@@ -494,9 +494,9 @@ if __name__ == '__main__':
         sys.exit(-1)
     if len(sys.argv) == 4:
         added_by = sys.argv.pop()
-    (channel, category, filename) = sys.argv[1:]
     else:
         added_by = '<console>'
+    (channel, category, filename) = sys.argv[1:]
     plugin = Class()
     db = plugin.getDb(channel)
     cursor = db.cursor()
