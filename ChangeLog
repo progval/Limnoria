@@ -1,3 +1,11 @@
+	* Moved the connect and disconnect commands from the Relay plugin
+	to the Owner plugin, so a Supybot can be on multiple networks
+	without ever loading the Relay plugin.
+	
+	* Added relay bot detection to the Relay plugin.  Now, rather
+	than get involved in a loop with another relay bot, a Supybot
+	will (if it has ops) rain down its wrath upon the offender.
+	
 	* Added supybot.plugins.Quotes.requireRegistration, which
 	determines whether a user need be registered to add Quotes to
 	the Quotes database.
