@@ -120,6 +120,8 @@ class FunctionsTestCase(unittest.TestCase):
         inChannel = [ircmsgs.privmsg('#foo', s) for s in inChannel]
         badmsg = ircmsgs.privmsg('#foo', '%s:foo' % nick)
         self.failIf(callbacks.addressed(nick, badmsg))
+        badmsg = ircmsgs.privmsg('#foo', '%s^: foo' % nick)
+        self.failIf(callbacks.addressed(nick, badmsg))
         for msg in inChannel:
             self.assertEqual('foo', callbacks.addressed(nick, msg), msg)
         msg = ircmsgs.privmsg(nick, 'foo')
