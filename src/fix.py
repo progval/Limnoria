@@ -37,8 +37,7 @@ __revision__ = "$Id$"
 
 __all__ = []
 
-exported = ['ignore', 'reversed', 'window', 'group',
-           'partition', 'any', 'all', 'rsplit']
+exported = ['ignore', 'window', 'group', 'partition', 'any', 'all', 'rsplit']
 
 import sys
 import new
@@ -68,10 +67,12 @@ def ignore(*args, **kwargs):
     """Simply ignore the arguments sent to it."""
     pass
 
-def reversed(L):
-    """Iterates through a sequence in reverse."""
-    for i in xrange(len(L) - 1, -1, -1):
-        yield L[i]
+if sys.version_info < (2, 4, 0):
+    def reversed(L):
+        """Iterates through a sequence in reverse."""
+        for i in xrange(len(L) - 1, -1, -1):
+            yield L[i]
+    exported.append('reversed')
 
 def window(L, size):
     """Returns a sliding 'window' through the list L of size size."""
@@ -166,20 +167,24 @@ def all(p, seq):
 
 def rsplit(s, sep=None, maxsplit=-1):
     """Equivalent to str.split, except splitting from the right."""
-    if sep is not None:
-        sep = sep[::-1]
-    L = s[::-1].split(sep, maxsplit)
-    L.reverse()
-    return [s[::-1] for s in L]
+    if sys.version_info < (2, 4, 0):
+        if sep is not None:
+            sep = sep[::-1]
+        L = s[::-1].split(sep, maxsplit)
+        L.reverse()
+        return [s[::-1] for s in L]
+    else:
+        return s.rsplit(sep, maxsplit)
 
-import operator
-def itemgetter(i):
-    return lambda x: x[i]
+if sys.version_info < (2, 4, 0):
+    import operator
+    def itemgetter(i):
+        return lambda x: x[i]
 
-def attrgetter(attr):
-    return lambda x: getattr(x, attr)
-operator.itemgetter = itemgetter
-operator.attrgetter = attrgetter
+    def attrgetter(attr):
+        return lambda x: getattr(x, attr)
+    operator.itemgetter = itemgetter
+    operator.attrgetter = attrgetter
 
 import csv
 import cStringIO as StringIO
