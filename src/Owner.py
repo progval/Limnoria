@@ -84,7 +84,8 @@ def loadPluginModule(name, ignoreDeprecation=False):
     try:
         module = imp.load_module(name, *moduleInfo)
     except:
-        del sys.modules[name]
+        if name in sys.modules:
+            del sys.modules[name]
         raise
     if 'deprecated' in module.__dict__ and module.deprecated:
         if ignoreDeprecation:
