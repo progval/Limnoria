@@ -43,6 +43,7 @@ plugins = [
     'Misc',
     'Owner',
     'QuoteGrabs',
+    'Scheduler',
     'Status',
     'User',
     'Utilities',
