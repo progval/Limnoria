@@ -56,11 +56,8 @@ class UserCommands(callbacks.Privmsg):
         Registers <name> with the given password <password> and the current
         hostmask of the person registering.
         """
-        (name, password) = privmsgs.getArgs(args, optional=1)
+        (name, password) = privmsgs.getArgs(args, needed=2)
         if not self._checkNotChannel(irc, msg, password):
-            return
-        if ircutils.isChannel(msg.args[0]):
-            irc.error(msg, conf.replyRequiresPrivacy)
             return
         try:
             ircdb.users.getUserId(name)
@@ -77,6 +74,26 @@ class UserCommands(callbacks.Privmsg):
         user.addHostmask(msg.prefix)
         ircdb.users.setUser(id, user)
         irc.reply(msg, conf.replySuccess)
+
+    def unregister(self, irc, msg, args):
+        """<name> <password>
+
+        Unregisters <name> from the user database.
+        """
+        (name, password) = privmsgs.getArgs(args, needed=2)
+        if not self._checkNotChannel(irc, msg, password):
+            return
+        try:
+            id = ircdb.users.getUserId(name)
+            user = ircdb.users.getUser(id)
+        except KeyError:
+            irc.error(msg, 'That username isn\'t registered.')
+            return
+        if user.checkPassword(password):
+            ircdb.users.delUser(id)
+            irc.reply(msg, conf.replySuccess)
+        else:
+            irc.error(msg, conf.replyIncorrectAuth)
 
     def addhostmask(self, irc, msg, args):
         """<name> <hostmask> [<password>]
