@@ -54,14 +54,23 @@ def configure(onStart, afterConnect, advanced):
 
 class IMDB(callbacks.Privmsg):
     threaded = True
+    def _formatMovie(self, movie):
+        title = utils.unCommaThe(movie.title())
+        genres = utils.commaAndify(map(str.lower, movie.genres()))
+        s = '"%s" (%s) belongs to the %s genres.  ' \
+            'It\'s been rated %s out of 10.  ' \
+            'More information is available at <%s>' % \
+            (title, movie.year(), genres, movie.rating(), movie.url)
+        return s
+        
     def imdb(self, irc, msg, args):
         """<movie title>
 
         Returns the IMDB information on the movie given.
         """
-        movie = privmsgs.getArgs(args)
+        movieTitle = privmsgs.getArgs(args)
         db = IMDb.IMDb()
-        movies = db.search(movie)
+        movies = db.search(movieTitle)
         if len(movies) == 0:
             irc.reply(msg, 'No movies matched that title.')
         elif len(movies) == 1:
@@ -71,17 +80,16 @@ class IMDB(callbacks.Privmsg):
                     'More information is available at <%s>' % \
                     (movie.title(), movie.url)
             else:
-                title = utils.unCommaThe(movie.title())
-                genres = utils.commaAndify(map(str.lower, movie.genres()))
-                s = '"%s" (%s) belongs to the %s genres.  ' \
-                    'It\'s been rated %s out of 10.  ' \
-                    'More information is available at <%s>' % \
-                    (title, movie.year(), genres, movie.rating(), movie.url)
-            irc.reply(msg, s)
+                irc.reply(msg, self._formatMovie(movie))
         elif len(movies) > 20:
             s = 'More than 20 movies matched, please narrow your search.'
             irc.reply(msg, s)
         else:
+            for movie in movies:
+                title = movie.title().lower()
+                if utils.unCommaThe(title) == movieTitle.lower():
+                    irc.reply(msg, self._formatMovie(movie))
+                    return
             titles = ['%s (%s)' % \
                       (utils.unCommaThe(movie.title()), movie.year())
                       for movie in movies]
