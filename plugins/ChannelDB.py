@@ -342,7 +342,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
-            if name.isdigit():
+            if isinstance(name, int):
                 name = ircdb.getUser(int(name)).name
             s = '%s was last seen here %s ago saying %r' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
