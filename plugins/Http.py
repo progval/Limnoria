@@ -329,12 +329,13 @@ class Http(callbacks.Privmsg):
             return
         html = fd.read()
         fd.close()
-        defs = self._acronymre.findall(html)
+        # The following definitions are stripped and empties are removed.
+        defs = filter(None, map(str.strip, self._acronymre.findall(html)))
+        debug.printf(defs)
         if len(defs) == 0:
             irc.reply(msg, 'No definitions found.')
         else:
-            s = ircutils.privmsgPayload([repr(s.strip()) for s in defs[1:-1]],
-                                        ', or ')
+            s = ircutils.privmsgPayload(defs, ', or ')
             irc.reply(msg, '%s could be %s' % (acronym, s))
 
     _netcraftre = re.compile(r'whatos text -->(.*?)<a href="/up/acc', re.S)
