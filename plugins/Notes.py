@@ -29,9 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-# add read delete count 
-# Jeremy: ircdb.users.getUserName(msg.prefix)
-
 from baseplugin import *
 
 import time
@@ -91,7 +88,16 @@ class Notes(DBHandler, callbacks.Privmsg):
             results = self.cursor.fetchall()
             return results[0]
         else: # this should NEVER happen
-            return "ERROR"
+            return "ERROR LOOKING UP USERID"
+
+    def getUserName(self, userid):
+        self.cursor.execute("""SELECT name FROM users
+                               WHERE id=%d""" % userid)
+        if self.cursor.rowcount != 0
+            results = self.cursor.fetchall()
+            return results[0]
+        else:
+            return "ERROR LOOKING UP USERNAME"
 
     def setNoteUnread(self, irc, msg, args):
         "set a note as unread"
@@ -102,6 +108,8 @@ class Notes(DBHandler, callbacks.Privmsg):
         self.db.commit()
         
     def sendNote(self, irc, msg, args):
+        "sends a new note to an IRC user"
+        # sendnote <user> <text>
         (name, note) = privmsgs.getArgs(args, needed=2)
         sender = ircdb.users.getUserName(msg.prefix)
         if ircdb.users.hasUser(name):
@@ -113,7 +121,7 @@ class Notes(DBHandler, callbacks.Privmsg):
         _addUser(recipient)
         senderID = self.getUserID(sender)
         recipID = self.getUserID(recipient)
-        if msg.args[0][0] == "#": public = "True"
+        if ircutils.isChannel(msg.args[0]): public = "True"
         else: public = "False"
         self.cursor.execute("""INSERT INTO notes
                                VALUES (%d,%d,%d,%s,'False',%s)""" %\
@@ -121,4 +129,64 @@ class Notes(DBHandler, callbacks.Privmsg):
                                public, note))
         self.db.commit()
 
-    
+    def getNote(self, irc, msg, args):
+        "retrieves a single note by unique note id"
+        # getnote 136  
+        noteid = privmsgs.getArgs(args)
+        sender = ircdb.users.getUserName(msg.prefix)
+        senderID = self.getUserID(sender)
+        self.cursor.execute("""SELECT note, to_id, public FROM notes
+                               WHERE id=%d LIMIT 1""" % int(noteid))
+        note, to_id, public = self.cursor.fetchall()
+        if senderID == to_id:
+            if public == 'True':
+                self.reply(msg, note)
+            else:
+                msg.args[0] = msg.nick
+                self.reply(msg, note)
+            self.cursor.execute("""UPDATE notes SET read='True' 
+                                   WHERE id=%d""" % noteid)
+            self.db.commit()
+        else:
+            self.error(msg, 'Error getting note')
+
+    def newNotes(self, irc, msg, args):
+        "takes no arguments, retrieves all unread notes for the requesting user"
+        sender = ircdb.users.getUserName(msg.prefix)
+        senderID = self.getUserID(sender)
+        self.cursor.execute("""SELECT id, from_id FROM notes
+                               WHERE to_id=%d
+                               AND read='False'""" % senderID)
+        notes = self.cursor.fetchall()
+        L = []
+        for (id, from_id) in notes:
+            sender = self.getUserName(from_id)
+            L.append(r'#%d from %s;;' % (id, sender))
+
+    def deleteNote(self, irc, msg, args):
+        "removes single note using note id"
+        noteid = privmsgs.getArgs(args)
+        sender = ircdb.users.getUserName(msg.prefix)
+        senderID = self.getUserID(sender)
+        self.cursor.execute("""SELECT to_id FROM notes
+                               WHERE id=%d""" % int(noteid))
+        to_id = self.cursor.fetchall()
+        if senderID == to_id:
+            self.cursor.execute("""DELETE FROM notes
+                                   WHERE id=%d""" % noteid)
+            self.db.commit()
+            self.reply(msg, conf.replySuccess)
+        else:
+            self.error(msg, 'Unable to delete note')
+            
+    def getNotes(self, irc, msg, args):
+        "takes no arguments gets all notes for sender"
+        sender = ircdb.users.getUserName(msg.prefix)
+        senderID = self.getUserID(sender)
+        self.cursor.execute("""SELECT id, from_id FROM notes
+                               WHERE to_id=%d""" % senderID)
+        notes = self.cursor.fetchall()
+        L = []
+        for (id, from_id) in notes:
+            sender = self.getUserName(from_id)
+            L.append(r'#%d from %s;;' % (id, sender)
