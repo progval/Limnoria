@@ -233,7 +233,7 @@ def ilen(iterator):
         i += 1
     return i
 
-def group(seq, groupSize):
+def group(seq, groupSize, noneFill=True):
     ret = []
     L = []
     i = groupSize
@@ -247,6 +247,9 @@ def group(seq, groupSize):
             L.append(elt)
         i -= 1
     if L:
+        if noneFill:
+            while len(L) < groupSize:
+                L.append(None)
         ret.append(L)
     return ret
 
