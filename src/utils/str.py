@@ -299,9 +299,15 @@ def nItems(n, item, between=None):
     assert isinstance(n, int), \
            'The order of the arguments to nItems changed again, sorry.'
     if between is None:
-        return '%s %s' % (n, pluralize(item, n))
+        if n > 1:
+            return format('%s %p', n, item)
+        else:
+            return format('%s %s', n, item)
     else:
-        return '%s %s %s' % (n, between, pluralize(item, n))
+        if n > 1:
+            return format('%s %s %p', n, between, item)
+        else:
+            return format('%s %s %s', n, between, item)
 
 def be(i):
     """Returns the form of the verb 'to be' based on the number i."""

@@ -169,20 +169,13 @@ class StrTest(SupyTestCase):
 
     def testPluralize(self):
         f = utils.str.pluralize
-        self.assertEqual('bike', f('bike', 1))
-        self.assertEqual('bikes', f('bike', 2))
-        self.assertEqual('BIKE', f('BIKE', 1))
-        self.assertEqual('BIKES', f('BIKE', 2))
-        self.assertEqual('match', f('match', 1))
-        self.assertEqual('matches', f('match', 2))
-        self.assertEqual('Patch', f('Patch', 1))
-        self.assertEqual('Patches', f('Patch', 2))
-        self.assertEqual('fish', f('fish', 1))
-        self.assertEqual('fishes', f('fish', 2))
-        self.assertEqual('try', f('try', 1))
-        self.assertEqual('tries', f('try', 2))
-        self.assertEqual('day', f('day', 1))
-        self.assertEqual('days', f('day', 2))
+        self.assertEqual('bikes', f('bike'))
+        self.assertEqual('BIKES', f('BIKE'))
+        self.assertEqual('matches', f('match'))
+        self.assertEqual('Patches', f('Patch'))
+        self.assertEqual('fishes', f('fish'))
+        self.assertEqual('tries', f('try'))
+        self.assertEqual('days', f('day'))
 
     def testDepluralize(self):
         f = utils.str.depluralize
