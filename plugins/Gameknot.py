@@ -141,7 +141,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 # Game is over.
                 m = self._gkWon.search(s)
                 winner = m.group(1)
-                m = self._gkReason.match(s)
+                m = self._gkReason.search(s)
                 if m:
                     reason = m.group(1)
                 else:
