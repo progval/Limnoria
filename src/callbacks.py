@@ -841,7 +841,8 @@ class Privmsg(irclib.IrcCallback):
                     self._original(irc, msg, args)
                 else:
                     cb = irc.getCallback('Misc')
-                    cb.help(irc, msg, [self.name()])
+                    if cb is not None:
+                        cb.help(irc, msg, [self.name()])
             if args:
                 name = canonicalName(args[0])
                 if name == canonicalName(self.name()):
