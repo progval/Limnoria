@@ -286,11 +286,11 @@ class Todo(callbacks.Privmsg):
         cursor.execute("""SELECT userid, priority FROM todo
                           WHERE id = %s AND active = 1""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No note with id %d' % id)
+            irc.error(msg, 'No note with id %s' % id)
             return
         (userid, oldpriority) = cursor.fetchone()
         if userid != user_id:
-            irc.error(msg, 'Todo #%d does not belong to you.' % id)
+            irc.error(msg, 'Todo #%s does not belong to you.' % id)
             return
         # If we make it here, we're okay
         cursor.execute("""UPDATE todo SET priority = %s

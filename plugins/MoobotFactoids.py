@@ -489,7 +489,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(msg, "No factoids by %r found." % author)
             return
         keys = [repr(tup[0]) for tup in cursor.fetchall()]
-        s = "Author search for %r (%d found): %s" % \
+        s = "Author search for %r (%s found): %s" % \
             (author, len(keys), utils.commaAndify(keys))
         irc.reply(msg, s)
 
@@ -509,7 +509,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(msg, "No keys matching %r found." % search)
             return
         keys = [repr(tup[0]) for tup in cursor.fetchall()]
-        s = "Key search for %r (%d found): %s" % \
+        s = "Key search for %r (%s found): %s" % \
             (search, len(keys), utils.commaAndify(keys))
         irc.reply(msg, s)
 
@@ -529,7 +529,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(msg, "No values matching %r found." % search)
             return
         keys = [repr(tup[0]) for tup in cursor.fetchall()]
-        s = "Value search for %r (%d found): %s" % \
+        s = "Value search for %r (%s found): %s" % \
             (search, len(keys), utils.commaAndify(keys))
         irc.reply(msg, s)
 

@@ -85,9 +85,7 @@ class Dunno(callbacks.Privmsg):
                           FROM dunnos
                           ORDER BY random()
                           LIMIT 1""")
-        if cursor.rowcount == 0:
-            irc.error(msg, 'No dunnos available, add some with dunno add.')
-        else:
+        if cursor.rowcount != 0:
             dunno = cursor.fetchone()[0]
             dunno = dunno.replace('$who', msg.nick)
             irc.reply(msg, dunno, prefixName=False)
@@ -130,7 +128,7 @@ class Dunno(callbacks.Privmsg):
                           FROM dunnos
                           WHERE id = %s""" % dunno_id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No dunno with id: %d' % dunno_id)
+            irc.error(msg, 'No dunno with id: %s' % dunno_id)
             return
         (added_by, dunno) = cursor.fetchone()
         if not (ircdb.checkCapability(user_id, 'admin') or \
@@ -157,7 +155,7 @@ class Dunno(callbacks.Privmsg):
             irc.error(msg, 'No dunnos with %r found.' % text)
             return
         ids = [str(t[0]) for t in cursor.fetchall()]
-        s = 'Dunno search for %r (%d found): %s' % \
+        s = 'Dunno search for %r (%s found): %s' % \
             (text, len(ids), utils.commaAndify(ids))
         irc.reply(msg, s)
 
@@ -175,10 +173,10 @@ class Dunno(callbacks.Privmsg):
         cursor = self.db.cursor()
         cursor.execute("""SELECT dunno FROM dunnos WHERE id = %s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No dunno found with id #%d' % id)
+            irc.error(msg, 'No dunno found with id #%s' % id)
             return
         dunno = cursor.fetchone()[0]
-        irc.reply(msg, "Dunno #%d: %r" % (id, dunno))
+        irc.reply(msg, "Dunno #%s: %r" % (id, dunno))
 
 Class = Dunno
 
