@@ -91,6 +91,10 @@ class IrcHandler(logging.Handler):
                         if not ircdb.checkCapability(hostmask, capability):
                             msgOk = False
                 if msgOk:
+                    # We use sendMsg here because queueMsg can cause some
+                    # WARNING logs, which might be sent here, which might
+                    # cause some more WARNING logs, etc. and that would be
+                    # baaaaaad.
                     irc.sendMsg(msg)
                 else:
                     print '*** Not sending to %r' % target
