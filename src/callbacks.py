@@ -701,13 +701,12 @@ class IrcObjectProxy(RichReplyMethods):
             # No matching regexp commands, now we do invalidCommands.
             self._callInvalidCommands()
         elif len(cbs) > 1:
+            names = sorted([cb.name() for cb in cbs])
             return self.error('The command %s is available in the %s plugins.  '
                               'Please specify the plugin whose command you '
                               'wish to call by using its name as a command '
                               'before %s.' %
-                              (command,
-                               sorted([cb.name() for cb in cbs]),
-                               command))
+                              (command, utils.commaAndify(names), command))
         else:
             cb = cbs[0]
             del self.args[0] # Remove the command.
@@ -755,6 +754,7 @@ class IrcObjectProxy(RichReplyMethods):
             self.to = self.to or to
         # action=True implies noLengthCheck=True and prefixName=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
+        s = ircutils.safeArgument(s)
         if self.finalEvaled:
             try:
                 if not isinstance(self.irc, irclib.Irc):
@@ -778,7 +778,6 @@ class IrcObjectProxy(RichReplyMethods):
                     self.irc.queueMsg(m)
                     return m
                 else:
-                    s = ircutils.safeArgument(s)
                     allowedLength = 450 - len(self.irc.prefix)
                     maximumMores = conf.supybot.reply.mores.maximum()
                     maximumLength = allowedLength * maximumMores
