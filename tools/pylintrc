@@ -1,7 +1,6 @@
-#  lint Python modules using external checkers.
-#     
 [MASTER]
-# add <file> (may be a directory) to the black list. It should be a base name, not a path. You may set this option multiple times.
+# add <file> (may be a directory) to the black list. 
+# It should be a base name, not a path. You may set this option multiple times.
 ignore=CVS
 
 # make statistics on collected data.
@@ -10,20 +9,17 @@ statistics=yes
 # pickle collected data for later comparisons.
 persistent=yes
 
-# Python expression which should return a note lesser than 10 (10 is the highest note).You have access to the variables errors, warnings, statements which respectivly contains the number of errors / warnings messages and the total number of statements analyzed.
-evaluation='10.0 - ((float(2 * errors + warnings) / statements) * 10)'
-
 # Add a comment according to your evaluation note.
 comment=no
 
 
 
 # checks for                                                              
-#     * external modules dependancies                                            
-#     * relative / wildcard imports                                                         
-#     * cyclic imports                                                           
+#     * external modules dependancies                                          
+#     * relative / wildcard imports                                           
+#     * cyclic imports                                                       
 #     * uses of depreceted modules
-#     
+
 [IMPORTS]
 # enable/disable this checker
 enable-imports=yes
@@ -46,14 +42,14 @@ deprecated-modules=regsub,TERMIOS
 
 
 # checks for :                                                            
-#     * doc strings                                                              
-#     * modules / classes / functions / methods / arguments / variables name     
-#     * number of arguments, local variables, branchs, returns and statements in
-# functions, methods                                                       
-#     * required module's attributes                                             
-#     * dangerous default values as arguments                                    
+#     * doc strings 
+#     * modules / classes / functions / methods / arguments / variables name
+#     * number of arguments, local variables, branchs, returns and statements
+#       in functions, methods
+#     * required module's attributes
+#     * dangerous default values as arguments
 #     * redefinition of function / method / class
-#     * uses of the global statement                                             
+#     * uses of the global statement            
 #     
 [BASIC]
 # enable/disable this checker
@@ -86,41 +82,44 @@ unreachable=yes
 # Check for function / method / class redefinition
 redefinition=yes
 
-# Regular expression which should only match functions which do not require a docstring
+# Regular expression which should only match functions which 
+# do not require a docstring
 no-docstring-rgx=_.*
 
-# Minimal length for module / class / function / method / argument / variable names
-min-name-length=0
+# Minimal length for module/class/function/method/argument/variable names
+min-name-length=3
 
 # Regular expression which should only match correct module name
-module-rgx=[a-z_]+
+module-rgx=([a-z_]+|[A-Z][a-zA-Z0-9]+)
 
 # Regular expression which should only match correct class name
-class-rgx=[A-Z][a-zA-Z]+
+class-rgx=([A-Z][a-zA-Z]+|[a-z]+)
 
 # Regular expression which should only match correct function name
 function-rgx=[a-zA-Z_]+
 
 # Regular expression which should only match correct argument name
-argument-rgx=[a-z_]+
+argument-rgx=[a-z_][A-Za-z0-9]*
 
 # Regular expression which should only match correct variable name
-variable-rgx=[a-z_]+
+variable-rgx=[a-z_][A-Za-z0-9]*
 
-# Good variable names which are lesser than min-name-length or wouldn't match the variable-rgx, separated by a comma
-good-variable-names=i,j,k,ex
+# Good variable names which are lesser than min-name-length 
+# or wouldn't match the variable-rgx, separated by a comma
+good-variable-names=i,j,k,db,s,t,s1,s2,t1,t2,m,e,cb,r,h,c,fd,_,u,tb,f,no,b,bg,fg,id
 
-# Bad variable names which are greater than min-name-length or would match the variable-rgx, separated by a comma
+# Bad variable names which are greater than min-name-length or would
+# match the variable-rgx, separated by a comma
 bad-variable-names=foo,bar,baz,toto,tutu,tata
 
 
 
 # checks for                                                              
-#     * unused variables / imports                                               
-#     * undefined variables                                                      
-#     * redefinition of variable from builtins or from an outer scope            
-#     * use of variable before assigment                                         
-#     
+#     * unused variables / imports
+#     * undefined variables
+#     * redefinition of variable from builtins or from an outer scope
+#     * use of variable before assigment
+
 [VARIABLES]
 # enable/disable this checker
 enable-variables=yes
@@ -128,13 +127,13 @@ enable-variables=yes
 
 
 # checks for :                                                            
-#     * methods without self as first argument                                   
-#     * overriden methods signature                                              
-#     * access only to existant members via self                                 
-#     * attributes not defined in the __init__ method                            
-#     * supported interfaces implementation                                      
-#     * unreachable code                                                         
-#     
+#     * methods without self as first argument
+#     * overriden methods signature          
+#     * access only to existant members via self  
+#     * attributes not defined in the __init__ method 
+#     * supported interfaces implementation          
+#     * unreachable code                            
+
 [CLASSES]
 # enable/disable this checker
 enable-classes=yes
@@ -154,12 +153,12 @@ interfaces=yes
 
 
 # gives some raw metrics :                                                
-#     * total number of lines                                                    
-#     * total number of code lines                                               
-#     * total number of docstring lines                                          
-#     * total number of comments lines                                           
-#     * total number of empty lines                                              
-#     
+#     * total number of lines                      
+#     * total number of code lines                
+#     * total number of docstring lines          
+#     * total number of comments lines          
+#     * total number of empty lines            
+
 [METRICS]
 # enable/disable this checker
 enable-metrics=yes
@@ -167,9 +166,9 @@ enable-metrics=yes
 
 
 # checks for:
-#     * source code with non ascii characters but np encoding declaration (PEP 263)
+#     * source code with non ascii characters but no encoding declaration
 #     * warning notes in the code like FIXME, XXX
-#     
+
 [MISCELLANEOUS]
 # enable/disable this checker
 enable-miscellaneous=yes
@@ -177,22 +176,22 @@ enable-miscellaneous=yes
 # check or not for source code encoding
 encoding=yes
 
-# list of notes to take in consideration, separated by a comma. Default to FIXME,XXX
+# list of notes to take in consideration, separated by a comma.
 notes=FIXME,XXX,TODO
 
 
 
 # checks for :                                                            
-#     * unauthorized constructions                                               
-#     * strict indentation                                                       
-#     * lines'length                                                             
-#     
+#     * unauthorized constructions            
+#     * strict indentation                   
+#     * lines'length                        
+
 [FORMAT]
 # enable/disable this checker
 enable-format=yes
 
 # Maximum number of characters on a single line.
-max-line-length=78
+max-line-length=79
 
 # Maximum number of lines in a module
 max-module-lines=1000
