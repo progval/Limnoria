@@ -43,6 +43,8 @@ class ToggleDictionaryTestCase(unittest.TestCase):
 ##         self.assertEqual(t['#baz']['foo'], True)
         self.assertEqual(t.get('foo'), True)
         self.assertEqual(t.get('foo', '#baz'), True)
+        t.toggle('foo', value=False)
+        self.assertEqual(t.get('foo', '#baz'), True)
         t.toggle('foo', value=False, channel='#baz')
         self.assertEqual(t.get('foo', '#baz'), False)
         t.toggle('foo', channel='#baz')
