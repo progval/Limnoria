@@ -98,11 +98,14 @@ class Http(callbacks.Privmsg):
             if text.startswith('Error'):
                 raise FreshmeatException, text
             dom = xml.dom.minidom.parseString(text)
-            project = dom.getElementsByTagName('projectname_full')[0]
-            version = dom.getElementsByTagName('latest_release_version')[0]
-            vitality = dom.getElementsByTagName('vitality_percent')[0]
-            popularity = dom.getElementsByTagName('popularity_percent')[0]
-            lastupdated = dom.getElementsByTagName('date_updated')[0]
+            def getNode(name):
+                node = dom.getElementsByTagName(name)[0]
+                return str(node.childNodes[0].data)
+            project = getNode('projectname_full')
+            version = getNode('latest_release_version')
+            vitality = getNode('vitality_percent')
+            popularity = getNode('popularity_percent')
+            lastupdated = getNode('date_updated')
             irc.reply(msg,
                       '%s, last updated %s, with a vitality percent of %s '\
                       'and a popularity of %s, is in version %s.' % \
