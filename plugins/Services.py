@@ -44,11 +44,13 @@ import conf
 import ircmsgs
 import privmsgs
 import ircutils
+import registry
 import schedule
 import callbacks
 
-def configure(onStart, afterConnect, advanced):
+def configure(advanced):
     from questions import expect, anything, something, yn
+    conf.registerPlugin('Services', True)
     nick = something('What is your registered nick?')
     password = something('What is your password for that nick?')
     chanserv = 'ChanServ'
@@ -57,65 +59,73 @@ def configure(onStart, afterConnect, advanced):
     nickserv = 'NickServ'
     if yn('Is your NickServ named something other than NickServ?') == 'y':
         nickserv = something('What is your NickServ named?')
-    onStart.append('load Services')
-    onStart.append('services start %s %s %s %s' % \
-                   (nick, password, nickserv, chanserv))
+    conf.supybot.plugins.Services.nick.setValue(nick)
+    conf.supybot.plugins.Services.password.setValue(password)
+    conf.supybot.plugins.Services.NickServ.setValue(nickserv)
+    conf.supybot.plugins.Services.ChanServ.setValue(chanserv)
 
+class ValidNickOrEmptyString(registry.String):
+    def setValue(self, v):
+        if v and not ircutils.isNick(v):
+            raise registry.InvalidRegistryValue, \
+                  'Value must be a valid nick or the empty string.'
+        self.value = v
+            
+conf.registerPlugin('Services')
+# Not really ChannelValues: but we can have values for each network.  We
+# should probably document that this is possible.
+conf.registerChannelValue(conf.supybot.plugins.Services, 'nick',
+    ValidNickOrEmptyString('', """Determines what nick the bot will use with
+    services."""))
+conf.registerChannelValue(conf.supybot.plugins.Services, 'password',
+    registry.String('', """Determines what password the bot will use with
+    services."""))
+conf.registerChannelValue(conf.supybot.plugins.Services, 'NickServ',
+    ValidNickOrEmptyString('', """Determines what nick the 'NickServ' service
+    has."""))
+conf.registerChannelValue(conf.supybot.plugins.Services, 'ChanServ',
+    ValidNickOrEmptyString('', """Determines what nick the 'ChanServ' service
+    has."""))
+
+    
 class Services(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.nickserv = ''
         self.reset()
 
     def reset(self):
         self.sentGhost = False
         self.identified = False
 
-    def start(self, irc, msg, args):
-        """<nick> <password> [<nickserv> <chanserv>]
-
-        Sets the necessary values for the services plugin to work.  <nick>
-        is the nick the bot should use (it must be registered with nickserv).
-        <password> is the password the registered <nick> uses.  The optional
-        arguments <nickserv> and <chanserv> are the names of the NickServ and
-        ChanServ, respectively,  They default to NickServ and ChanServ.
-        """
-        if ircutils.isChannel(msg.args[0]):
-            irc.errorRequiresPrivacy()
-            return
-        (self.nick, self.password, nickserv, chanserv) = \
-                    privmsgs.getArgs(args, required=2, optional=2)
-        if not self.nick:
-            irc.error('The registered nick cannot be blank.')
-            return
-        self.nick = ircutils.IrcString(self.nick)
-        self.nickserv = ircutils.IrcString(nickserv or 'NickServ')
-        self.chanserv = ircutils.IrcString(chanserv or 'ChanServ')
-        self._ghosted = re.compile('(Ghost|%s).*killed' % self.nick, re.I)
-        self.sentGhost = False
-        self.log.info('Services started.')
-        irc.replySuccess()
-
     def _doIdentify(self, irc):
-        assert self.nickserv, 'Nickserv must not be empty.'
+        nickserv = self.registryValue('NickServ', irc.network)
+        if not nickserv:
+            self.log.warning('_doIdentify called without a set NickServ.')
+            return
+        password = self.registryValue('password', irc.network)
         assert irc.nick == self.nick, 'Identifying with not normal nick.'
         self.log.info('Sending identify (current nick: %s)' % irc.nick)
-        identify = 'IDENTIFY %s' % self.password
+        identify = 'IDENTIFY %s' % password
         # It's important that this next statement is irc.sendMsg, not
         # irc.queueMsg.  We want this message to get through before any
         # JOIN messages also being sent on 376.
-        irc.sendMsg(ircmsgs.privmsg(self.nickserv, identify))
+        irc.sendMsg(ircmsgs.privmsg(nickserv, identify))
 
     def _doGhost(self, irc):
-        assert self.nickserv, 'Nickserv must not be empty.'
+        nickserv = self.registryValue('NickServ', irc.network)
+        if not nickserv:
+            self.log.warning('_doIdentify called without a set NickServ.')
+            return
         if self.sentGhost:
             self.log.warning('Refusing to send GHOST twice.')
         else:
+            nick = self.registryValue('nick', irc.network)
+            password = self.registryValue('password', irc.network)
             self.log.info('Sending ghost (current nick: %s)', irc.nick)
-            ghost = 'GHOST %s %s' % (self.nick, self.password)
-            # Ditto about the sendMsg.
-            irc.sendMsg(ircmsgs.privmsg(self.nickserv, ghost))
+            ghost = 'GHOST %s %s' % (nick, password)
+            # Ditto about the sendMsg (see _doIdentify).
+            irc.sendMsg(ircmsgs.privmsg(nickserv, ghost))
             self.sentGhost = True
 
     def do001(self, irc, msg):
@@ -123,43 +133,51 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.sentGhost = False
 
     def do376(self, irc, msg):
-        if self.nickserv: # Check to see if we're started.
-            assert self.nick, 'Services: Nick must not be empty.'
-            if irc.nick == self.nick:
+        nickserv = self.registryValue('NickServ', irc.network)
+        if nickserv: # Check to see if we're started.
+            nick = self.registryValue('nick', irc.network)
+            assert nick, 'Services: Nick must not be empty.'
+            if irc.nick == nick:
                 self._doIdentify(irc)
             else:
                 self._doGhost(irc)
         else:
-            self.log.warning('do376 called without plugin being started.')
+            s = 'supybot.plugins.Services.NickServ is unset; cannot identify.'
+            self.log.warning(s)
     do422 = do377 = do376
 
     def do433(self, irc, msg):
-        if self.nickserv and irc.afterConnect:
-            self._doGhost(irc)
-        else:
-            self.log.warning('do433 called without plugin being started.')
+        if irc.afterConnect:
+            nickserv = self.registryValue('NickServ', irc.network)
+            if nickserv:
+                self._doGhost(irc)
+            else:
+                self.log.warning('do433 called without plugin being started.')
 
     def doNick(self, irc, msg):
-        if msg.args[0] == self.nick:
-            hostmask = '*!' + '@'.join(ircutils.splitHostmask(msg.prefix)[1:])
-            if ircutils.hostmaskPatternEqual(hostmask, irc.prefix):
-                self._doIdentify(irc)
+        nick = self.registryValue('nick', irc.network)
+        if msg.args[0] == nick:
+            self._doIdentify(irc)
 
     def doNotice(self, irc, msg):
-        if self.nickserv and msg.nick == self.nickserv:
+        if irc.afterConnect:
+            nickserv = self.registryValue('NickServ', irc.network)
+            if not nickserv or msg.nick != nickserv:
+                return
+            nick = self.registryValue('nick', irc.network)
             self.log.debug('Notice received from NickServ: %r', msg)
             s = msg.args[1]
-            if self._ghosted.search(msg.args[1]):
+            if self._ghosted.search(s):
                 self.log.info('Received "GHOST succeeded" from NickServ')
                 self.sentGhost = False
-                irc.queueMsg(ircmsgs.nick(self.nick))
+                irc.queueMsg(ircmsgs.nick(nick))
             if ('registered' in s or 'protected' in s) and \
                ('not' not in s and 'isn\'t' not in s):
                 self.log.info('Received "Registered Nick" from NickServ')
-                if self.nick == irc.nick:
+                if nick == irc.nick:
                     self._doIdentify(irc)
                 else:
-                    irc.sendMsg(ircmsgs.nick(self.nick))
+                    irc.sendMsg(ircmsgs.nick(nick))
             elif 'now recognized' in s:
                 self.log.info('Received "Password accepted" from NickServ')
                 self.identified = True
@@ -175,7 +193,12 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             if irc.nick in irc.state.channels[channel].ops:
                 irc.error('I\'ve already got ops in %sx' % channel)
             else:
-                irc.sendMsg(ircmsgs.privmsg(self.chanserv, 'op %s' % channel))
+                chanserv = self.registryValue('ChanServ', irc.network)
+                if chanserv:
+                    irc.sendMsg(ircmsgs.privmsg(chanserv, 'op %s' % channel))
+                else:
+                    irc.error('You must set supybot.plugins.Services.ChanServ '
+                              'before I\'m able to do get ops.')
         except KeyError:
             irc.error('I\'m not in %s.' % channel)
 
@@ -184,12 +207,12 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
         Identifies with NickServ.
         """
-        if self.nickserv:
+        if self.registryValue('NickServ', irc.network):
             self._doIdentify(irc)
             irc.replySuccess()
         else:
-            s = 'This plugin must first be started via the start command.'
-            irc.error(s)
+            irc.error('You must set supybot.plugins.Services.NickServ before '
+                      'I\'m able to do identify.')
 
 
 
