@@ -47,5 +47,5 @@ if __name__ == '__main__':
         files = glob.glob(os.path.join('test', '*_test.py'))
     names = [os.path.splitext(os.path.basename(file))[0] for file in files]
     suite = unittest.defaultTestLoader.loadTestsFromNames(names)
-    runner = unittest.TextTestRunner(verbosity=1)
+    runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
