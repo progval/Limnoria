@@ -37,7 +37,6 @@ import urllib2
 import debug
 import ircmsgs
 import ircutils
-import ircutils
 import callbacks
 
 htmlStripper = re.compile(r'<[^>]+>')
@@ -67,8 +66,12 @@ class Forums(callbacks.PrivmsgRegexp):
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
     def gameknot(self, irc, msg, match):
         r"http://(?:www\.)?gameknot.com/chess.pl\?bd=\d+&r=\d+"
-        fd = urllib2.urlopen(match.group(0))
+        #debug.printf('Got a GK URL from %s' % msg.prefix)
+        url = match.group(0)
+        fd = urllib2.urlopen(url)
+        #debug.printf('Got the connection.')
         s = fd.read()
+        #debug.printf('Got the string.')
         fd.close()
         try:
             ((wRating, wName), (bRating, bName)) = self._gkPlayer.findall(s)
@@ -81,8 +84,7 @@ class Forums(callbacks.PrivmsgRegexp):
             wStats = '%s; W-%s, L-%s, D-%s' % (wRating, wWins, wLosses, wDraws)
             bStats = '%s; W-%s, L-%s, D-%s' % (bRating, bWins, bLosses, bDraws)
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
-              '%s (%s) vs. %s (%s)' % (wName, wStats, bName, bStats)))
-            
+              '%s (%s) vs. %s (%s) [%s]' % (wName,wStats,bName,bStats,url)))
         except ValueError:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
               'That doesn\'t appear to be a proper Gameknot game.'))
