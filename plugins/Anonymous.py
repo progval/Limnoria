@@ -65,46 +65,54 @@ conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireRegistration',
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireCapability',
     registry.String('', """Determines what capability (if any) the bot should
     require people trying to use this plugin to have."""))
-                         
 
 
 class Anonymous(callbacks.Privmsg):
     private = True
+    def _preCheck(self, irc, msg, channel):
+        if self.registryValue('requireRegistration'):
+            try:
+                _ = ircdb.users.getUser(msg.prefix)
+            except KeyError:
+                irc.errorNotRegistered(Raise=True)
+        if channel not in irc.state.channels:
+            irc.error('I\'m not in %s, chances are that I can\'t say anything '
+                      'in there.' % channel, Raise=True)
+        capability = self.registryValue('requireCapability')
+        if capability:
+            if not ircdb.checkCapability(msg.prefix, capability):
+                irc.errorNoCapability(capability, Raise=True)
+        if self.registryValue('requirePresenceInChannel', channel) and \
+           msg.nick not in irc.state.channels[channel].users:
+            irc.error('You must be in %s to "say" in there.' % channel,
+                      Raise=True)
+        c = ircdb.channels.getChannel(channel)
+        if c.lobotomized:
+            irc.error('I\'m lobotomized in %s.' % channel, Raise=True)
+        if not c.checkCapability(self.__class__.__name__):
+            irc.error('That channel has set its capabilities so as to '
+                      'disallow the use of this plugin.', Raise=True)
+
     def say(self, irc, msg, args):
         """<channel> <text>
 
         Sends <text> to <channel>.
         """
         (channel, text) = privmsgs.getArgs(args, required=2)
-        if self.registryValue('requireRegistration'):
-            try:
-                _ = ircdb.users.getUser(msg.prefix)
-            except KeyError:
-                irc.errorNotRegistered()
-                return
-        if channel not in irc.state.channels:
-            irc.error('I\'m not in %s, chances are that I can\'t say anything '
-                      'in there.' % channel)
-            return
-        capability = self.registryValue('requireCapability')
-        if capability:
-            if not ircdb.checkCapability(msg.prefix, capability):
-                irc.errorNoCapability(capability)
-                return
-        if self.registryValue('requirePresenceInChannel', channel) and \
-           msg.nick not in irc.state.channels[channel].users:
-            irc.error('You must be in %s to "say" in there.' % channel)
-            return
-        c = ircdb.channels.getChannel(channel)
-        if c.lobotomized:
-            irc.error('I\'m lobotomized in %s.' % channel)
-            return
-        if not c.checkCapability(self.__class__.__name__):
-            irc.error('That channel has set its capabilities so as to '
-                      'disallow the use of this plugin.')
-            return
+        self._preCheck(irc, msg, channel)
         self.log.info('Saying %r in %s due to %s.', text, channel, msg.prefix)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
+
+    def action(self, irc, msg, args):
+        """<channel> <action>
+
+        Performs <action> in <channel>.
+        """
+        (channel, action) = privmsgs.getArgs(args, required=2)
+        self._preCheck(irc, msg, channel)
+        self.log.info('Performing %r in %s due to %s.',
+                      action, channel, msg.prefix)
+        irc.queueMsg(ircmsgs.action(channel, action))
 
 
 Class = Anonymous

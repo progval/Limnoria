@@ -43,6 +43,17 @@ class AnonymousTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(orig)
 
+    def testAction(self):
+        m = self.assertError('anonymous action %s loves you!' % self.channel)
+        try:
+            orig = conf.supybot.plugins.Anonymous.requireRegistration()
+            conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
+            m = self.assertNotError('anonymous action %s loves you!'%self.channel)
+            self.failUnless(m.args == ircmsgs.action(self.channel,
+                                                     'loves you!').args)
+        finally:
+            conf.supybot.plugins.Anonymous.requireRegistration.setValue(orig)
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
