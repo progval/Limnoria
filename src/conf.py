@@ -171,12 +171,9 @@ for (name, s) in registry._cache.iteritems():
             registerNetwork(name)
 
 
-class SpaceSeparatedSetOfChannels(registry.SeparatedListOf):
+class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
     Value = ValidChannel
-    def splitter(self, s):
-        return s.split()
-    joiner = ' '.join
 
     def removeChannel(self, channel):
         removals = []

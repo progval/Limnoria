@@ -444,11 +444,13 @@ class SeparatedListOf(Value):
             # config parser doesn't care about this space, we'll use it :)
             return ' ' 
         
-class SpaceSeparatedListOfStrings(SeparatedListOf):
-    Value = String
+class SpaceSeparatedListOf(SeparatedListOf):
     def splitter(self, s):
         return s.split()
     joiner = ' '.join
+    
+class SpaceSeparatedListOfStrings(SpaceSeparatedListOf):
+    Value = String
 
 class CommaSeparatedListOfStrings(SeparatedListOf):
     Value = String
@@ -456,9 +458,6 @@ class CommaSeparatedListOfStrings(SeparatedListOf):
         return re.split(r'\s*,\s*', s)
     joiner = ', '.join
     
-class CommaSeparatedSetOfStrings(CommaSeparatedListOfStrings):
-    List = sets.Set
-
 
 if __name__ == '__main__':
 #if 1:
