@@ -62,6 +62,8 @@ if network:
             self.assertNotError('freshmeat supybot')
             self.assertNotError('freshmeat My Classifieds')
             self.assertNotRegexp('freshmeat supybot', 'DOM Element')
+            m = self.assertNotRegexp('freshmeat asdlfkasjdf','Exception')
+            self.failIf(m.args[1].count('Error') > 1)
 
         def testTitle(self):
             self.assertResponse('title slashdot.org',

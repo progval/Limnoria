@@ -75,12 +75,9 @@ class Http(callbacks.Privmsg):
         if not url.startswith('http://'):
             irc.error(msg, 'Only HTTP urls are valid.')
             return
-        try:
-            fd = webutils.getUrlFd(url)
-            s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
-            irc.reply(msg, s)
-        except webutils.WebError, e:
-            irc.error(msg, str(e))
+        fd = webutils.getUrlFd(url)
+        s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
+        irc.reply(msg, s)
             
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
     def doctype(self, irc, msg, args):
@@ -93,16 +90,13 @@ class Http(callbacks.Privmsg):
         if not url.startswith('http://'):
             irc.error(msg, 'Only HTTP urls are valid.')
             return
-        try:
-            s = webutils.getUrl(url, size=self.maxSize)
-            m = self._doctypeRe.search(s)
-            if m:
-                s = utils.normalizeWhitespace(m.group(0))
-                irc.reply(msg, '%s has the following doctype: %s' % (url, s))
-            else:
-                irc.reply(msg, '%s has no specified doctype.' % url)
-        except webutils.WebError, e:
-            irc.error(msg, str(e))
+        s = webutils.getUrl(url, size=self.maxSize)
+        m = self._doctypeRe.search(s)
+        if m:
+            s = utils.normalizeWhitespace(m.group(0))
+            irc.reply(msg, '%s has the following doctype: %s' % (url, s))
+        else:
+            irc.reply(msg, '%s has no specified doctype.' % url)
             
     def size(self, irc, msg, args):
         """<url>
@@ -114,21 +108,18 @@ class Http(callbacks.Privmsg):
         if not url.startswith('http://'):
             irc.error(msg, 'Only HTTP urls are valid.')
             return
+        fd = webutils.getUrlFd(url)
         try:
-            fd = webutils.getUrlFd(url)
-            try:
-                size = fd.headers['Content-Length']
-                irc.reply(msg, '%s is %s bytes long.' % (url, size))
-            except KeyError:
-                s = fd.read(self.maxSize)
-                if len(s) != self.maxSize:
-                    irc.reply(msg, '%s is %s bytes long.' % (url, len(s)))
-                else:
-                    irc.reply(msg, 'The server didn\'t tell me how long %s is '
-                                   'but it\'s longer than %s bytes.' %
-                                   (url,self.maxSize))
-        except webutils.WebError, e:
-            irc.error(msg, str(e))
+            size = fd.headers['Content-Length']
+            irc.reply(msg, '%s is %s bytes long.' % (url, size))
+        except KeyError:
+            s = fd.read(self.maxSize)
+            if len(s) != self.maxSize:
+                irc.reply(msg, '%s is %s bytes long.' % (url, len(s)))
+            else:
+                irc.reply(msg, 'The server didn\'t tell me how long %s is '
+                               'but it\'s longer than %s bytes.' %
+                               (url,self.maxSize))
 
     def title(self, irc, msg, args):
         """<url>
@@ -138,16 +129,13 @@ class Http(callbacks.Privmsg):
         url = privmsgs.getArgs(args)
         if '://' not in url:
             url = 'http://%s' % url
-        try:
-            text = webutils.getUrl(url, size=self.maxSize)
-            m = self._titleRe.search(text)
-            if m is not None:
-                irc.reply(msg, utils.htmlToText(m.group(1).strip()))
-            else:
-                irc.reply(msg, 'That URL appears to have no HTML title '
-                               'within the first %s bytes.' % self.maxSize)
-        except ValueError, e:
-            irc.error(msg, str(e))
+        text = webutils.getUrl(url, size=self.maxSize)
+        m = self._titleRe.search(text)
+        if m is not None:
+            irc.reply(msg, utils.htmlToText(m.group(1).strip()))
+        else:
+            irc.reply(msg, 'That URL appears to have no HTML title '
+                           'within the first %s bytes.' % self.maxSize)
 
     def freshmeat(self, irc, msg, args):
         """<project name>
@@ -160,6 +148,7 @@ class Http(callbacks.Privmsg):
         try:
             text = webutils.getUrl(url)
             if text.startswith('Error'):
+                text = text.split(None, 1)[1]
                 raise FreshmeatException, text
             dom = xml.dom.minidom.parseString(text)
             def getNode(name):
@@ -175,7 +164,7 @@ class Http(callbacks.Privmsg):
                       'and a popularity of %s, is in version %s.' % \
                       (project, lastupdated, vitality, popularity, version))
         except FreshmeatException, e:
-            irc.error(msg, utils.exnToString(e))
+            irc.error(msg, str(e))
 
     def stockquote(self, irc, msg, args):
         """<company symbol>
@@ -401,11 +390,7 @@ class Http(callbacks.Privmsg):
         Returns information about the current version of the Linux kernel.
         """
         try:
-            try:
-                fd = webutils.getUrlFd('http://kernel.org/kdist/finger_banner')
-            except webutils.WebError, e:
-                irc.error(msg, str(e))
-                return
+            fd = webutils.getUrlFd('http://kernel.org/kdist/finger_banner')
             stable = 'unknown'
             beta = 'unknown'
             for line in fd:
@@ -464,10 +449,7 @@ class Http(callbacks.Privmsg):
                 irc.error(msg, '\'%s\' is an invalid extension character' % c)
                 return
         s = 'http://www.filext.com/detaillist.php?extdetail=%s&goButton=Go'
-        try:
-            text = webutils.getUrl(s % ext)
-        except webutils.WebError, e:
-            irc.error(msg, str(e))
+        text = webutils.getUrl(s % ext)
         matches = self._filextre.findall(text)
         #print matches
         res = []
