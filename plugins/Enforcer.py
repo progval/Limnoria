@@ -41,6 +41,7 @@ import ircdb
 import ircmsgs
 import privmsgs
 import ircutils
+import callbacks
 
 
 ###
