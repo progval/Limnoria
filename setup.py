@@ -31,6 +31,7 @@
 
 plugins = [
     'Admin',
+    'Babelfish',
     'Channel',
     'Config',
     'Dict',

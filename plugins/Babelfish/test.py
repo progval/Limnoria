@@ -29,7 +29,7 @@
 
 from supybot.test import *
 
-class BabelFishTestCase(PluginTestCase, PluginDocumentation):
+class BabelFishTestCase(PluginTestCase):
     plugins = ('Babelfish',)
     if network:
         def testTranslate(self):

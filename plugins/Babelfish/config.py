@@ -30,6 +30,8 @@
 import supybot.conf as conf
 import supybot.registry as registry
 
+import babelfish
+
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
     # a bool that specifies whether the user identified himself as an advanced
@@ -44,7 +46,7 @@ class Languages(registry.OnlySomeStrings):
     normalize = staticmethod(str.capitalize)
 
 class SpaceSeparatedListOfLanguages(registry.SeparatedListOf):
-    List = sets.Set
+    List = set
     Value = Languages
     def splitter(self, s):
         return s.split()
