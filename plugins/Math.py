@@ -103,7 +103,6 @@ class Math(callbacks.Privmsg):
                          r'\.\d+|'
                          r'\d+\.|'
                          r'\d+))')
-
     def _floatToString(self, x):
         if -1e-10 < x < 1e-10:
             return '0'
