@@ -524,7 +524,7 @@ class Irc(IrcCommandDispatcher):
                 msg._str = msg._str[:500] + '\r\n'
                 msg._len =  len(str(msg))
             self.state.addMsg(self, msg)
-            log.info('Outgoing message: ' + str(msg).rstrip('\r\n'))
+            log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
             if msg.command == 'NICK':
                 # We don't want a race condition where the server's NICK
                 # back to us is lost and someone else steals our nick and uses
@@ -609,7 +609,7 @@ class Irc(IrcCommandDispatcher):
 
     def feedMsg(self, msg):
         """Called by the IrcDriver; feeds a message received."""
-        log.info('Incoming message: ' + str(msg).rstrip('\r\n'))
+        log.debug('Incoming message: ' + str(msg).rstrip('\r\n'))
 
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
         # messages with our nick instead of our prefix.  We'll fix that here.
