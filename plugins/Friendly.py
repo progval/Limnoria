@@ -35,6 +35,8 @@ Just a regexp module to make the bot a wee bit friendlier.
 
 __revision__ = "$Id$"
 
+deprecated = True
+
 import plugins
 
 import ircutils
