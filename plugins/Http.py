@@ -303,7 +303,7 @@ class Http(callbacks.Privmsg):
     def acronym(self, irc, msg, args):
         """<acronym>
 
-        Displays the first 5 acronym matches from acronymfinder.com
+        Displays the first acronym matches from acronymfinder.com
         """
         acronym = privmsgs.getArgs(args)
         try:
@@ -321,8 +321,9 @@ class Http(callbacks.Privmsg):
         if len(defs) == 0:
             irc.reply(msg, 'No definitions found.')
         else:
-            s = ircutils.privmsgPayload([repr(s.strip()) for s in defs[1:-1]])
-            irc.reply(msg, '%s could be %s' % (acronym, s)
+            s = ircutils.privmsgPayload([repr(s.strip()) for s in defs[1:-1]],
+                                        '," or "')
+            irc.reply(msg, '%s could be "%s"' % (acronym, s)
 
     _netcraftre = re.compile(r'whatos text -->(.*?)<a href="/up/acc', re.S)
     def netcraft(self, irc, msg, args):
