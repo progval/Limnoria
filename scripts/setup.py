@@ -141,8 +141,8 @@ if __name__ == '__main__':
     if yn('Would you like to see a list of the available modules?') == 'y':
         print 'The available plugins are:\n  %s' % '\n  '.join(plugins)
     if advanced and yn('Would you like to add plugins en masse first?') == 'y':
-        plugins = something('What plugins? (separate by spaces)').split()
-        for plugin in plugins:
+        massPlugins = something('What plugins? (separate by spaces)').split()
+        for plugin in massPlugins:
             moduleInfo = imp.find_module(plugin, conf.pluginDirs)
             try:
                 module = imp.load_module(plugin, *moduleInfo)
