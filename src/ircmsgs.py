@@ -41,6 +41,7 @@ __revision__ = "$Id$"
 import fix
 
 import re
+import time
 import string
 
 import conf
@@ -224,6 +225,27 @@ def unAction(msg):
     """Returns the payload (i.e., non-ACTION text) of an ACTION msg."""
     assert isAction(msg)
     return _unactionre.match(msg.args[1]).group(1)
+
+def _escape(s):
+    s = s.replace('&', '&amp;')
+    s = s.replace('"', '&quot;')
+    s = s.replace('<', '&lt;')
+    s = s.replace('>', '&gt;')
+    return s
+
+def toXml(msg, pretty=True, includeTime=True):
+    assert msg.command == _escape(msg.command)
+    L = []
+    L.append('<msg command="%s" prefix="%s"'%(msg.command,_escape(msg.prefix)))
+    if includeTime:
+        L.append(' time="%s"' % time.time())
+    L.append('>')
+    for arg in msg.args:
+        if pretty:
+            L.append('\n    ')
+        L.append('<arg>%s</arg>' % _escape(arg))
+    L.append('</msg>')
+    return ''.join(L)
 
 def prettyPrint(msg, addRecipients=False):
     """Provides a client-friendly string form for messages.
