@@ -334,9 +334,11 @@ class IrcState(IrcCommandDispatcher):
         'maxbans': int,
         'maxtargets': int,
         'nicklen': int,
+        'maxnicklen': int,
         'topiclen': int,
         'kicklen': int,
-        
+        'awaylen': int,
+        'silence': int,
         })
     def _prefixParser(s):
         if ')' in s:
