@@ -60,7 +60,9 @@ supybot: list Misc
 Will list all the commands in the Misc plugin.  If you want to see the
 help for any command, just use the help command:
 
-supybot: help help supybot: help list supybot: help load
+supybot: help help
+supybot: help list
+supybot: help load
 
 Sometimes more than one plugin will have a given command; for
 instance, the "list" command exists in both the Misc and Config
