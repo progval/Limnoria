@@ -68,6 +68,11 @@ conf.registerChannelValue(conf.supybot.plugins.Topic, 'format',
     TopicFormat('$topic ($nick)', """Determines what format is used to add
     topics in the topic.  All the standard substitutes apply, in addiction to
     "$topic" for the topic itself."""))
+conf.registerChannelValue(conf.supybot.plugins.Topic, 'recognizeTopiclen',
+    registry.Boolean(True, """Determines whether the bot will recognize the
+    TOPICLEN value sent to it by the server and thus refuse to send TOPICs
+    longer than the TOPICLEN.  These topics are likely to be truncated by the
+    server anyway, so this defaults to True."""))
 
 class Topic(callbacks.Privmsg):
     def __init__(self):
@@ -91,6 +96,14 @@ class Topic(callbacks.Privmsg):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics
         newTopic = self._joinTopic(channel, topics)
+        try:
+            maxLen = irc.state.supported['topiclen']
+            if len(newTopic) > maxLen:
+                if self.registryValue('recognizeTopiclen', channel):
+                    irc.error('That topic is too long for this server '
+                              '(maximum length: %s).' % maxLen, Raise=True)
+        except KeyError:
+            pass
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
 
     def _canChangeTopic(self, irc, channel):
@@ -120,7 +133,7 @@ class Topic(callbacks.Privmsg):
         Sets the topic of <channel> to <topic>.
         """
         topic = privmsgs.getArgs(args)
-        irc.queueMsg(ircmsgs.topic(channel, topic))
+        self._sendTopics(irc, channel, [topic])
     topic = privmsgs.channel(topic)
 
     def add(self, irc, msg, args, channel, insert=False):
