@@ -89,7 +89,7 @@ class Dunno(callbacks.Privmsg):
             return "No dunno's available, add some with dunnoadd."
         dunno = cursor.fetchone()[0]
         dunno = dunno.replace('$who', msg.nick)
-        irc.reply(msg, text, prefixName=false)
+        irc.reply(msg, dunno, prefixName=False)
         return True
 
     def add(self, irc, msg, args):
