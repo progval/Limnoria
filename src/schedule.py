@@ -42,6 +42,7 @@ import time
 import heapq
 
 import supybot.log as log
+import supybot.world as world
 import supybot.drivers as drivers
 
 class mytuple(tuple):
@@ -106,7 +107,7 @@ class Schedule(drivers.IrcDriver):
         f = self.removeEvent(name)
         self.addEvent(f, t, name=name)
 
-    def addPeriodicEvent(self, f, t, name=None):
+    def addPeriodicEvent(self, f, t, name=None, now=True):
         """Adds a periodic event that is called every t seconds."""
         def wrapper():
             try:
@@ -114,7 +115,10 @@ class Schedule(drivers.IrcDriver):
             finally:
                 # Even if it raises an exception, let's schedule it.
                 return self.addEvent(wrapper, time.time() + t, name)
-        return wrapper()
+        if now:
+            return wrapper()
+        else:
+            return self.addEvent(wrapper, time.time() + t, name)
 
     removePeriodicEvent = removeEvent
 
