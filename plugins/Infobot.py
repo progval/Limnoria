@@ -159,6 +159,9 @@ class InfobotDB(object):
     def getResponseCount(self):
         return self._responses
 
+class Dunno(Exception):
+    pass
+
 class Infobot(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['doForget', 'doFactoid', 'doUnknown']
     def __init__(self):
@@ -188,8 +191,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             assert self.msg is not None
             msg = self.msg
         self.replied = True
-        irc.reply(plugins.standardSubstitute(irc, msg, s), prefixName=False,
-                  action=action)
+        irc.reply(plugins.standardSubstitute(irc, msg, s),
+                  prefixName=False, action=action, msg=msg)
 
     def confirm(self, irc=None, msg=None):
         if self.registryValue('personality'):
@@ -204,7 +207,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         else:
             self.reply(self.registryValue('boringDunno'), irc=irc, msg=msg)
 
-    def factoid(self, key, irc=None, msg=None):
+    def factoid(self, key, irc=None, msg=None, dunno=True):
         if irc is None:
             assert self.irc is not None
             irc = self.irc
@@ -220,17 +223,21 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             value = self.db.getAre(key)
         if isAre is None:
             if self.addressed:
-                self.dunno(irc=irc, msg=msg)
+                if dunno:
+                    self.dunno(irc=irc, msg=msg)
+                else:
+                    raise Dunno
         else:
-            # XXX
             value = random.choice(value.split('|'))
             if value.startswith('<reply>'):
-                self.reply('%s' % value[7:].strip(), irc=irc, msg=msg)
+                self.reply(value[7:].strip(),
+                           irc=irc, msg=msg)
             elif value.startswith('<action>'):
-                self.reply('%s' % value[8:].strip(), irc=irc, msg=msg,
-                           action=True)
+                self.reply(value[8:].strip(),
+                           irc=irc, msg=msg, action=True)
             else:
-                self.reply('%s %s %s, $who.' % (key,isAre,value), irc=irc, msg=msg)
+                self.reply('%s %s %s, $who.' % (key,isAre,value),
+                           irc=irc, msg=msg)
 
     def normalize(self, s):
         s = ircutils.stripFormatting(s)
@@ -367,6 +374,28 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                   'to the database since this plugin was loaded.' %
                   (utils.nItems('request', self.db.getChangeCount()),
                    utils.nItems('change', self.db.getResponseCount())))
+
+    def tell(self, irc, msg, args):
+        """<nick> [about] <factoid>
+
+        Tells <nick> about <factoid>.
+        """
+        if len(args) < 2:
+            raise callbacks.ArgumentError
+        if args[1] == 'about':
+            del args[1]
+        (nick, factoid) = privmsgs.getArgs(args, required=2)
+        try:
+            hostmask = irc.state.nickToHostmask(nick)
+        except KeyError:
+            irc.error('I haven\'t seen %s, I\'ll let you do the telling.')
+            return
+        newmsg = ircmsgs.privmsg(irc.nick, factoid+'?', prefix=hostmask)
+        try:
+            self.factoid(factoid, msg=newmsg)
+        except Dunno:
+            self.dunno()
+        
 
 
 Class = Infobot

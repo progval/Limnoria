@@ -569,7 +569,7 @@ class IrcObjectProxy(RichReplyMethods):
                 self._callCommand(name, command, cb)
 
     def reply(self, s, noLengthCheck=False, prefixName=True,
-              action=False, private=False, notice=False, to=None):
+              action=False, private=False, notice=False, to=None, msg=None):
         """reply(s) -> replies to msg with s
 
         Keyword arguments:
@@ -589,7 +589,8 @@ class IrcObjectProxy(RichReplyMethods):
         # False use or.
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
-        msg = self.msg
+        if msg is None:
+            msg = self.msg
         self.action = action or self.action
         self.notice = notice or self.notice
         self.private = private or self.private
@@ -943,13 +944,17 @@ class IrcObjectProxyRegexp(RichReplyMethods):
         self.irc = irc
         self.msg = msg
 
-    def error(self, s, **kwargs):
-        self.irc.queueMsg(error(self.msg, s, **kwargs))
+    def error(self, s, msg=None, **kwargs):
+        if msg is None:
+            msg = self.msg
+        self.irc.queueMsg(error(msg, s, **kwargs))
 
-    def reply(self, s, **kwargs):
+    def reply(self, s, msg=None, **kwargs):
+        if msg is None:
+            msg = self.msg
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
-        self.irc.queueMsg(reply(self.msg, s, **kwargs))
+        self.irc.queueMsg(reply(msg, s, **kwargs))
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
