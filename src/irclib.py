@@ -583,6 +583,7 @@ class Irc(IrcCommandDispatcher):
         self.outstandingPing = False
 
     def do376(self, msg):
+        log.info('Got end of MOTD from %s', self.server)
         self.afterConnect = True
     do377 = do422 = do376
 
@@ -590,6 +591,7 @@ class Irc(IrcCommandDispatcher):
         """Handles 'nickname already in use' messages."""
         if self.nick != self.originalNick:
             newNick = self.nickmods.next() % self.originalNick
+            log.info('Got 433: %s is in use.  Trying %s.', self.nick, newNick)
             self.sendMsg(ircmsgs.nick(newNick))
     do432 = do433
 
