@@ -36,8 +36,6 @@ little greeting.  Otherwise, can greet
 
 __revision__ = "$Id$"
 
-import plugins
-
 import os
 import time
 

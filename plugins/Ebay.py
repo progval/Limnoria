@@ -39,15 +39,12 @@ import getopt
 
 __revision__ = "$Id$"
 
-import plugins
-
-import registry
-
 import conf
 import utils
 import plugins
 import ircutils
 import privmsgs
+import registry
 import webutils
 import callbacks
 
