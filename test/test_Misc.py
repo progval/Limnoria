@@ -33,6 +33,10 @@ from test import *
 
 class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp')
+    def testAction(self):
+        self.assertAction('action moos', 'moos')
+        self.assertAction('action','')
+
     def testReplyWhenNotCommand(self):
         try:
             conf.replyWhenNotCommand = True
