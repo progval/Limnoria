@@ -216,6 +216,14 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         """
         world.flush()
         irc.reply(msg, conf.replySuccess)
+
+    def upkeep(self, irc, msg, args):
+        """takes no arguments
+
+        Runs the standard upkeep stuff (flushes and gc.collects()).
+        """
+        world.upkeep()
+        irc.reply(msg, conf.replySuccess)
             
     def set(self, irc, msg, args):
         """<name> <value>
