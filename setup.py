@@ -36,13 +36,25 @@ if sys.version_info < (2, 3, 0):
     sys.exit(-1)
 
 import glob
+import shutil
 import os.path
 
 from distutils.core import setup
+from distutils.sysconfig import get_python_lib
 
 srcFiles = glob.glob(os.path.join('src', '*.py'))
 otherFiles = glob.glob(os.path.join('others', '*.py'))
 pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
+
+# This is a terrible hack.
+previousInstall = os.path.join(get_python_lib(), 'supybot')
+if os.path.exists(previousInstall):
+    try:
+        shutil.rmtree(previousInstall)
+    except Exception, e:
+        print 'Couldn\'t remove former installation: %s' % e
+        print 'Remove by hand and then run this script.'
+        sys.exit(-1)
 
 setup(
     # Metadata
