@@ -77,6 +77,7 @@ class AdminCommandsTestCase(PluginTestCase, PluginDocumentation):
 
     def testPart(self):
         self.assertError('part #foo')
+        self.assertRegexp('part #foo', 'currently')
         _ = self.getMsg('join #foo') # get the JOIN.
         _ = self.getMsg(' ') # get the WHO.
         self.assertError('part #foo #bar')
