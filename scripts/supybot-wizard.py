@@ -107,9 +107,7 @@ def getDirectoryName(default):
                        '[defaults to %s]' % os.path.join(os.curdir, default))
         if not dir:
             dir = default
-        if '~' in dir:
-            if 'HOME' in os.environ:
-                dir = dir.replace('~', os.getenv('HOME'))
+        dir = os.path.expanduser(dir)
         dir = os.path.abspath(dir)
         try:
             os.makedirs(dir)
