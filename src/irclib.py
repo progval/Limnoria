@@ -156,7 +156,9 @@ class Channel(object):
         self.voices = set()
 
     def addUser(self, user):
-        nick = ircutils.nick(user.lstrip('@%+'))
+        nick = user.lstrip('@%+')
+        if not isinstance(nick, ircutils.nick):
+            nick = ircutils.nick(nick)
         while user and user[0] in '@%+':
             (marker, user) = (user[0], user[1:])
             if marker == '@':
@@ -171,15 +173,18 @@ class Channel(object):
         # Note that this doesn't have to have the sigil (@%+) that users
         # have to have for addUser; it just changes the name of the user
         # without changing any of his categories.
-        oldNick = ircutils.nick(oldNick)
-        newNick = ircutils.nick(newNick)
+        if not isinstance(oldNick, ircutils.nick):
+            oldNick = ircutils.nick(oldNick)
+        if not isinstance(newNick, ircutils.nick):
+            newNick = ircutils.nick(newNick)
         for s in (self.users, self.ops, self.halfops, self.voices):
             if oldNick in s:
                 s.discard(oldNick)
                 s.add(newNick)
 
     def removeUser(self, user):
-        user = ircutils.nick(user)
+        if not isinstance(user, ircutils.nick):
+            user = ircutils.nick(user)
         self.users.discard(user)
         self.ops.discard(user)
         self.halfops.discard(user)
