@@ -146,6 +146,7 @@ class User(callbacks.Privmsg):
             isOwner = caller.checkCapability('owner')
         except KeyError:
             caller = None
+            isOwner = False
         if not conf.supybot.databases.users.allowUnregistration():
             if not caller or not isOwner:
                 self.log.warning('%s tried to unregister user %s.',
@@ -310,7 +311,9 @@ class User(callbacks.Privmsg):
                 else:
                     try:
                         user = ircdb.users.getUser(name)
-                        irc.reply(repr(user.hostmasks))
+                        hostmasks = map(repr, user.hostmasks)
+                        hostmasks.sort()
+                        irc.reply(utils.commaAndify(hostmasks))
                     except KeyError:
                         irc.errorNoUser()
             else:

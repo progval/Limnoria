@@ -36,13 +36,16 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('User',)
     prefix1 = 'somethingElse!user@host.tld'
     prefix2 = 'EvensomethingElse!user@host.tld'
-##     def testHostmasks(self):
-##         self.assertNotError('hostmasks')
-##         original = self.prefix
-##         self.prefix = self.prefix1
-##         self.assertNotError('register foo bar')
-##         self.prefix = original
-##         self.assertRegexp('hostmasks foo', 'only.*your.*own')
+    def testHostmasks(self):
+        self.assertError('hostmasks')
+        original = self.prefix
+        self.prefix = self.prefix1
+        self.assertNotError('register foo bar')
+        self.prefix = original
+        self.assertError('hostmasks foo')
+        self.assertNotError('addhostmask foo [hostmask] bar')
+        self.assertNotError('hostmasks foo')
+        self.assertNotRegexp('hostmasks foo', 'IrcSet')
 
     def testRegisterUnregister(self):
         self.prefix = self.prefix1
@@ -93,13 +96,14 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
             self.assertNotError('setpassword foo bar baz')
             self.assertEqual(ircdb.users.getUser(self.prefix).password, 'baz')
             self.assertNotError('setpassword --hashed foo baz biff')
-            self.assertNotEqual(ircdb.users.getUser(self.prefix).password, 'biff')
+            self.assertNotEqual(ircdb.users.getUser(self.prefix).password,
+                                'biff')
         finally:
             conf.supybot.databases.users.hash.setValue(orig)
 
     def testStats(self):
         self.assertNotError('user stats')
-        self.assertNotError('load FunDB')
+        self.assertNotError('load Lart')
         self.assertNotError('user stats')
 
     def testUserPluginAndUserList(self):
