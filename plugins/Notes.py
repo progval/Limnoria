@@ -143,7 +143,7 @@ class Notes(callbacks.Privmsg):
         try:
             name = ircdb.users.getUserName(msg.prefix)
         except KeyError:
-            return
+            callbacks.Privmsg.doPrivmsg(self, irc, msg)
         cursor = self.db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM notes, users
                           WHERE users.name=%s AND
