@@ -1,3 +1,53 @@
+2004-08-31 Jeremy Fincher <jemfinch@supybot.org>
+
+	* Version 0.79.999!
+	
+	* Added the ability to send long fortunes line-by-line rather
+	than all in one (or several) messages; it will do this if
+	supybot.reply.oneToOne is set to False.
+	
+	* Added many configuration variables to the Unix plugin, allowing
+	configurable commands and options to those commands.
+	
+	* Changed the output of Config.list to show groups with a
+	preceding @, rather than use the --groups option.
+	
+	* Changed the Google.stats (formerly Google.info) command to be
+	persistent, using the registry to record old values for the
+	number of searches made and the number of seconds Google has
+	spent searching for the bot.
+
+	* Added module __revision__ logging to our exception logs, for
+	more information in bug reports.
+
+	* Fixed a bug with asyncoreDrivers' handling of reconnects; it
+	would not reconnect when commanded to if it had reconnected
+	before.
+
+	* Fixed several bugs where the bot was testing nicks for
+	equivalence without first normalizing them, leading to some false
+	negatives.
+	
+	* Fixed a bug with the handling of
+	supybot.reply.withNoticeWhenPrivate so all private messages
+	really are replied to with a notice.
+	
+	* Fixed Http.geekquote to match the current bash.org layout.
+	Also, made sure all ids are valid ids before requesting a quote
+	(apparently bash.org is returning a certain quote for all invalid
+	ids).
+	
+	* Fixed a bad regular expression in the Ebay plugin which could
+	cause the bot to suck up 100% CPU for a signficant (perhaps
+	practically infinite) amount of time.
+	
+	* Fixed a bug where the bot would sometimes reconnect to a
+	network after being told to disconnect.
+	
+	* Fixed an uncaught exception in Owner.connect when the user
+	forgets the network name
+
+	
 2004-08-30  Jeremy Fincher  <jemfinch@supybot.org>
 
 	* Version 0.79.99!  We're getting asymptotically closer to
