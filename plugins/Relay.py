@@ -135,9 +135,11 @@ class Relay(callbacks.Privmsg):
     def __call__(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
-        self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
-        self.lastmsg[irc] = msg
-        callbacks.Privmsg.__call__(self, irc, msg)
+        try:
+            self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
+            callbacks.Privmsg.__call__(self, irc, msg)
+        finally:
+            self.lastmsg[irc] = msg
 
     def die(self):
         for irc in self.abbreviations:
