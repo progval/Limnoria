@@ -37,7 +37,7 @@ import supybot
 
 __revision__ = "$Id$"
 __contributors__ = {
-    supybot.authors.jamessan: ['allowUnaddressedKarma'],
+    supybot.authors.jamessan: ['allowUnaddressedKarma configuration variable'],
     }
 
 import os
