@@ -185,7 +185,9 @@ def urlSnarfer(f):
                 t = threading.Thread(target=f, args=[self,irc,msg,match]+L)
                 t.setDaemon(True)
                 t.start()
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
+    newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
+    newf.q = q
+    return newf
         
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
