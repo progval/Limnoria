@@ -286,6 +286,14 @@ if __name__ == '__main__':
         sys.stderr.close()
         sys.stdout = StringIO.StringIO()
         sys.stderr = StringIO.StringIO()
+        # We have to be really methodical here.
+        os.close(0)
+        os.close(1)
+        os.close(2)
+        fd = os.open('/dev/null', os.RDWR)
+        os.dup2(fd, 0)
+        os.dup2(fd, 1)
+        os.dup2(fd, 2)
         signal.signal(signal.SIGHUP, signal.SIG_IGN)
         log.info('Completed daemonization.  Current PID: %s', os.getpid())
 
