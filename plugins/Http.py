@@ -404,9 +404,10 @@ class Http(callbacks.Privmsg):
             line = fd.readline()
         if len(pgpkeys) == 0:
             irc.reply(msg, 'No results found for %s.' % search)
+            fd.close()
         else:
             irc.reply(msg, 'Matches found for %s: %s' % (search, pgpkeys[:-4]))
-        fd.close()
+            fd.close()
 
 Class = Http
 
