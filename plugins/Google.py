@@ -164,6 +164,9 @@ conf.registerChannelValue(conf.supybot.plugins.Google, 'searchSnarfer',
     enabled.  If so, messages (even unaddressed ones) beginning with the word
     'google' will result in the first URL Google returns being sent to the
     channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Google, 'colorfulFilter',
+    registry.Boolean(False, """Determines whether the word 'google' in the
+    bot's output will be made colorful (like Google's logo)."""))
 conf.registerChannelValue(conf.supybot.plugins.Google, 'bold',
     registry.Boolean(True, """Determines whether results are bolded."""))
 conf.registerChannelValue(conf.supybot.plugins.Google, 'maximumResults',
@@ -198,6 +201,31 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.last24hours = structures.TimeoutQueue(86400)
         google.setLicense(self.registryValue('licenseKey'))
+
+    _colorGoogles = {}
+    def _getColorGoogle(self, m):
+        s = m.group(1)
+        ret = self._colorGoogles.get(s)
+        if not ret:
+            L = list(s)
+            L[0] = ircutils.mircColor(L[0], 'blue')
+            L[1] = ircutils.mircColor(L[1], 'red')
+            L[2] = ircutils.mircColor(L[2], 'yellow')
+            L[3] = ircutils.mircColor(L[3], 'blue')
+            L[4] = ircutils.mircColor(L[4], 'green')
+            L[5] = ircutils.mircColor(L[5], 'red')
+            ret = ''.join(L)
+            self._colorGoogles[s] = ret
+        return ircutils.bold(ret)
+
+    _googleRe = re.compile('(google)', re.I)
+    def outFilter(self, irc, msg):
+        if msg.command == 'PRIVMSG' and \
+           self.registryValue('colorfulFilter', msg.args[0]):
+            s = msg.args[1]
+            s = re.sub(self._googleRe, self._getColorGoogle, s)
+            msg = ircmsgs.privmsg(msg.args[0], s, prefix=msg.prefix)
+        return msg
 
     def formatData(self, data, bold=True, max=0):
         if isinstance(data, basestring):
