@@ -22,6 +22,8 @@ def getPlugins():
     for filename in filenames:
         if filename.endswith('.py') and filename[0].isupper():
             plugins.append(os.path.splitext(filename)[0])
+    if 'OwnerCommands' in plugins:
+        plugins.remove('OwnerCommands')
     plugins.sort()
     return plugins
 
@@ -441,13 +443,6 @@ if __name__ == '__main__':
                     a floating-point number.""")
                     throttleTime = None
         
-        
-        
-    
-
-
-
-
     ###
     # This is close to the end.
     ###
