@@ -193,11 +193,7 @@ class Notes(callbacks.Privmsg):
         author = ircdb.users.getUser(fromId).name
         elapsed = utils.timeElapsed(time.time() - addedAt)
         newnote = "%s (Sent by %s %s ago)" % (note, author, elapsed)
-        if public:
-            irc.reply(msg, newnote)
-        else:
-            ### FIXME: IrcObjectProxy should offer a private keyword arg.
-            irc.reply(msg.nick, newnote)
+        irc.reply(msg, newnote, private=(not public))
         self.setAsRead(noteid)
 
     def _formatNoteData(self, msg, id, fromId, public):
