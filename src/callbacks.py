@@ -250,10 +250,7 @@ class IrcObjectProxy:
                                   (self.msg.nick, name))
                         return
                 command = getattr(callback, name)
-                start = time.time()
                 callback.callCommand(command, self, self.msg, self.args)
-                elapsed = time.time() - start
-                debug.msg('%s took %s seconds.' % (name, elapsed), 'verbose')
             else:
                 self.args.insert(0, name)
                 self.reply(self.msg, '[%s]' % ' '.join(self.args))
@@ -361,7 +358,11 @@ class Privmsg(irclib.IrcCallback):
         else:
             # Exceptions aren't caught here because IrcObjectProxy.finalEval
             # catches them and does The Right Thing.
+            start = time.time()
             f(irc, msg, args)
+            elapsed = time.time() - start
+            funcname = f.im_func.func_name
+            debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
     _r = re.compile(r'^(\w+)')
     def doPrivmsg(self, irc, msg):
