@@ -506,7 +506,7 @@ class AdminCommands(callbacks.Privmsg):
                 # This has to know that defaultCapabilties gets turned into a
                 # dictionary.
                 if command in conf.defaultCapabilities:
-                    conf.defaultCapabilities.remove(capability)
+                    conf.defaultCapabilities.remove(command)
                 capability = ircdb.makeAntiCapability(command)
                 conf.defaultCapabilities.add(capability)
                 irc.reply(msg, conf.replySuccess)
