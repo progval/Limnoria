@@ -118,6 +118,11 @@ class Scheduler(callbacks.Privmsg):
         except ValueError:
             irc.error('Invalid seconds: %r' % seconds)
             return
+        try:
+            name = int(name)
+            irc.error('Names must not be an integer.')
+        except ValueError:
+            pass
         self.events[name] = command 
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addPeriodicEvent(f, seconds, name)

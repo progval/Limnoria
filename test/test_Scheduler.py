@@ -31,8 +31,14 @@
 
 from testsupport import *
 
-class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
+import schedule
+
+class SchedulerTestCase(ChannelPluginTestCase):
     plugins = ('Scheduler', 'Utilities')
+    def tearDown(self):
+        schedule.schedule.reset()
+        ChannelPluginTestCase.tearDown(self)
+        
     def testAddRemove(self):
         self.assertRegexp('scheduler list', 'no.*commands')
         m = self.assertNotError('scheduler add [seconds 5s] echo foo bar baz')
@@ -73,6 +79,9 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse(' ', 'foo bar')
         self.assertNotError('scheduler remove foo')
         self.assertNoResponse(' ', 5)
+
+    def testRepeatDisallowsIntegerNames(self):
+        self.assertError('scheduler repeat 1234 1234 "echo foo bar baz"')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
