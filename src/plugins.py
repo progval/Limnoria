@@ -345,7 +345,7 @@ class PeriodicFileDownloader(object):
         
 
 _randomnickRe = re.compile(r'\$rand(?:om)?nick', re.I)
-_randomdateRe = re.compile(r'\$randomdate', re.I)
+_randomdateRe = re.compile(r'\$rand(?:om)?date', re.I)
 _randomintRe = re.compile(r'\$rand(?:omint)?', re.I)
 _channelRe = re.compile(r'\$channel', re.I)
 _whoRe = re.compile(r'\$(?:who|nick)', re.I)
