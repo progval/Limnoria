@@ -65,8 +65,12 @@ from fix import *
 import os
 import imp
 import conf
+import ircdb
 sys.path.insert(0, conf.pluginDir)
 if __name__ == '__main__':
+    ###
+    # Basic stuff.
+    ###
     name = anything('What would you like to name your config file?')
     if not name.endswith('.conf'):
         name += '.conf'
@@ -82,7 +86,10 @@ if __name__ == '__main__':
     configfd.write('load UserCommands\n')
     configfd.write('load ChannelCommands\n')
     configfd.write('load MiscCommands\n')
-    # Now's where we load the modules.
+
+    ###
+    # Modules.
+    ###
     if yn('Would you like to see a list of the available modules?') == 'y':
         filenames = os.listdir(conf.pluginDir)
         plugins = []
@@ -98,6 +105,10 @@ if __name__ == '__main__':
             print module.__doc__
             if yn('Would you like to add this plugin?') == 'y':
                 configfd.write('load %s\n' % plugin)
+
+    ###
+    # Commands
+    ###
     preConnect = 'Would you like any commands to run ' \
                  'before the bot connects to the server?'
     while yn(preConnect) == 'y':
@@ -114,6 +125,20 @@ if __name__ == '__main__':
         configfd.write(anything('What command?'))
         configfd.write('\n')
     configfd.close()
+
+    ###
+    # Set owner user.
+    ###
+    owner = anything('What should the owner\'s username be?')
+    password = anything('What should the owner\'s password be?')
+    user = ircdb.IrcUser()
+    user.setPassword(password)
+    user.addCapability('owner')
+    ircdb.users.setUser(owner, user)
+
+    ###
+    # Finito!
+    ###
     print
     print 'You\'re done!  Now run the bot with the command line:'
     print 'src/bot.py conf/%s.conf' % name
