@@ -193,7 +193,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
 
     def _getLnUrl(self, url):
         try:
-            return self.db.getLn(url)
+            return (self.db.getLn(url), '200')
         except KeyError:
             text = webutils.getUrl('http://ln-s.net/home/api.jsp?url=%s' % url)
             (code, lnurl) = text.split(None, 1)
