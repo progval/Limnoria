@@ -125,10 +125,7 @@ class Seen(callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
         if irc.isChannel(msg.args[0]):
             said = ircmsgs.prettyPrint(msg)
-            channel = msg.args[0]
-            channelSpecific = conf.supybot.databases.plugins.channelSpecific
-            if not conf.get(channelSpecific, channel):
-                channel = conf.get(channelSpecific.channel, channel)
+            channel = plugins.getChannel(msg.args[0])
             self.db.update(channel, msg.nick, said)
             try:
                 id = ircdb.users.getUserId(msg.prefix)

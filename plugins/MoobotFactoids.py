@@ -320,15 +320,6 @@ class SqliteMoobotDB(object):
 
 MoobotDB = plugins.DB('MoobotFactoids', {'sqlite': SqliteMoobotDB})
 
-## We define our own getChannel so we can take advantage of the channeldb
-# wrapper from non-command methods.  This means that the bot will use
-# supybot.databases.plugins.channelSpecific.channel as the default channel
-# when the user is talking to the bot privately.
-def getChannel(irc, msg, args=()):
-    spec = Spec(['channeldb'])
-    state = spec(irc, msg, args)
-    return state.channel
-
 class MoobotFactoids(callbacks.Privmsg):
     callBefore = ['Dunno']
     def __init__(self):
@@ -369,7 +360,7 @@ class MoobotFactoids(callbacks.Privmsg):
         else:
             key = ' '.join(tokens)
             key = self._sanitizeKey(key)
-            channel = getChannel(irc, msg)
+            channel = plugins.getChannel(msg.args[0])
             fact = self.db.getFactoid(channel, key)
             if fact:
                 self.db.updateRequest(channel, key, msg.prefix)
@@ -427,7 +418,7 @@ class MoobotFactoids(callbacks.Privmsg):
 
     def addFactoid(self, irc, msg, tokens):
         # First, check and see if the entire message matches a factoid key
-        channel = getChannel(irc, msg)
+        channel = plugins.getChannel(msg.args[0])
         id = self._getUserId(irc, msg.prefix)
         (key, fact) = self._getKeyAndFactoid(tokens)
         # Check and make sure it's not in the DB already
@@ -440,7 +431,7 @@ class MoobotFactoids(callbacks.Privmsg):
         id = self._getUserId(irc, msg.prefix)
         (key, regexp) = map(' '.join,
                             utils.itersplit('=~'.__eq__, tokens, maxsplit=1))
-        channel = getChannel(irc, msg)
+        channel = plugins.getChannel(msg.args[0])
         # Check and make sure it's in the DB
         fact = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
@@ -461,7 +452,7 @@ class MoobotFactoids(callbacks.Privmsg):
         isAlso = pairs.index(['is', 'also'])
         key = ' '.join(tokens[:isAlso])
         new_text = ' '.join(tokens[isAlso+2:])
-        channel = getChannel(irc, msg)
+        channel = plugins.getChannel(msg.args[0])
         fact = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         # It's fair game if we get to here
@@ -472,7 +463,7 @@ class MoobotFactoids(callbacks.Privmsg):
 
     def replaceFactoid(self, irc, msg, tokens):
         # Must be registered!
-        channel = getChannel(irc, msg)
+        channel = plugins.getChannel(msg.args[0])
         id = self._getUserId(irc, msg.prefix)
         del tokens[0] # remove the "no,"
         (key, fact) = self._getKeyAndFactoid(tokens)

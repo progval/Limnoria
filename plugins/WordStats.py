@@ -150,6 +150,7 @@ class WordStatsDB(plugins.ChannelUserDB):
         (channel, text) = msg.args
         if not ircutils.isChannel(channel):
             return
+        channel = plugins.getChannel(channel)
         text = text.strip().lower()
         if not text:
             return
@@ -217,7 +218,7 @@ class WordStats(callbacks.Privmsg):
             return
         self.db.addWord(channel, word)
         irc.replySuccess()
-    add = wrap(add, ['channel', 'somethingWithoutSpaces'])
+    add = wrap(add, ['channeldb', 'somethingWithoutSpaces'])
 
     def remove(self, irc, msg, args, channel, word):
         """[<channel>] <word>
@@ -235,7 +236,7 @@ class WordStats(callbacks.Privmsg):
                           'on.' % utils.quoted(word))
         else:
             irc.error('I am not currently keeping any word stats.')
-    remove = wrap(remove, ['channel', 'somethingWithoutSpaces'])
+    remove = wrap(remove, ['channeldb', 'somethingWithoutSpaces'])
 
     def wordstats(self, irc, msg, args, channel, user, word):
         """[<channel>] [<user>] [<word>]
@@ -319,7 +320,7 @@ class WordStats(callbacks.Privmsg):
             except KeyError:
                 irc.error('I have no wordstats for %s.' % user.name)
     wordstats = wrap(wordstats,
-                     ['channel',
+                     ['channeldb',
                       optional('otherUser'),
                       additional('somethingWithoutSpaces')])
 

@@ -101,7 +101,7 @@ class NoSuitableDatabase(Exception):
     def __init__(self, suitable):
         self.suitable = suitable
         self.suitable.sort()
-        
+
     def __str__(self):
         return 'No suitable databases were found.  Suitable databases ' \
                'include %s.  If you have one of these databases installed, ' \
@@ -169,6 +169,11 @@ def makeChannelFilename(filename, channel=None, dirname=None):
             os.makedirs(dirname)
     return os.path.join(dirname, filename)
 
+def getChannel(channel):
+    channelSpecific = conf.supybot.databases.plugins.channelSpecific
+    if not conf.get(channelSpecific, channel):
+        channel = conf.get(channelSpecific.channel, channel)
+    return channel
 
 # XXX This shouldn't be a mixin.  This should be contained by classes that
 #     want such behavior.  But at this point, it wouldn't gain much for us
@@ -251,7 +256,7 @@ class DbiChannelDB(object):
             db = self._getDb(channel)
             return getattr(db, attr)(*args, **kwargs)
         return _getDbAndDispatcher
-        
+
 
 # XXX This should eventually be gotten rid of in favor of some dbi thing.  At
 # the very least, it ought to get an interface much closer to dbi.DB.
@@ -402,7 +407,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
         if ircdb.checkCapability(msg.prefix, cap):
             return True
         irc.errorNoCapability(cap)
-        
+
     def addValidator(self, irc, text):
         """This should irc.error or raise an exception if text is invalid."""
         pass

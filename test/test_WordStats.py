@@ -54,11 +54,11 @@ class WordStatsTestCase(ChannelPluginTestCase):
         self.assertNotError('add lol')
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
                                          prefix=self.prefix))
-        self.assertResponse('wordstats foo', '\'lol\': 2')
+        self.assertRegexp('wordstats foo', r'[\'"]lol[\'"]: 2')
         self.assertNotError('add moo')
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'moo',
                                          prefix=self.prefix))
-        self.assertResponse('wordstats foo', '\'lol\': 2 and \'moo\': 2')
+        self.assertRegexp('wordstats foo', r'lol[\'"]: 2 and [\'"]moo[\'"]: 2')
 
     def testWordStatsWord(self):
         userPrefix1 = 'moo!bar@baz'; userNick1 = 'moo'
@@ -77,12 +77,12 @@ class WordStatsTestCase(ChannelPluginTestCase):
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
                                              prefix=userPrefix1))
         self.assertRegexp('wordstats lol',
-                          '2.*%s: 5.*foo: 2' % userNick1)
+                          r'2.*%s: 5.*foo: 2' % userNick1)
         for i in range(10):
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
                                              prefix=userPrefix2))
         self.assertRegexp('wordstats lol',
-                          '3.*%s: 10.*%s: 5.*foo: 3' %
+                          r'3.*%s: 10.*%s: 5.*foo: 3' %
                           (userNick2, userNick1))
         # Check for the extra-swanky stuff too
         # (note: to do so we must make sure they don't appear in the list,
@@ -91,50 +91,50 @@ class WordStatsTestCase(ChannelPluginTestCase):
             orig = conf.supybot.plugins.WordStats.rankingDisplay()
             conf.supybot.plugins.WordStats.rankingDisplay.setValue(2)
             self.assertRegexp('wordstats lol',
-                              'total.*19 \'lol\'s.*%s: 10.*%s: 5.*'
-                              'ranked 3 out of 3 \'lol\'ers' % \
+                              r'total.*19 [\'"]lol[\'"]s.*%s: 10.*%s: 5.*'
+                              r'ranked 3 out of 3 [\'"]lol[\'"]ers' % \
                               (userNick2, userNick1))
         finally:
             conf.supybot.plugins.WordStats.rankingDisplay.setValue(orig)
 
     def testWordStatsUserWord(self):
         self.assertNotError('add lol')
-        self.assertResponse('wordstats foo lol',
-                            'foo has said \'lol\' 1 time.')
+        self.assertRegexp('wordstats foo lol',
+                          r'foo has said [\'"]lol[\'"] 1 time.')
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
                                          prefix=self.prefix))
-        self.assertResponse('wordstats foo lol',
-                            'foo has said \'lol\' 3 times.')
+        self.assertRegexp('wordstats foo lol',
+                          r'foo has said [\'"]lol[\'"] 3 times.')
         # Now check for case-insensitivity
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'LOL',
                                          prefix=self.prefix))
-        self.assertResponse('wordstats foo lol',
-                            'foo has said \'lol\' 5 times.')
+        self.assertRegexp('wordstats foo lol',
+                          r'foo has said [\'"]lol[\'"] 5 times.')
         # Check and make sure actions get nabbed too
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
                                         prefix=self.prefix))
-        self.assertResponse('wordstats foo lol',
-                            'foo has said \'lol\' 7 times.')
+        self.assertRegexp('wordstats foo lol',
+                          r'foo has said [\'"]lol[\'"] 7 times.')
         # Check and make sure it handles two words in one message
         self.assertNotError('add heh')
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol heh',
                                          prefix=self.prefix))
-        self.assertResponse('wordstats foo lol',
-                            'foo has said \'lol\' 9 times.')
-        self.assertResponse('wordstats foo heh',
-                            'foo has said \'heh\' 2 times.')
+        self.assertRegexp('wordstats foo lol',
+                          r'foo has said [\'"]lol[\'"] 9 times.')
+        self.assertRegexp('wordstats foo heh',
+                          r'foo has said [\'"]heh[\'"] 2 times.')
         # It should ignore punctuation around words
         self.irc.feedMsg(ircmsgs.privmsg(self.channel,'lol, I said "heh"',
                                          prefix=self.prefix))
-        self.assertResponse('wordstats foo lol',
-                            'foo has said \'lol\' 11 times.')
-        self.assertResponse('wordstats foo heh',
-                            'foo has said \'heh\' 4 times.')
+        self.assertRegexp('wordstats foo lol',
+                          r'foo has said [\'"]lol[\'"] 11 times.')
+        self.assertRegexp('wordstats foo heh',
+                          r'foo has said [\'"]heh[\'"] 4 times.')
 
     def testAddword(self):
         self.assertError('add lol!')
         self.assertNotError('add lolz0r')
-        self.assertRegexp('wordstats lolz0r', r'1 \'lolz0r\' seen')
+        self.assertRegexp('wordstats lolz0r', r'1 [\'"]lolz0r[\'"] seen')
 
     def testRemoveword(self):
         # Using a word that's also the name of a user isn't smart since that
@@ -142,13 +142,13 @@ class WordStatsTestCase(ChannelPluginTestCase):
         #self.assertError('wordstats remove foo')
         self.assertError('wordstats remove blarg')
         self.assertNotError('wordstats add blarg')
-        self.assertRegexp('wordstats blarg', r'1 \'blarg\' seen')
-        self.assertRegexp('wordstats blarg', r'2 \'blarg\'s seen')
+        self.assertRegexp('wordstats blarg', r'1 [\'"]blarg[\'"] seen')
+        self.assertRegexp('wordstats blarg', r'2 [\'"]blarg[\'"]s seen')
         self.assertNotError('wordstats remove blarg')
         self.assertRegexp('wordstats blarg', r'doesn\'t look like a word I')
         # Verify that we aren't keeping results from before
         self.assertNotError('add blarg')
-        self.assertRegexp('wordstats blarg', r'1 \'blarg\' seen')
+        self.assertRegexp('wordstats blarg', r'1 [\'"]blarg[\'"] seen')
 
     def testWordStatsRankingDisplay(self):
         self.assertNotError('add lol')
@@ -171,8 +171,8 @@ class WordStatsTestCase(ChannelPluginTestCase):
                                                      prefix=users[i][0]))
             # Make sure it shows the top 5
             self.assertRegexp('wordstats lol',
-                              'Top 5 \'lol\'ers.*foo9: 9.*foo8: 8.*'
-                              'foo7: 7.*foo6: 6.*foo5: 5')
+                              r'Top 5 [\'"]lol[\'"]ers.*foo9: 9.*foo8: 8.*'
+                              r'foo7: 7.*foo6: 6.*foo5: 5')
         finally:
             conf.supybot.plugins.WordStats.rankingDisplay.setValue(orig)
 
