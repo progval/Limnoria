@@ -42,7 +42,7 @@ fd = file(registryFilename, 'w')
 fd.write("""
 supybot.directories.data: test-data
 supybot.directories.conf: test-conf
-supybot.directories.log: test-log
+supybot.directories.log: test-logs
 supybot.reply.whenNotCommand: False
 supybot.log.stdout: False
 supybot.log.minimumPriority: DEBUG
