@@ -148,7 +148,9 @@ def MarkovDB():
 
 class MarkovWorkQueue(threading.Thread):
     def __init__(self, *args, **kwargs):
-        threading.Thread.__init__(self)
+        name = 'Thread #%s (MarkovWorkQueue)' % world.threadsSpawned
+        world.threadsSpawned += 1
+        threading.Thread.__init__(self, name=name)
         self.db = MarkovDB(*args, **kwargs)
         self.q = Queue.Queue()
         self.killed = False
