@@ -184,8 +184,6 @@ class Debian(callbacks.Privmsg,
             irc.reply(utils.commaAndify(packages))
 
     _debreflags = re.DOTALL | re.IGNORECASE
-    _debbrre = re.compile(r'<li><a href[^>]+>(.*?)</a> \(', _debreflags)
-    _debverre = re.compile(r'<br>((?:\d+:)?\S+):', _debreflags)
     _deblistre = re.compile(r'<h3>Package ([^<]+)</h3>(.*?)</ul>', _debreflags)
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
     def version(self, irc, msg, args):
