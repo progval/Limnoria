@@ -103,25 +103,23 @@ def loadPluginClass(irc, module):
     irc.addCallback(callback)
 
 conf.registerGroup(conf.supybot, 'commands')
-conf.registerChannelValue(conf.supybot.commands, 'defaultPlugins',
-    registry.String('(Unused)', """Determines what commands have default
-    plugins set, and which plugins are set to be the default for each of
-    those commands."""))
-conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                         'list', registry.String('Misc', ''))
-conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                         'help', registry.String('Misc', ''))
-conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                         'capabilities', registry.String('User', ''))
-conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                         'addcapability', registry.String('Admin', ''))
-conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                         'removecapability', registry.String('Admin', ''))
-conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                         'reload', registry.String('Owner', ''))
-conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                         'ignore', registry.String('Admin', ''))
+conf.registerGroup(conf.supybot.commands, 'defaultPlugins')
+conf.supybot.commands.defaultPlugins.help = utils.normalizeWhitespace("""
+Determines what commands have default plugins set, and which plugins are set to
+be the default for each of those commands.""".strip())
 
+def registerDefaultPlugin(command, plugin):
+    command = callbacks.canonicalName(command)
+    conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
+                             command, registry.String(plugin, ''))
+
+registerDefaultPlugin('ignore', 'Admin')
+registerDefaultPlugin('addcapability', 'Admin')
+registerDefaultPlugin('removecapability', 'Admin')
+registerDefaultPlugin('list', 'Misc')
+registerDefaultPlugin('help', 'Misc')
+registerDefaultPlugin('reload', 'Owner')
+registerDefaultPlugin('capabilities', 'User')
 
 class holder(object):
     pass
@@ -305,7 +303,33 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                       'this command to be enabled.')
         _exec = eval
             
+    def defaultplugin(self, irc, msg, args):
+        """[--remove] <command> [<plugin>]
 
+        Sets the default plugin for <command> to <plugin>.  If --remove is
+        given, removes the current default plugin for <command>.  If no plugin
+        is given, returns the current default plugin set for <command>.
+        """
+        remove = False
+        (optlist, rest) = getopt.getopt(args, '', ['remove'])
+        for (option, arg) in optlist:
+            if option == '--remove':
+                remove = True
+        (command, plugin) = privmsgs.getArgs(rest, optional=1)
+        command = callbacks.canonicalName(command)
+        cbs = callbacks.findCallbackForCommand(irc, command)
+        if remove:
+            conf.supybot.commands.defaultPlugins.unregister(command)
+            irc.replySuccess()
+        elif not cbs:
+            irc.error('That\'s not a valid command.')
+            return
+        elif plugin:
+            registerDefaultPlugin(command, plugin)
+            irc.replySuccess()
+        else:
+            irc.reply(conf.supybot.commands.defaultPlugins.get(command)())
+            
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>
 
