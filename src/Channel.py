@@ -547,19 +547,14 @@ class Channel(callbacks.Privmsg):
             irc.reply(utils.commaAndify(imap(repr, L)))
     ignores = wrap(ignores, [('checkChannelCapability', 'op')])
 
-    def addcapability(self, irc, msg, args, channel, hostmask, capabilities):
-        """[<channel>] <name|hostmask> <capability> [<capability> ...]
+    def addcapability(self, irc, msg, args, channel, user, capabilities):
+        """[<channel>] <nick|username> <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will give the user
-        currently identified as <name> (or the user to whom <hostmask> maps)
+        <name> (or the user to whom <nick> maps)
         the capability <capability> in the channel. <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        try:
-            id = ircdb.users.getUserId(hostmask)
-            user = ircdb.users.getUser(id)
-        except KeyError:
-            irc.errorNoUser(Raise=True)
         for c in capabilities.split():
             c = ircdb.makeChannelCapability(channel, c)
             user.addCapability(c)
@@ -568,7 +563,7 @@ class Channel(callbacks.Privmsg):
     addcapability = wrap(addcapability, [('checkChannelCapability', 'op'),
                                          'otherUser', 'capability'])
 
-    def removecapability(self, irc, msg, args, channel, hostmask, capabilities):
+    def removecapability(self, irc, msg, args, channel, user, capabilities):
         """[<channel>] <name|hostmask> <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will take from the user
@@ -576,11 +571,6 @@ class Channel(callbacks.Privmsg):
         the capability <capability> in the channel. <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        try:
-            id = ircdb.users.getUserId(hostmask)
-        except KeyError:
-            irc.errorNoUser(Raise=True)
-        user = ircdb.users.getUser(id)
         fail = []
         for c in capabilities.split():
             cap = ircdb.makeChannelCapability(channel, c)
