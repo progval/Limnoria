@@ -281,7 +281,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         Returns the last time <name> was seen and what <name> was last seen
         saying.  --user will look for user <name> instead of using <name> as
         a nick (registered users, remember, can be recognized under any number
-        of names) <channel> is only necessary if the message isn't sent on the
+        of nicks) <channel> is only necessary if the message isn't sent on the
         channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
