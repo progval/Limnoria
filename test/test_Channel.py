@@ -33,7 +33,7 @@ import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 
-class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
+class ChannelTestCase(ChannelPluginTestCase):
     plugins = ('Channel', 'User')
     def testLobotomies(self):
         self.assertRegexp('lobotomies', 'not.*any')

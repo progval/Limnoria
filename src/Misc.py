@@ -387,8 +387,8 @@ class Misc(callbacks.Privmsg):
             if irc.nested:
                 irc.reply(utils.commaAndify(names))
             else:
-                irc.reply('The %r command is available in the %s %s.' %
-                          (command, plugin,
+                irc.reply('The %s command is available in the %s %s.' %
+                          (utils.quoted(command), plugin,
                            utils.pluralize('plugin', len(names))))
         else:
             irc.error('There is no such command %s.' % command)
@@ -675,7 +675,7 @@ class Misc(callbacks.Privmsg):
             if getattr(module, '__author__', False) == authorInfo:
                 isAuthor = True
             # XXX Partition needs moved to utils.
-            (nonCommands, commands) = fix.partition(lambda s: ' ' in s, 
+            (nonCommands, commands) = fix.partition(lambda s: ' ' in s,
                                                     contributions)
             results = []
             if commands:

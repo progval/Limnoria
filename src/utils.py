@@ -507,10 +507,10 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
         if node.__class__ is compiler.ast.Module:
             return node.doc
         else:
-            raise ValueError, 'Unsafe string: %r' % s
+            raise ValueError, 'Unsafe string: %s' % quoted(s)
     node = nodes[0]
     if node.__class__ is not compiler.ast.Discard:
-        raise ValueError, 'Invalid expression: %r' % s
+        raise ValueError, 'Invalid expression: %s' % quoted(s)
     node = node.getChildNodes()[0]
     def checkNode(node):
         if node.__class__ is compiler.ast.Const:
@@ -529,7 +529,7 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     if checkNode(node):
         return eval(s, namespace, namespace)
     else:
-        raise ValueError, 'Unsafe string: %r' % s
+        raise ValueError, 'Unsafe string: %s' % quoted(s)
 
 def exnToString(e):
     """Turns a simple exception instance into a string (better than str(e))"""
@@ -726,7 +726,7 @@ class AtomicFile(file):
     def __init__(self, filename, mode='w', allowEmptyOverwrite=True,
                  makeBackupIfSmaller=True, tmpDir=None, backupDir=None):
         if mode not in ('w', 'wb'):
-            raise ValueError, 'Invalid mode: %r' % mode
+            raise ValueError, 'Invalid mode: %s' % quoted(mode)
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
         self.makeBackupIfSmaller = makeBackupIfSmaller
@@ -826,12 +826,12 @@ def toBool(s):
     elif s in ('false', 'off', 'disable', 'disabled'):
         return False
     else:
-        raise ValueError, 'Invalid string for toBool: %r' % s
-    
+        raise ValueError, 'Invalid string for toBool: %s' % quoted(s)
+
 def mapinto(f, L):
     for (i, x) in enumerate(L):
         L[i] = f(x)
-        
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod(sys.modules['__main__'])

@@ -480,8 +480,8 @@ class RichReplyMethods(object):
         if 'Raise' not in kwargs:
             kwargs['Raise'] = True
         if isinstance(capability, basestring): # checkCommandCapability!
-            log.warning('Denying %s for lacking %r capability.',
-                        self.msg.prefix, capability)
+            log.warning('Denying %s for lacking %s capability.',
+                        self.msg.prefix, utils.quoted(capability))
             if not self._getConfig(conf.supybot.reply.noCapabilityError):
                 v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
@@ -1092,7 +1092,8 @@ class Privmsg(irclib.IrcCallback):
     def getCommand(self, name):
         """Gets the given command from this plugin."""
         name = canonicalName(name)
-        assert self.isCommand(name), '%r is not a command.' % name
+        assert self.isCommand(name), '%s is not a command.' % \
+                utils.quoted(name)
         return getattr(self, name)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
@@ -1243,7 +1244,8 @@ class PrivmsgRegexp(Privmsg):
                     r = re.compile(value.__doc__, self.flags)
                     self.res.append((r, name))
                 except re.error, e:
-                    self.log.warning('Invalid regexp: %r (%s)',value.__doc__,e)
+                    self.log.warning('Invalid regexp: %s (%s)',
+                                     utils.quoted(value.__doc__), e)
         utils.sortBy(operator.itemgetter(1), self.res)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):

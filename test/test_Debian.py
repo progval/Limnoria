@@ -32,29 +32,29 @@ import time
 
 from testsupport import *
 
-class DebianTestCase(PluginTestCase, PluginDocumentation):
+class DebianTestCase(PluginTestCase):
     plugins = ('Debian',)
     timeout = 100
     cleanDataDir = False
     fileDownloaded = False
 
     if network:
-        def setup(self, nick='test'):
-            plugintestcase.setup(self)
+        def setUp(self, nick='test'):
+            PluginTestCase.setUp(self)
             try:
                 datadir = conf.supybot.directories.data()
                 if os.path.exists(os.path.join(datadir,
-                                  'contents-i386.gz')):
+                                  'Contents-i386.gz')):
                     pass
                 else:
                     print
-                    print "downloading files, this may take awhile"
-                    filename = os.path.join(datadir, 'contents-i386.gz')
+                    print "Downloading files, this may take awhile"
+                    filename = os.path.join(datadir, 'Contents-i386.gz')
                     while not os.path.exists(filename):
                         time.sleep(1)
-                    print "download complete"
-                    print "starting test ..."
-                    self.filedownloaded = true
+                    print "Download complete"
+                    print "Starting test ..."
+                    self.fileDownloaded = True
             except KeyboardInterrupt:
                 pass
 

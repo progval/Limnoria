@@ -124,7 +124,7 @@ class Debian(callbacks.Privmsg,
         # that).
         if not optlist and not glob:
             raise callbacks.ArgumentError
-        if optlist and glob > 1:
+        if optlist and glob:
             irc.error('You must specify either a glob or a regexp/exact '
                       'search, but not both.')
         for (option, arg) in optlist:
@@ -181,8 +181,8 @@ class Debian(callbacks.Privmsg,
             irc.reply('I found no packages with that file.')
         else:
             irc.reply(utils.commaAndify(packages))
-    file = wrap(file, [getopts({'regexp':'regexpMatcher', 'exact':'text'}),
-                       additional('text')])
+    file = wrap(file, [getopts({'regexp':'regexpMatcher','exact':'something'}),
+                       additional('glob')])
 
     _debreflags = re.DOTALL | re.IGNORECASE
     _deblistre = re.compile(r'<h3>Package ([^<]+)</h3>(.*?)</ul>', _debreflags)
@@ -264,8 +264,8 @@ class Debian(callbacks.Privmsg,
                 archPredicate = lambda s, arg=arg: (arg in s)
         predicates.append(archPredicate)
         for glob in globs:
-            glob = glob.replace('*', '.*').replace('?', '.?')
-            predicates.append(re.compile(r'.*%s.*' % glob).search)
+            glob = fnmatch.translate(glob)
+            predicates.append(re.compile(glob).search)
         packages = []
         try:
             fd = webutils.getUrlFd('http://incoming.debian.org/')
@@ -285,18 +285,16 @@ class Debian(callbacks.Privmsg,
             irc.reply(utils.commaAndify(packages))
     incoming = thread(wrap(incoming,
                            [getopts({'regexp':'regexpMatcher', 'arch':'text'}),
-                            any('text')]))
+                            any('glob')]))
 
     _newpkgre = re.compile(r'<li><a href[^>]+>([^<]+)</a>')
-    def new(self, irc, msg, args, optlist, glob):
+    def new(self, irc, msg, args, section, glob):
         """[{main,contrib,non-free}] [<glob>]
 
         Checks for packages that have been added to Debian's unstable branch
         in the past week.  If no glob is specified, returns a list of all
         packages.  If no section is specified, defaults to main.
         """
-        if '?' not in glob and '*' not in glob:
-            glob = '*%s*' % glob
         try:
             fd = webutils.getUrlFd(
                 'http://packages.debian.org/unstable/newpkg_%s' % section)
@@ -316,7 +314,7 @@ class Debian(callbacks.Privmsg,
             irc.error('No packages matched that search.')
     new = wrap(new, [optional(('literal', ('main', 'contrib', 'non-free')),
                               'main'),
-                     additional('text', '*')])
+                     additional('glob', '*')])
 
     _severity = re.compile(r'.*(?:severity set to `([^\']+)\'|'
                            r'severity:\s+([^\s]+))', re.I)

@@ -88,6 +88,7 @@ class CommandsTestCase(SupyTestCase):
     def testAny(self):
         self.assertState([any('int')], ['1', '2', '3'], [[1, 2, 3]])
         self.assertState([None, any('int')], ['1', '2', '3'], ['1', [2, 3]])
+        self.assertState([any('int')], [], [[]])
 
 ##     def testAny(self):
 ##         self.assertState([None, any('int'), None],
@@ -103,6 +104,12 @@ class CommandsTestCase(SupyTestCase):
         spec = ['channel', 'text']
         self.assertState(spec, ['#foo', '+s'], ['#foo', '+s'])
         self.assertState(spec, ['+s'], ['#foo', '+s'], target='#foo')
+
+    def testGlob(self):
+        spec = ['glob']
+        self.assertState(spec, ['foo'], ['*foo*'])
+        self.assertState(spec, ['?foo'], ['?foo'])
+        self.assertState(spec, ['foo*'], ['foo*'])
 
     def testGetId(self):
         spec = ['id']

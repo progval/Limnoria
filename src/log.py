@@ -88,7 +88,8 @@ class Logger(logging.Logger):
         eId = hex(hash(eStrId) & 0xFFFFF)
         logging.Logger.exception(self, *args)
         if hasattr(e, '__revision__') and e.__revision__:
-            self.error('Exception __revision__: %r', e.__revision__)
+            self.error('Exception __revision__: %s',
+                       utils.quoted(e.__revision__))
         self.error('Exception id: %s', eId)
         # The traceback should be sufficient if we want it.
         # self.error('Exception string: %s', eStrId)
@@ -290,7 +291,7 @@ registry.exception = exception
 def stat(*args):
     level = conf.supybot.log.statistics()
     _logger.log(level, *args)
-    
+
 setLevel = _logger.setLevel
 
 atexit.register(logging.shutdown)

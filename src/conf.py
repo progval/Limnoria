@@ -457,7 +457,7 @@ registerChannelValue(supybot.replies, 'notRegistered',
     but they're not currently recognized."""))
 
 registerChannelValue(supybot.replies, 'noCapability',
-    registry.NormalizedString("""You don't have the %r capability.  If you
+    registry.NormalizedString("""You don't have the %s capability.  If you
     think that you should have this capability, be sure that you are identified
     before trying again.  The 'whoami' command can tell you if you're
     identified.""", """Determines what error message is given when the bot is

@@ -225,10 +225,11 @@ class IrcUser(object):
             self.hostmasks = hostmasks
 
     def __repr__(self):
-        return '%s(id=%s, ignore=%s, password="", name=%r, hashed=%r, ' \
+        return '%s(id=%s, ignore=%s, password="", name=%s, hashed=%r, ' \
                'capabilities=%r, hostmasks=[], secure=%r)\n' % \
-               (self.__class__.__name__, self.id, self.ignore, self.name,
-                self.hashed, self.capabilities, self.secure)
+               (self.__class__.__name__, self.id, self.ignore,
+                utils.quoted(self.name), self.hashed, self.capabilities,
+                self.secure)
 
     def __hash__(self):
         return hash(self.id)
@@ -655,7 +656,8 @@ class UsersDictionary(utils.IterableMap):
                     log.error('Multiple matches found in user database.  '
                               'Removing the offending hostmasks.')
                     for (id, hostmask) in ids.iteritems():
-                        log.error('Removing %r from user %s.', hostmask, id)
+                        log.error('Removing %s from user %s.',
+                                  utils.quoted(hostmask), id)
                         self.users[id].removeHostmask(hostmask)
                     raise DuplicateHostmask, 'Ids %r matched.' % ids
         else: # Not a hostmask, must be a name.
@@ -855,7 +857,8 @@ class IgnoresDB(object):
                     expiration = 0
                 self.add(hostmask, expiration)
             except Exception, e:
-                log.error('Invalid line in ignores database: %r', line)
+                log.error('Invalid line in ignores database: %s',
+                          utils.quoted(line))
         fd.close()
 
     def flush(self):

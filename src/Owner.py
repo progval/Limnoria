@@ -75,7 +75,8 @@ def loadPluginModule(name, ignoreDeprecation=False):
         try:
             files.extend(os.listdir(dir))
         except EnvironmentError: # OSError, IOError superclass.
-            log.warning('Invalid plugin directory: %r; removing.', dir)
+            log.warning('Invalid plugin directory: %s; removing.',
+                        utils.quoted(dir))
             conf.supybot.directories.plugins().remove(dir)
     loweredFiles = map(str.lower, files)
     try:
@@ -98,7 +99,8 @@ def loadPluginModule(name, ignoreDeprecation=False):
         if ignoreDeprecation:
             log.warning('Deprecated plugin loaded: %s', name)
         else:
-            raise Deprecated, 'Attempted to load deprecated plugin %r' % name
+            raise Deprecated, 'Attempted to load deprecated plugin %s' % \
+                utils.quoted(name)
     if module.__name__ in sys.modules:
         sys.modules[module.__name__] = module
     linecache.checkcache()
@@ -173,8 +175,8 @@ def renameCommand(cb, name, newName):
         method = getattr(cb.__class__, name)
         setattr(cb.__class__, newName, method)
         delattr(cb.__class__, name)
-    
-        
+
+
 registerDefaultPlugin('list', 'Misc')
 registerDefaultPlugin('help', 'Misc')
 registerDefaultPlugin('ignore', 'Admin')
@@ -248,7 +250,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 # There are no plugins that are all-lowercase, so we'll at
                 # least attempt to capitalize them.
                 if name == name.lower():
-                    name = name.capitalize() 
+                    name = name.capitalize()
                 conf.registerPlugin(name)
             if name.startswith('supybot.commands.defaultPlugins'):
                 try:
@@ -266,7 +268,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 self.log.warning('Tried to send a message to myself: %r.', msg)
                 return None
         return msg
-    
+
     def isCommand(self, name):
         return name == 'log' or \
                self.__parent.isCommand(name)
@@ -396,7 +398,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     self._evalEnv['_'] = x
                     irc.reply(repr(x))
                 except SyntaxError, e:
-                    irc.reply('%s: %r' % (utils.exnToString(e), s))
+                    irc.reply('%s: %s' % (utils.exnToString(e),
+                                          utils.quoted(s)))
                 except Exception, e:
                     self.log.exception('Uncaught exception in Owner.eval.  '
                                        'This is not a bug.  Please do not '
@@ -491,7 +494,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
         Sends the raw string given to the server.
         """
-        s = privmsgs.getArgs(args)
         try:
             m = ircmsgs.IrcMsg(s)
         except Exception, e:
@@ -678,7 +680,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     irc.replySuccess()
     defaultcapability = wrap(defaultcapability,
                              [('literal', ['add','remove']), 'capability'])
-            
+
     def disable(self, irc, msg, args):
         """[<plugin>] <command>
 

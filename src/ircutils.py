@@ -100,7 +100,7 @@ def toLower(s, casemapping=None):
     elif casemapping == 'ascii': # freenode
         return s.lower()
     else:
-        raise ValueError, 'Invalid casemapping: %r' % casemapping
+        raise ValueError, 'Invalid casemapping: %s' % utils.quoted(casemapping)
 
 def strEqual(nick1, nick2):
     """Returns True if nick1 == nick2 according to IRC case rules."""
@@ -360,7 +360,7 @@ class FormatContext(object):
             # Should we individually end formatters?
             s += '\x0f'
         return s
-            
+
 class FormatParser(object):
     def __init__(self, s):
         self.fd = sio(s)
@@ -427,7 +427,7 @@ def wrap(s, length):
         context = FormatParser(chunk).parse()
         processed.append(context.end(chunk))
     return processed
-        
+
 def isValidArgument(s):
     """Returns whether s is strictly a valid argument for an IRC message."""
     return '\r' not in s and '\n' not in s and '\x00' not in s
@@ -437,7 +437,7 @@ def safeArgument(s):
     if isinstance(s, unicode):
         s = s.encode('utf-8')
     elif not isinstance(s, basestring):
-        debug('Got a non-string in safeArgument: %r', s)
+        debug('Got a non-string in safeArgument: %s', utils.quoted(s))
         s = str(s)
     if isValidArgument(s):
         return s
@@ -504,7 +504,7 @@ class IrcSet(utils.NormalizingSet):
     """A sets.Set using IrcStrings instead of regular strings."""
     def normalize(self, s):
         return IrcString(s)
-    
+
     def __reduce__(self):
         return (self.__class__, (list(self),))
 
@@ -548,7 +548,7 @@ class FloodQueue(object):
                 return q
             else:
                 return None
-        
+
     def enqueue(self, msg, what=None):
         if what is None:
             what = msg
@@ -571,7 +571,7 @@ class FloodQueue(object):
                 if elt == what:
                     return True
         return False
-            
+
 
 mircColors = IrcDict({
     'white': '0',

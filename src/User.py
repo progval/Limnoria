@@ -46,6 +46,7 @@ from itertools import imap, ifilter
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
@@ -55,26 +56,22 @@ class User(callbacks.Privmsg):
         if password and ircutils.isChannel(msg.args[0]):
             raise callbacks.Error, conf.supybot.replies.requiresPrivacy()
 
-    def list(self, irc, msg, args):
-        """[--capability <capability>] [<glob>]
+    def list(self, irc, msg, args, optlist, glob):
+        """[--capability=<capability>] [<glob>]
 
         Returns the valid registered usernames matching <glob>.  If <glob> is
         not given, returns all registered usernames.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['capability='])
         predicates = []
         for (option, arg) in optlist:
-            if option == '--capability':
+            if option == 'capability':
                 def p(u, cap=arg):
                     try:
                         return u.checkCapability(cap)
                     except KeyError:
                         return False
                 predicates.append(p)
-        glob = privmsgs.getArgs(rest, required=0, optional=1)
         if glob:
-            if '*' not in glob and '?' not in glob:
-                glob = '*%s*' % glob
             r = re.compile(fnmatch.translate(glob), re.I)
             def p(u):
                 return r.match(u.name) is not None
@@ -94,8 +91,10 @@ class User(callbacks.Privmsg):
                 irc.reply('There are no matching registered users.')
             else:
                 irc.reply('There are no registered users.')
+    list = wrap(list, [getopts({'capability':'capability'}),
+                       additional('glob')])
 
-    def register(self, irc, msg, args):
+    def register(self, irc, msg, args, optlist, name, password):
         """[--hashed] <name> <password>
 
         Registers <name> with the given password <password> and the current
@@ -104,14 +103,11 @@ class User(callbacks.Privmsg):
         not in a channel.  If --hashed is given, the password will be hashed
         on disk, rather than being stored in the default configured format.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['hashed'])
-        (name, password) = privmsgs.getArgs(rest, required=2)
         addHostmask = True
         hashed = conf.supybot.databases.users.hash()
         for (option, arg) in optlist:
-            if option == '--hashed':
+            if option == 'hashed':
                 hashed = True
-        self._checkNotChannel(irc, msg, password)
         try:
             ircdb.users.getUserId(name)
             irc.error('That name is already assigned to someone.', Raise=True)
@@ -136,30 +132,26 @@ class User(callbacks.Privmsg):
             user.addHostmask(msg.prefix)
         ircdb.users.setUser(user)
         irc.replySuccess()
+    register = wrap(register, ['private', getopts({'hashed':''}), 'something',
+                               'something'])
 
-    def unregister(self, irc, msg, args):
+    def unregister(self, irc, msg, args, user, password):
         """<name> [<password>]
 
         Unregisters <name> from the user database.  If the user giving this
         command is an owner user, the password is not necessary.
         """
-        (name, password) = privmsgs.getArgs(args, optional=1)
-        self._checkNotChannel(irc, msg, password)
-        try:
-            id = ircdb.users.getUserId(name)
-            u = ircdb.users.getUser(id)
-        except KeyError:
-            irc.error('That username isn\'t registered.')
-            return
-        if not u.checkPassword(password):
-            u = ircdb.users.getUser(msg.prefix)
-            if not u.checkCapability('owner'):
+        if not user.checkPassword(password):
+            user = ircdb.users.getUser(msg.prefix)
+            if not user.checkCapability('owner'):
                 irc.error(conf.supybot.replies.incorrectAuthentication())
                 return
-        ircdb.users.delUser(id)
+        ircdb.users.delUser(user.id)
         irc.replySuccess()
+    unregister = wrap(unregister, ['private', 'otherUser',
+                                   additional('something')])
 
-    def changename(self, irc, msg, args):
+    def changename(self, irc, msg, args, user, newname, password):
         """<name> <new name> [<password>]
 
         Changes your current user database name to the new name given.
@@ -167,17 +159,9 @@ class User(callbacks.Privmsg):
         If you include the <password> parameter, this message must be sent
         to the bot privately (not on a channel).
         """
-        (name,newname,password) = privmsgs.getArgs(args,required=2,optional=1)
-        self._checkNotChannel(irc, msg, password)
-        try:
-            id = ircdb.users.getUserId(name)
-            user = ircdb.users.getUser(id)
-        except KeyError:
-            irc.error('That username isn\'t registered.')
-            return
         try:
             id = ircdb.users.getUserId(newname)
-            irc.error('%r is already registered.' % newname)
+            irc.error('%s is already registered.' % utils.quoted(newname))
             return
         except KeyError:
             pass
@@ -185,8 +169,10 @@ class User(callbacks.Privmsg):
             user.name = newname
             ircdb.users.setUser(user)
             irc.replySuccess()
+    changename = wrap(changename, ['private', 'otherUser', 'something',
+                                   additional('something')])
 
-    def addhostmask(self, irc, msg, args):
+    def addhostmask(self, irc, msg, args, user, hostmask, password):
         """[<name>] [<hostmask>] [<password>]
 
         Adds the hostmask <hostmask> to the user specified by <name>.  The
@@ -198,12 +184,8 @@ class User(callbacks.Privmsg):
         hostmask.  If <name> is not given, it defaults to your currently
         identified name.
         """
-        (name, hostmask, password) = privmsgs.getArgs(args, 0, 3)
-        self._checkNotChannel(irc, msg, password)
         if not hostmask:
             hostmask = msg.prefix
-        if not name:
-            name = msg.prefix
         if not ircutils.isUserHostmask(hostmask):
             irc.errorInvalid('hostmask', hostmask, 'Make sure your hostmask '
                       'includes a nick, then an exclamation point (!), then '
@@ -211,11 +193,6 @@ class User(callbacks.Privmsg):
                       'free to use wildcards (* and ?, which work just like '
                       'they do on the command line) in any of these parts.',
                       Raise=True)
-        try:
-            id = ircdb.users.getUserId(name)
-            user = ircdb.users.getUser(id)
-        except KeyError:
-            irc.errorNoUser(Raise=True)
         try:
             otherId = ircdb.users.getUserId(hostmask)
             if otherId != id:
@@ -241,8 +218,11 @@ class User(callbacks.Privmsg):
         except ValueError, e:
             irc.error(str(e), Raise=True)
         irc.replySuccess()
+    addhostmask = wrap(addhostmask, [first('otherUser', 'user'),
+                                     optional('something'),
+                                     additional('something')])
 
-    def removehostmask(self, irc, msg, args):
+    def removehostmask(self, irc, msg, args, user, hostmask, password):
         """<name> <hostmask> [<password>]
 
         Removes the hostmask <hostmask> from the record of the user specified
@@ -251,14 +231,6 @@ class User(callbacks.Privmsg):
         recognized by his hostmask.  If you include the <password> parameter,
         this message must be sent to the bot privately (not on a channel).
         """
-        (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
-        self._checkNotChannel(irc, msg, password)
-        try:
-            id = ircdb.users.getUserId(name)
-            user = ircdb.users.getUser(id)
-        except KeyError:
-            irc.errorNoUser()
-            return
         if not user.checkPassword(password) and \
            not user.checkHostmask(msg.prefix):
             u = ircdb.users.getUser(msg.prefix)
@@ -277,8 +249,10 @@ class User(callbacks.Privmsg):
             return
         ircdb.users.setUser(user)
         irc.replySuccess(s)
+    removehostmask = wrap(removehostmask, ['private', 'otherUser', 'something',
+                                           additional('something')])
 
-    def setpassword(self, irc, msg, args):
+    def setpassword(self, irc, msg, args, optlist, user, password,newpassword):
         """[--hashed] <name> <old password> <new password>
 
         Sets the new password for the user specified by <name> to
@@ -289,57 +263,36 @@ class User(callbacks.Privmsg):
         changed isn't that same owner user), then <old password> needn't be
         correct.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['hashed'])
-        (name, oldpassword, newpassword) = privmsgs.getArgs(rest, 3)
         hashed = conf.supybot.databases.users.hash()
         for (option, arg) in optlist:
-            if option == '--hashed':
+            if option == 'hashed':
                 hashed = True
-        self._checkNotChannel(irc, msg, oldpassword+newpassword)
-        try:
-            id = ircdb.users.getUserId(name)
-            user = ircdb.users.getUser(id)
-        except KeyError:
-            irc.errorNoUser()
-            return
         u = ircdb.users.getUser(msg.prefix)
-        if user.checkPassword(oldpassword) or \
+        if user.checkPassword(password) or \
            (u.checkCapability('owner') and not u == user):
             user.setPassword(newpassword, hashed=hashed)
             ircdb.users.setUser(user)
             irc.replySuccess()
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
+    setpassword = wrap(setpassword, [getopts({'hashed':''}), 'otherUser',
+                                     'something', 'something'])
 
-    def username(self, irc, msg, args):
+    def username(self, irc, msg, args, user):
         """<hostmask|nick>
 
         Returns the username of the user specified by <hostmask> or <nick> if
         the user is registered.
         """
-        hostmask = privmsgs.getArgs(args)
-        if not ircutils.isUserHostmask(hostmask):
-            try:
-                hostmask = irc.state.nickToHostmask(hostmask)
-            except KeyError:
-                irc.reply('I couldn\'t find %s in my user database.' %hostmask)
-                return
-        try:
-            user = ircdb.users.getUser(hostmask)
-            irc.reply(user.name)
-        except KeyError:
-            irc.reply('I couldn\'t find %s in my user database.' % hostmask)
+        irc.reply(user.name)
+    username = wrap(username, ['otherUser'])
 
-    def hostmasks(self, irc, msg, args):
+    def hostmasks(self, irc, msg, args, name):
         """[<name>]
 
         Returns the hostmasks of the user specified by <name>; if <name> isn't
         specified, returns the hostmasks of the user calling the command.
         """
-        if ircutils.isChannel(msg.args[0]):
-            irc.errorRequiresPrivacy()
-            return
-        name = privmsgs.getArgs(args, required=0, optional=1)
         try:
             user = ircdb.users.getUser(msg.prefix)
             if name:
@@ -355,38 +308,24 @@ class User(callbacks.Privmsg):
                 irc.reply(repr(user.hostmasks))
         except KeyError:
             irc.errorNotRegistered()
+    hostmasks = wrap(hostmasks, ['private', additional('something')])
 
-    def capabilities(self, irc, msg, args):
+    def capabilities(self, irc, msg, args, user):
         """[<name>]
 
         Returns the capabilities of the user specified by <name>; if <name>
         isn't specified, returns the hostmasks of the user calling the command.
         """
-        if not args:
-            name = msg.prefix
-        else:
-            name = privmsgs.getArgs(args)
-        try:
-            user = ircdb.users.getUser(name)
-            irc.reply('[%s]' % '; '.join(user.capabilities))
-        except KeyError:
-            irc.errorNoUser()
+        irc.reply('[%s]' % '; '.join(user.capabilities))
+    capabilities = wrap(capabilities, [first('otherUser', 'user')])
 
-    def identify(self, irc, msg, args):
+    def identify(self, irc, msg, args, user, password):
         """<name> <password>
 
         Identifies the user as <name>. This command (and all other
         commands that include a password) must be sent to the bot privately,
         not in a channel.
         """
-        (name, password) = privmsgs.getArgs(args, 2)
-        self._checkNotChannel(irc, msg)
-        try:
-            id = ircdb.users.getUserId(name)
-            user = ircdb.users.getUser(id)
-        except KeyError:
-            irc.errorNoUser()
-            return
         if user.checkPassword(password):
             try:
                 user.addAuth(msg.prefix)
@@ -397,8 +336,9 @@ class User(callbacks.Privmsg):
                           'doesn\'t match any of your known hostmasks.')
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
+    identify = wrap(identify, ['private', 'otherUser', 'something'])
 
-    def unidentify(self, irc, msg, args):
+    def unidentify(self, irc, msg, args, user):
         """takes no arguments
 
         Un-identifies you.  Note that this may not result in the desired
@@ -406,12 +346,6 @@ class User(callbacks.Privmsg):
         have added hostmasks to your user that can cause the bot to continue to
         recognize you.
         """
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-            user = ircdb.users.getUser(id)
-        except KeyError:
-            irc.errorNoUser()
-            return
         user.clearAuth()
         ircdb.users.setUser(user)
         irc.replySuccess('If you remain recognized after giving this command, '
@@ -419,6 +353,7 @@ class User(callbacks.Privmsg):
                          'by password.  You must remove whatever hostmask is '
                          'causing you to be recognized in order not to be '
                          'recognized.')
+    unidentify = wrap(unidentify, ['user'])
 
     def whoami(self, irc, msg, args):
         """takes no arguments
@@ -430,8 +365,9 @@ class User(callbacks.Privmsg):
             irc.reply(user.name)
         except KeyError:
             irc.reply('I don\'t recognize you.')
+    whoami = wrap(whoami)
 
-    def setsecure(self, irc, msg, args):
+    def setsecure(self, irc, msg, args, user, password, value):
         """<password> [<True|False>]
 
         Sets the secure flag on the user of the person sending the message.
@@ -441,21 +377,8 @@ class User(callbacks.Privmsg):
         If a specific True/False value is not given, it inverts the current
         value.
         """
-        (password, value) = privmsgs.getArgs(args, optional=1)
-        self._checkNotChannel(irc, msg, password)
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-            user = ircdb.users.getUser(id)
-        except KeyError:
-            irc.errorNotRegistered()
-        if value == '':
+        if value is None:
             value = not user.secure
-        elif value.lower() in ('true', 'on', 'enable'):
-            value = True
-        elif value.lower() in ('false', 'off', 'disable'):
-            value = False
-        else:
-            irc.errorInvalid('boolean value', value, Raise=True)
         if user.checkPassword(password) and \
            user.checkHostmask(msg.prefix, useAuth=False):
             user.secure = value
@@ -463,6 +386,8 @@ class User(callbacks.Privmsg):
             irc.reply('Secure flag set to %s' % value)
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
+    setsecure = wrap(setsecure, ['private', 'user', 'something',
+                                 additional('boolean')])
 
     def stats(self, irc, msg, args):
         """takes no arguments
@@ -488,7 +413,8 @@ class User(callbacks.Privmsg):
                   '%s and %s.' % (users, hostmasks,
                                   utils.nItems('owner', owners),
                                   utils.nItems('admin', admins)))
-                                      
+    stats = wrap(stats)
+
 
 ##     def config(self, irc, msg, args):
 ##         """[--list] <name> [<value>]

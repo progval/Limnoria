@@ -163,7 +163,7 @@ class Channel(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.halfops(channel, nicks))
     halfop = wrap(halfop, [('checkChannelCapability', 'halfop'),
                            ('haveOp', 'halfop someone'),
-                           many('nickInChannel')])
+                           any('nickInChannel')])
 
     def voice(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
@@ -173,12 +173,21 @@ class Channel(callbacks.Privmsg):
         voice you. <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
-        if not nicks:
+        if nicks:
+            if len(nicks) == 1 and msg.nick in nicks:
+                capability = 'voice'
+            else:
+                capability = 'op'
+        else:
             nicks = [msg.nick]
-        irc.queueMsg(ircmsgs.voices(channel, nicks))
-    voice = wrap(voice, [('checkChannelCapability', 'voice'),
-                         ('haveOp', 'voice someone'),
-                         many('nickInChannel')])
+            capability = 'voice'
+        capability = ircdb.makeChannelCapability(channel, capability)
+        if ircdb.checkCapability(msg.prefix, capability):
+            irc.queueMsg(ircmsgs.voices(channel, nicks))
+        else:
+            irc.errorNoCapability(capability)
+    voice = wrap(voice, ['channel', ('haveOp', 'voice someone'),
+                         any('nickInChannel')])
 
     def deop(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
@@ -193,11 +202,10 @@ class Channel(callbacks.Privmsg):
                       'yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        else:
-            irc.queueMsg(ircmsgs.deops(channel, nicks))
+        irc.queueMsg(ircmsgs.deops(channel, nicks))
     deop = wrap(deop, [('checkChannelCapability', 'op'),
                        ('haveOp', 'deop someone'),
-                       many('nickInChannel')])
+                       any('nickInChannel')])
 
     def dehalfop(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
@@ -212,11 +220,10 @@ class Channel(callbacks.Privmsg):
                       'dehalfop me yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        else:
-            irc.queueMsg(ircmsgs.dehalfops(channel, nicks))
+        irc.queueMsg(ircmsgs.dehalfops(channel, nicks))
     dehalfop = wrap(dehalfop, [('checkChannelCapability', 'halfop'),
                                ('haveOp', 'dehalfop someone'),
-                               many('nickInChannel')])
+                               any('nickInChannel')])
 
     # XXX These nicks should really be sets, rather than lists, especially
     #     we check whether the bot's nick is in them.
@@ -235,11 +242,10 @@ class Channel(callbacks.Privmsg):
                       'me yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        else:
-            irc.queueMsg(ircmsgs.devoices(channel, nicks))
+        irc.queueMsg(ircmsgs.devoices(channel, nicks))
     devoice = wrap(devoice, [('checkChannelCapability', 'voice'),
                              ('haveOp', 'devoice someone'),
-                             many('nickInChannel')])
+                             any('nickInChannel')])
 
     def cycle(self, irc, msg, args, channel, key):
         """[<channel>] [<key>]
@@ -299,11 +305,13 @@ class Channel(callbacks.Privmsg):
         # Check that they're not trying to make us kickban ourself.
         self.log.debug('In kban')
         if not ircutils.isNick(bannedNick):
-            self.log.warning('%r tried to kban a non nick: %r',
-                             msg.prefix, bannedNick)
+            self.log.warning('%s tried to kban a non nick: %s',
+                             utils.quoted(msg.prefix),
+                             utils.quoted(bannedNick))
             raise callbacks.ArgumentError
         elif bannedNick == irc.nick:
-            self.log.warning('%r tried to make me kban myself.', msg.prefix)
+            self.log.warning('%s tried to make me kban myself.',
+                             utils.quoted(msg.prefix))
             irc.error('I cowardly refuse to kickban myself.')
             return
         if not reason:
@@ -337,7 +345,8 @@ class Channel(callbacks.Privmsg):
         # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
-                self.log.warning('%r tried to make me kban myself.',msg.prefix)
+                self.log.warning('%s tried to make me kban myself.',
+                                 utils.quoted(msg.prefix))
                 irc.error('I cowardly refuse to ban myself.')
                 return
             else:
@@ -360,15 +369,16 @@ class Channel(callbacks.Privmsg):
             doBan()
         elif ircdb.checkCapability(msg.prefix, capability):
             if ircdb.checkCapability(bannedHostmask, capability):
-                self.log.warning('%s tried to ban %r, but both have %s',
-                                 msg.prefix, bannedHostmask, capability)
+                self.log.warning('%s tried to ban %s, but both have %s',
+                                 msg.prefix, utils.quoted(bannedHostmask),
+                                 capability)
                 irc.error('%s has %s too, you can\'t ban him/her/it.' %
                           (bannedNick, capability))
             else:
                 doBan()
         else:
-            self.log.warning('%r attempted kban without %s',
-                             msg.prefix, capability)
+            self.log.warning('%s attempted kban without %s',
+                             utils.quoted(msg.prefix), capability)
             irc.errorNoCapability(capability)
             exact,nick,user,host
     kban = wrap(kban,
@@ -519,7 +529,8 @@ class Channel(callbacks.Privmsg):
         # XXX Add the expirations.
         c = ircdb.channels.getChannel(channel)
         if len(c.ignores) == 0:
-            s = 'I\'m not currently ignoring any hostmasks in %r' % channel
+            s = 'I\'m not currently ignoring any hostmasks in %s' % \
+                utils.quoted(channel)
             irc.reply(s)
         else:
             L = sorted(c.ignores)

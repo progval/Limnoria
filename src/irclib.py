@@ -172,7 +172,8 @@ class IrcMsgQueue(object):
         if msg in self.msgs and \
            not conf.supybot.protocols.irc.queueDuplicateMessages():
             s = str(msg).strip()
-            log.warning('Not adding message %r to queue, already added.', s)
+            log.warning('Not adding message %s to queue, already added.',
+                        utils.quoted(s))
             return False
         else:
             self.msgs.add(msg)

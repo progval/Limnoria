@@ -426,6 +426,12 @@ def checkCapability(irc, msg, args, state, cap):
 def anything(irc, msg, args, state):
     state.args.append(args.pop(0))
 
+def getGlob(irc, msg, args, state):
+    glob = args.pop(0)
+    if '*' not in glob and '?' not in glob:
+        glob = '*%s*' % glob
+    state.args.append(glob)
+
 def getUrl(irc, msg, args, state):
     if webutils.urlRe.match(args[0]):
         state.args.append(args.pop(0))
@@ -521,6 +527,7 @@ wrappers = ircutils.IrcDict({
     'something': getSomething,
     'filename': getSomething, # XXX Check for validity.
     'commandName': getCommandName,
+    'glob': getGlob,
     'text': anything,
     'somethingWithoutSpaces': getSomethingNoSpaces,
     'capability': getSomethingNoSpaces,

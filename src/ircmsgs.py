@@ -43,6 +43,7 @@ import time
 import string
 
 import supybot.conf as conf
+import supybot.utils as utils
 import supybot.ircutils as ircutils
 
 ###
@@ -197,13 +198,14 @@ class IrcMsg(object):
     def __repr__(self):
         if self._repr is not None:
             return self._repr
-        self._repr = 'IrcMsg(prefix=%r, command=%r, args=%r)' % \
-                     (self.prefix, self.command, self.args)
+        self._repr = 'IrcMsg(prefix=%s, command=%s, args=%r)' % \
+                     (utils.quoted(self.prefix), utils.quoted(self.command),
+                      self.args)
         return self._repr
 
     def __reduce__(self):
         return (self.__class__, (str(self),))
-    
+
     def tag(self, tag, value=True):
         self.tags[tag] = value
 
