@@ -22,6 +22,18 @@ brainstorming.  He also wrote the Dunno, News, and Todo plugins and is
 responsible for a significant amount of code in the Poll, Debian, QuoteGrabs,
 Karma, and ChannelDB plugins.
 
+James Vega (jamessan) is an Electrical Engineering/Computer Science student at
+Northeastern University.  He wrote the Sourceforge and Ebay plugins as well as
+the first incarnation of the Babelfish commands and most of Amazon.  He has
+also performed a significant amount of maintenance and refactoring of plugins
+in general.  Some of the plugins that were affected the most are Debian,
+FunDB, Gameknot, Http, Note, and Quote.  All of the link snarfers, save
+Bugzilla's, were also written by jamessan.  His meddlings have prompted the
+implementation of Toggleables, which eventually evolved to Configurables and
+then to the current registry system.  As well as being the current webmaster,
+he also overhauled the tool which is used to generate the site's HTML
+documentation for Supybot and setup the weekly creation of CVS snapshots.
+
 Brett Kelly (inkedmn) is a hobbyist (soon to be professional :)) coder
 from southern California who enjoys collecting tattoos (on his body) and
 drinking coffee with his wife.  He initially wrote the Note plugin as well
