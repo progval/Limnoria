@@ -45,6 +45,7 @@ from itertools import imap, ifilter
 
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
@@ -582,7 +583,7 @@ class Misc(callbacks.Privmsg):
 
         Returns the networks to which the bot is currently connected.
         """
-        L = ['%s: %s' % (irc.network, irc.server) for irc in world.ircs]
+        L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
         
