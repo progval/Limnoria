@@ -248,9 +248,9 @@ class PluginTestCase(unittest.TestCase):
         if m is None:
             raise TimeoutError, query
         self.failUnless(ircmsgs.isAction(m))
-        self.failUnless(re.search(regexp, ircmsgs.unAction(m), flags),
-                        '%r does not match %r' % (ircmsgs.unAction(m),
-                                                  regexp))
+        s = ircmsgs.unAction(m)
+        self.failUnless(re.search(regexp, s, flags),
+                        '%r does not match %r' % (s, regexp))
 
 class ChannelPluginTestCase(PluginTestCase):
     channel = '#test'
