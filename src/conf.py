@@ -107,7 +107,8 @@ def registerPlugin(name, currentValue=None, public=True):
         publicly visible."""))
     if currentValue is not None:
         supybot.plugins.get(name).setValue(currentValue)
-    return registerGroup(users.plugins, name)
+    registerGroup(users.plugins, name)
+    return group
 
 def get(group, channel=None):
     if channel is None or not group.channelValue:
