@@ -39,6 +39,7 @@ __contributors__ = {
     }
 
 import os
+import csv
 import sets
 from itertools import imap
 
@@ -212,6 +213,32 @@ class SqliteKarmaDB(object):
                           WHERE normalized=%s""", normalized)
         db.commit()
 
+    def dump(self, channel, filename):
+        filename = conf.supybot.directories.data.dirize(filename)
+        fd = utils.transactionalFile(filename)
+        out = csv.writer(fd)
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT name, added, subtracted FROM karma""")
+        for (name, added, subtracted) in cursor.fetchall():
+            out.writerow([name, added, subtracted])
+        fd.close()
+
+    def load(self, channel, filename):
+        filename = conf.supybot.directories.data.dirize(filename)
+        fd = file(filename)
+        reader = csv.reader(fd)
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""DELETE FROM karma""")
+        for (name, added, subtracted) in reader:
+            normalized = name.lower()
+            cursor.execute("""INSERT INTO karma
+                              VALUES (NULL, %s, %s, %s, %s)""",
+                           name, normalized, added, subtracted)
+        db.commit()
+        fd.close()
+        
 KarmaDB = plugins.DB('Karma',
                      {'sqlite': SqliteKarmaDB})
 
@@ -382,6 +409,27 @@ class Karma(callbacks.Privmsg):
         name = name.strip('()')
         return name
 
+    def dump(self, irc, msg, args, channel, filename):
+        """[<channel>] <filename>
+
+        Dumps the Karma database for <channel> to <filename> in the bot's
+        data directory.  <channel> is only necessary if the message isn't sent
+        in the channel itself.
+        """
+        self.db.dump(channel, filename)
+        irc.replySuccess()
+    dump = wrap(dump, [('checkCapability', 'owner'), 'channeldb', 'filename'])
+
+    def load(self, irc, msg, args, channel, filename):
+        """[<channel>] <filename>
+
+        Loads the Karma database for <channel> from <filename> in the bot's
+        data directory.  <channel> is only necessary if the message isn't sent
+        in the channel itself.
+        """
+        self.db.load(channel, filename)
+        irc.replySuccess()
+    load = wrap(load, [('checkCapability', 'owner'), 'channeldb', 'filename'])
 
 Class = Karma
 
