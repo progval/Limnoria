@@ -37,6 +37,8 @@ __revision__ = "$Id$"
 
 import supybot.fix as fix
 
+import getopt
+
 import time
 import types
 import threading
@@ -186,6 +188,13 @@ def channelDb(irc, msg, args, **kwargs):
     else:
         return channel(irc, msg, args, **kwargs)
 
+def validChannel(irc, msg, args):
+    s = args.pop(0)
+    if ircutils.isChannel(s):
+        return s
+    else:
+        irc.errorInvalid('channel', s, Raise=True)
+
 def getHostmask(irc, msg, args):
     if ircutils.isUserHostmask(args[0]):
         return args.pop(0)
@@ -259,24 +268,50 @@ def channel(irc, msg, args, cap=None):
 
 def getLowered(irc, msg, args):
     return ircutils.toLower(args.pop(0))
+
+def getSomething(irc, msg, args):
+    s = args.pop(0)
+    if not s:
+        # XXX Better reply?  How?
+        irc.error('You must not give the empty string as an argument.',
+                  Raise=True)
+    return s
+
+def getPlugin(irc, msg, args, requirePresent=False):
+    s = args.pop(0)
+    cb = irc.getCallback(s)
+    if requirePresent and cb is None:
+        irc.errorInvalid('plugin', s, Raise=True)
+    return cb
         
 argWrappers = ircutils.IrcDict({
     'id': getId,
     'int': getInt,
     'nick': getNick,
     'channel': channel,
+    'plugin': getPlugin,
     'lowered': getLowered,
+    'something': getSomething,
     'channelDb': channelDb,
     'hostmask': getHostmask,
     'user': getUser,
     'otherUser': getOtherUser,
     'regexpMatcher': getMatcher,
+    'validChannel': validChannel,
     'regexpReplacer': getReplacer, 
 })
 
     
 _wrappers = wrappers # Used below so we can use a keyword argument "wrappers".
-def wrap(f, required=[], optional=[], wrappers=None, noExtra=False):
+def wrap(f, required=[], optional=[],
+         wrappers=None, getopts=None, noExtra=False):
+    if getopts is not None:
+        getoptL = []
+        for (key, value) in getopts.iteritems():
+            if value != '': # value can be None, remember.
+                key += '='
+            getoptL.append(key)
+            
     def getArgWrapper(x):
         if isinstance(x, tuple):
             assert x
@@ -295,24 +330,43 @@ def wrap(f, required=[], optional=[], wrappers=None, noExtra=False):
         starArgs = []
         req = (required or [])[:]
         opt = (optional or [])[:]
-        def callConverter(name):
+        def getConversion(name):
             (converter, convertArgs) = getArgWrapper(name)
             v = converter(irc, msg, args, *convertArgs)
+            return v
+        def callConverter(name):
+            v = getConversion(name)
             starArgs.append(v)
-            
+
+        # First, we getopt stuff.
+        if getopts is not None:
+            L = []
+            (optlist, args) = getopt.getopt(args, '', getoptL)
+            for (opt, arg) in optlist:
+                opt = opt[2:] # Strip --
+                assert opt in getopts
+                if arg is not None:
+                    assert getopts[opt] != ''
+                    L.append((opt, getConversion(getopts[opt])))
+                else:
+                    assert getopts[opt] == ''
+                    L.append((opt, True))
+            starArgs.append(L)
+
+        # Second, we get out everything but the last argument.
         try:
-            # First, we get out everything but the last argument.
             while len(req) + len(opt) > 1:
                 if req:
                     callConverter(req.pop(0))
                 else:
                     assert opt
                     callConverter(opt.pop(0))
-            # Second, if there is a remaining required or optional argument
+            # Third, if there is a remaining required or optional argument
             # (there's a possibility that there were no required or optional
             # arguments) then we join the remaining args and work convert that.
             if req or opt:
                 rest = ' '.join(args)
+                args = [rest]
                 if required:
                     converterName = req.pop(0)
                 else:
