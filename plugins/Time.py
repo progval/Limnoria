@@ -176,7 +176,8 @@ class Time(callbacks.Privmsg):
             else:
                 format = self.registryValue('format')
         irc.reply(time.strftime(format, time.localtime(seconds)))
-    time = wrap(time, ['channel?', 'nonInt?', ('?int', TIME.time)])
+    time = wrap(time, [additional('channel'), additional('nonInt'),
+                       optional('float', TIME.time)])
 
     def elapsed(self, irc, msg, args, seconds):
         """<seconds>
