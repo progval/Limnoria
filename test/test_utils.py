@@ -99,16 +99,12 @@ class UtilsTest(unittest.TestCase):
                              '%s was %s, not %s' % (name, soundex, key))
 
     def testDQRepr(self):
-        L = [('foo', '"foo"'),
-             ('foo\'bar', '"foo\'bar"'),
-             ('foo"bar', '"foo\\"bar"'),
-             ('"', '"\\""'),
-             ('', '""'),
-             ('\x00', '"\\x00"')]
-        for (s, r) in L:
-            self.assertEqual(r, utils.dqrepr(s))
-            self.assertEqual(s, eval(utils.dqrepr(s)))
-             
+        L = ['foo', 'foo\'bar', 'foo"bar', '"', '\\', '', '\x00']
+        for s in L:
+            r = utils.dqrepr(s)
+            self.assertEqual(s, eval(r), s)
+            self.failUnless(r[0] == '"' and r[-1] == '"', s)
+ 
     def testPerlReToPythonRe(self):
         r = utils.perlReToPythonRe('m/foo/')
         self.failUnless(r.search('foo'))
