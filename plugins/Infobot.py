@@ -611,8 +611,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         """
         irc.reply('There have been %s answered and %s made '
                   'to the database since this plugin was loaded.' %
-                  (utils.nItems('request', self.db.getChangeCount()),
-                   utils.nItems('change', self.db.getResponseCount())))
+                  (utils.nItems('request', self.db.getResponseCount()),
+                   utils.nItems('change', self.db.getChangeCount())))
 
     def tell(self, irc, msg, args):
         """<nick> [about] <factoid>

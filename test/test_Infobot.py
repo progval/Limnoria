@@ -52,6 +52,7 @@ if sqlite is not None:
                 ibot.snarfUnaddressedDefinitions.setValue(True)
                 ibot.answerUnaddressedQuestions.setValue(True)
                 self.assertSnarfNoResponse('foo is at http://bar.com/', 2)
+                self.assertRegexp('infobot stats', '1 change')
                 self.assertSnarfRegexp('foo?', r'foo.*is.*http://bar.com/')
                 self.assertSnarfNoResponse('foo is at http://baz.com/', 2)
                 self.assertSnarfNotRegexp('foo?', 'baz')
