@@ -151,48 +151,60 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         url = match.group(0)
         if self.configurables.get('tinyurl-snarfer', channel):
             minlen = self.configurables.get('tinyurl-minimum-length', channel)
-            if len(url) > minlen:
+            if len(url) >= minlen:
                 db = self.getDb(channel)
                 cursor = db.cursor()
-                cursor.execute("""SELECT tinyurls.tinyurl FROM urls, tinyurls
-                                  WHERE urls.url=%s AND
-                                  urls.id=tinyurls.url_id""", url)
-                if cursor.rowcount == 0:
+                (tinyurl, updateDb) = self._getTinyUrl(url, channel)
+                if tinyurl is None:
+                    debug.msg('tinyurl was None for url %r' % url)
+                    return
+                elif updateDb:
                     #debug.printf(url)
-                    tinyurl = self._getTinyUrl(url)
-                    cursor.execute("""INSERT INTO tinyurls
-                                      VALUES (NULL, 0, %s)""", tinyurl)
-                    cursor.execute("""SELECT id FROM urls WHERE url=%s""", url)
-                    id = cursor.fetchone()[0]
-                    cursor.execute("""UPDATE tinyurls SET url_id=%s
-                                      WHERE tinyurl=%s""", id,tinyurl)
-                    db.commit()
-                else:
-                    tinyurl = cursor.fetchone()[0]
-                if tinyurl is not None:
-                    s = '%s (was <%s>)' % (ircutils.bold(tinyurl), url)
-                    irc.reply(msg, s, prefixName=False)
-                else:
-                    debug.msg('tinyurl was none for url %r' % url)
+                    self._updateTinyDb(url, tinyurl, channel)
+                s = '%s (was <%s>)' % (ircutils.bold(tinyurl), url)
+                irc.reply(msg, s, prefixName=False)
     tinyurlSnarfer = privmsgs.urlSnarfer(tinyurlSnarfer)
                 
+    def _updateTinyDb(self, url, tinyurl, channel):
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO tinyurls
+                          VALUES (NULL, 0, %s)""", tinyurl)
+        cursor.execute("""SELECT id FROM urls WHERE url=%s""", url)
+        id = cursor.fetchone()[0]
+        cursor.execute("""UPDATE tinyurls SET url_id=%s
+                          WHERE tinyurl=%s""", id, tinyurl)
+        db.commit()
 
     _tinyRe = re.compile(r'(http://tinyurl\.com/\w+)</blockquote>')
-    def _getTinyUrl(self, url, cmd=False):
-        try:
-            #debug.printf('Trying to get tinyurl for %r' % url)
-            fd = urllib2.urlopen('http://tinyurl.com/create.php?url=%s' % url)
-            s = fd.read()
-            fd.close()
-            m = self._tinyRe.search(s)
-            if m is None:
-                return None
-            return m.group(1)
-        except urllib2.HTTPError, e:
-            if cmd:
-                raise callbacks.Error, e.msg()
-            else:
-                debug.msg(e.msg())
+    def _getTinyUrl(self, url, channel, cmd=False):
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT tinyurls.tinyurl FROM urls, tinyurls
+                          WHERE urls.url=%s AND
+                          tinyurls.url_id=urls.id""", url)
+        if cursor.rowcount == 0:
+            updateDb = True
+            try:
+                #debug.printf('Trying to get tinyurl for %r' % url)
+                fd = urllib2.urlopen('http://tinyurl.com/create.php?url=%s' %
+                                     url)
+                s = fd.read()
+                fd.close()
+                m = self._tinyRe.search(s)
+                if m is None:
+                    tinyurl = None
+                else:
+                    tinyurl = m.group(1)
+            except urllib2.HTTPError, e:
+                if cmd:
+                    raise callbacks.Error, e.msg()
+                else:
+                    debug.msg(e.msg())
+        else:
+            updateDb = False
+            tinyurl = cursor.fetchone()[0]
+        return (tinyurl, updateDb)
 
     def _formatUrl(self, url, added, addedBy):
         #debug.printf((url, added, addedBy))
@@ -224,11 +236,21 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         Returns a TinyURL.com version of <url>
         """
         url = privmsgs.getArgs(args)
-        if self.configurables.get('tinyurl-snarfer', channel=msg.args[0]):
+        if len(url) < 23:
+            irc.error(msg,
+                      'Stop being a lazy-biotch and type the URL yourself.')
             return
-        url = self._getTinyUrl(url, cmd=True)
-        if url:
-            irc.reply(msg, url)
+        channel = msg.args[0]
+        snarf = self.configurables.get('tinyurl-snarfer', channel=msg.args[0])
+        minlen = self.configurables.get('tinyurl-minimum-length',
+                                        channel=channel)
+        if snarf and len(url) >= minlen:
+            return
+        (tinyurl, updateDb) = self._getTinyUrl(url, channel, cmd=True)
+        if tinyurl:
+            if updateDb:
+                self._updateTinyDb(url, tinyurl, channel)
+            irc.reply(msg, tinyurl)
         else:
             s = 'Could not parse the TinyURL.com results page.  (%s)' % \
                 conf.replyPossibleBug
