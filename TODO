@@ -4,13 +4,6 @@ the more likely it'll be done before next release):
 * We should have a channel-global value in ircdb.IrcChannel for
   ignoring unregistered users.
 
-* It'd be nice to be able to use a backslash to continue lines in the
-  registry, so we could linewrap long strings or lists.
-
-* We need to store the key for channels in the registry and have an
-  easy way for plugins to send joins to channels based on their
-  registry configuration.
-
 * We need to note when bans expire on a channel and send the unban,
   that way plugins can use the ircdb ban stuff and not worry about
   sending or scheduling unbans.
