@@ -438,7 +438,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
 
     def searchSerializeRecord(self, record):
         text = utils.str.ellipsisify(record.text, 50)
-        return format('#%s: %q' % (record.id, text))
+        return format('#%s: %q', record.id, text)
 
     def search(self, irc, msg, args, channel, optlist, glob):
         """[<channel>] [--{regexp,by} <value>] [<glob>]
