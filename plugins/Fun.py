@@ -42,7 +42,6 @@ import re
 import sys
 import md5
 import sha
-import string
 import random
 import urllib
 import inspect
@@ -65,63 +64,13 @@ class Fun(callbacks.Privmsg):
         self.outFilters = ircutils.IrcDict()
         callbacks.Privmsg.__init__(self)
 
-    def outFilter(self, irc, msg):
-        if msg.command == 'PRIVMSG':
-            if msg.args[0] in self.outFilters:
-                if ircmsgs.isAction(msg):
-                    s = ircmsgs.unAction(msg)
-                else:
-                    s = msg.args[1]
-                methods = self.outFilters[msg.args[0]]
-                for filtercommand in methods:
-                    myIrc = MyFunProxy()
-                    filtercommand(myIrc, msg, [s])
-                    s = myIrc.s
-                if ircmsgs.isAction(msg):
-                    msg = ircmsgs.action(msg.args[0], s)
-                else:
-                    msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], s))
-        return msg
-
-    _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
-                       'scramble', 'morse', 'reverse', 'urlquote', 'md5','sha',
-                       'colorize', 'squish']
-    def outfilter(self, irc, msg, args, channel):
-        """[<channel>] [<command>]
-        
-        Sets the outFilter of this plugin to be <command>.  If no command is
-        given, unsets the outFilter.  <channel> is only necessary if the
-        message isn't sent in the channel itself.
-        """
-        command = privmsgs.getArgs(args, required=0, optional=1)
-        if command:
-            command = callbacks.canonicalName(command)
-            if command in self._filterCommands:
-                method = getattr(self, command)
-                self.outFilters.setdefault(channel, []).append(method)
-                irc.reply(msg, conf.replySuccess)
-            else:
-                irc.error(msg, 'That\'s not a valid filter command.')
-        else:
-            self.outFilters[channel] = []
-            irc.reply(msg, conf.replySuccess)
-    outfilter = privmsgs.checkChannelCapability(outfilter, 'op')
-    
-    def squish(self, irc, msg, args):
-        """<text>
-
-        Removes all the spaces from <text>.
-        """
-        text = privmsgs.getArgs(args)
-        text = ''.join(text.split())
-        irc.reply(msg, text)
-
     def ping(self, irc, msg, args):
         """takes no arguments
 
         Checks to see if the bot is alive.
         """
         irc.reply(msg, 'pong', prefixName=False)
+
     def hexip(self, irc, msg, args):
         """<ip>
 
@@ -178,30 +127,6 @@ class Fun(callbacks.Privmsg):
         (base, number) = privmsgs.getArgs(args, required=2)
         irc.reply(msg, str(long(number, int(base))))
 
-    def binary(self, irc, msg, args):
-        """<text>
-
-        Returns the binary representation of <text>.
-        """
-        L = []
-        for c in privmsgs.getArgs(args):
-            LL = []
-            i = ord(c)
-            counter = 8
-            while i:
-                counter -= 1
-                if i & 1:
-                    LL.append('1')
-                else:
-                    LL.append('0')
-                i >>= 1
-            while counter:
-                LL.append('0')
-                counter -= 1
-            LL.reverse()
-            L.extend(LL)
-        irc.reply(msg, ''.join(L))
-
     def encode(self, irc, msg, args):
         """<encoding> <text>
 
@@ -227,27 +152,6 @@ class Fun(callbacks.Privmsg):
             irc.reply(msg, text.decode(encoding).encode('utf-8'))
         except LookupError:
             irc.error(msg, 'There is no such encoding %r' % encoding)
-
-    def hexlify(self, irc, msg, args):
-        """<text>
-
-        Returns a hexstring from the given string; a hexstring is a string
-        composed of the hexadecimal value of each character in the string
-        """
-        text = privmsgs.getArgs(args)
-        irc.reply(msg, text.encode('hex_codec'))
-
-    def unhexlify(self, irc, msg, args):
-        """<hexstring>
-
-        Returns the string corresponding to <hexstring>.  Obviously,
-        <hexstring> must be a string of hexadecimal digits.
-        """
-        text = privmsgs.getArgs(args)
-        try:
-            irc.reply(msg, text.decode('hex_codec'))
-        except TypeError:
-            irc.error(msg, 'Invalid input.')
 
     def xor(self, irc, msg, args):
         """<password> <text>
@@ -315,16 +219,6 @@ class Fun(callbacks.Privmsg):
         s = urllib.unquote(text)
         irc.reply(msg, s)
 
-    def rot13(self, irc, msg, args):
-        """<text>
-
-        Rotates <text> 13 characters to the right in the alphabet.  Rot13 is
-        commonly used for text that simply needs to be hidden from inadvertent
-        reading by roaming eyes, since it's easily reversible.
-        """
-        text = privmsgs.getArgs(args)
-        irc.reply(msg, text.encode('rot13'))
-
     def coin(self, irc, msg, args):
         """takes no arguments
 
@@ -358,46 +252,6 @@ class Fun(callbacks.Privmsg):
                 irc.reply(msg, utils.commaAndify([str(x) for x in L]))
         else:
             irc.error(msg, 'Dice must be of the form <dice>d<sides>')
-
-    def lithp(self, irc, msg, args):
-        """<text>
-
-        Returns the lisping version of <text>
-        """
-        text = privmsgs.getArgs(args)
-        text = text.replace('sh', 'th')
-        text = text.replace('SH', 'TH')
-        text = text.replace('ss', 'th')
-        text = text.replace('SS', 'TH')
-        text = text.replace('s', 'th')
-        text = text.replace('z', 'th')
-        text = text.replace('S', 'Th')
-        text = text.replace('Z', 'Th')
-        text = text.replace('x', 'kth')
-        text = text.replace('X', 'KTH')
-        text = text.replace('cce', 'kth')
-        text = text.replace('CCE', 'KTH')
-        text = text.replace('tion', 'thion')
-        text = text.replace('TION', 'THION')
-        irc.reply(msg, text)
-
-    _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
-    _leetres = ((re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
-                (re.compile(r'fear'), 'ph33r'),
-                (re.compile(r'[aA][tT][eE]'), '8'),
-                (re.compile(r'[aA][tT]'), '@'),
-                (re.compile(r'[sS]\b'), 'z'),
-                (re.compile(r'x'), '><'),)
-    def leet(self, irc, msg, args):
-        """<text>
-
-        Returns the l33tspeak version of <text>
-        """
-        s = privmsgs.getArgs(args)
-        for (r, sub) in self._leetres:
-            s = re.sub(r, sub, s)
-        s = s.translate(self._leettrans)
-        irc.reply(msg, s)
 
     def objects(self, irc, msg, args):
         """takes no arguments.
@@ -492,22 +346,6 @@ class Fun(callbacks.Privmsg):
         """
         irc.reply(msg, random.choice(self._eightballs))
 
-    _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'\
-                             r'([a-zA-Z])(?:\b|(?![a-zA-Z]))')
-    def scramble(self, irc, msg, args):
-        """<text>
-
-        Replies with a string where each word is scrambled; i.e., each internal
-        letter (that is, all letters but the first and last) are shuffled.
-        """
-        def _subber(m):
-            L = list(m.group(2))
-            random.shuffle(L)
-            return '%s%s%s' % (m.group(1), ''.join(L), m.group(3))
-        text = privmsgs.getArgs(args)
-        s = self._scrambleRe.sub(_subber, text)
-        irc.reply(msg, s)
-
     def roulette(self, irc, msg, args):
         """takes no arguments.
 
@@ -524,207 +362,6 @@ class Fun(callbacks.Privmsg):
             irc.reply(msg, '*click*')
 
 
-
-
-    _code = {
-        "A" : ".-",
-        "B" : "-...",
-        "C" : "-.-.",
-        "D" : "-..",
-        "E" : ".",
-        "F" : "..-.",
-        "G" : "--.",
-        "H" : "....",
-        "I" : "..",
-        "J" : ".---",
-        "K" : "-.-",
-        "L" : ".-..",
-        "M" : "--",
-        "N" : "-.",
-        "O" : "---",
-        "P" : ".--.",
-        "Q" : "--.-",
-        "R" : ".-.",
-        "S" : "...",
-        "T" : "-",
-        "U" : "..-",
-        "V" : "...-",
-        "W" : ".--",
-        "X" : "-..-",
-        "Y" : "-.--",
-        "Z" : "--..",
-        "0" : "-----",
-        "1" : ".----",
-        "2" : "..---",
-        "3" : "...--",
-        "4" : "....-",
-        "5" : ".....",
-        "6" : "-....",
-        "7" : "--...",
-        "8" : "---..",
-        "9" : "----.",
-    }
-
-    _revcode = dict([(y, x) for (x, y) in _code.items()])
-
-    _unmorsere = re.compile('([.-]+)')
-    def unmorse(self, irc, msg, args):
-        """<morse code text>
-
-        Does the reverse of the morse/ditdaw command.
-        """
-        text = privmsgs.getArgs(args)
-        text = text.replace('_', '-')
-        def morseToLetter(m):
-            s = m.group(1)
-            return self._revcode.get(s, s)
-        text = self._unmorsere.sub(morseToLetter, text)
-        text = text.replace('  ', '\x00')
-        text = text.replace(' ', '')
-        text = text.replace('\x00', ' ')
-        irc.reply(msg, text)
-
-    def morse(self, irc, msg, args):
-        """<text>
-
-        Gives the more code equivalent of a given string.
-        """
-        text = privmsgs.getArgs(args)
-        L = []
-        for c in text.upper():
-            if c in self._code:
-                L.append(self._code[c])
-            else:
-                L.append(c)
-        irc.reply(msg, ' '.join(L))
-
-    def reverse(self, irc, msg, args):
-        """<text>
-
-        Reverses <text>.
-        """
-        text = privmsgs.getArgs(args)
-        irc.reply(msg, text[::-1])
-
-    def _color(self, c):
-        if c == ' ':
-            return c
-        fg = str(random.randint(2, 15)).zfill(2)
-        return '\x03%s%s' % (fg, c)
-
-    def colorize(self, irc, msg, args):
-        """<text>
-
-        Returns <text> with each character randomly colorized.
-        """
-        text = privmsgs.getArgs(args)
-        L = [self._color(c) for c in text]
-        irc.reply(msg, ''.join(L))
-
-    def jeffk(self, irc, msg, args):
-        """<text>
-
-        Returns <text> as if JeffK had said it himself.
-        """
-        def randomlyPick(L):
-            return random.choice(L)
-        def quoteOrNothing(m):
-            return randomlyPick(['"', '']).join(m.groups())
-        def randomlyReplace(s, probability=0.5):
-            def f(m):
-                if random.random() < probability:
-                    return m.expand(s)
-                else:
-                    return m.group(0)
-            return f
-        def randomExclaims(m):
-            if random.random() < 0.85:
-                return ('!' * random.randrange(1, 5)) + m.group(1)
-            else:
-                return '.' + m.group(1)
-        def randomlyShuffle(m):
-            L = list(m.groups())
-            random.shuffle(L)
-            return ''.join(L)
-        def lessRandomlyShuffle(m):
-            L = list(m.groups())
-            if random.random() < .4:
-                random.shuffle(L)
-            return ''.join(L)
-        def randomlyLaugh(text, probability=.3):
-            if random.random() < probability:
-                if random.random() < .5:
-                    insult = random.choice([' fagot1', ' fagorts', ' jerks',
-                                            'fagot' ' jerk', ' dumbshoes',
-                                            ' dumbshoe'])
-                else:
-                    insult = ''
-                laugh1 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
-                laugh2 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
-                laugh1 = laugh1 * random.randrange(1, 5)
-                laugh2 = laugh2 * random.randrange(1, 5)
-                exclaim = random.choice(['!', '~', '!~', '~!!~~',
-                                         '!!~', '~~~!'])
-                exclaim += random.choice(['!', '~', '!~', '~!!~~',
-                                          '!!~', '~~~!'])
-                if random.random() < 0.5:
-                    exclaim += random.choice(['!', '~', '!~', '~!!~~',
-                                              '!!~', '~~~!'])
-                laugh = ''.join([' ', laugh1, laugh2, insult, exclaim])
-                text += laugh
-            return text
-            
-        text = privmsgs.getArgs(args)
-
-        if random.random() < .03:
-            irc.reply(msg, randomlyLaugh('NO YUO', probability=1))
-            return
-
-        alwaysInsertions = {
-            r'er\b': 'ar',
-            r'\bthe\b': 'teh',
-            r'\byou\b': 'yuo',
-            r'\bis\b': 'si',
-            r'\blike\b': 'liek',
-            r'[^e]ing\b': 'eing',
-            }
-        for (r, s) in alwaysInsertions.iteritems():
-            text = re.sub(r, s, text)
-            
-        randomInsertions = {
-            r'i': 'ui',
-            r'le\b': 'al',
-            r'i': 'io',
-            r'l': 'll',
-            r'to': 'too',
-            r'that': 'taht',
-            r'[^s]c([ei])': r'sci\1',
-            r'ed\b': r'e',
-            r'\band\b': 'adn',
-            r'\bhere\b': 'hear',
-            r'\bthey\'re': 'their',
-            r'\bthere\b': 'they\'re',
-            r'\btheir\b': 'there',
-            r'[^e]y': 'ey',
-            }
-        for (r, s) in randomInsertions.iteritems():
-            text = re.sub(r, randomlyReplace(s), text)
-            
-        text = re.sub(r'(\w)\'(\w)', quoteOrNothing, text)
-        text = re.sub(r'\.(\s+|$)', randomExclaims, text)
-        text = re.sub(r'([aeiou])([aeiou])', randomlyShuffle, text)
-        text = re.sub(r'([bcdfghkjlmnpqrstvwxyz])([bcdfghkjlmnpqrstvwxyz])',
-                      lessRandomlyShuffle, text)
-
-        text = randomlyLaugh(text)
-
-        if random.random() < .4:
-            text = text.upper()
-
-        irc.reply(msg, text)
-
-
 Class = Fun
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

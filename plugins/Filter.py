@@ -37,17 +37,9 @@ __revision__ = "$Id$"
 
 import plugins
 
-import gc
 import re
-import sys
-import md5
-import sha
 import string
 import random
-import urllib
-import inspect
-import mimetypes
-from itertools import imap
 
 import conf
 import utils

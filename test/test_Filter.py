@@ -35,8 +35,8 @@ import re
 
 import utils
 
-class FunTest(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Fun',)
+class FilterTest(ChannelPluginTestCase, PluginDocumentation):
+    plugins = ('Filter',)
     def testNoErrors(self):
         self.assertNotError('leet foobar')
         self.assertNotError('lithp meghan sweeney')
