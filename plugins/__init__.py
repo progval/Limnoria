@@ -65,12 +65,11 @@ try:
     for (name, module) in sys.modules.items():
         if name.startswith('mx'):
             mxCrap[name] = module
-            sys.modules[name] = None
+            sys.modules.pop(name)
     # Now that the mx crap is gone, we can import sqlite.
     import sqlite
     # And now we'll put it back, even though it sucks.
-    for (name, module) in mxCrap.items():
-        sys.modules[name] = module
+    sys.modules.update(mxCrap)
     # Just in case, we'll do this as well.  It doesn't seem to work fine by
     # itself, though, or else we'd just do this in the first place.
     sqlite.have_datetime = False

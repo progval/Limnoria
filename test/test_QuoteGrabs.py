@@ -38,7 +38,7 @@ except ImportError:
 
 
 if sqlite:
-    class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
+    class QuoteGrabsTestCase(ChannelPluginTestCase):
         plugins = ('QuoteGrabs',)
         def testQuoteGrab(self):
             testPrefix = 'foo!bar@baz'
@@ -91,16 +91,16 @@ if sqlite:
             self.assertNotError('quotegrabs list FOO')
             self.assertNotError('quotegrabs list fOo')
 
-        def testRandomquote(self):
+        def testRandom(self):
             testPrefix = 'foo!bar@baz'
-            self.assertError('randomquote')
+            self.assertError('random')
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
                                              prefix=testPrefix))
-            self.assertError('randomquote')  # still none in the db
+            self.assertError('random')  # still none in the db
             self.assertNotError('grab foo')
-            self.assertResponse('randomquote', '<foo> test')
-            self.assertResponse('randomquote foo', '<foo> test')
-            self.assertResponse('randomquote FOO', '<foo> test')
+            self.assertResponse('random', '<foo> test')
+            self.assertResponse('random foo', '<foo> test')
+            self.assertResponse('random FOO', '<foo> test')
 
         def testGet(self):
             testPrefix= 'foo!bar@baz'
@@ -110,6 +110,9 @@ if sqlite:
                                              prefix=testPrefix))
             self.assertNotError('grab foo')
             self.assertNotError('quotegrabs get 1')
+
+    class QuoteGrabsNonChannelTestCase(QuoteGrabsTestCase):
+        config = { 'databases.plugins.channelSpecific' : False }
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
