@@ -33,8 +33,10 @@
 Infobot compatibility, for the parts that we don't support already.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 
@@ -52,14 +54,13 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
-import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
-## try:
-##     import sqlite
-## except ImportError:
-##     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-##                            'plugin.  Download it at <http://pysqlite.sf.net/>'
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 conf.registerPlugin('Infobot')
 conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'personality',
@@ -134,12 +135,9 @@ class PickleInfobotDB(object):
             self._changes = 0
         else:
             try:
-                try:
-                    (self._is, self._are) = pickle.load(fd)
-                except cPickle.UnpicklingError, e:
-                    raise dbi.InvalidDBError, str(e)
-            finally:
-                fd.close()
+                (self._is, self._are) = pickle.load(fd)
+            except cPickle.UnpicklingError, e:
+                raise dbi.InvalidDBError, str(e)
 
     def flush(self):
         fd = utils.transactionalFile(filename, 'wb')
@@ -230,14 +228,18 @@ class SqliteInfobotDB(object):
     def __init__(self):
         self._changes = 0
         self._responses = 0
+        self.db = None
 
     def _getDb(self):
+        if self.db is not None:
+            return self.db
         try:
             if os.path.exists(filename):
-                return sqlite.connect(filename)
+                self.db = sqlite.connect(filename)
+                return self.db
             #else:
-            db = sqlite.connect(filename)
-            cursor = db.cursor()
+            self.db = sqlite.connect(filename)
+            cursor = self.db.cursor()
             cursor.execute("""CREATE TABLE isFacts (
                               key TEXT UNIQUE ON CONFLICT REPLACE,
                               value TEXT
@@ -246,18 +248,18 @@ class SqliteInfobotDB(object):
                               key TEXT UNIQUE ON CONFLICT REPLACE,
                               value TEXT
                               );""")
-            db.commit()
+            self.db.commit()
             for (k, v) in initialIs.iteritems():
                 self.setIs(k, v)
             for (k, v) in initialAre.iteritems():
                 self.setAre(k, v)
             self._changes = 0
-            return db
+            return self.db
         except sqlite.DatabaseError, e:
             raise dbi.InvalidDBError, str(e)
 
     def close(self):
-        pass
+        self.db.close()
 
     def changeIs(self, factoid, replacer):
         db = self._getDb()
@@ -367,7 +369,7 @@ class SqliteInfobotDB(object):
         return areFacts + isFacts
 
 def InfobotDB():
-    return PickleInfobotDB()
+    return SqliteInfobotDB()
 
 class Dunno(Exception):
     pass
@@ -701,52 +703,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.factoid(factoid, msg=newmsg, prepend=prepend)
         except Dunno:
             self.dunno()
-
-    def update(self, irc, msg, args):
-        """{is,are} <url>
-
-        Updates the Infobot database using the dumped database at <url>.  The
-        first argument should be "is" or "are", and determines whether the is
-        or are database is updated.
-        """
-        (isAre, url) = privmsgs.getArgs(args, required=2)
-        isAre = isAre.lower()
-        if isAre == 'is':
-            add = self.db.setIs
-        elif isAre == 'are':
-            add = self.db.setAre
-        else:
-            raise callbacks.ArgumentError
-        count = 0
-        fd = webutils.getUrlFd(url)
-        for line in fd:
-            line = line.rstrip('\r\n')
-            try:
-                (key, value) = line.split(' => ', 1)
-            except ValueError: #unpack list of wrong size
-                self.log.debug('Invalid line: %r', line)
-                continue
-            else:
-                key = key.rstrip()
-                value = value.lstrip()
-                self.log.debug('Adding factoid %r with value %r.', key, value)
-                add(key, value)
-                count += 1
-        irc.replySuccess('%s added.' % utils.nItems('factoid', count))
-    update = privmsgs.checkCapability(update, 'owner')
-
-    def dump(self, irc, msg, args):
-        """<filename>
-
-        Dumps the current Infobot database into a flatfile named <filename>.
-        <filename> is put in the data directory if no directory is specified.
-        """
-        filename = privmsgs.getArgs(args)
-        if filename == os.path.basename(filename):
-            filename = conf.supybot.directories.data.dirize(filename)
-        fd = utils.transactionalFile(filename)
-        
-        
 
 
 Class = Infobot
