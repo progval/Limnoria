@@ -105,7 +105,7 @@ class Network(callbacks.Privmsg):
         quitMsg = quitMsg or conf.supybot.plugins.Owner.quitMsg() or msg.nick
         otherIrc.queueMsg(ircmsgs.quit(quitMsg))
         otherIrc.die()
-        conf.supybot.networks().discard(network)
+        conf.supybot.networks().discard(otherIrc.network)
     disconnect = wrap(disconnect, ['owner', 'networkIrc', additional('text')])
 
     def reconnect(self, irc, msg, args, otherIrc, quitMsg):
