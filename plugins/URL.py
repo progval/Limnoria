@@ -45,6 +45,7 @@ import getopt
 import urlparse
 import itertools
 
+import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
@@ -86,97 +87,40 @@ conf.registerChannelValue(conf.supybot.plugins.URL, 'nonSnarfingRegexp',
     snarfed.  Give the empty string if you have no URLs that you'd like to
     exclude from being snarfed."""))
 
-class URLDB(object):
-    def __init__(self, channel, log):
-        self.log = log
-        self.filename = plugins.makeChannelFilename('URL.db', channel)
+class UrlRecord(dbi.Record):
+    __fields__ = [
+        'url',
+        'by',
+        'near',
+        'at',
+        ]
 
-    def _getFile(self):
-        try:
-            fd = file(self.filename)
-            return fd
-        except EnvironmentError, e:
-            self.log.warning('Couldn\'t open %s: %s',
-                             self.filename, utils.exnToString(e))
-        return None
-
-    def _formatRecord(self, url, nick):
-        return '%s %s\n' % (url, nick)
-
-    def addUrl(self, url, nick):
-        fd = file(self.filename, 'a')
-        fd.write(self._formatRecord(url, nick))
-        fd.close()
-
-    def numUrls(self):
-        fd = self._getFile()
-        if fd is None:
-            return 0
-        try:
-            return itertools.ilen(fd)
-        finally:
-            fd.close()
-
-    def getUrlsAndNicks(self, p=None):
-        L = []
-        fd = self._getFile()
-        if fd is None:
-            return []
-        try:
-            for line in fd:
-                line = line.strip()
-                try:
-                    (url, nick) = line.split()
-                except ValueError: # unpack list of wrong size.
-                    self.log.warning('Invalid line in URLDB: %r.', line)
-                    continue
-                if p(url, nick):
-                    L.append((url, nick))
-            seen = sets.Set()
+class DbiUrlDB(plugins.DbiChannelDB):
+    class DB(dbi.DB):
+        Record = UrlRecord
+        def add(self, url, msg):
+            record = self.Record(url=url, by=msg.nick,
+                                 near=msg.args[1], at=msg.receivedAt)
+            super(self.__class__, self).add(record)
+        def urls(self, p):
+            L = list(self.select(p))
             L.reverse()
-            for (i, (url, nick)) in enumerate(L):
-                if url in seen:
-                    L[i] = None
-                else:
-                    seen.add(url)
-            L = filter(None, L)
             return L
-        finally:
-            fd.close()
 
-    def getUrls(self, p):
-        return [url for (url, nick) in self.getUrlsAndNicks(p)]
-
-    def vacuum(self):
-        out = utils.transactionalFile(self.filename)
-        notAdded = 0
-        urls = self.getUrlsAndNicks(lambda *args: True)
-        seen = sets.Set()
-        for (i, (url, nick)) in enumerate(urls):
-            if url not in seen:
-                seen.add(url)
-            else:
-                urls[i] = None
-                notAdded += 1
-        urls.reverse()
-        for urlNick in urls:
-            if urlNick is not None:
-                out.write(self._formatRecord(*urlNick))
-        out.close()
-        self.log.info('Vacuumed %s, removed %s records.',
-                      self.filename, notAdded)
+URLDB = plugins.DB('URL', {'flat': DbiUrlDB})
 
 class URL(callbacks.PrivmsgCommandAndRegexp):
     priority = 100 # lower than 99, the normal priority.
     regexps = ['titleSnarfer', 'tinyurlSnarfer']
     _titleRe = re.compile('<title>(.*?)</title>', re.I | re.S)
-    def getDb(self, channel):
-        return URLDB(channel, self.log)
+    def __init__(self):
+        self.__parent = super(URL, self)
+        self.__parent.__init__()
+        self.db = URLDB()
 
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
-            db = self.getDb(channel)
             if ircmsgs.isAction(msg):
                 text = ircmsgs.unAction(msg)
             else:
@@ -187,8 +131,8 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                     self.log.debug('Skipping adding %r to db.', url)
                     continue
                 self.log.debug('Adding %r to db.', url)
-                db.addUrl(url, msg.nick)
-        callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
+                self.db.add(channel, url, msg)
+        self.__parent.doPrivmsg(irc, msg)
 
     def tinyurlSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]{13,}"
@@ -292,47 +236,49 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
         required if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        db = self.getDb(channel)
-        db.vacuum()
-        count = db.numUrls()
+        self.db.vacuum(channel)
+        count = self.db.size(channel)
         irc.reply('I have %s in my database.' % utils.nItems('URL', count))
 
     def last(self, irc, msg, args):
-        """[<channel>] [--{from,with,proto}=<value>] --{nolimit}
+        """[<channel>] [--{from,with,near,proto}=<value>] --{nolimit}
 
         Gives the last URL matching the given criteria.  --from is from whom
         the URL came; --proto is the protocol the URL used; --with is something
-        inside the URL; If --nolimit is given, returns all the URLs that are
-        found. to just the URL.  <channel> is only necessary if the message
-        isn't sent in the channel itself.
+        inside the URL; --near is something in the same message as the URL; If
+        --nolimit is given, returns all the URLs that are found. to just the
+        URL.  <channel> is only necessary if the message isn't sent in the
+        channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (optlist, rest) = getopt.getopt(args, '', ['from=', 'with=',
+        (optlist, rest) = getopt.getopt(args, '', ['from=', 'with=', 'near=',
                                                    'proto=', 'nolimit',])
         predicates = []
+        f = None
         nolimit = False
         for (option, arg) in optlist:
             if option == '--nolimit':
                 nolimit = True
             elif option == '--from':
-                def from_(url, nick, arg=arg):
-                    return ircutils.strEqual(nick, arg)
-                predicates.append(from_)
+                def f(record, arg=arg):
+                    return ircutils.strEqual(record.by, arg)
             elif option == '--with':
-                def with(url, nick, arg=arg):
-                    return arg in url
-                predicates.append(with)
+                def f(record, arg=arg):
+                    return arg in record.url
             elif option == '--proto':
-                def proto(url, nick, arg=arg):
-                    return url.startswith(arg)
-                predicates.append(proto)
-        db = self.getDb(channel)
-        def predicate(url, nick):
+                def f(record, arg=arg):
+                    return record.url.startswith(arg)
+            elif option == '--near':
+                def f(record, arg=arg):
+                    return arg in record.near
+            if f is not None:
+                predicates.append(f)
+        def predicate(record):
             for predicate in predicates:
-                if not predicate(url, nick):
+                if not predicate(record):
                     return False
             return True
-        urls = db.getUrls(predicate)
+        urls = [record.url for record in self.db.urls(channel, predicate)]
         if not urls:
             irc.reply('No URLs matched that criteria.')
         else:
