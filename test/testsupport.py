@@ -208,8 +208,8 @@ class PluginTestCase(SupyTestCase):
     # do them would be to use a proxy for the irc object and intercept .error.
     # But that would be hard, so I don't bother.  When this breaks, it'll get
     # fixed, but not until then.
-    def assertError(self, query, to=None, frm=None):
-        m = self._feedMsg(query, to=to, frm=frm)
+    def assertError(self, query, **kwargs):
+        m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
         if lastGetHelp not in m.args[1]:
@@ -217,8 +217,8 @@ class PluginTestCase(SupyTestCase):
                             '%r did not error: %s' % (query, m.args[1]))
         return m
 
-    def assertNotError(self, query, to=None, frm=None):
-        m = self._feedMsg(query, to=to, frm=frm)
+    def assertNotError(self, query, **kwargs):
+        m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
         self.failIf(m.args[1].startswith('Error:'),
@@ -227,45 +227,45 @@ class PluginTestCase(SupyTestCase):
                     '%r returned the help string.' % query)
         return m
 
-    def assertHelp(self, query, to=None, frm=None):
-        m = self._feedMsg(query, to=to, frm=frm)
+    def assertHelp(self, query, **kwargs):
+        m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
         self.failUnless(lastGetHelp in m.args[1],
                         '%s is not the help (%s)' % (m.args[1], lastGetHelp))
         return m
 
-    def assertNoResponse(self, query, timeout=None, to=None, frm=None):
-        m = self._feedMsg(query, timeout=timeout, to=to, frm=frm)
+    def assertNoResponse(self, query, timeout=0, **kwargs):
+        m = self._feedMsg(query, timeout=timeout, **kwargs)
         self.failIf(m, 'Unexpected response: %r' % m)
         return m
         
-    def assertResponse(self, query, expectedResponse, to=None, frm=None):
-        m = self._feedMsg(query, to=to, frm=frm)
+    def assertResponse(self, query, expectedResponse, **kwargs):
+        m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
         self.assertEqual(m.args[1], expectedResponse,
                          '%r != %r' % (expectedResponse, m.args[1]))
         return m
 
-    def assertRegexp(self, query, regexp, flags=re.I, to=None, frm=None):
-        m = self._feedMsg(query, to=to, frm=frm)
+    def assertRegexp(self, query, regexp, flags=re.I, **kwargs):
+        m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
         self.failUnless(re.search(regexp, m.args[1], flags),
                         '%r does not match %r' % (m.args[1], regexp))
         return m
 
-    def assertNotRegexp(self, query, regexp, flags=re.I, to=None, frm=None):
-        m = self._feedMsg(query, to=to, frm=frm)
+    def assertNotRegexp(self, query, regexp, flags=re.I, **kwargs):
+        m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
         self.failUnless(re.search(regexp, m.args[1], flags) is None,
                         '%r matched %r' % (m.args[1], regexp))
         return m
 
-    def assertAction(self, query, expectedResponse=None, to=None, frm=None):
-        m = self._feedMsg(query, to=to, frm=frm)
+    def assertAction(self, query, expectedResponse=None, **kwargs):
+        m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
         self.failUnless(ircmsgs.isAction(m))
@@ -273,8 +273,8 @@ class PluginTestCase(SupyTestCase):
             self.assertEqual(ircmsgs.unAction(m), expectedResponse)
         return m
 
-    def assertActionRegexp(self, query, regexp, flags=re.I, to=None, frm=None):
-        m = self._feedMsg(query, to=to, frm=frm)
+    def assertActionRegexp(self, query, regexp, flags=re.I, **kwargs):
+        m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
         self.failUnless(ircmsgs.isAction(m))
@@ -353,10 +353,13 @@ class ChannelPluginTestCase(PluginTestCase):
             print 'Returning: %r' % ret
         return ret
 
-    def feedMsg(self, query):
+    def feedMsg(self, query, to=None, frm=None):
         """Just feeds it a message, that's all."""
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, query,
-                                         prefix=self.prefix))
+        if to is None:
+            to = self.channel
+        if frm is None:
+            frm = self.prefix
+        self.irc.feedMsg(ircmsgs.privmsg(to, query, prefix=frm))
 
 
 class PluginDocumentation:
