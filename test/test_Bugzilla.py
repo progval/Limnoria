@@ -58,5 +58,14 @@ if network:
             self.assertNotError(
                             'http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
 
+        def testConfigBugSnarfer(self):
+            self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
+            conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
+            self.assertNoResponse(
+                            'bug 5')
+            conf.supybot.plugins.bugzilla.bugSnarfer.setValue(True)
+            self.assertNotError(
+                            'bug 5')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

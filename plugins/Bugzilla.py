@@ -93,6 +93,9 @@ conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'replyNoBugzilla',
     registry.String('I don\'t have a bugzilla %r.', """Determines the phrase
     to use when notifying the user that there is no information about that
     bugzilla site."""))
+conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'snarfTarget',
+    registry.String('', """Determines the bugzilla site to query when the
+    snarf command is triggered"""))
 
 class Bugzillae(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
@@ -115,7 +118,7 @@ def registerBugzilla(name, url='', description=''):
 class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
     """Show a link to a bug report with a brief description"""
     threaded = True
-    regexps = ['bzSnarfer']
+    regexps = ['bzSnarfer', 'bugzSnarf']
 
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
@@ -202,6 +205,46 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(utils.commaAndify(L))
             else:
                 irc.reply('I have no defined bugzillae.')
+
+    def bugzSnarf(self, irc, msg, match):
+        r"""\s*bug\s*(?:id|ids|#)?\s+(?:id|ids|#)?(?P<bug>\d+)"""
+      
+        snarfTarget = self.registryValue('snarfTarget')
+        bugid       = match.group('bug')
+        
+        name = self.shorthand[snarfTarget]
+        try:
+            (url, description) = self.db[name]
+        except KeyError:
+            s = self.registryValue('replyNoBugzilla', name)
+            irc.error(s % name)
+            return
+            
+        if not self.registryValue('bugSnarfer', name):
+            return
+
+        queryurl = '%s/xml.cgi?id=%s' % (url, bugid)
+        bold     = self.registryValue('bold', name)
+        
+        try:
+            summary = self._get_short_bug_summary(queryurl,description,bugid)
+        except BugzillaError, e:
+            irc.error(str(e))
+            return
+        except IOError, e:
+            s = '%s.  Try yourself: %s' % (e, queryurl)
+            irc.error(s)
+        
+        report = {}
+        report['id']      = bugid
+        report['url']     = str('%s/show_bug.cgi?id=%s' % (url, bugid))
+        report['title']   = str(summary['title'])
+        report['summary'] = str(self._mk_summary_string(summary, bold))
+        report['product'] = str(summary['product'])
+        
+        s = '%(product)s bug #%(id)s: %(title)s %(summary)s' % report
+        
+        irc.reply(s, prefixName=False)
 
     def bzSnarfer(self, irc, msg, match):
         r"(http://\S+)/show_bug.cgi\?id=([0-9]+)"
