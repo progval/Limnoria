@@ -321,8 +321,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         name = privmsgs.getArgs(args)
         callbacks = irc.removeCallback(name)
         if callbacks:
+            module = sys.modules[callbacks[0].__module__]
+            if hasattr(module, 'reload'):
+                x = module.reload()
             try:
                 module = loadPluginModule(name)
+                if hasattr(module, 'reload'):
+                    module.reload(x)
                 for callback in callbacks:
                     callback.die()
                     del callback

@@ -63,7 +63,14 @@ def replyWhenNotCommand(irc, msg, notCommands):
             s = '%s are not commands' % \
                 utils.commaAndify(notCommands)
         irc.reply(msg, s)
-    
+
+def reload(x=None):
+    """Called when this plugin is reloaded."""
+    global replyWhenNotCommand
+    if x is None:
+        return replyWhenNotCommand
+    else:
+        replyWhenNotCommand = x
 
 class Misc(callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
