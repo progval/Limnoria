@@ -89,6 +89,42 @@ class Channel(callbacks.Privmsg):
         else:
             irc.error(msg, 'How can I voice you?  I\'m not opped!')
     voice = privmsgs.checkChannelCapability(voice, 'voice')
+
+    def deop(self, irc, msg, args, channel):
+        """[<channel>] <nick> [<nick> ...]
+
+        If you have the #channel.op capability, this will remove operator
+        privileges from all the nicks given.
+        """
+        if irc.nick in irc.state.channels[channel].ops:
+            irc.queueMsg(ircmsgs.deops(channel, args))
+        else:
+            irc.error(msg, 'How can I deop someone?  I\'m not opped!')
+    deop = privmsgs.checkChannelCapability(deop, 'op')
+    
+    def dehalfop(self, irc, msg, args, channel):
+        """[<channel>] <nick> [<nick> ...]
+
+        If you have the #channel.op capability, this will remove half-operator
+        privileges from all the nicks given.
+        """
+        if irc.nick in irc.state.channels[channel].ops:
+            irc.queueMsg(ircmsgs.dehalfops(channel, args))
+        else:
+            irc.error(msg, 'How can I deop someone?  I\'m not opped!')
+    dehalfop = privmsgs.checkChannelCapability(dehalfop, 'op')
+    
+    def devoice(self, irc, msg, args, channel):
+        """[<channel>] <nick> [<nick> ...]
+
+        If you have the #channel.op capability, this will remove voice from all
+        the nicks given.
+        """
+        if irc.nick in irc.state.channels[channel].ops:
+            irc.queueMsg(ircmsgs.devoices(channel, args))
+        else:
+            irc.error(msg, 'How can I deop someone?  I\'m not opped!')
+    devoice = privmsgs.checkChannelCapability(devoice, 'op')
     
     def cycle(self, irc, msg, args, channel):
         """[<channel>] [<key>]

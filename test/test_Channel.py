@@ -48,6 +48,13 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertEqual(m.args, (self.channel, '-b', 'foo!bar@baz'))
         self.assertNotError(' ')
         
+    def testErrorsWithoutOps(self):
+        for s in ['op', 'deop', 'voice', 'devoice', 'halfop', 'dehalfop']:
+            self.assertError(s)
+            self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+            self.assertNotError(s)
+            self.irc.feedMsg(ircmsgs.deop(self.channel, self.nick))
+
     def testOp(self):
         self.assertError('op')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
