@@ -152,15 +152,6 @@ class Topic(callbacks.Privmsg):
         except (ValueError, IndexError):
             irc.error('That\'s not a valid topic number.', Raise=True)
 
-    def topic(self, irc, msg, args, channel):
-        """[<channel>] <topic>
-
-        Sets the topic of <channel> to <topic>.
-        """
-        topic = privmsgs.getArgs(args)
-        self._sendTopics(irc, channel, [topic])
-    topic = privmsgs.channel(topic)
-
     def add(self, irc, msg, args, channel, insert=False):
         """[<channel>] <topic>
 
@@ -299,14 +290,20 @@ class Topic(callbacks.Privmsg):
     change = privmsgs.channel(change)
 
     def set(self, irc, msg, args, channel):
-        """[<channel>] <number> <topic>
+        """[<channel>] [<number>] <topic>
 
-        Sets the topic <number> to be <text>.  <channel> is only necessary if
-        the message isn't sent in the channel itself.
+        Sets the topic <number> to be <text>.  If no <number> is given, this
+        sets the entire topic.  <channel> is only necessary if the message
+        isn't sent in the channel itself.
         """
         self._canChangeTopic(irc, channel)
-        (i, topic) = privmsgs.getArgs(args, required=2)
+        (i, topic) = privmsgs.getArgs(args, optional=1)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        try:
+            int(i) # If this isn't a number, do something else.
+        except ValueError:
+            self._sendTopics(irc, channel, [privmsgs.getArgs(args)])
+            return
         i = self._topicNumber(irc, i, topics=topics)
         topic = self._formatTopic(irc, msg, channel, topic)
         topics[i] = topic
