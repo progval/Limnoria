@@ -197,7 +197,7 @@ class FunCommands(callbacks.Privmsg):
         for c in text:
             ret.append(chr(ord(c) ^ ord(password[i])))
             i = (i + 1) % passwordlen
-        irc.reply(msg, repr(''.join(ret)))
+        irc.reply(msg, ''.join(ret))
 
     def mimetype(self, irc, msg, args):
         "<filename>"
