@@ -74,29 +74,35 @@ class Misc(callbacks.Privmsg):
             if option == '--private':
                 evenPrivate = True
         name = privmsgs.getArgs(rest, required=0, optional=1)
-        name = name.lower()
+        name = callbacks.canonicalName(name)
         if not name:
             names = [cb.name() for cb in irc.callbacks
                      if evenPrivate or (hasattr(cb, 'public') and cb.public)]
             names.sort()
             irc.reply(msg, ', '.join(names))
         else:
-            for cb in irc.callbacks:
-                cls = cb.__class__
-                if cb.name().lower() == name and \
-                       not issubclass(cls, callbacks.PrivmsgRegexp) and \
-                       issubclass(cls, callbacks.Privmsg):
-                    commands = [x for x in dir(cls)
-                                if cb.isCommand(x) and
-                                hasattr(getattr(cb, x), '__doc__') and
-                                callbacks.canonicalName(x) == x and
-                                callbacks.canonicalName(x)!=cb.name().lower()]
+            cb = irc.getCallback(name)
+            if cb is None:
+                irc.error(msg, 'No such plugin %r exists.' % name)
+            elif isinstance(cb, callbacks.PrivmsgRegexp) or \
+                 not isinstance(cb, callbacks.Privmsg):
+                irc.error(msg, 'That plugin exists, but it has no commands.')
+            else:
+                commands = []
+                for s in dir(cb):
+                    if cb.isCommand(s) and \
+                       s != name and \
+                       s == callbacks.canonicalName(s):
+                        method = getattr(cb, s)
+                        if hasattr(method, '__doc__') and method.__doc__:
+                            commands.append(s)
+                if commands:
                     commands.sort()
                     irc.reply(msg, ', '.join(commands))
-                    return
-            irc.error(msg, 'There is no plugin named %s, ' \
-                           'or that plugin has no commands.' % name)
-
+                else:
+                    irc.error(msg, 'That plugin exists, but it has no '
+                                   'commands with help.')
+                
     def apropos(self, irc, msg, args):
         """<string>
 
