@@ -68,7 +68,18 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Python')
 
 example = utils.wrapLines("""
-Add an example IRC session using this module here.
+<jemfinch> @list Python
+<supybot> jemfinch: pydoc, zen
+<jemfinch> @zen
+<supybot> jemfinch: Complex is better than complicated.
+<jemfinch> @zen
+<supybot> jemfinch: Beautiful is better than ugly.
+<jemfinch> @pydoc list.reverse
+<supybot> jemfinch: L.reverse() -- reverse *IN PLACE*
+<jemfinch> @pydoc socket.socket
+<supybot> jemfinch: socket([family[, type[, proto]]]) -> socket object. Open a socket of the given type. The family argument specifies the address family; it defaults to AF_INET. The type argument specifies whether this is a stream (SOCK_STREAM, this is the default) or datagram (SOCK_DGRAM) socket. The protocol argument defaults to 0, specifying the default protocol. Keyword arguments (4 more messages)
+<jemfinch> @pydoc list
+<supybot> jemfinch: list() -> new list list(sequence) -> new list initialized from sequence's items
 """)
 
 class Python(callbacks.Privmsg):
