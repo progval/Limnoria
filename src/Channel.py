@@ -183,9 +183,7 @@ class Channel(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         (optlist, rest) = getopt.getopt(args, '', ['exact', 'nick',
                                                    'user', 'host'])
-        print 'rest:', rest
         (bannedNick, length) = privmsgs.getArgs(rest, optional=1)
-        print 'length:', length
         # Check that they're not trying to make us kickban ourself.
         if not ircutils.isNick(bannedNick):
             self.log.warning('%r tried to kban a non nick: %r',
