@@ -68,6 +68,10 @@ class ValidNickOrEmptyString(registry.String):
         self.value = v
             
 conf.registerPlugin('Enforcer')
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'enforce',
+    registry.Boolean(True, """Determines whether the bot will enforce
+    capabilities on this channel.  Basically, if False, it 'turns off' the
+    plugin for this channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoOp',
     registry.Boolean(False, """Determines whether the bot will automatically op
     people with the <channel>,op capability when they join the channel."""))
@@ -274,13 +278,16 @@ class Enforcer(callbacks.Privmsg):
                 self._cycle(irc, channel)
 
     def __call__(self, irc, msg):
-        chanserv = self.registryValue('ChanServ', irc.network)
-        if chanserv:
-            if ircutils.isUserHostmask(msg.prefix):
-                if msg.nick != chanserv:
-                    callbacks.Privmsg.__call__(self, irc, msg)
-        else:
-            callbacks.Privmsg.__call__(self, irc, msg)
+        channel = msg.args[0]
+        if ircutils.isChannel(channel) and \
+           self.registryValue('enforce', channel):
+            chanserv = self.registryValue('ChanServ', irc.network)
+            if chanserv:
+                if ircutils.isUserHostmask(msg.prefix):
+                    if msg.nick != chanserv:
+                        callbacks.Privmsg.__call__(self, irc, msg)
+            else:
+                callbacks.Privmsg.__call__(self, irc, msg)
 
 
 Class = Enforcer
