@@ -57,9 +57,6 @@ class WeatherCommand(registry.String):
         if s not in m:
             raise registry.InvalidRegistryValue,\
                   format('Command must be one of %L', m)
-        else:
-            method = getattr(plugin.Weather, s)
-            plugin.Weather.weather.im_func.__doc__ = method.__doc__
         registry.String.setValue(self, s)
 
 Weather = conf.registerPlugin('Weather')

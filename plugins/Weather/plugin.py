@@ -62,7 +62,10 @@ class Weather(callbacks.Plugin):
         raise NoLocation, noLocationError
 
     def weather(self, irc, msg, args, location):
-        # This specifically does not have a docstring.
+        """<US zip code | US/Canada city, state | Foreign city, country>
+
+        Returns the approximate weather conditions for a given city.
+        """
         channel = None
         if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
