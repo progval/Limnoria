@@ -47,6 +47,7 @@ import sha
 import time
 import math
 import cmath
+import getopt
 import socket
 import string
 import random
@@ -620,54 +621,50 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, response)
 
     def last(self, irc, msg, args):
-        """[<channel>] <message number>
+        """[--{from,in,to,with,regexp}] <args>
 
-        Gets message number <message number> from the bot's history.
-        <message number> defaults to 1, the last message prior to this command
-        itself.  <channel> is only necessary if the message isn't sent in the
-        channel itself.
+        Returns the last message matching the given criteria.  --from requires
+        a nick from whom the message came; --in and --to require a channel the
+        message was sent to; --with requires some string that had to be in the
+        message; --regexp requires a regular expression the message must match
         """
-        channel = privmsgs.getChannel(msg, args)
-        n = privmsgs.getArgs(args, needed=0, optional=1)
-        if n == '':
-            n = 1
-        else:
-            try:
-                n = int(n)
-            except ValueError:
-                irc.error(msg, '<message number> must be an integer.')
-                return
-        n += 1 # To remove the last question asked.
-        for msg in reviter(irc.state.history):
-            if msg.command == 'PRIVMSG' and msg.args[0] == channel and n == 1:
-                irc.reply(msg, msg.args[1])
-                return
-            else:
-                n -= 1
-        if n > 1:
-            s = 'I don\'t have a history of that many messages.'
-            irc.error(msg, s)
 
-    def lastfrom(self, irc, msg, args):
-        """[<channel>] <nick>
-
-        Returns the last message in <channel> from <nick>.  <channel> is only
-        necessary if the message isn't sent in the channel itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        nick = privmsgs.getArgs(args)
+        (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
+                                                   'with=', 'regexp='])
+        undecorated = False
+        predicates = []
+        for (option, arg) in optlist:
+            option = option.strip('-')
+            if option == 'from':
+                predicates.append(lambda m: m.nick == arg)
+            elif option == 'in' or option == 'to':
+                if not ircutils.isChannel(argument):
+                    irc.error(msg, 'Argument to --%s must be a channel.' % arg)
+                    return
+                predicates.append(lambda m: m.args[0] == arg)
+            elif option == 'with':
+                predicates.append(lambda m: arg in m.args[1])
+            elif option == 'regexp':
+                try:
+                    r = utils.perlReToPythonRe(arg)
+                except ValueError:
+                    irc.error(msg, str(e))
+                    return
+                predicates.append(lambda m: r.search(m.args[1]))
+        first = True
         for m in reviter(irc.state.history):
-            if m.command == 'PRIVMSG' and \
-               m.nick == nick and \
-               m.args[0] == channel:
-                if ircmsgs.isAction(m):
-                    irc.reply(msg, '* %s %s' % (nick, ircmsgs.unAction(m)))
-                    return
+            if first:
+                first = False
+                continue
+            if m.command != 'PRIVMSG':
+                continue
+            if all(bool, [f(m) for f in predicates]):
+                if undecorated:
+                    irc.reply(msg, m.args[1])
                 else:
-                    irc.reply(msg, '<%s> %s' % (nick, m.args[1]))
-                    return
+                    irc.reply(msg, ircmsgs.prettyPrint(m))
                 return
-        irc.error(msg, 'I don\'t remember a message from that person.')
+        irc.error(msg, 'I couldn\'t find a message matching that criteria.')
 
     def levenshtein(self, irc, msg, args):
         """<string1> <string2>
