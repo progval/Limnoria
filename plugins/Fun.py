@@ -287,7 +287,7 @@ class Fun(callbacks.Privmsg):
         """<string1> <string2>
 
         Returns the levenshtein distance (also known as the "edit distance"
-        between <string1> and <string2>
+        between <string1> and <string2>)
         """
         (s1, s2) = privmsgs.getArgs(args, required=2)
         irc.reply(str(utils.distance(s1, s2)))
