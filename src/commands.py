@@ -43,6 +43,7 @@ import time
 import types
 import threading
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -67,31 +68,6 @@ def thread(f):
             t.start()
         else:
             f(self, irc, msg, args, *L, **kwargs)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-
-def private(f):
-    """Makes sure a command is given in private."""
-    def newf(self, irc, msg, args, *L, **kwargs):
-        if ircutils.isChannel(msg.args[0]):
-            irc.errorRequiresPrivacy()
-        else:
-            f(self, irc, msg, args, *L, **kwargs)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-
-def checkCapability(f, capability):
-    """Makes sure a user has a certain capability before a command will run.
-    capability can be either a string or a callable object which will be called
-    in order to produce a string for ircdb.checkCapability."""
-    def newf(self, irc, msg, args):
-        cap = capability
-        if callable(cap):
-            cap = cap()
-        if ircdb.checkCapability(msg.prefix, cap):
-            f(self, irc, msg, args)
-        else:
-            self.log.info('%s attempted %s without %s.',
-                          msg.prefix, f.func_name, cap)
-            irc.errorNoCapability(cap)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 class UrlSnarfThread(threading.Thread):
@@ -158,105 +134,141 @@ def urlSnarfer(f):
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
     return newf
 
-wrappers = ircutils.IrcDict({
+decorators = ircutils.IrcDict({
     'thread': thread,
-    'private': private,
     'urlSnarfer': urlSnarfer,
-    'checkCapability': checkCapability,
 })
 
 
 ###
-# Arg wrappers, wrappers that add arguments to the command.
+# Arg wrappers, wrappers that add arguments to the command.  They accept the
+# irc, msg, and args, of course, as well as a State object which holds the args
+# (and kwargs, though none currently take advantage of that) to be given to the
+# command being decorated, as well as the name of the command, the plugin, the
+# log, etc.
 ###
-def getInt(irc, msg, args, default=None, type='integer'):
-    s = args.pop(0)
+
+# This is just so we can centralize this, since it may change.
+def _int(s):
+    return int(float(s))
+
+def getInt(irc, msg, args, state, default=None, type='integer', p=None):
     try:
-        return int(s)
+        i = _int(args[0])
+        if p is not None:
+            if not p(i):
+                raise ValueError
+        state.args.append(_int(args[0]))
+        del args[0]
     except ValueError:
         if default is not None:
-            return default
+            state.args.append(default)
         else:
-            irc.errorInvalid(type, s, Raise=True)
+            irc.errorInvalid(type, args[0])
 
-def getId(irc, msg, args):
-    getInt(irc, msg, args, type='id')
+def getPositiveInt(irc, msg, args, state, *L):
+    getInt(irc, msg, args, state,
+           p=lambda i: i<=0, type='positive integer', *L)
 
-def getExpiry(irc, msg, args, default=None):
-    s = args.pop(0)
+def getNonNegativeInt(irc, msg, args, state, *L):
+    getInt(irc, msg, args, state,
+            p=lambda i: i<0, type='non-negative integer', *L)
+
+def getId(irc, msg, args, state):
+    getInt(irc, msg, args, state, type='id')
+
+def getExpiry(irc, msg, args, state, default=None):
+    now = int(time.time())
     try:
-        expires = int(float(s))
-        expires += int(time.time())
+        expires = _int(args[0])
+        if expires:
+            expires += now
+        state.args.append(expires)
+        del args[0]
     except ValueError:
         if default is not None:
-            return default
+            if default:
+                default += now
+            state.args.append(default)
         else:
-            irc.errorInvalid('number of seconds', s, Raise=True)
+            irc.errorInvalid('number of seconds', args[0])
+    # XXX This should be handled elsewhere; perhaps all optional args should
+    # consider their first extra arg to be a default.
+    except IndexError:
+        if default is not None:
+            if default:
+                default += now
+            state.args.append(default)
+        else:
+            raise
 
-def getBoolean(irc, msg, args, default=None):
-    s = args.pop(0).strip().lower()
-    if s in ('true', 'on', 'enable', 'enabled'):
-        return True
-    elif s in ('false', 'off', 'disable', 'disabled'):
-        return False
-    elif default is not None:
-        return default
-    else:
-        irc.error("Value must be either True or False (or On or Off).",
-                  Raise=True)
+def getBoolean(irc, msg, args, state, default=None):
+    try:
+        state.args.append(utils.toBool(args[0]))
+        del args[0]
+    except ValueError:
+        if default is not None:
+            state.args.append(default)
+        else:
+            irc.errorInvalid('boolean', args[0])
 
-def getChannelDb(irc, msg, args, **kwargs):
+def getChannelDb(irc, msg, args, state, **kwargs):
     if not conf.supybot.databases.plugins.channelSpecific():
-        return None
+        state.args.append(None)
+        state.channel = None
     else:
-        return channel(irc, msg, args, **kwargs)
+        getChannel(irc, msg, args, state, **kwargs)
 
-def validChannel(irc, msg, args):
-    s = args.pop(0)
-    if ircutils.isChannel(s):
-        return s
+def getHaveOp(irc, msg, args, state, action='do that'):
+    if state.channel not in irc.state.channels:
+        irc.error('I\'m not even in %s.' % state.channel, Raise=True)
+    if irc.nick not in irc.state.channels[state.channel].ops:
+        irc.error('I need to be opped to %s.' % action, Raise=True)
+
+def validChannel(irc, msg, args, state):
+    if ircutils.isChannel(args[0]):
+        # XXX Check maxlength in irc.state.supported.
+        state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('channel', s, Raise=True)
+        irc.errorInvalid('channel', args[0])
 
-def getHostmask(irc, msg, args):
+def getHostmask(irc, msg, args, state):
     if ircutils.isUserHostmask(args[0]):
-        return args.pop(0)
+        state.args.append(args.pop(0))
     else:
         try:
-            s = args.pop(0)
-            return irc.state.nickToHostmask(s)
+            hostmask = irc.state.nickToHostmask(args[0])
+            state.args.append(hostmask)
+            del args[0]
         except KeyError:
-            irc.errorInvalid('nick or hostmask', s, Raise=True)
+            irc.errorInvalid('nick or hostmask', args[0])
 
-def getBanmask(irc, msg, args):
-    if ircutils.isUserHostmask(args[0]):
-        return args.pop(0)
-    else:
-        try:
-            s = args.pop(0)
-            return ircutils.banmask(irc.state.nickToHostmask(s))
-        except KeyError:
-            irc.errorInvalid('nick or hostmask', s, Raise=True)
+def getBanmask(irc, msg, args, state):
+    getHostmask(irc, msg, args, state)
+    # XXX Channel-specific stuff.
+    state.args[-1] = ircutils.banmask(state.args[-1])
 
-def getUser(irc, msg, args):
+def getUser(irc, msg, args, state):
     try:
-        return ircdb.users.getUser(msg.prefix)
+        state.args.append(ircdb.users.getUser(msg.prefix))
     except KeyError:
         irc.errorNotRegistered(Raise=True)
 
-def getOtherUser(irc, msg, args):
-    s = args.pop(0)
+def getOtherUser(irc, msg, args, state):
     try:
-        return ircdb.users.getUser(s)
+        state.args.append(ircdb.users.getUser(args[0]))
+        del args[0]
     except KeyError:
         try:
-            hostmask = getHostmask(irc, msg, [s])
-            return ircdb.users.getUser(hostmask)
+            getHostmask(irc, msg, args, state)
+            hostmask = state.args.pop()
+            state.args.append(ircdb.users.getUser(hostmask))
         except (KeyError, IndexError, callbacks.Error):
             irc.errorNoUser(Raise=True)
 
 def _getRe(f):
-    def get(irc, msg, args):
+    def get(irc, msg, args, state):
+        original = args[:]
         s = args.pop(0)
         def isRe(s):
             try:
@@ -264,170 +276,233 @@ def _getRe(f):
                 return True
             except ValueError:
                 return False
-        while not isRe(s):
-            s += ' ' + args.pop(0)
-        return f(s)
+        try:
+            while not isRe(s):
+                s += ' ' + args.pop(0)
+            state.args.append(f(s))
+        except IndexError:
+            args[:] = original
+            raise
     return get
 
 getMatcher = _getRe(utils.perlReToPythonRe)
 getReplacer = _getRe(utils.perlReToReplacer)
 
-def getNick(irc, msg, args):
-    s = args.pop(0)
-    if ircutils.isNick(s):
+def getNick(irc, msg, args, state):
+    if ircutils.isNick(args[0]):
         if 'nicklen' in irc.state.supported:
-            if len(s) > irc.state.supported['nicklen']:
+            if len(args[0]) > irc.state.supported['nicklen']:
                 irc.errorInvalid('nick', s,
-                                 'That nick is too long for this server.',
-                                 Raise=True)
-        return s
+                                 'That nick is too long for this server.')
+        state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('nick', s, Raise=True)
+        irc.errorInvalid('nick', s)
 
-def getChannel(irc, msg, args, cap=None):
-    if ircutils.isChannel(args[0]):
+def getChannel(irc, msg, args, state):
+    if args and ircutils.isChannel(args[0]):
         channel = args.pop(0)
     elif ircutils.isChannel(msg.args[0]):
         channel = msg.args[0]
     else:
+        state.log.debug('Raising ArgumentError because there is no channel.')
         raise callbacks.ArgumentError
-    if cap is not None:
-        if callable(cap):
-            cap = cap()
-        cap = ircdb.makeChannelCapability(channel, cap)
-        if not ircdb.checkCapability(msg.prefix, cap):
-            irc.errorNoCapability(cap, Raise=True)
-    return channel
+    state.channel = channel
+    state.args.append(channel)
 
-def getLowered(irc, msg, args):
-    return ircutils.toLower(args.pop(0))
+def checkChannelCapability(irc, msg, args, state, cap):
+    assert state.channel, \
+           'You must use a channel arg before you use checkChannelCapability.'
+    cap = ircdb.canonicalCapability(cap)
+    cap = ircdb.makeChannelCapability(state.channel, cap)
+    if not ircdb.checkCapability(msg.prefix, cap):
+        irc.errorNoCapability(cap, Raise=True)
+            
+def getLowered(irc, msg, args, state):
+    state.args.append(ircutils.toLower(args.pop(0)))
 
-def getSomething(irc, msg, args):
-    s = args.pop(0)
-    if not s:
-        # XXX Better reply?  How?
-        irc.error('You must not give the empty string as an argument.',
-                  Raise=True)
-    return s
+def getSomething(irc, msg, args, state, errorMsg=None, p=None):
+    if p is None:
+        p = lambda _: True
+    if not args[0] or not p(args[0]):
+        if errorMsg is None:
+            errorMsg = 'You must not give the empty string as an argument.'
+        irc.error(errorMsg, Raise=True)
+    else:
+        state.args.append(args.pop(0))
 
-def getPlugin(irc, msg, args, requirePresent=False):
-    s = args.pop(0)
-    cb = irc.getCallback(s)
+def getSomethingNoSpaces(irc, msg, args, state, *L):
+    def p(s):
+        return len(s.split(None, 1)) == 1
+    getSomething(irc, msg, args, state, p=p, *L)
+
+def getPlugin(irc, msg, args, state, requirePresent=False):
+    cb = irc.getCallback(args[0])
     if requirePresent and cb is None:
-        irc.errorInvalid('plugin', s, Raise=True)
-    return cb
+        irc.errorInvalid('plugin', s)
+    state.args.append(cb)
+    del args[0]
 
-argWrappers = ircutils.IrcDict({
+def private(irc, msg, args, state):
+    if ircutils.isChannel(msg.args[0]):
+        irc.errorRequiresPrivacy(Raise=True)
+
+def checkCapability(irc, msg, args, state, cap):
+    cap = ircdb.canonicalCapability(cap)
+    if not ircdb.checkCapability(msg.prefix, cap):
+        state.log.warning('%s tried %s without %s.',
+                          msg.prefix, state.name, cap)
+        irc.errorNoCapability(cap, Raise=True)
+    
+def anything(irc, msg, args, state):
+    state.args.append(args.pop(0))
+    
+wrappers = ircutils.IrcDict({
     'id': getId,
     'int': getInt,
+    'positiveInt': getPositiveInt,
+    'nonNegativeInt': getNonNegativeInt,
+    'haveOp': getHaveOp,
     'expiry': getExpiry,
     'nick': getNick,
     'channel': getChannel,
     'plugin': getPlugin,
     'boolean': getBoolean,
     'lowered': getLowered,
+    'anything': anything,
     'something': getSomething,
+    'somethingWithoutSpaces': getSomethingNoSpaces,
     'channelDb': getChannelDb,
     'hostmask': getHostmask,
     'banmask': getBanmask,
     'user': getUser,
+    'private': private,
     'otherUser': getOtherUser,
     'regexpMatcher': getMatcher,
     'validChannel': validChannel,
     'regexpReplacer': getReplacer,
+    'checkCapability': checkCapability,
+    'checkChannelCapability': checkChannelCapability,
 })
 
-def args(irc,msg,args, required=[], optional=[], getopts=None, noExtra=False):
-    starArgs = []
-    req = required[:]
-    opt = optional[:]
+class State(object):
+    def __init__(self, name=None, logger=None):
+        if logger is None:
+            logger = log
+        self.args = []
+        self.kwargs = {}
+        self.name = name
+        self.log = logger
+        self.getopts = []
+        self.channel = None
+            
+def args(irc,msg,args, types=[], state=None,
+         getopts=None, noExtra=False, requireExtra=False, combineRest=True):
+    orig = args[:]
+    if state is None:
+        state = State(name='unknown', logger=log)
+    if requireExtra:
+        combineRest = False # Implied by requireExtra.
+    types = types[:] # We're going to destroy this.
     if getopts is not None:
         getoptL = []
         for (key, value) in getopts.iteritems():
             if value != '': # value can be None, remember.
                 key += '='
             getoptL.append(key)
-    def getArgWrapper(x):
-        if isinstance(x, tuple):
-            assert x
-            name = x[0]
-            args = x[1:]
+    def callWrapper(spec):
+        if isinstance(spec, tuple):
+            assert spec, 'tuple specification cannot be empty.'
+            name = spec[0]
+            specArgs = spec[1:]
         else:
-            assert isinstance(x, basestring) or x is None
-            name = x
-            args = ()
-        if name is not None:
-            return argWrappers[name], args
-        else:
-            return lambda irc, msg, args: args.pop(0), args
-    def getConversion(name):
-        (converter, convertArgs) = getArgWrapper(name)
-        v = converter(irc, msg, args, *convertArgs)
-        return v
-    def callConverter(name):
-        v = getConversion(name)
-        starArgs.append(v)
+            assert isinstance(spec, basestring) or spec is None
+            name = spec
+            specArgs = ()
+        if name is None:
+            name = 'anything'
+        enforce = True
+        optional = False
+        if name.startswith('?'):
+            optional = True
+            name = name[1:]
+        elif name.endswith('?'):
+            optional = True
+            enforce = False
+            name = name[:-1]
+        wrapper = wrappers[name]
+        try:
+            wrapper(irc, msg, args, state, *specArgs)
+        except (callbacks.Error, ValueError, callbacks.ArgumentError), e:
+            state.log.debug('%r when calling wrapper.', utils.exnToString(e))
+            if not enforce:
+                state.args.append('')
+            else:
+                state.log.debug('Re-raising %s because of enforce.', e)
+                raise
+        except IndexError, e:
+            state.log.debug('%r when calling wrapper.', utils.exnToString(e))
+            if optional:
+                state.args.append('')
+            else:
+                state.log.debug('Raising ArgumentError because of '
+                                'non-optional args.')
+                raise callbacks.ArgumentError
 
     # First, we getopt stuff.
     if getopts is not None:
-        L = []
         (optlist, args) = getopt.getopt(args, '', getoptL)
         for (opt, arg) in optlist:
             opt = opt[2:] # Strip --
             assert opt in getopts
             if arg is not None:
                 assert getopts[opt] != ''
-                L.append((opt, getConversion(getopts[opt])))
+                state.getopts.append((opt, callWrapper(getopts[opt])))
             else:
                 assert getopts[opt] == ''
-                L.append((opt, True))
-        starArgs.append(L)
+                state.getopts.append((opt, True))
 
-    # Second, we get out everything but the last argument.
-    try:
-        while len(req) + len(opt) > 1:
-            if req:
-                callConverter(req.pop(0))
-            else:
-                assert opt
-                callConverter(opt.pop(0))
-        # Third, if there is a remaining required or optional argument
-        # (there's a possibility that there were no required or optional
-        # arguments) then we join the remaining args and work convert that.
-        if req or opt:
+    # Second, we get out everything but the last argument (or, if combineRest
+    # is False, we'll clear out all the types).
+    while len(types) > 1 or (types and not combineRest):
+        callWrapper(types.pop(0))
+    # Third, if there is a remaining required or optional argument
+    # (there's a possibility that there were no required or optional
+    # arguments) then we join the remaining args and work convert that.
+    if types:
+        assert len(types) == 1
+        if args:
             rest = ' '.join(args)
             args = [rest]
-            if required:
-                converterName = req.pop(0)
-            else:
-                converterName = opt.pop(0)
-            callConverter(converterName)
-    except IndexError:
-        if req:
-            raise callbacks.ArgumentError
-        while opt:
-            del opt[-1]
-            starArgs.append('')
+        callWrapper(types.pop(0))
     if noExtra and args:
+        log.debug('noExtra and args: %r (originally %r)', args, orig)
         raise callbacks.ArgumentError
-    return starArgs
+    if requireExtra and not args:
+        log.debug('requireExtra and not args: %r (originally %r)', args, orig)
+    log.debug('args: %r' % args)
+    log.debug('State.args: %r' % state.args)
+    log.debug('State.getopts: %r' % state.getopts)
+    return state
 
 # These are used below, but we need to rename them so their names aren't
 # shadowed by our locals.
 _args = args
-_wrappers = wrappers
-def wrap(f, required=[], optional=[],
-         wrappers=None, getopts=None, noExtra=False):
+_decorators = decorators
+def wrap(f, *argsArgs, **argsKwargs):
     def newf(self, irc, msg, args, **kwargs):
-        starArgs = _args(irc, msg, args,
-                         getopts=getopts, noExtra=noExtra,
-                         required=required, optional=optional)
-        f(self, irc, msg, args, *starArgs, **kwargs)
+        state = State('%s.%s' % (self.name(), f.func_name), self.log)
+        state.cb = self # This should probably be in State.__init__.
+        _args(irc,msg,args, state=state, *argsArgs, **argsKwargs)
+        if state.getopts:
+            f(self, irc, msg, args, state.getopts, *state.args, **state.kwargs)
+        else:
+            f(self, irc, msg, args, *state.args, **state.kwargs)
 
-    if wrappers is not None:
-        wrappers = map(_wrappers.__getitem__, wrappers)
-        for wrapper in wrappers:
-            newf = wrapper(newf)
+    decorators = argsKwargs.pop('decorators', None)
+    if decorators is not None:
+        decorators = map(_decorators.__getitem__, decorators)
+        for decorator in decorators:
+            newf = decorator(newf)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 

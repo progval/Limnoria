@@ -181,7 +181,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('I\'m not currently in any channels.')
-    channels = commands.wrap(channels, wrappers=['private'], noExtra=True)
+    channels = commands.wrap(channels, ['private'], noExtra=True)
 
     def do484(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
@@ -231,7 +231,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             self.pendingNickChanges[irc.getRealIrc()] = irc
         else:
             irc.reply(irc.nick)
-    nick = commands.wrap(nick, optional=['nick'])
+    nick = commands.wrap(nick, ['?nick'])
 
     def part(self, irc, msg, args):
         """<channel> [<channel> ...] [<reason>]
@@ -342,7 +342,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             expires += time.time()
         ircdb.ignores.add(hostmask, expires)
         irc.replySuccess()
-    ignore = commands.wrap(ignore, ['hostmask'], [('int', 0)])
+    ignore = commands.wrap(ignore, ['hostmask', ('?int', 0)])
 
     def unignore(self, irc, msg, args, hostmask):
         """<hostmask|nick>
