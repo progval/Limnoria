@@ -33,6 +33,7 @@ from baseplugin import *
 
 import re
 import time
+import urllib
 import urllib2
 import threading
 import xml.dom.minidom
@@ -107,7 +108,7 @@ class Http(callbacks.Privmsg):
 
     def foldoc(self, irc, msg, args):
         "<something to lookup on foldoc>"
-        search = '+'.join(args)
+        search = '+'.join([urllib.quote(arg) for arg in args])
         url = 'http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=%s' % search
         try:
             fd = urllib2.urlopen(url)
