@@ -1,5 +1,7 @@
-	* Added Channel.mode, to set modes in the channel, and
-	Channel.limit, to set the channel limit.
+	* Added Channel.mode, to set modes in the channel, Channel.limit,
+	to set the channel limit, Channel.moderate and
+	Channel.unmoderate, to set +m and -m, respectively, and
+	Channel.key to set or unset the channel keyword.
 	
 	* Added a new plugin, Format, which offers several commands for
 	formatting strings on IRC.  Moved several commands from to it

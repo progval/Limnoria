@@ -59,6 +59,13 @@ conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',
     rejoin a channel whenever it's kicked from the channel."""))
 
 class Channel(callbacks.Privmsg):
+    def haveOps(self, irc, channel, what):
+        if irc.nick in irc.state.channels[channel].ops:
+            return True
+        else:
+            irc.error('How can I %s?  I\'m not opped in %s.' % (what, channel))
+            return False
+
     def doKick(self, irc, msg):
         channel = msg.args[0]
         if msg.args[1] == irc.nick:
@@ -74,7 +81,8 @@ class Channel(callbacks.Privmsg):
         """
         if not args:
             raise callbacks.ArgumentError
-        irc.queueMsg(ircmsgs.mode(channel, args))
+        if self.haveOps(irc, channel, 'change the mode'):
+            irc.queueMsg(ircmsgs.mode(channel, args))
     mode = privmsgs.checkChannelCapability(mode, 'op')
 
     def limit(self, irc, msg, args, channel):
@@ -93,10 +101,50 @@ class Channel(callbacks.Privmsg):
             irc.error('%r is not a positive integer.' % limit)
             return
         if limit:
-            irc.queueMsg(ircmsgs.mode(channel, ['+l', limit]))
+            if self.haveOps(irc, channel, 'set the limit'):
+                irc.queueMsg(ircmsgs.mode(channel, ['+l', limit]))
         else:
-            irc.queueMsg(ircmsgs.mode(channel, ['-l']))
+            if self.haveOps(irc, channel, 'unset the limit'):
+                irc.queueMsg(ircmsgs.mode(channel, ['-l']))
     limit = privmsgs.checkChannelCapability(limit, 'op')
+
+    def moderate(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Sets +m on <channel>, making it so only ops and voiced users can
+        send messages to the channel.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
+        """
+        if self.haveOps(irc, channel, 'moderate the channel'):
+            irc.queueMsg(ircmsgs.mode(channel, ['+m']))
+    moderate = privmsgs.checkChannelCapability(moderate, 'op')
+                        
+    def unmoderate(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Sets -m on <channel>, making it so everyone can
+        send messages to the channel.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
+        """
+        if self.haveOps(irc, channel, 'unmoderate the channel'):
+            irc.queueMsg(ircmsgs.mode(channel, ['-m']))
+    unmoderate = privmsgs.checkChannelCapability(unmoderate, 'op')
+
+    def key(self, irc, msg, args, channel):
+        """[<channel>] [<key>]
+
+        Sets the keyword in <channel> to <key>.  If <key> is not given, removes
+        the keyword requirement to join <channel>.  <channel> is only necessary
+        if the message isn't sent in the channel itself.
+        """
+        key = privmsgs.getArgs(args, required=0, optional=1)
+        if key:
+            if self.haveOps(irc, channel, 'set the keyword'):
+                irc.queueMsg(ircmsgs.mode(channel, ['+k', key]))
+        else:
+            if self.haveOps(irc, channel, 'unset the keyword'):
+                irc.queueMsg(ircmsgs.mode(channel, ['-k']))
+    key = privmsgs.checkChannelCapability(key, 'op')
                         
     def op(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
@@ -108,10 +156,8 @@ class Channel(callbacks.Privmsg):
         """
         if not args:
             args = [msg.nick]
-        if irc.nick in irc.state.channels[channel].ops:
+        if self.haveOps(irc, channel, 'op you'):
             irc.queueMsg(ircmsgs.ops(channel, args))
-        else:
-            irc.error('How can I op you?  I\'m not opped!')
     op = privmsgs.checkChannelCapability(op, 'op')
 
     def halfop(self, irc, msg, args, channel):
@@ -124,10 +170,8 @@ class Channel(callbacks.Privmsg):
         """
         if not args:
             args = [msg.nick]
-        if irc.nick in irc.state.channels[channel].ops:
+        if self.haveOps(irc, channel, 'halfop you'):
             irc.queueMsg(ircmsgs.halfops(channel, args))
-        else:
-            irc.error('How can I halfop you?  I\'m not opped!')
     halfop = privmsgs.checkChannelCapability(halfop, 'halfop')
 
     def voice(self, irc, msg, args, channel):
@@ -140,10 +184,8 @@ class Channel(callbacks.Privmsg):
         """
         if not args:
             args = [msg.nick]
-        if irc.nick in irc.state.channels[channel].ops:
+        if self.haveOps(irc, channel, 'voice you'):
             irc.queueMsg(ircmsgs.voices(channel, args))
-        else:
-            irc.error('How can I voice you?  I\'m not opped!')
     voice = privmsgs.checkChannelCapability(voice, 'voice')
 
     def deop(self, irc, msg, args, channel):
@@ -159,10 +201,8 @@ class Channel(callbacks.Privmsg):
             irc.error('I cowardly refuse to deop myself.  If you really want '
                       'me deopped, tell me to op you and then deop me '
                       'yourself.')
-        elif irc.nick in irc.state.channels[channel].ops:
+        elif self.haveOps(irc, channel, 'deop someone'):
             irc.queueMsg(ircmsgs.deops(channel, args))
-        else:
-            irc.error('How can I deop someone?  I\'m not opped!')
     deop = privmsgs.checkChannelCapability(deop, 'op')
 
     def dehalfop(self, irc, msg, args, channel):
@@ -178,10 +218,8 @@ class Channel(callbacks.Privmsg):
             irc.error('I cowardly refuse to dehalfop myself.  If you really '
                       'want me dehalfopped, tell me to op you and then '
                       'dehalfop me yourself.')
-        elif irc.nick in irc.state.channels[channel].ops:
+        elif self.haveOps(irc, channel, 'dehalfop someone'):
             irc.queueMsg(ircmsgs.dehalfops(channel, args))
-        else:
-            irc.error('How can I dehalfop someone?  I\'m not opped!')
     dehalfop = privmsgs.checkChannelCapability(dehalfop, 'op')
 
     def devoice(self, irc, msg, args, channel):
@@ -197,10 +235,8 @@ class Channel(callbacks.Privmsg):
             irc.error('I cowardly refuse to devoice myself.  If you really '
                       'want me devoiced, tell me to op you and then devoice '
                       'me yourself.')
-        elif irc.nick in irc.state.channels[channel].ops:
+        elif self.haveOps(irc, channel, 'devoice someone'):
             irc.queueMsg(ircmsgs.devoices(channel, args))
-        else:
-            irc.error('How can I devoice someone?  I\'m not opped!')
     devoice = privmsgs.checkChannelCapability(devoice, 'op')
 
     def cycle(self, irc, msg, args, channel):
@@ -226,13 +262,11 @@ class Channel(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        if irc.nick in irc.state.channels[channel].ops:
+        if self.haveOps(irc, channel, 'kick someone'):
             (nick, reason) = privmsgs.getArgs(args, optional=1)
             if not reason:
                 reason = msg.nick
             irc.queueMsg(ircmsgs.kick(channel, nick, reason))
-        else:
-            irc.error('How can I kick someone?  I\'m not opped!')
     kick = privmsgs.checkChannelCapability(kick, 'op')
 
     def kban(self, irc, msg, args):
@@ -283,9 +317,9 @@ class Channel(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'op')
         if optlist:
             (nick, user, host) = ircutils.splitHostmask(bannedHostmask)
-            self.log.warning('*** nick: %s' % nick)
-            self.log.warning('*** user: %s' % user)
-            self.log.warning('*** host: %s' % host)
+            self.log.debug('*** nick: %s' % nick)
+            self.log.debug('*** user: %s' % user)
+            self.log.debug('*** host: %s' % host)
             bnick = '*'
             buser = '*'
             bhost = '*'
@@ -310,10 +344,6 @@ class Channel(callbacks.Privmsg):
                 return
             else:
                 banmask = bannedHostmask
-        # Check that we have ops.
-        if irc.nick not in irc.state.channels[channel].ops:
-            irc.error('How can I kick or ban someone?  I\'m not opped.')
-            return
         # Now, let's actually get to it.  Check to make sure they have
         # #channel,op and the bannee doesn't have #channel,op; or that the
         # bannee and the banner are both the same person.
@@ -327,14 +357,15 @@ class Channel(callbacks.Privmsg):
                     irc.queueMsg(ircmsgs.unban(channel, banmask))
                 schedule.addEvent(f, time.time() + length)
         if bannedNick == msg.nick:
-            doBan()
+            if self.haveOps(irc, channel, 'kick or ban someone'):
+                doBan()
         elif ircdb.checkCapability(msg.prefix, capability):
             if ircdb.checkCapability(bannedHostmask, capability):
                 self.log.warning('%r tried to ban %r, but both have %s',
                                  msg.prefix, bannedHostmask, capability)
                 irc.error('%s has %s too, you can\'t ban him/her/it.' %
                           (bannedNick, capability))
-            else:
+            elif self.haveOps(irc, channel, 'kick or ban someone'):
                 doBan()
         else:
             self.log.warning('%r attempted kban without %s',
@@ -350,10 +381,8 @@ class Channel(callbacks.Privmsg):
         in the channel itself.
         """
         hostmask = privmsgs.getArgs(args)
-        if irc.nick in irc.state.channels[channel].ops:
+        if self.haveOps(irc, channel, 'unban someone'):
             irc.queueMsg(ircmsgs.unban(channel, hostmask))
-        else:
-            irc.error('How can I unban someone?  I\'m not opped.')
     unban = privmsgs.checkChannelCapability(unban, 'op')
 
     def invite(self, irc, msg, args, channel):
@@ -364,10 +393,8 @@ class Channel(callbacks.Privmsg):
         sent in the channel itself.
         """
         nick = privmsgs.getArgs(args)
-        if irc.nick in irc.state.channels[channel].ops:
+        if self.haveOps(irc, channel, 'invite someone'):
             irc.queueMsg(ircmsgs.invite(nick, channel))
-        else:
-            irc.error('How can I invite someone?  I\'m not opped.')
     invite = privmsgs.checkChannelCapability(invite, 'op')
 
     def lobotomize(self, irc, msg, args, channel):
