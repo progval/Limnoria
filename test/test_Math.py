@@ -49,6 +49,17 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('rpn 1 dup', 'Stack: [1, 1]')
         self.assertResponse('rpn 2 3 4 + -', str(2-7))
 
+    def testConvert(self):
+        self.assertResponse('convert 1 m to cm', '100.0 [cm]')
+        self.assertResponse('convert 1 M to cm', '100.0 [cm]')
+        self.assertResponse('convert 1 m to CM', '100.0 [cm]')
+        self.assertResponse('convert 1 m to cM', '100.0 [cm]')
+        self.assertError('convert 1 m to kpa')
+        self.assertNotRegexp('convert 1 m to kpa', 'UNUM_ERROR')
+
+    def testUnits(self):
+        self.assertNotError('units')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

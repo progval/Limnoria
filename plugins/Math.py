@@ -41,6 +41,8 @@ import math
 import cmath
 from itertools import imap
 
+import unum.units
+
 import utils
 import privmsgs
 import callbacks
@@ -189,8 +191,51 @@ class Math(callbacks.Privmsg):
             s = ', '.join(imap(self._complexToString, imap(complex, stack)))
             irc.reply(msg, 'Stack: [%s]' % s)
 
+    _convertEnv = {'__builtins__': new.module('__builtins__')}
+    for (k, v) in unum.units.__dict__.iteritems():
+        if isinstance(v, unum.Unum):
+            _convertEnv[k.lower()] = v
+    def convert(self, irc, msg, args):
+        """<number> <units> to <other units>
 
+        Converts the first number of <units> to the <other units>.  Valid units
+        expressions include the standard Python math operators applied to valid
+        units.
+        """
+        (n, unit1, to, unit2) = privmsgs.getArgs(args, needed=4)
+        if to != 'to':
+            raise callbacks.ArgumentError
+        try:
+            n = float(n)
+        except ValueError:
+            irc.error(msg, '%s is not a valid number.' % n)
+            return
+        try:
+            u1 = eval(unit1.lower(), self._convertEnv, self._convertEnv)
+        except:
+            irc.error(msg, '%s is not a valid units expression.' % units1)
+            return
+        try:
+            u2 = eval(unit2.lower(), self._convertEnv, self._convertEnv)
+        except:
+            irc.error(msg, '%s is not a valid units expression.' % units2)
+            return
+        try:
+            irc.reply(msg, str((n*u1).as(u2)))
+        except Exception, e:
+            irc.error(msg, str(e))
 
+    def units(self, irc, msg, args):
+        """takes no arguments
+
+        Returns all the valid units.
+        """
+        L = self._convertEnv.keys()
+        L.remove('__builtins__')
+        L.sort()
+        irc.reply(msg, utils.commaAndify(L))
+        
+        
 Class = Math
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
