@@ -50,14 +50,14 @@ if sqlite is not None:
 
         def testLart(self):
             self.assertNotError('add lart jabs $who')
-            self.assertRegexp('lart', '^lart \[<id>\]')
+            self.assertHelp('lart')
             self.assertResponse('lart jemfinch for being dumb',
                 '\x01ACTION jabs jemfinch for being dumb (#1)\x01')
             self.assertResponse('lart jemfinch',
                 '\x01ACTION jabs jemfinch (#1)\x01')
             self.assertRegexp('num lart', 'currently 1 lart')
             self.assertNotError('add lart shoots $who')
-            self.assertRegexp('lart 1', '^lart \[<id>\]')
+            self.assertHelp('lart 1')
             self.assertResponse('lart 1 jemfinch',
                 '\x01ACTION jabs jemfinch (#1)\x01')
             self.assertResponse('lart 2 jemfinch for being dumb',
@@ -95,14 +95,14 @@ if sqlite is not None:
 
         def testPraise(self):
             self.assertNotError('add praise pets $who')
-            self.assertRegexp('praise', '^praise \[<id>\]')
+            self.assertHelp('praise')
             self.assertResponse('praise jemfinch for being him',
                 '\x01ACTION pets jemfinch for being him (#1)\x01')
             self.assertResponse('praise jemfinch',
                 '\x01ACTION pets jemfinch (#1)\x01')
             self.assertRegexp('num praise', 'currently 1')
             self.assertNotError('add praise gives $who a cookie')
-            self.assertRegexp('praise 1', '^praise \[<id>\]')
+            self.assertHelp('praise 1')
             self.assertResponse('praise 1 jemfinch',
                 '\x01ACTION pets jemfinch (#1)\x01')
             self.assertResponse('praise 2 jemfinch for being him',
