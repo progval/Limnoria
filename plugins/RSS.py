@@ -64,6 +64,12 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('rss add %s %s' % (name, url))
         #onStart.append('alias lock %s' % name)
 
+def SpaceOnRightStrType(s):
+    s = configurable.StrType(s)
+    if s.rstrip() == s:
+        s += ' '
+    return s
+
 class RSS(callbacks.Privmsg, configurable.Mixin):
     threaded = True
     configurables = configurable.Dictionary(
@@ -77,7 +83,8 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
          ('headline-separator', configurable.SpaceSurroundedStrType, ' :: ',
           """Determines what string is used to seperate headlines in
           feeds."""),
-         ('announce-news-prefix', configurable.StrType, 'New news item - ',
+         ('announce-news-prefix', configurable.SpaceOnRightStrType,
+          'New news from ',
           """Sets the prefix to be added (if any) to the new news item
           announcements made to the channel."""),]
     )
@@ -118,10 +125,11 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
                     except ValueError:
                         pass
                 if newheadlines:
+                    pre = prefix + name
                     if bold:
-                        name = ircutils.bold(name)
+                        pre = ircutils.bold(pre)
                     headlines = sep.join(newheadlines)
-                    s = '%s%s: %s' % (prefix, name, headlines)
+                    s = '%s: %s' % (pre, headlines)
                     irc.queueMsg(ircmsgs.privmsg(channel, s))
                 
     def getFeed(self, url):
