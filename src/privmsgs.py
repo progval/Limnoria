@@ -31,6 +31,7 @@
 
 from fix import *
 
+import gc
 import os
 import sys
 import imp
@@ -291,6 +292,8 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         if callbacks:
             for callback in callbacks:
                 callback.die()
+                del callback
+            gc.collect()
             try:
                 moduleInfo = imp.find_module(name)
                 module = imp.load_module(name, *moduleInfo)
@@ -316,6 +319,8 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         if callbacks:
             for callback in callbacks:
                 callback.die()
+                del callback
+            gc.collect()
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There was no callback %s' % name)
