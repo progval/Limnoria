@@ -643,4 +643,9 @@ def password(password, prefix=''):
         assert password, 'password must not be empty.'
     return IrcMsg(prefix=prefix, command='PASS', args=(password,))
 
+def ison(nick, prefix=''):
+    if conf.supybot.protocols.irc.strictRfc():
+        assert isNick(nick), repr(nick)
+    return IrcMsg(prefix=prefix, command='ISON', args=(nick,))
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
