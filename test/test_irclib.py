@@ -51,6 +51,38 @@ class IrcMsgQueueTestCase(unittest.TestCase):
     join = ircmsgs.join('#foo')
     who = ircmsgs.who('#foo')
 
+    def testInit(self):
+        q = irclib.IrcMsgQueue([self.msg, self.topic, self.ping])
+        self.assertEqual(len(q), 3)
+        
+    def testLen(self):
+        q = irclib.IrcMsgQueue()
+        q.enqueue(self.msg)
+        self.assertEqual(len(q), 1)
+        q.enqueue(self.mode)
+        self.assertEqual(len(q), 2)
+        q.enqueue(self.kick)
+        self.assertEqual(len(q), 3)
+        q.enqueue(self.topic)
+        self.assertEqual(len(q), 4)
+        q.dequeue()
+        self.assertEqual(len(q), 3)
+        q.dequeue()
+        self.assertEqual(len(q), 2)
+        q.dequeue()
+        self.assertEqual(len(q), 1)
+        q.dequeue()
+        self.assertEqual(len(q), 0)
+
+    def testRepr(self):
+        q = irclib.IrcMsgQueue()
+        self.assertEqual(repr(q), 'IrcMsgQueue([])')
+        q.enqueue(self.msg)
+        try:
+            repr(q)
+        except Exception, e:
+            self.fail('repr(q) raised an exception: %s' % debug.exnToString(e))
+
     def testEmpty(self):
         q = irclib.IrcMsgQueue()
         self.failIf(q)

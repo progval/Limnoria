@@ -30,11 +30,11 @@
 ###
 
 import fix
-from structures import queue, smallqueue, RingBuffer
 
 import copy
 import sets
 import time
+from itertools import imap, chain
 
 import conf
 import debug
@@ -43,6 +43,7 @@ import world
 import ircdb
 import ircmsgs
 import ircutils
+from structures import queue, smallqueue, RingBuffer
 
 ###
 # The base class for a callback to be registered with an Irc object.  Shows
@@ -132,8 +133,10 @@ class IrcMsgQueue(object):
     ones.
     """
     __slots__ = ('msgs', 'highpriority', 'normal', 'lowpriority')
-    def __init__(self):
+    def __init__(self, iterable=()):
         self.reset()
+        for msg in iterable:
+            self.enqueue(msg)
 
     def reset(self):
         """Clears the queue."""
@@ -174,6 +177,16 @@ class IrcMsgQueue(object):
 
     def __nonzero__(self):
         return bool(self.highpriority or self.normal or self.lowpriority)
+
+    def __len__(self):
+        return sum(imap(len,[self.highpriority,self.lowpriority,self.normal]))
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return '%s(%r)' % (name, list(chain(self.highpriority,
+                                            self.normal,
+                                            self.lowpriority)))
+    __str__ = __repr__
 
 
 ###
