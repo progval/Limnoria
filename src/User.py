@@ -95,19 +95,17 @@ class User(callbacks.Privmsg):
                        additional('glob')])
 
     def register(self, irc, msg, args, optlist, name, password):
-        """[--hashed] <name> <password>
+        """<name> <password>
 
         Registers <name> with the given password <password> and the current
-        hostmask of the person registering.  This command (and all other
-        commands that include a password) must be sent to the bot privately,
-        not in a channel.  If --hashed is given, the password will be hashed
-        on disk, rather than being stored in the default configured format.
+        hostmask of the person registering.  You shouldn't register twice; if
+        you're not recognized as a user but you've already registered, use the
+        addhostmask command to add another hostmask to your already-registered
+        user, or use the identify command to identify just for a session.
+        This command (and all other commands that include a password) must be
+        sent to the bot privately, not in a channel.
         """
         addHostmask = True
-        hashed = conf.supybot.databases.users.hash()
-        for (option, arg) in optlist:
-            if option == 'hashed':
-                hashed = True
         try:
             ircdb.users.getUserId(name)
             irc.error('That name is already assigned to someone.', Raise=True)
@@ -132,8 +130,7 @@ class User(callbacks.Privmsg):
             user.addHostmask(msg.prefix)
         ircdb.users.setUser(user)
         irc.replySuccess()
-    register = wrap(register, ['private', getopts({'hashed':''}), 'something',
-                               'something'])
+    register = wrap(register, ['private', 'something', 'something'])
 
     def unregister(self, irc, msg, args, user, password):
         """<name> [<password>]
