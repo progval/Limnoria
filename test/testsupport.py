@@ -109,6 +109,17 @@ class TimeoutError(AssertionError):
     def __str__(self):
         return '%r timed out' % self.args[0]
 
+class TestPlugin(callbacks.Privmsg):
+    def eval(self, irc, msg, args):
+        """<text>
+
+        This is the help for eval.
+        """
+        try:
+            irc.reply(repr(eval(' '.join(args))))
+        except Exception, e:
+            irc.reply(utils.exnToString(e))
+TestInstance = TestPlugin()
 
 class SupyTestCase(unittest.TestCase):
     def setUp(self):
@@ -194,6 +205,7 @@ class PluginTestCase(SupyTestCase):
                 if name not in ('Owner', 'Misc', 'Config'):
                     module = Owner.loadPluginModule(name,ignoreDeprecation=True)
                     cb = Owner.loadPluginClass(self.irc, module)
+        self.irc.addCallback(TestInstance)
         for (name, value) in self.config.iteritems():
             group = conf.supybot
             parts = registry.split(name)
