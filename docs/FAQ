@@ -182,7 +182,10 @@ Q: My bot can't handle nicks with brackets in them!  It always
 A: You should quote arguments (using double quotes, like this:
    "foo[bar]") that have brackets in them that you don't wish to be
    evaluated as nested commands.  Otherwise, you can turn off nested
-   commands by setting supybot.commands.nested to False.
+   commands by setting supybot.commands.nested to False, or change
+   the brackets that nest commands, by setting
+   supybot.commands.nested.brackets to some other value (like <>,
+   which can't occur in IRC nicks).
 
 
 Q: I've edited my configuration file, but my Supybot doesn't notice
