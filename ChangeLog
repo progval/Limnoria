@@ -1,3 +1,7 @@
+	* Added supybot.log.individualPluginLogfiles, which determines
+	whether plugin logs will be logged to their individual logfiles
+	in addition to the misc.log logfile.
+	
 	* Added supybot.plugins.WordStats.ignoreQueries, which, when
 	true, makes the bot ignore queries (and not increment its word
 	statistics).

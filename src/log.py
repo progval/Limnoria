@@ -146,6 +146,8 @@ setLevel = _logger.setLevel
 atexit.register(logging.shutdown)
 
 def getPluginLogger(name):
+    if not conf.supybot.log.individualPluginLogfiles():
+        return _logger
     log = logging.getLogger('supybot.plugins.%s' % name)
     if not log.handlers:
         filename = os.path.join(pluginLogDir, '%s.log' % name)
@@ -236,13 +238,14 @@ conf.supybot.directories.register('log', registry.String('logs', """Determines
 what directory the bot will store its logfiles in."""))
 
 conf.supybot.register('log')
-conf.supybot.log.register('level', LogLevel(logging.INFO,
-"""Determines what the minimum priority level logged will be.  Valid values are
-DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of increasing
-priority."""))
-conf.supybot.log.register('stdout',
-    registry.Boolean(True, """Determines whether the bot will log to
-    stdout."""))
+conf.supybot.log.register('level', LogLevel(logging.INFO, """Determines what
+the minimum priority level logged will be.  Valid values are DEBUG, INFO,
+WARNING, ERROR, and CRITICAL, in order of increasing priority."""))
+conf.supybot.log.register('stdout', registry.Boolean(True, """Determines
+whether the bot will log to stdout."""))
+conf.supybot.log.register('individualPluginLogfiles', registry.Boolean(True,
+    """Determines whether the bot will separate plugin logs into their own
+    individual logfiles."""))
 
 class BooleanRequiredFalseOnWindows(registry.Boolean):
     def set(self, s):
