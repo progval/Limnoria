@@ -191,6 +191,30 @@ class Relay(callbacks.Privmsg):
                     if channel in otherIrc.state.channels:
                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
+    def doMode(self, irc, msg):
+        if self.started:
+            if not isinstance(irc, irclib.Irc):
+                irc = irc.getRealIrc()
+            channel = msg.args[0]
+            if channel in self.channels:
+                abbreviation = self.abbreviations[irc]
+                s = 'mode change on %s/%s %s' % \
+                    (channel, abbreviation, ' '.join(msg.args[1:]))
+                for otherIrc in self.ircs.itervalues():
+                    otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                    
+    def doNick(self, irc, msg):
+        if self.started:
+            if not isinstance(irc, irclib.Irc):
+                irc = irc.getRealIrc()
+            s = 'nick change by %s to %s' % (msg.prefix, msg.args[0])
+            for otherIrc in self.ircs.itervalues():
+                for channel in self.channels:
+                    if channel in otherIrc.state.channels:
+                        chan = otherIrc.state.channels[channel]
+                        if msg.nick in chan.users:
+                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                            
     def outFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
