@@ -1,6 +1,23 @@
 2004-09-30 Jeremy Fincher <jemfinch@supybot.org>
 
 	* Version 0.80.0pre3!
+
+	* Deprecated FunDB, added two new plugins, Lart and Praise, to
+	handle the same features individually for larts and praises.
+	There is a script in tools/ that will convert from a FunDB to a
+	lart or praise database.
+
+	* Deprecated the Infobot plugin, in expectation of a rewrite.
+
+	* Deprecated the Quotes plugin, since we don't know anyone who
+	seriously uses it.  Let us know if you do use it, because it may
+	be removed in a future version.
+	
+	* Added Karma.{dump,load} for dumping and subsequently loading
+	the Karma database.
+
+	* Changed the News database implementation to a flatfile
+	database.
 	
 	* Removed the tinyurl shrinking code from the URL plugin and put
 	it in the ShrinkUrl plugin, and added the ability to use ln-s.net
@@ -19,7 +36,8 @@
 	show links during announcements (and another such variable for
 	non-announcements).
 	
-	* Added the spellit and hebrew filters to the Filter plugin.
+	* Added the spellit, hebrew, and shrink filters to the Filter
+	plugin.
 	
 	* Added the ability to log to separate directories to
 	ChannelLogger.
@@ -35,6 +53,25 @@
 
 	* Added single-letter commands to the Words plugin when a hangman
 	game is active.
+
+	* Added supybot.plugins.Services.disabledNetworks, to disable the
+	Services plugin specific networks.
+
+	* Added supybot.protocols.irc.vhost, for binding to a vhost
+	before connecting.
+
+	* Added supybot.reply.format.time.elapsed.short, offering now a
+	"short" formatting for elapsed times.
+
+	* Added supybot.commands.quotes, for configuring which quotes can
+	be used to quote arguments to commands.
+
+	* Added supybot.databases.plugins.channelSpecific.channel,
+	specifying the "default channel" for non-channel-specific
+	databases to use.
+	
+	* Moved the supybot.humanTimestampFormat configuration variable
+	to supybot.reply.format.time.
 
 	* Added a configuration variable determining the maximum length
 	of replies internally, so they can't suck up as much CPU as they
