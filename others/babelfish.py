@@ -76,7 +76,7 @@ __languages = { 'english'   : 'en',
                 'japanese'  : 'ja',
                 'korean'    : 'ko',
                 'spanish'   : 'es',
-                'portugese' : 'pt',
+                'portuguese' : 'pt',
               }
 
 """
