@@ -102,8 +102,8 @@ conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'trackerSnarfer',
     registry.Boolean(False, """Determines whether the bot will reply to SF.net
     Tracker URLs in the channel with a nice summary of the tracker item."""))
 conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'project',
-    registry.String('', """Sets the default project (used by the bugs/rfes
-    commands in the case that no explicit project is given)."""))
+    registry.String('', """Sets the default project to use in the case that no
+    explicit project is given."""))
 
 class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     """
@@ -219,6 +219,24 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             return
         irc.reply(self._getTrackerList(url))
 
+    _totbugs = re.compile(r'Bugs</a>\s+?\( <b>([^<]+)</b>', re.S | re.I)
+    def totalbugs(self, irc, msg, args):
+        """[<project>]
+
+        Returns a count of the open/total bugs.  <project> is not needed if a
+        default project is set.
+        """
+        project = privmsgs.getArgs(args, required=0, optional=1)
+        project = project or conf.supybot.plugins.Sourceforge.project()
+        if not project:
+            raise callbacks.ArgumentError
+        text = webutils.getUrl(''.join([self._projectURL, project]))
+        m = self._totbugs.search(text)
+        if m:
+            irc.reply(m.group(1))
+        else:
+            irc.error('Could not find bug statistics.')
+
     def bug(self, irc, msg, args):
         """[--{any,open,closed,deleted,pending}] [<project>] <num>
 
@@ -284,6 +302,25 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             irc.error('%s.  Can\'t find the RFEs link.' % e)
             return
         irc.reply(self._getTrackerList(url))
+
+    _totrfes = re.compile(r'Feature Requests</a>\s+?\( <b>([^<]+)</b>',
+                          re.S | re.I)
+    def totalrfes(self, irc, msg, args):
+        """[<project>]
+
+        Returns a count of the open/total RFEs.  <project> is not needed if a
+        default project is set.
+        """
+        project = privmsgs.getArgs(args, required=0, optional=1)
+        project = project or conf.supybot.plugins.Sourceforge.project()
+        if not project:
+            raise callbacks.ArgumentError
+        text = webutils.getUrl(''.join([self._projectURL, project]))
+        m = self._totrfes.search(text)
+        if m:
+            irc.reply(m.group(1))
+        else:
+            irc.error('Could not find RFE statistics.')
 
     def rfe(self, irc, msg, args):
         """[--{any,open,closed,deleted,pending}] [<project>] <num>

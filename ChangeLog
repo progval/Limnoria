@@ -1,3 +1,5 @@
+	* Added Sourceforge.totalbugs and Sourceforge.totalrfes
+
 	* Removed Admin.setprefixchar, since it's unneeded with the new
 	configuration.
 	
