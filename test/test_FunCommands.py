@@ -39,3 +39,6 @@ class FunCommandsTest(PluginTestCase):
     def testRot13(self):
         for s in nicks[:10]: # 10 is probably enough.
             self.assertResponse('rot13 [rot13 %s]' % s, s)
+
+    def testCalc(self):
+        self.assertResponse('calc 5*0.06', str(5*0.06))

@@ -386,7 +386,7 @@ class FunCommands(callbacks.Privmsg):
     _mathEnv.update(cmath.__dict__)
     _mathInt = re.compile(r'(?<!\d|\.)(\d+)(?!\d+|\.|\.\d+)')
     _mathHex = re.compile(r'(0x[A-Fa-f\d]+)')
-    _mathOctal = re.compile(r'(^|[^\dA-Fa-f])(0[0-7]+)')
+    _mathOctal = re.compile(r'(^|[^\dA-Fa-f.])(0[0-7]+)')
     def _complexToString(self, x):
         real = x.real
         imag = x.imag
@@ -425,11 +425,11 @@ class FunCommands(callbacks.Privmsg):
             i = long(literal, 8)
             return '%s%s.0' % (previous, i)
         text = self._mathHex.sub(hex2float, text)
-        #debug.printf('After unhexing: %r' % text)
+        debug.printf('After unhexing: %r' % text)
         text = self._mathOctal.sub(oct2float, text)
-        #debug.printf('After unocting: %r' % text)
+        debug.printf('After unocting: %r' % text)
         text = self._mathInt.sub(r'\1.0', text)
-        #debug.printf('After uninting: %r' % text)
+        debug.printf('After uninting: %r' % text)
         try:
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(msg, self._complexToString(x))
