@@ -132,6 +132,9 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         m = self.getMsg('notice [list]')
         self.assertEqual(m.command, 'NOTICE')
 
+    def testHostmask(self):
+        self.assertResponse('hostmask', self.prefix)
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

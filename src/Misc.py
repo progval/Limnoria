@@ -206,13 +206,17 @@ class Misc(callbacks.Privmsg):
                 irc.error(msg, '%s has no help or syntax description.'%command)
 
     def hostmask(self, irc, msg, args):
-        """<nick>
+        """[<nick>]
 
-        Returns the hostmask of <nick>.
+        Returns the hostmask of <nick>.  If <nick> isn't given, return the
+        hostmask of the person giving the command.
         """
-        nick = privmsgs.getArgs(args)
+        nick = privmsgs.getArgs(args, needed=0, optional=1)
         try:
-            irc.reply(msg, irc.state.nickToHostmask(nick))
+            if nick:
+                irc.reply(msg, irc.state.nickToHostmask(nick))
+            else:
+                irc.reply(msg, msg.prefix)
         except KeyError:
             irc.error(msg, 'I haven\'t seen anyone named %r' % nick)
 
