@@ -285,18 +285,20 @@ def depluralize(s):
         else:
             return s # Don't know what to do.
 
-def nItems(item, n, between=None):
+def nItems(n, item, between=None):
     """Works like this:
 
-    >>> nItems('clock', 1)
+    >>> nItems(1, 'clock')
     '1 clock'
 
-    >>> nItems('clock', 10)
+    >>> nItems(10, 'clock')
     '10 clocks'
 
-    >>> nItems('clock', 10, between='grandfather')
+    >>> nItems(10, 'clock', between='grandfather')
     '10 grandfather clocks'
     """
+    assert isinstance(n, int), \
+           'The order of the arguments to nItems changed again, sorry.'
     if between is None:
         return '%s %s' % (n, pluralize(item, n))
     else:

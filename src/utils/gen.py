@@ -81,7 +81,7 @@ def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
             if short:
                 ret.append('%s%s' % (i, s[0]))
             else:
-                ret.append(nItems(s, i))
+                ret.append(nItems(i, s))
     elapsed = int(elapsed)
     assert years or weeks or days or \
            hours or minutes or seconds, 'One flag must be True'

@@ -335,10 +335,10 @@ class StrTest(SupyTestCase):
 
     def testNItems(self):
         nItems = utils.str.nItems
-        self.assertEqual(nItems('tool', 1, 'crazy'), '1 crazy tool')
-        self.assertEqual(nItems('tool', 1), '1 tool')
-        self.assertEqual(nItems('tool', 2, 'crazy'), '2 crazy tools')
-        self.assertEqual(nItems('tool', 2), '2 tools')
+        self.assertEqual(nItems(1, 'tool', 'crazy'), '1 crazy tool')
+        self.assertEqual(nItems(1, 'tool'), '1 tool')
+        self.assertEqual(nItems(2, 'tool', 'crazy'), '2 crazy tools')
+        self.assertEqual(nItems(2, 'tool'), '2 tools')
 
     def testEllipsisify(self):
         f = utils.str.ellipsisify
