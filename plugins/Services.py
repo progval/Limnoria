@@ -171,6 +171,21 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             nickserv = self.registryValue('NickServ')
             self._doGhost(irc)
 
+##     def do474(self, irc, msg):
+##         # Can't join this channel, it's banned us.
+##         channel = msg.args[1]
+##         chanserv = self.registryValue('ChanServ')
+##         if chanserv:
+##             # This artificially conflates OP and UNBAN, but we'll assume until
+##             # we get a complaint from someone.
+##             if self.registryValue('ChanServ.op', channel):
+##                 if self.identified:
+##                     irc.sendMsg(ircmsgs.privmsg(chanserv,'UNBAN %s' % channel))
+##                     irc.sendMsg(ircmsgs.join(channel))
+##                 else:
+##                     self._doIdentify(irc)
+##         pass
+
     def do515(self, irc, msg):
         # Can't join this channel, it's +r (we must be identified).
         self.channels.append(msg.args[1])
