@@ -252,6 +252,22 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
              categories and '  Categories include %s.' % categories)
         irc.reply(s)
 
+    _cacheUrlRe = re.compile('<code>([^<]+)</code>')
+    def cache(self, irc, msg, args):
+        """<url>
+
+        Returns a link to the cached version of <url> if it is available.
+        """
+        url = privmsgs.getArgs(args)
+        html = google.doGetCachedPage(url)
+        m = self._cacheUrlRe.search(html)
+        if m is not None:
+            url = m.group(1)
+            url = utils.htmlToText(url)
+            irc.reply(url)
+        else:
+            irc.error('Google seems to have no cache for that site.')
+
     def fight(self, irc, msg, args):
         """<search string> <search string> [<search string> ...]
 
