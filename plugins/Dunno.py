@@ -30,7 +30,8 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+The Dunno module is used to spice up the "replyWhenNotCommand" behavior with
+random "I dunno"-like responses.
 """
 
 __revision__ = "$Id$"
@@ -180,6 +181,42 @@ class Dunno(callbacks.Privmsg):
             return
         dunno = cursor.fetchone()[0]
         irc.reply("Dunno #%s: %r" % (id, dunno))
+
+    def change(self, irc, msg, args):
+        """<id> <regexp>
+
+        Alters the dunno with the given id according to the provided regexp.
+        """
+        id, regexp = privmsgs.getArgs(args, required=2)
+        # Must be registered to use this
+        try:
+            user_id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        # Check id arg
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error(msg, '%r is not a valid dunno id' % id)
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT dunno FROM dunnos WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There is no dunno #%s' % id)
+            return
+        try:
+            replacer = utils.perlReToReplacer(regexp)
+        except:
+            irc.error(msg, '%r is not a valid regexp' % regexp)
+            return
+        new_dunno = replacer(dunno)
+        cursor.execute("""UPDATE dunnos SET dunno=%s WHERE id=%s""",
+                       new_dunno, id)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
+        
+
 
 Class = Dunno
 
