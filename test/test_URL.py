@@ -66,111 +66,106 @@ http://gameknot.com/tsignup.pl
 http://lambda.weblogs.com/xml/rss.xml
 """.strip().splitlines()
 
-try:
-    import sqlite
-except ImportError:
-    sqlite = None
+class URLTestCase(ChannelPluginTestCase, PluginDocumentation):
+    plugins = ('URL',)
+    def setUp(self):
+        ChannelPluginTestCase.setUp(self)
+        conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
 
-if sqlite is not None:
-    class URLTestCase(ChannelPluginTestCase, PluginDocumentation):
-        plugins = ('URL',)
-        def setUp(self):
-            ChannelPluginTestCase.setUp(self)
-            conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-
-        def test(self):
-            counter = 0
-            self.assertNotError('url random')
-            for url in urls:
-                self.assertRegexp('url stats', str(counter))
-                self.feedMsg(url)
-                counter += 1
+    def test(self):
+        counter = 0
+        #self.assertNotError('url random')
+        for url in urls:
             self.assertRegexp('url stats', str(counter))
-            self.assertRegexp('url last', re.escape(urls[-1]))
-            self.assertRegexp('url last --proto https', re.escape(urls[-3]))
-            self.assertRegexp('url last --at gameknot.com',re.escape(urls[-2]))
-            self.assertRegexp('url last --with dhcp', re.escape(urls[-4]))
-            self.assertRegexp('url last --from alsdkjf', '^No')
-            self.assertNotError('url random')
+            self.feedMsg(url)
+            counter += 1
+        self.assertRegexp('url stats', str(counter))
+        self.assertRegexp('url last', re.escape(urls[-1]))
+        self.assertRegexp('url last --proto https', re.escape(urls[-3]))
+        self.assertRegexp('url last --with gameknot.com',
+                          re.escape(urls[-2]))
+        self.assertRegexp('url last --with dhcp', re.escape(urls[-4]))
+        self.assertRegexp('url last --from alsdkjf', '^No')
+        self.assertNotError('url random')
 
-        def testDefaultNotFancy(self):
-            self.feedMsg(urls[0])
-            self.assertResponse('url last', urls[0])
+    def testDefaultNotFancy(self):
+        self.feedMsg(urls[0])
+        self.assertResponse('url last', urls[0])
 
-        def testAction(self):
-            self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
-            self.assertNotRegexp('url last', '\\x01')
+    def testAction(self):
+        self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
+        self.assertNotRegexp('url last', '\\x01')
 
-        def testNonSnarfingRegexpConfigurable(self):
-            self.assertNoResponse('http://foo.bar.baz/', 2)
+    def testNonSnarfingRegexpConfigurable(self):
+        self.assertNoResponse('http://foo.bar.baz/', 2)
+        self.assertResponse('url last', 'http://foo.bar.baz/')
+        try:
+            conf.supybot.plugins.URL.nonSnarfingRegexp.set('m/biff/i')
+            self.assertNoResponse('http://biff.bar.baz/', 2)
             self.assertResponse('url last', 'http://foo.bar.baz/')
+        finally:
+            conf.supybot.plugins.URL.nonSnarfingRegexp.set('')
+
+    if network:
+        def testTinyurl(self):
             try:
-                conf.supybot.plugins.URL.nonSnarfingRegexp.set('m/biff/i')
-                self.assertNoResponse('http://biff.bar.baz/', 2)
-                self.assertResponse('url last', 'http://foo.bar.baz/')
+                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
+                self.assertRegexp(
+                    'url tiny http://sourceforge.net/tracker/?'
+                    'func=add&group_id=58965&atid=489447',
+                    r'http://tinyurl.com/rqac')
+                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
+                self.assertRegexp(
+                    'url tiny http://sourceforge.net/tracker/?'
+                    'func=add&group_id=58965&atid=489447',
+                    r'http://tinyurl.com/rqac')
             finally:
-                conf.supybot.plugins.URL.nonSnarfingRegexp.set('')
+                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
 
-        if network:
-            def testTinyurl(self):
+        def testTinysnarf(self):
+            try:
+                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
+                self.assertRegexp('http://sourceforge.net/tracker/?'
+                                  'func=add&group_id=58965&atid=489447',
+                                  r'http://tinyurl.com/rqac.* \(at')
+                self.assertRegexp(
+                    'http://www.urbandictionary.com/define.php?'
+                    'term=all+your+base+are+belong+to+us',
+                    r'http://tinyurl.com/u479.* \(at')
+            finally:
+                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
+
+        def testTitleSnarfer(self):
+            try:
+                conf.supybot.plugins.URL.titleSnarfer.setValue(True)
+                self.assertResponse('http://microsoft.com/',
+                                    'Title: Microsoft Corporation'
+                                    ' (at microsoft.com)')
+            finally:
+                conf.supybot.plugins.URL.titleSnarfer.setValue(False)
+
+        def testNonSnarfing(self):
+            tiny = conf.supybot.plugins.URL.tinyurlSnarfer()
+            snarf = conf.supybot.plugins.URL.nonSnarfingRegexp()
+            title = conf.supybot.plugins.URL.titleSnarfer()
+            try:
+                conf.supybot.plugins.URL.nonSnarfingRegexp.set('m/sf/')
                 try:
-                    conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-                    self.assertRegexp(
-                        'url tiny http://sourceforge.net/tracker/?'
-                        'func=add&group_id=58965&atid=489447',
-                        r'http://tinyurl.com/rqac')
                     conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
-                    self.assertRegexp(
-                        'url tiny http://sourceforge.net/tracker/?'
-                        'func=add&group_id=58965&atid=489447',
-                        r'http://tinyurl.com/rqac')
+                    self.assertNoResponse('http://sf.net/', 2)
+                    self.assertResponse('http://www.sourceforge.net/',
+                                        'http://tinyurl.com/2cnkf')
                 finally:
-                    conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-
-            def testTinysnarf(self):
-                try:
-                    conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
-                    self.assertRegexp('http://sourceforge.net/tracker/?'
-                                      'func=add&group_id=58965&atid=489447',
-                                      r'http://tinyurl.com/rqac.* \(at')
-                    self.assertRegexp(
-                        'http://www.urbandictionary.com/define.php?'
-                        'term=all+your+base+are+belong+to+us',
-                        r'http://tinyurl.com/u479.* \(at')
-                finally:
-                    conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-
-            def testTitleSnarfer(self):
+                    conf.supybot.plugins.URL.tinyurlSnarfer.setValue(tiny)
                 try:
                     conf.supybot.plugins.URL.titleSnarfer.setValue(True)
-                    self.assertResponse('http://microsoft.com/',
-                                        'Title: Microsoft Corporation'
-                                        ' (at microsoft.com)')
+                    self.assertNoResponse('http://sf.net/', 2)
+                    self.assertRegexp('http://www.sourceforge.net/',
+                                      r'Sourceforge\.net')
                 finally:
-                    conf.supybot.plugins.URL.titleSnarfer.setValue(False)
-
-            def testNonSnarfing(self):
-                tiny = conf.supybot.plugins.URL.tinyurlSnarfer()
-                snarf = conf.supybot.plugins.URL.nonSnarfingRegexp()
-                title = conf.supybot.plugins.URL.titleSnarfer()
-                try:
-                    conf.supybot.plugins.URL.nonSnarfingRegexp.set('m/sf/')
-                    try:
-                        conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
-                        self.assertNoResponse('http://sf.net/', 2)
-                        self.assertResponse('http://www.sourceforge.net/',
-                                            'http://tinyurl.com/2cnkf')
-                    finally:
-                        conf.supybot.plugins.URL.tinyurlSnarfer.setValue(tiny)
-                    try:
-                        conf.supybot.plugins.URL.titleSnarfer.setValue(True)
-                        self.assertNoResponse('http://sf.net/', 2)
-                        self.assertRegexp('http://www.sourceforge.net/',
-                                          r'Sourceforge\.net')
-                    finally:
-                        conf.supybot.plugins.URL.titleSnarfer.setValue(title)
-                finally:
-                    conf.supybot.plugins.URL.nonSnarfingRegexp.setValue(snarf)
+                    conf.supybot.plugins.URL.titleSnarfer.setValue(title)
+            finally:
+                conf.supybot.plugins.URL.nonSnarfingRegexp.setValue(snarf)
 
 
 

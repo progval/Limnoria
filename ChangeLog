@@ -1,3 +1,8 @@
+	* Changed the URL plugin to use flatfiles rather than SQLite
+	database.  Also reduced the functionality of the last command by
+	removing some options that no one ever really used, and removed
+	the random command (who uses that anyway?)
+	
 	* Changed the Words plugin not to use SQLite.  We lose the
 	anagram command, but crossword and hangman become much easier to
 	use, since all the user has to do is put a words file in
