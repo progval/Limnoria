@@ -258,7 +258,8 @@ class MetaFirewall(type):
                 except:
                     errorHandler = None
                 dict[attr] = firewall(dict[attr], errorHandler)
-        return type.__new__(cls, name, bases, dict)
+        return super(MetaFirewall, cls).__new__(cls, name, bases, dict)
+        #return type.__new__(cls, name, bases, dict)
 
 
 class ValidLogLevel(registry.String):
