@@ -54,7 +54,7 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Unix')
     spellCmd = utils.findBinaryInPath('aspell')
     if not spellCmd:
-        cmdLine = utils.findBinaryInPath('ispell')
+        spellCmd = utils.findBinaryInPath('ispell')
     if not spellCmd:
         print 'NOTE: I couldn\'t find aspell or ispell in your path,'
         print 'so that function of this module will not work.  You may'
@@ -68,7 +68,14 @@ def configure(onStart, afterConnect, advanced):
         print 'later.  To re-enable this command then, remove the '
         print '"disable fortune" command from your configuration file.'
         onStart.append('disable fortune')
-
+    wtfCmd = utils.findBinaryInPath('wtf')
+    if not wtfCmd:
+        print 'NOTE: I couldn\'t find wtf in your path, so that function of '
+        print 'this module won\'t work.  You may choose to install it later; '
+        print 'to re-enable this command then, remove the "disable wtf" '
+        print 'command from your configuration file or simply tell the bot '
+        print '"enable wtf"'
+        onStart.append('disable wtf')
     print 'The "progstats" command can reveal potentially sensitive'
     print 'information about your machine.  Here\'s an example of its output:'
     print
@@ -119,6 +126,7 @@ class Unix(callbacks.Privmsg):
         (self._spellRead, self._spellWrite) = popen2.popen4([spellCmd, '-a'],0)
         self._spellRead.readline() # Ignore the banner.
         self.fortuneCmd = utils.findBinaryInPath('fortune')
+        self.wtfCmd = utils.findBinaryInPath('wtf')
 
     def die(self):
         # close the filehandles
@@ -211,11 +219,32 @@ class Unix(callbacks.Privmsg):
 
         Returns a fortune from the *nix fortune program.
         """
-        (r, w) = popen2.popen4('%s -s' % self.fortuneCmd)
-        s = r.read()
-        w.close()
-        r.close()
-        irc.reply(msg, ' '.join(s.split()))
+        if self.fortuneCmd is not None:
+            (r, w) = popen2.popen4('%s -s' % self.fortuneCmd)
+            s = r.read()
+            w.close()
+            r.close()
+            irc.reply(msg, ' '.join(s.split()))
+        else:
+            irc.error(msg, 'I couldn\'t find the fortune command.')
+
+    def wtf(self, irc, msg, args):
+        """[is] <something>
+
+        Returns wtf something is.
+        """
+        if self.wtfCmd is not None:
+            if args and args[0] == 'is':
+                del args[0]
+            something = privmsgs.getArgs(args)
+            something = something.rstrip('?')
+            (r, w) = popen2.popen4([self.wtfCmd, something])
+            response = utils.normalizeWhitespace(r.readline().strip())
+            irc.reply(msg, response)
+            r.close()
+            w.close()
+        else:
+            irc.error(msg, 'I couldn\'t find the wtf command.')
 
 
 Class = Unix
