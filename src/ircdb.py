@@ -209,6 +209,7 @@ class IrcUser(object):
     """This class holds the capabilities and authentications for a user."""
     def __init__(self, ignore=False, password='', name='',
                  capabilities=(), hostmasks=None, secure=False, hashed=False):
+        self.id = None
         self.auth = [] # The (time, hostmask) list of auth crap.
         self.name = name # The name of the user.
         self.ignore = ignore # A boolean deciding if the person is ignored.
@@ -224,10 +225,13 @@ class IrcUser(object):
             self.hostmasks = hostmasks
 
     def __repr__(self):
-        return '%s(ignore=%s, password="", name=%r, hashed=%r, ' \
+        return '%s(id=%s, ignore=%s, password="", name=%r, hashed=%r, ' \
                'capabilities=%r, hostmasks=[], secure=%r)\n' % \
-               (self.__class__.__name__, self.ignore, self.name, self.hashed,
-                self.capabilities, self.secure)
+               (self.__class__.__name__, self.id, self.ignore, self.name,
+                self.hashed, self.capabilities, self.secure)
+
+    def __hash__(self):
+        return hash(self.id)
 
     def addCapability(self, capability):
         """Gives the user the given capability."""
@@ -708,6 +712,7 @@ class UsersDictionary(utils.IterableMap):
                     del self._hostmaskCache[hostmask]
                 del self._hostmaskCache[id]
 
+    # XXX This shouldn't require an id, since user has an id attribute.
     def setUser(self, id, user):
         """Sets a user (given its id) to the IrcUser given it."""
         assert isinstance(id, int), 'setUser takes an integer userId.'
@@ -747,6 +752,8 @@ class UsersDictionary(utils.IterableMap):
             del self._hostmaskCache[id]
         self.flush()
 
+    # XXX This shouldn't return a tuple, just the user, since user has an
+    #     id attribute now.
     def newUser(self):
         """Allocates a new user in the database and returns it and its id."""
         hashed = conf.supybot.databases.users.hash()
