@@ -619,9 +619,9 @@ class IrcObjectProxy(RichReplyMethods):
                         return [cb]
             except registry.NonExistentRegistryEntry, e:
                 # Check for whether it's a src/ plugin; they get precedence.
+                important = []
+                importantPlugins = defaultPlugins.importantPlugins()
                 for cb in cbs:
-                    important = []
-                    importantPlugins = defaultPlugins.importantPlugins()
                     if cb.name() in importantPlugins:
                         # We do this to handle multiple importants matching.
                         important.append(cb)
