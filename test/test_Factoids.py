@@ -46,9 +46,10 @@ class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('learn jemfinch as a crappy assembly programmer')
         self.assertRegexp('whatis jemfinch', r'.*primary author.*assembly')
         self.assertError('forget jemfinch')
-        self.assertError('forget jemfinch 2')
+        self.assertError('forget jemfinch 3')
+        self.assertError('forget jemfinch 0')
+        self.assertNotError('forget jemfinch 2')
         self.assertNotError('forget jemfinch 1')
-        self.assertNotError('forget jemfinch 0')
         self.assertError('whatis jemfinch')
         self.assertError('factoidinfo jemfinch')
 
@@ -58,8 +59,8 @@ class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('learn foo bar as quux')
         self.assertRegexp('whatis foo bar', '.*baz.*quux')
         self.assertError('forget foo bar')
+        self.assertNotError('forget foo bar 2')
         self.assertNotError('forget foo bar 1')
-        self.assertNotError('forget foo bar 0')
         self.assertError('whatis foo bar')
         self.assertError('factoidinfo foo bar')
         
@@ -78,6 +79,14 @@ class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('searchfactoids /^j/', 'jemfinch.*jamessan')
         self.assertRegexp('searchfactoids ke',
                           'inkedmn.*strike|strike.*inkedmn')
+
+    def testNotZeroIndexed(self):
+        self.assertNotError('learn foo as bar')
+        self.assertNotRegexp('factoidinfo foo', '#0')
+        self.assertNotRegexp('whatis foo', '#0')
+        self.assertNotError('learn foo as baz')
+        self.assertNotRegexp('factoidinfo foo', '#0')
+        self.assertNotRegexp('whatis foo', '#0')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

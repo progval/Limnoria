@@ -163,7 +163,19 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
+        if args[-1].isdigit():
+            number = args.pop()
+        else:
+            number = ''
         key = privmsgs.getArgs(args)
+        if number:
+            try:
+                number = int(number)
+            except ValueError:
+                irc.error(msg, '%s is not a valid number.' % number)
+                return
+        else:
+            number = 0
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT factoids.fact FROM factoids, keys WHERE
@@ -173,12 +185,19 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         if cursor.rowcount == 0:
             irc.error(msg, 'No factoid matches that key.')
         else:
-            factoids = []
-            counter = 0
-            for result in cursor.fetchall():
-                factoids.append('(#%s) %s' % (counter, result[0]))
-                counter += 1
-            irc.reply(msg, '%r could be %s' % (key, ', or '.join(factoids)))
+            if not number:
+                factoids = []
+                counter = 1
+                for result in cursor.fetchall():
+                    factoids.append('(#%s) %s' % (counter, result[0]))
+                    counter += 1
+                irc.reply(msg,'%r could be %s' % (key, ', or '.join(factoids)))
+            else:
+                try:
+                    irc.reply(msg, cursor.fetchall()[number-1])
+                except IndexError:
+                    irc.error(msg, 'That\'s not a valid number for this key.')
+                    return
 
     def lock(self, irc, msg, args):
         """[<channel>] <key>
@@ -230,6 +249,10 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         if args[-1].isdigit():
             number = int(args.pop())
+            number -= 1
+            if number < 0:
+                irc.error(msg, 'Negative numbers aren\'t valid.')
+                return
         elif args[-1] == '*':
             del args[-1]
             number = True
