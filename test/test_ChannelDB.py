@@ -31,6 +31,8 @@
 
 from test import *
 
+import ircdb
+
 try:
     import sqlite
 except ImportError:
@@ -64,8 +66,12 @@ if sqlite is not None:
             self.assertError('channeldb stats %s' % self.irc.nick)
             self.assertNotError('channeldb stats %s' % self.irc.nick)
             self.assertNotError('channeldb stats %s' % self.irc.nick)
-            m1 = self.getMsg('channeldb stats %s' % self.irc.nick)
+            id = ircdb.users.getUserId(self.prefix)
+            u = ircdb.users.getUser(id)
+            u.addCapability(ircdb.makeChannelCapability(self.channel, 'op'))
+            ircdb.users.setUser(id, u)
             self.assertNotError('channeldb toggle selfstats off')
+            m1 = self.getMsg('channeldb stats %s' % self.irc.nick)
             m2 = self.getMsg('channeldb stats %s' % self.irc.nick)
             self.assertEqual(m1.args[1], m2.args[1])
             
