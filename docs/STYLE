@@ -28,11 +28,6 @@ class definition.  Two blank lines should be between all consecutive class
 definitions in a file.  Comments are even better than blank lines for
 separating classes.
 
-Code should pass PyChecker with no warnings.  The PyChecker config file is
-included in the tools/ subdirectory.  (Note: It's becoming harder and
-harder to do this in today's Python.  Just try to have as few warnings
-as possible.)
-
 Database filenames should generally begin with the name of the plugin and the
 extension should be 'db'.  baseplugin.DBHandler does this already.
 
