@@ -1,3 +1,9 @@
+	* Added Utilities.reply for replying to a person with text.  Like
+	echo, but it prepends the nick like the bot normally does.
+	
+	* Changed Utilities.success to accept an option <text> argument
+	for text to be appended to the success message.
+	
 	* Changed User.{addhostmask,removehostmask,register,unregister}
 	to allow owner users to do what they will with their users.  You
 	can now add hostmasks, remove hostmasks, register users, and

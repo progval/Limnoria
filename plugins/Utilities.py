@@ -55,15 +55,25 @@ class Utilities(callbacks.Privmsg):
         """
         pass
 
+    def reply(self, irc, msg, args):
+        """<text>
+
+        Replies with <text>.  Equivalent to the alias, 'echo $nick: $1'.
+        """
+        text = privmsgs.getArgs(args)
+        irc.reply(text)
+        
     def success(self, irc, msg, args):
-        """requires no arguments
+        """[<text>]
 
         Does nothing except to reply with a success message.  This is useful
         when you want to run multiple commands as nested commands, and don't
         care about their output as long as they're successful.  An error, of
-        course, will break out of this command.
+        course, will break out of this command.  <text>, if given, will be
+        appended to the end of the success message.
         """
-        irc.replySuccess()
+        text = privmsgs.getArgs(args)
+        irc.replySuccess(text)
 
     def last(self, irc, msg, args):
         """<text> [<text> ...]
