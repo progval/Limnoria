@@ -373,43 +373,46 @@ class PeriodicFileDownloader(object):
             world.threadsSpawned += 1
 
 
-_randomnickRe = re.compile(r'\$rand(?:om)?nick', re.I)
-_randomdateRe = re.compile(r'\$rand(?:om)?date', re.I)
-_randomintRe = re.compile(r'\$rand(?:omint)?', re.I)
-_channelRe = re.compile(r'\$channel', re.I)
-_whoRe = re.compile(r'\$(?:who|nick)', re.I)
-_botnickRe = re.compile(r'\$botnick', re.I)
-_todayRe = re.compile(r'\$(?:today|date)', re.I)
-_nowRe = re.compile(r'\$(?:now|time)', re.I)
-_userRe = re.compile(r'\$user', re.I)
-_hostRe = re.compile(r'\$host', re.I)
-def standardSubstitute(irc, msg, text):
+def standardSubstitute(irc, msg, text, env=None):
     """Do the standard set of substitutions on text, and return it"""
     if ircutils.isChannel(msg.args[0]):
         channel = msg.args[0]
     else:
         channel = 'somewhere'
-    def randInt(m):
+    def randInt():
         return str(random.randint(-1000, 1000))
-    def randDate(m):
+    def randDate():
         t = pow(2,30)*random.random()+time.time()/4.0
         return time.ctime(t)
-    def randNick(m):
+    def randNick():
         if channel != 'somewhere':
             return random.choice(list(irc.state.channels[channel].users))
         else:
             return 'someone'
-    text = _channelRe.sub(channel, text)
-    text = _randomnickRe.sub(randNick, text)
-    text = _randomdateRe.sub(randDate, text)
-    text = _randomintRe.sub(randInt, text)
-    text = _whoRe.sub(msg.nick, text)
-    text = _botnickRe.sub(irc.nick, text)
-    text = _todayRe.sub(time.ctime(), text)
-    text = _nowRe.sub(time.ctime(), text)
-    text = _userRe.sub(msg.user, text)
-    text = _hostRe.sub(msg.host, text)
-    return text
+    ctime = time.ctime()
+    localtime = time.localtime()
+    vars = ircutils.IrcDict({
+        'who': msg.nick,
+        'nick': msg.nick,
+        'user': msg.user,
+        'host': msg.host,
+        'channel': channel,
+        'botnick': irc.nick,
+        'now': ctime, 'ctime': ctime,
+        'randnick': randNick, 'randomnick': randNick,
+        'randdate': randDate, 'randomdate': randDate,
+        'rand': randInt, 'randint': randInt, 'randomint': randInt,
+        'year': localtime[0],
+        'month': localtime[1],
+        'date': localtime[2],
+        'h': localtime[3], 'hr': localtime[3], 'hour': localtime[3],
+        'm': localtime[4], 'min': localtime[4], 'minute': localtime[4],
+        's': localtime[5], 'sec': localtime[5], 'second': localtime[5],
+        'tz': time.tzname[time.daylight],
+        })
+    if env is not None:
+        vars.update(env)
+    return utils.perlVariableSubstitute(vars, text)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
