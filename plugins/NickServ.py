@@ -40,6 +40,7 @@ from baseplugin import *
 
 import re
 
+import conf
 import ircdb
 import ircmsgs
 import privmsgs
@@ -54,13 +55,13 @@ class NickServ(callbacks.Privmsg):
     def startnickserv(self, irc, msg, args):
         "<bot's nick> <password> <NickServ's nick (defaults to NickServ)>"
         if ircutils.isChannel(msg.args[0]):
-            irc.error(msg, 'Command must not be done in a channel.')
+            irc.error(msg, conf.replyRequiresPrivacy)
+            return
         if ircdb.checkCapability(msg.prefix, 'owner'):
             (self.nick, self.password, nickserv) = privmsgs.getArgs(args, 
                                                                     needed=2, 
                                                                     optional=1)
             self.nickserv = nickserv or 'NickServ'
-            self.sentGhost = 0
             self._ghosted = re.compile('%s.*killed' % self.nick)
             irc.reply(msg, conf.replySuccess)
         else:
