@@ -31,10 +31,6 @@
 
 """
 Provides fun/useless commands that require threads.
-
-Commands include:
-  dns
-  kernel
 """
 
 from baseplugin import *
@@ -69,6 +65,8 @@ class ThreadedFunCommands(callbacks.Privmsg):
         conn = telnetlib.Telnet('kernel.org', 79)
         conn.write('\n')
         text = conn.read_all()
+        stable = 'unkown'
+        beta = 'unknown'
         for line in text.splitlines():
             (name, version) = line.split(':')
             if 'latest stable' in name:
