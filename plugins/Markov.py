@@ -40,6 +40,7 @@ __revision__ = "$Id$"
 
 import supybot.plugins as plugins
 
+import sets
 import Queue
 import anydbm
 import random
@@ -92,6 +93,13 @@ class DbmMarkovDB(object):
         if channel not in self.dbs:
             # Stupid anydbm seems to append .db to the end of this.
             filename = plugins.makeChannelFilename(channel, 'DbmMarkovDB')
+            # To keep the code simpler for addPair, I decided not to make
+            # self.dbs[channel]['firsts'] and ['lasts'].  Instead, we'll pad
+            # the words list being sent to addPair such that ['\n \n'] will be
+            # ['firsts'] and ['\n'] will be ['lasts'].  This also means isFirst
+            # and isLast aren't necessary, but they'll be left alone in case
+            # one of the other Db formats uses them or someone decides that I
+            # was wrong and changes my code.
             self.dbs[channel] = anydbm.open(filename, 'c')
         return self.dbs[channel]
 
@@ -112,11 +120,11 @@ class DbmMarkovDB(object):
 
     def getFirstPair(self, channel):
         db = self._getDb(channel)
-        firsts = db['\r \r'].split()
+        firsts = db['\n \n'].split()
         if firsts:
             firsts.pop() # Empty line.
             if firsts:
-                return ('\r', random.choice(firsts))
+                return ('\n', random.choice(firsts))
             else:
                 raise KeyError, 'No firsts for %s.' % channel
         else:
@@ -133,15 +141,15 @@ class DbmMarkovDB(object):
 
     def firsts(self, channel):
         db = self._getDb(channel)
-        if '\r \r' in db:
-            return len(db['\r \r'].split())
+        if '\n \n' in db:
+            return len(sets.Set(db['\n \n'].split()))
         else:
             return 0
 
     def lasts(self, channel):
         db = self._getDb(channel)
         if '\n' in db:
-            return len(db['\n'].split())
+            return len(sets.Set(db['\n'].split()))
         else:
             return 0
 
@@ -199,9 +207,9 @@ class Markov(callbacks.Privmsg):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
             words = self.tokenize(msg.args[1])
-            words.insert(0, '\r')
-            words.insert(0, '\r')
-            words.insert(-1, '\n')
+            words.insert(0, '\n')
+            words.insert(0, '\n')
+            words.append('\n')
             def doPrivmsg(db):
                 for (first, second, follower) in window(words, 3):
                     db.addPair(channel, first, second, follower)
