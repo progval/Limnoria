@@ -123,6 +123,7 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
                                       prefix='foobar!user@host.domain.tld'))
         self.assertError('kban foobar')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+        self.assertError('kban foobar -1')
         self.assertBan('kban foobar', '*!*@*.domain.tld')
         self.assertBan('kban --exact foobar', 'foobar!user@host.domain.tld')
         self.assertBan('kban --host foobar', '*!*@host.domain.tld')

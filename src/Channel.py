@@ -230,12 +230,15 @@ class Channel(callbacks.Privmsg):
             return
         try:
             length = int(length or 0)
+            if length < 0:
+                irc.error('Ban length must be a non-negative integer.')
+                return
         except ValueError:
             if reason:
                 reason = ' '.join((length, reason))
                 length = 0
             else:
-                irc.error('Ban length must be a valid integer.')
+                irc.error('Ban length must be a non-negative integer.')
                 return
         if not reason:
             reason = msg.nick
