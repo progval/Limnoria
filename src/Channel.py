@@ -175,7 +175,9 @@ class Channel(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         (bannedNick, length) = privmsgs.getArgs(args, optional=1)
+        # Check that they're not trying to make us kickban ourself.
         if bannedNick == irc.nick:
+            self.log.warning('%r tried to make me kban myself.', msg.prefix)
             irc.error(msg, 'I cowardly refuse to kickban myself.')
             return
         length = int(length or 0)
@@ -186,21 +188,41 @@ class Channel(callbacks.Privmsg):
             return
         capability = ircdb.makeChannelCapability(channel, 'op')
         banmask = ircutils.banmask(bannedHostmask)
+        # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
-            banmask = bannedHostmask
-        if bannedNick == msg.nick or \
-           (ircdb.checkCapability(msg.prefix, capability) \
-           and not ircdb.checkCapability(bannedHostmask, capability)):
-            if irc.nick in irc.state.channels[channel].ops:
-                irc.queueMsg(ircmsgs.ban(channel, banmask))
-                irc.queueMsg(ircmsgs.kick(channel, bannedNick, msg.nick))
-                if length > 0:
-                    def f():
-                        irc.queueMsg(ircmsgs.unban(channel, banmask))
-                    schedule.addEvent(f, time.time() + length)
+            if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
+                self.log.warning('%r tried to make me kban myself.',msg.prefix)
+                irc.error(msg, 'I cowardly refuse to ban myself.')
+                return
             else:
-                irc.error(msg, 'How can I do that?  I\'m not opped.')
+                banmask = bannedHostmask
+        # Check that we have ops.
+        if irc.nick not in irc.state.channels[channel].ops:
+            irc.error(msg, 'How can I kick or ban someone?  I\'m not opped.')
+            return
+        # Now, let's actually get to it.  Check to make sure they have
+        # #channel.op and the bannee doesn't have #channel.op; or that the
+        # bannee and the banner are both the same person.
+        def doBan():
+            irc.queueMsg(ircmsgs.ban(channel, banmask))
+            irc.queueMsg(ircmsgs.kick(channel, bannedNick, msg.nick))
+            if length > 0:
+                def f():
+                    irc.queueMsg(ircmsgs.unban(channel, banmask))
+                schedule.addEvent(f, time.time() + length)
+        if bannedNick == msg.nick:
+            doBan()
+        elif ircdb.checkCapability(msg.prefix, capability):
+            if ircdb.checkCapability(bannedHostmask, capability):
+                self.log.warning('%r tried to ban %r, but both have %s',
+                                 msg.prefix, bannedHostmask, capability)
+                irc.error(msg, '%s has %s too, you can\'t ban him/her/it.' %
+                               bannedNick, capability)
+            else:
+                doBan()
         else:
+            self.log.warning('%r attempted kban without %s',
+                             msg.prefix, capability)
             irc.error(msg, conf.replyNoCapability % capability)
 
     def unban(self, irc, msg, args, channel):
@@ -366,7 +388,7 @@ class Channel(callbacks.Privmsg):
         (name, capability) = privmsgs.getArgs(args, 2)
         capability = ircdb.makeChannelCapability(channel, capability)
         try:
-            id = ircdb.users.getUser(name)
+            id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
             user.removeCapability(capability)
             ircdb.users.setUser(id, user)
