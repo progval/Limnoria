@@ -153,6 +153,13 @@ class DbiNoteDB(dbi.DB):
         self._addCache(n)
         return id
 
+    def unsend(self, id):
+        self.remove(id)
+        for cache in self.unRead, self.unNotified:
+            for (to, ids) in cache.items():
+                while id in ids:
+                    ids.remove(id)
+        
 
 NoteDB = plugins.DB('Note', {'flat': DbiNoteDB})
 
@@ -300,7 +307,7 @@ class Note(callbacks.Privmsg):
         note = self.db.get(id)
         if note.frm == userid:
             if not note.read:
-                self.db.remove(id)
+                self.db.unsend(id)
                 irc.replySuccess()
             else:
                 irc.error('That note has been read already.')
