@@ -160,6 +160,8 @@ def startDying():
 def finished():
     log.info('Shutdown complete.')
 
+# These are in order; don't reorder them for cosmetic purposes.  The order
+# in which they're registered is the reverse order in which they will run.
 atexit.register(finished)
 atexit.register(upkeep)
 atexit.register(makeIrcsDie)
