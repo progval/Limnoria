@@ -90,7 +90,8 @@ class Network(callbacks.Privmsg):
                           'already registered.')
                 return
         Owner = irc.getCallback('Owner')
-        newIrc = Owner._connect(network, serverPort=serverPort)
+        newIrc = Owner._connect(network, serverPort=serverPort,
+                                password=password)
         conf.supybot.networks().add(network)
         assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
         irc.replySuccess('Connection to %s initiated.' % network)
