@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2005, James Vega
+# Copyright (c) 2003-2005, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
