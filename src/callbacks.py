@@ -140,26 +140,23 @@ def canonicalName(command):
         command = command[:-1]
     return command.translate(string.ascii, special).lower() + reAppend
 
-def reply(msg, s, prefixName=True, private=None,
+def reply(msg, s, prefixName=None, private=None,
           notice=None, to=None, action=None, error=False):
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
-    def getConfig(wrapper):
-        if ircutils.isChannel(target):
-            return wrapper.get(target)()
-        else:
-            return wrapper()
     if ircutils.isChannel(target):
         channel = target
     else:
         channel = None
     if notice is None:
-        notice = getConfig(conf.supybot.reply.withNotice)
+        notice = conf.get(conf.supybot.reply.withNotice, channel)
     if private is None:
-        private = getConfig(conf.supybot.reply.inPrivate)
+        private = conf.get(conf.supybot.reply.inPrivate, channel)
+    if prefixName is None:
+        prefixName = conf.get(conf.supybot.reply.withNickPrefix, channel)
     if error:
-        notice = getConfig(conf.supybot.reply.errorWithNotice) or notice
-        private = getConfig(conf.supybot.reply.errorInPrivate) or private
+        notice =conf.get(conf.supybot.reply.errorWithNotice, channel) or notice
+        private=conf.get(conf.supybot.reply.errorInPrivate, channel) or private
         s = 'Error: ' + s
     if private:
         prefixName = False
@@ -188,7 +185,9 @@ def reply(msg, s, prefixName=True, private=None,
     if action:
         msgmaker = ircmsgs.action
     # Finally, we'll return the actual message.
-    return msgmaker(target, s)
+    ret = msgmaker(target, s)
+    ret.inReplyTo = msg
+    return ret
 
 def error(msg, s, **kwargs):
     """Makes an error reply to msg with the appropriate error payload."""
@@ -405,7 +404,7 @@ class RichReplyMethods(object):
         return plugins.standardSubstitute(self, self.msg, s)
 
     def _getConfig(self, wrapper):
-        return wrapper.get(self.msg.args[0])()
+        return conf.get(wrapper, self.msg.args[0])
     
     def replySuccess(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.success)
