@@ -33,6 +33,7 @@ their caller to have the 'owner' capability.  This plugin is loaded by default.
 """
 
 import supybot
+import supybot.world as world
 
 __author__ = supybot.authors.jemfinch
 
@@ -44,9 +45,8 @@ import config
 import plugin
 reload(plugin) # In case we're being reloaded.
 
-# Backwards compatibility.
-if hasattr(plugin, '__doc__') and plugin.__doc__:
-    __doc__ = plugin.__doc__
+if world.testing:
+    import test
 
 Class = plugin.Class
 configure = config.configure

@@ -29,8 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-
-
 import supybot
 
 import os
@@ -136,6 +134,7 @@ here.
 """
 
 import supybot
+import supybot.world as world
 
 # XXX Replace this with an appropriate author or supybot.Author instance.
 __author__ = supybot.authors.unknown
@@ -148,10 +147,9 @@ import config
 import plugin
 reload(plugin) # In case we\'re being reloaded.
 
-# For backwards compatibility with the old Plugin format.
-if hasattr(plugin, '__doc__') and plugin.__doc__:
-    __doc__ = plugin.__doc__
-
+if world.testing:
+    import test
+    
 Class = plugin.Class
 configure = config.configure
 
