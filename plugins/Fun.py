@@ -72,10 +72,6 @@ class MyFunProxy(object):
         self.s = s
 
 class Fun(callbacks.Privmsg):
-    def __init__(self):
-        self.outFilters = ircutils.IrcDict()
-        callbacks.Privmsg.__init__(self)
-
     def ping(self, irc, msg, args):
         """takes no arguments
 
