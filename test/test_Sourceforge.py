@@ -33,82 +33,73 @@ import re
 
 from testsupport import *
 
-if network:
-    class SourceforgeTest(ChannelPluginTestCase):
-        plugins = ('Sourceforge',)
+import supybot.plugins.Sourceforge
+Sf = conf.supybot.plugins.Sourceforge
+
+class SourceforgeTest(ChannelPluginTestCase):
+    plugins = ('Sourceforge',)
+    if network:
         def testAny(self):
-            m = self.getMsg('bugs --any gaim')
+            m = self.getMsg('trackers --any bugs gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
-            m = self.getMsg('rfes --any gaim')
+            m = self.getMsg('trackers --any rfes gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testClosed(self):
-            m = self.getMsg('bugs --closed gaim')
+            m = self.getMsg('trackers --closed bugs gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
-            m = self.getMsg('rfes --closed gaim')
+            m = self.getMsg('trackers --closed patches gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testDeleted(self):
-            m = self.getMsg('bugs --deleted gaim')
+            m = self.getMsg('trackers --deleted bugs gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
-            m = self.getMsg('rfes --deleted gaim')
+            m = self.getMsg('trackers --deleted rfes gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testOpen(self):
-            m = self.getMsg('bugs --open gaim')
+            m = self.getMsg('trackers --open bugs gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
-            m = self.getMsg('rfes --open gaim')
+            m = self.getMsg('trackers --open rfes gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
-        def testBugs(self):
-            self.assertHelp('bugs')
-            self.assertRegexp('bugs 83423', 'Use the bug command')
+        def testTrackers(self):
+            self.assertHelp('trackers bugs')
+            self.assertRegexp('trackers bugs 83423', 'find the Bug')
             try:
-                original = conf.supybot.plugins.Sourceforge.defaultProject()
-                conf.supybot.plugins.Sourceforge.defaultProject.set('supybot')
-                self.assertRegexp('bugs alkjfi83fa8', 'find the Bugs')
-                self.assertNotError('bugs gaim')
-                self.assertNotError('bugs')
+                original = Sf.defaultProject()
+                Sf.defaultProject.set('supybot')
+                self.assertRegexp('trackers bugs alkjfi83fa8', 'find the Bugs')
+                self.assertNotError('trackers rfes gaim')
+                self.assertNotError('trackers patches')
             finally:
-                conf.supybot.plugins.Sourceforge.defaultProject.set(original)
-
-        def testRfes(self):
-            self.assertHelp('rfes')
-            self.assertRegexp('rfes 83423', 'Use the rfe command')
-            try:
-                original = conf.supybot.plugins.Sourceforge.defaultProject()
-                conf.supybot.plugins.Sourceforge.defaultProject.set('gaim')
-                self.assertNotError('rfes')
-                self.assertRegexp('rfes alkjfi83hfa8', 'find the RFEs')
-                self.assertNotError('rfes gaim')
-            finally:
-                conf.supybot.plugins.Sourceforge.defaultProject.set(original)
+                Sf.defaultProject.set(original)
 
         def testDefaultproject(self):
             try:
-                original = conf.supybot.plugins.Sourceforge.defaultProject()
-                conf.supybot.plugins.Sourceforge.defaultProject.setValue('supybot')
-                self.assertNotError('bugs')
-                conf.supybot.plugins.Sourceforge.defaultProject.setValue('')
-                self.assertHelp('bugs')
+                original = Sf.defaultProject()
+                Sf.defaultProject.setValue('supybot')
+                self.assertNotError('trackers bugs')
+                Sf.defaultProject.setValue('')
+                self.assertHelp('trackers bugs')
             finally:
-                conf.supybot.plugins.Sourceforge.defaultProject.set(original)
+                Sf.defaultProject.set(original)
 
         def testTracker(self):
             bug = r'Bug.*Status.*: \w+'
@@ -121,8 +112,8 @@ if network:
         def testSnarfer(self):
             s = r'.*Status.*: \w+'
             try:
-                original = conf.supybot.plugins.Sourceforge.trackerSnarfer()
-                conf.supybot.plugins.Sourceforge.trackerSnarfer.setValue(True)
+                original = Sf.trackerSnarfer()
+                Sf.trackerSnarfer.setValue(True)
                 self.assertSnarfRegexp('http://sourceforge.net/tracker/index.'
                                        'php?func=detail&aid=589953&group_id='
                                        '58965&atid=489447',
@@ -166,8 +157,7 @@ if network:
                 self.assertSnarfNoResponse('https://sourceforge.net/tracker/?'
                                            'group_id=58965&atid=489447')
             finally:
-                conf.supybot.plugins.Sourceforge.trackerSnarfer.setValue(
-                    original)
+                Sf.trackerSnarfer.setValue(original)
 
         def testTotal(self):
             self.assertRegexp('total bugs gaim', r'\d+ open / \d+ total')
