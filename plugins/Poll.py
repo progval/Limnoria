@@ -140,7 +140,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         db.commit()
         cursor.execute("""SELECT id FROM polls WHERE question=%s""", question)
         id = cursor.fetchone()[0]
-        irc.replySuccess('(poll #%s)' % id)
+        irc.replySuccess('(poll #%s added)' % id)
 
     def close(self, irc, msg, args):
         """[<channel>] <id>
