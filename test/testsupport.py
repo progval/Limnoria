@@ -337,7 +337,11 @@ class ChannelPluginTestCase(PluginTestCase):
                 # Strip off nick: at beginning of response.
                 if args[1].startswith(self.nick) or \
                    args[1].startswith(ircutils.nickFromHostmask(self.prefix)):
-                    args[1] = args[1].split(' ', 1)[1]
+                    try:
+                        args[1] = args[1].split(' ', 1)[1]
+                    except IndexError:
+                        # Odd.  We'll skip this.
+                        pass
                 ret = ircmsgs.privmsg(*args)
             else:
                 ret = response
