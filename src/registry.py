@@ -132,6 +132,9 @@ class Group(object):
                 self.setValue(*args)
         self.X = X
 
+    def __call__(self):
+        raise ValueError, 'Groups have no value.'
+
     def __nonExistentEntry(self, attr):
         s = '%s is not a valid entry in %s' % (attr, self.name)
         raise NonExistentRegistryEntry, s
