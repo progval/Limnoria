@@ -39,6 +39,7 @@ import re
 import sets
 import time
 import getopt
+import socket
 import urllib2
 
 import google
