@@ -83,9 +83,12 @@ class UserCommands(callbacks.Privmsg):
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
         if not self._checkNotChannel(irc, msg, password):
             return
+        if not ircutils.isUserHostmask(hostmask):
+            irc.error(msg, 'That\'s not a valid hostmask.')
+            return
         s = hostmask.translate(string.ascii, '!@*?')
         if len(s) < 10:
-            s = 'Hostmask must be more than 10 non-wildcard characters.'
+            s = 'Hostmask must contain more than 10 non-wildcard characters.'
             irc.error(msg, s)
             return
         try:
