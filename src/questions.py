@@ -37,13 +37,25 @@ def expect(prompt, possibilities, recursed=False):
         prompt = '%s [%s]' % (prompt, '/'.join(possibilities))
     prompt = prompt.strip() + ' '
     s = raw_input(prompt)
+    s = s.strip()
     if possibilities:
         if s in possibilities:
-            return s.strip()
+            return s
         else:
             return expect(originalPrompt, possibilities, recursed=True)
     else:
         return s.strip()
+
+def expectWithDefault(prompt, possibilities, default):
+    prompt = prompt.strip() + ' '
+    prompt = '%s [%s] (default: %s) ' % \
+             (prompt.strip(), '/'.join(possibilities), default)
+    s = raw_input(prompt)
+    s = s.strip()
+    if s in possibilities:
+        return s
+    else:
+        return default
 
 def anything(prompt):
     return expect(prompt, [])
