@@ -153,11 +153,11 @@ class DBHandler(object):
 
 
 def makeChannelFilename(filename, channel=None, dirname=None):
-    channel = ircutils.toLower(channel)
     # ??? This may not be right.
     filename = os.path.basename(filename)
     if channel is not None and \
        conf.get(conf.supybot.databases.plugins.channelSpecific, channel):
+        channel = ircutils.toLower(channel)
         if dirname is None:
             dir = conf.supybot.directories.data.dirize(channel)
         else:
