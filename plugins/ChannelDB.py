@@ -574,10 +574,11 @@ class ChannelDB(plugins.ChannelDBHandler,
                     irc.error(msg, 'No one has said %r' % word)
                     return
                 results = cursor.fetchall()
+                maxResults = 3
                 ers = '%rer' % word
-                ret = 'Top %s: ' % utils.nItems(cursor.rowcount, ers)
+                ret = 'Top %s: ' % utils.nItems(maxResults, ers)
                 L = []
-                for (count, id) in results[:3]:
+                for (count, id) in results[:maxResults]:
                     username = ircdb.users.getUser(id).name
                     L.append('%s: %s' % (username, count))
                 try:
@@ -585,8 +586,8 @@ class ChannelDB(plugins.ChannelDBHandler,
                     rank = 1
                     for (_, userId) in results:
                         if userId == id:
-                            s = 'You are ranked %s out of %s %rers.' % \
-                                (rank, len(L), utils.nItems(rank, ers))
+                            s = 'You are ranked %s out of %s.' % \
+                                (rank, utils.nItems(len(results), ers))
                             break
                         else:
                             rank += 1
