@@ -213,6 +213,17 @@ class MiscCommands(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
     bug = privmsgs.thread(bug)
 
+    def hostmask(self, irc, msg, args):
+        """<nick>
+
+        Returns the hostmask of <nick>.
+        """
+        nick = privmsgs.getArgs(args)
+        try:
+            irc.reply(msg, irc.state.nickToHostmask(nick))
+        except KeyError:
+            irc.error(msg, 'I haven\'t seen anyone named %r' % nick)
+
     def version(self, irc, msg, args):
         """takes no arguments
 
