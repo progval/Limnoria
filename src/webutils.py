@@ -49,6 +49,8 @@ def getUrlFd(url):
             raise WebError, 'Connection refused.'
         elif e.args[0] in (110, 10060):
             raise WebError, 'Connection timed out.'
+        elif e.args[0] == 104:
+            raise WebError, 'Connection reset by peer.'
         else:
             raise WebError, str(e)
     except (urllib2.HTTPError, urllib2.URLError), e:
