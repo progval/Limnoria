@@ -103,12 +103,20 @@ conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'replaceMethod',
 conf.registerGlobalValue(conf.supybot.plugins.BadWords,'simpleReplacement',
     registry.String('[CENSORED]', """Determines what word will replace bad
     words if the replacement method is 'simple'."""))
+conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'stripFormatting',
+    registry.Boolean(True, """Determines whether the bot will strip
+    formatting characters from messages before it checks them for bad words.
+    If this is False, it will be relatively trivial to circumvent this plugin's
+    filtering.  If it's True, however, it will interact poorly with other
+    plugins that do coloring or bolding of text."""))
 
 class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     priority = 1
     capability = 'admin'
     def __init__(self):
         privmsgs.CapabilityCheckingPrivmsg.__init__(self)
+        # This is so we can not filter certain outgoing messages (like list,
+        # which would be kinda useless if it were filtered).
         self.filtering = True
         self.lastModified = 0
         self.words = conf.supybot.plugins.BadWords.words
@@ -130,7 +138,8 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
                 self.makeRegexp(self.words())
                 self.lastModified = time.time()
             s = msg.args[1]
-            s = ircutils.stripFormatting(s)
+            if self.registryValue('stripFormatting'):
+                s = ircutils.stripFormatting(s)
             s = self.regexp.sub(self.sub, s)
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
