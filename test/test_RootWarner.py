@@ -31,31 +31,30 @@
 
 from testsupport import *
 
-class RootWarnerTestCase(PluginTestCase):
+class RootWarnerTestCase(ChannelPluginTestCase):
     plugins = ('RootWarner',)
-    config = {'supybot.reply.whenNotCommand': False}
-    
+
     def test(self):
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
-        self.assertNotError(' ')
+        self.assertSnarfNotError(' ')
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!~root@host'))
-        self.assertNotError(' ')
+        self.assertSnarfNotError(' ')
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!~foo@host'))
-        self.assertNoResponse(' ', 1)
+        self.assertSnarfNoResponse(' ', 1)
 
     def testConfigWarn(self):
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
-        self.assertNotError(' ')
+        self.assertSnarfNotError(' ')
         try:
             conf.supybot.plugins.RootWarner.warn.setValue(False)
             self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
-            self.assertNoResponse(' ', 1)
+            self.assertSnarfNoResponse(' ', 1)
         finally:
             conf.supybot.plugins.RootWarner.warn.setValue(True)
 
     def testConfigKick(self):
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
-        self.assertNotError(' ')
+        self.assertSnarfNotError(' ')
         try:
             conf.supybot.plugins.RootWarner.warn.setValue(False)
             conf.supybot.plugins.RootWarner.kick.setValue(True)
@@ -65,12 +64,6 @@ class RootWarnerTestCase(PluginTestCase):
         finally:
             conf.supybot.plugins.RootWarner.warn.setValue(True)
             conf.supybot.plugins.RootWarner.kick.setValue(False)
-
-
-
-
-
-
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
