@@ -130,7 +130,8 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             optionstr = 'This poll has no options yet'
         else:
             options = cursor.fetchall()
-            optionstr = 'Options: ' + ' '.join(['%s: %r' % t for t in options])
+            optionstr = 'Options: %s' %\
+                    ' '.join(['%s: %r' % tuple(t) for t in options])
         pollstr = 'Poll #%s: %r started by %s.  %s.  Poll is %s.' % \
                   (poll_id, question, starter, optionstr, statusstr)
         irc.reply(pollstr)
@@ -319,7 +320,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         if cursor.rowcount == 0:
             irc.reply('This channel currently has no open polls.')
         else:
-            polls = ['#%s: %r' % t for t in cursor.fetchall()]
+            polls = ['#%s: %r' % tuple(t) for t in cursor.fetchall()]
             irc.reply(utils.commaAndify(polls))
 
 Class = Poll
