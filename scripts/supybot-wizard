@@ -364,12 +364,12 @@ def main():
     if yn('Do you want to set such a password?', default=False):
         network.password.set(getpass())
 
-    # conf.supybot.channels
+    # conf.supybot.networks.<network>.channels
     output("""Of course, having an IRC bot isn't the most useful thing in the
     world unless you can make that bot join some channels.""")
     if yn('Do you want your bot to join some channels when he connects?',
           default=True):
-        defaultChannels = ' '.join(conf.supybot.channels())
+        defaultChannels = ' '.join(network.channels())
         output("""Separate channels with spaces.  If the channel is locked
                   with a key, follow the channel name with the key separated
                   by a comma. For example:
@@ -377,7 +377,7 @@ def main():
         while True:
             channels = something('What channels?', default=defaultChannels)
             try:
-                conf.supybot.channels.set(channels)
+                network.channels.set(channels)
                 break
             except registry.InvalidRegistryValue:
                 # FIXME: say which ones weren't channels.
@@ -386,7 +386,7 @@ def main():
                 those channels, really).  Be sure the channel key (if you are
                 supplying one) does not contain a comma.""")
     else:
-        conf.supybot.channels.setValue([])
+        network.channels.setValue([])
 
     ###
     # Plugins
