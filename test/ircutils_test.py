@@ -38,6 +38,7 @@ class FunctionsTestCase(unittest.TestCase):
     hostmask = 'foo!bar@baz'
     def testIsUserHostmask(self):
         self.failUnless(ircutils.isUserHostmask(self.hostmask))
+        self.failUnless(ircutils.isUserHostmask('a!b@c'))
         self.failIf(ircutils.isUserHostmask('!bar@baz'))
         self.failIf(ircutils.isUserHostmask('!@baz'))
         self.failIf(ircutils.isUserHostmask('!bar@'))
@@ -48,7 +49,6 @@ class FunctionsTestCase(unittest.TestCase):
         self.failIf(ircutils.isUserHostmask('!'))
         self.failIf(ircutils.isUserHostmask('@'))
         self.failIf(ircutils.isUserHostmask('!bar@baz'))
-        self.failIf(ircutils.isUserHostmask('a!b@c'))
 
     def testIsChannel(self):
         self.failUnless(ircutils.isChannel('#'))
@@ -61,6 +61,17 @@ class FunctionsTestCase(unittest.TestCase):
         self.failUnless(ircutils.isChannel('!foo'))
         self.failIf(ircutils.isChannel('foo'))
         self.failIf(ircutils.isChannel(''))
+
+    def testBold(self):
+        s = ircutils.bold('foo')
+        self.assertEqual(s[0], '\x02')
+        self.assertEqual(s[-1], '\x02')
+        
+    def testSafeArgument(self):
+        s = 'I have been running for 9 seconds'
+        bolds = ircutils.bold(s)
+        self.assertEqual(s, ircutils.safeArgument(s))
+        self.assertEqual(bolds, ircutils.safeArgument(bolds))
 
     def testIsIP(self):
         self.failIf(ircutils.isIP('a.b.c'))
