@@ -521,9 +521,6 @@ class Irc(IrcCommandDispatcher):
 
     def reset(self):
         """Resets the Irc object.  Called when the driver reconnects."""
-        if self.zombie:
-            self._reallyDie()
-            return
         self._setNonResettingVariables()
         self.state.reset()
         self.queue.reset()
@@ -549,7 +546,10 @@ class Irc(IrcCommandDispatcher):
         self.outstandingPing = False
 
     def _queueConnectMessages(self):
-        if not self.zombie:
+        if self.zombie:
+            self.driver.die()
+            self._reallyDie()
+        else:
             if self.password:
                 log.info('Sending PASS command, not logging the password.')
                 self.queueMsg(ircmsgs.password(self.password))
