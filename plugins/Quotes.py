@@ -140,14 +140,14 @@ class Quotes(DBHandler, callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT quote FROM quotes
+        cursor.execute("""SELECT (id, quote) FROM quotes
                           ORDER BY random()
                           LIMIT 1""")
 	if cursor.rowcount != 1:
             irc.error(msg, 'It seems that quote database is empty.')
             return
-        quote = cursor.fetchone()[0]
-        irc.reply(msg, quote)
+        (id, quote) = cursor.fetchone()
+        irc.reply(msg, '%s [#%s]' % (quote, id))
         return
 
     def quoteinfo(self, irc, msg, args):
