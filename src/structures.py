@@ -39,9 +39,10 @@ from fix import *
 
 import types
 
-__all__ = ['RingBuffer', 'queue', 'MaxLengthQueue']
+__all__ = ['RingBuffer', 'queue', 'smallqueue', 'MaxLengthQueue']
 
 class RingBuffer(object):
+    """Class to represent a fixed-size ring buffer."""
     __slots__ = ('L', 'i', 'full', 'maxSize')
     def __init__(self, maxSize, seq=()):
         if maxSize <= 0:
@@ -159,6 +160,9 @@ class RingBuffer(object):
 
 
 class queue(object):
+    """Queue class for handling large queues.  Queues smaller than 1,000 or so
+    elements are probably better served by the smallqueue class.
+    """
     __slots__ = ('front', 'back')
     def __init__(self, seq=()):
         self.back = []
@@ -278,6 +282,17 @@ class queue(object):
         L.reverse()
         self.front = L
         self.back = []
+
+class smallqueue(list):
+    __slots__ = ()
+    def enqueue(self, elt):
+        self.append(elt)
+
+    def dequeue(self):
+        return self.pop(0)
+
+    def peek(self):
+        return self[0]
 
 
 class MaxLengthQueue(queue):
