@@ -373,7 +373,7 @@ def join(channel, key=None, prefix=''):
     if key is None:
         return IrcMsg(prefix=prefix, command='JOIN', args=(channel,))
     else:
-        assert key.translate(string.ascii, string.ascii[128:]) == '' and \
+        assert key.translate(string.ascii, string.ascii[128:]) == key and \
                '\x00' not in key and \
                '\r' not in key and \
                '\n' not in key and \
@@ -395,7 +395,7 @@ def joins(channels, keys=None, prefix=''):
                       args=(','.join(channels),))
     else:
         for key in keys:
-            assert key.translate(string.ascii, string.ascii[128:]) == '' and \
+            assert key.translate(string.ascii, string.ascii[128:]) == key and \
                    '\x00' not in key and \
                    '\r' not in key and \
                    '\n' not in key and \
