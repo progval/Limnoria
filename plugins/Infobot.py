@@ -111,6 +111,13 @@ class InfobotDB(object):
     def close(self):
         self.flush()
 
+    def changeIs(self, factoid, replacer):
+        old = self._is[factoid]
+        if replacer is not None:
+            self._is[factoid] = replacer(old)
+            self._changes += 1
+            self.flush()
+
     def getIs(self, factoid):
         ret = self._is[factoid]
         self._responses += 1
@@ -128,6 +135,13 @@ class InfobotDB(object):
 
     def hasIs(self, factoid):
         return factoid in self._is
+
+    def changeAre(self, factoid, replacer):
+        old = self._are[factoid]
+        if replacer is not None:
+            self._are[factoid] = replacer(old)
+            self._changes += 1
+            self.flush()
 
     def getAre(self, factoid):
         ret = self._are[factoid]
@@ -163,7 +177,7 @@ class Dunno(Exception):
     pass
 
 class Infobot(callbacks.PrivmsgCommandAndRegexp):
-    regexps = ['doForget', 'doFactoid', 'doUnknown']
+    regexps = ['doForget', 'doChange', 'doFactoid', 'doUnknown']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         try:
@@ -291,8 +305,10 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                     tokens = callbacks.tokenize(payload)
                     if callbacks.findCallbackForCommand(irc, tokens[0]):
                         return
-                    else:
+                    elif '=~' not in payload:
                         payload += '?'
+                    else:       # Looks like we have a doChange expression
+                        pass
                 except SyntaxError:
                     pass
             if payload.endswith(irc.nick):
@@ -334,6 +350,31 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             # XXX: Should this be genericified?
             irc.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
 
+    def doChange(self, irc, msg, match):
+        r"^(.+)\s+=~\s+(.+)$"
+        (fact, regexp) = match.groups()
+        changed = False
+        try:
+            r = utils.perlReToReplacer(regexp)
+        except ValueError, e:
+            if self.addressed:
+                irc.error('Invalid regexp: %s' % regexp)
+                return
+            else:
+                self.log.info('Invalid regexp: %s' % regexp)
+                return
+        for method in [self.db.changeIs, self.db.changeAre]:
+            try:
+                method(fact, r)
+                changed = True
+            except KeyError:
+                pass
+        if changed:
+            self.confirm()
+        else:
+            # XXX: Should this be genericified?
+            irc.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
+
     def doUnknown(self, irc, msg, match):
         r"^(.+?)\?[?!. ]*$"
         key = match.group(1)
@@ -341,7 +382,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.factoid(key) # Does the dunno'ing for us itself.
 
     def invalidCommand(self, irc, msg, tokens):
-        self.replied = True
+            irc.finished = True
 
     def doFactoid(self, irc, msg, match):
         r"^(.+)\s+(?<!\\)(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
