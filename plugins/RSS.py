@@ -30,7 +30,21 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Provides basic functionality for handling RSS/RDF feeds.  Depends on the Alias
+module for user-friendliness: instead of:
+
+rsstitles http://slashdot.org/slashdot.rss
+
+It'll make the alias:
+
+alias slashdot rsstitles http://slashdot.org/slashdot.rss
+
+And you'll be able to call the command like this:
+
+slashdot
+
+Commands include:
+  rsstitles
 """
 
 from baseplugin import *
@@ -43,44 +57,49 @@ import rssparser
 import privmsgs
 import callbacks
 
-def makeHeadlines(name, url, docstring, timeLimit=1800, title='title'):
-    timeAttr = '_%sTime' % name
-    responseAttr = '_%sResponse' % name
-    def f(self, irc, msg, args):
-        now = time.time()
-        if not hasattr(self, timeAttr) or \
-               now - getattr(self, timeAttr) > timeLimit:
-            results = rssparser.parse(url)
-            headlines = [x[title] for x in results['items']]
-            while reduce(operator.add, map(len, headlines)) > 350:
-                headlines.pop()
-            setattr(self, responseAttr, ' :: '.join(headlines))
-            setattr(self, timeAttr, now)
-        irc.reply(msg, getattr(self, responseAttr))
-    f.__doc__ = docstring
-    return f
+def configure(onStart, afterConnect, advanced):
+    from questions import expect, anything, something, yn
+    onStart.append('load RSS')
+    if yn('RSS depends on the Alias module.  Is that module loaded?') == 'n':
+        if yn('Do you want to load that module now?') == 'y':
+            onStart.append('load Alias')
+        else:
+            print 'You can still use the RSS module, but you won\'t be asked'
+            print 'any further questions.'
+            return
+    prompt = 'Would you like to add an RSS feed?'
+    while yn(prompt) == 'y':
+        prompt = 'Would you like to add another RSS feed?'
+        name = anything('What\'s the name of the website?')
+        url = anything('What\'s the URL of the RSS feed?')
+        onStart.append('alias %s "rsstitles %s"' % (name, url))
+        
 
 class RSS(callbacks.Privmsg):
     threaded = True
-    slashdot = makeHeadlines('slashdot', 'http://slashdot.org/slashdot.rss',
-                             """takes no arguments
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.lastRequest = {}
+        self.responses = {}
 
-        Returns the current headlines on slashdot.org, News for Nerds, Stuff
-        that Matters.
-        """)
-    arstechnica = makeHeadlines('arstechnica',
-                                'http://arstechnica.com/etc/rdf/ars.rdf',
-                                """takes no arguments
+    def rsstitles(self, irc, msg, args):
+        """<url>
 
-        Returns the current headlines on arstechnica.com, the pc enthusiast's
-        resource.
-        """)
-    advogato = makeHeadlines('advogato',
-                             'http://advogato.org/rss/articles.xml',
-                             """takes no arguments
-
-        Returns the current headlines on advogato.org.
-        """)
+        Gets the title components of the given RSS feed.
+        """
+        url = privmsgs.getArgs(args)
+        now = time.time()
+        if url not in self.lastRequest or now - self.lastRequest[url] > 1800:
+            results = rssparser.parse(url)
+            headlines = [d['title'] for d in results['items']]
+            while reduce(operator.add, map(len, headlines), 0) > 350:
+                headlines.pop()
+            if not headlines:
+                irc.error(msg, 'Error grabbing RSS feed')
+                return
+            self.responses[url] = ' :: '.join(headlines)
+            self.lastRequest[url] = now
+        irc.reply(msg, self.responses[url])
 
 
 Class = RSS
