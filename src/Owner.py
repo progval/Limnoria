@@ -414,7 +414,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     irc.reply('%s: %s' % (utils.exnToString(e),
                                           utils.quoted(s)))
                 except Exception, e:
-                    self.log.exception('Uncaught exception in Owner.eval.  '
+                    self.log.exception('Uncaught exception in Owner.eval.\n'
                                        'This is not a bug.  Please do not '
                                        'report it.')
                     irc.reply(utils.exnToString(e))
@@ -463,7 +463,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 irc.queueMsg(ircmsgs.privmsg(channel, text))
     announce = wrap(announce, ['text'])
 
-    def defaultplugin(self, irc, msg, args):
+    def defaultplugin(self, irc, msg, args, optlist, command, plugin):
         """[--remove] <command> [<plugin>]
 
         Sets the default plugin for <command> to <plugin>.  If --remove is
@@ -471,12 +471,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         is given, returns the current default plugin set for <command>.
         """
         remove = False
-        (optlist, rest) = getopt.getopt(args, '', ['remove'])
         for (option, arg) in optlist:
-            if option == '--remove':
+            if option == 'remove':
                 remove = True
-        (command, plugin) = privmsgs.getArgs(rest, optional=1)
-        command = callbacks.canonicalName(command)
         cbs = callbacks.findCallbackForCommand(irc, command)
         if remove:
             try:
@@ -488,12 +485,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         elif not cbs:
             irc.errorInvalid('command', command)
         elif plugin:
-            cb = irc.getCallback(plugin)
-            if cb is None:
-                irc.errorInvalid('plugin', plugin)
-            if not cb.isCommand(command):
+            if not plugin.isCommand(command):
                 irc.errorInvalid('command in the %s plugin' % plugin, command)
-            registerDefaultPlugin(command, plugin)
+            registerDefaultPlugin(command, plugin.name())
             irc.replySuccess()
         else:
             try:
@@ -501,6 +495,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             except registry.NonExistentRegistryEntry:
                 s = 'I don\'t have a default plugin set for that command.'
                 irc.error(s)
+    defaultplugin = wrap(defaultplugin, [getopts({'remove': ''}),
+                                         'commandName',
+                                         additional('plugin')])
 
     def ircquote(self, irc, msg, args, s):
         """<string to be sent to the server>
@@ -695,7 +692,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     defaultcapability = wrap(defaultcapability,
                              [('literal', ['add','remove']), 'capability'])
 
-    def disable(self, irc, msg, args):
+    def disable(self, irc, msg, args, plugin, command):
         """[<plugin>] <command>
 
         Disables the command <command> for all users (including the owners).
@@ -704,17 +701,22 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         a default capability of -plugin.command or -command (if you want to
         disable the command in all plugins).
         """
-        (plugin, command) = privmsgs.getArgs(args, optional=1)
-        if not command:
-            (plugin, command) = (None, plugin)
-            conf.supybot.commands.disabled().add(command)
-        else:
-            conf.supybot.commands.disabled().add('%s.%s' % (plugin, command))
         if command in ('enable', 'identify'):
             irc.error('You can\'t disable %s.' % command)
+            return
+        if plugin:
+            if plugin.isCommand(command):
+                pluginCommand = '%s.%s' % (plugin.name(), command)
+                conf.supybot.commands.disabled().add(pluginCommand)
+            else:
+                irc.error('%s is not a command in the %s plugin.' %
+                          (command, plugin.name()))
+                return
         else:
-            self._disabled.add(command, plugin)
-            irc.replySuccess()
+            conf.supybot.commands.disabled().add(command)
+        self._disabled.add(command, plugin)
+        irc.replySuccess()
+    disable = wrap(disable, [optional('plugin'), 'commandName'])
 
     def enable(self, irc, msg, args):
         """[<plugin>] <command>
