@@ -323,10 +323,10 @@ def standardSubstitute(irc, msg, text):
     else:
         channel = None
     if channel:
-        text = _randomnickRe.sub('anyone', text)
-    else:
         user = random.choice(list(irc.state.channels[channel].users))
         text = _randomnickRe.sub(user, text)
+    else:
+        text = _randomnickRe.sub('anyone', text)
     t = pow(2,30)*random.random()+time.time()/4.0 
     text = _randomdateRe.sub(time.ctime(t), text)
     text = _randomintRe.sub(str(random.randint(-1000, 1000)), text)

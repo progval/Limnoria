@@ -90,12 +90,14 @@ class ToggleDictionaryTestCase(unittest.TestCase):
                         '(bar: Off; foo: Off)')
 
 
+class holder:
+    users = sets.Set(['foo', 'bar', 'baz'])
+
 class FunctionsTestCase(unittest.TestCase):
     class irc:
         class state:
-            users = sets.Set(['foo', 'bar', 'baz'])
+            channels = {'#foo': holder()}
         nick = 'foobar'
-        pass
     def testStandardSubstitute(self):
         msg = ircmsgs.privmsg('#foo', 'filler', prefix='biff!quux@xyzzy')
         s = plugins.standardSubstitute(self.irc, msg, '$randomint')
@@ -115,6 +117,8 @@ class FunctionsTestCase(unittest.TestCase):
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$randomdate'))
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$today'))
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$now'))
+        n = plugins.standardSubstitute(self.irc, msg, '$randomnick')
+        self.failUnless(n in self.irc.state.channels['#foo'].users)
         
         
         
