@@ -141,11 +141,11 @@ class RSS(callbacks.Privmsg):
                 oldheadlines = []
             newresults = self.getFeed(url)
             newheadlines = self.getHeadlines(newresults)
-            def canonicalize(headline):
+            def canonize(headline):
                 return (tuple(headline[0].lower().split()), headline[1])
-            oldheadlines = set(map(canonicalize, oldheadlines))
+            oldheadlines = set(map(canonize, oldheadlines))
             for (i, headline) in enumerate(newheadlines):
-                if canonicalize(headline) in oldheadlines:
+                if canonize(headline) in oldheadlines:
                     newheadlines[i] = None
             newheadlines = filter(None, newheadlines) # Removes Nones.
             if newheadlines:
