@@ -39,8 +39,6 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
-import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 class ChannelStat(irclib.IrcCommandDispatcher):
