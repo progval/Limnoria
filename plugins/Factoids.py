@@ -40,6 +40,7 @@ import string
 import os.path
 from itertools import imap
 
+import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
@@ -49,15 +50,6 @@ import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-
-import supybot.Owner as Owner
-
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
-
 
 conf.registerPlugin('Factoids')
 
@@ -259,6 +251,8 @@ class SqliteFactoidsDB(object):
             return None
         else:
             return cursor.fetchall()
+
+FactoidsDB = plugins.DB('Factoids', {'sqlite': SqliteFactoidsDB})
 
 class Factoids(callbacks.Privmsg):
     def __init__(self):
