@@ -603,6 +603,8 @@ def whois(nick, mask='', prefix=''):
 def mode(channel, args=None, prefix=''):
     if args is None:
         args = ()
+    elif isinstance(args, basestring):
+        args = (args,)
     else:
         args = tuple(args)
     return IrcMsg(prefix=prefix, command='MODE', args=(channel,)+args)
