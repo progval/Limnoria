@@ -54,8 +54,7 @@ class User(callbacks.Privmsg):
         if password and ircutils.isChannel(msg.args[0]):
             irc.error(msg, conf.replyRequiresPrivacy)
             return False
-        else:
-            return True
+        else: return True
 
     def list(self, irc, msg, args):
         """[<glob>]
@@ -72,17 +71,16 @@ class User(callbacks.Privmsg):
         else:
             def p(s):
                 return True
-        users = ifilter(p, ifilter(None, ircdb.users.users))
-        users = [u.name for u in users]
-        assert users, 'There should be a bot user first.'
-        if users[0] != irc.nick:
-            self.log.warning('First user isn\'t the bot nick: %s' % users[0])
-        del users[0] # The bot user.  Implementation detail.
+        users = [u.name for u in ircdb.users.users[1:] if u is not None]
+        users = filter(p, users)
         if users:
             utils.sortBy(str.lower, users)
             irc.reply(msg, utils.commaAndify(users))
         else:
-            irc.reply(msg, 'There are no registered users.')
+            if glob:
+                irc.reply(msg, 'There are no matching registered users.')
+            else:
+                irc.reply(msg, 'There are no registered users.')
 
     def register(self, irc, msg, args):
         """[--hashed] <name> <password>
