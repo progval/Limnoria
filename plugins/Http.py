@@ -286,17 +286,21 @@ class Http(callbacks.Privmsg):
         fd = webutils.getUrlFd('http://kernel.org/kdist/finger_banner')
         try:
             stable = 'unknown'
-            beta = 'unknown'
+            snapshot = 'unknown'
+            mm = 'unknown'
             for line in fd:
                 (name, version) = line.split(':')
                 if 'latest stable' in name:
                     stable = version.strip()
-                elif 'latest beta' in name:
-                    beta = version.strip()
+                elif 'snapshot for the stable' in name:
+                    snapshot = version.strip()
+                elif '-mm patch' in name:
+                    mm = version.strip()
         finally:
             fd.close()
         irc.reply('The latest stable kernel is %s; '
-                  'the latest beta kernel is %s.' % (stable, beta))
+                  'the latest snapshot of the stable kernel is %s; '
+                  'the latest beta kernel is %s.' % (stable, snapshot, mm))
 
     _pgpkeyre = re.compile(r'pub\s+\d{4}\w/<a href="([^"]+)">'
                            r'([^<]+)</a>[^>]+>([^<]+)</a>')
