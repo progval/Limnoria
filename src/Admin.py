@@ -63,7 +63,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         self.joins = {}
 
     def do376(self, irc, msg):
-        channels = conf.supybot.channels()
+        channels = list(conf.supybot.channels())
         utils.sortBy(lambda s: ',' not in s, channels)
         keys = []
         chans = []
@@ -132,7 +132,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             if conf.supybot.alwaysJoinOnInvite() or \
                ircdb.checkCapability(msg.prefix, 'admin'):
                 irc.queueMsg(ircmsgs.join(channel))
-                conf.supybot.channels().append(channel)
+                conf.supybot.channels().add(channel)
     
     def join(self, irc, msg, args):
         """<channel>[,<key>] [<channel>[,<key>] ...]
@@ -157,7 +157,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             if not ircutils.isChannel(channel):
                 irc.error('%r is not a valid channel.' % channel)
                 return
-            conf.supybot.channels().append(original)
+            conf.supybot.channels().add(original)
         irc.queueMsg(ircmsgs.joins(channels, keys))
         for channel in channels:
             self.joins[channel] = (irc, msg)

@@ -67,7 +67,7 @@ def configure(advanced):
 
 conf.registerPlugin('Parter')
 conf.registerGlobalValue(conf.supybot.plugins.Parter, 'channels',
-    conf.SpaceSeparatedListOfChannels([], """Determines what channels the bot
+    conf.SpaceSeparatedSetOfChannels([], """Determines what channels the bot
     will automatically part whenever it joins them."""))
 
 class Parter(callbacks.Privmsg):

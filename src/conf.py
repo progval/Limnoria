@@ -108,13 +108,14 @@ what server the bot connects to."""))
 supybot.register('password', registry.String('', """Determines the password to
 be sent to the server if it requires one."""))
 
-class SpaceSeparatedListOfChannels(registry.SeparatedListOf):
+class SpaceSeparatedSetOfChannels(registry.SeparatedListOf):
+    List = ircutils.IrcSet
     Value = ValidChannel
     def splitter(self, s):
         return s.split()
     joiner = ' '.join
 
-supybot.register('channels', SpaceSeparatedListOfChannels(['#supybot'], """
+supybot.register('channels', SpaceSeparatedSetOfChannels(['#supybot'], """
 Determines what channels the bot will join when it connects to the server."""))
 
 class ValidPrefixChars(registry.String):
