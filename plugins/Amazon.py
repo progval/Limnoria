@@ -42,8 +42,10 @@ import amazon
 
 import conf
 import utils
+import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -63,10 +65,18 @@ def configure(onStart, afterConnect, advanced):
         print 'You can apply for a key at http://www.amazon.com/webservices'
         
 
-class Amazon(callbacks.Privmsg):
+class Amazon(callbacks.Privmsg,configurable.Mixin):
     threaded = True
+    configurables = configurable.Dictionary(
+        [('bold', configurable.BoolType, True,
+         """Determines whether the results are bolded.""")]
+    )
 
-    def _genResults(self, reply, attribs, items, url):
+    def __init__(self):
+        configurable.Mixin.__init__(self)
+        callbacks.Privmsg.__init__(self)
+    
+    def _genResults(self, reply, attribs, items, url, bold, bold_item):
         results = {}
         res = []
         if isinstance(items, amazon.Bag):
@@ -79,6 +89,8 @@ class Amazon(callbacks.Privmsg):
                         results[v] = getattr(results[v], k[:-1], 'unknown')
                     if not isinstance(results[v], basestring):
                         results[v] = utils.commaAndify(results[v])
+                if bold and bold_item in results:
+                    results[bold_item] = ircutils.bold(results[bold_item])
                 if not url:
                     results['url'] = ''
                 else:
@@ -128,7 +140,8 @@ class Amazon(callbacks.Privmsg):
             '%(publisher)s%(url)s'
         try:
             book = amazon.searchByKeyword(isbn)
-            res = self._genResults(s, attribs, book, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, book, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -160,7 +173,8 @@ class Amazon(callbacks.Privmsg):
             '%(publisher)s%(url)s'
         try:
             books = amazon.searchByKeyword(keyword)
-            res = self._genResults(s, attribs, books, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -198,7 +212,8 @@ class Amazon(callbacks.Privmsg):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             videos = amazon.searchByKeyword(keyword, product_line=product)
-            res = self._genResults(s, attribs, videos, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, videos, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -228,7 +243,8 @@ class Amazon(callbacks.Privmsg):
         s = '"%(title)s"%(url)s'
         try:
             item = amazon.searchByASIN(asin)
-            res = self._genResults(s, attribs, item, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -261,7 +277,8 @@ class Amazon(callbacks.Privmsg):
         s = '"%(title)s" %(manufacturer)s%(url)s'
         try:
             item = amazon.searchByUPC(upc)
-            res = self._genResults(s, attribs, item, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -293,7 +310,8 @@ class Amazon(callbacks.Privmsg):
             '%(publisher)s%(url)s'
         try:
             books = amazon.searchByAuthor(author)
-            res = self._genResults(s, attribs, books, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -390,7 +408,8 @@ class Amazon(callbacks.Privmsg):
             '%(publisher)s%(url)s'
         try:
             items = amazon.searchByArtist(artist, product_line=product)
-            res = self._genResults(s, attribs, items, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -429,7 +448,8 @@ class Amazon(callbacks.Privmsg):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             items = amazon.searchByActor(actor, product_line=product)
-            res = self._genResults(s, attribs, items, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -468,7 +488,8 @@ class Amazon(callbacks.Privmsg):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             items = amazon.searchByDirector(director, product_line=product)
-            res = self._genResults(s, attribs, items, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
@@ -506,7 +527,8 @@ class Amazon(callbacks.Privmsg):
         try:
             items = amazon.searchByManufacturer(manufacturer,
                                                 product_line=product)
-            res = self._genResults(s, attribs, items, url)
+            bold = self.configurables.get('bold', msg.args[0])
+            res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(msg, utils.commaAndify(res))
                 return
