@@ -651,6 +651,14 @@ class IrcObjectProxy(RichReplyMethods):
                         return (maxL, [cb])
             except registry.NonExistentRegistryEntry:
                 pass # No default plugin defined.
+            important = defaultPlugins.importantPlugins()
+            important = map(canonicalName, important)
+            importants = []
+            for cb in cbs:
+                if cb.canonicalName() in important:
+                    importants.append(cb)
+            if len(importants) == 1:
+                return (maxL, importants)
         return (maxL, cbs)
 
     def finalEval(self):
