@@ -315,7 +315,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         defaults to open bugs.
         """
         self._trackers(irc, args, msg, optlist, project, 'bugs')
-    bugs = wrap(bugs, [getopts(_optDict), additional('text', '')])
+    bugs = wrap(bugs, [getopts(_optDict), additional('something', '')])
 
     def rfes(self, irc, msg, args, optlist, project):
         """[--{any,open,closed,deleted,pending}] [<project>]
@@ -325,7 +325,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         defaults to open rfes.
         """
         self._trackers(irc, args, msg, optlist, project, 'rfes')
-    rfes = wrap(rfes, [getopts(_optDict), additional('text', '')])
+    rfes = wrap(rfes, [getopts(_optDict), additional('something', '')])
 
     def patches(self, irc, msg, args, optlist, project):
         """[--{any,open,closed,deleted,pending}] [<project>]
@@ -335,7 +335,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         defaults to open patches.
         """
         self._trackers(irc, args, msg, optlist, project, 'patches')
-    patches = wrap(patches, [getopts(_optDict), additional('text', '')])
+    patches = wrap(patches, [getopts(_optDict), additional('something', '')])
 
     _intRe = re.compile(r'(\d+)')
     _percentRe = re.compile(r'([\d.]+%)')
@@ -400,7 +400,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
 
     _totbugs = re.compile(r'Bugs</a>\s+?\( <b>([^<]+)</b>', re.S | re.I)
     def _getNumBugs(self, project):
-        text = webutils.getUrl('%s%s' % (self._projectURL, project))
+        try:
+            text = webutils.getUrl('%s%s' % (self._projectURL, project))
+        except webutils.WebError, e:
+            raise callbacks.Error, str(e)
         m = self._totbugs.search(text)
         if m:
             return m.group(1)
@@ -410,7 +413,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _totrfes = re.compile(r'Feature Requests</a>\s+?\( <b>([^<]+)</b>',
                           re.S | re.I)
     def _getNumRfes(self, project):
-        text = webutils.getUrl('%s%s' % (self._projectURL, project))
+        try:
+            text = webutils.getUrl('%s%s' % (self._projectURL, project))
+        except webutils.WebError, e:
+            raise callbacks.Error, str(e)
         m = self._totrfes.search(text)
         if m:
             return m.group(1)
@@ -427,7 +433,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             self._totalbugs(irc, msg, project)
         elif type == 'rfes':
             self._totalrfes(irc, msg, project)
-    total = wrap(total, [literal(('bugs', 'rfes')), additional('something')])
+    total = wrap(total, [('literal',('bugs', 'rfes')),additional('something')])
 
     def _totalbugs(self, irc, msg, project):
         project = project or self.registryValue('defaultProject', msg.args[0])
@@ -473,7 +479,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         s = ', '.join(['\'%s\': %s' % (s, i) for (i, s) in results])
         irc.reply(s)
     fight = wrap(fight, [getopts({'bugs':'','rfes':'','open':'','closed':''}),
-                         many('text')])
+                         many('something')])
 
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/" \
