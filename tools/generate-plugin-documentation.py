@@ -240,10 +240,11 @@ def makePluginDocumentation(pluginWindow):
         pluginconf = conf.supybot.plugins.get(pluginName)
         fd.write(textwrap.dedent(
             '''</table><br /><table>
-            <tr><th colspan="3">Configuration Variables for %s</th></tr>
+            <tr><th colspan="4">Configuration Variables for %s</th></tr>
             <tr class="trheader">
             <td>Config Var</td>
             <td>Default Value</td>
+            <td>Channel Specific</td>
             <td>Help</td></tr>''' % pluginName))
         trClass = trClasses[trClass]
         for config in [(c[0], c[1]) for c in\
@@ -256,9 +257,9 @@ def makePluginDocumentation(pluginWindow):
                 help = cgi.escape(help)
                 trClass = trClasses[trClass]
                 fd.write(textwrap.dedent('''
-                <tr class="%s" id="%s"><td>%s</td><td>%s</td>
+                <tr class="%s"><td>%s</td><td>%s</td><td>%s</td>
                 <td class="detail">%s</td></tr>
-                ''' % (trClass, name, name, default, help)))
+                ''' % (trClass, name, default, config[1].channelValue, help)))
     except registry.NonExistentRegistryEntry:
         pass
     fd.write('</table>\n')
