@@ -1045,12 +1045,6 @@ class Commands(object):
         return commands
     
     def callCommand(self, name, irc, msg, *L, **kwargs):
-        checkCapabilities = kwargs.pop('checkCapabilities', True)
-        if checkCapabilities:
-            cap = checkCommandCapability(msg, self, name)
-            if cap:
-                irc.errorNoCapability(cap)
-                return
         method = self.getCommandMethod(name)
         assert L, 'Odd, nothing in L.  This can\'t happen.'
         self.log.info('%s.%s called by %s.', self.name(), name, msg.prefix)
