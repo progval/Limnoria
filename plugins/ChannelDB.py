@@ -304,10 +304,10 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         message isn't sent on the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        name = privmsgs.getArgs(args, needed=0, optional=1)
         db = self.getDb(channel)
         cursor = db.cursor()
-        if name:
+        if len(args) == 1:
+            name = args[0]
             cursor.execute("""SELECT added, subtracted
                               FROM karma
                               WHERE name=%s""", name)
@@ -321,6 +321,15 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
                     (name, added, added == 1 and 'time' or 'times',
                      subtracted, subtracted == 1 and 'time' or 'times', total)
                 irc.reply(msg, s)
+        elif len(args) > 1:
+            criteria = ' OR '.join(['name=%s'] * len(args))
+            sql = """SELECT name, added-subtracted
+                     FROM karma WHERE %s
+                     ORDER BY added-subtracted DESC""" % criteria
+            cursor.execute(sql, *args)
+            s = utils.commaAndify(['%s: %s' % (n,t)
+                                   for (n,t) in cursor.fetchall()])
+            irc.reply(msg, s + '.')
         else: # No name was given.  Return the top/bottom 3 karmas.
             cursor.execute("""SELECT name, added-subtracted
                               FROM karma
