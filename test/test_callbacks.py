@@ -151,6 +151,18 @@ class FunctionsTestCase(unittest.TestCase):
         badmsg = ircmsgs.privmsg('#foo', '%s`: foo' % nick)
         self.failIf(callbacks.addressed(nick, badmsg))
 
+    def testAddressedReplyWhenNotAddressed(self):
+        msg1 = ircmsgs.privmsg('#foo', '@bar')
+        msg2 = ircmsgs.privmsg('#foo', 'bar')
+        self.assertEqual(callbacks.addressed('blah', msg1), 'bar')
+        try:
+            original = conf.replyWhenNotAddressed
+            conf.replyWhenNotAddressed = True
+            self.assertEqual(callbacks.addressed('blah', msg1), 'bar')
+            self.assertEqual(callbacks.addressed('blah', msg2), 'bar')
+        finally:
+            conf.replyWhenNotAddressed = original
+
     def testReply(self):
         prefix = 'foo!bar@baz'
         channelMsg = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)

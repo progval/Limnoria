@@ -92,6 +92,8 @@ def addressed(nick, msg):
             return ''
     elif msg.args[1] and msg.args[1][0] in conf.prefixChars:
         return msg.args[1][1:].strip()
+    elif conf.replyWhenNotAddressed:
+        return msg.args[1]
     else:
         return ''
 

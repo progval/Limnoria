@@ -141,6 +141,14 @@ replyWithNickPrefix = True
 replyWhenAddressedByNick = True
 
 ###
+# replyWhenNotAddressed: True if the bot should reply to messages even if they
+#                        don't address it at all.  If you have this on, you'll
+#                        almost certainly want to make sure replyWhenNotCommand
+#                        is turned off.
+###
+replyWhenNotAddressed = False
+
+###
 # requireRegistration: Oftentimes a plugin will want to record who added or
 #                      changed or messed with it last.  Supybot's user database
 #                      is an excellent way to determine who exactly someone is.
