@@ -53,6 +53,25 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load Lookup')
+    print 'This module allows you to define commands that do a simple key'
+    print 'lookup and return some simple value.  It has a command "addlookup"'
+    print 'that takes a command name and a file in conf.dataDir and adds a'
+    print 'command with that name that responds with mapping from that file.'
+    print 'The file itself should be composed of lines of the form key:value.'
+    while yn('Would you like to add a file?') == 'y':
+        filename = something('What\'s the filename?')
+        fd = file(os.path.join(conf.dataDir, filename))
+        counter = 1
+        try:
+            for line in fd:
+                (key, value) = line.split(':', 1)
+                counter += 1
+        except ValueError:
+            print 'That\'s not a valid file; line #%s is malformed.' % counter
+            continue
+        command = something('What would you like the command to be?')
+        onStart.append('addlookup %s %s' % (command, filename))
+    
 
 example = utils.wrapLines("""
 Add an example IRC session using this module here.
@@ -62,6 +81,12 @@ def getDb():
     return sqlite.connect(os.path.join(conf.dataDir, 'Lookup.db'))
 
 class Lookup(callbacks.Privmsg):
+    def die(self):
+        db = getDb()
+        db.commit()
+        db.close()
+        del db
+
     def removelookup(self, irc, msg, args):
         """<name>
 
