@@ -51,6 +51,7 @@ import supybot.registry as registry
 
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.world as world
 from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
@@ -141,12 +142,14 @@ class LicenseKey(registry.String):
             if s:
                 google.setLicense(self.value)
         except AttributeError:
-            raise callbacks.Error, 'It appears that the initial import of ' \
-                                   'our underlying google.py module has ' \
-                                   'failed.  Once the cause of that problem ' \
-                                   'has been diagnosed and fixed, the bot ' \
-                                   'will need to be restarted in order to ' \
-                                   'load this plugin.'
+            if not world.dying:
+                raise callbacks.Error, \
+                      'It appears that the initial import of ' \
+                      'our underlying google.py module has ' \
+                      'failed.  Once the cause of that problem ' \
+                      'has been diagnosed and fixed, the bot ' \
+                      'will need to be restarted in order to ' \
+                      'load this plugin.'
 
 class Language(registry.OnlySomeStrings):
     validStrings = ['lang_' + s for s in 'ar zh-CN zh-TW cs da nl en et fi fr '
