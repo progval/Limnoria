@@ -126,8 +126,7 @@ def reply(msg, s, prefixName=True, private=False,
           notice=False, to=None, action=False):
     # This is so we don't prefix a channel name.
     
-    if prefixName and not \
-       sum([ircutils.isChannel(x) for x in (target, to) if x]):
+    if prefixName and not ircutils.isChannel(to):
         s = '%s: %s' % (to, s)
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
