@@ -68,7 +68,7 @@ class ThreadedFunCommands(callbacks.Privmsg):
         """takes no arguments"""
         conn = telnetlib.Telnet('kernel.org', 79)
         conn.write('\n')
-        text = connection.read_all()
+        text = conn.read_all()
         for line in text.splitlines():
             (name, version) = line.split(':')
             if name.find('latest stable') != -1:
