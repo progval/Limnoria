@@ -109,7 +109,8 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         self.irc = irc
         drivers.ServersMixin.__init__(self, irc)
         (server, port) = self._getNextServer()
-        reactor.connectTCP(server, port, self)
+        vhost = conf.supybot.protocols.irc.vhost()
+        reactor.connectTCP(server, port, self, bindAddress=(vhost, 0))
 
     def clientConnectionFailed(self, connector, r):
         drivers.log.connectError(self.currentServer, errorMsg(r))

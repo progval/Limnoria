@@ -824,6 +824,10 @@ registerGlobalValue(supybot.protocols.irc, 'umodes',
     networks allow +x, which indicates to the auth services on those networks
     that you should be given a fake host."""))
 
+registerGlobalValue(supybot.protocols.irc, 'vhost',
+    registry.String('', """Determines what vhost the bot will bind to before
+    connecting to the IRC server."""))
+
 registerGlobalValue(supybot.protocols.irc, 'maxHistoryLength',
     registry.Integer(1000, """Determines how many old messages the bot will
     keep around in its history.  Changing this variable will not take effect
