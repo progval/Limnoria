@@ -127,23 +127,32 @@ def makeNewAlias(name, alias):
     doChannel = '$channel' in alias
     biggestDollar = findBiggestDollar(alias)
     biggestAt = findBiggestAt(alias)
+    wildcard = '$*' in alias
+    if biggestAt and wildcard:
+        raise AliasError, 'Can\'t use $* and optional args (@1, etc.)'
     def f(self, irc, msg, args):
         alias_ = alias
         if doChannel:
             channel = privmsgs.getChannel(msg, args)
             alias_ = alias.replace('$channel', channel)
-        if biggestDollar or biggestAt:
+        if not wildcard and biggestDollar or biggestAt:
             args = privmsgs.getArgs(args, needed=biggestDollar,
                                     optional=biggestAt)
             # Gotta have a tuple.
-            if biggestDollar + biggestAt == 1:
+            if biggestDollar + biggestAt == 1 and not wildcard:
                 args = (args,)
-            def replace(m):
-                idx = int(m.group(1))
-                return utils.dqrepr(args[idx-1])
-            alias_ = dollarRe.sub(replace, alias_)
-            args = args[biggestDollar:]
-            alias_ = atRe.sub(replace, alias_)
+        def replace(m):
+            idx = int(m.group(1))
+            return utils.dqrepr(args[idx-1])
+        #debug.printf((args, alias_))
+        alias_ = dollarRe.sub(replace, alias_)
+        #debug.printf((args, alias_))
+        args = args[biggestDollar:]
+        #debug.printf((args, alias_))
+        alias_ = atRe.sub(replace, alias_)
+        #debug.printf((args, alias_))
+        alias_ = alias_.replace('$*', ' '.join(map(utils.dqrepr, args)))
+        #debug.printf((args, alias_))
         self.Proxy(irc.irc, msg, callbacks.tokenize(alias_))
     #f = new.function(f.func_code, f.func_globals, alias)
     f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \

@@ -91,6 +91,11 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('alias rev "echo $3 $2 $1"')
         self.assertResponse('rev foo bar baz', 'baz bar foo')
 
+    def testAllArgs(self):
+        self.assertNotError('alias swap "echo $2 $1 $*"')
+        self.assertResponse('swap 1 2 3 4 5', '2 1 3 4 5')
+        self.assertError('alias foo "echo $1 @1 $*"')
+
     def testNoRecursion(self):
         self.assertError('alias rotinfinity "rot13 [rotinfinity $1]"')
 
