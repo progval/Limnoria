@@ -561,7 +561,7 @@ class UsersDictionary(utils.IterableMap):
             except EnvironmentError, e:
                 log.warning('UsersDictionary.reload failed: %s', e)
         else:
-            log.warning('UsersDictionary.reload called with no filename.')
+            log.error('UsersDictionary.reload called with no filename.')
 
     def flush(self):
         """Flushes the database to its file."""
@@ -576,7 +576,7 @@ class UsersDictionary(utils.IterableMap):
                     u.preserve(fd, indent='  ')
                 fd.close()
             else:
-                log.warning('UsersDictionary.flush called with no filename.')
+                log.error('UsersDictionary.flush called with no filename.')
         else:
             log.debug('Not flushing UsersDictionary becuase of noFlush.')
 
