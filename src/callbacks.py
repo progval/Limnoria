@@ -246,7 +246,6 @@ class Tokenizer(object):
 
     def _insideBrackets(self, lexer):
         ret = []
-        firstToken = True
         while True:
             token = lexer.get_token()
             if not token:
@@ -258,11 +257,6 @@ class Tokenizer(object):
             elif token == self.right:
                 return ret
             elif token == self.left:
-                if firstToken:
-                    s = 'The command called may not be the result ' \
-                        'of a nested command.'
-                    raise SyntaxError, 'The command called may not be the ' \
-                                       'result or a nested command.'
                 ret.append(self._insideBrackets(lexer))
             else:
                 ret.append(self._handleToken(token))
@@ -595,13 +589,47 @@ class IrcObjectProxy(RichReplyMethods):
         finally:
             self.commandMethod = None
 
+    def findCallbackForCommand(self, command):
+        cbs = findCallbackForCommand(self, command)
+        if len(cbs) > 1:
+            command = canonicalName(command)
+            # Check for whether it's the name of a callback; their dispatchers
+            # need to get precedence.
+            for cb in cbs:
+                if canonicalName(cb.name()) == command:
+                    return [cb]
+            try:
+                # Check if there's a configured defaultPlugin -- the user gets
+                # precedence in that case.
+                defaultPlugins = conf.supybot.commands.defaultPlugins
+                plugin = defaultPlugins.get(command)()
+                if plugin and plugin != '(Unused)':
+                    cb = self.irc.getCallback(plugin)
+                    if cb is None:
+                        log.warning('%s is set as a default plugin '
+                                    'for %s, but it isn\'t loaded.',
+                                    plugin, command)
+                        raise registry.NonExistentRegistryEntry
+                    else:
+                        return [cb]
+            except registry.NonExistentRegistryEntry, e:
+                # Check for whether it's a src/ plugin; they get precedence.
+                for cb in cbs:
+                    important = []
+                    importantPlugins = defaultPlugins.importantPlugins()
+                    if cb.name() in importantPlugins:
+                        # We do this to handle multiple importants matching.
+                        important.append(cb)
+                if len(important) == 1:
+                    return important
+        return cbs
+            
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
-        # We can't canonicalName here because it might be a regexp method.
-        name = self.args[0]
-        cbs = findCallbackForCommand(self, name)
-        if len(cbs) == 0:
+        command = self.args[0]
+        cbs = self.findCallbackForCommand(command)
+        if not cbs:
             # Normal command not found, let's go for the specialties now.
             # First, check for addressedRegexps -- they take precedence over
             # tokenizedCommands.
@@ -634,28 +662,20 @@ class IrcObjectProxy(RichReplyMethods):
                             return
             # No matching regexp commands, now we do invalidCommands.
             self._callInvalidCommands()
+        elif len(cbs) > 1:
+            self.error('The command %s is available in the %s plugins.  '
+                       'Please specify the plugin whose command you wish '
+                       'to call by using its name as a command before %s.' %
+                       (command, sorted([cb.name() for cb in cbs]), command))
         else:
-            # But we must canonicalName here, since we're comparing to a
-            # canonicalName.
-            name = canonicalName(name)
-            if len(cbs) > 1:
-                for cb in cbs:
-                    if canonicalName(cb.name()) == name:
-                        del self.args[0]
-                        break
-                else:
-                    # This should've been caught earlier, that's why we
-                    # assert instead of raising a ValueError or something.
-                    assert False,'Non-disambiguated command: args=%r'%self.args
-            else:
-                del self.args[0]
-                cb = cbs[0]
+            cb = cbs[0]
+            del self.args[0] # Remove the command.
             if cb.threaded or conf.supybot.debug.threadAllCommands():
                 t = CommandThread(target=self._callCommand,
-                                  args=(name, cb))
+                                  args=(command, cb))
                 t.start()
             else:
-                self._callCommand(name, cb)
+                self._callCommand(command, cb)
 
     def reply(self, s, noLengthCheck=False, prefixName=None,
               action=None, private=None, notice=None, to=None, msg=None):

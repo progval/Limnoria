@@ -92,7 +92,6 @@ class TokenizerTestCase(SupyTestCase):
     def testError(self):
         self.assertRaises(SyntaxError, tokenize, '[foo') #]
         self.assertRaises(SyntaxError, tokenize, '"foo') #"
-        self.assertRaises(SyntaxError, tokenize, '[[foo]]')
 
     def testPipe(self):
         try:

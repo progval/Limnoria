@@ -152,8 +152,6 @@ class Network(callbacks.Privmsg):
             raise callbacks.ArgumentError
         network = args.pop(0)
         otherIrc = self._getIrc(network)
-        Owner = irc.getCallback('Owner')
-        Owner.disambiguate(irc, args)
         self.Proxy(otherIrc, msg, args)
     command = privmsgs.checkCapability(command, 'admin')
 

@@ -513,6 +513,19 @@ registerGlobalValue(supybot, 'flush',
 # supybot.commands.  For stuff relating to commands.
 ###
 registerGroup(supybot, 'commands')
+registerGroup(supybot.commands, 'defaultPlugins',
+    orderAlphabetically=True, help=utils.normalizeWhitespace("""Determines
+    what commands have default plugins set, and which plugins are set to
+    be the default for each of those commands."""))
+registerGlobalValue(supybot.commands.defaultPlugins, 'importantPlugins',
+    registry.SpaceSeparatedSetOfStrings(['Admin', 'Channel', 'Config', 'Misc',
+                                         'Owner', 'User'], """Determines what
+    plugins automatically get precedence over all other plugins when selecting
+    a default plugin for a command.  By default, this includes the standard
+    loaded plugins.  You probably shouldn't change this if you don't know what
+    you're doing; if you do know what you're doing, then also know that this
+    set is case-sensitive."""))
+
 # supybot.commands.disabled moved to callbacks for canonicalName.
 
 

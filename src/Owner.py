@@ -113,18 +113,23 @@ def loadPluginClass(irc, module, register=None):
                                'instantiated.  If you didn\'t write this ' \
                                'plugin, but received it with Supybot, file ' \
                                'a bug with us about this error. %s.' % e
-    name = cb.name()
+    plugin = cb.name()
     public = True
     if hasattr(cb, 'public'):
         public = cb.public
-    conf.registerPlugin(name, register, public)
-    assert not irc.getCallback(name)
+    conf.registerPlugin(plugin, register, public)
+    assert not irc.getCallback(plugin)
     try:
         # XXX We should first register the rename plugin.
-        renames = conf.supybot.commands.renames.get(name)
-        for (name, v) in renames.getValues(fullNames=False):
-            newName = v()
-            renameCommand(cb, name, newName)
+        renames = registerRename(plugin)()
+        if renames:
+            for command in renames:
+                v = registerRename(plugin, command)
+                newName = v()
+                assert newName
+                renameCommand(cb, command, newName)
+        else:
+            conf.supybot.commands.renames.unregister(plugin)
     except registry.NonExistentRegistryEntry, e:
         pass # The plugin isn't there.
     irc.addCallback(cb)
@@ -138,10 +143,6 @@ conf.supybot.plugins.Owner.register('public', registry.Boolean(True,
 # supybot.commands.
 ###
 
-conf.registerGroup(conf.supybot.commands, 'defaultPlugins',
-    orderAlphabetically=True, help=utils.normalizeWhitespace("""Determines
-    what commands have default plugins set, and which plugins are set to
-    be the default for each of those commands."""))
 conf.registerGroup(conf.supybot.commands, 'renames', orderAlphabetically=True)
 
 def registerDefaultPlugin(command, plugin):
@@ -151,13 +152,20 @@ def registerDefaultPlugin(command, plugin):
     # This must be set, or the quotes won't be removed.
     conf.supybot.commands.defaultPlugins.get(command).set(plugin)
 
-def registerRename(plugin, command, newName):
+def registerRename(plugin, command=None, newName=None):
     # XXX renames.plugin should have a list of the renames, so they can be
     # registered from that value.
-    g = conf.registerGroup(conf.supybot.commands.renames, plugin)
-    v = conf.registerGlobalValue(g, command, registry.String(newName, ''))
-    v.setValue(newName) # In case it was already registered.
-    return v
+    g = conf.registerGlobalValue(conf.supybot.commands.renames, plugin,
+            registry.SpaceSeparatedSetOfStrings([], """Determines what commands
+            in this plugin are to be renamed."""))
+    if command is not None:
+        g().add(command)
+        v = conf.registerGlobalValue(g, command, registry.String('', ''))
+        if newName is not None:
+            v.setValue(newName) # In case it was already registered.
+        return v
+    else:
+        return g
 
 def renameCommand(cb, name, newName):
     assert not hasattr(cb, newName), 'Cannot rename over existing attributes.'
@@ -333,64 +341,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                  name, e)
         world.starting = False
 
-    def disambiguate(self, irc, tokens, ambiguousCommands=None):
-        """Disambiguates the given tokens based on the plugins loaded and
-           commands available in the given irc.  Returns a dictionary of
-           ambiguous commands, mapping the command to the plugins it's
-           available in."""
-        if ambiguousCommands is None:
-            ambiguousCommands = {}
-        if tokens:
-            command = callbacks.canonicalName(tokens[0])
-            try:
-                plugin = conf.supybot.commands.defaultPlugins.get(command)()
-                if plugin and plugin != '(Unused)':
-                    tokens.insert(0, plugin)
-                else:
-                    raise registry.NonExistentRegistryEntry
-            except registry.NonExistentRegistryEntry:
-                cbs = callbacks.findCallbackForCommand(irc, command)
-                if len(cbs) > 1:
-                    names = [cb.name() for cb in cbs]
-                    srcs = [name for name in names if name in self._srcPlugins]
-                    if len(srcs) == 1:
-                        if callbacks.canonicalName(name) != command:
-                            # We don't insert the dispatcher name here because
-                            # it's handled later.  Man, this stuff is a mess.
-                            tokens.insert(0, srcs[0])
-                    elif command not in map(callbacks.canonicalName, names):
-                        ambiguousCommands[command] = names
-            for elt in tokens:
-                if isinstance(elt, list):
-                    self.disambiguate(irc, elt, ambiguousCommands)
-        return ambiguousCommands
-
-    def ambiguousError(self, irc, msg, ambiguousCommands):
-        if len(ambiguousCommands) == 1: # Common case.
-            (command, names) = ambiguousCommands.popitem()
-            names.sort()
-            s = 'The command %r is available in the %s plugins.  ' \
-                'Please specify the plugin whose command you ' \
-                'wish to call by using its name as a command ' \
-                'before calling it.' % \
-                (command, utils.commaAndify(names))
-        else:
-            L = []
-            for (command, names) in ambiguousCommands.iteritems():
-                names.sort()
-                L.append('The command %r is available in the %s '
-                         'plugins' %
-                         (command, utils.commaAndify(names)))
-            s = '%s; please specify from which plugins to ' \
-                'call these commands.' % '; '.join(L)
-        irc.queueMsg(callbacks.error(msg, s))
-
     def processTokens(self, irc, msg, tokens):
-        ambiguousCommands = self.disambiguate(irc, tokens)
-        if ambiguousCommands:
-            self.ambiguousError(irc, msg, ambiguousCommands)
-        else:
-            callbacks.IrcObjectProxy(irc, msg, tokens)
+        callbacks.IrcObjectProxy(irc, msg, tokens)
 
     def do376(self, irc, msg):
         channels = ircutils.IrcSet(conf.supybot.channels())
@@ -421,14 +373,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             if ignored:
                 self.log.info('Ignoring command from %s.' % msg.prefix)
                 return
-            brackets = conf.supybot.reply.brackets.get(msg.args[0])()
+            brackets = conf.get(conf.supybot.reply.brackets, msg.args[0])
             try:
                 tokens = callbacks.tokenize(s, brackets=brackets)
-                if tokens and isinstance(tokens[0], list):
-                    s = 'The command called may not be the result ' \
-                        'of a nested command.'
-                    irc.queueMsg(callbacks.error(msg, s))
-                    return
                 self.processTokens(irc, msg, tokens)
             except SyntaxError, e:
                 irc.queueMsg(callbacks.error(msg, str(e)))

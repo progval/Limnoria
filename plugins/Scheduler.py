@@ -57,10 +57,6 @@ class Scheduler(callbacks.Privmsg):
     def _makeCommandFunction(self, irc, msg, command, remove=True):
         """Makes a function suitable for scheduling from command."""
         tokens = callbacks.tokenize(command)
-        Owner = irc.getCallback('Owner')
-        ambiguous = Owner.disambiguate(irc, tokens)
-        if ambiguous:
-            raise callbacks.Error, callbacks.ambiguousReply(ambiguous)
         def f():
             if remove:
                 del self.events[str(f.eventId)]
@@ -74,7 +70,7 @@ class Scheduler(callbacks.Privmsg):
         future.  For example, 'scheduler add [seconds 30m] "echo [cpu]"' will
         schedule the command "cpu" to be sent to the channel the schedule add
         command was given in (with no prefixed nick, a consequence of using
-        echo).
+        echo).  Do pay attention to the quotes in that example.
         """
         (seconds, command) = privmsgs.getArgs(args, required=2)
         try:

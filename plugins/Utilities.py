@@ -160,10 +160,9 @@ class Utilities(callbacks.Privmsg):
         commands = map(callbacks.canonicalName, commands)
         tokens = callbacks.tokenize(text)
         allTokens = commands + tokens
-        Owner = irc.getCallback('Owner')
-        Owner.processTokens(irc, msg, allTokens)
-
+        self.Proxy(irc, msg, allTokens)
 
 
 Class = Utilities
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

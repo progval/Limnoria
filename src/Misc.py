@@ -243,29 +243,14 @@ class Misc(callbacks.Privmsg):
         command = callbacks.canonicalName(name)
         # Users might expect "@help @list" to work.
         # command = command.lstrip(conf.supybot.reply.whenAddressedBy.chars())
-        cbs = callbacks.findCallbackForCommand(irc, command)
-        if len(cbs) > 1:
-            tokens = [command]
-            ambiguous = {}
-            Owner = irc.getCallback('Owner')
-            Owner.disambiguate(irc, tokens, ambiguous)
-            if ambiguous:
-                names = [cb.name() for cb in cbs]
-                names.sort()
-                irc.error('That command exists in the %s plugins.  '
-                          'Please specify exactly which plugin command '
-                          'you want help with.'% utils.commaAndify(names))
-                return
-            else:
-                if len(tokens) == 1:
-                    # It's a src plugin that wasn't disambiguated.
-                    tokens.append(tokens[0])
-                assert len(tokens) == 2, tokens
-                cb = irc.getCallback(tokens[0])
-                method = getattr(cb, tokens[1])
-                getHelp(method)
-        elif not cbs:
+        cbs = irc.findCallbackForCommand(command)
+        if not cbs:
             irc.error('There is no such command %s.' % command)
+        elif len(cbs) > 1:
+            names = sorted([cb.name() for cb in cbs])
+            irc.error('That command exists in the %s plugins.  '
+                      'Please specify exactly which plugin command '
+                      'you want help with.'% utils.commaAndify(names))
         else:
             cb = cbs[0]
             method = getattr(cb, command)
