@@ -183,5 +183,10 @@ if network:
             self.assertNoResponse('https://sourceforge.net/tracker/?'
                                   'group_id=58965&atid=489447')
 
+        def testTotal(self):
+            self.assertRegexp('totalbugs gaim', r'\d+ open / \d+ total')
+            self.assertRegexp('totalrfes gaim', r'\d+ open / \d+ total')
+            self.assertError('totalbugs lkjfad')
+            self.assertError('totalrfes lkjfad')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

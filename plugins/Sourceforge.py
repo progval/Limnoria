@@ -219,6 +219,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             return
         irc.reply(self._getTrackerList(url))
 
+    # TODO: consolidate total* into one command which takes options for all
+    # the viable statistics that can be snarfed from the project page
     _totbugs = re.compile(r'Bugs</a>\s+?\( <b>([^<]+)</b>', re.S | re.I)
     def totalbugs(self, irc, msg, args):
         """[<project>]
