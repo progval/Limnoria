@@ -397,9 +397,6 @@ class Privmsg(irclib.IrcCallback):
         self.Proxy = IrcObjectProxy
 
     def configure(self, irc):
-        nick = conf.config['nick']
-        user = conf.config['user']
-        ident = conf.config['ident']
         fakeIrc = ConfigIrcProxy(irc)
         for args in conf.config['onStart']:
             args = args[:]
