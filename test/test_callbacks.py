@@ -219,14 +219,29 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse("eval irc.reply('foo', action=True)",
                             '\x01ACTION foo\x01')
 
+    def testReplyWithNickPrefix(self):
+        self.feedMsg('@strlen foo')
+        m = self.irc.takeMsg()
+        self.failUnless(m is not None, 'm: %r' % m)
+        self.failUnless(m.args[1].startswith(self.nick))
+        try:
+            original = conf.supybot.reply.withNickPrefix()
+            conf.supybot.reply.withNickPrefix.setValue(False)
+            self.feedMsg('@strlen foobar')
+            m = self.irc.takeMsg()
+            self.failUnless(m is not None)
+            self.failIf(m.args[1].startswith(self.nick))
+        finally:
+            conf.supybot.reply.withNickPrefix.setValue(original)
+
     def testErrorPrivateKwarg(self):
         try:
-            original = str(conf.supybot.reply.errorInPrivate)
+            original = conf.supybot.reply.errorInPrivate()
             conf.supybot.reply.errorInPrivate.set('False')
             m = self.getMsg("eval irc.error('foo', private=True)")
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
-            conf.supybot.reply.errorInPrivate.set(original)
+            conf.supybot.reply.errorInPrivate.setValue(original)
 
     def testErrorReplyPrivate(self):
         try:

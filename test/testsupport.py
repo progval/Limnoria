@@ -306,6 +306,10 @@ class ChannelPluginTestCase(PluginTestCase):
             return
         PluginTestCase.setUp(self)
         self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'MODE')
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'WHO')
         
     def _feedMsg(self, query, timeout=None, to=None, frm=None):
         if to is None:

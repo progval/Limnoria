@@ -540,7 +540,7 @@ class IrcObjectProxy(RichReplyMethods):
         self.notice = notice or self.notice
         self.private = private or self.private
         self.to = to or self.to
-        self.prefixName = prefixName or self.prefixName
+        self.prefixName = prefixName and self.prefixName
         self.noLengthCheck = noLengthCheck or self.noLengthCheck
         if self.finalEvaled:
             if isinstance(self.irc, self.__class__):
