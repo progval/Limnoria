@@ -51,10 +51,11 @@ import BeautifulSoup
 
 import supybot.conf as conf
 import supybot.utils as utils
-import supybot.webutils as webutils
+import supybot.commands as commands
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
+import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
 unitAbbrevs = utils.abbrev(['Fahrenheit', 'Celsius', 'Centigrade', 'Kelvin'])
@@ -116,7 +117,7 @@ class Weather(callbacks.Privmsg):
                               location, ignoreNoUser=True)
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
-        ret = realCommand(irc, msg, args)
+        ret = realCommand(irc, msg, args, location)
 
     def _toCelsius(self, temp, unit):
         if unit == 'K':
@@ -180,7 +181,7 @@ class Weather(callbacks.Privmsg):
     # Certain countries are expected to use a standard abbreviation
     # The weather we pull uses weird codes.  Map obvious ones here.
     _hamCountryMap = {'uk': 'gb'}
-    def ham(self, irc, msg, args):
+    def ham(self, irc, msg, args, loc):
         """<US zip code | US/Canada city, state | Foreign city, country>
 
         Returns the approximate weather conditions for a given city.
@@ -188,16 +189,15 @@ class Weather(callbacks.Privmsg):
 
         #If we received more than one argument, then we have received
         #a city and state argument that we need to process.
-        if len(args) > 1:
+        if ' ' in loc:
             #If we received more than 1 argument, then we got a city with a
             #multi-word name.  ie ['Garden', 'City', 'KS'] instead of
             #['Liberal', 'KS'].  We join it together with a + to pass
             #to our query
-            state = args.pop()
-            state = state.lower()
-            city = '+'.join(args)
-            city = city.rstrip(',')
-            city = city.lower()
+            loc = rsplit(loc, None, 1)
+            state = loc.pop().lower()
+            city = '+'.join(loc)
+            city = city.rstrip(',').lower()
             #We must break the States up into two sections.  The US and
             #Canada are the only countries that require a State argument.
 
@@ -224,8 +224,7 @@ class Weather(callbacks.Privmsg):
 
         #We received a single argument.  Zipcode or station id.
         else:
-            zip = privmsgs.getArgs(args)
-            zip = zip.replace(',', '')
+            zip = loc.replace(',', '')
             zip = zip.lower()
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?' \
                   'config=&forecast=zandh&pands=%s&Submit=GO' % zip
@@ -288,6 +287,7 @@ class Weather(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.error('The format of the page was odd.')
+    ham=commands.wrap(ham, ['something'])
 
     _cnnUrl = 'http://weather.cnn.com/weather/search?wsearch='
     _cnnFTemp = re.compile(r'(-?\d+)(&deg;)(F)</span>', re.I | re.S)
@@ -299,26 +299,25 @@ class Weather(callbacks.Privmsg):
     # Certain countries are expected to use a standard abbreviation
     # The weather we pull uses weird codes.  Map obvious ones here.
     _cnnCountryMap = {'uk': 'en', 'de': 'ge'}
-    def cnn(self, irc, msg, args):
+    def cnn(self, irc, msg, args, loc):
         """<US zip code | US/Canada city, state | Foreign city, country>
 
         Returns the approximate weather conditions for a given city.
         """
-        if len(args) > 1:
+        if ' ' in loc:
             #If we received more than 1 argument, then we got a city with a
             #multi-word name.  ie ['Garden', 'City', 'KS'] instead of
-            #['Liberal', 'KS'].  We join it together with a + to pass
-            #to our query
-            state = args.pop().lower()
-            city = ' '.join(args)
+            #['Liberal', 'KS'].
+            loc = rsplit(loc, None, 1)
+            state = loc.pop().lower()
+            city = ' '.join(loc)
             city = city.rstrip(',').lower()
             if state in self._cnnCountryMap:
                 state = self._cnnCountryMap[state]
             loc = ' '.join([city, state])
         else:
             #We received a single argument.  Zipcode or station id.
-            zip = privmsgs.getArgs(args)
-            loc = zip.replace(',', '').lower()
+            loc = loc.replace(',', '')
         url = '%s%s' % (self._cnnUrl, urllib.quote(loc))
         text = webutils.getUrl(url) # Errors caught in callCommand.
         if "No search results" in text or "does not match a zip code" in text:
@@ -348,17 +347,17 @@ class Weather(callbacks.Privmsg):
             irc.reply(' '.join(resp))
         else:
             irc.error('Could not find weather information.')
+    cnn=commands.wrap(cnn, ['something'])
 
     _wunderUrl = 'http://mobile.wunderground.com/cgi-bin/' \
                  'findweather/getForecast?query='
     _wunderLoc = re.compile(r'Page (.+?) Forecast</title>', re.I | re.S)
     _wunderMultiLoc = re.compile(r'<a href="([^"]+)', re.I | re.S)
-    def wunder(self, irc, msg, args):
+    def wunder(self, irc, msg, args, loc):
         """<US zip code | US/Canada city, state | Foreign city, country>
 
         Returns the approximate weather conditions for a given city.
         """
-        loc = ' '.join(args)
         url = '%s%s' % (self._wunderUrl, urllib.quote(loc))
         text = webutils.getUrl(url)
         if 'Search not found' in text:
@@ -433,6 +432,7 @@ class Weather(callbacks.Privmsg):
             irc.reply(' '.join(resp))
         else:
             irc.error('Could not find weather information.')
+    wunder=commands.wrap(wunder, ['something'])
 
 conf.registerPlugin('Weather')
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'temperatureUnit',
