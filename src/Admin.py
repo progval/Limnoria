@@ -159,7 +159,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             if not irc.isChannel(channel):
                 irc.errorInvalid('channel', channel)
                 return
-            conf.supybot.channels().add(original)
+            conf.supybot.networks.get(irc.network).channels().add(original)
         maxchannels = irc.state.supported.get('maxchannels', sys.maxint)
         if len(irc.state.channels) + len(channels) > maxchannels:
             irc.error('I\'m already too close to maximum number of '
@@ -260,7 +260,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 return
         for chan in channels:
             try:
-                conf.supybot.channels.removeChannel(chan)
+                network = conf.supybot.networks.get(irc.network)
+                network.channels.removeChannel(chan)
             except KeyError:
                 pass # It might be in the network thingy.
             try:
