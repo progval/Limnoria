@@ -115,6 +115,17 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         self.assertEqual(self.topic, q.dequeue())
         self.assertEqual(self.msg, q.dequeue())
 
+    def testModeBeforePrivmsg(self):
+        q = irclib.IrcMsgQueue()
+        q.enqueue(self.msg)
+        q.enqueue(self.mode)
+        self.assertEqual(self.mode, q.dequeue())
+        self.assertEqual(self.msg, q.dequeue())
+        q.enqueue(self.mode)
+        q.enqueue(self.msg)
+        self.assertEqual(self.mode, q.dequeue())
+        self.assertEqual(self.msg, q.dequeue())
+
 
 class ChannelStateTestCase(unittest.TestCase):
     def testPickleCopy(self):
