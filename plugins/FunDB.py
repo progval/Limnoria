@@ -115,37 +115,12 @@ class FunDB(callbacks.Privmsg):
     """
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self._tables = sets.Set()
-        self._tables.add('lart')
-        self._tables.add('insult')
-        self._tables.add('excuse')
-        self._tables.add('praise')
+        self._tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
         self.db = makeDb(dbFilename)
 
     def die(self):
         self.db.commit()
         self.db.close()
-
-    '''
-    def praise(self, irc, msg, args):
-        """<something>
-
-        Praises <something> with a praise from my vast database of praises.
-        """
-        something = privmsgs.getArgs(args)
-        if something == 'me':
-            something = msg.nick
-        elif something == 'yourself':
-            something = irc.nick
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT id, praise FROM praises
-                          WHERE praise NOT NULL
-                          ORDER BY random()
-                          LIMIT 1""")
-        (id, insult) = cursor.fetchone()
-        s = insul
-        irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg),
-    '''
 
     def insult(self, irc, msg, args):
         """<nick>
@@ -301,24 +276,24 @@ class FunDB(callbacks.Privmsg):
     def getdb(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
 
-        Gets the record, of the type specified, with the id number <id>.
+        Gets the record with id <id> from the table specified.
         """
         (table, id) = privmsgs.getArgs(args, needed=2)
-        table = str.lower(table)
+        table = table.lower()
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, 'The id must be an integer.')
+            irc.error(msg, '<id> must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is an invalid choice. Must be one of: '\
-                'lart, excuse, insult, praise.' % table)
+            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+                           (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
-        cursor.execute("""SELECT %s FROM %s WHERE id=%s""", table, table+'s',
-            id)
+        sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
+        cursor.execute(sql, id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such %s.' % table)
+            irc.error(msg, 'There is no such %s.' % column)
         else:
             irc.reply(msg, cursor.fetchone()[0])
 
