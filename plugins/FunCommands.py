@@ -720,33 +720,11 @@ class FunCommands(callbacks.Privmsg):
     _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
     _these.pop(0)
     def zen(self, irc, msg, args):
-        """takes no arguments.
+        """takes no arguments
 
         Returns one of the zen of Python statements.
         """
         irc.reply(msg, random.sample(self._these, 1)[0])
-
-    _lesses = {}
-    def less(self, irc, msg, args):
-        """<text>
-
-        Deals out <text> in small, IrcMsg-sized pieces.  Mostly useful for
-        piecing-out nested commands.
-        """
-        text = privmsgs.getArgs(args, needed=0, optional=1)
-        userHostmask = msg.prefix.split('!', 1)[1]
-        if text:
-            lines = textwrap.wrap(text, 400)
-            lines.reverse()
-            s = lines.pop()
-            self._lesses[userHostmask] = lines
-            irc.reply(msg, s)
-        else:
-            try:
-                s = self._lesses[userHostmask].pop()
-                irc.reply(msg, s)
-            except (KeyError, IndexError): # Nothing in the list or dict.
-                irc.error(msg, 'I have no less history for you.')
 
     def dns(self, irc, msg, args):
         """<host|ip>
