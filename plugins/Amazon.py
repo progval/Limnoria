@@ -106,9 +106,10 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                       'one, you can set it with the command '
                       '"config supybot.plugins.Amazon.licensekey <key>".')
 
-    def _genResults(self, reply, attribs, items, url, bold, bold_item):
+    def _genResults(self, reply, attribs, items, url, bold):
         results = {}
         res = []
+        bold_item = 'title'
         if isinstance(items, amazon.Bag):
             items = [items]
         for item in items:
@@ -138,7 +139,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                 self.log.warning(str(e))
         return res
 
-    def isbn(self, irc, msg, args, channel, optlist, isbn):
+    def isbn(self, irc, msg, args, optlist, isbn):
         """[--url] <isbn>
 
         Returns the book matching the given ISBN number. If --url is
@@ -158,19 +159,21 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         bold = self.registryValue('bold', channel)
         region = self.registryValue('region', channel)
         try:
             book = amazon.searchByKeyword(isbn, locale=region)
-            res = self._genResults(s, attribs, book, url, bold, 'title')
+            res = self._genResults(s, attribs, book, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No book was found with that ISBN.')
-    isbn = wrap(isbn, ['channel', getopts({'url':''}), 'text'])
+            pass
+        irc.reply('No book was found with that ISBN.')
+    isbn = wrap(isbn, [getopts({'url':''}), 'text'])
 
-    def books(self, irc, msg, args, channel, optlist, keyword):
+    def books(self, irc, msg, args, optlist, keyword):
         """[--url] <keywords>
 
         Returns the books matching the given <keywords> search. If --url is
@@ -189,19 +192,21 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             books = amazon.searchByKeyword(keyword, locale=region)
-            res = self._genResults(s, attribs, books, url, bold, 'title')
+            res = self._genResults(s, attribs, books, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No books were found with that keyword search.')
-    books = wrap(books, ['channel', getopts({'url':''}), 'text'])
+            pass
+        irc.reply('No books were found with that keyword search.')
+    books = wrap(books, [getopts({'url':''}), 'text'])
 
-    def videos(self, irc, msg, args, channel, optlist, keyword):
+    def videos(self, irc, msg, args, optlist, keyword):
         """[--url] [--{dvd,vhs}] <keywords>
 
         Returns the videos matching the given <keyword> search. If --url is
@@ -225,21 +230,22 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             videos = amazon.searchByKeyword(keyword, product_line=product,
                                             locale=region)
-            res = self._genResults(s, attribs, videos, url, bold, 'title')
+            res = self._genResults(s, attribs, videos, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No videos were found with that keyword search.')
-    videos = wrap(videos, ['channel', getopts({'url':'', 'dvd':'', 'vhs':''}),
-                           'text'])
+            pass
+        irc.reply('No videos were found with that keyword search.')
+    videos = wrap(videos, [getopts({'url':'', 'dvd':'', 'vhs':''}), 'text'])
 
-    def asin(self, irc, msg, args, channel, optlist, asin):
+    def asin(self, irc, msg, args, optlist, asin):
         """[--url] <asin>
 
         Returns the item matching the given ASIN number. If --url is
@@ -256,19 +262,21 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'URL' : 'url'
                   }
         s = '%(title)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             item = amazon.searchByASIN(asin, locale=region)
-            res = self._genResults(s, attribs, item, url, bold, 'title')
+            res = self._genResults(s, attribs, item, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No item was found with that ASIN.')
-    asin = wrap(asin, ['channel', getopts({'url':''}), 'text'])
+            pass
+        irc.reply('No item was found with that ASIN.')
+    asin = wrap(asin, [getopts({'url':''}), 'text'])
 
-    def upc(self, irc, msg, args, channel, optlist, upc):
+    def upc(self, irc, msg, args, optlist, upc):
         """[--url] <upc>
 
         Returns the item matching the given UPC number.  If --url is
@@ -288,19 +296,21 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'URL' : 'url'
                   }
         s = '%(title)s %(manufacturer)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             item = amazon.searchByUPC(upc, locale=region)
-            res = self._genResults(s, attribs, item, url, bold, 'title')
+            res = self._genResults(s, attribs, item, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No item was found with that UPC.')
-    upc = wrap(upc, ['channel', getopts({'url':''}), 'text'])
+            pass
+        irc.reply('No item was found with that UPC.')
+    upc = wrap(upc, [getopts({'url':''}), 'text'])
 
-    def author(self, irc, msg, args, channel, optlist, author):
+    def author(self, irc, msg, args, optlist, author):
         """[--url] <author>
 
         Returns a list of books written by the given author. If --url is
@@ -319,17 +329,19 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             books = amazon.searchByAuthor(author, locale=region)
-            res = self._genResults(s, attribs, books, url, bold, 'title')
+            res = self._genResults(s, attribs, books, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No books were found by that author.')
-    author = wrap(author, ['channel', getopts({'url':''}), 'text'])
+            pass
+        irc.reply('No books were found by that author.')
+    author = wrap(author, [getopts({'url':''}), 'text'])
 
 # FIXME: Until I get a *good* list of categories (ones that actually work),
 #        these commands will remain unavailable
@@ -351,7 +363,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(utils.commaAndify(cats))
     categories = wrap(categories)
 
-    def bestsellers(self, irc, msg, args, channel, optlist, category):
+    def bestsellers(self, irc, msg, args, optlist, category):
         """[--url] <category>
 
         Returns a list of best selling items in <category>. The 'categories'
@@ -373,20 +385,23 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'URL' : 'url'
                   }
         s = '"%(title)s", from %(publisher)s.%(url)s'
+        channel = msg.args[0]
+        region = self.registryValue('region', channel)
+        bold = self.registryValue('bold', channel)
         try:
-            items = amazon.browseBestSellers(category)
-            res = self._genResults(s, attribs, items, url)
+            items = amazon.browseBestSellers(category, locale=region)
+            res = self._genResults(s, attribs, items, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No items were found on that best seller list.')
-    bestsellers = wrap(bestsellers,
-                       ['channel', getopts({'url':''}), rest('lowered')])
+            pass
+        irc.reply('No items were found on that best seller list.')
+    bestsellers = wrap(bestsellers, [getopts({'url':''}), rest('lowered')])
     '''
 
 
-    def artist(self, irc, msg, args, channel, optlist, artist):
+    def artist(self, irc, msg, args, optlist, artist):
         """[--url] [--{music,classical}] <artist>
 
         Returns a list of items by the given artist. If --url is specified, a
@@ -410,22 +425,23 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s (%(media)s), by %(artist)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             items = amazon.searchByArtist(artist, product_line=product,
                                           locale=region)
-            res = self._genResults(s, attribs, items, url, bold, 'title')
+            res = self._genResults(s, attribs, items, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No items were found by that artist.')
-    artist = wrap(artist, ['channel',
-                           getopts({'music':'', 'classical':'', 'url':''}),
+            pass
+        irc.reply('No items were found by that artist.')
+    artist = wrap(artist, [getopts({'music':'', 'classical':'', 'url':''}),
                            'text'])
 
-    def actor(self, irc, msg, args, channel, optlist, actor):
+    def actor(self, irc, msg, args, optlist, actor):
         """[--url] [--{dvd,vhs,video}] <actor>
 
         Returns a list of items starring the given actor. If --url is
@@ -450,22 +466,23 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             items = amazon.searchByActor(actor, product_line=product,
                                          locale=region)
-            res = self._genResults(s, attribs, items, url, bold, 'title')
+            res = self._genResults(s, attribs, items, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No items were found starring that actor.')
-    actor = wrap(actor, ['channel',
-                         getopts({'dvd': '', 'video': '', 'vhs':'', 'url':''}),
+            pass
+        irc.reply('No items were found starring that actor.')
+    actor = wrap(actor, [getopts({'dvd': '', 'video': '', 'vhs':'', 'url':''}),
                          'text'])
 
-    def director(self, irc, msg, args, channel, optlist, director):
+    def director(self, irc, msg, args, optlist, director):
         """[--url] [--{dvd,vhs,video}] <director>
 
         Returns a list of items by the given director. If --url is
@@ -490,22 +507,24 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             items = amazon.searchByDirector(director, product_line=product,
                                             locale=region)
-            res = self._genResults(s, attribs, items, url, bold, 'title')
+            res = self._genResults(s, attribs, items, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No items were found by that director.')
-    director = wrap(director, ['channel', getopts({'dvd': '', 'video': '',
-                                                   'vhs': '', 'url': ''}),
+            pass
+        irc.reply('No items were found by that director.')
+    director = wrap(director, [getopts({'dvd': '', 'video': '', 'vhs': '',
+                                        'url': ''}),
                                'text'])
 
-    def manufacturer(self, irc, msg, args, channel, optlist, manufacturer):
+    def manufacturer(self, irc, msg, args, optlist, manufacturer):
         """ [--url] \
         [--{pc-hardware,kitchen,electronics,videogames,software,photo}] \
         <manufacturer>
@@ -527,25 +546,26 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'URL' : 'url'
                   }
         s = '%(title)s; price: %(price)s%(url)s'
+        channel = msg.args[0]
         region = self.registryValue('region', channel)
         bold = self.registryValue('bold', channel)
         try:
             items = amazon.searchByManufacturer(manufacturer,
                                                 product_line=product,
                                                 locale=region)
-            res = self._genResults(s, attribs, items, url, bold, 'title')
+            res = self._genResults(s, attribs, items, url, bold)
             if res:
                 irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
-            irc.error('No items were found by that manufacturer.')
+            pass
+        irc.reply('No items were found by that manufacturer.')
     manufacturer = wrap(manufacturer,
-                        ['channel', getopts(
-                            {'url':'', 'electronics':'', 'kitchen':'',
-                             'videogames':'', 'software':'', 'photo':'',
-                             'pc-hardware':'',
-                            }),
-                        'text'])
+                        [getopts({'url':'', 'electronics':'', 'kitchen':'',
+                                  'videogames':'', 'software':'', 'photo':'',
+                                  'pc-hardware':'',
+                                 }),
+                         'text'])
 
     def amzSnarfer(self, irc, msg, match):
         r"http://www.amazon.com/exec/obidos/(?:tg/detail/-/|ASIN/)([^/]+)"
@@ -563,12 +583,12 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s; %(artist)s; %(author)s; %(mpaa)s; %(media)s; '\
             '%(date)s; %(publisher)s; price: %(price)s'
-        chan = msg.args[0]
-        region = self.registryValue('region', chan)
-        bold = self.registryValue('bold', chan)
+        channel = msg.args[0]
+        region = self.registryValue('region', channel)
+        bold = self.registryValue('bold', channel)
         try:
             item = amazon.searchByASIN(match, locale=region)
-            res = self._genResults(s, attribs, item, False, bold, 'title')
+            res = self._genResults(s, attribs, item, False, bold)
             if res:
                 res = utils.commaAndify(res)
                 res = res.replace('; unknown', '')
@@ -576,7 +596,8 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(res, prefixName=False)
                 return
         except amazon.AmazonError, e:
-            self.log.debug('No item was found with that ASIN.')
+            pass
+        self.log.debug('No item was found with that ASIN.')
     amzSnarfer = urlSnarfer(amzSnarfer)
 
 Class = Amazon

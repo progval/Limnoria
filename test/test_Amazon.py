@@ -69,7 +69,7 @@ if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
             self.assertHelp('artist')
             self.assertNotError('artist rahzel')
             self.assertNotError('artist --url rahzel')
-            self.assertError('artist --classical rahzel')
+            self.assertRegexp('artist --classical rahzel', 'No items were')
             self.assertNotError('artist --classical vivaldi')
 
         def testActor(self):
