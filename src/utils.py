@@ -681,6 +681,7 @@ class AtomicFile(file):
     Opens the file in 'w' mode."""
     def __init__(self, filename, allowEmptyOverwrite=False):
         self.filename = filename
+        self.closed = False
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
         self.tempFilename = '%s.%s' % (filename, mktemp())
@@ -688,16 +689,18 @@ class AtomicFile(file):
 
     def rollback(self):
         #print 'AtomicFile.rollback'
-        super(AtomicFile, self).close()
-        if os.path.exists(self.tempFilename):
-            print 'AtomicFile: Removing %s.' % self.tempFilename
-            os.remove(self.tempFilename)
-        self.rolledback = True
+        if not self.closed:
+            super(AtomicFile, self).close()
+            if os.path.exists(self.tempFilename):
+                print 'AtomicFile: Removing %s.' % self.tempFilename
+                os.remove(self.tempFilename)
+            self.rolledback = True
 
     def close(self):
         #print 'AtomicFile.close'
         if not self.rolledback:
             #print 'AtomicFile.close: actually closing.'
+            self.closed = True
             super(AtomicFile, self).close()
             size = os.stat(self.tempFilename).st_size
             if size or self.allowEmptyOverwrite:
