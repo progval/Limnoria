@@ -1,3 +1,7 @@
+	* Added QUIT stat-keeping to ChannelDB.  This added another column
+	to the database; you'll need to add a 'quits' column to both
+	user_stats and channel_stats.  Good luck.
+	
 	* Removed the OwnerCommands.say command; it wasn't useful enough,
 	and is so easily written that anyone can have it back if they want
 	it.
