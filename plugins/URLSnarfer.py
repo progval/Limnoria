@@ -208,7 +208,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         self.lasturl(irc, msg, args)
 
     def lasturl(self, irc, msg, args):
-        """[<channel>] [--{from,with,at,proto,near}=<value>] --{nolimit,url}
+        """[<channel>] [--{from,with,at,proto,near}=<value>] --{nolimit,fancy}
 
         Gives the last URL matching the given criteria.  --from is from whom
         the URL came; --at is the site of the URL; --proto is the protocol the
