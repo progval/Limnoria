@@ -575,6 +575,51 @@ class Fun(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         irc.reply(msg, text[::-1])
 
+    def jeffk(self, irc, msg, args):
+        """<text>
+
+        Returns <text> as if JeffK had said it himself.
+        """
+        def randomlyPick(L):
+            return random.choice(L)
+        def quoteOrNothing(m):
+            return randomlyPick(['"', '']).join(m.groups())
+        def randomlyReplace(s, probability=0.5):
+            def f(m):
+                if random.random() < probability:
+                    return s
+                else:
+                    return m.group(0)
+            return f
+        def randomExclaims(m):
+            return ('!'*random.randrange(1, 5)) + m.group(1)
+        def randomlyShuffle(m):
+            L = list(m.groups())
+            random.shuffle(L)
+            return ''.join(L)
+        def lessRandomlyShuffle(m):
+            L = list(m.groups())
+            if random.random() < .4:
+                random.shuffle(L)
+            return ''.join(L)
+        text = privmsgs.getArgs(args)
+        text = re.sub(r'er\b', 'ar', text)
+        text = re.sub(r'\bthe\b', 'teh', text)
+        text = re.sub(r'you', 'yuo', text)
+        text = re.sub(r'\bis\b', 'si', text)
+        text = re.sub(r'ing\b', 'eing', text)
+        text = re.sub(r'like', 'liek', text)
+        text = re.sub(r'y\b', randomlyReplace('ey', 0.9), text)
+        text = re.sub(r'(\w)\'(\w)', quoteOrNothing, text)
+        text = re.sub(r'\.(\s+|$)', randomExclaims, text)
+        text = re.sub(r'([aeiou])([aeiou])', randomlyShuffle, text)
+        text = re.sub(r'to', randomlyReplace('too', 0.6))
+        text = re.sub(r'([bcdfghkjlmnpqrstvwxyz])([bcdfghkjlmnpqrstvwxyz])',
+                      lessRandomlyShuffle, text)
+        if random.random() < .4:
+            text = text.upper()
+        irc.reply(msg, text)
+
 
 Class = Fun
 
