@@ -330,8 +330,9 @@ if __name__ == '__main__':
     driver = drivers.newDriver(server, irc)
     
     if options.profile:
-        import profile
-        profile.run('main()', '%s-%i.prof' % (nick, time.time()))
+        import hotshot
+        profiler = hotshot.Profile('%s-%i.prof' % (nick, time.time()))
+        profiler.run('main()')
     else:
         main()
 
