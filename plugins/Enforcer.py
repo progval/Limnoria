@@ -58,6 +58,13 @@ def configure(advanced):
     onStart.append('enforcer start %s' % chanserv)
     conf.supybot.plugins.Enforcer.takeRevenge.setValue(revenge)
 
+class ValidNickOrEmptyString(registry.String):
+    def setValue(self, v):
+        if v and not ircutils.isNick(v):
+            raise registry.InvalidRegistryValue, \
+                  'Value must be a valid nick or the empty string.'
+        self.value = v
+            
 conf.registerPlugin('Enforcer')
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoOp',
     registry.Boolean(False, """Determines whether the bot will automatically op
@@ -74,28 +81,19 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'takeRevenge',
     registry.Boolean(False, """Determines whether the bot will take revenge on
     people who do things it doesn't like (somewhat like 'bitch mode' in other
     IRC bots)."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'cycleToGetOps',
+    registry.Boolean(True, """Determines whether the bot will cycle the channel
+    if it doesn't have ops and there's no one else in the channel."""))
+# This is a network value, not a channel value.
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'ChanServ',
+    ValidNickOrEmptyString('', """Determines what nick the bot will consider to
+    be the ChanServ on the network.  ChanServ (on networks that support it) is
+    obviously beyond our abilities to enforce, and so we would ignore all
+    messages from it."""))
+
 _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg):
-    started = False
-    def start(self, irc, msg, args):
-        """[<CHANSERV>]
-
-        Starts the Enforcer plugin.  <chanserv> is the nick for the chanserv
-        aspect of Services (it defaults to ChanServ).
-        """
-        self.topics = {}
-        chanserv = privmsgs.getArgs(args, required=0, optional=1)
-        self.chanserv = ircutils.IrcString(chanserv or 'ChanServ')
-        self.started = True
-        for channel in irc.state.channels:
-            irc.queueMsg(ircmsgs.topic(channel))
-        irc.replySuccess()
-    start = privmsgs.checkCapability(start, 'admin')
-
     def doJoin(self, irc, msg):
-        if not self.started:
-            self.log.warning('Enforcer not started.')
-            return
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
         if c.checkBan(msg.prefix):
@@ -112,9 +110,6 @@ class Enforcer(callbacks.Privmsg):
                 irc.queueMsg(ircmsgs.voice(channel, msg.nick))
 
     def doTopic(self, irc, msg):
-        if not self.started:
-            self.log.info('Enforcer not started.')
-            return
         channel = msg.args[0]
         topic = msg.args[1]
         if msg.nick != irc.nick and \
@@ -131,9 +126,6 @@ class Enforcer(callbacks.Privmsg):
 
     def do332(self, irc, msg):
         # This command gets sent right after joining a channel.
-        if not self.started:
-            self.log.info('Enforcer not started.')
-            return
         (channel, topic) = msg.args[1:]
         self.topics[channel] = topic
 
@@ -146,9 +138,6 @@ class Enforcer(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.kick(channel,ircutils.nickFromHostmask(hostmask)))
 
     def doKick(self, irc, msg):
-        if not self.started:
-            self.log.info('Enforcer not started.')
-            return
         channel = msg.args[0]
         kicked = msg.args[1].split(',')
         deop = False
@@ -171,9 +160,6 @@ class Enforcer(callbacks.Privmsg):
                     irc.queueMsg(ircmsgs.deop(channel, msg.nick))
 
     def doMode(self, irc, msg):
-        if not self.started:
-            self.log.info('Enforcer not started.')
-            return
         channel = msg.args[0]
         if not ircutils.isChannel(channel) or msg.nick == self.chanserv:
             return
@@ -222,7 +208,7 @@ class Enforcer(callbacks.Privmsg):
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
                 elif mode == '+b':
-                    # To be safe, only #channel.ops are allowed to ban.
+                    # To be safe, only #channel,ops are allowed to ban.
                     if not ircdb.checkCapability(msg.prefix,
                                                  _chanCap(channel, 'op')):
                         irc.queueMsg(ircmsgs.unban(channel, value))
@@ -231,11 +217,31 @@ class Enforcer(callbacks.Privmsg):
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
 
+    def _cycle(self, irc, channel):
+        if self.registryValue('cycleToGetOps', channel):
+            if 'i' not in irc.state.channels[channel].modes:
+                # What about keywords?
+                self.log.info('Cycling %s: I\'m the only one left.', channel)
+                irc.queueMsg(ircmsgs.part(channel))
+                irc.queueMsg(ircmsgs.join(channel))
+            else:
+                self.log.warning('Not cycling %s: it\'s +i', channel)
+            
+    def doPart(self, irc, msg):
+        channel = msg.args[0]
+        if len(irc.state.channels[channel].users) == 1:
+            self._cycle(irc, channel)
+
+    def doQuit(self, irc, msg):
+        for (channel, c) in irc.state.channels.iteritems():
+            if len(c.users) == 1:
+                self._cycle(irc, channel)
+
     def __call__(self, irc, msg):
-        if self.started:
-            if ircutils.isUserHostmask(msg.prefix) and \
-               not msg.nick == self.chanserv:
-                return callbacks.Privmsg.__call__(self, irc, msg)
+        chanserv = self.registryValue('ChanServ', irc.network)
+        if chanserv and ircutils.isUserHostmask(msg.prefix):
+            if msg.nick != chanserv:
+                callbacks.Privmsg.__call__(self, irc, msg)
 
 
 Class = Enforcer
