@@ -206,9 +206,14 @@ def getIndex(irc, msg, args, state):
 
 def getId(irc, msg, args, state, kind=None):
     type = 'id'
-    if kind is not None:
+    if kind is not None and not kind.endswith('id'):
         type = kind + ' id'
-    getInt(irc, msg, args, state, type=type)
+    try:
+        original = args[0]
+        args[0] = args[0].lstrip('#')
+        getInt(irc, msg, args, state, type=type)
+    except Exception, e:
+        args[0] = original
 
 def getExpiry(irc, msg, args, state):
     now = int(time.time())
@@ -243,7 +248,6 @@ def getHaveOp(irc, msg, args, state, action='do that'):
 
 def validChannel(irc, msg, args, state):
     if irc.isChannel(args[0]):
-        # XXX Check maxlength in irc.state.supported.
         state.args.append(args.pop(0))
     else:
         irc.errorInvalid('channel', args[0])

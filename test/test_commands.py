@@ -99,6 +99,10 @@ class CommandsTestCase(SupyTestCase):
         spec = ['channel', 'text']
         self.assertState(spec, ['#foo', '+s'], ['#foo', '+s'])
         self.assertState(spec, ['+s'], ['#foo', '+s'], target='#foo')
+
+    def testGetId(self):
+        spec = ['id']
+        self.assertState(spec, ['#12'], [12])
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
