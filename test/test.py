@@ -37,6 +37,7 @@ conf.confDir = 'test-conf'
 conf.logDir = 'test-log'
 conf.replyWhenNotCommand = False
 conf.stdoutLogging = False
+conf.detailedTracebacks = False # Bugs in cgitb can be bad.
 
 import fix
 
