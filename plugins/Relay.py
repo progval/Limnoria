@@ -475,7 +475,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         s = '%s (%s) has been%s on server %s since %s (idle for %s) and ' \
             '%s.%s' % (user, hostmask, identify, server, signon, idle,
                        channels, away)
-        replyIrc.reply(replyMsg, s)
+        replyIrc.reply(s)
         del self._whois[(irc, loweredNick)]
 
     def do402(self, irc, msg):
@@ -487,7 +487,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
         del self._whois[(irc, loweredNick)]
         s = 'There is no %s on %s.' % (nick, self.abbreviations[irc])
-        replyIrc.reply(replyMsg, s)
+        replyIrc.reply(s)
 
     do401 = do402
 
