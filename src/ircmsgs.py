@@ -255,7 +255,9 @@ def halfops(channel, nicks, prefix=''):
     """Returns a MODE to halfop each of nicks on channel."""
     assert isChannel(channel), channel
     assert filter(isNick, nicks) == nicks, nicks
-    return IrcMsg(command=MODE, args=(channel, '+' + ('h'*len(nicks)), nicks))
+    return IrcMsg(prefix=prefix,
+                  command=MODE,
+                  args=(channel, '+' + ('h'*len(nicks)), nicks))
 
 def dehalfop(channel, nick, prefix=''):
     """Returns a MODE to dehalfop nick on channel."""
@@ -460,7 +462,7 @@ def who(hostmaskOrChannel, prefix=''):
 def whois(nick, prefix=''):
     """Returns a WHOIS for nick."""
     assert isNick(nick), nick
-    return IrcMsg(command='WHOIS', args=(nick,))
+    return IrcMsg(prefix=prefix, command='WHOIS', args=(nick,))
 
 def invite(channel, nick, prefix=''):
     """Returns an INVITE for nick."""
