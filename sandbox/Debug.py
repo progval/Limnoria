@@ -38,6 +38,7 @@ __revision__ = "$Id$"
 
 import supybot.plugins as plugins
 
+import gc
 import sys
 import exceptions
 
@@ -162,6 +163,19 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
         """
         irc.reply(channel)
     channeldb = wrap(channeldb, ['channeldb'])
+
+    def collect(self, irc, msg, args, times):
+        """[<times>]
+
+        Does <times> gc collections, returning the number of objects collected
+        each time.  <times> defaults to 1.
+        """
+        L = []
+        while times:
+            L.append(gc.collect())
+            times -= 1
+        irc.reply(utils.commaAndify(map(str, L)))
+    collect = wrap(collect, [additional('positiveInt', 1)])
 
 
 Class = Debug
