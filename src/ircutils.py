@@ -54,6 +54,10 @@ from cStringIO import StringIO as sio
 
 import utils
 
+def debug(s, *args):
+    """Prints a debug string.  Most likely replaced by our logging debug."""
+    print '***', s % args
+    
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
     p1 = s.find('!')
@@ -357,6 +361,9 @@ def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
     if isinstance(s, unicode):
         s = s.encode('utf-8')
+    elif not isinstance(s, basestring):
+        debug('Got a non-string in safeArgument: %r', s)
+        s = str(s)
     if isValidArgument(s):
         return s
     else:

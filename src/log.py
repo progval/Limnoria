@@ -47,6 +47,8 @@ import conf
 import utils
 import registry
 
+import ircutils
+
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
 
 class Formatter(logging.Formatter):
@@ -137,6 +139,8 @@ pluginFormatter = Formatter('%(levelname)s %(asctime)s %(name)s %(message)s')
 # These are not.
 logging.setLoggerClass(Logger)
 _logger = logging.getLogger('supybot')
+
+# These just make things easier.
 debug = _logger.debug
 info = _logger.info
 warning = _logger.warning
@@ -147,6 +151,9 @@ exception = _logger.exception
 setLevel = _logger.setLevel
 
 atexit.register(logging.shutdown)
+
+# ircutils will work without this, but it's useful.
+ircutils.debug = debug
 
 def getPluginLogger(name):
     if not conf.supybot.log.individualPluginLogfiles():

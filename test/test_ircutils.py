@@ -165,6 +165,10 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(bolds, ircutils.safeArgument(bolds))
         self.assertEqual(colors, ircutils.safeArgument(colors))
 
+    def testSafeArgumentConvertsToString(self):
+        self.assertEqual('1', ircutils.safeArgument(1))
+        self.assertEqual(str(None), ircutils.safeArgument(None))
+
     def testIsNick(self):
         try:
             original = conf.supybot.protocols.irc.strictRfc()
