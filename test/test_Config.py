@@ -44,8 +44,7 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertError('config list supybot.asdfkjsldf')
         self.assertNotError('config list supybot')
         self.assertNotError('config list supybot.replies')
-        self.assertRegexp('config list --groups supybot',
-                          r'plugins.*replies.*reply')
+        self.assertRegexp('config list supybot', r'@plugins.*@replies.*@reply')
 
     def testHelp(self):
         self.assertError('config help alsdkfj')
