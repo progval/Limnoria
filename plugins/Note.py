@@ -221,7 +221,8 @@ class Note(callbacks.Privmsg):
     def note(self, irc, msg, args):
         """<note id>
 
-        Retrieves a single note by its unique note id.
+        Retrieves a single note by its unique note id.  Use the 'note list'
+        command to see what unread notes you have.
         """
         noteid = privmsgs.getArgs(args)
         if noteid.startswith('get'):
