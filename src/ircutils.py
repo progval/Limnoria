@@ -122,7 +122,7 @@ def isNick(s, strictRfc=True, nicklen=None):
             ret = len(s) <= nicklen
         return ret
     else:
-        return not isChannel(s) and not isUserHostmask(s)
+        return not isChannel(s) and not isUserHostmask(s) and not ' ' in s
 
 def isChannel(s, chantypes='#&+!'):
     """Returns True if s is a valid IRC channel name."""
