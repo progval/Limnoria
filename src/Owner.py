@@ -111,11 +111,15 @@ def loadPluginClass(irc, module, register=None):
     try:
         cb = module.Class()
     except AttributeError, e:
-        raise callbacks.Error, 'This plugin module doesn\'t have a "Class" ' \
-                               'attribute to specify which plugin should be ' \
-                               'instantiated.  If you didn\'t write this ' \
-                               'plugin, but received it with Supybot, file ' \
-                               'a bug with us about this error. %s.' % e
+        if 'Class' in str(e):
+            raise callbacks.Error, \
+                  'This plugin module doesn\'t have a "Class" ' \
+                  'attribute to specify which plugin should be ' \
+                  'instantiated.  If you didn\'t write this ' \
+                  'plugin, but received it with Supybot, file ' \
+                  'a bug with us about this error.'
+        else:
+            raise
     plugin = cb.name()
     public = True
     if hasattr(cb, 'public'):
