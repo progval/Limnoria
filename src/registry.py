@@ -78,10 +78,14 @@ class Value(object):
 
     def set(self, s):
         """Override this with a function to convert a string to whatever type
-        you want, and set it to .value."""
+        you want, and call self.setValue to set the value."""
         raise NotImplementedError
 
     def setValue(self, v):
+        """Check conditions on the actual value type here.  I.e., if you're a
+        IntegerLessThanOneHundred (all your values must be integers less than
+        100) convert to an integer in set() and check that the integer is less
+        than 100 in this method."""
         self.value = v
     
     def reset(self):
@@ -99,36 +103,41 @@ class Boolean(Value):
     def set(self, s):
         s = s.lower()
         if s in ('true', 'on', 'enabled'):
-            self.value = True
+            value = True
         elif s in ('false', 'off', 'disabled'):
-            self.value = False
+            value = False
         elif s == 'toggle':
-            self.value = not self.value
+            value = not self.value
         else:
             raise InvalidRegistryValue, 'Value must be True or False.'
+        self.setValue(value)
+
+    def setValue(self, v):
+        self.value = bool(v)
 
 class Integer(Value):
     def set(self, s):
         try:
-            self.value = int(s)
+            self.setValue(int(s))
         except ValueError:
             raise InvalidRegistryValue, 'Value must be an integer.'
 
 class PositiveInteger(Value):
     def set(self, s):
         try:
-            original = self.value
-            self.value = int(s)
-            if self.value < 0:
-                raise ValueError
+            self.setValue(int(s))
         except ValueError:
-            self.value = original
             raise InvalidRegistryValue, 'Value must be a positive integer.'
+
+    def setValue(self, v):
+        if v <= 0:
+            raise ValueError, 'Value must be a positive integer.'
+        self.value = v
 
 class Float(Value):
     def set(self, s):
         try:
-            self.value = float(s)
+            self.setValue(float(s))
         except ValueError:
             raise InvalidRegistryValue, 'Value must be a float.'
 
@@ -156,23 +165,26 @@ class NormalizedString(String):
 class StringSurroundedBySpaces(String):
     def set(self, s):
         String.set(self, s)
-        if self.value.lstrip() == self.value:
-            self.value = ' ' + self.value
-        if self.value.rstrip() == self.value:
-            self.value += ' '
+        self.setValue(self.value)
+
+    def setValue(self, v):
+        if v.lstrip() == v:
+            v= ' ' + self.value
+        if v.rstrip() == v:
+            v += ' '
+        self.value = v
             
 class CommaSeparatedListOfStrings(String):
     def set(self, s):
         String.set(self, s)
-        self.value = map(str.strip, self.value.split(','))
+        self.setValue(map(str.strip, self.value.split(',')))
 
     def __str__(self):
         return ','.join(self.value)
 
 class CommaSeparatedSetOfStrings(CommaSeparatedListOfStrings):
-    def set(self, s):
-        CommaSeparatedListOfStrings.set(self, s)
-        self.value = sets.Set(self.value)
+    def setValue(self, v):
+        self.value = sets.Set(v)
 
 class Group(object):
     def __init__(self):
