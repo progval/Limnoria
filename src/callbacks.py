@@ -45,6 +45,7 @@ import new
 import sets
 import time
 import shlex
+import getopt
 import inspect
 import threading
 import sre_constants
@@ -298,7 +299,7 @@ class IrcObjectProxy:
                     # If self.irc is an actual irclib.Irc, then this is the
                     # first command given, and should be ignored as usual.
                     self.reply(self.msg, '[%s]' % ' '.join(self.args))
-        except ArgumentError:
+        except (getopt.GetoptError, ArgumentError):
             if hasattr(command, '__doc__'):
                 s = '%s %s' % (name, command.__doc__.splitlines()[0])
             else:
@@ -365,7 +366,7 @@ class CommandThread(threading.Thread):
             elapsed = time.time() - start
             debug.msg('%s took %s seconds.' % \
                       (self.commandName, elapsed), 'verbose')
-        except ArgumentError:
+        except (getopt.GetoptError, ArgumentError):
             if hasattr(self.command, '__doc__'):
                 help = self.command.__doc__.splitlines()[0]
                 s = '%s %s' % (self.commandName, help)
