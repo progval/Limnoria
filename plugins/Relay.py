@@ -59,6 +59,7 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
         callbacks.Privmsg.__init__(self)
         self.ircs = {}
         self.started = False
+        self.channels = set()
         self.abbreviations = {}
         
     def startrelay(self, irc, msg, args):
@@ -97,6 +98,7 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
     def relayjoin(self, irc, msg, args):
         "<channel>"
         channel = privmsgs.getArgs(args)
+        self.channels.add(channel)
         for otherIrc in self.ircs.itervalues():
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
@@ -105,6 +107,7 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
     def relaypart(self, irc, msg, args):
         "<channel>"
         channel = privmsgs.getArgs(args)
+        self.channels.remove(channel)
         for otherIrc in self.ircs.itervalues():
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
@@ -122,6 +125,8 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
             irc = irc.getRealIrc()
         if self.started and ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
+            if channel not in self.channels:
+                return
             #debug.printf('self.abbreviations = %s' % self.abbreviations)
             #debug.printf('self.ircs = %s' % self.ircs)
             #debug.printf('irc = %s' % irc)
@@ -171,6 +176,8 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
             rAction = re.compile(r'\* \w+/(?:%s) ' % '|'.join(abbreviations))
             if not (rPrivmsg.match(msg.args[1]) or rAction.match(msg.args[1])):
                 channel = msg.args[0]
+                if channel not in self.channels:
+                    return
                 abbreviation = self.abbreviations[irc]
                 s = self._formatPrivmsg(irc.nick, abbreviation, msg)
                 for otherIrc in self.ircs.itervalues():

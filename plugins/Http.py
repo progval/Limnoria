@@ -48,16 +48,12 @@ import re
 import time
 import urllib
 import urllib2
-import htmlentitydefs
 import xml.dom.minidom
 
+import utils
 import debug
 import privmsgs
 import callbacks
-
-_htmlstripper = re.compile('<[^>]+>')
-def stripHtml(s):
-    return _htmlstripper.sub('', s)
 
 class FreshmeatException(Exception):
     pass
@@ -132,7 +128,7 @@ class Http(callbacks.Privmsg):
         text = html.split('<P>\n', 2)[1]
         text = text.replace('.\n', '.  ')
         text = text.replace('\n', ' ')
-        text = stripHtml(text)
+        text = utils.htmlToText(text)
         irc.reply(msg, text.strip())
 
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
@@ -246,10 +242,8 @@ class Http(callbacks.Privmsg):
         if m is None:
             irc.error(msg, 'No quote found.')
             return
-        quote = m.group(1)
+        quote = utils.htmlToText(m.group(1))
         quote = ' // '.join(quote.splitlines())
-        for (entity, replacement) in htmlentitydefs.entitydefs.iteritems():
-            quote = quote.replace(entity, replacement)
         irc.reply(msg, quote)
         
     _acronymre = re.compile('<td[^>]*><b>[^<]+</b></td>[^<]+<td[^>]*>(\w+)')

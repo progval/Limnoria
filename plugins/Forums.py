@@ -40,14 +40,11 @@ from baseplugin import *
 import re
 import urllib2
 
+import utils
 import debug
 import ircmsgs
 import ircutils
 import callbacks
-
-htmlStripper = re.compile(r'<[^>]+>')
-def stripHtml(s):
-    return htmlStripper.sub('', s)
 
 class Forums(callbacks.PrivmsgRegexp):
     threaded = True
