@@ -673,34 +673,36 @@ def stackTrace():
 
 class AtomicFile(file):
     """Used for files that need to be atomically written -- i.e., if there's a
-    failure, the original file remains, unmodified.
-
-    Opens the file in 'w' mode."""
-    def __init__(self, filename, allowEmptyOverwrite=False, tmpDir=None):
-        self.filename = os.path.abspath(filename)
+    failure, the original file remains, unmodified.  mode must be 'w' or 'wb'"""
+    def __init__(self, filename, mode='w',
+                 allowEmptyOverwrite=False, tmpDir=None):
+        if mode not in ('w', 'wb'):
+            raise ValueError, 'Invalid mode: %r' % mode
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
-        self.tempFilename = '%s.%s' % (self.filename, mktemp())
-        if tmpDir is not None:
-            tempFilename = os.path.dirname(self.tempFilename)
-            self.tempFilename = os.path.join(tmpDir, self.tempFilename)
-        super(self.__class__, self).__init__(self.tempFilename, 'w')
+        self.filename = filename
+        if tmpDir is None:
+            # If not given a tmpDir, we'll just put a random token on the end
+            # of our filename and put it in the same directory.
+            self.tempFilename = '%s.%s' % (self.filename, mktemp())
+        else:
+            # If given a tmpDir, we'll get the basename (just the filename, no
+            # directory), put our random token on the end, and put it in tmpDir
+            tempFilename = '%s.%s' % (os.path.basename(self.filename), mktemp())
+            self.tempFilename = os.path.join(tmpDir, tempFilename)
+        super(AtomicFile, self).__init__(self.tempFilename, mode)
 
     def rollback(self):
-        #print 'AtomicFile.rollback'
         if not self.closed:
-            super(self.__class__, self).close()
+            super(AtomicFile, self).close()
             if os.path.exists(self.tempFilename):
-                #print 'AtomicFile: Removing %s.' % self.tempFilename
                 os.remove(self.tempFilename)
             self.rolledback = True
 
     def close(self):
-        #print 'AtomicFile.close'
         if not self.rolledback:
-            #print 'AtomicFile.close: actually closing.'
-            super(self.__class__, self).close()
-            size = os.stat(self.tempFilename).st_size
+            super(AtomicFile, self).close()
+            size = os.path.getsize(self.tempFilename)
             if size or self.allowEmptyOverwrite:
                 if os.path.exists(self.tempFilename):
                     # We use shutil.move here instead of os.rename because
@@ -710,8 +712,15 @@ class AtomicFile(file):
                     shutil.move(self.tempFilename, self.filename)
 
     def __del__(self):
-        #print 'AtomicFile.__del__'
+        # We rollback because if we're deleted without being explicitly closed,
+        # that's bad.  We really should log this here, but as of yet we've got
+        # no logging facility in utils.  I've got some ideas for this, though.
         self.rollback()
+
+def transactionalFile(*args, **kwargs):
+    # This exists so it can be replaced by a function that provides the tmpDir.
+    # We do that replacement in conf.py.
+    return AtomicFile(*args, **kwargs)
 
 if __name__ == '__main__':
     import sys, doctest

@@ -526,10 +526,18 @@ registerGlobalValue(supybot.drivers, 'module',
 
 class Directory(registry.String):
     def __call__(self):
+        # ??? Should we perhaps always return an absolute path here?
         v = super(Directory, self).__call__()
         if not os.path.exists(v):
             os.mkdir(v)
         return v
+
+    def dirize(self, filename):
+        dir = self()
+        dirname = os.path.basename(filename)
+        if not dirname.endswith(dir): # ??? Should this be an "in" test instead?
+            return os.path.join(dir, os.path.basename(filename))
+        return filename
 
 class DataFilename(registry.String):
     def __call__(self):
@@ -557,12 +565,11 @@ registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', """Determines what directory temporary files
     are put into."""))
 
-# This is a hack, but it should work.
-utils._AtomicFile = utils.AtomicFile
-def AtomicFile(*args, **kwargs):
+# Remember, we're *meant* to replace this nice little wrapper.
+def transactionalFile(*args, **kwargs):
     kwargs['tmpDir'] = supybot.directories.data.tmp()
-    return utils._AtomicFile(*args, **kwargs)
-utils.AtomicFile = AtomicFile
+    return utils.AtomicFile(*args, **kwargs)
+utils.transactionalFile = transactionalFile
 
 class PluginDirectories(registry.CommaSeparatedListOfStrings):
     def __call__(self):

@@ -149,7 +149,7 @@ class URLDB(object):
         return [url for (url, nick) in self.getUrlsAndNicks(p)]
 
     def vacuum(self):
-        out = utils.AtomicFile(self.filename)
+        out = utils.transactionalFile(self.filename)
         notAdded = 0
         urls = self.getUrlsAndNicks(lambda *args: True)
         seen = sets.Set()

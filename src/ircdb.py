@@ -571,7 +571,7 @@ class UsersDictionary(utils.IterableMap):
         if self.filename is not None:
             L = self.users.items()
             L.sort()
-            fd = utils.AtomicFile(self.filename)
+            fd = utils.transactionalFile(self.filename)
             for (id, u) in L:
                 fd.write('user %s' % id)
                 fd.write(os.linesep)
@@ -732,7 +732,7 @@ class ChannelsDictionary(utils.IterableMap):
     def flush(self):
         """Flushes the channel database to its file."""
         if self.filename is not None:
-            fd = utils.AtomicFile(self.filename)
+            fd = utils.transactionalFile(self.filename)
             for (channel, c) in self.channels.iteritems():
                 fd.write('channel %s' % channel)
                 fd.write(os.linesep)
@@ -792,7 +792,7 @@ class IgnoresDB(object):
 
     def flush(self):
         if self.filename is not None:
-            fd = utils.AtomicFile(self.filename)
+            fd = utils.transactionalFile(self.filename)
             for hostmask in self.hostmasks:
                 fd.write(hostmask)
                 fd.write(os.linesep)

@@ -78,7 +78,7 @@ def open(filename, clear=False):
 def close(registry, filename, annotated=True, helpOnceOnly=False):
     first = True
     helpCache = sets.Set()
-    fd = utils.AtomicFile(filename)
+    fd = utils.transactionalFile(filename)
     for (name, value) in registry.getValues(getChildren=True):
         if annotated and hasattr(value,'help') and value.help:
             if not helpOnceOnly or value.help not in self.helpCache:
