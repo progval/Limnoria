@@ -70,7 +70,6 @@ class ConfigurationDict(dict):
 
 def processConfigFile(filename):
     import debug
-    import world
     import irclib
     import ircmsgs
     import privmsgs
@@ -162,7 +161,6 @@ def main():
         else:
             print 'Unexpected argument %s; ignoring.' % option
     import debug
-    import world
     import drivers
     import schedule
     for filename in filenames:
