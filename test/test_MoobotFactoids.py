@@ -64,14 +64,15 @@ if sqlite is not None:
             self._testOptions('(|a)', ['a', ''])
             self._testOptions('((a)|(b))', ['(a)', '(b)'])
 
-    class FactoidsTestCase(PluginTestCase, PluginDocumentation):
+    class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
         config = {'reply.whenNotCommand': False}
         def setUp(self):
-            PluginTestCase.setUp(self)
+            ChannelPluginTestCase.setUp(self)
             # Create a valid user to use
             self.prefix = 'foo!bar@baz'
-            self.assertNotError('register tester moo')
+            self.irc.feedMsg(ircmsgs.privmsg(self.nick, 'register tester moo',
+                                             prefix=self.prefix))
 
         def testAddFactoid(self):
             self.assertNotError('moo is foo')
