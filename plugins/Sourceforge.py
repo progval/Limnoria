@@ -112,9 +112,11 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _assigned=re.compile(r'<b>(Assigned To):</b> <a.+?<br>(.+?)</td>', _reopts)
     _submitted = re.compile(r'<b>(Submitted By):</b><br>([^-]+) - '
                             r'(?:nobody|<a href)', _reopts)
+    _submitDate = re.compile(r'<b>(Date Submitted):</b><br>([^<]+)</', _reopts)
     _priority = re.compile(r'<b>(Priority):</b> <a.+?<br>(.+?)</td>', _reopts)
     _status = re.compile(r'<b>(Status):</b> <a.+?<br>(.+?)</td>', _reopts)
-    _regexps =(_resolution, _assigned, _submitted, _priority, _status)
+    _regexps =(_resolution, _submitDate, _submitted, _assigned, _priority,
+               _status)
     _statusOpt = {'any':100, 'open':1, 'closed':2, 'deleted':3, 'pending':4}
 
     _projectURL = 'http://sourceforge.net/projects/'
