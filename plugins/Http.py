@@ -131,7 +131,7 @@ class Http(callbacks.Privmsg):
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
         text = html.split('<P>\n', 2)[1]
-        text = text.replace('.\n', '  ')
+        text = text.replace('.\n', '.  ')
         text = text.replace('\n', ' ')
         text = self._html.sub('', text)
         irc.reply(msg, text.strip())

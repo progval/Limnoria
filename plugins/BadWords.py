@@ -52,7 +52,7 @@ class BadWords(callbacks.Privmsg):
             return msg
 
     def makeRegexp(self):
-        self.regexp = re.compile('|'.join(self.badwords), re.I)
+        self.regexp = re.compile(r'\b(?:'+'|'.join(self.badwords)+r')\b', re.I)
 
     def addbadword(self, irc, msg, args):
         "<word>"
