@@ -120,6 +120,8 @@ if __name__ == '__main__':
                     module.configure(onStart, afterConnect, advanced)
                 else:
                     onStart.append('load %s' % plugin)
+                if 'load %s' % plugin in onStart:
+                    plugins.remove(plugin)
 
     ###
     # Commands
