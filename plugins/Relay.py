@@ -105,7 +105,10 @@ class Relay(callbacks.Privmsg):
     def inFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
-        self.ircstates[irc] = irc.state.copy()
+        try:
+            self.ircstates[irc].enqueue(irc.state.copy())
+        except KeyError:
+            self.ircstates[irc] = MaxLengthQueue(2, (irc.state.copy(),))
         return msg
     
     def startrelay(self, irc, msg, args):
@@ -306,7 +309,7 @@ class Relay(callbacks.Privmsg):
             else:
                 s = '%s/%s has quit.' % (msg.nick, network)
             for channel in self.channels:
-                if msg.nick in self.ircstates[irc].channels[channel].users:
+                if msg.nick in self.ircstates[irc][1].channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
                             otherIrc.queueMsg(ircmsgs.privmsg(channel, s))

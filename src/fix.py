@@ -43,13 +43,15 @@ def ignore(*args, **kwargs):
     pass
 
 def catch(f, *args, **kwargs):
+    """Catches all exceptions raises by f."""
     try:
         return f(*args, **kwargs)
     except:
         return None
 
 class bool(int):
-    def __new__(self, val=0):
+    """Just a holdover until 2.3 comes out with its wonderful new bool type."""
+    def __new__(cls, val=0):
         # This constructor always returns an existing instance
         if val:
             return True
@@ -93,6 +95,7 @@ True = int.__new__(bool, 1)
 
 
 class set(object):
+    """Just a holdover until 2.3 comes out with its wonderful new set type."""
     __slots__ = ('d',)
     def __init__(self, seq=()):
         self.d = {}
@@ -139,6 +142,7 @@ class set(object):
 
 
 class queue(dict):
+    """An FIFO Queue, O(1) for all operations."""
     __slots__ = ('first', 'last')
     def __init__(self, seq=()):
         self.first = 0
@@ -214,6 +218,15 @@ class queue(dict):
         for (k, v) in d.iteritems():
             dict.__setitem__(self, k, v)
             
+class MaxLengthQueue(queue):
+    __slots__ = ('length',)
+    def __init__(length, *args):
+        self.length = length
+        queue.__init__(self, *args)
+        
+    def enqueue(self, elt):
+        if len(self) > self.length:
+            self.dequeue()
 
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.
@@ -250,6 +263,7 @@ class IterableMap(object):
         return False
 
 def mktemp(suffix=''):
+    """Gives a decent random string, suitable for a filename."""
     import sha
     import md5
     import time
@@ -266,12 +280,12 @@ def mktemp(suffix=''):
     return sha.sha(s + str(time.time())).hexdigest() + suffix
 
 def zipiter(*args):
-    length = len(args[0])
-    for arg in args:
-        if len(arg) < length:
-            length = len(arg)
-    for i in xrange(length):
-        yield tuple([arg[i] for arg in args])
+    args = map(iter, args)
+    while 1:
+        L = []
+        for arg in args:
+            L.append(arg.next())
+        yield tuple(L)
 
 def reviter(L):
     for i in xrange(len(L) - 1, -1, -1):
