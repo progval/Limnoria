@@ -2,6 +2,7 @@
 
 import os
 import sys
+sys.path.insert(0, 'src')
 
 from questions import *
 
@@ -46,6 +47,15 @@ from baseplugin import *
 import privmsgs
 import callbacks
 
+
+def configure(onStart, afterConnect):
+    # This will be called by setup.py to configure this module.  onStart and
+    # afterConnect are both lists.  Append to onStart the commands you would
+    # like to be run when the bot is started; append to afterConnect the
+    # commands you would like to be run when the bot has finished connecting.
+    from questions import *
+    onStart.append('load %s')
+
 class %s(%s):
     %s
 
@@ -71,7 +81,7 @@ if __name__ == '__main__':
         threaded = 'pass'
 
     fd = file(os.path.join('plugins', name + '.py'), 'w')
-    fd.write(template % (name, className, threaded, name))
+    fd.write(template % (name, name, className, threaded, name))
     fd.close()
     print 'Your new plugin template is in plugins/%s.py' % name
 
