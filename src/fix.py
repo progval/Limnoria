@@ -124,8 +124,13 @@ class set(object):
         self.d[x] = None
 
     def remove(self, x):
-        if x in self.d:
+        del self.d[x]
+
+    def discard(self, x):
+        try:
             del self.d[x]
+        except KeyError:
+            pass
 
 
 class queue(dict):
@@ -249,8 +254,8 @@ def enumerate(L):
         yield (i, L[i])
 
 def window(L, size):
-    if size <= 0:
-        raise ValueError, 'sizes <= 0 unallowed.'
+    if size < 1:
+        raise ValueError, 'size <= 0 unallowed.'
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
 
