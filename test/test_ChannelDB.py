@@ -38,7 +38,7 @@ except ImportError:
 
 if sqlite is not None:
     class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
-        plugins = ('ChannelDB',)
+        plugins = ('ChannelDB', 'MiscCommands')
         def test(self):
             self.assertNotError('channelstats')
             self.assertNotError('channelstats')
@@ -50,6 +50,17 @@ if sqlite is not None:
 
         def testNoKeyErrorStats(self):
             self.assertNotRegexp('stats sweede', 'KeyError')
+
+        def testKarma(self):
+            self.assertRegexp('karma foobar', 'no karma')
+            try:
+                conf.replyWhenNotCommand = True
+                self.assertNoResponse('foobar++', 2)
+            finally:
+                conf.replyWhenNotCommand = False
+            self.assertRegexp('karma foobar', 'increased 1.*total.*1')
+            self.assertNoResponse('foobar--', 2)
+            self.assertRegexp('karma foobar', 'decreased 1.*total.*0')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
