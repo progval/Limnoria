@@ -49,6 +49,7 @@ if sqlite is not None:
                                              'register foo bar',
                                              prefix=self.prefix))
             _ = self.irc.takeMsg()
+            ircdb.users.getUser(self.nick).addCapability(self.channel + '.op')
             
         def test(self):
             self.assertNotError('channelstats')
@@ -173,6 +174,28 @@ if sqlite is not None:
         def testAddword(self):
             self.assertError('addword lol!')
             self.assertNotError('addword lolz0r')
+
+        def testWordStatsTopN(self):
+            self.assertNotError('addword lol')
+            self.assertNotError('channeldb config wordstats-top-n 5')
+            # Create 10 users and have them each send a different number of
+            # 'lol's to the channel
+            users = []
+            for i in range(10):
+                users.append(('foo%s!bar@baz' % i, 'foo%s' % i))
+                self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                                 'register %s bar' % \
+                                                 users[i][1],
+                                                 prefix=users[i][0]))
+                _ = self.irc.takeMsg()
+            for i in range(10):
+                for j in range(i):
+                    self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
+                                                     prefix=users[i][0]))
+            # Make sure it shows the top 5
+            self.assertRegexp('wordstats lol',
+                              'Top 5 \'lol\'ers.*foo9: 9.*foo8: 8.*'
+                              'foo7: 7.*foo6: 6.*foo5: 5')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
