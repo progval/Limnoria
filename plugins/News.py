@@ -42,7 +42,7 @@ import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.plugins as plugins
-from supybot.commands import wrap
+from supybot.commands import additional, wrap
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
@@ -171,7 +171,7 @@ class News(callbacks.Privmsg):
             except ValueError:
                 irc.errorInvalid('news item id', id,
                                  '<id> must be a positive integer.')
-    news = wrap(news, ['channeldb', ('int?', None)])
+    news = wrap(news, ['channeldb', additional('int')])
 
     def remove(self, irc, msg, args, channel, id):
         """[<channel>] <id>
@@ -237,7 +237,7 @@ class News(callbacks.Privmsg):
                 irc.reply(s)
             except dbi.NoRecordError:
                 irc.reply('No old news for %s.' % channel)
-    old = wrap(old, ['channeldb', ('int?', None)])
+    old = wrap(old, ['channeldb', additional('int')])
 
 
 Class = News
