@@ -35,11 +35,17 @@ customized startup files for bots.
 """
 
 import re
+import os
 import sys
 
 if sys.version_info < (2, 3, 0):
     sys.stderr.write('This program requires Python >= 2.3.0\n')
     sys.exit(-1)
+
+if os.name == 'posix':
+    if os.getuid() == 0 or os.geteuid() == 0:
+        sys.stderr.write('Dude, don\'t even try to run this as root.\n')
+        sys.exit(-1)
 
 import time
 import optparse
