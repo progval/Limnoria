@@ -78,9 +78,12 @@ conf.registerGlobalValue(conf.supybot.plugins.BadWords,'requireWordBoundaries',
     false."""))
 
 class String256(registry.String):
-    def setValue(self, s):
-        multiplier = int(math.ceil(1024/len(s)))
-        registry.String.setValue(self, s*multiplier)
+    def __call__(self):
+        s = registry.String.__call__(self)
+        return s * (1024/len(s))
+
+    def __str__(self):
+        return self.value
 
 conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'nastyChars',
     String256('!@#&', """Determines what characters will replace bad words; a
