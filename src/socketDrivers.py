@@ -141,7 +141,8 @@ class SocketDriver(drivers.IrcDriver):
         self.irc.reset()
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # We allow more time for the connect here, since it might take longer.
-        self.conn.settimeout(conf.supybot.drivers.poll()*10)
+        # At least 10 seconds.
+        self.conn.settimeout(map(10, conf.supybot.drivers.poll()*10))
         if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
             self.reconnectWaitsIndex += 1
         try:
