@@ -221,14 +221,14 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                 irc.error(msg, "Spurious type from parseFactoid.")
 
     def addFactoid(self, irc, msg, match):
-        r"^(?!no\s+)(.+)\s+(is|_is_)\s+(?!also)(.+)"
+        r"^(?!no\s+)(.+)\s+is\s+(?!also)(.+)"
         # Must be registered!
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        key, _, fact = match.groups()
+        key, fact = match.groups()
         cursor = self.db.cursor()
         # Check and make sure it's not in the DB already
         cursor.execute("""SELECT * FROM factoids WHERE key = %s""", key)
@@ -309,14 +309,14 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, conf.replySuccess)
 
     def replaceFactoid(self, irc, msg, match):
-        r"^no,?\s+(.+)\s+(is|_is_)\s+(.+)"
+        r"^no,?\s+(.+)\s+is\s+(.+)"
         # Must be registered!
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        key, _, new_fact = match.groups()
+        key, new_fact = match.groups()
         cursor = self.db.cursor()
         # Check and make sure it's in the DB 
         cursor.execute("""SELECT locked_at, fact FROM factoids
