@@ -64,15 +64,19 @@ class HtmlToText(sgmllib.SGMLParser):
         return ' '.join(text.split()) # normalize whitespace
 
 def htmlToText(s, tagReplace=' '):
+    """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
+    """
     x = HtmlToText(tagReplace)
     x.feed(s)
     return x.getText()
 
 def eachSubstring(s):
-    for i in range(1, len(s)+1):
+    """Returns every substring starting at the first index until the last."""
+    for i in xrange(1, len(s)+1):
         yield s[:i]
 
 def abbrev(strings):
+    """Returns a dictionary mapping unambiguous abbreviations to full forms."""
     d = {}
     for s in strings:
         for abbreviation in eachSubstring(s):
@@ -91,6 +95,11 @@ def abbrev(strings):
 
 def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
                 days=True, hours=True, minutes=True, seconds=True):
+    """Given <elapsed> seconds, returns a string with an English description of
+    how much time as passed.  leadingZeroes determines whether 0 days, 0 hours,
+    etc. will be printed; the others determine what larger time periods should
+    be used.
+    """
     elapsed = int(elapsed)
     assert years or weeks or days or \
            hours or minutes or seconds, 'One flag must be True'
@@ -157,6 +166,7 @@ def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
         return ' and '.join([', '.join(ret[:-1]), ret[-1]])
         
 def distance(s, t):
+    """Returns the levenshtein edit distance between two strings."""
     n = len(s)
     m = len(t)
     if n == 0:
@@ -182,6 +192,7 @@ _soundextrans = string.maketrans(string.ascii_uppercase,
                                  '01230120022455012623010202')
 _notUpper = string.ascii.translate(string.ascii, string.ascii_uppercase)
 def soundex(s, length=4):
+    """Returns the soundex hash of a given string."""
     assert s
     s = s.upper() # Make everything uppercase.
     firstChar = s[0] # Save the first character.
@@ -192,7 +203,7 @@ def soundex(s, length=4):
     for c in s:
         if c != L[-1]:
             L.append(c)
-    L = [c for c in L if c != '0'] + ['0', '0', '0']
+    L = [c for c in L if c != '0'] + (['0']*(length-1))
     s = ''.join(L)
     return length and s[:length] or s.rstrip('0')
 
@@ -204,6 +215,9 @@ def dqrepr(s):
 
 nonEscapedSlashes = re.compile(r'(?<!\\)/')
 def perlReToPythonRe(s):
+    """Converts a string representation of a Perl regular expression (i.e.,
+    m/^foo$/i or /foo|bar/) to a Python regular expression.
+    """
     (kind, regexp, flags) = nonEscapedSlashes.split(s)
     regexp = regexp.replace('\\/', '/')
     if kind not in ('', 'm'):
@@ -217,6 +231,10 @@ def perlReToPythonRe(s):
     return re.compile(regexp, flag)
     
 def perlReToReplacer(s):
+    """Converts a string representation of a Perl regular expression (i.e.,
+    s/foo/bar/g or s/foo/bar/i) to a Python function doing the equivalent
+    replacement.
+    """
     (kind, regexp, replace, flags) = nonEscapedSlashes.split(s)
     if kind != 's':
         raise ValueError, 'Invalid kind: must be "s"'
