@@ -52,7 +52,12 @@ import ircutils
 # changes elsewhere won't be required.
 ###
 
-class IrcCallback(object):
+class IrcCommandDispatcher(object):
+    """Base class for classes that must dispatch on a command."""
+    def dispatchCommand(self, command):
+        return getattr(self, 'do' + command.capitalize(), None)
+
+class IrcCallback(IrcCommandDispatcher):
     """Base class for standard callbacks.
 
     Callbacks derived from this class should have methods of the form
@@ -69,9 +74,8 @@ class IrcCallback(object):
         return msg
 
     def __call__(self, irc, msg):
-        commandName = 'do' + msg.command.capitalize()
-        if hasattr(self, commandName):
-            method = getattr(self, commandName)
+        method = self.dispatchCommand(msg.command)
+        if method is not None:
             try:
                 method(irc, msg)
             except Exception:
@@ -92,6 +96,11 @@ class IrcCallback(object):
 ###
 class IrcMsgQueue(object):
     """Class for a queue of IrcMsgs.  Eventually, it should be smart.
+
+    Probably smarter than it is now, though it's gotten quite a bit smarter
+    than it originally was.  A method to "score" methods, and a heapq to
+    maintain a priority queue of the messages would be the ideal way to do
+    intelligent queueing.
     """
     __slots__ = ('msgs', 'highpriority', 'normal', 'lowpriority')
     def __init__(self):
@@ -147,15 +156,25 @@ class Channel(object):
         self.voices = set()
 
     def addUser(self, user):
+        nick = user.lstrip('@%+')
         while user[0] in '@%+':
             (marker, user) = (user[0], user[1:])
             if marker == '@':
-                self.ops.add(user)
+                self.ops.add(nick)
             elif marker == '%':
-                self.halfops.add(user)
+                self.halfops.add(nick)
             elif marker == '+':
-                self.voices.add(user)
-        self.users.add(user)
+                self.voices.add(nick)
+        self.users.add(nick)
+
+    def replaceUser(self, oldNick, newNick):
+        # Note that this doesn't have to have the sigil (@%+) that users
+        # have to have for addUser; it just changes the name of the user
+        # without changing any of his categories.
+        for s in (self.users, self.ops, self.halfops, self.voices):
+            if oldNick in s:
+                s.discard(oldNick)
+                s.add(newNick)
 
     def removeUser(self, user):
         self.users.discard(user)
@@ -164,7 +183,7 @@ class Channel(object):
         self.voices.discard(user)
 
     def __getstate__(self):
-        return map(lambda name: getattr(self, name), self.__slots__)
+        return [getattr(self, name) for name in self.__slots__]
 
     def __setstate__(self, t):
         for (name, value) in zip(self.__slots__, t):
@@ -177,9 +196,10 @@ class Channel(object):
         return ret
 
     def __ne__(self, other):
+        # This shouldn't even be necessary, grr...
         return not self == other
 
-class IrcState(object):
+class IrcState(IrcCommandDispatcher):
     """Maintains state of the Irc connection.  Should also become smarter.
     """
     __slots__ = ('history', 'nicksToHostmasks', 'channels')
@@ -218,73 +238,77 @@ class IrcState(object):
         self.history.append(msg)
         if ircutils.isUserHostmask(msg.prefix) and not msg.command == 'NICK':
             self.nicksToHostmasks[msg.nick] = msg.prefix
-        if msg.command == '352': # Response to a WHO command.
-            (nick, user, host) = (msg.args[2], msg.args[5], msg.args[3])
-            hostmask = '%s!%s@%s' % (nick, user, host)
-            self.nicksToHostmasks[nick] = hostmask
-        elif msg.command == 'JOIN':
-            channels = [channel.lower() for channel in msg.args[0].split(',')]
-            for channel in channels:
-                if channel in self.channels:
-                    # We're already on the channel.
-                    self.channels[channel].users.add(msg.nick)
-                else:
-                    chan = Channel()
-                    self.channels[channel] = chan
-                    chan.users.add(msg.nick)
-        elif msg.command == '353':
-            (_, _, channel, users) = msg.args
-            chan = self.channels[channel.lower()]
-            users = [ircutils.nick(user) for user in users.split()]
-            for user in users:
-                chan.addUser(user)
-        elif msg.command == 'PART':
-            for channel in msg.args[0].split(','):
-                channel = channel.lower()
-                chan = self.channels[channel]
-                if msg.nick == irc.nick:
-                    del self.channels[channel]
-                else:
-                    chan.removeUser(msg.nick)
-        elif msg.command == 'KICK':
-            (channel, users) = msg.args[:2]
-            channel = channel.lower()
-            chan = self.channels[channel]
-            for user in users.split(','):
-                chan.removeUser(user)
-        elif msg.command == 'QUIT':
-            for channel in self.channels.itervalues():
-                channel.removeUser(msg.nick)
-        elif msg.command == 'TOPIC':
-            channel = msg.args[0].lower()
-            chan = self.channels[channel]
-            chan.topic = msg.args[1]
-        elif msg.command == '332':
-            channel = msg.args[1].lower()
-            chan = self.channels[channel]
-            chan.topic = msg.args[2]
-        elif msg.command == 'NICK':
-            newNick = msg.args[0]
-            try:
-                del self.nicksToHostmasks[msg.nick]
-                newHostmask = ircutils.joinHostmask(newNick,msg.user,msg.host)
-                self.nicksToHostmasks[newNick] = newHostmask
-            except KeyError:
-                debug.printf('%s not in nicksToHostmask' % msg.nick)
-            for channel in self.channels.itervalues():
-                for s in (channel.users, channel.ops,
-                          channel.halfops, channel.voices):
-                    #debug.printf(s)
-                    if msg.nick in s:
-                        s.remove(msg.nick)
-                        s.add(newNick)
-                        
+        method = self.dispatchCommand(msg.command)
+        if method is not None:
+            method(irc, msg)
 
     def getTopic(self, channel):
-        return self.channels[channel.lower()].topic
+        return self.channels[channel].topic
 
     def nickToHostmask(self, nick):
         return self.nicksToHostmasks[nick]
+
+    def do352(self, irc, msg):
+        (nick, user, host) = (msg.args[2], msg.args[5], msg.args[3])
+        hostmask = '%s!%s@%s' % (nick, user, host)
+        self.nicksToHostmasks[nick] = hostmask
+
+    def doJoin(self, irc, msg):
+        for channel in msg.args[0].split(','):
+            if channel in self.channels:
+                self.channels[channel].addUser(msg.nick)
+            else:
+                chan = Channel()
+                chan.addUser(msg.nick)
+                self.channels[channel] = chan
+
+    def do353(self, irc, msg):
+        (_, _, channel, users) = msg.args
+        chan = self.channels[channel]
+        users = users.split()
+        for user in users:
+            chan.addUser(user)
+
+    def doPart(self, irc, msg):
+        for channel in msg.args[0].split(','):
+            chan = self.channels[channel]
+            if msg.nick == irc.nick:
+                del self.channels[channel]
+            else:
+                chan.removeUser(msg.nick)
+
+    def doKick(self, irc, msg):
+        (channel, users) = msg.args[:2]
+        chan = self.channels[channel]
+        for user in users.split(','):
+            chan.removeUser(user)
+
+    def doQuit(self, irc, msg):
+        for channel in self.channels.itervalues():
+            channel.removeUser(msg.nick)
+
+    def doTopic(self, irc, msg):
+        chan = self.channels[msg.args[0]]
+        chan.topic = msg.args[1]
+
+    def do332(self, irc, msg):
+        chan = self.channels[msg.args[0]]
+        chan.topic = msg.args[2]
+
+    def doNick(self, irc, msg):
+        newNick = msg.args[0]
+        oldNick = msg.nick
+        try:
+            if msg.user and msg.host:
+                # Nick messages being handed out from the bot itself won't
+                # have the necessary prefix to make a hostmask.
+                newHostmask = ircutils.joinHostmask(newNick,msg.user,msg.host)
+                self.nicksToHostmasks[newNick] = newHostmask
+            del self.nicksToHostmasks[oldNick]
+        except KeyError:
+            pass
+        for channel in self.channels.itervalues():
+            channel.replaceUser(oldNick, newNick)
 
 
 
@@ -298,16 +322,16 @@ class Irc(object):
 
     Handles PING commands already.
     """
-    _nickSetters = set(('001', '002', '003', '004', '250', '251', '252', '254',
+    _nickSetters = set(['001', '002', '003', '004', '250', '251', '252', '254',
                         '255', '265', '266', '372', '375', '376', '333', '353',
-                        '332', '366'))
+                        '332', '366'])
     def __init__(self, nick, user='', ident='', password='', callbacks=None):
         world.ircs.append(self)
         self.nick = nick
         self.password = password
-        self.prefix = ''
         self.user = user or nick    # Default to nick if user isn't provided.
         self.ident = ident or nick  # Ditto.
+        self.prefix = '%s!%s@%s' % (nick, ident, 'unset')
         if callbacks is None:
             self.callbacks = []
         else:
