@@ -239,7 +239,7 @@ class Herald(callbacks.Privmsg):
             return
         s = self.db[channel, id]
         newS = changer(s)
-        self.db[channel, id] = s
+        self.db[channel, id] = newS
         irc.replySuccess()
 
 
