@@ -70,6 +70,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def reset(self):
         self.got376 = False
+        self.sentGhost = False
+        self.identified = False
 
     def start(self, irc, msg, args):
         """<nick> <password> [<nickserv> <chanserv>]
@@ -160,8 +162,9 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                     self._doIdentify(irc)
                 else:
                     irc.sendMsg(ircmsgs.nick(self.nick))
-        elif msg.nick == self.nickserv:
-            self.log.warning('Received NOTICE without plugin being started.')
+            elif 'now recognized' in s:
+                self.log.info('Received "Password accepted" from NickServ')
+                self.identified = True
 
     def getops(self, irc, msg, args):
         """[<channel>]
