@@ -101,7 +101,7 @@ searches = conf.supybot.plugins.Google.state.searches()
 
 class Google(callbacks.PluginRegexp):
     threaded = True
-    callBefore = ['URL']
+    callBefore = ['Web']
     regexps = ['googleSnarfer', 'googleGroups']
     def __init__(self, irc):
         self.__parent = super(Google, self)
