@@ -34,6 +34,16 @@ from testsupport import *
 class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Google',)
     if network:
+        def testCalc(self):
+            self.assertNotRegexp('google calc e^(i*pi)+1', r'didn\'t')
+            self.assertNotRegexp('google calc '
+                                 'the speed of light '
+                                 'in microns / fortnight', '<sup>')
+            self.assertNotRegexp('google calc '
+                                 'the speed of light '
+                                 'in microns / fortnight', '&times;')
+            
+
         def testNoNoLicenseKeyError(self):
             conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))

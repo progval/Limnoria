@@ -408,6 +408,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     googleGroups = privmsgs.urlSnarfer(googleGroups)
 
     _calcRe = re.compile(r'<td nowrap><font size=\+1><b>(.*?)</b>', re.I)
+    _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
+    _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
+    _calcTimesRe = re.compile(r'&times;')
     def calc(self, irc, msg, args):
         """<expression>
 
@@ -420,7 +423,11 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         html = webutils.getUrl(url)
         match = self._calcRe.search(html)
         if match is not None:
-            irc.reply(match.group(1))
+            s = match.group(1)
+            s = self._calcSupRe.sub(r'^(\1)', s)
+            s = self._calcFontRe.sub(r' , ', s)
+            s = self._calcTimesRe.sub(r' * ', s)
+            irc.reply(s)
         else:
             irc.reply('Google\'s calculator didn\'t come up with anything.')
         
