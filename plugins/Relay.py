@@ -290,9 +290,27 @@ class Relay(callbacks.Privmsg, plugins.Toggleable):
             return
         users = []
         for (abbreviation, otherIrc) in self.ircs.iteritems():
+            ops = []
+            halfops = []
+            voices = []
+            usersS = []
             if abbreviation != self.abbreviations[realIrc]:
                 Channel = otherIrc.state.channels[channel]
-                usersS = ', '.join([s for s in Channel.users if s.strip()!=''])
+                for s in Channel.users:
+                    s = s.strip()
+                    if not s:
+                        continue
+                    elif s in Channel.ops:
+                        ops.append('@%s' % s)
+                    elif s in Channel.halfops:
+                        halfops.append('%%%s' % s)
+                    elif s in Channel.voices:
+                        voices.append('+%s' % s)
+                    else:
+                        usersS.append(s)
+                map(list.sort, (ops, halfops, voices, usersS))
+                usersS = ', '.join(filter(None, map(', '.join,
+                    (ops,halfops,voices,usersS))))
                 users.append('%s: %s' % (ircutils.bold(abbreviation), usersS))
         irc.reply(msg, '; '.join(users))
 
