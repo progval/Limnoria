@@ -38,7 +38,7 @@ import supybot.world as world
 from supybot.commands import *
 import supybot.callbacks as callbacks
 
-class Status(callbacks.Privmsg):
+class Status(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Status, self)
         self.__parent.__init__(irc)
@@ -52,7 +52,7 @@ class Status(callbacks.Privmsg):
     def __call__(self, irc, msg):
         self.recvdMsgs += 1
         self.recvdBytes += len(msg)
-        callbacks.Privmsg.__call__(self, irc, msg)
+        self.__parent.__call__(irc, msg)
 
     def outFilter(self, irc, msg):
         self.sentMsgs += 1
@@ -162,17 +162,17 @@ class Status(callbacks.Privmsg):
         Returns some interesting command-related statistics.
         """
         commands = 0
-        callbacksPrivmsg = 0
+        callbacksPlugin = 0
         for cb in irc.callbacks:
-            if isinstance(cb, callbacks.Privmsg) and cb.public:
-                callbacksPrivmsg += 1
+            if isinstance(cb, callbacks.Plugin) and cb.public:
+                callbacksPlugin += 1
                 for attr in dir(cb):
                     if cb.isCommand(attr) and \
                        attr == callbacks.canonicalName(attr):
                         commands += 1
         s = format('I offer a total of %n in %n.  I have processed %n.',
                    (commands, 'command'),
-                   (callbacksPrivmsg, 'command-based', 'plugin'),
+                   (callbacksPlugin, 'command-based', 'plugin'),
                    (world.commandsProcessed, 'command'))
         irc.reply(s)
     cmd = wrap(cmd)
@@ -184,7 +184,7 @@ class Status(callbacks.Privmsg):
         """
         commands = set()
         for cb in irc.callbacks:
-            if isinstance(cb, callbacks.Privmsg) and cb.public:
+            if isinstance(cb, callbacks.Plugin) and cb.public:
                 for attr in dir(cb):
                     if cb.isCommand(attr) and \
                        attr == callbacks.canonicalName(attr):

@@ -47,7 +47,7 @@ class FakeLog(object):
     def write(self, s):
         return
 
-class ChannelLogger(callbacks.Privmsg):
+class ChannelLogger(callbacks.Plugin):
     noIgnore = True
     def __init__(self, irc):
         self.__parent = super(ChannelLogger, self)

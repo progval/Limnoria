@@ -99,7 +99,7 @@ last24hours = structures.TimeoutQueue(86400)
 totalTime = conf.supybot.plugins.Google.state.time()
 searches = conf.supybot.plugins.Google.state.searches()
 
-class Google(callbacks.PrivmsgCommandAndRegexp):
+class Google(callbacks.PluginRegexp):
     threaded = True
     callBefore = ['URL']
     regexps = ['googleSnarfer', 'googleGroups']

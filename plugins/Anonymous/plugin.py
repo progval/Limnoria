@@ -33,7 +33,7 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.callbacks as callbacks
 
-class Anonymous(callbacks.Privmsg):
+class Anonymous(callbacks.Plugin):
     """This plugin allows users to act through the bot anonymously.  The 'do'
     command has the bot perform an anonymous action in a given channel, and
     the 'say' command allows other people to speak through the bot.  Since

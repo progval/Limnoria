@@ -208,7 +208,7 @@ class SqliteKarmaDB(object):
 KarmaDB = plugins.DB('Karma',
                      {'sqlite': SqliteKarmaDB})
 
-class Karma(callbacks.Privmsg):
+class Karma(callbacks.Plugin):
     callBefore = ('Factoids', 'MoobotFactoids', 'Infobot')
     def __init__(self, irc):
         self.__parent = super(Karma, self)

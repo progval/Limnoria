@@ -37,7 +37,7 @@ from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class User(callbacks.Privmsg):
+class User(callbacks.Plugin):
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and irc.isChannel(msg.args[0]):
             raise callbacks.Error, conf.supybot.replies.requiresPrivacy()

@@ -162,7 +162,7 @@ def makeNewAlias(name, alias):
     f = utils.changeFunctionName(f, name, doc)
     return f
 
-class Alias(callbacks.Privmsg):
+class Alias(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Alias, self)
         self.__parent.__init__(irc)

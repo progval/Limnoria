@@ -39,7 +39,7 @@ import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
-class Admin(callbacks.Privmsg):
+class Admin(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Admin, self)
         self.__parent.__init__(irc)

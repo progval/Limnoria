@@ -37,7 +37,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 
-class Games(callbacks.Privmsg):
+class Games(callbacks.Plugin):
     def coin(self, irc, msg, args):
         """takes no arguments
 

@@ -43,7 +43,7 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Format', True)
 
-class Format(callbacks.Privmsg):
+class Format(callbacks.Plugin):
     def bold(self, irc, msg, args, text):
         """<text>
 

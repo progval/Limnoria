@@ -72,7 +72,7 @@ def numberShifts(s):
     s=re.sub('[0-9]+', 'n', s)
     return len(s)-1
 
-class Nickometer(callbacks.Privmsg):
+class Nickometer(callbacks.Plugin):
     def punish(self, damage, reason):
         self.log.debug('%s lameness points awarded: %s' % (damage, reason))
         return damage

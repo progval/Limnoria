@@ -39,7 +39,7 @@ import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
-class Services(callbacks.Privmsg):
+class Services(callbacks.Plugin):
     """This plugin handles dealing with Services on networks that provide them.
     Basically, you should use the "password" command to tell the bot a nick to
     identify with and what password to use to identify with that nick.  You can

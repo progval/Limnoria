@@ -38,7 +38,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 
-class Later(callbacks.Privmsg):
+class Later(callbacks.Plugin):
     """Used to do things later; currently, it only allows the sending of
     nick-based notes.  Do note (haha!) that these notes are *not* private
     and don't even pretend to be; if you want such features, consider using the

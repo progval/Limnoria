@@ -124,7 +124,7 @@ class DbiNoteDB(dbi.DB):
         
 NoteDB = plugins.DB('Note', {'flat': DbiNoteDB})
 
-class Note(callbacks.Privmsg):
+class Note(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent= super(Note, self)
         self.__parent.__init__(irc)

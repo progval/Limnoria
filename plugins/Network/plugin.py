@@ -38,7 +38,7 @@ import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-class Network(callbacks.Privmsg):
+class Network(callbacks.Plugin):
     _whois = {}
     _latency = {}
     def _getIrc(self, network):

@@ -36,7 +36,7 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class Web(callbacks.PrivmsgCommandAndRegexp):
+class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
     regexps = ['titleSnarfer']
     threaded = True

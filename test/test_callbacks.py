@@ -359,22 +359,22 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             conf.supybot.reply.error.inPrivate.set(original)
 
     # Now for stuff not based on the plugins.
-    class First(callbacks.Privmsg):
+    class First(callbacks.Plugin):
         def firstcmd(self, irc, msg, args):
             """First"""
             irc.reply('foo')
 
-    class Second(callbacks.Privmsg):
+    class Second(callbacks.Plugin):
         def secondcmd(self, irc, msg, args):
             """Second"""
             irc.reply('bar')
 
-    class FirstRepeat(callbacks.Privmsg):
+    class FirstRepeat(callbacks.Plugin):
         def firstcmd(self, irc, msg, args):
             """FirstRepeat"""
             irc.reply('baz')
 
-    class Third(callbacks.Privmsg):
+    class Third(callbacks.Plugin):
         def third(self, irc, msg, args):
             """Third"""
             irc.reply(' '.join(args))
@@ -420,7 +420,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.
         self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
 
-    class TwoRepliesFirstAction(callbacks.Privmsg):
+    class TwoRepliesFirstAction(callbacks.Plugin):
         def testactionreply(self, irc, msg, args):
             irc.reply('foo', action=True)
             irc.reply('bar') # We're going to check that this isn't an action.
@@ -457,7 +457,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     def testNoEscapingAttributeErrorFromTokenizeWithFirstElementList(self):
         self.assertError('[plugin list] list')
 
-    class InvalidCommand(callbacks.Privmsg):
+    class InvalidCommand(callbacks.Plugin):
         def invalidCommand(self, irc, msg, tokens):
             irc.reply('foo')
 
@@ -472,7 +472,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
 
-    class BadInvalidCommand(callbacks.Privmsg):
+    class BadInvalidCommand(callbacks.Plugin):
         def invalidCommand(self, irc, msg, tokens):
             s = 'This shouldn\'t keep Misc.invalidCommand from being called'
             raise Exception, s
@@ -487,9 +487,9 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             conf.supybot.reply.whenNotCommand.set(original)
 
 
-class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
+class PluginRegexpTestCase(PluginTestCase):
     plugins = ()
-    class PCAR(callbacks.PrivmsgCommandAndRegexp):
+    class PCAR(callbacks.PluginRegexp):
         def test(self, irc, msg, args):
             "<foo>"
             raise callbacks.ArgumentError
@@ -499,7 +499,7 @@ class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
 
 class RichReplyMethodsTestCase(PluginTestCase):
     plugins = ()
-    class NoCapability(callbacks.Privmsg):
+    class NoCapability(callbacks.Plugin):
         def error(self, irc, msg, args):
             irc.errorNoCapability('admin')
     def testErrorNoCapability(self):
@@ -509,7 +509,7 @@ class RichReplyMethodsTestCase(PluginTestCase):
 
 class WithPrivateNoticeTestCase(ChannelPluginTestCase):
     plugins = ('Utilities',)
-    class WithPrivateNotice(callbacks.Privmsg):
+    class WithPrivateNotice(callbacks.Plugin):
         def normal(self, irc, msg, args):
             irc.reply('should be with private notice')
         def explicit(self, irc, msg, args):

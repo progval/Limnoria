@@ -43,7 +43,7 @@ import convertcore
 
 baseArg = ('int', 'base', lambda i: i <= 36)
 
-class Math(callbacks.Privmsg):
+class Math(callbacks.Plugin):
     def base(self, irc, msg, args, frm, to, number):
         """<fromBase> [<toBase>] <number>
 

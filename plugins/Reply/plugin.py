@@ -31,7 +31,7 @@ from supybot.commands import *
 import supybot.callbacks as callbacks
 
 
-class Reply(callbacks.Privmsg):
+class Reply(callbacks.Plugin):
     """This plugins contains a few commands that construct various types of
     replies.  Some bot owners would be wise to not load this plugin because it
     can be easily abused.

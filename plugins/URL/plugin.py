@@ -58,7 +58,7 @@ class DbiUrlDB(plugins.DbiChannelDB):
 
 URLDB = plugins.DB('URL', {'flat': DbiUrlDB})
 
-class URL(callbacks.Privmsg):
+class URL(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(URL, self)
         self.__parent.__init__(irc)

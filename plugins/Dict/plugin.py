@@ -37,7 +37,7 @@ from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class Dict(callbacks.Privmsg):
+class Dict(callbacks.Plugin):
     threaded = True
     def dictionaries(self, irc, msg, args):
         """takes no arguments

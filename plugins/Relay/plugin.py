@@ -39,7 +39,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.structures import MultiSet, TimeoutQueue
 
-class Relay(callbacks.Privmsg):
+class Relay(callbacks.Plugin):
     noIgnore = True
     def __init__(self, irc):
         self.__parent = super(Relay, self)

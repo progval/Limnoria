@@ -34,7 +34,7 @@ from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class Utilities(callbacks.Privmsg):
+class Utilities(callbacks.Plugin):
     # Yes, I really do mean "requires no arguments" below.  "takes no
     # arguments" would probably lead people to think it was a useless command.
     def ignore(self, irc, msg, args):

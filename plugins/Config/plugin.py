@@ -99,7 +99,7 @@ def getConfigVar(irc, msg, args, state):
         irc.errorInvalid('configuration variable', str(e))
 addConverter('configVar', getConfigVar)
 
-class Config(callbacks.Privmsg):
+class Config(callbacks.Plugin):
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
             super(Config, self).callCommand(name, irc, msg, *L, **kwargs)

@@ -52,7 +52,7 @@ def parse(s):
         i = f(i)
     return i
 
-class Time(callbacks.Privmsg):
+class Time(callbacks.Plugin):
     def seconds(self, irc, msg, args):
         """[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]
 

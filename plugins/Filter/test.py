@@ -53,7 +53,7 @@ class FilterTest(ChannelPluginTestCase):
             self.assertNotError('outfilter rot13')
         finally:
             try:
-                callbacks.Privmsg._disabled.remove('rot13')
+                callbacks.Plugin._disabled.remove('rot13')
             except KeyError:
                 pass
 

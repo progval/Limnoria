@@ -49,7 +49,7 @@ def getFeedName(irc, msg, args, state):
     state.args.append(callbacks.canonicalName(args.pop(0)))
 addConverter('feedName', getFeedName)
 
-class RSS(callbacks.Privmsg):
+class RSS(callbacks.Plugin):
     """This plugin is useful both for announcing updates to RSS feeds in a
     channel, and for retrieving the headlines of RSS feeds via command.  Use
     the "add" command to add feeds to this plugin, and use the "announce"

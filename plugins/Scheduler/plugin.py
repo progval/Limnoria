@@ -35,7 +35,7 @@ from supybot.commands import *
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
-class Scheduler(callbacks.Privmsg):
+class Scheduler(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Scheduler, self)
         self.__parent.__init__(irc)

@@ -33,7 +33,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class Protector(callbacks.Privmsg):
+class Protector(callbacks.Plugin):
     def isImmune(self, irc, msg):
         if not ircutils.isUserHostmask(msg.prefix):
             self.log.debug('%q is immune, it\'s a server.', msg)

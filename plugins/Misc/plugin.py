@@ -42,7 +42,7 @@ import supybot.callbacks as callbacks
 
 from supybot.utils.iter import ifilter
 
-class Misc(callbacks.Privmsg):
+class Misc(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Misc, self)
         self.__parent.__init__(irc)
@@ -143,7 +143,7 @@ class Misc(callbacks.Privmsg):
         commands = {}
         L = []
         for cb in irc.callbacks:
-            if isinstance(cb, callbacks.Privmsg):
+            if isinstance(cb, callbacks.Plugin):
                 for attr in dir(cb):
                     if s in attr and cb.isCommand(attr):
                         if attr == callbacks.canonicalName(attr):

@@ -94,7 +94,7 @@ addConverter('canChangeTopic', canChangeTopic)
 def splitTopic(topic, separator):
     return filter(None, topic.split(separator))
 
-class Topic(callbacks.Privmsg):
+class Topic(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Topic, self)
         self.__parent.__init__(irc)

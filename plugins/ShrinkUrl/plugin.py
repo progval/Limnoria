@@ -66,7 +66,7 @@ class CdbShrunkenUrlDB(object):
 
 ShrunkenUrlDB = plugins.DB('ShrinkUrl', {'cdb': CdbShrunkenUrlDB})
 
-class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
+class ShrinkUrl(callbacks.PluginRegexp):
     regexps = ['shrinkSnarfer']
     def __init__(self, irc):
         self.__parent = super(ShrinkUrl, self)

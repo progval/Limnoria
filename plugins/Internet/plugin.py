@@ -36,7 +36,7 @@ from supybot.utils.iter import any
 import supybot.callbacks as callbacks
 
 
-class Internet(callbacks.Privmsg):
+class Internet(callbacks.Plugin):
     """Add the help for "@help Internet" here."""
     threaded = True
     def dns(self, irc, msg, args, host):

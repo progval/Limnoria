@@ -993,8 +993,7 @@ class DisabledCommands(object):
             if self.d[command] is not None:
                 self.d[command].remove(plugin)
 
-class Privmsg(irclib.IrcCallback):
-    """Base class for all Privmsg handlers."""
+class Plugin(irclib.IrcCallback):
     # For awhile, a comment stood here to say, "Eventually callCommand."  But
     # that's wrong, because we can't do generic error handling in this
     # callCommand -- plugins need to be able to override callCommand and do
@@ -1243,8 +1242,9 @@ class SimpleProxy(RichReplyMethods):
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
+Privmsg = Plugin # Backwards compatibility.
 
-class PrivmsgCommandAndRegexp(Privmsg):
+class PluginRegexp(Plugin):
     """Same as Privmsg, except allows the user to also include regexp-based
     callbacks.  All regexp-based callbacks must be specified in a set
     (or list) attribute "regexps".
@@ -1310,6 +1310,8 @@ class PrivmsgCommandAndRegexp(Privmsg):
             for m in r.finditer(msg.args[1]):
                 proxy = self.Proxy(irc, msg)
                 self.callCommand(name, proxy, msg, m, catchErrors=True)
+
+PrivmsgCommandAndRegexp = PluginRegexp
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

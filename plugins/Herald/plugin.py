@@ -52,7 +52,7 @@ class HeraldDB(plugins.ChannelUserDB):
             raise ValueError
         return L[0]
 
-class Herald(callbacks.Privmsg):
+class Herald(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Herald, self)
         self.__parent.__init__(irc)

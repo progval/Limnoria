@@ -37,7 +37,7 @@ import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
-class Ctcp(callbacks.PrivmsgCommandAndRegexp):
+class Ctcp(callbacks.PluginRegexp):
     public = False
     regexps = ('ctcpPing', 'ctcpVersion', 'ctcpUserinfo',
                'ctcpTime', 'ctcpFinger', 'ctcpSource') 

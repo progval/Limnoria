@@ -38,7 +38,7 @@ import supybot.schedule as schedule
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class Channel(callbacks.Privmsg):
+class Channel(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Channel, self)
         self.__parent.__init__(irc)

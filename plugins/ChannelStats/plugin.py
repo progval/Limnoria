@@ -149,7 +149,7 @@ class StatsDB(plugins.ChannelUserDB):
         return self[channel, id]
 
 filename = conf.supybot.directories.data.dirize('ChannelStats.db')
-class ChannelStats(callbacks.Privmsg):
+class ChannelStats(callbacks.Plugin):
     noIgnore = True
     def __init__(self, irc):
         self.__parent = super(ChannelStats, self)
@@ -164,7 +164,7 @@ class ChannelStats(callbacks.Privmsg):
     def die(self):
         world.flushers.remove(self._flush)
         self.db.close()
-        callbacks.Privmsg.die(self)
+        self.__parent.die()
 
     def __call__(self, irc, msg):
         try:

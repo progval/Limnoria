@@ -89,7 +89,7 @@ class SeenDB(plugins.ChannelUserDB):
 
 filename = conf.supybot.directories.data.dirize('Seen.db')
 
-class Seen(callbacks.Privmsg):
+class Seen(callbacks.Plugin):
     noIgnore = True
     def __init__(self, irc):
         self.__parent = super(Seen, self)

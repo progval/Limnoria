@@ -45,7 +45,7 @@ noLocationError = 'No such location could be found.'
 class NoLocation(callbacks.Error):
     pass
 
-class Weather(callbacks.Privmsg):
+class Weather(callbacks.Plugin):
     weatherCommands = ['wunder', 'cnn', 'ham']
     threaded = True
     def __init__(self, irc):

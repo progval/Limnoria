@@ -34,7 +34,7 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
 
-class Babelfish(callbacks.Privmsg):
+class Babelfish(callbacks.Plugin):
     threaded = True
     _abbrevs = utils.gen.abbrev(map(str.lower, babelfish.available_languages))
     _abbrevs['de'] = 'german'

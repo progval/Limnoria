@@ -38,7 +38,7 @@ import supybot.callbacks as callbacks
 class Continue(Exception):
     pass # Used below, look in the "do" function nested in doJoin.
 
-class AutoMode(callbacks.Privmsg):
+class AutoMode(callbacks.Plugin):
     def doJoin(self, irc, msg):
         channel = msg.args[0]
         if ircutils.strEqual(irc.nick, msg.nick):

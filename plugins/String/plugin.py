@@ -38,7 +38,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 
-class String(callbacks.Privmsg):
+class String(callbacks.Plugin):
     def ord(self, irc, msg, args, letter):
         """<letter>
 

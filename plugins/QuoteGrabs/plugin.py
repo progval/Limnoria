@@ -183,7 +183,7 @@ class SqliteQuoteGrabsDB(object):
 
 QuoteGrabsDB = plugins.DB('QuoteGrabs', {'sqlite': SqliteQuoteGrabsDB})
 
-class QuoteGrabs(callbacks.Privmsg):
+class QuoteGrabs(callbacks.Plugin):
     """Add the help for "@help QuoteGrabs" here."""
     def __init__(self, irc):
         self.__parent = super(QuoteGrabs, self)

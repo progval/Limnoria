@@ -119,7 +119,7 @@ class LogProxy(object):
         return getattr(self.log, attr)
 
 
-class Owner(callbacks.Privmsg):
+class Owner(callbacks.Plugin):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
     def __init__(self, irc=None):
