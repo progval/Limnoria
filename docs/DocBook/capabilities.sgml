@@ -20,6 +20,11 @@
 				<date>18 Feb 2004</date>
 				<revremark>Initial Docbook translation</revremark>
 			</revision>
+			<revision>
+				<revnumber>0.2</revnumber>
+				<date>04 Sep 2004</date>
+				<revremark>Update Docbook translation</revremark>
+			</revision>
 		</revhistory>
 	</articleinfo>
 	<sect1>
@@ -68,49 +73,49 @@
 			&ldquo;anticapability&rdquo; for that command.  An anticapability is
 			a capability that, instead of saying &ldquo;what a user can
 			do&rdquo;, says what a user <emphasis>cannot</emphasis> do.  It's
-            formed rather simply by adding a dash (&ldquo;-&rdquo;) to the
-            beginning of a capability; <botcommand>rot13</botcommand> is a
-            capability, and <botcommand>-rot13</botcommand> is an
-            anticapability.  Anyway, when a user issues the bot a command,
-            perhaps <botcommand>calc</botcommand> or
-            <botcommand>help</botcommand>, the bot first checks to make sure
-            the user doesn't have the <capability>-calc</capability> or the
-            <capability>-help</capability> capabilities before even
-            considering responding to the user.  So commands can be turned on
-            or off on a <emphasis>per user</emphasis> basis, offering
-            finegrained control not often (if at all!) seen in other bots.
+			formed rather simply by adding a dash (&ldquo;-&rdquo;) to the
+			beginning of a capability; <botcommand>rot13</botcommand> is a
+			capability, and <botcommand>-rot13</botcommand> is an
+			anticapability.  Anyway, when a user issues the bot a command,
+			perhaps <botcommand>calc</botcommand> or
+			<botcommand>help</botcommand>, the bot first checks to make sure
+			the user doesn't have the <capability>-calc</capability> or the
+			<capability>-help</capability> capabilities before even
+			considering responding to the user.  So commands can be turned on
+			or off on a <emphasis>per user</emphasis> basis, offering
+			finegrained control not often (if at all!) seen in other bots.
 		</para>
 		<sect2>
 			<title>Channel capabilities</title>
 			<para>
 				But that's not all!  The capabilities system also supports
 				<emphasis>Channel</emphasis> capabilities, which are
-                capabilities that only apply to a specific channel; they're of
-                the form <capability>#channel.capability</capability>.
-                Whenever a user issues a command to the bot in a channel, the
-                command dispatcher also checks to make sure the user doesn't
-                have the anticapability for that command <emphasis>in that
-                channel</emphasis> and if the user does, the bot won't respond
-                to the user in the channel.  Thus now, in addition to having
-                the ability to turn individual commands on or off for an
-                individual user, we can now turn commands on or off for an
-                individual user on an individual channel!
+				capabilities that only apply to a specific channel; they're of
+				the form <capability>#channel,capability</capability>.
+				Whenever a user issues a command to the bot in a channel, the
+				command dispatcher also checks to make sure the user doesn't
+				have the anticapability for that command <emphasis>in that
+				channel</emphasis> and if the user does, the bot won't respond
+				to the user in the channel.  Thus now, in addition to having
+				the ability to turn individual commands on or off for an
+				individual user, we can now turn commands on or off for an
+				individual user on an individual channel!
 			</para>
 			<para>
 				So when a user <nick>foo</nick> sends a command
-                <botcommand>bar</botcommand> to the bot on channel
-                <channel>#baz</channel>, first the bot checks to see if the
-                user has the anticapability for the command by itself,
-                <capability>-bar</capability>.  If so, it returns right then
-                and there, compltely ignoring the fact that the user issued
-                that command to it.  If the user doesn't have that
-                anticapability, then the bot checks to see if the user issued
-                the command over a channel, and if so, checks to see if the
-                user has the antichannelcapability for that command,
-                <capability>#baz.-bar</capability>.  If so, again, he returns
-                right then and there and doesn't even think about responding
-                to the bot.  If neither of these anticapabilities are present,
-                then the bot just responds to the user like normal.
+				<botcommand>bar</botcommand> to the bot on channel
+				<channel>#baz</channel>, first the bot checks to see if the
+				user has the anticapability for the command by itself,
+				<capability>-bar</capability>.  If so, it returns right then
+				and there, compltely ignoring the fact that the user issued
+				that command to it.  If the user doesn't have that
+				anticapability, then the bot checks to see if the user issued
+				the command over a channel, and if so, checks to see if the
+				user has the antichannelcapability for that command,
+				<capability>#baz,-bar</capability>.  If so, again, he returns
+				right then and there and doesn't even think about responding
+				to the bot.  If neither of these anticapabilities are present,
+				then the bot just responds to the user like normal.
 			</para>
 		</sect2>
 	</sect1>
@@ -119,7 +124,7 @@
 		<sect2>
 			<title>A programmer's perspective</title>
 			<para>
-				From a programmatical perspective, capabilties are easy to use
+				From a programming perspective, capabilties are easy to use
 				and flexible.  Any command can check if a user has any
 				capability, even ones not thought of when the bot was
 				originally written.  Commands/Callbacks can add their own
@@ -140,6 +145,7 @@
 				bot to follow for users that haven't yet registered in his
 				user database.
 			</para>
+		</sect2>
 		<para>
 			It's really a revolution!
 		</para>
@@ -148,11 +154,11 @@
 		<title>Hard-coded supybot capabilities</title>
 		<para>
 			There are several default capabilities the bot uses.  The most
-            important of these is the <capability>owner</capability>
-            capability.  This capability allows the person having it to use
-            <emphasis>any</emphasis> command.  It's best to keep this
-            capability reserved to people who actually have access to the
-            shell the bot is running on.  
+			important of these is the <capability>owner</capability>
+			capability.  This capability allows the person having it to use
+			<emphasis>any</emphasis> command.  It's best to keep this
+			capability reserved to people who actually have access to the
+			shell the bot is running on.  
 		</para>
 		<para>
 			There is also the <capability>admin</capability> capability for
@@ -164,41 +170,50 @@
 			people with the next capability.
 		</para>
 		<para>
-            People who are to administer channels with the bot should have the
-            <capability>#channel.op</capability> capability -- whatever
-            channel they are to administrate, they should have that channel
-            capability for <capability>op</capability>.  For example, since I
-            want <nick>inkedmn</nick> to be an administrator in
-            <channel>#supybot</channel>, I'll give him the
-            <capability>#supybot.op</capability> capability.  This is in
-            addition to his <capability>admin</capability> capability, since
-            the <capability>admin</capability> capability doesn't give the
-            person having it control over channels.
-            <capability>#channel.op</capability> is used for such things as
-            giving/receiving ops, kickbanning people, lobotomizing the bot,
-            ignoring users in the channel, and managing the channel
-            capabilities.  The <capability>#channel.op</capability> capability
-            is also basically the equivalent of the owner capability for
-            capabilities involving <channel>#channel</channel> &ndash;
-            basically anyone with the <capability>#channel.op</capability>
-            capability is considered to have all positive capabilities and no
-            negative capabilities for <channel>#channel</channel>.
+			People who are to administer channels with the bot should have the
+			<capability>#channel,op</capability> capability &ndash; whatever
+			channel they are to administrate, they should have that channel
+			capability for <capability>op</capability>.  For example, since I
+			want <nick>inkedmn</nick> to be an administrator in
+			<channel>#supybot</channel>, I'll give him the
+			<capability>#supybot,op</capability> capability.  This is in
+			addition to his <capability>admin</capability> capability, since
+			the <capability>admin</capability> capability doesn't give the
+			person having it control over channels.
+			<capability>#channel.op</capability> is used for such things as
+			giving/receiving ops, kickbanning people, lobotomizing the bot,
+			ignoring users in the channel, and managing the channel
+			capabilities.  The <capability>#channel,op</capability> capability
+			is also basically the equivalent of the owner capability for
+			capabilities involving <channel>#channel</channel> &ndash;
+			basically anyone with the <capability>#channel,op</capability>
+			capability is considered to have all positive capabilities and no
+			negative capabilities for <channel>#channel</channel>.
 		</para>
 		<para>
-            One other globally important capability exists:
-            <capability>trusted</capability>.  This is a command that
-            basically says &ldquo;This user can be trusted not to try and
-            crash the bot.&rdquo; It allows users to call commands like
-            <botcommand>Math.icalc</botcommand>, which potentially could cause the
-            bot to begin a calculation that could potentially never return (a
-            calculation like 10**10**10**10).  Another command that requires
-            the trusted capability is <botcommand>Utilties.re</botcommand>, which
-            (due to the regular expression implementation in Python (and any
-            other language that uses NFA regular expressions, like Perl or
-            Ruby or Lua or &hellip;) which can allow a regular expression to
-            take exponential time to process).  Consider what would happen if
-            the someone gave the bot the command <literal>re [strjoin "" s/./
-            [dict go] /] [dict go]</literal>.
+			One other globally important capability exists:
+			<capability>trusted</capability>.  This is a command that
+			basically says &ldquo;This user can be trusted not to try and
+			crash the bot.&rdquo; It allows users to call commands like
+			<botcommand>Math.icalc</botcommand>, which potentially could cause the
+			bot to begin a calculation that could potentially never return (a
+			calculation like 10**10**10**10).  Another command that requires
+			the trusted capability is <botcommand>Utilties.re</botcommand>, which
+			(due to the regular expression implementation in Python (and any
+			other language that uses NFA regular expressions, like Perl or
+			Ruby or Lua or &hellip;) which can allow a regular expression to
+			take exponential time to process).  Consider what would happen if
+			the someone gave the bot the command <literal>re [strjoin "" s/./
+			[dict go] /] [dict go]</literal>.
+		</para>
+	</sect1>
+	<sect1>
+		<title>Other capabilities</title>
+		<para>
+			Other plugins may require different capabilities; the
+            <plugin>Factoids</plugin> plugin requires
+            <capability>#channel,factoids</capability>, the <plugin>Topic</plugin>
+            plugin requires <capability>#channel,topic</capability>, etc.
 		</para>
 	</sect1>
 </article>
