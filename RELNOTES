@@ -1,3 +1,14 @@
+Version 0.77.2
+
+This is a drop-in replacement for 0.77.1, with one exception.  The
+configuration variable formerly known as
+"supybot.plugins.Services.password" is now known as
+"supybot.plugins.Services.NickServ.password", due to the fact that
+there might be different passwords for NickServ and ChanServ (and
+ChanServ passwords are per-channel, whereas NickServ passwords are
+global).  If you're using the Services plugin, you'll need to make
+this change in order to continue identifying with services.
+
 Version 0.77.1
 
 This is a drop-in replacement for 0.77.0 -- no incompatibilities, to

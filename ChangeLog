@@ -1,8 +1,27 @@
+2004-04-16  Jeremy Fincher  <jemfinch@supybot.org>
+	
+	* Version 0.77.2!
+	
+	* Fixed numerous bugs, high and low, big and small and
+	in-between.  Definitely worthy of a release.
+	
+	* Added Utilities.success, mostly for making aliases such that
+	they can respond with success if no errors were encountered in
+	any nested commands.
+	
+	* Changed the name of the new filter, colorstrip, to be
+	stripcolor.  Better now than after it was highly established :)
+	
+	* Added configuration variables
+	supybot.plugins.Services.NickServ.password (which replaces the
+	old supybot.plugins.Services.password) for specifying the
+	NickServ password, as well as
+	supybot.plugins.Services.ChanServ.{op,halfop,voice}, which
+	determine what the bot should request of ChanServ when it
+	identifies or joins a channel.  These latter variables are, of
+	course, channel variables.
+	
 	* Fixed bug #863601, plugin BadWords fails on color codes.
-
-	* Added ircutils.strip{Bold,Reverse,Underline,Formatting}, which
-	will remove the specified formatting or all forms of formatting
-	in the case of stripFormatting.
 
 	* Replaced Sourceforge.{rfe,bug} with Sourceforge.tracker, which
 	can query any tracker type (not just RFEs and bugs) and responds
@@ -31,7 +50,14 @@
 	be correct if the requesting user has the owner capability (and
 	isn't the owner himself).
 	
+	* Added ircutils.strip{Bold,Reverse,Underline,Formatting}, which
+	will remove the specified formatting or all forms of formatting
+	in the case of stripFormatting.
+
+	
 2004-04-09  Jeremy Fincher  <jemfinch@supybot.org>
+	
+	* Version 0.77.1!
 	
 	* Added supybot.reply.errorWithNotice to make the bot give its
 	error messages in a notice.
