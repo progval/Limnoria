@@ -168,14 +168,6 @@ def rsplit(s, sep=None, maxsplit=-1):
     L.reverse()
     return [s[::-1] for s in L]
 
-def sorted(iterable, cmp=None, key=None, reverse=False):
-    L = list(iterable)
-##     if key is None:
-##         L.sort(cmp)
-##     else:
-##         # Oops, we don't have sortBy.  Let's come back to this.utils.
-##     utils.sortBy(key
-
 import operator
 def itemgetter(i):
     return lambda x: x[i]

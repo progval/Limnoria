@@ -435,8 +435,7 @@ class Channel(callbacks.Privmsg):
             s = 'I\'m not currently ignoring any hostmasks in %r' % channel
             irc.reply(s)
         else:
-            L = c.ignores[:]
-            L.sort()
+            L = sorted(c.ignores)
             irc.reply(utils.commaAndify(imap(repr, L)))
     ignores = privmsgs.checkChannelCapability(ignores, 'op')
 
@@ -542,8 +541,7 @@ class Channel(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         c = ircdb.channels.getChannel(channel)
-        L = list(c.capabilities)
-        L.sort()
+        L = sorted(c.capabilities)
         irc.reply('[%s]' % '; '.join(L))
 
     def lobotomies(self, irc, msg, args):
