@@ -73,6 +73,13 @@ if sqlite:
             self.assertResponse('test foo:bar', 'baz')
             self.assertHelp('help test')
             self.assertNotError('lookup remove test')
+            # Re-add the lookup, this time using the --nokey option
+            self.assertNotError('lookup add --nokey test foo.supyfact')
+            # And verify that the return of a random result does *not* include
+            # the key value, and that the value is at the beginning of the
+            # string
+            self.assertRegexp('test', r"^(bar|baz|my mom)")            
+            self.assertNotError('lookup remove test')
             try:
                 original = conf.supybot.reply.WhenNotCommand()
                 conf.supybot.reply.WhenNotCommand.setValue(True)
