@@ -269,50 +269,22 @@ def underline(s):
     """Returns the string s, underlined."""
     return '\x1F%s\x1F' % s
 
-mircColors = {
-    None: '',
-    'white': 0,
-    'black': 1,
-    'blue': 2,
-    'green': 3,
-    'red': 4,
-    'brown': 5,
-    'purple': 6,
-    'orange': 7,
-    'yellow': 8,
-    'light green': 9,
-    'teal': 10,
-    'light blue': 11,
-    'dark blue': 12,
-    'pink': 13,
-    'dark grey': 14,
-    'light grey': 15,
-}
-
-# Offer a reverse mapping from integers to their associated colors.
-for (k, v) in mircColors.items():
-    if k is not None: # Ignore empty string for None.
-        mircColors[v] = k
-
+# Definition of mircColors dictionary moved below because it became an IrcDict.
 def mircColor(s, fg=None, bg=None):
     """Returns s with the appropriate mIRC color codes applied."""
     if fg is None and bg is None:
         return s
-    if isinstance(fg, int):
-        fg = mircColors[fg] # Convert to string, just in case.
-    if isinstance(bg, int):
-        bg = mircColors[bg] # Convert to string, just in case.
-    if fg is None or isinstance(fg, str):
-        fg = mircColors[fg]
-    if bg is None:
-        fg = str(fg).zfill(2)
-        return '\x03%s%s\x03' % (fg, s)
+    elif bg is None:
+        fg = mircColors[str(fg)]
+        return '\x03%s%s\x03' % (fg.zfill(2), s)
+    elif fg is None:
+        bg = mircColors[str(bg)]
+        return '\x03,%s%s\x03' % (bg.zfill(2), s)
     else:
-        # We don't need to zfill fg here because the comma delimits it.
-        if isinstance(bg, str):
-            bg = mircColors[bg]
-        bg = str(bg).zfill(2)
-        return '\x03%s,%s%s\x03' % (fg, bg, s)
+        fg = mircColors[str(fg)]
+        bg = mircColors[str(bg)]
+        # No need to zfill fg because the comma delimits.
+        return '\x03%s,%s%s\x03' % (fg, bg.zfill(2), s)
 
 def canonicalColor(s, bg=False, shift=0):
     """Assigns an (fg, bg) canonical color pair to a string based on its hash
@@ -552,6 +524,31 @@ class IrcSet(sets.Set):
     def __reduce__(self):
         return (self.__class__, (list(self),))
 
+
+mircColors = IrcDict({
+    'white': '0',
+    'black': '1',
+    'blue': '2',
+    'green': '3',
+    'red': '4',
+    'brown': '5',
+    'purple': '6',
+    'orange': '7',
+    'yellow': '8',
+    'light green': '9',
+    'teal': '10',
+    'light blue': '11',
+    'dark blue': '12',
+    'pink': '13',
+    'dark grey': '14',
+    'light grey': '15',
+})
+
+# We'll map integers to their string form so mircColor is simpler.
+for (k, v) in mircColors.items():
+    if k is not None: # Ignore empty string for None.
+        sv = str(v)
+        mircColors[sv] = sv
 
 if __name__ == '__main__':
     import sys, doctest

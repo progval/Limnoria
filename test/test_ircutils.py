@@ -117,11 +117,12 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual('\x036,07foo\x03',
                          ircutils.mircColor(s, bg='orange', fg='purple'))
 
-    def testMircColors(self):
-        # Make sure all (k, v) pairs are also (v, k) pairs.
-        for (k, v) in ircutils.mircColors.items():
-            if k:
-                self.assertEqual(ircutils.mircColors[v], k)
+# Commented out because we don't map numbers to colors anymore.
+##     def testMircColors(self):
+##         # Make sure all (k, v) pairs are also (v, k) pairs.
+##         for (k, v) in ircutils.mircColors.items():
+##             if k:
+##                 self.assertEqual(ircutils.mircColors[v], k)
 
     def testStripBold(self):
         self.assertEqual(ircutils.stripBold(ircutils.bold('foo')), 'foo')
