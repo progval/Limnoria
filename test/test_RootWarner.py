@@ -33,6 +33,15 @@ from testsupport import *
 
 class RootWarnerTestCase(PluginTestCase):
     plugins = ('RootWarner',)
+    def setUp(self):
+        PluginTestCase.setUp(self)
+        self.original = conf.supybot.reply.whenNotCommand()
+        conf.supybot.reply.whenNotCommand.setValue(False)
+        
+    def tearDown(self):
+        PluginTestCase.tearDown(self)
+        conf.supybot.reply.whenNotCommand.setValue(self.original)
+        
     def test(self):
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
         self.assertNotError(' ')
