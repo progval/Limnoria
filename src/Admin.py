@@ -301,12 +301,13 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
            '-' in capability:
             try:
                 id = ircdb.users.getUserId(name)
-                user = ircdb.users.getUser(id)
-                user.addCapability(capability)
-                ircdb.users.setUser(id, user)
-                irc.replySuccess()
             except KeyError:
                 irc.errorNoUser()
+                return
+            user = ircdb.users.getUser(id)
+            user.addCapability(capability)
+            ircdb.users.setUser(id, user)
+            irc.replySuccess()
         else:
             s = 'You can\'t add capabilities you don\'t have.'
             irc.error(s)
