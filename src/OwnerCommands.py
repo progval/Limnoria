@@ -47,6 +47,7 @@ import debug
 import utils
 import world
 import ircdb
+import irclib
 import ircmsgs
 import drivers
 import privmsgs
@@ -210,12 +211,9 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         """
         collected = world.upkeep()
         if gc.garbage:
-            if len(gc.garbage) < 10:
-                irc.reply(msg, 'Garbage!  %r' % gc.garbage)
-            else:
-                irc.reply(msg, 'Garbage!  %s items.' % len(gc.garbage))
+            irc.reply(msg, 'Garbage!  %r' % gc.garbage)
         else:
-            irc.reply(msg, '%s collected' % utils.nItems(collected, 'object'))
+            irc.reply(msg, '%s collected.' % utils.nItems(collected, 'object'))
 
     def set(self, irc, msg, args):
         """<name> <value>
@@ -338,6 +336,48 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         """
         (channel, text) = privmsgs.getArgs(args, needed=2)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
+
+    def connect(self, irc, msg, args):
+        """<server> [<port>]
+
+        Connects a new Irc instance to <server>:<port> (<port> defaults to 6667
+        if not given).  The bot will automatically join the channels he
+        normally joins.
+        """
+        (server, port) = privmsgs.getArgs(args, optional=1)
+        if not port:
+            port = 6667
+        else:
+            try:
+                port = int(port)
+            except ValueError:
+                irc.error(msg, '<port> must be an integer.')
+                return
+        cbs = map(irc.getCallback, ['OwnerCommands', 'ConfigAfter376'])
+        newIrc = irclib.Irc(irc.nick, irc.user, irc.ident,
+                            irc.password, callbacks=cbs)
+        driver = drivers.newDriver((server, port), newIrc)
+        newIrc.driver = driver
+        irc.reply(msg, conf.replySuccess)
+
+    def disconnect(self, irc, msg, args):
+        """[<server>]
+
+        Disconnects from the server, if given; otherwise disconnects from the
+        server on which it received the command.
+        """
+        server = privmsgs.getArgs(args, needed=0, optional=1)
+        if not server:
+            server = irc.server[0]
+        me = False
+        for otherIrc in world.ircs[:]: # Copy because they remove themselves.
+            if otherIrc.driver.server[0] == server:
+                if otherIrc == irc:
+                    me = True
+                otherIrc.die()
+        if not me:
+            irc.reply(msg, conf.replySuccess)
+                
 
 
 Class = OwnerCommands
