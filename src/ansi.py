@@ -48,6 +48,8 @@ Color Usage:
   def clrtoeol(): 'Clears screen to end of line'
 """
 
+__revision__ = "$Id$"
+
 ################################
 # C O L O R  C O N S T A N T S #
 ################################

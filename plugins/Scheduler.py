@@ -34,6 +34,8 @@ Gives the user the ability to schedule commands to run at a particular time,
 or repeatedly run at a particular interval.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import sets

@@ -33,6 +33,8 @@
 This handles interesting things to do with a dictionary (words) database.
 """
 
+__revision__ = "$Id$"
+
 import supybot
 import plugins
 
