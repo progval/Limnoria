@@ -97,6 +97,17 @@ def progstats():
                 sys.version.translate(string.ascii, '\r\n'))
     return response
 
+class TimeoutError(Exception):
+    pass
+
+def pipeReadline(fd, timeout=0.5):
+    (r, _, _) = select.select([fd], [], [], timeout)
+    if r:
+        return r[0].readline()
+    else:
+        raise TimeoutError
+    
+
 
 class Unix(callbacks.Privmsg):
     def __init__(self):
@@ -170,22 +181,22 @@ class Unix(callbacks.Privmsg):
         """
         # We are only checking the first word
         word = privmsgs.getArgs(args)
-        if word and word[0] in '.?*&@+-~#!%^':
-            irc.error(msg, 'Initial spell metacharacters aren\'t allowed.')
+        if word and not word[0].isalpha():
+            irc.error(msg, '<word> must begin with an alphabet character.')
             return
         if ' ' in word:
             irc.error(msg, 'Spaces aren\'t allowed in the word.')
             return
         self._spellWrite.write(word)
         self._spellWrite.write('\n')
-        (r, _, _) = select.select([self._spellRead], [], [], 0.1)
-        if not r:
-            irc.error(msg, 'The spell command did not respond to %r' % word)
+        try:
+            line = pipeReadline(self._spellRead)
+            # aspell puts extra whitespace, ignore it
+            while line == '\n':
+                line = pipeReadline(self._spellRead)
+        except TimeoutError:
+            irc.error(msg, 'The spell command didn\'t return usefully.')
             return
-        line = self._spellRead.readline()
-        # aspell puts extra whitespace, ignore it
-        while line == '\n':
-            line = self._spellRead.readline()
         # parse the output
         if line[0] in '*+':
             resp = '"%s" may be spelled correctly.' % word
