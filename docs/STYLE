@@ -47,8 +47,7 @@ plugin.
 Method docstrings in classes deriving from callbacks.Privmsg should include an
 argument list as their first line, and after that a blank line followed by
 a longer description of what the command does.  The argument list is used by
-the 'help' command, and the longer description is used by the 'morehelp'
-command.
+the 'syntax' command, and the longer description is used by the 'help' command.
 
 Whenever joining more than two strings, use string interpolation, not addition:
   s = x + y + z # Bad.
