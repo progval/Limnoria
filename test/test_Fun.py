@@ -51,6 +51,9 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
         for i in range(100):
             self.assertNotError('jeffk the quick brown fox is ghetto')
 
+    def testLithp(self):
+        self.assertResponse('lithp jamessan', 'jamethan')
+
     def testMorse(self):
         self.assertResponse('unmorse [morse jemfinch]', 'JEMFINCH')
 
