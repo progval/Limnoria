@@ -158,18 +158,15 @@ class DBHandler(object):
 def makeChannelFilename(filename, channel=None, dirname=None):
     # ??? This may not be right.
     filename = os.path.basename(filename)
-    if channel is not None and \
-       conf.get(conf.supybot.databases.plugins.channelSpecific, channel):
-        channel = ircutils.toLower(channel)
-        if dirname is None:
-            dir = conf.supybot.directories.data.dirize(channel)
-        else:
-            dir = os.path.join(dirname, channel)
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        return os.path.join(dir, filename)
-    else:
-        return conf.supybot.directories.data.dirize(filename)
+    if channel is None or \
+       not conf.get(conf.supybot.databases.plugins.channelSpecific, channel):
+        channel = conf.supybot.databases.plugins.channelSpecific.channel()
+    channel = ircutils.toLower(channel)
+    if dirname is None:
+        dirname = conf.supybot.directories.data.dirize(channel)
+    if not os.path.exists(dirname):
+            os.makedirs(dirname)
+    return os.path.join(dirname, filename)
 
 
 # XXX This shouldn't be a mixin.  This should be contained by classes that
