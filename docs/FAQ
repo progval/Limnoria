@@ -167,3 +167,20 @@ A: Take a look at "help <alias you added>".  If the alias the bot has
 
    The first version works; the second version will always return the
    same url.
+
+Q: Is there a command that can tell me what capability another
+   command requires?
+
+A: No, there isn't, and there probably never will be.  Commands have
+   the flexibility to check any capabilities they wish to check;
+   while this flexibility is useful, it also makes it hard to guess
+   what capability a certain command requires.  We could make a
+   solution that would work in a large majority of cases, but it
+   wouldn't (and couldn't!) be absolutely correct in all
+   circumstances, and since we're anal and we hate doing things
+   halfway, we probably won't ever add this partial solution.
+
+   Besides, is the error message so bad?  If we did have such a
+   command, many users would call the command, see that they could
+   perform it, and then run the command, thus doubling the activity
+   in the channel.  Is that something you want?
