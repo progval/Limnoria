@@ -148,7 +148,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             assert self.msg is not None
             msg = self.msg
         self.replied = True
-        irc.reply(plugins.standardSubstitute(irc, msg, s))
+        irc.reply(plugins.standardSubstitute(irc, msg, s), prefixName=False)
         
     def confirm(self, irc=None, msg=None):
         # XXX
@@ -200,24 +200,24 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             payload = maybeAddressed
         else:
             payload = msg.args[1]
-        print '*', payload
+        #print '*', payload
         payload = self.normalize(payload)
-        print '**', payload
+        #print '**', payload
         maybeForced = self._forceRe.sub('', payload)
         if maybeForced != payload:
             self.force = True
             payload = maybeForced
-        print '***', payload
+        #print '***', payload
         if payload.endswith(irc.nick):
             self.addressed = True
             payload = payload[:-len(irc.nick)]
             payload = payload.strip(', ') # Strip punctuation separating nick.
             payload += '?' # So doUnknown gets called.
-        print '****', payload
+        #print '****', payload
         try:
-            print 'Payload:', payload
-            print 'Force:', self.force
-            print 'Addressed:', self.addressed
+            #print 'Payload:', payload
+            #print 'Force:', self.force
+            #print 'Addressed:', self.addressed
             msg = ircmsgs.privmsg(msg.args[0], payload, prefix=msg.prefix)
             callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         finally:
