@@ -361,7 +361,7 @@ class RSS(callbacks.Plugin):
         except registry.NonExistentRegistryEntry:
             pass
         feed = self.getFeed(url)
-        info = feed['channel']
+        info = feed.get('channel')
         if not info:
             irc.error('I couldn\'t retrieve that RSS feed.')
             return
