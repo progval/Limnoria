@@ -181,7 +181,7 @@ class Babelfish(callbacks.Privmsg):
                 allowEnglish = True
         languages = self.registryValue('languages', msg.args[0])
         if not languages:
-            irc.error('I can\'t speak any other languages.')
+            irc.error('I can\'t speak any other languages.', Raise=True)
         language = random.choice(languages)
         while not allowEnglish and language == 'English':
             language = random.choice(languages)
