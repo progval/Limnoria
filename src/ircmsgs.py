@@ -188,7 +188,6 @@ def prettyPrint(msg, addRecipients=False):
         s = '*** %s changes topic to %s' % (nickorprefix(), msg.args[1])
     return s
     
-
 ###
 # Various IrcMsg functions
 ###
