@@ -126,8 +126,8 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
         Adds another record to the data referred to in the first argument.  For
         commands that will later respond with an ACTION (lart and praise), $who
         should be in the message to show who should be larted or praised.  I.e.
-        'dbadd lart slices $who in half with a free AOL cd' would make the bot,
-        when it used that lart against, say, jemfinch, to say '/me slices
+        'fundb add lart slices $who in half with a free AOL cd' would make the
+        bot, when it used that lart against, say, jemfinch, to say '/me slices
         jemfinch in half with a free AOL cd'  <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
