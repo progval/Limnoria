@@ -55,17 +55,6 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-def configure(advanced):
-    from supybot.questions import output, expect, anything, something, yn
-    conf.registerPlugin('RSS', True)
-    prompt = 'Would you like to add an RSS feed?'
-    while yn(prompt):
-        prompt = 'Would you like to add another RSS feed?'
-        name = something('What\'s the name of the website?')
-        url = something('What\'s the URL of the RSS feed?')
-        # XXX How should we fix this?  I'm thinking just remove it.
-        registerFeed(name, url)
-
 class AnnouncedFeeds(registry.SpaceSeparatedListOfStrings):
     List = callbacks.CanonicalNameSet
     
@@ -93,6 +82,10 @@ conf.registerGlobalValue(conf.supybot.plugins.RSS, 'feeds',
     commands."""))
 
 class RSS(callbacks.Privmsg):
+    """This plugin is useful both for announcing updates to RSS feeds in a
+    channel, and for retrieving the headlines of RSS feeds via command.  Use
+    the "add" command to add feeds to this plugin, and use the "announce"
+    command to determine what feeds should be announced in a given channel."""
     threaded = True
     def __init__(self):
         callbacks.Privmsg.__init__(self)
