@@ -39,7 +39,6 @@ __revision__ = "$Id$"
 __contributors__ = {
     supybot.authors.jemfinch: ['bender', 'cyborg', 'doctype', 'freshmeat',
                                'headers', 'netcraft', 'size', 'title'],
-    supybot.authors.skorobeus: ['geekquote snarfer'],
     supybot.authors.jamessan: ['pgpkey', 'kernel', 'filext', 'zipinfo',
                                'acronym'],
     }
@@ -61,26 +60,13 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-def configure(advanced):
-    from supybot.questions import output, expect, anything, something, yn
-    conf.registerPlugin('Http', True)
-    output("""The Http plugin has the ability to watch for geekquote 
-              (bash.org) URLs and respond to them as though the user had 
-              asked for the geekquote by ID""")
-    if yn('Do you want the Geekquote snarfer enabled by default?'):
-        conf.supybot.plugins.Http.geekSnarfer.setValue(True)
-
 conf.registerPlugin('Http')
-conf.registerChannelValue(conf.supybot.plugins.Http, 'geekSnarfer',
-    registry.Boolean(False, """Determines whether the bot will automatically
-    'snarf' Geekquote auction URLs and print information about them."""))
 
 class FreshmeatException(Exception):
     pass
 
-class Http(callbacks.PrivmsgCommandAndRegexp):
+class Http(callbacks.PrivmsgCommand):
     threaded = True
-    regexps = ['geekSnarfer']
 
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
 
@@ -219,40 +205,6 @@ class Http(callbacks.PrivmsgCommandAndRegexp):
         else:
             m = 'I couldn\'t find a listing for %s' % symbol
             irc.error(m)
-
-    _mlgeekquotere = re.compile('<p class="qt">(.*?)</p>', re.M | re.DOTALL)
-    def geekquote(self, irc, msg, args):
-        """[<id>]
-
-        Returns a random geek quote from bash.org; the optional argument
-        id specifies which quote to retrieve.
-        """
-        id = privmsgs.getArgs(args, required=0, optional=1)
-        if id:
-            try:
-                id = int(id)
-            except ValueError:
-                irc.error('Invalid id: %s' % id, Raise=True)
-            id = 'quote=%s' % id
-        else:
-            id = 'random'
-        html = webutils.getUrl('http://bash.org/?%s' % id)
-        m = self._mlgeekquotere.search(html)
-        if m is None:
-            irc.error('No quote found on bash.org.')
-            return
-        quote = utils.htmlToText(m.group(1))
-        quote = ' // '.join(quote.splitlines())
-        irc.reply(quote)
-
-    def geekSnarfer(self, irc, msg, match):
-        r"http://(?:www\.)?bash\.org/\?(\d+)"
-        if not self.registryValue('geekSnarfer', msg.args[0]):
-            return
-        id = match.group(1)
-        self.log.info('Snarfing geekquote %s.', id)
-        self.geekquote(irc, msg, [id])
-    geekSnarfer = privmsgs.urlSnarfer(geekSnarfer)
 
     _cyborgRe = re.compile(r'<p class="mediumheader">(.*?)</p>', re.I)
     def cyborg(self, irc, msg, args):
