@@ -53,6 +53,12 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load Gameknot')
+    print 'The Gameknot plugin has the functionality to watch for URLs'
+    print 'that match a specific pattern (we call this a snarfer). When'
+    print 'supybot sees such a URL, he will parse the web page for information'
+    print 'and reply with the results.\n'
+    if yn('Do you want the Gameknot snarfer enabled by default?') == 'n':
+        onStart.append('Gameknot togglesnarfer')
 
 
 example = utils.wrapLines("""

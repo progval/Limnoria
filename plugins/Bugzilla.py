@@ -84,6 +84,12 @@ class BugError(Exception):
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, yn
     onStart.append('load Bugzilla')
+    print 'The Bugzilla plugin has the functionality to watch for URLs'
+    print 'that match a specific pattern (we call this a snarfer). When'
+    print 'supybot sees such a URL, he will parse the web page for information'
+    print 'and reply with the results.\n'
+    if yn('Do you want the Bugzilla snarfer enabled by default?') == 'n':
+        onStart.append('Bugzilla togglesnarfer')
 
 class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
     """Show a link to a bug report with a brief description"""

@@ -78,6 +78,12 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('alias googlelinux "google --restrict=linux $1"')
         onStart.append('alias googlebsd "google --restrict=bsd $1"')
         onStart.append('alias googlemac "google --restrict=mac $1"')
+        print 'The Google plugin has the functionality to watch for URLs'
+        print 'that match a specific pattern (we call this a snarfer). When'
+        print 'supybot sees such a URL, he will parse the web page for'
+        print 'information and reply with the results.\n'
+        if yn('Do you want the Google snarfer enabled by default?') == 'n':
+            onStart.append('Google togglesnarfer')
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key at http://www.google.com/apis/'
