@@ -74,9 +74,12 @@ class Http(callbacks.Privmsg):
         if not url.startswith('http://'):
             irc.error('Only HTTP urls are valid.')
             return
-        fd = webutils.getUrlFd(url)
-        s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
-        irc.reply(s)
+        try:
+            fd = webutils.getUrlFd(url)
+            s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
+            irc.reply(s)
+        finally:
+            fd.close()
 
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
     def doctype(self, irc, msg, args):
@@ -385,11 +388,7 @@ class Http(callbacks.Privmsg):
             return
         url = 'http://zipinfo.com/cgi-local/zipsrch.exe?cnty=cnty&ac=ac&'\
               'tz=tz&ll=ll&zip=%s&Go=Go' % zipcode
-        try:
-            text = webutils.getUrl(url)
-        except webutils.WebError, e:
-            irc.error(str(e))
-            return
+        text = webutils.getUrl(url)
         if 'daily usage limit' in text:
             irc.error('I have exceeded the site\'s daily usage limit.')
             return

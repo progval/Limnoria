@@ -89,7 +89,7 @@ def getUrlFd(url):
     except socket.error, e:
         raise WebError, strError(e)
     except urllib2.URLError, e:
-        raise WebError, strError(e)
+        raise WebError, strError(e.reason[1])
     except urllib2.HTTPError, e:
         raise WebError, strError(e)
 
