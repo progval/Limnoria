@@ -238,7 +238,12 @@ def tokenize(s):
     debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
     return args
 
-
+def findCallbackForCommand(irc, commandName):
+    for callback in irc.callbacks:
+        if hasattr(callback, 'isCommand'):
+            if callback.isCommand(commandName):
+                return callback
+    return None
 
 class IrcObjectProxy:
     def __init__(self, irc, msg, args):
@@ -251,11 +256,8 @@ class IrcObjectProxy:
         self.evalArgs()
 
     def findCallback(self, commandName):
-        for callback in self.irc.callbacks:
-            if hasattr(callback, 'isCommand'):
-                if callback.isCommand(commandName):
-                    return callback
-        return None
+        # Mostly for backwards compatibility now.
+        return findCallbackForCommand(self.irc, commandName)
 
     def evalArgs(self):
         while self.counter < len(self.args):
@@ -292,7 +294,10 @@ class IrcObjectProxy:
                 callback.callCommand(command, self, self.msg, self.args)
             else:
                 self.args.insert(0, name)
-                self.reply(self.msg, '[%s]' % ' '.join(self.args))
+                if not isinstance(self.irc, irclib.Irc):
+                    # If self.irc is an actual irclib.Irc, then this is the
+                    # first command given, and should be ignored as usual.
+                    self.reply(self.msg, '[%s]' % ' '.join(self.args))
         except ArgumentError:
             if hasattr(command, '__doc__'):
                 self.reply(self.msg, command.__doc__.splitlines()[0])
@@ -451,7 +456,7 @@ class Privmsg(irclib.IrcCallback):
             funcname = f.im_func.func_name
             debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
-    _r = re.compile(r'^([\w_-]+)')
+    _r = re.compile(r'^([\w_-]+)(?:\s+|$)')
     def doPrivmsg(self, irc, msg):
         s = addressed(irc.nick, msg)
         #debug.printf('Privmsg.doPrivmsg: s == %r' % s)
