@@ -67,8 +67,8 @@ conf.registerChannelValue(conf.supybot.plugins.Karma, 'karmaMostDisplay',
     registry.Integer(25, """Determines how many karma things are shown when
     the most command is called.'"""))
 
-class Karma(callbacks.PrivmsgCommandAndRegexp,
-            plugins.ChannelDBHandler):
+class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
+    addressedRegexps = ['increaseKarma', 'decreaseKarma']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
