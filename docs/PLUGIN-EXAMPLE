@@ -1,3 +1,11 @@
+*******************************************************************************
+The plugins/Random.py included with the distribution has been
+updated to use an argument-parsing module recently added to Supybot
+but not yet documented.  Still, all of the functions used in this
+tutorial are available, so the code (as shown in this tutorial*
+should still work.
+*******************************************************************************
+
 Ok, so you want to write a callback for Supybot.  Good, then this is
 the place to be.  We're going to start from the top (the highest
 level, where Supybot code does the most work for you) and move lower
