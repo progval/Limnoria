@@ -99,7 +99,7 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
         self.lastMsg = msg
 
     def _checkFiles(self):
-        self.log.info('Checking files.')
+        self.log.debug('Checking files.')
         for filename in self.registryValue('files'):
             self._checkFile(filename)
 
