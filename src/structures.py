@@ -208,22 +208,36 @@ class queue(object):
         return 'queue([%s])' % ', '.join(map(repr, self))
 
     def __getitem__(self, oidx):
-        (m, idx) = divmod(oidx, len(self))
-        if m and m != -1:
-            raise IndexError, oidx
-        if len(self.front) > idx:
-            return self.front[-(idx+1)]
+        if type(oidx) == types.SliceType:
+            L = []
+            for i in xrange(*sliceIndices(oidx, len(self))):
+                L.append(self[i])
+            return L
         else:
-            return self.back[(idx-len(self.front))]
+            (m, idx) = divmod(oidx, len(self))
+            if m and m != -1:
+                raise IndexError, oidx
+            if len(self.front) > idx:
+                return self.front[-(idx+1)]
+            else:
+                return self.back[(idx-len(self.front))]
         
     def __setitem__(self, oidx, value):
-        (m, idx) = divmod(oidx, len(self))
-        if m and m != -1:
-            raise IndexError, oidx
-        if len(self.front) > idx:
-            self.front[-(idx+1)] = value
+        if type(oidx) == types.SliceType:
+            range = xrange(*sliceIndices(oidx, len(self)))
+            if len(range) != len(value):
+                raise ValueError, 'seq must be the same length as slice.'
+            else:
+                for (i, x) in zip(range, value):
+                    self[i] = x
         else:
-            self.back[(idx-len(self.front))] = value
+            (m, idx) = divmod(oidx, len(self))
+            if m and m != -1:
+                raise IndexError, oidx
+            if len(self.front) > idx:
+                self.front[-(idx+1)] = value
+            else:
+                self.back[(idx-len(self.front))] = value
 
     def __getstate__(self):
         return (list(self),)

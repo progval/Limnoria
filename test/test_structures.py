@@ -95,6 +95,8 @@ class RingBufferTestCase(unittest.TestCase):
             b.append(i)
         for i in range(len(b)):
             self.assertEqual(L[i], b[i])
+        for i in range(len(b)):
+            self.assertEqual(list(b), list(b[:i]) + list(b[i:]))
 
     def testSliceGetitem(self):
         L = range(10)
@@ -182,8 +184,6 @@ class RingBufferTestCase(unittest.TestCase):
         b1 = RingBuffer(10, range(10))
         self.failIf(b == b1)
         
-        
-
     def testIter(self):
         b = RingBuffer(3, range(3))
         L = []
@@ -208,9 +208,11 @@ class QueueTest(unittest.TestCase):
             self.assertEqual(q[i], i)
         for i in xrange(n, 0, -1):
             self.assertEqual(q[-i], n-i)
+        for i in xrange(len(q)):
+            self.assertEqual(list(q), list(q[:i]) + list(q[i:]))
         self.assertRaises(IndexError, q.__getitem__, -(n+1))
         self.assertRaises(IndexError, q.__getitem__, n)
-        #self.assertEqual(q[3:7], queue([3, 4, 5, 6]))
+        self.assertEqual(q[3:7], queue([3, 4, 5, 6]))
         
     def testSetitem(self):
         q1 = queue()
