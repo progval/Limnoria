@@ -407,25 +407,19 @@ class Regexp(Value):
     def set(self, s):
         try:
             if s:
-                self.value = utils.perlReToPythonRe(s)
-                self._lastModified = time.time()
-                # Since we aren't calling self.setValue(), we need to run the
-                # following code.  If we don't, self.value isn't properly
-                # updated.
-                if self.supplyDefault:
-                    for (name, v) in self.children.items():
-                        if v.__class__ is self.X:
-                            self.unregister(name)
+                self.setValue(utils.perlReToPythonRe(s), sr=s)
             else:
                 self.setValue(None)
-            self.sr = s
         except ValueError, e:
             self.error(e)
 
-    def setValue(self, v):
+    def setValue(self, v, sr=None):
         if v is None:
             self.sr = ''
             Value.setValue(self, None)
+        elif sr is not None:
+            self.sr = sr
+            Value.setValue(self, v)
         else:
             raise InvalidRegistryValue, \
                   'Can\'t setValue a regexp, there would be an inconsistency '\
