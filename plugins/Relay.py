@@ -127,7 +127,7 @@ class Relay(callbacks.Privmsg):
         self.whois = {}
         self.started = False
         self.ircstates = {}
-        self.lastmsg = ircmsgs.ping('this is just a fake message')
+        self.lastmsg = {}
         self.channels = ircutils.IrcSet()
         self.abbreviations = {}
         self.originalIrc = None
@@ -135,12 +135,8 @@ class Relay(callbacks.Privmsg):
     def inFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
-        try:
-            self.ircstates[irc].addMsg(irc, self.lastmsg)
-        except KeyError:
-            self.ircstates[irc] = irclib.IrcState()
-            self.ircstates[irc].addMsg(irc, self.lastmsg)
-        self.lastmsg = msg
+        self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
+        self.lastmsg[irc] = msg
         return msg
 
     def die(self):
@@ -171,6 +167,8 @@ class Relay(callbacks.Privmsg):
         abbreviation = privmsgs.getArgs(args)
         self.ircs[abbreviation] = realIrc
         self.abbreviations[realIrc] = abbreviation
+        self.ircstates[realIrc] = irclib.IrcState()
+        self.lastmsg[realIrc] = ircmsgs.ping('this is just a fake message')
         self.started = True
         irc.reply(msg, conf.replySuccess)
     startrelay = privmsgs.checkCapability(startrelay, 'owner')
@@ -198,6 +196,8 @@ class Relay(callbacks.Privmsg):
         newIrc.driver = driver
         self.ircs[abbreviation] = newIrc
         self.abbreviations[newIrc] = abbreviation
+        self.ircstates[newIrc] = irclib.IrcState()
+        self.lastmsg[newIrc] = ircmsgs.ping('this is just a fake message')
         irc.reply(msg, conf.replySuccess)
     relayconnect = privmsgs.checkCapability(relayconnect, 'owner')
 
