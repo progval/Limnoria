@@ -51,12 +51,22 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testRepeat(self):
         self.assertNotError('scheduler repeat repeater 5 echo foo bar baz')
-        self.assertNotError(' ') # replySuccess
+        self.assertNotError(' ') # First response.
         self.assertNoResponse(' ', 4)
         self.assertResponse(' ', 'foo bar baz')
         self.assertNoResponse(' ', 4)
         self.assertResponse(' ', 'foo bar baz')
         self.assertNotError('scheduler remove repeater')
+        self.assertNoResponse(' ', 5)
+
+    def testRepeatWorksWithNestedCommands(self):
+        self.assertNotError('scheduler repeat foo 5 "echo foo [echo bar]"')
+        self.assertNotError(' ') # First response.
+        self.assertNoResponse(' ', 4)
+        self.assertResponse(' ', 'foo bar')
+        self.assertNoResponse(' ', 4)
+        self.assertResponse(' ', 'foo bar')
+        self.assertNotError('scheduler remove foo')
         self.assertNoResponse(' ', 5)
 
 

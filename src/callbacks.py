@@ -296,7 +296,7 @@ class IrcObjectProxy:
         log.debug('IrcObjectProxy.__init__: %s' % args)
         self.irc = irc
         self.msg = msg
-        self.args = args[:]
+        self.args = copy.deepcopy(args)
         self.counter = 0
         self.to = None
         self.action = False
@@ -397,7 +397,7 @@ class IrcObjectProxy:
 
     def reply(self, msg, s, noLengthCheck=False, prefixName=True,
               action=False, private=False, notice=False, to=None):
-        """reply(msg, text) -> replies to msg with text
+        """reply(msg, s) -> replies to msg with s
 
         Keyword arguments:
           noLengthCheck=False: True if the length shouldn't be checked
@@ -466,6 +466,21 @@ class IrcObjectProxy:
         else:
             self.args[self.counter] = s
             self.evalArgs()
+
+    def replySuccess(self, msg, s='', **kwargs):
+        if s:
+            s = '%s  %s' % (conf.replySuccess, s)
+        else:
+            s = conf.replySuccess
+        self.reply(msg, s, **kwargs)
+
+    def replyNoCapability(self, msg, capability, s='', **kwargs):
+        if s:
+            s = '%s   %s' % (conf.replyNoCapability % capability, s)
+        else:
+            s = conf.replyNoCapability % capability
+        self.reply(msg, s, **kwargs)
+
 
     def error(self, msg, s, private=False):
         """error(msg, text) -> replies to msg with an error message of text.
