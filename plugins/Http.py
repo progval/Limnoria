@@ -152,7 +152,10 @@ class Http(callbacks.Privmsg):
             irc.reply(msg, '%s is rated %s and has %s active games; '
                            'W-%s, L-%s, D-%s' % (name, rating, games, w, l, d))
         except AttributeError:
-            irc.error(msg, 'The format of the page was odd.')
+			if profile.find('User %s not found!' % name) != -1:
+				irc.error(msg, 'No user %s exists.')
+			else:
+				irc.error(msg, 'The format of the page was odd.')
         except urllib2.URLError:
             irc.error(msg, 'Couldn\'t connect to gameknot.com.')
 
