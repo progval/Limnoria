@@ -70,6 +70,7 @@ def main():
     # We schedule this event rather than have it actually run because if there
     # is a failure between now and the time it takes the Owner plugin to load
     # all the various plugins, our registry file might be wiped.  That's bad.
+    interrupted = False
     when = time.time() + conf.supybot.upkeepInterval()
     schedule.addEvent(world.upkeep, when, name='upkeep')
     world.startedAt = started
@@ -77,11 +78,22 @@ def main():
         try:
             drivers.run()
         except KeyboardInterrupt:
-            log.info('Exiting due to Ctrl-C at console.')
-            world.upkeep()
-            for irc in world.ircs:
-                irc.queueMsg(ircmsgs.quit('Ctrl-C at console.'))
-                irc.die()
+            if interrupted:
+                # Interrupted while waiting for queues to clear.  Let's clear
+                # them ourselves.
+                for irc in world.ircs:
+                    irc._reallyDie()
+                    continue
+            else:
+                interrupted = True
+                log.info('Exiting due to Ctrl-C at console.  '
+                         'If the bot doesn\'t exit within a few seconds, '
+                         'feel free to press Ctrl-C again to make it exit '
+                         'without flushing its message queues.')
+                world.upkeep()
+                for irc in world.ircs:
+                    irc.queueMsg(ircmsgs.quit('Ctrl-C at console.'))
+                    irc.die()
         except SystemExit, e:
             s = str(e)
             if s:
@@ -169,14 +181,12 @@ if __name__ == '__main__':
             sys.exit(-1)
 
     if len(args) > 1:
-        parser.error()
+        parser.error("""Only one configuration option should be specified.""")
     elif not args:
-        import supybot.questions as questions
-        questions.output("""It seems you've given me no configuration file.  If
-        you have a configuration file, be sure to tell its filename.  If you
-        don't have a configuration file, read docs/GETTING_STARTED and follow
-        its directions.""")
-        sys.exit(0)
+        parser.error(utils.normalizeWhitespace("""It seems you've given me no
+        configuration file.  If you have a configuration file, be sure to tell
+        its filename.  If you don't have a configuration file, read
+        docs/GETTING_STARTED and follow its directions."""))
     else:
         registryFilename = args.pop()
         try:
@@ -184,8 +194,8 @@ if __name__ == '__main__':
             registry.open(registryFilename)
             shutil.copy(registryFilename, registryFilename + '.bak')
         except registry.InvalidRegistryFile, e:
-            s = '%s in %s.  ' % (e, registryFilename)
-            s += 'Please fix this error and start Supybot again.'
+            s = '%s in %s.  Please fix this error and start supybot again.' % \
+                (e, registryFilename)
             s = textwrap.fill(s)
             sys.stderr.write(s)
             sys.stderr.write(os.linesep)
