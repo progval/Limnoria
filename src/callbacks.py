@@ -122,7 +122,7 @@ def getHelp(method, name=None):
     if name is None:
         name = method.__name__
     doclines = method.__doc__.splitlines()
-    s = '%s %s' % (name, doclines.pop(0))
+    s = '%s %s %s' % (method.im_self.name(), name, doclines.pop(0))
     if doclines:
         doclines = imap(str.strip, ifilter(None, doclines))
         help = ' '.join(doclines)
@@ -133,7 +133,7 @@ def getSyntax(method, name=None):
     if name is None:
         name = method.__name__
     doclines = method.__doc__.splitlines()
-    return '%s %s' % (name, doclines[0])
+    return '%s %s %s' % (method.im_self.name(), name, doclines[0])
 
 class RateLimiter:
     """This class is used to rate limit replies to certain people, in order to
