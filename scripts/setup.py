@@ -42,7 +42,9 @@ import sys
 import pydoc
 import socket
 import pprint
-sys.path.insert(0, 'src')
+
+if 'src' not in sys.path:
+    sys.path.insert(0, 'src')
 
 from fix import *
 from questions import *
@@ -51,7 +53,8 @@ import conf
 import ircdb
 import ircutils
 
-sys.path.insert(0, conf.pluginDir)
+if conf.pluginDir not in sys.path:
+    sys.path.insert(0, conf.pluginDir)
 
 if __name__ == '__main__':
     fd = file('src/template.py')
