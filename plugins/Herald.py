@@ -142,12 +142,12 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
 
     def doPart(self, irc, msg):
         try:
-            id = self._getId(msg.prefix)
+            id = self._getId(irc, msg.prefix)
             self.lastParts[(id, msg.args[0])] = time.time()
         except KeyError:
             pass
 
-    def _getId(self, userNickHostmask):
+    def _getId(self, irc, userNickHostmask):
         try:
             id = ircdb.users.getUserId(userNickHostmask)
         except KeyError:
@@ -168,7 +168,7 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
         channel = privmsgs.getChannel(msg, args)
         (userNickHostmask, herald) = privmsgs.getArgs(args, required=2)
         try:
-            id = self._getId(userNickHostmask)
+            id = self._getId(irc, userNickHostmask)
         except KeyError:
             irc.errorNoUser()
             return
@@ -186,7 +186,7 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
         channel = privmsgs.getChannel(msg, args)
         userNickHostmask = privmsgs.getArgs(args)
         try:
-            id = self._getId(userNickHostmask)
+            id = self._getId(irc, userNickHostmask)
         except KeyError:
             irc.errorNoUser()
             return
