@@ -1,0 +1,42 @@
+EVERYONE:
+---------
+Read LICENSE.  It's a 2-clause BSD license, but you should read it anyway.
+
+
+PROGRAMMERS:
+------------
+Read OVERVIEW to see what the modules are used for.  Read EXAMPLE to see some
+examples of callbacks and command written for the bot.  Read STYLE if you ever
+wish to contribute.
+
+All contributions need to assign the copyright to Jeremiah Fincher for
+licensing and modification purposes.  I'll probably change the modules to fit
+STYLE if they don't already fit.  (Of course, that doesn't mean 'all
+modifications'; only if you want your code to be included in the *standard
+distribution* of Supybot do you need to assign to me the copyright.  If you
+don't mind distributing your modifications or additions elsewhere, by all means
+keep the copyright.)
+
+Use PyChecker.  Believe me, it makes things better.
+
+
+USERS:
+------
+Read conf.py to see what kind of configuration options you have available.  In
+order to actually connect to a server on the internet, you'll want to modify
+the "drivers" option, changing the server "localhost" to the appropriate value.
+You'll probably also want to change the channels that are joined by modifying
+the configuration for the "callbacks.ChannelJoiner" callback.  This should all
+be done in a separate file, as per the example in sample.conf.
+
+To run the bot, do it from this directory, like this:
+
+src/bot.py
+
+If you have your own configuration file (the bot will still use conf.py as its
+set of defaults, but will override it with whatever it finds in your file) use:
+
+src/bot.py -c yourconfig.py
+
+I've included slightly patched versions of asyncore and asynchat so they don't
+make PyChecker complain, and use some newer features (mostly {}.iter*) of 2.2.

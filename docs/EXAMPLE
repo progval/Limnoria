@@ -1,0 +1,202 @@
+Here's an example of how to code a few callbacks for SupyBot.
+
+Let's say you want to make an annoying "Mimic" callback that repeats everything
+anyone says to the bot or on the channels the bot is in.  Here's what it looks
+like:
+
+[code]
+class AnnoyingMimic(irclib.IrcCallback):
+    def doPrivmsg(self, irc, msg):
+        irc.queueMsg(ircmsgs.privmsg(msg.args[0], msg.args[1]))
+[/code]
+
+Almost every callback will inherit from irclib.IrcCallback somewhere in their
+class hierarchy.  irclib.IrcCallback does a lot of the basic stuff that call-
+backs have to do, and inheriting from it relieves the programmer from such
+pedantries.  All you have to do to start writing callbacks inheriting from
+irclib.IrcCallback is write functions of the form "doCommand", where "Command"
+is a valid ircCommand.  The "ChannelJoiner" function in the callbacks module
+is a good illustrative example of a callback being called on different
+commands.
+
+The "irc" argument there is the irc object that is calling the callback.  To
+see what kind of interface it provides, read the class definition in irclib.
+Really, you only need to know a few methods if you're writing simple callbacks:
+'queueMsg', which queues a message to be sent later, and 'sendMsg' which tries
+to send it right away (well, as soon as the Irc object's driver asks for
+another message to send, which is generally right away).  The Irc object also
+provides some attributes that might come in useful, most notably "nick" (the
+nick of the bot) and "state" (an IrcState object that does various useful
+things like keeping a history of the most recent irc messages.)
+
+Irc messsages are represented by the IrcMsg class in ircmsgs.  It has several
+useful methods and attributes, but it's probably easier for you to read the
+code than for me to tell you about it.  The ircmsgs module also provides a set
+of useful little commands to create IrcMsg objects that do particular little
+things; for instance, ircmsgs.privmsg(recipient, msg) sends a PRIVMSG command
+to a channel or user (whatever recipient turns out to be).  Check out the code
+to see other functions for making IrcMsg objects.
+
+Now, that wasn't too bad.  Now, however you're going to have to get it into the
+bot.  Note that AnnoyingMimic doesn't have an __init__.  This'll make it pretty
+simple to get it into the configuration system.  Look for the section of the
+config file where you see all the configurations for Irc objects.  These
+configurations are going to be lists of (class name, args, kwargs) tuples which
+contain the name of a callback class to be instantiated, a tuple of the argu-
+ments to be passed to the __init__ function for that class, and a dictionary
+of the keyword arguments to be passed to the __init__ function of that class.
+For instance, if AnnoyingMimic was in a file 'mycallbacks.py', its config-
+uration in the config file would look like this:
+
+[code]
+('mycallbacks.AnnoyingMimic', (), {})
+[/code]
+
+Since it doesn't have an __init__, there are no arguments or keyword arguments
+to pass to the class.  Just throw something like that in a list of callbacks
+that you use for your bot (you can have several lists, you'll notice later on
+in the 'drivers' variable that they're used), and you're ready to go!
+
+Now, let's say you want to make your AnnoyingMimic class a little less
+annoying.  Now, you only want to mimic people *you* find annoying.  The easiest
+way to do that is to make it so you tell the class who to mimic when you
+instantiate it.  This means adding an __init__ function, and modifying your
+configuration slightly.
+
+[code]
+class AnnoyingMimic(irclib.IrcCallback):
+    def __init__(self, nicksToAnnoy):
+        self.nicksToAnnoy = nicksToAnnoy
+
+    def doPrivmsg(self, irc, msg):
+        if msg.nick() in self.nicksToAnnoy:
+            irc.queueMsg(ircmsgs.privmsg(msg.args[0], msg.args[1]))
+[/code]
+
+(Now, really, to make this efficient, you'd want a slightly different version
+that turned the nicksToAnnoy argument into a dictionary so nick lookups would
+be O(1) instead of O(n) in the length of the list of nicks to annoy, but that
+would obfuscate the problem.  I'll leave that as an exercise left up to the
+reader.)
+
+So now your AnnoyingMimic class has an __init__ function that accepts a list
+of nicks to annoy, but how do you pass it those nicks?  Simple!  Change the
+configuration slightly:
+
+[code]
+('mycallbacks.AnnoyingMimic', (['jemfinch', 'GnuVince'],), {})
+[/code]
+
+That's the wonder of this configuration system -- you can use all the Python
+syntax you want, so you have practically unlimited flexibility.
+
+(Note that since the 'arguments' member of that tuple is a single-member tuple,
+you'll have to stick a comma after the first (only) element because otherwise
+Python wouldn't believe it's a tuple.)
+
+So, again, you choose to make your AnnoyingMimic less annoying -- really, you
+decide to make it not annoying at all by making it only mimic people who ask to
+be repeated.  You want to make a class that has an "echo" command that repeats
+the message to those who ask it.  You want people to be able to tell the bot,
+"echo The quick brown fox jumps over the lazy dog!" and have the bot say right
+back, "The quick brown fox jumps over the lazy dog!".  That's easy!  Here's the
+code:
+
+[code]
+reply = callbacks.reply
+
+class Echo(callbacks.Privmsg):
+    def echo(self, irc, msg, args):
+        "<text>"
+        text = self.getArgs(args)
+        self.reply(text)
+[/code]
+
+So that seemed pretty simple there, too.  Let's explain what's going on:
+
+callbacks.Privmsg is an easy way to create "commands" which are simple named
+functions that use a universal scheme for delimiting arguments -- basically,
+they'll all act the same in how they get their arguments.  callbacks.Privmsg
+takes a Privmsg (it has a doPrivmsg function and inherits from
+irclib.IrcCallback) and first determines if it's addressed to the bot -- the
+message must either be PRIVMSGed directly to the bot, or PRIVMSGed over a
+channel the bot is in and either start with a character in conf.prefixchars or
+start with the bot's name.  Don't worry, callbacks.Privmsg almost always does
+The Right Thing.  After deciding that the bot has been addressed,
+callbacks.Privmsg then parses the text of the message into a list of strings.
+Here are a few examples of what it would do:
+
+"""arg1 arg2 arg3"""
+['arg1', 'arg2', 'arg3']
+
+"""'arg1 arg2 arg3' arg4""" # Note the quotes.
+['arg1 arg2 arg3', 'arg4']
+
+getArgs is a function that just a little bit of magic.  It takes an optional
+argument (that defaults to 1) of the number of args needed.  If more than one
+argument is needed, it checks that the proper number of arguments has been
+given, and then returns a tuple of those arguments.  So if you wanted 3 args
+from a message, you'd do something like this:
+
+(name, oldpassword, newpassword) = self.getArgs(args, 3)
+
+See how simple that is?  If getArgs only needs one argument, however, it does
+something a bit magic -- first of all, it doesn't return a tuple, it just
+returns the argument itself.  This makes it so you can type:
+
+text = self.getArgs(args)
+
+Instead of:
+
+(text,) = self.getArgs(args)
+
+It just makes things easier that way.  Also, however, if *only* one argument
+is needed, it does something a bit more magical.  A lot of commands take only
+one argument and then do some processing on it -- for example, look at the
+privmsgs module, the "FunCommands" callback, at the commands 'leet' and
+'rot13'.  This is all great, but because of the way args are normally parsed
+by callbacks.Privmsg, you'd have to always enclose that argument in quotes.
+For instance, you'd have to type this:
+
+bot: leet "The quick brown fox jumps over the lazy dog."
+
+From experience, I can tell you that most people will forget the quotes almost
+every time they talk to the bot.  Since having only one argument is such a
+command case, getArgs special-cases it to string.join all the args with spaces.
+Now you can say:
+
+bot: leet The quick brown fox jumps over the lazy dog.
+
+And it'll return the same exact thing as above.  Of course, the original still
+works, but since people forget the quotes so often, it's good to go easy on
+them :)  We're actually using that behavior with our callback above: by using
+getArgs, now our users can say:
+
+echo foo bar baz
+
+Instead of always having to say:
+
+echo "foo bar baz"
+
+Anyway, you're probably wondering how that callback works.  It inherits from
+callbacks.Privmsg, which as I mentioned before, has a doPrivmsg callback.  So
+when callbacks.Privmsg receives a PRIVMSG command, it parses it and then tries
+to find if it has a method by the same name as the command -- if it does, and
+that method looks like this:
+
+def method(self, irc, msg, args):
+    ...
+
+Then it calls that method with the appropriate arguments.  Easy, huh?  Don't
+worry, it gets even cooler :)  So you write a command like echo and you want
+to provide the user with some help using it.  You were probably wondering why
+the docstring to that "echo" method above looked so weird, but now you know:
+it *is* the help for the command!  callbacks.Privmsg has its own command, help,
+which will return the *docstring* for any other command!  So it's cake to write
+your own commands and help.
+
+(This, of course, means that if you *don't* write a help string for your
+command, you have no excuse and are just plain lazy.  So write help strings!)
+
+There's a bit more I could tutorialize on, but it would be more esoteric, and
+better a reference material than as a tutorial.  I'll put that in another file.

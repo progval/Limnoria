@@ -1,0 +1,4 @@
+There are just little tidbits that you might need/want to know.
+
+In order to make a module dynamically loadable, all you gotta do is have a
+callback named "Class" and throw it in plugins/ .

@@ -1,0 +1,60 @@
+So here's a general *programming* introduction to what the different modules do
+and what services they provide.  It is, however, only an introduction.  Read
+the modules themselves for a much more detailed explanation :)
+
+fix.py: Just some stuff that needs to be done to make the bot work in some
+        older versions of Python (like 2.2 :))
+
+cdb.py: A constant database library, translated from C (and my O'Caml version)
+        More information available at http://cr.yp.to/cdb.html .
+
+ansi.py: Contains different ANSI color sequences.
+         Mostly used by the debug module.
+
+debug.py: Functions for handling bugs and errors in a consistent manner
+          throughout the bot.
+
+conf.py: The configuration file for the bot -- it sets a lot of variables that
+         other modules check for when they have questions about what they need
+         to do.
+
+world.py: Just a dropping off place for some globals that need to be shared
+          among all the modules.  It's obviously not used *a lot*, but some
+          things seem to fit better here than anywhere else.
+
+bot.py: The topmost module, the one that runs the bot.  It's also probably the
+        'dirtiest' module right now, but I'll add proper command line parsing
+        and clean it up a bit later.
+
+privmsgs.py: The privmsg commands that are included by default in the bot.
+             It's probably most useful from a programming standpoint simply so
+             a new programmer can see what commands look like.
+
+callbacks.py: A few basic callbacks used by default in the bot.  You'll likely
+              be inheriting from Privmsg quite a bit, and using the reply
+              function a bit as well.
+
+ircdb.py: The users and channels databases are here, as well as the
+          IrcUser and IrcChannel classes.  Look here when you want to
+          restrict a command to only certain users.
+
+irclib.py: Provides the most important class in the irclib, Irc.  It represents
+           a connection to an IRC server, but it's entirely separate from the
+           network implementation.  It's connected to the network (or whatever
+           else drives it) by a "driver" module which uses its feedMsg/takeMsg
+           functions.
+
+drivers.py: The baseclass (IrcDriver) for various drivers to drive irclib.Irc
+            classes.  Also, the driving mechanism.
+
+asyncoreDrivers.py: The asyncore-based drivers for use with the bot.
+
+ircmsgs.py: The IrcMsg class (get to know it :)) and various functions for
+            making the creation of IrcMsgs easier.
+
+ircutils.py: Various utility functions for Irc -- read the module to see what
+             goodies are there :)
+
+schedule.py: A schedule driver (which is automatically registered with the
+             drivers module) to run things at a particular time, or at
+             specified periods of time.

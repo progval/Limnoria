@@ -1,0 +1,32 @@
+Maximum line length is 79 characters.
+
+Identation is 4 spaces per level.  No tabs.
+
+Single quotes are used for all string literals that aren't docstrings.
+They're just easier to type.
+
+Triple double quotes (""") are always used for docstrings, except for the
+docstrings on callbacks deriving from callbacks.Privmsg, which use just
+double quotes (").
+
+Spaces go around all operators (except around '=' in default arguments to
+functions) and after all commas (unless doing so keeps a line within the 79
+character limit).
+
+Class names are StudlyCaps.  Method and function names are camelCaps
+(StudlyCaps with an initial lowercase letter).  If variable and attribute
+names can maintain readability without being camelCaps, then they should be
+entirely in lowercase, otherwise they should also use camelCaps.
+
+Imports should always happen at the top of the module, one import per line
+(so if imports need to be added or removed later, it can be done easily).
+
+A blank line should be between all consecutive method declarations in a
+class definition.  Two blank lines should be between all consecutive class
+definitions in a file.  Comments are even better than blank lines for
+separating classes.
+
+Code should pass PyChecker with no warnings.
+
+Read PEP 8 (Guido's Style Guide) and know that we use almost all the same style
+guidelines.

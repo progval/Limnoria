@@ -1,0 +1,15 @@
+Write tests (both unit tests and regression tests on the whole shebang).
+  -- Ugh.  I don't want to have to do this.
+
+Continue to document a bit more.  Perhaps use doctest on ircutils and ircmsgs.
+  -- Let me know what isn't instantly understandable, and I'll recode or write
+     documentation so it *is* instantly understandable.
+
+Redo configuration.
+
+Write DCC stuff.
+
+Write the following callbacks:
+  -- News
+  -- Debian
+  -- FreeBSD Ports
