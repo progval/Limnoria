@@ -161,6 +161,19 @@ class Config(callbacks.Privmsg):
         else:
             self._get(irc, msg, args)
 
+    def channel(self, irc, msg, args):
+        """[<channel>] <name> [<value>]
+
+        If <value> is given, sets the channel configuration variable for <name>
+        to <value> for <channel>.  Otherwise, returns the current channel
+        configuration value of <name>.  <channel> is only necessary if the
+        message isn't sent in the channel itself."""
+        channel = privmsgs.getChannel(msg, args)
+        components = registry.split(args[0])
+        components.append(channel)
+        args[0] = registry.join(components)
+        self.config(irc, msg, args)
+
     def _get(self, irc, msg, args):
         """<name>
 
