@@ -128,13 +128,19 @@ class PluginTestCase(SupyTestCase):
         conf.supybot.reply.whenNotCommand.setValue(False)
         self.myVerbose = world.myVerbose
         if self.cleanConfDir:
-            for filename in os.listdir(conf.supybot.directories.conf()):
-                os.remove(os.path.join(conf.supybot.directories.conf(),
-                                       filename))
+            confDir = conf.supybot.directories.conf()
+            for (dirpath, dirnames, filenames) in os.walk(confDir):
+                for filename in filenames:
+                    filename = os.path.join(dirpath, filename)
+                    if os.path.isfile(filename):
+                        os.remove(filename)
         if self.cleanDataDir:
-            for filename in os.listdir(conf.supybot.directories.data()):
-                os.remove(os.path.join(conf.supybot.directories.data(),
-                                       filename))
+            dataDir = conf.supybot.directories.data()
+            for (dirpath, dirnames, filenames) in os.walk(dataDir):
+                for filename in filenames:
+                    filename = os.path.join(dirpath, filename)
+                    if os.path.isfile(filename):
+                        os.remove(filename)
         ircdb.users.reload()
         ircdb.ignores.reload()
         ircdb.channels.reload()
