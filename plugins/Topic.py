@@ -178,7 +178,7 @@ class Topic(callbacks.Privmsg):
                 username = msg.nick
             if name != username and \
                not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
-                irc.error('You can only remove your own topics.')
+                irc.error(msg, 'You can only remove your own topics.')
                 return
             newTopic = self.topicSeparator.join(topics)
             irc.queueMsg(ircmsgs.topic(channel, newTopic))
