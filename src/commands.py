@@ -878,7 +878,7 @@ class Spec(object):
             raise callbacks.ArgumentError
         return state
 
-def wrap(f, specList=[], **kw):
+def wrap(f, specList=[], name=None, **kw):
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
@@ -891,7 +891,7 @@ def wrap(f, specList=[], **kw):
             funcArgs = inspect.getargs(f.func_code)[0][len(self.commandArgs):]
             self.log.error('Extra args: %s', funcArgs)
             raise
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__) 
+    return utils.changeFunctionName(newf, name or f.func_name, f.__doc__) 
 
 __all__ = [
     # Contexts.
