@@ -245,10 +245,10 @@ class Irc(object):
         self.prefix = ''
         self.user = user or nick    # Default to nick if user isn't provided.
         self.ident = ident or nick  # Ditto.
-        self.callbacks = []
-        if callbacks is not None:
-            for callback in callbacks:
-                self.addCallback(callback)
+        if callbacks is None:
+            self.callbacks = []
+        else:
+            self.callbacks = callbacks
         self._nickmods = copy.copy(conf.nickmods)
         self.state = IrcState()
         self.queue = IrcMsgQueue()
@@ -274,11 +274,15 @@ class Irc(object):
 
     def removeCallback(self, name):
         ret = []
+        toRemove = []
         for (i, cb) in enumerate(self.callbacks):
             if cb.name() == name:
-                ret.append(self.callbacks[i])
-                self.callbacks[i] = None
-        self.callbacks = [cb for cb in self.callbacks if cb is not None]
+                toRemove.append(i)
+        if toRemove:
+            for i in reviter(range(len(self.callbacks))):
+                if toRemove[-1] == i:
+                    toRemove.pop()
+                    ret.append(self.callbacks.pop(i))
         return ret
 
     def queueMsg(self, msg):
