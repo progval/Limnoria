@@ -506,7 +506,7 @@ class Privmsg(irclib.IrcCallback):
         if s:
             recipient = msg.args[0]
             if ircdb.checkIgnored(msg.prefix, recipient):
-                debug.printf('Privmsg.doPrivmsg: ignoring %s.' % recipient)
+                debug.printf('Privmsg.doPrivmsg: ignoring %s.' % msg.prefix)
                 return
             m = self._r.match(s)
             if m and self.isCommand(canonicalName(m.group(1))):
