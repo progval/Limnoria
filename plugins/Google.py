@@ -43,6 +43,7 @@ import time
 import getopt
 import socket
 import urllib2
+import xml.sax
 
 import SOAP
 import google
