@@ -315,7 +315,7 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
                     if not s:
                         continue
                     numUsers += 1
-                    elif s in Channel.ops:
+                    if s in Channel.ops:
                         ops.append('@%s' % s)
                     elif s in Channel.halfops:
                         halfops.append('%%%s' % s)
