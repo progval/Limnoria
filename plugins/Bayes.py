@@ -76,13 +76,19 @@ class PickleBayesDB(plugins.DbiChannelDB):
             self.filename = filename
             self.nickFilename = self.filename.replace('pickle', 'nick.pickle')
             self.bayes = reverend.thomas.Bayes(tokenize)
-            if os.path.exists(self.filename) and \
-               os.path.getsize(self.filename):
-                self.bayes.load(self.filename)
+            if os.path.exists(self.filename):
+                try:
+                    self.bayes.load(self.filename)
+                except (EOFError, EnvironmentError), e:
+                    log.error('Couldn\'t load bayes pickle from %s: %s',
+                              self.filename, utils.exnToString(e))
             self.nickBayes = reverend.thomas.Bayes(tokenize)
-            if os.path.exists(self.nickFilename) and \
-               os.path.getsize(self.nickFilename):
-                self.nickBayes.load(self.nickFilename)
+            if os.path.exists(self.nickFilename):
+                try:
+                    self.nickBayes.load(self.nickFilename)
+                except (EOFError, EnvironmentError), e:
+                    log.error('Couldn\'t load nickbayes pickle from %s: %s',
+                              self.nickFilename, utils.exnToString(e))
 
         def close(self):
             self.bayes.save(self.filename)
@@ -121,6 +127,8 @@ class Bayes(callbacks.Privmsg):
     def __init__(self):
         self.__parent = super(Bayes, self)
         self.__parent.__init__()
+        global log
+        log = self.log
         self.db = BayesDB()
 
     def die(self):
