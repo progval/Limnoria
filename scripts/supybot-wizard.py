@@ -63,9 +63,9 @@ def describePlugin(module, showUsage):
     
 def configurePlugin(module, onStart, afterConnect, advanced):
     if hasattr(module, 'configure'):
-        myPrint("""The following questions are plugin-specific configuration
-        questions for %s""" % module.Class.__name__)
+        myPrint("""Beginning configuration for %s..."""%module.Class.__name__)
         module.configure(onStart, afterConnect, advanced)
+        myPrint("""Done!""")
     else:
         onStart.append('load %s' % name)
 
@@ -291,6 +291,7 @@ if __name__ == '__main__':
     if yn('Do you want your bot to join some channels when he connects?')=='y':
         channels = something('What channels?')
         while not all(ircutils.isChannel, channels.split()):
+            # FIXME: say which ones weren't channels.
             myPrint("""Not all of those are valid IRC channels.  Be sure to
             prefix the channel with # (or +, or !, or &, but no one uses those
             channels, really).""")
@@ -308,7 +309,9 @@ if __name__ == '__main__':
     clearLoadedPlugins(onStart, plugins)
 
     # bulk
+    addedBulk = False
     if advanced and yn('Would you like to add plugins en masse first?') == 'y':
+        addedBulk = True
         myPrint("""The available plugins are %s.  What plugins would you like
         to add?  If you've changed your mind and would rather not add plugins
         in bulk like this, just press enter and we'll move on to the individual
@@ -321,23 +324,25 @@ if __name__ == '__main__':
                 clearLoadedPlugins(onStart, plugins)
 
     # individual
-    myPrint("""Next comes your oppurtunity to learn more about the plugins that
-    are available and select some (or all!) of them to run in your bot.  Before
-    you have to make a decision, of course, you'll be able to see a short
-    description of the plugin and, if you choose, an example session with the
-    plugin.  Let's begin.""")
-    showUsage = yn('Would you like the option of seeing usage examples?')=='y'
-    name = expect('What plugin would you like to look at?', plugins)
-    while name:
-        module = loadPlugin(name)
-        if module is not None:
-            describePlugin(module, showUsage)
-            if yn('Would you like to load this plugin?') == 'y':
-                configurePlugin(module, onStart, afterConnect, advanced)
-                clearLoadedPlugins(onStart, plugins)
-        if yn('Would you like add another plugin?') == 'n':
-            break
+    if yn('Would you like to look at plugins individually?') == 'y':
+        myPrint("""Next comes your oppurtunity to learn more about the plugins
+        that are available and select some (or all!) of them to run in your
+        bot.  Before you have to make a decision, of course, you'll be able to
+        see a short description of the plugin and, if you choose, an example
+        session with the plugin.  Let's begin.""")
+        showUsage = yn('Would you like the option of seeing usage examples?') \
+                    =='y'
         name = expect('What plugin would you like to look at?', plugins)
+        while name:
+            module = loadPlugin(name)
+            if module is not None:
+                describePlugin(module, showUsage)
+                if yn('Would you like to load this plugin?') == 'y':
+                    configurePlugin(module, onStart, afterConnect, advanced)
+                    clearLoadedPlugins(onStart, plugins)
+            if yn('Would you like add another plugin?') == 'n':
+                break
+            name = expect('What plugin would you like to look at?', plugins)
     
     ###
     # Sundry
