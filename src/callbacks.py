@@ -297,14 +297,15 @@ def getCommands(tokens):
     return L
 
 def findCallbackForCommand(irc, commandName):
-    """Given a command name and an Irc object, returns the callback that
-    command is in.  Returns None if there is no callback with that command."""
+    """Given a command name and an Irc object, returns a list of callbacks that
+    commandName is in."""
+    L = []
     for callback in irc.callbacks:
         if not isinstance(callback, PrivmsgRegexp):
             if hasattr(callback, 'isCommand'):
                 if callback.isCommand(commandName):
-                    return callback
-    return None
+                    L.append(callback)
+    return L
 
 class IrcObjectProxy:
     "A proxy object to allow proper nested of commands (even threaded ones)."
@@ -341,9 +342,22 @@ class IrcObjectProxy:
         self.finalEvaled = True
         originalName = self.args.pop(0)
         name = canonicalName(originalName)
-        cb = findCallbackForCommand(self, name)
-        try:
-            if cb is not None:
+        cbs = findCallbackForCommand(self, name)
+        if len(cbs) == 0:
+            self.args.insert(0, originalName)
+            if not isinstance(self.irc, irclib.Irc):
+                # If self.irc is an actual irclib.Irc, then this is the
+                # first command given, and should be ignored as usual.
+                self.reply(self.msg, '[%s]' % ' '.join(self.args))
+                return
+        elif len(cbs) > 1:
+            s = 'The command %s is available in plugins %s.  Please specify ' \
+                'the plugin whose command you wish to call.' % \
+                (originalName, utils.commaAndify([cb.name() for cb in cbs]))
+            self.error(self.msg, s)
+        else:
+            try:
+                cb = cbs[0]
                 anticap = ircdb.makeAntiCapability(name)
                 #debug.printf('Checking for %s' % anticap)
                 if ircdb.checkCapability(self.msg.prefix, anticap):
@@ -371,26 +385,20 @@ class IrcObjectProxy:
                     t.start()
                 else:
                     cb.callCommand(command, self, self.msg, self.args)
-            else:
-                self.args.insert(0, originalName)
+            except (getopt.GetoptError, ArgumentError):
+                if hasattr(command, '__doc__'):
+                    s = '%s %s' % (name, command.__doc__.splitlines()[0])
+                else:
+                    s = 'Invalid arguments for %s.' % name
+                self.reply(self.msg, s)
+            except CannotNest, e:
                 if not isinstance(self.irc, irclib.Irc):
-                    # If self.irc is an actual irclib.Irc, then this is the
-                    # first command given, and should be ignored as usual.
-                    self.reply(self.msg, '[%s]' % ' '.join(self.args))
-        except (getopt.GetoptError, ArgumentError):
-            if hasattr(command, '__doc__'):
-                s = '%s %s' % (name, command.__doc__.splitlines()[0])
-            else:
-                s = 'Invalid arguments for %s.' % name
-            self.reply(self.msg, s)
-        except CannotNest, e:
-            if not isinstance(self.irc, irclib.Irc):
-                self.error(self.msg, 'Command %r cannot be nested.' % name)
-        except (SyntaxError, Error), e:
-            self.reply(self.msg, debug.exnToString(e))
-        except Exception, e:
-            debug.recoverableException()
-            self.error(self.msg, debug.exnToString(e))
+                    self.error(self.msg, 'Command %r cannot be nested.' % name)
+            except (SyntaxError, Error), e:
+                self.reply(self.msg, debug.exnToString(e))
+            except Exception, e:
+                debug.recoverableException()
+                self.error(self.msg, debug.exnToString(e))
 
     def reply(self, msg, s, noLengthCheck=False, prefixName=True,
               action=False, private=False, notice=False):

@@ -124,79 +124,60 @@ class MiscCommands(callbacks.Privmsg):
             irc.error(msg, 'There is no plugin named %s, ' \
                            'or that plugin has no commands.' % name)
 
-    def syntax(self, irc, msg, args):
-        """<command>
-
-        Gives the syntax for a specific command.  To find commands,
-        use the 'list' command to go see the commands offered by a plugin.
-        The 'list' command by itself will show you what plugins have commands.
-        """
-        command = privmsgs.getArgs(args, needed=0, optional=1)
-        if not command:
-            command = 'help'
-        command = callbacks.canonicalName(command)
-        cb = callbacks.findCallbackForCommand(irc, command)
-        if cb:
-            method = getattr(cb, command)
-            if hasattr(method, '__doc__') and method.__doc__ is not None:
-                doclines = method.__doc__.strip().splitlines()
-                help = doclines.pop(0)
-                irc.reply(msg, '%s %s' % (command, help))
-            else:
-                irc.reply(msg, 'That command exists, '
-                               'but has no syntax description.')
-        else:
-            cb = irc.getCallback(command)
-            if cb:
-                s = ''
-                if hasattr(cb, '__doc__') and cb.__doc__ is not None:
-                    s = cb.__doc__
-                else:
-                    module = sys.modules[cb.__module__]
-                    if hasattr(module, '__doc__') and module.__doc__:
-                        s = module.__doc__
-                if s:
-                    s = ' '.join(map(str.strip, s.splitlines()))
-                    if not s.endswith('.'):
-                        s += '.'
-                    s += '  Use the list command to see what commands this ' \
-                         'plugin supports.'
-                else:
-                    s = 'That plugin has no help description.'
-                irc.reply(msg, s)
-            else:
-                irc.error(msg, 'There is no such command or plugin.')
-
     def help(self, irc, msg, args):
-        """<command>
+        """[<plugin>] <command>
 
         This command gives a much more useful description than the simple
-        argument list given by the command 'syntax'.
+        argument list given by the command 'syntax'.  <plugin> is only
+        necessary if the command is in more than one plugin.
         """
+        def helpFor(method):
+            doclines = method.__doc__.splitlines()
+            simplehelp = '(%s %s)' % (method.__name__, doclines.pop(0))
+            if doclines:
+                doclines = filter(None, doclines)
+                doclines = map(str.strip, doclines)
+                help = ' '.join(doclines)
+                s = '%s -- %s' % (ircutils.bold(simplehelp), help)
+                return s
+            else:
+                return 'That command has no help.  The syntax is: %s' % \
+                       simplehelp[1:-1]
+        if len(args) > 1:
+            cb = irc.getCallback(args[0])
+            if cb is not None:
+                command = callbacks.canonicalName(privmsgs.getArgs(args[1:]))
+                if hasattr(cb, 'isCommand') and cb.isCommand(command):
+                    method = getattr(cb, command)
+                    if hasattr(method, '__doc__') and method.__doc__ != None:
+                        irc.reply(msg, helpFor(method))
+                    else:
+                        irc.error(msg, 'That command has no help.')
+                else:
+                    irc.error(msg, 'There is no such command %s %s.' %
+                                   (args[0], command))
+            else:
+                irc.error(msg, 'There is no such plugin %s' % args[0])
+            return
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         # Users might expect "@help @list" to work.
         command = command.lstrip(conf.prefixChars) 
-        cb = callbacks.findCallbackForCommand(irc, command)
-        if cb:
+        cbs = callbacks.findCallbackForCommand(irc, command)
+        if len(cbs) > 1:
+            irc.error(msg, 'That command exists in the %s %s.  Please specify '
+                           'exactly which plugin command you want help with.'%\
+                           (utils.commaAndify([cb.name() for cb in cbs]),
+                            utils.nItems(len(cbs), 'plugin')))
+            return
+        elif not cbs:
+            irc.error(msg, 'There is no such command %s.' % command)
+        else:
+            cb = cbs[0]
             method = getattr(cb, command)
             if hasattr(method, '__doc__') and method.__doc__ is not None:
-                doclines = method.__doc__.splitlines()
-                simplehelp = doclines.pop(0)
-                simplehelp = '(%s %s)' % (command, simplehelp)
-                if doclines:
-                    doclines = filter(None, doclines)
-                    doclines = map(str.strip, doclines)
-                    help = ' '.join(doclines)
-                    s = '%s    %s' % (ircutils.bold(simplehelp),help)
-                    irc.reply(msg, s)
-                else:
-                    irc.reply(msg, 'That command has no help.  '\
-                                   'The syntax is this: %s %s' % \
-                                   (command, simplehelp))
+                irc.reply(msg, helpFor(method))
             else:
                 irc.error(msg, '%s has no help or syntax description.'%command)
-        else:
-            irc.error(msg, 'There is no such command %s.' % command)
 
     def hostmask(self, irc, msg, args):
         """<nick>
@@ -257,9 +238,9 @@ class MiscCommands(callbacks.Privmsg):
         Returns the plugin <command> is in.
         """
         command = callbacks.canonicalName(privmsgs.getArgs(args))
-        cb = callbacks.findCallbackForCommand(irc, command)
-        if cb is not None:
-            irc.reply(msg, cb.name())
+        cbs = callbacks.findCallbackForCommand(irc, command)
+        if cbs:
+            irc.reply(msg, utils.commaAndify([cb.name() for cb in cbs]))
         else:
             irc.error(msg, 'There is no such command %s' % command)
 

@@ -198,8 +198,8 @@ class Alias(callbacks.Privmsg):
         if name != realName:
             raise AliasError,'That name isn\'t valid.  Try %r instead'%realName
         name = realName
-        cb = callbacks.findCallbackForCommand(irc, name)
-        if cb is not None and cb != self:
+        cbs = callbacks.findCallbackForCommand(irc, name)
+        if [cb for cb in cbs if cb != self]:
             raise AliasError, 'A command with the name %r already exists.'%name
         if name in self.frozen:
             raise AliasError, 'Alias %r is frozen.' % name

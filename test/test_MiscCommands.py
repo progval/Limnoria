@@ -61,10 +61,6 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         finally:
             conf.repylWhenNotCommand = False
         
-    def testSyntax(self):
-        self.assertNotError('syntax list')
-        self.assertNotError('syntax help')
-
     def testHelp(self):
         self.assertNotError('help list')
         try:
@@ -73,7 +69,7 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
             self.assertNotError('help @list')
         finally:
             conf.prefixChars = original
-        self.assertNotError('help syntax')
+        self.assertNotError('help list')
         self.assertRegexp('help help', r'^\x02\(help')
         self.assertError('help morehelp')
 

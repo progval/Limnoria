@@ -70,7 +70,6 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Alias', 'Fun', 'Utilities', 'MiscCommands')
     def testAliasHelp(self):
         self.assertNotError('alias slashdot foo')
-        self.assertNotRegexp('syntax slashdot', 'None')
         self.assertRegexp('help slashdot', "Alias for 'foo'")
         
     def testDollars(self):

@@ -163,7 +163,7 @@ class FunctionsTestCase(unittest.TestCase):
         
 
 class PrivmsgTestCase(ChannelPluginTestCase):
-    plugins = ('Utilities', 'OwnerCommands')
+    plugins = ('Utilities', 'OwnerCommands', 'MiscCommands')
     conf.allowEval = True
     timeout = 2
     def testEmptySquareBrackets(self):
@@ -239,12 +239,15 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('firstcmd', '(foo.*baz|baz.*foo)')
         self.assertResponse('first firstcmd', 'foo')
         self.assertResponse('firstrepeat firstcmd', 'baz')
+
+    def testHelpDispatching(self):
+        self.irc.addCallback(self.First())
+        self.assertNotError('help firstcmd')
+        self.assertNotError('help first firstcmd')
+        self.irc.addCallback(self.FirstRepeat())
         self.assertError('help firstcmd')
         self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.
         self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
-        self.assertResponse('syntax first firstcmd', 'firstcmd First')
-        self.assertResponse('syntax firstrepeat firstcmd',
-                            'firstcmd FirstRepeat')
 
     def testDefaultCommand(self):
         self.irc.addCallback(self.First())
