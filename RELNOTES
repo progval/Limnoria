@@ -1,3 +1,11 @@
+Version 0.80.0pre2
+
+Many more bugs have been fixed.  A few more plugins have been updated
+to use our new-style database abstraction.  If it seems like your
+databases are suddenly empty, look for a new database file named
+Plugin.dbtype.db.  We've also added a few more configuration variables.
+
+
 Version 0.80.0pre1
 
 Tons of bugs fixed, many features and plugins added.  Everything

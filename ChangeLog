@@ -1,3 +1,29 @@
+2004-09-17 James Vega <jamessan@users.sf.net>
+
+	* Version 0.80.0pre2!
+
+	* Added supybot.plugins.Google.colorfulSnarfer, which determines
+	whether the word 'google' in the bot's output will be made colorful
+	(like Google's logo).
+
+	* Added the Time plugin, to hold all of our Time related commands.
+
+	* Added max() and min() to Math.calc.
+	
+	* Added Unix.pid, which allows the Owner to retrieve the pid of the
+	bot's process.
+
+	* Added supybot.plugins.Sourceforge.enableSpecificTrackerCommands,
+	which enables the rfe, bug, and patch commands.
+
+	* Added Topic.topic, which returns the current topic of the channel.
+
+	* Updated conf.Databases to use a more sane database ordering and
+	include anydbm.
+
+	* Updated various plugins to use our new-style database abstraction.
+	Plugin databases using this new-style will be named Plugin.dbtype.db.
+
 2004-09-12 Jeremy Fincher <jemfinch@supybot.org>
 
 	* Version 0.80.0pre1!
