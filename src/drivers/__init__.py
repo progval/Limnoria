@@ -31,15 +31,13 @@
 Contains various drivers (network, file, and otherwise) for using IRC objects.
 """
 
-
-
 import sys
 import time
 import socket
 
-import supybot.log as supylog
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.log as supylog
 import supybot.ircmsgs as ircmsgs
 
 _drivers = {}
@@ -175,7 +173,6 @@ class Log(object):
     critical = staticmethod(supylog.critical)
     timestamp = staticmethod(supylog.timestamp)
     exception = staticmethod(supylog.exception)
-    stat = staticmethod(supylog.stat)
 
 log = Log()
 
@@ -209,7 +206,6 @@ def parseMsg(s):
     s = s.strip()
     if s:
         msg = ircmsgs.IrcMsg(s)
-        log.stat('Time to parse IrcMsg: %s', time.time()-start)
         msg.tag('receivedAt', start)
         return msg
     else:
