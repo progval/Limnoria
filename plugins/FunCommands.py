@@ -369,6 +369,8 @@ class FunCommands(callbacks.Privmsg):
                 irc.reply(msg, '%s' % imag)
             else:
                 irc.reply(msg, '%s + %si' % (real, imag))
+        except OverflowError:
+            irc.reply(msg, 'I don\'t have that many fingers and toes!')
         except Exception, e:
             irc.reply(msg, debug.exnToString(e))
 
