@@ -74,19 +74,8 @@ def configure(onStart, afterConnect, advanced):
         if project:
             onStart.append('Sourceforge defaultproject %s' % project)
 
-example = utils.wrapLines("""
-<@jamessan|work> @bugs
-< supybot> jamessan|work: Bug #820702: ChannelDB bugs in stats., Bug #797823: Time reporting errors on win9x, Bug #794330: Website documentation isn't finished., Bug #708327: FreeBSD plugin doesn't automatically download the new INDEX, and Bug #708158: FreeBSD plugin's searchports doesn't do depends correctly.
-<@jamessan|work> @bugs supybot 797823
-< supybot> jamessan|work: Time reporting errors on win9x <http://sourceforge.net/tracker/index.php?func=detail&aid=797823&group_id=58965&atid=489447>
-<@jamessan|work> @bugs gaim
-< supybot> jamessan|work: Bug #821118: MSN Plugin cannot be loaded
-in 0.71, Bug #820961: dock icon doesn't show up with..., Bug #820879: Cannot connect to a particular irc..., Bug #820831: &copy; or &reg; render im null, Bug #820776: gaim 0.70 segfaults using certain..., Bug #820691: gaim 0.70 fails to start up on..., Bug #820687: MSN duplicating buddies at signon, Bug (6 more messages)
-<@jamessan|work> @rfes pythoggoras
-< supybot> jamessan|work: RFE #728701: Ability to specify 'themed' configs at command line, RFE #720757: Improve CLI interface, RFE #719248: Add config file support, and RFE #717761: Tracker for adding GUI
-<@jamessan|work> @rfes pythoggoras 720757
-< supybot> jamessan|work: Improve CLI interface <http://sourceforge.net/tracker/index.php?func=detail&aid=720757&group_id=75946&atid=545548>
-""")
+class TrackerError(Exception):
+    pass
 
 class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     """
@@ -110,28 +99,25 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
     toggles = plugins.ToggleDictionary({'tracker' : True})
     project = None
+    _projectURL = 'http://sourceforge.net/projects/'
 
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         plugins.Toggleable.__init__(self)
 
-    def _formatResp(self, num, text):
+    def _formatResp(self, text, num=''):
         """
         Parses the Sourceforge query to return a list of tuples that
         contain the bug/rfe information.
         """
-
-        matches = []
-        try:
-            int(num)
-            for item in ifilter(lambda s, n=num: s is not None and n in s,
+        if num:
+            for item in ifilter(lambda s, n=num: s and n in s,
                                 self._infoRe.findall(text)):
-                matches.append((ircutils.bold(utils.htmlToText(item[2])),
-                                utils.htmlToText(item[1])))
-        except ValueError:
+                yield (ircutils.bold(utils.htmlToText(item[2])),
+                        utils.htmlToText(item[1]))
+        else:
             for item in ifilter(None, self._infoRe.findall(text)):
-                matches.append((item[0], utils.htmlToText(item[2])))
-        return matches
+                yield (item[0], utils.htmlToText(item[2]))
 
     def defaultproject(self, irc, msg, args):
         """[<project>]
@@ -143,47 +129,49 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         self.project = project
         irc.reply(msg, conf.replySuccess)
     defaultproject = privmsgs.checkCapability(defaultproject, 'admin')
-        
-    def _getTrackerInfo(self, irc, msg, url, regex, num):
+
+    def _getTrackerURL(self, project, regex):
         try:
-            fd = urllib2.urlopen(url)
+            fd = urllib2.urlopen('%s%s' % (self._projectURL, project))
             text = fd.read()
             fd.close()
             m = regex.search(text)
             if m is None:
-                irc.reply(msg, 'Can\'t find the proper Tracker link.')
-                return
+                raise TrackerError, 'Invalid Tracker page'
             else:
-                url = 'http://sourceforge.net%s%s' %\
-                    (utils.htmlToText(m.group(1)), self._hrefOpts)
-        except ValueError, e:
-            irc.error(msg, str(e))
+                return 'http://sourceforge.net%s%s' % (utils.htmlToText(
+                    m.group(1)), self._hrefOpts)
         except urllib2.HTTPError, e:
-            irc.error(msg, e.msg())
+            raise callbacks.Error, e.msg()
         except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+            raise callbacks.Error, debug.exnToString(e)
 
+    def _getTrackerList(self, url):
         try:
             fd = urllib2.urlopen(url)
             text = fd.read()
             fd.close()
-            resp = []
-            if num:
-                head = '%s <http://sourceforge.net%s>'
-                for match in self._formatResp(num, text):
-                    resp.append(head % match)
-                if resp:
-                    irc.reply(msg, resp[0])
-                    return
-            else:
-                head = '#%s: %s'
-                for entry in self._formatResp(num, text):
-                    resp.append(head % entry)
-                if resp:
-                    if len(resp) > 10:
-                        resp = map(lambda s: utils.ellipsisify(s, 50), resp)
-                    irc.reply(msg, '%s' % utils.commaAndify(resp))
-                    return
+            head = '#%s: %s'
+            resp = [head % entry for entry in self._formatResp(text)]
+            if resp:
+                if len(resp) > 10:
+                    resp = map(lambda s: utils.ellipsisify(s, 50), resp)
+                return '%s' % utils.commaAndify(resp)
+            raise callbacks.Error, 'No Trackers were found. (%s)' %\
+                conf.replyPossibleBug
+        except Exception, e:
+            raise callbacks.Error, debug.exnToString(e)
+        
+    def _getTrackerInfo(self, irc, msg, url, num):
+        try:
+            fd = urllib2.urlopen(url)
+            text = fd.read()
+            fd.close()
+            head = '%s <http://sourceforge.net%s>'
+            resp = [head % match for match in self._formatResp(text,num)]
+            if resp:
+                irc.reply(msg, resp[0])
+                return
             irc.error(msg, 'No Trackers were found. (%s)' %
                 conf.replyPossibleBug)
         except ValueError, e:
@@ -193,45 +181,83 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
     def bugs(self, irc, msg, args):
-        """[<project>] [<num>]
+        """[<project>]
 
         Returns a list of the most recent bugs filed against <project>.
         Defaults to searching for bugs in the project set by defaultproject.
-        If <num> is specified, the bug description and link are retrieved.
         """
-        (project, bugnum) = privmsgs.getArgs(args, needed=0, optional=2)
+        project = privmsgs.getArgs(args, needed=0, optional=1)
         project = project or self.project
         if not project:
             raise callbacks.ArgumentError
-        elif not bugnum:
+        try:
+            url = self._getTrackerURL(project, self._bugLink)
+        except TrackerError:
+            irc.error(msg, 'Can\'t find the Bugs link.')
+            return
+        irc.reply(msg, self._getTrackerList(url))
+
+    def bug(self, irc, msg, args):
+        """[<project>] <num>
+
+        Returns a description of the bug with Tracker id <num> and the 
+        corresponding Tracker URL.  Defaults to searching for bugs in the 
+        project set by defaultproject.
+        """
+        (project, bugnum) = privmsgs.getArgs(args, optional=1)
+        if not bugnum:
             try:
-                bugnum = int(project)
-                project = self.project
+                int(project)
             except ValueError:
-                pass
-        url = 'http://sourceforge.net/projects/%s' % project
-        self._getTrackerInfo(irc, msg, url, self._bugLink, bugnum)
+                irc.error(msg, '"%s" is not a proper bugnumber.' % project)
+            bugnum = project
+            project = self.project
+        try:
+            url = self._getTrackerURL(project, self._bugLink)
+        except TrackerError:
+            irc.error(msg, 'Can\'t find the Bugs link.')
+            return
+        self._getTrackerInfo(irc, msg, url, bugnum)
 
     _rfeLink = re.compile(r'"([^"]+)">RFE')
     def rfes(self, irc, msg, args):
-        """[<project>] [<num>]
+        """[<project>]
 
         Returns a list of the most recent RFEs filed against <project>.
         Defaults to searching for RFEs in the project set by defaultproject.
-        If <num> is specified, the rfe description and link are retrieved.
         """
-        (project, rfenum) = privmsgs.getArgs(args, needed=0, optional=2)
+        project = privmsgs.getArgs(args, needed=0, optional=1)
         project = project or self.project
         if not project:
             raise callbacks.ArgumentError
-        elif not rfenum:
+        try:
+            url = self._getTrackerURL(project, self._rfeLink)
+        except TrackerError, e:
+            irc.error(msg, 'Can\'t find the RFEs link.')
+            return
+        irc.reply(msg, self._getTrackerList(url))
+
+    def rfe(self, irc, msg, args):
+        """[<project>] <num>
+
+        Returns a description of the bug with Tracker id <num> and the 
+        corresponding Tracker URL.  Defaults to searching for bugs in the 
+        project set by defaultproject.
+        """
+        (project, rfenum) = privmsgs.getArgs(args, optional=1)
+        if not rfenum:
             try:
-                rfenum = int(project)
-                project = self.project
+                int(project)
             except ValueError:
-                pass
-        url = 'http://sourceforge.net/projects/%s' % project
-        self._getTrackerInfo(irc, msg, url, self._rfeLink, rfenum)
+                irc.error(msg, '"%s" is not a proper rfenumber.' % project)
+            rfenum = str(int(project))
+            project = self.project
+        try:
+            url = self._getTrackerURL(project, self._rfeLink)
+        except TrackerError:
+            irc.error(msg, 'Can\'t find the RFE link.')
+            return
+        self._getTrackerInfo(irc, msg, url, rfenum)
 
     _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
     _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)

@@ -35,23 +35,34 @@ from test import *
 
 class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Sourceforge',)
-    def testBugs(self):
-        self.assertHelp('bugs')
-        self.assertResponse('bugs alkjfi83fa8', 'Can\'t find the proper '\
-            'Tracker link.')
-        self.assertNotError('bugs gaim')
+    def testBug(self):
+        self.assertHelp('bug')
         m = self.getMsg('bugs gaim')
         n = re.search('#(\d+)', m.args[1]).group(1)
-        self.assertNotError('bugs gaim %s' % n)
+        self.assertNotError('bug gaim %s' % n)
+        self.assertError('bug gaim')
+
+    def testBugs(self):
+        self.assertHelp('bugs')
+        self.assertNotError('defaultproject supybot')
+        self.assertNotError('bugs')
+        self.assertError('bugs alkjfi83fa8')
+        self.assertNotError('bugs gaim')
+        self.assertNotError('defaultproject')
+
+    def testRfe(self):
+        m = self.getMsg('rfes gaim')
+        n = re.search('#(\d+)', m.args[1]).group(1)
+        self.assertNotError('rfe gaim %s' % n)
+        self.assertError('rfe gaim')
 
     def testRfes(self):
         self.assertHelp('rfes')
-        self.assertResponse('rfes alkjfi83hfa8', 'Can\'t find the proper '\
-            'Tracker link.')
+        self.assertNotError('defaultproject gaim')
+        self.assertNotError('rfes')
+        self.assertError('rfes alkjfi83hfa8')
         self.assertNotError('rfes gaim')
-        m = self.getMsg('rfes gaim')
-        n = re.search('#(\d+)', m.args[1]).group(1)
-        self.assertNotError('rfes gaim %s' % n)
+        self.assertNotError('defaultproject')
 
     def testDefaultproject(self):
         self.assertHelp('bugs')
@@ -59,8 +70,10 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('bugs')
         m = self.getMsg('bugs')
         n = re.search('#(\d+)', m.args[1]).group(1)
-        # This should have the same effect as calling 'bugs supybot %s'
-        self.assertNotError('bugs %s' % n)
+        self.assertNotError('bug supybot %s' % n)
+        # This should have the same effect as calling 'bug supybot %s'
+        self.assertNotError('bug %s' % n)
+        self.assertNotError('defaultproject')
 
     def testSnarfer(self):
         s = r'.*Status.*: \w+'
