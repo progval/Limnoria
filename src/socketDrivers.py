@@ -114,11 +114,15 @@ class SocketDriver(drivers.IrcDriver):
         self._sendIfMsgs()
         
     def reconnect(self, wait=False):
-        log.info('Reconnect called.')
+        log.info('Reconnect called on driver for %s.' % self.irc)
+        if self.connected:
+            self.conn.close()
+        self.connected = False
         if wait:
             log.info('Reconnect waiting.')
             self._scheduleReconnect()
             return
+        self.irc.reset()
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.conn.settimeout(conf.poll*10) # Allow more time for connect.
         if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
@@ -139,10 +143,6 @@ class SocketDriver(drivers.IrcDriver):
         self.irc.die()
 
     def _scheduleReconnect(self):
-        self.irc.reset()
-        if self.connected:
-            self.conn.close()
-        self.connected = False
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
         if not world.dying:
