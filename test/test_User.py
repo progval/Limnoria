@@ -44,6 +44,18 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         self.failUnless(ircdb.users.getUserId('foo'))
         self.assertNotError('unregister foo bar')
         self.assertRaises(KeyError, ircdb.users.getUserId, 'foo')
+
+    def testList(self):
+        self.prefix = self.prefix1
+        self.assertNotError('register foo bar')
+        self.assertResponse('user list', 'foo')
+        self.prefix = self.prefix2
+        self.assertNotError('register biff quux')
+        self.assertResponse('user list', 'biff and foo')
+        self.assertNotError('unregister biff quux')
+        self.assertResponse('user list', 'foo')
+        self.assertNotError('unregister foo bar')
+        self.assertRegexp('user list', 'no registered users')
         
     def testChangeUsername(self):
         self.prefix = self.prefix1
