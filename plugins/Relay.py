@@ -53,7 +53,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-from supybot.structures import RingBuffer, MultiSet
+from supybot.structures import MultiSet, TimeoutQueue
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
@@ -87,12 +87,16 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'includeNetwork',
     registry.Boolean(True, """Determines whether the bot will include the
     network in relayed PRIVMSGs; if you're only relaying between two networks,
     it's somewhat redundant, and you may wish to save the space."""))
-conf.registerChannelValue(conf.supybot.plugins.Relay, 'detectOtherRelayBots',
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'punishOtherRelayBots',
     registry.Boolean(False, """Determines whether the bot will detect other
     bots relaying and respond by kickbanning them."""))
 conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
     conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
     will relay in."""))
+conf.registerChannelValue(conf.supybot.plugins.Relay.channels,
+    'joinOnAllNetworks', registry.Boolean(True, """Determines whether the bot
+    will always join the channel(s) it relays for on all networks the bot is
+    connected to."""))
 
 class Relay(callbacks.Privmsg):
     noIgnore = True
@@ -103,7 +107,7 @@ class Relay(callbacks.Privmsg):
         self.lastmsg = {}
         self.ircstates = {}
         self.queuedTopics = MultiSet()
-        self.last20Privmsgs = ircutils.IrcDict()
+        self.lastRelayMsgs = ircutils.IrcDict()
 
     def __call__(self, irc, msg):
         try:
@@ -118,8 +122,9 @@ class Relay(callbacks.Privmsg):
     def do376(self, irc, msg):
         L = []
         for channel in self.registryValue('channels'):
-            if channel not in irc.state.channels:
-                L.append(channel)
+            if self.registryValue('channels.joinOnAllNetworks', channel):
+                if channel not in irc.state.channels:
+                    L.append(channel)
         if L:
             irc.queueMsg(ircmsgs.joins(L))
     do377 = do422 = do376
@@ -360,50 +365,37 @@ class Relay(callbacks.Privmsg):
                     msg.tag('relayedMsg')
                     otherIrc.queueMsg(msg)
 
-    def _detectRelays(self, irc, msg, channel):
-        def isRelayPrefix(s):
-            return s and s[0] == '<' and s[-1] == '>'
-        def punish():
-            punished = False
-            for irc in world.ircs:
-                if channel in irc.state.channels:
-                    if irc.nick in irc.state.channels[channel].ops:
+    def _checkRelayMsg(self, msg):
+        channel = msg.args[0]
+        if channel in self.lastRelayMsgs:
+            q = self.lastRelayMsgs[channel]
+            unformatted = ircutils.stripFormatting(msg.args[1])
+            normalized = utils.normalizeWhitespace(unformatted)
+            for s in q:
+                if s in normalized:
+                    return True
+        return False
+        
+    def _punishRelayers(self, msg):
+        assert self._checkRelayMsg(msg), 'Punishing without checking.'
+        who = msg.prefix
+        channel = msg.args[0]
+        def notPunishing(irc, s, *args):
+            self.log.info('Not punishing %s in %s on %s: %s.',
+                          msg.prefix, channel, irc.network, s, *args)
+        for irc in world.ircs:
+            if channel in irc.state.channels:
+                if irc.nick in irc.state.channels[channel].ops:
+                    if who in irc.state.channels[channel].bans:
+                        notPunishing(irc, 'already banned')
+                    else:
                         self.log.info('Punishing %s in %s on %s for relaying.',
-                                      msg.prefix, channel, irc.network)
-                        irc.sendMsg(ircmsgs.ban(channel, msg.prefix))
+                                      who, channel, irc.network)
+                        irc.sendMsg(ircmsgs.ban(channel, who))
                         kmsg = 'You seem to be relaying, punk.'
                         irc.sendMsg(ircmsgs.kick(channel, msg.nick, kmsg))
-                        punished = True
-                    else:
-                        self.log.warning('Can\'t punish %s in %s on %s; '
-                                         'I\'m not opped.',
-                                         msg.prefix, channel, irc.network)
-            return punished
-        if channel not in self.last20Privmsgs:
-            self.last20Privmsgs[channel] = RingBuffer(20)
-        s = ircutils.stripFormatting(msg.args[1])
-        s = utils.normalizeWhitespace(s)
-        try:
-            (prefix, suffix) = s.split(None, 1)
-        except ValueError, e:
-            pass
-        else:
-            if isRelayPrefix(prefix):
-                parts = suffix.split()
-                while parts and isRelayPrefix(parts[0]):
-                    parts.pop(0)
-                suffix = ' '.join(parts)
-                for m in self.last20Privmsgs[channel]:
-                    if suffix in m:
-                        who = msg.prefix
-                        self.log.info('%s seems to be relaying too.', who)
-                        if punish():
-                            self.log.info('Successfully punished %s.', who)
-                        else:
-                            self.log.info('Unsuccessfully attempted to '
-                                          'punish %s.', who)
-                        break
-        self.last20Privmsgs[channel].append(s)
+                else:
+                    notPunishing(irc, 'not opped') 
 
     def doPrivmsg(self, irc, msg):
         (channel, text) = msg.args
@@ -415,12 +407,19 @@ class Relay(callbacks.Privmsg):
                'AWAY' not in text and 'ACTION' not in text:
                 return
             # Let's try to detect other relay bots.
-            if self.registryValue('detectOtherRelayBots', channel):
-                self._detectRelays(irc, msg, channel)
-            network = self._getIrcName(irc)
-            s = self._formatPrivmsg(msg.nick, network, msg)
-            m = ircmsgs.privmsg(channel, s)
-            self._sendToOthers(irc, m)
+            if self._checkRelayMsg(msg):
+                if self.registryValue('punishOtherRelayBots', channel):
+                    self._punishRelayers(msg)
+                # Either way, we don't relay the message.
+                else:
+                    self.log.warning('Refusing to relay message from %s, '
+                                     'it appears to be a relay message.',
+                                     msg.prefix)
+            else:
+                network = self._getIrcName(irc)
+                s = self._formatPrivmsg(msg.nick, network, msg)
+                m = ircmsgs.privmsg(channel, s)
+                self._sendToOthers(irc, m)
             
     def doJoin(self, irc, msg):
         irc = self._getRealIrc(irc)
@@ -530,7 +529,9 @@ class Relay(callbacks.Privmsg):
     def outFilter(self, irc, msg):
         irc = self._getRealIrc(irc)
         if msg.command == 'PRIVMSG':
-            if not msg.relayedMsg:
+            if msg.relayedMsg:
+                self._addRelayMsg(msg)
+            else:
                 channel = msg.args[0]
                 if channel in self.registryValue('channels'):
                     network = self._getIrcName(irc)
@@ -538,6 +539,18 @@ class Relay(callbacks.Privmsg):
                     relayMsg = ircmsgs.privmsg(channel, s)
                     self._sendToOthers(irc, relayMsg)
         return msg
+
+    def _addRelayMsg(self, msg):
+        channel = msg.args[0]
+        if channel in self.lastRelayMsgs:
+            q = self.lastRelayMsgs[channel]
+        else:
+            q = TimeoutQueue(60) # XXX Make this configurable.
+            self.lastRelayMsgs[channel] = q
+        unformatted = ircutils.stripFormatting(msg.args[1])
+        normalized = utils.normalizeWhitespace(unformatted)
+        q.enqueue(normalized)
+
 
 Class = Relay
 
