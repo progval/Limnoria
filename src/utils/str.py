@@ -127,7 +127,7 @@ def _getSep(s):
 def _getSplitterRe(s):
     separator = _getSep(s)
     return re.compile(r'(?<!\\)%s' % re.escape(separator))
-        
+
 def perlReToPythonRe(s):
     """Converts a string representation of a Perl regular expression (i.e.,
     m/^foo$/i or /foo|bar/) to a Python regular expression.
@@ -342,7 +342,7 @@ def format(s, *args, **kwargs):
     f: float
     b: form of the verb 'to be' (takes an int)
     h: form of the verb 'to have' (takes an int)
-    L: commaAndify (takes a list of strings)
+    L: commaAndify (takes a list of strings or a tuple of ([strings], and))
     p: pluralize (takes a string)
     q: quoted (takes a string)
     n: nItems (takes a 2-tuple of (n, item) or a 3-tuple of (n, between, item))
@@ -365,7 +365,17 @@ def format(s, *args, **kwargs):
         elif char == 'h':
             return has(args.pop())
         elif char == 'L':
-            return commaAndify(args.pop())
+            t = args.pop()
+            if isinstance(t, list):
+                return commaAndify(t)
+            elif isinstance(t, tuple) and len(t) == 2:
+                if not isinstance(t[0], list):
+                    raise ValueError, 'Invalid list for %%L in format: %s' % t
+                if not isinstance(t[1], basestring):
+                    raise ValueError, 'Invalid string for %%L in format: %s' % t
+                return commaAndify(t[0], And=t[1])
+            else:
+                raise ValueError, 'Invalid value for %%L in format: %s' % t
         elif char == 'p':
             return pluralize(args.pop())
         elif char == 'q':
@@ -390,5 +400,5 @@ def format(s, *args, **kwargs):
         return _formatRe.sub(sub, s)
     except IndexError:
         raise ValueError, 'Extra format chars in format spec: %r' % s
-            
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
