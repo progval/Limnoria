@@ -320,9 +320,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             return
         if data.results:
             url = data.results[0].URL
-            irc.reply(url)
-        else:
-            irc.reply('No results for "%s"' % searchString)
+            irc.reply(url, prefixName=False)
     googleSnarfer = privmsgs.urlSnarfer(googleSnarfer)
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
