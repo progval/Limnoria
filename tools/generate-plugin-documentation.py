@@ -40,7 +40,7 @@ import traceback
 if 'src' not in sys.path:
     sys.path.insert(0, 'src')
 
-from fix import *
+import fix
 
 import conf
 import callbacks

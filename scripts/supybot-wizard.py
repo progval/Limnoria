@@ -2,7 +2,7 @@
 
 import supybot
 
-from fix import *
+import fix
 
 import os
 import sys

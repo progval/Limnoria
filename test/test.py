@@ -37,7 +37,7 @@ conf.confDir = 'test-conf'
 conf.logDir = 'test-log'
 conf.replyWhenNotCommand = False
 
-from fix import *
+import fix
 
 import gc
 import re

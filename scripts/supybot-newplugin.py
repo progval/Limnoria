@@ -50,7 +50,7 @@ template = '''
 Add the module docstring here.  This will be used by the setup.py script.
 """
 
-from baseplugin import *
+import plugins
 
 import utils
 import privmsgs

@@ -31,7 +31,7 @@
 
 import supybot
 
-from fix import *
+import fix
 from questions import *
 
 import os
