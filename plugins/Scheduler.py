@@ -53,7 +53,7 @@ class Scheduler(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.events = {}
 
-    def _makeCommandFunction(self, irc, msg, command, remove=True)
+    def _makeCommandFunction(self, irc, msg, command, remove=True):
         """Makes a function suitable for scheduling from command."""
         tokens = callbacks.tokenize(command)
         Owner = irc.getCallback('Owner')
