@@ -125,7 +125,7 @@ class Relay(callbacks.Privmsg):
             realIrc = irc.getRealIrc()
         channel = privmsgs.getChannel(msg, args)
         if channel not in self.channels:
-            irc.error(msg, 'I\'m not relaying that channel.')
+            irc.error(msg, 'I\'m not relaying %s.' % channel)
             return
         users = []
         for (abbreviation, otherIrc) in self.ircs.iteritems():
