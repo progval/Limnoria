@@ -62,6 +62,10 @@ conf.registerChannelValue(conf.supybot.plugins.Anonymous,
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireRegistration',
     registry.Boolean(True, """Determines whether the bot should require people
     trying to use this plugin to be registered."""))
+conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireCapability',
+    registry.String('', """Determines what capability (if any) the bot should
+    require people trying to use this plugin to have."""))
+                         
 
 
 class Anonymous(callbacks.Privmsg):
@@ -82,6 +86,11 @@ class Anonymous(callbacks.Privmsg):
             irc.error('I\'m not in %s, chances are that I can\'t say anything '
                       'in there.' % channel)
             return
+        capability = self.registryValue('requireCapability')
+        if capability:
+            if not ircdb.checkCapability(msg.prefix, capability):
+                irc.errorNoCapability(capability)
+                return
         if self.registryValue('requirePresenceInChannel', channel) and \
            msg.nick not in irc.state.channels[channel].users:
             irc.error('You must be in %s to "say" in there.' % channel)
