@@ -809,6 +809,7 @@ class IrcObjectProxy(RichReplyMethods):
                                              target)
                     if not allowedLength: # 0 indicates this.
                         allowedLength = 450 - len(self.irc.prefix)
+                        allowedLength -= len(msg.nick)
                     maximumMores = conf.get(conf.supybot.reply.mores.maximum,
                                             target)
                     maximumLength = allowedLength * maximumMores
@@ -832,7 +833,7 @@ class IrcObjectProxy(RichReplyMethods):
                                   prefixName=self.prefixName)
                         self.irc.queueMsg(m)
                         return m
-                    msgs = ircutils.wrap(s, allowedLength-30) # -30 is for nick:
+                    msgs = ircutils.wrap(s, allowedLength)
                     msgs.reverse()
                     instant = conf.get(conf.supybot.reply.mores.instant,target)
                     while instant > 1 and msgs:
