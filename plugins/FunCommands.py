@@ -64,6 +64,88 @@ import ircmsgs
 import privmsgs
 import callbacks
 
+example = """
+<jemfinch> @list FunCommands
+<supybot> base, binary, calc, chr, coin, cpustats, decode, dice, dns, encode, hexlify, kernel, last, lastfrom, leet, levenshtein, lithp, md5, mimetype, netstats, objects, ord, pydoc, rot13, rpn, sha, soundex, unhexlify, uptime, urlquote, urlunquote, xor
+<jemfinch> @netstats
+<supybot> I have received 211 messages for a total of 19535 bytes.  I have sent 109 messages for a total of 8672 bytes.
+<jemfinch> @ord A
+<supybot> 65
+<jemfinch> @chr 65
+<supybot> A
+<jemfinch> @base 2 10101010101001010101010101
+<supybot> 44733781
+<jemfinch> @binary jemfinch
+<supybot> 0110101001100101011011010110011001101001011011100110001101101000
+<jemfinch> (that's what the bits in a string look like for 'jemfinch')
+<jemfinch> @encode string-escape "\x00\x01"
+<supybot> \x00\x01
+<jemfinch> @decode string-escape "\\x01\\x02"
+<supybot> '\x01\x02'
+<jemfinch> @hexlify jemfinch
+<supybot> 6a656d66696e6368
+<jemfinch> @unhexlify 6a656d66696e6368
+<supybot> jemfinch
+<jemfinch> @xor password The quick brown fox jumps over the lazy dog.
+<supybot> '$\t\x16S\x06\x1a\x1b\x07\x1bA\x11\x01\x18\x18\x1cD\x16\x0e\x0bS\x1d\x1a\x1f\x14\x03A\x1c\x05\x12\x1dR\x10\x18\x04S\x1f\x16\x15\x0bD\x14\x0e\x14]'
+<jemfinch> (now watch this -- a nested command :))
+<jemfinch> @xor password [xor password The quick brown fox jumps over the lazy dog.]
+<supybot> The quick brown fox jumps over the lazy dog.
+<jemfinch> (xor is a reversible encryption method.  It's easy to crack, so don't use it for real things :))
+<jemfinch> @rot13 jemfinch
+<supybot> wrzsvapu
+<jemfinch> @rot13 [rot13 jemfinch]
+<supybot> jemfinch
+<jemfinch> @mimetype someSong.mp3
+<supybot> audio/mpeg
+<jemfinch> @md5 jemfinch
+<supybot> cb2faabafafa9037493cf33779a2dc2e
+<jemfinch> @unhexlify [md5 jemfinch]
+<supybot> /7I<7y.
+<jemfinch> @sha jemfinch
+<supybot> b06a020b92ff41317f152139a4dda98f6c638812
+<jemfinch> @coin
+<supybot> heads
+<jemfinch> @coin
+<supybot> heads
+<jemfinch> @coin
+<supybot> tails
+<jemfinch> @dice 2d20
+<supybot> 3 and 10
+<jemfinch> @lithp Sally sells seashells by the seashore.
+<supybot> THally thellth theathellth by the theathore.
+<jemfinch> @dice 4d100
+<supybot> 25, 97, 85, and 93
+<jemfinch> @leet All your base are belong to us!!
+<supybot> 411 y0ur b453 4r3 b310ng +0 uz!!
+<jemfinch> @cpustats
+<supybot> I have taken 5.4 seconds of user time and 0.29 seconds of system time, for a total of 5.69 seconds of CPU time.  My children have taken 0.0 seconds of user time and 0.0 seconds of system time for a total of 0.0 seconds of CPU time.  I've taken a total of 0.00329929635973% of this computer's time.  Out of 2 spawned threads, I have 1 active.
+<jemfinch> @uptime
+<supybot> I have been running for 28 minutes and 47 seconds.
+<jemfinch> @calc e**(i*pi) + 1
+<supybot> 0
+<jemfinch> @calc 1+2+3
+<supybot> 6
+<jemfinch> @rpn 1 2 3 + +
+<supybot> 6
+<jemfinch> @objects
+<supybot> I have 24941 objects: 234 modules, 716 classes, 5489 functions, 1656 dictionaries, 827 lists, and 14874 tuples (and a few other different types).  I have a total of 119242 references.
+<jemfinch> @levenshtein supybot supbot
+<supybot> 1
+<jemfinch> (taht's the edit distance between "supybot" and "supbot")
+<jemfinch> @soundex jemfinch
+<supybot> J515
+<jemfinch> @soundex supercallifragilisticexpealadocious
+<supybot> S162
+<jemfinch> @soundex supercallifragilisticexpealadocious 20
+<supybot> S1624162423221432200
+<jemfinch> @pydoc str
+<supybot> str(object) -> string. Return a nice string representation of the object. If the argument is a string, the return value is the same object.
+<jemfinch> @dns kernel.org
+<supybot> 204.152.189.116
+<jemfinch> @kernel
+"""
+
 class FunCommands(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -304,7 +386,7 @@ class FunCommands(callbacks.Privmsg):
                 L = [0] * dice
                 for i in xrange(dice):
                     L[i] = random.randrange(1, sides+1)
-                irc.reply(msg, ', '.join([str(x) for x in L]))
+                irc.reply(msg, utils.commaAndify([str(x) for x in L]))
         else:
             irc.error(msg, 'Dice must be of the form <dice>d<sides>')
 
