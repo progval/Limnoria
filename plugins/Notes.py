@@ -117,10 +117,6 @@ class Notes(callbacks.Privmsg):
         else:
             return True
     
-    def makePrivate(self, msg):
-        "Returns an IrcMsg object with an updated target value."
-        return ircmsgs.privmsg(msg.nick, msg.args[1])
-
     def setAsRead(self, noteid):
         "Changes a message's 'read' value to true in the notes table."
         self.cursor.execute('UPDATE notes SET read=1 WHERE id=%s', noteid)
