@@ -125,6 +125,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         wait = self.globalConfigurables.get('wait-period')
         if url not in self.lastRequest or now - self.lastRequest[url] > wait:
             try:
+                self.log.info('Downloading new feed from %s', url)
                 results = rssparser.parse(url)
             except sgmllib.SGMLParseError:
                 self.log.exception('Uncaught exception from rssparser:')
