@@ -453,7 +453,10 @@ class IrcObjectProxy:
                     n = ircutils.bold('(%s)')
                     n %= utils.nItems('message', len(msgs), 'more')
                     response = '%s %s' % (response, n)
-                mask = msg.prefix.split('!', 1)[1]
+                prefix = msg.prefix
+                if self.to and ircutils.isNick(self.to):
+                    prefix = self.getRealIrc().state.nickToHostmask(self.to)
+                mask = prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
                 private = self.private or not ircutils.isChannel(msg.args[0])
                 Privmsg._mores[msg.nick] = (private, msgs)
@@ -647,8 +650,10 @@ class Privmsg(irclib.IrcCallback):
             self.__parent.__call__(irc, msg)
 
     def isCommand(self, methodName):
+        """Returns whether a given method name is a command in this plugin."""
         # This function is ugly, but I don't want users to call methods like
         # doPrivmsg or __init__ or whatever, and this is good to stop them.
+        methodName = canonicalName(methodName)
         if hasattr(self, methodName):
             method = getattr(self, methodName)
             if inspect.ismethod(method):
@@ -658,6 +663,12 @@ class Privmsg(irclib.IrcCallback):
                 return False
         else:
             return False
+
+    def getCommand(self, methodName):
+        """Gets the given command from this plugin."""
+        assert self.isCommand(methodName)
+        methodName = canonicalName(methodName)
+        return getattr(self, methodName)
 
     def callCommand(self, f, irc, msg, *L):
         name = f.im_func.func_name
