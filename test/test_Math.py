@@ -49,6 +49,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('rpn 1 2 3 +', 'Stack: [1, 5]')
         self.assertResponse('rpn 1 dup', 'Stack: [1, 1]')
         self.assertResponse('rpn 2 3 4 + -', str(2-7))
+        self.assertNotError('rpn 2 degrees')
 
     def testConvert(self):
         self.assertResponse('convert 1 m to cm', '100.0 cm')

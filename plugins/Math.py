@@ -166,7 +166,10 @@ class Math(callbacks.Privmsg):
         stack = []
         for arg in args:
             try:
-                stack.append(complex(arg))
+                x = complex(arg)
+                if x == abs(x):
+                    x = abs(x)
+                stack.append(x)
             except ValueError: # Not a float.
                 if arg in self._mathEnv:
                     f = self._mathEnv[arg]
