@@ -55,12 +55,13 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load Ebay')
-    print 'The Ebay plugin has the functionality to watch for URLs'
-    print 'that match a specific pattern (we call this a snarfer). When'
-    print 'supybot sees such a URL, he will parse the web page for information'
-    print 'and reply with the results.\n'
-    if yn('Do you want the Ebay snarfer enabled by default?') == 'n':
-        onStart.append('Ebay togglesnarfer')
+    if advanced:
+        print 'The Ebay plugin has the functionality to watch for URLs'
+        print 'that match a specific pattern (we call this a snarfer). When'
+        print 'supybot sees such a URL, he will parse the web page for'
+        print 'information and reply with the results.\n'
+        if yn('Do you want the Ebay snarfer enabled by default?') == 'n':
+            onStart.append('Ebay togglesnarfer auction off')
 
 example = utils.wrapLines("""
 Add an example IRC session using this module here.
@@ -75,7 +76,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['ebaySnarfer']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        self.snarfer = True
+        self.snarfers = {'auction' : True}
 
     _reopts = re.I | re.S
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',
@@ -114,16 +115,42 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     _getSeller = lambda self, s: '%s: %s (%s)' % (ircutils.bold('Seller'),
         self._seller.search(s).group(1), self._seller.search(s).group(2))
 
-    def togglesnarfer(self, irc, msg, args):
-        """takes no argument
+    def _toggleHelper(self, irc, msg, state, snarfer):
+        if not state:
+            self.snarfers[snarfer] = not self.snarfers[snarfer] 
+        elif state in self._enable:
+            self.snarfers[snarfer] = True
+        elif state in self._disable:
+            self.snarfers[snarfer] = False
+        resp = []
+        for k in self.snarfers:
+            if self.snarfers[k]:
+                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
+            else:
+                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
+        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
 
-        Disables the snarfer that responds to all Sourceforge Tracker links
+    _enable = ('on', 'enable')
+    _disable = ('off', 'disable')
+    def togglesnarfer(self, irc, msg, args):
+        """<auction> [<on|off>]
+
+        Toggles the snarfer that responds to eBay auction links.  If
+        nothing is specified, all snarfers will have their states
+        toggled (on -> off, off -> on).  If only a state is specified, all
+        snarfers will have their state set to the specified state.  If a
+        specific snarfer is specified, the changes will apply only to that
+        snarfer.
         """
-        self.snarfer = not self.snarfer
-        if self.snarfer:
-            irc.reply(msg, '%s (Snarfer is enabled)' % conf.replySuccess)
-        else:
-            irc.reply(msg, '%s (Snarfer is disabled)' % conf.replySuccess)
+        (snarfer, state) = privmsgs.getArgs(args, optional=1)
+        snarfer = snarfer.lower()
+        state = state.lower()
+        if snarfer not in self.snarfers:
+            raise callbacks.ArgumentError
+        if state and state not in self._enable and state not in self._disable:
+            raise callbacks.ArgumentError
+        self._toggleHelper(irc, msg, state, snarfer)
+    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
 
     def ebay(self, irc, msg, args):
         """[--link] <item>
@@ -147,7 +174,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     def ebaySnarfer(self, irc, msg, match):
         r"http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem(?:&item=\d+|"\
             "&category=\d+)+"
-        if not self.snarfer:
+        if not self.snarfers['auction']:
             return
         url = match.group(0)
         self._getResponse(irc, msg, url, snarf = True)

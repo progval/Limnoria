@@ -84,12 +84,13 @@ class BugError(Exception):
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, yn
     onStart.append('load Bugzilla')
-    print 'The Bugzilla plugin has the functionality to watch for URLs'
-    print 'that match a specific pattern (we call this a snarfer). When'
-    print 'supybot sees such a URL, he will parse the web page for information'
-    print 'and reply with the results.\n'
-    if yn('Do you want the Bugzilla snarfer enabled by default?') == 'n':
-        onStart.append('Bugzilla togglesnarfer')
+    if advanced:
+        print 'The Bugzilla plugin has the functionality to watch for URLs'
+        print 'that match a specific pattern (we call this a snarfer). When'
+        print 'supybot sees such a URL, he will parse the web page for'
+        print 'information and reply with the results.\n'
+        if yn('Do you want the Bugzilla snarfer enabled by default?') == 'n':
+            onStart.append('Bugzilla togglesnarfer bug off')
 
 class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
     """Show a link to a bug report with a brief description"""
@@ -99,23 +100,49 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.entre = re.compile('&(\S*?);')
         self.db = makeDb(dbfilename)
-        self.snarfer = True
+        self.snarfers = {'bug' : True}
 
     def die(self):
         self.db.close()
         del self.db
     
-    def togglesnarfer(self, irc, msg, args):
-        """takes no argument
+    def _toggleHelper(self, irc, msg, state, snarfer):
+        if not state:
+            self.snarfers[snarfer] = not self.snarfers[snarfer] 
+        elif state in self._enable:
+            self.snarfers[snarfer] = True
+        elif state in self._disable:
+            self.snarfers[snarfer] = False
+        resp = []
+        for k in self.snarfers:
+            if self.snarfers[k]:
+                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
+            else:
+                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
+        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
 
-        Disables the snarfer that responds to all Bugzilla links
+    _enable = ('on', 'enable')
+    _disable = ('off', 'disable')
+    def togglesnarfer(self, irc, msg, args):
+        """<bug> [<on|off>]
+
+        Toggles the snarfer that responds to Bugzilla-style bug links.  If
+        nothing is specified, all snarfers will have their states
+        toggled (on -> off, off -> on).  If only a state is specified, all
+        snarfers will have their state set to the specified state.  If a
+        specific snarfer is specified, the changes will apply only to that
+        snarfer.
         """
-        self.snarfer = not self.snarfer
-        if self.snarfer:
-            irc.reply(msg, '%s (Snarfer is enabled)' % conf.replySuccess)
-        else:
-            irc.reply(msg, '%s (Snarfer is disabled)' % conf.replySuccess)
-    togglesnarfer=privmsgs.checkCapability(togglesnarfer,'admin')
+        (snarfer, state) = privmsgs.getArgs(args, optional=1)
+        snarfer = snarfer.lower()
+        state = state.lower()
+        if snarfer not in self.snarfers:
+            raise callbacks.ArgumentError
+        if state and state not in self._enable and state not in self._disable:
+            raise callbacks.ArgumentError
+        self._toggleHelper(irc, msg, state, snarfer)
+    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
+
     def addzilla(self, irc, msg, args):
         """shorthand url description
         Add a bugzilla to the list of defined bugzillae.
@@ -176,7 +203,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             return    
     def bzSnarfer(self, irc, msg, match):
         r"(.*)/show_bug.cgi\?id=([0-9]+)"
-        if not self.snarfer:
+        if not self.snarfers['bug']:
             return
         queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
         try:
