@@ -35,6 +35,7 @@ import re
 import copy
 import sets
 import types
+import textwrap
 
 import utils
 
@@ -63,9 +64,17 @@ def open(filename):
             raise InvalidRegistryFile, 'Error unpacking line #%s' % (i+1)
         _cache[key.lower()] = value
 
-def close(registry, filename):
+def close(registry, filename, annotated=True):
     fd = file(filename, 'w')
     for (name, value) in registry.getValues(getChildren=True):
+        if annotated and hasattr(value, 'help'):
+            lines = textwrap.wrap(value.help)
+            for (i, line) in enumerate(lines):
+                lines[i] = '# %s\n' % line
+            lines.insert(0, '###\n')
+            lines.insert(0, '\n')
+            lines.append('###\n')
+            fd.writelines(lines)
         fd.write('%s: %s\n' % (name, value))
     fd.close()
 
@@ -89,9 +98,6 @@ class Value(object):
         than 100 in this method."""
         self.value = v
     
-    def reset(self):
-        self.setValue(self.default)
-
     def __str__(self):
         return repr(self.value)
 
@@ -103,9 +109,9 @@ class Value(object):
 class Boolean(Value):
     def set(self, s):
         s = s.lower()
-        if s in ('true', 'on', 'enabled'):
+        if s in ('true', 'on', 'enable', 'enabled'):
             value = True
-        elif s in ('false', 'off', 'disabled'):
+        elif s in ('false', 'off', 'disable', 'disabled'):
             value = False
         elif s == 'toggle':
             value = not self.value
@@ -132,7 +138,7 @@ class PositiveInteger(Value):
 
     def setValue(self, v):
         if v <= 0:
-            raise ValueError, 'Value must be a positive integer.'
+            raise InvalidRegistryValue, 'Value must be a positive integer.'
         self.value = v
 
 class Float(Value):
@@ -142,9 +148,17 @@ class Float(Value):
         except ValueError:
             raise InvalidRegistryValue, 'Value must be a float.'
 
+    def setValue(self, v):
+        try:
+            self.value = float(v)
+        except ValueError:
+            raise InvalidRegistryValue, 'Value must be a float.'
+
 class String(Value):
     def set(self, s):
-        if not s or (s[0] not in '\'"' and s[-1] not in '\'"'):
+        if not s:
+            s = '""'
+        elif s[0] != s[-1] or s[0] not in '\'"':
             s = repr(s)
         try:
             v = utils.safeEval(s)
@@ -170,7 +184,7 @@ class StringSurroundedBySpaces(String):
 
     def setValue(self, v):
         if v.lstrip() == v:
-            v= ' ' + self.value
+            v= ' ' + v
         if v.rstrip() == v:
             v += ' '
         self.value = v
@@ -244,20 +258,21 @@ class Group(object):
         if _cache and fullname in _cache:
             group.set(_cache[fullname])
 
-    def getValues(self, getChildren=False):
+    def getValues(self, getChildren=False, fullNames=True):
         L = []
         items = self.values.items()
         for (name, child) in self.children.items():
             if hasattr(child, 'value'):
                 items.append((name, child))
         utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
-        for (name, value) in items:
-            L.append(('%s.%s' % (self.getName(), self.originals[name]), value))
+        if fullNames:
+            for (name, value) in items:
+                L.append(('%s.%s'%(self.getName(),self.originals[name]),value))
         if getChildren:
             items = self.children.items()
             utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
             for (_, child) in items:
-                L.extend(child.getValues(getChildren))
+                L.extend(child.getValues(getChildren, fullNames))
         return L
         
 
@@ -273,9 +288,6 @@ class GroupWithValue(Group):
     def setValue(self, v):
         self.value.setValue(v)
 
-    def reset(self):
-        self.value.reset()
-
     def __call__(self):
         return self.value()
 
@@ -289,14 +301,9 @@ class GroupWithDefault(GroupWithValue):
             def set(self, *args):
                 self.__class__ = value.__class__
                 self.set(*args)
-
             def setValue(self, *args):
                 self.__class__ = value.__class__
                 self.setValue(*args)
-
-            def reset(self, *args):
-                self.__class__ = value.__class__
-                self.reset(*args)
         self.X = X
         GroupWithValue.__init__(self, value)
         
@@ -323,8 +330,8 @@ class GroupWithDefault(GroupWithValue):
                 (_, group) = rsplit(k, '.', 1)
                 self.__makeChild(group, v)
 
-    def getValues(self, getChildren=False):
-        L = GroupWithValue.getValues(self, getChildren)
+    def getValues(self, getChildren=False, fullNames=True):
+        L = GroupWithValue.getValues(self, getChildren, fullNames)
         L = [v for v in L if v[1].__class__ is not self.X]
         return L
 
