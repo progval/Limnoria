@@ -130,6 +130,7 @@ class Network(callbacks.Privmsg):
         disconnects and then reconnects to the network the command was given
         on.
         """
+        # XXX Should send a QUIT message.
         network = self._getNetwork(irc, args)
         if args:
             irc.error('I\'m not connected to %s.' % privmsgs.getArgs(args))
