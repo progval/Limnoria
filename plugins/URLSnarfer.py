@@ -55,8 +55,7 @@ example = """
 <jemfinch> @numurls #sourcereview
 <supybot> I have 93 URLs in my database.
 <jemfinch> @randomurl #sourcereview
-<supybot> 6: <http://gameknot.com/chess.pl?bd=1022045&r=735> (added by Strike at 06:25 PM, August 17, 2003)
-<jemfinch> (that's the ID number, the link, and some other sundry info about it)
+<supybot> <http://gameknot.com/chess.pl?bd=1022045&r=735> (added by Strike at 06:25 PM, August 17, 2003)
 <jemfinch> @lasturl
 <supybot> Error: Command must be sent in a channel or include a channel in its arguments.
 <jemfinch> @lasturl #sourcereview
