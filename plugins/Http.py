@@ -202,7 +202,10 @@ class Http(callbacks.Privmsg):
         id specifies which quote to retrieve.
         """
         id = privmsgs.getArgs(args, required=0, optional=1)
-        id = id or 'random1'
+        if id:
+            id = 'quote=%s' % id
+        else:
+            id = 'random'
         html = webutils.getUrl('http://bash.org/?%s' % id)
         m = self._mlgeekquotere.search(html)
         if m is None:
