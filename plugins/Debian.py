@@ -118,7 +118,7 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         if self.usePythonZegrep:
             fd = gzip.open(self.contents)
             fd = ifilter(imap(lambda line: r.search(line), fd))
-        (fd, _) = popen2.popen2(['zegrep', regexp, self.contents])
+        (fd, _) = popen2.popen4(['zegrep', regexp, self.contents])
         packages = []
         for line in fd:
             try:
