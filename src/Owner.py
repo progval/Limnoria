@@ -368,51 +368,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         ircdb.channels.reload()
         irc.reply(msg, conf.replySuccess)
 
-    def connect(self, irc, msg, args):
-        """<server> [<port>]
-
-        Connects a new Irc instance to <server>:<port> (<port> defaults to 6667
-        if not given).  The bot will automatically join the channels he
-        normally joins.
-        """
-        (server, port) = privmsgs.getArgs(args, optional=1)
-        if not port:
-            port = 6667
-        else:
-            try:
-                port = int(port)
-                if not (0 < port < 65536):
-                    raise ValueError
-            except ValueError:
-                irc.error(msg, '<port> must be an integer greater than 0 '
-                               'and less than 65536.')
-                return
-        cbs = map(irc.getCallback, ['Owner', 'ConfigAfter376'])
-        newIrc = irclib.Irc(irc.nick, irc.user, irc.ident,
-                            irc.password, callbacks=cbs)
-        driver = drivers.newDriver((server, port), newIrc)
-        newIrc.driver = driver
-        irc.reply(msg, conf.replySuccess)
-
-    def disconnect(self, irc, msg, args):
-        """[<server>]
-
-        Disconnects from the server, if given; otherwise disconnects from the
-        server on which it received the command.
-        """
-        server = privmsgs.getArgs(args, needed=0, optional=1)
-        if not server:
-            server = irc.server[0]
-        me = False
-        for otherIrc in world.ircs[:]: # Copy because they remove themselves.
-            if otherIrc.driver.server[0] == server:
-                if otherIrc == irc:
-                    me = True
-                otherIrc.die()
-        if not me:
-            irc.reply(msg, conf.replySuccess)
-                
-
 
 Class = Owner
 
