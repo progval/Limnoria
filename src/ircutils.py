@@ -317,8 +317,8 @@ def stripUnderline(s):
 
 def stripFormatting(s):
     """Returns the string s, with all formatting removed."""
-    s = stripBold(s)
     s = stripColor(s)
+    s = stripBold(s)
     s = stripReverse(s)
     s = stripUnderline(s)
     return s.replace('\x0f', '').replace('\x0F', '')

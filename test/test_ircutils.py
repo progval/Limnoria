@@ -153,6 +153,8 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(ircutils.stripFormatting('\x02bold\x0302,04foo\x03'
                                                   'bar\x0f'),
                          'boldfoobar')
+        s = ircutils.mircColor('[', 'blue') + ircutils.bold('09:21')
+        self.assertEqual(ircutils.stripFormatting(s), '[09:21')
 
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'
