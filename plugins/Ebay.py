@@ -72,7 +72,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = ['ebaySnarfer']
     configurables = plugins.ConfigurableDictionary(
-        [('snarfer', plugins.ConfigurableBoolType, True,
+        [('auction-snarfer', plugins.ConfigurableBoolType, True,
           """Determines whether the bot will automatically 'snarf' Ebay auction
           URLs and print information about them.""")]
     )
@@ -128,7 +128,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     def ebaySnarfer(self, irc, msg, match):
         r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?" \
         r"eBayISAPI\.dll\?ViewItem(?:&item=\d+|&category=\d+)+"
-        if not self.configurables.get('snarfer', channel=msg.args[0]):
+        if not self.configurables.get('auction-snarfer', channel=msg.args[0]):
             return
         url = match.group(0)
         #debug.printf(url)
