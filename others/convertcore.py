@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 #****************************************************************************
 # This file has been modified from its original version. It has been
 # formatted to fit your irc bot.

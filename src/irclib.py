@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###
 # Copyright (c) 2002-2004 Jeremiah Fincher
 # All rights reserved.

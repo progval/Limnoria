@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###
 # Copyright (c) 2004, Kevin Murphy
 # All rights reserved.

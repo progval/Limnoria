@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """Ultra-liberal feed parser
 
 Visit http://diveintomark.org/projects/feed_parser/ for the latest version
