@@ -102,7 +102,7 @@ class Network(callbacks.Privmsg):
         message.  <network> is only necessary if the network is different
         from the network the command is sent on.
         """
-        quitMsg = quitMsg or conf.supybot.plugins.Owner.quitMsg or msg.nick
+        quitMsg = quitMsg or conf.supybot.plugins.Owner.quitMsg() or msg.nick
         otherIrc.queueMsg(ircmsgs.quit(quitMsg))
         otherIrc.die()
         conf.supybot.networks().discard(network)
