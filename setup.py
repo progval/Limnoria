@@ -36,6 +36,11 @@ if sys.version_info < (2, 3, 0):
     sys.stderr.write("Supybot requires Python 2.3 or newer.\n")
     sys.exit(-1)
 
+clean = False
+while '--clean' in sys.argv:
+    clean = True
+    sys.argv.remove('--clean')
+
 import glob
 import shutil
 import os.path
@@ -64,30 +69,31 @@ srcFiles = glob.glob(os.path.join('src', '*.py'))
 otherFiles = glob.glob(os.path.join('others', '*.py'))
 pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
 
-## previousInstall = os.path.join(get_python_lib(), 'supybot')
-## if os.path.exists(previousInstall):
-##     try:
-##         shutil.rmtree(previousInstall)
-##     except Exception, e:
-##         print 'Couldn\'t remove former installation: %s' % e
-##         print 'Remove by hand and then run this script.'
-##         sys.exit(-1)
+if clean:
+    previousInstall = os.path.join(get_python_lib(), 'supybot')
+    if os.path.exists(previousInstall):
+        try:
+            print 'Removing current installation.'
+            shutil.rmtree(previousInstall)
+        except Exception, e:
+            print 'Couldn\'t remove former installation: %s' % e
+            sys.exit(-1)
 
 setup(
     # Metadata
     name='supybot',
     version='0.77.2+cvs',
-    url='http://supybot.sf.net/',
     author='Jeremy Fincher',
+    url='http://supybot.sf.net/',
     author_email='jemfinch@users.sf.net',
+    download_url='http://www.sf.net/project/showfiles.php?group_id=58965',
     description='A flexible and extensible Python IRC bot and framework.',
     long_description="""A robust, full-featured Python IRC bot with a clean and
     flexible plugin API.  Equipped with a complete ACL system for specifying
     user permissions with as much as per-command granularity.  Batteries are
     included in the form of numerous plugins already written.""",
-    download_url='http://www.sf.net/project/showfiles.php?group_id=58965',
     classifiers = [
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Environment :: No Input/Output (Daemon)',
         'Intended Audience :: End Users/Desktop',
@@ -99,7 +105,7 @@ setup(
         'Operating System :: POSIX',
         'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
-    ],
+        ],
 
     # Installation data
     packages=['supybot',

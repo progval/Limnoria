@@ -1,29 +1,7 @@
-We changed the way Supybot does imports, and so now in the
-installation directory there is no longer any src/ subdirectory.  If
-your configuration file includes this directory in
-supybot.directories.plugins (hint: it does), you'll need to chop off
-the "/src" at the end.
-
-Since we now support separate network entries, the old supybot.server
-configuration variable won't work.  To fix this, add these lines to
-your configuration:
-
-    supybot.networks.default: <network>
-    supybot.networks.<network>.servers: <server>
-    supybot.networks.<network>.password: <password>
-
-Where <network> is the name of the network you're connecting to,
-<server> is the old supybot.server, and <password> is the old
-supybot.password.  Also note the "servers" rather than "server": we
-now allow the configuration of multiple servers per network.
-
-Since we support multiple networks and multiple servers now, the
---server option has been removed from scripts/supybot, as has the
---password option.
-
-supybot.defaultCapabilities is space-separated now, not
-comma-separated.  You you should remove the commas from this value in
-your configuration file before loading the bot.
+We've changed so much stuff in this release that we've given up on
+users upgrading their configuration files for the new release.  So
+do a clean install (python2.3 setup.py install --clean), run the
+wizard again, and kick some butt.
 
 Version 0.77.2
 

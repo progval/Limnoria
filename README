@@ -5,8 +5,9 @@ Read LICENSE.  It's a 2-clause BSD license, but you should read it anyway.
 
 USERS:
 ------
-Read docs/GETTING_STARTED for an introduction to the bot.  Read
-docs/CAPABILITIES to see how to use capabilities more to your
+If you're upgrading, read RELNOTES.  If you're new to Supybot, 
+read docs/GETTING_STARTED for an introduction to the bot, and read
+docs/CAPABILITIES to see how to use capabilities to your greater
 benefit. 
 
 If you have any trouble, feel free to swing by #supybot on
@@ -31,11 +32,6 @@ see some examples of callbacks and commands written for the bot.
 Read INTERFACES to see what kinds of objects you'll be dealing with.
 Read STYLE if you wish to contribute; all contributed code must meet
 the guidelines set forth there..
-
-Use PyLint.  It's even better than PyChecker.  A sample .pylintrc file
-is included as tools/pylintrc.  Copy this to ~/.pylintrc and you'll be
-able to check your code with the same stringent guidelines I've found
-useful to check my code. (deja vu? :))
 
 Be sure to run "test/test.py --help" to see what options are available
 to you when testing.  Windows users in particular should be sure to
