@@ -1,3 +1,5 @@
+2003-12-6  Jeremy Fincher  <jemfinch@supybot.org>
+	
 	* Added Math.icalc, a new command for doing integer arithmetic.
 	It requires...
 	
