@@ -1,3 +1,10 @@
+Version 0.76.0
+
+Major bugfix release.  A great number of bugs fixed.  This is the last
+release without an upgrade script.  There shouldn't be any major
+upgrade hiccups, just be sure to note the new logging format.
+
+
 Version 0.75.0
 
 Don't forget to reinstall (i.e., run "python setup.py install" as
