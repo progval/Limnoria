@@ -229,7 +229,7 @@ if __name__ == '__main__':
         password = something('What should the owner\'s password be?')
         (id, user) = ircdb.users.newUser()
         user.setPassword(password)
-        user.names.add(owner)
+        user.name = owner
         user.addCapability('owner')
         while yn('Would you like to add a hostmask for the owner?') == 'y':
             user.addHostmask(something('What hostmask?'))
