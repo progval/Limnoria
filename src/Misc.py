@@ -395,7 +395,7 @@ class Misc(callbacks.Privmsg):
             return
         module = sys.modules[cb.__class__.__module__]
         if hasattr(module, '__author__') and module.__author__:
-            irc.reply(utils.mungeEmailForWeb(module.__author__))
+            irc.reply(utils.mungeEmailForWeb(str(module.__author__)))
         else:
             irc.reply('That plugin doesn\'t have an author that claims it.')
     author = wrap(author, [('plugin', False)])
