@@ -257,7 +257,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         criterion = ' AND '.join(criteria)
-        sql = """SELECT url, added, added_by
+        sql = """SELECT id, url, added, added_by
                  FROM urls
                  WHERE %s ORDER BY id DESC
                  LIMIT 100""" % criterion
@@ -266,15 +266,16 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
             irc.reply(msg, 'No URLs matched that criteria.')
         else:
             if nolimit:
-                urls = ['<%s>' % t[0] for t in cursor.fetchall()]
+                urls = ['<%s>' % t[1] for t in cursor.fetchall()]
                 s = ', '.join(urls)
             elif simple:
                 s = cursor.fetchone()[0]
             else:
-                (url, added, added_by) = cursor.fetchone()
+                (id, url, added, added_by) = cursor.fetchone()
                 timestamp = time.strftime('%I:%M %p, %B %d, %Y',
                                           time.localtime(int(added)))
-                s = '<%s>, added by %s at %s.' % (url, added_by, timestamp)
+                s = '#%s: <%s>, added by %s at %s.' % \
+                    (id, url, added_by, timestamp)
             irc.reply(msg, s)
 
 
