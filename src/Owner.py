@@ -338,6 +338,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 return
 
     if conf.allowEval:
+        _evalEnv = {'_': None,
+                    '__': None,
+                    '___': None,
+                    }
+        _evalEnv.update(globals())
         def eval(self, irc, msg, args):
             """<expression>
 
@@ -348,7 +353,12 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             if conf.allowEval:
                 s = privmsgs.getArgs(args)
                 try:
-                    irc.reply(repr(eval(s)))
+                    self._evalEnv.update(locals())
+                    x = eval(s, self._evalEnv, self._evalEnv)
+                    self._evalEnv['___'] = self._evalEnv['__']
+                    self._evalEnv['__'] = self._evalEnv['_']
+                    self._evalEnv['_'] = x
+                    irc.reply(repr(x))
                 except SyntaxError, e:
                     irc.reply('%s: %r' % (utils.exnToString(e), s))
                 except Exception, e:
