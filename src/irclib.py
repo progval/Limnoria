@@ -59,6 +59,7 @@ class IrcCommandDispatcher(object):
     def dispatchCommand(self, command):
         return getattr(self, 'do' + command.capitalize(), None)
 
+
 class IrcCallback(IrcCommandDispatcher):
     """Base class for standard callbacks.
 
@@ -81,10 +82,10 @@ class IrcCallback(IrcCommandDispatcher):
         if method is not None:
             try:
                 method(irc, msg)
-            except Exception:
+            except Exception, e:
                 debug.recoverableException()
-                s = 'Exception raised by %s.%s' % \
-                    (self.__class__.__name__, method.im_func.func_name)
+                s = 'Exception (%s) raised by %s.%s' % \
+                    (e, self.__class__.__name__, method.im_func.func_name)
                 debug.msg(s)
 
     def reset(self):
