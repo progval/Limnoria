@@ -121,7 +121,7 @@ class Value(object):
         # TODO: Check _lastModified to see if stuff needs to be reloaded from
         # the _cache.
         return self.value
-    
+
 class Boolean(Value):
     def set(self, s):
         s = s.lower()

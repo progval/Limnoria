@@ -3,9 +3,7 @@ the more likely it'll be done before next release):
 
 Update the database infrastructure to allow other RDBMSes.
 
-Improved (and perhaps integrated Services and Enforcer plugins.
-
-
+Improved (and perhaps integrated) Services and Enforcer plugins.
 
 To be done as soon as someone with the necessary expertise is found to
 help us:
