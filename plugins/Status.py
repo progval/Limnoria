@@ -75,7 +75,7 @@ class UptimeDB(object):
 
     def die(self):
         fd = file(self.filename, 'w')
-        fd.write(repr(self.uptimes))
+        fd.write(repr(self.top(50)))
         fd.write('\n')
         fd.close()
 
