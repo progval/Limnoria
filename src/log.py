@@ -35,6 +35,7 @@ import fix
 
 import os
 import sys
+import time
 import cgitb
 import types
 import atexit
@@ -227,6 +228,12 @@ def getPluginLogger(name):
         handler.setFormatter(pluginFormatter)
         log.addHandler(handler)
     return log
+
+def timestamp(when=None):
+    if when is None:
+        when = time.time()
+    format = conf.supybot.log.timestampFormat()
+    return time.strftime(format, time.localtime(when))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -152,10 +152,9 @@ class SocketDriver(drivers.IrcDriver):
 
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
-        whenS = time.strftime(conf.supybot.log.timestampFormat(),
-                              time.localtime(when))
+        when = log.timestamp(when)
         if not world.dying:
-            log.info('Scheduling reconnect to %s at %s', self.server, whenS)
+            log.info('Scheduling reconnect to %s at %s', self.server, when)
         schedule.addEvent(self.reconnect, when)
 
     def name(self):
