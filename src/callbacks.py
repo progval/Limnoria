@@ -126,10 +126,11 @@ def reply(msg, s, prefixName=True, private=False,
           notice=False, to=None, action=False):
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
-    if to is not None:
-        target = to
-    elif private:
-        target = msg.nick
+    if private:
+        if to is not None:
+            target = to
+        else:
+            target = msg.nick
     if to is None:
         to = msg.nick
     # Ok, now let's make the payload:
