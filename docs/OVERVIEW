@@ -22,9 +22,6 @@ world.py: Just a dropping off place for some globals that need to be
           lot*, but some things seem to fit better here than anywhere
           else.
 
-template.py: A template used by setup.py to create customized runnable
-             Python scripts for individual bots.
-
 privmsgs.py: Basic stuff relating to callbacks.Privmsg, the base class
              for most plugins.
 
