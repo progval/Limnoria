@@ -36,6 +36,9 @@ import supybot
 
 __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
+__contributors__ = {
+    supybot.authors.skorobeus: ['enable', 'disable'],
+    }
 
 import supybot.fix as fix
 
