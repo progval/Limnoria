@@ -373,14 +373,9 @@ class Note(callbacks.Privmsg):
         def p(note):
             return note.frm == user.id
         if receiver:
-            try:
-                receiver = ircdb.users.getUserId(receiver)
-            except KeyError:
-                irc.error('That user is not in my user database.')
-                return
             originalP = p
             def p(note):
-                return originalP(note) and note.to == receiver
+                return originalP(note) and note.to == receiver.id
         notes = list(self.db.select(p))
         if not notes:
             irc.error('I couldn\'t find any sent notes for your user.')

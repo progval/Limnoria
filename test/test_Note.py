@@ -70,9 +70,11 @@ class NoteTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('note send inkedmn 1,2,3')
         _ = self.getMsg(' ')
         self.assertRegexp('note list --sent', r'#2.*#1')
+        self.assertRegexp('note list --sent --to inkedmn', r'#2.*#1')
         self.assertRegexp('note list', r'#1.*#2')
         self.assertRegexp('note 1', 'testing')
         self.assertResponse('note list --old', '#1 from inkedmn')
+        self.assertResponse('note list --old --from inkedmn','#1 from inkedmn')
 
 
 
