@@ -511,6 +511,21 @@ class IterableMap(object):
         return False
 
 
+def nonCommentLines(fd):
+    for line in fd:
+        if not line.startswith('#'):
+            yield line
+
+def nonEmptyLines(fd):
+##     for line in fd:
+##         if line.strip():
+##             yield line
+    return ifilter(str.strip, fd)
+
+def nonCommentNonEmptyLines(fd):
+    return nonEmptyLines(nonCommentLines(fd))
+
+
 if __name__ == '__main__':
     import sys, doctest
     doctest.testmod(sys.modules['__main__'])

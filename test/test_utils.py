@@ -311,6 +311,15 @@ class UtilsTest(unittest.TestCase):
         for s in ['lambda: 2', 'import foo', 'foo.bar']:
             self.assertRaises(ValueError, utils.safeEval, s)
 
+    def testLines(self):
+        L = ['foo', 'bar', '#baz', '  ', 'biff']
+        self.assertEqual(list(utils.nonEmptyLines(L)),
+                         ['foo', 'bar', '#baz', 'biff'])
+        self.assertEqual(list(utils.nonCommentLines(L)),
+                         ['foo', 'bar', '  ', 'biff'])
+        self.assertEqual(list(utils.nonCommentNonEmptyLines(L)),
+                         ['foo', 'bar', 'biff'])
+
 
 
 
