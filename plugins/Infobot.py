@@ -457,7 +457,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             elif self.db.hasAre(key):
                 isAre = 'are'
                 value = self.db.getAre(key)
-        except dbi.InvalidDBError:
+        except dbi.InvalidDBError, e:
             self._error('Unable to access db: %s' % e)
             return
         if isAre is None:
@@ -559,11 +559,12 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.badForce = False
             self.addressed = False
 
-    def callCommand(self, f, irc, msg, *L, **kwargs):
+    def callCommand(self, name, irc, msg, *L, **kwargs):
+        #print '***', name, utils.stackTrace()
         try:
             self.irc = irc
             self.msg = msg
-            super(Infobot, self).callCommand(f, irc, msg, *L, **kwargs)
+            super(Infobot, self).callCommand(name, irc, msg, *L, **kwargs)
         finally:
             self.irc = None
             self.msg = None
