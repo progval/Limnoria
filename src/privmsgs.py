@@ -222,7 +222,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         except (ValueError, IndexError):
             i = 0
         for driver in drivers._drivers.itervalues():
-            driver.close()
+            driver.die()
         for irc in world.ircs:
             irc.die()
         debug.exit(i)
