@@ -37,6 +37,7 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         ChannelPluginTestCase.setUp(self)
         self.prefix = 'foo!bar@baz'
         self.nick = 'foo'
+        self.wildcardTest = ['f*', '*oo', '*foo*', 'f*o*o']
         self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
                                          'register foo bar',
                                          prefix=self.prefix))
@@ -56,6 +57,10 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.failUnless(self.nick.upper() in m.args[1])
         self.assertRegexp('seen user %s' % self.nick,
                           '^%s was last seen' % self.nick)
+        for wildcard in self.wildcardTest:
+            self.assertRegexp('seen %s' % wildcard,
+                              '^%s was last seen' % self.nick)
+        self.assertRegexp('seen bar*', '^I haven\'t seen anyone matching')
 
     def testSeenNoUser(self):
         self.assertNotRegexp('seen user alsdkfjalsdfkj', 'KeyError')

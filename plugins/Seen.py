@@ -31,7 +31,12 @@
 Keeps track of the last time a user was seen on a channel.
 """
 
+import supybot
+
 __revision__ = "$Id$"
+__contributors__ = {
+    supybot.authors.skorobeus: ['wildcard support'],
+    }
 
 import os
 import re
@@ -73,6 +78,25 @@ class SeenDB(plugins.ChannelUserDB):
         seen = time.time()
         self[channel, nickOrId] = (seen, saying)
         self[channel, '<last>'] = (seen, saying)
+    
+    def seenWildcard(self, channel, nick):
+        nicks = []
+        nickRe = re.compile('.*'.join(nick.split('*')), re.I)
+        for (searchChan, searchNick) in self.keys():
+            #print 'chan: %s ... nick: %s' % (searchChan, searchNick)
+            if isinstance(searchNick, int):
+                # We need to skip the reponses that are keyed by id as they
+                # apparently duplicate the responses for the same person that
+                # are keyed by nick-string
+                continue
+            if ircutils.strEqual(searchChan, channel):
+                try:
+                    s = nickRe.match(searchNick).group()
+                except AttributeError:
+                    continue
+                nicks.append(s)
+        L = [[nick, self.seen(channel, nick)] for nick in nicks]
+        return L
 
     def seen(self, channel, nickOrId):
         return self[channel, nickOrId]
@@ -116,9 +140,26 @@ class Seen(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         name = privmsgs.getArgs(args)
         try:
-            (when, said) = self.db.seen(channel, name)
-            irc.reply('%s was last seen here %s ago saying: %s' %
-                      (name, utils.timeElapsed(time.time()-when), said))
+            results = []
+            if '*' in name:
+                results = self.db.seenWildcard(channel, name)
+            else:
+                results = [[name, self.db.seen(channel, name)]]
+            if len(results) == 1:
+                (nick, info) = results[0]
+                (when, said) = info
+                irc.reply('%s was last seen here %s ago saying: %s' %
+                          (nick, utils.timeElapsed(time.time()-when), said))
+            elif len(results) > 1:
+                L = []
+                for (nick, info) in results:
+                    (when, said) = info
+                    L.append('%s (%s ago)' % 
+                            (nick, utils.timeElapsed(time.time()-when)))
+                irc.reply('%s could be %s' % (name, utils.commaAndify(L, And='or')))
+            else:
+                irc.reply('I haven\'t seen anyone matching %s' % name)
+                
         except KeyError:
             irc.reply('I have not seen %s.' % name)
 
