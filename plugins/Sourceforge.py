@@ -195,7 +195,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             raise callbacks.Error, str(e)
 
     _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
-    _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
+    _sfTitle = re.compile(r'<h2>\[ (\d+) \] ([^<]+)</h2>', re.I)
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def _getTrackerInfo(self, url):
         """
