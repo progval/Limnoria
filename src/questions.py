@@ -30,6 +30,7 @@
 ###
 
 def expect(prompt, possibilities, recursed=False):
+    originalPrompt = prompt
     if recursed:
         print 'Sorry, that response was not an option.'
     if possibilities:
@@ -40,7 +41,7 @@ def expect(prompt, possibilities, recursed=False):
         if s in possibilities:
             return s.strip()
         else:
-            return expect(prompt, possibilities, recursed=True)
+            return expect(originalPrompt, possibilities, recursed=True)
     else:
         return s.strip()
 
