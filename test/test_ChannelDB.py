@@ -76,7 +76,7 @@ if sqlite is not None:
             self.assertEqual(m1.args[1], m2.args[1])
             
         def testNoKeyErrorEscapeFromSeen(self):
-            self.assertRegexp('seen asldfkjasdlfkj', 'I have not seen')
+            self.assertRegexp('seen asldfkjasdlfkj', '^I have not seen')
             self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
 
         def testNoKeyErrorStats(self):
@@ -86,6 +86,8 @@ if sqlite is not None:
             self.assertNotError('list')
             self.assertNotError('seen %s' % self.nick)
             self.assertNotError('seen %s' % self.nick.upper())
+            self.assertRegexp('seen --user %s' % self.nick,
+                              '^%s was last seen' % self.nick)
 
         def testWordStatsNoArgs(self):
             self.assertResponse('wordstats', 'I am not currently keeping any '

@@ -349,6 +349,7 @@ class ChannelDB(callbacks.Privmsg,
         if ('--user', '') in optlist:
             table = 'user_stats'
             criterion = 'user_id=%s'
+            name = ircdb.users.getUserId(name)
             if not ircdb.users.hasUser(name):
                 try:
                     hostmask = irc.state.nickToHostmask(name)
@@ -367,6 +368,8 @@ class ChannelDB(callbacks.Privmsg,
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
+            if isinstance(name, int):
+                name = ircdb.users.getUser(int(name)).name
             s = '%s was last seen here %s ago saying %r' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
