@@ -432,6 +432,11 @@ class Misc(callbacks.Privmsg):
         if not ircutils.isNick(target) and not ircutils.isChannel(target):
             irc.error('%s is not a valid nick or channel.' % target)
             return
+        if ircutils.isChannel(target):
+            c = ircdb.channels.getChannel(target)
+            if c.lobotomized:
+                irc.error('I\'m lobotomized in %s.' % target)
+                return
         s = '%s wants me to tell you: %s' % (msg.nick, text)
         irc.reply(s, to=target, private=True)
 
