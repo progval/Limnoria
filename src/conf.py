@@ -70,7 +70,6 @@ def registerChannelValue(group, name, value):
 
 def registerGlobalValue(group, name, value):
     group.register(name, value)
-        
                                        
 class ValidNick(registry.String):
     def set(self, s):
