@@ -355,9 +355,22 @@ class IrcState(IrcCommandDispatcher):
                 self.supported[arg] = None
         
     def do352(self, irc, msg):
+        # WHO reply.
         (nick, user, host) = (msg.args[5], msg.args[2], msg.args[3])
         hostmask = '%s!%s@%s' % (nick, user, host)
         self.nicksToHostmasks[nick] = hostmask
+
+    def do353(self, irc, msg):
+        # NAMES reply.
+        channel = msg.args[2]
+        names = msg.args[-1].split()
+        if channel not in self.channels:
+            self.channels[channel] = Channel()
+        c = self.channels[channel]
+        for name in names:
+            c.addUser(name)
+        if msg.args[1] == '@':
+            c.modes['s'] = None
 
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
