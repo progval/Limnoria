@@ -215,6 +215,21 @@ class Relay(callbacks.Privmsg):
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
                             otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+
+    def doQuit(self, irc, msg):
+        if self.started:
+            if not isinstance(irc, irclib.Irc):
+                irc = irc.getRealIrc()
+            network = self.abbreviations[irc]
+            if len(msg.args) > 0:
+                s = '%s/%s has quit (%s)' % (msg.nick, network, msg.args[0])
+            else:
+                s = '%s/%s has quit.' % (msg.nick, network)
+            for channel in self.channels:
+                if msg.nick in irc.state.channels[channel].users:
+                    for otherIrc in self.ircs.itervalues():
+                        if otherIrc != irc:
+                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
                             
     def outFilter(self, irc, msg):
         if not self.started:
