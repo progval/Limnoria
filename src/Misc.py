@@ -263,10 +263,26 @@ class Misc(callbacks.Privmsg):
         Gives the latest revision of <module>.  If <module> isn't given, gives
         the revision of all Supybot modules.
         """
-        name = privmsgs.getArgs(args, required=0, optional=1)
-        if name:
+        def normalize(name):
             if name.endswith('.py'):
                 name = name[:-3]
+            return name
+        def getRevisionNumber(module):
+            def getVersion(s):
+                try:
+                    return s.split(None, 3)[2]
+                except:
+                    self.log.exception('Couldn\'t get id string: %r', s)
+            if hasattr(module, '__revision__'):
+                if 'supybot' in module.__file__:
+                    return getVersion(module.__revision__)
+                else:
+                    for dir in conf.supybot.directories.plugins():
+                        if module.__file__.startswith(dir):
+                            return getVersion(module.__revision__)
+        if len(args) == 1 and '*' not in args[0] and '?' not in args[0]:
+            # wildcards are handled below.
+            name = normalize(args[0])
             try:
                 def startsWithPluginsDir(filename):
                     for dir in conf.supybot.directories.plugins():
@@ -299,23 +315,26 @@ class Misc(callbacks.Privmsg):
             else:
                 irc.error('Module %s has no __revision__ string.' % name)
         else:
-            def getVersion(s):
-                try:
-                    return s.split(None, 3)[2]
-                except:
-                    self.log.exception('Couldn\'t get id string: %r', s)
-            names = {}
-            dirs = map(os.path.abspath, conf.supybot.directories.plugins())
-            for (name, module) in sys.modules.items(): # Don't use iteritems.
-                if hasattr(module, '__revision__'):
-                    if 'supybot' in module.__file__:
-                        names[name] = getVersion(module.__revision__)
-                    else:
-                        for dir in conf.supybot.directories.plugins():
-                            if module.__file__.startswith(dir):
-                                names[name] = getVersion(module.__revision__)
-                                break
-            L = ['%s: %s' % (k, v) for (k, v) in names.items() if v]
+            names = []
+            if not args:
+                # I shouldn't use iteritems here for some reason.
+                for (name, module) in sys.modules.items():
+                    names.append((name, getRevisionNumber(module)))
+            elif len(args) == 1: # wildcards
+                pattern = args[0]
+                for (name, module) in sys.modules.items():
+                    if ircutils.hostmaskPatternEqual(pattern, name):
+                        names.append((name, getRevisionNumber(module)))
+            else:
+                for name in args:
+                    name = normalize(name)
+                    if name not in sys.modules:
+                        irc.error('I couldn\'t find a Supybot named %s.'%name)
+                        return
+                    module = sys.modules[name]
+                    names.append((name, getRevisionNumber(module)))
+            names.sort()
+            L = ['%s: %s' % (k, v) for (k, v) in names if v]
             irc.reply(utils.commaAndify(L))
 
     def source(self, irc, msg, args):
