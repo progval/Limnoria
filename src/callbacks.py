@@ -751,7 +751,6 @@ class PrivmsgCommandAndRegexp(Privmsg):
         try:
             Privmsg.callCommand(self, f, irc, msg, *L)
         except Exception, e:
-            print irc.__class__
             irc.error(msg, debug.exnToString(e))
             debug.recoverableException()
 
