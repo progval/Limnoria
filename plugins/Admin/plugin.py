@@ -251,17 +251,19 @@ class Admin(callbacks.Plugin):
             ### 2) Admin users are *not* superior to #channel.ops, and don't
             ###    have God-like powers over channels.
             ### 3) We assume that Admin users are two things: non-malicious and
-            ###    and greedy for power.  So they'll try to elevate their privilege
-            ###    to owner, but they won't try to crash the bot for no reason.
+            ###    and greedy for power.  So they'll try to elevate their
+            ###    privilege to owner, but they won't try to crash the bot for
+            ###    no reason.
 
-            # Thus, the owner capability can't be given in the bot.  Admin users
-            # can only give out capabilities they have themselves (which will
-            # depend on supybot.capabilities and its child default) but generally
-            # means they can't mess with channel capabilities.
+            # Thus, the owner capability can't be given in the bot.  Admin
+            # users can only give out capabilities they have themselves (which
+            # will depend on supybot.capabilities and its child default) but
+            # generally means they can't mess with channel capabilities.
             if ircutils.strEqual(capability, 'owner'):
-                irc.error('The "owner" capability can\'t be added in the bot.  '
-                          'Use the supybot-adduser program (or edit the '
-                          'users.conf file yourself) to add an owner capability.')
+                irc.error('The "owner" capability can\'t be added in the bot.'
+                          '  Use the supybot-adduser program (or edit the '
+                          'users.conf file yourself) to add an owner '
+                          'capability.')
                 return
             if ircdb.isAntiCapability(capability) or \
                ircdb.checkCapability(msg.prefix, capability):
@@ -296,12 +298,12 @@ class Admin(callbacks.Plugin):
         def add(self, irc, msg, args, hostmask, expires):
             """<hostmask|nick> [<expires>]
 
-            Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
-            that nick is currently using.  <expires> is a "seconds from now" value
-            that determines when the ignore will expire; if, for instance, you wish
-            for the ignore to expire in an hour, you could give an <expires> of
-            3600.  If no <expires> is given, the ignore will never automatically
-            expire.
+            Ignores <hostmask> or, if a nick is given, ignores whatever
+            hostmask that nick is currently using.  <expires> is a "seconds
+            from now" value that determines when the ignore will expire; if,
+            for instance, you wish for the ignore to expire in an hour, you
+            could give an <expires> of 3600.  If no <expires> is given, the
+            ignore will never automatically expire.
             """
             ircdb.ignores.add(hostmask, expires)
             irc.replySuccess()
@@ -310,8 +312,8 @@ class Admin(callbacks.Plugin):
         def remove(self, irc, msg, args, hostmask):
             """<hostmask|nick>
 
-            Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
-            that nick is currently using.
+            Ignores <hostmask> or, if a nick is given, ignores whatever
+            hostmask that nick is currently using.
             """
             try:
                 ircdb.ignores.remove(hostmask)
