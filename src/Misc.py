@@ -274,7 +274,7 @@ class Misc(callbacks.Privmsg):
                ircutils.isChannel(msg.args[0])
 
     def last(self, irc, msg, args):
-        """[--{from,in,to,with,regexp,fancy}] <args>
+        """[--{from,in,to,with,regexp}] <args>
 
         Returns the last message matching the given criteria.  --from requires
         a nick from whom the message came; --in and --to require a channel the
@@ -283,15 +283,12 @@ class Misc(callbacks.Privmsg):
         --fancy determines whether or not to show the nick; the default is not
         """
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
-                                                   'with=', 'regexp=',
-                                                   'fancy'])
-        fancy = False
+                                                   'with=', 'regexp='])
+                                                   
         predicates = []
         for (option, arg) in optlist:
             option = option.strip('-')
-            if option == 'fancy':
-                fancy = True
-            elif option == 'from':
+            if option == 'from':
                 predicates.append(lambda m, arg=arg: \
                                   ircutils.hostmaskPatternEqual(arg, m.nick))
             elif option == 'in' or option == 'to':
@@ -317,10 +314,7 @@ class Misc(callbacks.Privmsg):
                 if not predicate(m):
                     break
             else:
-                if fancy:
-                    irc.reply(msg, ircmsgs.prettyPrint(m))
-                else:
-                    irc.reply(msg, m.args[1])
+                irc.reply(msg, ircmsgs.prettyPrint(m))
                 return
         irc.error(msg, 'I couldn\'t find a message matching that criteria.')
 

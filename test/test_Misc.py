@@ -116,15 +116,17 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testLast(self):
         self.feedMsg('foo bar baz')
-        self.assertResponse('last', 'foo bar baz')
-        self.assertRegexp('last', 'last')
-        self.assertResponse('last --with foo', 'foo bar baz')
+        self.assertResponse('last', '<%s> foo bar baz' % self.nick)
+        self.assertRegexp('last', '<%s> @last' % self.nick)
+        self.assertResponse('last --with foo', '<%s> foo bar baz' % self.nick)
         self.assertRegexp('last --regexp m/\s+/', 'last --with foo')
-        self.assertResponse('last --regexp m/bar/', 'foo bar baz')
+        self.assertResponse('last --regexp m/bar/',
+                            '<%s> foo bar baz' % self.nick)
         self.assertResponse('last --from %s' % self.nick.upper(),
-                            '@last --regexp m/bar/')
+                            '<%s> @last --regexp m/bar/' % self.nick)
         self.assertResponse('last --from %s*' % self.nick[0],
-                            '@last --from %s' % self.nick.upper())
+                            '<%s> @last --from %s' %
+                            (self.nick, self.nick.upper()))
 
     def testMore(self):
         self.assertRegexp('echo %s' % ('abc'*300), 'more')
