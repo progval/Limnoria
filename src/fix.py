@@ -147,104 +147,6 @@ class set(object):
 ##         self.d = d
 
 
-class queue(object):
-    __slots__ = ('front', 'back')
-    def __init__(self, seq=()):
-        self.back = []
-        self.front = []
-        for elt in seq:
-            self.enqueue(elt)
-
-    def enqueue(self, elt):
-        self.back.append(elt)
-
-    def dequeue(self):
-        try:
-            return self.front.pop()
-        except IndexError:
-            self.back.reverse()
-            self.front = self.back
-            self.back = []
-            return self.front.pop()
-
-    def peek(self):
-        if self.front:
-            return self.front[-1]
-        else:
-            return self.back[0]
-
-    def __len__(self):
-        return len(self.front) + len(self.back)
-
-    def __contains__(self, elt):
-        return elt in self.front or elt in self.back
-
-    def __iter__(self):
-        for elt in reviter(self.front):
-            yield elt
-        for elt in self.back:
-            yield elt
-
-    def __eq__(self, other):
-        if len(self) == len(other):
-            otheriter = iter(other)
-            for elt in self:
-                otherelt = otheriter.next()
-                if not (elt == otherelt):
-                    return False
-            return True
-        else:
-            return False
-
-    def __repr__(self):
-        return 'queue([%s])' % ', '.join(map(repr, self))
-
-    def __getitem__(self, oidx):
-        (m, idx) = divmod(oidx, len(self))
-        if m and m != -1:
-            raise IndexError, oidx
-        if len(self.front) > idx:
-            return self.front[-(idx+1)]
-        else:
-            return self.back[(idx-len(self.front))]
-        
-    def __setitem__(self, oidx, value):
-        (m, idx) = divmod(oidx, len(self))
-        if m and m != -1:
-            raise IndexError, oidx
-        if len(self.front) > idx:
-            self.front[-(idx+1)] = value
-        else:
-            self.back[(idx-len(self.front))] = value
-
-    def __getstate__(self):
-        return (list(self),)
-
-    def __setstate__(self, (L,)):
-        L.reverse()
-        self.front = L
-        self.back = []
-
-            
-class MaxLengthQueue(queue):
-    __slots__ = ('length',)
-    def __init__(self, length, *args):
-        self.length = length
-        queue.__init__(self, *args)
-
-    def __getstate__(self):
-        return (self.length, queue.__getstate__(self))
-
-    def __setstate__(self, (length, q)):
-        self.length = length
-        queue.__setstate__(self, q)
-        
-    def enqueue(self, elt):
-        queue.enqueue(self, elt)
-        if len(self) > self.length:
-            self.dequeue()
-
-
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.
     """
@@ -350,5 +252,5 @@ def partition(p, L):
         else:
             no.append(elt)
     return (yes, no)
-            
+    
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
