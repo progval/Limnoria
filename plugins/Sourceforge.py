@@ -493,11 +493,11 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             url = match.group(0)
             resp = self._getTrackerInfo(url)
             if resp is None:
-                self.log.warning('Invalid Tracker page snarfed: %s', url)
+                self.log.info('Invalid Tracker page snarfed: %s', url)
             else:
                 irc.reply(resp, prefixName=False)
         except TrackerError, e:
-            self.log.warning(str(e))
+            self.log.info(str(e))
     sfSnarfer = urlSnarfer(sfSnarfer)
 
 Class = Sourceforge
