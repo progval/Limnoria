@@ -150,11 +150,13 @@ class Log(object):
         if e:
             if isinstance(e, Exception):
                 e = utils.exnToString(e)
-            self.warning('Disconnect from %s: %s.', server, e)
+            else:
+                e = str(e)
+            if not e.endswith('.'):
+                e += '.'
+            self.warning('Disconnect from %s: %s', server, e)
         else:
-            if not server.endswith('.'):
-                server += '.'
-            self.info('Disconnect from %s', server)
+            self.info('Disconnect from %s.', server)
 
     def reconnect(self, network, when=None):
         s = 'Reconnecting to %s' % network
