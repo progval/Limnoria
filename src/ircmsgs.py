@@ -101,7 +101,7 @@ class IrcMsg(object):
                     self.prefix, s = s[1:].split(None, 1)
                 else:
                     self.prefix = ''
-                if ' :' in s:
+                if ' :' in s: # Note the space: IPV6 addresses are bad w/o it.
                     s, last = s.split(' :', 1)
                     self.args = s.split()
                     self.args.append(last.rstrip('\r\n'))
