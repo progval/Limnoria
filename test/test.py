@@ -51,6 +51,7 @@ supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
 supybot.log.level: DEBUG
 supybot.log.detailedTracebacks: False
+supybot.log.individualPluginLogfiles: True
 supybot.throttleTime: 0
 supybot.reply.whenAddressedBy.chars: @
 supybot.protocols.irc.throttleTime: -1
@@ -122,9 +123,9 @@ if __name__ == '__main__':
     parser.add_option('-v', '--verbose', action='store_true', default=False,
                       help='Sets the verbose flag, printing extra information '
                            'about each test that runs.')
-    parser.add_option('', '--nonetwork', action='store_true', default=False,
+    parser.add_option('', '--no-network', action='store_true', default=False,
                       help='Causes the network-based tests not to run.')
-    parser.add_option('', '--noplugins', action='store_true', default=False,
+    parser.add_option('', '--no-plugins', action='store_true', default=False,
                       help='Causes the plugin tests not to run.')
     parser.add_option('', '--trace', action='store_true', default=False,
                       help='Traces all calls made.')
