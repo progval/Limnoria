@@ -92,7 +92,7 @@ def isQuakeNet(irc, msg, args, state):
                   'This plugin should only be used on QuakeNet.', Raise=True)
 
 addConverter('isQuakeNet', isQuakeNet)
-        
+
 class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
     def __init__(self):
@@ -118,7 +118,7 @@ class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
         password = self.registryValue('Q.password')
         if name and password:
             self._sendToQ(irc, 'challenge')
-            
+
     def doNotice(self, irc, msg):
         if _isQuakeNet(irc):
             if msg.prefix == fromQ:
