@@ -41,7 +41,6 @@ import sys
 import md5
 import sha
 import random
-import urllib
 import inspect
 import mimetypes
 from itertools import imap
@@ -52,6 +51,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
+import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
 
@@ -212,7 +212,7 @@ class Fun(callbacks.Privmsg):
         Returns the URL quoted form of the text.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(urllib.quote(text))
+        irc.reply(webutils.urlquote(text))
 
     def urlunquote(self, irc, msg, args):
         """<text>
@@ -220,7 +220,7 @@ class Fun(callbacks.Privmsg):
         Returns the text un-URL quoted.
         """
         text = privmsgs.getArgs(args)
-        s = urllib.unquote(text)
+        s = webutils.urlunquote(text)
         irc.reply(s)
 
     def coin(self, irc, msg, args):

@@ -33,6 +33,7 @@ import supybot.fix as fix
 
 import re
 import socket
+import urllib
 import urllib2
 import httplib
 import urlparse
@@ -40,6 +41,9 @@ import urlparse
 import supybot.conf as conf
 
 Request = urllib2.Request
+urlquote = urllib.quote
+urlunquote = urllib.unquote
+
 class WebError(Exception):
     pass
 
@@ -116,7 +120,6 @@ def getUrl(url, size=None, headers=None):
 
 def getDomain(url):
     return urlparse.urlparse(url)[1]
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
