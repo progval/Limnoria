@@ -239,7 +239,6 @@ class Channel(callbacks.Privmsg):
         hostmask = privmsgs.getArgs(args)
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.unban(channel, hostmask))
-            irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'How can I unban someone?  I\'m not opped.')
     unban = privmsgs.checkChannelCapability(unban, 'op')
@@ -252,7 +251,9 @@ class Channel(callbacks.Privmsg):
         channel. <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
-        ircdb.channels.getChannel(channel).lobotomized = True
+        c = ircdb.channels.getChannel(channel)
+        c.lobotomized = True
+        ircdb.channels.setChannel(channel, c)
         irc.reply(msg, conf.replySuccess)
     lobotomize = privmsgs.checkChannelCapability(lobotomize, 'op')
 
@@ -264,7 +265,9 @@ class Channel(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        ircdb.channels.getChannel(channel).lobotomized = False
+        c = ircdb.channels.getChannel(channel)
+        c.lobotomized = False
+        ircdb.channels.setChannel(channel, c)
         irc.reply(msg, conf.replySuccess)
     unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
 
