@@ -1,6 +1,9 @@
 Roughly in order of precedence (the closer to the front of the file,
 the more likely it'll be done before next release):
 
+* We should have a channel-global value in ircdb.IrcChannel for
+  ignoring unregistered users.
+
 * It'd be nice to be able to use a backslash to continue lines in the
   registry, so we could linewrap long strings or lists.
 

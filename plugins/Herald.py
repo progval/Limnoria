@@ -252,8 +252,7 @@ class Herald(callbacks.Privmsg):
         try:
             changer = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error('That\'s not a valid regexp: %s.' % e)
-            return
+            irc.errorInvalid('regular expression', regexp, str(e), Raise=True)
         s = self.db[channel, id]
         newS = changer(s)
         self.db[channel, id] = newS

@@ -194,7 +194,7 @@ class Observer(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         if name not in self.registryValue('observers'):
-            irc.error('That\'s not a valid observer.', Raise=True)
+            irc.errorInvalid('observer', name, Raise=True)
         g = self.registryValue('observers.%s' % name, value=False)
         regexp = g()
         command = g.command()
@@ -222,8 +222,9 @@ class Observer(callbacks.Privmsg):
             probability = 1.0
         (name, regexp, command) = privmsgs.getArgs(args, required=3)
         if not registry.isValidRegistryName(name):
-            irc.error('That\'s not a valid observer name.  Please be sure '
-                      'there are no spaces in the name.', Raise=True)
+            irc.errorInvalid('observer name', name,
+                             'Please be sure there are no spaces in the name.',
+                             Raise=True)
         registerObserver(name, regexp, command, probability)
         irc.replySuccess()
 

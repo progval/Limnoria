@@ -171,8 +171,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                 try:
                     irc.reply(factoids[number-1])
                 except IndexError:
-                    irc.error('That\'s not a valid number for that key.')
-                    return
+                    irc.errorInvalid('number for that key', number, Raise=True)
             else:
                 intro = self.registryValue('factoidPrefix', channel)
                 prefix = '%r %s' % (key, intro)
@@ -214,8 +213,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
             try:
                 number = int(number)
             except ValueError:
-                irc.error('%s is not a valid number.' % number)
-                return
+                irc.errorInvalid('number', number, Raise=True)
         else:
             number = 0
         factoids = self._lookupFactoid(channel, key)
@@ -293,8 +291,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                 try:
                     (_, id) = results[number]
                 except IndexError:
-                    irc.error('Invalid factoid number.')
-                    return
+                    irc.errorInvalid('factoid number', number, Raise=True)
                 cursor.execute("DELETE FROM factoids WHERE id=%s", id)
                 db.commit()
                 irc.replySuccess()
@@ -370,15 +367,13 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error('Invalid regexp: %s' % e)
-            return
+            irc.errorInvalid('regular expression', regexp, str(e), Raise=True)
         try:
             number = int(number)
             if number <= 0:
                 raise ValueError
         except ValueError:
-            irc.error('Invalid key id.')
-            return
+            irc.errorInvalid('id', number, Raise=True)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT factoids.id, factoids.fact

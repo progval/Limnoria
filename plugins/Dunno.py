@@ -194,8 +194,7 @@ class Dunno(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error('Invalid id: %r' % id)
-            return
+            irc.error('id', id, Raise=True)
         dunno = self.db.get(channel, id)
         if by != dunno.by:
             cap = ircdb.makeChannelCapability(channel, 'op')
@@ -238,8 +237,7 @@ class Dunno(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error('%r is not a valid dunno id.' % id)
-            return
+            irc.errorInvalid('dunno id', id, Raise=True)
         try:
             dunno = self.db.get(channel, id)
             name = ircdb.users.getUser(dunno.by).name
@@ -268,18 +266,15 @@ class Dunno(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error('%r is not a valid dunno id.' % id)
-            return
+            irc.errorInvalid('dunno id', id, Raise=True)
         try:
             _ = self.db.get(channel, id)
         except KeyError:
             irc.error('There is no dunno #%s.' % id)
-            return
         try:
             replacer = utils.perlReToReplacer(regexp)
         except:
-            irc.error('%r is not a valid regular expression.' % regexp)
-            return
+            irc.errorInvalid('regular expression', regexp, Raise=True)
         self.db.change(channel, id, replacer)
         irc.replySuccess()
 

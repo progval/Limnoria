@@ -101,14 +101,12 @@ class Format(callbacks.Privmsg):
         try:
             fg = ircutils.mircColors[fg]
         except KeyError:
-            irc.error('%r is not a valid foreground color.' % fg)
-            return
+            irc.errorInvalid('foreground color', fg, Raise=True)
         if bg is not None:
             try:
                 bg = ircutils.mircColors[bg]
             except KeyError:
-                irc.error('%r is not a valid background color.' % bg)
-                return
+                irc.errorInvalid('background color', bg, Raise=True)
         irc.reply(ircutils.mircColor(text, fg=fg, bg=bg))
 
     def join(self, irc, msg, args):
@@ -172,7 +170,7 @@ class Format(callbacks.Privmsg):
         try:
             size = int(size)
         except ValueError:
-            irc.error('%r is not a valid integer.' % size)
+            irc.errorInvalid('integer', size, Raise=True)
         irc.reply(text[:size])
 
     def field(self, irc, msg, args):
@@ -187,11 +185,11 @@ class Format(callbacks.Privmsg):
             if index > 0:
                 index -= 1
         except ValueError:
-            irc.error('%r is not a valid integer.' % number)
+            irc.errorInvalid('integer', number, Raise=True)
         try:
             irc.reply(text.split()[index])
         except IndexError:
-            irc.error('That\'s not a valid field.')
+            irc.errorInvalid('field')
                      
     def format(self, irc, msg, args):
         """<format string> [<arg> ...]

@@ -303,10 +303,10 @@ class Words(callbacks.Privmsg):
             else:
                 # User input an invalid character
                 if len(letter) == 1:
-                    irc.error('That is not a valid letter.')
+                    irc.errorInvalid('letter', letter, Raise=True)
                 # User input an invalid word (len(try) != len(hidden))
                 else:
-                    irc.error('That is not a valid word guess.')
+                    irc.errorInvalid('word guess', letter, Raise=True)
         # Verify if the user won or lost
         if game.guessed and game.tries > 0:
             self._hangmanReply(irc, channel,

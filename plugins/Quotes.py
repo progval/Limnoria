@@ -323,8 +323,7 @@ class Quotes(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error('Invalid id: %r' % id)
-            return
+            irc.errorInvalid('id', id, Raise=True)
         try:
             quote = self.db.get(channel, id)
             irc.reply(str(quote))
@@ -342,7 +341,7 @@ class Quotes(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error('That\'s not a valid id: %r' % id)
+            irc.errorInvalid('id', id, Raise=True)
         try:
             self.db.remove(channel, id)
             irc.replySuccess()

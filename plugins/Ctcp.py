@@ -45,9 +45,12 @@ import time
 sys.path.append(os.pardir)
 
 import supybot.conf as conf
+import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
 import supybot.registry as registry
+import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
 conf.registerPlugin('Ctcp')
@@ -63,8 +66,13 @@ conf.registerGlobalValue(conf.supybot.abuse.flood.ctcp, 'maximum',
 conf.registerGlobalValue(conf.supybot.abuse.flood.ctcp, 'punishment',
     registry.PositiveInteger(300, """Determines how many seconds the bot will
     ignore CTCP messages from users who flood it with CTCP messages."""))
+conf.registerGlobalValue(conf.supybot.plugins.Ctcp, 'versionWait',
+    registry.PositiveInteger(10, """Determines how many seconds the bot will
+    wait after getting a version command (not a CTCP VERSION, but an actual
+    call of the command in this plugin named "version") before replying with
+    the results it has collected."""))
 
-class Ctcp(callbacks.PrivmsgRegexp):
+class Ctcp(callbacks.PrivmsgCommandAndRegexp):
     public = False
     def __init__(self):
         self.__parent = super(Ctcp, self)
@@ -96,35 +104,77 @@ class Ctcp(callbacks.PrivmsgRegexp):
         s = '\x01%s\x01' % s
         irc.reply(s, notice=True, private=True, to=msg.nick)
 
-    def ping(self, irc, msg, match):
+    regexps = ('ctcpPing', 'ctcpVersion', 'ctcpUserinfo',
+               'ctcpTime', 'ctcpFinger', 'ctcpSource') 
+    def ctcpPing(self, irc, msg, match):
         "\x01PING (.*)\x01"
         self.log.info('Received CTCP PING from %s', msg.prefix)
         self._reply(irc, msg, 'PING %s' % match.group(1))
 
-    def version(self, irc, msg, match):
+    def ctcpVersion(self, irc, msg, match):
         "\x01VERSION\x01"
         self.log.info('Received CTCP VERSION from %s', msg.prefix)
         self._reply(irc, msg, 'VERSION Supybot %s' % conf.version)
 
-    def userinfo(self, irc, msg, match):
+    def ctcpUserinfo(self, irc, msg, match):
         "\x01USERINFO\x01"
         self.log.info('Received CTCP USERINFO from %s', msg.prefix)
         self._reply(irc, msg, 'USERINFO')
 
-    def time(self, irc, msg, match):
+    def ctcpTime(self, irc, msg, match):
         "\x01TIME\x01"
         self.log.info('Received CTCP TIME from %s' % msg.prefix)
         self._reply(irc, msg, time.ctime())
 
-    def finger(self, irc, msg, match):
+    def ctcpFinger(self, irc, msg, match):
         "\x01FINGER\x01"
         self.log.info('Received CTCP FINGER from %s' % msg.prefix)
         self._reply(irc, msg, 'Supybot, the best Python IRC bot in existence!')
 
-    def source(self, irc, msg, match):
+    def ctcpSource(self, irc, msg, match):
         "\x01SOURCE\x01"
         self.log.info('Received CTCP SOURCE from %s' % msg.prefix)
         self._reply(irc, msg, 'http://www.sourceforge.net/projects/supybot/')
+
+    def doNotice(self, irc, msg):
+        if ircmsgs.isCtcp(msg):
+            try:
+                (version, payload) = msg.args[1][1:-1].split(None, 1)
+            except ValueError:
+                return
+            if version == 'VERSION':
+                self.versions.setdefault(payload, []).append(msg.nick)
+        
+    def version(self, irc, msg, args):
+        """[<channel>] [--nicks]
+
+        Sends a CTCP VERSION to <channel>, returning the various
+        version strings returned.  It waits for 10 seconds before returning
+        the versions received at that point.  If --nicks is given, nicks are
+        associated with the version strings; otherwise, only the version
+        strings are given.
+        """
+        self.versions = ircutils.IrcDict()
+        nicks = False
+        while '--nicks' in args:
+            nicks = True
+            args.remove('--nicks')
+        channel = privmsgs.getChannel(msg, args)
+        irc.queueMsg(ircmsgs.privmsg(channel, '\x01VERSION\x01'))
+        def doReply():
+            if self.versions:
+                L = []
+                for (reply, nicks) in self.versions.iteritems():
+                    if nicks:
+                        L.append('%s responded with %r' %
+                                 (utils.commaAndify(nicks), reply))
+                    else:
+                        L.append(reply)
+                irc.reply(utils.commaAndify(L))
+            else:
+                irc.reply('I received no version responses.')
+        wait = self.registryValue('versionWait')
+        schedule.addEvent(doReply, time.time()+wait)
 
 Class = Ctcp
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
