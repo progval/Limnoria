@@ -27,7 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from testsupport import *
+from supybot.test import *
 
 from supybot.commands import *
 import supybot.irclib as irclib

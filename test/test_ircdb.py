@@ -27,7 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from testsupport import *
+from supybot.test import *
 
 import os
 import unittest

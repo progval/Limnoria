@@ -27,7 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from testsupport import *
+from supybot.test import *
 
 import supybot.ircmsgs as ircmsgs
 import supybot.privmsgs as privmsgs

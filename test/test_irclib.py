@@ -27,7 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from testsupport import *
+from supybot.test import *
 
 import copy
 import pickle
@@ -35,6 +35,11 @@ import pickle
 import supybot.conf as conf
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
+
+# The test framework used to provide these, but not it doesn't.  We'll add
+# messages to as we find bugs (if indeed we find bugs).
+msgs = []
+rawmsgs = []
 
 class IrcMsgQueueTestCase(SupyTestCase):
     mode = ircmsgs.op('#foo', 'jemfinch')
@@ -226,22 +231,24 @@ class IrcStateTestCase(SupyTestCase):
         self.failUnless(st.channels['#foo'].isOp('baz'))
 
     def testHistory(self):
-        oldconfmaxhistory = conf.supybot.protocols.irc.maxHistoryLength()
-        conf.supybot.protocols.irc.maxHistoryLength.setValue(10)
-        state = irclib.IrcState()
-        for msg in msgs:
-            try:
-                state.addMsg(self.irc, msg)
-            except Exception:
-                pass
-            self.failIf(len(state.history) >
-                        conf.supybot.protocols.irc.maxHistoryLength())
-        self.assertEqual(len(state.history),
-                         conf.supybot.protocols.irc.maxHistoryLength())
-        self.assertEqual(list(state.history),
-                         msgs[len(msgs) -
-                              conf.supybot.protocols.irc.maxHistoryLength():])
-        conf.supybot.protocols.irc.maxHistoryLength.setValue(oldconfmaxhistory)
+        if len(msgs) < 10:
+            return
+        maxHistoryLength = conf.supybot.protocols.irc.maxHistoryLength
+        oldconfmaxhistory = maxHistoryLength()
+        try:
+            maxHistoryLength.setValue(10)
+            state = irclib.IrcState()
+            for msg in msgs:
+                try:
+                    state.addMsg(self.irc, msg)
+                except Exception:
+                    pass
+                self.failIf(len(state.history) > maxHistoryLength())
+            self.assertEqual(len(state.history), maxHistoryLength())
+            self.assertEqual(list(state.history),
+                             msgs[len(msgs) - maxHistoryLength():])
+        finally:
+            maxHistoryLength.setValue(oldconfmaxhistory)
 
     def testWasteland005(self):
         state = irclib.IrcState()

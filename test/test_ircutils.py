@@ -28,13 +28,18 @@
 ###
 
 
-from testsupport import *
+from supybot.test import *
 
 import copy
 import random
 
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
+
+# The test framework used to provide these, but not it doesn't.  We'll add
+# messages to as we find bugs (if indeed we find bugs).
+msgs = []
+rawmsgs = []
 
 class FunctionsTestCase(SupyTestCase):
     hostmask = 'foo!bar@baz'

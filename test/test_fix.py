@@ -29,7 +29,7 @@
 
 ## from __future__ import generators
 
-from testsupport import *
+from supybot.test import *
 
 import random
 import itertools

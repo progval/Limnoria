@@ -27,7 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from testsupport import *
+from supybot.test import *
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -272,7 +272,7 @@ class FunctionsTestCase(SupyTestCase):
 
 
 class PrivmsgTestCase(ChannelPluginTestCase):
-    plugins = ('Utilities', 'Misc', 'Http')
+    plugins = ('Utilities', 'Misc',)
     conf.allowEval = True
     timeout = 2
     def testEmptySquareBrackets(self):
@@ -280,6 +280,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     def testHelpNoNameError(self):
         # This will raise a NameError if some dynamic scoping isn't working
+        self.assertNotError('load Http')
         self.assertHelp('extension')
 
     def testMaximumNestingDepth(self):

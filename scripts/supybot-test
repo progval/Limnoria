@@ -163,16 +163,21 @@ if __name__ == '__main__':
     pluginDirs = set([os.path.dirname(s) or '.' for s in args])
     conf.supybot.directories.plugins.setValue(list(pluginDirs))
     pluginNames = set([os.path.basename(s) for s in args])
-    suites = []
     load = unittest.defaultTestLoader.loadTestsFromModule
     for pluginName in pluginNames:
         if pluginName.endswith('.py'):
             pluginName = pluginName[:-3]
-        pluginModule = plugin.loadPluginModule(pluginName)
+        try:
+            pluginModule = plugin.loadPluginModule(pluginName)
+        except ImportError, e:
+            sys.stderr.write('Failed to load plugin %s: %s\n' % (pluginName,e))
+            sys.stderr.write('(pluginDirs: %s)' %
+                             conf.supybot.directories.plugins())
+            sys.exit(-1)
         if hasattr(pluginModule, 'test'):
-            suites.append(load(pluginModule.test))
-
-    suite = unittest.TestSuite(suites)
+            test.suites.append(load(pluginModule.test))
+            
+    suite = unittest.TestSuite(test.suites)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 

@@ -27,7 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from testsupport import *
+from supybot.test import *
 
 import copy
 import pickle
@@ -35,6 +35,10 @@ import pickle
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 
+# The test framework used to provide these, but not it doesn't.  We'll add
+# messages to as we find bugs (if indeed we find bugs).
+msgs = []
+rawmsgs = []
 
 class IrcMsgTestCase(SupyTestCase):
     def testLen(self):
@@ -59,7 +63,7 @@ class IrcMsgTestCase(SupyTestCase):
     def testEq(self):
         for msg in msgs:
             self.assertEqual(msg, msg)
-        self.failIf(msgs[0] == []) # Comparison to unhashable type.
+        self.failIf(msgs and msgs[0] == []) # Comparison to unhashable type.
 
     def testNe(self):
         for msg in msgs:

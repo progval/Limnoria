@@ -53,6 +53,9 @@ import supybot.callbacks as callbacks
 
 network = True
 
+# This is the global list of suites that are to be run.
+suites = []
+
 originalCallbacksGetHelp = callbacks.getHelp
 lastGetHelp = 'x'*1000
 def cachingGetHelp(method, name=None):
