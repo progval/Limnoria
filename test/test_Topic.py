@@ -81,10 +81,14 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('topic change 0 s/baz/biff/')
 
     def testConfig(self):
-        self.assertNotError('topic config separator <==>')
-        _ = self.getMsg('topic add foo')
-        m = self.getMsg('topic add bar')
-        self.failUnless('<==>' in m.args[1])
+        try:
+            conf.supybot.plugins.Topic.separator.setValue(' <==> ')
+            _ = self.getMsg('topic add foo')
+            m = self.getMsg('topic add bar')
+            self.failUnless('<==>' in m.args[1])
+        finally:
+            default = conf.supybot.plugins.Topic.separator.default
+            conf.supybot.plugins.Topic.separator.setValue(default)
 
     def testReorder(self):
         _ = self.getMsg('topic add foo')

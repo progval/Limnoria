@@ -46,26 +46,23 @@ import ircdb
 import ircmsgs
 import plugins
 import privmsgs
+import registry
 import callbacks
-import configurable
 
-class Topic(callbacks.Privmsg, configurable.Mixin):
+conf.registerPlugin('Topic')
+conf.registerChannelValue(conf.supybot.plugins.Topic, 'separator',
+    registry.StringSurroundedBySpaces(' || ', """Determines what separator is
+    used between individually added topics in the channel topic."""))
+
+class Topic(callbacks.Privmsg):
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((\S+)\)')
-    configurables = configurable.Dictionary(
-        [('separator', configurable.SpaceSurroundedStrType, ' || ',
-          "The separator between individual topics in the channel topic.")]
-    )
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
-
     def _splitTopic(self, topic, channel):
-        separator = self.configurables.get('separator', channel)
+        separator = self.registryValue('separator', channel)
         return filter(None, topic.split(separator))
 
     def _joinTopic(self, topics, channel):
-        separator = self.configurables.get('separator', channel)
+        separator = self.registryValue('separator', channel)
         return separator.join(topics)
 
     def _unformatTopic(self, topic, channel):
@@ -82,7 +79,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         if the message isn't sent in the channel itself.
         """
         topic = privmsgs.getArgs(args)
-        separator = self.configurables.get('separator', channel)
+        separator = self.registryValue('separator', channel)
         if separator in topic:
             s = 'You can\'t have %s in your topic' % separator
             irc.error(s)
