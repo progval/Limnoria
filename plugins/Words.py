@@ -327,7 +327,7 @@ class Words(callbacks.Privmsg):
                                'You lose!  The word was %s.' %
                                utils.quoted(game.hidden))
             self.endGame(channel)
-    guess = wrap(guess, ['channel', 'somethingWithoutSpaces'])
+    guess = wrap(guess, ['channel', 'text'])
     ###
     # END HANGMAN
     ###
