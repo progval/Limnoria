@@ -144,28 +144,78 @@ def makeNewAlias(name, alias):
     f = utils.changeFunctionName(f, name, doc)
     return f
 
-
+def preserveAlias(fd, alias, command, locked):
+    def write(s):
+        fd.write(s)
+        fd.write(os.linesep)
+    write('alias %s' % alias)
+    write('  command %s' % command)
+    write('  locked %s' % locked)
+    write('')
+    
+        
+filename = os.path.join(conf.supybot.directories.conf(), 'aliases.conf')
 class Alias(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        filename = os.path.join(conf.supybot.directories.data(), 'Aliases.db')
-        # Schema: {name: [alias, locked]}
-        self.aliases = structures.PersistentDictionary(filename)
+        # Schema: {alias: [command, locked]}
+        aliases = {}
+        class AliasCreator(object):
+            aliasName = None
+            def __init__(self):
+                self.aliasCommand = None
+                self.aliasLocked = None
+
+            def badCommand(self, command, rest, lineno):
+                raise ValueError, \
+                      'Invalid command on line %s: %s' % (lineno, command)
+
+            def alias(self, rest, lineno):
+                if self.aliasName is not None:
+                    raise ValueError, \
+                          'Unexpected alias command at line %s' % lineno
+                AliasCreator.aliasName = rest
+                
+            def command(self, rest, lineno):
+                if self.aliasName is None:
+                    raise ValueError, \
+                          'Unexpected alias configuration at line %s' % lineno
+                self.aliasCommand = rest
+
+            def locked(self, rest, lineno):
+                if self.aliasName is None:
+                    raise ValueError, \
+                          'Unexpected alias configuration at line %s' % lineno
+                self.aliasLocked = rest
+
+            def finish(self):
+                if self.aliasCommand is None:
+                    raise ValueError, \
+                          'Unexpected end of alias configuration at line %s' \
+                          % lineno
+                aliases[self.aliasName] = (self.aliasCommand, self.aliasLocked)
+                AliasCreator.aliasName = None
+        reader = unpreserve.Reader(AliasCreator)
+        reader.readFile(filename)
 
     def __call__(self, irc, msg):
         # Adding the aliases requires an Irc.  So the first time we get called
         # with an Irc, we add our aliases and then delete ourselves :)
-        for (name, (alias, locked)) in self.aliases.items():
+        for (alias, (command, locked)) in self.aliases.iteritems():
             try:
-                self.addAlias(irc, name, alias, locked)
+                self.addAlias(irc, alias, command, locked)
             except Exception, e:
                 self.log.exception('Exception when trying to add alias %s.  '
                                    'Removing from the Alias database.' % name)
                 del self.aliases[name]
         del self.__class__.__call__
+        callbacks.Privmsg.__call__(self, irc, msg)
         
     def die(self):
-        self.aliases.close()
+        fd = file(filename, 'w')
+        for (alias, (command, locked)) in self.aliases.iteritems():
+            preserveAlias(fd, alias, command, locked)
+        fd.close()
 
     def lock(self, irc, msg, args):
         """<alias>
