@@ -52,6 +52,8 @@ import operator
 from itertools import imap
 from cStringIO import StringIO as sio
 
+import utils
+
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
     p1 = s.find('!')
@@ -161,41 +163,6 @@ def hostmaskPatternEqual(pattern, hostmask):
         _hostmaskPatternEqualCache[(pattern, hostmask)] = b
         return b
 
-_ipchars = string.digits + '.'
-def isIP(s):
-    """Returns whether or not a given string is an IPV4 address.
-
-    >>> isIP('255.255.255.255')
-    1
-
-    >>> isIP('abc.abc.abc.abc')
-    0
-    """
-    try:
-        return bool(socket.inet_aton(s))
-    except socket.error:
-        return False
-
-def isIPV6(s):
-    """Returns whether or not a given string is an IPV6 address."""
-    try:
-        return bool(socket.inet_pton(socket.AF_INET6, s))
-    except socket.error:
-        try:
-            socket.inet_pton(socket.AF_INET6, '::')
-        except socket.error:
-            # We gotta fake it.
-            if s.count('::') <= 1:
-                L = s.split(':')
-                if len(L) <= 8:
-                    for x in L:
-                        if x:
-                            try:
-                                int(x, 16)
-                            except ValueError:
-                                return False
-                    return True
-        return False
 
 def banmask(hostmask):
     """Returns a properly generic banning hostmask for a hostmask.
@@ -208,11 +175,11 @@ def banmask(hostmask):
     """
     assert isUserHostmask(hostmask)
     host = hostFromHostmask(hostmask)
-    if isIP(host):
+    if utils.isIP(host):
         L = host.split('.')
         L[-1] = '*'
         return '*!*@' + '.'.join(L)
-    elif isIPV6(host):
+    elif utils.isIPV6(host):
         L = host.split(':')
         L[-1] = '*'
         return '*!*@' + ':'.join(L)
@@ -374,7 +341,8 @@ def replyTo(msg):
 
 def dccIP(ip):
     """Returns in IP in the proper for DCC."""
-    assert isIP(ip), 'argument must be a string ip in xxx.yyy.zzz.www format.'
+    assert utils.isIP(ip), \
+           'argument must be a string ip in xxx.yyy.zzz.www format.'
     i = 0
     x = 256**3
     for quad in ip.split('.'):

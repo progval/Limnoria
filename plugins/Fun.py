@@ -77,7 +77,7 @@ class Fun(callbacks.Privmsg):
         Returns the hexadecimal IP for that IP.
         """
         ip = privmsgs.getArgs(args)
-        if not ircutils.isIP(ip):
+        if not utils.isIP(ip):
             irc.error('%r is not a valid IP.' % ip)
             return
         quads = ip.split('.')

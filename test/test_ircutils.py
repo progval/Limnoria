@@ -122,20 +122,6 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(bolds, ircutils.safeArgument(bolds))
         self.assertEqual(colors, ircutils.safeArgument(colors))
 
-    def testIsIP(self):
-        self.failIf(ircutils.isIP('a.b.c'))
-        self.failIf(ircutils.isIP('256.0.0.0'))
-        self.failUnless(ircutils.isIP('127.1'))
-        self.failUnless(ircutils.isIP('0.0.0.0'))
-        self.failUnless(ircutils.isIP('100.100.100.100'))
-        # This test is too flaky to bother with.
-        # self.failUnless(ircutils.isIP('255.255.255.255'))
-
-    def testIsIPV6(self):
-        f = ircutils.isIPV6
-        self.failUnless(f('2001::'))
-        self.failUnless(f('2001:888:0:1::666'))
-
     def testIsNick(self):
         self.failUnless(ircutils.isNick('jemfinch'))
         self.failUnless(ircutils.isNick('jemfinch0'))

@@ -63,7 +63,7 @@ class Network(callbacks.Privmsg):
         Returns the ip of <host> or the reverse DNS hostname of <ip>.
         """
         host = privmsgs.getArgs(args)
-        if ircutils.isIP(host):
+        if utils.isIP(host):
             hostname = socket.getfqdn(host)
             if hostname == host:
                 irc.reply('Host not found.')

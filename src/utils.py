@@ -44,6 +44,7 @@ import re
 import md5
 import sha
 import types
+import socket
 import string
 import sgmllib
 import compiler
@@ -533,6 +534,42 @@ def changeFunctionName(f, name, doc=None):
                               f.func_defaults, f.func_closure)
     newf.__doc__ = doc
     return newf
+
+_ipchars = string.digits + '.'
+def isIP(s):
+    """Returns whether or not a given string is an IPV4 address.
+
+    >>> isIP('255.255.255.255')
+    1
+
+    >>> isIP('abc.abc.abc.abc')
+    0
+    """
+    try:
+        return bool(socket.inet_aton(s))
+    except socket.error:
+        return False
+
+def isIPV6(s):
+    """Returns whether or not a given string is an IPV6 address."""
+    try:
+        return bool(socket.inet_pton(socket.AF_INET6, s))
+    except socket.error:
+        try:
+            socket.inet_pton(socket.AF_INET6, '::')
+        except socket.error:
+            # We gotta fake it.
+            if s.count('::') <= 1:
+                L = s.split(':')
+                if len(L) <= 8:
+                    for x in L:
+                        if x:
+                            try:
+                                int(x, 16)
+                            except ValueError:
+                                return False
+                    return True
+        return False
 
 if __name__ == '__main__':
     import sys, doctest

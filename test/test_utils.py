@@ -320,7 +320,19 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(list(utils.nonCommentNonEmptyLines(L)),
                          ['foo', 'bar', 'biff'])
 
+    def testIsIP(self):
+        self.failIf(utils.isIP('a.b.c'))
+        self.failIf(utils.isIP('256.0.0.0'))
+        self.failUnless(utils.isIP('127.1'))
+        self.failUnless(utils.isIP('0.0.0.0'))
+        self.failUnless(utils.isIP('100.100.100.100'))
+        # This test is too flaky to bother with.
+        # self.failUnless(utils.isIP('255.255.255.255'))
 
+    def testIsIPV6(self):
+        f = utils.isIPV6
+        self.failUnless(f('2001::'))
+        self.failUnless(f('2001:888:0:1::666'))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
