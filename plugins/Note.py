@@ -38,6 +38,7 @@ import plugins
 
 import time
 import os.path
+from itertools import imap
 
 import sqlite
 
@@ -167,7 +168,7 @@ class Note(callbacks.Privmsg):
             irc.error(msg, s)
             return
         (note, toId, fromId, addedAt, public) = cursor.fetchone()
-        (toId,fromId,addedAt,public) = map(int, (toId,fromId,addedAt,public))
+        (toId,fromId,addedAt,public) = imap(int, (toId,fromId,addedAt,public))
         elapsed = utils.timeElapsed(time.time() - addedAt)
         if toId == id:
             author = ircdb.users.getUser(fromId).name
@@ -179,7 +180,7 @@ class Note(callbacks.Privmsg):
         self.setAsRead(noteid)
 
     def _formatNoteData(self, msg, id, fromId, public):
-        (id, fromId, public) = map(int, (id, fromId, public))
+        (id, fromId, public) = imap(int, (id, fromId, public))
         if public or not ircutils.isChannel(msg.args[0]):
             sender = ircdb.users.getUser(fromId).name
             return '#%s from %s' % (id, sender)

@@ -35,6 +35,7 @@ import os
 import sets
 import time
 import string
+from itertools import imap
 
 import conf
 import debug
@@ -145,7 +146,7 @@ class CapabilitySet(sets.Set):
 
     def __repr__(self):
         return '%s([%s])' % (self.__class__.__name__,
-                             ', '.join(map(repr, self)))
+                             ', '.join(imap(repr, self)))
 
 antiOwner = makeAntiCapability('owner')
 class UserCapabilitySet(CapabilitySet):

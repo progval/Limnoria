@@ -40,6 +40,7 @@ import time
 import getopt
 import string
 import os.path
+from itertools import imap
 
 import sqlite
 
@@ -102,7 +103,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
             cursor.execute("""INSERT INTO keys VALUES (NULL, %s, 0)""", key)
             db.commit()
             cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s",key)
-        (id, locked) = map(int, cursor.fetchone())
+        (id, locked) = imap(int, cursor.fetchone())
         capability = ircdb.makeChannelCapability(channel, 'factoids')
         if not locked:
             if not ircdb.checkCapability(msg.prefix, capability):
@@ -296,7 +297,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         if cursor.rowcount == 0:
             irc.error(msg, 'No factoid matches that key.')
             return
-        (id, locked) = map(int, cursor.fetchone())
+        (id, locked) = imap(int, cursor.fetchone())
         cursor.execute("""SELECT  added_by, added_at FROM factoids
                           WHERE key_id=%s
                           ORDER BY id""", id)

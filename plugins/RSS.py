@@ -37,6 +37,7 @@ module for user-friendliness.
 import plugins
 
 import time
+from itertools import imap
 
 import rssparser
 
@@ -84,10 +85,10 @@ class RSS(callbacks.Privmsg):
         feed = self.cachedFeeds[url]
         headlines = [d['title'].strip().replace('\n', ' ') \
                      for d in feed['items']]
-        headlines = map(utils.htmlToText, headlines)
         if not headlines:
             irc.error(msg, 'Error grabbing RSS feed')
             return
+        headlines = imap(utils.htmlToText, headlines)
         irc.reply(msg, ' :: '.join(headlines))
 
     def info(self, irc, msg, args):
