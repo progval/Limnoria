@@ -59,6 +59,7 @@ plugins = [
     'Relay',
     'RSS',
     'Scheduler',
+    'Seen',
     'ShrinkUrl',
     'Status',
     'String',
