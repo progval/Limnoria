@@ -76,16 +76,24 @@ class Utilities(callbacks.Privmsg):
     def ignore(self, irc, msg, args):
         """takes no arguments
 
-        does nothing
+        Does nothing.  Useful sometimes for sequencing commands when you don't
+        care about their non-error return values.
         """
         pass
 
     def shrink(self, irc, msg, args):
+        """<text>
+
+        Shrinks <text> to 400 characters.
+        """
         text = privmsgs.getArgs(args)
         irc.reply(msg, text[:400])
 
     def strjoin(self, irc, msg, args):
-        "<separator> <strings to join>"
+        """<separator> <string 1> [<string> ...]
+
+        Joins all the arguments together with <separator>.
+        """
         sep = args.pop(0)
         args = flatten(map(callbacks.tokenize, args))
         irc.reply(msg, sep.join(args))
@@ -115,6 +123,10 @@ class Utilities(callbacks.Privmsg):
         irc.reply(msg, privmsgs.getArgs(args).lower())
 
     def strlen(self, irc, msg, args):
+        """<text>
+
+        Returns the length of <text>.
+        """
         total = 0
         for arg in args:
             total += len(arg)
@@ -129,7 +141,12 @@ class Utilities(callbacks.Privmsg):
         irc.reply(msg, utils.dqrepr(text))
 
     def strconcat(self, irc, msg, args):
-        "<string 1> <string 2>"
+        """<string 1> <string 2>
+
+        Concatenates two strings.  Do keep in mind that this is *not* the same
+        thing as strjoin "", since if <string 2> contains spaces, they won't be
+        removed by strconcat.
+        """
         (first, second) = privmsgs.getArgs(args, needed=2)
         irc.reply(msg, first+second)
 
@@ -143,7 +160,10 @@ class Utilities(callbacks.Privmsg):
     def re(self, irc, msg, args):
         """<regexp> <text>
 
-        Returns all matches to <regexp> (in the form /regexp/flags) in text.
+        If <regexp> is of the form m/regexp/flags, returns the portion of
+        <text> that matches the regexp.  If <regexp> is of the form
+        s/regexp/replacement/flags, returns the result of applying such a
+        regexp to <text>
         """
         (regexp, text) = privmsgs.getArgs(args, needed=2)
         f = None
