@@ -53,7 +53,15 @@ if sqlite is not None:
             self.assertNotError('todo add wash my car')
             self.assertRegexp('todo', '#1: wash my car')
             # Check that task
-            self.assertNotError('todo 1')
+            self.assertRegexp('todo 1',
+                              'Todo for tester: wash my car \(Added .*?\)')
+            # Check that it lists all my tasks when given my name
+            self.assertRegexp('todo tester', 'Todo for tester: '
+                              '#1: wash my car')
+            # Check pluralization
+            self.assertNotError('todo add moo')
+            self.assertRegexp('todo tester', 'Todos for tester: '
+                              '#1: wash my car and #2: moo')
 
         def testAddtodo(self):
             self.assertNotError('todo add code a new plugin')
