@@ -83,6 +83,12 @@ class AliasTestCase(PluginTestCase):
     def testMoreDollars(self):
         self.assertNotError('alias rev "echo $3 $2 $1"')
         self.assertResponse('rev foo bar baz', 'baz bar foo')
+
+    def testNoRecursion(self):
+        self.assertError('alias rotinfinity "rot13 [rotinfinity $1]"')
+
+    def testNonCanonicalName(self):
+        self.assertError('alias FOO foo')
         
 
 
