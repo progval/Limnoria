@@ -391,7 +391,7 @@ class RSS(callbacks.Privmsg):
         sep = self.registryValue('headlineSeparator', channel)
         if self.registryValue('bold', channel):
             sep = ircutils.bold(sep)
-        irc.reply(sep.join(headlines))
+        irc.replies(headlines, joiner=sep)
     rss = wrap(rss, ['url', additional('int')])
 
     def info(self, irc, msg, args, url):
