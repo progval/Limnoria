@@ -36,10 +36,8 @@ import string
 import fnmatch
 import operator
 
-import debug
-import world
-
 def isUserHostmask(s):
+    """Returns whether or not the string s is a valid User hostmask."""
     p1 = s.find('!')
     p2 = s.find('@')
     if p1 < p2-1 and p1 >= 1 and p2 >= 3 and len(s) > p2+1:
@@ -48,52 +46,63 @@ def isUserHostmask(s):
         return False
 
 def isServerHostmask(s):
+    """Returns True if s is a valid server hostmask."""
     return (not isUserHostmask(s) and s.find('!') == -1 and s.find('@') == -1)
 
 def nickFromHostmask(hostmask):
+    """Returns the nick from a user hostmask."""
     assert isUserHostmask(hostmask)
     return nick(hostmask.split('!', 1)[0])
 
 def userFromHostmask(hostmask):
+    """Returns the user from a user hostmask."""
     assert isUserHostmask(hostmask)
     return hostmask.split('!', 1)[1].split('@', 1)[0]
 
 def hostFromHostmask(hostmask):
+    """Returns the host from a user hostmask."""
     assert isUserHostmask(hostmask)
     return hostmask.split('@', 1)[1]
 
 def splitHostmask(hostmask):
+    """Returns the nick, user, host of a user hostmask."""
     assert isUserHostmask(hostmask)
     nck, rest = hostmask.split('!', 1)
     user, host = rest.split('@', 1)
     return (nick(nck), user, host)
 
 def joinHostmask(nick, ident, host):
+    """Joins the nick, ident, host into a user hostmask."""
     assert nick and ident and host
     return '%s!%s@%s' % (nick, ident, host)
 
 _lowertrans = string.maketrans(string.ascii_uppercase + r'\[]~',
                                string.ascii_lowercase + r'|{}^')
-def toLower(nick):
-    return nick.translate(_lowertrans)
+def toLower(s):
+    """Returns the string s lowered according to IRC case rules."""
+    return s.translate(_lowertrans)
 
 def nickEqual(nick1, nick2):
+    """Returns True if nick1 == nick2 according to IRC case rules."""
     return toLower(nick1) == toLower(nick2)
 
 _nickchars = r'-[]\\`^{}'
 _nickre = re.compile(r'^[%sA-Za-z][%s0-9A-Za-z]+$' % (re.escape(_nickchars),
                                                       re.escape(_nickchars)))
 def isNick(s):
+    """Returns True if s is a valid IRC nick."""
     if re.match(_nickre, s):
         return True
     else:
         return False
 
 def isChannel(s):
+    """Returns True if s is a valid IRC channel name."""
     return (s and s[0] in '#&+!' and len(s) <= 50 and \
             '\x07' not in s and ',' not in s and ' ' not in s)
 
 def hostmaskPatternEqual(pattern, hostmask):
+    """Returns True if hostmask matches the hostmask pattern pattern."""
     return fnmatch.fnmatch(toLower(hostmask), toLower(pattern))
 
 _ipchars = string.digits + '.'
@@ -189,16 +198,19 @@ def bold(s):
     return "\x02%s\x02" % s
 
 def isValidArgument(s):
+    """Returns if s is strictly a valid argument for an IRC message."""
     return '\r' not in s and '\n' not in s and '\x00' not in s
 
 notFunky = string.ascii[32:]+'\x02'
 def safeArgument(s):
+    """If s is unsafe for IRC, returns a safe version."""
     if isValidArgument(s) and s.translate(string.ascii, notFunky) == '':
         return s
     else:
         return repr(s)
 
 def replyTo(msg):
+    """Returns the appropriate target to send responses to msg."""
     if isChannel(msg.args[0]):
         return msg.args[0]
     else:
@@ -236,6 +248,7 @@ class nick(str):
 
 
 class IrcDict(dict):
+    """Subclass of dict to make key comparison IRC-case insensitive."""
     def __contains__(self, s):
         return dict.__contains__(self, toLower(s))
     has_key = __contains__
