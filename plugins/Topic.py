@@ -87,6 +87,31 @@ class Topic(callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
+    def changetopic(self, irc, msg, args):
+        "[<channel>] <number> <regexp> <replacement>"
+        channel = privmsgs.getChannel(msg, args)
+        (number, regexp, replacement) = privmsgs.getArgs(args, needed=3)
+        try:
+            number = int(number)
+            r = re.compile(regexp, re.I)
+        except ValueError:
+            irc.error(msg, 'The <number> argument must be a number.')
+            return
+        except sre_constants.error, e:
+            irc.error(msg, debug.exnToString(e))
+            return
+        topics = irc.state.getTopic(channel).split(self.topicSeparator)
+        topic = topics.pop(number)
+        (topic, name) = self.topicUnformatter.match(topic).groups()
+        if name != ircdb.users.getUserName(msg.prefix) and \
+           not ircdb.checkCapabilities(msg.prfix, ('op', 'admin')):
+            irc.error(msg, 'You can only modify your own topics.')
+            return
+        newTopic = self.topicFormatter % (r.sub(replacement, topic), name)
+        topics.insert(number, newTopic)
+        newTopic = self.topicSeparator.join(topics)
+        irc.queueMsg(ircmsgs.topic(channel, newTopic))
+        
     def removetopic(self, irc, msg, args):
         "[<channel>] (if not sent in the channel itself) <topic number>"
         channel = privmsgs.getChannel(msg, args)
