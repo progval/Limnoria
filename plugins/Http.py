@@ -38,6 +38,7 @@ import plugins
 import re
 import sets
 import urllib2
+import getopt
 
 import utils
 import debug
@@ -259,27 +260,31 @@ class Http(callbacks.Privmsg):
             debug.recoverableException()
             irc.error(msg, debug.exnToString(e))
 
-    _geekquotere = re.compile('<p class="qt">(.*?)</p>')
     _mlgeekquotere = re.compile('<p class="qt">(.*?)</p>', re.M | re.DOTALL)
     def geekquote(self, irc, msg, args):
-        """[<multiline>]
+        """[--id=<value>]
 
         Returns a random geek quote from bash.org; the optional argument
-        <multiline> specifies whether multi-line quotes (which are longer
-        than other quotes, generally) are to be allowed.
+        --id specifies which quote to retrieve.
         """
-        multiline = privmsgs.getArgs(args, needed=0, optional=1)
+        (optlist, rest) = getopt.getopt(args, '', ['id='])
+        id = 'random1'
+        for (option, arg) in optlist:
+            if option == '--id':
+                try:
+                    id = int(arg)
+                except ValueError, e:
+                    irc.error(msg, 'Invalid id: %s' % e)
+                    return
+
         try:
-            fd = urllib2.urlopen('http://bash.org/?random1')
+            fd = urllib2.urlopen('http://bash.org/?%s' % id)
         except urllib2.URLError:
             irc.error(msg, 'Error connecting to geekquote server.')
             return
         html = fd.read()
         fd.close()
-        if multiline:
-            m = self._mlgeekquotere.search(html)
-        else:
-            m = self._geekquotere.search(html)
+        m = self._mlgeekquotere.search(html)
         if m is None:
             irc.error(msg, 'No quote found.')
             return

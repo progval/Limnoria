@@ -52,7 +52,8 @@ class HttpTest(PluginTestCase, PluginDocumentation):
 
     def testGeekquote(self):
         self.assertNotError('geekquote')
-        self.assertNotError('geekquote multiline')
+        self.assertNotError('geekquote --id=4848')
+        self.assertError('geekquote --id=48a')
 
     def testAcronym(self):
         self.assertNotError('acronym PERL')
