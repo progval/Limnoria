@@ -662,6 +662,33 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         except AttributeError: # There's a cleaner way to do this, but I'm lazy.
             irc.error('I couldn\'t reconnect.  You should restart me instead.')
 
+    def defaultcapability(self, irc, msg, args):
+        """<add|remove> <capability>
+
+        Adds or removes (according to the first argument) <capability> from the
+        default capabilities given to users (the configuration variable
+        supybot.capabilities stores these).
+        """
+        (action, capability) = privmsgs.getArgs(args, required=2)
+        if action == 'add':
+            conf.supybot.capabilities().add(capability)
+            irc.replySuccess()
+        elif action == 'remove':
+            try:
+                conf.supybot.capabilities().remove(capability)
+                irc.replySuccess()
+            except KeyError:
+                if ircdb.isAntiCapability(capability):
+                    irc.error('That capability wasn\'t in '
+                              'supybot.capabilities.')
+                else:
+                    anticap = ircdb.makeAntiCapability(capability)
+                    conf.supybot.capabilities().add(anticap)
+                    irc.replySuccess()
+        else:
+            irc.error('That\'s not a valid action to take.  Valid actions '
+                      'are "add" and "remove"')
+            
     def disable(self, irc, msg, args):
         """[<plugin>] <command>
 
