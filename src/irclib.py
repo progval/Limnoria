@@ -94,7 +94,7 @@ class IrcMsgQueue(object):
         self.queue = []
 
     def enqueueMsg(self, msg):
-        if msg in self.msgs:
+        if msg in self.msgs and not world.startup:
             debug.debugMsg('Not adding msg %s to queue' % msg, 'normal')
         else:
             self.msgs.add(msg)
