@@ -398,7 +398,7 @@ class User(callbacks.Privmsg):
                 irc.replySuccess()
             except ValueError:
                 irc.error('Your secure flag is true and your hostmask '
-                               'doesn\'t match any of your known hostmasks.')
+                          'doesn\'t match any of your known hostmasks.')
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
 
@@ -415,8 +415,8 @@ class User(callbacks.Privmsg):
             return
         user.unsetAuth()
         ircdb.users.setUser(id, user)
-        irc.replySuccess('If you remain recognized after giving this command,'
-                         ' you\'re being recognized by hostmask, rather than '
+        irc.replySuccess('If you remain recognized after giving this command, '
+                         'you\'re being recognized by hostmask, rather than '
                          'by password.  You must remove whatever hostmask is '
                          'causing you to be recognized in order not to be '
                          'recognized.')
