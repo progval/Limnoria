@@ -458,9 +458,11 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
         self.failIf(m.command == 'NOTICE')
         self.failUnless(ircutils.isChannel(m.args[0]))
         # Check abnormal behavior.
-        original = conf.supybot.reply.withPrivateNotice()
+        originalInPrivate = conf.supybot.reply.inPrivate()
+        originalWithNotice = conf.supybot.reply.withNotice()
         try:
-            conf.supybot.reply.withPrivateNotice.setValue(True)
+            conf.supybot.reply.inPrivate.setValue(True)
+            conf.supybot.reply.withNotice.setValue(True)
             m = self.assertNotError('normal')
             self.failUnless(m.command == 'NOTICE')
             self.failIf(ircutils.isChannel(m.args[0]))
@@ -468,7 +470,8 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
             self.failIf(m.command == 'NOTICE')
             self.failUnless(ircutils.isChannel(m.args[0]))
         finally:
-            conf.supybot.reply.withPrivateNotice.setValue(original)
+            conf.supybot.reply.inPrivate.setValue(originalInPrivate)
+            conf.supybot.reply.withNotice.setValue(originalWithNotice)
             
             
         

@@ -127,34 +127,32 @@ def reply(msg, s, prefixName=True, private=None,
           notice=None, to=None, action=None):
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
+    if notice is None:
+        notice = conf.supybot.reply.withNotice()
+    if private is None:
+        private = conf.supybot.reply.inPrivate()
     if private:
         prefixName = False
-        if to is not None:
-            target = to
-        else:
+        if to is None:
             target = msg.nick
-        # XXX: User value.
-        if conf.supybot.reply.withNoticeWhenPrivate() and notice is None:
-            notice = True
+        else:
+            target = to
+        # XXX: User value for reply.withNoticeWhenPrivate.
     if to is None:
         to = msg.nick
     # Ok, now let's make the payload:
     s = ircutils.safeArgument(s)
     if not s and not action:
         s = 'Error: I tried to send you an empty message.'
-    # Let's may sure we don't do, "#channel: foo.".
     if prefixName and ircutils.isChannel(target):
+        # Let's may sure we don't do, "#channel: foo.".
         if not ircutils.isChannel(to):
             s = '%s: %s' % (to, s)
     # And now, let's decide whether it's a PRIVMSG or a NOTICE.
     msgmaker = ircmsgs.privmsg
     if notice:
         msgmaker = ircmsgs.notice
-    if conf.supybot.reply.withPrivateNotice():
-        if private is None:
-            target = msg.nick
-        if notice is None:
-            msgmaker = ircmsgs.notice
+    # We don't use elif here because actions can't be sent as NOTICEs.
     if action:
         msgmaker = ircmsgs.action
     # Finally, we'll return the actual message.

@@ -1,3 +1,7 @@
+	* Removed supybot.reply.withPrivateNotice and split it into two
+	separate configuration variables, supybot.reply.withNotice and
+	supybot.reply.inPrivate.
+	
 	* Added supybot.log.stdout.wrap, to allow optional (defaulting to
 	True) wrapping of stdout logs.
 	
