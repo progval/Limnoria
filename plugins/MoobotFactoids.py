@@ -152,6 +152,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           modified_by INTEGER,
                           modified_at TIMESTAMP,
                           locked_at TIMESTAMP,
+                          locked_by INTEGER,
                           last_requested_by TEXT,
                           last_requested_at TIMESTAMP,
                           fact TEXT,
@@ -387,13 +388,14 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor = self.db.cursor()
         cursor.execute("""SELECT created_by, created_at, modified_by,
                           modified_at, last_requested_by, last_requested_at,
-                          requested_count, locked_at FROM
+                          requested_count, locked_by, locked_at FROM
                           factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "No such factoid: %s" % key)
             return
         (created_by, created_at, modified_by, modified_at, last_requested_by,
-         last_requested_at, requested_count, locked_at) = cursor.fetchone()
+         last_requested_at, requested_count, locked_by,
+         locked_at) = cursor.fetchone()
         # First, creation info.
         # Map the integer created_by to the username
         creat_by = ircdb.users.getUser(created_by).name
@@ -417,11 +419,11 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                  (last_by, last_at, times_str)
         # Last, locked info
         if locked_at is not None:
-             lock_at = time.strftime(conf.humanTimestampFormat,
+            lock_at = time.strftime(conf.humanTimestampFormat,
                                      time.localtime(int(locked_at)))
-             s += " Locked on %s." % lock_at
+            lock_by = ircdb.users.getUser(locked_by).name
+            s += " Locked by %s on %s." % (lock_by, lock_at)
         irc.reply(msg, s)
-
 
     def _lock(self, irc, msg, args, lock=True):
         try:
@@ -431,19 +433,19 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             return
         key = privmsgs.getArgs(args, needed=1)
         cursor = self.db.cursor()
-        cursor.execute("""SELECT created_by, locked_at FROM factoids
+        cursor.execute("""SELECT created_by, locked_by FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "No such factoid: %s" % key)
             return
-        (created_by, locked_at) = cursor.fetchone()
+        (created_by, locked_by) = cursor.fetchone()
         # Don't perform redundant operations
         if lock:
-           if locked_at is not None:
+           if locked_by is not None:
                irc.error(msg, "Factoid '%s' is already locked." % key)
                return
         else:
-           if locked_at is None:
+           if locked_by is None:
                irc.error(msg, "Factoid '%s' is not locked." % key)
                return
         # Can only lock/unlock own factoids
@@ -459,8 +461,9 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
            locked_at = int(time.time())
         else:
            locked_at = None
-        cursor.execute("""UPDATE factoids SET locked_at = %s
-                          WHERE key = %s""", locked_at, key)
+           id = None
+        cursor.execute("""UPDATE factoids SET locked_at = %s, locked_by = %s
+                          WHERE key = %s""", locked_at, id, key)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
