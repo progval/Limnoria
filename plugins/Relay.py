@@ -269,8 +269,7 @@ class Relay(callbacks.Privmsg):
                     ircmsgs.unAction(msg))
         else:
             return '<%s@%s> %s' % \
-				   (ircutils.mircColor(nick, color), abbreviation,
-                    msg.args[1])
+                   (ircutils.mircColor(nick, color), abbreviation, msg.args[1])
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
