@@ -291,7 +291,8 @@ class ChannelLogger(callbacks.Privmsg):
     def outFilter(self, irc, msg):
         # Gotta catch my own messages *somehow* :)
         # Let's try this little trick...
-        if msg.command != 'PART':
+        if msg.command in ('PRIVMSG', 'NOTICE'):
+            # Other messages should be sent back to us.
             m = ircmsgs.IrcMsg(msg=msg, prefix=irc.prefix)
             self(irc, m)
         return msg
