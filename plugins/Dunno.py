@@ -104,7 +104,7 @@ class Dunno(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         text = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
@@ -123,7 +123,7 @@ class Dunno(callbacks.Privmsg):
         try:
             user_id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         dunno_id = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()

@@ -251,7 +251,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         key, fact = match.groups()
         # These are okay, unless there's an _is_ in there, in which case
@@ -279,7 +279,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         key, regexp = match.groups()
         db = self.dbHandler.getDb()
@@ -315,7 +315,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         key, new_text = match.groups()
         db = self.dbHandler.getDb()
@@ -346,7 +346,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         key, new_fact = match.groups()
         # These are okay, unless there's an _is_ in there, in which case
@@ -450,7 +450,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         key = privmsgs.getArgs(args, required=1)
         db = self.dbHandler.getDb()
@@ -640,7 +640,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         try:
             ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         key = privmsgs.getArgs(args, required=1)
         db = self.dbHandler.getDb()

@@ -107,14 +107,15 @@ class Factoids(plugins.ChannelDBHandler,
         db.commit()
         return db
 
-    def learn(self, irc, msg, args, channel):
+    def learn(self, irc, msg, args):
         """[<channel>] <key> as <value>
 
         Associates <key> with <value>.  <channel> is only necessary if the
-        message isn't sent on the channel itself.  The word "as" is necessary
+        message isn't sent on the channel itself.  The word 'as' is necessary
         to separate the key from the value.  It can be changed to another
         word via the learn-separator configurable.
         """
+        channel = privmsgs.getChannel(msg, args)
         try:
             separator = self.configurables.get('learn-separator', channel)
             i = args.index(separator)
@@ -189,13 +190,14 @@ class Factoids(plugins.ChannelDBHandler,
                     irc.error('That\'s not a valid number for this key.')
                     return
 
-    def lock(self, irc, msg, args, channel):
+    def lock(self, irc, msg, args):
         """[<channel>] <key>
 
         Locks the factoid(s) associated with <key> so that they cannot be
         removed or added to.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -203,13 +205,14 @@ class Factoids(plugins.ChannelDBHandler,
         db.commit()
         irc.replySuccess()
 
-    def unlock(self, irc, msg, args, channel):
+    def unlock(self, irc, msg, args):
         """[<channel>] <key>
 
         Unlocks the factoid(s) associated with <key> so that they can be
         removed or added to.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -217,7 +220,7 @@ class Factoids(plugins.ChannelDBHandler,
         db.commit()
         irc.replySuccess()
 
-    def forget(self, irc, msg, args, channel):
+    def forget(self, irc, msg, args):
         """[<channel>] <key> [<number>|*]
 
         Removes the factoid <key> from the factoids database.  If there are
@@ -226,6 +229,7 @@ class Factoids(plugins.ChannelDBHandler,
         factoids associated with a key.  <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         if args[-1].isdigit():
             number = int(args.pop())
             number -= 1
@@ -324,12 +328,13 @@ class Factoids(plugins.ChannelDBHandler,
              utils.nItems('factoid', counter), factoids)
         irc.reply(s)
 
-    def change(self, irc, msg, args, channel):
+    def change(self, irc, msg, args):
         """[<channel>] <key> <number> <regexp>
 
         Changes the factoid #<number> associated with <key> according to
         <regexp>.
         """
+        channel = privmsgs.getChannel(msg, args)
         (key, number, regexp) = privmsgs.getArgs(args, required=3)
         try:
             replacer = utils.perlReToReplacer(regexp)

@@ -125,7 +125,7 @@ class Todo(callbacks.Privmsg):
             try:
                 id = ircdb.users.getUserId(msg.prefix)
             except KeyError:
-                irc.error(conf.replyNotRegistered)
+                irc.errorNotRegistered()
                 return
             cursor.execute("""SELECT id, task FROM todo
                               WHERE userid = %s AND active = 1
@@ -186,7 +186,7 @@ class Todo(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         (optlist, rest) = getopt.getopt(args, '', ['priority='])  
         priority = 0 
@@ -218,7 +218,7 @@ class Todo(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         taskids = privmsgs.getArgs(args)
         tasks = taskids.split()
@@ -256,7 +256,7 @@ class Todo(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         (optlist, rest) = getopt.getopt(args, '', ['regexp='])
         if not optlist and not rest:
@@ -301,7 +301,7 @@ class Todo(callbacks.Privmsg):
         try:
             user_id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         (id, priority) = privmsgs.getArgs(args, required=2)
         db = self.dbHandler.getDb()
@@ -329,7 +329,7 @@ class Todo(callbacks.Privmsg):
         try:
             userid = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         taskid, regexp = privmsgs.getArgs(args, required=2)
         # Check the regexp first, it's easier and doesn't require a db query

@@ -303,7 +303,7 @@ class User(callbacks.Privmsg):
             else:
                 irc.reply(repr(user.hostmasks))
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
 
     def capabilities(self, irc, msg, args):
         """[<name>]
@@ -371,7 +371,7 @@ class User(callbacks.Privmsg):
             user = ircdb.users.getUser(msg.prefix)
             irc.reply(user.name)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
 
     def setsecure(self, irc, msg, args):
         """<password> [<True|False>]
@@ -389,7 +389,7 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(msg.prefix)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
         if value == '':
             value = not user.secure
         elif value.lower() in ('true', 'false'):

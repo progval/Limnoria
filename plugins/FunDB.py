@@ -138,7 +138,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         if table == "lart" or table == "praise":
             if '$who' not in s:
@@ -173,7 +173,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         try:
             id = int(id)
@@ -206,7 +206,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         try:
             id = int(id)

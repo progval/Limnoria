@@ -271,7 +271,7 @@ def formatArgumentError(method, name=None):
     else:
         return 'Invalid arguments for %s.' % method.__name__
 
-def checkCommandCapability(msg, command):
+def checkCommandCapability(msg, cb, command):
     anticap = ircdb.makeAntiCapability(command)
     if ircdb.checkCapability(msg.prefix, anticap):
         log.info('Preventing because of anticap: %s', msg.prefix)
@@ -409,8 +409,8 @@ class IrcObjectProxy(RichReplyMethods):
                 else:
                     del self.args[0]
                     cb = cbs[0]
-                if not checkCommandCapability(self.msg, name):
-                    self.error(conf.replyNoCapability % name)
+                if not checkCommandCapability(self.msg, cb, name):
+                    self.errorNoCapability(name)
                     return
                 command = getattr(cb, name)
                 Privmsg.handled = True
@@ -636,8 +636,8 @@ class Privmsg(irclib.IrcCallback):
                 if name == canonicalName(self.name()):
                     handleBadArgs()
                 elif self.isCommand(name):
-                    if not checkCommandCapability(msg, name):
-                        irc.error(conf.replyNoCapability % name)
+                    if not checkCommandCapability(msg, self, name):
+                        irc.errorNoCapability(name)
                         return
                     del args[0]
                     method = getattr(self, name)

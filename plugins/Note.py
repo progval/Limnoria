@@ -139,7 +139,7 @@ class Note(callbacks.Privmsg):
         try:
             fromId = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         if ircutils.isChannel(msg.args[0]):
             public = 1
@@ -168,7 +168,7 @@ class Note(callbacks.Privmsg):
         try:
             userid = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -197,7 +197,7 @@ class Note(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         try:
             noteid = int(noteid)
@@ -247,7 +247,7 @@ class Note(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -270,7 +270,7 @@ class Note(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()

@@ -138,7 +138,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         try:
             userId = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -187,7 +187,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         try:
             userId = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -237,7 +237,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         try:
             userId = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         db = self.getDb(channel)
         cursor = db.cursor()

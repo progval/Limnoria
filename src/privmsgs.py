@@ -143,7 +143,7 @@ def name(f):
             name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
             if conf.requireRegistration:
-                irc.error(conf.replyNotRegistered)
+                irc.errorNotRegistered()
                 return
             else:
                 name = msg.prefix
