@@ -173,7 +173,7 @@ class FunDB(callbacks.Privmsg):
             return
         while counter and lenSoFar < 400:
             (started, ended) = map(int, cursor.fetchone())
-            s = '%s, up for %s' % \
+            s = '%s; up for %s' % \
                 (time.strftime(conf.humanTimestampFormat,
                                time.localtime(ended)),
                  utils.timeElapsed(ended-started))
