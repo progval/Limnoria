@@ -309,29 +309,32 @@ class Toggleable(object):
             irc.error(msg, '%r isn\'t a valid name to toggle.  '
                            'Valid names are %s' % (name, self._toggleNames()))
 
-randomnickre = re.compile ("\$randomnick", re.I)
-randomdatere = re.compile ("\$randomdate", re.I)
-randomintre = re.compile ("\$randomint", re.I)
-whore = re.compile ("\$who", re.I)
-botnickre = re.compile("\$botnick", re.I)
-todayre = re.compile("\$today", re.I)
+_randomnickRe = re.compile ("\$randomnick", re.I)
+_randomdateRe = re.compile ("\$randomdate", re.I)
+_randomintRe = re.compile ("\$randomint", re.I)
+_whoRe = re.compile ("\$who", re.I)
+_botnickRe = re.compile("\$botnick", re.I)
+_todayRe = re.compile("\$today", re.I)
+_nowRe = re.compile("\$now", re.I)
 def standardSubstitute(irc, msg, text):
     """Do the standard set of substitutions on text, and return it"""
-    nochannel = False
-    try:
-        channel = privmsgs.getChannel(msg, None)
-    except:
-        nochannel = True
-    if nochannel:
-        text = randomnickre.sub('anyone', text)
+    if ircutils.isChannel(msg.args[0]):
+        channel = msg.args[0]
     else:
-        text = randomnickre.sub(random.choice(irc.state.channels[channel].users._data.keys()),
-                text)
+        channel = None
+    if channel:
+        text = _randomnickRe.sub('anyone', text)
+    else:
+        user = random.choice(list(irc.state.channels[channel].users))
+        text = _randomnickRe.sub(user, text)
     t = pow(2,30)*random.random()+time.time()/4.0 
-    text = randomdatere.sub(time.ctime(t), text)
-    text = randomintre.sub(str(random.randint(-1000, 1000)), text)
-    text = whore.sub(msg.nick, text)
-    text = botnickre.sub(irc.nick, text)
-    text = todayre.sub(time.ctime(), text)
+    text = _randomdateRe.sub(time.ctime(t), text)
+    text = _randomintRe.sub(str(random.randint(-1000, 1000)), text)
+    text = _whoRe.sub(msg.nick, text)
+    text = _botnickRe.sub(irc.nick, text)
+    text = _todayRe.sub(time.ctime(), text)
+    text = _nowRe.sub(time.ctime(), text)
     return text
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -31,6 +31,9 @@
 
 from test import *
 
+import sets
+
+import irclib
 import plugins
 
 class ToggleDictionaryTestCase(unittest.TestCase):
@@ -85,4 +88,37 @@ class ToggleDictionaryTestCase(unittest.TestCase):
         self.assertEqual(t.toString(), '(bar: On; foo: On)')
         self.assertEqual(t.toString(channel='#foo'),
                         '(bar: Off; foo: Off)')
+
+
+class FunctionsTestCase(unittest.TestCase):
+    class irc:
+        class state:
+            users = sets.Set(['foo', 'bar', 'baz'])
+        nick = 'foobar'
+        pass
+    def testStandardSubstitute(self):
+        msg = ircmsgs.privmsg('#foo', 'filler', prefix='biff!quux@xyzzy')
+        s = plugins.standardSubstitute(self.irc, msg, '$randomint')
+        try:
+            int(s)
+        except ValueError:
+            self.fail('$randomnick wasn\'t an int.')
+        s = plugins.standardSubstitute(self.irc, msg, '$randomInt')
+        try:
+            int(s)
+        except ValueError:
+            self.fail('$randomnick wasn\'t an int.')
+        self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$botnick'),
+                         self.irc.nick)
+        self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$who'),
+                         msg.nick)
+        self.assert_(plugins.standardSubstitute(self.irc, msg, '$randomdate'))
+        self.assert_(plugins.standardSubstitute(self.irc, msg, '$today'))
+        self.assert_(plugins.standardSubstitute(self.irc, msg, '$now'))
+        
+        
+        
+            
+            
+            
         
