@@ -42,7 +42,7 @@ useBold = False
 
 def output(s, unformatted=True, fd=sys.stdout):
     if unformatted:
-        s = textwrap.fill(utils.normalizeWhitespace(s), width=65)
+        s = textwrap.fill(utils.str.normalizeWhitespace(s), width=65)
     print >>fd, s
     print >>fd
 
@@ -52,7 +52,7 @@ def expect(prompt, possibilities, recursed=False, default=None,
 
     If possibilities is empty, allow anything.
     """
-    prompt = utils.normalizeWhitespace(prompt)
+    prompt = utils.str.normalizeWhitespace(prompt)
     originalPrompt = prompt
     if recursed:
         output('Sorry, that response was not an option.')
