@@ -55,7 +55,7 @@ import optparse
 started = time.time()
 
 import supybot
-import registry
+import registry # Must be imported before conf or log.
 
 def main():
     import conf
