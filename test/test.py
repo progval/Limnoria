@@ -97,8 +97,12 @@ class Cmd(object):
         return self.toString()
                     
 class PluginTestCase(unittest.TestCase):
-    callbacks = ()
     channels = ()
+    def getResponse(self, command, prefix=None, channel=None):
+        pass
+    
+    def getResponseMsg(self, msg):
+        pass
     
     
 if __name__ == '__main__':
@@ -111,4 +115,5 @@ if __name__ == '__main__':
     suite = unittest.defaultTestLoader.loadTestsFromNames(names)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
+    print 'Total asserts: %s' % unittest.asserts
     world.testing = False
