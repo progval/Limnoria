@@ -145,7 +145,7 @@ class RSS(callbacks.Privmsg):
                     t = threading.Thread(target=self._newHeadlines,
                                          name='Fetching <%s>' % url,
                                          args=(irc, channels, name, url))
-                    self.log.debug('Spawning thread to fetch <%s>', url)
+                    self.log.info('Checking for announcements at <%s>', url)
                     world.threadsSpawned += 1
                     t.setDaemon(True)
                     t.start()
