@@ -30,7 +30,7 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+A plugin that tries to emulate Infobot somewhat faithfully.
 """
 
 from baseplugin import *
@@ -46,6 +46,10 @@ import ircmsgs
 import callbacks
 
 dbfilename = os.path.join(conf.dataDir, 'Infobot.db')
+
+def configure(onStart, afterConnect, advanced):
+    from questions import expect, anything, something, yn
+    onStart.append('load Infobot')
 
 def makeDb(filename):
     if os.path.exists(filename):
