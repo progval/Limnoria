@@ -31,7 +31,7 @@ if __name__ == '__main__':
     shutil.copy(channelFile, channelFile + '.bak')
     # Users.conf.
     fd = file(userFile, 'w')
-    for (i, u) in enumerate(ircdb.users):
+    for (i, u) in enumerate(ircdb.users.users):
         if u is None:
             continue
         write(fd, 'user %s' % i)
