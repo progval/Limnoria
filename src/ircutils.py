@@ -254,6 +254,11 @@ def mircColor(s, fg=None, bg=None):
         return '\x03%s,%s%s\x0F' % (fg, bg, s)
 
 def canonicalColor(s, bg=False, shift=0):
+    """Assigns an (fg, bg) canonical color pair to a string based on its hash
+    value.  This means it might change between Python versions.  This pair can
+    be used as a *parameter to mircColor.  The shift parameter is how much to
+    right-shift the hash value initially.
+    """
     h = hash(s) >> shift
     fg = h % 14 + 2 # The + 2 is to rule out black and white.
     if bg:
@@ -303,9 +308,9 @@ def shrinkList(L, sep='', limit=425):
     """Shrinks a list of strings to a given combined length of limit."""
     length = len(sep)
     count = 0
-    while reduce(operator.add, map(length.__add__, map(len, L)), 0)> limit:
-          L.pop()
-          count += 1
+    while reduce(operator.add, map(length.__add__, map(len, L)), 0) > limit:
+        L.pop()
+        count += 1
     return count
 
 
@@ -349,6 +354,7 @@ class IrcDict(dict):
         dict.__delitem__(self, IrcString(s))
 
 class IrcSet(sets.Set):
+    """A sets.Set using IrcStrings instead of regular strings."""
     __slots__ = ()
     def add(self, s):
         return sets.Set.add(self, IrcString(s))
