@@ -91,6 +91,9 @@ def makeNewAlias(name, alias):
         raise AliasError, 'Can\'t mix $* and optional args (@1, etc.)'
     if original.count('$*') > 1:
         raise AliasError, 'There can be only one $* in an alias.'
+    testTokens = callbacks.tokenize(original)
+    if testTokens and isinstance(testTokens[0], list):
+        raise AliasError, 'Commands may not be the result of nesting.'
     def f(self, irc, msg, args):
         alias = original.replace('$nick', msg.nick)
         if '$channel' in original:

@@ -67,6 +67,9 @@ class FunctionsTest(SupyTestCase):
 
 class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Alias', 'Filter', 'Utilities')
+    def testNoAliasWithNestedCommandName(self):
+        self.assertError('alias add foo "[bar] baz"')
+        
     def testDoesNotOverwriteCommands(self):
         self.assertError('alias add alias "echo foo bar baz"')
         self.assertError('alias add add "echo foo bar baz"')
