@@ -191,6 +191,9 @@ class Tokenizer:
         if len(tokens) >= 2:
             self.left = tokens[0]
             self.right = tokens[1]
+        else:
+            self.left = ''
+            self.right = ''
 
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
