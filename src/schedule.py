@@ -90,8 +90,11 @@ class Schedule(drivers.IrcDriver):
     def addPeriodicEvent(self, f, t, name=None):
         """Adds a periodic event that is called every t seconds."""
         def wrapper():
-            f()
-            return self.addEvent(wrapper, time.time() + t, name)
+            try:
+                f()
+            finally:
+                # Even if it raises an exception, let's schedule it.
+                return self.addEvent(wrapper, time.time() + t, name)
         return wrapper()
 
     removePeriodicEvent = removeEvent
@@ -103,7 +106,10 @@ class Schedule(drivers.IrcDriver):
             (t, name) = heapq.heappop(self.schedule)
             f = self.events[name]
             del self.events[name]
-            f()
+            try:
+                f()
+            except Exception, e:
+                log.exception('Uncaught exception in scheduled function:')
 
 try:
     ignore(schedule)
