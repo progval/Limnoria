@@ -96,7 +96,7 @@ class Format(callbacks.Privmsg):
         Joins all the arguments together with <separator>.
         """
         irc.reply(sep.join(args))
-    join = wrap(join, ['something'], allowExtra=True)
+    join = wrap(join, ['anything'], allowExtra=True)
 
     def translate(self, irc, msg, args, bad, good, text):
         """<chars to translate> <chars to replace those with> <text>

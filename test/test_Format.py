@@ -50,6 +50,7 @@ class UtilitiesTestCase(PluginTestCase):
         
     def testJoin(self):
         self.assertResponse('join + foo bar baz', 'foo+bar+baz')
+        self.assertResponse('join "" foo bar baz', 'foobarbaz')
 
     def testTranslate(self):
         self.assertResponse('translate 123 456 1234567890', '4564567890')
