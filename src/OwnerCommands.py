@@ -229,7 +229,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
     '''
 
     def reload(self, irc, msg, args):
-        """<callback name>
+        """<plugin>
 
         Unloads and subsequently reloads the callback by name; use the 'list'
         command to see a list of the currently loaded callbacks.
@@ -259,7 +259,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
             irc.error(msg, 'There was no callback %s.' % name)
 
     def unload(self, irc, msg, args):
-        """<callback name>
+        """<plugin>
 
         Unloads the callback by name; use the 'list' command to see a list
         of the currently loaded callbacks.

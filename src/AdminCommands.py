@@ -81,6 +81,10 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         """
         if not args:
             args.append(msg.args[0])
+        for arg in args:
+            if arg not in irc.state.channels:
+                irc.error('I\'m not currently in %s' % arg)
+                return
         irc.queueMsg(ircmsgs.parts(args, msg.nick))
 
     def disable(self, irc, msg, args):

@@ -35,12 +35,56 @@ import conf
 
 class OwnerCommandsTestCase(PluginTestCase):
     plugins = ('OwnerCommands',)
-
     def testEval(self):
         conf.allowEval = True
         s = "[irc.__class__ for irc in " \
             "irc.getCallback('Relay').ircstates.keys()]" 
         self.assertNotRegexp('eval ' + s, '^SyntaxError')
+
+    def testExec(self):
+        self.assertNotError('exec conf.foo = True')
+        self.failUnless(conf.foo)
+        del conf.foo
+
+    def testSettrace(self):
+        self.assertNotError('settrace')
+        self.assertNotError('unsettrace')
+
+    def testIrcquote(self):
+        self.assertResponse('ircquote PRIVMSG %s :foo' % self.irc.nick, 'foo')
+
+    def testFlush(self):
+        self.assertNotError('flush')
+
+    def testUpkeep(self):
+        self.assertNotError('upkeep')
+
+    def testSetUnset(self):
+        self.assertNotError('set foo bar')
+        self.failUnless(world.tempvars['foo'] == 'bar')
+        self.assertNotError('unset foo')
+        self.failIf('foo' in world.tempvars)
+        self.assertError('unset foo')
+
+    def testLoad(self):
+        self.assertError('load OwnerCommands')
+        self.assertNotError('load MiscCommands')
+        self.assertNotError('list OwnerCommands')
+
+    def testReload(self):
+        self.assertError('reload MiscCommands')
+        self.assertNotError('load MiscCommands')
+        self.assertNotError('reload MiscCommands')
+
+    def testUnload(self):
+        self.assertError('unload MiscCommands')
+        self.assertNotError('load MiscCommands')
+        self.assertNotError('unload MiscCommands')
+        self.assertError('unload MiscCommands')
+
+    def testSay(self):
+        self.assertResponse('say %s foo' % self.irc.nick, 'foo')
+        
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
