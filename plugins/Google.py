@@ -104,7 +104,8 @@ def search(log, queries, **kwargs):
         proxy = conf.supybot.protocols.http.proxy()
         if proxy:
             kwargs['http_proxy'] = proxy
-        data = google.doGoogleSearch(' '.join(queries), **kwargs)
+        query = ' '.join(queries).decode('utf-8')
+        data = google.doGoogleSearch(query, **kwargs)
         searches = conf.supybot.plugins.Google.state.searches() + 1
         conf.supybot.plugins.Google.state.searches.setValue(searches)
         time = conf.supybot.plugins.Google.state.time() + data.meta.searchTime
