@@ -38,6 +38,7 @@ class HttpTest(PluginTestCase, PluginDocumentation):
 
     def testFreshmeat(self):
         self.assertNotError('freshmeat supybot')
+        self.assertNotError('freshmeat My Classifieds')
         self.assertNotRegexp('freshmeat supybot', 'DOM Element')
 
     def testTitle(self):

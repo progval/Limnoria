@@ -87,6 +87,7 @@ class Http(callbacks.Privmsg):
         Returns Freshmeat data about a given project.
         """
         project = privmsgs.getArgs(args)
+        project = ''.join(project.split())
         url = 'http://www.freshmeat.net/projects-xml/%s' % project
         try:
             text = webutils.getUrl(url)

@@ -1,3 +1,5 @@
+	* Fixed Http.freshmeat for projects with a space in their names.
+	
 	* Added Karma.most for determining various "mosts" in the Karma
 	database.
 	
