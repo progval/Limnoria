@@ -92,7 +92,6 @@ class Moobot(callbacks.Privmsg):
         "7" : "--... ",
         "8" : "---.. ",
         "9" : "----. ",
-        " " : " "
     }
 
     _revcode = dict([(y.strip(), x) for (x, y) in _code.items()])
@@ -104,11 +103,14 @@ class Moobot(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         L = []
-        for code in text.split():
-            try:
-                L.append(self._revcode[code])
-            except KeyError:
-                L.append(code)
+        for (first, second, third) in window(text.split(' ')+[''], 3):
+            if first == '' and second == '' and third == '':
+                L.append(' ')
+            else:
+                try:
+                    L.append(self._revcode[first])
+                except KeyError:
+                    L.append(first)
         irc.reply(msg, ''.join(L))
 
     def morse(self, irc, msg, args):
