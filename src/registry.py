@@ -261,7 +261,8 @@ class Value(Group):
     because we forgot to put a proper help string here."""
     def __init__(self, default, help,
                  private=False, showDefault=True, **kwargs):
-        Group.__init__(self, **kwargs)
+        self.__parent = super(Value, self)
+        self.__parent.__init__(**kwargs)
         self._default = default
         self._private = private
         self.showDefault = showDefault
@@ -279,7 +280,7 @@ class Value(Group):
     def setName(self, *args):
         if self._name == 'unset':
             self._lastModified = 0
-        Group.setName(self, *args)
+        self.__parent.setName(*args)
         self._lastModified = time.time()
 
     def set(self, s):
@@ -325,7 +326,7 @@ class Boolean(Value):
         self.setValue(value)
 
     def setValue(self, v):
-        Value.setValue(self, bool(v))
+        super(Boolean, self).setValue(bool(v))
 
 class Integer(Value):
     """Value must be an integer."""
@@ -340,14 +341,14 @@ class NonNegativeInteger(Integer):
     def setValue(self, v):
         if v < 0:
             self.error()
-        Integer.setValue(self, v)
+        super(NonNegativeInteger, self).setValue(v)
 
 class PositiveInteger(NonNegativeInteger):
     """Value must be positive (non-zero) integer."""
     def setValue(self, v):
         if not v:
             self.error()
-        NonNegativeInteger.setValue(self, v)
+        super(PositiveInteger, self).setValue(v)
 
 class Float(Value):
     """Value must be a floating-point number."""
@@ -359,7 +360,7 @@ class Float(Value):
 
     def setValue(self, v):
         try:
-            Value.setValue(self, float(v))
+            super(Float, self).setValue(float(v))
         except ValueError:
             self.error()
 
@@ -369,7 +370,7 @@ class PositiveFloat(Float):
         if v <= 0:
             self.error()
         else:
-            Float.setValue(self, v)
+            super(PositiveFloat, self).setValue(v)
 
 class String(Value):
     """Value is not a valid Python string."""
@@ -401,7 +402,8 @@ class OnlySomeStrings(String):
     def __init__(self, *args, **kwargs):
         assert self.validStrings, 'There must be some valid strings.  ' \
                                   'This is a bug.'
-        String.__init__(self, *args, **kwargs)
+        self.__parent = super(OnlySomeStrings, self)
+        self.__parent.__init__(*args, **kwargs)
 
     def error(self):
         raise InvalidRegistryValue, \
@@ -420,43 +422,40 @@ class OnlySomeStrings(String):
     def setValue(self, s):
         s = self.normalize(s)
         if s in self.validStrings:
-            String.setValue(self, s)
+            self.__parent.setValue(s)
         else:
             self.error()
 
 class NormalizedString(String):
-    def __init__(self, default, help, **kwargs):
+    def __init__(self, default, *args, **kwargs):
         default = self.normalize(default)
-        String.__init__(self, default, help, **kwargs)
+        self.__parent = super(NormalizedString, self)
+        self.__parent.__init__(default, *args, **kwargs)
         
     def normalize(self, s):
         return utils.normalizeWhitespace(s.strip())
     
     def set(self, s):
         s = self.normalize(s)
-        String.set(self, s)
+        self.__parent.set(s)
 
     def setValue(self, s):
         s = self.normalize(s)
-        String.setValue(self, s)
+        self.__parent.setValue(s)
 
 class StringSurroundedBySpaces(String):
-    def set(self, s):
-        String.set(self, s)
-        self.setValue(self.value)
-
     def setValue(self, v):
         if v.lstrip() == v:
             v= ' ' + v
         if v.rstrip() == v:
             v += ' '
-        String.setValue(self, v)
+        super(StringSurroundedBySpaces, self).setValue(v)
 
 class StringWithSpaceOnRight(String):
     def setValue(self, v):
         if v.rstrip() == v:
             v += ' '
-        String.setValue(self, v)
+        super(StringWithSpaceOnRight, self).setValue(v)
 
 class Regexp(Value):
     """Value must be a valid regular expression."""
@@ -473,12 +472,13 @@ class Regexp(Value):
             self.error(e)
 
     def setValue(self, v, sr=None):
+        parent = super(Regexp, self)
         if v is None:
             self.sr = ''
-            Value.setValue(self, None)
+            parent.setValue(None)
         elif sr is not None:
             self.sr = sr
-            Value.setValue(self, v)
+            parent.setValue(v)
         else:
             raise InvalidRegistryValue, \
                   'Can\'t setValue a regexp, there would be an inconsistency '\
@@ -508,7 +508,7 @@ class SeparatedListOf(Value):
         self.setValue(L)
 
     def setValue(self, v):
-        Value.setValue(self, self.List(v))
+        super(SeparatedListOf, self).setValue(self.List(v))
 
     def __str__(self):
         values = self()
