@@ -344,15 +344,6 @@ def tokenize(s, channel=None):
     except ValueError, e:
         raise SyntaxError, str(e)
 
-def getCommands(tokens):
-    """Given tokens as output by tokenize, returns the command names."""
-    L = []
-    if tokens and isinstance(tokens, list):
-        L.append(tokens[0])
-        for elt in tokens:
-            L.extend(getCommands(elt))
-    return L
-
 def findCallbackForCommand(irc, name):
     """Given a command name and an Irc object, returns a list of callbacks that
     commandName is in."""
