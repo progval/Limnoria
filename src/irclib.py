@@ -359,7 +359,6 @@ class IrcState(IrcCommandDispatcher):
                 elif mode[-1] in 'beq':
                     pass # We don't need this right now.
                 else:
-                    print '*****', mode
                     modeChar = mode[1]
                     if mode[0] == '+':
                         chan.setMode(modeChar, value)
