@@ -64,6 +64,9 @@ def configure(onStart, afterConnect, advanced):
         if yn('Do you want the Ebay snarfer enabled by default?') == 'n':
             onStart.append('Ebay config auction-snarfer off')
 
+class EbayError(callbacks.Error):
+    pass
+
 class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     """
     Module for eBay stuff. Currently contains a URL snarfer and a command to
@@ -107,31 +110,20 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     _multiField = (_bidder, _winningBidder, _seller)
 
     def auction(self, irc, msg, args):
-        """[--link] <item>
+        """<item>
 
         Return useful information about the eBay auction with item number
-        <item>. If --link is specified, returns a link to the auction as well.
+        <item>.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['link'])
-        link = False
-        for (option, arg) in optlist:
-            option = option.strip('-')
-            if option == 'link':
-                link = True
-        item = privmsgs.getArgs(rest)
-        try:
-            int(item)
-        except ValueError:
+        item = privmsgs.getArgs(args)
+        if not item.isdigit():
             irc.error(msg, '<item> must be an integer value.')
             return
         url = 'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=%s' % item
-        if link:
-            irc.reply(msg, url)
-            return
         try:
-            self._getResponse(irc, msg, url)
-        except urllib2.HTTPError, e:
-            irc.error(msg, 'Error while fetching the web page: %s' % e.msg)
+            irc.reply(msg, self._getResponse(url))
+        except EbayError, e:
+            irc.reply(msg, str(e))
 
     def ebaySnarfer(self, irc, msg, match):
         r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?" \
@@ -141,24 +133,24 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         url = match.group(0)
         #debug.printf(url)
         try:
-            self._getResponse(irc, msg, url, snarf=True)
-        except urllib2.HTTPError, e:
-            debug.msg('Error while fetching the web page: %s' % e.msg)
+            irc.reply(msg, self._getResponse(url), prefixName=False)
+        except EbayError, e:
+            debug.msg('Ebay Auction Snarfer: %s: %s' % (url, e))
     ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
 
-    def _getResponse(self, irc, msg, url, snarf=False):
+    def _getResponse(self, url):
         def bold(m):
             return (ircutils.bold(m[0]),) + m[1:]
-        fd = urllib2.urlopen(url)
-        s = fd.read()
-        fd.close()
+        try:
+            fd = urllib2.urlopen(url)
+            s = fd.read()
+            fd.close()
+        except urllib2.HTTPError, e:
+            raise EbayError, str(e)
         resp = []
         m = self._invalid.search(s)
         if m:
-            if snarf:
-                return
-            irc.reply(msg, 'That auction %s' % m.group(1))
-            return
+            raise EbayError, 'That auction %s' % m.group(1)
         m = self._info.search(s)
         if m:
             (num, desc) = m.groups()
@@ -177,17 +169,10 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 else:
                     resp.append('%s: %s' % bold(m.groups()))
         if resp:
-            if snarf:
-                irc.reply(msg, '%s' % '; '.join(resp), prefixName=False)
-            else:
-                irc.reply(msg, '%s' % '; '.join(resp))
+            return '; '.join(resp)
         else:
-            if snarf:
-                irc.error(msg, '%s doesn\'t appear to be a proper eBay '\
-                    'Auction page. (%s)' % (url, conf.replyPossibleBug))
-            else:
-                irc.error(msg, 'That doesn\'t appear to be a proper eBay '\
-                    'Auction page. (%s)' % conf.replyPossibleBug)
+            raise EbayError, 'That doesn\'t appear to be a proper eBay ' \
+                             'auction page.  (%s)' % conf.replyPossibleBug
 
 Class = Ebay
 

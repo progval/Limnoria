@@ -34,9 +34,7 @@ from test import *
 class EbayTest(PluginTestCase, PluginDocumentation):
     plugins = ('Ebay',)
     def testAuction(self):
-        self.assertResponse('auction --link 3053641570',
-                            'http://cgi.ebay.com/ws/eBayISAPI.dll?'
-                            'ViewItem&item=3053641570')
+        self.assertNotError('auction 3053641570')
         # test 'Invalid Item' checking
         self.assertRegexp('auction 2357056673', 'That auction is invalid')
         self.assertError('auction foobar')
