@@ -197,6 +197,109 @@ class Http(callbacks.Privmsg):
             irc.reply(msg, s)
 
 
+    _cityregex = re.compile(
+        r'<td><font size="4" face="arial"><b>'\
+        r'(.*?), (.*?),(.*?)</b></font></td>', re.IGNORECASE)
+    _interregex = re.compile(
+        r'<td><font size="4" face="arial"><b>'\
+        r'(.*?), (.*?)</b></font></td>', re.IGNORECASE)
+    _condregex = re.compile(
+        r'<td width="100%" colspan="2" align="center"><strong>'\
+        r'<font face="arial">(.*?)</font></strong></td>', re.IGNORECASE)
+    _tempregex = re.compile(
+        r'<td valign="top" align="right"><strong><font face="arial">'\
+        r'(.*?)</font></strong></td>', re.IGNORECASE)
+    def weather2(self, irc, msg, args):
+        """<US zip code> <US/Canada city, state> <Foreign city, country>
+
+        Returns the approximate weather conditions for a given city.
+        """
+        zip = privmsgs.getArgs(args)
+        zip = zip.replace(',','')  
+        zip = zip.lower().split()
+        
+        #If we received more than one argument, then we have received
+        #a city and state argument that we need to process.
+        if len(zip) > 1:
+            #If we received more than 1 argument, then we got a city with a
+            #multi-word name.  ie ['Garden', 'City', 'KS'] instead of
+            #['Liberal', 'KS'].  We join it together with a + to pass
+            #to our query
+            if len(zip) > 2:
+                city = '+'.join(zip[:-1])
+                isState = zip[-1]
+            else:
+                city = zip[0]
+                isState = zip[1]
+            
+            #We must break the States up into two sections.  The US and
+            #Canada are the only countries that require a State argument.
+            
+            #United States
+            realStates = sets.Set(['ak', 'al', 'ar', 'ca', 'co', 'ct', 'dc',
+                        'de', 'fl', 'ga', 'hi', 'ia', 'id', 'il',
+                        'in', 'ks', 'ky', 'la', 'ma', 'md', 'me',
+                        'mi', 'mn', 'mo', 'ms', 'mt', 'nc', 'nd',
+                        'ne', 'nh', 'nj', 'nm', 'nv', 'ny', 'oh',
+                        'ok', 'or', 'pa', 'ri', 'sc', 'sd', 'tn',
+                        'tx', 'ut', 'va', 'vt', 'wa', 'wi', 'wv',
+                        'wy'])
+            #Canadian provinces.  (Province being a metric State measurement
+            #mind you. :D)
+            fakeStates = sets.Set(['ab', 'bc', 'mb', 'nb', 'nf', 'ns', 'nt',
+                        'nu', 'on', 'pe', 'qc', 'sk', 'yk'])
+            
+            if isState in realStates:
+                state = isState
+                country = 'us'
+            elif isState in fakeStates:
+                state = isState
+                country = 'ca'
+            else:
+                state = ''
+                country = isState
+            
+            #debug.printf('State: %s' % (state,))
+            #debug.printf('Country: %s' % (country,))
+            
+            url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
+                    'pass=&dpp=&forecast=zandh&config=&'\
+                    'place=%s&state=%s&country=%s' % \
+                                (city, state, country)
+
+        #We received a single argument.  Zipcode or station id.
+        else:
+            url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
+                    'config=&forecast=zandh&pands=%s&Submit=GO' % (zip[0],)
+
+        #debug.printf(url)
+        try:
+            fd = urllib2.urlopen(url)
+            html = fd.read()
+            fd.close()
+            
+            headData = self._cityregex.search(html)
+            if headData:
+                (city, state, country) = headData.groups()
+            else:
+                headData = self._interregex.search(html)
+                (city, state) = headData.groups()
+                
+            temp = self._tempregex.search(html).group(1)
+            conds = self._condregex.search(html).group(1)
+            
+            if temp and conds and city and state:
+                irc.reply(msg, 'The current temperature in %s, %s is %s'\
+                  ' with %s conditions.' % (city.strip(), state.strip(),
+                                            temp, conds))
+            else:
+                irc.error(msg, 'the format of the page was odd.')
+                
+        except urllib2.URLError:
+            irc.error(msg, 'Couldn\'t open the search page.')
+        except:
+            irc.error(msg, 'the format of the page was odd.')
+
     _tempregex = re.compile('CLASS=obsTempTextA>(\d+)&deg;F</b></td>',\
                          re.IGNORECASE)
     _cityregex = re.compile(r'Local Forecast for (.*), (.*?) ')
