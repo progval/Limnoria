@@ -358,6 +358,27 @@ class Filter(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         irc.reply(ircutils.stripColor(text))
 
+    def aol(self, irc, msg, args):
+        """<text>
+
+        Returns <text> as if an AOLuser had said it.
+        """
+        text = privmsg.getArgs(args)
+        text = text.replace('you', 'u')
+        text = text.replace('are', 'r')
+        text = text.replace('love', '<3')
+        text = text.replace('too', '2')
+        text = text.replace('to', '2')
+        text = text.replace('two', '2')
+        text = text.replace('for', '4')
+        text = text.replace('four', '4')
+        text = text.replace(', ', ' ')
+        text = text.replace(',', ' ')
+        text = text.replace("'", '')
+        text = text.replace('their', 'there')
+        smiley = random.choice(['<3', ':)', ':-)', ':D', ':-D'])
+        text += smiley*3
+        
     def jeffk(self, irc, msg, args):
         """<text>
 
