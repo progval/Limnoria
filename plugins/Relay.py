@@ -95,7 +95,7 @@ class Relay(callbacks.Privmsg):
         otherIrc.driver.die()
         del self.ircs[network]
         world.ircs.remove(otherIrc)
-        del abbreviations[network]
+        del self.abbreviations[network]
         irc.reply(msg, conf.replySuccess)
     relaydisconnect = privmsgs.checkCapability(relaydisconnect, 'owner')
 
@@ -205,14 +205,20 @@ class Relay(callbacks.Privmsg):
                     msg.args[1].find('has left on ') != -1 or \
                     msg.args[1].find('has joined on ') != -1):
                 channel = msg.args[0]
-                if channel not in self.channels:
-                    return msg
-                abbreviation = self.abbreviations[irc]
-                s = self._formatPrivmsg(irc.nick, abbreviation, msg)
+                if channel in self.channels:
+                    abbreviation = self.abbreviations[irc]
+                    s = self._formatPrivmsg(irc.nick, abbreviation, msg)
+                    for otherIrc in self.ircs.itervalues():
+                        if otherIrc != irc:
+                            if channel in otherIrc.state.channels:
+                                otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+        elif msg.command == 'TOPIC':
+            (channel, topic) = msg.args
+            if channel in self.channels:
                 for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
-                        if channel in otherIrc.state.channels:
-                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                        otherIrc.queueMsg(ircmsgs.topic(channel, topic))
+            
         return msg
 
 Class = Relay
