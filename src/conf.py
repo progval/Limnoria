@@ -422,13 +422,10 @@ supybot.register('drivers')
 supybot.drivers.register('poll', registry.Float(1.0, """Determines the default
 length of time a driver should block waiting for input."""))
 
-class ValidDriverModule(registry.String):
-    def setValue(self, v):
-        if v not in ('socketDrivers', 'twistedDrivers', 'asyncoreDrivers'):
-            raise registry.InvalidRegistryValue, \
-                  'Value must be one of "socketDrivers", "asyncoreDrivers", ' \
-                  'or twistedDrivers.'
-        registry.String.setValue(self, v)
+class ValidDriverModule(registry.OnlySomeStrings):
+    def normalize(self, s):
+        # We can't be case insensitive here.  At least not without work.
+        return s 
 
 supybot.drivers.register('module', ValidDriverModule('socketDrivers', """
 Determines what driver module the bot will use.  socketDrivers, a simple
