@@ -379,7 +379,9 @@ class Misc(callbacks.Privmsg):
     def plugin(self, irc, msg, args):
         """<command>
 
-        Returns the plugin <command> is in.
+        Returns the plugin (or plugins) <command> is in.  If this command is
+        nested, it returns only the plugin name(s).  If given as a normal
+        command, it returns a more verbose, user-friendly response.
         """
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         cbs = callbacks.findCallbackForCommand(irc, command)
