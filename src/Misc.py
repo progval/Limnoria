@@ -377,7 +377,7 @@ class Misc(callbacks.Privmsg):
                     irc.error('%s has no public mores.' % nick)
                     return
             except KeyError:
-                irc.error('Sorry, I can\'t find a hostmask for %s' % nick)
+                irc.error('Sorry, I can\'t find any mores for %s' % nick)
                 return
         try:
             L = self._mores[userHostmask]
