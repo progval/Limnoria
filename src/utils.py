@@ -309,6 +309,12 @@ def pluralize(i, s):
         else:
             return s + 's'
 
+def nItems(n, item, between=None):
+    if between is None:
+        return '%s %s' % (n, pluralize(n, item))
+    else:
+        return '%s %s %s' % (n, between, pluralize(n, item))
+
 def be(i):
     """Returns the form of the verb 'to be' based on the number i."""
     if i == 1:

@@ -170,5 +170,11 @@ class UtilsTest(unittest.TestCase):
         utils.sortBy(str.lower, L)
         self.assertEqual(L, ['abc', 'AD', 'z'])
         
+    def testNItems(self):
+        self.assertEqual(utils.nItems(1, 'tool', 'crazy'), '1 crazy tool')
+        self.assertEqual(utils.nItems(1, 'tool'), '1 tool')
+        self.assertEqual(utils.nItems(2, 'tool', 'crazy'), '2 crazy tools')
+        self.assertEqual(utils.nItems(2, 'tool'), '2 tools')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
