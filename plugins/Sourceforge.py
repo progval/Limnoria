@@ -72,7 +72,7 @@ def configure(advanced):
     if yn('Do you want to specify a default project?'):
         project = anything('Project name:')
         if project:
-            conf.supybot.plugins.Sourceforge.project.set(project)
+            conf.supybot.plugins.Sourceforge.defaultProject.set(project)
 
     output("""Sourceforge is quite the word to type, and it may get annoying
               typing it all the time because Supybot makes you use the plugin
@@ -101,7 +101,7 @@ conf.registerPlugin('Sourceforge')
 conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'trackerSnarfer',
     registry.Boolean(False, """Determines whether the bot will reply to SF.net
     Tracker URLs in the channel with a nice summary of the tracker item."""))
-conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'project',
+conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'defaultProject',
     registry.String('', """Sets the default project to use in the case that no
     explicit project is given."""))
 
@@ -204,7 +204,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         except ValueError:
             pass
         if not project:
-            project = self.registryValue('project', msg.args[0])
+            project = self.registryValue('defaultProject', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -224,7 +224,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         default project is set.
         """
         project = privmsgs.getArgs(args, required=0, optional=1)
-        project = project or self.registryValue('project', msg.args[0])
+        project = project or self.registryValue('defaultProject', msg.args[0])
         if not project:
             raise callbacks.ArgumentError
         text = webutils.getUrl(''.join([self._projectURL, project]))
@@ -255,7 +255,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 irc.error('"%s" is not a proper bugnumber.' % project)
                 return
             bugnum = project
-            project = self.registryValue('project', msg.args[0])
+            project = self.registryValue('defaultProject', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -290,7 +290,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         except ValueError:
             pass
         if not project:
-            project = self.registryValue('project', msg.args[0])
+            project = self.registryValue('defaultProject', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -309,7 +309,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         default project is set.
         """
         project = privmsgs.getArgs(args, required=0, optional=1)
-        project = project or self.registryValue('project', msg.args[0])
+        project = project or self.registryValue('defaultProject', msg.args[0])
         if not project:
             raise callbacks.ArgumentError
         text = webutils.getUrl(''.join([self._projectURL, project]))
@@ -340,7 +340,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 irc.error('"%s" is not a proper rfenumber.' % project)
                 return
             rfenum = project
-            project = self.registryValue('project', msg.args[0])
+            project = self.registryValue('defaultProject', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
