@@ -260,7 +260,7 @@ class IrcObjectProxy:
         self.__dict__ = {}
 
     def getRealIrc(self):
-        if issubclass(self.irc, irclib.Irc):
+        if isinstance(self.irc, irclib.Irc):
             return self.irc
         else:
             return self.irc.getRealIrc()
