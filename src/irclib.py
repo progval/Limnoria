@@ -280,7 +280,7 @@ class Irc(object):
                 toRemove.append(i)
         if toRemove:
             for i in reviter(range(len(self.callbacks))):
-                if toRemove[-1] == i:
+                if toRemove and toRemove[-1] == i:
                     toRemove.pop()
                     ret.append(self.callbacks.pop(i))
         return ret
