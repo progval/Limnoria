@@ -43,7 +43,6 @@ import logging
 import ansi
 import conf
 import utils
-import ircutils
 import registry
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
@@ -130,7 +129,6 @@ class ColorizedFormatter(Formatter):
                             ansi.RESET])
         else:
             return Formatter.format(self, record, *args, **kwargs)
-
 
 # These are public.
 formatter = Formatter('%(levelname)s %(asctime)s %(message)s')
@@ -219,16 +217,11 @@ class MetaFirewall(type):
 
 
 class LogLevel(registry.Value):
-    def __init__(self, target, default, help,
-                 private=False, showDefault=True, **kwargs):
-        registry.Value.__init__(self, default, help, private=private,
-                                showDefault=showDefault, **kwargs)
-        self._target = target
     def set(self, s):
         s = s.upper()
         try:
             self.value = getattr(logging, s)
-            self._target.setLevel(self.value) # _logger defined later.
+            _logger.setLevel(self.value) # _logger defined later.
         except AttributeError:
             s = 'Invalid log level: should be one of ' \
                 'DEBUG, INFO, WARNING, ERROR, or CRITICAL.'
@@ -240,10 +233,10 @@ conf.supybot.directories.register('log', registry.String('logs', """Determines
 what directory the bot will store its logfiles in."""))
 
 conf.supybot.register('log')
-conf.supybot.log.register('level', LogLevel(_logger, logging.INFO,
-"""Determines what the minimum priority level logged will be to log files.
-Valid values are DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of
-increasing priority."""))
+conf.supybot.log.register('level', LogLevel(logging.INFO,
+"""Determines what the minimum priority level logged will be.  Valid values are
+DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of increasing
+priority."""))
 conf.supybot.log.register('stdout',
     registry.Boolean(True, """Determines whether the bot will log to
     stdout."""))
@@ -270,13 +263,12 @@ pluginLogDir = os.path.join(conf.supybot.directories.log(), 'plugins')
 if not os.path.exists(pluginLogDir):
     os.mkdir(pluginLogDir, 0755)
 
-_logger.setLevel(-1)
-
 _handler = BetterFileHandler(os.path.join(conf.supybot.directories.log(),
                                           'misc.log'))
 _handler.setFormatter(formatter)
-_handler.setLevel(conf.supybot.log.level())
+_handler.setLevel(-1)
 _logger.addHandler(_handler)
+_logger.setLevel(conf.supybot.log.level())
 
 _stdoutHandler = StdoutStreamHandler(sys.stdout)
 _formatString = '%(name)s: %(levelname)s %(message)s'
@@ -285,9 +277,6 @@ _stdoutHandler.setFormatter(_stdoutFormatter)
 _stdoutHandler.setLevel(-1)
 _logger.addHandler(_stdoutHandler)
 
-conf.supybot.log.stdout.register('level', LogLevel(_stdoutHandler,
-logging.DEBUG, """Determines what the minimum priority level logged will be to
-stdout. See supybot.log.level for possible values"""))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
