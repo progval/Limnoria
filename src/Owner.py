@@ -378,6 +378,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             c = ircdb.channels.getChannel(channel)
             if not c.lobotomized:
                 irc.queueMsg(ircmsgs.privmsg(channel, text))
+        irc.noReply()
     announce = wrap(announce, ['text'])
 
     def defaultplugin(self, irc, msg, args, optlist, command, plugin):
@@ -427,6 +428,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.error(utils.exnToString(e))
         else:
             irc.queueMsg(m)
+            irc.noReply()
     ircquote = wrap(ircquote, ['text'])
 
     def quit(self, irc, msg, args, text):
