@@ -12,6 +12,16 @@ A: Because you've not given it anything to recognize you from!
    myOwnerUser and myOwnerUserPassword appropriately for your bot).
 
 
+Q: What's a hostmask?
+
+A: Each user on IRC is uniquely identified by a string which we call
+   a "hostmask."  The IRC RFC refers to it as a prefix.  Either way,
+   it consists of a nick, a user, and a host, in the form
+   nick!user@host.  If your Supybot complains that something you've
+   given to it isn't a hostmask, make sure that you have those three
+   components and that they're joined in the appropriate manner.
+
+
 Q: How do I make my Supybot op my users?
 
 A: First, you'll have to make sure that your users register with the
