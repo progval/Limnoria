@@ -84,11 +84,18 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         quote = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
+        quotetime = int(time.time())
         cursor.execute("""INSERT INTO quotes
                          VALUES(NULL, %s, %s, %s)""",
-                       msg.nick, int(time.time()), quote)
+                       msg.nick, quotetime, quote)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        criteria = ['added_by=%s' % msg.nick]
+        criteria.append('added_at=%s' % quotetime)
+        criteria.append('quote=%s' % quote)
+        sql = """SELECT id FROM quotes WHERE %s""" % ' AND '.join(criteria)
+        cursor.execute(sql)
+        quoteid = cursor.fetchone()[0]
+        irc.reply(msg, '%s (Quote #%s added)' % (conf.replySuccess, quoteid))
 
     def numquotes(self, irc, msg, args):
         """[<channel>]
