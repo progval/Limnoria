@@ -243,6 +243,9 @@ class Relay(callbacks.Privmsg, plugins.Toggleable):
             irc.error(msg, 'You must use the start command first.')
             return
         channel = privmsgs.getArgs(args)
+        if not ircutils.isChannel(channel):
+            irc.error(msg, '%r is not a valid channel.' % channel)
+            return
         self.channels.add(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
             if channel not in otherIrc.state.channels:
@@ -261,6 +264,9 @@ class Relay(callbacks.Privmsg, plugins.Toggleable):
             irc.error(msg, 'You must use the start command first.')
             return
         channel = privmsgs.getArgs(args)
+        if not ircutils.isChannel(channel):
+            irc.error(msg, '%r is not a valid channel.' % channel)
+            return
         self.channels.remove(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
             if channel in otherIrc.state.channels:
