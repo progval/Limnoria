@@ -220,6 +220,11 @@ class Debian(callbacks.Privmsg,
                 return
             else:
                 raise
+
+        if 'is down at the moment' in html:
+            irc.error(msg, 'Packages.debian.org is down at the moment.  '
+                           'Please try again later.')
+            return
         m = self._debnumpkgsre.search(html)
         if m:
             numberOfPackages = m.group(1)
