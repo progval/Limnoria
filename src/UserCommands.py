@@ -134,10 +134,10 @@ class UserCommands(callbacks.Privmsg):
             irc.error(msg, conf.replyIncorrectAuth)
             return
 
-    def delhostmask(self, irc, msg, args):
+    def removehostmask(self, irc, msg, args):
         """<name> <hostmask> [<password>]
 
-        Deletes the hostmask <hostmask> from the record of the user specified
+        Removes the hostmask <hostmask> from the record of the user specified
         by <name>.  The <password> may only be required if the user is not
         recognized by his hostmask.
         """
@@ -151,7 +151,11 @@ class UserCommands(callbacks.Privmsg):
             irc.error(msg, conf.replyNoUser)
             return
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
-            user.removeHostmask(hostmask)
+            try:
+                user.removeHostmask(hostmask)
+            except ValueError:
+                irc.error(msg, 'There was no such hostmask.')
+                return
             ircdb.users.setUser(id, user)
             irc.reply(msg, conf.replySuccess)
         else:

@@ -223,7 +223,7 @@ class IrcUser(object):
         self.hostmasks.append(hostmask)
 
     def removeHostmask(self, hostmask):
-        self.hostmasks = [s for s in self.hostmasks if s != hostmask]
+        self.hostmasks.remove(hostmask)
 
     def hasHostmask(self, hostmask):
         return hostmask in self.hostmasks
