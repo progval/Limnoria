@@ -45,6 +45,8 @@ class IrcMsg(object):
     """
     #__slots__ = ('_args', '_command', '_host', '_nick', '_prefix', '_user')
     def __init__(self, s='', command='', args=None, prefix='', msg=None):
+        if not s and not command and not msg:
+            raise ValueError, 'IRC messages require a command.'
         if msg:
             prefix = msg.prefix
             command = msg.command
