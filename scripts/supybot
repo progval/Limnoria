@@ -290,7 +290,7 @@ if __name__ == '__main__':
         os.close(0)
         os.close(1)
         os.close(2)
-        fd = os.open('/dev/null', os.RDWR)
+        fd = os.open('/dev/null', os.O_RDWR)
         os.dup2(fd, 0)
         os.dup2(fd, 1)
         os.dup2(fd, 2)
