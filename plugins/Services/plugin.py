@@ -46,7 +46,7 @@ class Services(callbacks.Plugin):
     use the password command multiple times if your bot has multiple nicks
     registered.  Also, be sure to configure the NickServ and ChanServ
     configuration variables to match the NickServ and ChanServ nicks on your
-    network.  Other commands such as identify, getops, etc. should not be
+    network.  Other commands such as identify, op, etc. should not be
     necessary if the bot is properly configured."""
     def __init__(self, irc):
         self.__parent = super(Services, self)
