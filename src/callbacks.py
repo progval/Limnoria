@@ -901,7 +901,7 @@ class IrcObjectProxy(RichReplyMethods):
         else:
             if self.commandMethod is not None:
                 # We can recurse here because it only gets called once.
-                return self.error(formatArgumentError(self.commandMethod),
+                return self.reply(formatArgumentError(self.commandMethod),
                                   **kwargs)
             else:
                 raise ArgumentError # We shouldn't get here, but just in case.
@@ -1108,7 +1108,7 @@ class Privmsg(irclib.IrcCallback):
         """Gets the given command from this plugin."""
         name = canonicalName(name)
         assert self.isCommand(name), '%s is not a command.' % \
-                utils.quoted(name)
+                                     utils.quoted(name)
         return getattr(self, name)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
