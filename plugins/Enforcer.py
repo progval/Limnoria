@@ -222,7 +222,8 @@ class Enforcer(callbacks.Privmsg):
 
     def __call__(self, irc, msg):
         if self.started:
-            if msg.nick != self.chanserv and msg.nick != msg.prefix:
+            if ircutils.isUserHostmask(msg.prefix) and \
+               not ircutils.nickEqual(msg.nick, self.chanserv):
                 return callbacks.Privmsg.__call__(self, irc, msg)
         else:
             debug.msg('Enforcer plugin not started.  '
