@@ -78,11 +78,12 @@ def open(filename, clear=False):
             acc += line[:-1]
             continue
         else:
-            acc = line
+            acc += line
         try:
             (key, value) = re.split(r'(?<!\\):', acc, 1)
             key = key.strip()
             value = value.strip()
+            acc = ''
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line %r' % acc
         _cache[key] = value
@@ -122,7 +123,6 @@ def close(registry, filename, private=True):
                 fd.write('%s: %s\n' % (name, s))
             except Exception, e:
                 exception('Exception printing value:')
-            
     fd.close()
 
 def isValidRegistryName(name):
@@ -483,13 +483,15 @@ class NormalizedString(String):
         s = str(self)
         prefixLen = len(self._name) + 2
         lines = textwrap.wrap(s, width=76-prefixLen)
-        first = True
+        last = len(lines)-1
         for (i, line) in enumerate(lines):
-            if not first:
+            if i != 0:
                 line = ' '*prefixLen + line
-            lines[i] = line + '\\'
-            first = False
-        return os.linesep.join(lines)
+            if i != last:
+                line += '\\'
+            lines[i] = line
+        ret = os.linesep.join(lines)
+        return ret
 
 class StringSurroundedBySpaces(String):
     def setValue(self, v):
