@@ -389,13 +389,18 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, reply)
 
     def lart(self, irc, msg, args):
-        """[<channel>] <nick>
+        """[<channel>] <text>
 
         The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  Uses a lart on <nick>.
+        sent in the channel itself.  Uses a lart on <text>.
         """
         channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
+        try:
+            (nick, reason) = map(' '.join, itersplit(nick.split(' '), 'for'.__eq__))
+        except ValueError:
+            nick = ' '.join(args)
+            reason = ""
         cursor = self.db.cursor()
         cursor.execute("""SELECT id, lart FROM larts
                           WHERE lart NOTNULL
@@ -413,17 +418,26 @@ class FunDB(callbacks.Privmsg):
             else:
                 lartee = nick
             lart = lart.replace("$who", lartee)
-            irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
+            if len(reason) > 0:
+                irc.queueMsg(ircmsgs.action(channel, '%s for %s (#%s)' %\
+                    (lart, reason, id)))
+            else:
+                irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
         raise callbacks.CannotNest
 
     def praise(self, irc, msg, args):
-        """[<channel>] <nick>
+        """[<channel>] <text>
 
         The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  Uses a praise on <nick>.
+        sent in the channel itself.  Uses a praise on <text>.
         """
         channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
+        try:
+            (nick, reason) = map(' '.join, itersplit(nick.split(' '), 'for'.__eq__))
+        except ValueError:
+            nick = ' '.join(args)
+            reason = ""
         cursor = self.db.cursor()
         cursor.execute("""SELECT id, praise FROM praises
                           WHERE praise NOTNULL
@@ -442,7 +456,11 @@ class FunDB(callbacks.Privmsg):
             else:
                 praisee = nick
             praise = praise.replace("$who", praisee)
-            irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (praise, id)))
+            if len(reason) > 0:
+                irc.queueMsg(ircmsgs.action(channel, '%s for %s (#%s)' %\
+                    (praise, reason, id)))
+            else:
+                irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (praise, id)))
         raise callbacks.CannotNest
 
     def addword(self, irc, msg, args):
