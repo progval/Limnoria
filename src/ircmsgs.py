@@ -444,11 +444,11 @@ def nick(nick, prefix=''):
 
 def user(ident, user, prefix=''):
     """Returns a USER with ident ident and user user."""
-    assert '\x00' not in user and \
-           '\r' not in user and \
-           '\n' not in user and \
-           ' ' not in user and \
-           '@' not in user
+    assert '\x00' not in ident and \
+           '\r' not in ident and \
+           '\n' not in ident and \
+           ' ' not in ident and \
+           '@' not in ident
     return IrcMsg(prefix=prefix, command='USER', args=(ident, '0', '*', user))
 
 def who(hostmaskOrChannel, prefix=''):
