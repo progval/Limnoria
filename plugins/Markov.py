@@ -90,7 +90,8 @@ class DbmMarkovDB(object):
     def _getDb(self, channel):
         if channel not in self.dbs:
             # Stupid anydbm seems to append .db to the end of this.
-            self.dbs[channel] = anydbm.open('%s-DbmMarkovDB' % channel, 'c')
+            filename = plugins.makeChannelFilename(channel, 'DbmMarkovDB')
+            self.dbs[channel] = anydbm.open(filename, 'c')
             self.dbs[channel]['lasts'] = ''
             self.dbs[channel]['firsts'] = ''
         return self.dbs[channel]
@@ -156,6 +157,7 @@ class MarkovWorkQueue(threading.Thread):
 
     def die(self):
         self.killed = True
+        self.q.put(None)
 
     def enqueue(self, f):
         self.q.put(f)
@@ -163,7 +165,8 @@ class MarkovWorkQueue(threading.Thread):
     def run(self):
         while not self.killed:
             f = self.q.get()
-            f(self.db)
+            if f is not None:
+                f(self.db)
         self.db.close()
         
 class Markov(callbacks.Privmsg):
