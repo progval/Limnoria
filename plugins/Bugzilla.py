@@ -100,8 +100,6 @@ def configure(onStart, afterConnect, advanced):
     if yn('Do you want this bug snarfer enabled by default?') == 'y':
         conf.supybot.plugins.Bugzilla.bugSnarfer.setValue(True)
 
-replyNoBugzilla = 'I don\'t have a bugzilla %r'
-
 conf.registerPlugin('Bugzilla')
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bugSnarfer',
     registry.Boolean(False, """Determines whether the bug snarfer will be
@@ -109,6 +107,10 @@ conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bugSnarfer',
     information reported into the channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bold',
     registry.Boolean(True, """Determines whether results are bolded."""))
+conf.registerGlobalValue(conf.supybot.plugins.Bugzilla, 'replyNoBugzilla',
+    registry.String('I don\'t have a bugzilla %r.', """Determines the phrase
+    to use when notifying the user that there is no information about that
+    bugzilla site."""))
 
 class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
     """Show a link to a bug report with a brief description"""
@@ -170,7 +172,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             self.shorthand = utils.abbrev(self.db.keys())
             irc.replySuccess()
         except KeyError:
-            irc.error(replyNoBugzilla % name)
+            s = conf.supybot.plugins.Bugzilla.replyNoBugzilla()
+            irc.error(s % name)
 
     def list(self, irc,  msg, args):
         """[<abbreviation>]
@@ -185,7 +188,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
                 (url, description) = self.db[name]
                 irc.reply('%s: %s, %s' % (name, description, url))
             except KeyError:
-                irc.error(replyNoBugzilla % name)
+                s = conf.supybot.plugins.Bugzilla.replyNoBugzilla()
+                irc.error(s % name)
         else:
             if self.db:
                 L = self.db.keys()
@@ -267,7 +271,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             name = self.shorthand[name]
             (url, description) = self.db[name]
         except KeyError:
-            irc.error(replyNoBugzilla % name)
+            s = conf.supybot.plugins.Bugzilla.replyNoBugzilla()
+            irc.error(s % name)
             return
         bugs = self.urlquery2bugslist(url, query)
         bugids = bugs.keys()
@@ -287,7 +292,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             name = self.shorthand[name]
             (url, description) = self.db[name]
         except KeyError:
-            irc.error(replyNoBugzilla % name)
+            s = conf.supybot.plugins.Bugzilla.replyNoBugzilla()
+            irc.error(s % name)
             return
         queryurl = '%s/xml.cgi?id=%s' % (url, number)
         try:
