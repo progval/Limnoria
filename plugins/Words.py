@@ -218,11 +218,12 @@ class Words(callbacks.Privmsg):
             game.guessed = False
             game.unused = copy.copy(self.validLetters)
             game.hidden = game.getWord()
-            game.guess = '_' * len(game.hidden)
+            game.guess = re.sub('[%s]' % string.ascii_lowercase, '_',
+                                game.hidden)
             self._hangmanReply(irc, channel,
                                'Okay ladies and gentlemen, you have '
                                'a %s-letter word to find, you have %s!' %
-                               (len(game.hidden), game.triesLeft()))
+                               (game.guess.count('_'), game.triesLeft()))
         # So, a game is going on, but let's see if it's timed out.  If it is
         # we create a new one, otherwise we inform the user
         else:
