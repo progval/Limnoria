@@ -1,3 +1,9 @@
+We changed the way Supybot does imports, and so now in the
+installation directory there is no longer any src/ subdirectory.  If
+your configuration file includes this directory in
+supybot.directories.plugins (hint: it does), you'll need to chop off
+the "/src" at the end.
+
 Since we now support separate network entries, the old supybot.server
 configuration variable won't work.  To fix this, add these lines to
 your configuration:
