@@ -77,9 +77,11 @@ def main():
         try:
             drivers.run()
         except KeyboardInterrupt:
+            log.info('Exiting due to Ctrl-C at console.')
             world.upkeep()
-            log.info('Exiting due to Ctrl-C.')
-            break
+            for irc in world.ircs:
+                irc.queueMsg(ircmsgs.quit('Ctrl-C at console.'))
+                irc.die()
         except SystemExit, e:
             s = str(e)
             if s:
