@@ -387,7 +387,8 @@ class Channel(callbacks.Plugin):
         to join <channel>. <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        self._sendMsg(irc, ircmsgs.invite(nick or msg.nick, channel))
+        nick = nick or msg.nick
+        self._sendMsg(irc, ircmsgs.invite(nick, channel))
         self.invites[(irc.getRealIrc(), ircutils.toLower(nick))] = irc
     invite = wrap(invite, ['op', ('haveOp', 'invite someone'),
                            additional('nick')])
