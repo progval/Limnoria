@@ -46,7 +46,8 @@ def fromChannelCapability(capability):
     """Returns a (channel, capability) tuple from a channel capability."""
     if not isChannelCapability(capability):
         raise ValueError, '%s is not a channel capability' % capability
-    return capability.split('.', 1)
+    #return capability.rsplit('.', 1)
+    return rsplit(capability, '.', 1)
 
 def isChannelCapability(capability):
     """Returns True if capability is a channel capability; False otherwise."""

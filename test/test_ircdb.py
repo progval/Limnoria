@@ -45,10 +45,12 @@ class FunctionsTestCase(unittest.TestCase):
         self.failIf(ircdb.isAntiCapability('#foo.bar'))
         self.failUnless(ircdb.isAntiCapability('!foo'))
         self.failUnless(ircdb.isAntiCapability('#foo.!bar'))
+        self.failUnless(ircdb.isAntiCapability('#foo.bar.!baz'))
 
     def testIsChannelCapability(self):
         self.failIf(ircdb.isChannelCapability('foo'))
         self.failUnless(ircdb.isChannelCapability('#foo.bar'))
+        self.failUnless(ircdb.isChannelCapability('#foo.bar.baz'))
 
     def testMakeAntiCapability(self):
         self.assertEqual(ircdb.makeAntiCapability('foo'), '!foo')
@@ -58,9 +60,17 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircdb.makeChannelCapability('#f', 'b'), '#f.b')
         self.assertEqual(ircdb.makeChannelCapability('#f', '!b'), '#f.!b')
 
+    def testFromChannelCapability(self):
+        self.assertEqual(ircdb.fromChannelCapability('#foo.bar'),
+                         ['#foo', 'bar'])
+        self.assertEqual(ircdb.fromChannelCapability('#foo.bar.baz'),
+                         ['#foo.bar', 'baz'])
+
     def testUnAntiCapability(self):
         self.assertEqual(ircdb.unAntiCapability('!bar'), 'bar')
         self.assertEqual(ircdb.unAntiCapability('#foo.!bar'), '#foo.bar')
+        self.assertEqual(ircdb.unAntiCapability('#foo.bar.!baz'),
+                         '#foo.bar.baz')
 
     def testInvertCapability(self):
         self.assertEqual(ircdb.invertCapability('bar'), '!bar')
