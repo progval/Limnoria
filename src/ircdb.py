@@ -569,6 +569,7 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
     """
     for ignore in conf.ignores:
         if ircutils.hostmaskPatternEqual(ignore, hostmask):
+            log.info('Ignoring %s due to conf.ignores.', hostmask)
             return True
     try:
         id = users.getUserId(hostmask)
@@ -577,18 +578,31 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
         # If there's no user...
         if ircutils.isChannel(recipient):
             channel = channels.getChannel(recipient)
-            return channel.checkIgnored(hostmask)
+            if channel.checkIgnored(hostmask):
+                log.info('Ignoring %s due to the channel ignores.', hostmask)
+                return True
+            else:
+                return False
         else:
-            return conf.defaultIgnore
+            if conf.defaultIgnore:
+                log.info('Ignoring %s due to conf.defaultIgnore', hostmask)
+                return True
+            else:
+                return False
     if user.checkCapability('owner'):
         # Owners shouldn't ever be ignored.
         return False
     elif user.ignore:
+        log.info('Ignoring %s due to his IrcUser ignore flag.', hostmask)
         return True
     elif recipient:
         if ircutils.isChannel(recipient):
             channel = channels.getChannel(recipient)
-            return channel.checkIgnored(hostmask)
+            if channel.checkIgnored(hostmask):
+                log.info('Ignoring %s due to the channel ignores.', hostmask)
+                return True
+            else:
+                return False
         else:
             return False
     else:
