@@ -543,10 +543,10 @@ def main():
 
     # conf.supybot.log.level
     output("""Your bot can handle debug messages at several priorities,
-    CRITICAL, in decreasing order of priority.  By
-    default, your bot will log all of these priorities.  You can, however,
-    specify that he only log messages above a certain priority level.  Of
-    course, all error messages will still be logged.""")
+    CRITICAL, ERROR, WARNING, INFO, and DEBUG, in decreasing order of priority.
+    By default, your bot will log all of these priorities except DEBUG.  You
+    can, however, specify that it only log messages above a certain priority
+    level.""")
     newLogLevel = something('What would you like the minimum priority to be?  '
                          'Just press enter to accept the default.',
                          default=priority).lower()
