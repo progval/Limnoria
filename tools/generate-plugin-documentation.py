@@ -79,7 +79,6 @@ def makePluginDocumentation(filename):
         Detailed Help</td></tr>
         """) % (pluginName, cgi.escape(module.__doc__ or "")))
         for attr in dir(plugin):
-            trClass = trClasses[trClass]
             if plugin.isCommand(attr):
                 method = getattr(plugin, attr)
                 if hasattr(method, '__doc__'):
@@ -92,6 +91,7 @@ def makePluginDocumentation(filename):
                         morehelp = ' '.join(doclines)
                     help = cgi.escape(help)
                     morehelp = cgi.escape(morehelp)
+                    trClass = trClasses[trClass]
                     fd.write(textwrap.dedent("""
                     <tr class="%s"><td>%s</td><td>%s</td><td class="detail">%s
                     </td></tr>
