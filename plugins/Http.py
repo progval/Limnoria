@@ -33,7 +33,16 @@
 Provides several commands that go out to websites and get things.
 """
 
+import supybot
+
 __revision__ = "$Id$"
+__contributors__ = {
+    supybot.authors.jemfinch: ['bender', 'cyborg', 'doctype', 'freshmeat',
+                               'headers', 'netcraft', 'size', 'title'],
+    supybot.authors.skorobeus: ['geekquote snarfer'],
+    supybot.authors.jamessan: ['pgpkey', 'kernel', 'filext', 'zipinfo',
+                               'acronym'],
+    }
 
 import supybot.plugins as plugins
 
@@ -52,15 +61,32 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
+def configure(advanced):
+    from supybot.questions import output, expect, anything, something, yn
+    conf.registerPlugin('Http', True)
+    output("""The Http plugin has the ability to watch for geekquote 
+              (bash.org) URLs and respond to them as though the user had 
+              asked for the geekquote by ID""")
+    if yn('Do you want the Geekquote snarfer enabled by default?'):
+        conf.supybot.plugins.Http.geekSnarfer.setValue(True)
+
+conf.registerPlugin('Http')
+conf.registerChannelValue(conf.supybot.plugins.Http, 'geekSnarfer',
+    registry.Boolean(False, """Determines whether the bot will automatically
+    'snarf' Geekquote auction URLs and print information about them."""))
+
 class FreshmeatException(Exception):
     pass
 
-class Http(callbacks.Privmsg):
+class Http(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
+    regexps = ['geekSnarfer']
+    
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
-    def callCommand(self, method, irc, msg, *L):
+
+    def callCommand(self, method, irc, msg, *L, **kwargs):
         try:
-            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
+            super(Http, self).callCommand(method, irc, msg, *L, **kwargs)
         except webutils.WebError, e:
             irc.error(str(e))
 
@@ -213,11 +239,20 @@ class Http(callbacks.Privmsg):
         html = webutils.getUrl('http://bash.org/?%s' % id)
         m = self._mlgeekquotere.search(html)
         if m is None:
-            irc.error('No quote found.')
+            irc.error('No quote found on bash.org.')
             return
         quote = utils.htmlToText(m.group(1))
         quote = ' // '.join(quote.splitlines())
         irc.reply(quote)
+
+    def geekSnarfer(self, irc, msg, match):
+        r"http://(?:www\.)?bash\.org/\?(\d+)"
+        if not self.registryValue('geekSnarfer', msg.args[0]):
+            return
+        id = match.group(1)
+        self.log.info('Snarfing geekquote %s.', id)
+        self.geekquote(irc, msg, [id])
+    geekSnarfer = privmsgs.urlSnarfer(geekSnarfer)
 
     _cyborgRe = re.compile(r'<p class="mediumheader">(.*?)</p>', re.I)
     def cyborg(self, irc, msg, args):
