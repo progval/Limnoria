@@ -753,7 +753,7 @@ class Irc(IrcCommandDispatcher):
                 log.debug('Updating nick attribute to %s.', self.nick)
             if msg.prefix != self.server:
                 self.server = msg.prefix
-                log.debug('Updating server attribute to %s.')
+                log.debug('Updating server attribute to %s.', self.server)
 
         # Dispatch to specific handlers for commands.
         method = self.dispatchCommand(msg.command)
