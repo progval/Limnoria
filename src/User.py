@@ -71,7 +71,7 @@ class User(callbacks.Privmsg):
         else:
             def p(s):
                 return True
-        users = [u.name for u in ircdb.users if p(u.name)]
+        users = [u.name for u in ircdb.users.itervalues() if p(u.name)]
         if users:
             utils.sortBy(str.lower, users)
             irc.reply(utils.commaAndify(users))
