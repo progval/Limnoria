@@ -72,6 +72,8 @@ class Enforcer(callbacks.Privmsg):
         else:
             irc.error(msg,'Possible values for revenge are "True" and "False"')
             return
+        for channel in irc.state.channels:
+            irc.queueMsg(ircmsgs.topic(channel))
         irc.reply(msg, conf.replySuccess)
     startenforcer = privmsgs.checkCapability(startenforcer, 'admin')
 
