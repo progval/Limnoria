@@ -31,10 +31,11 @@
 
 from test import *
 
-class GoogleTestCase(PluginTestCase, PluginDocumentation):
+class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Google',)
     def testNoNoLicenseKeyError(self):
-        self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, 'google blah'))
+        self.assertNotError('toggle 
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
         self.assertNoResponse(' ')
         
     def testGroupsSnarfer(self):
