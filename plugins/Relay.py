@@ -655,8 +655,13 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             if channel in self.channels:
                 for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
-                        if otherIrc.state.getTopic(channel) != topic:
-                            otherIrc.queueMsg(ircmsgs.topic(channel, topic))
+                        try:
+                            if otherIrc.state.getTopic(channel) != topic:
+                                otherIrc.queueMsg(ircmsgs.topic(channel,topic))
+                        except KeyError:
+                            self.log.warning('Odd, not on %s on %s -- '
+                                             'Can\'t synchronize topics.',
+                                             channel, otherIrc.server)
 
         return msg
 
