@@ -287,7 +287,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
             secondsEllapsed = time.time() - game.timeGuess
             if secondsEllapsed > game.timeout:
                 self.endGame(channel)
-                self.newhangman(irc, msg, args)
+                self.hangman(irc, msg, args)
             else:
                 irc.error(msg, 'Sorry, there is already a game going on.  '
                         '%s left before timeout.' % utils.nItems('seconds',
