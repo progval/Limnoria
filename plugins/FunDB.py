@@ -402,6 +402,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         except ValueError:
             nick = ' '.join([id, nick]).strip()
             id = 0
+        nick = nick.rstrip('.')
         if not nick:
             raise callbacks.ArgumentError
         if nick == irc.nick:
@@ -457,6 +458,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         except ValueError:
             nick = ' '.join([id, nick]).strip()
             id = 0
+        nick = nick.rstrip('.')
         if not nick:
             raise callbacks.ArgumentError
         try:

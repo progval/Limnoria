@@ -86,6 +86,11 @@ if sqlite is not None:
             self.assertRegexp('num lart', 'currently 0')
             self.assertError('lart jemfinch')
 
+        def testLartAndPraiseRemoveTrailingPeriods(self):
+            for s in ['lart', 'praise']:
+                self.assertNotError('add %s $who foo!' % s)
+                self.assertAction('%s bar.' % s, 'bar foo!')
+
         def testMyMeReplacement(self):
             self.assertNotError('add lart jabs $who')
             self.assertNotError('add praise pets $who')
