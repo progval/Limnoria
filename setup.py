@@ -37,6 +37,7 @@ plugins = [
     'Dict',
     'Filter',
     'Format',
+    'Herald',
     'Math',
     'Misc',
     'Owner',
