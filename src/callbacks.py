@@ -368,8 +368,9 @@ class Privmsg(irclib.IrcCallback):
             if m and self.isCommand(canonicalName(m.group(1))):
                 self.rateLimiter.put(msg)
                 msg = self.rateLimiter.get()
-                args = tokenize(s)
-                self.Proxy(irc, msg, args)
+                if msg:
+                    args = tokenize(s)
+                    self.Proxy(irc, msg, args)
 
 
 class IrcObjectProxyRegexp:
