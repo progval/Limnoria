@@ -242,7 +242,15 @@ class PluginTestCase(unittest.TestCase):
         self.failUnless(ircmsgs.isAction(m))
         if expectedResponse is not None:
             self.assertEqual(ircmsgs.unAction(m), expectedResponse)
-        
+
+    def assertActionRegexp(self, query, regexp, flags=re.I):
+        m = self._feedMsg(query)
+        if m is None:
+            raise TimeoutError, query
+        self.failUnless(ircmsgs.isAction(m))
+        self.failUnless(re.search(regexp, ircmsgs.unAction(m), flags),
+                        '%r does not match %r' % (ircmsgs.unAction(m),
+                                                  regexp))
 
 class ChannelPluginTestCase(PluginTestCase):
     channel = '#test'
