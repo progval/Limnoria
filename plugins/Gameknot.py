@@ -68,17 +68,6 @@ def configure(onStart, afterConnect, advanced):
             onStart.append('Gameknot toggle stat off')
 
 
-example = utils.wrapLines("""
-<jemfinch> @list Gameknot
-<supybot> gkstats
-<jemfinch> @gkstats jemfinch
-<supybot> jemfinch (team: Grasshoppers) is rated 1526 and has 0 active games and a record of W-58, L-30, D-5 (win/loss/draw %: 62.37/32.26/5.38).  jemfinch was last seen on Gameknot 6 minutes ago.
-<jemfinch> blah blah blah I'm talking about http://gameknot.com/stats.pl?ddipaolo blah blah blah
-<supybot> ddipaolo blah blah blah (team: Grasshoppers) is rated 1159 and has 4 active games and a record of W-135, L-136, D-8 (win/loss/draw %: 48.39/48.75/2.87).  ddipaolo blah blah blah was last seen on Gameknot 3 hours 48 minutes ago.
-<jemfinch> hmm, I wonder what the game http://gameknot.com/chess.pl?bd=1038943 is all about.
-<supybot> Challenge from ddipaolo: inkedmn (901; W-69, L-84, D-4) vs. ddipaolo (1159; W-135, L-136, D-8);  inkedmn to move.  <http://gameknot.com/chess.pl?bd=1038943>
-""")
-
 class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     threaded = True
     regexps = ['gameknotSnarfer', 'gameknotStatsSnarfer']
@@ -89,7 +78,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         plugins.Toggleable.__init__(self)
 
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
-    _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
+    _gkgames = re.compile(r's:</td><td class=sml>(\d+)</td></tr>')
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
         '"#FFFF00">(\d+)')
     _gkteam = re.compile(r'Team:(<.*?>)+(?P<name>.*?)</span>')
@@ -155,7 +144,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             if ('User %s not found!' % name) in profile:
                 raise callbacks.Error, 'No user %s exists.' % name
             else:
-                raise callbacks.Error, 'The format of the page was odd. %s' %\
+                raise callbacks.Error,'The format of the page was odd.  %s' %\
                     conf.replyPossibleBug
         except urllib2.URLError:
             raise callbacks.Error, 'Couldn\'t connect to gameknot.com'
