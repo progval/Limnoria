@@ -359,26 +359,28 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         db = self.getDb(channel)
         cursor = db.cursor()
         if len(args) == 1:
-            name = args[0]
+            orig_name = args[0]
+            name = args[0].lower()
             cursor.execute("""SELECT added, subtracted
                               FROM karma
                               WHERE name=%s""", name)
             if cursor.rowcount == 0:
-                irc.reply(msg, '%s has no karma.' % name)
+                irc.reply(msg, '%s has no karma.' % orig_name)
             else:
                 (added, subtracted) = map(int, cursor.fetchone())
                 total = added - subtracted
                 s = 'Karma for %r has been increased %s %s ' \
                     'and decreased %s %s for a total karma of %s.' % \
-                    (name, added, utils.pluralize(added, 'time'),
+                    (orig_name, added, utils.pluralize(added, 'time'),
                      subtracted, utils.pluralize(subtracted, 'time'), total)
                 irc.reply(msg, s)
         elif len(args) > 1:
+            lowered_args = map(str.lower, args)
             criteria = ' OR '.join(['name=%s'] * len(args))
             sql = """SELECT name, added-subtracted
                      FROM karma WHERE %s
                      ORDER BY added-subtracted DESC""" % criteria
-            cursor.execute(sql, *args)
+            cursor.execute(sql, *lowered_args)
             if cursor.rowcount > 0:
                 s = utils.commaAndify(['%s: %s' % (n, t)
                                        for (n,t) in cursor.fetchall()])
@@ -403,7 +405,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
             
     def increaseKarma(self, irc, msg, match):
         r"^(\S+)\+\+$"
-        name = match.group(1)
+        name = match.group(1).lower()           
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
         cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
@@ -411,7 +413,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
 
     def decreaseKarma(self, irc, msg, match):
         r"^(\S+)--$"
-        name = match.group(1)
+        name = match.group(1).lower()          
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
         cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
