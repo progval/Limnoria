@@ -212,7 +212,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             return True
 
     def addFactoid(self, irc, msg, match):
-        r"^(.+)\s+(?:is|_is_)\s+(.+)"
+        r"^(.+?)\s+(?:is|_is_)\s+(.+)"
         # First, check and see if the entire message matches a factoid key
         cursor = self.db.cursor()
         cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""",

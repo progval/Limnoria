@@ -51,6 +51,8 @@ if sqlite is not None:
             self.assertError('moo!?    is foo') # 'moo' already exists
             self.assertNotError('foo!?    is foo') 
             self.assertResponse('foo', 'foo is foo')
+            self.assertNotError('bar is <reply>moo is moo')
+            self.assertResponse('bar', 'moo is moo')
 
         def testLiteral(self):
             self.assertError('literal moo') # no factoids yet
