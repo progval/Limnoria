@@ -91,6 +91,7 @@ def abbrev(strings):
 
 def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
                 days=True, hours=True, minutes=True, seconds=True):
+    elapsed = int(elapsed)
     assert years or weeks or days or \
            hours or minutes or seconds, 'One flag must be True'
     ret = []
