@@ -167,7 +167,9 @@ class IrcMsgQueue(object):
         else:
             msg = None
         if msg:
-            self.msgs.remove(msg)
+            if msg not in self.msgs:
+                debug.msg('Odd, dequeuing a message that\'s not in self.msgs.')
+            self.msgs.discard(msg)
         return msg
 
     def __nonzero__(self):
