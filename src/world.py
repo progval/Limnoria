@@ -88,7 +88,7 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
         debug.msg('Uncollectable garbage: %s' % gc.garbage, 'normal')
     if 'noflush' not in tempvars:
         flush()
-    msg = '%s upkeep ran.' % time.strftime(conf.timestampFormat)
+    msg = '%s upkeep ran.' % time.strftime(conf.logTimestampFormat)
     debug.msg(msg, 'verbose')
 
 '''

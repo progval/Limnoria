@@ -57,11 +57,19 @@ ignoresfile = os.path.join(confDir, 'ignores.conf')
 rawlogfile = os.path.join(logDir, 'raw.log')
 
 ###
-# timestampFormat: A format string defining how timestamps should be.  Check
-#                  the Python library reference for the "time" module to see
-#                  what the various format specifiers mean.
+# logTimestampFormat: A format string defining how timestamps should be.  Check
+#                     the Python library reference for the "time" module to see
+#                     what the various format specifiers mean.
 ###
-timestampFormat = '[%d-%b-%Y %H:%M:%S]'
+logTimestampFormat = '[%d-%b-%Y %H:%M:%S]'
+
+###
+# humanTimestampFormat: A format string defining how timestamps should be
+#                       formatted for human consumption.  Check the Python
+#                       library reference for the "time" module to see what the
+#                       various format specifiers mean.
+###
+humanTimestampFormat = '%I:%M %p, %B %d, %Y'
 
 ###
 # throttleTime: A floating point number of seconds to throttle queued messages.

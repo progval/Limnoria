@@ -423,7 +423,7 @@ class Irc(object):
                     debug.msg(s)
                     return None
             self.state.addMsg(self,ircmsgs.IrcMsg(msg=msg, prefix=self.prefix))
-            s = '%s  %s' % (time.strftime(conf.timestampFormat), msg)
+            s = '%s  %s' % (time.strftime(conf.logTimestampFormat), msg)
             debug.msg(s, 'low')
             if msg.command == 'NICK':
                 # We don't want a race condition where the server's NICK
@@ -438,7 +438,7 @@ class Irc(object):
             return None
 
     def feedMsg(self, msg):
-        debug.msg('%s  %s' % (time.strftime(conf.timestampFormat), msg), 'low')
+        debug.msg('%s  %s'%(time.strftime(conf.logTimestampFormat), msg),'low')
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
         # messages with our nick instead of our prefix.  We'll fix that here.
         if msg.prefix == self.nick:

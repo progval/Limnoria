@@ -122,7 +122,8 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         cursor = db.cursor()
         cursor.execute("""SELECT * FROM urls ORDER BY random() LIMIT 1""")
         (id, url, added, addedBy, _, _, _, _, _, _) = cursor.fetchone()
-        when = time.ctime(int(added))
+        when = time.strftime(conf.humanTimestampFormat,
+                             time.localtime(int(added)))
         s = '%s: <%s> (added by %s on %s)' % (id, url, addedBy, when)
         irc.reply(msg, s)
 
@@ -180,13 +181,18 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         criterion = ' AND '.join(criteria)
-        sql = 'SELECT url FROM urls WHERE %s ORDER BY id DESC' % criterion
+        sql = """SELECT url, added, added_by
+                 FROM urls
+                 WHERE %s ORDER BY id DESC""" % criterion
         cursor.execute(sql, *formats)
         if cursor.rowcount == 0:
             irc.reply(msg, 'No URLs matched that criteria.')
         else:
-            (url,) = cursor.fetchone()
-            irc.reply(msg, url)
+            (url, added, added_by) = cursor.fetchone()
+            timestamp = time.strftime('%I:%M %p, %B %d, %Y',
+                                      time.localtime(int(added)))
+            s = '<%s>, added by %s at %s.' % (url, added_by, timestamp)
+            irc.reply(msg, s)
 
 
 Class = URLSnarfer

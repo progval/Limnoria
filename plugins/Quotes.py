@@ -158,10 +158,12 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT * FROM quotes WHERE id=%s""", id)
-        row = cursor.fetchone()
+        (id, added_by, added_at, quote) = cursor.fetchone()
         if row:
+            timestamp = time.strftime(conf.humanTimestampFormat,
+                                      time.localtime(int(added_at)))
             irc.reply(msg, 'Quote %r added by %s at %s.' % \
-               (row.quote, row.added_by, time.strftime(conf.timestampFormat)))
+                           (quote, added_by, timestamp)
             return
         else:
             irc.reply(msg, 'There isn\'t a quote with that id.')

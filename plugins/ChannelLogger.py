@@ -81,7 +81,7 @@ class ChannelLogger(irclib.IrcCallback):
                 return StringIO()
 
     def timestamp(self, log):
-        log.write(time.strftime(conf.timestampFormat))
+        log.write(time.strftime(conf.logTimestampFormat))
         log.write('  ')
 
     def doPrivmsg(self, irc, msg):

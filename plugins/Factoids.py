@@ -218,7 +218,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         L = []
         counter = 0
         for (added_by, added_at) in factoids:
-            added_at = time.strftime(conf.timestampFormat,
+            added_at = time.strftime(conf.humanTimestampFormat,
                                      time.localtime(int(added_at)))
             L.append('#%s was added by %s at %s' % (counter,added_by,added_at))
             counter += 1
