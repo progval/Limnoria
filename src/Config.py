@@ -33,14 +33,15 @@
 Handles configuration of the bot while it's running.
 """
 
-import plugins
+import getopt
 
 import conf
 import utils
 import ircdb
+import plugins
 import ircutils
-import registry
 import privmsgs
+import registry
 import callbacks
 
 ###
@@ -87,21 +88,35 @@ class Config(callbacks.Privmsg):
             irc.error(str(e))
 
     def list(self, irc, msg, args):
-        """<group>
+        """[--groups] <group>
 
         Returns the configuration variables available under the given
-        configuration <group>.
+        configuration <group>.  If --groups is given, return the subgroups of
+        the <group>.
         """
-        name = privmsgs.getArgs(args)
+        (optlist, rest) = getopt.getopt(args, '', ['groups'])
+        groups = False
+        for (name, arg) in optlist:
+            if name == '--groups':
+                groups = True
+        name = privmsgs.getArgs(rest)
         group = getWrapper(name)
-        if hasattr(group, 'getValues'):
-            try:
-                L = zip(*group.getValues(fullNames=False))[0]
+        if groups:
+            L = group.children.keys()
+            if L:
+                utils.sortBy(str.lower, L)
                 irc.reply(utils.commaAndify(L))
-            except TypeError:
-                irc.error('There don\'t seem to be any values in %r' % name)
+            else:
+                irc.reply('%s has no subgroups.' % name)
         else:
-            irc.error('%r is not a valid configuration group.' % name)
+            if hasattr(group, 'getValues'):
+                try:
+                    L = zip(*group.getValues(fullNames=False))[0]
+                    irc.reply(utils.commaAndify(L))
+                except TypeError:
+                    irc.error('There don\'t seem to be any values in %s'%name)
+            else:
+                irc.error('%r is not a valid configuration group.' % name)
 
     def get(self, irc, msg, args):
         """<name>
@@ -110,6 +125,11 @@ class Config(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         wrapper = getWrapper(name)
+        if wrapper.__class__ is registry.Group:
+            irc.error(msg, 'That\'s not a value, it\'s a group.  Use the list '
+                           'command in this plugin to see what values are '
+                           'available in this group.')
+            return
         irc.reply(str(wrapper))
 
     def set(self, irc, msg, args):

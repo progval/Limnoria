@@ -36,6 +36,21 @@ class ConfigTestCase(ChannelPluginTestCase):
     def testGet(self):
         self.assertNotRegexp('config get supybot.reply', r'registry\.Group')
 
+    def testList(self):
+        self.assertError('config list asldfkj')
+        self.assertError('config list supybot.asdfkjsldf')
+        self.assertNotError('config list supybot')
+        self.assertNotError('config list supybot.replies')
+        self.assertRegexp('config list --groups supybot',
+                          r'plugins.*replies.*reply')
+
+    def testHelp(self):
+        self.assertError('config help alsdkfj')
+        self.assertError('config help supybot')
+        self.assertError('config help supybot.plugins')
+        self.assertError('config help supybot.alsdkfj')
+        self.assertNotError('config help supybot.replies.success')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
