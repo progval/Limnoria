@@ -106,7 +106,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         _seller)
     _multiField = (_bidder, _winningBidder, _seller)
 
-    def ebay(self, irc, msg, args):
+    def auction(self, irc, msg, args):
         """[--link] <item>
 
         Return useful information about the eBay auction with item number
