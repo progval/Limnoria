@@ -134,10 +134,6 @@ anti-capabilities, then the user will have to have the actual capability to
 override these capabilities.  See docs/CAPABILITIES if you don't understand
 why these default to what they do."""))
 
-supybot.register('ignores', registry.CommaSeparatedListOfStrings('', """
-A list of hostmasks ignored by the bot.  Add people you don't like to here.
-"""))
-
 supybot.register('defaultAllow', registry.Boolean(True, """Determines whether
 the bot by default will allow users to run commands.  If this is disabled, a
 user will have to have the capability for whatever command he wishes to run.
@@ -392,10 +388,15 @@ registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir],
 
 supybot.register('databases')
 supybot.databases.register('users')
+supybot.databases.register('ignores')
 supybot.databases.register('channels')
 supybot.databases.users.register('filename', registry.String('users.conf', """
 Determines what filename will be used for the users database.  This file will
 go into the directory specified by the supybot.directories.conf
+variable."""))
+supybot.databases.ignores.register('filename', registry.String('ignores.conf',
+"""Determines what filename will be used for the ignores database.  This file
+will go into the directory specified by the supybot.directories.conf
 variable."""))
 supybot.databases.channels.register('filename',registry.String('channels.conf',
 """Determines what filename will be used for the channels database.  This file

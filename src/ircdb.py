@@ -506,6 +506,7 @@ class UsersDictionary(utils.IterableMap):
         self._nameCache = {}
         self._hostmaskCache = {}
 
+    # This is separate because the Creator has to access our instance.
     def open(self, filename):
         self.filename = filename
         reader = unpreserve.Reader(IrcUserCreator)
@@ -521,7 +522,7 @@ class UsersDictionary(utils.IterableMap):
             except EnvironmentError, e:
                 log.warning('UsersDictionary.reload failed: %s', e)
         else:
-            log.warning('UsersDictionary.reload called without self.filename.')
+            log.warning('UsersDictionary.reload called with no filename.')
 
     def flush(self):
         """Flushes the database to its file."""
@@ -535,7 +536,7 @@ class UsersDictionary(utils.IterableMap):
                 u.preserve(fd, indent='  ')
             fd.close()
         else:
-            log.warning('UsersDictionary.flush called without self.filename.')
+            log.warning('UsersDictionary.flush called with no filename.')
 
     def iteritems(self):
         return self.users.iteritems()
@@ -655,7 +656,7 @@ class ChannelsDictionary(utils.IterableMap):
 
     def flush(self):
         """Flushes the channel database to its file."""
-        if self.filename:
+        if self.filename is not None:
             fd = file(self.filename, 'w')
             for (channel, c) in self.channels.iteritems():
                 fd.write('channel %s' % channel)
@@ -667,7 +668,7 @@ class ChannelsDictionary(utils.IterableMap):
 
     def reload(self):
         """Reloads the channel database from its file."""
-        if self.filename:
+        if self.filename is not None:
             self.channels.clear()
             try:
                 self.open(self.filename)
@@ -696,24 +697,78 @@ class ChannelsDictionary(utils.IterableMap):
         return self.channels.iteritems()
 
 
-###
-# Later, I might add some special handling for botnet.
-###
+class IgnoresDB(object):
+    def __init__(self):
+        self.filename = None
+        self.hostmasks = sets.Set()
+
+    def open(self, filename):
+        self.filename = filename
+        fd = file(self.filename)
+        for line in nonEmptyNonCommentLines(fd):
+            self.hostmasks.add(line.rstrip('\r\n'))
+        fd.close()
+
+    def flush(self):
+        if self.filename is not None:
+            fd = file(self.filename, 'w')
+            for hostmask in self.hostmasks:
+                fd.write(hostmask)
+                fd.write(os.linesep)
+            fd.close()
+        else:
+            log.warning('IgnoresDB.flush called without self.filename.')
+
+    def reload(self):
+        if self.filename is not None:
+            self.hostmasks.clear()
+            try:
+                self.open(self.filename)
+            except EnvironmentError, e:
+                log.warning('IgnoresDB.reload failed: %s', e)
+        else:
+            log.warning('IgnoresDB.reload called without self.filename.')
+        
+    def checkIgnored(self, prefix):
+        for hostmask in self.hostmasks:
+            if ircutils.hostmaskPatternEqual(hostmask, prefix):
+                return True
+        return False
+
+    def addHostmask(self, hostmask):
+        self.hostmasks.add(hostmask)
+
+    def removeHostmask(self, hostmask):
+        self.hostmasks.remove(hostmask)
+
+
 confDir = conf.supybot.directories.conf()
-users = UsersDictionary()
 try:
-    users.open(os.path.join(confDir, conf.supybot.databases.users.filename()))
+    userFile = os.path.join(confDir, conf.supybot.databases.users.filename())
+    users = UsersDictionary()
+    users.open(userFile)
 except EnvironmentError, e:
     log.warning('Couldn\'t open user database: %s', e)
 
-channels = ChannelsDictionary()
 try:
-    channelFile = conf.supybot.databases.channels.filename()
-    channels.open(os.path.join(confDir,channelFile))
+    channelFile = os.path.join(confDir,
+                               conf.supybot.databases.channels.filename())
+    channels = ChannelsDictionary()
+    channels.open(channelFile)
 except EnvironmentError, e:
     log.warning('Couldn\'t open channel database: %s', e)
 
+try:
+    ignoreFile = os.path.join(confDir,
+                              conf.supybot.databases.ignores.filename())
+    ignores = IgnoresDB()
+    ignores.open(ignoreFile)
+except EnvironmentError, e:
+    log.warning('Couldn\'t open ignore database: %s', e)
+
+
 world.flushers.append(users.flush)
+world.flushers.append(ignores.flush)
 world.flushers.append(channels.flush)
     
 
@@ -725,10 +780,9 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
 
     Checks if the user is ignored by the recipient of the message.
     """
-    for ignore in conf.supybot.ignores():
-        if ircutils.hostmaskPatternEqual(ignore, hostmask):
-            log.debug('Ignoring %s due to conf.supybot.ignores.', hostmask)
-            return True
+    if ignores.checkIgnored(hostmask):
+        log.debug('Ignoring %s due to ignore database.', hostmask)
+        return True
     try:
         id = users.getUserId(hostmask)
         user = users.getUser(id)

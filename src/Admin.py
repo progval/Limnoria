@@ -317,7 +317,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             except KeyError:
                 irc.error('I can\'t find a hostmask for %s' % arg)
                 return
-        conf.supybot.ignores().append(hostmask)
+        ircdb.ignores.addHostmask(hostmask)
         irc.replySuccess()
 
     def unignore(self, irc, msg, args):
@@ -336,20 +336,18 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('I can\'t find a hostmask for %s' % arg)
                 return
         try:
-            conf.supybot.ignores().remove(hostmask)
-            while hostmask in conf.supybot.ignores():
-                conf.supybot.ignores().remove(hostmask)
+            ircdb.ignores.removeHostmask(hostmask)
             irc.replySuccess()
-        except ValueError:
-            irc.error('%s wasn\'t in conf.supybot.ignores.' % hostmask)
+        except KeyError:
+            irc.error('%s wasn\'t in the ignores database.' % hostmask)
             
     def ignores(self, irc, msg, args):
         """takes no arguments
 
         Returns the hostmasks currently being globally ignored.
         """
-        if conf.supybot.ignores():
-            irc.reply(utils.commaAndify(imap(repr, conf.supybot.ignores())))
+        if ircdb.ignores.hostmasks:
+            irc.reply(utils.commaAndify(imap(repr, ircdb.ignores.hostmasks)))
         else:
             irc.reply('I\'m not currently globally ignoring anyone.')
 
