@@ -490,6 +490,7 @@ def saltHash(password, salt=None, hash='sha'):
 def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
     without unsafely using eval()."""
+    #print s, '::', stackTrace()
     node = compiler.parse(s)
     nodes = compiler.parse(s).node.nodes
     if not nodes:
