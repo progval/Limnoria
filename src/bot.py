@@ -185,6 +185,7 @@ if __name__ == '__main__':
     if '-O' in sys.argv:
         import psyco
         psyco.full()
+        main()
     else:
         main()
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
