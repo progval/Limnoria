@@ -287,7 +287,7 @@ class Weather(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.error('The format of the page was odd.')
-    ham=commands.wrap(ham, ['something'])
+    ham = commands.wrap(ham, ['something'])
 
     _cnnUrl = 'http://weather.cnn.com/weather/search?wsearch='
     _cnnFTemp = re.compile(r'(-?\d+)(&deg;)(F)</span>', re.I | re.S)
@@ -347,7 +347,7 @@ class Weather(callbacks.Privmsg):
             irc.reply(' '.join(resp))
         else:
             irc.error('Could not find weather information.')
-    cnn=commands.wrap(cnn, ['something'])
+    cnn = commands.wrap(cnn, ['something'])
 
     _wunderUrl = 'http://mobile.wunderground.com/cgi-bin/' \
                  'findweather/getForecast?query='
@@ -432,7 +432,7 @@ class Weather(callbacks.Privmsg):
             irc.reply(' '.join(resp))
         else:
             irc.error('Could not find weather information.')
-    wunder=commands.wrap(wunder, ['something'])
+    wunder = commands.wrap(wunder, ['something'])
 
 conf.registerPlugin('Weather')
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'temperatureUnit',
