@@ -41,6 +41,10 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('lithp meghan sweeney')
         self.assertNotError('aol I\'m too legit to quit.')
 
+    def testHebrew(self):
+        self.assertResponse('hebrew The quick brown fox '
+                            'jumps over the lazy dog.',
+                            'Th qck brwn fx jmps vr th lzy dg.')
     def testJeffk(self):
         for i in range(100):
             self.assertNotError('jeffk the quick brown fox is ghetto')

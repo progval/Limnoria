@@ -96,7 +96,8 @@ class Filter(callbacks.Privmsg):
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
-                       'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit']
+                       'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
+                       'hebrew']
     def outfilter(self, irc, msg, args, channel):
         """[<channel>] [<command>]
 
@@ -118,6 +119,17 @@ class Filter(callbacks.Privmsg):
             irc.replySuccess()
     outfilter = privmsgs.checkChannelCapability(outfilter, 'op')
 
+    def hebrew(self, irc, msg, args):
+        """<text>
+
+        Removes all the vowels from <text>.  (If you're curious why this is
+        named 'hebrew' it's because I (jemfinch) thought of it in Hebrew class,
+        and printed Hebrew often elides the vowels.)
+        """
+        text = privmsgs.getArgs(args)
+        text = filter(lambda c: c not in 'aeiou', text)
+        irc.reply(text)
+        
     def squish(self, irc, msg, args):
         """<text>
 
