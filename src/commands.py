@@ -182,7 +182,7 @@ def getInt(irc, msg, args, default=None, type='integer'):
 def getId(irc, msg, args):
     getInt(irc, msg, args, type='id')
 
-def channelDb(irc, msg, args, **kwargs):
+def getChannelDb(irc, msg, args, **kwargs):
     if not conf.supybot.databases.plugins.channelSpecific():
         return None
     else:
@@ -251,7 +251,7 @@ def getNick(irc, msg, args):
     else:
         irc.errorInvalid('nick', s, Raise=True)
 
-def channel(irc, msg, args, cap=None):
+def getChannel(irc, msg, args, cap=None):
     if ircutils.isChannel(args[0]):
         channel = args.pop(0)
     elif ircutils.isChannel(msg.args[0]):
@@ -288,11 +288,11 @@ argWrappers = ircutils.IrcDict({
     'id': getId,
     'int': getInt,
     'nick': getNick,
-    'channel': channel,
+    'channel': getChannel,
     'plugin': getPlugin,
     'lowered': getLowered,
     'something': getSomething,
-    'channelDb': channelDb,
+    'channelDb': getChannelDb,
     'hostmask': getHostmask,
     'user': getUser,
     'otherUser': getOtherUser,
