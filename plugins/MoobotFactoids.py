@@ -228,15 +228,14 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     def _getDunno(self, nick):
         """Retrieves a "dunno" from the database."""
         cursor = self.db.cursor()
-        cursor.execute("""SELECT id, dunno
+        cursor.execute("""SELECT dunno
                           FROM dunnos
                           ORDER BY random()
                           LIMIT 1""")
         if cursor.rowcount == 0:
             return "No dunno's available, add some with dunnoadd."
-        (id, dunno) = cursor.fetchone()
+        dunno = cursor.fetchone()[0]
         dunno = dunno.replace('$who', nick)
-        dunno += " (#%d)" % id
         return dunno
 
     def addFactoid(self, irc, msg, match):
@@ -448,11 +447,12 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                irc.error(msg, "Factoid '%s' is not locked." % key)
                return
         # Can only lock/unlock own factoids
-        if created_by != id:
+        if not (ircdb.checkCapability(id, 'admin') or created_by == id):
             s = "unlock"
             if lock:
                s = "lock"
-            irc.error(msg, "Cannot %s someone else's factoid." % s)
+            irc.error(msg, "Cannot %s someone else's factoid unless you "
+                           "are an admin." % s)
             return
         # Okay, we're done, ready to lock/unlock
         if lock:
