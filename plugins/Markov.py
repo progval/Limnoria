@@ -131,6 +131,9 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
                           WHERE is_first=1
                           ORDER BY random()
                           LIMIT 1""")
+        if cursor.rowcount == 0:
+            irc.error(msg, 'I have no records for that channel.')
+            return
         (id, first, second) = cursor.fetchone()
         id = int(id)
         words.append(first)
