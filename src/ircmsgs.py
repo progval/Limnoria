@@ -604,13 +604,11 @@ def whois(nick, mask='', prefix=''):
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='WHOIS', args=(nick, mask))
 
-def mode(channel, args=None, prefix=''):
-    if args is None:
-        args = ()
-    elif isinstance(args, basestring):
+def mode(channel, args=(), prefix=''):
+    if isinstance(args, basestring):
         args = (args,)
     else:
-        args = tuple(args)
+        args = tuple(map(str, args))
     return IrcMsg(prefix=prefix, command='MODE', args=(channel,)+args)
 
 def invite(nick, channel, prefix=''):
