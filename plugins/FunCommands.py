@@ -95,7 +95,6 @@ class FunCommands(callbacks.Privmsg):
         self.recvdMsgs = 0
         self.sentBytes = 0
         self.recvdBytes = 0
-        self._startTime = time.time()
 
     def inFilter(self, irc, msg):
         self.recvdMsgs += 1
@@ -309,7 +308,7 @@ class FunCommands(callbacks.Privmsg):
 
     def uptime(self, irc, msg, args):
         "takes no arguments"
-        elapsed = time.time() - self._startTime
+        elapsed = time.time() - world.startedAt
         days, elapsed = elapsed // 86400, elapsed % 86400
         hours, elapsed = elapsed // 3600, elapsed % 3600
         minutes, seconds = elapsed // 60, elapsed % 60

@@ -36,13 +36,17 @@ Main program file for running the bot.
 from fix import *
 
 import sys
+import time
 import email
 import getopt
 #import pprint
 
 import conf
+import world
 
 sys.path.append(conf.pluginDir)
+
+world.startedAt = time.time()
 
 class ConfigurationDict(dict):
     def __init__(self, L=None):
