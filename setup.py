@@ -76,7 +76,6 @@ plugins = [
     'URL',
     'User',
     'Utilities',
-    'Weather',
     'Web',
     ]
 
