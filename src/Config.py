@@ -171,6 +171,7 @@ class Config(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         if not args:
             raise callbacks.ArgumentError
+        args[0] = self._canonicalizeName(args[0]
         wrapper = getWrapper(args[0])
         if not wrapper.channelValue:
             irc.error('That configuration variable is not a channel-specific '
