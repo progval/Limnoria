@@ -41,6 +41,7 @@ import os.path
 import sqlite
 
 import debug
+import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
