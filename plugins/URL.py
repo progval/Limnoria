@@ -43,7 +43,6 @@ import os
 import re
 import sets
 import time
-import shutil
 import getopt
 import urlparse
 import itertools
