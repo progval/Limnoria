@@ -118,6 +118,22 @@ class Config(callbacks.Privmsg):
             else:
                 irc.error('%r is not a valid configuration group.' % name)
 
+    def search(self, irc, msg, args):
+        """<word>
+
+        Searches for <word> in the current configuration variables.
+        """
+        word = privmsgs.getArgs(args)
+        word = word.lower()
+        L = []
+        for (name, _) in conf.supybot.getValues(getChildren=True):
+            if word in name.lower():
+                L.append(name)
+        if L:
+            irc.reply(utils.commaAndify(L))
+        else:
+            irc.reply('There were no matching configuration variables.')
+
     def config(self, irc, msg, args):
         """<name> [<value>]
 
