@@ -161,6 +161,9 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertRegexp('more', 'more')
         self.assertNotRegexp('more', 'more')
 
+    def testInvalidCommand(self):
+        self.assertResponse('echo []', '[]')
+
     def testMoreIsCaseInsensitive(self):
         self.assertNotError('echo %s' % ('abc'*2000))
         self.assertNotError('more')

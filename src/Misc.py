@@ -60,7 +60,10 @@ class Misc(callbacks.Privmsg):
             command = tokens and tokens[0] or ''
             irc.error('%r is not a valid command.' % command)
         else:
-            self.log.info('Not replying to %s, not a command.' % tokens[0])
+            if tokens:
+                # echo [] will get us an empty token set, but there's no need
+                # to log this in that case anyway, it being a nested command.
+                self.log.info('Not replying to %s, not a command.' % tokens[0])
             if not isinstance(irc.irc, irclib.Irc):
                 irc.reply('[%s]' % ' '.join(tokens))
         
