@@ -64,7 +64,11 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.irc.feedMsg(ircmsgs.join(self.channel, prefix='foobar!user@host'))
         self.assertError('kban foobar')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
-        self.assertNotError('kban foobar')
+        m = self.getMsg('kban foobar')
+        self.assertEqual(m, ircmsgs.ban(self.channel, '*!*@host'))
+        m = self.getMsg(' ')
+        self.assertEqual(m, ircmsgs.kick(self.channel, 'foobar', self.nick))
+        self.assertNotRegexp('kban adlkfajsdlfkjsd', 'KeyError')
 
     def testLobotomizers(self):
         self.assertNotError('lobotomize')

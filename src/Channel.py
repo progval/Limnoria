@@ -113,11 +113,16 @@ class Channel(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         (bannedNick, length) = privmsgs.getArgs(args, optional=1)
         length = int(length or 0)
-        bannedHostmask = irc.state.nickToHostmask(bannedNick)
+        try:
+            bannedHostmask = irc.state.nickToHostmask(bannedNick)
+        except KeyError:
+            irc.error(msg, 'I haven\'t seen %s.' % bannedNick)
+            return
         capability = ircdb.makeChannelCapability(channel, 'op')
         banmask = ircutils.banmask(bannedHostmask)
-        if ircdb.checkCapability(msg.prefix, capability)\
-           and not ircdb.checkCapability(bannedHostmask, capability):
+        if bannedNick == msg.nick or \
+           (ircdb.checkCapability(msg.prefix, capability) \
+           and not ircdb.checkCapability(bannedHostmask, capability)):
             if irc.nick in irc.state.channels[channel].ops:
                 irc.queueMsg(ircmsgs.ban(channel, banmask))
                 irc.queueMsg(ircmsgs.kick(channel, bannedNick, msg.nick))
