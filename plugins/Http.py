@@ -473,6 +473,25 @@ class Http(callbacks.Privmsg):
             language = random.sample(babelfish.available_languages, 1)[0]
         irc.reply(msg, language)
 
+    def kernel(self, irc, msg, args):
+        """takes no arguments
+
+        Returns information about the current version of the Linux kernel.
+        """
+        try:
+            fd = urllib2.urlopen('http://www.kernel.org/kdist/finger_banner')
+        except urllib2.URLError:
+            irc.error(msg, 'Couldn\'t connect to kernel.org.')
+            return
+        for line in fd:
+            (name, version) = line.split(':')
+            if 'latest stable' in name:
+                stable = version.strip()
+            elif 'latest beta' in name:
+                beta = version.strip()
+        irc.reply(msg, 'The latest stable kernel is %s; ' \
+                       'the latest beta kernel is %s.' % (stable, beta))
+
 Class = Http
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -447,7 +447,7 @@ class FunCommands(callbacks.Privmsg):
         """
         (user, system, childUser, childSystem, elapsed) = os.times()
         timeRunning = time.time() - world.startedAt
-        threads = threading.activeCount()
+        activeThreads = threading.activeCount()
         response ='I have taken %s seconds of user time and %s seconds of '\
                   'system time, for a total of %s seconds of CPU time.  My '\
                   'children have taken %s seconds of user time and %s seconds'\
@@ -460,7 +460,7 @@ class FunCommands(callbacks.Privmsg):
                      (user+system+childUser+childSystem)/timeRunning,
                      world.threadsSpawned,
                      world.threadsSpawned == 1 and 'thread' or 'threads',
-                     threads, world.commandsProcessed,
+                     activeThreads, world.commandsProcessed,
                      world.commandProcessed == 1 and 'command' or 'commands')
         irc.reply(msg, response)
 
@@ -773,27 +773,6 @@ class FunCommands(callbacks.Privmsg):
             except socket.error:
                 irc.error(msg, 'Host not found.')
     dns = privmsgs.thread(dns)
-
-    def kernel(self, irc, msg, args):
-        """takes no arguments"""
-        try:
-            conn = telnetlib.Telnet('kernel.org', 79)
-            conn.write('\n')
-            text = conn.read_all()
-        except socket.error, e:
-            irc.error(msg, e.args[1])
-            return
-        stable = 'unkown'
-        beta = 'unknown'
-        for line in text.splitlines():
-            (name, version) = line.split(':')
-            if 'latest stable' in name:
-                stable = version.strip()
-            elif 'latest beta' in name:
-                beta = version.strip()
-        irc.reply(msg, 'The latest stable kernel is %s; ' \
-                       'the latest beta kernel is %s.' % (stable, beta))
-    kernel = privmsgs.thread(kernel)
 
 
 Class = FunCommands
