@@ -39,6 +39,7 @@ import urllib2
 
 from itertools import ifilter
 
+import conf
 import debug
 import utils
 import ircutils
@@ -94,6 +95,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _getStatus = lambda self, s: '%s: %s' % (ircutils.bold('Status'), 
         self._status.search(s).group(1))
 
+    def __init__(self):
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        self.snarfer = True
+
     def _formatResp(self, num, text):
         """
         Parses the Sourceforge query to return a list of tuples that
@@ -111,6 +116,15 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             for item in ifilter(None, self._infoRe.findall(text)):
                 matches.append((item[0], utils.htmlToText(item[2])))
         return matches
+
+    def disablesfsnarfer(self, irc, msg, args):
+        """takes no argument
+
+        Disables the snarfer that responds to all Sourceforge Tracker links
+        """
+        self.snarfer = False
+        irc.reply(msg, conf.replySuccess)
+    disablesfsnarfer=privmsgs.checkCapability(disablesfsnarfer,'admin')
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
     def bugs(self, irc, msg, args):
@@ -230,6 +244,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def sourceforgeSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?sourceforge\.net/tracker/(?:index\.php)?\?func=detail&aid=\d+&group_id=\d+&atid=\d+"
+        if not self.snarfer:
+            return
         url = match.group(0)
         fd = urllib2.urlopen(url)
         s = fd.read()

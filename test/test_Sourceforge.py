@@ -96,5 +96,13 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
         self.assertNotError('https://www.sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
 
+    def testDisablesfsnarfer(self):
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=540223&group_id=235&atid=300235', 
+            r';.*Status.*: \w+;')
+        self.assertNotError('disablesfsnarfer')
+        self.assertNoResponse('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
