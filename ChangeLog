@@ -1,3 +1,7 @@
+	* Changed OwnerCommands.load (and loadPluginModule) to be
+	case-insensitive, so "load funcommands" works just as well as
+	"load FunCommands".
+	
 2003-10-12  Jeremy Fincher  <jemfinch@users.sf.net>
 	
 	* Version 0.73.1!
