@@ -276,6 +276,8 @@ class PluginDocumentation:
     
 
 if __name__ == '__main__':
+    import optparse
+
     if not os.path.exists(conf.dataDir):
         os.mkdir(conf.dataDir)
 
@@ -290,12 +292,20 @@ if __name__ == '__main__':
         os.remove(os.path.join(conf.logDir, filename))
     debug._open()
 
+    parser = optparse.OptionParser(usage='Usage: %prog [options]',
+                                   version='Supybot %s' % conf.version)
+    parser.add_option('-e', '--exclude', action='append',
+                      dest='exclusions', metavar='TESTFILE',
+                      help='Exclude this test from the test run.')
+    (options, args) = parser.parse_args()
+    if not args:
+        args = glob.glob(os.path.join('test', 'test_*.py'))
+    if options.exclusions:
+        for name in options.exclusions:
+            args = [s for s in args if s != name]
+    
     world.testing = True
-    if len(sys.argv) > 1:
-        files = sys.argv[1:]
-    else:
-        files = glob.glob(os.path.join('test', 'test_*.py'))
-    names = [os.path.splitext(os.path.basename(file))[0] for file in files]
+    names = [os.path.splitext(os.path.basename(name))[0] for name in args]
     suite = unittest.defaultTestLoader.loadTestsFromNames(names)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
