@@ -126,8 +126,6 @@ def reply(msg, s, prefixName=True, private=False,
           notice=False, to=None, action=False):
     # This is so we don't prefix a channel name.
     
-    if prefixName and not ircutils.isChannel(to):
-        s = '%s: %s' % (to, s)
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
     if private:
@@ -141,6 +139,9 @@ def reply(msg, s, prefixName=True, private=False,
     s = ircutils.safeArgument(s)
     if not s:
         s = 'Error: I tried to send you an empty message.'
+    # Let's may sure we don't do, "#channel: foo.".
+    if prefixName and not ircutils.isChannel(to):
+        s = '%s: %s' % (to, s)
     # And now, let's decide whether it's a PRIVMSG or a NOTICE.
     msgmaker = ircmsgs.privmsg
     if notice: 
