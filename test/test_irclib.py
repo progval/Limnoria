@@ -368,8 +368,12 @@ class IrcStateTestCase(SupyTestCase):
 class IrcTestCase(SupyTestCase):
     def setUp(self):
         self.irc = irclib.Irc('test')
-        _ = self.irc.takeMsg() # NICK
-        _ = self.irc.takeMsg() # USER
+        #m = self.irc.takeMsg()
+        #self.failUnless(m.command == 'PASS', 'Expected PASS, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
 
     def testPingResponse(self):
         self.irc.feedMsg(ircmsgs.ping('123'))
@@ -482,10 +486,9 @@ class IrcCallbackTestCase(SupyTestCase):
             expected.insert(0, ircmsgs.password(password))
             self.assertEqual(msgs, expected)
         finally:
-            conf.supybot.nick.setValue(nick)
-            conf.supybot.user.setValue(user)
-            conf.supybot.networks.test.password.setValue(password)
-            conf.supybot.nick.setValue(nick)
+            conf.supybot.nick.setValue(originalNick)
+            conf.supybot.user.setValue(originalUser)
+            conf.supybot.networks.test.password.setValue(originalPassword)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

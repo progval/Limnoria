@@ -36,7 +36,11 @@ load = unittest.defaultTestLoader.loadTestsFromModule
 
 GLOBALS = globals()
 dirname = os.path.dirname(__file__)
-for filename in os.listdir(dirname):
+filenames = os.listdir(dirname)
+# Uncomment these if you need some consistency in the order these tests run.
+# filenames.sort()
+# filenames.reverse()
+for filename in filenames:
     if filename.startswith('test_') and filename.endswith('.py'):
         name = filename[:-3]
         exec 'import %s' % name in GLOBALS
