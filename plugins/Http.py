@@ -219,7 +219,9 @@ class Http(callbacks.Privmsg):
         html = webutils.getUrl(url)
         m = self._cyborgRe.search(html)
         if m:
-            irc.reply(m.group(1))
+            s = m.group(1)
+            s = utils.normalizeWhitespace(s)
+            irc.reply(s)
         else:
             irc.errorPossibleBug('No cyborg name returned.')
         
