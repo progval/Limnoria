@@ -66,7 +66,7 @@ class Http(callbacks.Privmsg):
         thought = ' ' * 512
         now = time.time()
         while self.deepthoughtq and now - self.deepthoughtq[0][0] > 86400:
-            s = self.deepthoughtq.dequeue()
+            s = self.deepthoughtq.dequeue()[1]
             self.deepthoughts.remove(s)
         while len(thought) > 430 or thought in self.deepthoughts:
             fd = urllib2.urlopen(url)
