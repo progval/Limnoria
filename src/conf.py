@@ -193,6 +193,9 @@ supybot.register('reply')
 supybot.reply.register('truncate', registry.Boolean(False, """Determines
 whether the bot will simply truncate messages instead of breaking up long
 messages and using the 'more' command to get the remaining chunks."""))
+supybot.reply.register('maximumMores', registry.PositiveInteger(50, """
+Determines what the maximum number of chunks (for use with the 'more' command)
+will be."""))
 
 supybot.reply.register('oneToOne', registry.Boolean(True, """Determines whether
 the bot will send multi-message replies in a single messsage or in multiple

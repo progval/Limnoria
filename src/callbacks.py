@@ -567,9 +567,11 @@ class IrcObjectProxy(RichReplyMethods):
             else:
                 s = ircutils.safeArgument(s)
                 allowedLength = 450 - len(self.irc.prefix)
-                if len(s) > allowedLength*50:
-                    log.warning('Cowardly refusing to "more" %s bytes.'%len(s))
-                    s = s[:allowedLength*50]
+                maximumLength = allowedLength*conf.supybot.reply.maximumMores()
+                if len(s) > maximumLength:
+                    log.warning('Truncating to %s bytes from %s bytes',
+                                maximumLength, len(s))
+                    s = s[:maximumLength]
                 if len(s) < allowedLength or conf.supybot.reply.truncate():
                     s = s[:allowedLength+20] # In case we're truncating.
                     self.irc.queueMsg(reply(msg, s, self.prefixName,

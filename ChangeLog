@@ -1,5 +1,10 @@
-	* Added supybot.reply.truncate, to turn off the normal more'ing
-	of replies.
+	* Added supybot.reply.maximumMores, to give users the ability to
+	set the maximum number of "more" chunks replies will generate.
+	
+	* Added supybot.reply.truncate, to turn off the normal chunking
+	of replies that later can be retrieved with the more command.
+	Setting this variable to On means that no chunks will ever be
+	created.
 	
 	* Added supybot.plugins.Enforcer.takeRevengeOnOps, which makes
 	the bot even take revenge on #channel,ops who try to violate the
