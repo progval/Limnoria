@@ -310,6 +310,10 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         else:
             irc.error(msg, 'There was no callback %s' % name)
 
+    def cvsup(self, irc, msg, args):
+        """takes no arguments"""
+        irc.reply(msg, str(os.system('cvs up')))
+
 
 standardPrivmsgModules = [OwnerCommands]
 
