@@ -36,6 +36,9 @@ class BugzillaTest(PluginTestCase, PluginDocumentation):
     def testBugzilla(self):
         self.assertNotError('bug gcc 5')
         self.assertNotError('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
+        self.assertNotError('add xiph http://bugs.xiph.org/ Xiph')
+        self.assertNotError('bug xiph 413')
+        self.assertNotError('remove xiph')
 
     def testConfigBugzillaSnarfer(self):
         self.assertNotError('bugzilla config bug-snarfer off')

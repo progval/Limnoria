@@ -43,6 +43,7 @@ from itertools import imap, ifilter
 from htmlentitydefs import entitydefs as entities
 
 import conf
+import debug
 import utils
 import plugins
 import ircutils
@@ -114,7 +115,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         be listed with the bugzilla query.
         """
         (name, url, description) = privmsgs.getArgs(args, required=3)
-        cursor = self.db.cursor()
+        if url[-1] == '/':
+            url = url[:-1]
         self.db[name] = [url, description]
         self.shorthand = utils.abbrev(self.db.keys())
         irc.reply(msg, conf.replySuccess)
@@ -191,10 +193,13 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         try:
             name = self.shorthand[name]
             (url, description) = self.db[name]
+            #debug.printf(url)
+            #debug.printf(description)
         except KeyError:
             irc.error(msg, replyNoBugzilla % name)
             return
         queryurl = '%s/xml.cgi?id=%s' % (url, number)
+        #debug.printf(queryurl)
         try:
             summary = self._get_short_bug_summary(queryurl,description,number)
         except BugzillaError, e:
@@ -229,8 +234,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         return ', '.join(imap(str, L))
 
     def _get_short_bug_summary(self, url, desc, number):
-        bugxml = self._getbugxml(url, desc)
         try:
+            bugxml = self._getbugxml(url, desc)
             zilladom = minidom.parseString(bugxml)
         except Exception, e:
             s = 'Could not parse XML returned by %s bugzilla: %s' % (desc, e)
@@ -267,7 +272,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     def _getbugxml(self, url, desc):
         try:
             fh = urllib2.urlopen(url)
-        except urllib2.UrlError, e:
+        except urllib2.HTTPError, e:
             raise IOError, 'Connection to %s bugzilla failed' % desc
         bugxml = fh.read()
         fh.close()
