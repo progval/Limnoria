@@ -55,45 +55,28 @@ import registry
 import callbacks
 
 def configure(advanced):
-    import socket
     from questions import output, expect, anything, something, yn
     conf.registerPlugin('Relay', True)
-    startNetwork = anything('What is the name of the network you\'re '
-                            'connecting to first?')
-    onStart.append('relay start %s' % startNetwork)
-    while yn('Do you want to connect to another network for relaying?'):
-        network = anything('What is the name of the network you want to '
-                           'connect to?')
-        server = ''
-        while not server:
-            server = anything('What server does that network use?')
-            try:
-                output('Looking up %s' % server)
-                ip = socket.gethostbyname(server)
-                output('Found %s (%s)' % (server, ip))
-            except socket.error:
-                output('Sorry, but I couldn\'t find that server.')
-                server = ''
-        if yn('Does that server require you to connect on a port other than '
-              'the default port for IRC (6667)?', default=False):
-            port = ''
-            while not port:
-                port = anything('What port is that?')
-                try:
-                    int(port)
-                except ValueError:
-                    output('Sorry, but that isn\'t a valid port.')
-                    port = ''
-            server = ':'.join((server, port))
-        onStart.append('relay connect %s %s' % (network, server))
-    channel = anything('What channel would you like to relay between?')
-    afterConnect.append('relay join %s' % utils.dqrepr(channel))
-    while yn('Would like to relay between any more channels?'):
-        channel = anything('What channel?')
-        afterConnect.append('relay join %s' % channel)
+    if yn('Would you like to relay between any channels?'):
+        channels = anything('What channels?  Separated them by spaces.')
+        conf.supybot.plugins.Relay.channels.set(channels)
     if yn('Would you like to use color to distinguish between nicks?'):
-        afterConnect.append('relay color 2')
+        conf.supybot.plugins.Relay.color.setValue(True)
+    output("""Right now there's no way to configure the actual connection to
+    the server.  What you'll need to do when the bot finishes starting up is
+    use the 'start' command followed by the 'connect' command.  Use the 'help'
+    command to see how these two commands should be used.""")
 
+conf.registerPlugin('Relay')
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
+    registry.Boolean(False, """Determines whether the bot will color relayed
+    PRIVMSGs so as to make the messages easier to read."""))
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'topicSync',
+    registry.Boolean(True, """Determines whether the bot will synchronize
+    topics between networks in the channels it relays."""))
+conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
+    conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
+    will relay in."""))
 
 ircs = ircutils.IrcDict()
 lastmsg = {} # Not IrcDict.  Doesn't map strings.
@@ -107,25 +90,6 @@ def reload(x=None):
         return (ircs, ircstates, lastmsg, abbreviations, originalIrc)
     else:
         (ircs, ircstates, lastmsg, abbreviations, originalIrc) = x
-
-conf.registerPlugin('Relay')
-conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
-    registry.Boolean(True, """Determines whether the bot will color relayed
-    PRIVMSGs so as to make the messages easier to read."""))
-conf.registerChannelValue(conf.supybot.plugins.Relay, 'topicSync',
-    registry.Boolean(True, """Determines whether the bot will synchronize
-    topics between networks in the channels it relays."""))
-
-class SpaceSeparatedSetOfChannels(registry.SeparatedListOf):
-    List = ircutils.IrcSet
-    Value = conf.ValidChannel
-    def splitter(self, s):
-        return s.split()
-    joiner = ' '.join
-    
-conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
-    SpaceSeparatedSetOfChannels([], """Determines which channels the bot
-    will relay in."""))
 
 class Relay(callbacks.Privmsg):
     noIgnore = True
