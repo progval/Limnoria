@@ -292,6 +292,8 @@ class IrcState(IrcCommandDispatcher):
             channel.removeUser(msg.nick)
 
     def doTopic(self, irc, msg):
+        if len(msg.args) == 1:
+            return # Empty TOPIC for information.  Does not affect state.
         chan = self.channels[msg.args[0]]
         chan.topic = msg.args[1]
 
