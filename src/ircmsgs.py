@@ -487,7 +487,7 @@ def dcc(recipient, kind, *args, **kwargs):
     assert ircutils.isNick(recipient), 'Can\'t DCC a channel.'
     kind = kind.upper()
     assert kind in ('SEND', 'CHAT', 'RESUME', 'ACCEPT'), 'Invalid DCC command.'
-    args.insert(0, kind)
+    args = (kind,) + args
     return IrcMsg(prefix=kwargs.get('prefix', ''), command='PRIVMSG',
                   args=(recipient, ' '.join(args)))
 
