@@ -121,14 +121,15 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         irc.reply(msg, s)
 
     def quote(self, irc, msg, args):
-        """[<channel>] --{id,regexp,from}=<value> [--{id,regexp,from}=<value>]
+        """[<channel>] --{id,regexp,from,with}=<value> ]
 
         Returns quote(s) matching the given criteria.  --from is who added the
         quote; --id is the id number of the quote; --regexp is a regular
         expression to search for.
         """
         channel = privmsgs.getChannel(msg, args)
-        (optlist, rest) = getopt.getopt(args, '', ['id=', 'regexp=', 'from='])
+        (optlist, rest) = getopt.getopt(args, '', ['id=', 'regexp=',
+                                                   'from=', 'with='])
         if not optlist and not rest:
             raise callbacks.ArgumentError
         criteria = []
@@ -144,6 +145,9 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
                 except ValueError:
                     irc.error(msg, '--id value must be an integer.')
                     return
+            elif option == 'with':
+                criteria.append('quote LIKE %s')
+                formats.append('%%%s%%' % argument)
             elif option == 'from':
                 criteria.append('added_by=%s')
                 formats.append(argument)

@@ -47,6 +47,8 @@ class QuotesTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('quote #foo 3', '#3: baz')
         self.assertRegexp('quote #foo --regexp m/ba/', 'bar.*baz')
         self.assertRegexp('quote #foo --regexp ba', 'bar.*baz')
+        self.assertRegexp('quote #foo --with bar', '#2: bar')
+        self.assertRegexp('quote #foo bar', '#2: bar')
         self.assertNotError('quoteinfo #foo 1')
         self.assertNotError('randomquote #foo')
         self.assertError('removequote #foo 4')
