@@ -143,7 +143,7 @@ class Weather(callbacks.Privmsg):
                 return
                 
         headData = self._cityregex.search(html)
-        if headData:
+        if headData is not None:
             (city, state, country) = headData.groups()
         else:
             headData = self._interregex.search(html)
@@ -156,14 +156,14 @@ class Weather(callbacks.Privmsg):
         city = city.strip()
         state = state.strip()
         temp = self._tempregex.search(html)
-        if temp:
+        if temp is not None:
             temp = temp.group(1)
         conds = self._condregex.search(html)
-        if conds:
+        if conds is not None:
             conds = conds.group(1)
         index = ''
         chill = self._chillregex.search(html)
-        if chill:
+        if chill is not None:
             #self.log.warning(chill.groups())
             chill = chill.group(1)
             if int(chill[:-2]) < int(temp[:-2]):
@@ -174,8 +174,8 @@ class Weather(callbacks.Privmsg):
             if int(heat[:-2]) > int(temp[:-2]):
                 index = ' (Heat Index: %s)' % heat
         if temp and conds and city and state:
-            conds = conds.replace('Tsra', 'Thunder Storms')
-            s = 'The current temperature in %s, %s is %s%s. Conditions: %s' % \
+            conds = conds.replace('Tsra', 'Thunderstorms')
+            s = 'The current temperature in %s, %s is %s%s. Conditions: %s.'% \
                 (city, state, temp, index, conds)
             irc.reply(s)
         else:
