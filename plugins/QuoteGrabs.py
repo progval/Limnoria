@@ -63,11 +63,14 @@ minRandomLength = 8
 minRandomWords = 3
 
 class QuoteGrabs(plugins.ChannelDBHandler,
-                 plugins.Toggleable,
+                 plugins.Configurable,
                  callbacks.Privmsg):
-    toggles = plugins.ToggleDictionary({'random': False})
+    configurables = plugins.ConfigurableDictionary(
+        [('random-grabber', plugins.ConfigurableTypes.bool, False,
+          """Determines whether the bot will randomly grab possibly-suitable
+          quotes for someone."""),]
+    )
     def __init__(self):
-        plugins.Toggleable.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
 
@@ -94,7 +97,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
-            if self.toggles.get('random', channel):
+            if self.configurables.get('random', channel):
                 if len(msg.args[1]) > minRandomLength and \
                    len(msg.args[1].split()) > minRandomWords:
                     db = self.getDb(channel)
