@@ -108,7 +108,7 @@ class Misc(callbacks.Privmsg):
         channel = msg.args[0]
         if conf.get(conf.supybot.reply.whenNotCommand, channel):
             command = tokens and tokens[0] or ''
-            irc.errorInvalid('command', command)
+            irc.errorInvalid('command', command, repr=False)
         else:
             if tokens:
                 # echo [] will get us an empty token set, but there's no need

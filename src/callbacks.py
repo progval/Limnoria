@@ -479,13 +479,18 @@ class RichReplyMethods(object):
         v = self._getConfig(conf.supybot.replies.requiresPrivacy)
         self._error(self.__makeReply(v, s), **kwargs)
 
-    def errorInvalid(self, what, given=None, s='', **kwargs):
+    def errorInvalid(self, what, given=None, s='', repr=True, **kwargs):
         if given is not None:
-            v = '%r is not a valid %s.' % (given, what)
+            if repr:
+                given = _repr(given)
+            else:
+                given = '"%s"' % given
+            v = '%s is not a valid %s.' % (given, what)
         else:
             v = 'That\'s not a valid %s.' % what
         self._error(self.__makeReply(v, s), **kwargs)
 
+_repr = repr
 
 class IrcObjectProxy(RichReplyMethods):
     "A proxy object to allow proper nested of commands (even threaded ones)."
