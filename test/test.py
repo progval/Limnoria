@@ -115,13 +115,18 @@ class PluginTestCase(unittest.TestCase):
         self.irc.die()
         gc.collect()
 
-    def _feedMsg(self, query):
+    def _feedMsg(self, query, timeout=None):
+        if timeout is None:
+            timeout = self.timeout
         self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
         fed = time.time()
         response = self.irc.takeMsg()
-        while response is None and time.time() - fed < self.timeout:
+        while response is None and time.time() - fed < timeout:
             response = self.irc.takeMsg()
         return response
+
+    def getMsg(self, query, timeout=None):
+        return self._feedMsg(query)
 
     def feedMsg(self, query):
         """Just feeds it a message, that's all."""
@@ -143,6 +148,10 @@ class PluginTestCase(unittest.TestCase):
         self.failIf(m.args[1].startswith('Error:'),
                     '%r errored: %s' % (query, m.args[1]))
 
+    def assertNoResponse(self, query, timeout=None):
+        m = self._feedMsg(query, timeout)
+        self.failIf(m)
+        
     def assertResponse(self, query, expectedResponse):
         m = self._feedMsg(query)
         self.failUnless(m)
