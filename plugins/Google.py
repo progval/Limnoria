@@ -329,7 +329,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
-        if not self.snarfer['group']:
+        if not self.snarfers['groups']:
             return
         request = urllib2.Request(match.group(0), headers=\
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
