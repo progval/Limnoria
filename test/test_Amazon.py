@@ -31,73 +31,82 @@
 
 from testsupport import *
 
-class AmazonTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Amazon',)
-    def setUp(self):
-        PluginTestCase.setUp(self)
-        self.assertNotError('licensekey test')
+LICENSE_KEY = 'INITIAL_NON_LICENSE_KEY'
 
-    def testIsbn(self):
-        self.assertHelp('isbn')
-        self.assertRegexp('isbn 0738203793', r'Buckminster Fuller\'s Universe')
-        self.assertRegexp('isbn --url 0738203793', r'Buck.*/exec/obidos/ASIN')
+if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY':
+    class AmazonTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Amazon',)
+        def setUp(self):
+            PluginTestCase.setUp(self)
+            self.assertNotError('licensekey %s' % LICENSE_KEY)
 
-    def testAsin(self):
-        self.assertHelp('asin')
-        self.assertRegexp('asin B00005JM5E', r'Pirates of the Caribbean')
-        self.assertRegexp('asin --url B00005JM5E', r'Pirate.*ASIN/B00005JM5E')
+        def testIsbn(self):
+            self.assertHelp('isbn')
+            self.assertRegexp('isbn 0738203793',
+                              r'Buckminster Fuller\'s Universe')
+            self.assertRegexp('isbn --url 0738203793',
+                              r'Buck.*/exec/obidos/ASIN')
 
-    def testUpc(self):
-        self.assertHelp('upc')
-        self.assertRegexp('upc 093624586425', r'Short Bus')
-        self.assertRegexp('upc --url 093624586425', r'Short Bus.*/exec/obidos')
+        def testAsin(self):
+            self.assertHelp('asin')
+            self.assertRegexp('asin B00005JM5E', r'Pirates of the Caribbean')
+            self.assertRegexp('asin --url B00005JM5E',
+                              r'Pirate.*ASIN/B00005JM5E')
 
-    def testAuthor(self):
-        self.assertHelp('author')
-        self.assertRegexp('author torvalds', r'Just for Fun')
-        self.assertRegexp('author --url torvalds', r'Linus.*/exec/obidos')
+        def testUpc(self):
+            self.assertHelp('upc')
+            self.assertRegexp('upc 093624586425', r'Short Bus')
+            self.assertRegexp('upc --url 093624586425',
+                              r'Short Bus.*/exec/obidos')
 
-    def testArtist(self):
-        self.assertHelp('artist')
-        self.assertRegexp('artist rahzel', r'Audio CD')
-        self.assertRegexp('artist --url rahzel', r'Audio CD.*/exec/obidos')
-        self.assertRegexp('artist --classical rahzel', r'No items were found')
-        self.assertRegexp('artist --classical vivaldi', r'Audio CD')
+        def testAuthor(self):
+            self.assertHelp('author')
+            self.assertRegexp('author torvalds', r'Just for Fun')
+            self.assertRegexp('author --url torvalds', r'Linus.*/exec/obidos')
 
-    def testActor(self):
-        self.assertHelp('actor')
-        self.assertRegexp('actor bruce lee', r'DVD')
-        self.assertRegexp('actor --url bruce lee', r'DVD.*/exec/obidos/')
-        self.assertRegexp('actor --vhs bruce lee', r'VHS Tape')
-        self.assertRegexp('actor --video bruce lee', r'DVD|VHS Tape')
+        def testArtist(self):
+            self.assertHelp('artist')
+            self.assertRegexp('artist rahzel', r'Audio CD')
+            self.assertRegexp('artist --url rahzel', r'Audio CD.*/exec/obidos')
+            self.assertRegexp('artist --classical rahzel',
+                              r'No items were found')
+            self.assertRegexp('artist --classical vivaldi', r'Audio CD')
 
-    def testDirector(self):
-        self.assertHelp('director')
-        self.assertRegexp('director gore verbinski', r'DVD')
-        self.assertRegexp('director --url gore verbinski',
-                          r'DVD.*/exec/obidos/')
-        self.assertRegexp('director --vhs gore verbinski', r'VHS Tape')
-        self.assertRegexp('director --video gore verbinski', r'DVD|VHS Tape')
+        def testActor(self):
+            self.assertHelp('actor')
+            self.assertRegexp('actor bruce lee', r'DVD')
+            self.assertRegexp('actor --url bruce lee', r'DVD.*/exec/obidos/')
+            self.assertRegexp('actor --vhs bruce lee', r'VHS Tape')
+            self.assertRegexp('actor --video bruce lee', r'DVD|VHS Tape')
 
-    def testManufacturer(self):
-        self.assertHelp('manufacturer')
-        self.assertRegexp('manufacturer iomega', r'Iomega')
-        self.assertRegexp('manufacturer --url iomega',
-                          r'Iomega.*/exec/obidos/')
-        self.assertRegexp('manufacturer --electronics plextor', r'Plextor')
-        self.assertRegexp('manufacturer --kitchen henckels', r'Henckels')
-        self.assertRegexp('manufacturer --videogames ea', r'Madden')
-        self.assertRegexp('manufacturer --software adobe', r'Photoshop')
-        self.assertRegexp('manufacturer --photo kodak', r'Kodak')
+        def testDirector(self):
+            self.assertHelp('director')
+            self.assertRegexp('director gore verbinski', r'DVD')
+            self.assertRegexp('director --url gore verbinski',
+                              r'DVD.*/exec/obidos/')
+            self.assertRegexp('director --vhs gore verbinski', r'VHS Tape')
+            self.assertRegexp('director --video gore verbinski',
+                              r'DVD|VHS Tape')
 
-    def testBooks(self):
-        self.assertHelp('books')
-        self.assertRegexp('books linux', r'Linux Kernel Development')
+        def testManufacturer(self):
+            self.assertHelp('manufacturer')
+            self.assertRegexp('manufacturer iomega', r'Iomega')
+            self.assertRegexp('manufacturer --url iomega',
+                              r'Iomega.*/exec/obidos/')
+            self.assertRegexp('manufacturer --electronics plextor', r'Plextor')
+            self.assertRegexp('manufacturer --kitchen henckels', r'Henckels')
+            self.assertRegexp('manufacturer --videogames ea', r'Madden')
+            self.assertRegexp('manufacturer --software adobe', r'Photoshop')
+            self.assertRegexp('manufacturer --photo kodak', r'Kodak')
 
-    def testVideos(self):
-        self.assertHelp('videos')
-        self.assertRegexp('videos zim', r'Demystifying the Devil.*DVD')
-        self.assertRegexp('videos --vhs samuel jackson', r'VHS Tape')
+        def testBooks(self):
+            self.assertHelp('books')
+            self.assertRegexp('books linux', r'Linux Kernel Development')
+
+        def testVideos(self):
+            self.assertHelp('videos')
+            self.assertRegexp('videos zim', r'Demystifying the Devil.*DVD')
+            self.assertRegexp('videos --vhs samuel jackson', r'VHS Tape')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
