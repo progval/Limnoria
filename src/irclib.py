@@ -419,7 +419,7 @@ class Irc(IrcCommandDispatcher):
         self.state = IrcState()
         self.queue = IrcMsgQueue()
         self.lastTake = 0
-        self.server = None
+        self.server = 'unset'
         self.afterConnect = False
         self.fastqueue = smallqueue()
         self.lastping = time.time()
@@ -436,7 +436,7 @@ class Irc(IrcCommandDispatcher):
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         self.state.reset()
         self.queue.reset()
-        self.server = None
+        self.server = 'unset'
         self.afterConnect = False
         self.lastping = time.time()
         self.outstandingPing = False
@@ -678,6 +678,9 @@ class Irc(IrcCommandDispatcher):
 
     def __eq__(self, other):
         return id(self) == id(other)
+
+    def __str__(self):
+        return 'Irc object for server %s' % self.server
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
