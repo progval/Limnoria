@@ -104,8 +104,13 @@ def getKeywordArgs(irc, msg, d=None):
     del args[0] # The command name itself.
     return (args, d)
             
-            
-            
+
+class CapabilityChecker(callbacks.Privmsg):
+    def callCommand(self, f, irc, msg, args):
+        if ircdb.checkCapability(msg.prefix, self.capability):
+            callbacks.Privmsg.callCommand(self, f, irc, msg, args)
+        else:
+            irc.error(msg, conf.replyNoCapability % self.capability)
     
 ###
 # Privmsg Callbacks.
@@ -124,7 +129,6 @@ class ChannelCommands(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.op(channel, msg.nick))
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def halfop(self, irc, msg, args):
         """[<channel>]
@@ -139,7 +143,6 @@ class ChannelCommands(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def voice(self, irc, msg, args):
         """[<channel>]
@@ -154,7 +157,6 @@ class ChannelCommands(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def cycle(self, irc, msg, args):
         """[<channel>]
@@ -170,7 +172,6 @@ class ChannelCommands(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.join(channel))
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def kban(self, irc, msg, args):
         """[<channel>] <nick> [<number of seconds to ban>]
@@ -197,7 +198,6 @@ class ChannelCommands(callbacks.Privmsg):
                 schedule.addEvent(f, time.time() + length)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def lobotomize(self, irc, msg, args):
         """[<channel>]
@@ -212,10 +212,8 @@ class ChannelCommands(callbacks.Privmsg):
         if ircdb.checkCapability(msg.prefix, capability):
             ircdb.channels.getChannel(channel).lobotomized = True
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def unlobotomize(self, irc, msg, args):
         """[<channel>]
@@ -230,10 +228,8 @@ class ChannelCommands(callbacks.Privmsg):
         if ircdb.checkCapability(msg.prefix, capability):
             ircdb.channels.getChannel(channel).lobotomized = False
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def permban(self, irc, msg, args):
         """[<channel>] <nick|hostmask>
@@ -255,10 +251,8 @@ class ChannelCommands(callbacks.Privmsg):
             c.addBan(banmask)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def unpermban(self, irc, msg, args):
         """[<channel>] <hostmask>
@@ -275,10 +269,8 @@ class ChannelCommands(callbacks.Privmsg):
             c.removeBan(banmask)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def chanignore(self, irc, msg, args):
         """[<channel>] <nick|hostmask>
@@ -300,10 +292,8 @@ class ChannelCommands(callbacks.Privmsg):
             c.addIgnore(banmask)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def unchanignore(self, irc, msg, args):
         """[<channel>] <hostmask>
@@ -320,10 +310,8 @@ class ChannelCommands(callbacks.Privmsg):
             c.removeIgnore(banmask)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            return
 
     def addchancapability(self, irc, msg, args):
         """[<channel>] <name|hostmask> <capability>
@@ -343,13 +331,10 @@ class ChannelCommands(callbacks.Privmsg):
                 u.addCapability(capability)
                 ircdb.users.setUser(name, u)
                 irc.reply(msg, conf.replySuccess)
-                return
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
-                return
         else:
             irc.error(msg, conf.replyNoCapability % neededcapability)
-            return
 
     def removechancapability(self, irc, msg, args):
         """[<channel>] <name|hostmask> <capability>
@@ -423,14 +408,11 @@ class ChannelCommands(callbacks.Privmsg):
                 c.addCapability(capability, value)
                 ircdb.channels.setChannel(channel, c)
                 irc.reply(msg, conf.replySuccess)
-                return
             else:
                 s = 'Value of the capability must be True or False'
                 irc.error(msg, s)
-                return
         else:
             irc.error(msg, conf.replyNoCapability % neededcapability)
-            return
 
     def unsetchancapability(self, irc, msg, args):
         """[<chanel>] <capability>
@@ -449,37 +431,28 @@ class ChannelCommands(callbacks.Privmsg):
             c.removeCapability(capability)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyNoCapability % neededcapability)
-            return
 
 
-class AdminCommands(callbacks.Privmsg):
+class AdminCommands(CapabilityChecker):
+    capability = 'admin'
     def join(self, irc, msg, args):
         """<channel> [<channel> ...]
 
         Tell the bot to join the whitespace-separated list of channels
         you give it.
         """
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            irc.queueMsg(ircmsgs.joins(args))
-            for channel in args:
-                irc.queueMsg(ircmsgs.who(channel))
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+        irc.queueMsg(ircmsgs.joins(args))
+        for channel in args:
+            irc.queueMsg(ircmsgs.who(channel))
 
     def nick(self, irc, msg, args):
         """<nick>
 
         Changes the bot's nick to <nick>."""
         nick = getArgs(args)
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            irc.queueMsg(ircmsgs.nick(nick))
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+        irc.queueMsg(ircmsgs.nick(nick))
 
     def part(self, irc, msg, args):
         """<channel> [<channel> ...]
@@ -487,11 +460,7 @@ class AdminCommands(callbacks.Privmsg):
         Tells the bot to part the whitespace-separated list of channels
         you give it.
         """
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            irc.queueMsg(ircmsgs.parts(args, msg.nick))
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+        irc.queueMsg(ircmsgs.parts(args, msg.nick))
 
     def disable(self, irc, msg, args):
         """<command>
@@ -499,21 +468,16 @@ class AdminCommands(callbacks.Privmsg):
         Disables the command <command> for all non-owner users.
         """
         command = getArgs(args)
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            if command in ('enable', 'identify'):
-                irc.error(msg, 'You can\'t disable %s!' % command)
-            else:
-                # This has to know that defaultCapabilties gets turned into a
-                # dictionary.
-                if command in conf.defaultCapabilities:
-                    conf.defaultCapabilities.remove(command)
-                capability = ircdb.makeAntiCapability(command)
-                conf.defaultCapabilities.add(capability)
-                irc.reply(msg, conf.replySuccess)
-                return
+        if command in ('enable', 'identify'):
+            irc.error(msg, 'You can\'t disable %s!' % command)
         else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+            # This has to know that defaultCapabilties gets turned into a
+            # dictionary.
+            if command in conf.defaultCapabilities:
+                conf.defaultCapabilities.remove(command)
+            capability = ircdb.makeAntiCapability(command)
+            conf.defaultCapabilities.add(capability)
+            irc.reply(msg, conf.replySuccess)
 
     def enable(self, irc, msg, args):
         """<command>
@@ -522,17 +486,11 @@ class AdminCommands(callbacks.Privmsg):
         """
         command = getArgs(args)
         anticapability = ircdb.makeAntiCapability(command)
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            if anticapability in conf.defaultCapabilities:
-                conf.defaultCapabilities.remove(anticapability)
-                irc.reply(msg, conf.replySuccess)
-                return
-            else:
-                irc.error(msg, 'That command wasn\'t disabled.')
-                return
+        if anticapability in conf.defaultCapabilities:
+            conf.defaultCapabilities.remove(anticapability)
+            irc.reply(msg, conf.replySuccess)
         else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+            irc.error(msg, 'That command wasn\'t disabled.')
 
     def addcapability(self, irc, msg, args):
         """<name|hostmask> <capability>
@@ -541,26 +499,19 @@ class AdminCommands(callbacks.Privmsg):
         currently maps) the specified capability <capability>
         """
         (name, capability) = getArgs(args, 2)
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            # This next check to make sure 'admin's can't hand out 'owner'.
-            if ircdb.checkCapability(msg.prefix, capability) or \
-               '!' in capability:
-                try:
-                    u = ircdb.users.getUser(name)
-                    u.addCapability(capability)
-                    ircdb.users.setUser(name, u)
-                    irc.reply(msg, conf.replySuccess)
-                    return
-                except KeyError:
-                    irc.error(msg, conf.replyNoUser)
-                    return
-            else:
-               s = 'You can\'t add capabilities you don\'t have.'
-               irc.error(msg, s)
-               return
+        # This next check to make sure 'admin's can't hand out 'owner'.
+        if ircdb.checkCapability(msg.prefix, capability) or \
+           '!' in capability:
+            try:
+                u = ircdb.users.getUser(name)
+                u.addCapability(capability)
+                ircdb.users.setUser(name, u)
+                irc.reply(msg, conf.replySuccess)
+            except KeyError:
+                irc.error(msg, conf.replyNoUser)
         else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+            s = 'You can\'t add capabilities you don\'t have.'
+            irc.error(msg, s)
 
     def removecapability(self, irc, msg, args):
         """<name|hostmask> <capability>
@@ -569,21 +520,18 @@ class AdminCommands(callbacks.Privmsg):
         <hostmask> currently maps) the specified capability <capability>
         """
         (name, capability) = getArgs(args, 2)
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            if ircdb.checkCapability(msg.prefix, capability) or \
-               '!' in capability:
-                try:
-                    u = ircdb.users.getUser(name)
-                    u.addCapability(capability)
-                    ircdb.users.setUser(name, u)
-                    irc.reply(msg, conf.replySuccess)
-                except KeyError:
-                    irc.error(msg, conf.replyNoUser)
-            else:
-                s = 'You can\'t remove capabilities you don\'t have.'
-                irc.error(msg, s)
+        if ircdb.checkCapability(msg.prefix, capability) or \
+           '!' in capability:
+            try:
+                u = ircdb.users.getUser(name)
+                u.addCapability(capability)
+                ircdb.users.setUser(name, u)
+                irc.reply(msg, conf.replySuccess)
+            except KeyError:
+                irc.error(msg, conf.replyNoUser)
         else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
+            s = 'You can\'t remove capabilities you don\'t have.'
+            irc.error(msg, s)
 
     def setprefixchar(self, irc, msg, args):
         """<prefixchars>
@@ -591,36 +539,29 @@ class AdminCommands(callbacks.Privmsg):
         Sets the prefix chars by which the bot can be addressed.
         """
         s = getArgs(args)
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            if s.translate(string.ascii, string.ascii_letters) == '':
-                irc.error(msg, 'Prefixes cannot contain letters.')
-            else:
-                conf.prefixChars = s
-                irc.reply(msg, conf.replySuccess)
+        if s.translate(string.ascii, string.ascii_letters) == '':
+            irc.error(msg, 'Prefixes cannot contain letters.')
         else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
+            conf.prefixChars = s
+            irc.reply(msg, conf.replySuccess)
 
 
-class OwnerCommands(callbacks.Privmsg):
+class OwnerCommands(CapabilityChecker):
+    capability = 'owner'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        setattr(self.__class__, 'eval', self._eval)
-        #setattr(self.__class__, 'import', self._import)
         setattr(self.__class__, 'exec', self._exec)
 
-    def _eval(self, irc, msg, args):
+    def eval(self, irc, msg, args):
         """<string to be evaluated by the Python interpreter>"""
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            if conf.allowEval:
-                s = getArgs(args)
-                try:
-                    irc.reply(msg, repr(eval(s)))
-                except Exception, e:
-                    irc.reply(msg, debug.exnToString(e))
-            else:
-                irc.error(msg, conf.replyEvalNotAllowed)
+        if conf.allowEval:
+            s = getArgs(args)
+            try:
+                irc.reply(msg, repr(eval(s)))
+            except Exception, e:
+                irc.reply(msg, debug.exnToString(e))
         else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+            irc.error(msg, conf.replyEvalNotAllowed)
 
     '''
     def _import(self, irc, msg, args):
@@ -642,42 +583,33 @@ class OwnerCommands(callbacks.Privmsg):
 
     def _exec(self, irc, msg, args):
         """<code to exec>"""
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            if conf.allowEval:
-                s = getArgs(args)
-                try:
-                    exec s
-                    irc.reply(msg, conf.replySuccess)
-                except Exception, e:
-                    irc.reply(msg, debug.exnToString(e))
-            else:
-                irc.error(msg, conf.replyEvalNotAllowed)
+        if conf.allowEval:
+            s = getArgs(args)
+            try:
+                exec s
+                irc.reply(msg, conf.replySuccess)
+            except Exception, e:
+                irc.reply(msg, debug.exnToString(e))
         else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+            irc.error(msg, conf.replyEvalNotAllowed)
 
     def setdefaultcapability(self, irc, msg, args):
         """<capability>
 
         Sets the default capability to be allowed for any command.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            capability = getArgs(args)
-            conf.defaultCapabilities[capability] = True
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        capability = getArgs(args)
+        conf.defaultCapabilities[capability] = True
+        irc.reply(msg, conf.replySuccess)
 
     def unsetdefaultcapability(self, irc, msg, args):
         """<capability>
 
         Unsets the default capability for any command.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            capability = getArgs(args)
-            del conf.defaultCapabilities[capability]
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        capability = getArgs(args)
+        del conf.defaultCapabilities[capability]
+        irc.reply(msg, conf.replySuccess)
 
     def settrace(self, irc, msg, args):
         """takes no arguments
@@ -685,66 +617,51 @@ class OwnerCommands(callbacks.Privmsg):
         Starts the function-tracing debug mode; beware that this makes *huge*
         logfiles.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            sys.settrace(debug.tracer)
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        sys.settrace(debug.tracer)
+        irc.reply(msg, conf.replySuccess)
 
     def unsettrace(self, irc, msg, args):
         """takes no arguments
 
         Stops the function-tracing debug mode."""
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            sys.settrace(None)
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        sys.settrace(None)
+        irc.reply(msg, conf.replySuccess)
 
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>
 
         Sends the raw string given to the server.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            s = getArgs(args)
-            try:
-                m = ircmsgs.IrcMsg(s)
-                irc.queueMsg(m)
-            except Exception:
-                debug.recoverableException()
-                irc.error(msg, conf.replyError)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        s = getArgs(args)
+        try:
+            m = ircmsgs.IrcMsg(s)
+            irc.queueMsg(m)
+        except Exception:
+            debug.recoverableException()
+            irc.error(msg, conf.replyError)
 
     def quit(self, irc, msg, args):
         """[<int return value>]
 
         Exits the program with the given return value (the default is 0)
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            try:
-                i = int(args[0])
-            except (ValueError, IndexError):
-                i = 0
-            for driver in drivers._drivers.itervalues():
-                driver.die()
-            for irc in world.ircs:
-                irc.die()
-            debug.exit(i)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        try:
+            i = int(args[0])
+        except (ValueError, IndexError):
+            i = 0
+        for driver in drivers._drivers.itervalues():
+            driver.die()
+        for irc in world.ircs:
+            irc.die()
+        debug.exit(i)
 
     def flush(self, irc, msg, args):
         """takes no arguments
 
         Runs all the periodic flushers in world.flushers.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            world.flush()
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        world.flush()
+        irc.reply(msg, conf.replySuccess)
             
     '''
     def reload(self, irc, msg, args):
@@ -759,7 +676,6 @@ class OwnerCommands(callbacks.Privmsg):
                         except Exception, e:
                             m = '%s: %s' % (name, debug.exnToString(e))
                             irc.reply(msg, m)
-                            return
             else:
                 try:
                     module = sys.modules[module]
@@ -768,10 +684,8 @@ class OwnerCommands(callbacks.Privmsg):
                     return
                 world.superReload(module)
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyNoCapability % 'owner')
-            return
     '''
 
     def set(self, irc, msg, args):
@@ -781,52 +695,37 @@ class OwnerCommands(callbacks.Privmsg):
         include "noflush" which, if set to true value, will prevent the
         periodic flushing that normally occurs.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            (name, value) = getArgs(args, optional=1)
-            world.tempvars[name] = value
-            irc.reply(msg, conf.replySuccess)
-            return
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
-            return
+        (name, value) = getArgs(args, optional=1)
+        world.tempvars[name] = value
+        irc.reply(msg, conf.replySuccess)
 
     def unset(self, irc, msg, args):
         """<name>
 
         Unsets the value of variables set via the 'set' command.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            name = getArgs(args)
-            try:
-                del world.tempvars[name]
-            except KeyError:
-                irc.error(msg, 'That variable wasn\'t set.')
-                return
+        name = getArgs(args)
+        try:
+            del world.tempvars[name]
             irc.reply(msg, conf.replySuccess)
-            return
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
-            return
+        except KeyError:
+            irc.error(msg, 'That variable wasn\'t set.')
 
     def load(self, irc, msg, args):
         """<plugin>
 
         Loads the plugin <plugin> from the plugins/ directory.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            plugin = getArgs(args)
-            try:
-                moduleInfo = imp.find_module(plugin)
-            except ImportError:
-                irc.error(msg, 'Sorry, no plugin %s exists.' % plugin)
-                return
-            module = imp.load_module(plugin, *moduleInfo)
-            callback = module.Class()
-            irc.addCallback(callback)
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        plugin = getArgs(args)
+        try:
+            moduleInfo = imp.find_module(plugin)
+        except ImportError:
+            irc.error(msg, 'Sorry, no plugin %s exists.' % plugin)
             return
+        module = imp.load_module(plugin, *moduleInfo)
+        callback = module.Class()
+        irc.addCallback(callback)
+        irc.reply(msg, conf.replySuccess)
 
     def unload(self, irc, msg, args):
         """<callback name>
@@ -834,18 +733,15 @@ class OwnerCommands(callbacks.Privmsg):
         Unloads the callback by name; use the 'list' command to see a list
         of the currently loaded callbacks.
         """
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            name = getArgs(args)
-            numCallbacks = len(irc.callbacks)
-            callbacks = irc.removeCallback(name)
-            for callback in callbacks:
-                callback.die()
-            if len(irc.callbacks) < numCallbacks:
-                irc.reply(msg, conf.replySuccess)
-            else:
-                irc.error(msg, 'There was no callback %s' % name)
+        name = getArgs(args)
+        numCallbacks = len(irc.callbacks)
+        callbacks = irc.removeCallback(name)
+        for callback in callbacks:
+            callback.die()
+        if len(irc.callbacks) < numCallbacks:
+            irc.reply(msg, conf.replySuccess)
         else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+            irc.error(msg, 'There was no callback %s' % name)
 
 
 class UserCommands(callbacks.Privmsg):
@@ -972,10 +868,9 @@ class UserCommands(callbacks.Privmsg):
             name = getArgs(args)
         try:
             user = ircdb.users.getUser(name)
+            irc.reply(msg, repr(user.hostmasks))
         except KeyError:
             irc.error(msg, conf.replyNoUser)
-            return
-        irc.reply(msg, repr(user.hostmasks))
 
     def capabilities(self, irc, msg, args):
         """[<name>]
@@ -993,10 +888,9 @@ class UserCommands(callbacks.Privmsg):
             name = getArgs(args)
         try:
             user = ircdb.users.getUser(name)
+            irc.reply(msg, '[%s]' % ', '.join(user.capabilities))
         except KeyError:
             irc.error(msg, conf.replyNoUser)
-            return
-        irc.reply(msg, '[%s]' % ', '.join(user.capabilities))
 
     def identify(self, irc, msg, args):
         """<name> <password>
@@ -1014,10 +908,8 @@ class UserCommands(callbacks.Privmsg):
             u.setAuth(msg.prefix)
             ircdb.users.setUser(name, u)
             irc.reply(msg, conf.replySuccess)
-            return
         else:
             irc.error(msg, conf.replyIncorrectAuth)
-            return
 
     def unidentify(self, irc, msg, args):
         """takes no arguments
@@ -1169,4 +1061,5 @@ standardPrivmsgModules = (OwnerCommands,
                           ChannelCommands,
                           UserCommands,
                           MiscCommands)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
