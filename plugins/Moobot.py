@@ -68,9 +68,6 @@ class Moobot(callbacks.Privmsg):
         something = privmsgs.getArgs(args)
         irc.reply(msg, ':cool: %s :cool:' % something)
 
-    # Stolen shamelessless from moobot, so I suppose this data structure is
-    # GPLed.  Don't worry, it doesn't infect the rest of the code because it's
-    # not essential to the operation of the bot.
     _code = {
         "A" : ".- ",
         "B" : "-... ",
