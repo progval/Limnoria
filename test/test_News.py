@@ -33,13 +33,20 @@ from test import *
 
 import utils
 
-class NewsTestCase(PluginTestCase):
+class NewsTestCase(ChannelPluginTestCase):
     plugins = ('News',)
     def testAddNews(self):
-        self.assertNotError('addnews 0 subject: foo')
-		self.assertNotError('addnews #somechannel subject: foo')
+        self.assertNotError('addnews #somechannel 0 subject: foo')
+        self.assertNotError('addnews 0 subject2: foo2')
     
     def testListNews(self):
+        # These should both fail first, as they will have nothing in the DB
+        self.assertError('listnews')
+        self.assertError('listnews #channel')
+        # Now we'll add news and make sure listnews doesn't fail
+        self.assertNotError('addnews #channel 0 subject: foo')
+        self.assertNotError('listnews #channel')
+        self.assertNotError('addnews 0 subject: foo')
         self.assertNotError('listnews')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

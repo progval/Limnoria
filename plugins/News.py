@@ -94,7 +94,7 @@ class News(callbacks.Privmsg, ChannelDBHandler):
         db.commit()
         return db
 
-    def addnews(self, irc, msg, args):
+    def addnews(self, irc, msg, args, channel):
         """[<channel>] <expires> <subject>: <text>
 
         Adds a given news item of <text> to a channel with the given <subject>.
@@ -102,12 +102,6 @@ class News(callbacks.Privmsg, ChannelDBHandler):
         now.  <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        # Check if they have the appropriate capability.
-        capability = ircdb.makeChannelCapability(channel, 'news')
-        if not ircdb.checkCapability(msg.prefix, capability):
-            irc.error(msg, conf.replyNoCapability % capability)
-            return
         # Parse out the args
         i = None
         for i, arg in enumerate(args):
@@ -123,7 +117,7 @@ class News(callbacks.Privmsg, ChannelDBHandler):
         text = ' '.join(args[i:])
         # Set the other stuff needed for the insert.
         if ircdb.users.hasUser(msg.prefix):
-            name = ircdb.users.getUserName(msg.prefix)
+            name = ircdb.users.getUser(msg.prefix).name
         else:
             name = msg.nick
 
@@ -133,6 +127,7 @@ class News(callbacks.Privmsg, ChannelDBHandler):
                        subject[:-1], text, added_at, expires, name)
         db.commit()
         irc.reply(msg, conf.replySuccess)
+    addnews = privmsgs.checkChannelCapability(addnews, 'news')
 
     def readnews(self, irc, msg, args):
         """[<channel>] <number>
