@@ -507,10 +507,16 @@ class IrcSet(utils.NormalizingSet):
 
 class FloodQueue(object):
     timeout = 0
-    def __init__(self, timeout=None):
+    def __init__(self, timeout=None, queues=None):
         if timeout is not None:
             self.timeout = timeout
-        self.queues = IrcDict()
+        if queues is None:
+            queues = IrcDict()
+        self.queues = queues
+
+    def __repr__(self):
+        return 'FloodQueue(timeout=%r, queues=%s)' % (self.timeout,
+                                                      repr(self.queues))
 
     def key(self, msg):
         return msg.user + '@' + msg.host
