@@ -41,6 +41,7 @@ import random
 
 import irclib
 import ircmsgs
+import ircutils
 
 class FixRelayBot(irclib.IrcCallback):
     _re = re.compile(r'<([^@]+)@[^>]+>\s+(.*)')
