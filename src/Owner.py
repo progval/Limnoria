@@ -45,6 +45,7 @@ import imp
 import sre
 import sys
 import getopt
+import socket
 import logging
 import linecache
 
@@ -194,7 +195,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             for network in conf.supybot.networks():
                 try:
                     self._connect(network)
+                except socket.error, e:
+                    self.log.error('Could not connect to %s: %s.', network, e)
                 except Exception, e:
+                    self.log.exception('Exception connecting to %s:', network)
                     self.log.error('Could not connect to %s: %s.', network, e)
         # Setup plugins and default plugins for commands.
         for (name, s) in registry._cache.iteritems():
