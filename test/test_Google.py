@@ -55,6 +55,12 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
                           'selm=1.5.4.32.19970313170853.00674d60%40adan.'
                           'kingston.net&oe=UTF-8&output=gplain',
                           r'Madrid Bluegrass Ramble')
+        self.assertRegexp('http://groups.google.com/groups?'
+                          'dq=&hl=en&lr=&ie=UTF-8&threadm=mailman.1010.'
+                          '1069645289.702.python-list%40python.org'
+                          '&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8'
+                          '%26group%3Dcomp.lang.python',
+                          r'comp\.lang\.python.*What exactly are bound')
 
     def testConfig(self):
         self.assertNotError('google config groups-snarfer off')

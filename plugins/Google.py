@@ -322,6 +322,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             fd = urllib2.urlopen(request)
             text = fd.read()
             fd.close()
+            mThread = self._ggThread.search(text)
+            mGroup = self._ggGroup.search(text)
         elif '&output=gplain' in match.group(0):
             mThread = self._ggPlainThread.search(text)
             mGroup = self._ggPlainGroup.search(text)
