@@ -1,3 +1,6 @@
+	* Added supybot.reply.errorWithNotice to make the bot give its
+	error messages in a notice.
+	
 	* Added Filter.colorstrip, an outfilter that strips all color
 	codes from messages.
 
