@@ -494,28 +494,20 @@ registerGlobalValue(supybot.databases.channels, 'filename',
 ###
 # Protocol information.
 ###
-class StrictRfc(registry.Boolean):
-    def __init__(self, *args, **kwargs):
-        self.originalIsNick = ircutils.isNick
-        registry.Boolean.__init__(self, *args, **kwargs)
-        
-    def setValue(self, v):
-        registry.Boolean.setValue(self, v)
-        # Now let's replace ircutils.isNick.
-        if self.value:
-            ircutils.isNick = self.originalIsNick
-        else:
-            def unstrictIsNick(s):
-                return not ircutils.isChannel(s)
-            ircutils.isNick = unstrictIsNick
-        
+originalIsNick = ircutils.isNick
+def isNick(s, strictRfc=None):
+    if strictRfc is None:
+        strictRfc = supybot.protocols.irc.strictRfc()
+    return originalIsNick(s, strictRfc=strictRfc)
+ircutils.isNick = isNick
+
 registerGroup(supybot, 'protocols')
 registerGroup(supybot.protocols, 'irc')
 registerGlobalValue(supybot.protocols.irc, 'strictRfc',
-    StrictRfc(False, """Determines whether the bot will strictly follow the
-    RFC; currently this only affects what strings are considered to be nicks.
-    If you're using a server or a network that requires you to message a nick
-    such as services@this.network.server then you you should set this to
+    registry.Boolean(False, """Determines whether the bot will strictly follow
+    the RFC; currently this only affects what strings are considered to be
+    nicks. If you're using a server or a network that requires you to message
+    a nick such as services@this.network.server then you you should set this to
     False."""))
 
 registerGlobalValue(supybot.protocols.irc, 'maxHistoryLength',

@@ -110,9 +110,12 @@ _nickchars = r'_[]\`^{}|-'
 nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
                     % (re.escape(_nickchars), re.escape(_nickchars)))
 
-def isNick(s):
+def isNick(s, strictRfc=True):
     """Returns True if s is a valid IRC nick."""
-    return bool(nickRe.match(s))
+    if strictRfc:
+        return bool(nickRe.match(s))
+    else:
+        return not isChannel(s)
 
 def isChannel(s):
     """Returns True if s is a valid IRC channel name."""

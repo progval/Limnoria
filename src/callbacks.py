@@ -65,21 +65,29 @@ import plugins
 import ircmsgs
 import ircutils
 
-def addressed(nick, msg):
+def addressed(nick, msg, prefixChars=None, whenAddressedByNick=None):
     """If msg is addressed to 'name', returns the portion after the address.
     Otherwise returns the empty string.
     """
+    assert msg.command == 'PRIVMSG'
+    if prefixChars is None:
+        prefixChars = conf.supybot.prefixChars()
+    if whenAddressedByNick is None:
+        whenAddressedByNick = conf.supybot.reply.whenAddressedByNick()
     nick = ircutils.toLower(nick)
-    if ircutils.nickEqual(msg.args[0], nick):
-        if msg.args[1][0] in conf.supybot.prefixChars():
-            return msg.args[1][1:].strip()
+    (target, payload) = msg.args
+    # Ok, let's see if it's a private message.
+    if ircutils.nickEqual(target, nick):
+        if payload[0] in prefixChars:
+            return payload[1:].strip()
         else:
-            return msg.args[1].strip()
-    elif conf.supybot.reply.whenAddressedByNick() and \
-         ircutils.toLower(msg.args[1]).startswith(nick):
+            return payload.strip()
+    # Ok, not private.  Does it start with our nick?
+    elif whenAddressedByNick and \
+         ircutils.toLower(payload).startswith(nick):
         try:
-            (maybeNick, rest) = msg.args[1].split(None, 1)
-            while not ircutils.isNick(maybeNick):
+            (maybeNick, rest) = payload.split(None, 1)
+            while not ircutils.isNick(maybeNick, strictRfc=True):
                 if maybeNick[-1].isalnum():
                     return ''
                 maybeNick = maybeNick[:-1]
@@ -89,10 +97,10 @@ def addressed(nick, msg):
                 return ''
         except ValueError: # split didn't work.
             return ''
-    elif msg.args[1] and msg.args[1][0] in conf.supybot.prefixChars():
-        return msg.args[1][1:].strip()
+    elif payload and payload[0] in prefixChars:
+        return payload[1:].strip()
     elif conf.supybot.reply.whenNotAddressed():
-        return msg.args[1]
+        return payload
     else:
         return ''
 
@@ -824,7 +832,7 @@ class Privmsg(irclib.IrcCallback):
         return group.get(id)()
 
     def setUserValue(self, prefixOrName, name, value,
-                     ignoreNoUser=False, setValue=False):
+                     ignoreNoUser=True, setValue=False):
         try:
             id = str(ircdb.users.getUserId(prefixOrName))
         except KeyError:
