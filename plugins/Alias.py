@@ -179,7 +179,7 @@ class Alias(callbacks.Privmsg):
         # with an Irc, we add our aliases and then delete ourselves :)
         for (alias, (command, locked)) in self.aliases.iteritems():
             try:
-                self.addAlias(irc, alias, command, locked)
+                self.addAlias(irc, msg, alias, command, locked)
             except Exception, e:
                 self.log.exception('Exception when trying to add alias %s.  '
                                    'Removing from the Alias database.' % alias)
@@ -218,11 +218,10 @@ class Alias(callbacks.Privmsg):
     unlock = privmsgs.checkCapability(unlock, 'admin')
 
     _invalidCharsRe = re.compile(r'[\[\]\s]')
-    def addAlias(self, irc, name, alias, lock=False):
+    def addAlias(self, irc, msg, name, alias, lock=False):
         if self._invalidCharsRe.search(name):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
-        channel = privmsgs.getChannel(irc.msg, irc.args)
-        if conf.supybot.reply.pipeSyntax.get(channel)() and '|' in name:
+        if '|' in name:
             raise AliasError, 'Names cannot contain pipes.'
         if irc.getCallback(name):
             raise AliasError, 'Names cannot coincide with names of plugins.'
@@ -271,7 +270,7 @@ class Alias(callbacks.Privmsg):
 
         Defines an alias <name> that executes <alias>.  The <alias>
         should be in the standard "command argument [nestedcommand argument]"
-        format.  $[digit] (like $1, $2, etc.) can be used to represent
+        arguments to the alias; they'll be filled with the first, second, etc.
         arguments to the alias; they'll be filled with the first, second, etc.
         arguments.  @1, @2 can be used for optional arguments.  $* simply
         means "all remaining arguments," and cannot be combined with optional
