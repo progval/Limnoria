@@ -449,6 +449,9 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
         def explicit(self, irc, msg, args):
             irc.reply('should not be with private notice',
                       private=False, notice=False)
+        def implicit(self, irc, msg, args):
+            irc.reply('should be with notice due to private',
+                      private=True)
     def test(self):
         self.irc.addCallback(self.WithPrivateNotice())
         # Check normal behavior.
@@ -473,8 +476,18 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.reply.inPrivate.setValue(originalInPrivate)
             conf.supybot.reply.withNotice.setValue(originalWithNotice)
-            
-            
-        
+        orig = conf.supybot.reply.withNoticeWhenPrivate()
+        try:
+            conf.supybot.reply.withNoticeWhenPrivate.setValue(True)
+            m = self.assertNotError('implicit')
+            self.failUnless(m.command == 'NOTICE')
+            self.failIf(ircutils.isChannel(m.args[0]))
+            m = self.assertNotError('normal')
+            self.failIf(m.command == 'NOTICE')
+            self.failUnless(ircutils.isChannel(m.args[0]))
+        finally:
+            conf.supybot.reply.withNoticeWhenPrivate.setValue(orig)
+
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
