@@ -53,7 +53,7 @@ import callbacks
 
 conf.registerPlugin('Infobot')
 conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'personality',
-    registry.Boolean(True, """Determines whether the bot will respond will
+    registry.Boolean(True, """Determines whether the bot will respond with
     personable (Infobot-like) responses rather than its standard messages."""))
 conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'boringDunno',
     registry.String('Dunno.', """Determines what boring dunno should be given
@@ -245,24 +245,17 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             payload = maybeAddressed
         else:
             payload = msg.args[1]
-        #print '*', payload
         payload = self.normalize(payload)
-        #print '**', payload
         maybeForced = self._forceRe.sub('', payload)
         if maybeForced != payload:
             self.force = True
             payload = maybeForced
-        #print '***', payload
         if payload.endswith(irc.nick):
             self.addressed = True
             payload = payload[:-len(irc.nick)]
             payload = payload.strip(', ') # Strip punctuation separating nick.
             payload += '?' # So doUnknown gets called.
-        #print '****', payload
         try:
-            #print 'Payload:', payload
-            #print 'Force:', self.force
-            #print 'Addressed:', self.addressed
             msg = ircmsgs.privmsg(msg.args[0], payload, prefix=msg.prefix)
             callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         finally:
@@ -283,12 +276,18 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     def doForget(self, irc, msg, match):
         r"^forget\s+(.+?)[?!. ]*$"
         fact = match.group(1)
+        deleted = False
         for method in [self.db.delIs, self.db.delAre]:
             try:
                 method(fact)
+                deleted = True
             except KeyError:
                 pass
-        self.confirm()
+        if deleted:
+            self.confirm()
+        else:
+            # XXX: Should this be genericified?
+            irc.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
 
     def doUnknown(self, irc, msg, match):
         r"^(.+?)\?[?!. ]*$"
@@ -300,7 +299,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
 
     def doFactoid(self, irc, msg, match):
         r"^(.+)\s+(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
-        (key, isAre, maybeForce, value) = match.groups()
+        (key, isAre, also, value) = match.groups()
         if key.lower() in ('where', 'what', 'who'):
             # It's a question.
             if self.addressed or \
@@ -311,28 +310,33 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
            not self.registryValue('snarfUnaddressedDefinitions'):
             return
         isAre = isAre.lower()
-        self.force = self.force or bool(maybeForce)
         key = plugins.standardSubstitute(irc, msg, key)
         value = plugins.standardSubstitute(irc, msg, value)
         if isAre in ('was', 'is', 'am'):
             if self.db.hasIs(key):
-                if self.addressed and not self.force:
-                    value = self.db.getIs(key)
-                    self.reply('But %s is %s.' % (key, value))
-                    return
-                else:
+                if also:
+                    self.log.info('Adding %r to %r.', key, value)
                     value = '%s or %s' % (self.db.getIs(key), value)
+                elif self.force:
+                    self.log.info('Forcing %r to %r.', key, value)
+                elif self.addressed:
+                    value = self.db.getIs(key)
+                    self.reply('But %s is %s, %s.' % (key, value, msg.nick))
+                    return
             self.db.setIs(key, value)
         else:
             if self.db.hasAre(key):
-                if self.addressed and not self.force:
-                    value = self.db.getAre(key)
-                    self.reply('But %s are %s.' % (key, value))
-                    return
-                else:
+                if also:
+                    self.log.info('Adding %r to %r.', key, value)
                     value = '%s or %s' % (self.db.getAre(key), value)
+                elif self.force:
+                    self.log.info('Forcing %r to %r.', key, value)
+                elif self.addressed:
+                    value = self.db.getAre(key)
+                    self.reply('But %s are %s, %s.' % (key, value, msg.nick))
+                    return
             self.db.setAre(key, value)
-        if self.addressed or self.force:
+        if self.addressed or self.force or also:
             self.confirm()
 
     def stats(self, irc, msg, args):
