@@ -339,7 +339,7 @@ class Fun(callbacks.Privmsg):
         irc.reply(random.choice(self._eightballs))
 
     def roulette(self, irc, msg, args):
-        """takes no arguments.
+        """takes no arguments
 
         Randomly picks a number from 1 to 6 and if it comes up 1, you get
         kicked.  Otherwise -- *click*
