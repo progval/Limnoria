@@ -49,6 +49,7 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('pydoc fnmatch.fnmatch')
         self.assertNotError('pydoc socket.socket')
         self.assertNotError('pydoc logging.Logger')
+        self.assertNotRegexp('pydoc str.replace', r"^'")
 
     def testZen(self):
         self.assertNotError('zen')

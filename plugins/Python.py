@@ -103,7 +103,7 @@ class Python(callbacks.Privmsg):
                 if hasattr(obj, methodname):
                     obj = getattr(obj, methodname)
                     if hasattr(obj, '__doc__'):
-                        irc.reply(msg, obj.__doc__)
+                        irc.reply(msg, normalize(obj.__doc__))
                     else:
                         irc.reply(msg, '%s has no documentation' % funcname)
                 else:
