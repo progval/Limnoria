@@ -69,9 +69,9 @@ setup(
                  'supybot.others.unum.units': 
 		     os.path.join(os.path.join('others', 'unum'), 'units')},
     description='A highly robust and full-featured IRC library and bot.',
-    scripts=['scripts/supybot-wizard.py',
-             'scripts/supybot-adduser.py',
-             'scripts/supybot-newplugin.py']
+    scripts=['scripts/supybot-wizard',
+             'scripts/supybot-adduser',
+             'scripts/supybot-newplugin']
     )
 
 
