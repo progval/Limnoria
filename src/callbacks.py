@@ -282,6 +282,8 @@ class CommandThread(threading.Thread):
                                   args=(irc, msg, args))
         self.irc = irc
         self.msg = msg
+        self.setDaemon(True)
+        
     def run(self):
         try:
             threading.Thread.run(self)
@@ -328,7 +330,6 @@ class Privmsg(irclib.IrcCallback):
     def callCommand(self, f, irc, msg, args):
         if self.threaded:
             thread = CommandThread(f, irc, msg, args)
-            thread.setDaemon(True)
             thread.start()
             debug.printf('Spawned new thread: %s' % thread)
         else:
