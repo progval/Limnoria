@@ -45,6 +45,7 @@ import sys
 import imp
 import glob
 import time
+started = time.time()
 import os.path
 import unittest
 
@@ -52,6 +53,7 @@ import debug
 debug.stderr = False
 
 import world
+world.startedAt = started
 import ircdb
 import irclib
 import drivers
