@@ -52,6 +52,22 @@ if sqlite is not None:
                                              prefix=self.prefix))
             _ = self.irc.takeMsg()
 
+        def testPoll(self):
+            self.assertNotError('poll open Foo?')
+            self.assertRegexp('poll 1', 'Foo\?')
+            self.assertRegexp('poll 1', 'started by foo')
+            self.assertRegexp('poll 1', 'no options')
+            self.assertRegexp('poll 1', 'open')
+            self.assertNotError('poll add 1 moo')
+            self.assertRegexp('poll 1', '1: \'moo\'')
+            self.assertNotError('poll add 1 boo')
+            self.assertRegexp('poll 1', '2: \'boo\'')
+            self.assertNotError('poll open Moo?')
+            self.assertNotError('poll add 2 moo')
+            self.assertRegexp('poll 2', '1: \'moo\'')
+            self.assertNotError('poll close 2')
+            self.assertRegexp('poll 2', 'closed')
+
         def testOpen(self):
             self.assertRegexp('poll open Foo?', '(poll #1)')
 
@@ -60,6 +76,7 @@ if sqlite is not None:
             self.assertNotError('poll close 1')
             self.assertError('poll close blah')
             self.assertError('poll close 2')
+            self.assertRegexp('poll 2', 'closed')
 
         def testAdd(self):
             self.assertNotError('poll open Foo?')
@@ -79,20 +96,12 @@ if sqlite is not None:
             self.assertNotError('poll add 1 moo')
             self.assertNotError('poll vote 1 1')
             self.assertError('poll results blah')
-            self.assertRegexp('poll results 1', 'moo: 1')
+            self.assertRegexp('poll results 1', '\'moo\': 1')
 
         def testList(self):
             self.assertNotError('poll open Foo?')
             self.assertRegexp('poll list', '#1: \'Foo\?\'')
             self.assertNotError('poll open Foo 2?')
             self.assertRegexp('poll list', '#1: \'Foo\?\'.*#2: \'Foo 2\?\'')
-
-        def testOptions(self):
-            self.assertNotError('poll open Foo?')
-            self.assertNotError('poll add 1 moo')
-            self.assertNotError('poll add 1 bar')
-            self.assertNotError('poll add 1 baz')
-            self.assertRegexp('poll options 1', 'moo.*bar.*baz')
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
