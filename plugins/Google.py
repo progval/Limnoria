@@ -86,7 +86,11 @@ def configure(advanced):
             conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
         if yn('Do you want the Google search snarfer enabled by default?'):
             conf.supybot.plugins.Google.searchSnarfer.setValue(True)
-        if not conf.supybot.plugins.Alias():
+        hasAlias = False
+        for (name, _) in conf.supybot.plugins.getValues(fullNames=False):
+            if name == 'Alias':
+                hasAlias = True
+        if not hasAlias:
             output('Google depends on the Alias module '
                    'for some extra commands.')
             if yn('Would you like to load the Alias module now?'):
@@ -95,6 +99,12 @@ def configure(advanced):
                 output('You can still use the Google module, but you won\'t '
                        'have these extra commands enabled.')
                 return
+        conf.supybot.plugins.Alias.aliases.register('googlelinux',
+            registry.String('google --restrict=linux $*', ''))
+        conf.supybot.plugins.Alias.aliases.register('googlebsd',
+            registry.String('google --restrict=bsd $*', ''))
+        conf.supybot.plugins.Alias.aliases.register('googlemac',
+            registry.String('google --restrict=mac $*', ''))
     else:
         output("""You'll need to get a key before you can use this plugin.
                   You can apply for a key at http://www.google.com/apis/""")
