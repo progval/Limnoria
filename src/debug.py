@@ -73,7 +73,7 @@ else:
     colorterm = True
 
 # printf: True if printf debugging messages should be printed.
-printf = True
+printf = False
 
 # minimumDebugPriority: Lowest priority logged;
 #                       One of {'verbose', 'low', 'normal', 'high'}.
@@ -89,8 +89,6 @@ deadlyExceptions = [KeyboardInterrupt, SystemExit]
 _errorfd = file(errorfile, 'a')
 _debugfd = file(debugfile, 'a')
 _tracefd = file(tracefile, 'w')
-
-minpriority = 1
 
 priorities = { 'verbose': 0,
                'low': 1,
