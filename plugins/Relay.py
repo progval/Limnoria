@@ -116,8 +116,16 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
 conf.registerChannelValue(conf.supybot.plugins.Relay, 'topicSync',
     registry.Boolean(True, """Determines whether the bot will synchronize
     topics between networks in the channels it relays."""))
+
+class SpaceSeparatedSetOfChannels(registry.SeparatedListOf):
+    List = ircutils.IrcSet
+    Value = conf.ValidChannel
+    def splitter(self, s):
+        return s.split()
+    joiner = ' '.join
+    
 conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
-    conf.SpaceSeparatedListOfChannels([], """Determines which channels the bot
+    SpaceSeparatedSetOfChannels([], """Determines which channels the bot
     will relay in."""))
 
 class Relay(callbacks.Privmsg):
