@@ -114,8 +114,13 @@ class IrcStateTestCase(unittest.TestCase):
         self.assertEqual(len(state.history), conf.maxHistory)
         self.assertEqual(list(state.history), msgs[len(msgs)-conf.maxHistory:])
         conf.maxHistory = oldconfmaxhistory
-    
 
+    """
+    def testChannels(self):
+        channel = 
+        state = irclib.IrcState()
+        state.addMsg(self.irc, ircmsgs.join('#foo'))
+    """
 
 class IrcTestCase(unittest.TestCase):
     irc = irclib.Irc('nick')
@@ -150,3 +155,37 @@ class IrcTestCase(unittest.TestCase):
         msg2 = ircmsgs.IrcMsg('JOIN #sourcereview')
         self.irc.feedMsg(msg2)
         self.assertEqual(list(self.irc.state.history), [msg1, msg2])
+
+
+class IrcCallbackTestCase(unittest.TestCase):
+    class FakeIrc:
+        pass
+    irc = FakeIrc()
+    def testName(self):
+        class UnnamedIrcCallback(irclib.IrcCallback):
+            pass
+        unnamed = UnnamedIrcCallback()
+
+        class NamedIrcCallback(irclib.IrcCallback):
+            myName = 'foobar'
+            def name(self):
+                return self.myName
+        named = NamedIrcCallback()
+        self.assertEqual(unnamed.name(), unnamed.__class__.__name__)
+        self.assertEqual(named.name(), named.myName)
+
+    def testDoCommand(self):
+        def makeCommand(msg):
+            return 'do' + msg.command.capitalize()
+        class DoCommandCatcher(irclib.IrcCallback):
+            def __init__(self):
+                self.L = []
+            def __getattr__(self, attr):
+                self.L.append(attr)
+                return lambda *args: None
+        doCommandCatcher = DoCommandCatcher()
+        for msg in msgs:
+            doCommandCatcher(self.irc, msg)
+        commands = map(makeCommand, msgs)
+        self.assertEqual(doCommandCatcher.L,
+                         list(flatten(zip(commands, commands))))
