@@ -24,7 +24,7 @@ flags.  First, whenever a user issues the bot a command, the command dispatcher
 checks to make sure the user doesn't have the "anticapability" for that
 command.  An anticapability is a capability that, instead of saying "what a
 user can do", says what a user *cannot* do.  It's formed rather simply by
-adding an exclamation point ("-") to the beginning of a capability; "rot13" is
+adding a dash ("-") to the beginning of a capability; "rot13" is
 a capability, and "-rot13" is an anticapability.  Anyway, when a user issues
 the bot a command, perhaps "calc" or "help", the bot first checks to make sure
 the user doesn't have the "-calc" or the "-help" capabilities before even
