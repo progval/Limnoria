@@ -191,7 +191,7 @@ def newDriver(irc, moduleName=None):
             import twistedDrivers
             moduleName = 'supybot.twistedDrivers'
         except ImportError:
-            del sys.modules['supybot.twistedDrivers']
+            sys.modules.pop('supybot.twistedDrivers', None)
             moduleName = 'supybot.socketDrivers'
     elif not moduleName.startswith('supybot.'):
         moduleName = 'supybot.' + moduleName
