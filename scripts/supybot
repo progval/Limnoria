@@ -261,6 +261,7 @@ if __name__ == '__main__':
     import log
     import conf
     import world
+    world.starting = True
     
     def closeRegistry():
         # We only print if world.dying so we don't see these messages during

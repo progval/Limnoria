@@ -189,10 +189,14 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                             m = loadPluginModule(name)
                             loadPluginClass(irc, m)
                         except Exception, e:
-                            log.exception('Failed to load %s:' % name)
+                            log.exception('Failed to load %s:', name)
                 else:
                     # Let's import the module so configuration is preserved.
-                    _ = loadPluginModule(name)
+                    try:
+                        _ = loadPluginModule(name)
+                    except Exception, e:
+                        log.exception('Failed to load %s:', name)
+        world.starting = False
 
     def disambiguate(self, irc, tokens, ambiguousCommands=None):
         """Disambiguates the given tokens based on the plugins loaded and

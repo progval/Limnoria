@@ -55,6 +55,8 @@ import schedule
 
 startedAt = time.time() # Just in case it doesn't get set later.
 
+starting = False
+
 mainThread = threading.currentThread()
 assert 'MainThread' in repr(mainThread)
 
@@ -86,7 +88,7 @@ def upkeep():
             pass
     if gc.garbage:
         log.warning('Uncollectable garbage: %s', gc.garbage)
-    flushed = conf.supybot.flush()
+    flushed = conf.supybot.flush() and not starting
     if flushed:
         flush()
         # This is so registry._cache gets filled.
