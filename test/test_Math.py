@@ -60,6 +60,9 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('rpn 2 3 4 + -', str(2-7))
         self.assertNotError('rpn 2 degrees')
 
+    def testRpnSwap(self):
+        self.assertResponse('rpn 1 2 swap', 'Stack: [2, 1]')
+
     def testRpmNoSyntaxError(self):
         self.assertNotRegexp('rpn 2 3 foobar', 'SyntaxError')
         

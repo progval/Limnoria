@@ -151,6 +151,7 @@ class Math(callbacks.Privmsg):
 
     _rpnEnv = {
         'dup': lambda s: s.extend([s.pop()]*2),
+        'swap': lambda s: s.extend([s.pop(), s.pop()])
         }
     def rpn(self, irc, msg, args):
         """<rpn math expression>

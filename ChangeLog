@@ -1,3 +1,5 @@
+	* Added a swap function to Math.rpn.
+	
 	* Changed the logging infrastructure significantly; each plugin
 	now has its own logger (and thus logfile), in addition to being
 	logged in the main logfile.
