@@ -111,6 +111,7 @@ class RSS(callbacks.Privmsg):
         callbacks.Privmsg.__call__(self, irc, msg)
         irc = callbacks.IrcObjectProxyRegexp(irc, msg)
         L = conf.supybot.plugins.RSS.announce.getValues(fullNames=False)
+        newFeeds = {}
         for (channel, v) in L:
             feeds = v() 
             for name in feeds:
@@ -119,15 +120,17 @@ class RSS(callbacks.Privmsg):
                 else:
                     url = name
                 if self.willGetNewFeed(url):
-                    t = threading.Thread(target=self._newHeadlines,
-                                         name='Fetching <%s>' % url,
-                                         args=(irc, channel, name, url))
-                    self.log.info('Spawning thread to fetch <%s>', url)
-                    world.threadsSpawned += 1
-                    t.start()
+                    newFeeds.setdefault(url, []).append(channel)
+        for (feed, channels) in newFeeds.iteritems():
+            t = threading.Thread(target=self._newHeadlines,
+                                 name='Fetching <%s>' % url,
+                                 args=(irc, channels, name, url))
+            self.log.info('Spawning thread to fetch <%s>', url)
+            world.threadsSpawned += 1
+            t.setDaemon(True)
+            t.start()
 
-
-    def _newHeadlines(self, irc, channel, name, url):
+    def _newHeadlines(self, irc, channels, name, url):
         try:
             oldresults = self.cachedFeeds[url]
             oldheadlines = self.getHeadlines(oldresults)
@@ -140,15 +143,16 @@ class RSS(callbacks.Privmsg):
                 newheadlines.remove(headline)
             except ValueError:
                 pass
-        bold = self.registryValue('bold', channel)
-        sep = self.registryValue('headlineSeparator', channel)
-        prefix = self.registryValue('announcementPrefix', channel)
         if newheadlines:
-            pre = '%s%s: ' % (prefix, name)
-            if bold:
-                pre = ircutils.bold(pre)
-            irc.replies(newheadlines, prefixer=pre, joiner=sep,
-                        to=channel, prefixName=False, private=True)
+            for channel in channels:
+                bold = self.registryValue('bold', channel)
+                sep = self.registryValue('headlineSeparator', channel)
+                prefix = self.registryValue('announcementPrefix', channel)
+                pre = '%s%s: ' % (prefix, name)
+                if bold:
+                    pre = ircutils.bold(pre)
+                irc.replies(newheadlines, prefixer=pre, joiner=sep,
+                            to=channel, prefixName=False, private=True)
                 
     def willGetNewFeed(self, url):
         now = time.time()
