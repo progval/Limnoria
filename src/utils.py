@@ -336,13 +336,6 @@ def unCommaThe(s):
     else:
         return s
 
-def wrapLines(s):
-    """Word wraps several paragraphs in a string s."""
-    L = []
-    for line in s.splitlines():
-        L.append(textwrap.fill(line))
-    return '\n'.join(L)
-
 def ellipsisify(s, n):
     """Returns a shortened version of s.  Produces up to the first n chars at
     the nearest word boundary.
