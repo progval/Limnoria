@@ -62,6 +62,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.eagains = 0
         self.inbuffer = ''
         self.outbuffer = ''
+        self.zombie = False
         self.connected = False
         self.reconnectWaitsIndex = 0
         self.reconnectWaits = reconnectWaits
@@ -78,11 +79,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.eagains += 1
 
     def _sendIfMsgs(self):
-        msgs = [self.irc.takeMsg()]
-        while msgs[-1] is not None:
-            msgs.append(self.irc.takeMsg())
-        del msgs[-1]
-        self.outbuffer += ''.join(imap(str, msgs))
+        if not self.zombie:
+            msgs = [self.irc.takeMsg()]
+            while msgs[-1] is not None:
+                msgs.append(self.irc.takeMsg())
+            del msgs[-1]
+            self.outbuffer += ''.join(imap(str, msgs))
         if self.outbuffer:
             try:
                 sent = self.conn.send(self.outbuffer)
@@ -90,6 +92,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 self.eagains = 0
             except socket.error, e:
                 self._handleSocketError(e)
+        if self.zombie and not self.outbuffer:
+            self._reallyDie()
 
     def run(self):
         if not self.connected:
@@ -179,9 +183,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         schedule.addEvent(self.reconnect, when)
 
     def die(self):
+        self.zombie = True
         drivers.log.die(self.irc)
+        
+    def _reallyDie(self):
         if self.conn is not None:
             self.conn.close()
+        drivers.IrcDriver.die(self)
         # self.irc.die() Kill off the ircs yourself, jerk!
 
     def name(self):
