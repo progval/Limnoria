@@ -37,8 +37,7 @@ Bugzilla bug retriever
 import os
 import re
 import string
-import urllib
-import base64
+import urllib2
 import xml.dom.minidom as minidom
 from htmlentitydefs import entitydefs as entities
 
@@ -47,36 +46,26 @@ import sqlite
 import conf
 import utils
 import plugins
+import ircutils
 import privmsgs
 import callbacks
-import ircutils
+import structures
 
 dbfilename = os.path.join(conf.dataDir, 'Bugzilla.db')
 def makeDb(filename):
     if os.path.exists(filename):
-        return sqlite.connect(filename)
-    db = sqlite.connect(filename)
-    cursor = db.cursor()
-    cursor.execute("""CREATE TABLE bugzillas (
-                      shorthand TEXT UNIQUE ON CONFLICT REPLACE,
-                      url TEXT,
-                      description TEXT
-                      )""")
-    cursor = db.cursor();
-    cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
-                    'rh', 'http://bugzilla.redhat.com/bugzilla', 'Red Hat')
-    cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
-                    'gnome', 'http://bugzilla.gnome.org', 'Gnome')
-    cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
-                    'xim', 'http://bugzilla.ximian.com', 'Ximian')
-    cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
-                    'moz', 'http://bugzilla.mozilla.org', 'Mozilla')
-    cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
-                    'gcc', 'http://gcc.gnu.org/bugzilla', 'GCC')
-    db.commit()
-    return db
+        d = structures.PersistentDictionary(filename)
+    else:
+        d = structures.PersistentDictionary(filename)
+        d['gcc'] = ['http://gcc.gnu.org/bugzilla', 'GCC']
+        d['rh'] = ['http://bugzilla.redhat.com/bugzilla', 'Red Hat']
+        d['gnome'] = ['http://bugzilla.gnome.org/bugzilla', 'Gnome']
+        d['mozilla'] = ['http://bugzilla.mozilla.org', 'Mozilla']
+        d['ximian'] = ['http://bugzilla.ximian.com/bugzilla', 'Ximian Gnome']
+        d.flush()
+    return d
 
-class BugError(Exception):
+class BugzillaError(Exception):
     """A bugzilla error"""
     pass
 
@@ -91,6 +80,8 @@ def configure(onStart, afterConnect, advanced):
         if yn('Do you want the Bugzilla snarfer enabled by default?') == 'n':
             onStart.append('Bugzilla config bug-snarfer off')
 
+replyNoBugzilla = 'I don\'t have a bugzilla %r'
+
 class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     """Show a link to a bug report with a brief description"""
     threaded = True
@@ -104,28 +95,28 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.entre = re.compile('&(\S*?);')
+        # Schema: {name, [url, description]}
         self.db = makeDb(dbfilename)
+        self.shorthand = utils.abbrev(self.db.keys())
 
     def die(self):
         self.db.close()
         del self.db
     
     def add(self, irc, msg, args):
-        """<abbreviation> <url> <description>
+        """<name> <url> <description>
 
-        Add a bugzilla <url> to the list of defined bugzillae. <abbreviation>
-        is the name that will be used to reference the zilla in all other
-        commands. <description> is the common name for the bugzilla and will
+        Add a bugzilla <url> to the list of defined bugzillae. <name>
+        is the name that will be used to reference the zilla in all
+        commands. Unambiguous abbreviations of <name> will be accepted also.
+        <description> is the common name for the bugzilla and will
         be listed with the bugzilla query.
         """
-        (shorthand, url, description) = privmsgs.getArgs(args, required=3)
+        (name, url, description) = privmsgs.getArgs(args, required=3)
         cursor = self.db.cursor()
-        cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
-                    shorthand, url, description)
-        self.db.commit()
-        irc.reply(msg, 'Added bugzilla entry for "%s" with shorthand "%s"' % (
-            description, shorthand))
-        return
+        self.db[name] = [url, description]
+        self.shorthand = utils.abbrev(self.db.keys())
+        irc.reply(msg, conf.replySuccess)
 
     def remove(self, irc, msg, args):
         """<abbreviation>
@@ -133,19 +124,14 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         Remove the bugzilla associated with <abbreviation> from the list of
         defined bugzillae.
         """
-        shorthand = privmsgs.getArgs(args)
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT * from bugzillas where shorthand = %s""",
-            shorthand)
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'Bugzilla "%s" not defined. Try list.' %
-                shorthand)
-            return
-        cursor.execute("""DELETE FROM bugzillas where shorthand = %s""",
-            shorthand)
-        self.db.commit()
-        irc.reply(msg, 'Deleted bugzilla "%s"' % shorthand)
-        return
+        name = privmsgs.getArgs(args)
+        try:
+            name = self.shorthand[name]
+            del self.db[name]
+            self.shorthand = utils.abbrev(self.db.keys())
+            irc.reply(msg, conf.replySuccess)
+        except KeyError:
+            irc.error(msg, replyNoBugzilla % name)
 
     def list(self, irc,  msg, args):
         """[<abbreviation>]
@@ -153,26 +139,21 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         List defined bugzillae. If <abbreviation> is specified, list the
         information for that bugzilla.
         """
-        shorthand = privmsgs.getArgs(args, required=0, optional=1)
-        if shorthand:
-            cursor = self.db.cursor()
-            cursor.execute("""SELECT url,description from bugzillas where
-                              shorthand = %s""", shorthand)
-            if cursor.rowcount == 0:
-                irc.reply(msg, 'No such bugzilla defined: "%s".' % shorthand)
-                return
-            url, description = cursor.fetchone()
-            irc.reply(msg, '%s: %s, %s' % (shorthand, description, url))
-            return
+        name = privmsgs.getArgs(args, required=0, optional=1)
+        if name:
+            try:
+                name = self.shorthand[name]
+                (url, description) = self.db[name]
+                irc.reply(msg, '%s: %s, %s' % (name, description, url))
+            except KeyError:
+                irc.error(msg, replyNoBugzilla % name)
         else:
-            cursor = self.db.cursor()
-            cursor.execute("""SELECT shorthand from bugzillas""")
-            if cursor.rowcount == 0:
-                irc.reply(msg, 'No bugzillae defined. Add some with "add"!')
-                return
-            results = ['%s' % (item[0]) for item in cursor.fetchall()]
-            irc.reply(msg, 'Defined bugzillae: %s' % ' '.join(results))
-            return    
+            if self.db:
+                L = self.db.keys()
+                L.sort()
+                irc.reply(msg, utils.commaAndify(L))
+            else:
+                irc.reply(msg, 'I have no defined bugzillae.')
 
     def bzSnarfer(self, irc, msg, match):
         r"(http://\S+)/show_bug.cgi\?id=([0-9]+)"
@@ -182,7 +163,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         try:
             summary = self._get_short_bug_summary(queryurl, 'Snarfed '\
                 'Bugzilla URL', match.group(2))
-        except BugError, e:
+        except BugzillaError, e:
             irc.reply(msg, str(e))
             return
         except IOError, e:
@@ -205,34 +186,28 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
 
         Look up bug <number> in the bugzilla associated with <abbreviation>.
         """
-        (shorthand, num) = privmsgs.getArgs(args, required=2)
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT url,description from bugzillas where
-                          shorthand = %s""", shorthand)
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'Bugzilla "%s" is not defined.' % shorthand)
-            return
-        if not self._is_bug_number(num):
-            irc.reply(msg, '"%s" does not seem to be a number' % num)
-            return
-        url, desc = cursor.fetchone()
-        queryurl = '%s/xml.cgi?id=%s' % (url, num)
+        (name, number) = privmsgs.getArgs(args, required=2)
         try:
-            summary = self._get_short_bug_summary(queryurl, desc, num)
-        except BugError, e:
-            irc.reply(msg, str(e))
+            name = self.shorthand[name]
+            (url, description) = self.db[name]
+        except KeyError:
+            irc.error(msg, replyNoBugzilla % name)
+            return
+        queryurl = '%s/xml.cgi?id=%s' % (url, number)
+        try:
+            summary = self._get_short_bug_summary(queryurl,description,number)
+        except BugzillaError, e:
+            irc.error(msg, str(e))
             return
         except IOError, e:
-            msgtouser = '%s. Try yourself: %s' % (e, queryurl)
-            irc.reply(msg, msgtouser)
-            return
-
+            s = '%s.  Try yourself: %s' % (e, queryurl)
+            irc.error(msg, s)
         report = {}
-        report['zilla'] = str(desc)
-        report['id'] = str(num)
-        report['url'] = str('%s/show_bug.cgi?id=%s' % (url, num))
+        report['zilla'] = description
+        report['id'] = number
+        report['url'] = '%s/show_bug.cgi?id=%s' % (url, number)
         report['title'] = str(summary['title'])
-        report['summary'] = str(self._mk_summary_string(summary))
+        report['summary'] = self._mk_summary_string(summary)
         s = '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report
         irc.reply(msg, s)
 
@@ -250,27 +225,20 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             L.append(ircutils.bold('Status: ') + summary['status'])
         if 'resolution' in summary:
             L.append(ircutils.bold('Resolution: ') + summary['resolution'])
-        return ', '.join(L)
+        return ', '.join(map(str, L))
 
-    def _is_bug_number(self, bug):
-        try:
-            int(bug)
-            return True
-        except ValueError:
-            return False
-        
-    def _get_short_bug_summary(self, url, desc, num):
+    def _get_short_bug_summary(self, url, desc, number):
         bugxml = self._getbugxml(url, desc)
-        try: zilladom = minidom.parseString(bugxml)
+        try:
+            zilladom = minidom.parseString(bugxml)
         except Exception, e:
-            msg = 'Could not parse XML returned by %s bugzilla: %s'
-            raise BugError, msg % (desc, e)
+            s = 'Could not parse XML returned by %s bugzilla: %s' % (desc, e)
+            raise BugzillaError, s
         bug_n = zilladom.getElementsByTagName('bug')[0]
         if bug_n.hasAttribute('error'):
             errtxt = bug_n.getAttribute('error')
-            zilladom.unlink()
-            msg = 'Error getting %s bug #%s: %s' % (desc, num, errtxt)
-            raise BugError(str(msg))
+            s = 'Error getting %s bug #%s: %s' % (desc, number, errtxt)
+            raise BugzillaError, s
         summary = {}
         try:
             node = bug_n.getElementsByTagName('short_desc')[0]
@@ -291,17 +259,15 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             node = bug_n.getElementsByTagName('bug_severity')[0]
             summary['severity'] = self._getnodetxt(node)
         except Exception, e:
-            zilladom.unlink()
-            msg = 'Could not parse XML returned by %s bugzilla: %s'
-            raise BugError(str(msg % (desc, e)))
-        zilladom.unlink()
+            s = 'Could not parse XML returned by %s bugzilla: %s' % (desc, e)
+            raise BugzillaError, s
         return summary
 
     def _getbugxml(self, url, desc):
         try:
-            fh = urllib.urlopen(url)
-        except:
-            raise IOError('Connection to %s bugzilla failed' % desc)
+            fh = urllib2.urlopen(url)
+        except urllib2.UrlError, e:
+            raise IOError, 'Connection to %s bugzilla failed' % desc
         bugxml = fh.read()
         fh.close()
         if not bugxml:
@@ -324,9 +290,9 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         while self.entre.search(val):
             entity = self.entre.search(val).group(1)
             if entity in entities:
-                val = re.sub(self.entre, entities[entity], val)
+                val = self.entre.sub(entities[entity], val)
             else:
-                val = re.sub(self.entre, '_', val)
+                val = self.entre.sub('?', val)
         return val
 
 
