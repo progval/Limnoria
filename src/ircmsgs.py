@@ -426,7 +426,6 @@ def privmsg(recipient, msg, prefix=''):
 def action(recipient, msg, prefix=''):
     """Returns a PRIVMSG ACTION to recipient with the message msg."""
     assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
-    assert msg, 'msg must not be empty.'
     return IrcMsg(prefix=prefix, command='PRIVMSG',
                   args=(recipient,'\x01ACTION %s\x01'% msg))
 
