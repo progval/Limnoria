@@ -105,7 +105,7 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                 lines.append('###\n')
                 fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
-            fd.write('%s: %s\n' % (name, value))
+            fd.write('%s: %s\n' % (name, value.serialize()))
     fd.close()
 
 def isValidRegistryName(name):
@@ -310,6 +310,9 @@ class Value(Group):
     def __str__(self):
         return repr(self())
 
+    def serialize(self):
+        return str(self)
+
     # We tried many, *many* different syntactic methods here, and this one was
     # simply the best -- not very intrusive, easily overridden by subclasses,
     # etc.
@@ -469,8 +472,9 @@ class Regexp(Value):
     """Value must be a valid regular expression."""
     def __init__(self, *args, **kwargs):
         kwargs['setDefault'] = False
-        super(Regexp, self).__init__(*args, **kwargs)
+        self.sr = ''
         self.value = None
+        super(Regexp, self).__init__(*args, **kwargs)
         
     def error(self, e):
         raise InvalidRegistryValue, 'Value must be a regexp of the form %s' % e
