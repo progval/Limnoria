@@ -240,3 +240,17 @@ class FunctionsTest(unittest.TestCase):
         self.assertEqual(AL.values(), [2, 3, 4])
         self.assertEqual(list(AL.itervalues()), [2, 3, 4])
         self.assertEqual(len(AL), 3)
+
+    def testFlatten(self):
+        def lflatten(seq):
+            return list(flatten(seq))
+        self.assertEqual(lflatten([]), [])
+        self.assertEqual(lflatten([1]), [1])
+        self.assertEqual(lflatten(range(10)), range(10))
+        twoRanges = range(10)*2
+        twoRanges.sort()
+        self.assertEqual(lflatten(zip(range(10), range(10))), twoRanges)
+        self.assertEqual(lflatten([1, [2, 3], 4]), [1, 2, 3, 4])
+        self.assertEqual(lflatten([[[[[[[[[[]]]]]]]]]]), [])
+        self.assertEqual(lflatten([1, [2, [3, 4], 5], 6]), [1, 2, 3, 4, 5, 6])
+        self.assertRaises(TypeError, lflatten, 1)

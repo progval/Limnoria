@@ -290,4 +290,15 @@ def itersplit(iterable, isSeparator, yieldEmpty=False):
     if acc or yieldEmpty:
         yield acc
 
+def flatten(seq, strings=False):
+    for elt in seq:
+        if not strings and type(elt) == str or type(elt) == unicode:
+            yield elt
+        else:
+            try:
+                for x in flatten(elt):
+                    yield x
+            except TypeError:
+                yield elt
+            
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
