@@ -239,6 +239,7 @@ class Network(callbacks.Privmsg):
         # The double nick here is necessary because single-nick WHOIS only works
         # if the nick is on the same server (*not* the same network) as the user
         # giving the command.  Yeah, it made me say wtf too.
+        nick = ircutils.toLower(nick)
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
         self._whois[(otherIrc, nick)] = (irc, msg, {})
     whois = wrap(whois, ['networkIrc', 'nick'])
