@@ -368,6 +368,7 @@ class Weather(callbacks.Privmsg):
     _wunderUv = re.compile(r'UV:</td><td[^>]+><b>(\d\d?)</b>( out of \d\d?)',
                            re.I | re.S)
     _wunderTime = re.compile(r'Updated:\s+<b>([\w\s:,]+)</b>', re.I | re.S)
+    _wunderMultiLoc = re.compile(r'<a href="([^"]+)', re.I | re.S)
     def wunder(self, irc, msg, args):
         """<US zip code | US/Canada city, state | Foreign city, country>
 
@@ -379,8 +380,16 @@ class Weather(callbacks.Privmsg):
         if 'Search not found' in text:
             irc.error(noLocationError, Raise=True)
         if 'Search results for' in text:
-            irc.error('Multiple locations found.  Please be more specific.',
-                      Raise=True)
+            text = text[text.index('Search results for'):]
+            newloc = self._wunderMultiLoc.search(text)
+            if newloc is None:
+                irc.error('Multiple locations found.  '
+                          'Please be more specific.', Raise=True)
+            url = 'http://www.wunderground.com%s' % newloc.group(1)
+            try:
+                text = webutils.getUrl(url)
+            except webutils.WebError, e:
+                irc.error(str(e), Raise=True)
         location = self._wunderLoc.search(text)
         temp = self._wunderFTemp.search(text)
         convert = self.registryValue('convert', msg.args[0])
@@ -445,7 +454,7 @@ conf.registerChannelValue(conf.supybot.plugins.Weather, 'temperatureUnit',
     WeatherUnit('Fahrenheit', """Sets the default temperature unit to use when
     reporting the weather."""))
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'command',
-    WeatherCommand('cnn', """Sets the default command to use when retrieving
+    WeatherCommand('wunder', """Sets the default command to use when retrieving
     the weather.  Command must be one of %s.""" %
     utils.commaAndify(Weather.weatherCommands, And='or')))
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'convert',
