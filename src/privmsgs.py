@@ -42,8 +42,9 @@ import types
 import threading
 
 import conf
-import ircdb
+import utils
 import world
+import ircdb
 import ircmsgs
 import ircutils
 import callbacks
@@ -101,10 +102,7 @@ def checkCapability(f, capability):
             self.log.warning('%r attempted %s without %s.',
                              msg.prefix, f.func_name, capability)
             irc.errorNoCapability(capability)
-    newf = types.FunctionType(newf.func_code, newf.func_globals,
-                              f.func_name, closure=newf.func_closure)
-    newf.__doc__ = f.__doc__
-    return newf
+    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 def checkChannelCapability(f, capability):
     """Makes sure a user has a certain channel capability before running f.
@@ -122,21 +120,30 @@ def checkChannelCapability(f, capability):
             self.log.warning('%r attempted %s without %s.',
                              msg.prefix, f.func_name, capability)
             irc.errorNoCapability(chancap)
-    newf = types.FunctionType(newf.func_code, newf.func_globals,
-                              f.func_name, closure=newf.func_closure)
-    newf.__doc__ = f.__doc__
-    return newf
+    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
+def _threadedWrapMethod(f):
+    """A function to wrap methods that are to be run in a thread, so that the
+    callback's threaded attribute is set to True while the thread is running.
+    """
+    def newf(self, *args, **kwargs):
+        originalThreaded = self.threaded
+        try:
+            self.threaded = True
+            return f(self, *args, **kwargs)
+        finally:
+            self.threaded = originalThreaded
+    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
+            
 def thread(f):
     """Makes sure a command spawns a thread when called."""
+    f = _threadedWrapMethod(f)
     def newf(self, irc, msg, args, *L):
         ff = types.MethodType(f, self, self.__class__)
-        t = callbacks.CommandThread(self.callCommand, ff, irc, msg, args, *L)
+        t = callbacks.CommandThread(target=irc._callCommand,
+                                    args=(f.func_name, ff, self))
         t.start()
-    newf = types.FunctionType(newf.func_code, newf.func_globals,
-                              f.func_name, closure=newf.func_closure)
-    newf.__doc__ = f.__doc__
-    return newf
+    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 def name(f):
     """Makes sure a name is available based on conf.requireRegistration."""
@@ -152,10 +159,7 @@ def name(f):
         L = (name,) + L
         ff = types.MethodType(f, self, self.__class__)
         ff(irc, msg, args, *L)
-    newf = types.FunctionType(newf.func_code, newf.func_globals,
-                              f.func_name, closure=newf.func_closure)
-    newf.__doc__ = f.__doc__
-    return newf
+    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 def channel(f):
     """Gives the command an extra channel arg as if it had called getChannel"""
@@ -164,13 +168,11 @@ def channel(f):
         L = (channel,) + L
         ff = types.MethodType(f, self, self.__class__)
         ff(irc, msg, args, *L)
-    newf = types.FunctionType(newf.func_code, newf.func_globals,
-                              f.func_name, closure=newf.func_closure)
-    newf.__doc__ = f.__doc__
-    return newf
+    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
+    f = _threadedWrapMethod(f)
     def newf(self, irc, msg, match, *L):
         now = time.time()
         cutoff = now - conf.snarfThrottle
@@ -190,14 +192,11 @@ def urlSnarfer(f):
                 f(self, irc, msg, match, *L)
             else:
                 L = list(L)
-                t = threading.Thread(target=f, args=[self, irc, msg, match]+L)
+                world.threadsSpawned += 1
+                t = threading.Thread(target=f, args=[self,irc,msg,match]+L)
                 t.setDaemon(True)
                 t.start()
-                world.threadsSpawned += 1
-    newf = types.FunctionType(newf.func_code, newf.func_globals,
-                              f.func_name, closure=newf.func_closure)
-    newf.__doc__ = f.__doc__
-    return newf
+    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
         
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
