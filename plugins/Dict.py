@@ -46,10 +46,12 @@ import dictclient
 import conf
 import utils
 import plugins
+import registry
 import ircutils
 import privmsgs
 import callbacks
-import configurable
+
+import Owner
 
 
 def configure(onStart, afterConnect, advanced):
@@ -65,20 +67,20 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('dict config server %s' % server)
 
 replyTimeout = 'Timeout on the dictd server.'
-class Dict(callbacks.Privmsg, configurable.Mixin):
+
+Owner.registerPlugin('Dict', True)
+# TODO: We should make this check to see if there's actually a dictd server
+# running on the host given.
+conf.supybot.plugins.Dict.register('server', registry.String('dict.org', """
+Determines what server the bot will retrieve definitions from."""))
+
+class Dict(callbacks.Privmsg):
     threaded = True
-    configurables = configurable.Dictionary(
-        [('server', configurable.StrType, 'dict.org',
-          """Determines what server the bot will connect to to receive
-          definitions from."""),]
-    )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
 
     def die(self):
         callbacks.Privmsg.die(self)
-        configurable.Mixin.die(self)
 
     def dictionaries(self, irc, msg, args):
         """takes no arguments.
@@ -86,7 +88,8 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
         Returns the dictionaries valid for the dict command.
         """
         try:
-            conn = dictclient.Connection(self.configurables.get('server'))
+            server = conf.supybot.plugins.Dict.server()
+            conn = dictclient.Connection(server)
             dbs = conn.getdbdescs().keys()
             dbs.sort()
             irc.reply(utils.commaAndify(dbs))
@@ -99,7 +102,8 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
         Returns a random valid dictionary.
         """
         try:
-            conn = dictclient.Connection(self.configurables.get('server'))
+            server = conf.supybot.plugins.Dict.server()
+            conn = dictclient.Connection(server)
             dbs = conn.getdbdescs().keys()
             irc.reply(random.choice(dbs))
         except socket.timeout:
@@ -113,7 +117,8 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
         if not args:
             raise callbacks.ArgumentError
         try:
-            conn = dictclient.Connection(self.configurables.get('server'))
+            server = conf.supybot.plugins.Dict.server()
+            conn = dictclient.Connection(server)
         except socket.timeout:
             irc.error('Timeout on the dict server.')
             return
