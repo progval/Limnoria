@@ -5,6 +5,7 @@ import supybot
 import fix
 
 import os
+import re
 import sys
 import sets
 import pydoc
@@ -102,6 +103,7 @@ def clearLoadedPlugins(onStart, plugins):
             if plugin in plugins:
                 plugins.remove(plugin)
 
+_windowsVarRe = re.compile(r'%(\w+)%')
 def getDirectoryName(default):
     done = False
     while not done:
@@ -110,6 +112,8 @@ def getDirectoryName(default):
         if not dir:
             dir = default
         dir = os.path.expanduser(dir)
+        dir = _windowsVarRe.sub(r'$\1', dir)
+        dir = os.path.expandvars(dir)
         dir = os.path.abspath(dir)
         try:
             os.makedirs(dir)
@@ -121,7 +125,7 @@ def getDirectoryName(default):
                 have to pick someplace else.""" % e)
             else:
                 done = True
-    return dir
+    return os.path.expandvars(os.path.expanduser(dir))
         
 def myPrint(s, unformatted=True):
     if unformatted:
