@@ -213,7 +213,7 @@ class Success(callbacks.Privmsg):
         num = self.db.size(channel)
         irc.reply('There %s %s in my database.' %
                   (utils.be(num), utils.nItems('success', num)))
-    stats = wrap(stats, ['channeldb'], noExtra=True)
+    stats = wrap(stats, ['channeldb'])
 
 
 

@@ -485,7 +485,7 @@ class State(object):
         self.channel = None
             
 def args(irc,msg,args, types=[], state=None,
-         getopts=None, noExtra=False, requireExtra=False, combineRest=True):
+         getopts=None, allowExtra=False, requireExtra=False, combineRest=True):
     if state is None:
         state = State(name='unknown', logger=log)
     if requireExtra:
@@ -596,8 +596,8 @@ def args(irc,msg,args, types=[], state=None,
                 rest = ' '.join(args)
                 args = [rest]
             callWrapper(types.pop(0))
-    if noExtra and args:
-        log.debug('noExtra and args: %r', args)
+    if args and not allowExtra:
+        log.debug('args but not allowExtra: %r', args)
         raise callbacks.ArgumentError
     if requireExtra and not args:
         log.debug('requireExtra and not args: %r', args)

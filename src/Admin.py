@@ -181,7 +181,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('I\'m not currently in any channels.')
-    channels = wrap(channels, ['private'], noExtra=True)
+    channels = wrap(channels, ['private'])
 
     def do484(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
@@ -367,7 +367,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(imap(repr, ircdb.ignores.hostmasks)))
         else:
             irc.reply('I\'m not currently globally ignoring anyone.')
-    ignores = wrap(ignores, noExtra=True)
+    ignores = wrap(ignores)
 
 
 Class = Admin

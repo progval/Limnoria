@@ -100,7 +100,7 @@ class Status(callbacks.Privmsg):
         if world.profiling:
             L.append('I am currently in code profiling mode.')
         irc.reply('  '.join(L))
-    status = wrap(status, noExtra=True)
+    status = wrap(status)
 
     def threads(self, irc, msg, args):
         """takes no arguments
@@ -114,7 +114,7 @@ class Status(callbacks.Privmsg):
              utils.nItems('thread', len(threads)), utils.be(len(threads)),
              utils.commaAndify(threads))
         irc.reply(s)
-    threads = wrap(threads, noExtra=True)
+    threads = wrap(threads)
 
     def net(self, irc, msg, args):
         """takes no arguments
@@ -131,7 +131,7 @@ class Status(callbacks.Privmsg):
                   'I have been connected to %s for %s.' %
                   (self.recvdMsgs, self.recvdBytes,
                    self.sentMsgs, self.sentBytes, irc.server, timeElapsed))
-    net = wrap(net, noExtra=True)
+    net = wrap(net)
 
     def cpu(self, irc, msg, args):
         """takes no arguments
@@ -178,7 +178,7 @@ class Status(callbacks.Privmsg):
             except Exception:
                 self.log.exception('Uncaught exception in cpu.memory:')
         irc.reply(utils.normalizeWhitespace(response))
-    cpu = wrap(cpu, noExtra=True)
+    cpu = wrap(cpu)
 
     def cmd(self, irc, msg, args):
         """takes no arguments
@@ -200,7 +200,7 @@ class Status(callbacks.Privmsg):
              utils.nItems('plugin', callbacksPrivmsg, 'command-based'),
              utils.nItems('command', world.commandsProcessed))
         irc.reply(s)
-    cmd = wrap(cmd, noExtra=True)
+    cmd = wrap(cmd)
 
     def commands(self, irc, msg, args):
         """takes no arguments
@@ -218,7 +218,7 @@ class Status(callbacks.Privmsg):
         commands = list(commands)
         commands.sort()
         irc.reply(utils.commaAndify(commands))
-    commands = wrap(commands, noExtra=True)
+    commands = wrap(commands)
 
     def uptime(self, irc, msg, args):
         """takes no arguments
@@ -228,7 +228,7 @@ class Status(callbacks.Privmsg):
         response = 'I have been running for %s.' % \
                    utils.timeElapsed(time.time() - world.startedAt)
         irc.reply(response)
-    uptime = wrap(uptime, noExtra=True)
+    uptime = wrap(uptime)
 
     def server(self, irc, msg, args):
         """takes no arguments
@@ -236,7 +236,7 @@ class Status(callbacks.Privmsg):
         Returns the server the bot is on.
         """
         irc.reply(irc.server)
-    server = wrap(server, noExtra=True)
+    server = wrap(server)
 
 
 Class = Status

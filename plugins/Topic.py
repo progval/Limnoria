@@ -49,7 +49,7 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-from supybot.commands import wrap, addWrapper, inChannel
+from supybot.commands import wrap, addWrapper, inChannel, getChannel
 
 class TopicFormat(registry.String):
     "Value must include $topic, otherwise the actual topic would be left out."
@@ -82,6 +82,7 @@ conf.registerChannelValue(conf.supybot.plugins.Topic.undo, 'max',
 
 def canChangeTopic(irc, msg, args, state):
     assert not state.channel
+    getChannel(irc, msg, args, state)
     inChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         irc.error('I\'m not currently in %s.' % state.channel, Raise=True)
@@ -198,7 +199,7 @@ class Topic(callbacks.Privmsg):
         """
         topic = irc.state.channels[channel].topic
         irc.reply(topic)
-    topic = wrap(topic, ['inChannel'], noExtra=True)
+    topic = wrap(topic, ['inChannel'])
 
     def add(self, irc, msg, args, channel, topic, insert=False):
         """[<channel>] <topic>
