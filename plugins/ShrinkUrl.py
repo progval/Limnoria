@@ -188,8 +188,6 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                 domain = webutils.getDomain(url)
                 s = '%s (at %s)' % (ircutils.bold(shorturl), domain)
                 m = irc.reply(s, prefixName=False)
-                if m is None:
-                    print irc, irc.__class__
                 m.tag('shrunken')
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
 

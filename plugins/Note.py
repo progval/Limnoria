@@ -34,20 +34,15 @@ users that can be retrieved later.
 
 __revision__ = "$Id$"
 
-import csv
-import sets
 import time
-import getopt
-import os.path
 import operator
-
-from itertools import imap
 
 import supybot.dbi as dbi
 import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.privmsgs as privmsgs
@@ -77,8 +72,6 @@ conf.registerGlobalValue(conf.supybot.plugins.Note.notify, 'autoSend',
 
 class Ignores(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
-
-conf.registerUserValue(conf.users.plugins.Note, 'ignores', Ignores([], ''))
 
 class NoteRecord(dbi.Record):
     __fields__ = [
@@ -219,92 +212,54 @@ class Note(callbacks.Privmsg):
             except KeyError:
                 return None
 
-    def _validId(self, irc, id):
-        try:
-            id = id.lstrip('#')
-            return int(id)
-        except ValueError:
-            irc.error('That\'s not a valid note id.', Raise=True)
-
-    def send(self, irc, msg, args):
+    def send(self, irc, msg, args, user, targets, text):
         """<recipient>,[<recipient>,[...]] <text>
 
         Sends a new note to the user specified.  Multiple recipients may be
-        specified by separating their names by commas, with *no* spaces
-        between.
+        specified by separating their names by commas.
         """
-        (names, text) = privmsgs.getArgs(args, required=2)
         # Let's get the from user.
-        try:
-            fromId = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
         public = ircutils.isChannel(msg.args[0])
-        names = names.split(',')
-        ids = [self._getUserId(irc, name) for name in names]
-        badnames = []
-        # Make sure all targets are registered.
-        if None in ids:
-            for (id, name) in zip(ids, names):
-                if id is None:
-                    badnames.append(name)
-            irc.errorNoUser(name=utils.commaAndify(badnames, And='or'))
-            return
-
-        # Make sure the sender isn't being ignored.
-        senderName = ircdb.users.getUser(fromId).name
-        for name in names:
-            ignores = self.userValue('ignores', name)
-            if ignores and senderName in ignores:
-                badnames.append(name)
-        if badnames:
-            irc.error('%s %s ignoring notes from you.' % \
-                      (utils.commaAndify(badnames), utils.be(len(badnames))))
-            return
         sent = []
-        for toId in ids:
-            id = self.db.send(fromId, toId, public, text)
-            name = ircdb.users.getUser(toId).name
-            s = 'note #%s sent to %s' % (id, name)
+        for target in targets:
+            id = self.db.send(user.id, target.id, public, text)
+            s = 'note #%s sent to %s' % (id, target.name)
             sent.append(s)
         irc.reply(utils.commaAndify(sent).capitalize() + '.')
+    send = wrap(send, ['user', commalist('otherUser'), 'text'])
 
-    def reply(self, irc, msg, args):
+    def reply(self, irc, msg, args, user, id, text):
         """<id> <text>
 
         Sends a note in reply to <id>.
         """
-        if not args:
-            raise callbacks.ArgumentError
-        id = self._validId(irc, args[0])
-        args.append('(in reply to #%s)' % id)
-        note = self.db.get(id)
-        to = self.db.get(id).frm
-        self.db.setRead(id)
         try:
-            args[0] = ircdb.users.getUser(to).name
+            note = self.db.get(id)
         except KeyError:
-            irc.error('Odd, the user you\'re replying to is no longer in the '
-                      'database.  You should notify my owner about this.')
-            return
-        self.send(irc, msg, args)
+            irc.error('That\'s not a note in my database.', Raise=True)
+        if note.to != user.id:
+            irc.error('You may only reply to notes '
+                      'that have been sent to you.', Raise=True)
+        self.db.setRead(id)
+        text += ' (in reply to #%s)' % id
+        public = ircutils.isChannel(msg.args[0])
+        try:
+            target = ircdb.users.getUser(note.frm)
+        except KeyError:
+            irc.error('The user who sent you that note '
+                      'is no longer in my user database.', Raise=True)
+        id = self.db.send(user.id, note.frm, public, text)
+        irc.reply('Note #%s sent to %s.' % (id, target.name))
+    reply = wrap(reply, [('id', 'note'), 'text'])
 
-    def unsend(self, irc, msg, args):
+    def unsend(self, irc, msg, args, user, id):
         """<id>
 
         Unsends the note with the id given.  You must be the
         author of the note, and it must be unread.
         """
-        try:
-            userid = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        id = privmsgs.getArgs(args)
-        id = self._validId(irc, id)
         note = self.db.get(id)
-        if note.frm == userid:
+        if note.frm == user.id:
             if not note.read:
                 self.db.unsend(id)
                 irc.replySuccess()
@@ -312,6 +267,7 @@ class Note(callbacks.Privmsg):
                 irc.error('That note has been read already.')
         else:
             irc.error('That note wasn\'t sent by you.')
+    unsend = wrap(unsend, ['user', ('id', 'note')])
 
     def _formatNote(self, note, to):
         elapsed = utils.timeElapsed(time.time() - note.at)
@@ -323,58 +279,25 @@ class Note(callbacks.Privmsg):
             recipient = ircdb.users.getUser(note.to).name
             return '%s (Sent to %s %s ago)' % (note.text, recipient, elapsed)
 
-    def note(self, irc, msg, args):
-        """<note id>
+    def note(self, irc, msg, args, user, id):
+        """<id>
 
         Retrieves a single note by its unique note id.  Use the 'note list'
         command to see what unread notes you have.
         """
         try:
-            userid = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        id = privmsgs.getArgs(args)
-        id = self._validId(irc, id)
-        try:
             note = self.db.get(id)
         except KeyError:
             irc.error('That\'s not a valid note id.')
             return
-        if userid != note.frm and userid != note.to:
+        if user.id != note.frm and user.id != note.to:
             s = 'You may only retrieve notes you\'ve sent or received.'
             irc.error(s)
             return
-        newnote = self._formatNote(note, userid)
+        newnote = self._formatNote(note, user.id)
         irc.reply(newnote, private=(not note.public))
         self.db.setRead(id)
-
-    def ignore(self, irc, msg, args):
-        """[--remove] <user>
-
-        Ignores all messages from <user>.  If --remove is listed, remove <user>
-        from the list of users being ignored.
-        """
-        remove = False
-        while '--remove' in args:
-            remove = True
-            args.remove('--remove')
-        user = privmsgs.getArgs(args)
-        try:
-            L = self.userValue('ignores', msg.prefix)
-            if remove:
-                try:
-                    L.remove(user)
-                except (KeyError, ValueError):
-                    irc.error('%s was not in your list of ignores.' %
-                              utils.quoted(user))
-                    return
-            else:
-                L.add(user)
-            self.setUserValue('ignores', msg.prefix, L)
-            irc.replySuccess()
-        except KeyError:
-            irc.errorNoUser()
+    note = wrap(note, ['user', ('id', 'note')])
 
     def _formatNoteId(self, msg, note, sent=False):
         if note.public or not ircutils.isChannel(msg.args[0]):
@@ -386,7 +309,7 @@ class Note(callbacks.Privmsg):
         else:
             return '#%s (private)' % note.id
 
-    def list(self, irc, msg, args):
+    def list(self, irc, msg, args, user, optlist):
         """[--{old,sent}] [--{from,to} <user>]
 
         Retrieves the ids of all your unread notes.  If --old is given, list
@@ -394,40 +317,27 @@ class Note(callbacks.Privmsg):
         --from is specified, only lists notes sent to you from <user>.  If
         --to is specified, only lists notes sent by you to <user>.
         """
-        options = ['old', 'sent', 'from=', 'to=']
-        (optlist, rest) = getopt.getopt(args, '', options)
-        sender, receiver, old, sent = ('', '', False, False)
+        (sender, receiver, old, sent) = (None, None, False, False)
         for (option, arg) in optlist:
-            if option == '--old':
+            if option == 'old':
                 old = True
-            if option == '--sent':
+            if option == 'sent':
                 sent = True
-            if option == '--from':
+            if option == 'from':
                 sender = arg
-            if option == '--to':
+            if option == 'to':
                 receiver = arg
                 sent = True
         if old:
             return self._oldnotes(irc, msg, sender)
         if sent:
             return self._sentnotes(irc, msg, receiver)
-        try:
-            userid = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-
         def p(note):
-            return not note.read and note.to == userid
+            return not note.read and note.to == user.id
         if sender:
-            try:
-                sender = ircdb.users.getUserId(sender)
-                originalP = p
-                def p(note):
-                    return originalP(note) and note.frm == sender
-            except KeyError:
-                irc.errorNoUser()
-                return
+            originalP = p
+            def p(note):
+                return originalP(note) and note.frm == sender.id
         notes = list(self.db.select(p))
         if not notes:
             irc.reply('You have no unread notes.')
@@ -436,6 +346,9 @@ class Note(callbacks.Privmsg):
             ids = [self._formatNoteId(msg, note) for note in notes]
             ids = self._condense(ids)
             irc.reply(utils.commaAndify(ids))
+    list = wrap(list, ['user', getopts({'old': '', 'sent': '',
+                                        'from': 'otherUser',
+                                        'to': 'otherUser'})])
 
     def _condense(self, notes):
         temp = {}
@@ -452,12 +365,12 @@ class Note(callbacks.Privmsg):
 
     def _sentnotes(self, irc, msg, receiver):
         try:
-            userid = ircdb.users.getUserId(msg.prefix)
+            user = ircdb.users.getUser(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
         def p(note):
-            return note.frm == userid
+            return note.frm == user.id
         if receiver:
             try:
                 receiver = ircdb.users.getUserId(receiver)
@@ -479,21 +392,21 @@ class Note(callbacks.Privmsg):
 
     def _oldnotes(self, irc, msg, sender):
         try:
-            userid = ircdb.users.getUserId(msg.prefix)
+            user = ircdb.users.getUser(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
         def p(note):
-            return note.to == userid and note.read
+            return note.to == user.id and note.read
         if sender:
             try:
-                sender = ircdb.users.getUserId(sender)
+                sender = ircdb.users.getUser(sender)
             except KeyError:
                 irc.error('That user is not in my user database.')
                 return
             originalP = p
             def p(note):
-                return originalP(note) and note.frm == sender
+                return originalP(note) and note.frm == sender.id
         notes = list(self.db.select(p))
         if not notes:
             irc.reply('I couldn\'t find any matching read notes for your user.')

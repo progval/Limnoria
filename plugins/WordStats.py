@@ -42,9 +42,9 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -205,29 +205,26 @@ class WordStats(callbacks.Privmsg):
         finally:
             self.queried = False
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, channel, word):
         """[<channel>] <word>
 
         Keeps stats on <word> in <channel>.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        word = privmsgs.getArgs(args)
         word = word.strip()
         if word.strip(nonAlphaNumeric) != word:
             irc.error('<word> must not contain non-alphanumeric chars.')
             return
         self.db.addWord(channel, word)
         irc.replySuccess()
+    add = wrap(add, ['channel', 'somethingWithoutSpaces'])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, channel, word):
         """[<channel>] <word>
 
         Removes <word> from the list of words being tracked.  If <channel> is
         not specified, uses current channel.
         """
-        channel = privmsgs.getChannel(msg, args)
-        word = privmsgs.getArgs(args)
         words = self.db.getWords(channel)
         if words:
             if word in words:
@@ -236,12 +233,11 @@ class WordStats(callbacks.Privmsg):
             else:
                 irc.error('%s doesn\'t look like a word I am keeping stats '
                           'on.' % utils.quoted(word))
-                return
         else:
             irc.error('I am not currently keeping any word stats.')
-            return
+    remove = wrap(remove, ['channel', 'somethingWithoutSpaces'])
 
-    def wordstats(self, irc, msg, args):
+    def wordstats(self, irc, msg, args, channel, user, word):
         """[<channel>] [<user>] [<word>]
 
         With no arguments, returns the list of words that are being monitored
@@ -252,9 +248,7 @@ class WordStats(callbacks.Privmsg):
         <word> is given, <word> is assumed first and only if no stats are
         available for that word, do we assume it's <user>.)
         """
-        channel = privmsgs.getChannel(msg, args)
-        (arg1, arg2) = privmsgs.getArgs(args, required=0, optional=2)
-        if not arg1 and not arg2:
+        if not user and not word:
             words = self.db.getWords(channel)
             if words:
                 commaAndify = utils.commaAndify
@@ -263,32 +257,22 @@ class WordStats(callbacks.Privmsg):
             else:
                 irc.reply('I am not currently keeping any word stats.')
                 return
-        elif arg1 and arg2:
-            user, word = (arg1, arg2)
+        elif user and word:
             try:
-                id = ircdb.users.getUserId(user)
-            except KeyError: # Maybe it was a nick.  Check the hostmask.
-                try:
-                    hostmask = irc.state.nickToHostmask(user)
-                    id = ircdb.users.getUserId(hostmask)
-                except KeyError:
-                    irc.errorNoUser()
-                    return
-            try:
-                count = self.db.getWordCount(channel, id, word)
+                count = self.db.getWordCount(channel, user.id, word)
             except KeyError:
                 irc.error('I\'m not keeping stats on %s.' %
                           utils.quoted(word))
                 return
             if count:
                 s = '%s has said %s %s.' % \
-                    (user, utils.quoted(word), utils.nItems('time', count))
+                    (user.name, utils.quoted(word),
+                     utils.nItems('time', count))
                 irc.reply(s)
             else:
                 irc.error('%s has never said %s.' %
                           (user, utils.quoted(word)))
-        elif arg1 in WordDict.fromkeys(self.db.getWords(channel)):
-            word = arg1
+        elif word in WordDict.fromkeys(self.db.getWords(channel)):
             total = self.db.getTotalWordCount(channel, word)
             if total == 0:
                 irc.reply('I\'m keeping stats on %s, but I haven\'t seen it '
@@ -323,27 +307,23 @@ class WordStats(callbacks.Privmsg):
                 s = ''
             ret = '%s %s.%s' % (ret, utils.commaAndify(L), s)
             irc.reply(ret)
+        elif word:
+            irc.error('%r doesn\'t look like a word I\'m keeping stats '
+                      'on or a user in my database.' % word)
         else:
-            user = arg1
             try:
-                id = ircdb.users.getUserId(user)
+                L = ['%s: %s' % (utils.quoted(w), c)
+                     for (w, c) in self.db.getUserWordCounts(channel,user.id)]
+                L.sort()
+                irc.reply(utils.commaAndify(L))
             except KeyError:
-                irc.error('%s doesn\'t look like a word I\'m keeping stats '
-                          'on or a user in my database.' % utils.quoted(user))
-                return
-            try:
-                L = ['%s: %s' % (utils.quoted(word), count)
-                     for (word,count) in self.db.getUserWordCounts(channel,id)]
-                if L:
-                    L.sort()
-                    irc.reply(utils.commaAndify(L))
-                else:
-                    irc.error('%s doesn\'t look like a word I\'m keeping stats'
-                              ' on or a user in my database.' %
-                              utils.quoted(user))
-                    return
-            except KeyError:
-                irc.error('I have no word stats for that person.')
+                irc.error('I have no wordstats for %s.' % user.name)
+    wordstats = wrap(wordstats,
+                     ['channel',
+                      optional('otherUser'),
+                      additional('somethingWithoutSpaces')])
+
+
 Class = WordStats
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
