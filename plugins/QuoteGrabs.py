@@ -313,7 +313,7 @@ class QuoteGrabs(callbacks.Privmsg):
             if nick:
                 irc.error('Couldn\'t get a random quote for that nick.')
             else:
-                irc.error('Couldn\'t get a random quote.  Are there any'
+                irc.error('Couldn\'t get a random quote.  Are there any '
                           'grabbed quotes in the database?')
     random = wrap(random, ['channeldb', additional('nick')])
 
