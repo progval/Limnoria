@@ -141,12 +141,18 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM urls ORDER BY random() LIMIT 1""")
-        (id, url, added, addedBy, _, _, _, _, _, _) = cursor.fetchone()
-        when = time.strftime(conf.humanTimestampFormat,
-                             time.localtime(int(added)))
-        s = '<%s> (added by %s at %s)' % (id, url, addedBy, when)
-        irc.reply(msg, s)
+        cursor.execute("""SELECT id, url, added, added_by
+                          FROM urls
+                          ORDER BY random()
+                          LIMIT 1""")
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'I have no URLs in my database for %s' % channel)
+        else:
+            (id, url, added, addedBy) = cursor.fetchone()
+            when = time.strftime(conf.humanTimestampFormat,
+                                 time.localtime(int(added)))
+            s = '<%s> (added by %s at %s)' % (url, addedBy, when)
+            irc.reply(msg, s)
 
     def numurls(self, irc, msg, args):
         """[<channel>]
@@ -182,6 +188,8 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
                 criteria.append('added_by LIKE %s')
                 formats.append(argument)
             elif option == 'with':
+                if '%' not in argument and '_' not in argument:
+                    argument = '%%%s%%' % argument
                 criteria.append('url LIKE %s')
                 formats.append(argument)
             elif option == 'at':
