@@ -101,6 +101,8 @@ class PluginTestCase(unittest.TestCase):
     timeout = 10
     plugins = ()
     def setUp(self, nick='test'):
+        if not self.plugins:
+            raise ValueError, 'PluginTestCase must have a "plugins" attribute.'
         self.nick = nick
         self.prefix = ircutils.joinHostmask(nick, 'user', 'host.domain.tld')
         self.irc = irclib.Irc(nick)
