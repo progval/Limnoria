@@ -558,7 +558,7 @@ if __name__ == '__main__':
                 onStart.append(command)
                 command = anything('Another command?')
         if yn('Would you like you add any commands to be given to the bot '
-              'before it connects to the server?') == 'y':
+              'after it connects to the server?') == 'y':
             command = anything('What command?  Just press enter when done.')
             while command:
                 afterConnect.append(command)
