@@ -272,19 +272,36 @@ class GroupWithValue(Group):
 
 class GroupWithDefault(GroupWithValue):
     def __init__(self, value):
+        class X(value.__class__):
+            def set(self, *args):
+                self.__class__ = value.__class__
+                self.set(*args)
+
+            def setValue(self, *args):
+                self.__class__ = value.__class__
+                self.setValue(*args)
+
+            def reset(self, *args):
+                self.__class__ = value.__class__
+                self.reset(*args)
+        self.X = X
         GroupWithValue.__init__(self, value)
         
     def __makeChild(self, attr, s):
         v = copy.copy(self.value)
         v.set(s)
+        v.__class__ = self.X
         self.register(attr, v)
+        return v
 
     def __getattr__(self, attr):
         try:
-            return GroupWithValue.__getattr__(self, attr)
+            v = GroupWithValue.__getattr__(self, attr)
+            if v.__class__ is self.X:
+                raise NonExistentRegistryEntry 
         except NonExistentRegistryEntry:
-            self.__makeChild(attr, str(self))
-            return self.__getattr__(attr)
+            v = self.__makeChild(attr, str(self))
+        return v
 
     def setName(self, name):
         GroupWithValue.setName(self, name)
@@ -295,8 +312,7 @@ class GroupWithDefault(GroupWithValue):
 
     def getValues(self, getChildren=False):
         L = GroupWithValue.getValues(self, getChildren)
-        me = str(self)
-        L = [v for v in L if str(v[1]) != me]
+        L = [v for v in L if v[1].__class__ is not self.X]
         return L
 
 
