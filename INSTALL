@@ -86,11 +86,11 @@ supybot-wizard, you've got a nice registry file handy.  If you're not
 satisfied with your answers to any of the questions you were asked,
 feel free to run the program again until you're satisfied with all
 your answers.  Once you're satisfied, though, run "python
-C:\Python23\supybot botname.conf".  This will start the bot; unless
-you turned off logging to stdout, you'll see some nice log messages
-describing what the bot is doing at any particular moment; it may
-pause for a significant amount of time after saying "Connecting to
-..." while the server tries to check its ident.
+C:\Python23\Scripts\supybot botname.conf".  This will start the bot;
+unless you turned off logging to stdout, you'll see some nice log
+messages describing what the bot is doing at any particular moment; it
+may pause for a significant amount of time after saying "Connecting
+to ..." while the server tries to check its ident.
 
 For more information and help on how to use Supybot, checkout
 docs/GETTING_STARTED.  Our forums (http://forums.supybot.org/) may
