@@ -140,6 +140,10 @@ class Enforcer(callbacks.Privmsg):
            not ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
             for nick in kicked:
                 hostmask = irc.state.nickToHostmask(nick)
+                if nick == irc.nick:
+                    # Must be a sendMsg so he joins the channel before MODEing.
+                    irc.sendMsg(ircmsgs.join(channel))
+                    deop = True
                 if self._isProtected(channel, hostmask):
                     deop = True
                     irc.queueMsg(ircmsgs.invite(channel, msg.args[1]))
