@@ -66,7 +66,7 @@ class ValidNickOrEmptyString(registry.String):
             raise registry.InvalidRegistryValue, \
                   'Value must be a valid nick or the empty string.'
         registry.String.setValue(self, v)
-            
+
 conf.registerPlugin('Services')
 # Not really ChannelValues: but we can have values for each network.  We
 # should probably document that this is possible.

@@ -119,7 +119,7 @@ class Lookup(callbacks.Privmsg):
                 self.addCommand(name)
             except Exception, e:
                 self.log.warning('Couldn\'t add lookup %s: %s', name, e)
-        
+
     def _shrink(self, s):
         return utils.ellipsisify(s, 50)
 
@@ -182,7 +182,7 @@ class Lookup(callbacks.Privmsg):
     def addRegistryValue(self, name, filename):
         v = registry.String(filename, '')
         conf.supybot.plugins.Lookup.lookups.register(name, v)
-        
+
     def addDatabase(self, name, filename):
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -316,8 +316,8 @@ class Lookup(callbacks.Privmsg):
                 return
             (key, value) = cursor.fetchone()
             irc.reply('%s: %s' % (key, value))
-            
-            
+
+
 Class = Lookup
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
