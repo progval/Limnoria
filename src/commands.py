@@ -50,6 +50,7 @@ import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
+import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 import supybot.structures as structures
 
@@ -96,7 +97,7 @@ class SnarfIrc(object):
 
     def reply(self, *args, **kwargs):
         _snarfed.enqueue(self.channel, self.url)
-        self.irc.reply(*args, **kwargs)
+        return self.irc.reply(*args, **kwargs)
 
 # This lock is used to serialize the calls to snarfers, so
 # earlier snarfers are guaranteed to beat out later snarfers.
@@ -355,10 +356,17 @@ def checkCapability(irc, msg, args, state, cap):
     
 def anything(irc, msg, args, state):
     state.args.append(args.pop(0))
+
+def getUrl(irc, msg, args, state):
+    if webutils.urlRe.match(args[0]):
+        state.args.append(args.pop(0))
+    else:
+        irc.errorInvalid('url', args[0])
     
 wrappers = ircutils.IrcDict({
     'id': getId,
     'int': getInt,
+    'url': getUrl,
     'float': getFloat,
     'nonInt': getNonInt,
     'positiveInt': getPositiveInt,
@@ -399,7 +407,6 @@ class State(object):
             
 def args(irc,msg,args, types=[], state=None,
          getopts=None, noExtra=False, requireExtra=False, combineRest=True):
-    orig = args[:]
     if state is None:
         state = State(name='unknown', logger=log)
     if requireExtra:
@@ -484,10 +491,10 @@ def args(irc,msg,args, types=[], state=None,
             args = [rest]
         callWrapper(types.pop(0))
     if noExtra and args:
-        log.debug('noExtra and args: %r (originally %r)', args, orig)
+        log.debug('noExtra and args: %r', args)
         raise callbacks.ArgumentError
     if requireExtra and not args:
-        log.debug('requireExtra and not args: %r (originally %r)', args, orig)
+        log.debug('requireExtra and not args: %r', args)
     log.debug('args: %r' % args)
     log.debug('State.args: %r' % state.args)
     log.debug('State.getopts: %r' % state.getopts)
