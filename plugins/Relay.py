@@ -146,6 +146,7 @@ class Relay(callbacks.Privmsg):
             port = 6667
         newIrc = irclib.Irc(irc.nick, callbacks=irc.callbacks)
         driver = drivers.newDriver((server, port), newIrc)
+        newIrc.driver = driver
         self.ircs[abbreviation] = newIrc
         self.abbreviations[newIrc] = abbreviation
         irc.reply(msg, conf.replySuccess)
@@ -237,6 +238,8 @@ class Relay(callbacks.Privmsg):
             s = self._formatPrivmsg(msg.nick, abbreviation, msg)
             for otherIrc in self.ircs.itervalues():
                 if otherIrc != irc:
+                    if channel in otherIrc.state.channels:
+                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
     def doJoin(self, irc, msg):
         if self.started:
