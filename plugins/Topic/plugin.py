@@ -53,7 +53,7 @@ def getTopic(irc, msg, args, state, format=True):
     separator = state.cb.registryValue('separator', state.channel)
     if separator in args[0]:
         irc.errorInvalid('topic', args[0],
-                         format('The topic must not include %s.', separator))
+                         format('The topic must not include %q.', separator))
     topic = args.pop(0)
     if format:
         env = {'topic': topic}
@@ -144,7 +144,8 @@ class Topic(callbacks.Privmsg):
             if len(newTopic) > maxLen:
                 if self.registryValue('recognizeTopiclen', channel):
                     irc.error(format('That topic is too long for this server '
-                                     '(maximum length: %s).', maxLen),
+                                     '(maximum length: %i; this topic: %i).',
+                                     maxLen, len(newTopic)),
                               Raise=True)
         except KeyError:
             pass
@@ -256,7 +257,7 @@ class Topic(callbacks.Privmsg):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         L = []
         for (i, t) in enumerate(topics):
-            L.append(format('%s: %s', i+1, utils.str.ellipsisify(t, 30)))
+            L.append(format('%i: %s', i+1, utils.str.ellipsisify(t, 30)))
         s = utils.str.commaAndify(L)
         irc.reply(s)
     list = wrap(list, ['inChannel'])
