@@ -66,7 +66,7 @@ class FunctionsTest(unittest.TestCase):
         self.assertEqual(Alias.findBiggestDollar('$10 bar $1'), 10)
 
 
-class AliasTestCase(PluginTestCase, PluginDocumentation):
+class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Alias', 'FunCommands', 'Utilities', 'MiscCommands')
     def testAliasHelp(self):
         self.assertNotError('alias slashdot foo')
@@ -76,12 +76,7 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
     def testSimpleAlias(self):
         pi = '3.1456926535897932384626433832795028841971693'
         self.assertNotError('alias pi %s' % pi)
-        self.assertReponse('pi', pi)
-
-    def testSimpleAlias(self):
-        s = 'foobar'
-        self.assertNotError('alias foo "rot13 %s"' % s)
-        self.assertResponse('foo', s.encode('rot13'))
+        self.assertResponse('pi', pi)
 
     def testDollars(self):
         self.assertNotError('alias rot26 "rot13 [rot13 $1]"')
@@ -116,9 +111,17 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('mytell #foo bugs')
         self.assertNoResponse('blah blah blah', 2)
 
+    def testChannel(self):
+        self.assertNotError('alias channel $channel')
+        self.assertResponse('channel', self.channel)
+
+    def testNick(self):
+        self.assertNotError('alias sendingnick $nick')
+        self.assertResponse('sendingnick', self.nick)
+
     def testAddRemoveAlias(self):
         cb = self.irc.getCallback('Alias')
-        cb.addAlias(self.irc, 'foobar', 'rot13 foobar', freeze=True)
+        cb.addAlias(self.irc, 'foobar', 'sbbone', freeze=True)
         self.assertResponse('foobar', 'sbbone')
         self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
         cb.removeAlias('foobar', evenIfFrozen=True)

@@ -124,17 +124,19 @@ def findBiggestAt(alias):
 def makeNewAlias(name, alias):
     if findAliasCommand(name, alias):
         raise RecursiveAlias
-    doChannel = '$channel' in alias
     biggestDollar = findBiggestDollar(alias)
     biggestAt = findBiggestAt(alias)
     wildcard = '$*' in alias
     if biggestAt and wildcard:
         raise AliasError, 'Can\'t use $* and optional args (@1, etc.)'
     def f(self, irc, msg, args):
-        alias_ = alias
-        if doChannel:
+        alias_ = alias.replace('$nick', msg.nick)
+        if '$channel' in alias:
             channel = privmsgs.getChannel(msg, args)
-            alias_ = alias.replace('$channel', channel)
+            alias_ = alias_.replace('$channel', channel)
+        if not (biggestDollar or biggestAt or wildcard):
+            irc.reply(msg, alias_)
+            return
         if not wildcard and biggestDollar or biggestAt:
             args = privmsgs.getArgs(args, needed=biggestDollar,
                                     optional=biggestAt)
@@ -144,15 +146,10 @@ def makeNewAlias(name, alias):
         def replace(m):
             idx = int(m.group(1))
             return utils.dqrepr(args[idx-1])
-        #debug.printf((args, alias_))
         alias_ = dollarRe.sub(replace, alias_)
-        #debug.printf((args, alias_))
         args = args[biggestDollar:]
-        #debug.printf((args, alias_))
         alias_ = atRe.sub(replace, alias_)
-        #debug.printf((args, alias_))
         alias_ = alias_.replace('$*', ' '.join(map(utils.dqrepr, args)))
-        #debug.printf((args, alias_))
         self.Proxy(irc.irc, msg, callbacks.tokenize(alias_))
     #f = new.function(f.func_code, f.func_globals, alias)
     f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \
