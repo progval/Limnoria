@@ -707,12 +707,13 @@ def mungeEmailForWeb(s):
 class AtomicFile(file):
     """Used for files that need to be atomically written -- i.e., if there's a
     failure, the original file remains, unmodified.  mode must be 'w' or 'wb'"""
-    def __init__(self, filename, mode='w',
-                 allowEmptyOverwrite=True, tmpDir=None):
+    def __init__(self, filename, mode='w', allowEmptyOverwrite=True,
+                 makeBackupIfSmaller=True, tmpDir=None):
         if mode not in ('w', 'wb'):
             raise ValueError, 'Invalid mode: %r' % mode
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
+        self.makeBackupIfSmaller = makeBackupIfSmaller
         self.filename = filename
         if tmpDir is None:
             # If not given a tmpDir, we'll just put a random token on the end
@@ -723,6 +724,8 @@ class AtomicFile(file):
             # directory), put our random token on the end, and put it in tmpDir
             tempFilename = '%s.%s' % (os.path.basename(self.filename), mktemp())
             self.tempFilename = os.path.join(tmpDir, tempFilename)
+        # This doesn't work because of the uncollectable garbage effect.
+        # self.__parent = super(AtomicFile, self)
         super(AtomicFile, self).__init__(self.tempFilename, mode)
 
     def rollback(self):
@@ -739,13 +742,20 @@ class AtomicFile(file):
             # doesn't exist.
             size = os.path.getsize(self.tempFilename)
             originalExists = os.path.exists(self.filename)
+            # We use shutil.move here instead of os.rename because
+            # the latter doesn't work on Windows when self.filename
+            # (the target) already exists.  shutil.move handles those
+            # intricacies for us.
             if size or self.allowEmptyOverwrite or not originalExists:
-                if os.path.exists(self.tempFilename):
-                    # We use shutil.move here instead of os.rename because
-                    # the latter doesn't work on Windows when self.filename
-                    # (the target) already exists.  shutil.move handles those
-                    # intricacies for us.
-                    shutil.move(self.tempFilename, self.filename)
+                if originalExists:
+                    currentSize = os.path.getsize(self.filename)
+                    if self.makeBackupIfSmaller and size < currentSize:
+                        now = int(time.time())
+                        backupFilename = '%s.backup.%s' % (self.filename, now)
+                        shutil.copy(self.filename, backupFilename)
+                shutil.move(self.tempFilename, self.filename)
+        else:
+            raise ValueError, 'AtomicFile.close called after rollback.'
 
     def __del__(self):
         # We rollback because if we're deleted without being explicitly closed,
@@ -786,6 +796,22 @@ def callTracer(fd=None, basename=True):
                 filename = os.path.basename(filename)
             print >>fd, '%s: %s(%s)' % (filename, funcname, lineno)
     return tracer
+
+
+# These are used by Owner and Misc for their callBefore/callAfter attributes.
+class Everything(object):
+    def __contains__(self, x):
+        return True
+
+    def __iter__(self):
+        return iter([])
+
+class Nothing(object):
+    def __contains__(self, x):
+        return False
+    
+    def __iter__(self):
+        return iter([])
 
 if __name__ == '__main__':
     import doctest
