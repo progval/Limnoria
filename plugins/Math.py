@@ -90,6 +90,12 @@ class Math(callbacks.Privmsg):
     _mathEnv = {'__builtins__': types.ModuleType('__builtins__'), 'i': 1j}
     _mathEnv.update(math.__dict__)
     _mathEnv.update(cmath.__dict__)
+    def _sqrt(x):
+        if isinstance(x, complex) or x < 0:
+            return cmath.sqrt(x)
+        else:
+            return math.sqrt(x)
+    _mathEnv['sqrt'] = _sqrt
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d])-)?'
                          r'(?:0x[A-Fa-f\d]+|'
                          r'0[0-7]+|'
@@ -178,7 +184,7 @@ class Math(callbacks.Privmsg):
         except NameError, e:
             irc.error('%s is not a defined function.' % str(e).split()[1])
         except Exception, e:
-            irc.error(utils.exnToString(e))
+            irc.error(str(e))
 
     def icalc(self, irc, msg, args):
         """<math expression>

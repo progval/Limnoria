@@ -56,6 +56,9 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
 
     def testCalcImaginary(self):
         self.assertResponse('calc 3 + sqrt(-1)', '3+i')
+
+    def testCalcFloorWorksWithSqrt(self):
+        self.assertNotError('calc floor(sqrt(5))')
         
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')
