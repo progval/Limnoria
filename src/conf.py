@@ -261,6 +261,10 @@ registerGlobalValue(supybot, 'channels',
 ###
 registerGroup(supybot, 'reply')
 
+registerGlobalValue(supybot.reply, 'maximumLength',
+    registry.Integer(512*256, """Determines the absolute maximum length of the
+    bot's reply -- no reply will passed through the bot greater than this."""))
+
 registerChannelValue(supybot.reply, 'truncate',
     registry.Boolean(False, """Determines whether the bot will simply truncate
     messages instead of breaking up long messages and using the 'more' command
