@@ -51,13 +51,16 @@ import ircutils
 class ChannelLogger(irclib.IrcCallback):
     logs = ircutils.IrcDict()
     def __init__(self):
-        self.laststate = None
+        self.laststate = irclib.IrcState()
+        self.lastMsg = None
         world.flushers.append(self.flush)
 
     def __call__(self, irc, msg):
         super(self.__class__, self).__call__(irc, msg)
         #self.__class__.__bases__[0].__call__(self, irc, msg)
-        self.laststate = irc.state.copy()
+        if self.lastMsg:
+            self.laststate.addMsg(irc, self.lastMsg)
+        self.lastMsg = msg
 
     def reset(self):
         for log in self.logs.itervalues():
