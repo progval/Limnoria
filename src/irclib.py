@@ -505,8 +505,8 @@ class Irc(IrcCommandDispatcher):
                 self.outstandingPing = True
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
+            log.debug(repr(msg))
             for callback in reviter(self.callbacks):
-                log.debug(repr(msg))
                 try:
                     outFilter = getattr(callback, 'outFilter')
                 except AttributeError, e:
@@ -649,10 +649,12 @@ class Irc(IrcCommandDispatcher):
     def die(self):
         """Makes the Irc object die.  Dead."""
         log.info('Irc object for %s dying.' % self.server)
-        for callback in self.callbacks:
-            callback.die()
         if self in world.ircs:
+            for callback in self.callbacks:
+                callback.die()
             world.ircs.remove(self)
+        else:
+            log.warning('Irc object killed twice.')
 
     def __hash__(self):
         return id(self)
