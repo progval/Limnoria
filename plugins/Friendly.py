@@ -35,13 +35,23 @@ Just a regexp module to make the bot a wee bit friendlier.
 
 import plugins
 
+import debug
+import ircutils
 import callbacks
 
 class Friendly(callbacks.PrivmsgRegexp):
     onlyFirstMatch = True
     def greet(self, irc, msg, match):
-        r"(?:heya?|(?:w(?:hat'?s\b|as)s?up)|howdy|hi|hello)$"
+        r"^(?:heya?|(?:w(?:hat'?s\b|as)s?up)|howdy|hi|hello)$"
         if irc.nick in msg.args[1]:
+            s = 'howdy, %s :)' % msg.nick
+            irc.reply(msg, s, prefixName=False)
+
+    def greet2(self, irc, msg, match):
+        r"^(?:heya?|(?:w(?:hat'?s\b|as)s*up)|howdy|hi|hello)" \
+        r"(?:,\s*|\s+)" \
+        r"([0-9A-Za-z_\[\]\`^{}\|-]+)[^A-Za-z_\[\]\`^{}\|-]*$"
+        if ircutils.nickEqual(match.group(1), irc.nick):
             s = 'howdy, %s :)' % msg.nick
             irc.reply(msg, s, prefixName=False)
 

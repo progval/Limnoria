@@ -40,6 +40,7 @@ class FriendlyTestCase(PluginTestCase):
     def testGreet(self):
         self.assertNotError('heya, %s' % self.irc.nick)
         self.assertNotError('howdy %s' % self.irc.nick)
+        self.assertNotError('howdy %s!' % self.irc.nick)
         self.assertNotError('hi, %s!' % self.irc.nick)
         self.assertNotRegexp('hi, %s' % self.irc.nick,
                              '^%s: ' % self.irc.nick)
@@ -57,6 +58,14 @@ class FriendlyTestCase(PluginTestCase):
         self.assertNotError('%s: thx!' % self.irc.nick)
         self.assertNotRegexp('thanks, %s' % self.irc.nick,
                              '^%s: ' % self.irc.nick)
+
+    def testGreet2Regexp(self):
+        me = self.irc.getCallback('Friendly')
+        r = re.compile(me.greet2.__doc__, re.I)
+        m = r.search('heya, %s' % self.irc.nick)
+        self.failUnless(m, 'no match')
+        self.failUnless(m.groups(), 'no match.groups()')
+        self.assertEqual(m.group(1), self.irc.nick)
 
 
 
