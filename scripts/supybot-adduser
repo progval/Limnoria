@@ -64,7 +64,12 @@ def main():
                            'this option may be given multiple times.')
     (options, args) = parser.parse_args()
     if len(args) is not 1:
-        parser.error('Specify the users.conf file you\'d like to use.')
+        parser.error('Specify the users.conf file you\'d like to use.  '
+                     'Be sure *not* to specify your registry file, generated '
+                     'by supybot-wizard.  This is not the file you want.  '
+                     'Instead, take a look in your conf directory (usually '
+                     'named "conf") and take a gander at the file '
+                     '"users.conf".  That\'s the one you want.')
 
     filename = os.path.abspath(args[0])
     conf.supybot.directories.log.setValue('/')
