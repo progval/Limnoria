@@ -294,7 +294,9 @@ if sqlite is not None:
             self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, '\x01VERSION\x01'))
             m = self.irc.takeMsg()
             self.failIf(m)
-                
 
+        def testAddFactoidNotCalledWithBadNestingSyntax(self):
+            self.assertError('re s/Error:.*/jbm is a tard/ ]')
+            self.assertNoResponse(' ', 3)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
