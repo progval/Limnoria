@@ -88,7 +88,7 @@ class RSS(callbacks.Plugin):
                 commandName = callbacks.canonicalName(name)
                 if self.isCommand(commandName):
                     name = commandName
-                    url = self.getCommand(name).url
+                    url = self.getCommandMethod(name).url
                 else:
                     url = name
                 if self.willGetNewFeed(url):

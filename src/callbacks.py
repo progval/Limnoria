@@ -632,7 +632,7 @@ class IrcObjectProxy(RichReplyMethods):
 
     def _callCommand(self, name, cb):
         try:
-            self.commandMethod = cb.getCommand(name)
+            self.commandMethod = cb.getCommandMethod(name)
             if not world.isMainThread():
                 # If we're a threaded command, we may not reply quickly enough
                 # to prevent regexp stuff from running.  So we do this to make
@@ -914,7 +914,7 @@ class CommandThread(world.SupyThread):
     def __init__(self, target=None, args=(), kwargs={}):
         (self.name, self.cb) = args
         self.__parent = super(CommandThread, self)
-        self.command = self.cb.getCommand(self.name)
+        self.command = self.cb.getCommandMethod(self.name)
         threadName = 'Thread #%s (for %s.%s)' % (world.threadsSpawned,
                                                  self.cb.name(), self.name)
         log.debug('Spawning thread %s' % threadName)
@@ -1025,10 +1025,10 @@ class Commands(object):
         else:
             return False
 
-    def getCommand(self, name):
+    def getCommandMethod(self, name):
         """Gets the given command from this plugin."""
         name = canonicalName(name)
-        assert self.isCommand(name), format('%s is not a command.', name)
+        assert self.isCommand(name), format('%q is not a command.', name)
         return getattr(self, name)
 
     def listCommands(self):
@@ -1051,7 +1051,7 @@ class Commands(object):
             if cap:
                 irc.errorNoCapability(cap)
                 return
-        method = self.getCommand(name)
+        method = self.getCommandMethod(name)
         assert L, 'Odd, nothing in L.  This can\'t happen.'
         self.log.info('%s.%s called by %s.', self.name(), name, msg.prefix)
         self.log.debug('args: %s', L[0])
@@ -1069,9 +1069,9 @@ class Commands(object):
         name = canonicalName(name)
         assert self.isCommand(name), \
                '%s is not a command in %s.' % (name, self.name())
-        command = self.getCommand(name)
-        if hasattr(command, 'isDispatcher') and \
-           command.isDispatcher and self.__doc__:
+        method = self.getCommandMethod(name)
+        if hasattr(method, 'isDispatcher') and \
+           method.isDispatcher and self.__doc__:
             return utils.str.normalizeWhitespace(self.__doc__)
         elif hasattr(command, '__doc__'):
             return getHelp(command)
@@ -1277,11 +1277,11 @@ class PluginRegexp(Plugin):
                name in self.regexps or \
                name in self.addressedRegexps
 
-    def getCommand(self, name):
+    def getCommandMethod(self, name):
         try:
             return getattr(self, name) # Regexp stuff.
         except AttributeError:
-            return self.__parent.getCommand(name)
+            return self.__parent.getCommandMethod(name)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
