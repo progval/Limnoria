@@ -704,7 +704,12 @@ class IrcObjectProxy(RichReplyMethods):
             self.args[self.counter] = s
             self.evalArgs()
 
-    def error(self, s='', **kwargs):
+    def error(self, s='', Raise=False, **kwargs):
+        if Raise:
+            if s:
+                raise Error, s
+            else:
+                raise ArgumentError
         if s:
             if not isinstance(self.irc, irclib.Irc):
                 self.irc.error(s, **kwargs)
