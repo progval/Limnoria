@@ -67,7 +67,7 @@ if network:
             self.assertRegexp('debian version unstable alkdjfad',
                 r'^No package.*\(unstable\)')
             self.assertRegexp('debian version gaim',
-                              r'Total matches:.*gaim.*\(stable\)')
+                              r'\d+ matches found:.*gaim.*\(stable')
             self.assertError('debian version unstable')
 
         def testDebfile(self):

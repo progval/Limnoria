@@ -46,14 +46,15 @@ import socket
 import urllib
 import fnmatch
 import os.path
-import urllib2
 from itertools import imap, ifilter
+
+import registry
 
 import conf
 import utils
 import privmsgs
+import webutils
 import callbacks
-import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -77,13 +78,18 @@ def configure(onStart, afterConnect, advanced):
             print 'orders of magnitude slower.  THIS MEANS IT WILL TAKE AGES '
             print 'TO RUN THIS COMMAND.  Don\'t do this.'
             if yn('Do you want to use a Python equivalent of zegrep?') == 'y':
-                onStart.append('usepythonzegrep')
+                conf.supybot.plugins.Debian.pythonZegrep.setValue(True)
             else:
                 print 'I\'ll disable file now.'
                 onStart.append('disable file')
 
+conf.registerPlugin('Debian')
+conf.registerGlobalValue(conf.supybot.plugins.Debian, 'pythonZegrep',
+    registry.Boolean(False, """An advanced option, mostly just for testing;
+    uses a Python-coded zegrep rather than the actual zegrep executable,
+    generally resulting in a 50x slowdown.  What would take 2 seconds will
+    take 100 with this enabled.  Don't enable this."""))
 class Debian(callbacks.Privmsg,
-             configurable.Mixin,
              plugins.PeriodicFileDownloader):
     threaded = True
     periodicFiles = {
@@ -94,21 +100,12 @@ class Debian(callbacks.Privmsg,
                              604800, None)
         }
     contents = os.path.join(conf.supybot.directories.data(),'Contents-i386.gz')
-    configurables = configurable.Dictionary(
-        [('python-zegrep', configurable.BoolType, False,
-          """An advanced option, mostly just for testing; uses a Python-coded
-          zegrep rather than the actual zegrep executable, generally resulting
-          in a 50x slowdown.  What would take 2 seconds will take 100 with this
-          enabled.  Don't enable this.""")]
-    )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
         plugins.PeriodicFileDownloader.__init__(self)
 
     def die(self):
         callbacks.Privmsg.die(self)
-        configurable.Mixin.die(self)
 
     def file(self, irc, msg, args):
         """[--{regexp,exact}=<value>] [<glob>]
@@ -141,7 +138,7 @@ class Debian(callbacks.Privmsg,
         except re.error, e:
             irc.error("Error in regexp: %s" % e)
             return
-        if self.configurables.get('python-zegrep', None):
+        if self.registryValue('pythonZegrep'):
             fd = gzip.open(self.contents)
             r = imap(lambda tup: tup[0], 
                      ifilter(lambda tup: tup[0],
@@ -181,10 +178,9 @@ class Debian(callbacks.Privmsg,
             irc.reply(utils.commaAndify(packages))
                 
     _debreflags = re.DOTALL | re.IGNORECASE
-    _debpkgre = re.compile(r'<a[^>]+>(.*?)</a>', _debreflags)
-    _debbrre = re.compile(r'<td align="center">(\S+)\s*</?td>', _debreflags)
-    _debtablere = re.compile(r'<table[^>]*>(.*?)</table>', _debreflags)
-    _debnumpkgsre = re.compile(r'out of total of (\d+)', _debreflags)
+    _debbrre = re.compile(r'<li><a href[^>]+>(.*?)</a> \(', _debreflags)
+    _debverre = re.compile(r'<br>\d+?:(\S+):', _debreflags)
+    _deblistre = re.compile(r'<h3>Package ([^<]+)</h3>(.*?)</ul>', _debreflags)
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
     def version(self, irc, msg, args):
         """[stable|testing|unstable|experimental] <package name>
@@ -202,47 +198,37 @@ class Debian(callbacks.Privmsg,
             irc.error('You must give a package name.')
             return
         responses = []
-        numberOfPackages = 0
         package = privmsgs.getArgs(args)
         package = urllib.quote(package)
         url = 'http://packages.debian.org/cgi-bin/search_packages.pl?keywords'\
               '=%s&searchon=names&version=%s&release=all' % (package, branch)
         try:
-            fd = urllib2.urlopen(url)
-            html = fd.read()
-            fd.close()
-        except urllib2.HTTPError, e:
+            html = webutils.getUrl(url)
+        except webutils.WebError, e:
             irc.error('I couldn\'t reach the search page (%s).' % e)
             return
-        except socket.error, e:
-            if e.args[0] == 110 or e.args[0] == 10060:
-                irc.error('Connection timed out to packages.debian.org.')
-                return
-            else:
-                raise
 
         if 'is down at the moment' in html:
             irc.error('Packages.debian.org is down at the moment.  '
                            'Please try again later.')
             return
-        m = self._debnumpkgsre.search(html)
-        if m:
-            numberOfPackages = m.group(1)
-        m = self._debtablere.search(html)
-        if m is None:
+        pkgs = self._deblistre.findall(html)
+        self.log.warning(pkgs)
+        if not pkgs:
             irc.reply('No package found for %s (%s)' %
                       (urllib.unquote(package), branch))
         else:
-            tableData = m.group(1)
-            rows = tableData.split('</TR>')
-            for row in rows:
-                pkgMatch = self._debpkgre.search(row)
-                brMatch = self._debbrre.search(row)
-                if pkgMatch and brMatch:
-                    s = '%s (%s)' % (pkgMatch.group(1), brMatch.group(1))
-                    responses.append(s)
-            resp = 'Total matches: %s, shown: %s.  %s' % \
-                   (numberOfPackages, len(responses), ', '.join(responses))
+            for pkg in pkgs:
+                pkgMatch = pkg[0]
+                brMatch = self._debbrre.findall(pkg[1])
+                verMatch = self._debverre.findall(pkg[1])
+                if pkgMatch and brMatch and verMatch:
+                    versions = zip(brMatch, verMatch)
+                    for version in versions:
+                        s = '%s (%s)' % (pkgMatch, ': '.join(version))
+                        responses.append(s)
+            resp = '%s matches found: %s' % \
+                   (len(responses), '; '.join(responses))
             irc.reply(resp)
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
@@ -275,7 +261,11 @@ class Debian(callbacks.Privmsg,
                 glob = '*%s*' % glob
             predicates.append(lambda s: fnmatch.fnmatch(s, glob))
         packages = []
-        fd = urllib2.urlopen('http://incoming.debian.org/')
+        try:
+            fd = webutils.getUrlFd('http://incoming.debian.org/')
+        except webutils.WebError, e:
+            irc.error(e)
+            return
         for line in fd:
             m = self._incomingRe.search(line)
             if m:
