@@ -168,16 +168,19 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             else:
                 # Game is over.
                 m = self._gkWon.search(s)
-                winner = m.group(1)
-                m = self._gkReason.search(s)
                 if m:
-                    reason = m.group(1)
+                    winner = m.group(1)
+                    m = self._gkReason.search(s)
+                    if m:
+                        reason = m.group(1)
+                    else:
+                        reason = 'lost'
+                    if winner == 'white':
+                        toMove = '%s won, %s %s.' % (wName, bName, reason)
+                    else:
+                        toMove = '%s won, %s %s.' % (bName, wName, reason)
                 else:
-                    reason = 'lost'
-                if winner == 'white':
-                    toMove = '%s won, %s %s.' % (wName, bName, reason)
-                else:
-                    toMove = '%s won, %s %s.' % (bName, wName, reason)
+                    toMove = 'The game was a draw.'
             (wRating, wWins, wLosses, wDraws) = \
                       self._gkRating.search(wRating).groups()
             (bRating, bWins, bLosses, bDraws) = \

@@ -54,6 +54,8 @@ class GameknotTestCase(PluginTestCase, PluginDocumentation):
                           '\x02chroniqueur\x0f resigned')
         self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',
                           '\x02ddipaolo\x0f lost')
+        self.assertRegexp('http://gameknot.com/chess.pl?bd=1077345&r=365',
+                          'draw')
 
 
 
