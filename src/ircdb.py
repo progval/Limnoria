@@ -108,9 +108,9 @@ def invertCapability(capability):
         return makeAntiCapability(capability)
 
 def canonicalCapability(capability):
-    assert isCapability(capability), 'got %s' % capability
     if callable(capability):
         capability = capability()
+    assert isCapability(capability), 'got %s' % capability
     return capability.lower()
 
 def unWildcardHostmask(hostmask):
