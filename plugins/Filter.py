@@ -61,6 +61,10 @@ conf.registerGlobalValue(conf.supybot.plugins.Filter.spellit,
 conf.registerGlobalValue(conf.supybot.plugins.Filter.spellit,
     'replaceNumbers', registry.Boolean(True, """Determines whether or not to
     replace numbers in the output of spellit."""))
+conf.registerGroup(conf.supybot.plugins.Filter, 'shrink')
+conf.registerChannelValue(conf.supybot.plugins.Filter.shrink, 'minimum',
+    registry.PositiveInteger(4, """Determines the minimum number of a letters
+    in a word before it will be shrunken by the shrink command/filter."""))
 
 class MyFilterProxy(object):
     def reply(self, s):
@@ -614,6 +618,21 @@ class Filter(callbacks.Privmsg):
         """
         irc.reply(' '.join(['GNU/' + s for s in text.split()]))
     gnu = wrap(gnu, ['text'])
+
+    def shrink(self, irc, msg, args):
+        """<text>
+
+        Returns <text> with each word longer than
+        supybot.plugins.Filter.shrink.minimum being shrunken (i.e., like
+        "internationalization" becomes "i18n").
+        """
+        L = []
+        minimum = self.registryValue('shrink.minimum', msg.args[0])
+        for word in args:
+            if len(word) >= minimum:
+                word = '%s%s%s' % (word[0], len(word)-2, word[-1])
+            L.append(word)
+        irc.reply(' '.join(L))
 
 
 Class = Filter

@@ -157,4 +157,8 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('echo foo bar baz', 'GNU/foo GNU/bar GNU/baz')
         self.assertNotError('outfilter')
 
+    def testShrink(self):
+        self.assertResponse('shrink I love you', 'I l2e you')
+        self.assertResponse('shrink internationalization', 'i18n')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
