@@ -99,12 +99,12 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
     _titleRe = re.compile('<title>(.*?)</title>', re.I)
     def __init__(self):
         self.nextMsgs = {}
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        callbacks.PrivmsgCommandAndRegexp.die(self)
         plugins.ChannelDBHandler.die(self)
+        callbacks.PrivmsgCommandAndRegexp.die(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):
@@ -191,6 +191,8 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
     def titleSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]+"
         if not ircutils.isChannel(msg.args[0]):
+            return
+        if callbacks.addressed(irc.nick, msg):
             return
         channel = msg.args[0]
         if self.registryValue('titleSnarfer', channel):
