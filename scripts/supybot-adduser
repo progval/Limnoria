@@ -67,7 +67,10 @@ def main():
         parser.error('specify the configuration file you\'d like to use.')
 
     filename = os.path.abspath(args[0])
+    conf.supybot.directories.log.setValue('/')
     conf.supybot.directories.conf.setValue('/')
+    conf.supybot.directories.data.setValue('/')
+    conf.supybot.directories.plugins.setValue(['/'])
     conf.supybot.databases.users.filename.setValue(filename)
     import ircdb
 
