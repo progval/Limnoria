@@ -474,6 +474,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     _forceRe = re.compile(r'^no[,: -]+', re.I)
     _karmaRe = re.compile(r'^(?:\S+|\(.+\))(?:\+\+|--)(?:\s+)?$')
     def doPrivmsg(self, irc, msg):
+        if msg.repliedTo:
+            self.log.debug('Returning early from doPrivmsg, msg.repliedTo.')
+            return
         try:
             if ircmsgs.isCtcp(msg):
                 return
@@ -594,9 +597,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         if self.addressed or self.registryValue('answerUnaddressedQuestions'):
             # Does the dunno'ing for us itself.
             self.factoid(key, prepend=random.choice(starts))
-
-    def invalidCommand(self, irc, msg, tokens):
-            irc.finished = True
 
     def doFactoid(self, irc, msg, match):
         r"^(.+?)\s+(?<!\\)(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"

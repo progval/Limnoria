@@ -184,6 +184,9 @@ class SnarfIrc(object):
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
     def newf(self, irc, msg, match, *L, **kwargs):
+        if msg.repliedTo:
+            self.log.debug('Not calling snarfer, msg is already repliedTo.')
+            return
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
