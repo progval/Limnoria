@@ -55,7 +55,12 @@ import callbacks
 import structures
 
 try:
+    if 'mx' in sys.modules:
+        original = sys.modules['mx']
+        sys.modules['mx'] = None
     import sqlite
+    if 'mx' in sys.modules:
+        sys.modules['mx'] = original
     sqlite.have_datetime = False
     Connection = sqlite.Connection
     class MyConnection(sqlite.Connection):
