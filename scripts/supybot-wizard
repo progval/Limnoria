@@ -252,7 +252,7 @@ def main():
         myPrint("""IRC Servers almost always accept connections on port
         6667.  They can, however, accept connections anywhere their admin
         feels like he wants to accept connections from.""")
-        if yn('Does this server require connection on a non-standard port?')
+        if yn('Does this server require connection on a non-standard port?') \
             =='y':
             port = 0
             while not port:
