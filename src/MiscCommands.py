@@ -52,8 +52,7 @@ class MiscCommands(callbacks.Privmsg):
         name = privmsgs.getArgs(args, needed=0, optional=1)
         name = name.lower()
         if not name:
-            names = [cb.__class__.__name__
-                     for cb in irc.callbacks
+            names = [cb.name() for cb in irc.callbacks
                      if hasattr(cb, 'public') and cb.public]
             names.sort()
             irc.reply(msg, ', '.join(names))
