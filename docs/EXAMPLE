@@ -248,7 +248,7 @@ message (and oftentimes that turns out to be the case :)) the supybot
 framework handles that entirely transparently to you.  Do make sure,
 however, that you give irc.reply a string.  It doesn't take anything
 else (sometimes even unicode fails!).  That's why we have
-"str(self.rnd.random())" instead of simply "self.rng.random()" -- we
+"str(self.rng.random())" instead of simply "self.rng.random()" -- we
 had to give irc.reply a string.
 
 Anyway, now that we have an RNG, we have a need for seed!  Of course,
