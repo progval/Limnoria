@@ -276,7 +276,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
             (seen, m) = cursor.fetchone()
             seen = int(seen)
             s = '%s was last seen here %s ago saying %r' % \
-                (name, utils.timeElapsed(time.time(), seen), m)
+                (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
 
     def karma(self, irc, msg, args):
@@ -297,9 +297,11 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         else:
             (added, subtracted) = cursor.fetchone()
             total = added - subtracted
-            irc.reply(msg, '%s\'s karma has been increased %s times ' \
-                           'and decreased %s times for a total karma of %s' % \
-                      (name, added, subtracted, total))
+            irc.reply(msg, '%s\'s karma has been increased %s %s ' \
+                           'and decreased %s %s for a total karma of %s.' % \
+                      (name, added, added == 1 and 'time' or 'times',
+                       subtracted, subtracted == 1 and 'time' or 'times',
+                       total))
 
     def increaseKarma(self, irc, msg, match):
         r"^(.*?)\+\+"
@@ -307,7 +309,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         name = match.group(1)
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 1, 0)""", name)
+        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
         cursor.execute("""UPDATE karma SET added=added+1 WHERE name=%s""",name)
 
     def decreaseKarma(self, irc, msg, match):
@@ -316,7 +318,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         name = match.group(1)
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 1)""", name)
+        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
         cursor.execute("""UPDATE karma
                           SET subtracted=subtracted+1
                           WHERE name=%s""", name)
