@@ -108,7 +108,7 @@ class Anonymous(callbacks.Privmsg):
         self.log.info('Saying %r in %s due to %s.', text, channel, msg.prefix)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
 
-    def action(self, irc, msg, args):
+    def do(self, irc, msg, args):
         """<channel> <action>
 
         Performs <action> in <channel>.

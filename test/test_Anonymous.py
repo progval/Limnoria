@@ -44,13 +44,13 @@ class AnonymousTestCase(ChannelPluginTestCase):
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(orig)
 
     def testAction(self):
-        m = self.assertError('anonymous action %s loves you!' % self.channel)
+        m = self.assertError('anonymous do %s loves you!' % self.channel)
         try:
             orig = conf.supybot.plugins.Anonymous.requireRegistration()
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
-            m = self.assertNotError('anonymous action %s loves you!'%self.channel)
-            self.failUnless(m.args == ircmsgs.action(self.channel,
-                                                     'loves you!').args)
+            m = self.assertNotError('anonymous do %s loves you!'%self.channel)
+            self.assertEqual(m.args, ircmsgs.action(self.channel,
+                                                    'loves you!').args)
         finally:
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(orig)
 
