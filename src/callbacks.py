@@ -364,7 +364,7 @@ class Privmsg(irclib.IrcCallback):
             funcname = f.im_func.func_name
             debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
-    _r = re.compile(r'^(\w+)')
+    _r = re.compile(r'^([\w-_]+)')
     def doPrivmsg(self, irc, msg):
         s = addressed(irc.nick, msg)
         #debug.printf('Privmsg.doPrivmsg: s == %r' % s)
