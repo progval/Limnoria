@@ -48,6 +48,7 @@ plugins = [
     'Status',
     'User',
     'Utilities',
+    'Web',
     ]
 
 import sys
