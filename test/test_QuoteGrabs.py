@@ -29,10 +29,31 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sets
+
 from test import *
 
-class QuoteGrabsTestCase(PluginTestCase, PluginDocumentation):
+class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('QuoteGrabs',)
+
+    def testQuoteGrab(self):
+        testPrefix = 'foo!bar@baz'
+        self.assertError('grab foo')    
+        # Test join/part/notice (shouldn't grab)
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=testPrefix))
+        self.assertError('grab foo')
+        self.irc.feedMsg(ircmsgs.part(self.channel, prefix=testPrefix))
+        self.assertError('grab foo')
+        # Test privmsgs
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        self.assertNotError('grab foo')    
+        self.assertResponse('quote foo', '<foo> something')
+        # Test actions
+        self.irc.feedMsg(ircmsgs.action(self.channel, 'moos',
+                                        prefix=testPrefix))
+        self.assertNotError('grab foo')
+        self.assertResponse('quote foo', '* foo moos')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
