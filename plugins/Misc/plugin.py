@@ -179,8 +179,8 @@ class Misc(callbacks.Plugin):
                 assert cbs, 'Odd, maxL == command, but no cbs.'
                 irc.reply(cbs[0].getCommandHelp(command))
         else:
-            irc.reply('There is no command %q.',
-                      callbacks.formatCommand(command))
+            irc.reply(format('There is no command %q.',
+                             callbacks.formatCommand(command)))
     help = wrap(help, [many('something')])
 
     def hostmask(self, irc, msg, args, nick):
