@@ -48,7 +48,6 @@ import re
 import time
 import urllib
 import urllib2
-import threading
 import htmlentitydefs
 import xml.dom.minidom
 
@@ -133,7 +132,7 @@ class Http(callbacks.Privmsg):
         text = html.split('<P>\n', 2)[1]
         text = text.replace('.\n', '.  ')
         text = text.replace('\n', ' ')
-        text = self._html.sub('', text)
+        text = stripHtml(text)
         irc.reply(msg, text.strip())
 
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
