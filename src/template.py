@@ -202,9 +202,9 @@ if __name__ == '__main__':
 
     irc = irclib.Irc(nick, user, ident, password)
     callback = Owner.Class()
-    callback.configure(irc)
     irc.addCallback(callback)
     irc.addCallback(ConfigAfterConnect(afterConnect))
+    callback.configure(irc)
     driver = drivers.newDriver(server, irc)
     
     if options.profile:
