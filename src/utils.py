@@ -712,7 +712,7 @@ class AtomicFile(file):
     """Used for files that need to be atomically written -- i.e., if there's a
     failure, the original file remains, unmodified.  mode must be 'w' or 'wb'"""
     def __init__(self, filename, mode='w',
-                 allowEmptyOverwrite=False, tmpDir=None):
+                 allowEmptyOverwrite=True, tmpDir=None):
         if mode not in ('w', 'wb'):
             raise ValueError, 'Invalid mode: %r' % mode
         self.rolledback = False
