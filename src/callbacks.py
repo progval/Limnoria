@@ -103,6 +103,14 @@ def error(msg, s):
     return reply(msg, 'Error: ' + s)
 
 class RateLimiter:
+    """This class is used to rate limit replies to certain people, in order to
+    prevent abuse of the bot.  Basically, you put messages in with the .put
+    method, and then take a message out with the .get method.  .get may return
+    None if there is no message waiting that isn't being rate limited.
+    """
+    # lastRequest must be class-global, so each instance of it uses the same
+    # information.  Otherwise, if it was an instance variable, then rate
+    # limiting would only work within a single plugin.
     lastRequest = {}
     def __init__(self):
         self.limited = []
@@ -168,6 +176,7 @@ class Error(Exception):
     pass
 
 class ArgumentError(Error):
+    """The bot replies with a help message when this is raised."""
     pass
 
 class Tokenizer:
@@ -175,10 +184,6 @@ class Tokenizer:
     # Evaluation is, of course, necessary in order to allowed escaped
     # characters to be properly handled.
     #
-    # Recall that environments which contain an __builtins__ variable will
-    # have no access to the builtins except through that variable.  What I'm
-    # doing here is establishing an empty builtin environment.
-    _env = {'__builtins__': new.module('__builtins__')}
     # These are the characters valid in a token.  Everything printable except
     # double-quote, left-bracket, and right-bracket.
     validChars = string.ascii[33:].translate(string.ascii, '"[]')
@@ -189,7 +194,6 @@ class Tokenizer:
         while token and token[0] == '"' and token[-1] == token[0]:
             if len(token) > 1:
                 token = token[1:-1].decode('string_escape') # 2.3+
-                # token = eval('"%s"' % token[1:-1], self._env, self._env)
             else:
                 break
         return token
@@ -228,6 +232,7 @@ class Tokenizer:
         return args
 
 def tokenize(s):
+    """A utility function to create a Tokenizer and tokenize a string."""
     start = time.time()
     try:
         args = Tokenizer().tokenize(s)
@@ -237,6 +242,8 @@ def tokenize(s):
     return args
 
 def findCallbackForCommand(irc, commandName):
+    """Given a command name and an Irc object, returns the callback that
+    command is in.  Returns None if there is no callback with that command."""
     for callback in irc.callbacks:
         if hasattr(callback, 'isCommand'):
             if callback.isCommand(commandName):
@@ -244,6 +251,7 @@ def findCallbackForCommand(irc, commandName):
     return None
 
 class IrcObjectProxy:
+    "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
         #debug.printf('__init__: %s' % args)
         self.irc = irc
@@ -341,6 +349,9 @@ class IrcObjectProxy:
 
 
 class CommandThread(threading.Thread):
+    """Just does some extra logging and error-recovery for commands that need
+    to run in threads.
+    """
     def __init__(self, command, irc, msg, args):
         self.command = command
         world.threadsSpawned += 1
@@ -381,6 +392,7 @@ class CommandThread(threading.Thread):
 
 
 class ConfigIrcProxy(object):
+    """Used as a proxy Irc object during configuration. """
     def __init__(self, irc):
         self.__dict__['irc'] = irc
         
