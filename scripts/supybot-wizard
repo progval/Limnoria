@@ -359,7 +359,7 @@ def main():
         in bulk like this, just press enter and we'll move on to the individual
         plugin configuration.""" % utils.commaAndify(plugins))
         massPlugins = anything('Separate plugin names by spaces:')
-        for name in massPlugins.split():
+        for name in re.split(r',?\s+', massPlugins):
             module = loadPlugin(name)
             if module is not None:
                 configurePlugin(module, onStart, afterConnect, advanced)
