@@ -165,7 +165,7 @@ def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
         return ret[0]
     else:
         return ' and '.join([', '.join(ret[:-1]), ret[-1]])
-        
+
 def distance(s, t):
     """Returns the levenshtein edit distance between two strings."""
     n = len(s)
@@ -230,7 +230,7 @@ def perlReToPythonRe(s):
     except AttributeError:
         raise ValueError, 'Invalid flag: %s' % c
     return re.compile(regexp, flag)
-    
+
 def perlReToReplacer(s):
     """Converts a string representation of a Perl regular expression (i.e.,
     s/foo/bar/g or s/foo/bar/i) to a Python function doing the equivalent
@@ -258,5 +258,16 @@ def findBinaryInPath(s):
             cmdLine = filename
             break
     return cmdLine
+
+def commaAndify(L):
+    if len(L) == 0:
+        return ''
+    elif len(L) == 1:
+        return L[0]
+    elif len(L) == 2:
+        return '%s and %s' % (L[0], L[1])
+    else:
+        L[-1] = 'and %s' % L[-1]
+        return ', '.join(L)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

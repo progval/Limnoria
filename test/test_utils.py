@@ -104,7 +104,7 @@ class UtilsTest(unittest.TestCase):
             r = utils.dqrepr(s)
             self.assertEqual(s, eval(r), s)
             self.failUnless(r[0] == '"' and r[-1] == '"', s)
- 
+
     def testPerlReToPythonRe(self):
         r = utils.perlReToPythonRe('m/foo/')
         self.failUnless(r.search('foo'))
@@ -126,10 +126,19 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(f('foobarbaz'), 'foorz')
         f = utils.perlReToReplacer('s/ba\\///g')
         self.assertEqual(f('fooba/rba/z'), 'foorz')
-		
+
     def testFindBinaryInPath(self):
-        self.assertEqual(None, utils.findBinaryInPath('asdfhjklasdfhjkl'))
-        self.assertEqual('/bin/sh', utils.findBinaryInPath('sh'))
+        if os.name == 'posix':
+            self.assertEqual(None, utils.findBinaryInPath('asdfhjklasdfhjkl'))
+            self.assertEqual('/bin/sh', utils.findBinaryInPath('sh'))
+
+    def testCommaAndify(self):
+        L = ['foo']
+        self.assertEqual(utils.commaAndify(L), 'foo')
+        L.append('bar')
+        self.assertEqual(utils.commaAndify(L), 'foo and bar')
+        L.append('baz')
+        self.assertEqual(utils.commaAndify(L), 'foo, bar, and baz')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
