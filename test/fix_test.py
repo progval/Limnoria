@@ -45,6 +45,7 @@ class QueueTest(unittest.TestCase):
             self.assertEqual(q[-i], n-i)
         self.assertRaises(IndexError, q.__getitem__, -(n+1))
         self.assertRaises(IndexError, q.__getitem__, n)
+        #self.assertEqual(q[3:7], queue([3, 4, 5, 6]))
         
             
     def testSetitem(self):
