@@ -194,7 +194,7 @@ def reply(msg, s, prefixName=None, private=None,
 def error(msg, s, **kwargs):
     """Makes an error reply to msg with the appropriate error payload."""
     kwargs['error'] = True
-    msg.tag('errored')
+    msg.tag('isError')
     return reply(msg, s, **kwargs)
 
 def getHelp(method, name=None):
@@ -1200,8 +1200,8 @@ class PrivmsgRegexp(Privmsg):
                 irc.replyError()
 
     def doPrivmsg(self, irc, msg):
-        if msg.errored:
-            self.log.info('%s not running due to msg.errored.', self.name())
+        if msg.isError:
+            self.log.info('%s not running due to msg.isError.', self.name())
             return
         for (r, name) in self.res:
             spans = sets.Set()
@@ -1266,8 +1266,8 @@ class PrivmsgCommandAndRegexp(Privmsg):
                 raise
 
     def doPrivmsg(self, irc, msg):
-        if msg.errored:
-            self.log.debug('%s not running due to msg.errored.', self.name())
+        if msg.isError:
+            self.log.debug('%s not running due to msg.isError.', self.name())
             return
         for (r, name) in self.res:
             for m in r.finditer(msg.args[1]):
