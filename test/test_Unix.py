@@ -45,6 +45,8 @@ if os.name == 'posix':
             self.assertError('spell -')
             self.assertError('spell .')
             self.assertError('spell ?')
+            self.assertNotError('spell whereever')
+            self.assertNotRegexp('spell foo', 'whatever')
 
         def testErrno(self):
             self.assertRegexp('errno 12', '^ENOMEM')
