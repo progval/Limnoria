@@ -44,11 +44,11 @@ import dictclient
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
+import supybot.webutils as webutils
 import supybot.registry as registry
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
-
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
