@@ -165,12 +165,24 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                               ORDER BY added-subtracted ASC
                               LIMIT %s""", limit)
             lowest=['%r (%s)' % (t[0], int(t[1])) for t in cursor.fetchall()]
+            cursor.execute("""SELECT added-subtracted FROM karma
+                              WHERE name=%s""", msg.nick)
             if not (highest and lowest):
                 irc.error('I have no karma for this channel.')
-            else:
-                s = 'Highest karma: %s.  Lowest karma: %s.' % \
-                    (utils.commaAndify(highest), utils.commaAndify(lowest))
-                irc.reply(s)
+                return
+            rankS = ''
+            if cursor.rowcount != 0:
+                personal = int(cursor.fetchone()[0])
+                cursor.execute("""SELECT COUNT(*) FROM karma
+                                  WHERE added-subtracted > %s""", personal)
+                rank = int(cursor.fetchone()[0]) + 1
+                cursor.execute("""SELECT COUNT(*) FROM karma""")
+                total = int(cursor.fetchone()[0])
+                rankS = '  You (%s) are ranked %s out of %s.' % \
+                        (msg.nick, rank, total)
+            s = 'Highest karma: %s.  Lowest karma: %s.%s' % \
+                (utils.commaAndify(highest), utils.commaAndify(lowest), rankS)
+            irc.reply(s)
 
     _mostAbbrev = utils.abbrev(['increased', 'decreased', 'active'])
     def most(self, irc, msg, args):
