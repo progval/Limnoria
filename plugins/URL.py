@@ -41,6 +41,7 @@ import supybot.plugins as plugins
 
 import os
 import re
+import sets
 import time
 import getopt
 import urllib2
@@ -119,10 +120,12 @@ class URLDB(object):
                              self.filename, utils.exnToString(e))
             return []
         try:
+            urls = sets.Set()
             for line in fd:
                 line = line.strip()
                 (url, nick) = line.split()
-                if p(url, nick):
+                if url not in urls and p(url, nick):
+                    urls.add(url)
                     L.append(url)
             L.reverse()
             return L
