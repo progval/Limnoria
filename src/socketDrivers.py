@@ -87,7 +87,11 @@ class SocketDriver(drivers.IrcDriver):
                 msg = ircmsgs.IrcMsg(line)
                 debug.msg('Time to parse IrcMsg: %s' % (time.time()-start),
                           'verbose')
-                self.irc.feedMsg(msg)
+                try:
+                    self.irc.feedMsg(msg)
+                except:
+                    debug.msg('Exception caught outside Irc object.', 'normal')
+                    debug.recoverableException()
         except socket.timeout:
             pass
         self._sendIfMsgs()
@@ -110,7 +114,8 @@ class SocketDriver(drivers.IrcDriver):
         self.connected = False
         when = time.time() + 60
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
-        debug.msg('Scheduling reconnect at %s' % whenS, 'normal')
+        debug.msg('Scheduling reconnect to %s at %s' % (self.server, whenS),
+                  'normal')
         schedule.addEvent(self.reconnect, when)
 
 

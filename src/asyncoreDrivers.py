@@ -70,14 +70,14 @@ class AsyncoreDriver(asynchat.async_chat, object):
             self.connect(self.server)
         except:
             debug.recoverableException('terse')
-            self.scheduleReconnect()
             self.close()
 
     def scheduleReconnect(self):
         #debug.methodNamePrintf(self, 'scheduleReconnect')
         when = time.time() + 60
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
-        debug.msg('Scheduling reconnect at %s' % whenS, 'normal')
+        debug.msg('Scheduling reconnect to %s at %s' % (self.server, whenS),
+                  'normal')
         def makeNewDriver():
             self.irc.reset()
             driver = self.__class__(self.server, self.irc)
@@ -110,6 +110,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
         try:
             self.irc.feedMsg(msg)
         except:
+            debug.msg('Exception caught outside Irc object.', 'normal')
             debug.recoverableException()
 
     def handle_close(self):
