@@ -33,7 +33,10 @@
 Provides basic functionality for handling RSS/RDF feeds.
 """
 
+import supybot
+
 __revision__ = "$Id$"
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 
@@ -92,7 +95,7 @@ class RSS(callbacks.Privmsg):
     threaded = True
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.feedNames = sets.Set()
+        self.feedNames = callbacks.CanonicalNameSet()
         self.locks = {}
         self.lastRequest = {}
         self.cachedFeeds = {}
@@ -234,8 +237,9 @@ class RSS(callbacks.Privmsg):
         for d in feed['items']:
             if 'title' in d:
                 title = utils.htmlToText(d['title']).strip()
-                if showLinks:
-                    headlines.append('%s <%s>' % (title, d['link']))
+                link = d.get('link')
+                if link and showLinks:
+                    headlines.append('%s <%s>' % (title, link))
                 else:
                     headlines.append('%s' % title)
         return headlines
@@ -257,7 +261,7 @@ class RSS(callbacks.Privmsg):
         assert name == self._validFeedName(name)
         if url not in self.locks:
             self.locks[url] = threading.RLock()
-        if hasattr(self, name):
+        if hasattr(self.__class__, name):
             s = 'I already have a command in this plugin named %s' % name
             raise callbacks.Error, s
         def f(self, irc, msg, args):
