@@ -564,17 +564,18 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
             #debug.printf('isChannelCapability true, user found too.')
             (channel, capability) = fromChannelCapability(capability)
             try:
-                c = channels.getChannel(channel)
-                #debug.printf('channel found')
-                if capability in c.capabilities:
-                    #debug.printf('capability in c.capabilities')
-                    return c.checkCapability(capability)
-                else:
-                    #debug.printf('capability not in c.capabilities')
-                    return _x(capability, c.defaultAllow)
+                chanop = makeChannelCapability(channel, 'op')
+                if u.checkCapability(chanop):
+                    return _x(capability, True)
             except KeyError:
-                #debug.printf('no such channel %s' % channel)
                 pass
+            c = channels.getChannel(channel)
+            if capability in c.capabilities:
+                #debug.printf('capability in c.capabilities')
+                return c.checkCapability(capability)
+            else:
+                #debug.printf('capability not in c.capabilities')
+                return _x(capability, c.defaultAllow)
         if capability in conf.defaultCapabilities:
             #debug.printf('capability in conf.defaultCapabilities')
             return True

@@ -35,6 +35,7 @@ import os
 import unittest
 
 import conf
+import debug
 import ircdb
 import ircutils
 
@@ -296,6 +297,7 @@ class CheckCapabilityTestCase(unittest.TestCase):
     anticap = ircdb.makeAntiCapability(cap)
     chancap = ircdb.makeChannelCapability(channel, cap)
     antichancap = ircdb.makeAntiCapability(chancap)
+    chanop = ircdb.makeChannelCapability(channel, 'op')
     channelnothing = ircdb.IrcChannel()
     channelcap = ircdb.IrcChannel()
     channelcap.addCapability(cap)
@@ -392,6 +394,18 @@ class CheckCapabilityTestCase(unittest.TestCase):
         self.channels.setChannel(self.channel, self.channelanticap)
         self.failUnless(self.checkCapability(self.justchanfoo, self.chancap))
         self.failIf(self.checkCapability(self.justchanfoo, self.antichancap))
+
+    def testChanOpCountsAsEverything(self):
+        self.channels.setChannel(self.channel, self.channelanticap)
+        id = self.users.getUserId('nothing')
+        u = self.users.getUser(id)
+        u.addCapability(self.chanop)
+        self.users.setUser(id, u)
+        self.failUnless(self.checkCapability(self.nothing, self.chancap))
+        self.channels.setChannel(self.channel, self.channelnothing)
+        self.failUnless(self.checkCapability(self.nothing, self.chancap))
+        self.channelnothing.defaultAllow = not self.channelnothing.defaultAllow
+        self.failUnless(self.checkCapability(self.nothing, self.chancap))
 
     def testAntiChanFoo(self):
         self.channels.setChannel(self.channel, self.channelnothing)
