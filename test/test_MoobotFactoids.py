@@ -164,24 +164,30 @@ if sqlite is not None:
                               '(?!(request|modif)).*?\.$')
 
         def testLockUnlock(self):
-            self.assertNotError('moo is <reply>moo')
-            self.assertNotError('lock moo')
-            self.assertRegexp('factinfo moo',
-                              '^moo: Created by tester on'
-                              '.*?\. Locked by tester on .*?\.')
-            # switch user
-            self.prefix = 'moo!moo@moo'
-            self.assertNotError('register nottester moo')
-            self.assertError('unlock moo')
-            self.assertRegexp('factinfo moo',
-                              '^moo: Created by tester on'
-                              '.*?\. Locked by tester on .*?\.')
-            # switch back
-            self.prefix = 'foo!bar@baz'
-            self.assertNotError('identify tester moo')
-            self.assertNotError('unlock moo')
-            self.assertRegexp('factinfo moo',
-                              '^moo: Created by tester on.*?\.')
+            # disable world.testing since we want new users to not
+            # magically be endowed with the admin capability
+            try:
+                world.testing = False
+                self.assertNotError('moo is <reply>moo')
+                self.assertNotError('lock moo')
+                self.assertRegexp('factinfo moo',
+                                  '^moo: Created by tester on'
+                                  '.*?\. Locked by tester on .*?\.')
+                # switch user
+                self.prefix = 'moo!moo@moo'
+                self.assertNotError('register nottester moo')
+                self.assertError('unlock moo')
+                self.assertRegexp('factinfo moo',
+                                  '^moo: Created by tester on'
+                                  '.*?\. Locked by tester on .*?\.')
+                # switch back
+                self.prefix = 'foo!bar@baz'
+                self.assertNotError('identify tester moo')
+                self.assertNotError('unlock moo')
+                self.assertRegexp('factinfo moo',
+                                  '^moo: Created by tester on.*?\.')
+            finally:
+                world.testing = True
                               
         def testChangeFactoid(self):
             self.assertNotError('moo is <reply>moo')
@@ -240,7 +246,10 @@ if sqlite is not None:
         def testListkeys(self):
             self.assertResponse('listkeys %', 'No keys matching "%" found.')
             self.assertNotError('moo is <reply>moo')
-            # If only one key, it should respond with the factoid
+            # With this set, if only one key matches, it should respond with
+            # the factoid
+            MFconf = conf.supybot.plugins.MoobotFactoids  # looooong!
+            MFconf.showFactoidIfOnlyOneMatch.setValue(True)
             self.assertResponse('listkeys moo', 'moo')
             self.assertResponse('listkeys foo', 'No keys matching "foo" '
                                 'found.')

@@ -459,12 +459,14 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             s += " Locked by %s on %s." % (lock_by, lock_at)
         irc.reply(s)
 
-    def _lock(self, irc, msg, args, lock=True):
+    def _lock(self, irc, msg, args, locking=True):
+        self.log.debug('in _lock')
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
+        self.log.debug('id: %s' % id)
         key = privmsgs.getArgs(args, required=1)
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -475,24 +477,25 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             return
         (created_by, locked_by) = cursor.fetchone()
         # Don't perform redundant operations
-        if lock:
-           if locked_by is not None:
+        if locking and locked_by is not None:
                irc.error('Factoid "%s" is already locked.' % key)
                return
-        else:
-           if locked_by is None:
+        if not locking and locked_by is None:
                irc.error('Factoid "%s" is not locked.' % key)
                return
         # Can only lock/unlock own factoids unless you're an admin
+        self.log.debug('admin?: %s' % ircdb.checkCapability(id, 'admin'))
+        self.log.debug('created_by: %s' % created_by)
         if not (ircdb.checkCapability(id, 'admin') or created_by == id):
-            s = "unlock"
-            if lock:
-               s = "lock"
+            if locking:
+                s = "lock"
+            else:
+                s = "unlock"
             irc.error("Cannot %s someone else's factoid unless you "
                            "are an admin." % s)
             return
         # Okay, we're done, ready to lock/unlock
-        if lock:
+        if locking:
            locked_at = int(time.time())
         else:
            locked_at = None
