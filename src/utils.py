@@ -289,7 +289,8 @@ def ellipsisify(s, n):
         return (textwrap.wrap(s, n-3)[0] + '...')
 
 plurals = TwoWayDictionary({'match': 'matches',
-                            'patch': 'patches',})
+                            'patch': 'patches',
+                            'loss': 'losses'})
 def _matchCase(s1, s2):
     """Matches the case of s1 in s2"""
     L = list(s2)
