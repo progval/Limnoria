@@ -162,7 +162,6 @@ class Utilities(callbacks.Privmsg):
         commands = map(callbacks.canonicalName, commands)
         tokens = callbacks.tokenize(text)
         allTokens = commands + tokens
-        print '***', allTokens
         Owner = irc.getCallback('Owner')
         Owner.processTokens(irc, msg, allTokens)
 
