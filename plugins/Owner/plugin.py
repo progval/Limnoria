@@ -172,9 +172,9 @@ class Owner(callbacks.Plugin):
                 return None
         return msg
 
-    def isCommand(self, name):
+    def isCommandMethod(self, name):
         return name == 'log' or \
-               self.__parent.isCommand(name)
+               self.__parent.isCommandMethod(name)
 
     def reset(self):
         # This has to be done somewhere, I figure here is as good place as any.
