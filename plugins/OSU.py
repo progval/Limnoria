@@ -248,10 +248,12 @@ class OSU(callbacks.Privmsg):
                 line.strip()
                 if 'Published address' in line:
                     emails.append(line.split()[-1])
-            if emails:
-                irc.reply(msg, 'Possible matches: %s' % ', '.join(emails))
-            else:
+            if len(emails) == 0:
                 irc.reply(msg, 'There seem to be no matches to that name.')
+            elif len(emails) == 1:
+                irc.reply(msg, emails[0])
+            else:
+                irc.reply(msg, 'Possible matches: %s' % ', '.join(emails))
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 
