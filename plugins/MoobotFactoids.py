@@ -49,6 +49,8 @@ import random
 from itertools import imap
 from cStringIO import StringIO
 
+import registry
+
 import conf
 import ircdb
 import utils
@@ -116,6 +118,11 @@ class OptionList(object):
 def pickOptions(s):
     return OptionList().tokenize(s)
 
+conf.registerPlugin('MoobotFactoids')
+conf.registerChannelValue(conf.supybot.plugins.MoobotFactoids,
+    'showFactoidIfOnlyOneMatch', registry.Boolean(True, """Determines whether
+    or not the factoid value will be shown when a listkeys search returns only
+    one factoid key."""))
 
 class MoobotDBHandler(plugins.DBHandler):
     def makeDb(self, filename):
@@ -159,11 +166,17 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                          # definition of what the key is (i.e., "foo is bar")
         newfact = pickOptions(fact)
         if newfact.startswith("<reply>"):
-            newfact = newfact[7:].strip()
+            newfact = newfact[7:]
             type = "reply"
         elif newfact.startswith("<action>"):
-            newfact = newfact[8:].strip()
+            newfact = newfact[8:]
             type = "action"
+        elif newfact.startswith("see "):
+            newfact = newfact[4:]
+            type = "refer"
+            # shortcut the substitutions here
+            return (type, newfact)
+        newfact = newfact.strip()
         newfact = plugins.standardSubstitute(irc, msg, newfact)
         return (type, newfact)
 
@@ -219,6 +232,11 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(text, prefixName=False)
             elif type == "define":
                 irc.reply("%s is %s" % (key, text), prefixName=False)
+            elif type == "refer":
+                # text here is the new key to refer to 
+                msg.args = [s.replace(key, text) for s in msg.args]
+                newtokens = [s.replace(key, text) for s in tokens]
+                self.invalidCommand(irc, wmsg, newtokens) 
             else:
                 irc.error("Spurious type from _parseFactoid.")
             return True
@@ -593,15 +611,15 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           glob)
         if cursor.rowcount == 0:
             irc.reply("No keys matching %r found." % search)
-            return
-        elif cursor.rowcount == 1:
+        elif cursor.rowcount == 1 and \
+        self.registryValue('showFactoidIfOnlyOneMatch', msg.args[0]):
             key = cursor.fetchone()[0]
             self.invalidCommand(irc, msg, [key])
-            return
-        keys = [repr(tup[0]) for tup in cursor.fetchall()]
-        s = "Key search for %r (%s found): %s" % \
-            (search, len(keys), utils.commaAndify(keys))
-        irc.reply(s)
+        else:
+            keys = [repr(tup[0]) for tup in cursor.fetchall()]
+            s = "Key search for %r (%s found): %s" % \
+                (search, len(keys), utils.commaAndify(keys))
+            irc.reply(s)
 
     def listvalues(self, irc, msg, args):
         """<text>
