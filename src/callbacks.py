@@ -169,7 +169,7 @@ class Tokenizer:
     #
     # These are the characters valid in a token.  Everything printable except
     # double-quote, left-bracket, and right-bracket.
-    validChars = string.ascii.translate(string.ascii, '\x00\r\n \t"[]')
+    validChars = string.ascii.translate(string.ascii, '\x00\r\n \t"')
     quotes = '"'
     def __init__(self, tokens=''):
         # Add a '|' to tokens to have the pipe syntax.
@@ -207,15 +207,16 @@ class Tokenizer:
             token = lexer.get_token()
             if not token:
                 break
-            elif token == '|':
+            elif token == '|' and conf.supybot.pipeSyntax():
                 if not args:
                     raise SyntaxError, '"|" with nothing preceding'
                 ends.append(args)
                 args = []
-            elif token == '[':
-                args.append(self._insideBrackets(lexer))
-            elif token == ']':
-                raise SyntaxError, 'Spurious "["'
+            elif conf.supybot.bracketSyntax():
+                if token == '[':
+                    args.append(self._insideBrackets(lexer))
+                elif token == ']':
+                    raise SyntaxError, 'Spurious "["'
             else:
                 args.append(self._handleToken(token))
         if ends:
@@ -235,10 +236,11 @@ def tokenize(s):
     try:
         if s != _lastTokenized:
             _lastTokenized = s
+            tokens = ''
+            if conf.supybot.bracketSyntax():
+                tokens = '[]'
             if conf.supybot.pipeSyntax():
-                tokens = '|'
-            else:
-                tokens = ''
+                tokens = '%s|' % tokens
             _lastTokenizeResult = Tokenizer(tokens).tokenize(s)
     except ValueError, e:
         _lastTokenized = None

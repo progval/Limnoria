@@ -175,11 +175,13 @@ the bot will send multi-message replies in a single messsage or in multiple
 messages.  For safety purposes (so the bot can't possibly flood) it will
 normally send everything in a single message."""))
 
+supybot.register('bracketSyntax', registry.Boolean(True, """Supybot allows
+nested commands. If this option is enabled users can nest commands using a
+bracket syntax, for example: 'bot: bar [foo]'."""))
+
 supybot.register('pipeSyntax', registry.Boolean(False, """Supybot allows
-nested commands; generally, commands are nested via square brackets.  Supybot
-can also provide a syntax more similar to UNIX pipes.  The square bracket
-nesting syntax is always enabled, but when this value is True, users can also
-nest commands by saying 'bot: foo | bar' instead of 'bot: bar [foo]'."""))
+nested commands. Enabling this option will allow nested commands with a syntax
+similar to UNIX pipes, for example: 'bot: foo | bar'."""))
 
 supybot.reply.register('whenNotCommand', registry.Boolean(True, """
 Determines whether the bot will reply with an error message when it is
