@@ -150,3 +150,20 @@ A: Karma by default doesn't acknowledge karma updates.  If you check
    your increment or decrement still took place.  If you'd rather
    Karma acknowledge karma updates, change the
    supybot.plugins.Karma.response configuration variable to On.
+
+Q: I added an alias, but it doesn't work!
+
+A: Take a look at "help <alias you added>".  If the alias the bot has
+   listed doesn't match what you're giving it, chances are you need
+   to quote your alias in order for the brackets not to be
+   evaluated.  For instance, if you're adding an alias to give you a
+   link to your homepage, you need to say:
+
+   alias add mylink "strconcat http://my.host.com/ [urlquote $1]"
+
+   and not:
+
+   alias add mylink strconcat http://my.host.com/ [urlquote $1]
+
+   The first version works; the second version will always return the
+   same url.
