@@ -43,6 +43,7 @@ import os.path
 import sqlite
 
 import conf
+import utils
 import ircmsgs
 import ircutils
 import privmsgs
@@ -196,7 +197,11 @@ class FunDB(callbacks.Privmsg):
         sql = """INSERT INTO %ss VALUES (NULL, %%s)""" % table
         cursor.execute(sql, s)
         self.db.commit()
-        irc.reply(msg, conf.replySuccess)
+        sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
+        cursor.execute(sql, s)
+        id = cursor.fetchone()[0]
+        response = [conf.replySuccess,'(%s #%s)' % (table,id)]
+        irc.reply(msg, ' '.join(response))
 
     def removedb(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
