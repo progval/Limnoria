@@ -86,11 +86,11 @@ class Dunno(callbacks.Privmsg):
                           ORDER BY random()
                           LIMIT 1""")
         if cursor.rowcount == 0:
-            return "No dunno's available, add some with dunnoadd."
-        dunno = cursor.fetchone()[0]
-        dunno = dunno.replace('$who', msg.nick)
-        irc.reply(msg, dunno, prefixName=False)
-        return True
+            irc.error(msg, 'No dunnos available, add some with dunno add.')
+        else:
+            dunno = cursor.fetchone()[0]
+            dunno = dunno.replace('$who', msg.nick)
+            irc.reply(msg, dunno, prefixName=False)
 
     def add(self, irc, msg, args):
         """<text>
@@ -156,8 +156,8 @@ class Dunno(callbacks.Privmsg):
         if cursor.rowcount == 0:
             irc.error(msg, 'No dunnos with %r found.' % text)
             return
-        ids = [str(tup[0]) for tup in cursor.fetchall()]
-        s = "Dunno search for %r (%d found): %s" % \
+        ids = [str(t[0]) for t in cursor.fetchall()]
+        s = 'Dunno search for %r (%d found): %s' % \
             (text, len(ids), utils.commaAndify(ids))
         irc.reply(msg, s)
 
