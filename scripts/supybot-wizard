@@ -327,9 +327,8 @@ def main():
 
     myPrint("""Of course, having an IRC bot isn't the most useful thing in the
     world unless you can make that bot join some channels.""")
-    if yn('Do you want your bot to join some channels when he connects?  '
-          'Use spaces to separate the channels.')=='y':
-        channels = something('What channels?')
+    if yn('Do you want your bot to join some channels when he connects?'=='y':
+        channels = something('What channels?  Separate channels by spaces.')
         channels = channels.split()
         while not all(ircutils.isChannel, channels):
             # FIXME: say which ones weren't channels.
