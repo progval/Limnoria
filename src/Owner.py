@@ -109,8 +109,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
-        if ircdb.checkIgnored(msg.prefix, msg.args[0]):
-            return
         s = callbacks.addressed(irc.nick, msg)
         if s:
             try:

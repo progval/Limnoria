@@ -135,78 +135,6 @@ def getSyntax(method, name=None):
     doclines = method.__doc__.splitlines()
     return '%s %s' % (name, doclines[0])
 
-class RateLimiter:
-    """This class is used to rate limit replies to certain people, in order to
-    prevent abuse of the bot.  Basically, you put messages in with the .put
-    method, and then take a message out with the .get method.  .get may return
-    None if there is no message waiting that isn't being rate limited.
-    """
-    # lastRequest must be class-global, so each instance of it uses the same
-    # information.  Otherwise, if it was an instance variable, then rate
-    # limiting would only work within a single plugin.
-    lastRequest = {}
-    def __init__(self):
-        self.limited = []
-        self.unlimited = []
-
-    def get(self):
-        """Returns the next un-ratelimited message, or the next rate-limited
-        message whose time has come up."""
-        if self.unlimited:
-            return self.unlimited.pop(0)
-        elif self.limited:
-            for i in range(len(self.limited)):
-                msg = self.limited[i]
-                if not self._limit(msg, penalize=False):
-                    return self.limited.pop(i)
-            return None
-        else:
-            return None
-
-    def put(self, msg):
-        """Puts a message in for possible ratelimiting."""
-        t = self._limit(msg)
-        if t and not world.testing:
-            s = 'Limiting message from %s for %s seconds' % (msg.prefix, t)
-            debug.msg(s, 'normal')
-            self.limited.append(msg)
-        else:
-            self.unlimited.append(msg)
-
-    def _limit(self, msg, penalize=True):
-        if msg.prefix and ircutils.isUserHostmask(msg.prefix):
-            (nick, user, host) = ircutils.splitHostmask(msg.prefix)
-            key = '@'.join((user, host))
-            now = time.time()
-            if ircdb.checkCapabilities(msg.prefix, ('owner', 'admin')):
-                return 0
-            if key in self.lastRequest:
-                # Here's how we throttle requests.  We keep a dictionary of
-                # (lastRequest, wait period) tuples.  When a request arrives,
-                # we check to see if we have a lastRequest tuple, and if so,
-                # we check to make sure that lastRequest was more than wait
-                # seconds ago.  If not, we're getting flooded, and we set
-                # the lastRequest time to the current time and increment wait,
-                # thus making it even harder for the flooder to get us to
-                # send them messages.
-                (t, wait) = self.lastRequest[key]
-                if now - t <= wait:
-                    if penalize:
-                        newWait = wait + conf.throttleTime
-                    else:
-                        newWait = wait - (now - t)
-                    self.lastRequest[key] = (now, newWait)
-                    return newWait
-                else:
-                    self.lastRequest[key] = (now, conf.throttleTime)
-                    return 0
-            else:
-                self.lastRequest[key] = (now, conf.throttleTime)
-                return 0
-        else:
-            return 0
-
-
 class Error(Exception):
     """Generic class for errors in Privmsg callbacks."""
     pass
@@ -597,10 +525,10 @@ class Privmsg(irclib.IrcCallback):
     public = True
     handled = False
     alwaysCall = ()
+    noIgnore = False
     commandArgs = ['self', 'irc', 'msg', 'args']
     _mores = {} # This must be class-scope, so all subclasses use the same one.
     def __init__(self):
-        self.rateLimiter = RateLimiter()
         self.Proxy = IrcObjectProxy
         canonicalname = canonicalName(self.name())
         self._original = getattr(self, canonicalname, None)
@@ -658,17 +586,13 @@ class Privmsg(irclib.IrcCallback):
                     world.startup = False
 
     def __call__(self, irc, msg):
-        irclib.IrcCallback.__call__(self, irc, msg)
-        # Now, if there's anything in the rateLimiter...
-        msg = self.rateLimiter.get()
-        while msg:
-            s = addressed(irc.nick, msg)
-            try:
-                args = tokenize(s)
-                self.Proxy(irc, msg, args)
-            except SyntaxError, e:
-                irc.queueMsg(reply(msg, str(e)))
-            msg = self.rateLimiter.get()
+        if msg.command == 'PRIVMSG':
+            if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
+                irclib.IrcCallback.__call__(self, irc, msg)
+            else:
+                debug.msg('Ignoring %s.' % msg.prefix)
+        else:
+            irclib.IrcCallback.__call__(self, irc, msg)
 
     def isCommand(self, methodName):
         # This function is ugly, but I don't want users to call methods like
@@ -734,7 +658,6 @@ class PrivmsgRegexp(Privmsg):
     better class to use, at the very least for consistency's sake, but also
     because it's much more easily coded and maintained.
     """
-    threaded = False # Again, like Privmsg...
     flags = re.I
     commandArgs = ['self', 'irc', 'msg', 'match']
     def __init__(self):
@@ -763,10 +686,6 @@ class PrivmsgRegexp(Privmsg):
             irc.error(msg, debug.exnToString(e))
 
     def doPrivmsg(self, irc, msg):
-        if ircdb.checkIgnored(msg.prefix, msg.args[0]):
-            debug.msg('PrivmsgRegexp.doPrivmsg: ignoring %s' % msg.prefix)
-            return
-        fed = False
         for (r, method) in self.res:
             spans = sets.Set()
             for m in r.finditer(msg.args[1]):
@@ -775,13 +694,8 @@ class PrivmsgRegexp(Privmsg):
                     break
                 else:
                     spans.add(m.span())
-                if not fed:
-                    fed = True
-                    self.rateLimiter.put(msg)
-                    msg = self.rateLimiter.get()
-                if msg:
-                    proxy = IrcObjectProxyRegexp(irc)
-                    self.callCommand(method, proxy, msg, m)
+                proxy = IrcObjectProxyRegexp(irc)
+                self.callCommand(method, proxy, msg, m)
 
 
 class PrivmsgCommandAndRegexp(Privmsg):
@@ -790,8 +704,8 @@ class PrivmsgCommandAndRegexp(Privmsg):
     (or list) attribute "regexps".
     """
     flags = re.I
-    regexps = () # Use sets.Set() in your own callbacks.
-    addressedRegexps = () # Ditto on the sets.Sets() idea.
+    regexps = ()
+    addressedRegexps = ()
     def __init__(self):
         Privmsg.__init__(self)
         self.res = []
@@ -816,22 +730,14 @@ class PrivmsgCommandAndRegexp(Privmsg):
                 raise
 
     def doPrivmsg(self, irc, msg):
-        if ircdb.checkIgnored(msg.prefix, msg.args[0]):
-            return
-        fed = False
         for (r, method) in self.res:
             originalHandled = self.handled
             name = method.__name__
             for m in r.finditer(msg.args[1]):
                 if originalHandled and name not in self.alwaysCall:
                     continue
-                if not fed:
-                    fed = True
-                    self.rateLimiter.put(msg)
-                    msg = self.rateLimiter.get()
-                if msg:
-                    proxy = IrcObjectProxyRegexp(irc)
-                    self.callCommand(method, proxy, msg, m, catchErrors=True)
+                proxy = IrcObjectProxyRegexp(irc)
+                self.callCommand(method, proxy, msg, m, catchErrors=True)
         s = addressed(irc.nick, msg)
         if s:
             for (r, method) in self.addressedRes:
@@ -840,13 +746,8 @@ class PrivmsgCommandAndRegexp(Privmsg):
                 for m in r.finditer(s):
                     if originalHandled and name not in self.alwaysCall:
                         continue
-                    if not fed:
-                        fed = True
-                        self.rateLimiter.put(msg)
-                        msg = self.rateLimiter.get()
-                    if msg:
-                        proxy = IrcObjectProxyRegexp(irc)
-                        self.callCommand(method,proxy,msg,m,catchErrors=True)
+                    proxy = IrcObjectProxyRegexp(irc)
+                    self.callCommand(method,proxy,msg,m,catchErrors=True)
             
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
