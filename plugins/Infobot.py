@@ -182,7 +182,6 @@ class PickleInfobotDB(object):
 
     def incChanges(self):
         filename = dynamic.filename
-        print '*** self.changes: %s' % self.changes
         self.changes[filename] += 1
 
     def incResponses(self):
