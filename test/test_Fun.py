@@ -77,6 +77,8 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
             self.assertRegexp('chr %s' % i, regexp)
 
     def testXor(self):
+        # This no longer works correctly.  It almost seems like were throwing
+        # in a repr() somewhere.
         L = [nick for nick in nicks if '|' not in nick and
                                        '[' not in nick and
                                        ']' not in nick]
@@ -93,6 +95,8 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
             self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
 
     def testEncodeDecode(self):
+        # This no longer works correctly.  It almost seems like were throwing
+        # in a repr() somewhere.
         s = 'the recalcitrant jamessan tests his scramble function'
         self.assertNotRegexp('encode aldkfja foobar', 'LookupError')
         self.assertNotRegexp('decode asdflkj foobar', 'LookupError')

@@ -47,7 +47,7 @@ from itertools import imap
 
 import supybot.conf as conf
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
@@ -300,27 +300,27 @@ class Fun(callbacks.Privmsg):
         length, use 0.
         """
         irc.reply(utils.soundex(text, length))
-    soundex = wrap(soundex, ['text', ('?int', 4)])
+    soundex = wrap(soundex, ['text', optional('int', 4)])
 
     # The list of words and algorithm are pulled straight the mozbot
     # MagicEightBall.bm module: http://tinyurl.com/7ytg7
-    _responses = {'positive': ['It is possible.', 'Yes!', 'Of course.', 
+    _responses = {'positive': ['It is possible.', 'Yes!', 'Of course.',
                                'Naturally.', 'Obviously.', 'It shall be.',
                                'The outlook is good.', 'It is so.',
-                               'One would be wise to think so.', 
+                               'One would be wise to think so.',
                                'The answer is certainly yes.'],
                   'negative': ['In your dreams.', 'I doubt it very much.',
-                               'No chance.', 'The outlook is poor.', 
+                               'No chance.', 'The outlook is poor.',
                                'Unlikely.', 'About as likely as pigs flying.',
-                               'You\'re kidding, right?', 'NO!', 'NO.', 'No.', 
+                               'You\'re kidding, right?', 'NO!', 'NO.', 'No.',
                                'The answer is a resounding no.', ],
-                  'unknown' : ['Maybe...', 'No clue.', '_I_ don\'t know.', 
-                               'The outlook is hazy, please ask again later.', 
+                  'unknown' : ['Maybe...', 'No clue.', '_I_ don\'t know.',
+                               'The outlook is hazy, please ask again later.',
                                'What are you asking me for?', 'Come again?',
-                               'You know the answer better than I.', 
+                               'You know the answer better than I.',
                                'The answer is def-- oooh! shiny thing!'],
                  }
-    
+
     def _checkTheBall(self, questionLength):
         if questionLength % 3 == 0:
             category = 'positive'
@@ -339,7 +339,7 @@ class Fun(callbacks.Privmsg):
             irc.reply(self._checkTheBall(len(text)))
         else:
             irc.reply(self._checkTheBall(random.randint(0, 2)))
-    eightball = wrap(eightball, ['?text'])
+    eightball = wrap(eightball, [optional('text')])
 
     _rouletteChamber = random.randrange(0, 6)
     _rouletteBullet = random.randrange(0, 6)
@@ -367,7 +367,7 @@ class Fun(callbacks.Privmsg):
             irc.reply('*click*')
             self._rouletteChamber += 1
             self._rouletteChamber %= 6
-    roulette = wrap(roulette, ['public', ('?literal', False, 'spin')])
+    roulette = wrap(roulette, ['public', optional(('literal', 'spin'))])
 
     def monologue(self, irc, msg, args, channel):
         """[<channel>]

@@ -42,7 +42,7 @@ import supybot.registry as registry
 
 import supybot.conf as conf
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.webutils as webutils
@@ -149,15 +149,15 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             raise callbacks.Error, webutils.strError(e)
 
 
-    def gkstats(self, irc, msg, args):
+    def gkstats(self, irc, msg, args, name):
         """<name>
 
         Returns the stats Gameknot keeps on <name>.  Gameknot is an online
         website for playing chess (rather similar to correspondence chess, just
         somewhat faster) against players from all over the world.
         """
-        name = privmsgs.getArgs(args)
         irc.reply(self.getStats(name))
+    gkstats = wrap(gkstats, ['text'])
 
     _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
