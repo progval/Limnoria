@@ -253,9 +253,14 @@ if __name__ == '__main__':
     os.chmod(filename, 0755)
     
 
-    print
-    print 'You\'re done!  Now run the bot with the command line:'
-    print './%s' % filename
-    print
-
+    if sys.platform == 'win32':
+        print
+        print 'You\'re done!  Run the bot however works for you.'
+        print
+    else:
+        print
+        print 'You\'re done!  Now run the bot with the command line:'
+        print './%s' % filename
+        print
+    
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
