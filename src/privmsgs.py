@@ -71,6 +71,7 @@ def getArgs(args, required=1, optional=0):
     If there aren't enough args even to satisfy required, raise an error and
     let the caller handle sending the help message.
     """
+    assert not isinstance(args, str), 'args should be a list.'
     if len(args) < required:
         raise callbacks.ArgumentError
     if len(args) < required + optional:
