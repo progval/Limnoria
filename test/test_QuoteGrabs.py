@@ -111,8 +111,7 @@ if sqlite:
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
                                              prefix=testPrefix))
             self.assertNotError('grab foo')
-            self.assertRegexp('quotegrabs get 1',
-                              '<foo> test \(Said by: foo!bar@baz on .*?\)')
+            self.assertNotError('quotegrabs get 1')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

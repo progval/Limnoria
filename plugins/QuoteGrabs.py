@@ -269,7 +269,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
             grabber = ircdb.users.getUser(grabber_mask).name
         except:
             grabber = grabber_mask       
-        irc.reply('%s (Said by: %s; grabbed by %s on %s)' % \
+        irc.reply('%s (Said by: %s; grabbed by %s at %s)' % \
                   (quote, hostmask, grabber, time_str))
 
 
