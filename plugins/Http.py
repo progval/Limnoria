@@ -64,7 +64,7 @@ class Http(callbacks.Privmsg):
             callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
         except webutils.WebError, e:
             irc.error(str(e))
-            
+
     def headers(self, irc, msg, args):
         """<url>
 
@@ -78,7 +78,7 @@ class Http(callbacks.Privmsg):
         fd = webutils.getUrlFd(url)
         s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
         irc.reply(s)
-            
+
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
     def doctype(self, irc, msg, args):
         """<url>
@@ -98,7 +98,7 @@ class Http(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.reply('That URL has no specified doctype.')
-            
+
     def size(self, irc, msg, args):
         """<url>
 
@@ -224,7 +224,7 @@ class Http(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.errorPossibleBug('No cyborg name returned.')
-        
+
     _acronymre = re.compile(r'valign="middle" width="7\d%" bgcolor="[^"]+">'
                             r'(?:<b>)?([^<]+)')
     def acronym(self, irc, msg, args):
