@@ -1,3 +1,6 @@
+	* Added a signal handler for SIGTERM, so you folks killing your
+	bots uncleanly won't have as many bugs :)
+	
 	* Added a new configuration variable, supybot.pidFile, which
 	determines what file the bot should write its PID to.  The
 	default is not to write the PID file at all.
