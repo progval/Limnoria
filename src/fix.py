@@ -36,10 +36,13 @@ Fixes stuff that Python should have but doesn't.
 __all__ = []
 
 exported = ['ignore', 'catch', 'reviter', 'window', 'group',
-           'partition', 'any', 'all', 'rsplit']
+           'partition', 'any', 'all', 'rsplit', 'curry']
 
+import new
 import string
 string.ascii = string.maketrans('', '')
+
+curry = new.instancemethod
 
 def ignore(*args, **kwargs):
     """Simply ignore the arguments sent to it."""

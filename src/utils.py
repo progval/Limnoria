@@ -235,7 +235,7 @@ def perlReToReplacer(s):
         flags = filter('g'.__ne__, flags)
     r = perlReToPythonRe('/'.join(('', regexp, flags)))
     if g:
-        return lambda s: r.sub(replace, s)
+        return curry(r.sub, replace)
     else:
         return lambda s: r.sub(replace, s, 1)
 
