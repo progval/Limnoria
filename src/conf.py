@@ -352,7 +352,7 @@ registerChannelValue(supybot.reply.error, 'inPrivate',
     registry.Boolean(False, """Determines whether the bot will send error
     messages to users in private.  You might want to do this in order to keep
     channel traffic to minimum.  This can be used in combination with
-    supybot.reply.errorWithNotice."""))
+    supybot.reply.error.withNotice."""))
 registerChannelValue(supybot.reply.error, 'withNotice',
     registry.Boolean(False, """Determines whether the bot will send error
     messages to users via NOTICE instead of PRIVMSG.  You might want to do this
