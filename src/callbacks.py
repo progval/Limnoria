@@ -620,6 +620,7 @@ class IrcObjectProxy(RichReplyMethods):
     def findCallbacksForArgs(self, args):
         """Returns a two-tuple of (command, plugins) that has the command
         (a list of strings) and the plugins for which it was a command."""
+        assert isinstance(args, list)
         cbs = []
         maxL = []
         for cb in self.irc.callbacks:
