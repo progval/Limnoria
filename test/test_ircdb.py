@@ -203,15 +203,15 @@ class IrcUserTestCase(IrcdbTestCase):
     def testCapabilities(self):
         u = ircdb.IrcUser()
         u.addCapability('foo')
-        self.failUnless(u.checkCapability('foo'))
-        self.failIf(u.checkCapability('-foo'))
+        self.failUnless(u._checkCapability('foo'))
+        self.failIf(u._checkCapability('-foo'))
         u.addCapability('-bar')
-        self.failUnless(u.checkCapability('-bar'))
-        self.failIf(u.checkCapability('bar'))
+        self.failUnless(u._checkCapability('-bar'))
+        self.failIf(u._checkCapability('bar'))
         u.removeCapability('foo')
         u.removeCapability('-bar')
-        self.assertRaises(KeyError, u.checkCapability, 'foo')
-        self.assertRaises(KeyError, u.checkCapability, '-bar')
+        self.assertRaises(KeyError, u._checkCapability, 'foo')
+        self.assertRaises(KeyError, u._checkCapability, '-bar')
 
     def testAddhostmask(self):
         u = ircdb.IrcUser()
@@ -228,12 +228,12 @@ class IrcUserTestCase(IrcdbTestCase):
     def testOwner(self):
         u = ircdb.IrcUser()
         u.addCapability('owner')
-        self.failUnless(u.checkCapability('foo'))
-        self.failIf(u.checkCapability('-foo'))
+        self.failUnless(u._checkCapability('foo'))
+        self.failIf(u._checkCapability('-foo'))
 
     def testInitCapabilities(self):
         u = ircdb.IrcUser(capabilities=['foo'])
-        self.failUnless(u.checkCapability('foo'))
+        self.failUnless(u._checkCapability('foo'))
 
     def testPassword(self):
         u = ircdb.IrcUser()
@@ -294,8 +294,8 @@ class IrcUserTestCase(IrcdbTestCase):
 
     def testIgnore(self):
         u = ircdb.IrcUser(ignore=True)
-        self.failIf(u.checkCapability('foo'))
-        self.failUnless(u.checkCapability('-foo'))
+        self.failIf(u._checkCapability('foo'))
+        self.failUnless(u._checkCapability('-foo'))
 
     def testRemoveCapability(self):
         u = ircdb.IrcUser(capabilities=('foo',))
@@ -304,27 +304,27 @@ class IrcUserTestCase(IrcdbTestCase):
 class IrcChannelTestCase(IrcdbTestCase):
     def testInit(self):
         c = ircdb.IrcChannel()
-        self.failIf(c.checkCapability('op'))
-        self.failIf(c.checkCapability('voice'))
-        self.failIf(c.checkCapability('halfop'))
-        self.failIf(c.checkCapability('protected'))
+        self.failIf(c._checkCapability('op'))
+        self.failIf(c._checkCapability('voice'))
+        self.failIf(c._checkCapability('halfop'))
+        self.failIf(c._checkCapability('protected'))
 
     def testCapabilities(self):
         c = ircdb.IrcChannel(defaultAllow=False)
-        self.failIf(c.checkCapability('foo'))
+        self.failIf(c._checkCapability('foo'))
         c.addCapability('foo')
-        self.failUnless(c.checkCapability('foo'))
+        self.failUnless(c._checkCapability('foo'))
         c.removeCapability('foo')
-        self.failIf(c.checkCapability('foo'))
+        self.failIf(c._checkCapability('foo'))
 
     def testDefaultCapability(self):
         c = ircdb.IrcChannel()
         c.setDefaultCapability(False)
-        self.failIf(c.checkCapability('foo'))
-        self.failUnless(c.checkCapability('-foo'))
+        self.failIf(c._checkCapability('foo'))
+        self.failUnless(c._checkCapability('-foo'))
         c.setDefaultCapability(True)
-        self.failUnless(c.checkCapability('foo'))
-        self.failIf(c.checkCapability('-foo'))
+        self.failUnless(c._checkCapability('foo'))
+        self.failIf(c._checkCapability('-foo'))
 
     def testLobotomized(self):
         c = ircdb.IrcChannel(lobotomized=True)

@@ -242,7 +242,7 @@ class IrcUser(object):
         """Takes from the user the given capability."""
         self.capabilities.remove(capability)
 
-    def checkCapability(self, capability):
+    def _checkCapability(self, capability):
         """Checks the user for a given capability."""
         if self.ignore:
             if isAntiCapability(capability):
@@ -404,7 +404,7 @@ class IrcChannel(object):
         """Sets the default capability in the channel."""
         self.defaultAllow = b
 
-    def checkCapability(self, capability):
+    def _checkCapability(self, capability):
         """Checks whether a certain capability is allowed by the channel."""
         assert isCapability(capability), 'got %s' % capability
         if capability in self.capabilities:
@@ -969,7 +969,7 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
                 return True
             else:
                 return False
-    if user.checkCapability('owner'):
+    if user._checkCapability('owner'):
         # Owners shouldn't ever be ignored.
         return False
     elif user.ignore:
@@ -1000,7 +1000,7 @@ def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
         try:
             c = channels.getChannel(channel)
             if capability in c.capabilities:
-                return c.checkCapability(capability)
+                return c._checkCapability(capability)
             else:
                 return _x(capability, c.defaultAllow)
         except KeyError:
@@ -1030,19 +1030,19 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
         return _checkCapabilityForUnknownUser(capability, users=users,
                                               channels=channels)
     if capability in u.capabilities:
-        return u.checkCapability(capability)
+        return u._checkCapability(capability)
     else:
         if isChannelCapability(capability):
             (channel, capability) = fromChannelCapability(capability)
             try:
                 chanop = makeChannelCapability(channel, 'op')
-                if u.checkCapability(chanop):
+                if u._checkCapability(chanop):
                     return _x(capability, True)
             except KeyError:
                 pass
             c = channels.getChannel(channel)
             if capability in c.capabilities:
-                return c.checkCapability(capability)
+                return c._checkCapability(capability)
             else:
                 return _x(capability, c.defaultAllow)
         defaultCapabilities = conf.supybot.capabilities()
