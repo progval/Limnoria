@@ -1,17 +1,67 @@
+2004-09-06 James Vega <jamessan@users.sf.net>
+
+	* Version 0.79.9999!
+
+	* Added stripFormatting option to ChannelLogger plugin, which
+	determines whether non-printable formatting characters are logged.
+
+	* Added Sourceforge.patches command to complement the current bugs
+	and rfes commands.
+
+	* Added abs() to Math.calc.
+
+	* Improved the interface for Config.list. Now groups and values
+	are listed, with groups being denoted by a leading @.
+
+	* Improved Config.config such that the user can specify the entire
+	config variable name (conf.supybot....).
+
+	* Fixed a bug where ChannelLogger wouldn't log ignored nicks.
+
+	* Fixed an incorrect path in INSTALL.
+
+	* Fixed some missing imports in Unix's configure method.
+
+	* Fixed a bug where an owner could publically retrieve a private
+	configuration variable.
+
+	* Fixed an exception when trying to remove non-existent Heralds.
+
+	* Fixed an exception in RSS.getHeadlines.
+
+	* Fixed a couple bugs in Poll, when retrieving the Poll id.
+
+	* Fixed a problem with trying to use socket.inet_pton under
+	Windows; Python doesn't build their Win32 port with IPV6 support,
+	so we have to brute-force IPV6 detection.
+
+	* Fixed a few bugs with how Infobot handled the SQLite db.
+
+	* Fixed others/convertcore.py so that liter-based units are
+	properly capitalized (L not l) and use 1000 as the conversion rate
+	for MB, KB, etc. since MiB, KiB, etc. are also known units.
+
+	* Fixed a bug where Infobot would confirm an unaddressed factoid
+	definition.
+
+	* Fixed a problem where Google.stats didn't keep track of all
+	searches.
+
+
 2004-08-31 Jeremy Fincher <jemfinch@supybot.org>
 
 	* Version 0.79.999!
-	
+
 	* Added the ability to send long fortunes line-by-line rather
 	than all in one (or several) messages; it will do this if
 	supybot.reply.oneToOne is set to False.
-	
+
 	* Added many configuration variables to the Unix plugin, allowing
 	configurable commands and options to those commands.
-	
+
 	* Changed the output of Config.list to show groups with a
 	preceding @, rather than use the --groups option.
-	
+
 	* Changed the Google.stats (formerly Google.info) command to be
 	persistent, using the registry to record old values for the
 	number of searches made and the number of seconds Google has
@@ -27,43 +77,43 @@
 	* Fixed several bugs where the bot was testing nicks for
 	equivalence without first normalizing them, leading to some false
 	negatives.
-	
+
 	* Fixed a bug with the handling of
 	supybot.reply.withNoticeWhenPrivate so all private messages
 	really are replied to with a notice.
-	
+
 	* Fixed Http.geekquote to match the current bash.org layout.
 	Also, made sure all ids are valid ids before requesting a quote
 	(apparently bash.org is returning a certain quote for all invalid
 	ids).
-	
+
 	* Fixed a bad regular expression in the Ebay plugin which could
 	cause the bot to suck up 100% CPU for a signficant (perhaps
 	practically infinite) amount of time.
-	
+
 	* Fixed a bug where the bot would sometimes reconnect to a
 	network after being told to disconnect.
-	
+
 	* Fixed an uncaught exception in Owner.connect when the user
 	forgets the network name
 
-	
+
 2004-08-30  Jeremy Fincher  <jemfinch@supybot.org>
 
 	* Version 0.79.99!  We're getting asymptotically closer to
 	0.80.0!
-	
+
 	* Added Anonymous.action, to anonymously perform actions in a
 	specified channel.
 
 	* Added a Karma.clear, so channel ops can clear the karma for a
 	given name.
-	
+
 	* Added a Topic.redo, to redo the last undo.
 
 	* Added supybot.protocols.irc.umodes, to allow the bot to set
 	user modes upon connecting to a network.
-	
+
 	* Fixed numerous bugs involved with disconnecting, reconnecting,
 	and using multiple networks.
 
@@ -93,11 +143,11 @@
 
 	* Fixed Amazon's use of unicode.
 
-	
+
 2004-08-27  Jeremy Fincher  <jemfinch@supybot.org>
 
 	* Version 0.79.9!
-	
+
 	* Added Infobot, a plugin to emulate Infobot.
 
 	* Added Anonymous, a plugin for anonymously saying things to a
@@ -109,21 +159,21 @@
 	* Added NickCapture, a plugin which tries to recapture a nick
 	that's being used by someone else, both by watching for QUITs
 	with that nick and by checking via ISON for that nick.
-	
+
 	* Changed the behavior of "seen" with the --user switch instead to
 	be a separated command, Seen.user.
-	
+
 	* Changed the behavior of "seen" with no arguments instead to be
 	a separate command, Seen.last.
-	
+
 	* Moved the connect and disconnect commands from the Relay plugin
 	to the Owner plugin, so a Supybot can be on multiple networks
 	without ever loading the Relay plugin.
-	
+
 	* Added relay bot detection to the Relay plugin.  Now, rather
 	than get involved in a loop with another relay bot, a Supybot
 	will (if it has ops) rain down its wrath upon the offender.
-	
+
 	* Added supybot.plugins.Quotes.requireRegistration, which
 	determines whether a user need be registered to add Quotes to
 	the Quotes database.
@@ -135,10 +185,10 @@
 	* Removed supybot.reply.withPrivateNotice and split it into two
 	separate configuration variables, supybot.reply.withNotice and
 	supybot.reply.inPrivate.
-	
+
 	* Added supybot.log.stdout.wrap, to allow optional (defaulting to
 	True) wrapping of stdout logs.
-	
+
 	* Added supybot.databases.plugins.channelSpecific, a value that
 	determines whether the database used for channel-based plugins
 	will be a channel-specific database or a global database.  This
@@ -146,112 +196,112 @@
 	each individually decide to be "part of the Borg" or to "be their
 	own channel."  The default, of course, is for databases to be
 	channel-specific.
-	
+
 	* Changed the way channel databases are handled; instead of
 	generating #channel-<name> files, instead we create a subdirectory
 	of the data directory named #channel, and then stick all the files
 	in there.  It's a much cleaner way to do things, in our opinion.
-	
+
 	* Added several configuration variables to the Status plugin to
 	determine how verbose the cpu command is.  These are, of course,
 	channel-specific.
-	
+
 	* Added a configuration variable to the Dunno plugin,
 	supybot.plugins.Dunno.prefixNick, which determines whether the
 	bot will prefix the nick of the user giving an invalid command to
 	its "dunno" response.  Formerly, it never would; the default for
 	this variable, however, is True, because that's how the rest of
 	Supybot works.
-	
+
 	* Added Owner.rename, a command for renaming commands in other
 	plugins.
-	
+
 	* Added Config.channel, for getting/setting channel configuration
 	variables.
-	
+
 	* Fixed the problem with channels with dots or colons in them
 	raising exceptions whenever the registry was accessed.
-	
+
 	* Changed Fun.eightball to provide a similar answer for a question
 	asked multiple times.
-	
+
 	* Changed Fun.roulette to use a 6-barrel revolver.
 
 	* Changed Bugzilla to use the registry, rather than a custom
 	flatfile database format.
-	
+
 	* Added the KeepAlive plugin, to send useless keepalive messages
 	to someone every some period.  It's mostly just because we
 	noticed that MozBot had one, and we couldn't allow ourselves to
 	be outdone.
-	
+
 	* Changed the URL plugin to use flatfiles rather than SQLite
 	database.  Also reduced the functionality of the last command by
 	removing some options that no one ever really used, and removed
 	the random command (who uses that anyway?)
-	
+
 	* Changed the Words plugin not to use SQLite.  We lose the
 	anagram command, but crossword and hangman become much easier to
 	use, since all the user has to do is put a words file in
 	data/words.
-	
+
 	* Changed the Relay plugin to rely only on the registry, allowing
 	it to start and join all networks and channels with no user/owner
 	interaction at all.  Also, removed the Relay.say and
 	Relay.reconnect commands, since both can be accomplished easily
 	using the Relay.command command in combination with
 	Owner.reconnect and Anonymous.say commands.
-	
+
 	* Added supybot.reply.withNoticeWhenPrivate, to make the bot
 	reply with a notice when it privately messages a user -- this
 	generally means that the user's client won't open a query window,
 	which may be nice.  Do note that users can override this setting
 	via the user registry variable of the same name.
-	
+
 	* Added supybot.nick.alternates, which allows a list of alternate
 	nicks to try, in order, if the primary nick (supybot.nick) is
 	taken.  Also added a nick-perturbation function that will change
 	supybot.nick if there are no alternates or if they're all taken
 	as well.  As a result, removed supybot.nickmods.
-	
+
 	* Changed ChannelLogger to log channels to logs/ChannelLogger,
 	rather than simply logs.
-	
+
 	* Added the ChannelRelay plugin, to relay messages between two
 	channels.  This might be useful for people who want to forward
 	CVS update messages from one channel (such as #commits) to
 	another.
-	
+
 	* Added Channel.mode, to set modes in the channel, Channel.limit,
 	to set the channel limit, Channel.moderate and
 	Channel.unmoderate, to set +m and -m, respectively, and
 	Channel.key to set or unset the channel keyword.
-	
+
 	* Added a new plugin, Format, which offers several commands for
 	formatting strings on IRC.  Moved several commands from to it
 	from the Utilities plugin.
-	
+
 	* Improved the functionality of RSS.announce.  Calling it with
 	no arguments now lists the currently announced feeds.  Removing
 	feeds is done by specifying the --remove option.
 
 	* Added a reconnect command to the Owner plugin.
-	
+
 	* Added aol and rainbow filters to the Filter plugin.
-	
+
 	* Added Nickometer plugin, a translation of Infobot's Nickometer.
-	
+
 	* Added multiple recipient support for notes.
-	
+
 	* Added BadWords.list, to list the bad words currently being
 	censored by the bot.
-	
+
 	* Changed Misc.help to allow plugins to specify their own help,
 	and added help for several of the more confusing plugins.
-	
+
 	* Added Dunno.stats, to return the number of dunnos in the
 	database.
-	
+
 	* Added the Currency plugin, to perform currency conversions.
 
 	* Added conf.supybot.plugins.Karma.allowSelfRating, which
@@ -273,28 +323,28 @@
 	list rather than a comma-separated list.  Also added a check to
 	make sure -owner was in supybot.defaultCapabilities, and to
 	require a command-line option to allow it not to be present.
-	
+
 	* Added Sourceforge.fight, which returns the list of specified
 	projects and their bug/rfe count in sorted order, least to most.
 
 	* Added Utilities.reply for replying to a person with text.  Like
 	echo, but it prepends the nick like the bot normally does.
-	
+
 	* Changed Utilities.success to accept an optional <text> argument
 	for text to be appended to the success message.
-	
+
 	* Changed User.{addhostmask,removehostmask,register,unregister}
 	to allow owner users to do what they will with their users.  You
 	can now add hostmasks, remove hostmasks, register users, and
 	unregister users willy-nilly.
-	
+
 	* Changed and moved several configuration variables.
 	supybot.{throttleTime,maxHistoryLength,pingServer,pingInterval}
 	all moved to supybot.protocols.irc; supybot.httpPeekSize moved to
 	supybot.protocols.http; supybot.threadAllCommands moved to
 	supybot.debug.threadAllCommands, and probably a few others I
 	forgot to mention.
-	
+
 	* Added Http.zipinfo, which returns a veritable plethora of
 	information about the supplied zip code.
 
@@ -734,7 +784,7 @@
 	access such information.
 
 	* Added revision command for finding out the revision of the files
-	in a running bot; also added __revision__ strings so CVS would be 
+	in a running bot; also added __revision__ strings so CVS would be
 	happy to keep such information for us :)
 
 	* Fixed bug #848475 -- bad error message from regexp-expecting
@@ -1015,10 +1065,10 @@
 	* Added a debincoming command to the Debian plugin; it searches
 	the available packages at http://incoming.debian.org/
 
-	* Moved the "bug" command from MiscCommands to AdminCommands in 
+	* Moved the "bug" command from MiscCommands to AdminCommands in
 	order to prevent possible abuse.
 
-	* Changed ChannelDB.seen to default to using nicks; a --user 
+	* Changed ChannelDB.seen to default to using nicks; a --user
 	option can be passed to use the old behavior.  Note that this
 	means you'll have to update your ChannelDB database; use this
 	SQL statement to do so:
@@ -1027,4 +1077,3 @@
 	    last_seen TIMESTAMP,
 	    last_msg TEXT
 	    );
-

@@ -1,3 +1,10 @@
+Version 0.79.9999
+
+Some more bugs fixed, added a few features and a couple configuration
+variabless.  This should hopefully be the last release before 0.80.0,
+which will finally bring us to pure Beta status.
+
+
 Version 0.79.999
 
 Some bugs fixed, but the ones that were fixed were pretty big.  This
