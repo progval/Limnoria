@@ -712,9 +712,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('%s is not a command in the %s plugin.' %
                           (command, plugin.name()))
                 return
+            self._disabled.add(command, plugin.name())
         else:
             conf.supybot.commands.disabled().add(command)
-        self._disabled.add(command, plugin)
+            self._disabled.add(command)
         irc.replySuccess()
     disable = wrap(disable, [optional('plugin'), 'commandName'])
 
