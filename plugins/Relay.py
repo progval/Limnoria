@@ -193,6 +193,7 @@ class Relay(callbacks.Privmsg):
         else:
             port = 6667
         newIrc = irclib.Irc(irc.nick, callbacks=realIrc.callbacks)
+        newIrc.state.history = realIrc.state.history
         driver = drivers.newDriver((server, port), newIrc)
         newIrc.driver = driver
         self.ircs[abbreviation] = newIrc
@@ -358,11 +359,12 @@ class Relay(callbacks.Privmsg):
         (replyIrc, replyMsg, d) = self.whois[(irc, nick)]
         hostmask = '@'.join(d['311'].args[2:4])
         user = d['311'].args[-1]
-        channels = d['319'].args[-1].split()
-        if len(channels) == 1:
-            channels = channels[0]
+        if '319' in d:
+            channels = d['319'].args[-1].split()
+            channels[0] = 'is on ' + channels[0]
         else:
-            channels = utils.commaAndify(channels)
+            channels = ['isn\'t on any channels.']
+        channels = utils.commaAndify(channels)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
             signon = time.strftime(conf.humanTimestampFormat,
@@ -370,7 +372,7 @@ class Relay(callbacks.Privmsg):
         else:
             idle = '<unknown>'
             signon = '<unknown>'
-        s = '%s (%s) has been online since %s (idle for %s) and is on %s' % \
+        s = '%s (%s) has been online since %s (idle for %s) and %s' % \
             (user, hostmask, signon, idle, channels)
         replyIrc.reply(replyMsg, s)
         del self.whois[(irc, nick)]
