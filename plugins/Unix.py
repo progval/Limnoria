@@ -31,11 +31,6 @@
 
 """
 Provides commands available only on Unix.
-
-Commands include:
-  errno
-  progstats
-  crypt
 """
 
 from baseplugin import *
@@ -135,7 +130,9 @@ class Unix(callbacks.Privmsg):
         """<password> [<salt>]
 
         Returns the resulting of doing a crypt() on <password>  If <salt> is
-        not given, uses a random salt.
+        not given, uses a random salt.  If running on a glibc2 system,
+        prepending '$1$' to your salt will cause crypt to return an MD5sum
+        based crypt rather than the standard DES based crypt.
         """
         def makeSalt():
             s = '\x00'
