@@ -117,4 +117,9 @@ class FunctionsTestCase(unittest.TestCase):
                                          '%s: foo' % channelMsg.nick),
                          callbacks.reply(channelMsg, 'foo'))
 
+class PrivmsgTestCase(PluginTestCase):
+    plugins = ('Utilities',)
+    def testEmptySquareBrackets(self):
+        self.assertResponse('echo []', '[]')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
