@@ -367,9 +367,13 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                      FROM karma WHERE %s
                      ORDER BY added-subtracted DESC""" % criteria
             cursor.execute(sql, *args)
-            s = utils.commaAndify(['%s: %s' % (n, t)
-                                   for (n,t) in cursor.fetchall()])
-            irc.reply(msg, s + '.')
+            if cursor.rowcount > 0:
+                s = utils.commaAndify(['%s: %s' % (n, t)
+                                       for (n,t) in cursor.fetchall()])
+                irc.reply(msg, s + '.')
+            else:
+                irc.reply(msg, 'I didn\'t know the karma for any '
+                               'of those things.')
         else: # No name was given.  Return the top/bottom 3 karmas.
             cursor.execute("""SELECT name, added-subtracted
                               FROM karma

@@ -80,6 +80,9 @@ if sqlite is not None:
             self.assertRegexp('karma foobar', 'increased 1.*total.*1')
             self.assertNoResponse('foobar--', 2)
             self.assertRegexp('karma foobar', 'decreased 1.*total.*0')
+            self.assertNoResponse('foo++', 2)
+            self.assertNoResponse('bar--', 2)
+            self.assertRegexp('karma foo bar foobar', '.*foo.*foobar.*bar.*')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
