@@ -115,10 +115,11 @@ class Lookup(callbacks.Privmsg):
 
         Adds a lookup for <name> with the key/value pairs specified in the
         colon-delimited file specified by <filename>.  <filename> is searched
-        for in conf.dataDir.  Use 'lookup <name> <key>' to get the value of
-        the key in the file.
+        for in conf.dataDir.  If <name> is not singular, we try to make it
+        singular before creating the command.
         """
         (name, filename) = privmsgs.getArgs(args, required=2)
+        name = utils.depluralize(name)
         db = getDb()
         cursor = db.cursor()
         try:
@@ -150,7 +151,7 @@ class Lookup(callbacks.Privmsg):
             db.commit()
             self.addCommand(name)
             cb = irc.getCallback('Alias')
-            irc.reply(msg, conf.replySuccess)
+            irc.reply(msg, '%s (lookup %s added)' % (conf.replySuccess, name))
 
     def addCommand(self, name):
         def f(self, irc, msg, args):
