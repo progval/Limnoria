@@ -101,7 +101,7 @@ class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
         db.commit()
         return db
 
-    _urlRe = re.compile(r"([^\[<(\s]+://[^\])>\s]+)", re.I)
+    _urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         db = self.getDb(channel)
@@ -153,6 +153,7 @@ class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
     _tinyRe = re.compile(r'(http://tinyurl.com/\w{4})</blockquote>')
     def _getTinyUrl(self, url, cmd=False):
         try:
+            #debug.printf('Trying to get tinyurl for %r' % url)
             fd = urllib2.urlopen('http://tinyurl.com/create.php?url=%s' % url)
             s = fd.read()
             fd.close()

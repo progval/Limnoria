@@ -109,13 +109,7 @@ if sqlite is not None:
             self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
                               'func=add&group_id=58965&atid=489447',
                               r'http://tinyurl.com/rqac')
-            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
-                              'func=add&group_id=58965&atid=489447',
-                              r'http://tinyurl.com/rqac')
 
-
-    class URLTestCase2(ChannelPluginTestCase, PluginDocumentation):
-        plugins = ('URL',)
         def testTinysnarf(self):
             self.assertNotError('url config tinyurlsnarfer on')
             self.assertRegexp('http://www.urbandictionary.com/define.php?'
