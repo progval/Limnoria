@@ -520,9 +520,11 @@ class UsersDictionary(utils.IterableMap):
 
     def reload(self):
         """Reloads the database from its file."""
+        self.nextId = 0
+        self.users.clear()
+        self._nameCache.clear()
+        self._hostmaskCache.clear()
         if self.filename is not None:
-            self.nextId = 0
-            self.users.clear()
             try:
                 self.open(self.filename)
             except EnvironmentError, e:
