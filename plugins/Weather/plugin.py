@@ -345,7 +345,6 @@ class Weather(callbacks.Plugin):
         text = utils.web.getUrl(url)
         severe = ''
         m = self._wunderSevere.search(text)
-        self.log.critical('%s', m)
         if m:
             severe = ircutils.bold(format('  %s', m.group(1)))
         if 'Search not found' in text or \
@@ -404,7 +403,7 @@ class Weather(callbacks.Plugin):
             # set to "-" instead of an actual reading. So, we'll just catch
             # the ValueError from trying to unpack a tuple of the wrong size.
             try:
-                (dew, deg, unit) = info['Dew Point'].split()
+                (dew, deg, unit) = info['Dew Point'].split()[3:]
                 if convert:
                     dew = self._getTemp(int(dew), deg, unit, msg.args[0])
                 else:
@@ -417,7 +416,7 @@ class Weather(callbacks.Plugin):
             except (ValueError, TypeError):
                 pass
             try:
-                (chill, deg, unit) = info['Dew Point'].split()
+                (chill, deg, unit) = info['Windchill'].split()[3:]
                 if convert:
                     chill = self._getTemp(int(chill), deg, unit, msg.args[0])
                 else:
