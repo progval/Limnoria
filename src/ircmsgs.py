@@ -221,6 +221,19 @@ def isAction(msg):
     else:
         return False
 
+def isSplit(msg):
+    if msg.command == 'QUIT':
+        # It's a quit.
+        quitmsg = msg.args[0]
+        if not quitmsg.startswith('"') and not quitmsg.endswith('"'):
+            # It's not a user-generated quitmsg.
+            servers = quitmsg.split()
+            if len(servers) == 2:
+                # We could check if domains match, or if the hostnames actually
+                # resolve, but we're going to put that off for now.
+                return True
+    return False
+
 _unactionre = re.compile(r'^\x01ACTION\s+(.*)\x01$')
 def unAction(msg):
     """Returns the payload (i.e., non-ACTION text) of an ACTION msg."""

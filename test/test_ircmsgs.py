@@ -239,5 +239,19 @@ class FunctionsTestCase(SupyTestCase):
         s = str(m)
         self.assertEqual(s, 'MODE #foo -b :foo!bar@baz\r\n')
 
+    def testIsSplit(self):
+        m = ircmsgs.IrcMsg(prefix="caker!~caker@ns.theshore.net",
+                           command="QUIT",
+                           args=('jupiter.oftc.net quasar.oftc.net',))
+        self.failUnless(ircmsgs.isSplit(m))
+        m = ircmsgs.IrcMsg(prefix="bzbot!Brad2901@ACC87473.ipt.aol.com",
+                           command="QUIT",
+                           args=('Read error: 110 (Connection timed out)',))
+        self.failIf(ircmsgs.isSplit(m))
+        m = ircmsgs.IrcMsg(prefix="JibberJim!~none@8212cl.b0nwbeoe.co.uk",
+                           command="QUIT",
+                           args=('"Bye!"',))
+        self.failIf(ircmsgs.isSplit(m))
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
