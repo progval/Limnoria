@@ -84,59 +84,70 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             db.commit()
         return db
 
+    def _getUserId(self, prefix):
+        try:
+            return ircdb.users.getUserId(prefix)
+        except KeyError:
+            irc.errorNotRegistered(Raise=True)
+
+    def _getUserName(self, id):
+        try:
+            return ircdb.users.getUser(int(id)).name
+        except KeyError:
+            return 'an unknown user'
+
+    def _getId(self, idStr):
+        try:
+            return int(idStr)
+        except ValueError:
+            irc.error('The id must be a valid integer.', Raise=True)
+
     def poll(self, irc, msg, args):
-        """<id>
+        """[<channel>] <id>
 
         Displays the poll question and options for the given poll id.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         channel = privmsgs.getChannel(msg, args)
         poll_id = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT id, question, started_by, open
-                          FROM polls WHERE id=%s""",
-                          poll_id)
+        cursor.execute("""SELECT question, started_by, open
+                          FROM polls WHERE id=%s""", poll_id)
         if cursor.rowcount == 0:
-            irc.error('There is no poll with id %s' % poll_id)
+            irc.error('There is no poll with id %s.' % poll_id)
             return
-        _, question, started_by, open = cursor.fetchone()
+        question, started_by, open = cursor.fetchone()
         starter = ircdb.users.getUser(started_by).name
         if open:
             statusstr = 'open'
         else:
             statusstr = 'closed'
-        cursor.execute("""SELECT id, option FROM options
-                          WHERE poll_id=%s""",
-                          poll_id)
+        cursor.execute("""SELECT id, option FROM options WHERE poll_id=%s""",
+                       poll_id)
         if cursor.rowcount == 0:
             optionstr = 'This poll has no options yet'
         else:
             options = cursor.fetchall()
-            optionstr = 'Options:'
-            optionstr += ''.join([' %s: %r' % (id, option)
-                                 for id, option in options])
-        pollstr = 'Poll #%s: %r started by %s. %s. Poll is %s.' % \
+            optionstr = 'Options: ' + ' '.join(['%s: %r' % t for t in options])
+        pollstr = 'Poll #%s: %r started by %s.  %s.  Poll is %s.' % \
                   (poll_id, question, starter, optionstr, statusstr)
         irc.reply(pollstr)
 
     def open(self, irc, msg, args):
         """[<channel>] <question>
 
-        Creates a new poll with the given question.
+        Creates a new poll with the given question.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         question = privmsgs.getArgs(args)
-        # Must be registered to create a poll
-        try:
-            userId = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
+        userId = self._getUserId(msg.prefix)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO polls
-                          VALUES (NULL, %s, %s, 1)""",
-                          question, userId)
+        cursor.execute("""INSERT INTO polls VALUES (NULL, %s, %s, 1)""",
+                       question, userId)
         db.commit()
         cursor.execute("""SELECT id FROM polls WHERE question=%s""", question)
         id = cursor.fetchone()[0]
@@ -146,14 +157,12 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         """[<channel>] <id>
 
         Closes the poll with the given <id>; further votes will not be allowed.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error('The id must be an integer.')
-            return
+        id = self._getId(id)
         db = self.getDb(channel)
         cursor = db.cursor()
         # Check to make sure that the poll exists
@@ -168,19 +177,13 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         """[<channel>] <id> <option text>
 
         Add an option with the given text to the poll with the given id.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         channel = privmsgs.getChannel(msg, args)
         (poll_id, option) = privmsgs.getArgs(args, required=2)
-        try:
-            poll_id = int(poll_id)
-        except ValueError:
-            irc.error('The id must be an integer.')
-            return
-        try:
-            userId = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
+        poll_id = self._getId(poll_id)
+        userId = self._getUserId(msg.prefix)
         db = self.getDb(channel)
         cursor = db.cursor()
         # Only the poll starter or an admin can add options
@@ -216,21 +219,14 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
 
         Vote for the option with the given id on the poll with the given poll
         id.  This command can also be used to override any previous vote.
+        <channel> is only necesssary if the message isn't sent in the channel
+        itself.
         """
         channel = privmsgs.getChannel(msg, args)
         (poll_id, option_id) = privmsgs.getArgs(args, required=2)
-        try:
-            poll_id = int(poll_id)
-            option_id = int(option_id)
-        except ValueError:
-            irc.error('The poll id and option id '
-                           'arguments must be an integers.')
-            return
-        try:
-            userId = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
+        poll_id = self._getId(poll_id)
+        option_id = self._getId(option_id)
+        userId = self._getUserId(msg.prefix)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT open
@@ -264,15 +260,12 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
     def results(self, irc, msg, args):
         """[<channel>] <id>
 
-        Shows the results for the poll with the given id.
+        Shows the results for the poll with the given id.  <channel> is only
+        necessary if the message is not sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         poll_id = privmsgs.getArgs(args)
-        try:
-            poll_id = int(poll_id)
-        except ValueError:
-            irc.error('The id argument must be an integer.')
-            return
+        poll_id = self._getId(poll_id)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, question, started_by, open
@@ -282,11 +275,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             irc.error('There is no such poll.')
             return
         (id, question, startedBy, open) = cursor.fetchone()
-        try:
-            startedBy = ircdb.users.getUser(startedBy).name
-        except KeyError:
-            startedBy = 'an unknown user'
-            return
+        startedBy = self._getUserName(startedBy)
         reply = 'Results for poll #%s: "%s" by %s' % \
                 (id, question, startedBy)
         cursor.execute("""SELECT count(user_id), option_id
@@ -318,9 +307,10 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         irc.reply(reply)
 
     def list(self, irc, msg, args):
-        """takes no arguments.
+        """[<channel>]
 
-        Lists the currently open polls for the channel and their ids.
+        Lists the currently open polls for <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
@@ -328,9 +318,9 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         cursor.execute("""SELECT id, question FROM polls WHERE open=1""")
         if cursor.rowcount == 0:
             irc.reply('This channel currently has no open polls.')
-            return
-        polls = ['#%s: %r' % (id, q) for id, q in cursor.fetchall()]
-        irc.reply(utils.commaAndify(polls))
+        else:
+            polls = ['#%s: %r' % t for t in cursor.fetchall()]
+            irc.reply(utils.commaAndify(polls))
 
 Class = Poll
 
