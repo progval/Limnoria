@@ -61,6 +61,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         privmsgs.CapabilityCheckingPrivmsg.__init__(self)
         self.joins = {}
+        self.pendingNickChanges = {}
 
     def do376(self, irc, msg):
         channels = list(conf.supybot.channels())
@@ -180,6 +181,24 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         else:
             irc.reply('I\'m not currently in any channels.')
 
+    def do484(self, irc, msg):
+        irc = self.pendingNickChanges.get(irc, None)
+        if irc is not None:
+            irc.error('My connection is restricted, I can\'t change nicks.')
+        else:
+            self.log.debug('Got 484 without Admin.nick being called.')
+
+    def do433(self, irc, msg):
+        irc = self.pendingNickChanges.get(irc, None)
+        if irc is not None:
+            irc.error('Someone else is already using that nick.')
+        else:
+            self.log.debug('Got 433 without Admin.nick being called.')
+
+    def doNick(self, irc, msg):
+        if msg.nick == irc.nick or msg.args[0] == irc.nick:
+            del self.pendingNickChanges[irc]
+            
     def nick(self, irc, msg, args):
         """<nick>
 
@@ -188,6 +207,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         if ircutils.isNick(nick):
             conf.supybot.nick.setValue(nick)
             irc.queueMsg(ircmsgs.nick(nick))
+            self.pendingNickChanges[irc.getRealIrc()] = irc
         else:
             irc.error('That\'s not a valid nick.')
 
