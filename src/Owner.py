@@ -94,20 +94,13 @@ def loadPluginClass(irc, module):
     assert not irc.getCallback(callback.name())
     irc.addCallback(callback)
 
-def registerPlugin(name, currentValue=None):
-    conf.supybot.plugins.registerGroup(name,
-        registry.GroupWithValue(registry.Boolean(False, """Determines
-        whether this plugin is loaded by default.""")))
-    if currentValue is not None:
-        conf.supybot.plugins.getChild(name).setValue(currentValue)
-    
 
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
     priority = ~sys.maxint-1 # This must be first!
     capability = 'owner'
-    _srcPlugins = ('Owner', 'Misc', 'Admin', 'User', 'Channel')
+    _srcPlugins = ('Admin', 'Channel', 'Config', 'Misc', 'Owner', 'User')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         if hasattr(self.__class__, '_exec'):
@@ -122,7 +115,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     (_, _, name) = name.split('.')
                 except ValueError: #unpack list of wrong size.
                     continue
-                registerPlugin(name)
+                conf.registerPlugin(name)
 
     def do001(self, irc, msg):
         self.log.info('Loading other src/ plugins.')
@@ -346,7 +339,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error(utils.exnToString(e))
             return
         loadPluginClass(irc, module)
-        registerPlugin(name, True)
+        conf.registerPlugin(name, True)
         irc.replySuccess()
 
     def reload(self, irc, msg, args):
@@ -391,7 +384,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 callback.die()
                 del callback
             gc.collect()
-            registerPlugin(name, False)
+            conf.registerPlugin(name, False)
             irc.replySuccess()
         else:
             irc.error('There was no callback %s' % name)
