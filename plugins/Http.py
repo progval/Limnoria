@@ -165,7 +165,7 @@ class Http(callbacks.Privmsg):
             rating = self._gkrating.search(profile).group(1)
             games = self._gkgames.search(profile).group(1)
             (w, l, d) = self._gkrecord.search(profile).groups()
-            seen = self._gkseen.search(profile).group(1)
+            seen = self._gkseen.search(utils.htmlToText(profile)).group(1)
             if seen.find("is hiding") != -1:
                 seen = '%s is hiding his/her online status.' % name
             elif seen.startswith('0'):
