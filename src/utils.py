@@ -273,6 +273,15 @@ def wrapLines(s):
         L.append(textwrap.fill(line))
     return '\n'.join(L)
 
+def ellipsisify(s, n):
+    """Returns a shortened version of s.  Produces up to the first n chars at
+    the nearest word boundary.
+    """
+    if len(s) <= n:
+        return s
+    else:
+        return (textwrap.wrap(s, n-3)[0] + '...')
+
 plurals = {'match': 'matches'}
 def pluralize(i, s):
     """Returns the plural of s based on its number i.  Put any exceptions to
