@@ -368,9 +368,12 @@ def main():
     if yn('Do you want your bot to join some channels when he connects?',
           default=True):
         defaultChannels = ' '.join(conf.supybot.channels())
+        output("""Seperate channels with spaces.  If the channel is locked
+                  with a key, follow the channel name with the key seperated
+                  by a comma. For example:
+                  #supybot #mychannel,mykey #otherchannel""");
         while True:
-            channels = something('What channels?  Separate channels with '
-                                 'spaces.', default=defaultChannels)
+            channels = something('What channels?', default=defaultChannels)
             try:
                 conf.supybot.channels.set(channels)
                 break
@@ -379,6 +382,8 @@ def main():
                 output("""Not all of those are valid IRC channels.  Be sure to
                 prefix the channel with # (or +, or !, or &, but no one uses
                 those channels, really).""")
+    else:
+        conf.supybot.channels.setValue([])
 
     ###
     # Plugins
