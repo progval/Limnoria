@@ -50,14 +50,13 @@ def getChannel(msg, args):
     If the channel was given in args, args is modified (the channel is
     removed).
     """
-    if ircutils.isChannel(msg.args[0]):
+    if args and ircutils.isChannel(args[0]):
+        return args.pop(0)
+    elif ircutils.isChannel(msg.args[0]):
         return msg.args[0]
     else:
-        if len(args) > 0:
-            return args.pop(0)
-        else:
-            raise callbacks.Error, 'Command must be sent in a channel or ' \
-                                   'include a channel in its arguments.'
+        raise callbacks.Error, 'Command must be sent in a channel or ' \
+                               'include a channel in its arguments.'
 
 def getArgs(args, needed=1, optional=0):
     """Take the needed arguments from args.
