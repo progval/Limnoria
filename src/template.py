@@ -92,7 +92,7 @@ def main():
         while world.ircs:
             drivers.run()
     except (SystemExit, KeyboardInterrupt):
-        sys.exit(0)
+        raise SystemExit, 'Goodbye!'
     except:
         log.exception('Exception raised out of drivers.run:')
 
