@@ -419,7 +419,7 @@ class RichReplyMethods(object):
 
     def _error(self, s, Raise, **kwargs):
         if Raise:
-            raise callbacks.Error, s
+            raise Error, s
         else:
             self.error(s, **kwargs)
 
