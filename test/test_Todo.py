@@ -81,10 +81,10 @@ if sqlite is not None:
         def testSetPriority(self):
             self.assertNotError('todo add --priority=1 moo')
             self.assertRegexp('todo 1', 'moo, priority: 1 \(Added '
-                              'at: .*?\)')
+                              'at .*?\)')
             self.assertNotError('setpriority 1 50')
             self.assertRegexp('todo 1', 'moo, priority: 50 \(Added '
-                              'at: .*?\)')
+                              'at .*?\)')
             self.assertNotError('setpriority 1 0')
             self.assertRegexp('todo 1', 'moo \(Added at .*?\)')
 
