@@ -705,7 +705,8 @@ class UsersDictionary(utils.IterableMap):
 
     def newUser(self):
         """Allocates a new user in the database and returns it and its id."""
-        user = IrcUser()
+        hashed = conf.supybot.databases.users.hash()
+        user = IrcUser(hashed=hashed)
         self.nextId += 1
         id = self.nextId
         self.users[id] = user

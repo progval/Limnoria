@@ -454,6 +454,9 @@ supybot.databases.users.register('timeoutIdentification',
 registry.Integer(0, """Determines how long it takes identification to time
 out.  If the value is less than or equal to zero, identification never
 times out."""))
+supybot.databases.users.register('hash', registry.Boolean(False, """
+Determines whether the passwords in the user database will be hashed by
+default."""))
 
 supybot.databases.register('ignores')
 supybot.databases.ignores.register('filename', registry.String('ignores.conf',

@@ -1,3 +1,7 @@
+	* Added supybot.databases.users.hash, allowing those running bots
+	to specify the default hashed/unhashed state of user passwords in
+	the config file.
+	
 	* Added Debian.bug, which retrieve bug info from Debian's BTS.
 
 	* Changed Relay.names to Relay.nicks, to be consistent with
