@@ -49,7 +49,7 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 ###
 # version: This should be pretty obvious.
 ###
-version ='0.77.2'
+version ='0.77.2+cvs'
 
 ###
 # daemonized: This determines whether or not the bot has been daemonized
