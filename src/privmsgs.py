@@ -69,7 +69,7 @@ def getArgs(args, needed=1, optional=0):
     let the caller handle sending the help message.
     """
     if len(args) < needed:
-        raise callbacks.Error
+        raise callbacks.ArgumentError
     if len(args) < needed + optional:
         ret = list(args) + ([''] * (needed + optional - len(args)))
     elif len(args) >= needed + optional:

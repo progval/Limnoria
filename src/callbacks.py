@@ -150,6 +150,9 @@ class Error(Exception):
     """Generic class for errors in Privmsg callbacks."""
     pass
 
+class ArgumentError(Error):
+    pass
+
 class Tokenizer:
     quotes = '"`'
     nonbacktickquotes = '"'
@@ -237,11 +240,10 @@ class IrcObjectProxy:
             else:
                 command = getattr(callback, name)
                 callback.callCommand(command, self, self.msg, self.args)
+        except ArgumentError:
+            self.reply(self.msg, command.__doc__.splitlines()[0])
         except Error, e:
-            if str(e) == '':
-                self.reply(self.msg, command.__doc__.splitlines()[0])
-            else:
-                self.reply(self.msg, debug.exnToString(e))
+            self.reply(self.msg, debug.exnToString(e))
         except Exception, e:
             debug.recoverableException()
             self.reply(self.msg, debug.exnToString(e))
