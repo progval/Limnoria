@@ -539,11 +539,16 @@ class Directory(registry.String):
         return v
 
     def dirize(self, filename):
+        myself = self()
         if os.path.isabs(filename):
-            selfAbs = os.path.abspath(self())
+            filename = os.path.abspath(filename)
+            selfAbs = os.path.abspath(myself)
             commonPrefix = os.path.commonprefix([selfAbs, filename])
             filename = filename[len(commonPrefix)+1:] # +1 for extra /.
-        return os.path.join(self(), filename)
+        elif not os.path.isabs(myself):
+            if filename.startswith(myself):
+                filename = filename[len(myself):]
+        return os.path.join(myself, filename)
 
 class DataFilename(registry.String):
     def __call__(self):
