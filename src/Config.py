@@ -199,7 +199,7 @@ class Config(callbacks.Privmsg):
             else:
                 capability = getCapability(name)
                 if ircdb.checkCapability(msg.prefix, capability):
-                    irc.reply(str(wrapper))
+                    irc.reply(str(wrapper), private=True)
                 else:
                     irc.errorNoCapability(capability)
         else:
