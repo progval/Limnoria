@@ -219,7 +219,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             self._colorGoogles[s] = ret
         return ircutils.bold(ret)
 
-    _googleRe = re.compile('(google)', re.I)
+    _googleRe = re.compile(r'\b(google)\b', re.I)
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and \
            self.registryValue('colorfulFilter', msg.args[0]):
