@@ -39,16 +39,18 @@ import cgitb
 import traceback
 
 import ansi
-import conf
+try:
+    import conf
+except ImportError:
+    class conf:
+        logDir = '.'
+        detailedTracebacks = True
+    
 import world
 
 ###
 # CONFIGURATION
 ###
-
-## Uncomment this class to remove the tie to SupyBot's conf module.
-## class conf:
-##     logDir = '.'
 
 # Names of logfiles.
 errorfile = os.path.join(conf.logDir, 'error.log')
