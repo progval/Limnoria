@@ -1,3 +1,6 @@
+	* Added supybot.plugins.Channels.alwaysRejoin, to make the bot
+	always rejoin when it's kicked.
+	
 	* Added supybot.databases.users.hash, allowing those running bots
 	to specify the default hashed/unhashed state of user passwords in
 	the config file.

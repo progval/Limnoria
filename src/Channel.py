@@ -49,9 +49,21 @@ import ircmsgs
 import schedule
 import ircutils
 import privmsgs
+import registry
 import callbacks
 
+conf.registerPlugin('Channel')
+conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',
+    register.Boolean(True, """Determines whether the bot will always try to
+    rejoin a channel whenever it's kicked from the channel."""))
+
 class Channel(callbacks.Privmsg):
+    def doKick(self, irc, msg):
+        channel = msg.args[0]
+        if msg.args[1] == irc.nick:
+            if self.registryValue('alwaysRejoin', channel):
+                irc.sendMsg(ircmsgs.join(channel)) # Fix for keys.
+
     def op(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
 
