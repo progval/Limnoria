@@ -42,6 +42,7 @@ from fix import *
 
 import re
 import new
+import sets
 import time
 import shlex
 import inspect
@@ -407,7 +408,7 @@ class Privmsg(irclib.IrcCallback):
         if s:
             recipient = msg.args[0]
             if ircdb.checkIgnored(msg.prefix, recipient):
-                debug.printf('Privmsg.doPrivmsg: ignoring.')
+                debug.printf('Privmsg.doPrivmsg: ignoringi %s.' % recipient)
                 return
             m = self._r.match(s)
             if m and self.isCommand(canonicalName(m.group(1))):
@@ -474,6 +475,7 @@ class PrivmsgRegexp(Privmsg):
 
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
+            debug.msg('PrivmsgRegexp.doPrivmsg: ignoring %s' % msg.args[0])
             return
         for (r, method) in self.res:
             m = r.search(msg.args[1])
@@ -485,57 +487,40 @@ class PrivmsgRegexp(Privmsg):
                     self.callCommand(method, irc, msg, m)
 
 
-class Combine(Privmsg):
-    classes = [] # Override in a subclass.
-    def __getattr__(self, attr):
-        for instance in self.instances:
-            try:
-                return getattr(instance, attr)
-            except AttributeError:
-                pass
-        raise AttributeError, attr
-    
-    def __init__(self, *args, **kwargs):
-        self.instances = []
-        for cls in self.classes:
-            self.instances.append(cls(*args, **kwargs))
-
-    def __call__(self, irc, msg):
-        for instance in self.instances:
-            instance.__call__(irc, msg)
-
-    def inFilter(self, irc, msg):
-        for instance in self.instances:
-            msg = instance.inFilter(irc, msg)
-        return msg
-
-    def outFilter(self, irc, msg):
-        for instance in self.instances:
-            msg = instance.outFilter(irc, msg)
-        return msg
-
-    def isCommand(self, *args, **kwargs):
-        for instance in self.instances:
-            if instance.isCommand(*args, **kwargs):
-                return True
-        return False
-
-    def callCommand(self, f, *args, **kwargs):
-        for instance in self.instances:
-            if instance.__class__ == f.im_class:
-                return instance.callCommand(f, *args, **kwargs)
-                
-        assert False
+class PrivmsgCommandAndRegexp(Privmsg):
+    flags = re.I
+    regexps = sets.Set()
+    def __init__(self):
+        Privmsg.__init__(self)
+        self.res = []
+        for name in self.regexps:
+            method = getattr(self, name)
+            r = re.compile(method.__doc__, self.flags)
+            self.res.append((r, method))
             
-    def name(self):
-        return self.__class__.__name__
-    
-    def reset(self):
-        for instance in self.instances:
-            instance.reset()
-
-    def die(self):
-        for instance in self.instances:
-            instance.die()
+    def doPrivmsg(self, irc, msg):
+        if ircdb.checkIgnored(msg.prefix, msg.args[0]):
+            return
+        for (r, method) in self.res:
+            m = r.search(msg.args[1])
+            if m:
+                self.rateLimiter.put(msg)
+                msg = self.rateLimiter.get()
+                if msg:
+                    self.callCommand(method, IrcObjectProxyRegexp(irc), msg, m)
+        s = addressed(irc.nick, msg)
+        if s:
+            m = self._r.match(s)
+            if m and self.isCommand(canonicalName(m.group(1))):
+                self.rateLimiter.put(msg)
+                msg = self.rateLimiter.get()
+                if msg:
+                    args = tokenize(s)
+                    self.Proxy(irc, msg, args)
+                    
+            
+                    
+            
+        
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
