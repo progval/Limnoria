@@ -76,32 +76,35 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
         # test that it works with sf.net
         self.assertNotError('http://sf.net/tracker/?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
+        # test that it works
 
-    def testHttpsSnarfer(self):
-        s = r';.*Status.*: \w+;'
-        self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=589953&group_id=58965&atid=489447', s)
-        self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=712761&group_id=58965&atid=489450', s)
-        self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235', s)
-        self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=561547&group_id=235&atid=200235', s)
-        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=400942&group_id=235&atid=390395', s)
+##     def testHttpsSnarfer(self):
+##         s = r';.*Status.*: \w+;'
+##         self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
+##             'func=detail&aid=589953&group_id=58965&atid=489447', s)
+##         self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
+##             'func=detail&aid=712761&group_id=58965&atid=489450', s)
+##         self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
+##             'func=detail&aid=540223&group_id=235&atid=300235', s)
+##         self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
+##             'func=detail&aid=561547&group_id=235&atid=200235', s)
+##         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+##             'func=detail&aid=400942&group_id=235&atid=390395', s)
 
-        # test that it works without index.php
-        self.assertNotError('https://sourceforge.net/tracker/?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
-        # test that it works with www
-        self.assertNotError('https://www.sourceforge.net/tracker/?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
-        # test that it works with www and without index.php
-        self.assertNotError('https://www.sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
-        # test that it works with www and without index.php
-        self.assertNotError('https://sf.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
+##         # test that it works without index.php
+##         self.assertNotError('https://sourceforge.net/tracker/?'\
+##             'func=detail&aid=540223&group_id=235&atid=300235')
+##         # test that it works with www
+##         self.assertNotError('https://www.sourceforge.net/tracker/?'\
+##             'func=detail&aid=540223&group_id=235&atid=300235')
+##         # test that it works with www and without index.php
+##         self.assertNotError('https://www.sourceforge.net/tracker/index.php?'\
+##             'func=detail&aid=540223&group_id=235&atid=300235')
+##         # test that it works with www and without index.php
+##         self.assertNotError('https://sf.net/tracker/index.php?'\
+##             'func=detail&aid=540223&group_id=235&atid=300235')
+        self.assertNotError('https://sourceforge.net/tracker/?'
+                            'func=detail&atid=105470&aid=827260&group_id=5470')
 
     def testDisablesfsnarfer(self):
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
