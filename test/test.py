@@ -137,7 +137,8 @@ class PluginTestCase(unittest.TestCase):
     def _feedMsg(self, query, timeout=None):
         if timeout is None:
             timeout = self.timeout
-        self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
+        self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, query,
+                                         prefix=self.prefix))
         fed = time.time()
         response = self.irc.takeMsg()
         while response is None and time.time() - fed < timeout:
@@ -151,7 +152,8 @@ class PluginTestCase(unittest.TestCase):
 
     def feedMsg(self, query):
         """Just feeds it a message, that's all."""
-        self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
+        self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, query,
+                                         prefix=self.prefix))
 
     # These assertError/assertNoError are somewhat fragile.  The proper way to
     # do them would be to use a proxy for the irc object and intercept .error.
