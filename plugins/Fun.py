@@ -356,6 +356,25 @@ class Fun(callbacks.Privmsg):
         else:
             irc.reply('*click*')
 
+    def monologue(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the number of consecutive lines you've sent in <channel>
+        without being interrupted by someone else (i.e. how long your current
+        'monologue' is).  <channel> is only necessary if the message isn't sent
+        in the channel itself.
+        """
+        i = 0
+        for m in reversed(irc.state.history):
+            if m.command != 'PRIVMSG' or not m.prefix:
+                continue
+            elif msg.prefix == m.prefix:
+                i += 1
+            else:
+                break
+        iS = utils.nItems('line', i)
+        irc.reply('Your current monologue is at least %s long.' % iS)
+
 
 Class = Fun
 
