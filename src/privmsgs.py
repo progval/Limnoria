@@ -999,6 +999,7 @@ class UserCommands(callbacks.Privmsg):
             user = ircdb.users.getUser(name)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
+            return
         irc.reply(msg, '[%s]' % ', '.join(user.capabilities))
 
     def auth(self, irc, msg, args):
