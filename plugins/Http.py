@@ -55,6 +55,7 @@ class Http(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.deepthoughtq = structures.queue()
+        self.deepthoughts = set()
 
     def deepthought(self, irc, msg, args):
         """takes no arguments
@@ -65,13 +66,15 @@ class Http(callbacks.Privmsg):
         thought = ' ' * 512
         now = time.time()
         while self.deepthoughtq and now - self.deepthoughtq[0][0] > 86400:
-            self.deepthoughtq.dequeue()
-        while len(thought) > 450 or thought in self.deepthoughtq:
+            s = self.deepthoughtq.dequeue()
+            self.deepthoughts.remove(s)
+        while len(thought) > 430 or thought in self.deepthoughts:
             fd = urllib2.urlopen(url)
             s = fd.read()
             thought = s.split('<br>')[2]
             thought = ' '.join(thought.split())
         self.deepthoughtq.enqueue((now, thought))
+        self.deepthoughts.add(thought)
         irc.reply(msg, thought)
 
     _titleRe = re.compile(r'<title>(.*)</title>')
