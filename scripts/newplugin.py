@@ -53,7 +53,7 @@ def configure(onStart, afterConnect):
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
-    from questions import *
+    from questions import expect, anything, something, yn
     onStart.append('load %s')
 
 class %s(%s):

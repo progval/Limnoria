@@ -85,11 +85,14 @@ if __name__ == '__main__':
         ident = anything('What ident would you like the bot to use?')
         configfd.write('Ident: %s\n' % ident)
     configfd.write('\n')
-    configfd.write('# Commands to run before connecting.\n')
-    configfd.write('load AdminCommands\n')
-    configfd.write('load UserCommands\n')
-    configfd.write('load ChannelCommands\n')
-    configfd.write('load MiscCommands\n')
+    onStart = []
+    onStart.append('# Commands to run before connecting.')
+    onStart.append('load AdminCommands')
+    onStart.append('load UserCommands')
+    onStart.append('load ChannelCommands')
+    onStart.append('load MiscCommands')
+    afterConnect = []
+    afterConnect.append('# Commands to run after connecting.')
 
     ###
     # Modules.
@@ -108,7 +111,10 @@ if __name__ == '__main__':
             module = imp.load_module(plugin, *moduleInfo)
             print module.__doc__
             if yn('Would you like to add this plugin?') == 'y':
-                configfd.write('load %s\n' % plugin)
+                if hasattr(module, 'configure'):
+                    module.configure(onStart, afterConnect, advanced)
+                else:
+                    onStart.append('load %s' % plugin)
 
     ###
     # Commands
@@ -118,19 +124,22 @@ if __name__ == '__main__':
     while advanced and yn(preConnect) == 'y':
         preConnect = 'Would you like any other commands ' \
                      'to run before the bot connects to the server?'
-        configfd.write(anything('What command?'))
-        configfd.write('\n')
-    configfd.write('\n')
-    configfd.write('# Commands to run after the bot is connected.\n')
+        onStart.append(anything('What command?'))
     if yn('Do you want the bot to join any channels?') == 'y':
         channels = anything('What channels? (separate channels by spaces)')
-        configfd.write('join %s\n' % channels)
+        afterConnect.append('join %s' % channels)
     postConnect = 'Would you like any commands to run ' \
                   'when the bot is finished connecting to the server?'
     while advanced and yn(postConnect) == 'y':
         postConnect = 'Would you like any other commands to run ' \
                       'when the bot is finished connecting to the server?'
-        configfd.write(anything('What command?'))
+        afterConnect.append(anything('What command?'))
+    for command in onStart:
+        configfd.write(command)
+        configfd.write('\n')
+    configfd.write('\n')
+    for command in afterConnect:
+        configfd.write(command)
         configfd.write('\n')
     configfd.close()
 
