@@ -254,8 +254,13 @@ class IrcUser(object):
         authentication.  If useAuth is False, only checks against the user's
         hostmasks.
         """
-        if useAuth and self.auth and (hostmask == self.auth[1]):
-            return True
+        if useAuth:
+            if self.auth:
+                i = conf.supybot.databases.users.timeoutIdentification()
+                if i > 0 and self.auth[0] < time.time() - i:
+                    self.unsetAuth()
+                elif hostmask == self.auth[1]:
+                    return True
         for pat in self.hostmasks:
             if ircutils.hostmaskPatternEqual(pat, hostmask):
                 return pat
@@ -282,6 +287,7 @@ class IrcUser(object):
 
     def unsetAuth(self):
         """Unsets a use's authenticated hostmask."""
+        users.invalidateCache(hostmask=self.auth[1])
         self.auth = None
 
     def preserve(self, fd, indent=''):
@@ -305,13 +311,21 @@ class IrcChannel(object):
     """This class holds the capabilities, bans, and ignores of a channel.
     """
     defaultOff = ('op', 'halfop', 'voice', 'protected')
-    def __init__(self, bans=None, ignores=None, capabilities=None,
-                 lobotomized=False, defaultAllow=True):
+    def __init__(self, bans=None, silences=None, exceptions=None, ignores=None,
+                 capabilities=None, lobotomized=False, defaultAllow=True):
         self.defaultAllow = defaultAllow
         if bans is None:
             self.bans = []
         else:
             self.bans = bans
+        if exceptions is None:
+            self.exceptions = []
+        else:
+            self.exceptions = exceptions
+        if silences is None:
+            self.silences = []
+        else:
+            self.silences = silences
         if ignores is None:
             self.ignores = []
         else:
@@ -327,10 +341,11 @@ class IrcChannel(object):
 
     def __repr__(self):
         return '%s(bans=%r, ignores=%r, capabilities=%r, ' \
-               'lobotomized=%r, defaultAllow=%s)\n' % \
+               'lobotomized=%r, defaultAllow=%s, ' \
+               'silences=%r, exceptions=%r)\n' % \
                (self.__class__.__name__, self.bans, self.ignores,
                 self.capabilities, self.lobotomized,
-                self.defaultAllow)
+                self.defaultAllow, self.silences, self.exceptions)
 
     def addBan(self, hostmask):
         """Adds a ban to the channel banlist."""
@@ -396,12 +411,16 @@ class IrcChannel(object):
             fd.write(os.linesep)
         write('lobotomized %s' % self.lobotomized)
         write('defaultAllow %s' % self.defaultAllow)
-        for ban in self.bans:
-            write('ban %s' % ban)
-        for ignore in self.ignores:
-            write('ignore %s' % ignore)
         for capability in self.capabilities:
-            write('capability %s' % capability)
+            write('capability ' + capability)
+        for ban in self.bans:
+            write('ban ' + ban)
+        for silence in self.silences:
+            write('silence ' + silence)
+        for exception in self.exceptions:
+            write('exception ' + exception)
+        for ignore in self.ignores:
+            write('ignore ' + ignore)
         fd.write(os.linesep)
         
 
@@ -496,6 +515,16 @@ class IrcChannelCreator(Creator):
         if self.name is None:
             raise ValueError, 'Unexpected channel description without channel.'
         self.c.ignores.append(rest)
+
+    def silence(self, rest, lineno):
+        if self.name is None:
+            raise ValueError, 'Unexpected channel description without channel.'
+        self.c.silences.append(rest)
+
+    def exception(self, rest, lineno):
+        if self.name is None:
+            raise ValueError, 'Unexpected channel description without channel.'
+        self.c.exceptions.append(rest)
 
     def finish(self):
         if self.hadChannel:
@@ -618,6 +647,25 @@ class UsersDictionary(utils.IterableMap):
     def numUsers(self):
         return len(self.users)
 
+    def invalidateCache(self, id=None, hostmask=None, name=None):
+        if hostmask is not None:
+            if hostmask in self._hostmaskCache:
+                id = self._hostmaskCache.pop(hostmask)
+                self._hostmaskCache[id].remove(hostmask)
+                if not self._hostmaskCache[id]:
+                    del self._hostmaskCache[id]
+        if name is not None:
+            del self._nameCache[self._nameCache[id]]
+            del self._nameCache[id]
+        if id is not None:
+            if id in self._nameCache:
+                del self._nameCache[self._nameCache[id]]
+                del self._nameCache[id]
+            if id in self._hostmaskCache:
+                for hostmask in self._hostmaskCache[id]:
+                    del self._hostmaskCache[hostmask]
+                del self._hostmaskCache[id]
+            
     def setUser(self, id, user):
         """Sets a user (given its id) to the IrcUser given it."""
         assert isinstance(id, int), 'setUser takes an integer userId.'
@@ -639,13 +687,7 @@ class UsersDictionary(utils.IterableMap):
                     if ircutils.hostmaskPatternEqual(hostmask, otherHostmask):
                         s = '%s is someone else\'s hostmask.' % hostmask
                         raise ValueError, s
-        if id in self._nameCache:
-            del self._nameCache[self._nameCache[id]]
-            del self._nameCache[id]
-        if id in self._hostmaskCache:
-            for hostmask in self._hostmaskCache[id]:
-                del self._hostmaskCache[hostmask]
-            del self._hostmaskCache[id]
+        self.invalidateCache(id)
         self.users[id] = user
         self.flush()
 
