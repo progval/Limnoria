@@ -69,7 +69,7 @@ class LastModifiedSetOfStrings(registry.SpaceSeparatedListOfStrings):
         registry.SpaceSeparatedListOfStrings.setValue(self, v)
 
 conf.registerPlugin('BadWords')
-conf.registerChannelValue(conf.supybot.plugins.BadWords, 'words',
+conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'words',
     LastModifiedSetOfStrings([], """Determines what words are
     considered to be 'bad' so the bot won't say them."""))
 
