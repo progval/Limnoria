@@ -72,8 +72,8 @@ if sys.platform == 'win32':
 else:
     colorterm = True
 
-# printf: True if printf debugging messages should be printed.
-printf = False
+# PRINTF: True if printf debugging messages should be printed.
+PRINTF = False
 
 # minimumPriority: Lowest priority logged;
 #                  One of {'verbose', 'low', 'normal', 'high'}.
@@ -209,7 +209,7 @@ def msg(s, priority='low'):
         _debugfd.flush()
 
 def printf(msg):
-    if printf:
+    if PRINTF:
         print '*** ' + str(msg)
 
 def methodNamePrintf(obj, methodName):
