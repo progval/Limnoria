@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 """Namespace module, so you don't need PyXML 
 """
 
