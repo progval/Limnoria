@@ -2,3 +2,9 @@ There are just little tidbits that you might need/want to know.
 
 In order to make a module dynamically loadable, all you gotta do is have a
 callback named "Class" and throw it in plugins/ .
+
+In order to begin writing a callback, you'll want to run
+scripts/newplugin.py.
+
+Everything you run needs to be run from the root supybot directory;
+don't ever run anything from *inside* src/ or plugins/ or scripts/.
