@@ -192,6 +192,11 @@ def split(s):
 csv.join = join
 csv.split = split
 
+import socket
+# Some socket modules don't have sslerror, so we'll just make it an error.
+if not hasattr(socket, 'sslerror'):
+    socket.sslerror = socket.error
+    
 for name in exported:
     __builtins__[name] = globals()[name]
 
