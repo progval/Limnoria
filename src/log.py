@@ -74,9 +74,23 @@ class BetterStreamHandler(logging.StreamHandler):
 
 
 class StdoutStreamHandler(BetterStreamHandler):
+    def disable(self):
+        self.setLevel(sys.maxint) # Just in case.
+        _logger.removeHandler(self)
+        logging._acquireLock()
+        try:
+            del logging._handlers[self]
+        finally:
+            logging._releaseLock()
+
     def emit(self, record):
         if conf.supybot.log.stdout():
-            BetterStreamHandler.emit(self, record)
+            try:
+                BetterStreamHandler.emit(self, record)
+            except ValueError, e: # Raised if sys.stdout is closed.
+                self.disable()
+                error('Error logging to stdout.  Removing stdout handler.')
+                exception('Uncaught exception in StdoutStreamHandler:')
             
 
 class BetterFileHandler(logging.FileHandler):
