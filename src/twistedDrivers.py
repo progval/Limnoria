@@ -50,7 +50,7 @@ class TwistedRunnerDriver(drivers.IrcDriver):
         try:
             reactor.iterate(conf.supybot.drivers.poll())
         except:
-            log.exception('Uncaught exception outside reactor:')
+            drivers.log.exception('Uncaught exception outside reactor:')
 
 class SupyIrcProtocol(LineReceiver):
     delimiter = '\n'
@@ -74,7 +74,7 @@ class SupyIrcProtocol(LineReceiver):
     def connectionLost(self, failure):
         self.mostRecentCall.cancel()
         self.irc.reset()
-        log.warning(failure.getErrorMessage())
+        drivers.log.disconnect(self.currentServer, errorMsg(failure))
 
     def connectionMade(self):
         self.irc.reset()
@@ -82,44 +82,33 @@ class SupyIrcProtocol(LineReceiver):
         self.irc.driver = self
 
     def die(self):
-        log.info('Driver for %s dying.', self.irc)
+        drivers.log.die(self.irc)
         self.factory.continueTrying = False
         self.transport.loseConnection()
 
     def reconnect(self):
+        drivers.log.reconnect(self.irc.network)
         self.transport.loseConnection()
 
+def errorMsg(reason):
+    return reason.getErrorMessage()
 
-class SupyReconnectingFactory(ReconnectingClientFactory):
+class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
     maxDelay = 300
     protocol = SupyIrcProtocol
     def __init__(self, irc):
         self.irc = irc
-        self.networkGroup = conf.supybot.networks.get(self.irc.network)
-        self.servers = ()
+        drivers.ServersMixin.__init__(self, irc)
         (server, port) = self._getNextServer()
         reactor.connectTCP(server, port, self)
 
-    def _getServers(self):
-        # We do this, rather than itertools.cycle the servers in __init__,
-        # because otherwise registry updates given as setValues or sets
-        # wouldn't be visible until a restart.
-        return self.networkGroup.servers()[:] # Be sure to copy!
-
-    def _getNextServer(self):
-        if not self.servers:
-            self.servers = self._getServers()
-        assert self.servers, 'Servers value for %s is empty.' % \
-                             self.networkGroup.name
-        server = self.servers.pop(0)
-        self.currentServer = '%s:%s' % server
-        return server
-        
     def clientConnectionFailed(self, connector, r):
+        drivers.log.connectError(self.currentServer, errorMsg(r))
         (connector.host, connector.port) = self._getNextServer()
         ReconnectingClientFactory.clientConnectionFailed(self, connector, r)
 
     def clientConnectionLost(self, connector, r):
+        drivers.log.disconnect(self.currentServer, errorMsg(r))
         (connector.host, connector.port) = self._getNextServer()
         ReconnectingClientFactory.clientConnectionLost(self, connector, r)
 

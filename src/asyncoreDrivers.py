@@ -43,6 +43,7 @@ import asynchat
 import supybot.log as log
 import supybot.conf as conf
 import supybot.ircdb as ircdb
+import supybot.utils as utils
 import supybot.world as world
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
@@ -59,48 +60,30 @@ class AsyncoreRunnerDriver(drivers.IrcDriver):
             else:
                 asyncore.poll(timeout)
         except:
-            log.exception('Uncaught exception:')
+            drivers.log.exception('Uncaught exception:')
 
 
-class AsyncoreDriver(asynchat.async_chat, object):
+class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
     def __init__(self, irc, servers=()):
         asynchat.async_chat.__init__(self)
+        drivers.ServersMixin.__init__(self, irc, servers=servers)
         self.irc = irc
         self.buffer = ''
-        self.servers = servers 
-        self.networkGroup = conf.supybot.networks.get(self.irc.network)
         self.set_terminator('\n')
         try:
             server = self._getNextServer()
             sock = utils.getSocket(server[0])
             self.set_socket(sock)
-            log.info('Connecting to %s.', self.currentServer)
+            drivers.log.connect(self.currentServer)
             self.connect(server)
         except socket.error, e:
-            log.warning('Error connecting to %s: %s', self.currentServer, e)
+            drivers.log.connectError(self.currentServer, e)
             self.reconnect(wait=True)
 
-    def _getServers(self):
-        # We do this, rather than itertools.cycle the servers in __init__,
-        # because otherwise registry updates given as setValues or sets
-        # wouldn't be visible until a restart.
-        return self.networkGroup.servers()[:] # Be sure to copy!
-
-    def _getNextServer(self):
-        if not self.servers:
-            self.servers = self._getServers()
-        assert self.servers, 'Servers value for %s is empty.' % \
-                             self.networkGroup.name
-        server = self.servers.pop(0)
-        self.currentServer = '%s:%s' % server
-        return server
-        
     def _scheduleReconnect(self, at=60):
         when = time.time() + at
         if not world.dying:
-            whenS = log.timestamp(when)
-            log.info('Scheduling reconnect to %s at %s',
-                     self.currentServer, whenS)
+            drivers.log.reconnect(self.irc.network, when)
         def makeNewDriver():
             self.irc.reset()
             driver = self.__class__(self.irc, servers=self.servers)
@@ -137,7 +120,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
         pass
 
     def die(self):
-        log.info('Driver for %s dying.', self.irc)
+        drivers.log.die(self.irc)
         self.close()
 
 try:

@@ -41,7 +41,7 @@ import re
 import os
 import sys
 
-import supybot.log as log
+import supybot.log as supylog
 import supybot.conf as conf
 import supybot.ansi as ansi
 import supybot.ircmsgs as ircmsgs
@@ -69,6 +69,28 @@ class IrcDriver(object):
 
     def name(self):
         return repr(self)
+
+class ServersMixin(object):
+    def __init__(self, irc, servers=()):
+        self.networkGroup = conf.supybot.networks.get(irc.network)
+        self.servers = servers
+        super(ServersMixin, self).__init__(irc)
+        
+    def _getServers(self):
+        # We do this, rather than itertools.cycle the servers in __init__,
+        # because otherwise registry updates given as setValues or sets
+        # wouldn't be visible until a restart.
+        return self.networkGroup.servers()[:] # Be sure to copy!
+
+    def _getNextServer(self):
+        if not self.servers:
+            self.servers = self._getServers()
+        assert self.servers, 'Servers value for %s is empty.' % \
+                             self.networkGroup._name
+        server = self.servers.pop(0)
+        self.currentServer = '%s:%s' % server
+        return server
+        
 
 def empty():
     """Returns whether or not the driver loop is empty."""
@@ -111,6 +133,47 @@ def run():
             del _drivers[name]
         _drivers[name] = driver
 
+class Log(object):
+    """This is used to have a nice, consistent interface for drivers to use."""
+    def connect(self, server):
+        self.info('Connecting to %s.', server)
+
+    def connectError(self, server, e):
+        if isinstance(e, Exception):
+            e = utils.exnToString(e)
+        self.warning('Error connecting to %s: %s', server, e)
+
+    def disconnect(self, server, e=None):
+        if e:
+            if isinstance(e, Exception):
+                e = utils.exnToString(e)
+            self.warning('Disconnect from %s: %s.', server, e)
+        else:
+            self.info('Disconnect from %s.', server)
+
+    def reconnect(self, network, when=None):
+        s = 'Reconnecting to %s' % network
+        if when is not None:
+            if not isinstance(when, basestring):
+                when = self.timestamp(when)
+            s += ' at %s.' % when
+        else:
+            s += '.'
+        self.info(s)
+
+    def die(self, irc):
+        self.info('Driver for %s dying.', irc)
+
+    debug = staticmethod(supylog.debug)
+    info = staticmethod(supylog.info)
+    warning = staticmethod(supylog.warning)
+    error = staticmethod(supylog.warning)
+    critical = staticmethod(supylog.critical)
+    timestamp = staticmethod(supylog.timestamp)
+    exception = staticmethod(supylog.exception)
+
+log = Log()
+        
 def newDriver(irc, moduleName=None):
     """Returns a new driver for the given server using the irc given and using
     conf.supybot.driverModule to determine what driver to pick."""

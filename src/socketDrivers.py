@@ -54,11 +54,11 @@ import supybot.ircmsgs as ircmsgs
 import supybot.schedule as schedule
 
 reconnectWaits = (0, 60, 300)
-class SocketDriver(drivers.IrcDriver):
+class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
         self.irc = irc
+        drivers.ServersMixin.__init__(self, irc)
         drivers.IrcDriver.__init__(self) # Must come after setting irc.
-        self.networkGroup = conf.supybot.networks.get(self.irc.network)
         self.servers = ()
         self.eagains = 0
         self.inbuffer = ''
@@ -68,27 +68,11 @@ class SocketDriver(drivers.IrcDriver):
         self.reconnectWaits = reconnectWaits
         self.connect()
 
-    def _getServers(self):
-        # We do this, rather than itertools.cycle the servers in __init__,
-        # because otherwise registry updates given as setValues or sets
-        # wouldn't be visible until a restart.
-        return self.networkGroup.servers()[:] # Be sure to copy!
-
-    def _getNextServer(self):
-        if not self.servers:
-            self.servers = self._getServers()
-        assert self.servers, 'Servers value for %s is empty.' % \
-                             self.networkGroup.name
-        server = self.servers.pop(0)
-        self.currentServer = '%s:%s' % server
-        return server
-        
     def _handleSocketError(self, e):
         # (11, 'Resource temporarily unavailable') raised if connect
         # hasn't finished yet.  We'll keep track of how many we get.
         if e.args[0] != 11 and self.eagains > 120:
-            log.warning('Disconnect from %s: %s.',
-                        self.currentServer, e.args[1])
+            drivers.log.disconnect(self.currentServer, e)
             self.reconnect(wait=True)
         else:
             log.debug('Got EAGAIN, current count: %s.', self.eagains)
@@ -137,26 +121,24 @@ class SocketDriver(drivers.IrcDriver):
         
     def reconnect(self, wait=False, reset=True):
         server = self._getNextServer()
-        if reset:
-            log.debug('Resetting %s.', self.irc)
-            self.irc.reset()
-        else:
-            log.debug('Not resetting %s.', self.irc)
         if self.connected:
-            log.info('Reconnect called on driver for %s.', self.irc)
+            drivers.log.reconnect(self.irc.network)
             self.conn.close()
         elif not wait:
-            log.info('Connecting to %s.', self.currentServer)
+            drivers.log.connect(self.currentServer)
+        if reset:
+            drivers.log.debug('Resetting %s.', self.irc)
+            self.irc.reset()
+        else:
+            drivers.log.debug('Not resetting %s.', self.irc)
         self.connected = False
         if wait:
-            log.info('Reconnect to %s waiting.', self.currentServer)
             self._scheduleReconnect()
             return
         try:
             self.conn = utils.getSocket(server[0])
         except socket.error, e:
-            log.warning('Error connecting to %s: %s',
-                        self.currentServer, e.args[1])
+            drivers.log.connectError(self.currentServer, e)
             self.reconnect(wait=True)
             return
         # We allow more time for the connect here, since it might take longer.
@@ -172,37 +154,35 @@ class SocketDriver(drivers.IrcDriver):
                 now = time.time()
                 when = now + 60
                 whenS = log.timestamp(when)
-                log.info('Connection in progress, scheduling connectedness '
-                         'check for %s', whenS)
+                drivers.log.debug('Connection in progress, scheduling '
+                                  'connectedness check for %s', whenS)
                 schedule.addEvent(self._checkAndWriteOrReconnect, when)
             else:
-                log.warning('Error connecting to %s: %s', self.currentServer,e)
+                drivers.log.connectError(self.currentServer, e)
                 self.reconnect(wait=True)
             return
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
 
     def _checkAndWriteOrReconnect(self):
-        log.debug('Checking whether we are connected.')
+        drivers.log.debug('Checking whether we are connected.')
         (_, w, _) = select.select([], [self.conn], [], 0)
         if w:
-            log.info('Socket is writable, it might be connected.')
+            drivers.log.debug('Socket is writable, it might be connected.')
             self.connected = True
             self.reconnectWaitPeriodsIndex = 0
         else:
-            log.warning('Error connecting to %s: Timed out.',self.currentServer)
+            drivers.log.connectError(self.currentServer, 'Timed out')
             self.reconnect()
 
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         if not world.dying:
-            whenS = log.timestamp(when)
-            log.info('Scheduling reconnect to %s at %s',
-                     self.irc.network, whenS)
+            drivers.log.reconnect(self.irc.network, when)
         schedule.addEvent(self.reconnect, when)
 
     def die(self):
-        log.info('Driver for %s dying.', self.irc)
+        drivers.log.die(self.irc)
         self.conn.close()
         # self.irc.die() Kill off the ircs yourself, jerk!
 
