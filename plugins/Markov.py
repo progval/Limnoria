@@ -254,6 +254,7 @@ class Markov(callbacks.Privmsg):
         def f(db):
             minLength = self.registryValue('minChainLength', channel)
             maxTries = self.registryValue('maxAttempts', channel)
+            Random = kwargs.pop('Random', None)
             while maxTries > 0:
                 maxTries -= 1;
                 if word1 and word2:
