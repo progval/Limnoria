@@ -32,15 +32,6 @@
 """
 Handles "factoids," little tidbits of information held in a database and
 available on demand via several commands.
-
-Commands include:
-  addfactoid
-  removefactoid
-  lookupfactoid
-  lockfactoid
-  unlockfactoid
-  randomfactoid
-  factoidinfo
 """
 
 from baseplugin import *
@@ -86,16 +77,20 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         db.commit()
         return db
 
-    def add(self, irc, msg, args):
+    def learn(self, irc, msg, args):
         """[<channel>] <key> as <value>
 
         Associates <key> with <value>.  <channel> is only necessary if the
         message isn't sent on the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (key, as, factoid) = privmsgs.getArgs(args, needed=3)
-        if as != 'as':
+        try:
+            i = args.index('as')
+        except ValueError:
             raise callbacks.ArgumentError
+        args.pop(i)
+        key = ' '.join(args[:i])
+        factoid = ' '.join(args[i:])
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, locked FROM keys WHERE key=%s""", key)
@@ -121,29 +116,44 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, 'That factoid is locked.')
 
-    def lookup(self, irc, msg, args):
-        "[<channel>] (If not sent in the channel itself) <key> [<number>]"
+    def whatis(self, irc, msg, args):
+        """[<channel>] <key> [<number>]
+
+        Looks up the value of <key> in the factoid database.  If given a
+        number, will return only that exact factoid.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
-        (key, number) = privmsgs.getArgs(args, optional=1)
-        try:
-            number = int(number)
-        except ValueError:
-            key += number
-            number = 0
+        key = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT factoids.fact FROM factoids, keys WHERE
                           keys.key=%s AND factoids.key_id=keys.id
-                          ORDER BY factoids.id""", key)
-        results = cursor.fetchall()
-        if len(results) == 0:
+                          ORDER BY factoids.id
+                          LIMIT 20""", key)
+        if cursor.rowcount == 0:
             irc.error(msg, 'No factoid matches that key.')
         else:
-            factoid = results[number][0]
-            irc.reply(msg, '%s/%s: %s' % (key, number, factoid))
+            counter = 0
+            factoids = []
+            for result in cursor.fetchall():
+                factoids.append('(#%s) %s' % (counter, result[0]))
+                counter += 1
+            totalResults = len(factoids)
+            if ircutils.shrinkList(factoids, ', or ', 400):
+                s = '%s could be %s. (%s results shown out of %s)' % \
+                    (key, ', or '.join(factoids), counter-1, totalResults)
+            else:
+                s = '%s could be %s.' % (key, ', or '.join(factoids))
+            irc.reply(msg, s)
 
     def lock(self, irc, msg, args):
-        "[<channel>] (If not sent in the channel itself) <key>"
+        """[<channel>] <key>
+
+        Locks the factoid(s) associated with <key> so that they cannot be
+        removed or added to.  <channel> is only necessary if the message isn't
+        sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
@@ -157,7 +167,12 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             irc.error(msg, conf.replyNoCapability % capability)
 
     def unlock(self, irc, msg, args):
-        "[<channel>] (If not sent in the channel itself) <key>"
+        """[<channel>] <key>
+
+        Unlocks the factoid(s) associated with <key> so that they can be
+        removed or added to.  <channel> is only necessary if the message isn't
+        sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
@@ -170,22 +185,60 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
-    def remove(self, irc, msg, args):
-        "[<channel>] (If not sent in the channel itself) <key>"
+    def unlearn(self, irc, msg, args):
+        """[<channel>] <key> [<number>]
+
+        Removes the factoid <key> from the factoids database.  If there are
+        more than one factoid with such a key, a number is necessary to
+        determine which one should be removed.  <channel> is only necessary if
+        the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
+        if args[-1].isdigit:
+            number = int(args.pop())
+        else:
+            number = None
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
         capability = ircdb.makeChannelCapability(channel, 'factoids')
         if ircdb.checkCapability(msg.prefix, capability):
             cursor = db.cursor()
-            cursor.execute("""DELETE FROM keys WHERE key=%s""", key)
-            db.commit()
-            irc.reply(msg, conf.replySuccess)
+            cursor.execute("""SELECT keys.id, factoids.id
+                              FROM keys, factoids
+                              WHERE key=%s AND
+                                    factoids.key_id=keys.id""", key)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'There is no such factoid.')
+            elif cursor.rowcount == 1:
+                (id, _) = cursor.fetchone()
+                cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
+                cursor.execute("""DELETE FROM keys WHERE key=%s""", key)
+                db.commit()
+                irc.reply(msg, conf.replySuccess)
+            else:
+                if number is not None:
+                    results = cursor.fetchall()
+                    try:
+                        (_, id) = results[number]
+                    except IndexError:
+                        irc.error(msg, 'Invalid factoid number.')
+                        return
+                    cursor.execute("DELETE FROM factoids WHERE id=%s", id)
+                    db.commit()
+                    irc.reply(msg, conf.replySuccess)
+                else:
+                    irc.error(msg, '%s factoids have that key.  ' \
+                                   'Please specify which one to remove.' % \
+                                   cursor.rowcount)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
     def randomfactoid(self, irc, msg, args):
-        "[<channel>] (If not sent in the channel itself)"
+        """[<channel>]
+
+        Returns a random factoid from the database for <channel>.  <channel>
+        is only necessary if the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -201,7 +254,12 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             irc.error(msg, 'I couldn\'t find a factoid.')
 
     def factoidinfo(self, irc, msg, args):
-        "[<channel>] (If not sent in the channel itself) <key>"
+        """[<channel>] <key>
+
+        Gives information about the factoid(s) associated with <key>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
@@ -224,7 +282,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             counter += 1
         factoids = '; '.join(L)
         s = 'Key %r is %s and has %s factoids associated with it: %s' % \
-            (key, locked and 'locked' or 'not locked', counter, '; '.join(L))
+            (key, locked and 'locked' or 'not locked', counter, factoids)
         irc.reply(msg, s)
 
 
