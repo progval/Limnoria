@@ -196,6 +196,26 @@ class Relay(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
     relaypart = privmsgs.checkCapability(relaypart, 'owner')
 
+    def relaysay(self, irc, msg, args):
+        """<network> [<channel>] <text>
+
+        Says <text> on <channel> (using the current channel if unspecified)
+        on <network>.
+        """
+        if not args:
+            raise callbacks.ArgumentError
+        network = args.pop(0)
+        channel = privmsgs.getChannel(msg, args)
+        text = privmsgs.getArgs(args)
+        if network not in self.ircs:
+            irc.error(msg, 'I\'m not currently on %s.' % network)
+            return
+        if channel not in self.channels:
+            irc.error(msg, 'I\'m not currently relaying to %s.' % channel)
+            return
+        self.ircs[network].queueMsg(ircmsgs.privmsg(channel, text))
+    relaysay = privmsgs.checkCapability(relaysay, 'admin')
+
     def relaynames(self, irc, msg, args):
         """[<channel>] (only if not sent in the channel itself.)
 
