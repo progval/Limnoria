@@ -319,7 +319,7 @@ class IrcState(IrcCommandDispatcher):
         return self.nicksToHostmasks[nick]
 
     def do352(self, irc, msg):
-        (nick, user, host) = (msg.args[2], msg.args[5], msg.args[3])
+        (nick, user, host) = (msg.args[5], msg.args[2], msg.args[3])
         hostmask = '%s!%s@%s' % (nick, user, host)
         self.nicksToHostmasks[nick] = hostmask
 
@@ -536,9 +536,9 @@ class Irc(IrcCommandDispatcher):
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
-        elif conf.supybot.pingServer() and \
-             now > (self.lastping + conf.supybot.pingInterval()) and \
-             self.afterConnect:
+        elif self.afterConnect and \
+             conf.supybot.protocols.irc.ping() and \
+             now > self.lastping + conf.supybot.protocols.irc.ping.interval():
             if self.outstandingPing:
                 s = 'Reconnecting to %s, ping not replied to.' % self.server
                 log.warning(s)
@@ -556,6 +556,7 @@ class Irc(IrcCommandDispatcher):
                 if msg is None:
                     log.debug('%s.outFilter returned None.' % callback.name())
                     return self.takeMsg()
+                world.debugFlush()
             if len(str(msg)) > 512:
                 # Yes, this violates the contract, but at this point it doesn't
                 # matter.  That's why we gotta go munging in private attributes
@@ -679,6 +680,7 @@ class Irc(IrcCommandDispatcher):
             log.exception('Exception in update of IrcState object:')
 
         # Now call the callbacks.
+        world.debugFlush()
         for callback in self.callbacks:
             try:
                 m = callback.inFilter(self, msg)
@@ -688,12 +690,14 @@ class Irc(IrcCommandDispatcher):
                 msg = m
             except:
                 log.exception('Uncaught exception in inFilter:')
+            world.debugFlush()
         for callback in self.callbacks:
             try:
                 if callback is not None:
                     callback(self, msg)
             except:
                 log.exception('Uncaught exception in callback:')
+            world.debugFlush()
 
     def die(self):
         """Makes the Irc object die.  Dead."""
