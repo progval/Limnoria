@@ -219,6 +219,10 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(ircutils.separateModes(['+sntl', '100']),
                         [('+s', None),('+n', None),('+t', None),('+l', 100)])
 
+    def testNickFromHostmask(self):
+        self.assertEqual(ircutils.nickFromHostmask('nick!user@host.domain.tld'),
+                         'nick')
+        
     def testToLower(self):
         self.assertEqual('jemfinch', ircutils.toLower('jemfinch'))
         self.assertEqual('{}|^', ircutils.toLower('[]\\~'))
