@@ -116,14 +116,14 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         self.assertEqual(self.msg, q.dequeue())
 
 
-class ChannelTestCase(unittest.TestCase):
+class ChannelStateTestCase(unittest.TestCase):
     def testPickleCopy(self):
-        c = irclib.Channel()
+        c = irclib.ChannelState()
         c1 = pickle.loads(pickle.dumps(c))
         self.assertEqual(pickle.loads(pickle.dumps(c)), c)
 
     def testAddUser(self):
-        c = irclib.Channel()
+        c = irclib.ChannelState()
         c.addUser('foo')
         self.failUnless('foo' in c.users)
         self.failIf('foo' in c.ops)
@@ -214,7 +214,7 @@ class IrcStateTestCase(unittest.TestCase):
 
     def testDoModeOnlyChannels(self):
         st = irclib.IrcState()
-        st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i'))
+        self.assert_(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
 
     """
     def testChannels(self):

@@ -152,7 +152,7 @@ class IrcMsgQueue(object):
 # Maintains the state of IRC connection -- the most recent messages, the
 # status of various modes (especially ops/halfops/voices) in channels, etc.
 ###
-class Channel(object):
+class ChannelState(object):
     __slots__ = ('users', 'ops', 'halfops', 'voices', 'topic')
     def __init__(self):
         self.topic = ''
@@ -265,7 +265,7 @@ class IrcState(IrcCommandDispatcher):
             if channel in self.channels:
                 self.channels[channel].addUser(msg.nick)
             else:
-                chan = Channel()
+                chan = ChannelState()
                 chan.addUser(msg.nick)
                 self.channels[channel] = chan
 
