@@ -76,9 +76,10 @@ throttleTime = 1.0
 allowEval = True
 
 ###
-# defaultCapabilities: Capabilities allowed to everyone by default.
+# defaultCapabilities: Capabilities allowed to everyone by default.  You almost
+#                      certainly want to have !owner and !admin in here.
 ###
-defaultCapabilities = set()
+defaultCapabilities = set(['!owner', '!admin'])
 
 ###
 # reply%s: Stock replies for various reasons.
@@ -137,9 +138,9 @@ nickmods = ['%s^', '^%s^', '__%s__', '%s_', '%s__', '__%s', '^^%s^^', '{%s}',
             '[%s]', '][%s][', '}{%s}{', '}{}%s', '^_^%s', '%s^_^', '^_^%s^_^']
 
 ###
-# defaultAllow: does an IrcUser allow a command by default?
+# defaultAllow: Are commands allowed by default?
 ###
-defaultAllow = False
+defaultAllow = True
 
 ###
 # defaultChannelAllow: does an IrcChannel allow a command by by default?
@@ -176,7 +177,7 @@ detailedTracebacks = True
 #               bot will be found.
 ###
 driverModule = 'asyncoreDrivers'
-#driverModule = 'twistedDrivers'
+driverModule = 'twistedDrivers'
 
 ###############################
 ###############################
