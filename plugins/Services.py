@@ -59,9 +59,15 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         callbacks.Privmsg.__init__(self)
         self.nickserv = ''
 
-    def startnickserv(self, irc, msg, args):
-        "<bot's nick> <password> <NickServ's nick (defaults to NickServ)> " \
-                "<ChanServ's nick (defaults to ChanServ)"
+    def startservices(self, irc, msg, args):
+        """<nick> <password> [<nickserv> <chanserv>]
+
+        Sets the necessary values for the services plugin to work.  <nick>
+        is the nick the bot should use (it must be registered with nickserv).
+        <password> is the password the registered <nick> uses.  The optional
+        arguments <nickserv> and <chanserv> are the names of the NickServ and
+        ChanServ, respectively,  They default to NickServ and ChanServ.
+        """
         if ircutils.isChannel(msg.args[0]):
             irc.error(msg, conf.replyRequiresPrivacy)
             return
