@@ -66,6 +66,7 @@ for knowing which one to use.   This includes AltaVista employees.
 """
 __where = [ re.compile(r'lang=..>([^<]*)</div'),
             re.compile(r'name=\"q\" value=\"([^\"]*)\">'),
+            re.compile(r'div style=padding:10px;>([^<]+)</div'),
           ]
 
 __languages = { 'english'   : 'en',
