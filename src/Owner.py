@@ -120,6 +120,7 @@ def loadPluginClass(irc, module, register=None):
     conf.registerPlugin(name, register, public)
     assert not irc.getCallback(name)
     try:
+        # XXX We should first register the rename plugin.
         renames = conf.supybot.commands.renames.get(name)
         for (name, v) in renames.getValues(fullNames=False):
             newName = v()
@@ -151,6 +152,8 @@ def registerDefaultPlugin(command, plugin):
     conf.supybot.commands.defaultPlugins.get(command).set(plugin)
 
 def registerRename(plugin, command, newName):
+    # XXX renames.plugin should have a list of the renames, so they can be
+    # registered from that value.
     g = conf.registerGroup(conf.supybot.commands.renames, plugin)
     v = conf.registerGlobalValue(g, command, registry.String(newName, ''))
     v.setValue(newName) # In case it was already registered.
