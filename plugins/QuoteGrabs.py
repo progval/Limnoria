@@ -224,7 +224,7 @@ class QuoteGrabs(callbacks.Privmsg):
             if self.registryValue('randomGrabber', channel):
                 if len(payload) > length and len(payload.split()) > words:
                     try:
-                        last = self.db.select(channel, msg.nick)
+                        last = int(self.db.select(channel, msg.nick))
                     except dbi.NoRecordError:
                         self._grab(irc, msg, irc.prefix)
                         self._sendGrabMsg(irc, msg)
