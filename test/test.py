@@ -53,6 +53,7 @@ supybot.throttleTime: 0
 supybot.prefixChars: @
 supybot.protocols.irc.throttleTime: -1
 supybot.networks.test.server: should.not.need.this
+supybot.nick: test
 """)
 fd.close()
 
