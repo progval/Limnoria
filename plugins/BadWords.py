@@ -66,15 +66,16 @@ class LastModifiedSetOfStrings(registry.SpaceSeparatedListOfStrings):
     lastModified = 0
     def setValue(self, v):
         self.lastModified = time.time()
-        registry.SpaceSeparatedSetOfStrings.setValue(self, v)
+        registry.SpaceSeparatedListOfStrings.setValue(self, v)
 
 conf.registerPlugin('BadWords')
 conf.registerChannelValue(conf.supybot.plugins.BadWords, 'words',
-    registry.SpaceSeparatedListOfStrings([], """Determines what words are
+    LastModifiedSetOfStrings([], """Determines what words are
     considered to be 'bad' so the bot won't say them."""))
 
 class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     priority = 1
+    capability = 'admin'
     def __init__(self):
         privmsgs.CapabilityCheckingPrivmsg.__init__(self)
         self.lastModified = 0
@@ -94,6 +95,27 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     def makeRegexp(self, iterable):
         self.regexp = re.compile(r'\b('+'|'.join(iterable)+r')\b', re.I)
 
+    def add(self, irc, msg, args):
+        """<word> [<word> ...]
+
+        Adds all <word>s to the list of words the bot isn't to say.
+        """
+        set = self.words()
+        set.update(args)
+        self.words.setValue(set)
+        irc.replySuccess()
+
+    def remove(self, irc, msg, args):
+        """<word> [<word> ...]
+
+        Removes a <word>s from the list of words the bot isn't to say.
+        """
+        set = self.words()
+        for word in args:
+            set.discard(word)
+        self.words.setValue(set)
+        irc.replySuccess()
+            
 
 Class = BadWords
 

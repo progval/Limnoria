@@ -34,6 +34,10 @@ from testsupport import *
 class BadWordsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('BadWords', 'Utilities')
     badwords = ('shit', 'ass')
+    def tearDown(self):
+        default = conf.supybot.plugins.BadWords.words.default
+        conf.supybot.plugins.BadWords.words.setValue(default)
+
     def _test(self):
         for word in self.badwords:
             self.assertRegexp('echo %s' % word, '(?!%s)' % word)
