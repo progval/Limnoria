@@ -114,6 +114,27 @@ class MiscTestCase(ChannelPluginTestCase):
     def testListIncludesDispatcherIfThereIsAnOriginalCommand(self):
         self.assertRegexp('list Dict', r'\bdict\b')
 
+    def testContributors(self):
+        # Test ability to list contributors
+        self.assertNotError('contributors Misc')
+        # Test ability to list contributions
+        self.assertNotError('contributors Misc skorobeus')
+        # Test handling of invalid plugin
+        self.assertRegexp('contributors InvalidPlugin', 
+            'No such plugin')
+        # Test handling of invalid person
+        self.assertRegexp('contributors Misc noname', 
+            'not a registered contributor')
+        # Test handling of valid person with no contributions
+        # Note: This will break if the listed person ever makes a contribution
+        # to the Misc plugin
+        self.assertRegexp('contributors Misc bwp',
+            'listed as a contributor')
+        
+    def testContributorsIsCaseInsensitive(self):
+        self.assertNotError('contributors Misc Skorobeus')
+        self.assertNotError('contributors Misc sKoRoBeUs')
+
     if network:
         def testVersion(self):
             print '*** This test should start passing when we have our '\
