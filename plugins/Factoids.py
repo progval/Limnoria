@@ -141,7 +141,7 @@ class SqliteFactoidsDB(object):
             raise LockError
 
     def get(self, channel, key):
-        db = self.getDb(channel)
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT factoids.fact FROM factoids, keys
                           WHERE keys.key LIKE %s AND factoids.key_id=keys.id
@@ -150,19 +150,19 @@ class SqliteFactoidsDB(object):
         return [t[0] for t in cursor.fetchall()]
 
     def lock(self, channel, key):
-        db = self.getDb(channel)
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("UPDATE keys SET locked=1 WHERE key LIKE %s", key)
         db.commit()
 
     def unlock(self, channel, key):
-        db = self.getDb(channel)
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s", key)
         db.commit()
 
     def remove(self, channel, key, number):
-        db = self.getDb(channel)
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT keys.id, factoids.id
                           FROM keys, factoids
@@ -188,7 +188,7 @@ class SqliteFactoidsDB(object):
                 raise MultiKeyError, cursor.rowcount
 
     def random(self, channel):
-        db = self.getDb(channel)
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT fact, key_id FROM factoids
                           ORDER BY random()
@@ -203,7 +203,7 @@ class SqliteFactoidsDB(object):
         return L
 
     def info(self, channel, key):
-        db = self.getDb(channel)
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s", key)
         if cursor.rowcount == 0:
@@ -216,7 +216,7 @@ class SqliteFactoidsDB(object):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def select(self, channel, values, predicates, globs):
-        db = self.getDb(channel)
+        db = self._getDb(channel)
         cursor = db.cursor()
         tables = ['keys']
         criteria = []
@@ -232,10 +232,10 @@ class SqliteFactoidsDB(object):
         for glob in globs:
             criteria.append('TARGET LIKE %s')
             formats.append(glob.translate(self._sqlTrans))
-        for predicate in predicates:
+        for r in predicates:
             criteria.append('%s(TARGET)' % predicateName)
-            def p(s, r=arg):
-                return int(bool(predicate(s)))
+            def p(s, r=r):
+                return int(bool(r(s)))
             db.create_function(predicateName, 1, p)
             predicateName += 'p'
         sql = """SELECT keys.key FROM %s WHERE %s""" % \
@@ -344,7 +344,8 @@ class Factoids(callbacks.Privmsg):
         """
         self.db.lock(channel, key)
         irc.replySuccess()
-    lock = wrap(lock, ['channeldb', 'something'])
+    lock = wrap(lock, ['channeldb', ('checkChannelCapability', 'op'),
+                       'something'])
 
     def unlock(self, irc, msg, args, channel, key):
         """[<channel>] <key>
@@ -355,7 +356,8 @@ class Factoids(callbacks.Privmsg):
         """
         self.db.unlock(channel, key)
         irc.replySuccess()
-    unlock = wrap(unlock, ['channeldb', 'something'])
+    unlock = wrap(unlock, ['channeldb', ('checkChannelCapability', 'op'),
+                           'something'])
 
     def forget(self, irc, msg, args, channel, number, key):
         """[<channel>] <key> [<number>|*]
@@ -471,11 +473,12 @@ class Factoids(callbacks.Privmsg):
         if not optlist and not globs:
             raise callbacks.ArgumentError
         values = False
+        predicates = []
         for (option, arg) in optlist:
             if option == 'values':
                 values = True
             elif option == 'regexp':
-                predicates.append(r.search)
+                predicates.append(arg.search)
         L = []
         for glob in globs:
             if '*' not in glob and '?' not in glob:
@@ -496,7 +499,7 @@ class Factoids(callbacks.Privmsg):
             irc.reply('No keys matched that query.')
     search = wrap(search, ['channeldb',
                            getopts({'values':'', 'regexp':'regexpMatcher'}),
-                           additional('something')]) # XXX 'glob' spec
+                           any('glob')])
 
 
 Class = Factoids
