@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from baseplugin import *
+import plugins
 
 import string
 import random
