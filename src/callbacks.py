@@ -664,7 +664,8 @@ class ConfigIrcProxy(RichReplyMethods):
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     __metaclass__ = log.MetaFirewall
-    __firewalled__ = {'invalidCommand': None} # Eventually callCommand.
+    __firewalled__ = {'isCommand': None,
+                      'invalidCommand': None} # Eventually callCommand.
     threaded = False
     public = True
     alwaysCall = ()
@@ -726,10 +727,6 @@ class Privmsg(irclib.IrcCallback):
         if msg.command == 'PRIVMSG':
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
-            else:
-                # We want this to be under logging.DEBUG: it's not very useful,
-                # even for debugging things :)
-                self.log.log(0, 'Ignoring %s', msg.prefix)
         else:
             self.__parent.__call__(irc, msg)
 
