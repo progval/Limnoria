@@ -101,7 +101,8 @@ def canonicalName(command):
     Currently, this makes everything lowercase and removes all dashes and
     underscores.
     """
-    assert not isinstance(command, unicode)
+    if isinstance(command, unicode):
+        command = command.encode('utf-8')
     special = '\t -_'
     reAppend = ''
     while command and command[-1] in special:
