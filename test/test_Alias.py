@@ -54,11 +54,36 @@ class FunctionsTest(unittest.TestCase):
         self.assertEqual(Alias.findBiggestDollar('$0'), 0)
         self.assertEqual(Alias.findBiggestDollar('$1'), 1)
         self.assertEqual(Alias.findBiggestDollar('$2'), 2)
+        self.assertEqual(Alias.findBiggestDollar('$2 $10'), 10)
         self.assertEqual(Alias.findBiggestDollar('$3'), 3)
+        self.assertEqual(Alias.findBiggestDollar('$3 $2 $1'), 3)
         self.assertEqual(Alias.findBiggestDollar('foo bar $1'), 1)
         self.assertEqual(Alias.findBiggestDollar('foo $2 $1'), 2)
         self.assertEqual(Alias.findBiggestDollar('foo $0 $1'), 1)
         self.assertEqual(Alias.findBiggestDollar('foo $1 $3'), 3)
         self.assertEqual(Alias.findBiggestDollar('$10 bar $1'), 10)
+
+
+class AliasTestCase(PluginTestCase):
+    plugins = ('Alias', 'FunCommands', 'Utilities')
+    def testSimpleAlias(self):
+        pi = '3.1456926535897932384626433832795028841971693'
+        self.assertNotError('alias pi %s' % pi)
+        self.assertReponse('pi', pi)
+
+    def testSimpleAlias(self):
+        s = 'foobar'
+        self.assertNotError('alias foo "rot13 %s"' % s)
+        self.assertResponse('foo', s.encode('rot13'))
+
+    def testDollars(self):
+        self.assertNotError('alias rot26 "rot13 [rot13 $1]"')
+        self.assertResponse('rot26 foobar', 'foobar')
+
+    def testMoreDollars(self):
+        self.assertNotError('alias rev "echo $3 $2 $1"')
+        self.assertResponse('rev foo bar baz', 'baz bar foo')
+        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
