@@ -58,19 +58,23 @@ dbFilename = os.path.join(conf.dataDir, 'FunDB.db')
 tableCreateStatements = {
     'larts': ("""CREATE TABLE larts (
                  id INTEGER PRIMARY KEY,
-                 lart TEXT, added_by TEXT
+                 lart TEXT,
+                 added_by TEXT
                  )""",),
     'praises': ("""CREATE TABLE praises (
                    id INTEGER PRIMARY KEY,
-                   praise TEXT, added_by TEXT
+                   praise TEXT,
+                   added_by TEXT
                    )""",),
     'insults': ("""CREATE TABLE insults (
                    id INTEGER PRIMARY KEY,
-                   insult TEXT, added_by TEXT
+                   insult TEXT,
+                   added_by TEXT
                    )""",),
     'excuses': ("""CREATE TABLE excuses (
                    id INTEGER PRIMARY KEY,
-                   excuse TEXT, added_by TEXT
+                   excuse TEXT,
+                   added_by TEXT
                    )""",),
     'words': ("""CREATE TABLE words (
                  id INTEGER PRIMARY KEY,
@@ -254,11 +258,11 @@ class FunDB(callbacks.Privmsg):
             return
         if table == "lart" or table == "praise":
             if '$who' not in s:
-                irc.error(msg, 'There must be an $who in the lart/praise '\
-                    'somewhere.')
+                irc.error(msg, 'There must be a $who in the lart/praise '\
+                               'somewhere.')
                 return
         elif table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
@@ -290,7 +294,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
@@ -320,13 +324,13 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
                            (table, utils.commaAndify(self._tables)))
             return
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error(msg, 'The regexp wasn\'t valid: %s' % e.args[0])
+            irc.error(msg, 'The regexp wasn\'t valid: %s.' % e.args[0])
         except re.error, e:
             irc.error(msg, debug.exnToString(e))
             return
@@ -338,7 +342,8 @@ class FunDB(callbacks.Privmsg):
         else:
             old_entry = cursor.fetchone()[0]
             new_entry = replacer(old_entry)
-            sql = """UPDATE %ss SET %s=%%s, added_by=%%s WHERE id=%%s""" % (table, table)
+            sql = """UPDATE %ss SET %s=%%s, added_by=%%s WHERE id=%%s""" % \
+                  (table, table)
             cursor.execute(sql, new_entry, name, id)
             self.db.commit()
             irc.reply(msg, conf.replySuccess)
@@ -352,17 +357,14 @@ class FunDB(callbacks.Privmsg):
         table = privmsgs.getArgs(args)
         table = table.lower()
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+            irc.error(msg, '%r is not valid. Valid values include %s.' % \
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
         sql = """SELECT count(*) FROM %ss""" % table
         cursor.execute(sql)
-        try:
-            total = int(cursor.fetchone()[0])
-        except ValueError:
-            irc.error(msg, 'Unexpected response from database')
-        irc.reply(msg, 'There %s currently %s in my database' % \
+        total = int(cursor.fetchone()[0])
+        irc.reply(msg, 'There %s currently %s in my database.' % \
                   (utils.be(total), utils.nItems(total, table)))
 
     def dbget(self, irc, msg, args):
@@ -378,7 +380,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
@@ -403,7 +405,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
@@ -488,7 +490,7 @@ class FunDB(callbacks.Privmsg):
         """
         word = privmsgs.getArgs(args)
         if word.translate(string.ascii, string.ascii_letters) != '':
-            irc.error(msg, 'Word must contain only letters')
+            irc.error(msg, 'Word must contain only letters.')
         addWord(self.db, word, commit=True)
         irc.reply(msg, conf.replySuccess)
 
