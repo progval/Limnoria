@@ -75,7 +75,8 @@ conf.registerGlobalValue(conf.supybot.plugins.ChannelRelay, 'regexp',
     relayed from the source channel to the target channel.  By default, the
     value is m/./, which means that all non-empty messages will be
     relayed."""))
-conf.supybot.plugins.ChannelRelay.regexp.set('m/./')
+if conf.supybot.plugins.ChannelRelay.regexp() is None:
+    conf.supybot.plugins.ChannelRelay.regexp.set('m/./')
 conf.registerGlobalValue(conf.supybot.plugins.ChannelRelay, 'fancy',
     registry.Boolean(True, """Determines whether the bot should relay the
     messages in fancy form (i.e., including the nick of the sender of the
