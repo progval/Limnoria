@@ -68,6 +68,8 @@ if network:
                 r'^No package.*\(unstable\)')
             self.assertRegexp('debian version gaim',
                               r'\d+ matches found:.*gaim.*\(stable')
+            self.assertRegexp('debian version linux-wlan',
+                              r'\d+ matches found:.*linux-wlan.*')
             self.assertError('debian version unstable')
 
         def testDebfile(self):

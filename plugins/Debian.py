@@ -74,7 +74,7 @@ def configure(advanced):
                       about two orders of magnitude slower.  THIS MEANS IT
                       WILL TAKE AGES TO RUN THIS COMMAND.  Don't do this.""")
             if yn('Do you want to use a Python equivalent of zgrep?'):
-                conf.supybot.plugins.Debian.pythonZegrep.setValue(True)
+                conf.supybot.plugins.Debian.pythonZgrep.setValue(True)
             else:
                 output('I\'ll disable file now.')
                 conf.supybot.defaultCapabilities().add('-Debian.file')
@@ -136,7 +136,7 @@ class Debian(callbacks.Privmsg,
         except re.error, e:
             irc.error("Error in regexp: %s" % e)
             return
-        if self.registryValue('pythonZegrep'):
+        if self.registryValue('pythonZgrep'):
             fd = gzip.open(self.contents)
             r = imap(lambda tup: tup[0], 
                      ifilter(lambda tup: tup[0],
@@ -177,7 +177,7 @@ class Debian(callbacks.Privmsg,
                 
     _debreflags = re.DOTALL | re.IGNORECASE
     _debbrre = re.compile(r'<li><a href[^>]+>(.*?)</a> \(', _debreflags)
-    _debverre = re.compile(r'<br>\d+?:(\S+):', _debreflags)
+    _debverre = re.compile(r'<br>(?:\d+:)?(\S+):', _debreflags)
     _deblistre = re.compile(r'<h3>Package ([^<]+)</h3>(.*?)</ul>', _debreflags)
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
     def version(self, irc, msg, args):
