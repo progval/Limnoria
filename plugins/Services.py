@@ -87,46 +87,70 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.nick = ircutils.IrcString(self.nick)
         self.nickserv = ircutils.IrcString(nickserv or 'NickServ')
         self.chanserv = ircutils.IrcString(chanserv or 'ChanServ')
+        self._ghosted = re.compile('(Ghost|%s).*killed' % self.nick, re.I)
         self.sentGhost = False
-        self._ghosted = re.compile('%s.*killed' % self.nick)
+        self.log.info('Services started.')
         irc.reply(msg, conf.replySuccess)
 
+    def _doIdentify(self, irc):
+        assert self.nickserv, 'Nickserv must not be empty.'
+        self.log.info('Sending identify (current nick: %s)' % irc.nick)
+        identify = 'IDENTIFY %s' % self.password
+        # It's important that this next statement is irc.sendMsg, not
+        # irc.queueMsg.  We want this message to get through before any
+        # JOIN messages also being sent on 376.
+        irc.sendMsg(ircmsgs.privmsg(self.nickserv, identify))
+
+    def _doGhost(self, irc):
+        assert self.nickserv, 'Nickserv must not be empty.'
+        if self.sentGhost:
+            self.log.warning('Refusing to send GHOST twice.')
+        else:
+            self.log.info('Sending ghost (current nick: %s)', irc.nick)
+            ghost = 'GHOST %s %s' % (self.nick, self.password)
+            # Ditto about the sendMsg.
+            irc.sendMsg(ircmsgs.privmsg(self.nickserv, ghost))
+            self.sentGhost = True
+
+    def do001(self, irc, msg):
+        # New connection, make sure sentGhost is False.
+        self.sentGhost = False
+
     def do376(self, irc, msg):
-        if self.nickserv:
+        if self.nickserv: # Check to see if we're started.
             assert self.nick, 'Services: Nick must not be empty.'
-            identify = 'IDENTIFY %s' % self.password
-            # It's important that this next statement is irc.sendMsg, not
-            # irc.queueMsg.  We want this message to get through before any
-            # JOIN messages also being sent on 376.
-            irc.sendMsg(ircmsgs.privmsg(self.nickserv, identify))
-    do377 = do376
-    do422 = do376
+            if irc.nick == self.nick:
+                self._doIdentify(irc)
+            else:
+                self._doGhost(irc)
+                self._doIdentify(irc)
+        else:
+            self.log.warning('do376 called without plugin being started.')
+    do422 = do377 = do376
+
+    def do433(self, irc, msg):
+        if self.nickserv:
+            self._doGhost(irc)
+        else:
+            self.log.warning('do433 called without plugin being started.')
 
     def doNotice(self, irc, msg):
-        if self.nickserv:
-            if msg.nick == self.nickserv:
-                s = msg.args[1]
-                if ('registered' in s or 'protected' in s) and \
-                   ('not' not in s and 'isn\'t' not in s):
-                    # NickServ told us the nick is registered.
-                    identify = 'IDENTIFY %s' % self.password
-                    irc.queueMsg(ircmsgs.privmsg(self.nickserv, identify))
-                elif 'recognized' in msg.args[1]:
-                    self.sentGhost = False
-                elif self._ghosted.search(msg.args[1]):
-                    # NickServ told us the nick has been ghost-killed.
-                    irc.queueMsg(ircmsgs.nick(self.nick))
-
-    def __call__(self, irc, msg):
-        callbacks.Privmsg.__call__(self, irc, msg)
-        if self.nickserv:
-            if irc.nick != self.nick and not self.sentGhost:
-                ghost = 'GHOST %s %s' % (self.nick, self.password)
-                irc.queueMsg(ircmsgs.privmsg(self.nickserv, ghost))
-                self.sentGhost = True
-                def flipSentGhost():
-                    self.sentGhost = False
-                schedule.addEvent(flipSentGhost, time.time() + 300)
+        if self.nickserv and msg.nick == self.nickserv:
+            self.log.debug('Notice received from NickServ: %r', msg)
+            s = msg.args[1]
+            if self._ghosted.search(msg.args[1]):
+                self.log.info('Received "GHOST succeeded" from NickServ')
+                self.sentGhost = False
+                irc.queueMsg(ircmsgs.nick(self.nick))
+            if ('registered' in s or 'protected' in s) and \
+               ('not' not in s and 'isn\'t' not in s):
+                self.log.info('Received "Registered Nick" from NickServ')
+                if self.nick == irc.nick:
+                    self._doIdentify(irc)
+                else:
+                    irc.sendMsg(ircmsgs.nick(self.nick))
+        elif msg.nick == self.nickserv:
+            self.log.warning('Received NOTICE without plugin being started.')
 
     def getops(self, irc, msg, args):
         """[<channel>]
@@ -136,6 +160,18 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         irc.sendMsg(ircmsgs.privmsg(self.chanserv, 'op %s' % channel))
+
+    def identify(self, irc, msg, args):
+        """takes no arguments
+
+        Identifies with NickServ.
+        """
+        if self.nickserv:
+            self._doIdentify(irc)
+            irc.reply(msg, conf.replySuccess)
+        else:
+            s = 'This plugin must first be started via the start command.'
+            irc.error(msg, s)
 
 
 
