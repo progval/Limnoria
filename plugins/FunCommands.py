@@ -324,11 +324,9 @@ class FunCommands(callbacks.Privmsg):
     # Then we delete all square brackets, underscores, and whitespace, so no
     # one can do list comprehensions or call __...__ functions.
     ###
-    _mathEnv = {}
+    _mathEnv = {'__builtins__': new.module('__builtins__'), 'i': 1j}
     _mathEnv.update(math.__dict__)
     _mathEnv.update(cmath.__dict__)
-    _mathEnv['i'] = 1j
-    _mathEnv['__builtins__'] = new.module('__builtins__')
     _mathInt = re.compile(r'(?<!\d|\.)(\d+)(?!\d+|\.|\.\d+)')
     _mathHex = re.compile(r'(0x[A-Fa-f\d]+)')
     _mathOctal = re.compile(r'(^|[^\dA-Fa-f])(0[0-7]+)')
