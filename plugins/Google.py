@@ -462,6 +462,12 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                                  'Google Groups page.')
     googleGroups = urlSnarfer(googleGroups)
 
+    def _googleUrl(self, s):
+        s = s.replace('+', '%2B')
+        s = s.replace(' ', '+')
+        url = r'http://google.com/search?q=%s' % s
+        return url
+
     _calcRe = re.compile(r'<td nowrap><font size=\+1><b>(.*?)</b>', re.I)
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
@@ -471,9 +477,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
         Uses Google's calculator to calculate the value of <expression>.
         """
-        expr = expr.replace('+', '%2B')
-        expr = expr.replace(' ', '+')
-        url = r'http://google.com/search?q=%s' % expr
+        url = self._googleUrl(expr)
         html = webutils.getUrl(url)
         match = self._calcRe.search(html)
         if match is not None:
@@ -485,6 +489,27 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.reply('Google\'s calculator didn\'t come up with anything.')
     calc = wrap(calc, ['text'])
+
+    _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
+    def phonebook(self, irc, msg, args, phonenumber):
+        """<phone number>
+
+        Looks <phone number> up on Google.
+        """
+        url = self._googleUrl(phonenumber)
+        html = webutils.getUrl(url)
+        m = self._phoneRe.search(html)
+        if m is not None:
+            s = m.group(1)
+            s = s.replace('<b>', '')
+            s = s.replace('</b>', '')
+            s = utils.htmlToText(s)
+            irc.reply(s)
+        else:
+            irc.reply('Google return not phonebook results.')
+    phonebook = wrap(phonebook, ['text'])
+                
+            
 
 
 Class = Google
