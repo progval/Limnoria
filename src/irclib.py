@@ -327,10 +327,11 @@ class IrcState(IrcCommandDispatcher):
         for channel in msg.args[0].split(','):
             if channel in self.channels:
                 self.channels[channel].addUser(msg.nick)
-            else:
+            elif msg.nick: # It must be us.
                 chan = ChannelState()
                 chan.addUser(msg.nick)
                 self.channels[channel] = chan
+                assert msg.nick == irc.nick, msg
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
