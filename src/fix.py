@@ -217,10 +217,6 @@ def reviter(L):
     for i in xrange(len(L) - 1, -1, -1):
         yield L[i]
 
-def enumerate(L):
-    for i in xrange(len(L)):
-        yield (i, L[i])
-
 def window(L, size):
     if size < 1:
         raise ValueError, 'size <= 0 unallowed.'
