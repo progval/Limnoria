@@ -41,13 +41,14 @@ import re
 import sets
 import urllib2
 
+import registry
+
 import conf
 import utils
 import plugins
 import ircutils
 import privmsgs
 import callbacks
-import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -63,26 +64,25 @@ def configure(onStart, afterConnect, advanced):
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
         if yn('Do you want the Gameknot stats snarfer enabled by default?')==\
-               'n':
-            onStart.append('Gameknot toggle stat off')
+               'y':
+            conf.supybot.plugins.Gameknot.statSnarfer.setValue(True)
         if yn('Do you want the Gameknot Game links snarfer enabled by '
-              'default?') == 'n':
-            onStart.append('Gameknot toggle stat off')
+              'default?') == 'y':
+            conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
 
+conf.registerPlugin('Gameknot')
+conf.registerChannelValue(conf.supybot.plugins.Gameknot, 'gameSnarfer',
+    registry.Boolean(False, """Determines whether the game URL snarfer is
+    enabled.  If so, the bot will reply to the channel with a summary of the
+    game data when it sees a Gameknot game link on the channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Gameknot, 'statSnarfer',
+    registry.Boolean(False, """Determines whether the stats URL snarfer is
+    enabled.  If so, the bot will reply to the channel with a summary of the
+    stats of any player whose stats URL is seen on the channel."""))
 
-class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
+class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = ['gameknotSnarfer', 'gameknotStatsSnarfer']
-    configurables = configurable.Dictionary(
-        [('game-snarfer', configurable.BoolType, True,
-          """Determines whether the game URL snarfer is active; if so, the bot
-          will reply to the channel with a summary of the game data when it
-          sees a Gameknot game on the channel."""),
-         ('stats-snarfer', configurable.BoolType, True,
-          """Determines whether the stats URL snarfer is active; if so, the bot
-          will reply to the channel with a summary of the stats of any player
-          whose stats URL is seen on the channel.""")]
-        )
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:</td><td class=sml>(\d+)</td></tr>')
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'
@@ -90,11 +90,9 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     _gkteam = re.compile(r'Team:(<.*?>)+(?P<name>.*?)</span>')
     _gkseen = re.compile(r'(seen on GK:\s+([^[]+ago)|.*?is hiding.*?)')
     def __init__(self):
-        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
         
     def getStats(self, name):
@@ -181,7 +179,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     _gkReason = re.compile(r'won\s+\(\S+\s+(\S+)\)')
     def gameknotSnarfer(self, irc, msg, match):
         r"http://(?:www\.)?gameknot\.com/chess\.pl\?bd=\d+(&r=\d+)?"
-        if not self.configurables.get('game-snarfer', channel=msg.args[0]):
+        if not self.registryValue('gameSnarfer', msg.args[0]):
             return
         url = match.group(0)
         fd = urllib2.urlopen(url)
@@ -244,7 +242,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
 
     def gameknotStatsSnarfer(self, irc, msg, match):
         r"http://gameknot\.com/stats\.pl\?([^&]+)"
-        if not self.configurables.get('stats-snarfer', channel=msg.args[0]):
+        if not self.registryValue('statSnarfer', msg.args[0]):
             return
         name = match.group(1)
         s = self.getStats(name)

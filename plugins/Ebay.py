@@ -42,13 +42,14 @@ __revision__ = "$Id$"
 
 import plugins
 
+import registry
+
 import conf
 import utils
 import plugins
 import ircutils
 import privmsgs
 import callbacks
-import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -63,29 +64,27 @@ def configure(onStart, afterConnect, advanced):
     print 'supybot sees such a URL, he will parse the web page for'
     print 'information and reply with the results.\n'
     if yn('Do you want the Ebay snarfer enabled by default?') == 'y':
-        onStart.append('Ebay config auction-snarfer on')
+        conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
 
 class EbayError(callbacks.Error):
     pass
 
-class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
+conf.registerPlugin('Ebay')
+conf.registerChannelValue(conf.supybot.plugins.Ebay, 'auctionSnarfer',
+    registry.Boolean(False, """Determines whether the bot will automatically
+    'snarf' Ebay auction URLs and print information about them."""))
+
+class Ebay(callbacks.PrivmsgCommandAndRegexp):
     """
     Module for eBay stuff. Currently contains a URL snarfer and a command to
     get info about an auction.
     """
     threaded = True
     regexps = ['ebaySnarfer']
-    configurables = configurable.Dictionary(
-        [('auction-snarfer', configurable.BoolType, False,
-          """Determines whether the bot will automatically 'snarf' Ebay auction
-          URLs and print information about them.""")]
-    )
     def __init__(self):
-        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
 
     _reopts = re.I | re.S
@@ -129,7 +128,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     def ebaySnarfer(self, irc, msg, match):
         r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?" \
         r"eBayISAPI\.dll\?ViewItem(?:&item=\d+|&category=\d+)+"
-        if not self.configurables.get('auction-snarfer', channel=msg.args[0]):
+        if not self.registryValue('auctionSnarfer', msg.args[0]):
             return
         url = match.group(0)
         try:

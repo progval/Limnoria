@@ -42,6 +42,7 @@ if network:
             self.assertNotError('gkstats Strike')
 
         def testUrlSnarfer(self):
+            conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
             self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
             self.assertNotError('here\'s a link: '
                                 'http://gameknot.com/chess.pl?bd=1077350&r=394 '
@@ -52,22 +53,24 @@ if network:
                                  self.nick)
 
         def testStatsUrlSnarfer(self):
+            conf.supybot.plugins.Gameknot.statSnarfer.setValue(True)
             self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
             self.assertRegexp('http://gameknot.com/stats.pl?ddipaolo&1',
                               r'^[^&]+$')
 
         def testConfig(self):
-            self.assertNotError('gameknot config game-snarfer off')
-            self.assertNotError('gameknot config stats-snarfer off')
+            conf.supybot.plugins.Gameknot.gameSnarfer.setValue(False)
+            conf.supybot.plugins.Gameknot.statSnarfer.setValue(False)
             self.assertNoResponse('http://gameknot.com/stats.pl?ironchefchess')
             self.assertNoResponse('http://gameknot.com/chess.pl?bd=907498')
-            self.assertNotError('gameknot config game-snarfer on')
-            self.assertNotError('gameknot config stats-snarfer on')
+            conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
+            conf.supybot.plugins.Gameknot.statSnarfer.setValue(True)
             self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
             self.assertNotError('http://gameknot.com/chess.pl?bd=907498')
         
 
         def testSnarfer(self):
+            conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
             # This game expired.
 ##             self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
 ##                               '\x02ddipaolo\x0f won')

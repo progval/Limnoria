@@ -41,7 +41,7 @@ if network:
             self.assertError('auction foobar')
 
         def testSnarfer(self):
-            self.assertNotError('ebay config auction-snarfer on')
+            conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
             self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
                               '&category=176&item=3053767552',
                              r'.*Cisco NP-4T.*Serial Module.*US \$74\.95.*')
@@ -64,11 +64,11 @@ if network:
                              r'88-89 CRX amber')
 
         def testConfigSnarfer(self):
-            self.assertNotError('ebay config auction-snarfer off')
+            conf.supybot.plugins.Ebay.auctionSnarfer.setValue(False)
             self.assertNoResponse('http://cgi.ebay.com/ebaymotors/ws/'
                                   'eBayISAPI.dll?ViewItem&item=2439393310&'
                                   'category=33708')
-            self.assertNotError('ebay config auction-snarfer on')
+            conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
             self.assertNotError('http://cgi.ebay.com/ebaymotors/ws/'
                                 'eBayISAPI.dll?ViewItem&item=2439393310&'
                                 'category=33708')
