@@ -100,7 +100,6 @@ def addWord(db, word, commit=False):
 
 class HangmanGame:
     def __init__(self):
-        self.gameOn = False
         self.timeout = 0
         self.timeGuess = 0
         self.tries = 0
@@ -168,7 +167,6 @@ class Words(callbacks.Privmsg, configurable.Mixin):
             self.gotDictFile = True
         except IOError:
             self.gotDictFile = False
-        self.gameon = False 
 
     def add(self, irc, msg, args):
         """<word> [<word>]
@@ -245,7 +243,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
     validLetters = [chr(c) for c in range(ord('a'), ord('z')+1)]
 
     def endGame(self, channel):
-        self.games[channel].gameOn = False
+        self.games[channel] = None
 
     def letters(self, irc, msg, args):
         """takes no arguments
@@ -255,8 +253,8 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         channel = msg.args[0]
         if channel in self.games:
             game = self.games[channel]
-            if game.gameOn:
-                irc.reply('%s %s' % (game.prefix, ' '.join(game.unused)))
+            if game is not None:
+                irc.reply('%s%s' % (game.prefix, ' '.join(game.unused)))
                 return
         irc.error('There is no hangman game going on right now.')
 
@@ -268,11 +266,11 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         channel = msg.args[0]
         # Fill our dictionary of games
         if channel not in self.games:
-            self.games[channel] = HangmanGame()
-        game = self.games[channel]
+            self.games[channel] = None
         # We only start a new game if no other game is going on right now
-        if not game.gameOn:
-            game.gameOn = True
+        if self.games[channel] is None:
+            self.games[channel] = HangmanGame()
+            game = self.games[channel]
             game.timeout = self.configurables.get('timeout', channel)
             game.timeGuess = time.time()
             game.tries = self.configurables.get('tries', channel)
@@ -288,6 +286,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         # So, a game is going on, but let's see if it's timed out.  If it is
         # we create a new one, otherwise we inform the user
         else:
+            game = self.games[channel]
             secondsEllapsed = time.time() - game.timeGuess
             if secondsEllapsed > game.timeout:
                 self.endGame(channel)
@@ -309,7 +308,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         except KeyError:
             irc.error('There is no hangman game going on right now.')
             return
-        if not game.gameOn:
+        if game is None:
             irc.error('There is no hangman game going on right now.')
             return
         letter = privmsgs.getArgs(args)
