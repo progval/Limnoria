@@ -124,6 +124,26 @@ class Herald(callbacks.Privmsg):
                 raise KeyError
         return id
 
+    def get(self, irc, msg, args):
+        """[<channel>] <user|nick|hostmask>
+
+        Returns the current herald message for <user> (or the user
+        <nick|hostmask> is currently identified or recognized as).  <channel>
+        is only necessary if the message isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        userNickHostmask = privmsgs.getArgs(args)
+        try:
+            id = self._getId(irc, userNickHostmask)
+        except KeyError:
+            irc.errorNoUser()
+            return
+        try:
+            herald = self.db[channel, id]
+            irc.reply(herald)
+        except KeyError:
+            irc.error('I have no herald for that user.')
+
     def add(self, irc, msg, args):
         """[<channel>] <user|nick|hostmask> <msg>
 
