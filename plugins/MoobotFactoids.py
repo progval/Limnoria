@@ -131,10 +131,11 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.makeDB(dbfilename)
         # Set up the "reply when not command" behavior
-        conf.replyWhenNotCommand = True
         MiscCommands = OwnerCommands.loadPluginModule('MiscCommands')
         # Gotta make sure we restore this when we unload
         self.originalReplyWhenNotCommand = MiscCommands.replyWhenNotCommand
+        self.originalConfReplyWhenNotCommand = conf.replyWhenNotCommand
+        conf.replyWhenNotCommand = True
         MiscCommands.replyWhenNotCommand = self._checkFactoids
 
     def makeDB(self, filename):
@@ -172,6 +173,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         # Recover from clobbering this command earlier
         MiscCommands = OwnerCommands.loadPluginModule('MiscCommands')
         MiscCommands.replyWhenNotCommand = self.originalReplyWhenNotCommand
+        conf.replyWhenNotCommand = self.originalConfReplyWhenNotCommand
 
     def parseFactoid(self, fact):
         type = "define"  # Default is to just spit the factoid back as a
