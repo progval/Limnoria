@@ -114,10 +114,14 @@ totalSearches = 0
 totalTime = 0
 last24hours = structures.queue()
 
-def search(log, *args, **kwargs):
+def search(log, queries, **kwargs):
+    assert not isinstance(queries, basestring), 'Old code: queries is a list.'
     try:
         global totalSearches, totalTime, last24hours
-        data = google.doGoogleSearch(*args, **kwargs)
+        for (i, query) in enumerate(queries):
+            if len(query.split(None, 1)) > 1:
+                queries[i] = repr(query)
+        data = google.doGoogleSearch(' '.join(query), **kwargs)
         now = time.time()
         totalSearches += 1
         totalTime += data.meta.searchTime
@@ -218,11 +222,17 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                 kwargs['filter'] = False
             else:
                 kwargs[option[2:]] = argument
-        searchString = privmsgs.getArgs(rest)
+        for (i, arg) in args:
+            if len(arg.split()) > 1:
+                args[i] = repr(arg)
         try:
-            data = search(self.log, searchString, **kwargs)
+            data = search(self.log, rest, **kwargs)
         except google.NoLicenseKey, e:
-            irc.error(str(e))
+            irc.error('You must have a free Google web services license key '
+                      'in order to use this command.  You can get one at '
+                      '<http://google.com/apis/>.  Once you have one, you can '
+                      'set it with the command '
+                      '"config supybot.plugins.Google.licenseKey <key>".')
             return
         bold = self.registryValue('bold', msg.args[0])
         max = self.registryValue('maximumResults', msg.args[0])
@@ -245,8 +255,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                 kwargs['filter'] = False
             else:
                 kwargs[option[2:]] = argument
-        searchString = privmsgs.getArgs(rest)
-        data = search(self.log, searchString, **kwargs)
+        data = search(self.log, rest, **kwargs)
         meta = data.meta
         categories = [d['fullViewableName'] for d in meta.directoryCategories]
         categories = [utils.dqrepr(s.replace('_', ' ')) for s in categories]
@@ -287,7 +296,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
         results = []
         for arg in args:
-            data = search(self.log, arg)
+            data = search(self.log, [arg])
             results.append((data.meta.estimatedTotalResultsCount, arg))
         results.sort()
         results.reverse()
@@ -325,7 +334,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             return
         searchString = match.group(1)
         try:
-            data = search(self.log, searchString, safeSearch=1)
+            data = search(self.log, [searchString], safeSearch=1)
         except google.NoLicenseKey:
             return
         if data.results:
