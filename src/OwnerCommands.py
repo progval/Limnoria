@@ -42,6 +42,7 @@ import linecache
 
 import conf
 import debug
+import utils
 import world
 import ircmsgs
 import drivers
