@@ -286,6 +286,14 @@ class UsersDictionary(object):
             name = self.getUserName(s)
         else:
             name = s
+        for hostmask in u.hostmasks:
+            try:
+                username = self.getUserName(hostmask)
+                if username != name:
+                    raise ValueError, 'User has hostmasks already matching ' \
+                                      'another user\'s hostmasks.'
+            except KeyError:
+                pass
         self.dict[name] = u
 
     def hasUser(self, s):
