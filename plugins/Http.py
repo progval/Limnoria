@@ -349,9 +349,8 @@ class Http(callbacks.Privmsg):
 
     _abbrevs = utils.abbrev(map(str.lower, babelfish.available_languages))
     _abbrevs['de'] = 'german'
-    _abbrevs['fr'] = 'french'
     _abbrevs['jp'] = 'japanese'
-    _abbrevs['ko'] = 'korean'
+    _abbrevs['kr'] = 'korean'
     _abbrevs['es'] = 'spanish'
     _abbrevs['pt'] = 'portuguese'
     _abbrevs['it'] = 'italian'
