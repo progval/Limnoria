@@ -156,7 +156,9 @@ class Unix(callbacks.Privmsg):
     def spell(self, irc, msg, args): 
         """<word>
 
-        Returns the result of passing <word> to aspell/ispell.
+        Returns the result of passing <word> to aspell/ispell.  The results
+        shown are sorted from best to worst in terms of being a likely match
+        for the spelling of <word>.
         """
         # We are only checking the first word
         word = privmsgs.getArgs(args)
@@ -176,8 +178,11 @@ class Unix(callbacks.Privmsg):
         elif line[0] == '&':
             matches = line.split(':')[1].strip()
             match_list = matches.split(', ')
-            s = ircutils.privmsgPayload(match_list, ', ', 400)
-            resp = 'Possible spellings for "%s": %s.' % (word, s)
+            total = len(match_list)
+            ircutils.shrinkList(match_list, ', ', 350)
+            shown = len(match_list)
+            resp = 'Possible spellings for "%s" (%d found, %d shown): %s.' % \
+                (word, total, shown, ', '.join(match_list))
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(msg, resp)
