@@ -126,6 +126,8 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
         # (the filenames don't have leading slashes, and people may not know
         # that).
         (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        if not optlist and not rest:
+            raise callbacks.ArgumentError
         if len(optlist) + len(rest) > 1:
             irc.error(msg, 'Only one search option is allowed.')
             return
