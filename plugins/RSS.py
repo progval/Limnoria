@@ -127,7 +127,7 @@ class RSS(callbacks.Privmsg):
         headlines = [utils.htmlToText(d['title'].strip())
                      for d in feed['items']]
         if not headlines:
-            irc.error(msg, 'Error grabbing RSS feed')
+            irc.error(msg, 'Couldn\'t get RSS feed')
             return
         headlines = imap(utils.htmlToText, headlines)
         irc.reply(msg, ' :: '.join(headlines))
