@@ -385,6 +385,10 @@ class FileTest(SupyTestCase):
 
 
 class NetTest(SupyTestCase):
+    def testEmailRe(self):
+        emailRe = utils.net.emailRe
+        self.failUnless(emailRe.match('jemfinch@supybot.com'))
+
     def testIsIP(self):
         isIP = utils.net.isIP
         self.failIf(isIP('a.b.c'))

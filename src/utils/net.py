@@ -31,7 +31,12 @@
 Simple utility modules.
 """
 
+import re
 import socket
+
+emailRe = re.compile(r"^(\w&.+-]+!)*[\w&.+-]+@"
+                     r"(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)[a-z]{2,6}|"
+                     r"([0-9]{1,3}\.){3}[0-9]{1,3})$", re.I) 
 
 def getSocket(host):
     """Returns a socket of the correct AF_INET type (v4 or v6) in order to
