@@ -88,6 +88,8 @@ class ValuesTestCase(unittest.TestCase):
         self.assertEqual(v(), 'bar')
         v.set('"biff"')
         self.assertEqual(v(), 'biff')
+        v.set("'buff'")
+        self.assertEqual(v(), 'buff')
         v.set('"xyzzy')
         self.assertEqual(v(), '"xyzzy')
 
@@ -109,5 +111,14 @@ class ValuesTestCase(unittest.TestCase):
         self.assertEqual(v(), ' || ')
         v.set('&&')
         self.assertEqual(v(), ' && ')
+
+    def testCommaSeparatedListOfStrings(self):
+        v = registry.CommaSeparatedListOfStrings(['foo', 'bar'], 'help')
+        self.assertEqual(v(), ['foo', 'bar'])
+        v.setValue(['foo', 'bar', 'baz'])
+        self.assertEqual(v(), ['foo', 'bar', 'baz'])
+        v.set('foo,bar')
+        self.assertEqual(v(), ['foo', 'bar'])
+        
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
