@@ -337,7 +337,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
                           ORDER BY id""", id)
         factoids = cursor.fetchall()
         L = []
-        counter = 0
+        counter = 1
         for (added_by, added_at) in factoids:
             added_at = time.strftime(conf.humanTimestampFormat,
                                      time.localtime(int(added_at)))
