@@ -146,9 +146,10 @@ class FunDB(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.db = makeDb(dbFilename)
         cursor = self.db.cursor()
+        started = int(world.startedAt)
         cursor.execute("""INSERT INTO uptime VALUES (%s, NULL)""", started)
         self.db.commit()
-        atexit.register(uptimeEnder(int(world.startedAt)))
+        atexit.register(uptimeEnder(started))
 
     def die(self):
         self.db.commit()
