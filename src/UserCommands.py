@@ -54,7 +54,9 @@ class UserCommands(callbacks.Privmsg):
         """<name> <password>
 
         Registers <name> with the given password <password> and the current
-        hostmask of the person registering.
+        hostmask of the person registering.  This command (and all other
+        commands that include a password) must be sent to the bot privately,
+        not in a channel.
         """
         (name, password) = privmsgs.getArgs(args, needed=2)
         if not self._checkNotChannel(irc, msg, password):
@@ -100,8 +102,12 @@ class UserCommands(callbacks.Privmsg):
 
         Changes your current user database name to the new name given.
         <password> is only necessary if the user isn't recognized by hostmask.
+        If you include the <password> parameter, this message must be sent
+        to the bot privately (not on a channel).
         """
         (name, newname, password) = privmsgs.getArgs(args, needed=2,optional=1)
+        if not self._checkNotChannel(irc, msg, password):
+            return
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
@@ -124,7 +130,8 @@ class UserCommands(callbacks.Privmsg):
 
         Adds the hostmask <hostmask> to the user specified by <name>.  The
         <password> may only be required if the user is not recognized by
-        hostmask.
+        hostmask.  If you include the <password> parameter, this message must
+        be sent to the bot privately (not on a channel).
         """
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
         if not self._checkNotChannel(irc, msg, password):
@@ -163,7 +170,8 @@ class UserCommands(callbacks.Privmsg):
 
         Removes the hostmask <hostmask> from the record of the user specified
         by <name>.  The <password> may only be required if the user is not
-        recognized by his hostmask.
+        recognized by his hostmask.  If you include the <password> parameter,
+        this message must be sent to the bot privately (not on a channel).
         """
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
         if not self._checkNotChannel(irc, msg, password):
@@ -190,7 +198,8 @@ class UserCommands(callbacks.Privmsg):
         """<name> <old password> <new password>
 
         Sets the new password for the user specified by <name> to
-        <new password>.
+        <new password>.  Obviously this message must be sent to the bot
+        privately (not on a channel).
         """
         (name, oldpassword, newpassword) = privmsgs.getArgs(args, 3)
         if not self._checkNotChannel(irc, msg, oldpassword+newpassword):
