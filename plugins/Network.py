@@ -55,11 +55,12 @@ class Network(callbacks.Privmsg):
     _whois = {}
     _latency = {}
     def _getIrc(self, network):
-        network = network.lower()
-        for irc in world.ircs:
-            if irc.network.lower() == network:
-                return irc
-        raise callbacks.Error, 'I\'m not currently connected to %s.' % network
+        irc = world.getIrc(network)
+        if irc:
+            return irc
+        else:
+            raise callbacks.Error, \
+                  'I\'m not currently connected to %s.' % network
 
     def connect(self, irc, msg, args, network, server):
         """<network> [<host[:port]>]
