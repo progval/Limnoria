@@ -317,7 +317,7 @@ class User(callbacks.Privmsg):
             name = privmsgs.getArgs(args)
         try:
             user = ircdb.users.getUser(name)
-            irc.reply('[%s]' % ', '.join(user.capabilities))
+            irc.reply('[%s]' % '; '.join(user.capabilities))
         except KeyError:
             irc.errorNoUser()
 
