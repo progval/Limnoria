@@ -39,6 +39,7 @@ from baseplugin import *
 
 import re
 import time
+import getopt
 import urlparse
 
 import sqlite
@@ -116,13 +117,13 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         Returns a random URL from the URL database.  <channel> is only required
         if the message isn't sent in the channel itself.
         """
-        channel = msg.args[0]
+        channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT * FROM urls ORDER BY random() LIMIT 1""")
         (id, url, added, addedBy, _, _, _, _, _, _) = cursor.fetchone()
         when = time.ctime(int(added))
-        s = '%s: %s (added by %s on %s)' % (id, url, addedBy, when)
+        s = '%s: <%s> (added by %s on %s)' % (id, url, addedBy, when)
         irc.reply(msg, s)
 
     def numurls(self, irc, msg, args):
@@ -131,13 +132,61 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         Returns the number of URLs in the URL database.  <channel> is only
         required if the message isn't sent in the channel itself.
         """
-        channel = msg.args[0]
+        channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM urls""")
         (count,) = cursor.fetchone()
         irc.reply(msg, 'I have %s %s in my database.' % \
                   (count, int(count) == 1 and 'URL' or 'URLs'))
+
+    def lasturl(self, irc, msg, args):
+        """[<channel>] [--{from,with,at,proto,near}=<value>]
+
+        Gives the last URL matching the given criteria.  --from is from whom
+        the URL came; --at is the site of the URL; --proto is the protocol the
+        URL used; --with is something inside the URL; --near is a string in the
+        messages before and after the link.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        (optlist, rest) = getopt.getopt(args, '', ['from=', 'with=', 'at=',
+                                                   'proto=', 'near='])
+        criteria = ['1=1']
+        formats = []
+        for (option, argument) in optlist:
+            option = option[2:] # Strip off the --.
+            if option == 'from':
+                criteria.append('added_by LIKE %s')
+                formats.append(argument)
+            elif option == 'with':
+                criteria.append('url LIKE %s')
+                formats.append(argument)
+            elif option == 'at':
+                criteria.append('site LIKE %s')
+                formats.append(argument)
+            elif option == 'proto':
+                criteria.append('protocol=%s')
+                formats.append(argument)
+            elif option == 'near':
+                criteria.append("""(previous_msg LIKE %s OR
+                                    next_msg LIKE %s OR
+                                    current_msg LIKE %s)""")
+                if '%' not in argument:
+                    argument = '%%%s%%' % argument
+                formats.append(argument)
+                formats.append(argument)
+                formats.append(argument)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        criterion = ' AND '.join(criteria)
+        sql = 'SELECT url FROM urls WHERE %s ORDER BY id DESC' % criterion
+        cursor.execute(sql, *formats)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'No URLs matched that criteria.')
+        else:
+            (url,) = cursor.fetchone()
+            irc.reply(msg, url)
             
     
 Class = URLSnarfer
