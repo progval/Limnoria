@@ -71,7 +71,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Later, 'private',
 class Later(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.notes = ircutils.IrcDict()
+        self._notes = ircutils.IrcDict()
         self.wildcards = []
         self.filename = conf.supybot.directories.data.dirize('Later.db')
         self._openNotes()
@@ -82,7 +82,7 @@ class Later(callbacks.Privmsg):
     def _flushNotes(self):
         fd = utils.transactionalFile(self.filename)
         writer = csv.writer(fd)
-        for (nick, notes) in self.notes.iteritems():
+        for (nick, notes) in self._notes.iteritems():
             for (time, whence, text) in notes:
                 writer.writerow([nick, time, whence, text])
         fd.close()
@@ -112,13 +112,13 @@ class Later(callbacks.Privmsg):
         if maximum is None:
             maximum = self.registryValue('maximum')
         try:
-            notes = self.notes[nick]
+            notes = self._notes[nick]
             if maximum and len(notes) >= maximum:
                 raise ValueError
             else:
                 notes.append((at, whence, text))
         except KeyError:
-            self.notes[nick] = [(at, whence, text)]
+            self._notes[nick] = [(at, whence, text)]
         if '?' in nick or '*' in nick and nick not in self.wildcards:
             self.wildcards.append(nick)
         self._flushNotes()
@@ -140,17 +140,25 @@ class Later(callbacks.Privmsg):
             irc.error('That person\'s message queue is already full.')
     tell = wrap(tell, ['nick', 'text'])
 
+    def notes(self, irc, msg, args):
+        """takes no arguments
+
+        Tells which nicks have notes waiting for them.
+        """
+        nicks = self._notes.keys()
+        utils.sortBy(ircutils.toLower, nicks)
+        irc.reply('I currently have notes waiting for %s.' %
+                  utils.commaAndify(nicks))
+    #notes = wrap(notes)
+    
     def doPrivmsg(self, irc, msg):
-        try:
-            notes = self.notes.pop(msg.nick)
-        except KeyError:
-            notes = []
+        notes = self._notes.pop(msg.nick, [])
         # Let's try wildcards.
         removals = []
         for wildcard in self.wildcards:
             if ircutils.hostmaskPatternEqual(wildcard, msg.nick):
                 removals.append(wildcard)
-                notes.extend(self.notes.pop(wildcard))
+                notes.extend(self._notes.pop(wildcard))
             for removal in removals:
                 self.wildcards.remove(removal)
         if notes:
