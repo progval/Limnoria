@@ -45,6 +45,7 @@ class UserCommandsTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('unregister foo bar')
         self.assertRaises(KeyError, ircdb.users.getUserId, 'foo')
         
+    def testChangeUsername(self):
         self.prefix = self.prefix1
         self.assertNotError('register foo bar')
         self.prefix = self.prefix2
