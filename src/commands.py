@@ -208,8 +208,8 @@ def getId(irc, msg, args, state, kind=None):
     type = 'id'
     if kind is not None and not kind.endswith('id'):
         type = kind + ' id'
+    original = args[0]
     try:
-        original = args[0]
         args[0] = args[0].lstrip('#')
         getInt(irc, msg, args, state, type=type)
     except Exception, e:
