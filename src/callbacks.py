@@ -528,13 +528,14 @@ class ConfigIrcProxy(object):
         return None
 
     def error(self, msg, s, *args):
-        log.info('ConfigIrcProxy saw an error: %s' % s)
+        log.warning('ConfigIrcProxy saw an error: %s' % s)
 
     def getRealIrc(self):
         irc = self.__dict__['irc']
-        while(hasattr(irc, 'getRealIrc')):
-            irc = irc.getRealIrc()
-        return irc
+        if hasattr(irc, 'getRealIrc'):
+            return irc.getRealIrc()
+        else:
+            return irc
 
     def __getattr__(self, attr):
         return getattr(self.getRealIrc(), attr)
