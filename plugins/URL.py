@@ -87,11 +87,6 @@ conf.registerChannelValue(conf.supybot.plugins.URL.tinyurlSnarfer,
 conf.registerChannelValue(conf.supybot.plugins.URL, 'titleSnarfer',
     registry.Boolean(False, """Determines whether the bot will output the HTML
     title of URLs it sees in the channel."""))
-conf.registerChannelValue(conf.supybot.plugins.URL.titleSnarfer,
-    'includesUrl',
-    registry.Boolean(True, """Determines whether the bot will include the
-    snarfed URL in its message.  This is particularly useful when people have a
-    habit of putting multiple URLs in a message."""))
 conf.registerChannelValue(conf.supybot.plugins.URL, 'nonSnarfingRegexp',
     registry.Regexp(None, """Determines what URLs are to be snarfed and stored
     in the database in the channel; URLs matchin the regexp given will not be
@@ -188,7 +183,8 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                     return
                 elif updateDb:
                     self._updateTinyDb(url, tinyurl, channel)
-                s = '%s (was <%s>)' % (ircutils.bold(tinyurl), url)
+                domain = webutils.getDomain(url)
+                s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
                 irc.reply(s, prefixName=False)
     tinyurlSnarfer = privmsgs.urlSnarfer(tinyurlSnarfer)
 
@@ -202,9 +198,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
             text = webutils.getUrl(url, size=conf.supybot.httpPeekSize())
             m = self._titleRe.search(text)
             if m is not None:
-                s = 'Title: %s' % utils.htmlToText(m.group(1).strip())
-                if self.registryValue('titleSnarfer.includesUrl', channel):
-                    s += ' (<%s>)' % url
+                domain = webutils.getDomain(url)
+                title = utils.htmlToText(m.group(1).strip())
+                s = 'Title: %s (at %s)' % (title, domain)
                 irc.reply(s, prefixName=False)
     titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
                 
