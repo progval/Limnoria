@@ -68,6 +68,7 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
 
     def testAction(self):
         self.assertAction('action moos', 'moos')
+        self.assertAction('action','')
 
     def testRe(self):
         self.assertResponse('re "m/My children/" [cpustats]', 'My children')
