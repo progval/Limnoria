@@ -74,7 +74,7 @@ class Babelfish(callbacks.Privmsg):
     def translate(self, irc, msg, args):
         """<from-language> <to-language> <text>
 
-        Returns the text translated to the new language.
+        Returns <text> translated from <from-language> into <to-language>.
         """
         (fromLang, toLang, text) = privmsgs.getArgs(args, needed=3)
         try:
