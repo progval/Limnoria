@@ -151,15 +151,13 @@ class Channel(object):
     __slots__ = ('users', 'ops', 'halfops', 'voices', 'topic')
     def __init__(self):
         self.topic = ''
-        self.users = sets.Set()
-        self.ops = sets.Set()
-        self.halfops = sets.Set()
-        self.voices = sets.Set()
+        self.users = ircutils.IrcSet() # sets.Set()
+        self.ops = ircutils.IrcSet() # sets.Set()
+        self.halfops = ircutils.IrcSet() # sets.Set()
+        self.voices = ircutils.IrcSet() # sets.Set()
 
     def addUser(self, user):
         nick = user.lstrip('@%+')
-        if not isinstance(nick, ircutils.nick):
-            nick = ircutils.nick(nick)
         while user and user[0] in '@%+':
             (marker, user) = (user[0], user[1:])
             if marker == '@':
@@ -174,18 +172,12 @@ class Channel(object):
         # Note that this doesn't have to have the sigil (@%+) that users
         # have to have for addUser; it just changes the name of the user
         # without changing any of his categories.
-        if not isinstance(oldNick, ircutils.nick):
-            oldNick = ircutils.nick(oldNick)
-        if not isinstance(newNick, ircutils.nick):
-            newNick = ircutils.nick(newNick)
         for s in (self.users, self.ops, self.halfops, self.voices):
             if oldNick in s:
                 s.discard(oldNick)
                 s.add(newNick)
 
     def removeUser(self, user):
-        if not isinstance(user, ircutils.nick):
-            user = ircutils.nick(user)
         self.users.discard(user)
         self.ops.discard(user)
         self.halfops.discard(user)
@@ -305,7 +297,7 @@ class IrcState(IrcCommandDispatcher):
         chan.topic = msg.args[2]
 
     def doNick(self, irc, msg):
-        newNick = ircutils.nick(msg.args[0])
+        newNick = msg.args[0]
         oldNick = msg.nick
         try:
             if msg.user and msg.host:
@@ -340,7 +332,7 @@ class Irc(object):
         self.password = password
         self.user = user or nick    # Default to nick if user isn't provided.
         self.ident = ident or nick  # Ditto.
-        self.prefix = '%s!%s@%s' % (nick, ident, 'unset')
+        self.prefix = '%s!%s@%s' % (nick, ident, 'unset.domain')
         if callbacks is None:
             self.callbacks = []
         else:
@@ -447,18 +439,25 @@ class Irc(object):
 
     def feedMsg(self, msg):
         debug.msg('%s  %s' % (time.strftime(conf.timestampFormat), msg), 'low')
+        # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
+        # messages with our nick instead of our prefix.  We'll fix that here.
+        if msg.prefix == self.nick:
+            debug.msg('Got one of those odd nick-instead-of-prefix msgs.')
+            msg = ircmsgs.IrcMsg(prefix=self.prefix,
+                                 command=msg.command,
+                                 args=msg.args)
         # First, make sure self.nick is always consistent with the server.
         if msg.command == 'NICK' and msg.nick == self.nick:
             if ircdb.users.hasUser(self.nick):
                 ircdb.users.delUser(self.nick)
             if ircdb.users.hasUser(self.prefix):
                 ircdb.users.delUser(self.prefix)
-            self.nick = ircutils.nick(msg.args[0])
+            self.nick = msg.args[0]
             (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             self.prefix = '%s!%s@%s' % (self.nick, user, domain)
         elif msg.command in self._nickSetters:
             #debug.printf('msg.command in self._nickSetters')
-            newnick = ircutils.nick(msg.args[0])
+            newnick = msg.args[0]
             if self.nick != newnick:
                 debug.printf('Hmm...self.nick != newnick.  Odd.')
             self.nick = newnick

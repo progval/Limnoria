@@ -141,12 +141,12 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual('jemfinch', ircutils.toLower('jemfinch'))
         self.assertEqual('{}|^', ircutils.toLower('[]\\~'))
 
-    def testNick(self):
-        nicks = ['jemfinch', 'jemfinch\\[]~']
-        for nick in nicks:
-            self.assertEqual(str(ircutils.nick(nick)), str(nick))
-            self.assertEqual(ircutils.nick(nick), nick)
-            self.assertEqual(ircutils.nick(nick), ircutils.toLower(nick))
+##     def testNick(self):
+##         nicks = ['jemfinch', 'jemfinch\\[]~']
+##         for nick in nicks:
+##             self.assertEqual(str(ircutils.nick(nick)), str(nick))
+##             self.assertEqual(ircutils.nick(nick), nick)
+##             self.assertEqual(ircutils.nick(nick), ircutils.toLower(nick))
 
     def testReplyTo(self):
         prefix = 'foo!bar@baz'

@@ -39,6 +39,7 @@ IRC-case-insensitive fashion), and numerous other things.
 from fix import *
 
 import re
+import sets
 import string
 import fnmatch
 import operator
@@ -59,7 +60,7 @@ def isServerHostmask(s):
 def nickFromHostmask(hostmask):
     """Returns the nick from a user hostmask."""
     assert isUserHostmask(hostmask)
-    return nick(hostmask.split('!', 1)[0])
+    return hostmask.split('!', 1)[0]
 
 def userFromHostmask(hostmask):
     """Returns the user from a user hostmask."""
@@ -74,9 +75,9 @@ def hostFromHostmask(hostmask):
 def splitHostmask(hostmask):
     """Returns the nick, user, host of a user hostmask."""
     assert isUserHostmask(hostmask)
-    nck, rest = hostmask.split('!', 1)
+    nick, rest = hostmask.split('!', 1)
     user, host = rest.split('@', 1)
-    return (nick(nck), user, host)
+    return (nick, user, host)
 
 def joinHostmask(nick, ident, host):
     """Joins the nick, ident, host into a user hostmask."""
@@ -296,26 +297,26 @@ def shrinkList(L, sep='', limit=425):
           L.pop()
 
 
-class nick(str):
-    """This class does case-insensitive comparison and hashing of nicks."""
-    def __init__(self, s):
-        self.original = s
-        self.lowered = toLower(s)
+## class nick(str):
+##     """This class does case-insensitive comparison and hashing of nicks."""
+##     def __init__(self, s):
+##         self.original = s
+##         self.lowered = toLower(s)
 
-    def __repr__(self):
-        return repr(self.original)
+##     def __repr__(self):
+##         return repr(self.original)
 
-    def __str__(self):
-        return str(self.original)
+##     def __str__(self):
+##         return str(self.original)
     
-    def __eq__(self, s):
-        try:
-            return toLower(s) == self.lowered
-        except:
-            return False
+##     def __eq__(self, s):
+##         try:
+##             return toLower(s) == self.lowered
+##         except:
+##             return False
 
-    def __hash__(self):
-        return hash(self.lowered)
+##     def __hash__(self):
+##         return hash(self.lowered)
 
 
 class IrcDict(dict):
@@ -332,6 +333,21 @@ class IrcDict(dict):
 
     def __delitem__(self, s):
         dict.__delitem__(self, toLower(s))
+
+class IrcSet(sets.Set):
+    def add(self, s):
+        return sets.Set.add(self, toLower(s))
+
+    def remove(self, s):
+        return sets.Set.remove(self, toLower(s))
+
+    def discard(self, s):
+        return sets.Set.discard(self, toLower(s))
+
+    def __contains__(self, s):
+        return sets.Set.__contains__(self, toLower(s))
+
+    has_key = __contains__
 
 
 if __name__ == '__main__':
