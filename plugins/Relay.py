@@ -182,7 +182,7 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
                     msg.args[1].find('has joined on ') != -1):
                 channel = msg.args[0]
                 if channel not in self.channels:
-                    return
+                    return msg
                 abbreviation = self.abbreviations[irc]
                 s = self._formatPrivmsg(irc.nick, abbreviation, msg)
                 for otherIrc in self.ircs.itervalues():
