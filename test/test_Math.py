@@ -124,6 +124,10 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
     def testCaseInsensitive(self):
         self.assertNotError('calc PI**PI')
 
+    def testCalcMaxMin(self):
+        self.assertResponse('calc max(1,2)', '2')
+        self.assertResponse('calc min(1,2)', '1')
+        
     def testICalc(self):
         self.assertResponse('icalc 1^1', '0')
         self.assertResponse('icalc 10**24', '1' + '0'*24)

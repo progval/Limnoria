@@ -130,6 +130,8 @@ class Math(callbacks.Privmsg):
             return math.sqrt(x)
     _mathEnv['sqrt'] = _sqrt
     _mathEnv['abs'] = abs
+    _mathEnv['max'] = max
+    _mathEnv['min'] = min
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d)])-)?'
                          r'(?:0x[A-Fa-f\d]+|'
                          r'0[0-7]+|'
