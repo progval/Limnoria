@@ -152,7 +152,8 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
         sql = """INSERT INTO %ss VALUES (NULL, %%s, %%s)""" % table
         cursor.execute(sql, s, name)
         db.commit()
-        sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
+        sql = """SELECT id FROM %ss WHERE %s=%%s
+                 ORDER BY id DESC LIMIT 1""" % (table, table)
         cursor.execute(sql, s)
         id = cursor.fetchone()[0]
         irc.replySuccess('(%s #%s added)' % (table, id))
