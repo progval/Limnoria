@@ -55,6 +55,7 @@ import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 tableCreateStatements = {
     'larts': ("""CREATE TABLE larts (
@@ -79,26 +80,26 @@ tableCreateStatements = {
                    )""",),
     }
     
-class FunDB(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
+class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
     """
     Contains the 'fun' commands that require a database.  Currently includes
     database-backed commands for crossword puzzle solving, anagram searching,
     larting, praising, excusing, and insulting.
     """
-    configurables = plugins.ConfigurableDictionary(
-        [('show-ids', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('show-ids', configurable.BoolType, False,
           """Determines whether the bot will show the id of an
           excuse/insult/praise/lart.""")]
     )
     _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
 
     def die(self):
         callbacks.Privmsg.die(self)
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, dbfilename, replace=False):

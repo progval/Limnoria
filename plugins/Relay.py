@@ -51,6 +51,7 @@ import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 def configure(onStart, afterConnect, advanced):
     import socket
@@ -107,17 +108,17 @@ def reload(x=None):
     else:
         (ircs, ircstates, lastmsg, channels, abbreviations, originalIrc) = x
 
-class Relay(callbacks.Privmsg, plugins.Configurable):
+class Relay(callbacks.Privmsg, configurable.Mixin):
     noIgnore = True
     priority = sys.maxint
-    configurables = plugins.ConfigurableDictionary(
-        [('color', plugins.ConfigurableBoolType, True,
+    configurables = configurable.Dictionary(
+        [('color', configurable.BoolType, True,
           """Determines whether the bot will color relayed PRIVMSGs so as to
           make the messages easier to read."""),]
     )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         self.ircs = ircs
         self._color = 0
         self._whois = {}
@@ -139,7 +140,7 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
 
     def die(self):
         callbacks.Privmsg.die(self)
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         for irc in self.abbreviations:
             if irc != originalIrc:
                 irc.callbacks[:] = []

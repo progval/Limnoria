@@ -57,6 +57,7 @@ import plugins
 import privmsgs
 import ircutils
 import callbacks
+import configurable
 
 smileys = (':)', ';)', ':]', ':-)', ':-D', ':D', ':P', ':p', '(=', '=)')
 frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
@@ -65,21 +66,21 @@ smileyre = re.compile('|'.join(imap(re.escape, smileys)))
 frownre = re.compile('|'.join(imap(re.escape, frowns)))
 
 class ChannelDB(plugins.ChannelDBHandler,
-                plugins.Configurable,
+                configurable.Mixin,
                 callbacks.Privmsg):
     noIgnore = True
-    configurables = plugins.ConfigurableDictionary(
-        [('self-stats', plugins.ConfigurableBoolType, True,
+    configurables = configurable.Dictionary(
+        [('self-stats', configurable.BoolType, True,
           """Determines whether the bot will keep channel statistics on itself,
           possibly skewing the channel stats (especially in cases where he's
           relaying between channels on a network."""),
-         ('wordstats-top-n', plugins.ConfigurableIntType, 3,
+         ('wordstats-top-n', configurable.IntType, 3,
          """Determines the maximum number of top users to show for a given
          wordstat when you request the wordstats for a particular word.""")]
         )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
         self.lastmsg = None
         self.laststate = None
@@ -87,7 +88,7 @@ class ChannelDB(plugins.ChannelDBHandler,
 
     def die(self):
         callbacks.Privmsg.die(self)
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):

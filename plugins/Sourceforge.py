@@ -47,6 +47,7 @@ import ircutils
 import privmsgs
 import webutils
 import callbacks
+import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -94,7 +95,7 @@ def configure(onStart, afterConnect, advanced):
 class TrackerError(Exception):
     pass
 
-class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
+class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     """
     Module for Sourceforge stuff. Currently contains commands to query a
     project's most recent bugs and rfes.
@@ -114,21 +115,21 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     _status = re.compile(r'<b>(Status):</b> <a.+?<br>(.+?)</td>', _reopts)
     _res =(_resolution, _assigned, _submitted, _priority, _status)
 
-    configurables = plugins.ConfigurableDictionary(
-        [('tracker-snarfer', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('tracker-snarfer', configurable.BoolType, False,
           """Determines whether the bot will reply to SF.net Tracker URLs in
           the channel with a nice summary of the tracker item."""),
-         ('default-project', plugins.ConfigurableStrType, '',
+         ('default-project', configurable.StrType, '',
           """Sets the default project (used by the bugs/rfes commands in the
           case that no explicit project is given).""")]
     )
     _projectURL = 'http://sourceforge.net/projects/'
     def __init__(self):
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
 
     def _formatResp(self, text, num=''):

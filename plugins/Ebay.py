@@ -48,6 +48,7 @@ import plugins
 import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -67,24 +68,24 @@ def configure(onStart, afterConnect, advanced):
 class EbayError(callbacks.Error):
     pass
 
-class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
+class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     """
     Module for eBay stuff. Currently contains a URL snarfer and a command to
     get info about an auction.
     """
     threaded = True
     regexps = ['ebaySnarfer']
-    configurables = plugins.ConfigurableDictionary(
-        [('auction-snarfer', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('auction-snarfer', configurable.BoolType, False,
           """Determines whether the bot will automatically 'snarf' Ebay auction
           URLs and print information about them.""")]
     )
     def __init__(self):
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
 
     _reopts = re.I | re.S

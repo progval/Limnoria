@@ -57,6 +57,7 @@ import webutils
 import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 L = [os.__file__]
 if hasattr(math, '__file__'):
@@ -75,22 +76,22 @@ def configure(onStart, afterConnect, advanced):
              Would you like to enable this snarfer?""") == 'y':
         onStart.append('python config aspn-snarfer on')
 
-class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
+class Python(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
     regexps = ['aspnRecipes']
-    configurables = plugins.ConfigurableDictionary(
-        [('aspn-snarfer', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('aspn-snarfer', configurable.BoolType, False,
           """Determines whether the ASPN Python recipe snarfer is enabled.  If
           so, it will message the channel with the name of the recipe when it
           sees an ASPN Python recipe link on the channel.""")]
     )
 
     def __init__(self):
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
         
     def pydoc(self, irc, msg, args):

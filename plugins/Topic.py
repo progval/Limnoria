@@ -47,25 +47,26 @@ import ircmsgs
 import plugins
 import privmsgs
 import callbacks
+import configurable
 
 def ConfigurableTopicSeparator(s):
-    s = plugins.ConfigurableStrType(s)
+    s = configurable.StrType(s)
     if s.lstrip() == s:
         s = ' ' + s
     if s.rstrip() == s:
         s += ' '
     return s
 
-class Topic(callbacks.Privmsg, plugins.Configurable):
+class Topic(callbacks.Privmsg, configurable.Mixin):
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((\S+)\)')
-    configurables = plugins.ConfigurableDictionary(
-        [('separator', plugins.ConfigurableStrType, ' || ',
+    configurables = configurable.Dictionary(
+        [('separator', configurable.StrType, ' || ',
           "The separator between individual topics in the channel topic.")]
     )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
 
     def _splitTopic(self, topic, channel):
         separator = self.configurables.get('separator', channel)

@@ -46,6 +46,7 @@ import utils
 import plugins
 import privmsgs
 import callbacks
+import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -57,23 +58,23 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Karma')
 
 class Karma(callbacks.PrivmsgCommandAndRegexp,
-            plugins.Configurable,
+            configurable.Mixin,
             plugins.ChannelDBHandler):
     addressedRegexps = ['increaseKarma', 'decreaseKarma']
-    configurables = plugins.ConfigurableDictionary(
-        [('simple-output', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('simple-output', configurable.BoolType, False,
           """Determines whether the bot will output shorter versions of the
           karma output when requesting a single thing's karma. (example: 'foo:
           1')""")]
     )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
 
     def die(self):
         callbacks.PrivmsgCommandAndRegexp.die(self)
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):

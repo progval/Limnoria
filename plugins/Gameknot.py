@@ -47,6 +47,7 @@ import plugins
 import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -69,15 +70,15 @@ def configure(onStart, afterConnect, advanced):
             onStart.append('Gameknot toggle stat off')
 
 
-class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
+class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     threaded = True
     regexps = ['gameknotSnarfer', 'gameknotStatsSnarfer']
-    configurables = plugins.ConfigurableDictionary(
-        [('game-snarfer', plugins.ConfigurableBoolType, True,
+    configurables = configurable.Dictionary(
+        [('game-snarfer', configurable.BoolType, True,
           """Determines whether the game URL snarfer is active; if so, the bot
           will reply to the channel with a summary of the game data when it
           sees a Gameknot game on the channel."""),
-         ('stats-snarfer', plugins.ConfigurableBoolType, True,
+         ('stats-snarfer', configurable.BoolType, True,
           """Determines whether the stats URL snarfer is active; if so, the bot
           will reply to the channel with a summary of the stats of any player
           whose stats URL is seen on the channel.""")]
@@ -89,11 +90,11 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     _gkteam = re.compile(r'Team:(<.*?>)+(?P<name>.*?)</span>')
     _gkseen = re.compile(r'(seen on GK:\s+([^[]+ago)|.*?is hiding.*?)')
     def __init__(self):
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
         
     def getStats(self, name):

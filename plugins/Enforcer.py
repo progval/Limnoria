@@ -45,6 +45,7 @@ import plugins
 import privmsgs
 import ircutils
 import callbacks
+import configurable
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
@@ -61,18 +62,18 @@ def configure(onStart, afterConnect, advanced):
 # Enforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
 ###
 _chanCap = ircdb.makeChannelCapability
-class Enforcer(callbacks.Privmsg, plugins.Configurable):
-    configurables = plugins.ConfigurableDictionary(
-        [('auto-op', plugins.ConfigurableBoolType, False,
+class Enforcer(callbacks.Privmsg, configurable.Mixin):
+    configurables = configurable.Dictionary(
+        [('auto-op', configurable.BoolType, False,
           """Determines whether the bot will automatically op people with
           the <channel>.op capability when they join the channel."""),
-         ('auto-voice', plugins.ConfigurableBoolType, False,
+         ('auto-voice', configurable.BoolType, False,
           """Determines whether the bot will automatically voice people with
           the <channel>.voice capability when they join the channel."""),
-         ('auto-halfop', plugins.ConfigurableBoolType, False,
+         ('auto-halfop', configurable.BoolType, False,
           """Determines whether the bot will automatically halfop people with
           the <channel>.halfop capability when they join the channel."""),
-         ('revenge', plugins.ConfigurableBoolType, False,
+         ('revenge', configurable.BoolType, False,
           """Determines whether the bot will take revenge on people who do
           things it doesn't like (somewhat like 'bitch mode' in other IRC
           bots)."""),]
@@ -80,11 +81,11 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
     started = False
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
 
     def die(self):
         callbacks.Privmsg.die(self)
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
 
     def start(self, irc, msg, args):
         """[<CHANSERV>]

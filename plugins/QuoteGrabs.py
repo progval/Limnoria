@@ -54,6 +54,7 @@ import plugins
 import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -69,10 +70,10 @@ minRandomLength = 8
 minRandomWords = 3
 
 class QuoteGrabs(plugins.ChannelDBHandler,
-                 plugins.Configurable,
+                 configurable.Mixin,
                  callbacks.Privmsg):
-    configurables = plugins.ConfigurableDictionary(
-        [('random-grabber', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('random-grabber', configurable.BoolType, False,
           """Determines whether the bot will randomly grab possibly-suitable
           quotes for someone."""),]
     )

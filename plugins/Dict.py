@@ -49,6 +49,7 @@ import plugins
 import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -64,20 +65,20 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('dict config server %s' % server)
 
 replyTimeout = 'Timeout on the dictd server.'
-class Dict(callbacks.Privmsg, plugins.Configurable):
+class Dict(callbacks.Privmsg, configurable.Mixin):
     threaded = True
-    configurables = plugins.ConfigurableDictionary(
-        [('server', plugins.ConfigurableStrType, 'dict.org',
+    configurables = configurable.Dictionary(
+        [('server', configurable.StrType, 'dict.org',
           """Determines what server the bot will connect to to receive
           definitions from."""),]
     )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
 
     def die(self):
         callbacks.Privmsg.die(self)
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
 
     def dictionaries(self, irc, msg, args):
         """takes no arguments.

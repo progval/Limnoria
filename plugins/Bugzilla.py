@@ -52,6 +52,7 @@ import ircutils
 import privmsgs
 import callbacks
 import structures
+import configurable
 
 dbfilename = os.path.join(conf.dataDir, 'Bugzilla.db')
 def makeDb(filename):
@@ -83,18 +84,18 @@ def configure(onStart, afterConnect, advanced):
 
 replyNoBugzilla = 'I don\'t have a bugzilla %r'
 
-class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
+class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     """Show a link to a bug report with a brief description"""
     threaded = True
     regexps = ['bzSnarfer']
-    configurables = plugins.ConfigurableDictionary(
-        [('bug-snarfer', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('bug-snarfer', configurable.BoolType, False,
          """Determines whether the bug snarfer will be enabled, such that any
          Bugzilla URLs seen in the channel will have their information reported
          into the channel.""")]
     )
     def __init__(self):
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.entre = re.compile('&(\S*?);')
         # Schema: {name, [url, description]}
@@ -102,7 +103,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         self.shorthand = utils.abbrev(self.db.keys())
 
     def die(self):
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         self.db.close()
         del self.db
     

@@ -54,6 +54,7 @@ import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
@@ -82,26 +83,26 @@ def configure(onStart, afterConnect, advanced):
                                     length that will trigger this snarfer?""")
 
 class URL(callbacks.PrivmsgCommandAndRegexp,
-          plugins.Configurable,
+          configurable.Mixin,
           plugins.ChannelDBHandler):
     regexps = ['tinyurlSnarfer']
-    configurables = plugins.ConfigurableDictionary(
-        [('tinyurl-snarfer', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('tinyurl-snarfer', configurable.BoolType, False,
           """Determines whether the bot will output shorter versions of URLs
           longer than the tinyurl-minimum-length config variable."""),
-         ('tinyurl-minimum-length', plugins.ConfigurableIntType, 46,
+         ('tinyurl-minimum-length', configurable.IntType, 46,
           """The minimum length a URL must be before the tinyurl-snarfer will
           snarf it and offer a tinyurl replacement."""),]
     )
     def __init__(self):
         self.nextMsgs = {}
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
 
     def die(self):
         callbacks.PrivmsgCommandAndRegexp.die(self)
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
         plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):

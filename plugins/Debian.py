@@ -53,6 +53,7 @@ import conf
 import utils
 import privmsgs
 import callbacks
+import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -82,7 +83,7 @@ def configure(onStart, afterConnect, advanced):
                 onStart.append('disable file')
 
 class Debian(callbacks.Privmsg,
-             plugins.Configurable,
+             configurable.Mixin,
              plugins.PeriodicFileDownloader):
     threaded = True
     periodicFiles = {
@@ -93,8 +94,8 @@ class Debian(callbacks.Privmsg,
                              604800, None)
         }
     contents = os.path.join(conf.dataDir, 'Contents-i386.gz')
-    configurables = plugins.ConfigurableDictionary(
-        [('python-zegrep', plugins.ConfigurableBoolType, False,
+    configurables = configurable.Dictionary(
+        [('python-zegrep', configurable.BoolType, False,
           """An advanced option, mostly just for testing; uses a Python-coded
           zegrep rather than the actual zegrep executable, generally resulting
           in a 50x slowdown.  What would take 2 seconds will take 100 with this
@@ -102,12 +103,12 @@ class Debian(callbacks.Privmsg,
     )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Configurable.__init__(self)
+        configurable.Mixin.__init__(self)
         plugins.PeriodicFileDownloader.__init__(self)
 
     def die(self):
         callbacks.Privmsg.die(self)
-        plugins.Configurable.die(self)
+        configurable.Mixin.die(self)
 
     def file(self, irc, msg, args):
         """[--{regexp,exact}=<value>] [<glob>]
