@@ -61,6 +61,8 @@ class Games(callbacks.Plugin):
             irc.error('You can\'t roll more than 6 dice.')
         elif sides > 100:
             irc.error('Dice can\'t have more than 100 sides.')
+        elif sides < 3:
+            irc.error('Dice can\'t have less than 3 sides.')
         else:
             L = [0] * dice
             for i in xrange(dice):
