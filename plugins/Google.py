@@ -65,8 +65,8 @@ def configure(onStart, afterConnect, advanced):
         if key:
             onStart.append('load Google')
             onStart.append('googlelicensekey %s' % key)
-        if yn('Google depends on the Alias module for some commands.  ' \
-              'Is the Alias module loaded?') == 'n':
+        if 'load Alias' not in onStart:
+            print 'Google depends on the Alias module for some commands.'
             if yn('Would you like to load the Alias module now?') == 'y':
                 onStart.append('load Alias')
             else:
