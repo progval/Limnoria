@@ -30,11 +30,12 @@
 ###
 
 import sys
-import textwrap
 
 if sys.version_info < (2, 3, 0):
     sys.stderr.write("Supybot requires Python 2.3 or newer.\n")
     sys.exit(-1)
+
+import textwrap
 
 clean = False
 while '--clean' in sys.argv:
