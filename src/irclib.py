@@ -400,7 +400,7 @@ class Irc(object):
         if self.fastqueue:
             msg = self.fastqueue.dequeue()
         elif self.queue:
-            if now - self.lastTake <= conf.throttleTime:
+            if not world.testing and now - self.lastTake <= conf.throttleTime:
                 debug.msg('Irc.takeMsg throttling.', 'verbose')
             else:
                 self.lastTake = now
