@@ -35,8 +35,9 @@ Module for general worldly stuff, like global variables and whatnot.
 
 import fix
 
-import os
 import gc
+import os
+import sre
 import time
 import types
 import atexit
@@ -90,6 +91,7 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
         debug.msg('Uncollectable garbage: %s' % gc.garbage, 'normal')
     if 'noflush' not in tempvars:
         flush()
+    debug.msg('Regexp cache size: %s' % len(sre._cache), 'verbose')
     msg = '%s upkeep ran.' % time.strftime(conf.logTimestampFormat)
     debug.msg(msg, 'verbose')
     return collected
