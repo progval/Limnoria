@@ -359,6 +359,26 @@ class FunCommands(callbacks.Privmsg):
     _mathInt = re.compile(r'(?<!\d|\.)(\d+)(?!\d+|\.|\.\d+)')
     _mathHex = re.compile(r'(0x[A-Fa-f\d]+)')
     _mathOctal = re.compile(r'(^|[^\dA-Fa-f])(0[0-7]+)')
+    def _complexToString(self, x):
+        real = x.real
+        imag = x.imag
+        if real < 1e-12 and imag < 1e-12:
+            return '0'
+        if int(real) == real:
+            real = int(real)
+        if int(imag) == imag:
+            imag = int(imag)
+        if real < 1e-12:
+            real = 0
+        if imag < 1e-12:
+            imag = 0
+        if imag == 0:
+            return str(real)
+        elif real == 0:
+            return '%s*i' % imag
+        else:
+            return '%s+%si' % (real, imag)
+        
     def calc(self, irc, msg, args):
         """<math expression>
 
@@ -384,26 +404,48 @@ class FunCommands(callbacks.Privmsg):
         #debug.printf('After uninting: %r' % text)
         try:
             x = complex(eval(text, self._mathEnv, self._mathEnv))
-            real = x.real
-            imag = x.imag
-            if real == int(real):
-                real = int(real)
-            if real < 1e-12:
-                real = 0
-            if imag < 1e-12:
-                imag = 0
-            if real < 1e-12 and imag < 1e-12:
-                irc.reply(msg, '0')
-            elif imag < 1e-12:
-                irc.reply(msg, '%s' % real)
-            elif real < 1e-12:
-                irc.reply(msg, '%s' % imag)
-            else:
-                irc.reply(msg, '%s + %si' % (real, imag))
+            irc.reply(msg, self._complexToString(x))
         except OverflowError:
             irc.reply(msg, 'Go get scanez, this is a *real* math problem!')
         except Exception, e:
             irc.reply(msg, debug.exnToString(e))
+
+    def rpn(self, irc, msg, args):
+        """<rpn math expression>
+
+        Returns the value of an RPN expression.
+        """
+        stack = []
+        for arg in args:
+            try:
+                stack.append(float(arg))
+            except ValueError: # Not a float.
+                if arg in self._mathEnv:
+                    f = self._mathEnv[arg]
+                    if callable(f):
+                        called = False
+                        arguments = []
+                        while not called and stack:
+                            arguments.append(stack.pop())
+                            try:
+                                stack.append(f(*arguments))
+                                called = True
+                            except TypeError:
+                                pass
+                        if not called:
+                            irc.error(msg, 'Not enough arguments for %s' % arg)
+                            return
+                    else:
+                        stack.append(f)
+                else:
+                    arg2 = stack.pop()
+                    arg1 = stack.pop()
+                    stack.append(eval('%s%s%s' % (arg1, arg, arg2),
+                                      self._mathEnv, self._mathEnv))
+        if len(stack) == 1:
+            irc.reply(msg, str(self._complexToString(complex(stack[0]))))
+        else:
+            irc.reply(msg, 'Stack: %r' % stack)
 
     def objects(self, irc, msg, args):
         """takes no arguments.
