@@ -286,11 +286,11 @@ class Factoids(callbacks.Privmsg):
         except KeyError:
             name = msg.nick
         try:
-            self.db.add(channel, key, factoid, nick)
+            self.db.add(channel, key, factoid, name)
             irc.replySuccess()
         except LockError:
             irc.error('That factoid is locked.')
-    learn = wrap(learn, ['channeldb', many('text')])
+    learn = wrap(learn, ['channeldb', many('something')])
 
     def _replyFactoids(self, irc, channel, key, factoids, number=0, error=True):
         if factoids:
