@@ -329,6 +329,8 @@ class IrcObjectProxy(RichReplyMethods):
         log.debug('IrcObjectProxy.__init__: %s' % args)
         self.irc = irc
         self.msg = msg
+        # The deepcopy here is necessary for Scheduler; it re-runs already
+        # tokenized commands.
         self.args = copy.deepcopy(args)
         self.counter = 0
         self.to = None
@@ -373,7 +375,16 @@ class IrcObjectProxy(RichReplyMethods):
                     log.warning('Uncaught exception in %s.invalidCommand, '
                                 'continuing to call other invalidCommands.' %
                                 cb.name())
-                
+
+    def _callCommand(self, name, command, cb):
+        try:
+            cb.callCommand(command, self, self.msg, self.args)
+        except (getopt.GetoptError, ArgumentError):
+            self.reply(formatArgumentError(command, name=name))
+        except CannotNest, e:
+            if not isinstance(self.irc, irclib.Irc):
+                self.error('Command %r cannot be nested.' % name)
+            
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
@@ -410,6 +421,8 @@ class IrcObjectProxy(RichReplyMethods):
                         if cb.name().lower() == name:
                             break
                     else:
+                        # This should've been caught earlier, that's why we
+                        # assert instead of raising a ValueError or something.
                         assert False, 'Non-disambiguated command.'
                 else:
                     del self.args[0]
@@ -424,12 +437,7 @@ class IrcObjectProxy(RichReplyMethods):
                                       self, self.msg, self.args)
                     t.start()
                 else:
-                    cb.callCommand(command, self, self.msg, self.args)
-            except (getopt.GetoptError, ArgumentError):
-                self.reply(formatArgumentError(command, name=name))
-            except CannotNest, e:
-                if not isinstance(self.irc, irclib.Irc):
-                    self.error('Command %r cannot be nested.' % name)
+                    self._callCommand(name, command, cb)
 
     def reply(self, s, noLengthCheck=False, prefixName=True,
               action=False, private=False, notice=False, to=None):
