@@ -236,7 +236,7 @@ class Value(Group):
 
 class Boolean(Value):
     def set(self, s):
-        s = s.lower()
+        s = s.strip().lower()
         if s in ('true', 'on', 'enable', 'enabled'):
             value = True
         elif s in ('false', 'off', 'disable', 'disabled'):
