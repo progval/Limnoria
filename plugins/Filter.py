@@ -106,7 +106,8 @@ class Filter(callbacks.Privmsg):
         message isn't sent in the channel itself.
         """
         if command:
-            if command in self._filterCommands:
+            if command in self._filterCommands and \
+              command not in conf.supybot.commands.disabled():
                 method = getattr(self, command)
                 self.outFilters.setdefault(channel, []).append(method)
                 irc.replySuccess()
