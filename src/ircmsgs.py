@@ -759,4 +759,7 @@ def ison(nick, prefix='', msg=None):
         prefix = msg.prefix
     return IrcMsg(prefix=prefix, command='ISON', args=(nick,), msg=msg)
 
+def error(s, msg=None):
+    return IrcMsg(command='ERROR', args=(s,), msg=msg)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
