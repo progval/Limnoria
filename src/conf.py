@@ -187,6 +187,8 @@ driverModule = 'asyncoreDrivers'
 ###############################
 ###############################
 ###############################
+import debug
+
 class ConfigurationDict(dict):
     def __init__(self, L=()):
         L = [(key.lower(), value) for (key, value) in L]
@@ -205,12 +207,13 @@ class ConfigurationDict(dict):
         return dict.__contains__(self, key.lower())
 
 config = ConfigurationDict()
+
+def reportConfigError(filename, msg):
+    debug.unrecoverableError('%s: %s' % (filename, msg))
     
 def processConfig(filename):
-    import debug
     import email
-    def reportConfigError(filename, msg):
-        debug.unrecoverableError('%s: %s' % (filename, msg))
+    from callbacks import tokenize
     try:
         fd = file(filename)
         m = email.message_from_file(fd)
@@ -247,7 +250,7 @@ def processConfig(filename):
         # from the commands to be run after connecting.  This separates them
         # based on those newlines.
         (onStart, afterConnect) = tuple(itersplit(lines,lambda s: not s,True))
-        config['onStart'] = [s for s in onStart if s and s[0] != '#']
+        config['onStart'] = [tokenize(s) for s in onStart if s and s[0] != '#']
         config['afterConnect'] = [s for s in afterConnect if s and s[0] != '#']
 
     except IOError, e:

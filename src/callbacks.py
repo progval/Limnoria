@@ -51,6 +51,7 @@ import sre_constants
 from cStringIO import StringIO
 
 import conf
+import utils
 import world
 import ircdb
 import irclib
@@ -366,6 +367,29 @@ class Privmsg(irclib.IrcCallback):
         self.rateLimiter = RateLimiter()
         self.Proxy = IrcObjectProxy
 
+    def configure(self):
+        nick = conf.config['nick']
+        user = conf.config['user']
+        ident = conf.config['ident']
+        fakeIrc = irclib.Irc(nick, user, ident)
+        fakeIrc.error = lambda _, s: None #debug.printf(s)
+        fakeIrc.reply = lambda _, s: None #debug.printf(s)
+        fakeIrc.findCallback = lambda *args: None
+        for args in conf.config['onStart']:
+            args = args[:]
+            command = args.pop(0)
+            if self.isCommand(command):
+                #debug.printf('%s: %r' % (command, args))
+                method = getattr(self, command)
+                line = ' '.join(map(utils.dqrepr, args))
+                msg = ircmsgs.privmsg(fakeIrc.nick, line, fakeIrc.prefix)
+                try:
+                    world.startup = True
+                    method(fakeIrc, msg, args)
+                finally:
+                    world.startup = False
+        return fakeIrc
+
     def __call__(self, irc, msg):
         irclib.IrcCallback.__call__(self, irc, msg)
         # Now, if there's anything in the rateLimiter...
@@ -395,7 +419,7 @@ class Privmsg(irclib.IrcCallback):
         if self.threaded:
             thread = CommandThread(f, irc, msg, args)
             thread.start()
-            debug.printf('Spawned new thread: %s' % thread)
+            #debug.printf('Spawned new thread: %s' % thread)
         else:
             # Exceptions aren't caught here because IrcObjectProxy.finalEval
             # catches them and does The Right Thing.
@@ -412,7 +436,7 @@ class Privmsg(irclib.IrcCallback):
         if s:
             recipient = msg.args[0]
             if ircdb.checkIgnored(msg.prefix, recipient):
-                debug.printf('Privmsg.doPrivmsg: ignoringi %s.' % recipient)
+                debug.printf('Privmsg.doPrivmsg: ignoring %s.' % recipient)
                 return
             m = self._r.match(s)
             if m and self.isCommand(canonicalName(m.group(1))):
@@ -462,6 +486,7 @@ class PrivmsgRegexp(Privmsg):
     """
     threaded = False # Again, like Privmsg...
     flags = re.I
+    onlyFirstMatch = False
     def __init__(self):
         Privmsg.__init__(self)
         self.Proxy = IrcObjectProxyRegexp
@@ -479,6 +504,7 @@ class PrivmsgRegexp(Privmsg):
                         (self.__class__.__name__, name,
                          value.__doc__, debug.exnToString(e))
                     debug.msg(s)
+        self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
 
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
@@ -492,6 +518,8 @@ class PrivmsgRegexp(Privmsg):
                 if msg:
                     irc = IrcObjectProxyRegexp(irc)
                     self.callCommand(method, irc, msg, m)
+                if self.onlyFirstMatch:
+                    return
 
 
 class PrivmsgCommandAndRegexp(Privmsg):

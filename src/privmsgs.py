@@ -266,6 +266,8 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         module = imp.load_module(name, *moduleInfo)
         linecache.checkcache()
         callback = module.Class()
+        if hasattr(callback, 'configure'):
+            callback.configure()
         irc.addCallback(callback)
         irc.reply(msg, conf.replySuccess)
 
@@ -299,6 +301,8 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
                 module = imp.load_module(name, *moduleInfo)
                 linecache.checkcache()
                 callback = module.Class()
+                if hasattr(callback, 'configure'):
+                    callback.configure()
                 irc.addCallback(callback)
                 irc.reply(msg, conf.replySuccess)
             except ImportError:

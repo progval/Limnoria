@@ -519,4 +519,5 @@ class Irc(object):
     def __eq__(self, other):
         return id(self) == id(other)
 
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

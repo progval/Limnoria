@@ -38,74 +38,57 @@ from fix import *
 import sys
 import time
 import getopt
-#import pprint
 
 import conf
+import debug
 import world
+import irclib
+import drivers
+import ircmsgs
+import privmsgs
+import schedule
 
 sys.path.append(conf.pluginDir)
 
 world.startedAt = time.time()
 
-class ConfigurationDict(dict):
-    def __init__(self, L=None):
-        if L is not None:
-            L = [(key.lower(), value) for (key, value) in L]
-        dict.__init__(self, L)
+class ConfigAfter376(irclib.IrcCallback):
+    public = False
+    def __init__(self, commands):
+        self.commands = commands
 
-    def __setitem__(self, key, value):
-        dict.__setitem__(self, key.lower(), value)
+    def do376(self, irc, msg):
+        #debug.printf('Firing ConfigAfter376 messages')
+        for command in self.commands:
+            #debug.printf(irc.nick)
+            #debug.printf(command)
+            msg = ircmsgs.privmsg(irc.nick, command, prefix=irc.prefix)
+            irc.queueMsg(msg)
 
-    def __getitem__(self, key):
-        try:
-            return dict.__getitem__(self, key.lower())
-        except KeyError:
-            return ''
+    do377 = do376
 
-    def __contains__(self, key):
-        return dict.__contains__(self, key.lower())
-
-
-
-def handleConfigFile(filename):
-    import debug
-    import irclib
-    import ircmsgs
-    import drivers
-    import ircutils
-    import privmsgs
-    class ConfigAfter376(irclib.IrcCallback):
-        public = False
-        def __init__(self, commands):
-            self.commands = commands
-
-        def do376(self, irc, msg):
-            #debug.printf('Firing ConfigAfter376 messages')
-            for command in self.commands:
-                #debug.printf(irc.nick)
-                #debug.printf(command)
-                msg = ircmsgs.privmsg(irc.nick, command, prefix=irc.prefix)
-                irc.queueMsg(msg)
-
-        do377 = do376
+def handleConfigFile():
     nick = conf.config['nick']
     user = conf.config['user']
     ident = conf.config['ident']
-    prefix = ircutils.joinHostmask(nick, ident, 'host')
     password = conf.config['password']
     irc = irclib.Irc(nick, user, ident, password)
     for Class in privmsgs.standardPrivmsgModules:
-        irc.addCallback(Class())
-    world.startup = True
-    for line in conf.config['onStart']:
-        irc.feedMsg(ircmsgs.privmsg(irc.nick, line, prefix=prefix))
-    irc.reset()
-    world.startup = False
+        callback = Class()
+        if hasattr(callback, 'configure'):
+            fakeIrc = callback.configure()
+        # This is mostly a hack to make sure the load command works.
+        for cb in fakeIrc.callbacks:  # Should most always be empty.
+            irc.addCallback(cb)
+        irc.addCallback(callback)
     irc.addCallback(ConfigAfter376(conf.config['afterConnect']))
-    driver = drivers.newDriver(conf.config['server'], irc)
+    drivers.newDriver(conf.config['server'], irc)
 
 def main():
     (optlist, filenames) = getopt.getopt(sys.argv[1:], 'Opc:')
+    if len(filenames) != 1:
+        conf.reportConfigError('Command line', 'No configuration file given.') 
+        
     for (option, argument) in optlist:
         if option == '-c':
             myLocals = {}
@@ -117,12 +100,9 @@ def main():
                 setattr(conf, key, value)
         else:
             print 'Unexpected argument %s; ignoring.' % option
-    import debug
-    import drivers
-    import schedule
-    for filename in filenames:
-        conf.processConfig(filename)
-        handleConfigFile(filename)
+    filename = filenames[0]
+    conf.processConfig(filename)
+    handleConfigFile()
     schedule.addPeriodicEvent(world.upkeep, 300)
     try:
         while world.ircs:
