@@ -204,6 +204,8 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('seconds 2m', '120')
         self.assertResponse('seconds 2d 2h 2m 2s', '180122')
         self.assertResponse('seconds 1s', '1')
+        self.assertResponse('seconds 1y 1s', '31536001')
+        self.assertResponse('seconds 1w 1s', '604801')
 
 
 
