@@ -44,7 +44,7 @@ import callbacks
 class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def join(self, irc, msg, args):
-        """<channel> [<channel> ...]
+        """<channel>[,<key>] [<channel>[,<key>] ...]
 
         Tell the bot to join the whitespace-separated list of channels
         you give it.  If a channel requires a key, attach it behind the
@@ -54,8 +54,8 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         keys = []
         channels = []
         for channel in args:
-            if ',' in s:
-                (channel, key) = s.split(',', 1)
+            if ',' in channel:
+                (channel, key) = channel.split(',', 1)
                 channels.insert(0, channel)
                 keys.insert(0, key)
             else:
