@@ -157,6 +157,7 @@ def main():
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
             sys.stderr.write('Please, don\'t run this as root.\n')
+            sys.exit(-1)
 
     filename = ''
     if args:
