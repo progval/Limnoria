@@ -231,15 +231,27 @@ class IrcObjectProxy:
 
     def finalEval(self):
         self.finalEvaled = True
-        name = self.args.pop(0)
+        name = canonicalName(self.args.pop(0))
         callback = self.findCallback(name)
         try:
-            if callback is None:
-                self.args.insert(0, name)
-                self.reply(self.msg, '[%s]' % ' '.join(self.args))
-            else:
+            if callback is not None:
+                anticap = ircdb.makeAntiCapability(name)
+                if ircdb.checkCapability(self.msg.prefix, anticap):
+                    debug.debugMsg('Preventing %s from calling %s' % \
+                                   (self.msg.nick, name))
+                    return
+                recipient = self.msg.args[0]
+                if ircutils.isChannel(recipient):
+                    chancap = ircdb.makeChannelCapability(recipient, anticap)
+                    if ircdb.checkCapability(self.msg.prefix, chancap):
+                        debug.debugMsg('Preventing %s from calling %s' % \
+                                       (self.msg.nick, name))
+                        return
                 command = getattr(callback, name)
                 callback.callCommand(command, self, self.msg, self.args)
+            else:
+                self.args.insert(0, name)
+                self.reply(self.msg, '[%s]' % ' '.join(self.args))
         except ArgumentError:
             self.reply(self.msg, command.__doc__.splitlines()[0])
         except Error, e:
@@ -341,15 +353,7 @@ class Privmsg(irclib.IrcCallback):
         else:
             f(irc, msg, args)
 
-    def _getCommands(self, args):
-        commands = []
-        if type(args) == list:
-            commands.append(args[0])
-            for arg in args[1:]:
-                commands.extend(self._getCommands(arg))
-        return commands
-    
-    _r = re.compile(r'(\w+)')
+    _r = re.compile(r'^(\S+)')
     def doPrivmsg(self, irc, msg):
         s = addressed(irc.nick, msg)
         #debug.printf('Privmsg.doPrivmsg: s == %r' % s)
@@ -363,21 +367,6 @@ class Privmsg(irclib.IrcCallback):
                 self.rateLimiter.put(msg)
                 msg = self.rateLimiter.get()
                 args = tokenize(s)
-                commands = self._getCommands(args)
-                for command in commands:
-                    anticap = ircdb.makeAntiCapability(command)
-                    if ircdb.checkCapability(msg.prefix, anticap):
-                        debug.debugMsg('Preventing %s from calling %s' % \
-                                            (msg.nick,        command))
-                        return
-                    if ircutils.isChannel(msg.args[0]):
-                        chan = msg.args[0]
-                        chancap = ircdb.makeChannelCapability(chan, command)
-                        antichancap = ircdb.makeAntiCapability(chancap)
-                        if ircdb.checkCapability(msg.prefix, antichancap):
-                            debug.debugMsg('Preventing %s from calling %s' % \
-                                                (msg.nick,        command))
-                            return
                 self.Proxy(irc, msg, args)
 
 
