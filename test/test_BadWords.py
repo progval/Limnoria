@@ -32,7 +32,7 @@
 from testsupport import *
 
 class BadWordsTestCase(PluginTestCase):
-    plugins = ('BadWords', 'Utilities')
+    plugins = ('BadWords', 'Utilities', 'Format')
     badwords = ('shit', 'ass')
     def tearDown(self):
         default = conf.supybot.plugins.BadWords.words.default
@@ -43,14 +43,14 @@ class BadWordsTestCase(PluginTestCase):
             self.assertRegexp('echo %s' % word, '(?!%s)' % word)
             self.assertRegexp('echo [colorize %s]' % word, '(?!%s)' % word)
             self.assertRegexp('echo foo%sbar' % word, '(?!%s)' % word)
-            self.assertRegexp('echo [strjoin "" %s]' % ' '.join(word),
+            self.assertRegexp('echo [join "" %s]' % ' '.join(word),
                               '(?!%s)' % word)
 
     def _NegTest(self):
         for word in self.badwords:
             self.assertRegexp('echo %s' % word, word)
             self.assertRegexp('echo foo%sbar' % word, word)
-            self.assertRegexp('echo [strjoin "" %s]' % ' '.join(word), word)
+            self.assertRegexp('echo [join "" %s]' % ' '.join(word), word)
 
     def testAddbadwords(self):
         self.assertNotError('badwords add %s' % ' '.join(self.badwords))
