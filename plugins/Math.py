@@ -45,7 +45,7 @@ import string
 from itertools import imap
 
 import supybot.utils as utils
-from supybot.commands import additional, optional, wrap
+from supybot.commands import *
 import supybot.callbacks as callbacks
 
 import convertcore

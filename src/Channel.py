@@ -48,8 +48,8 @@ from itertools import imap
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
-from supybot.commands import wrap
 import supybot.schedule as schedule
 import supybot.ircutils as ircutils
 import supybot.registry as registry
