@@ -229,7 +229,9 @@ class Unix(callbacks.Privmsg):
     def wtf(self, irc, msg, args):
         """[is] <something>
 
-        Returns wtf something is.
+        Returns wtf <something> is.  'wtf' is a *nix command that first
+        appeared in NetBSD 1.5.  In most *nices, it's available in some sort
+        of 'bsdgames' package.
         """
         if self.wtfCmd is not None:
             if args and args[0] == 'is':
