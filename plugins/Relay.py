@@ -547,7 +547,7 @@ class Relay(callbacks.Privmsg):
                     if otherIrc != irc:
                         try:
                             if otherIrc.state.getTopic(channel) != topic:
-                                otherIrc.queueMsg(ircmsgs.topic(channel,topic))
+                                otherIrc.queueMsg(msg)
                         except KeyError:
                             self.log.warning('Not on %s on %s -- '
                                              'Can\'t synchronize topics.',
