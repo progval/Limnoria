@@ -333,10 +333,12 @@ class IrcObjectProxy:
             debug.recoverableException()
             self.error(self.msg, debug.exnToString(e))
 
-    def reply(self, msg, s):
+    def reply(self, msg, s, noLengthCheck=False):
         if self.finalEvaled:
             if isinstance(self.irc, self.__class__):
-                self.irc.reply(msg, s)
+                self.irc.reply(msg, s, noLengthCheck)
+            elif noLengthCheck:
+                self.irc.queueMsg(reply(msg, s))
             else:
                 # The size of a PRIVMSG is:
                 # 1 for the colon
@@ -356,7 +358,7 @@ class IrcObjectProxy:
                 # 512 - 51 == 461.
                 s = ircutils.safeArgument(s)
                 allowedLength = 461 - len(self.irc.prefix)
-                msgs = textwrap.wrap(s, allowedLength)
+                msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
                 msgs.reverse()
                 response = msgs.pop()
                 if msgs:

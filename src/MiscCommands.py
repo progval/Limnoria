@@ -218,7 +218,9 @@ class MiscCommands(callbacks.Privmsg):
         userHostmask = msg.prefix.split('!', 1)[1]
         try:
             chunk = self._mores[userHostmask].pop()
-            irc.reply(msg, chunk)
+            if self._mores[userHostmask]:
+                chunk += ' (more)'
+            irc.reply(msg, chunk, True)
         except KeyError:
             irc.error(msg, 'You haven\'t asked me a command!')
         except IndexError:
