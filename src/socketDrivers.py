@@ -33,6 +33,8 @@
 Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 """
 
+from __future__ import division
+
 from fix import *
 
 import time
@@ -52,8 +54,8 @@ class SocketDriver(drivers.IrcDriver):
         global instances
         instances += 1
         conf.poll = originalPoll / instances
-        drivers.IrcDriver.__init__(self)
         self.server = (server, port)
+        drivers.IrcDriver.__init__(self) # Must come after server is set.
         self.irc = irc
         self.irc.driver = self
         self.inbuffer = ''
@@ -71,8 +73,14 @@ class SocketDriver(drivers.IrcDriver):
         del msgs[-1]
         self.outbuffer += ''.join(map(str, msgs))
         if self.outbuffer:
-            sent = self.conn.send(self.outbuffer)
-            self.outbuffer = self.outbuffer[sent:]
+            try:
+                sent = self.conn.send(self.outbuffer)
+                self.outbuffer = self.outbuffer[sent:]
+            except socket.error, e:
+                # (11, 'Resource temporarily unavailable') raised if connect
+                # hasn't finished yet.
+                if e.args[0] != 11:
+                    raise
         
     def run(self):
         #debug.methodNamePrintf(self, 'run')
@@ -97,9 +105,11 @@ class SocketDriver(drivers.IrcDriver):
         except socket.timeout:
             pass
         except socket.error, e:
-            s = 'Disconnect from %s: %s' % (self.server, e.args[1])
-            debug.msg(s, 'normal')
-            self.die()
+            # Same as with _sendIfMsgs.
+            if e.args[0] != 11:
+                s = 'Disconnect from %s: %s' % (self.server, e.args[1])
+                debug.msg(s, 'normal')
+                self.die()
             return
         self._sendIfMsgs()
         
@@ -111,11 +121,12 @@ class SocketDriver(drivers.IrcDriver):
             self.reconnectWaitsIndex += 1
         try:
             self.conn.connect(self.server)
-            self.connected = True
-            self.reconnectWaitPeriodsIndex = 0
         except socket.error, e:
-            debug.msg('Error connecting to %s: %s' % (self.server, e))
-            self.die()
+            if e.args[0] != 115:
+                debug.msg('Error connecting to %s: %s' % (self.server, e))
+                self.die()
+        self.connected = True
+        self.reconnectWaitPeriodsIndex = 0
         
 
     def die(self):
@@ -128,6 +139,9 @@ class SocketDriver(drivers.IrcDriver):
         debug.msg('Scheduling reconnect to %s at %s' % (self.server, whenS),
                   'normal')
         schedule.addEvent(self.reconnect, when)
+
+    def name(self):
+        return '%s%s' % (self.__class__.__name__, self.server)
 
 
 Driver = SocketDriver

@@ -69,7 +69,7 @@ class IrcDriver(object):
         raise NotImplementedError
 
     def name(self):
-        return self.__class__.__name__
+        return repr(self)
 
 
 class Interactive(IrcDriver):
