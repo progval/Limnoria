@@ -49,9 +49,7 @@ class IrcMsg(object):
             args = msg.args
         if command: # Must be using command=, args=, prefix= form.
             if args is not None:
-                for arg in args:
-                    if not ircutils.validArgument(arg):
-                        raise ValueError, 'Invalid argument: %r' % arg
+                assert filter(isValidArgument, args) == []
             else:
                 args = ()
         else: # Must be using a string.
@@ -84,28 +82,19 @@ class IrcMsg(object):
     command = property(lambda self: self._command)
     args = property(lambda self: self._args)
 
-##     def copy(self):
-##         return self.__class__(command=self.command,
-##                               args=self.args,
-##                               prefix=self.prefix)
-
     def __str__(self):
         ret = ''
         if self.prefix:
-            #debug.printf(1)
             ret = ':%s %s' % (self.prefix, self.command)
         else:
             ret = self.command
         if self.args:
             if len(self.args) > 1:
-                #debug.printf(2)
                 ret = '%s %s :%s\r\n' % (ret, ' '.join(self.args[:-1]),
                                          self.args[-1])
             else:
-                #debug.printf(3)
                 ret = '%s :%s\r\n' % (ret, self.args[0])
         else:
-            #debug.printf(4)
             ret = ret + '\r\n'
         return ret
 
@@ -115,18 +104,19 @@ class IrcMsg(object):
         ret = 0
         if self.prefix:
             ret += len(self.prefix)
+        else:
+            ret += 42 # Ironically, the average length of an IRC prefix.
         ret += len(self.command)
         if self.args:
             for arg in self.args:
-                ret += len(arg)
+                ret += len(arg) + 1 # Remember the space prior to the arg.
         ret += 2 # For the colon before the prefix and before the last arg.
-        ret += 2 # For the ! and the @ in the prefix.
         return ret
 
     def __eq__(self, other):
-        return hash(self) == hash(other) and\
-               self.command == other.command and\
-               self.prefix == other.prefix and\
+        return hash(self) == hash(other) and \
+               self.command == other.command and \
+               self.prefix == other.prefix and \
                self.args == other.args
 
     def __hash__(self):
@@ -142,7 +132,7 @@ def isAction(msg):
            msg.args[1].startswith('\x01ACTION') and \
            msg.args[1].endswith('\x01')
 
-_unactionre = re.compile(r'\x01ACTION (.*)\x01')
+_unactionre = re.compile(r'^\x01ACTION (.*)\x01$')
 def unAction(msg):
     return _unactionre.match(msg.args[1]).group(1)
 
@@ -194,136 +184,196 @@ def prettyPrint(msg, addRecipients=False):
 
 MODE = 'MODE'
 
+isNick = ircutils.isNick
+isChannel = ircutils.isChannel
+isUserHostmask = ircutils.isUserHostmask
+
 def pong(payload):
-    """Takes a payload and returns the proper PONG IrcMsg"""
+    """Takes a payload and returns the proper PONG IrcMsg."""
+    assert payload, 'PONG requires a payload'
     return IrcMsg(command='PONG', args=(payload,))
 
-def fromPong(msg):
-    """Takes a PONG IrcMsg and returns the payload."""
-    assert msg.command == 'PONG'
-    return msg.args[0]
-
 def ping(payload):
-    """Takes a payload and returns the proper PING IrcMsg"""
+    """Takes a payload and returns the proper PING IrcMsg."""
+    assert payload, 'PING requires a payload'
     return IrcMsg(command='PING', args=(payload,))
 
-def fromPing(msg):
-    """Takes a PING IrcMsg and returns the payload."""
-    assert msg.command == 'PING'
-    return msg.args[0]
-
 def op(channel, nick):
+    """Returns a MODE to op nick on channel."""
+    assert isChannel(channel) and isNick(nick)
     return IrcMsg(command=MODE, args=(channel, '+o', nick))
 
 def ops(channel, nicks):
+    """Returns a MODE to op each of nicks on channel."""
+    assert isChannel(channel) and filter(isNick, nicks) == []
     return IrcMsg(command=MODE,
                   args=(channel, '+' + ('o'*len(nicks)), nicks))
 
 def deop(channel, nick):
+    """Returns a MODE to deop nick on channel."""
+    assert isChannel(channel) and isNick(nick)
     return IrcMsg(command=MODE, args=(channel, '-o', nick))
 
 def deops(channel, nicks):
+    """Returns a MODE to deop each of nicks on channel."""
+    assert isChannel(channel) and filter(isNick, nicks) == []
     return IrcMsg(command=MODE, args=(channel, '-' + ('o'*len(nicks)), nicks))
 
 def halfop(channel, nick):
+    """Returns a MODE to halfop nick on channel."""
+    assert isChannel(channel) and isNick(nick)
     return IrcMsg(command=MODE, args=(channel, '+h', nick))
 
 def halfops(channel, nicks):
+    """Returns a MODE to halfop each of nicks on channel."""
+    assert isChannel(channel) and filter(isNick, nicks) == []
     return IrcMsg(command=MODE, args=(channel, '+' + ('h'*len(nicks)), nicks))
 
 def dehalfop(channel, nick):
+    """Returns a MODE to dehalfop nick on channel."""
+    assert isChannel(channel) and isNick(nick)
     return IrcMsg(command=MODE, args=(channel, '-h', nick))
 
 def dehalfops(channel, nicks):
+    """Returns a MODE to dehalfop each of nicks on channel."""
+    assert isChannel(channel) and filter(isNick, nicks) == []
     return IrcMsg(command=MODE, args=(channel, '-' + ('h'*len(nicks)), nicks))
 
 def voice(channel, nick):
+    """Returns a MODE to voice nick on channel."""
+    assert isChannel(channel) and isNick(nick)
     return IrcMsg(command=MODE, args=(channel, '+v', nick))
 
 def voices(channel, nicks):
+    """Returns a MODE to voice each of nicks on channel."""
+    assert isChannel(channel) and filter(isNick, nicks) == []
     return IrcMsg(command=MODE, args=(channel, '+' + ('v'*len(nicks)), nicks))
 
 def devoice(channel, nick):
+    """Returns a MODE to devoice nick on channel."""
+    assert isChannel(channel) and isNick(nick)
     return IrcMsg(command=MODE, args=(channel, '-v', nick))
 
 def devoices(channel, nicks):
+    """Returns a MODE to devoice each of nicks on channel."""
+    assert isChannel(channel) and filter(isNick, nicks) == []
     return IrcMsg(command=MODE, args=(channel, '-' + ('v'*len(nicks)), nicks))
 
 def ban(channel, hostmask):
+    """Returns a MODE to ban nick on channel."""
+    assert isChannel(channel) and isUserHostmask(hostmask)
     return IrcMsg(command=MODE, args=(channel, '+b', hostmask))
 
 def bans(channel, hostmasks):
+    """Returns a MODE to ban each of nicks on channel."""
+    assert filter(ircutils.isUserHostmask, hostmasks) == []
     return IrcMsg(command=MODE,
                   args=(channel, '+' + ('b'*len(hostmasks)), hostmasks))
 
 def unban(channel, hostmask):
+    """Returns a MODE to unban nick on channel."""
+    assert isChannel(channel) and isUserHostmask(hostmask)
     return IrcMsg(command=MODE, args=(channel, '-b', hostmask))
 
 def unbans(channel, hostmasks):
+    """Returns a MODE to unban each of nicks on channel."""
+    assert isChannel(channel) and filter(isUserHostmask, hostmasks) == []
     return IrcMsg(command=MODE,
                   args=(channel, '-' + ('b'*len(hostmasks)), hostmasks))
 
 def kick(channel, nick, msg=''):
+    """Returns a KICK to kick nick from channel with the message msg."""
+    assert isChannel(channel) and isNick(nick)
     if msg:
         return IrcMsg(command='KICK', args=(channel, nick, msg))
     else:
         return IrcMsg(command='KICK', args=(channel, nick))
 
 def kicks(channel, nicks, msg=''):
+    """Returns a KICK to kick each of nicks from channel with the message msg.
+    """
+    assert isChannel(channel) and filter(isNick, nicks) == []
     if msg:
         return IrcMsg(command='KICK', args=(channel, ','.join(nicks), msg))
     else:
         return IrcMsg(command='KICK', args=(channel, ','.join(nicks)))
 
 def privmsg(recipient, msg):
+    """Returns a PRIVMSG to recipient with the message msg."""
+    assert (isChannel(recipient) or isNick(recipient)) and msg
     return IrcMsg(command='PRIVMSG', args=(recipient, msg))
 
 def action(recipient, msg):
+    """Returns a PRIVMSG ACTION to recipient with the message msg."""
+    assert (isChannel(recipient) or isNick(recipient)) and msg
     return IrcMsg(command='PRIVMSG', args=(recipient,'\x01ACTION %s\x01'% msg))
 
 def notice(recipient, msg):
+    """Returns a NOTICE to recipient with the message msg."""
+    assert (isChannel(recipient) or isNick(recipient)) and msg
     return IrcMsg(command='NOTICE', args=(recipient, msg))
 
 def join(channel):
+    """Returns a JOIN to a channel"""
+    assert isChannel(channel)
     return IrcMsg(command='JOIN', args=(channel,))
 
 def joins(channels):
+    """Returns a JOIN to each of channels."""
+    assert filter(isChannel, channels) == []
     return IrcMsg(command='JOIN', args=(','.join(channels),))
 
 def part(channel, msg=""):
+    """Returns a PART from channel with the message msg."""
+    assert isChannel(channel)
     if msg:
         return IrcMsg(command='PART', args=(channel, msg))
     else:
         return IrcMsg(command='PART', args=(channel,))
 
 def parts(channels, msg=""):
+    """Returns a PART from each of channels with the message msg."""
+    assert filter(isChannel, channels) == []
     if msg:
         return IrcMsg(command='PART', args=(','.join(channels), msg,))
     else:
         return IrcMsg(command='PART', args=(','.join(channels),))
 
 def quit(msg=''):
+    """Returns a QUIT with the message msg."""
     if msg:
         return IrcMsg(command='QUIT', args=(msg,))
     else:
         return IrcMsg(command='QUIT')
 
 def topic(channel, topic):
+    """Returns a TOPIC for channel with the topic topic."""
+    assert isChannel(channel)
     return IrcMsg(command='TOPIC', args=(channel, topic))
 
 def nick(nick):
+    """Returns a NICK with nick nick."""
+    assert isNick(nick)
     return IrcMsg(command='NICK', args=(nick,))
 
 def user(user, ident):
+    """Returns a USER with ident ident and user user."""
+    assert isValidArgument(ident)
     return IrcMsg(command='USER', args=(ident, '0', '*', user))
 
-def who(hostmask):
-    return IrcMsg(command='WHO', args=(hostmask,))
+def who(hostmaskOrChannel):
+    """Returns a WHO for the hostmask or channel hostmaskOrChannel."""
+    assert isChannel(hostmaskOrChannel) or isUserHostmask(hostmaskOrChannel)
+    return IrcMsg(command='WHO', args=(hostmaskOrChannel,))
 
 def whois(nick):
+    """Returns a WHOIS for nick."""
+    assert isNick(nick)
     return IrcMsg(command='WHOIS', args=(nick,))
 
-def invite(channel, user):
-    return IrcMsg(command='INVITE', args=(channel, user))
+def invite(channel, nick):
+    """Returns an INVITE for nick."""
+    assert isNick(nick)
+    return IrcMsg(command='INVITE', args=(channel, nick))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
