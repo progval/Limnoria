@@ -1114,10 +1114,10 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
     classModule = None
     Proxy = IrcObjectProxy
     def __init__(self, irc):
-        self.__parent = super(PluginMixin, self)
-        self.__parent.__init__(irc)
         myName = self.name()
         self.log = log.getPluginLogger(myName)
+        self.__parent = super(PluginMixin, self)
+        self.__parent.__init__(irc)
         # We can't do this because of the specialness that Owner and Misc do.
         # I guess plugin authors will have to get the capitalization right.
         # self.callAfter = map(str.lower, self.callAfter)
