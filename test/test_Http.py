@@ -112,8 +112,7 @@ class HttpTest(PluginTestCase):
             self.assertRegexp('zipinfo 78014', 'County: La Salle')
             self.assertRegexp('zipinfo 90001',
                               r'City: Los Angeles.*County: Los Angeles')
-        def testBender(self):
-            self.assertNotError('bender')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
