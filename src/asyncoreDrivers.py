@@ -121,6 +121,8 @@ class AsyncoreDriver(asynchat.async_chat, object):
         self.scheduleReconnect()
         self.die()
 
+    reconnect = handle_close
+
     def handle_connect(self):
         pass
 

@@ -85,6 +85,8 @@ class SupyIrcProtocol(LineReceiver):
 
     def die(self):
         self.transport.loseConnection()
+
+    reconnect = die
         
 
 class SupyReconnectingFactory(ReconnectingClientFactory):

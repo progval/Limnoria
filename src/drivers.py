@@ -65,6 +65,9 @@ class IrcDriver(object):
         # sure this (and anything else later added) is done.
         _deadDrivers.append(self.name())
 
+    def reconnect(self):
+        raise NotImplementedError
+
     def name(self):
         return self.__class__.__name__
 
