@@ -265,7 +265,8 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
         kind = privmsgs.getArgs(args)
         try:
             kind = self._mostAbbrev[kind]
-            L = self.db.most(channel, kind)
+            L = self.db.most(channel, kind,
+                             self.registryValue('mostDisplay', channel))
             if L:
                 L = ['%r: %s' % (name, i) for (name, i) in L]
                 irc.reply(utils.commaAndify(L))
