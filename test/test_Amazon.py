@@ -90,5 +90,14 @@ class AmazonTestCase(PluginTestCase, PluginDocumentation):
         self.assertRegexp('manufacturer --software adobe', r'Photoshop')
         self.assertRegexp('manufacturer --photo kodak', r'Kodak')
 
+    def testBooks(self):
+        self.assertHelp('books')
+        self.assertRegexp('books linux', r'Linux Kernel Development')
+
+    def testVideos(self):
+        self.assertHelp('videos')
+        self.assertRegexp('videos zim', r'Demystifying the Devil.*DVD')
+        self.assertRegexp('videos --vhs samuel jackson', r'VHS Tape')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

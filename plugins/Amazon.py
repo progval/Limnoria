@@ -136,6 +136,76 @@ class Amazon(callbacks.Privmsg):
             pass
         irc.error(msg, 'No book was found with that ISBN.')
 
+    def books(self, irc, msg, args):
+        """[--url] <keywords>
+
+        Returns the books matching the given <keywords> search. If --url is
+        specified, a link to amazon.com's page for the book will also be
+        returned.
+        """
+        opts = ['url']
+        (optlist, rest) = getopt.getopt(args, '', opts)
+        url = False
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'url':
+                url = True
+        keyword = privmsgs.getArgs(rest)
+        attribs = {'ProductName' : 'title',
+                   'Manufacturer' : 'publisher',
+                   'Authors' : 'author',
+                   'URL' : 'url'
+                  }
+        s = '"%(title)s", written by %(author)s; published by '\
+            '%(publisher)s%(url)s'
+        try:
+            books = amazon.searchByKeyword(keyword)
+            res = self._genResults(s, attribs, books, url)
+            if res:
+                irc.reply(msg, utils.commaAndify(res))
+                return
+        except amazon.AmazonError, e:
+            pass
+        irc.error(msg, 'No books were found with that keyword search.')
+
+    def videos(self, irc, msg, args):
+        """[--url] [--{dvd,vhs}] <keywords>
+
+        Returns the videos matching the given <keyword> search. If --url is
+        specified, a link to amazon.com's page for the video will also be
+        returned.  Search defaults to using --dvd.
+        """
+        opts = ['url']
+        products = ['dvd', 'vhs']
+        (optlist, rest) = getopt.getopt(args, '', opts + products)
+        url = False
+        product = 'dvd'
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'url':
+                url = True
+            if option in products:
+                product = option
+        keyword = privmsgs.getArgs(rest)
+        attribs = {'ProductName' : 'title',
+                   'Manufacturer' : 'publisher',
+                   'MpaaRating' : 'mpaa',
+                   'Media' : 'media',
+                   'ReleaseDate' : 'date',
+                   'URL' : 'url'
+                  }
+        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released '\
+            '%(date)s; published by %(publisher)s%(url)s'
+        try:
+            videos = amazon.searchByKeyword(keyword, product_line=product)
+            res = self._genResults(s, attribs, videos, url)
+            if res:
+                irc.reply(msg, utils.commaAndify(res))
+                return
+        except amazon.AmazonError, e:
+            pass
+        irc.error(msg, 'No videos were found with that keyword search.')
+
     def asin(self, irc, msg, args):
         """[--url] <asin>
 
