@@ -422,6 +422,15 @@ def checkChannelCapability(irc, msg, args, state, cap):
     if not ircdb.checkCapability(msg.prefix, cap):
         irc.errorNoCapability(cap, Raise=True)
 
+def getOp(irc, msg, args, state):
+    checkChannelCapability(irc, msg, args, state, 'op')
+
+def getHalfop(irc, msg, args, state):
+    checkChannelCapability(irc, msg, args, state, 'halfop')
+
+def getVoice(irc, msg, args, state):
+    checkChannelCapability(irc, msg, args, state, 'voice')
+
 def getLowered(irc, msg, args, state):
     state.args.append(ircutils.toLower(args.pop(0)))
 
@@ -610,6 +619,9 @@ wrappers = ircutils.IrcDict({
     'admin': admin,
     'checkCapability': checkCapability,
     'checkChannelCapability': checkChannelCapability,
+    'op': getOp,
+    'halfop': getHalfop,
+    'voice': getVoice,
 })
 
 def addConverter(name, wrapper):
