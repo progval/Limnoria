@@ -217,6 +217,8 @@ class Group(object):
             node = self.children[name]
             del self.children[name]
             self.added.remove(name)
+            if node._name in _cache:
+                del _cache[node._name]
             return node
         except KeyError:
             self.__nonExistentEntry(name)
