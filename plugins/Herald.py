@@ -100,6 +100,8 @@ class Herald(callbacks.Privmsg):
         self.__parent.die()
 
     def doJoin(self, irc, msg):
+        if ircutils.strEqual(irc.nick, msg.nick):
+            return # It's us.
         channel = msg.args[0]
         irc = callbacks.SimpleProxy(irc, msg)
         if self.registryValue('heralding', channel):
