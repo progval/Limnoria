@@ -138,7 +138,9 @@ class SqliteQuotesDB(object):
     # XXX This needs to be modified to accept a predicate, and the creation of
     # the predicate moved to the plugin.  One plugin, many database
     # implementations -- we don't want to burden every database implementation
-    # to do all this work.
+    # to do all this work.  Yes, this means that sqlite implementations will
+    # be less efficient for awhile, but I have a plan to resolve that
+    # eventually.
     def search(self, channel, **kwargs):
         criteria = []
         formats = []
