@@ -314,6 +314,8 @@ class CommandThread(threading.Thread):
             elapsed = time.time() - start
             debug.msg('%s took %s seconds.' % \
                       (self.commandName, elapsed), 'verbose')
+        except ArgumentError:
+            self.reply(self.msg, command.__doc__.splitlines()[0])
         except Error, e:
             self.irc.reply(self.msg, debug.exnToString(e))
         except Exception, e:
