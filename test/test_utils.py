@@ -280,6 +280,14 @@ class UtilsTest(unittest.TestCase):
         (salt, hash) = s.split('|')
         self.assertEqual(utils.saltHash('jemfinch', salt=salt), s)
 
+    def testSafeEval(self):
+        for s in ['1', '()', '(1,)', '[]', '{}', '{1:2}', '{1:(2,3)}',
+                  '1.0', '[1,2,3]', 'True', 'False', 'None',
+                  '(True,False,None)', '"foo"', '{"foo": "bar"}']:
+            self.assertEqual(eval(s), utils.safeEval(s))
+        for s in ['lambda: 2', 'import foo', 'foo.bar']:
+            self.assertRaises(ValueError, utils.safeEval, s)
+
 
 
 

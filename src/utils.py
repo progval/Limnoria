@@ -43,6 +43,7 @@ import md5
 import sha
 import string
 import sgmllib
+import compiler
 import textwrap
 import htmlentitydefs
 
@@ -408,11 +409,46 @@ def flatten(seq, strings=False):
 def saltHash(password, salt=None, hash='sha'):
     if salt is None:
         salt = mktemp()[:8]
-    if hash == 'md5':
-        hasher = md5.md5
-    elif hash == 'sha':
+    if hash == 'sha':
         hasher = sha.sha
+    elif hash == 'md5':
+        hasher = md5.md5
     return '|'.join([salt, hasher(salt + password).hexdigest()])
+
+def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
+    """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
+    without unsafely using eval()."""
+    node = compiler.parse(s)
+    nodes = compiler.parse(s).node.nodes
+    if not nodes:
+        if node.__class__ is compiler.ast.Module:
+            return node.doc
+        else:
+            raise ValueError, 'Unsafe string.'
+    node = nodes[0]
+    if node.__class__ is not compiler.ast.Discard:
+        raise ValueError, 'Invalid expression: %s'
+    node = node.getChildNodes()[0]
+    def checkNode(node):
+        if node.__class__ is compiler.ast.Const:
+            return True
+        if node.__class__ in (compiler.ast.List,
+                              compiler.ast.Tuple,
+                              compiler.ast.Dict):
+            return all(checkNode, node.getChildNodes())
+        if node.__class__ is compiler.ast.Name:
+            if node.name in namespace:
+                return True
+            else:
+                return False
+        else:
+            return False
+    if checkNode(node):
+        return eval(s, namespace, namespace)
+    else:
+        raise ValueError, 'Unsafe string.'
+    
+    
 
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.
