@@ -39,6 +39,7 @@ __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import supybot.fix as fix
 
+import sys
 import time
 import pprint
 from itertools import imap
@@ -157,6 +158,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('%r is not a valid channel.' % channel)
                 return
             conf.supybot.channels().add(original)
+        maxchannels = irc.state.supported.get('maxchannels', sys.maxint)
+        if len(irc.state.channels) + len(channels) > maxchannels:
+            irc.error('I\'m already too close to maximum number of '
+                      'channels for this network.')
         irc.queueMsg(ircmsgs.joins(channels, keys))
         for channel in channels:
             self.joins[channel] = (irc, msg)
@@ -222,6 +227,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         nick = privmsgs.getArgs(args, required=0, optional=1)
         if nick:
             if ircutils.isNick(nick):
+                if 'nicklen' in irc.state.supported:
+                    if len(nick) > irc.state.supported['nicklen']:
+                        irc.error('That nick is too long for this server.')
+                        return
                 conf.supybot.nick.setValue(nick)
                 irc.queueMsg(ircmsgs.nick(nick))
                 self.pendingNickChanges[irc.getRealIrc()] = irc
