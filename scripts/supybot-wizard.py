@@ -2,6 +2,8 @@
 
 import supybot
 
+from fix import *
+
 import os
 import pydoc
 import socket
