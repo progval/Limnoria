@@ -94,7 +94,7 @@ class User(callbacks.Privmsg):
     list = wrap(list, [getopts({'capability':'capability'}),
                        additional('glob')])
 
-    def register(self, irc, msg, args, optlist, name, password):
+    def register(self, irc, msg, args, name, password):
         """<name> <password>
 
         Registers <name> with the given password <password> and the current
