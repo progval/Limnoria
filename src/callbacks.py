@@ -650,19 +650,17 @@ class IrcObjectProxy(RichReplyMethods):
             self.args[self.counter] = s
             self.evalArgs()
 
-    def error(self, s='', private=None, notice=None, **kwargs):
+    def error(self, s='', **kwargs):
         if s:
             if not isinstance(self.irc, irclib.Irc):
-                self.irc.error(s, private)
+                self.irc.error(s, **kwargs)
             else:
-                self.irc.queueMsg(error(self.msg, s, private=private,
-                                        notice=notice, **kwargs))
+                self.irc.queueMsg(error(self.msg, s, **kwargs))
         else:
             # No argument, let's raise ArgumentError.
             if self.commandMethod is not None:
                 # We can recurse here because it only gets called once.
-                self.error(formatArgumentError(self.commandMethod),
-                           private=private, notice=notice, **kwargs)
+                self.error(formatArgumentError(self.commandMethod), **kwargs)
         self.finished = True
 
     def getRealIrc(self):
@@ -819,9 +817,8 @@ class IrcObjectProxyRegexp(RichReplyMethods):
         self.irc = irc
         self.msg = msg
 
-    def error(self, s, private=None, notice=None, **kwargs):
-        self.irc.queueMsg(error(self.msg, s, private=private,
-                                notice=notice, **kwargs))
+    def error(self, s, **kwargs):
+        self.irc.queueMsg(error(self.msg, s, **kwargs))
 
     def reply(self, s, **kwargs):
         assert not isinstance(s, ircmsgs.IrcMsg), \
