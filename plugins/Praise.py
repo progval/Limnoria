@@ -97,7 +97,7 @@ class Praise(plugins.ChannelIdDatabasePlugin):
         else:
             praise = self.db.random(channel)
             if not praise:
-                irc.error('There are no praise in my database for %s.' %channel)
+                irc.error('There are no praises in my database for %s.'%channel)
                 return
         text = self._replaceFirstPerson(praise.text, msg.nick)
         reason = self._replaceFirstPerson(reason, msg.nick)
