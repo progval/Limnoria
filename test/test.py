@@ -386,7 +386,9 @@ if __name__ == '__main__':
         PluginTestCase.timeout = options.timeout
 
     if options.plugindirs:
+        options.plugindirs.reverse()
         conf.pluginDirs.extend(options.plugindirs)
+        conf.pluginDirs.reverse()
 
     if options.verbose:
         world.myVerbose = True

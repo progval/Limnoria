@@ -220,12 +220,12 @@ def main():
     press enter and we'll put a "plugins" directory right here that you can
     stick your own personal plugins in.""")
     pluginDir = getDirectoryName('plugins')
-    conf.pluginDirs.append(pluginDir)
+    conf.pluginDirs.insert(0, pluginDir)
     myPrint("""Of course, you can have more than one plugin directory.""")
     while yn('Would you like to add another plugin directory?') == 'y':
         pluginDir = getDirectoryName('plugins')
         if pluginDir != 'plugins' and pluginDir not in conf.pluginDirs:
-            conf.pluginDirs.append(pluginDir)
+            conf.pluginDirs.insert(0, pluginDir)
     configVariables['pluginDirs'] = conf.pluginDirs
 
     ###
