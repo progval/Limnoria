@@ -234,7 +234,7 @@ class Quotes(callbacks.Privmsg):
             irc.reply('More than 10 quotes matched your criteria.  '
                       'Please narrow your query.')
         else:
-            quotes = ['#%s: "%s"' % (q.id, utils.ellipsisify(q.text, 30))
+            quotes = ['#%s: %r' % (q.id, utils.ellipsisify(q.text, 30))
                       for q in quote]
             irc.reply(utils.commaAndify(quotes))
 
@@ -281,7 +281,6 @@ class Quotes(callbacks.Privmsg):
             irc.reply('No quotes matched that criteria.')
         else:
             self._replyQuote(irc, quote)
-        ### FIXME: we need to remove those predicates from the database.
 
     def random(self, irc, msg, args):
         """[<channel>]
