@@ -42,13 +42,10 @@ import getopt
 
 from itertools import ifilter, imap
 
-import supybot.registry as registry
+import rssparser
 
 import supybot.conf as conf
 import supybot.utils as utils
-
-import rssparser
-
 import supybot.plugins as plugins
 from supybot.commands import wrap
 import supybot.ircutils as ircutils
