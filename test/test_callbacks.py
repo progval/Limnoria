@@ -346,6 +346,17 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.
         self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
 
+    class TwoRepliesFirstAction(callbacks.Privmsg):
+        def testactionreply(self, irc, msg, args):
+            irc.reply('foo', action=True)
+            irc.reply('bar') # We're going to check that this isn't an action.
+
+    def testNotActionSecondReply(self):
+        self.irc.addCallback(self.TwoRepliesFirstAction())
+        self.assertAction('testactionreply', 'foo')
+        m = self.getMsg(' ')
+        self.failIf(m.args[1].startswith('\x01ACTION'))
+
     def testEmptyNest(self):
         try:
             conf.supybot.reply.whenNotCommand.set('True')

@@ -341,7 +341,6 @@ def checkCommandCapability(msg, cb, command):
         return s
 
 
-
 class RichReplyMethods(object):
     """This is a mixin so these replies need only be defined once.  It operates
     under several assumptions, including the fact that "self" is an Irc object
@@ -363,8 +362,8 @@ class RichReplyMethods(object):
         s = self.__makeReply(v, s)
         self.reply(s, **kwargs)
 
-    def replies(self, L, prefixer=''.join,
-                joiner=utils.commaAndify, onlyPrefixFirst=False, **kwargs):
+    def replies(self, L, prefixer=None, joiner=None,
+                onlyPrefixFirst=False, **kwargs):
         if prefixer is None:
             prefixer = ''
         if joiner is None:
@@ -432,13 +431,8 @@ class IrcObjectProxy(RichReplyMethods):
         # tokenized commands.
         self.args = copy.deepcopy(args)
         self.counter = 0
-        self.to = None
-        self.action = False
-        self.notice = False
-        self.private = False
-        self.finished = False
-        self.prefixName = conf.supybot.reply.withNickPrefix()
-        self.noLengthCheck = False
+        self.finished = False # Used in _callInvalidCommands.
+        self._resetReplyAttributes()
         if not args:
             self.finalEvaled = True
             self._callInvalidCommands()
@@ -447,6 +441,14 @@ class IrcObjectProxy(RichReplyMethods):
             world.commandsProcessed += 1
             self.evalArgs()
 
+    def _resetReplyAttributes(self):
+        self.to = None
+        self.action = False
+        self.notice = False
+        self.private = False
+        self.noLengthCheck = False
+        self.prefixName = conf.supybot.reply.withNickPrefix()
+        
     def evalArgs(self):
         while self.counter < len(self.args):
             if type(self.args[self.counter]) == str:
@@ -569,50 +571,73 @@ class IrcObjectProxy(RichReplyMethods):
         self.prefixName = prefixName and self.prefixName and not self.action
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         if self.finalEvaled:
-            if not isinstance(self.irc, irclib.Irc):
-                self.irc.reply(s, private=self.private, notice=self.notice,
-                               to=self.to, noLengthCheck=self.noLengthCheck,
-                               prefixName=self.prefixName, action=self.action)
-            elif self.noLengthCheck:
-                self.irc.queueMsg(reply(msg, s, prefixName=self.prefixName,
-                                        private=self.private, to=self.to,
-                                        action=self.action,notice=self.notice))
-            else:
-                s = ircutils.safeArgument(s)
-                allowedLength = 450 - len(self.irc.prefix)
-                maximumLength = allowedLength*conf.supybot.reply.maximumMores()
-                if len(s) > maximumLength:
-                    log.warning('Truncating to %s bytes from %s bytes',
-                                maximumLength, len(s))
-                    s = s[:maximumLength]
-                if len(s) < allowedLength or conf.supybot.reply.truncate():
-                    s = s[:allowedLength+20] # In case we're truncating.
-                    self.irc.queueMsg(reply(msg, s, self.prefixName,
-                                            self.private,self.notice,self.to))
-                    self.finished = True
-                    return
-                msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
-                msgs.reverse()
-                response = msgs.pop()
-                if msgs:
-                    n = ircutils.bold('(%s)')
-                    n %= utils.nItems('message', len(msgs), 'more')
-                    response = '%s %s' % (response, n)
-                prefix = msg.prefix
-                if self.to and ircutils.isNick(self.to):
-                    try:
-                        prefix=self.getRealIrc().state.nickToHostmask(self.to)
-                    except KeyError:
-                        pass # We'll leave it as it is.
-                mask = prefix.split('!', 1)[1]
-                Privmsg._mores[mask] = msgs
-                private = self.private or not ircutils.isChannel(msg.args[0])
-                Privmsg._mores[msg.nick] = (private, msgs)
-                self.irc.queueMsg(reply(msg, response,
-                                        prefixName=self.prefixName,
-                                        private=self.private, to=self.to,
-                                        action=self.action,notice=self.notice))
-            self.finished = True
+            try:
+                if not isinstance(self.irc, irclib.Irc):
+                    self.irc.reply(s, to=self.to,
+                                   notice=self.notice,
+                                   action=self.action,
+                                   private=self.private,
+                                   prefixName=self.prefixName,
+                                   noLengthCheck=self.noLengthCheck)
+                elif self.noLengthCheck:
+                    # noLengthCheck only matters to IrcObjectProxy, so it's not
+                    # used here.  Just in case you were wondering.
+                    self.irc.queueMsg(reply(msg, s, to=self.to,
+                                            notice=self.notice,
+                                            action=self.action,
+                                            private=self.private,
+                                            prefixName=self.prefixName))
+                else:
+                    s = ircutils.safeArgument(s)
+                    allowedLength = 450 - len(self.irc.prefix)
+                    maximumMores = conf.supybot.reply.maximumMores()
+                    maximumLength = allowedLength * maximumMores
+                    if len(s) > maximumLength:
+                        log.warning('Truncating to %s bytes from %s bytes',
+                                    maximumLength, len(s))
+                        s = s[:maximumLength]
+                    if len(s) < allowedLength or conf.supybot.reply.truncate():
+                        # In case we're truncating, we add 20 to allowedLength,
+                        # because our allowedLength is shortened for the
+                        # "(XX more messages)" trailer.
+                        s = s[:allowedLength+20]
+                        # There's no need for action=self.action here because
+                        # action implies noLengthCheck, which has already been
+                        # handled.  Let's stick an assert in here just in case.
+                        assert not self.action
+                        self.irc.queueMsg(reply(msg, s, to=self.to,
+                                                notice=self.notice,
+                                                private=self.private,
+                                                prefixName=self.prefixName))
+                        self.finished = True
+                        return
+                    msgs = textwrap.wrap(s,allowedLength-30) # -30 is for nick:
+                    msgs.reverse()
+                    response = msgs.pop()
+                    if msgs:
+                        n = ircutils.bold('(%s)')
+                        n %= utils.nItems('message', len(msgs), 'more')
+                        response = '%s %s' % (response, n)
+                    prefix = msg.prefix
+                    if self.to and ircutils.isNick(self.to):
+                        try:
+                            state = self.getRealIrc().state
+                            prefix = state.nickToHostmask(self.to)
+                        except KeyError:
+                            pass # We'll leave it as it is.
+                    mask = prefix.split('!', 1)[1]
+                    Privmsg._mores[mask] = msgs
+                    public = ircutils.isChannel(msg.args[0])
+                    private = self.private or not public
+                    Privmsg._mores[msg.nick] = (private, msgs)
+                    self.irc.queueMsg(reply(msg, response, to=self.to,
+                                            action=self.action,
+                                            notice=self.notice,
+                                            private=self.private,
+                                            prefixName=self.prefixName))
+                self.finished = True
+            finally:
+                self._resetReplyAttributes()
         else:
             self.args[self.counter] = s
             self.evalArgs()
