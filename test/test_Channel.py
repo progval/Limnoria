@@ -44,7 +44,7 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
 ##                                          prefix=self.prefix))
 ##         u = ircdb.users.getUser(0)
 ##         u.addCapability('%s.op' % self.channel)
-##         ircdb.users.setUser(0, u)
+##         ircdb.users.setUser(u)
 ##         self.assertNotError(' ')
 ##         self.assertResponse('user capabilities foo', '[]')
 ##         self.assertNotError('channel addcapability foo op')

@@ -129,12 +129,12 @@ class User(callbacks.Privmsg):
                 return
         except KeyError:
             pass
-        (id, user) = ircdb.users.newUser()
+        user = ircdb.users.newUser()
         user.name = name
         user.setPassword(password, hashed=hashed)
         if addHostmask:
             user.addHostmask(msg.prefix)
-        ircdb.users.setUser(id, user)
+        ircdb.users.setUser(user)
         irc.replySuccess()
 
     def unregister(self, irc, msg, args):
@@ -183,7 +183,7 @@ class User(callbacks.Privmsg):
             pass
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             user.name = newname
-            ircdb.users.setUser(id, user)
+            ircdb.users.setUser(user)
             irc.replySuccess()
 
     def addhostmask(self, irc, msg, args):
@@ -237,7 +237,7 @@ class User(callbacks.Privmsg):
         except ValueError, e:
             irc.error(str(e), Raise=True)
         try:
-            ircdb.users.setUser(id, user)
+            ircdb.users.setUser(user)
         except ValueError, e:
             irc.error(str(e), Raise=True)
         irc.replySuccess()
@@ -275,7 +275,7 @@ class User(callbacks.Privmsg):
         except ValueError:
             irc.error('There was no such hostmask.')
             return
-        ircdb.users.setUser(id, user)
+        ircdb.users.setUser(user)
         irc.replySuccess(s)
 
     def setpassword(self, irc, msg, args):
@@ -306,7 +306,7 @@ class User(callbacks.Privmsg):
         if user.checkPassword(oldpassword) or \
            (u.checkCapability('owner') and not u == user):
             user.setPassword(newpassword, hashed=hashed)
-            ircdb.users.setUser(id, user)
+            ircdb.users.setUser(user)
             irc.replySuccess()
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
@@ -390,7 +390,7 @@ class User(callbacks.Privmsg):
         if user.checkPassword(password):
             try:
                 user.addAuth(msg.prefix)
-                ircdb.users.setUser(id, user)
+                ircdb.users.setUser(user)
                 irc.replySuccess()
             except ValueError:
                 irc.error('Your secure flag is true and your hostmask '
@@ -413,7 +413,7 @@ class User(callbacks.Privmsg):
             irc.errorNoUser()
             return
         user.clearAuth()
-        ircdb.users.setUser(id, user)
+        ircdb.users.setUser(user)
         irc.replySuccess('If you remain recognized after giving this command, '
                          'you\'re being recognized by hostmask, rather than '
                          'by password.  You must remove whatever hostmask is '
@@ -459,7 +459,7 @@ class User(callbacks.Privmsg):
         if user.checkPassword(password) and \
            user.checkHostmask(msg.prefix, useAuth=False):
             user.secure = value
-            ircdb.users.setUser(id, user)
+            ircdb.users.setUser(user)
             irc.reply('Secure flag set to %s' % value)
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())

@@ -542,7 +542,7 @@ class Channel(callbacks.Privmsg):
         for c in capabilities.split():
             c = ircdb.makeChannelCapability(channel, c)
             user.addCapability(c)
-        ircdb.users.setUser(id, user)
+        ircdb.users.setUser(user)
         irc.replySuccess()
     addcapability = wrap(addcapability, [('checkChannelCapability', 'op'),
                                          'hostmask', 'capability'])
@@ -567,7 +567,7 @@ class Channel(callbacks.Privmsg):
                 user.removeCapability(cap)
             except KeyError:
                 fail.append(c)
-        ircdb.users.setUser(id, user)
+        ircdb.users.setUser(user)
         if fail:
             irc.error('That user didn\'t have the %s %s.' %
                       (utils.commaAndify(fail),

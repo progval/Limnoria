@@ -458,18 +458,17 @@ class Creator(object):
         raise ValueError, 'Invalid command on line %s: %s' % (lineno, command)
 
 class IrcUserCreator(Creator):
-    id = None
     def __init__(self, users):
         self.u = IrcUser()
         self.users = users
 
     def user(self, rest, lineno):
-        if self.id is not None:
+        if self.u.id is not None:
             raise ValueError, 'Unexpected user command on line %s.' % lineno
-        IrcUserCreator.id = int(rest)
+        self.u.id = int(rest)
 
     def _checkId(self):
-        if self.id is None:
+        if self.u.id is None:
             raise ValueError, 'Unexpected user description without user.'
 
     def name(self, rest, lineno):
@@ -503,7 +502,7 @@ class IrcUserCreator(Creator):
     def finish(self):
         if self.u.name:
             try:
-                self.users.setUser(self.id, self.u)
+                self.users.setUser(self.u)
             except DuplicateHostmask:
                 log.error('Hostmasks for %s collided with another user\'s.  '
                           'Resetting hostmasks for %s.', self.u.name)
@@ -511,7 +510,7 @@ class IrcUserCreator(Creator):
                 # But we've got to do *something*, so we'll show some deference
                 # to our lower-numbered users.
                 self.u.hostmasks[:] = []
-                self.users.setUser(self.id, self.u)
+                self.users.setUser(self.u)
             IrcUserCreator.id = None
 
 class IrcChannelCreator(Creator):
@@ -712,19 +711,17 @@ class UsersDictionary(utils.IterableMap):
                     del self._hostmaskCache[hostmask]
                 del self._hostmaskCache[id]
 
-    # XXX This shouldn't require an id, since user has an id attribute.
-    def setUser(self, id, user):
+    def setUser(self, user):
         """Sets a user (given its id) to the IrcUser given it."""
-        assert isinstance(id, int), 'setUser takes an integer userId.'
-        self.nextId = max(self.nextId, id)
+        self.nextId = max(self.nextId, user.id)
         try:
-            if self.getUserId(user.name) != id:
+            if self.getUserId(user.name) != user.id:
                 raise DuplicateHostmask, hostmask
         except KeyError:
             pass
         for hostmask in user.hostmasks:
             for (i, u) in self.iteritems():
-                if i == id:
+                if i == user.id:
                     continue
                 elif u.checkHostmask(hostmask):
                     # We used to remove the hostmask here, but it's not
@@ -736,8 +733,8 @@ class UsersDictionary(utils.IterableMap):
                 for otherHostmask in u.hostmasks:
                     if ircutils.hostmaskPatternEqual(hostmask, otherHostmask):
                         raise DuplicateHostmask, hostmask
-        self.invalidateCache(id)
-        self.users[id] = user
+        self.invalidateCache(user.id)
+        self.users[user.id] = user
         self.flush()
 
     def delUser(self, id):
@@ -752,8 +749,6 @@ class UsersDictionary(utils.IterableMap):
             del self._hostmaskCache[id]
         self.flush()
 
-    # XXX This shouldn't return a tuple, just the user, since user has an
-    #     id attribute now.
     def newUser(self):
         """Allocates a new user in the database and returns it and its id."""
         hashed = conf.supybot.databases.users.hash()
@@ -763,7 +758,7 @@ class UsersDictionary(utils.IterableMap):
         self.users[id] = user
         self.flush()
         user.id = id
-        return (id, user)
+        return user
 
 
 class ChannelsDictionary(utils.IterableMap):

@@ -63,9 +63,9 @@ class AdminTestCase(PluginTestCase):
 
     def testAddcapability(self):
         self.assertError('addcapability sdlkfj foo')
-        (id, u) = ircdb.users.newUser()
+        u = ircdb.users.newUser()
         u.name = 'foo'
-        ircdb.users.setUser(id, u)
+        ircdb.users.setUser(u)
         self.assertError('removecapability foo bar')
         self.assertNotRegexp('removecapability foo bar', 'find')
 

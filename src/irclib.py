@@ -917,7 +917,7 @@ class Irc(IrcCommandDispatcher):
                         log.info('Following identification for %s: %s -> %s',
                                  u.name, authmask, newhostmask)
                         u.auth[i] = (u.auth[i][0], newhostmask)
-                        ircdb.users.setUser(id, u)
+                        ircdb.users.setUser(u)
 
     def _reallyDie(self):
         """Makes the Irc object die.  Dead."""

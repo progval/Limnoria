@@ -61,10 +61,9 @@ class ChannelStatsTestCase(ChannelPluginTestCase):
         self.assertNotError('channelstats stats %s' % self.irc.nick)
         self.assertNotError('channelstats stats %s' % self.irc.nick)
         self.assertNotError('channelstats stats %s' % self.irc.nick.upper())
-        id = ircdb.users.getUserId(self.prefix)
-        u = ircdb.users.getUser(id)
+        u = ircdb.users.getUser(self.prefix)
         u.addCapability(ircdb.makeChannelCapability(self.channel, 'op'))
-        ircdb.users.setUser(id, u)
+        ircdb.users.setUser(u)
         try:
             conf.supybot.plugins.ChannelStats.selfStats.setValue(False)
             m1 = self.getMsg('channelstats stats %s' % self.irc.nick)

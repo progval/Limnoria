@@ -357,19 +357,19 @@ class UsersDictionaryTestCase(IrcdbTestCase):
 
     def testIterAndNumUsers(self):
         self.assertEqual(self.users.numUsers(), 0)
-        (id, u) = self.users.newUser()
+        u = self.users.newUser()
         hostmask = 'foo!xyzzy@baz.domain.com'
         banmask = ircutils.banmask(hostmask)
         u.addHostmask(banmask)
         u.name = 'foo'
-        self.users.setUser(id, u)
+        self.users.setUser(u)
         self.assertEqual(self.users.numUsers(), 1)
-        (id, u) = self.users.newUser()
+        u = self.users.newUser()
         hostmask = 'biff!fladksfj@blakjdsf'
         banmask = ircutils.banmask(hostmask)
         u.addHostmask(banmask)
         u.name = 'biff'
-        self.users.setUser(id, u)
+        self.users.setUser(u)
         self.assertEqual(self.users.numUsers(), 2)
         self.users.delUser(2)
         self.assertEqual(self.users.numUsers(), 1)
@@ -380,22 +380,22 @@ class UsersDictionaryTestCase(IrcdbTestCase):
         self.assertRaises(KeyError, self.users.getUser, 'foo')
         self.assertRaises(KeyError,
                           self.users.getUser, 'foo!xyzzy@baz.domain.com')
-        (id, u) = self.users.newUser()
+        u = self.users.newUser()
         hostmask = 'foo!xyzzy@baz.domain.com'
         banmask = ircutils.banmask(hostmask)
         u.addHostmask(banmask)
         u.addHostmask(hostmask)
         u.name = 'foo'
-        self.users.setUser(id, u)
+        self.users.setUser(u)
         self.assertEqual(self.users.getUser('foo'), u)
         self.assertEqual(self.users.getUser('FOO'), u)
         self.assertEqual(self.users.getUser(hostmask), u)
         self.assertEqual(self.users.getUser(banmask), u)
         # The UsersDictionary shouldn't allow users to be added whose hostmasks
         # match another user's already in the database.
-        (id, u2) = self.users.newUser()
+        u2 = self.users.newUser()
         u2.addHostmask('*!xyzzy@baz.domain.c?m')
-        self.assertRaises(ValueError, self.users.setUser, id, u2)
+        self.assertRaises(ValueError, self.users.setUser, u2)
 
 
 class CheckCapabilityTestCase(IrcdbTestCase):
@@ -430,47 +430,47 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         self.channels = ircdb.ChannelsDictionary()
         #self.channels.open(self.filename)
 
-        (id, owner) = self.users.newUser()
+        owner = self.users.newUser()
         owner.name = 'owner'
         owner.addCapability('owner')
         owner.addHostmask(self.owner)
-        self.users.setUser(id, owner)
+        self.users.setUser(owner)
 
-        (id, nothing) = self.users.newUser()
+        nothing = self.users.newUser()
         nothing.name = 'nothing'
         nothing.addHostmask(self.nothing)
-        self.users.setUser(id, nothing)
+        self.users.setUser(nothing)
 
-        (id, justfoo) = self.users.newUser()
+        justfoo = self.users.newUser()
         justfoo.name = 'justfoo'
         justfoo.addCapability(self.cap)
         justfoo.addHostmask(self.justfoo)
-        self.users.setUser(id, justfoo)
+        self.users.setUser(justfoo)
 
-        (id, antifoo) = self.users.newUser()
+        antifoo = self.users.newUser()
         antifoo.name = 'antifoo'
         antifoo.addCapability(self.anticap)
         antifoo.addHostmask(self.antifoo)
-        self.users.setUser(id, antifoo)
+        self.users.setUser(antifoo)
 
-        (id, justchanfoo) = self.users.newUser()
+        justchanfoo = self.users.newUser()
         justchanfoo.name = 'justchanfoo'
         justchanfoo.addCapability(self.chancap)
         justchanfoo.addHostmask(self.justchanfoo)
-        self.users.setUser(id, justchanfoo)
+        self.users.setUser(justchanfoo)
 
-        (id, antichanfoo) = self.users.newUser()
+        antichanfoo = self.users.newUser()
         antichanfoo.name = 'antichanfoo'
         antichanfoo.addCapability(self.antichancap)
         antichanfoo.addHostmask(self.antichanfoo)
-        self.users.setUser(id, antichanfoo)
+        self.users.setUser(antichanfoo)
 
-        (id, securefoo) = self.users.newUser()
+        securefoo = self.users.newUser()
         securefoo.name = 'securefoo'
         securefoo.addCapability(self.cap)
         securefoo.secure = True
         securefoo.addHostmask(self.securefoo)
-        self.users.setUser(id, securefoo)
+        self.users.setUser(securefoo)
 
         channel = ircdb.IrcChannel()
         self.channels.setChannel(self.channel, channel)
@@ -533,7 +533,7 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         id = self.users.getUserId('nothing')
         u = self.users.getUser(id)
         u.addCapability(self.chanop)
-        self.users.setUser(id, u)
+        self.users.setUser(u)
         self.failUnless(self.checkCapability(self.nothing, self.chancap))
         self.channels.setChannel(self.channel, self.channelnothing)
         self.failUnless(self.checkCapability(self.nothing, self.chancap))
@@ -551,7 +551,7 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         id = self.users.getUserId(self.securefoo)
         u = self.users.getUser(id)
         u.addAuth(self.securefoo)
-        self.users.setUser(id, u)
+        self.users.setUser(u)
         try:
             originalConfDefaultAllow = conf.supybot.capabilities.default()
             conf.supybot.capabilities.default.set('False')
