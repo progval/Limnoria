@@ -193,6 +193,9 @@ class Note(callbacks.Privmsg):
         Retrieves a single note by its unique note id.
         """
         noteid = privmsgs.getArgs(args)
+        if noteid.startswith('get'):
+            irc.error('The Note.get command has changed to be simply "note".')
+            return
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
