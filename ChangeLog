@@ -1,3 +1,6 @@
+	* Fixed bug in Gameknot.gkstats when retrieving the stats for
+	users who haven't yet played a game.
+	
 2003-11-18  Jeremy Fincher  <jemfinch@users.sf.net>
 
 	* Changed commands so that plugins no longer have to make sure
