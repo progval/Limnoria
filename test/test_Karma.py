@@ -179,6 +179,14 @@ if sqlite is not None:
         def testIncreaseKarmaWithNickNotCallingInvalidCommand(self):
             self.assertSnarfNoResponse('%s: foo++' % self.irc.nick, 3)
 
+        def testClear(self):
+            self.assertNoResponse('foo++', 1)
+            self.assertRegexp('karma foo', '1')
+            self.assertNotError('karma clear foo')
+            self.assertRegexp('karma foo', '0')
+            self.assertNotRegexp('karma foo', '1')
+            
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

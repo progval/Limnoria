@@ -186,6 +186,14 @@ class SqliteKarmaDB(object):
         cursor = db.cursor()
         cursor.execute(sql)
         return [(name, int(i)) for (name, i) in cursor.fetchall()]
+
+    def clear(self, channel, name):
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        normalized = name.lower()
+        cursor.execute("""UPDATE karma SET subtracted=0, added=0
+                          WHERE normalized=%s""", normalized)
+        db.commit()
     
 
 def KarmaDB():
@@ -275,6 +283,15 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
                 irc.error('I have no karma for this channel.')
         except (KeyError, ValueError):
             raise callbacks.ArgumentError
+
+    def clear(self, irc, msg, args, channel):
+        """[<channel>] <name>
+
+        Resets the karma of <name> to 0.
+        """
+        name = privmsgs.getArgs(args)
+        self.db.clear(channel, name)
+    clear = privmsgs.checkChannelCapability(clear, 'op')
 
     def increaseKarma(self, irc, msg, match):
         r"^(\S+)\+\+(|\s+)$"
