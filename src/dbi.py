@@ -237,7 +237,10 @@ class CdbMapping(MappingInterface):
         return i
 
     def get(self, id):
-        return self.db[str(id)]
+        try:
+            return self.db[str(id)]
+        except KeyError:
+            raise NoRecordError, id
 
     # XXX Same as above.
     def set(self, id, s):
