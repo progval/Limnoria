@@ -236,7 +236,7 @@ class Misc(callbacks.Privmsg):
                 getHelp(cb)
             else:
                 irc.reply(cb.getCommandHelp(cb.name()))
-        else:
+        elif command:
             cbs = irc.findCallbackForCommand(command)
             if not cbs:
                 irc.error('There is no command %s.' % command)
@@ -247,6 +247,8 @@ class Misc(callbacks.Privmsg):
                           'you want help with.'% utils.commaAndify(names))
             else:
                 getHelp(cbs[0])
+        else:
+            raise callbacks.ArgumentError
     help = wrap(help, [optional(('plugin', False)), additional('commandName')])
 
     def hostmask(self, irc, msg, args, nick):
