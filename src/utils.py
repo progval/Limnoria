@@ -460,6 +460,7 @@ class IterableMap(object):
     def iterkeys(self):
         for (key, _) in self.iteritems():
             yield key
+    __iter__ = iterkeys
 
     def itervalues(self):
         for (_, value) in self.iteritems():
