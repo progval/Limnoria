@@ -1,3 +1,8 @@
+	* Added a new configuration variable, supybot.pidFile, which
+	determines what file the bot should write its PID to.  The
+	default is not to write the PID file at all.
+
+	
 2004-04-16  Jeremy Fincher  <jemfinch@supybot.org>
 	
 	* Version 0.77.2!
