@@ -1,3 +1,8 @@
+====================================================================
+Code not following these style guidelines fastidiously is likely
+(*very* likely) not to be accepted into the Supybot core.
+====================================================================
+
 Read PEP 8 (Guido's Style Guide) and know that we use almost all the
 same style guidelines.
 
