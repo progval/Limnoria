@@ -381,27 +381,21 @@ class IterTest(SupyTestCase):
     def testRandomChoice(self):
         choice = utils.iter.choice
         self.assertRaises(IndexError, choice, {})
+        self.assertRaises(IndexError, choice, [])
+        self.assertRaises(IndexError, choice, ())
         L = [1, 2]
-        i = iter(L)
-        L1 = False
-        L2 = False
-        i1 = False
-        i2 = False
-        for n in xrange(100):
-            ans = choice(L)
-            if ans == 1:
-                L1 = True
-            else:
-                L2 = True
-            ans = choice(i)
-            if ans == 1:
-                i1 = True
-            else:
-                i2 = True
-        self.assertEqual(L1 and L2, True,
-                     'utils.iter.choice isn\'t being random with lists')
-        self.assertEqual(i1 and i2, True,
-                     'utils.iter.choice isn\'t being random with iterables')
+        seenList = set()
+        seenIterable = set()
+        for n in xrange(300):
+            # 2**266 > 10**80, the number of atoms in the known universe.
+            # (ignoring dark matter, but that likely doesn't exist in atoms
+            #  anyway, so it shouldn't have a significant impact on that #)
+            seenList.add(choice(L))
+            seenIterable.add(choice(iter(L)))
+        self.assertEqual(len(L), len(seenList),
+                         'choice isn\'t being random with lists')
+        self.assertEqual(len(L), len(seenIterable),
+                         'choice isn\'t being random with iterables')
 
 ##     def testGroup(self):
 ##         group = utils.iter.group
