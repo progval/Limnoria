@@ -96,7 +96,7 @@ class Config(callbacks.Privmsg):
         group = getWrapper(name)
         if hasattr(group, 'getValues'):
             try:
-                L = zip(*group.getValues())[0]
+                L = zip(*group.getValues(fullNames=False))[0]
                 irc.reply(utils.commaAndify(L))
             except TypeError:
                 irc.error('There don\'t seem to be any values in %r' % name)
