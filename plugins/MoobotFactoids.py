@@ -77,10 +77,10 @@ class OptionList(object):
         while True:
             token = lexer.get_token()
             if not token:
-                raise SyntaxError, 'Missing ")"'
+                return '(%s' % ''.join(ret) #)
             elif token == ')':
                 if len(ret) > 1:
-                    return ret
+                    return [x for x in ret if x != '|']
                 elif len(ret) == 1:
                         return '(%s)' % ret[0]
                 else:
@@ -88,7 +88,7 @@ class OptionList(object):
             elif token == '(':
                 ret.append(self._insideParens(lexer))
             elif token == '|':
-                continue
+                ret.append(token)
             else:
                 ret.append(token)
 
@@ -106,9 +106,19 @@ class OptionList(object):
             elif token == '(':
                 ret.append(self._insideParens(lexer))
             elif token == ')':
-                raise SyntaxError, 'Spurious ")"'
-            else:
+                if ret: #(
+                    ret[-1] += ')'
+                else: #(
+                    ret.append(')')
+            elif token == '|':
                 ret.append(token)
+            else:
+                if ret and ret[-1] == '|':
+                    pipe = ret.pop()
+                    first = ret.pop()
+                    ret.append(pipe.join([first, token]))
+                else:
+                    ret.append(token)
         return ret
 
 def tokenize(s):
