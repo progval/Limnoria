@@ -66,6 +66,17 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertRegexp('learn foo bar baz', '^learn') # No 'as'
         self.assertRegexp('learn foo bar', '^learn') # No 'as'
 
+    def testSearchFactoids(self):
+        self.assertNotError('learn jemfinch as my primary author')
+        self.assertNotError('learn strike as another cool guy working on me')
+        self.assertNotError('learn inkedmn as another of my developers')
+        self.assertNotError('learn jamessan as a developer of much python')
+        self.assertNotError('learn bwp as the author of my weather command')
+        self.assertRegexp('searchfactoids /.w./', 'bwp')
+        self.assertRegexp('searchfactoids /^.+i/', 'jemfinch.*strike')
+        self.assertNotRegexp('searchfactoids /^.+i/', 'inkedmn')
+        self.assertRegexp('searchfactoids /^j/', 'jemfinch.*jamessan')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
