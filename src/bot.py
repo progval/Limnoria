@@ -74,12 +74,15 @@ def processConfigFile(filename):
         debug.recoverableError('%s: %s' % (filename, msg))
     class ConfigAfter376(irclib.IrcCallback):
         public = False
-        def __init__(self, msgs):
-            self.msgs = msgs
+        def __init__(self, commands):
+            self.commands = commands
 
         def do376(self, irc, msg):
             #debug.printf('Firing ConfigAfter376 messages')
-            for msg in self.msgs:
+            for command in self.commands:
+                #debug.printf(irc.nick)
+                #debug.printf(command)
+                msg = ircmsgs.privmsg(irc.nick, command)
                 irc.queueMsg(msg)
 
         do377 = do376
@@ -120,8 +123,6 @@ def processConfigFile(filename):
             else:
                 text = newtext
         lines = text.splitlines()
-        print lines
-        print tuple(itersplit(lines, lambda s: not s, True))
         (startup, after376) = tuple(itersplit(lines,lambda s: not s, True))
         #debug.printf('startup: %r' % startup)
         #debug.printf('after376: %r' % after376)
@@ -130,8 +131,7 @@ def processConfigFile(filename):
                 irc.feedMsg(ircmsgs.privmsg(irc.nick, line))
         irc.reset()
         world.startup = False
-        msgs = [ircmsgs.privmsg(irc.nick, line) for line in after376]
-        irc.addCallback(ConfigAfter376(msgs))
+        irc.addCallback(ConfigAfter376(after376))
         driver = asyncoreDrivers.AsyncoreDriver(server)
         driver.irc = irc
     except IOError, e:
