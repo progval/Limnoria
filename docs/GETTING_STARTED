@@ -28,15 +28,15 @@ like being asked many questions, just run supybot with no arguments
 and it'll ask you only the questions necessary to run a bot.
 
 So after running either of those two programs, you've got a nice
-registry file handy.  If you're not satisfied with your answers to any
-of the questions you were asked, feel free to run the program again
-until you're satisfied with all your answers.  Once you're satisfied,
-though, run the "supybot" program with the registry file you created
-as an argument.  This will start the bot; unless you turned off
-logging to stdout, you'll see some nice log messages describing what
-the bot is doing at any particular moment; it may pause for a
-significant amount of time after saying "Reconnecting to ..." while
-the server tries to check its ident.
+registry[*] file handy.  If you're not satisfied with your answers to
+any of the questions you were asked, feel free to run the program
+again until you're satisfied with all your answers.  Once you're
+satisfied, though, run the "supybot" program with the registry file
+you created as an argument.  This will start the bot; unless you
+turned off logging to stdout, you'll see some nice log messages
+describing what the bot is doing at any particular moment; it may
+pause for a significant amount of time after saying "Connecting 
+to ..." while the server tries to check its ident.
 
 Ok, so let's assume your bot connected to the server fine and joined
 the channels you told it to join.  For now we'll assume you named your
@@ -135,3 +135,9 @@ Enjoy using Supybot!
 # Addenda
 ###
 Local installs: See this forum post: http://tinyurl.com/2tb37
+
+The Registry: The Supybot registry is somewhat similar to Window's
+registry in concept, but completely different in implementation.
+It's still a hierarchical representation of configuration data, but
+it's in a completely text-based and easy-to-use/modify format.  We
+think it's great :)
