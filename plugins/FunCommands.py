@@ -441,7 +441,7 @@ class FunCommands(callbacks.Privmsg):
         if '.' in funcname:
             parts = funcname.split('.')
             module = '.'.join(parts[:-1])
-            if module not in sys.modules:
+            if module not in __builtins__ and module not in sys.modules:
                 path = os.path.dirname(os.__file__)
                 for name in parts[:-1]:
                     try:
