@@ -47,11 +47,13 @@ import sha
 import time
 import math
 import cmath
+import socket
 import string
 import random
 import urllib
 import inspect
 import binascii
+import telnetlib
 import threading
 import mimetypes
 
@@ -616,6 +618,44 @@ class FunCommands(callbacks.Privmsg):
             irc.error(msg, 'That function has no documentation.')
             return
         irc.reply(msg, s)
+
+    def dns(self, irc, msg, args):
+        """<host|ip>"""
+        host = privmsgs.getArgs(args)
+        if ircutils.isIP(host):
+            hostname = socket.getfqdn(host)
+            if hostname == host:
+                irc.error(msg, 'Host not found.')
+            else:
+                irc.reply(msg, hostname)
+        else:
+            try:
+                ip = socket.gethostbyname(host)
+                irc.reply(msg, ip)
+            except socket.error:
+                irc.error(msg, 'Host not found.')
+    dns = privmsgs.thread(dns)
+
+    def kernel(self, irc, msg, args):
+        """takes no arguments"""
+        try:
+            conn = telnetlib.Telnet('kernel.org', 79)
+            conn.write('\n')
+            text = conn.read_all()
+        except socket.error, e:
+            irc.error(msg, e.args[1])
+            return
+        stable = 'unkown'
+        beta = 'unknown'
+        for line in text.splitlines():
+            (name, version) = line.split(':')
+            if 'latest stable' in name:
+                stable = version.strip()
+            elif 'latest beta' in name:
+                beta = version.strip()
+        irc.reply(msg, 'The latest stable kernel is %s; ' \
+                       'the latest beta kernel is %s.' % (stable, beta))
+    kernel = privmsgs.thread(kernel)
 
 
 Class = FunCommands

@@ -84,4 +84,11 @@ class FunCommandsTest(PluginTestCase):
             i = ord(c)
             self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
 
+    def testDns(self):
+        self.assertNotError('dns slashdot.org')
+
+    def testKernel(self):
+        self.assertNotError('kernel')
+    
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
