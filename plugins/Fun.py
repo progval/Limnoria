@@ -331,6 +331,7 @@ class Fun(callbacks.Privmsg):
 
     # The list of words and algorithm are pulled straight the mozbot
     # MagicEightBall.bm module.
+    # http://lxr.mozilla.org/mozilla/source/webtools/mozbot/BotModules/MagicEightball.bm
     _responses = {'positive': ['It is possible.', 'Yes!', 'Of course.', 
                                'Naturally.', 'Obviously.', 'It shall be.',
                                'The outlook is good.', 'It is so.',
