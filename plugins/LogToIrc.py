@@ -115,9 +115,9 @@ class IrcFormatter(log.Formatter):
 class ColorizedIrcFormatter(IrcFormatter):
     def formatException(self, (E, e, tb)):
         if conf.supybot.plugins.LogToIrc.colorized():
-            return ircutils.bold(ircutils.mircColor(
-                                IrcFormatter.formatException(self, (E, e, tb)),
-                                fg='red'))
+            return ircutils.mircColor(IrcFormatter.formatException(self,
+                                                                   (E, e, tb)),
+                                      fg='red')
         else:
             return IrcFormatter.formatException(self, (E, e, tb))
 
