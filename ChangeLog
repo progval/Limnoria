@@ -1,3 +1,6 @@
+	* Added the ability to turn on/off the showing of ids in FunDB
+	excuse/insult/praise/lart.
+	
 	* Added the to= keyword argument to the various reply functions to
 	you can specify a target to send the message to.
 	

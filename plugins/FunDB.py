@@ -121,97 +121,30 @@ def addWord(db, word, commit=False):
         db.commit()
 
 
-class FunDB(callbacks.Privmsg):
+class FunDB(callbacks.Privmsg, plugins.Configurable):
     """
     Contains the 'fun' commands that require a database.  Currently includes
     database-backed commands for crossword puzzle solving, anagram searching,
     larting, praising, excusing, and insulting.
     """
+    configurables = plugins.ConfigurableDictionary(
+        [('show-ids', plugins.ConfigurableBoolType, False,
+          """Determines whether the bot will show the id of an
+          excuse/insult/praise/lart.""")]
+    )
     _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
         self.dbHandler = FunDBDB(os.path.join(conf.dataDir, 'FunDB'))
 
     def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.Configurable.die(self)
         db = self.dbHandler.getDb()
         db.commit()
         db.close()
         del db
-
-    def insult(self, irc, msg, args):
-        """<nick>
-
-        Insults <nick>.
-        """
-        nick = privmsgs.getArgs(args)
-        if not nick:
-            raise callbacks.ArgumentError
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute("""SELECT id, insult FROM insults
-                          WHERE insult NOT NULL
-                          ORDER BY random()
-                          LIMIT 1""")
-        if cursor.rowcount == 0:
-            irc.error(msg, 'There are currently no available insults.')
-        else:
-            (id, insult) = cursor.fetchone()
-            nick = nick.strip()
-            nick = re.sub(r'\bme\b', msg.nick, nick)
-            nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
-            insultee = nick
-            insult = insult.replace("$who", insultee)
-            s = '%s: %s (#%s)' % (insultee, insult, id)
-            irc.reply(msg, s, prefixName=False)
-
-    def crossword(self, irc, msg, args):
-        """<word>
-
-        Gives the possible crossword completions for <word>; use underscores
-        ('_') to denote blank spaces.
-        """
-        word = privmsgs.getArgs(args).lower()
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        if '%' in word:
-            irc.error(msg, '"%" isn\'t allowed in the word.')
-            return
-        cursor.execute("""SELECT word FROM words
-                          WHERE word LIKE %s
-                          ORDER BY word""", word)
-        words = [t[0] for t in cursor.fetchall()]
-        irc.reply(msg, ', '.join(words))
-
-    def excuse(self, irc, msg, args):
-        """[<id>]
-
-        Gives you a standard, random BOFH excuse or the excuse with the given 
-        <id>.
-        """
-        id = privmsgs.getArgs(args, required=0, optional=1)
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        if id:
-            try:
-                id = int(id)
-            except ValueError:
-                irc.error(msg, 'The <id> argument must be an integer.')
-                return
-            cursor.execute("""SELECT id, excuse FROM excuses WHERE id=%s""",
-                           id)
-            if cursor.rowcount == 0:
-                irc.error(msg, 'There is no such excuse.')
-                return
-        else:
-            cursor.execute("""SELECT id, excuse FROM excuses
-                              WHERE excuse NOTNULL
-                              ORDER BY random()
-                              LIMIT 1""")
-        if cursor.rowcount == 0:
-            irc.error(msg, 'There are currently no available excuses.')
-        else:
-            (id, excuse) = cursor.fetchone()
-            irc.reply(msg, '%s (#%s)' % (excuse, id))
 
     def add(self, irc, msg, args):
         """<lart|excuse|insult|praise> <text>
@@ -398,6 +331,66 @@ class FunDB(callbacks.Privmsg):
             reply = '%s #%s: Created by %s.' % (table, id, add)
             irc.reply(msg, reply)
 
+    def _formatResponse(self, s, id):
+        if self.configurables.get('show-ids'):
+            return '%s (#%s)' % (s, id)
+        else:
+            return s
+        
+    def insult(self, irc, msg, args):
+        """<nick>
+
+        Insults <nick>.
+        """
+        nick = privmsgs.getArgs(args)
+        if not nick:
+            raise callbacks.ArgumentError
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT id, insult FROM insults
+                          WHERE insult NOT NULL
+                          ORDER BY random()
+                          LIMIT 1""")
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There are currently no available insults.')
+        else:
+            (id, insult) = cursor.fetchone()
+            nick = re.sub(r'\bme\b', msg.nick, nick)
+            nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
+            insult = insult.replace('$who', nick)
+            irc.reply(msg, self._formatResponse(insult, id), to=nick)
+
+    def excuse(self, irc, msg, args):
+        """[<id>]
+
+        Gives you a standard, random BOFH excuse or the excuse with the given 
+        <id>.
+        """
+        id = privmsgs.getArgs(args, required=0, optional=1)
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
+        if id:
+            try:
+                id = int(id)
+            except ValueError:
+                irc.error(msg, 'The <id> argument must be an integer.')
+                return
+            cursor.execute("""SELECT id, excuse FROM excuses WHERE id=%s""",
+                           id)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'There is no such excuse.')
+                return
+        else:
+            cursor.execute("""SELECT id, excuse FROM excuses
+                              WHERE excuse NOTNULL
+                              ORDER BY random()
+                              LIMIT 1""")
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There are currently no available excuses.')
+        else:
+            (id, excuse) = cursor.fetchone()
+            irc.reply(msg, self._formatResponse(excuse, id))
+
     def lart(self, irc, msg, args):
         """[<id>] <text> [for <reason>]
 
@@ -443,12 +436,10 @@ class FunDB(callbacks.Privmsg):
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
             reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
             lartee = nick
-            lart = lart.replace("$who", lartee)
+            s = lart.replace('$who', lartee)
             if len(reason) > 0:
-                s = '%s for %s (#%s)' % (lart, reason, id)
-            else:
-                s = '%s (#%s)' % (lart, id)
-            irc.reply(msg, s, action=True)
+                s = '%s for %s' % (s, reason)
+            irc.reply(msg, self._formatResponse(s, id), action=True)
 
     def praise(self, irc, msg, args):
         """[<id>] <text> [for <reason>]
@@ -493,12 +484,10 @@ class FunDB(callbacks.Privmsg):
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
             reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
             praisee = nick
-            praise = praise.replace("$who", praisee)
+            s = praise.replace('$who', praisee)
             if len(reason) > 0:
-                s = '%s for %s (#%s)' % (praise, reason, id)
-            else:
-                s = '%s (#%s)' % (praise, id)
-            irc.reply(msg, s, action=True)
+                s = '%s for %s' % (s, reason)
+            irc.reply(msg, self._formatResponse(s, id), action=True)
 
     def addword(self, irc, msg, args):
         """<word>
@@ -511,6 +500,24 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'Word must contain only letters.')
         addWord(self.dbHandler.getDb(), word, commit=True)
         irc.reply(msg, conf.replySuccess)
+
+    def crossword(self, irc, msg, args):
+        """<word>
+
+        Gives the possible crossword completions for <word>; use underscores
+        ('_') to denote blank spaces.
+        """
+        word = privmsgs.getArgs(args).lower()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
+        if '%' in word:
+            irc.error(msg, '"%" isn\'t allowed in the word.')
+            return
+        cursor.execute("""SELECT word FROM words
+                          WHERE word LIKE %s
+                          ORDER BY word""", word)
+        words = [t[0] for t in cursor.fetchall()]
+        irc.reply(msg, utils.commaAndify(words))
 
     def anagram(self, irc, msg, args):
         """<word>
@@ -530,7 +537,7 @@ class FunDB(callbacks.Privmsg):
         except ValueError:
             pass
         if words:
-            irc.reply(msg, ', '.join(words))
+            irc.reply(msg, utils.commaAndify(words))
         else:
             irc.reply(msg, 'That word has no anagrams that I know of.')
 
@@ -562,22 +569,22 @@ if __name__ == '__main__':
             addWord(db, line)
         elif category == 'larts':
             if '$who' in line:
-                cursor.execute("""INSERT INTO larts VALUES (NULL, %s,
-                                  %s)""", line, added_by)
+                cursor.execute("""INSERT INTO larts VALUES (NULL, %s, %s)""",
+                               line, added_by)
             else:
                 print 'Invalid lart: %s' % line
         elif category == 'praises':
             if '$who' in line:
-                cursor.execute("""INSERT INTO praises VALUES (NULL, %s,
-                                  %s)""", line, added_by)
+                cursor.execute("""INSERT INTO praises VALUES (NULL, %s, %s)""",
+                               line, added_by)
             else:
                 print 'Invalid praise: %s' % line
         elif category == 'insults':
-            cursor.execute("""INSERT INTO insults VALUES (NULL, %s, %s
-                              )""", line, added_by)
+            cursor.execute("""INSERT INTO insults VALUES (NULL, %s, %s)""",
+                           line, added_by)
         elif category == 'excuses':
-            cursor.execute("""INSERT INTO excuses VALUES (NULL, %s, %s
-                              )""", line, added_by)
+            cursor.execute("""INSERT INTO excuses VALUES (NULL, %s, %s )""",
+                           line, added_by)
     db.commit()
     db.close()
 
