@@ -36,6 +36,7 @@ import supybot.fix as fix
 import copy
 import sets
 import time
+import random
 import operator
 from itertools import imap, chain, cycle
 
@@ -500,24 +501,14 @@ class Irc(IrcCommandDispatcher):
             return self.alternateNicks.pop(0)
         else:
             nick = conf.supybot.nick()
-            for c in '`_^':
-                if nick.endswith(c):
-                    if len(nick) >= 9: # The max length on many servers.
-                        nick = nick.rstrip(c)
-                        continue
-                    else:
-                        return nick + c
-                else:
-                    return nick + c
-            for c in '`_^':
-                if nick.startswith(c):
-                    if len(nick) >= 9:
-                        nick = nick.lstrip(c)
-                        continue
-                    else:
-                        return c + nick
-                else:
-                    return c + nick
+            ret = nick
+            L = list(nick)
+            while len(L) <= 3:
+                L.append('`')
+            while ret == nick:
+                L[random.randrange(len(L))] = random.choice('0123456789')
+                ret = ''.join(L)
+            return ret
 
     def __repr__(self):
         return '<irclib.Irc object for %s>' % self.network
@@ -620,6 +611,7 @@ class Irc(IrcCommandDispatcher):
     def do433(self, msg):
         """Handles 'nickname already in use' messages."""
         newNick = self._getNextNick()
+        assert newNick != self.nick, 'self._getNextNick() returned same nick.'
         log.info('Got 433: %s is in use.  Trying %s.', self.nick, newNick)
         self.sendMsg(ircmsgs.nick(newNick))
     do432 = do433 # 432: Erroneous nickname.
