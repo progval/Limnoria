@@ -31,6 +31,7 @@
 
 from fix import *
 
+import os
 import time
 import atexit
 import string
@@ -344,7 +345,16 @@ class ChannelsDictionary(object):
 ###
 # Later, I might add some special handling for botnet.
 ###
+if not os.path.exists(conf.userfile):
+    fd = open(conf.userfile, 'w')
+    fd.write('{}')
+    fd.close()
 users = UsersDictionary(conf.userfile)
+
+if not os.path.exists(conf.channelfile):
+    fd = file(conf.channelfile, 'w')
+    fd.write('{}')
+    fd.close()
 channels = ChannelsDictionary(conf.channelfile)
 
 atexit.register(users.flush)
