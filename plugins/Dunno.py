@@ -95,17 +95,19 @@ class Dunno(callbacks.Privmsg):
         """
         # Must be registered to use this
         try:
-            id = ircdb.users.getUserId(msg.prefix)
+            user_id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
-        text = privmsgs.getArgs(args, required=1)
+        text = privmsgs.getArgs(args)
         cursor = self.db.cursor()
-        cursor.execute("""INSERT INTO dunnos
-                          VALUES(NULL, %s, %s, %s)""",
-                          id, int(time.time()), text)
+        at = int(time.time())
+        cursor.execute("""INSERT INTO dunnos VALUES(NULL, %s, %s, %s)""",
+                          user_id, at, text)
         self.db.commit()
-        irc.replySuccess()
+        cursor.execute("""SELECT id FROM dunnos WHERE added_at=%s""", at)
+        id = cursor.fetchone()[0]
+        irc.replySuccess('Dunno #%s added.' % id)
 
     def remove(self, irc, msg, args):
         """<id>
@@ -120,19 +122,17 @@ class Dunno(callbacks.Privmsg):
             return
         dunno_id = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
-        cursor.execute("""SELECT added_by, dunno
-                          FROM dunnos
-                          WHERE id = %s""" % dunno_id)
+        cursor.execute("""SELECT added_by, dunno FROM dunnos
+                          WHERE id=%s""", dunno_id)
         if cursor.rowcount == 0:
-            irc.error('No dunno with id: %s' % dunno_id)
+            irc.error('No dunno with id #%s.' % dunno_id)
             return
         (added_by, dunno) = cursor.fetchone()
         if not (ircdb.checkCapability(user_id, 'admin') or \
                 added_by == user_id):
-            irc.error('Only admins and the dunno creator may delete a '
-                           'dunno.')
+            irc.error('Only admins and the dunno creator may delete a dunno.')
             return
-        cursor.execute("""DELETE FROM dunnos WHERE id = %s""" % dunno_id)
+        cursor.execute("""DELETE FROM dunnos WHERE id=%s""", dunno_id)
         self.db.commit()
         irc.replySuccess()
 
@@ -145,13 +145,12 @@ class Dunno(callbacks.Privmsg):
         text = privmsgs.getArgs(args, required=1)
         glob = "%" + text + "%"
         cursor = self.db.cursor()
-        cursor.execute("""SELECT id FROM dunnos
-                          WHERE dunno LIKE %s""", glob)
+        cursor.execute("""SELECT id FROM dunnos WHERE dunno LIKE %s""", glob)
         if cursor.rowcount == 0:
             irc.error('No dunnos with %r found.' % text)
             return
         ids = [str(t[0]) for t in cursor.fetchall()]
-        s = 'Dunno search for %r (%s found): %s' % \
+        s = 'Dunno search for %r (%s found): %s.' % \
             (text, len(ids), utils.commaAndify(ids))
         irc.reply(s)
 
@@ -164,15 +163,15 @@ class Dunno(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error('%r is not a valid dunno id' % id)
+            irc.error('%r is not a valid dunno id.' % id)
             return
         cursor = self.db.cursor()
-        cursor.execute("""SELECT dunno FROM dunnos WHERE id = %s""", id)
+        cursor.execute("""SELECT dunno FROM dunnos WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            irc.error('No dunno found with id #%s' % id)
+            irc.error('No dunno found with id #%s.' % id)
             return
         dunno = cursor.fetchone()[0]
-        irc.reply("Dunno #%s: %r" % (id, dunno))
+        irc.reply("Dunno #%s: %r." % (id, dunno))
 
     def change(self, irc, msg, args):
         """<id> <regexp>
@@ -184,23 +183,23 @@ class Dunno(callbacks.Privmsg):
         try:
             user_id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.errorNotRegistered()
             return
         # Check id arg
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, '%r is not a valid dunno id' % id)
+            irc.error('%r is not a valid dunno id.' % id)
             return
         cursor = self.db.cursor()
         cursor.execute("""SELECT dunno FROM dunnos WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'There is no dunno #%s' % id)
+            irc.error('There is no dunno #%s.' % id)
             return
         try:
             replacer = utils.perlReToReplacer(regexp)
         except:
-            irc.error(msg, '%r is not a valid regexp' % regexp)
+            irc.error('%r is not a valid regular expression.' % regexp)
             return
         dunno = cursor.fetchone()[0]
         new_dunno = replacer(dunno)
