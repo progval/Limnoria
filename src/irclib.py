@@ -205,10 +205,11 @@ class IrcState(IrcCommandDispatcher):
     """
     __slots__ = ('history', 'nicksToHostmasks', 'channels')
     def __init__(self):
+        self.history = RingBuffer(conf.maxHistory)
         self.reset()
 
     def reset(self):
-        self.history = RingBuffer(conf.maxHistory)
+        self.history.reset()
         self.nicksToHostmasks = ircutils.IrcDict()
         self.channels = ircutils.IrcDict()
 
