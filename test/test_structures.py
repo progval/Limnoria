@@ -202,6 +202,7 @@ class QueueTest(unittest.TestCase):
     def testGetitem(self):
         q = queue()
         n = 10
+        self.assertRaises(IndexError, q.__getitem__, 0)
         for i in xrange(n):
             q.enqueue(i)
         for i in xrange(n):
@@ -216,6 +217,7 @@ class QueueTest(unittest.TestCase):
         
     def testSetitem(self):
         q1 = queue()
+        self.assertRaises(IndexError, q1.__setitem__, 0, 0)
         for i in xrange(10):
             q1.enqueue(i)
         q2 = eval(repr(q1))

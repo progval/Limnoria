@@ -130,4 +130,3 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(f('foobarbaz'), 'foorz')
         f = utils.perlReToReplacer('s/ba\\///g')
         self.assertEqual(f('fooba/rba/z'), 'foorz')
-        
