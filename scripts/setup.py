@@ -117,6 +117,9 @@ if __name__ == '__main__':
         configfd.write(anything('What command?'))
         configfd.write('\n')
     configfd.write('\n')
+    if yn('Do you want the bot to join any channels?') == 'y':
+        channels = anything('What channels? (separate channels by spaces)')
+        configfd.write('join %s\n' % channels)
     postConnect = 'Would you like any commands to run ' \
                   'when the bot is finished connecting to the server?'
     while yn(postConnect) == 'y':
