@@ -164,6 +164,12 @@ class LogProxy(object):
         self.im_func = holder()
         self.im_func.func_name = 'log'
 
+    def inFilter(self, irc, msg):
+        if msg.command == 'PRIVMSG' and msg.nick == irc.nick:
+            self.log.warning('Somehow sent a message to myself, ignoring.')
+            return None
+        return msg
+    
     def __call__(self, irc, msg, args):
         text = privmsgs.getArgs(args)
         log.critical(text)
