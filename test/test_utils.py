@@ -175,7 +175,7 @@ class UtilsTest(unittest.TestCase):
     def testFindBinaryInPath(self):
         if os.name == 'posix':
             self.assertEqual(None, utils.findBinaryInPath('asdfhjklasdfhjkl'))
-            self.assertEqual('/bin/sh', utils.findBinaryInPath('sh'))
+            self.failUnless(utils.findBinaryInPath('sh').endswith('/bin/sh'))
 
     def testCommaAndify(self):
         L = ['foo']
