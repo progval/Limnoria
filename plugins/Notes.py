@@ -142,6 +142,10 @@ class Notes(callbacks.Privmsg):
                                              FROM users
                                              WHERE name=%s)""", name)
 
+    def doPrivmsg(self, irc, msg):
+        self.doJoin(irc, msg)
+        callbacks.Privmsg.doPrivmsg(self, irc, msg)
+
     def sendnote(self, irc, msg, args):
         """<recipient> <text>
         
