@@ -260,7 +260,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         sql = """SELECT url, added, added_by
                  FROM urls
                  WHERE %s ORDER BY id DESC
-                 LIMIT 10""" % criterion
+                 LIMIT 100""" % criterion
         cursor.execute(sql, *formats)
         if cursor.rowcount == 0:
             irc.reply(msg, 'No URLs matched that criteria.')
