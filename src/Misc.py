@@ -479,6 +479,10 @@ class Misc(callbacks.Privmsg):
                     return ircutils.hostmaskPatternEqual(arg, m.nick)
                 predicates['from'] = f
             elif option == '--in':
+                if arg not in irc.state.channels:
+                    irc.error('I\'m not in %s.' % arg, Raise=True)
+                if msg.nick in irc.state.channels[arg].users:
+                    irc.error('You\'re not in %s.' % arg, Raise=True)
                 def f(m, arg=arg):
                     return ircutils.strEqual(m.args[0], arg)
                 predicates['in'] = f
