@@ -458,8 +458,10 @@ class Creator(object):
         raise ValueError, 'Invalid command on line %s: %s' % (lineno, command)
 
 class IrcUserCreator(Creator):
+    u = None
     def __init__(self, users):
-        self.u = IrcUser()
+        if self.u is None:
+            IrcUserCreator.u = IrcUser()
         self.users = users
 
     def user(self, rest, lineno):
@@ -511,7 +513,7 @@ class IrcUserCreator(Creator):
                 # to our lower-numbered users.
                 self.u.hostmasks[:] = []
                 self.users.setUser(self.u)
-            IrcUserCreator.id = None
+            IrcUserCreator.u = None
 
 class IrcChannelCreator(Creator):
     name = None
