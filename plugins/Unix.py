@@ -83,7 +83,7 @@ def configure(onStart, afterConnect, advanced):
     print
     print progstats()
     print
-    if yn('Would you like to disable this command?') == 'y':
+    if yn('Would you like to disable this command for non-owner users?')=='y':
         onStart.append('disable progstats')
 
 example = utils.wrapLines("""
