@@ -78,7 +78,8 @@ def addressed(nick, msg):
             return msg.args[1][1:].strip()
         else:
             return msg.args[1].strip()
-    elif ircutils.toLower(msg.args[1]).startswith(nick):
+    elif conf.replyWhenAddressedByNick and \
+         ircutils.toLower(msg.args[1]).startswith(nick):
         try:
             (maybeNick, rest) = msg.args[1].split(None, 1)
             while not ircutils.isNick(maybeNick):
@@ -272,6 +273,22 @@ def formatArgumentError(method, name=None):
     else:
         return 'Invalid arguments for %s.' % method.__name__
 
+def checkCommandCapability(msg, command):
+    anticap = ircdb.makeAntiCapability(command)
+    if ircdb.checkCapability(msg.prefix, anticap):
+        log.info('Preventing because of anticap: %s', msg.prefix)
+        return False
+    if ircutils.isChannel(msg.args[0]):
+        channel = msg.args[0]
+        antichancap = ircdb.makeChannelCapability(channel, anticap)
+        if ircdb.checkCapability(msg.prefix, antichancap):
+            log.info('Preventing because of antichancap: %s', msg.prefix)
+            return False
+    return conf.defaultAllow or \
+           ircdb.checkCapability(msg.prefix, command) or \
+           ircdb.checkCapability(msg.prefix, chancap)
+
+            
 class IrcObjectProxy:
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
@@ -285,7 +302,7 @@ class IrcObjectProxy:
         self.notice = False
         self.private = False
         self.finished = False
-        self.prefixName = True
+        self.prefixName = conf.replyWithNickPrefix
         self.noLengthCheck = False
         if not args:
             self.finalEvaled = True
@@ -345,25 +362,9 @@ class IrcObjectProxy:
                 else:
                     del self.args[0]
                     cb = cbs[0]
-                anticap = ircdb.makeAntiCapability(name)
-                log.printf('Checking for %s' % anticap)
-                if ircdb.checkCapability(self.msg.prefix, anticap):
-                    log.printf('Being prevented with anticap')
-                    log.info('Preventing %s from calling %s' %
-                             (self.msg.nick, name))
-                    s = conf.replyNoCapability % name
-                    self.error(self.msg, s, private=True)
+                if not checkCommandCapability(self.msg, name):
+                    self.error(self.msg, conf.replyNoCapability % name)
                     return
-                recipient = self.msg.args[0]
-                if ircutils.isChannel(recipient):
-                    chancap = ircdb.makeChannelCapability(recipient, anticap)
-                    if ircdb.checkCapability(self.msg.prefix, chancap):
-                        log.printf('Being prevented with chancap')
-                        log.info('Preventing %s from calling %s' %
-                                 (self.msg.nick, name))
-                        s = conf.replyNoCapability % name
-                        self.error(self.msg, s, private=True)
-                        return
                 command = getattr(cb, name)
                 Privmsg.handled = True
                 if cb.threaded:
@@ -580,6 +581,9 @@ class Privmsg(irclib.IrcCallback):
                 if name == canonicalName(self.name()):
                     handleBadArgs()
                 elif self.isCommand(name):
+                    if not checkCommandCapability(msg, name):
+                        irc.error(msg, conf.replyNoCapability % name)
+                        return
                     del args[0]
                     method = getattr(self, name)
                     try:

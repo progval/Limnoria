@@ -124,7 +124,21 @@ replyWhenNotCommand = True
 # replyWithPrivateNotice: True if replies to a user in a channel should be
 #                         noticed to that user instead of sent to the channel
 #                         itself.
+###
 replyWithPrivateNotice = False
+
+###
+# replyWithNickPrefix: True if the bot should always prefix the nick of the
+#                      person giving the command to its reply.
+###
+replyWithNickPrefix = True
+
+###
+# replyWhenAddressedByName: True if the bot should reply to messages of the
+#                           form "botnick: foo" where "botnick" is the bot's
+#                           nick.
+###
+replyWhenAddressedByName = True
 
 ###
 # requireRegistration: Oftentimes a plugin will want to record who added or
@@ -307,6 +321,8 @@ types = {
     #'allowEval': mybool,
     'replyWhenNotCommand': mybool,
     'replyWithPrivateNotice': mybool,
+    'replyWithNickPrefix': mybool,
+    'replyWhenAddressedByName': mybool,
     'requireRegistration': mybool,
     'enablePipeSyntax': mybool,
     'replyError': mystr,
