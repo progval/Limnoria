@@ -251,7 +251,7 @@ class Karma(callbacks.Plugin):
                 self.db.decrement(channel, self._normalizeThing(thing))
                 self._respond(irc, channel)
 
-    def tokenizedCommand(self, irc, msg, tokens):
+    def invalidCommand(self, irc, msg, tokens):
         channel = msg.args[0]
         if not irc.isChannel(channel):
             return
