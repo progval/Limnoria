@@ -287,6 +287,17 @@ def pluralize(i, s):
             return s + 's'
 
 def nItems(n, item, between=None):
+    """Works like this:
+
+    >>> nItems(1, 'clock')
+    '1 clock'
+
+    >>> nItems(10, 'clock')
+    '10 clocks'
+
+    >>> nItems(10, 'clock', between='grandfather')
+    '10 grandfather clocks'
+    """
     if between is None:
         return '%s %s' % (n, pluralize(n, item))
     else:
@@ -385,5 +396,9 @@ class IterableMap(object):
             return True
         return False
 
+
+if __name__ == '__main__':
+    import sys, doctest
+    doctest.testmod(sys.modules['__main__'])
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
