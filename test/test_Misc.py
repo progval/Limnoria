@@ -195,7 +195,7 @@ class MiscTestCase(ChannelPluginTestCase):
 
     def testApropos(self):
         self.assertNotError('apropos f')
-        self.assertError('apropos asldkfjasdlkfja')
+        self.assertRegexp('apropos asldkfjasdlkfja', 'No appropriate commands')
 
     def testAproposDoesntReturnNonCanonicalNames(self):
         self.assertNotRegexp('apropos exec', '_exec')
