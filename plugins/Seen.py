@@ -57,14 +57,12 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-def ircToLowerOrInt(x):
-    if isinstance(x, int):
-        return x
-    else:
-        return ircutils.toLower(x)
-
 class IrcStringAndIntDict(utils.InsensitivePreservingDict):
-    key = staticmethod(ircToLowerOrInt)
+    def key(self, x):
+        if isinstance(x, int):
+            return x
+        else:
+            return ircutils.toLower(x)
 
 class SeenDB(plugins.ChannelUserDB):
     IdDict = IrcStringAndIntDict
