@@ -362,14 +362,13 @@ class IrcState(IrcCommandDispatcher):
 
     def do353(self, irc, msg):
         # NAMES reply.
-        channel = msg.args[2]
-        names = msg.args[-1].split()
+        (_, type, channel, names) = msg.args
         if channel not in self.channels:
             self.channels[channel] = Channel()
         c = self.channels[channel]
         for name in names:
             c.addUser(name)
-        if msg.args[1] == '@':
+        if type == '@':
             c.modes['s'] = None
 
     def doJoin(self, irc, msg):
@@ -419,13 +418,6 @@ class IrcState(IrcCommandDispatcher):
                 chan.setMode(modeChar, value)
             elif mode[0] == '-' and mode[1] not in 'ovh':
                 chan.unsetMode(modeChar)
-
-    def do353(self, irc, msg):
-        (_, _, channel, users) = msg.args
-        chan = self.channels[channel]
-        users = users.split()
-        for user in users:
-            chan.addUser(user)
 
     def doPart(self, irc, msg):
         for channel in msg.args[0].split(','):
