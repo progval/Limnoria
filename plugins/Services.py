@@ -91,6 +91,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.reset()
 
     def reset(self):
+        self.channels = []
         self.sentGhost = False
         self.identified = False
 
@@ -151,6 +152,10 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             else:
                 self.log.warning('do433 called without NickServ being set.')
 
+    def do515(self, irc, msg):
+        # Can't join this channel, it's +r (we must be identified).
+        self.channels.append(msg.args[1])
+
     def doNick(self, irc, msg):
         nick = self.registryValue('nick', irc.network)
         if msg.args[0] == nick:
@@ -183,6 +188,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             elif 'now recognized' in s:
                 self.log.info('Received "Password accepted" from NickServ')
                 self.identified = True
+                if self.channels:
+                    irc.queueMsg(ircmsgs.joins(self.channels))
 
     def getops(self, irc, msg, args):
         """[<channel>]
