@@ -30,7 +30,7 @@
 ###
 
 """
-Warns people when they join a channel if their ident is root.
+Warns (or even kicks) people when they join a channel if their ident is root.
 """
 
 __revision__ = "$Id$"
@@ -60,6 +60,11 @@ conf.registerChannelValue(conf.supybot.plugins.RootWarner, 'kick',
     join the channel with an ident of 'root' or '~root'."""))
 
 class RootWarner(callbacks.Privmsg):
+    """Warns or kicks people who appear to be using IRC as root.  Check out the
+    configuration variables supybot.plugins.RootWarner.warn,
+    supybot.plugins.RootWarner.kick, and supybot.plugins.RootWarner.warning to
+    configure this plugin's behavior.
+    """
     def doJoin(self, irc, msg):
         user = ircutils.userFromHostmask(msg.prefix)
         if user == 'root' or user == '~root':

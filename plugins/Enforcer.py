@@ -94,6 +94,12 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'ChanServ',
 
 _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg):
+    """Manages various things concerning channel security.  Check out the
+    supybot.plugins.Enforcer.autoOp, supybot.plugins.Enforcer.autoHalfop,
+    supybot.plugins.Enforcer.autoVoice, supybot.plugins.Enforcer.takeRevenge,
+    supybot.plugins.Enforcer.cycleToGetOps, and
+    supybot.plugins.Enforcer.ChanServ to configure the behavior of this plugin.
+    """
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.topics = ircutils.IrcDict()
