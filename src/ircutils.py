@@ -406,6 +406,12 @@ class IrcDict(dict):
     def __reduce__(self):
         return (self.__class__, (dict(self),))
 
+    def setdefault(self, s, v):
+        return self.__parent.setdefault(IrcString(s), v)
+
+    def get(self, s, d=None):
+        return self.__parent.get(IrcString(s), d)
+
 class IrcSet(sets.Set):
     """A sets.Set using IrcStrings instead of regular strings."""
     def __init__(self, seq=()):
