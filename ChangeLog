@@ -1,3 +1,5 @@
+	* Moved bestuptime command from FunDB to Status.
+	
 	* Changed OwnerCommands.load (and loadPluginModule) to be
 	case-insensitive, so "load funcommands" works just as well as
 	"load FunCommands".
