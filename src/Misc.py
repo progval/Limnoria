@@ -233,11 +233,25 @@ class Misc(callbacks.Privmsg):
                 name = name[:-3]
             try:
                 modules = {}
-                for moduleName in sys.modules:
-                    modules[moduleName.lower()] = moduleName
-                module = sys.modules[modules[name.lower()]]
+                for (moduleName, module) in sys.modules.iteritems():
+                    if hasattr(module, '__file__'):
+                        if module.__file__.startswith(conf.installDir):
+                            modules[moduleName.lower()] = moduleName
+                try:
+                    module = sys.modules[name]
+                    if not module.__file__.startswith(conf.installDir):
+                        raise KeyError
+                except KeyError:
+                    try:
+                        module = sys.modules[modules[name.lower()]]
+                        if not module.__file__.startswith(conf.installDir):
+                            raise KeyError
+                    except KeyError:
+                        module = sys.modules[name.lower()]
+                        if not module.__file__.startswith(conf.installDir):
+                            raise KeyError
             except KeyError:
-                irc.error('I couldn\'t find a module named %s' % name)
+                irc.error('I couldn\'t find a Supybot module named %s' % name)
                 return
             if hasattr(module, '__revision__'):
                 irc.reply(module.__revision__)
@@ -260,7 +274,7 @@ class Misc(callbacks.Privmsg):
                             if dir in module.__file__:
                                 names[name] = getVersion(module.__revision__)
                                 break
-            L = ['%s: %s' % (k, v) for (k, v) in names.items()]
+            L = ['%s: %s' % (k, v) for (k, v) in names.items() if v]
             irc.reply(utils.commaAndify(L))
                         
     def source(self, irc, msg, args):

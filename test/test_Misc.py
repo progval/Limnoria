@@ -192,6 +192,12 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('revision Misc.py')
         self.assertNotError('revision')
 
+    def testRevisionDoesNotLowerUnnecessarily(self):
+        self.assertNotError('load Math')
+        m1 = self.assertNotError('revision Math')
+        m2 = self.assertNotError('revision math')
+        self.assertEqual(m1, m2)
+
     def testRevisionIsCaseInsensitive(self):
         self.assertNotError('revision misc')
         
