@@ -202,7 +202,6 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
             self.value.remove(removal)
 
 def registerNetwork(name, password='', servers=()):
-    name = intern(name)
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,
         """Determines what password will be used on %s.  Yes, we know that

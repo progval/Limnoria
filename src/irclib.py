@@ -639,11 +639,10 @@ class Irc(IrcCommandDispatcher):
     def doNick(self, msg):
         """Handles NICK messages."""
         if msg.nick == self.nick:
-            newNick = intern(msg.args[0])
+            newNick = msg.args[0]
             self.nick = newNick
             (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             self.prefix = ircutils.joinHostmask(self.nick, user, domain)
-            self.prefix = intern(self.prefix)
         elif conf.supybot.followIdentificationThroughNickChanges():
             # We use elif here because this means it's someone else's nick
             # change, not our own.

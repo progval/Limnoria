@@ -103,7 +103,7 @@ _lowertrans = string.maketrans(string.ascii_uppercase + r'\[]~',
                                string.ascii_lowercase + r'|{}^')
 def toLower(s):
     """Returns the string s lowered according to IRC case rules."""
-    return intern(s.translate(_lowertrans))
+    return s.translate(_lowertrans)
 
 def strEqual(nick1, nick2):
     """Returns True if nick1 == nick2 according to IRC case rules."""
@@ -475,12 +475,10 @@ def unDccIP(i):
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
     def __new__(cls, s=''):
-        return str.__new__(cls, intern(s))
+        x = super(IrcString, cls).__new__(cls, s)
+        x.lowered = toLower(x)
+        return x
 
-    def __init__(self, s):
-        assert isinstance(s, basestring), \
-               'Cannot make an IrcString from %r' % s
-        self.lowered = toLower(s)
 
     def __eq__(self, s):
         try:

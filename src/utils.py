@@ -39,6 +39,7 @@ import supybot.fix as fix
 
 import os
 import re
+import sys
 import md5
 import new
 import sha
@@ -51,6 +52,7 @@ import compiler
 import textwrap
 import UserDict
 import itertools
+import traceback
 import htmlentitydefs
 from itertools import imap, ifilter
 
@@ -669,6 +671,8 @@ def mungeEmailForWeb(s):
     s = s.replace('.', ' DOT ')
     return s
 
+def stackTrace():
+    traceback.print_stack(sys._getframe())
 
 if __name__ == '__main__':
     import sys, doctest
