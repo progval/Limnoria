@@ -35,6 +35,8 @@ Various math-related commands.
 
 __revision__ = "$Id$"
 
+from __future__ import division
+
 import plugins
 
 import re

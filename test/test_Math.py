@@ -55,6 +55,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
     def testICalc(self):
         self.assertResponse('icalc 1^1', '0')
         self.assertResponse('icalc 10**24', '1' + '0'*24)
+        self.assertRegexp('icalc 49/6', '8.16')
 
     def testCalcNoNameError(self):
         self.assertNotRegexp('calc foobar(x)', 'NameError')
