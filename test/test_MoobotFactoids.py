@@ -170,8 +170,6 @@ if sqlite is not None:
             self.assertError('delete moo')
             self.assertNotError('unlock moo')
             self.assertNotError('delete moo')
-            # if there's a dunno that's just 'moo', this will fail
-            self.assertRegexp('moo', '^(?!moo).*$')  
 
         def testAugmentFactoid(self):
             self.assertNotError('moo is foo')
