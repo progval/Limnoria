@@ -268,7 +268,7 @@ class Http(callbacks.Privmsg):
             irc.reply(msg, 'No definitions found.')
         else:
             defs=[x[1].strip() for x in defs[1:-1]][:5]
-            irc.reply(msg, '%s could be %s' % (acronym, ', or '.join(defs)))
+            irc.reply(msg, '%s could be %r' % (acronym, ', or '.join(defs)))
 
 Class = Http
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
