@@ -197,7 +197,7 @@ class Notes(callbacks.Privmsg):
             irc.reply(msg, newnote)
         else:
             ### FIXME: IrcObjectProxy should offer a private keyword arg.
-            irc.queueMsg(ircmsgs.privmsg(msg.nick, newnote))
+            irc.reply(msg.nick, newnote)
         self.setAsRead(noteid)
 
     def _formatNoteData(self, msg, id, fromId, public):
