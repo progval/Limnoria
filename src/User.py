@@ -191,17 +191,23 @@ class User(callbacks.Privmsg):
             irc.replySuccess()
 
     def addhostmask(self, irc, msg, args):
-        """<name> <hostmask> [<password>]
+        """[<name>] [<hostmask>] [<password>]
 
         Adds the hostmask <hostmask> to the user specified by <name>.  The
         <password> may only be required if the user is not recognized by
         hostmask.  If you include the <password> parameter, this message must
         be sent to the bot privately (not on a channel).  <password> is also
         not required if an owner user is giving the command on behalf of some
-        other user.
+        other user.  If <hostmask> is not given, it defaults to your current
+        hostmask.  If <name> is not given, it defaults to your currently
+        identified name.
         """
-        (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
+        (name, hostmask, password) = privmsgs.getArgs(args, 0, 3)
         self._checkNotChannel(irc, msg, password)
+        if not hostmask:
+            hostmask = msg.prefix
+        if not name:
+            name = msg.prefix
         if not ircutils.isUserHostmask(hostmask):
             irc.error('That\'s not a valid hostmask. Make sure your hostmask '
                       'includes a nick, then an exclamation point (!), then '
