@@ -72,7 +72,10 @@ class ChannelDB(plugins.ChannelDBHandler,
         [('self-stats', plugins.ConfigurableBoolType, True,
           """Determines whether the bot will keep channel statistics on itself,
           possibly skewing the channel stats (especially in cases where he's
-          relaying between channels on a network.""")]
+          relaying between channels on a network."""),
+         ('wordstats-top-n', plugins.ConfigurableIntType, 3,
+         """Determines the maximum number of top users to show for a given
+         wordstat when you request the wordstats for a particular word.""")]
         )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -564,21 +567,32 @@ class ChannelDB(plugins.ChannelDBHandler,
             else:
                 # It's a word, not a user
                 word = arg1
+                numUsers = self.configurables.get('wordstats-top-n',
+                                                  msg.args[0])
                 cursor.execute("""SELECT word_stats.count,
                                          word_stats.user_id
                                   FROM words, word_stats
                                   WHERE words.word=%s AND
                                         words.id=word_stats.word_id
-                                  ORDER BY word_stats.count DESC""", word)
+                                  ORDER BY word_stats.count DESC""",
+                                  word)
                 if cursor.rowcount == 0:
                     irc.error(msg, 'No one has said %r' % word)
                     return
                 results = cursor.fetchall()
-                maxResults = 3
+                numResultsShown = min(cursor.rowcount, numUsers)
+                cursor.execute("""SELECT sum(word_stats.count)
+                                  FROM words, word_stats
+                                  WHERE words.word=%s AND
+                                        words.id=word_stats.word_id""",
+                                  word)
+                total = int(cursor.fetchone()[0])
                 ers = '%rer' % word
-                ret = 'Top %s: ' % utils.nItems(maxResults, ers)
+                ret = 'Top %s ' % utils.nItems(numResultsShown, ers)
+                ret += '(out of a total of %s seen):' % \
+                             utils.nItems(total, repr(word))
                 L = []
-                for (count, id) in results[:maxResults]:
+                for (count, id) in results[:numResultsShown]:
                     username = ircdb.users.getUser(id).name
                     L.append('%s: %s' % (username, count))
                 try:

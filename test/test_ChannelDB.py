@@ -130,6 +130,11 @@ if sqlite is not None:
             self.assertRegexp('wordstats lol',
                               '3.*%s: 10.*%s: 5.*foo: 3' %
                               (userNick2, userNick1))
+            # Check for the extra-swanky stuff too
+            self.assertRegexp('wordstats lol',
+                              'total.*19 \'lol\'s.*%s: 10.*%s: 5.*foo: 4.*'
+                              'ranked 3 out of 3 \'lol\'ers' % \
+                              (userNick2, userNick1))
 
         def testWordStatsUserWord(self):
             self.assertNotError('addword lol')
