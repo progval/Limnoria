@@ -333,36 +333,40 @@ class RSS(callbacks.Privmsg):
     def announce(self, irc, msg, args, channel, optlist, rest):
         """[<channel>] [--remove] [<name|url> ...]
 
-        Sets the current list of announced feeds in the channel to the feeds
-        given.  Valid feeds include the names of registered feeds as well as
-        URLs for a RSS feeds.  <channel> is only necessary if the message isn't
-        sent in the channel itself.  If no arguments are specified, replies
-        with the current list of feeds to announce.  If --remove is given,
-        the specified feeds will be removed from the list of feeds to announce.
+        Adds the list of <name|url> to the current list of announced feeds in
+        the channel given.  Valid feeds include the names of registered feeds
+        as well as URLs for a RSS feeds.  <channel> is only necessary if the
+        message isn't sent in the channel itself.  If no arguments are
+        specified, replies with the current list of feeds to announce.  If
+        --remove is given, the specified feeds will be removed from the list
+        of feeds to announce.
         """
         remove = False
         announce = conf.supybot.plugins.RSS.announce
         for (option, _) in optlist:
             if option == 'remove':
+                if not rest:
+                    raise callbacks.ArgumentError
                 remove = True
-        if remove:
-            if rest:
-                feeds = announce.get(channel)()
-                for feed in rest:
-                    if feed in feeds:
-                        feeds.remove(feed)
-                announce.get(channel).setValue(feeds)
-                irc.replySuccess()
-                return
+        def addFeed(feed):
+            if feed not in feeds:
+                feeds.add(feed)
+        def removeFeed(feed):
+            if feed in feeds:
+                feeds.remove(feed)
+        if rest:
+            if remove:
+                updater = removeFeed
             else:
-                raise callbacks.ArgumentError
+                updater = addFeed
+            feeds = announce.get(channel)()
+            for feed in rest:
+                updater(feed)
+            announce.get(channel).setValue(feeds)
+            irc.replySuccess()
         elif not rest:
             feeds = utils.commaAndify(announce.get(channel)())
             irc.reply(feeds or 'I am currently not announcing any feeds.')
-            return
-        else:
-            announce.get(channel).setValue(rest)
-            irc.replySuccess()
             return
     announce = wrap(announce, [('checkChannelCapability', 'op'),
                                getopts({'remove':''}), any('something')])
