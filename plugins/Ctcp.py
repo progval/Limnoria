@@ -29,6 +29,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Handles standard CTCP responses to PING, TIME, SOURCE, VERSION, USERINFO, 
+and FINGER.
+"""
+
 from baseplugin import *
 
 import os

@@ -29,6 +29,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Silently listens to every message received on a channel and keeps statistics
+concerning joins, parts, and various other commands in addition to tracking
+statistics about smileys, actions, characters, and words.
+
+Commands include:
+  seen
+"""
+
 from baseplugin import *
 
 import re

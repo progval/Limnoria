@@ -29,6 +29,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Maintains a Quotes database for each channel.
+
+Commands include:
+  addquote
+  removequote
+  maxquote
+  randomquote
+  quoteinfo
+"""
+
 from baseplugin import *
 
 import re

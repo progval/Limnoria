@@ -29,6 +29,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Allows people behind a relaybot (which uses <nick@network> to relay messages)
+to access the bot.
+"""
+
 from baseplugin import *
 
 import re

@@ -29,6 +29,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Handles "factoids," little tidbits of information held in a database and 
+available on demand via several commands.
+
+Commands include:
+  addfactoid
+  removefactoid
+  lookupfactoid
+  lockfactoid
+  unlockfactoid
+  randomfactoid
+  factoidinfo
+"""
+
 from baseplugin import *
 
 import time

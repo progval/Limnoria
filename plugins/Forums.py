@@ -29,6 +29,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Reads URLs from a channel, generally for web-based forums, and messages the
+channel with useful information about the URL -- its forum, title, original
+poster, etc.
+"""
+
 from baseplugin import *
 
 import re

@@ -29,6 +29,24 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides fun commands that require a database to operate.
+
+Commands include:
+  crossword
+  anagram
+  addword
+  lart
+  addlart
+  removelart
+  excuse
+  addexcuse
+  removeexcuse
+  insult
+  addinsult
+  removeinsult
+"""
+
 from baseplugin import *
 
 import string

@@ -29,6 +29,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides FreeBSD ports searching and other FreeBSD-specific services.
+
+Commands include:
+  numports
+  searchports
+  randomport
+  portinfo
+"""
+
 from baseplugin import *
 
 import string

@@ -29,6 +29,19 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides several commands that go out to websites and get things.
+
+Commands include:
+  freshmeat
+  stockquote
+  foldoc
+  gkstats
+  zipcode
+  weather
+  slashdot
+"""
+
 from baseplugin import *
 
 import re

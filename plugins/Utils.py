@@ -29,6 +29,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Various utility commands, mostly useful for manipulating nested commands.
+
+Commands include:
+  strjoin
+  strconcat
+"""
+
 from baseplugin import *
 
 import privmsgs

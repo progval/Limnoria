@@ -29,6 +29,34 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides a multitude of fun, useless commands.
+
+Commands include:
+  netstats
+  ord
+  chr
+  base
+  hexlify
+  unhexlify
+  xor
+  mimetype
+  md5
+  sha
+  urlquote
+  urlunquote
+  rot13
+  coin
+  dice
+  leet
+  cpustats
+  uptime
+  calc
+  objects
+  last
+  lastfrom
+"""
+
 from baseplugin import *
 
 import os
@@ -314,8 +342,6 @@ class FunCommands(callbacks.Privmsg):
                 irc.reply(msg, '%s + %si' % (real, imag))
         except Exception, e:
             irc.reply(msg, debug.exnToString(e))
-
-    math = calc
 
     def objects(self, irc, msg, args):
         "takes no arguments.  Returns the number of Python objects in memory."

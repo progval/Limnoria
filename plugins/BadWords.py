@@ -29,6 +29,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Filters bad words on outgoing messages from the bot, so the bot can't be made
+to say bad words.
+
+Commands include:
+  addbadword
+  removebadword
+  addbadwords
+  removebadwords
+"""
+
 from baseplugin import *
 
 import re

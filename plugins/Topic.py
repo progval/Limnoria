@@ -29,6 +29,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides commands for manipulating channel topics.
+
+Commands include:
+  addtopic
+  removetopic
+  shuffletopic
+"""
+
 from baseplugin import *
 
 import re

@@ -29,7 +29,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-"""Logger: Logs channels in a format similar to most IRC clients."""
+"""
+Logs each channel to its own individual logfile.
+"""
 
 from baseplugin import *
 

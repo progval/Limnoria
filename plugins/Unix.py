@@ -29,6 +29,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides commands available only on Unix.
+
+Commands include:
+  errno
+  progstats
+  crypt
+"""
+
 from baseplugin import *
 
 import os
