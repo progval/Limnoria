@@ -111,7 +111,8 @@ class IrcMsg(object):
         else:
             (nick, user, host) = ('', '', '')
         self._prefix = prefix
-        self._nick = ircutils.nick(nick)
+        ## self._nick = ircutils.nick(nick)
+        self._nick = nick
         self._user = user
         self._host = host
         self._command = command
@@ -132,17 +133,25 @@ class IrcMsg(object):
             return self._str
         ret = ''
         if self.prefix:
-            ret = ':%s %s' % (self.prefix, self.command)
-        else:
-            ret = self.command
-        if self.args:
             if len(self.args) > 1:
-                ret = '%s %s :%s\r\n' % (ret, ' '.join(self.args[:-1]),
-                                         self.args[-1])
+                ret = ':%s %s %s :%s\r\n' % \
+                      (self.prefix, self.command,
+                       ' '.join(self.args[:-1]), self.args[-1])
             else:
-                ret = '%s :%s\r\n' % (ret, self.args[0])
+                if self.args:
+                    ret = ':%s %s :%s\r\n' % \
+                          (self.prefix, self.command, self.args[0])
+                else:
+                    ret = ':%s %s\r\n' % (self.prefix, self.command)
         else:
-            ret = ret + '\r\n'
+            if len(self.args) > 1:
+                ret = '%s %s :%s\r\n' % \
+                      (self.command, ' '.join(self.args[:-1]), self.args[-1])
+            else:
+                if self.args:
+                    ret = '%s :%s\r\n' % (self.command, self.args[0])
+                else:
+                    ret = '%s\r\n' % self.command
         self._str = ret
         return ret
 
