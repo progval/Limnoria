@@ -2,6 +2,7 @@ These are things not to be forgotten when making a Supybot release:
 
 Update the version in conf.py.
 Update the version in setup.py.
+Update the version in scripts/supybot
 Make a release-MAJOR_MINOR_PATCHLEVEL tag.  (cvs tag ...)
 Make a release-MAJOR_MINOR_PATCHLEVEL-branch branch tag.  (cvs tag -b ...)
 Remove CVS directories from the tarball.
