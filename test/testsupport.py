@@ -40,6 +40,7 @@ started = time.time()
 import unittest
 
 import conf
+import utils
 import ircdb
 import world
 world.startedAt = started
@@ -138,7 +139,10 @@ class PluginTestCase(unittest.TestCase):
         else:
             for name in self.plugins:
                 if name not in ('Owner', 'Misc'):
-                    module = Owner.loadPluginModule(name)
+                    try:
+                        module = Owner.loadPluginModule(name)
+                    except Owner.Deprecated, e:
+                        return utils.exnToString(e)
                     cb = Owner.loadPluginClass(self.irc, module)
 
     def tearDown(self):

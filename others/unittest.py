@@ -212,7 +212,10 @@ class TestCase:
         testMethod = getattr(self, self.__testMethodName)
         try:
             try:
-                self.setUp()
+                x = self.setUp()
+                if x:
+                    print 'skipped (%s)' % x
+                    return
             except KeyboardInterrupt:
                 raise
             except:
