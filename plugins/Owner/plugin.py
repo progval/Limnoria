@@ -290,7 +290,7 @@ class Owner(callbacks.Plugin):
         for (option, arg) in optlist:
             if option == 'remove':
                 remove = True
-        cbs = callbacks.findCallbackForCommand(irc, command)
+        (_, cbs) = irc.findCallbacksForArgs([command])
         if remove:
             try:
                 conf.supybot.commands.defaultPlugins.unregister(command)
