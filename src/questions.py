@@ -29,12 +29,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import textwrap
+
 def expect(prompt, possibilities, recursed=False):
     originalPrompt = prompt
     if recursed:
         print 'Sorry, that response was not an option.'
     if possibilities:
-        prompt = '%s [%s]' % (prompt, '/'.join(possibilities))
+        prompt = '%s [%s]' % (originalPrompt, '/'.join(possibilities))
+    if len(prompt) > 70:
+        prompt = '%s [%s]' % (originalPrompt, ' / '.join(possibilities))
+    indent = ' ' * (len(originalPrompt) + 3)
+    prompt = textwrap.fill(prompt, subsequent_indent=indent)
     prompt = prompt.strip() + ' '
     s = raw_input(prompt)
     s = s.strip()
@@ -47,9 +53,13 @@ def expect(prompt, possibilities, recursed=False):
         return s.strip()
 
 def expectWithDefault(prompt, possibilities, default):
-    prompt = prompt.strip() + ' '
+    indent = ' ' * (len(prompt) + 3)
     prompt = '%s [%s] (default: %s) ' % \
              (prompt.strip(), '/'.join(possibilities), default)
+    if len(prompt) > 70:
+        prompt = '%s [%s] (default: %s) ' % \
+                 (prompt.strip(), ' / '.join(possibilities), default)
+    prompt = textwrap.fill(prompt, subsequent_indent=indent)
     s = raw_input(prompt)
     s = s.strip()
     if s in possibilities:
