@@ -589,6 +589,27 @@ class TestTimeoutQueue(SupyTestCase):
         time.sleep(1)
         self.assertEqual(len(q), 0)
         self.assertEqual(sum(q), 0)
+
+    def testCallableTimeout(self):
+        q = TimeoutQueue(lambda : 1)
+        q.enqueue(1)
+        self.assertEqual(len(q), 1)
+        q.enqueue(2)
+        self.assertEqual(len(q), 2)
+        q.enqueue(3)
+        self.assertEqual(len(q), 3)
+        self.assertEqual(sum(q), 6)
+        time.sleep(1)
+        self.assertEqual(len(q), 0)
+        self.assertEqual(sum(q), 0)
+
+    def testContains(self):
+        q = TimeoutQueue(1)
+        q.enqueue(1)
+        self.failUnless(1 in q)
+        self.failIf(2 in q)
+        time.sleep(1)
+        self.failIf(1 in q)
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
