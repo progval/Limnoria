@@ -378,11 +378,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         r"http://groups.google.com/[^\s]+"
         if not self.registryValue('groupsSnarfer', msg.args[0]):
             return
-        m = match.group(0)
-        header = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; '
-                                'Windows NT 4.0)'}
-        request = webutils.Request(m, headers=header)
-        text = webutils.getUrl(request)
+        text = webutils.getUrl(match.group(0))
         mThread = None
         mGroup = None
         if 'threadm=' in m:
@@ -410,6 +406,24 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             irc.errorPossibleBug('That doesn\'t appear to be a proper '
                                  'Google Groups page.')
     googleGroups = privmsgs.urlSnarfer(googleGroups)
+
+    _calcRe = re.compile(r'<td nowrap><font size=\+1><b>(.*?)</b>', re.I)
+    def calc(self, irc, msg, args):
+        """<expression>
+
+        Uses Google's calculator to calculate the value of <expression>.
+        """
+        expr = privmsgs.getArgs(args)
+        expr = expr.replace('+', '%2B')
+        expr = expr.replace(' ', '+')
+        url = r'http://google.com/search?q=%s' % expr
+        html = webutils.getUrl(url)
+        match = self._calcRe.search(html)
+        if match is not None:
+            irc.reply(match.group(1))
+        else:
+            irc.reply('Google\'s calculator didn\'t come up with anything.')
+        
 
 
 Class = Google
