@@ -246,7 +246,7 @@ class Http(callbacks.Privmsg):
         quote = ' // '.join(quote.splitlines())
         irc.reply(msg, quote)
         
-    _acronymre = re.compile('<td[^w]+width="70[^>]+>(<b>|)([^<]+)(</b>|)')
+    _acronymre = re.compile(r'<td[^w]+width="70[^>]+>(?:<b>)?([^<]+)(?:</b>)?')
     def acronym(self, irc, msg, args):
         """<acronym>
 
@@ -267,8 +267,8 @@ class Http(callbacks.Privmsg):
         if len(defs) == 0:
             irc.reply(msg, 'No definitions found.')
         else:
-            defs=[x[1].strip() for x in defs[1:-1]][:5]
-            irc.reply(msg, '%s could be %r' % (acronym, ', or '.join(defs)))
+            defs=[repr(x.strip()) for x in defs[1:-1]][:5]
+            irc.reply(msg, '%s could be %s' % (acronym, ', or '.join(defs)))
 
 Class = Http
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
