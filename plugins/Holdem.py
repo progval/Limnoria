@@ -37,10 +37,12 @@ __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
 __contributors__ = {}
 
+import sets
 import random
+import operator
 import itertools
 
-from poker import deck
+import poker
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -66,7 +68,8 @@ class PokerError(ValueError):
 
 Holdem = conf.registerPlugin('Holdem')
 conf.registerChannelValue(Holdem, 'blind',
-    registry.PositiveInteger(10, """Determines what the little blind is."""))
+    registry.PositiveInteger(10, """Determines what the small blind is.
+    The big blind will be twice this."""))
 conf.registerChannelValue(Holdem, 'color',
     registry.Boolean(True, """Determines whether the bot will use color to
     distinguish between consecutive hands."""))
@@ -92,15 +95,19 @@ class Table(object):
         self.channel = channel
         self.waitingToJoin = []
         self.waitingToLeave = []
-        self.colors = itertools.cycle(['red', 'blue', 'green', 'yellow'])
+        self.colors = itertools.cycle(['red', 'orange', 'yellow',
+                                       'green', 'light blue', 'blue',
+                                       'purple'])
 
     def _color(self, s):
         if conf.get(conf.supybot.plugins.Holdem.color, self.channel):
             s = ircutils.mircColor(s, self.color)
+            s = ircutils.bold(s)
         return s
 
-    def public(self, s):
-        s = self._color(s)
+    def public(self, s, noColor=False):
+        if not noColor:
+            s = self._color(s)
         self.irc.reply(s, to=self.channel)
 
     def private(self, player, s, noColor=False):
@@ -108,28 +115,29 @@ class Table(object):
             s = self._color(s)
         self.irc.reply(s, to=users[player.user], private=True)
 
-    def error(self, s):
-        s = self._color(s)
-        self.irc.reply(s, to=self.channel)
+    def error(self, player, s):
+        s = self._color('%s: %s' % (player.nick(), s))
+        self.irc.reply(s)
 
     def sit(self, player):
         if player in self.players:
-            self.public('You\'re already seated.')
+            self.error(player, 'You\'re already seated.')
             return
         self.waitingToJoin.append(player)
-        self.public('You will join the table when the next hand begins.',True)
+        self.irc.reply('You will be dealt in when the next hand begins.')
 
     def stand(self, player):
         if player in self.players:
             self.waitingToLeave.append(player)
-            self.public('You will leave this table when this hand ends.',True)
+            self.irc.reply('You will leave this table when this hand ends.')
         elif player in self.waitingToJoin:
             self.waitingToJoin.remove(player)
         else:
-            self.public('You aren\'t currently seated.')
+            self.error(player, 'You aren\'t currently seated.')
 
-    def deal(self, player):
+    def deal(self, startingPlayer):
         # Ignore player.
+        self.blind = conf.get(conf.supybot.plugins.Holdem.blind, self.channel)
         if self.waitingToJoin:
             self.players.extend(self.waitingToJoin)
             self.waitingToJoin = []
@@ -137,66 +145,143 @@ class Table(object):
             playa = self.waitingToLeave.pop()
             self.players.remove(playa)
 
+        for player in self.players[:]:
+            if player.stack < 2*self.blind:
+                self.public('%s doesn\'t have enough money to play this hand.'
+                            % player.nick())
+                self.players.remove(player)
+
         if len(self.players) < 2:
-            self.error('You can\'t deal a new game with fewer than 2 people.')
+            self.public('I can\'t deal a new game with fewer than 2 people.')
             return
+
         self.hands = {}
         self.buckets = {}
         for player in self.players:
             self.buckets[player] = 0
         self.foldedBuckets = []
-        self.deck = deck[:]
         self.tableCards = []
         self.button += 1
         self.button %= len(self.players)
+        self._waitingOn = self.button
+        self.deck = poker.deck[:]
         random.shuffle(self.deck)
+        self.color = self.colors.next()
         for player in self.players:
             self.hands[player] = [self.deck.pop()]
         for player in self.players:
             self.hands[player].append(self.deck.pop())
-            self.private(player, 'Your cards are %s.' % self.hands[player])
+            self.hand(player)
         self.public('The cards are dealt.')
+        self.startRound()
+        # Blinds.
+        smallBlind = self.nextPlayer()
+        smallBlind.stack -= self.blind
+        self.buckets[smallBlind] += self.blind
+        self.currentBets[smallBlind] = self.blind
+        self.public('%s places small blind of %s.' %
+                    (smallBlind.nick(), self.blind))
+        bigBlind = self.nextPlayer()
+        bigBlind.stack -= 2*self.blind
+        self.buckets[bigBlind] += 2*self.blind
+        self.currentBets[bigBlind] = 2*self.blind
+        self.public('%s places big blind of %s.' %
+                    (bigBlind.nick(), 2*self.blind))
+        self.currentBet = 2*self.blind
         self.startBettingRound()
 
-    def nextRound(self):
+    def startRound(self):
+        self.couldBet = {}
         self.currentBet = 0
         self.currentBets = {}
-        for player in self.buckets: # Folded people aren't in buckets.
+        self._waitingOn = self.button
+        for player in self.hands:
             self.currentBets[player] = 0
+
+    def nextRound(self):
+        self.startRound()
         self.deck.pop() # Burn a card.
         if len(self.tableCards) == 0:
-            self.tableCards.append(deck.pop())
-            self.tableCards.append(deck.pop())
-            self.tableCards.append(deck.pop())
+            self.tableCards.append(self.deck.pop())
+            self.tableCards.append(self.deck.pop())
+            self.tableCards.append(self.deck.pop())
+            self.public('Flop dealt, table shows %s.' % self.tableCards)
             self.startBettingRound()
-        elif len(self.tableCards) == 5:
-            self.finishGame()
+        elif len(self.tableCards) == 3:
+            self.tableCards.append(self.deck.pop())
+            self.public('Turn dealt, table shows %s.' % self.tableCards)
+            self.startBettingRound()
+        elif len(self.tableCards) == 4:
+            self.tableCards.append(self.deck.pop())
+            self.public('River dealt, table shows %s.' % self.tableCards)
+            self.startBettingRound()
         else:
-            self.tableCards.append(deck.pop())
-            self.startBettingRound(self.button+3 % len(self.players))
-            
+            self.finishGame()
+
+    def finishGame(self):
+        try:
+            if len(self.buckets) == 1:
+                total = self.pot()
+                player = self.buckets.keys()[0]
+                player.stack += total
+                self.public('%s wins the hand for %s.' % (player.nick(), total))
+                return
+            assert len(self.hands) == len(self.buckets)
+            hands = [(player, poker.score(hand + self.tableCards))
+                     for (player, hand) in self.hands.iteritems()]
+            utils.sortBy(operator.itemgetter(1), hands)
+            hands.reverse()
+            buckets = self.buckets.values() + self.foldedBuckets
+            for (player, (kind, hand)) in hands:
+                amountBet = self.buckets[player]
+                totalReceived = 0
+                for (i, bucket) in enumerate(buckets):
+                    received = min(bucket, amountBet)
+                    totalReceived += received
+                    buckets[i] -= received
+                player.stack += totalReceived
+                self.public('%s wins %s with a %s, %s' %
+                            (player.nick(), totalReceived, kind[2:], hand))
+                buckets = filter(None, buckets)
+                if not buckets:
+                    break
+        finally:
+            self.public('This hand is finished, prepare for the next hand.')
+        
     def waitingOn(self):
+        self._waitingOn %= len(self.players)
         return self.players[self._waitingOn]
 
-    def startBettingRound(self, start=None):
-        if start is None:
-            start = self.button+1 % len(self.players)
-        self._waitingOn = start
-        self.public('The table shows %s.  Betting begins with %s.' %
-                    self.tableCards, self.waitingOn().nick())
+    def pot(self):
+        return sum(self.buckets.values()) + sum(self.foldedBuckets)
 
-    def checkWrongPlayer(player):
+    def startBettingRound(self):
+        player = self.nextPlayer()
+        if player is None:
+            self.nextRound()
+            return
+        s = 'Betting begins with %s.' % self.waitingOn().nick()
+        s = 'The pot is currently at %s.  %s' % (self.pot(), s)
+        self.public(s)
+
+    def checkWrongPlayer(self, player):
         if player != self.waitingOn():
             self.public('It\'s not your turn, %s.' % player.nick())
             return True
         return False
 
     def nextPlayer(self):
-        self._waitingOn += 1
-        self._waitingOn %= len(self.players)
-        while self.waitingOn() not in self.buckets:
+        seen = sets.Set()
+        while 1:
             self._waitingOn += 1
-            self._waitingOn %= len(self.players)
+            player = self.waitingOn()
+            if player in seen:
+                return None # Handled by checkEndOfRound.
+            seen.add(player)
+            if player not in self.buckets or player.stack <= 0:
+                continue
+            else:
+                break
         return self.waitingOn()
 
     def checkEndOfRound(self):
@@ -205,29 +290,49 @@ class Table(object):
             # Only one guy left, let's distribute.
             self.finishGame()
             return
+        finished = True
         for player in self.buckets:
-            if self.currentBet > self.currentBets[player] and player.stack:
+            if player not in self.couldBet:
+                finished = False
                 break
+            if self.currentBet > self.currentBets[player] and player.stack:
+                finished = False
+                break
+        if finished:
+            self.nextRound()
         else:
             player = self.nextPlayer()
-            self.public('%s, it\'s your turn.  The current bet is %s.  '
-                        'You\'ve bet %s already this round.' %
-                        player.nick(), self.currentBet,
-                        self.currentBets[player])
+            if player is not None:
+                self.public('%s, it\'s your turn.  The current bet is %s.  '
+                            'You\'ve bet %s already this round.' %
+                            (player.nick(), self.currentBet,
+                             self.currentBets[player]))
+            else:
+                self.nextRound()
 
     def checkNoCurrentBet(self):
         if self.currentBet:
-            self.public('There\'s a bet of %s, you must call it, raise it, '
-                        'or fold.' % self.currentBet)
+            self.error(player, 'There\'s a bet of %s, you must call it, '
+                               'raise it, or fold.' % self.currentBet)
             return True
         return False
     
+    def hand(self, player):
+        try:
+            self.private(player, 'Your hand is %s.' % self.hands[player])
+        except KeyError:
+            self.error(player, 'You\'re not dealt in right now.')
+
+    def table(self, player):
+        self.public('The table shows %s.' % self.tableCards)
+
     def fold(self, player):
         if self.checkWrongPlayer(player):
             return
         bucket = self.buckets.pop(player)
         if bucket:
             self.foldedBuckets.append(bucket)
+        del self.hands[player]
         self.checkEndOfRound()
 
     def check(self, player):
@@ -235,18 +340,23 @@ class Table(object):
             return
         if self.checkNoCurrentBet():
             return
-        selef.checkEndOfRound()
+        self.public('%s checks.' % player.nick())
+        self.couldBet[player] = True
+        self.checkEndOfRound()
 
     def addCurrentBet(self, player, amount):
+        self.couldBet[player] = True
         self.buckets[player] += amount
         self.currentBets[player] += amount
         self.currentBet = max(self.currentBet, self.currentBets[player])
         player.stack -= amount
+        return amount
             
     def call(self, player):
         if self.checkWrongPlayer(player):
             return
-        self.addCurrentBet(player, min(self.currentBet, player.stack))
+        bet = self.addCurrentBet(player, min(self.currentBet, player.stack))
+        self.public('%s calls %s.' % (player.nick(), bet))
         self.checkEndOfRound()
 
     def bet(self, player, amount):
@@ -255,35 +365,38 @@ class Table(object):
         if self.checkNoCurrentBet():
             return
         if amount > player.stack:
-            self.public('You only have %s in your stack, you can\'t bet that '
-                        'much.  Perhaps you should use the allin command.' %
-                        player.stack)
+            self.error(player, 'You only have %s in your stack, you can\'t '
+                       'bet that much.  Perhaps you should use the allin '
+                       'command.' % player.stack)
             return
         if amount < 2*self.blind:
-            self.public('You must bet at least the big blind.')
+            self.error(player, 'You must bet at least the big blind.')
             return
-        self.addCurrentBet(player, amount)
+        bet = self.addCurrentBet(player, amount)
+        self.public('%s bets %s.' % (player.nick(), bet))
         self.checkEndOfRound()
         
     def RAISE(self, player, amount):
         if self.checkWrongPlayer(player):
             return
         if not self.currentBet:
-            self.public('You can\'t raise when there\'s no current bet.  '
-                        'Perhaps you should use the bet command.')
+            self.error(player, 'You can\'t raise when there\'s no current '
+                       'bet.  Perhaps you should use the bet command.')
             return
         if amount < 2*self.currentBet:
-            self.public('You can\'t raise less than twice the current bet '
-                        'of %s.' % self.currentBet)
+            self.error(player, 'You can\'t raise less than twice the current '
+                       'bet of %s.' % self.currentBet)
             return
         totalRaise = amount + self.currentBet - self.currentBets[player]
-        self.addCurrentBet(player, min(totalRaise, player.stack))
+        bet = self.addCurrentBet(player, min(totalRaise, player.stack))
+        self.public('%s raises to %s.' % (player.nick(), bet))
         self.checkEndOfRound()
         
     def allin(self, player):
         if self.checkWrongPlayer(player):
             return
-        self.addCurrentBet(player, player.stack)
+        bet = self.addCurrentBet(player, player.stack)
+        self.public('%s goes all-in, %s.' % (player.nick(), bet))
         self.checkEndOfRound()
         
         
@@ -322,15 +435,19 @@ class Holdem(callbacks.Privmsg):
             self.players[user] = Player(user, 1000)
         return self.players[user]
 
+    def getTable(self, irc, channel):
+        table = self.tables[channel]
+        table.irc = irc
+        return table
+
     def forwarder(name):
         def f(self, irc, msg, args, channel, player):
             """takes no arguments
 
             Does %s in the current game in the channel in which it's given.
             """
-            #print 'irc:', irc, 'msg:', msg, 'args:', args, 'channel:', channel, 'player:', player
             try:
-                table = self.tables[channel]
+                table = self.getTable(irc, channel)
                 getattr(table, name)(player)
             except KeyError:
                 return
@@ -357,6 +474,8 @@ class Holdem(callbacks.Privmsg):
     call = forwarder('call')
     deal = forwarder('deal')
     fold = forwarder('fold')
+    hand = forwarder('hand')
+    table = forwarder('table')
     check = forwarder('check')
     allin = forwarder('allin')
     stand = forwarder('stand')
@@ -375,17 +494,17 @@ class Holdem(callbacks.Privmsg):
         Bets <amount>.
         """
         if channel in self.tables:
-            self.tables[channel].bet(player, amount)
+            self.getTable(irc, channel).bet(player, amount)
     bet = wrap(bet, ['onlyInChannel', 'player', 'positiveInt'])
 
-    def RAISE(self, irc, msg, args, channel, user, amount):
+    def RAISE(self, irc, msg, args, channel, player, amount):
         """<amount>
 
         Calls the current bet and raises it by <amount>.
         """
         if channel in self.tables:
-            self.tables[channel].RAISE(player, amount)
-    RAISE = wrap(RAISE, ['onlyInChannel', 'user', 'positiveInt'])
+            self.getTable(irc, channel).RAISE(player, amount)
+    RAISE = wrap(RAISE, ['onlyInChannel', 'player', 'positiveInt'])
 
 
 Class = Holdem
