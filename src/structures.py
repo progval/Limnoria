@@ -38,6 +38,7 @@ Data structures for Python.
 import fix
 
 import types
+import pprint
 import string
 
 class RingBuffer(object):
@@ -366,7 +367,7 @@ class PersistentDictionary(dict):
 
     def close(self):
         fd = file(self.filename, 'w')
-        fd.write(repr(self))
+        fd.write(pprint.pformat(self))
         fd.close()
 
     flush = close
