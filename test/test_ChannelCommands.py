@@ -41,8 +41,6 @@ class ChannelCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('unban foo!bar@baz')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         m = self.getMsg('unban foo!bar@baz')
-        print
-        debug.printf(m)
         self.assertEqual(m.command, 'MODE')
         self.assertEqual(m.args, (self.channel, '-b', 'foo!bar@baz'))
         self.assertNotError(' ')
