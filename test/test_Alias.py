@@ -66,7 +66,7 @@ class FunctionsTest(unittest.TestCase):
 
 
 class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Alias', 'Fun', 'Utilities')
+    plugins = ('Alias', 'Filter', 'Utilities')
     def testDoesNotOverwriteCommands(self):
         self.assertError('alias add alias "echo foo bar baz"')
         self.assertError('alias add add "echo foo bar baz"')
