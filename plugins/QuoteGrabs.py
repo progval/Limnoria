@@ -66,7 +66,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                  plugins.Configurable,
                  callbacks.Privmsg):
     configurables = plugins.ConfigurableDictionary(
-        [('random-grabber', plugins.ConfigurableTypes.bool, False,
+        [('random-grabber', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will randomly grab possibly-suitable
           quotes for someone."""),]
     )

@@ -64,17 +64,23 @@ def configure(onStart, afterConnect, advanced):
 
 class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
     configurables = plugins.ConfigurableDictionary(
-        [('tinyurl-snarfer', plugins.ConfigurableTypes.bool, True,
+        [('tinyurl-snarfer', plugins.ConfigurableBoolType, True,
           """Determines whether the bot will output shorter versions of URLs
           longer than the tinyurl-minimum-length config variable."""),
-         ('tinyurl-minimum-length', plugins.ConfigurableTypes.int, 46,
+         ('tinyurl-minimum-length', plugins.ConfigurableIntType, 46,
           """The minimum length a URL must be before the tinyurl-snarfer will
           snarf it and offer a tinyurl replacement."""),]
     )
     def __init__(self):
         self.nextMsgs = {}
         callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
+
+    def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.Configurable.die(self)
+        plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):

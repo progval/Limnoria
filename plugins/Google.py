@@ -123,20 +123,25 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
     configurables = plugins.ConfigurableDictionary(
-        [('groups-snarfer', plugins.ConfigurableTypes.bool, True,
+        [('groups-snarfer', plugins.ConfigurableBoolType, True,
           """Determines whether the groups snarfer is enabled.  If so, URLs at
           groups.google.com will be snarfed and their group/title messaged to
           the channel."""),
-         ('search-snarfer', plugins.ConfigurableTypes.bool, False,
+         ('search-snarfer', plugins.ConfigurableBoolType, False,
           """Determines whether the search snarfer is enabled.  If so, messages
           (even unaddressed ones) beginning with the word 'google' will result
           in the first URL Google returns being sent to the channel.""")]
     )
     def __init__(self):
-        super(Google, self).__init__()
+        plugins.Configurable.__init__(self)
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.total = 0
         self.totalTime = 0
         self.last24hours = structures.queue()
+
+    def die(self):
+        plugins.Configurable.die(self)
+        callbacks.PrivmsgCommandAndRegexp.die(self)
 
     def formatData(self, data):
         if isinstance(data, basestring):

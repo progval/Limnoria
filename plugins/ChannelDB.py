@@ -59,22 +59,28 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
-class ChannelDB(plugins.ChannelDBHandler, # Must be first (die).
+class ChannelDB(plugins.ChannelDBHandler,
                 plugins.Configurable,
                 callbacks.Privmsg):
     noIgnore = True
     configurables = plugins.ConfigurableDictionary(
-        [('self-stats', plugins.ConfigurableTypes.bool, True,
+        [('self-stats', plugins.ConfigurableBoolType, True,
           """Determines whether the bot will keep channel statistics on itself,
           possibly skewing the channel stats (especially in cases where he's
           relaying between channels on a network.""")]
         )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
         self.lastmsg = None
         self.laststate = None
         self.outFiltering = False
+
+    def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.Configurable.die(self)
+        plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):

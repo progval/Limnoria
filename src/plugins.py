@@ -41,6 +41,7 @@ import types
 import random
 import urllib2
 import threading
+import cPickle as pickle
 
 import fix
 import cdb
@@ -52,11 +53,6 @@ import ircdb
 import ircutils
 import privmsgs
 import callbacks
-
-__all__ = ['ChannelDBHandler',
-           'PeriodicFileDownloader',
-           'ConfigurableDictionary',
-           'Configurable']
 
 class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.
@@ -244,41 +240,35 @@ class ConfigurableDictionary(object):
     def names(self):
         return self.originalNames
 
-    # XXX: Make persistent.
-
 class ConfigurableTypeError(TypeError):
     pass
 
-class _ConfigurableTypes(object):
-    def bool(self, s):
-        s = s.lower()
-        if s in ('true', 'enable', 'on'):
-            return True
-        elif s in ('false', 'disable', 'off'):
-            return False
-        else:
-            s = 'Value must be one of on/off/true/false/enable/disable.'
-            raise ConfigurableTypeError, s
+def ConfigurableBoolType(s):
+    s = s.lower()
+    if s in ('true', 'enable', 'on'):
+        return True
+    elif s in ('false', 'disable', 'off'):
+        return False
+    else:
+        s = 'Value must be one of on/off/true/false/enable/disable.'
+        raise ConfigurableTypeError, s
 
-    def str(self, s):
-        if s and s[0] not in '\'"' and s[-1] not in '\'"':
-            s = repr(s)
-        try:
-            v = utils.safeEval(s)
-            if type(v) is not str:
-                raise ValueError
-        except ValueError:
-            raise ConfigurableTypeError, 'Value must be a string.'
-        return v
+def ConfigurableStrType(s):
+    if s and s[0] not in '\'"' and s[-1] not in '\'"':
+        s = repr(s)
+    try:
+        v = utils.safeEval(s)
+        if type(v) is not str:
+            raise ValueError
+    except ValueError:
+        raise ConfigurableTypeError, 'Value must be a string.'
+    return v
 
-    def int(self, s):
-        try:
-            return int(s)
-        except ValueError:
-            raise ConfigurableTypeError, 'Value must be an int.'
-ConfigurableTypes = _ConfigurableTypes()
-
-foobar = 'baz'
+def ConfigurableIntType(s):
+    try:
+        return int(s)
+    except ValueError:
+        raise ConfigurableTypeError, 'Value must be an int.'
 
 class Configurable(object):
     """A mixin class to provide a "config" command that can be consistent
@@ -292,6 +282,21 @@ class Configurable(object):
     variable should take on; help is a string that'll be returned to describe
     the purpose of the config variable.
     """
+    def __init__(self):
+        className = self.__class__.__name__
+        self.filename = os.path.join(conf.confDir,'%s-configurable'%className)
+        try:
+            if os.path.exists(self.filename):
+                configurables = pickle.load(file(self.filename, 'rb'))
+                if configurables.names() == self.configurables.names():
+                    self.configurables = configurables
+        except Exception, e:
+            debug.msg('%s raised when trying to unpickle %s configurables' %
+                      (debug.exnToString(e), className))
+
+    def die(self):
+        pickle.dump(self.configurables, file(self.filename, 'wb'), -1)
+
     def config(self, irc, msg, args):
         """[<channel>] [<name>] [<value>]
 
@@ -318,7 +323,7 @@ class Configurable(object):
             return
         if not value:
             help = self.configurables.help(name)
-            value = self.configurables.get(name)
+            value = self.configurables.get(name, channel=channel)
             irc.reply(msg, '%s: %s  (Current value: %r)' % (name, help, value))
             return
         try:

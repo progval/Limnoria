@@ -87,12 +87,13 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = ['bzSnarfer']
     configurables = plugins.ConfigurableDictionary(
-        [('bug-snarfer', plugins.ConfigurableTypes.bool, True,
+        [('bug-snarfer', plugins.ConfigurableBoolType, True,
          """Determines whether the bug snarfer will be enabled, such that any
          Bugzilla URLs seen in the channel will have their information reported
          into the channel.""")]
     )
     def __init__(self):
+        plugins.Configurable.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.entre = re.compile('&(\S*?);')
         # Schema: {name, [url, description]}
@@ -100,6 +101,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         self.shorthand = utils.abbrev(self.db.keys())
 
     def die(self):
+        plugins.Configurable.die(self)
         self.db.close()
         del self.db
     

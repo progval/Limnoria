@@ -98,14 +98,21 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     _res =(_resolution, _assigned, _submitted, _priority, _status)
 
     configurables = plugins.ConfigurableDictionary(
-        [('tracker-snarfer', plugins.ConfigurableTypes.bool, True,
+        [('tracker-snarfer', plugins.ConfigurableBoolType, True,
           """Determines whether the bot will reply to SF.net Tracker URLs in
           the channel with a nice summary of the tracker item."""),
-         ('default-project', plugins.ConfigurableTypes.str, '',
+         ('default-project', plugins.ConfigurableStrType, '',
           """Sets the default project (used by the bugs/rfes commands in the
           case that no explicit project is given).""")]
     )
     _projectURL = 'http://sourceforge.net/projects/'
+    def __init__(self):
+        plugins.Configurable.__init__(self)
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+
+    def die(self):
+        plugins.Configurable.die(self)
+        callbacks.PrivmsgCommandAndRegexp.die(self)
 
     def _formatResp(self, text, num=''):
         """

@@ -72,12 +72,17 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = ['ebaySnarfer']
     configurables = plugins.ConfigurableDictionary(
-        [('snarfer', utils.safeEval, True,
+        [('snarfer', plugins.ConfigurableBoolType, True,
           """Determines whether the bot will automatically 'snarf' Ebay auction
           URLs and print information about them.""")]
     )
     def __init__(self):
+        plugins.Configurable.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
+
+    def die(self):
+        plugins.Configurable.die(self)
+        callbacks.PrivmsgCommandAndRegexp.die(self)
 
     _reopts = re.I | re.S
     _invalid = re.compile(r'(is invalid, still pending, or no longer in our '\

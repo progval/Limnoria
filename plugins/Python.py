@@ -75,12 +75,20 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = ['aspnRecipes']
     configurables = plugins.ConfigurableDictionary(
-        [('aspn-snarfer', plugins.ConfigurableTypes.bool, True,
+        [('aspn-snarfer', plugins.ConfigurableBoolType, True,
           """Determines whether the ASPN Python recipe snarfer is enabled.  If
           so, it will message the channel with the name of the recipe when it
           sees an ASPN Python recipe link on the channel.""")]
     )
 
+    def __init__(self):
+        plugins.Configurable.__init__(self)
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+
+    def die(self):
+        plugins.Configurable.die(self)
+        callbacks.PrivmsgCommandAndRegexp.die(self)
+        
     def pydoc(self, irc, msg, args):
         """<python function>
 

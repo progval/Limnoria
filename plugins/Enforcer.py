@@ -61,19 +61,24 @@ def configure(onStart, afterConnect, advanced):
 _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg, plugins.Configurable):
     configurables = plugins.ConfigurableDictionary(
-        [('auto-op', plugins.ConfigurableTypes.bool, False,
+        [('auto-op', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will automatically op people with
           the <channel>.op capability when they join the channel."""),
-         ('auto-voice', plugins.ConfigurableTypes.bool, False,
+         ('auto-voice', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will automatically voice people with
           the <channel>.voice capability when they join the channel."""),
-         ('auto-halfop', plugins.ConfigurableTypes.bool, False,
+         ('auto-halfop', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will automatically halfop people with
           the <channel>.halfop capability when they join the channel."""),]
     )
     started = False
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
+
+    def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.Configurable.die(self)
 
     def start(self, irc, msg, args):
         """[<CHANSERV> <revenge>]

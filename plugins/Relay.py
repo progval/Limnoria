@@ -95,12 +95,13 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
     noIgnore = True
     priority = sys.maxint
     configurables = plugins.ConfigurableDictionary(
-        [('color', plugins.ConfigurableTypes.bool, True,
+        [('color', plugins.ConfigurableBoolType, True,
           """Determines whether the bot will color relayed PRIVMSGs so as to
           make the messages easier to read."""),]
     )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
         self.ircs = {}
         self._color = 0
         self._whois = {}
@@ -122,6 +123,8 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
         callbacks.Privmsg.__call__(self, irc, msg)
 
     def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.Configurable.die(self)
         for irc in self.abbreviations:
             if irc != self.originalIrc:
                 irc.callbacks[:] = []
