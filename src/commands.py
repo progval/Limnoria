@@ -169,6 +169,9 @@ def _int(s):
 def getInt(irc, msg, args, state, type='integer', p=None):
     try:
         i = _int(args[0])
+        if p is not None:
+            if not p(i):
+                irc.errorInvalid(type, args[0])
         state.args.append(i)
         del args[0]
     except ValueError:
