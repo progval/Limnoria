@@ -51,6 +51,9 @@ conf.registerChannelValue(Herald.throttle, 'afterPart',
     registry.NonNegativeInteger(0, """Determines the minimum number of seconds
     after parting that the bot will not herald the person when he or she
     rejoins."""))
+conf.registerChannelValue(Herald.throttle, 'afterSplit',
+    registry.NonNegativeInteger(60, """Determines the minimum number of seconds
+    after a netsplit that the bot will not herald the users that split."""))
 conf.registerChannelValue(Herald, 'default',
     registry.String('', """Sets the default herald to use.  If a user has a
     personal herald specified, that will be used instead.  If set to the empty

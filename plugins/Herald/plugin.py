@@ -40,6 +40,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.structures import TimeoutQueue
 
 filename = conf.supybot.directories.data.dirize('Herald.db')
 
@@ -59,6 +60,8 @@ class Herald(callbacks.Plugin):
         self.db = HeraldDB(filename)
         world.flushers.append(self.db.flush)
         self.lastParts = plugins.ChannelUserDictionary()
+        splitTimeout = conf.supybot.plugins.Herald.throttle.afterSplit
+        self.splitters = TimeoutQueue(splitTimeout)
         self.lastHerald = plugins.ChannelUserDictionary()
 
     def die(self):
@@ -67,14 +70,31 @@ class Herald(callbacks.Plugin):
         self.db.close()
         self.__parent.die()
 
+    def doQuit(self, irc, msg):
+        # We want to observe netsplits and keep from heralding users rejoining
+        # after one.
+        if ircmsgs.isSplit(msg):
+            self.splitters.enqueue(msg.nick)
+            try:
+                id = ircdb.users.getUserId(msg.prefix)
+                self.splitters.enqueue(id)
+            except KeyError:
+                pass
+
     def doJoin(self, irc, msg):
         if ircutils.strEqual(irc.nick, msg.nick):
             return # It's us.
+        if msg.nick in splitters:
+            self.log.debug('Not heralding %s, recent split.', msg.nick)
+            return # Recently split.
         channel = msg.args[0]
         irc = callbacks.SimpleProxy(irc, msg)
         if self.registryValue('heralding', channel):
             try:
                 id = ircdb.users.getUserId(msg.prefix)
+                if id in splitters:
+                    self.log.debug('Not heralding id #%s, recent split.', id)
+                    return
                 herald = self.db[channel, id]
             except KeyError:
                 default = self.registryValue('default', channel)
