@@ -93,6 +93,11 @@ class Schedule(drivers.IrcDriver):
         """Removes the event with the given name from the schedule."""
         del self.events[name]
         self.schedule = [(t, n) for (t, n) in self.schedule if n != name]
+        # We must heapify here because the heap property may not be preserved
+        # by the above list comprehension.  We could, conceivably, just mark
+        # the elements of the heap as removed and ignore them when we heappop,
+        # but that would only save a constant factor (we're already linear for
+        # the listcomp) so I'm not worried about it right now.
         heapq.heapify(self.schedule)
 
     def addPeriodicEvent(self, f, t, name=None):
