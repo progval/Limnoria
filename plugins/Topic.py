@@ -54,7 +54,11 @@ class Topic(callbacks.Privmsg):
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((.*)\)')
     def addtopic(self, irc, msg, args):
-        "[<channel>] (if not sent in the channel itself) <topic>"
+        """[<channel>] <topic>
+
+        Adds <topic> to the topics for <channel>.  <channel> is only necessary
+        if the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'topic')
         topic = privmsgs.getArgs(args)
@@ -79,7 +83,11 @@ class Topic(callbacks.Privmsg):
             irc.error(msg, conf.replyNoCapability % capability)
 
     def shuffletopic(self, irc, msg, args):
-        "[<channel>] (if not sent in the channel itself)"
+        """[<channel>]
+
+        Shuffles the topics in <channel>.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'topic')
         if ircdb.checkCapability(msg.prefix, capability):
@@ -90,16 +98,46 @@ class Topic(callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
+    def topic(self, irc, msg, args):
+        """[<channel>] <number>
+
+        Returns topic number <number> from <channel>.  <number> is a zero-based
+        index into the topics.  <channel> is only necessary if the message
+        isn't sent in the channel itself.
+        """
+        i = privmsgs.getArgs(args)
+        try:
+            i = int(i)
+        except ValueError:
+            irc.error(msg, 'The argument must be a valid integer.')
+            return
+        topics = irc.state.getTopic(channel).split(self.topicSeparator)
+        try:
+            irc.reply(msg, topics[i])
+        except IndexError:
+            irc.error(msg, 'That\'s not a valid index.')
+            return
+        
     def changetopic(self, irc, msg, args):
-        "[<channel>] <number> <regexp> <replacement>"
+        """[<channel>] <number> <regexp>
+
+        Changes the topic number <number> on <channel> according to the regular
+        expression <regexp>.  <number> is the zero-based index into the topics;
+        <regexp> is a regular expression of the form
+        s/regexp/replacement/flags.  <channel> is only necessary if the message
+        isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
-        (number, regexp, replacement) = privmsgs.getArgs(args, needed=3)
+        (number, regexp) = privmsgs.getArgs(args, needed=2)
         try:
             number = int(number)
-            r = re.compile(regexp, re.I)
         except ValueError:
             irc.error(msg, 'The <number> argument must be a number.')
             return
+        try:
+            replacer = utils.perlReToReplacer(regexp)
+        except ValueError, e:
+            irc.error(msg, 'The regexp wasn\'t valid: %s' % e.args[0])
         except sre_constants.error, e:
             irc.error(msg, debug.exnToString(e))
             return
@@ -110,7 +148,7 @@ class Topic(callbacks.Privmsg):
            not ircdb.checkCapabilities(msg.prfix, ('op', 'admin')):
             irc.error(msg, 'You can only modify your own topics.')
             return
-        newTopic = self.topicFormatter % (r.sub(replacement, topic), name)
+        newTopic = self.topicFormatter % (replacer(topic), name)
         topics.insert(number, newTopic)
         newTopic = self.topicSeparator.join(topics)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
