@@ -89,6 +89,7 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
     msg = '%s upkeep ran.' % time.strftime(conf.timestampFormat)
     debug.debugMsg(msg, 'verbose')
 
+'''
 def superReload(oldmodule):
     ###
     # So here's how this baby works:
@@ -154,10 +155,8 @@ def superReload(oldmodule):
     # Update the linecache, so tracebacks show the proper lines.
     linecache.checkcache()
     return newmodule
-
-
-
 '''
+
 try:
     # This makes the module reload properly; we don't want to lose oldobjects
     # on reload.
@@ -200,7 +199,6 @@ def superReload(module):
                     updateFunction(oldobj.im_func, newobj.im_func,
                                   ('func_code', 'func_defaults', 'func_doc'))
     return module
-'''
 
 #################################################
 #################################################
