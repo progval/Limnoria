@@ -48,7 +48,7 @@ instances = 0
 originalPoll = conf.poll
 
 class SocketDriver(drivers.IrcDriver):
-    def __init__(self, (server, port), irc):
+    def __init__(self, (server, port), irc, reconnectWaits=(0, 60, 300)):
         global instances
         instances += 1
         conf.poll = originalPoll / instances
@@ -59,6 +59,8 @@ class SocketDriver(drivers.IrcDriver):
         self.inbuffer = ''
         self.outbuffer = ''
         self.connected = False
+        self.reconnectWaitsIndex = 0
+        self.reconnectWaits = reconnectWaits
         self.reconnect()
 
     def _sendIfMsgs(self):
@@ -94,25 +96,34 @@ class SocketDriver(drivers.IrcDriver):
                     debug.recoverableException()
         except socket.timeout:
             pass
+        except socket.error, e:
+            s = 'Disconnect from %s: %s' % (self.server, e.args[1])
+            debug.msg(s, 'normal')
+            self.die()
+            return
         self._sendIfMsgs()
         
     def reconnect(self):
         #debug.methodNamePrintf(self, 'reconnect')
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.conn.settimeout(conf.poll)
+        if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
+            self.reconnectWaitsIndex += 1
         try:
             self.conn.connect(self.server)
+            self.connected = True
+            self.reconnectWaitPeriodsIndex = 0
         except socket.error, e:
             debug.msg('Error connecting to %s: %s' % (self.server, e))
             self.die()
-        self.connected = True
+        
 
     def die(self):
         #debug.methodNamePrintf(self, 'die')
         self.irc.reset()
         self.conn.close()
         self.connected = False
-        when = time.time() + 60
+        when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
         debug.msg('Scheduling reconnect to %s at %s' % (self.server, whenS),
                   'normal')
