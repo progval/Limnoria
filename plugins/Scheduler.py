@@ -117,7 +117,8 @@ class Scheduler(callbacks.Privmsg):
             return
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addPeriodicEvent(f, seconds, name)
-        irc.reply(msg, conf.replySuccess)
+        # We don't reply because the command runs immediately.
+        # irc.reply(msg, conf.replySuccess)
 
 
 Class = Scheduler
