@@ -68,6 +68,7 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
                           id INTEGER PRIMARY KEY,
                           first TEXT,
                           second TEXT,
+                          is_first BOOLEAN,
                           UNIQUE (first, second) ON CONFLICT IGNORE
                           )""")
         cursor.execute("""CREATE TABLE follows (
@@ -86,15 +87,22 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         words = msg.args[1].split()
+        isFirst = True
         for (first, second, follower) in window(words, 3):
-            cursor.execute("""INSERT INTO pairs VALUES (NULL, %s, %s)""",
-                           first, second)
+            if isFirst:
+                cursor.execute("""INSERT OR REPLACE
+                                  INTO pairs VALUES (NULL, %s, %s, 1)""",
+                               first, second)
+                isFirst = False
+            else:
+                cursor.execute("INSERT INTO pairs VALUES (NULL, %s, %s, 0)",
+                               first, second)
             cursor.execute("""SELECT id FROM pairs
                               WHERE first=%s AND second=%s""", first, second)
             id = int(cursor.fetchone()[0])
             cursor.execute("""INSERT INTO follows VALUES (NULL, %s, %s)""",
                            id, follower)
-        cursor.execute("""INSERT INTO pairs VALUES (NULL, %s, %s)""",
+        cursor.execute("""INSERT INTO pairs VALUES (NULL, %s, %s, 0)""",
                        second, follower)
         cursor.execute("""SELECT id FROM pairs
                           WHERE first=%s AND second=%s""", second, follower)
@@ -116,6 +124,7 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
         cursor = db.cursor()
         words = []
         cursor.execute("""SELECT id, first, second FROM pairs
+                          WHERE is_first=1
                           ORDER BY random()
                           LIMIT 1""")
         (id, first, second) = cursor.fetchone()
