@@ -821,6 +821,10 @@ def toBool(s):
     else:
         raise ValueError, 'Invalid string for toBool: %r' % s
     
+def mapinto(f, L):
+    for (i, x) in enumerate(L):
+        L[i] = f(x)
+        
 if __name__ == '__main__':
     import doctest
     doctest.testmod(sys.modules['__main__'])
