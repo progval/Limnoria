@@ -86,6 +86,7 @@ class Enforcer(callbacks.Privmsg):
 
     def doJoin(self, irc, msg):
         if not self.started:
+            debug.msg('Enforcer not started.', 'normal')
             return
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
@@ -101,6 +102,7 @@ class Enforcer(callbacks.Privmsg):
 
     def doTopic(self, irc, msg):
         if not self.started:
+            debug.msg('Enforcer not started.', 'normal')
             return
         channel = msg.args[0]
         topic = msg.args[1]
@@ -119,6 +121,7 @@ class Enforcer(callbacks.Privmsg):
     def do332(self, irc, msg):
         # This command gets sent right after joining a channel.
         if not self.started:
+            debug.msg('Enforcer not started.', 'normal')
             return
         (channel, topic) = msg.args[1:]
         self.topics[channel] = topic
@@ -133,6 +136,7 @@ class Enforcer(callbacks.Privmsg):
 
     def doKick(self, irc, msg):
         if not self.started:
+            debug.msg('Enforcer not started.', 'normal')
             return
         channel = msg.args[0]
         kicked = msg.args[1].split(',')
@@ -157,6 +161,7 @@ class Enforcer(callbacks.Privmsg):
 
     def doMode(self, irc, msg):
         if not self.started:
+            debug.msg('Enforcer not started.', 'normal')
             return
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
@@ -216,10 +221,12 @@ class Enforcer(callbacks.Privmsg):
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
 
     def __call__(self, irc, msg):
-        if self.started and msg.prefix == self.chanserv:
-            return
+        if self.started:
+            if msg.prefix != self.chanserv and msg.nick != msg.prefix:
+                return callbacks.Privmsg.__call__(self, irc, msg)
         else:
-            return callbacks.Privmsg.__call__(self, irc, msg)
+            debug.msg('Enforcer plugin not started.  '
+                      'Give the bot the startenforcer command.', 'normal')
 
 
 Class = Enforcer
