@@ -37,6 +37,7 @@ import socket
 import asyncore
 import asynchat
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -44,6 +45,11 @@ import supybot.drivers as drivers
 import supybot.schedule as schedule
 
 class AsyncoreRunnerDriver(drivers.IrcDriver):
+    def __init__(self, *args, **kwargs):
+        log.info('Using deprecated asyncoreDrivers; consider switching to '
+                 'twistedDrivers or socketDrivers.')
+        drivers.IrcDriver.__init__(self, *args, **kwargs)
+        
     def name(self):
         return self.__class__.__name__
     
@@ -63,6 +69,8 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
     def __init__(self, irc, servers=()):
         asynchat.async_chat.__init__(self)
         drivers.ServersMixin.__init__(self, irc, servers=servers)
+        log.info('Using deprecated asyncoreDrivers; consider switching to '
+                 'twistedDrivers or socketDrivers.')
         self.irc = irc
         self.irc.driver = self # Necessary because of the way we reconnect.
         self.buffer = ''
