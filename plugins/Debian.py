@@ -242,7 +242,7 @@ class Debian(callbacks.Privmsg,
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
     def incoming(self, irc, msg, args):
-        """[--{regexp,arch}=<value>] [<glob>]
+        """[--{regexp,arch}=<value>] <glob>
         
         Checks debian incoming for a matching package name.  The arch
         parameter defaults to i386; --regexp returns only those package names
@@ -264,8 +264,11 @@ class Debian(callbacks.Privmsg,
                 arg = '_%s.' % arg
                 archPredicate = lambda s, arg=arg: (arg in s)
         predicates.append(archPredicate)
-        for arg in rest:
-            predicates.append(lambda s: fnmatch.fnmatch(s, arg))
+        globs = privmsgs.getArgs(rest)
+        for glob in globs:
+            if '?' not in glob and '*' not in glob:
+                glob = '*%s*' % glob
+            predicates.append(lambda s: fnmatch.fnmatch(s, glob))
         packages = []
         fd = urllib2.urlopen('http://incoming.debian.org/')
         for line in fd:
