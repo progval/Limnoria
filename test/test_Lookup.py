@@ -57,7 +57,8 @@ if sqlite:
             
         def setUp(self):
             PluginTestCase.setUp(self)
-            fd = file(os.path.join(conf.dataDir, 'foo.supyfact'), 'w')
+            dataDir = conf.supybot.directories.data()
+            fd = file(os.path.join(dataDir, 'foo.supyfact'), 'w')
             for k, v in self.d.iteritems():
                 fd.write('%s:%s\n' % (k, v))
             fd.close()
@@ -73,17 +74,18 @@ if sqlite:
             self.assertHelp('help test')
             self.assertNotError('lookup remove test')
             try:
-                original = conf.replyWhenNotCommand
-                conf.replyWhenNotCommand = True
+                original = conf.supybot.reply.WhenNotCommand()
+                conf.supybot.reply.WhenNotCommand.setValue(True)
                 self.assertError('test foo')
             finally:
-                conf.replyWhenNotCommand = original
+                conf.supybot.reply.whenNotCommand.setValue(original)
 
         def testNotEscapingIOError(self):
             self.assertNotRegexp('lookup add foo asdlfkjsdalfkj', 'IOError')
 
         def testEmptyLines(self):
-            fd = file(os.path.join(conf.dataDir, 'foo.supyfact'), 'a')
+            dataDir = conf.supybot.directories.data()
+            fd = file(os.path.join(dataDir, 'foo.supyfact'), 'a')
             fd.write('\n')
             fd.close()
             self.assertNotError('lookup add test foo.supyfact')
@@ -96,9 +98,10 @@ if sqlite:
             self.assertRegexp('lookup search --regexp m/^b/ test',
                               'bar: baz')
             # Values searches.
-            self.assertResponse('search test --values mom', 'your mom: my mom')
-            self.assertResponse('search test --values b?r', 'foo: bar')
-            self.assertResponse('search --values --regexp m/bar/ test',
+            self.assertResponse('lookup search test --values mom',
+                                'your mom: my mom')
+            self.assertResponse('lookup search test --values b?r', 'foo: bar')
+            self.assertResponse('lookup search --values --regexp m/bar/ test',
                                 'foo: bar')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
