@@ -30,7 +30,7 @@ def main():
     total = 0
     failed = 0
     success = 0
-    for (table, plugin) in (('larts', larts), ('praises', praises))
+    for (table, plugin) in (('larts', larts), ('praises', praises)):
         cursor.execute("""SELECT * FROM %s ORDER BY id ASC""" % table)
         table = table[:-1]
         if cursor.rowcount != 0:
