@@ -244,7 +244,7 @@ class Config(callbacks.Privmsg):
         if hasattr(wrapper, 'help'):
             s = wrapper.help
             if not wrapper._private:
-                s += '  (Current value: %s)' % wrapper()
+                s += '  (Current value: %s)' % wrapper
             irc.reply(s)
         else:
             irc.error('%s has no help.' % name)
