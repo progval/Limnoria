@@ -82,9 +82,18 @@ conf.registerPlugin('Services')
 class ValidNickSet(conf.ValidNicks):
     List = ircutils.IrcSet
 
+
 conf.registerGlobalValue(conf.supybot.plugins.Services, 'nicks',
     ValidNickSet([], """Determines what nicks the bot will use with
     services."""))
+
+class Networks(registry.SpaceSeparatedSetOfStrings):
+    List = ircutils.IrcSet
+    
+conf.registerGlobalValue(conf.supybot.plugins.Services, 'disabledNetworks',
+    Networks(['QuakeNet'], """Determines what networks this plugin will be
+    disabled on."""))
+
 conf.registerGlobalValue(conf.supybot.plugins.Services,
     'noJoinsUntilIdentified',
     registry.Boolean(False, """Determines whether the bot will not join any
@@ -208,6 +217,10 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             self.sentGhost = True
 
     def __call__(self, irc, msg):
+        disabled = self.registryValue('disabledNetworks')
+        if irc.network in disabled or \
+           irc.state.supported.get('NETWORK', '') in disabled:
+            return
         self.__parent.__call__(irc, msg)
         nick = self._getNick()
         if nick not in self.registryValue('nicks'):
