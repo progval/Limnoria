@@ -176,12 +176,18 @@ class Notes(callbacks.Privmsg):
         Retrieves a single note by unique note id.
         """
         noteid = privmsgs.getArgs(args)
-        sender = ircdb.users.getUserName(msg.prefix)
-        senderID = self.getUserID(sender)
-        self.cursor.execute("""SELECT note, to_id, from_id, added_at, public 
-                               FROM notes
-                               WHERE id=%s
-                               LIMIT 1""", noteid)
+        try:
+            sender = ircdb.users.getUserName(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNoUser)
+            return
+        self.cursor.execute("""SELECT notes.note, notes.from_id,
+                                      notes.added_at, notes.public 
+                               FROM users, notes
+                               WHERE users.name=%s AND
+                                     notes.to_id=users.id AND
+                                     notes.id=%s
+                               LIMIT 1""", sender, noteid)
         if self.cursor.rowcount == 0:
             irc.error(msg, 'That\'s not a valid note id.')
             return
@@ -200,19 +206,21 @@ class Notes(callbacks.Privmsg):
         self.setAsRead(noteid)
 
     def notes(self, irc, msg, args):
-        """<takes no arguments>
+        """takes no arguments
         
-        Retrieves all unread notes for the requesting user.
+        Retrieves all your unread notes.
         """
         try:
             sender = ircdb.users.getUserName(msg.prefix)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
-        senderID = self.getUserID(sender)
-        self.cursor.execute("""SELECT id, from_id, public, read FROM notes
-                               WHERE to_id=%s
-                               AND read=0""", senderID)
+        self.cursor.execute("""SELECT notes.id, notes.from_id,
+                                      notes.public, notes.read
+                               FROM users, notes
+                               WHERE users.name=%s AND
+                                     notes.to_id=users.id AND
+                                     notes.read=0""", sender)
         count = self.cursor.rowcount
         notes = self.cursor.fetchall()
         L = []
@@ -233,6 +241,31 @@ class Notes(callbacks.Privmsg):
             else:
                 shrinkList(L, ', ', 450)
             irc.reply(msg, ', '.join(L))
+
+    def oldnotes(self, irc, msg, args):
+        """takes no arguments
+
+        Returns a list of your most recent old notes.
+        """
+        try:
+            sender = ircdb.users.getUserName(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNoUser)
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT notes.id FROM users, notes
+                          WHERE notes.to_id=users.id AND
+                                users.name=%s AND
+                                notes.read=1""", sender)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'I could find no notes for your user.')
+        else:
+            ids = [str(t[0]) for t in cursor.fetchall()]
+            ids.reverse()
+            utils.shrinkList(ids, ', ', 425)
+            ids.reverse()
+            irc.reply(msg, ', '.join(ids))
+                          
 
 
 Class = Notes
