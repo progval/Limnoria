@@ -36,6 +36,8 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
     if network:
         def testCalc(self):
             self.assertNotRegexp('google calc e^(i*pi)+1', r'didn\'t')
+
+        def testHtmlHandled(self):
             self.assertNotRegexp('google calc '
                                  'the speed of light '
                                  'in microns / fortnight', '<sup>')
