@@ -104,4 +104,4 @@ exponential time to process).  Consider what would happen if the someone gave
 the bot the command 're [strjoin "" s/./ [dict go] /] [dict go]'
 
 Other plugins may require different capabilities; the Factoids plugin requires
-#channel.capability, the Topic plugin requires #channel.topic, etc.
+#channel.factoids, the Topic plugin requires #channel.topic, etc.
