@@ -5,6 +5,7 @@ Update the version in setup.py.
 Update the version in scripts/supybot
 Make a release-MAJOR_MINOR_PATCHLEVEL tag.  (cvs tag ...)
 Make a release-MAJOR_MINOR_PATCHLEVEL-branch branch tag.  (cvs tag -b ...)
+Remove test directory from the tarball.
 Remove CVS directories from the tarball.
 Remove sandbox directory from the tarball.
 Create .tar.gz, .tar.bz2, and .zip archives.
