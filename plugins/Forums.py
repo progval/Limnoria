@@ -96,7 +96,7 @@ class Forums(callbacks.PrivmsgRegexp):
             wStats = '%s; W-%s, L-%s, D-%s' % (wRating, wWins, wLosses, wDraws)
             bStats = '%s; W-%s, L-%s, D-%s' % (bRating, bWins, bLosses, bDraws)
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
-              '%s (%s) vs. %s (%s) [%s]' % (wName,wStats,bName,bStats,url)))
+              '%s (%s) vs. %s (%s) <%s>' % (wName,wStats,bName,bStats,url)))
         except ValueError:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
               'That doesn\'t appear to be a proper Gameknot game.'))
