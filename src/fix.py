@@ -201,4 +201,17 @@ def enumerate(L):
 def window(L, size):
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
+
+def itersplit(iterable, isSeparator, yieldEmpty=False):
+    acc = []
+    for element in iterable:
+        if isSeparator(element):
+            if yieldEmpty or acc:
+                yield acc
+            acc = []
+        else:
+            acc.append(element)
+    if yieldEmpty or acc:
+        yield acc
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
