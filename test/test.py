@@ -50,7 +50,6 @@ import unittest
 
 import debug
 debug.stderr = False
-debug.PRINTF = True
 
 import world
 import ircdb
