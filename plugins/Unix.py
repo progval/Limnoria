@@ -64,23 +64,22 @@ def configure(advanced):
     if not spellCmd:
         output("""NOTE: I couldn't find aspell or ispell in your path, so that
                   function of this module will not work.  You may choose to
-                  install it later.  To re-enable this command then, remove
-                  the "disable spell" line from your configuration file.""")
+                  install it later.  The re-enable the command then, give the
+                  bot the command 'enable Unix.spell'.""")
         conf.supybot.defaultCapabilities().add('-Unix.spell')
     fortuneCmd = utils.findBinaryInPath('fortune')
     if not fortuneCmd:
         output("""NOTE: I couldn't find fortune in your path, so that function
                   of this module will not work.  You may choose to install it
-                  later.  To re-enable this command then, remove the
-                  '"disable fortune" command from your configuration file.""")
+                  later.  To re-enable this command then, give the bot the
+                  command 'enable Unix.fortune'.""")
         conf.supybot.defaultCapabilities().add('-Unix.fortune')
     wtfCmd = utils.findBinaryInPath('wtf')
     if not wtfCmd:
         output("""NOTE: I couldn't find wtf in your path, so that function of
                   this module won't work.  You may choose to install it later;
-                  to re-enable this command then, remove the "disable wtf"
-                  command from your configuration file or simply tell the bot
-                  "enable wtf" instead.""")
+                  to re-enable this command then, give the bot the command
+                  'enable Unix.wtf'.""")
         conf.supybot.defaultCapabilities().add('-Unix.wtf')
     output("""The "progstats" command can reveal potentially sensitive
               information about your machine. Here's an example of its output:
