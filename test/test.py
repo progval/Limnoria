@@ -38,6 +38,7 @@ from fix import *
 
 import sys
 import glob
+import time
 import os.path
 import unittest
 
@@ -81,6 +82,7 @@ class PluginTestCase(unittest.TestCase):
     """Subclass this to write a test case for a plugin.  See test_FunCommands
     for an example.
     """
+    timeout = 10
     def setUp(self, nick='test'):
         self.nick = nick
         self.prefix = ircutils.joinHostmask(nick, 'user', 'host.domain.tld')
@@ -91,19 +93,24 @@ class PluginTestCase(unittest.TestCase):
         
     def assertResponse(self, query, expectedResponse):
         self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
+        fed = time.time()
         response = self.irc.takeMsg()
+        while response is None and time.time() - fed < self.timeout:
+            response = self.irc.takeMsg()
         self.failUnless(response)
         self.assertEqual(response.args[1], expectedResponse)
 
     def assertResponses(self, query, expectedResponses):
         self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
+        fed = time.time()
         responses = []
-        while 1:
+        while len(responses) < len(expectedResponses) and \
+                  time.time() - fed < self.timeout :
             m = self.irc.takeMsg()
             if m:
                 responses.append(m)
             else:
-                break
+                time.sleep(.1)
         self.assertEqual(len(expectedResponses), len(responses))
         for (response, expected) in zip(responses, expectedResponses):
             self.assertEqual(response.args[1], expected)
@@ -119,5 +126,5 @@ if __name__ == '__main__':
     suite = unittest.defaultTestLoader.loadTestsFromNames(names)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
-    print 'Total asserts: %s' % unittest.asserts
-    world.testing = False
+##     print 'Total asserts: %s' % unittest.asserts
+##     world.testing = False
