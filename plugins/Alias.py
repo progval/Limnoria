@@ -182,7 +182,7 @@ class Alias(callbacks.Privmsg):
     def __call__(self, irc, msg):
         # Adding the aliases requires an Irc.  So the first time we get called
         # with an Irc, we add our aliases and then delete ourselves :)
-        for (alias, (command, locked)) in self.aliases.iteritems():
+        for (alias, (command, locked)) in self.aliases.items():
             try:
                 self.addAlias(irc, alias, command, locked)
             except Exception, e:
