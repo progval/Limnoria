@@ -84,8 +84,10 @@ class HttpTest(PluginTestCase, PluginDocumentation):
 
     def testGeekquote(self):
         self.assertNotError('geekquote')
-        self.assertNotError('geekquote --id=4848')
-        self.assertError('geekquote --id=48a')
+        self.assertNotError('geekquote 4848')
+        # It's not an error, it just truncates at the first non-number
+        #self.assertError('geekquote 48a8')
+        self.assertError('geekquote asdf')
 
     def testAcronym(self):
         self.assertRegexp('acronym ASAP', 'as soon as possible')

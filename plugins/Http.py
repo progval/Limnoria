@@ -329,21 +329,13 @@ class Http(callbacks.Privmsg):
 
     _mlgeekquotere = re.compile('<p class="qt">(.*?)</p>', re.M | re.DOTALL)
     def geekquote(self, irc, msg, args):
-        """[--id=<value>]
+        """[<id>]
 
         Returns a random geek quote from bash.org; the optional argument
-        --id specifies which quote to retrieve.
+        id specifies which quote to retrieve.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['id='])
-        id = 'random1'
-        for (option, arg) in optlist:
-            if option == '--id':
-                try:
-                    id = int(arg)
-                except ValueError, e:
-                    irc.error(msg, 'Invalid id: %s' % e)
-                    return
-
+        id = privmsgs.getArgs(args, required=0, optional=1)
+        id = id or 'random1'
         html = webutils.getUrl('http://bash.org/?%s' % id)
         m = self._mlgeekquotere.search(html)
         if m is None:
@@ -413,6 +405,8 @@ class Http(callbacks.Privmsg):
             except webutils.WebError, e:
                 irc.error(msg, str(e))
                 return
+            stable = 'unknown'
+            beta = 'unknown'
             for line in fd:
                 (name, version) = line.split(':')
                 if 'latest stable' in name:
