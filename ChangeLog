@@ -1,3 +1,6 @@
+	* Added a 'server' attribute to Irc objects to unify the way to
+	access such information.
+	
 	* Added revision command for finding out the revision of the files
 	in a running bot; also added __revision__ strings so CVS would be 
 	happy to keep such information for us :)
