@@ -1,0 +1,14 @@
+To do before next major release (0.8.0):
+
+Fix the inability to reload configuration.
+Fix the configuration system.
+Change NickServ plugin into Services plugin.
+Add callback based on PrivmsgRegexp that allows ordering of callbacks.
+Fix Quotes plugin.
+Fix (or nuke :)) Factoids plugin.
+Fix Infobot plugin.
+Fix website.
+
+To do later:
+
+Fix Enforcer plugin.
