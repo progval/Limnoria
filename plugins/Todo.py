@@ -285,6 +285,8 @@ class Todo(callbacks.Privmsg):
                 predicateName += 'p'
         for glob in rest:
             criteria.append('task LIKE %s')
+            if '?' not in glob and '*' not in glob:
+                glob = '*%s*' % glob
             formats.append(glob.translate(self._sqlTrans))
         cursor = db.cursor()
         sql = """SELECT id, task FROM todo WHERE %s""" % ' AND '.join(criteria)

@@ -107,6 +107,7 @@ if sqlite is not None:
         def testSearchtodo(self):
             self.assertNotError('todo add task number one')
             self.assertRegexp('todo search task*', '#1: task number one')
+            self.assertRegexp('todo search number', '#1: task number one')
             self.assertNotError('todo add task number two is much longer than'
                                 ' task number one')
             self.assertRegexp('todo search task*',
