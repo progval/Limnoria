@@ -124,14 +124,13 @@ class Network(callbacks.Privmsg):
             irc.replySuccess()
     reconnect = wrap(reconnect, ['owner', 'networkIrc', additional('text')])
 
-    def command(self, irc, msg, args, otherIrc, command, commandArgs):
+    def command(self, irc, msg, args, otherIrc, commandAndArgs):
         """<network> <command> [<arg> ...]
 
         Gives the bot <command> (with its associated <arg>s) on <network>.
         """
-        self.Proxy(otherIrc, msg, commandArgs)
-    command = wrap(command, ['admin', ('networkIrc', True),
-                             'commandName', any('something')])
+        self.Proxy(otherIrc, msg, commandAndArgs)
+    command = wrap(command, ['admin', ('networkIrc', True), many('something')])
 
     ###
     # whois command-related stuff.
