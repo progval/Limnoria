@@ -31,6 +31,8 @@
 
 __revision__ = "$Id$"
 
+from __future__ import division
+
 import fix
 
 import os
@@ -96,10 +98,8 @@ def invertCapability(capability):
     else:
         return makeAntiCapability(capability)
 
-_normal = string.maketrans('\r\n', '  ')
-def _normalize(s):
-    return s.translate(_normal)
-
+def unWildcardHostmask(hostmask):
+    return hostmask.translate(string.ascii, '!@*?')
 
 _invert = invertCapability
 class CapabilitySet(sets.Set):
@@ -258,11 +258,15 @@ class IrcUser(object):
             return True
         for pat in self.hostmasks:
             if ircutils.hostmaskPatternEqual(pat, hostmask):
-                return True
+                return pat
         return False
 
     def addHostmask(self, hostmask):
         """Adds a hostmask to the user's hostmasks."""
+        assert ircutils.isUserHostmask(hostmask)
+        if len(unWildcardHostmask(hostmask)) < 8:
+            raise ValueError, \
+                  'Hostmask must contain at least 8 non-wildcard characters.'
         self.hostmasks.append(hostmask)
 
     def removeHostmask(self, hostmask):
@@ -517,7 +521,7 @@ class UsersDictionary(utils.IterableMap):
     def reload(self):
         """Reloads the database from its file."""
         if self.filename is not None:
-            self.nextId = 1
+            self.nextId = 0
             self.users.clear()
             try:
                 self.open(self.filename)
@@ -555,12 +559,13 @@ class UsersDictionary(utils.IterableMap):
             try:
                 return self._hostmaskCache[s]
             except KeyError:
-                ids = []
+                ids = {}
                 for (id, user) in self.users.iteritems():
-                    if user.checkHostmask(s):
-                        ids.append(id)
+                    x = user.checkHostmask(s)
+                    if x:
+                        ids[id] = x
                 if len(ids) == 1:
-                    id = ids[0]
+                    id = ids.keys()[0]
                     self._hostmaskCache[s] = id
                     try:
                         self._hostmaskCache[id].add(s)
@@ -570,6 +575,11 @@ class UsersDictionary(utils.IterableMap):
                 elif len(ids) == 0:
                     raise KeyError, s
                 else:
+                    log.error('Multiple matches found in user database.  '
+                              'Removing the offending hostmasks.')
+                    for (id, hostmask) in ids.iteritems():
+                        log.error('Removing %r from user %s.', hostmask, id)
+                        self.users[id].removeHostmask(hostmask)
                     raise ValueError, 'Ids %r matched.' % ids
         else: # Not a hostmask, must be a name.
             s = s.lower()
@@ -608,17 +618,21 @@ class UsersDictionary(utils.IterableMap):
         self.nextId = max(self.nextId, id)
         try:
             if self.getUserId(user.name) != id:
-                s = '%s is already registered to someone else.' % user.name
+                s = '%s is someone else\'s hostmask.' % user.name
                 raise ValueError, s
         except KeyError:
             pass
         for hostmask in user.hostmasks:
-            try:
-                if self.getUserId(hostmask) != id:
-                    s = '%s is already registered to someone else.'% hostmask
+            for (i, u) in self.iteritems():
+                if i == id:
+                    continue
+                elif u.checkHostmask(hostmask):
+                    s = '%s is someone else\'s hostmask.' % hostmask
                     raise ValueError, s
-            except KeyError:
-                continue
+                for otherHostmask in u.hostmasks:
+                    if ircutils.hostmaskPatternEqual(hostmask, otherHostmask):
+                        s = '%s is someone else\'s hostmask.' % hostmask
+                        raise ValueError, s
         if id in self._nameCache:
             del self._nameCache[self._nameCache[id]]
             del self._nameCache[id]
@@ -732,6 +746,12 @@ class IgnoresDB(object):
         else:
             log.warning('IgnoresDB.flush called without self.filename.')
 
+    def close(self):
+        if self.flush in world.flushers:
+            world.flushers.remove(self.flush)
+        self.flush()
+        self.hostmasks.clear()
+
     def reload(self):
         if self.filename is not None:
             self.hostmasks.clear()
@@ -749,6 +769,7 @@ class IgnoresDB(object):
         return False
 
     def addHostmask(self, hostmask):
+        assert ircutils.isUserHostmask(hostmask)
         self.hostmasks.add(hostmask)
 
     def removeHostmask(self, hostmask):

@@ -215,6 +215,10 @@ class IrcUserTestCase(IrcdbTestCase):
         self.assertRaises(KeyError, u.checkCapability, 'foo')
         self.assertRaises(KeyError, u.checkCapability, '-bar')
 
+    def testAddhostmask(self):
+        u = ircdb.IrcUser()
+        self.assertRaises(ValueError, u.addHostmask, '*!*@*')
+
     def testRemoveHostmask(self):
         u = ircdb.IrcUser()
         u.addHostmask('foo!bar@baz')
@@ -247,8 +251,8 @@ class IrcUserTestCase(IrcdbTestCase):
         self.assertNotEqual(u.password, 'foobar')
 
     def testHostmasks(self):
-        prefix = 'foo!bar@baz'
-        hostmasks = ['*!bar@baz', 'foo!*@*']
+        prefix = 'foo12341234!bar@baz.domain.tld'
+        hostmasks = ['*!bar@baz.domain.tld', 'foo12341234!*@*']
         u = ircdb.IrcUser()
         self.failIf(u.checkHostmask(prefix))
         for hostmask in hostmasks:
@@ -315,21 +319,21 @@ class IrcChannelTestCase(IrcdbTestCase):
         c.removeBan(banmask)
         self.failIf(c.checkIgnored(prefix))
 
-class UsersDBTestCase(IrcdbTestCase):
+class UsersDictionaryTestCase(IrcdbTestCase):
     filename = os.path.join(conf.supybot.directories.conf(),
-                            'UsersDBTestCase.conf')
+                            'UsersDictionaryTestCase.conf')
     def setUp(self):
         try:
             os.remove(self.filename)
         except:
             pass
-        self.users = ircdb.UsersDB(self.filename)
+        self.users = ircdb.UsersDictionary()
         IrcdbTestCase.setUp(self)
 
     def testIterAndNumUsers(self):
         self.assertEqual(self.users.numUsers(), 0)
         (id, u) = self.users.newUser()
-        hostmask = 'foo!bar@baz'
+        hostmask = 'foo!xyzzy@baz.domain.com'
         banmask = ircutils.banmask(hostmask)
         u.addHostmask(banmask)
         u.name = 'foo'
@@ -349,9 +353,10 @@ class UsersDBTestCase(IrcdbTestCase):
 
     def testGetSetDelUser(self):
         self.assertRaises(KeyError, self.users.getUser, 'foo')
-        self.assertRaises(KeyError, self.users.getUser, 'foo!bar@baz')
+        self.assertRaises(KeyError,
+                          self.users.getUser, 'foo!xyzzy@baz.domain.com')
         (id, u) = self.users.newUser()
-        hostmask = 'foo!bar@baz'
+        hostmask = 'foo!xyzzy@baz.domain.com'
         banmask = ircutils.banmask(hostmask)
         u.addHostmask(banmask)
         u.name = 'foo'
@@ -360,10 +365,10 @@ class UsersDBTestCase(IrcdbTestCase):
         self.assertEqual(self.users.getUser('FOO'), u)
         self.assertEqual(self.users.getUser(hostmask), u)
         self.assertEqual(self.users.getUser(banmask), u)
-        # The UsersDB shouldn't allow users to be added whose hostmasks
+        # The UsersDictionary shouldn't allow users to be added whose hostmasks
         # match another user's already in the database.
         (id, u2) = self.users.newUser()
-        u2.addHostmask('*!*@*')
+        u2.addHostmask('*!xyzzy@baz.domain.c?m')
         self.assertRaises(ValueError, self.users.setUser, id, u2)
 
 
@@ -394,8 +399,10 @@ class CheckCapabilityTestCase(IrcdbTestCase):
             os.remove(self.filename)
         except:
             pass
-        self.users = ircdb.UsersDB(self.filename)
-        self.channels = ircdb.ChannelsDictionary(self.filename)
+        self.users = ircdb.UsersDictionary()
+        #self.users.open(self.filename)
+        self.channels = ircdb.ChannelsDictionary()
+        #self.channels.open(self.filename)
 
         (id, owner) = self.users.newUser()
         owner.name = 'owner'
