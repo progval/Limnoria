@@ -49,6 +49,7 @@ sys.stdout = StringIO()
 import this
 sys.stdout = sys.__stdout__
 
+import debug
 import utils
 import privmsgs
 import callbacks
@@ -77,40 +78,52 @@ class Python(callbacks.Privmsg):
 
         Returns the __doc__ string for a given Python function.
         """
+        def normalize(s):
+            return utils.normalizeWhitespace(s.replace('\n\n', '.'))
         funcname = privmsgs.getArgs(args)
         if funcname.translate(string.ascii, self.modulechars) != '':
             irc.error('That\'s not a valid module or function name.')
             return
         if '.' in funcname:
             parts = funcname.split('.')
-            functionName = parts.pop()
-            path = pythonPath
-            for name in parts:
-                try:
-                    info = imp.find_module(name, path)
-                    newmodule = imp.load_module(name, *info)
-                    path = [os.path.dirname(newmodule.__file__)]
-                    info[0].close()
-                except ImportError:
-                    irc.error(msg, 'No such module %s exists.' % name)
-                    return
-            if hasattr(newmodule, functionName):
-                f = getattr(newmodule, functionName)
-                if hasattr(f, '__doc__'):
-                    s = f.__doc__.replace('\n\n', '. ')
-                    s = utils.normalizeWhitespace(s)
-                    irc.reply(msg, s)
+            if len(parts) == 2 and parts[0] in __builtins__:
+                (objectname, methodname) = parts
+                obj = __builtins__[objectname]
+                if hasattr(obj, methodname):
+                    obj = getattr(obj, methodname)
+                    if hasattr(obj, '__doc__'):
+                        irc.reply(msg, obj.__doc__)
+                    else:
+                        irc.reply(msg, '%s has no documentation' % funcname)
                 else:
-                    irc.error(msg, 'That function has no documentation.')
+                    irc.reply(msg, '%s has no method %s' % (parts[0],parts[1]))
             else:
-                irc.error(msg, 'That function doesn\'t exist.')
+                functionName = parts.pop()
+                path = pythonPath
+                for name in parts:
+                    try:
+                        info = imp.find_module(name, path)
+                        newmodule = imp.load_module(name, *info)
+                        path = [os.path.dirname(newmodule.__file__)]
+                        info[0].close()
+                    except ImportError:
+                        irc.error(msg, 'No such module %s exists.' % name)
+                        return
+                if hasattr(newmodule, functionName):
+                    f = getattr(newmodule, functionName)
+                    if hasattr(f, '__doc__'):
+                        s = f.__doc__.replace('\n\n', '. ')
+                        s = utils.normalizeWhitespace(s)
+                        irc.reply(msg, s)
+                    else:
+                        irc.error(msg, 'That function has no documentation.')
+                else:
+                    irc.error(msg, 'That function doesn\'t exist.')
         else:
             try:
                 f = __builtins__[funcname]
                 if hasattr(f, '__doc__'):
-                    s = f.__doc__.replace('\n\n', '. ')
-                    s = utils.normalizeWhitespace(s)
-                    irc.reply(msg, s)
+                    irc.reply(msg, normalize(f.__doc__))
                 else:
                     irc.error(msg, 'That function has no documentation.')
             except SyntaxError:
