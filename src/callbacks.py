@@ -1207,11 +1207,11 @@ class PluginRegexp(Plugin):
         self.res = []
         self.addressedRes = []
         for name in self.regexps:
-            method = self.getCommandMethod(name)
+            method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
             self.res.append((r, name))
         for name in self.addressedRegexps:
-            method = self.getCommandMethod(name)
+            method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
             self.addressedRes.append((r, name))
 
