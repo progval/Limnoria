@@ -823,15 +823,25 @@ class Privmsg(irclib.IrcCallback):
             group = group.get(name)
         return group.get(id)()
 
-    def setUserValue(self, prefixOrName, name, value):
-        id = str(ircdb.users.getUserId(prefixOrName))
+    def setUserValue(self, prefixOrName, name, value,
+                     ignoreNoUser=False, setValue=False):
+        try:
+            id = str(ircdb.users.getUserId(prefixOrName))
+        except KeyError:
+            if ignoreNoUser:
+                return
+            else:
+                raise
         plugin = self.name()
         group = conf.users.plugins.get(plugin)
         names = name.split('.')
         for name in names:
             group = group.get(name)
         group = group.get(id)
-        group.set(value)
+        if setValue:
+            group.setValue(value)
+        else:
+            group.set(value)
         
 
 class IrcObjectProxyRegexp(RichReplyMethods):
