@@ -34,14 +34,15 @@ This is for jemfinch's debugging only.  If this somehow gets added and
 committed, remove it immediately.  It must not be released.
 """
 
-import plugins
+import supybot.plugins as plugins
 
+import sys
 import exceptions
 
-import conf
-import utils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):
@@ -51,6 +52,10 @@ def configure(advanced):
     # registry as appropriate.
     from questions import expect, anything, something, yn
     conf.registerPlugin('Debug', True)
+
+def tracer(frame, event, _):
+    if event == 'call':
+        print '%s: %s\n' % (frame.f_code.co_filename, frame.f_code.co_name)
 
 
 class Debug(privmsgs.CapabilityCheckingPrivmsg):
@@ -82,6 +87,22 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
         """
         msg = ircmsgs.IrcMsg(privmsgs.getArgs(args))
         irc.sendMsg(msg)
+
+    def settrace(self, irc, msg, args):
+        """takes no arguments
+
+        Starts tracing function calls on stdout.  This causes much output.
+        """
+        sys.settrace(tracer)
+        irc.replySuccess()
+
+    def unsettrace(self, irc, msg, args):
+        """takes no arguments
+
+        Stops tracing function calls on stdout.
+        """
+        sys.settrace(None)
+        irc.replySuccess()
 
 
 Class = Debug
