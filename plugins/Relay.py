@@ -145,27 +145,29 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
         if self.started:
             if not isinstance(irc, irclib.Irc):
                 irc = irc.getRealIrc()
-            channels = msg.args[0].split(',')
+            channel = msg.args[0]
+            if channel not in self.channels:
+                return
             abbreviation = self.abbreviations[irc]
             s = '%s has joined on %s' % (msg.nick, abbreviation)
             for otherIrc in self.ircs.itervalues():
                 if otherIrc != irc:
-                    for channel in channels:
-                        if channel in otherIrc.state.channels:
-                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                    if channel in otherIrc.state.channels:
+                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
     def doPart(self, irc, msg):
         if self.started:
             if not isinstance(irc, irclib.Irc):
                 irc = irc.getRealIrc()
-            channels = msg.args[0].split(',')
+            channel = msg.args[0]
+            if channel not in self.channels:
+                return
             abbreviation = self.abbreviations[irc]
             s = '%s has left on %s' % (msg.nick, abbreviation)
             for otherIrc in self.ircs.itervalues():
                 if otherIrc != irc:
-                    for channel in channels:
-                        if channel in otherIrc.state.channels:
-                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                    if channel in otherIrc.state.channels:
+                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
     def outFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
@@ -173,8 +175,11 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
         if msg.command == 'PRIVMSG':
             abbreviations = self.abbreviations.values()
             rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
-            rAction = re.compile(r'\* \w+/(?:%s) ' % '|'.join(abbreviations))
-            if not (rPrivmsg.match(msg.args[1]) or rAction.match(msg.args[1])):
+            rAction = re.compile(r'\* [^/]+/(?:%s) ' % '|'.join(abbreviations))
+            if not (rPrivmsg.match(msg.args[1]) or \
+                    rAction.match(msg.args[1]) or \
+                    msg.args[1].find('has left on ') != -1 or \
+                    msg.args[1].find('has joined on ') != -1):
                 channel = msg.args[0]
                 if channel not in self.channels:
                     return
