@@ -47,8 +47,11 @@ import rssparser
 
 import conf
 import utils
+import ircmsgs
+import ircutils
 import privmsgs
 import callbacks
+import configurable
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
@@ -61,13 +64,77 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('rss add %s %s' % (name, url))
         #onStart.append('alias lock %s' % name)
 
-class RSS(callbacks.Privmsg):
+class RSS(callbacks.Privmsg, configurable.Mixin):
     threaded = True
+    configurables = configurable.Dictionary(
+        [('announce-news-feeds', configurable.SpaceSeparatedStrListType,
+          [], """Gives the bot a space-separated list of feeds for which it
+          should announce updates to the channel.  The feeds should be
+          either URLs or names of feeds already added to this plugin."""),
+         ('announce-news-bold', configurable.BoolType, True,
+          """Determines whether the bot will bold the title of the feed when
+          it announces new additions."""),
+         ('headline-separator', configurable.SpaceSurroundedStrType, ' :: ',
+          """Determines what string is used to seperate headlines in
+          feeds."""),]
+    )
+    globalConfigurables = configurable.Dictionary(
+         [('wait-period', configurable.PositiveIntType, 1800,
+          """Indicates how many seconds the bot will wait between retrieving
+          RSS feeds; requests made within this period will return cached
+          results."""),]
+    )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.feedNames = sets.Set()
         self.lastRequest = {}
         self.cachedFeeds = {}
+
+    def __call__(self, irc, msg):
+        callbacks.Privmsg.__call__(self, irc, msg)
+        feeds = self.configurables.getChannels('announce-news-feeds')
+        for (channel, d) in feeds.iteritems():
+            sep = self.configurables.get('headline-separator', channel)
+            bold = self.configurables.get('announce-news-bold', channel)
+            for name in d:
+                if self.isCommand(name):
+                    url = self.getCommand(name).url
+                else:
+                    url = name
+                try:
+                    oldresults = self.cachedFeeds[url]
+                    oldheadlines = self.getHeadlines(oldresults)
+                except KeyError:
+                    oldheadlines = []
+                newresults = self.getFeed(url)
+                newheadlines = self.getHeadlines(newresults)
+                for headline in oldheadlines:
+                    try:
+                        newheadlines.remove(headline)
+                    except ValueError:
+                        pass
+                if newheadlines:
+                    if bold:
+                        name = ircutils.bold(name)
+                    headlines = sep.join(newheadlines)
+                    s = '%s: %s' % (name, headlines)
+                    irc.queueMsg(ircmsgs.privmsg(channel, s))
+                
+    def getFeed(self, url):
+        now = time.time()
+        wait = self.globalConfigurables.get('wait-period')
+        if url not in self.lastRequest or now - self.lastRequest[url] > wait:
+            try:
+                results = rssparser.parse(url)
+            except sgmllib.SGMLParseError:
+                self.log.exception('Uncaught exception from rssparser:')
+                raise callbacks.Error, 'Invalid (unparseable) RSS feed.'
+            self.cachedFeeds[url] = results
+            self.lastRequest[url] = now
+        return self.cachedFeeds[url]
+
+    def getHeadlines(self, feed):
+        return [utils.htmlToText(d['title'].strip()) for d in feed['items']]
 
     def add(self, irc, msg, args):
         """<name> <url>
@@ -93,6 +160,7 @@ class RSS(callbacks.Privmsg):
         f = types.FunctionType(f.func_code, f.func_globals,
                                name, closure=f.func_closure)
         f.__doc__ = docstring
+        f.url = url # Used by __call__.
         self.feedNames.add(name)
         setattr(self.__class__, name, f)
         irc.reply(msg, conf.replySuccess)
@@ -117,20 +185,18 @@ class RSS(callbacks.Privmsg):
         Gets the title components of the given RSS feed.
         """
         url = privmsgs.getArgs(args)
-        now = time.time()
-        if url not in self.lastRequest or now - self.lastRequest[url] > 1800:
-            results = rssparser.parse(url)
-            self.cachedFeeds[url] = results
-            self.lastRequest[url] = now
-
-        feed = self.cachedFeeds[url]
-        headlines = [utils.htmlToText(d['title'].strip())
-                     for d in feed['items']]
+        feed = self.getFeed(url)
+        if ircutils.isChannel(msg.args[0]):
+            channel = msg.args[0]
+        else:
+            channel = None
+        headlines = self.getHeadlines(feed)
         if not headlines:
             irc.error(msg, 'Couldn\'t get RSS feed')
             return
         headlines = imap(utils.htmlToText, headlines)
-        irc.reply(msg, ' :: '.join(headlines))
+        sep = self.configurables.get('headline-separator', channel)
+        irc.reply(msg, sep.join(headlines))
 
     def info(self, irc, msg, args):
         """<url>
@@ -139,16 +205,10 @@ class RSS(callbacks.Privmsg):
         URL, description, and last update date, if available.
         """
         url = privmsgs.getArgs(args)
-        now = time.time()
-        if url not in self.lastRequest or now - self.lastRequest[url] > 1800:
-            results = rssparser.parse(url)
-            self.cachedFeeds[url] = results
-            self.lastRequest[url] = now
-
-        feed = self.cachedFeeds[url]
+        feed = self.getFeed(url)
         info = feed['channel']
         if not info:
-            irc.error(msg, 'Error grabbing RSS feed')
+            irc.error(msg, 'I couldn\'t retrieve that RSS feed.')
             return
         # check the 'modified' key, if it's there, convert it here first
         if 'modified' in feed:
