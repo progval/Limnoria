@@ -94,11 +94,11 @@ def configure(onStart, afterConnect, advanced):
         afterConnect.append('relay color 2')
 
 
-ircs = {}
-ircstates = {}
-lastmsg = {}
+ircs = ircutils.IrcDict()
+lastmsg = {} # Not IrcDict.
 channels = ircutils.IrcSet()
-abbreviations = {}
+ircstates = {} # Not IrcDict.
+abbreviations = {} # Not IrcDict.
 originalIrc = None
 
 def reload(x=None):
@@ -123,13 +123,12 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         callbacks.Privmsg.__init__(self)
         configurable.Mixin.__init__(self)
         self.ircs = ircs
-        self._color = 0
-        self._whois = {}
         self.started = False
         self.ircstates = ircstates
         self.lastmsg = lastmsg
         self.channels = channels
-        self.abbreviations = {}
+        self._whois = ircutils.IrcDict()
+        self.abbreviations = abbreviations
 
     def __call__(self, irc, msg):
         if self.started:
@@ -152,8 +151,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
     def do376(self, irc, msg):
         if self.channels:
             irc.queueMsg(ircmsgs.joins(self.channels))
-    do377 = do376
-    do422 = do376
+    do377 = do422 = do376
 
     def start(self, irc, msg, args):
         """<network abbreviation for current server>
@@ -273,6 +271,27 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         irc.reply(msg, conf.replySuccess)
     part = privmsgs.checkCapability(part, 'owner')
 
+    def command(self, irc, msg, args):
+        """<network> <command> [<arg> ...]
+
+        Gives the bot <command> (with its associated <arg>s) on <network>.
+        """
+        if not self.started:
+            irc.error(msg, 'You must use the start command first.')
+            return
+        if len(args) < 2:
+            raise callbacks.ArgumentError
+        network = args.pop(0)
+        try:
+            otherIrc = self.ircs[network]
+        except KeyError:
+            irc.error(msg, 'I\'m not currently on %s.' % network)
+        Owner = irc.getCallback('Owner')
+        Owner.disambiguate(irc, args)
+        self.Proxy(otherIrc, msg, args)
+        irc.reply(msg, conf.replySuccess)
+    command = privmsgs.checkCapability(command, 'admin')
+        
     def say(self, irc, msg, args):
         """<network> [<channel>] <text>
 

@@ -1,7 +1,10 @@
+	* Added Relay.command, a command for sending commands to the bot
+	on a different network.
+	
 	* Changed all "zegrep" stuff to "zgrep -e" stuff, since zegrep is
 	on fewer platforms than zgrep.
 
-        * Added Bugzilla.search, a new command for searching a bugzilla
+	* Added Bugzilla.search, a new command for searching a bugzilla
 	installation
 	 
 2003-12-12 Jeremy Fincher <jemfinch@supybot.org>
