@@ -194,5 +194,12 @@ if sqlite is not None:
             self.assertNotError('fundb config show-ids off')
             self.assertNotRegexp('praise jemfinch', r'\(#1\)')
 
+        def testLartPraiseReasonPeriod(self):
+            self.assertNotError('add lart kills $who')
+            self.assertNotRegexp('lart foo for bar.', r'\.')
+            self.assertNotError('add praise loves $who')
+            self.assertNotRegexp('praise for for bar.', r'\.')
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
