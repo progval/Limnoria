@@ -59,6 +59,7 @@ if __name__ == '__main__':
     # import supybot.conf as conf
     import os
     import sys
+    import popen2
     import optparse
 
     parser = optparse.OptionParser(usage='Usage: %prog [options]')
@@ -111,8 +112,19 @@ if __name__ == '__main__':
 
     if not foundBot:
         debug('Bot not found, starting.')
-        cmdline = 'sh -cl "%s --daemon %s"'%(options.supybot, options.conffile)
-        ret = os.system(cmdline)
+        home = os.environ['HOME']
+        inst = popen2.Popen4('sh')
+        for filename in ('.login', '.bash_profile', '.profile'):
+            filename = os.path.join(home, filename)
+            if os.path.exists(filename):
+                debug('Found %s, sourcing.' % filename)
+                inst.tochild.write('source %s' % filename + os.linesep)
+        cmdline = "%s --daemon %s" % (options.supybot, options.conffile)
+        debug('Sending cmdline to sh process.')
+        inst.tochild.write(cmdline + os.linesep)
+        inst.tochild.close()
+        debug('Received from sh process: %r' % inst.fromchild.read())
+        ret = inst.wait()
         debug('Bot started, command line %r returned %s.' % (cmdline, ret))
         sys.exit(ret)
     else:
