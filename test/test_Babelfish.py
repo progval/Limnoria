@@ -45,7 +45,7 @@ if network:
         def testBabelize(self):
             self.assertNotError('babelize en sp foo')
             self.assertError('babelize sp fr foo')
-            self.assertResponse('babelize german english sprache', 'language')
+            self.assertResponse('babelize german english sprache', 'Language')
 
         def testRandomlanguage(self):
             self.assertNotError('randomlanguage')
