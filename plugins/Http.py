@@ -66,9 +66,13 @@ class FreshmeatException(Exception):
 class Http(callbacks.Privmsg):
     threaded = True
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
+    def __init__(self):
+        self.__parent = super(Http, self)
+        self.__parent.__init__()
+
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
-            super(Http, self).callCommand(name, irc, msg, *L, **kwargs)
+            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
         except webutils.WebError, e:
             irc.error(str(e))
 
@@ -233,9 +237,7 @@ class Http(callbacks.Privmsg):
         acronym = privmsgs.getArgs(args)
         url = 'http://www.acronymfinder.com/' \
               'af-query.asp?String=exact&Acronym=%s' % urllib.quote(acronym)
-        request = webutils.Request(url, headers={'User-agent':
-          'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
-        html = webutils.getUrl(request)
+        html = webutils.getUrl(url)
         if 'daily limit' in html:
             s = 'Acronymfinder.com says I\'ve reached my daily limit.  Sorry.'
             irc.error(s)
@@ -245,7 +247,7 @@ class Http(callbacks.Privmsg):
         utils.sortBy(lambda s: not s.startswith('[not an acronym]'), defs)
         for (i, s) in enumerate(defs):
             if s.startswith('[not an acronym]'):
-                defs[i] = s.split('is ', 1)[1]
+                defs[i] = s.split('] ', 1)[1].strip()
         if len(defs) == 0:
             irc.reply('No definitions found.')
         else:
