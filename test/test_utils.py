@@ -34,7 +34,6 @@ import sets
 
 import utils
 
-
 class UtilsTest(unittest.TestCase):
     def testPluralize(self):
         f = utils.pluralize
@@ -212,6 +211,14 @@ class UtilsTest(unittest.TestCase):
         L = ['supybot', 'Supybot']
         utils.sortBy(str.lower, L)
         self.assertEqual(L, ['supybot', 'Supybot'])
+
+    def testSorted(self):
+        L = ['a', 'c', 'b']
+        self.assertEqual(utils.sorted(L), ['a', 'b', 'c'])
+        self.assertEqual(L, ['a', 'c', 'b'])
+        def mycmp(x, y):
+            return -cmp(x, y)
+        self.assertEqual(utils.sorted(L, mycmp), ['c', 'b', 'a'])
         
     def testNItems(self):
         self.assertEqual(utils.nItems(1, 'tool', 'crazy'), '1 crazy tool')

@@ -377,6 +377,13 @@ def sortBy(f, L, cmp=cmp):
     for (i, elt) in enumerate(L):
         L[i] = L[i][2]
 
+def sorted(iterable, *args, **kwargs):
+    """Returns a sorted list made from iterable.  All other args are given to
+    list.sort unchanged."""
+    L = list(iterable)
+    L.sort(*args, **kwargs)
+    return L
+
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
     import sha
