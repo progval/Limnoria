@@ -96,7 +96,8 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
         self.irc = irc
         self.networkGroup = conf.supybot.networks.get(self.irc.network)
         self.servers = ()
-        reactor.connectTCP('', 0, self)
+        (server, port) = self._getNextServer()
+        reactor.connectTCP(server, port, self)
 
     def _getServers(self):
         # We do this, rather than itertools.cycle the servers in __init__,
@@ -113,8 +114,15 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
         self.currentServer = '%s:%s' % server
         return server
         
+    def clientConnectionFailed(self, connector, r):
+        (connector.host, connector.port) = self._getNextServer()
+        ReconnectingClientFactory.clientConnectionFailed(self, connector, r)
+
+    def clientConnectionLost(self, connector, r):
+        (connector.host, connector.port) = self._getNextServer()
+        ReconnectingClientFactory.clientConnectionLost(self, connector, r)
+
     def buildProtocol(self, addr):
-        addr = self._getNextServer()
         protocol = ReconnectingClientFactory.buildProtocol(self, addr)
         protocol.irc = self.irc
         return protocol
