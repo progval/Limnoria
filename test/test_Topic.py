@@ -50,8 +50,11 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         _ = self.getMsg('topic add bar')
         _ = self.getMsg('topic add baz')
         self.assertRegexp('topic get 1', '^foo')
+        self.assertNotRegexp('topic get 1', self.nick)
         self.assertRegexp('topic get 2', '^bar')
+        self.assertNotRegexp('topic get 2', self.nick)
         self.assertRegexp('topic get 3', '^baz')
+        self.assertNotRegexp('topic get 3', self.nick)
         self.assertError('topic get 0')
 
     def testTopicAdd(self):

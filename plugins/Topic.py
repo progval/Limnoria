@@ -122,7 +122,11 @@ class Topic(callbacks.Privmsg):
         topics = self._splitTopic(irc.state.getTopic(channel))
         if topics:
             try:
-                irc.reply(msg, topics[number])
+                match = self.topicUnformatter.match(topics[number])
+                if match:
+                    irc.reply(msg, match.group(1))
+                else:
+                    irc.reply(msg, topics[number])
             except IndexError:
                 irc.error(msg, 'That\'s not a valid topic.')
         else:
