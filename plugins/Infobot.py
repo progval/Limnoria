@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2004, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,175 +30,273 @@
 ###
 
 """
-A plugin that tries to emulate Infobot somewhat faithfully.
+Infobot compatibility, for the parts that we don't support already.
 """
 
-deprecated = True
-
 __revision__ = "$Id$"
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import plugins
 
+import os
 import re
-import os.path
+import cPickle as pickle
 
 import conf
+import utils
 import ircmsgs
+import ircutils
+import privmsgs
 import callbacks
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
+conf.registerPlugin('Infobot')
 
-dbfilename = os.path.join(conf.supybot.directories.data(), 'Infobot.db')
+def configure(advanced):
+    # This will be called by setup.py to configure this module.  Advanced is
+    # a bool that specifies whether the user identified himself as an advanced
+    # user or not.  You should effect your configuration by manipulating the
+    # registry as appropriate.
+    from questions import expect, anything, something, yn
+    conf.registerPlugin('Infobot', True)
 
-def makeDb(filename):
-    if os.path.exists(filename):
-        return sqlite.connect(filename)
-    db = sqlite.connect(filename)
-    cursor = db.cursor()
-    cursor.execute("""CREATE TABLE is_factoids (
-                      key TEXT UNIQUE ON CONFLICT REPLACE,
-                      value TEXT
-                      )""")
-    cursor.execute("""CREATE TABLE are_factoids (
-                      key TEXT UNIQUE ON CONFLICT REPLACE,
-                      value TEXT
-                      )""")
-    cursor.execute("""CREATE TABLE dont_knows (saying TEXT)""")
-    for s in ('I don\'t know.', 'No idea.', 'I don\'t have a clue.', 'Dunno.'):
-        cursor.execute("""INSERT INTO dont_knows VALUES (%s)""", s)
-    cursor.execute("""CREATE TABLE statements (saying TEXT)""")
-    for s in ('I heard', 'Rumor has it', 'I think', 'I\'m pretty sure'):
-        cursor.execute("""INSERT INTO statements VALUES (%s)""", s)
-    cursor.execute("""CREATE TABLE confirms (saying TEXT)""")
-    for s in ('Gotcha', 'Ok', '10-4', 'I hear ya', 'Got it'):
-        cursor.execute("""INSERT INTO confirms VALUES (%s)""", s)
-    cursor.execute("""CREATE INDEX is_key ON is_factoids (key)""")
-    cursor.execute("""CREATE INDEX are_key ON are_factoids (key)""")
-    db.commit()
-    return db
+filename = os.path.join(conf.supybot.directories.data(), 'Infobot.db')
 
-class Infobot(callbacks.PrivmsgRegexp):
+class InfobotDB(object):
     def __init__(self):
-        callbacks.PrivmsgRegexp.__init__(self)
-        self.db = makeDb(dbfilename)
+        try:
+            fd = file(filename)
+        except EnvironmentError:
+            self._is = utils.InsensitivePreservingDict()
+            self._are = utils.InsensitivePreservingDict()
+        else:
+            (self._is, self._are) = pickle.load(fd)
+        self._changes = 0
+        self._responses = 0
+
+    def flush(self):
+        fd = file(filename, 'w')
+        pickle.dump((self._is, self._are), fd)
+        fd.close()
+
+    def close(self):
+        self.flush()
+
+    def getIs(self, factoid):
+        ret = self._is[factoid]
+        self._responses += 1
+        return ret
+
+    def setIs(self, fact, oid):
+        self._changes += 1
+        self._is[fact] = oid
+        self.flush()
+
+    def delIs(self, factoid):
+        del self._is[factoid]
+        self._changes += 1
+        self.flush()
+
+    def hasIs(self, factoid):
+        return factoid in self._is
+
+    def getAre(self, factoid):
+        ret = self._are[factoid]
+        self._responses += 1
+        return ret
+
+    def hasAre(self, factoid):
+        return factoid in self._are
+
+    def setAre(self, fact, oid):
+        self._changes += 1
+        self._are[fact] = oid
+        self.flush()
+
+    def delAre(self, factoid):
+        del self._are[factoid]
+        self._changes += 1
+        self.flush()
+        
+    def getChangeCount(self):
+        return self._changes
+
+    def getResponseCount(self):
+        return self._responses
+
+class Infobot(callbacks.PrivmsgCommandAndRegexp):
+    regexps = ['doForget', 'doFactoid', 'doUnknown']
+    def __init__(self):
+        self.db = InfobotDB()
+        self.irc = None
+        self.msg = None
+        self.force = False
+        self.replied = False
+        self.addressed = False
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        self.db.commit()
         self.db.close()
 
-    def getRandomSaying(self, table):
-        cursor = self.db.cursor()
-        sql = 'SELECT saying FROM %s ORDER BY random() LIMIT 1' % table
-        cursor.execute(sql)
-        return cursor.fetchone()[0]
-
-    def getFactoid(self, key):
-        cursor = self.db.cursor()
-        cursor.execute('SELECT value FROM is_factoids WHERE key=%s', key)
-        if cursor.rowcount != 0:
-            statement = self.getRandomSaying('statements')
-            value = cursor.fetchone()[0]
-            return '%s %s is %s' % (statement, key, value)
-        cursor.execute('SELECT value FROM are_factoids WHERE key=%s', key)
-        if cursor.rowcount != 0:
-            statement = self.getRandomSaying('statements')
-            value = cursor.fetchone()[0]
-            return '%s %s are %s' % (statement, key, value)
-        raise KeyError, key
-
-    def hasFactoid(self, key, isAre):
-        cursor = self.db.cursor()
-        sql = 'SELECT COUNT(*) FROM %s_factoids WHERE key=%%s' % isAre
-        cursor.execute(sql, key)
-        return int(cursor.fetchone()[0])
-
-    def insertFactoid(self, key, isAre, value):
-        cursor = self.db.cursor()
-        sql = 'INSERT INTO %s_factoids VALUES (%%s, %%s)' % isAre
-        cursor.execute(sql, key, value)
-        self.db.commit()
-
-    def forget(self, irc, msg, match):
-        r"^forget\s+(.+?)(?!\?+)[?.! ]*$"
-        key = match.group(1)
-        cursor = self.db.cursor()
-        cursor.execute('DELETE FROM is_factoids WHERE key=%s', key)
-        cursor.execute('DELETE FROM are_factoids WHERE key=%s', key)
-        irc.reply(self.getRandomSaying('confirms'))
-
-    def factoid(self, irc, msg, match):
-        r"^(no[ :,-]+)?(.+?)\s+(was|is|am|were|are)\s+(also\s+)?(.+?)(?!\?+)$"
-        (correction, key, isAre, addition, value) = match.groups()
-        if self.hasFactoid(key, isAre):
-            if not correction:
-                factoid = self.getFactoid(key)
-                irc.reply('No, %s %s %s' % (key, isAre, factoid))
-            elif addition:
-                factoid = self.getFactoid(key)
-                newFactoid = '%s, or %s' % (factoid, value)
-                self.insertFactoid(key, isAre, newFactoid)
-                irc.reply(self.getRandomSaying('confirms'))
-            else:
-                self.insertFactoid(key, isAre, value)
-                irc.reply(self.getRandomSaying('confirms'))
+    def reply(self, s, irc=None, msg=None):
+        if self.replied:
+            self.log.debug('Already replied, not replying again.')
             return
+        if irc is None:
+            assert self.irc is not None
+            irc = self.irc
+        if msg is None:
+            assert self.msg is not None
+            msg = self.msg
+        self.replied = True
+        irc.reply(plugins.standardSubstitute(irc, msg, s))
+        
+    def confirm(self, irc=None, msg=None):
+        # XXX
+        self.reply('Roger that!', irc=irc, msg=msg)
+
+    def dunno(self, irc=None, msg=None):
+        # XXX
+        self.reply('I dunno, dude.', irc=irc, msg=msg)
+
+    def factoid(self, key, irc=None, msg=None):
+        if irc is None:
+            assert self.irc is not None
+            irc = self.irc
+        if msg is None:
+            assert self.msg is not None
+            msg = self.msg
+        isAre = None
+        key = plugins.standardSubstitute(irc, msg, key)
+        if self.db.hasIs(key):
+            isAre = 'is'
+            value = self.db.getIs(key)
+        elif self.db.hasAre(key):
+            isAre = 'are'
+            value = self.db.getAre(key)
+        if isAre is None:
+            if self.addressed:
+                self.dunno(irc=irc, msg=msg)
         else:
-            self.insertFactoid(key, isAre, value)
-            irc.reply(self.getRandomSaying('confirms'))
+            # XXX
+            self.reply('%s %s %s, $who.' % (key,isAre,value), irc=irc, msg=msg)
 
-    def unknown(self, irc, msg, match):
-        r"^(.+?)\?[?.! ]*$"
-        key = match.group(1)
+    def normalize(self, s):
+        s = ircutils.stripFormatting(s)
+        s = s.strip() # After stripFormatting for formatted spaces.
+        s = utils.normalizeWhitespace(s)
+        contractions = [('what\'s', 'what is'), ('where\'s', 'where is'),
+                        ('who\'s', 'who is'),]
+        for (contraction, replacement) in contractions:
+            if s.startswith(contraction):
+                s = replacement + s[len(contraction):]
+        return s
+        
+    _forceRe = re.compile(r'no[,: -]+', re.I)
+    def doPrivmsg(self, irc, msg):
+        maybeAddressed = callbacks.addressed(irc.nick, msg,
+                                             whenAddressedByNick=True)
+        if maybeAddressed:
+            self.addressed = True
+            payload = maybeAddressed
+        else:
+            payload = msg.args[1]
+        print '*', payload
+        payload = self.normalize(payload)
+        print '**', payload
+        maybeForced = self._forceRe.sub('', payload)
+        if maybeForced != payload:
+            self.force = True
+            payload = maybeForced
+        print '***', payload
+        if payload.endswith(irc.nick):
+            self.addressed = True
+            payload = payload[:-len(irc.nick)]
+            payload = payload.strip(', ') # Strip punctuation separating nick.
+            payload += '?' # So doUnknown gets called.
+        print '****', payload
         try:
-            irc.reply(self.getFactoid(key))
-        except KeyError:
-            irc.reply(self.getRandomSaying('dont_knows'))
+            print 'Payload:', payload
+            print 'Force:', self.force
+            print 'Addressed:', self.addressed
+            msg = ircmsgs.privmsg(msg.args[0], payload, prefix=msg.prefix)
+            callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
+        finally:
+            self.force = False
+            self.replied = False
+            self.addressed = False
 
-    def info(self, irc, msg, match):
-        r"^info$"
-        cursor = self.db.cursor()
-        cursor.execute("SELECT COUNT(*) FROM is_factoids")
-        numIs = int(cursor.fetchone()[0])
-        cursor.execute("SELECT COUNT(*) FROM are_factoids")
-        numAre = int(cursor.fetchone()[0])
-        s = 'I have %s is factoids and %s are factoids' % (numIs, numAre)
-        irc.reply(s)
+    def callCommand(self, f, irc, msg, *L, **kwargs):
+        try:
+            self.irc = irc
+            self.msg = msg
+            callbacks.PrivmsgCommandAndRegexp.callCommand(self, f, irc, msg,
+                                                          *L, **kwargs)
+        finally:
+            self.irc = None
+            self.msg = None
 
+    def doForget(self, irc, msg, match):
+        r"^forget\s+(.+?)[?!. ]*$"
+        fact = match.group(1)
+        for method in [self.db.delIs, self.db.delAre]:
+            try:
+                method(fact)
+            except KeyError:
+                pass
+        self.confirm()
 
+    def doUnknown(self, irc, msg, match):
+        r"^(.+?)\?[?!. ]*$"
+        key = match.group(1)
+        key = plugins.standardSubstitute(irc, msg, key)
+        self.factoid(key) # Does the dunno'ing for us itself.
+    # TODO: Add invalidCommand.
+
+    def doFactoid(self, irc, msg, match):
+        r"^(.+)\s+(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
+        (key, isAre, maybeForce, value) = match.groups()
+        if key.lower() in ('where', 'what', 'who'):
+            # It's a question.
+            self.factoid(value)
+            return
+        isAre = isAre.lower()
+        self.force = self.force or bool(maybeForce)
+        key = plugins.standardSubstitute(irc, msg, key)
+        value = plugins.standardSubstitute(irc, msg, value)
+        if isAre in ('was', 'is', 'am'):
+            if self.db.hasIs(key):
+                if not self.force:
+                    value = self.db.getIs(key)
+                    self.reply('But %s is %s.' % (key, value))
+                    return
+                else:
+                    value = '%s or %s' % (self.db.getIs(key), value)
+            self.db.setIs(key, value)
+        else:
+            if self.db.hasAre(key):
+                if not self.force:
+                    value = self.db.getAre(key)
+                    self.reply('But %s are %s.' % (key, value))
+                    return
+                else:
+                    value = '%s or %s' % (self.db.getAre(key), value)
+            self.db.setAre(key, value)
+        if self.addressed or self.force:
+            self.confirm()
+
+    def stats(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the number of changes and requests made to the Infobot database
+        since the plugin was loaded.
+        """
+        irc.reply('There have been %s answered and %s made '
+                  'to the database since this plugin was loaded.' %
+                  (utils.nItems('request', self.db.getChangeCount()),
+                   utils.nItems('change', self.db.getResponseCount())))
+        
 
 
 Class = Infobot
-
-if __name__ == '__main__':
-    import sys
-    if len(sys.argv) < 2 and sys.argv[1] not in ('is', 'are'):
-        print 'Usage: %s <is|are> <factpack> [<factpack> ...]' % sys.argv[0]
-        sys.exit(-1)
-    r = re.compile(r'\s+=>\s+')
-    db = makeDb(dbfilename)
-    cursor = db.cursor()
-    if sys.argv[1] == 'is':
-        table = 'is_factoids'
-    else:
-        table = 'are_factoids'
-    sql = 'INSERT INTO %s VALUES (%%s, %%s)' % table
-    for filename in sys.argv[2:]:
-        fd = file(filename)
-        for line in fd:
-            line = line.strip()
-            if not line or line[0] in ('*', '#'):
-                continue
-            else:
-                try:
-                    (key, value) = r.split(line, 1)
-                    cursor.execute(sql, key, value)
-                except Exception, e:
-                    print 'Invalid line (%s): %r' %(utils.exnToString(e),line)
-    db.commit()
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
