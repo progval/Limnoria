@@ -33,7 +33,7 @@ import re
 
 from test import *
 
-class SourceforgeTest(PluginTestCase, PluginDocumentation):
+class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Sourceforge',)
     def testBugs(self):
         self.assertHelp('bugs')
@@ -89,10 +89,11 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
             'group_id=58965&atid=489447')
 
     def testToggle(self):
-        s = r'.*Status.*: \w+'
+        s = r'Status.*: \w+'
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235', s)
         self.assertNotError('Sourceforge toggle tracker off')
+        self.failIf(self.irc.takeMsg())
         self.assertNoResponse('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
         self.assertNotError('Sourceforge toggle tracker on')
