@@ -36,13 +36,14 @@ bots.  This module makes supybot automatically part certain channels as soon
 as he joins.
 """
 
-import plugins
+import sets
 
 import conf
 import utils
 import ircdb
 import ircmsgs
 import ircutils
+import plugins
 import privmsgs
 import callbacks
 
@@ -78,34 +79,30 @@ example = utils.wrapLines("""
 """)
 
 class Parter(callbacks.Privmsg):
-    def autopartchannel(self, irc, msg, args):
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.channels = sets.Set([])
+
+    def autopart(self, irc, msg, args):
         """<channel>
 
 
         Makes the bot part <channel> automatically, as soon as he joins it.
         """
         channel = privmsgs.getArgs(args)
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            if not hasattr(self, 'channels'):
-                self.channels = [channel]
-            else:
-                self.channels.append(channel)
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
+        self.channels.add(channel)
+        irc.reply(msg, conf.replySuccess)
+    autopart = privmsgs.checkCapability(autopart, 'admin')
 
-    def removeautopartchannel(self, irc, msg, args):
+    def removeautopart(self, irc, msg, args):
         """<channel>
 
         Removes the channel from the auto-part list.
         """
         channel = privmsgs.getArgs(args)
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            if hasattr(self, 'channels'):
-                self.channels = [x for x in self.channels if x != channel]
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
+        self.channels.discard(channel)
+        irc.reply(msg, conf.replySuccess)
+    removeautopart = privmsgs.checkCapability(removeautopart, 'admin')
 
     def doJoin(self, irc, msg):
         if irc.nick == msg.nick:
