@@ -190,6 +190,10 @@ dynamically (though sometimes that doesn't work, hence this variable)."""))
 # Reply/error tweaking.
 ###
 supybot.register('reply')
+supybot.reply.register('truncate', registry.Boolean(False, """Determines
+whether the bot will simply truncate messages instead of breaking up long
+messages and using the 'more' command to get the remaining chunks."""))
+
 supybot.reply.register('oneToOne', registry.Boolean(True, """Determines whether
 the bot will send multi-message replies in a single messsage or in multiple
 messages.  For safety purposes (so the bot can't possibly flood) it will

@@ -1,3 +1,6 @@
+	* Added supybot.reply.truncate, to turn off the normal more'ing
+	of replies.
+	
 	* Added supybot.plugins.Enforcer.takeRevengeOnOps, which makes
 	the bot even take revenge on #channel,ops who try to violate the
 	channel configuration.  Of course, such people can change the

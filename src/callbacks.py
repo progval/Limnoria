@@ -570,7 +570,8 @@ class IrcObjectProxy(RichReplyMethods):
                 if len(s) > allowedLength*50:
                     log.warning('Cowardly refusing to "more" %s bytes.'%len(s))
                     s = s[:allowedLength*50]
-                if len(s) < allowedLength:
+                if len(s) < allowedLength or conf.supybot.reply.truncate():
+                    s = s[:allowedLength+20] # In case we're truncating.
                     self.irc.queueMsg(reply(msg, s, self.prefixName,
                                             self.private,self.notice,self.to))
                     self.finished = True
