@@ -71,7 +71,7 @@ conf.registerChannelValue(conf.supybot.plugins.Observer.observers, 'active',
 
 
 def registerObserver(name, regexpString='',
-                     commandString='', probability=1.0):
+                     commandString='', probability=None):
     g = conf.registerGlobalValue(conf.supybot.plugins.Observer.observers,
             name, registry.Regexp(regexpString, """Determines what regexp must
             match for this observer to be executed."""))
@@ -82,9 +82,10 @@ def registerObserver(name, regexpString='',
     if commandString:
         g.command.setValue(commandString)
     conf.registerGlobalValue(g, 'probability',
-        registry.Probability(probability, """ Determines what the probability
+        registry.Probability(1.0, """ Determines what the probability
         of executing this observer is if it matches."""))
-    g.probability.setValue(probability)
+    if probability is not None:
+        g.probability.setValue(probability)
     conf.supybot.plugins.Observer.observers().add(name)
     return g
 
@@ -190,7 +191,7 @@ class Observer(callbacks.Privmsg):
         command = g.command()
         probability = g.probability()
         irc.reply('%s matches the regular expression %s and '
-                  'runs the command %s with a probability of %s' %
+                  'runs the command <<%s>> with a probability of %s' %
                   (name, g, command, probability))
     info = wrap(info, ['something'])
 
