@@ -43,6 +43,7 @@ import sets
 import random
 import itertools
 
+import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
@@ -53,50 +54,15 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-
-class FunDBDBInterface(object):
-    def close(self):
-        pass
-
-    def flush(self):
-        pass
-    
-    def get(self, channel, type, id):
-        """Returns just the text associated with the channel, type, and id."""
-        raise NotImplementedError
-
-    def info(self, channel, type, id):
-        """Returns the test and the metadata associated with the
-        channel, type, and id."""
-        raise NotImplementedError
-
-    def add(self, channel, type, text, by):
-        raise NotImplementedError
-
-    def remove(self, channel, type, id):
-        raise NotImplementedError
-
-    def change(self, channel, type, id, f):
-        raise NotImplementedError
-
-    def random(self, channel, type):
-        raise NotImplementedError
-
-    def size(self, channel, type):
-        raise NotImplementedError
-
-    def search(self, channel, type, p):
-        """Returns a list of (id, text) pairs whose text matches predicate p"""
-        raise NotImplementedError
-
-class FlatfileFunDBDB(FunDBDBInterface):
-    class FunDBDB(plugins.FlatfileDB):
-        def serialize(self, v):
-            return csv.join(map(str, v))
-
-        def deserialize(self, s):
-            return csv.split(s)
-        
+class DbiFunDBDB(object):
+    class FunDBDB(dbi.DB):
+        class Record(object):
+            __metaclass__ = dbi.Record
+            __fields__ = [
+                'by',
+                ('text', str),
+                ]
+            
     def __init__(self):
         self.dbs = ircutils.IrcDict()
         self.filenames = sets.Set()
@@ -121,49 +87,33 @@ class FlatfileFunDBDB(FunDBDBInterface):
         return self.dbs[channel][type]
 
     def get(self, channel, type, id):
-        return self.info(channel, type, id)[1]
-
-    def info(self, channel, type, id):
         db = self._getDb(channel, type)
-        return db.getRecord(id)
+        return db.get(id)
 
     def add(self, channel, type, text, by):
         db = self._getDb(channel, type)
-        return db.addRecord([by, text])
+        return db.add(db.Record(by=by, text=text))
 
     def remove(self, channel, type, id):
         db = self._getDb(channel, type)
-        db.delRecord(id)
+        db.remove(id)
 
     def change(self, channel, type, id, f):
         db = self._getDb(channel, type)
-        (by, text) = db.getRecord(id)
-        db.setRecord(id, [by, f(text)])
+        record = db.get(id)
+        record.text = f(record.text)
+        db.set(id, record)
 
     def random(self, channel, type):
         db = self._getDb(channel, type)
-        t = random.choice(db.records())
-        if t is not None:
-            (id, (by, text)) = t
-            t = (id, text)
-        return t
+        return db.random()
 
     def size(self, channel, type):
         db = self._getDb(channel, type)
-        return itertools.ilen(db.records())
-
-    def search(self, channel, type, p):
-        db = self._getDb(channel, type)
-        L = []
-        for (id, record) in db.records():
-            text = record[1]
-            if p(text):
-                L.append((id, text))
-        return L
-                
+        return itertools.ilen(db)
 
 def FunDBDB():
-    return FlatfileFunDBDB()
+    return DbiFunDBDB()
 
 conf.registerPlugin('FunDB')
 conf.registerChannelValue(conf.supybot.plugins.FunDB, 'showIds',
@@ -316,8 +266,8 @@ class FunDB(callbacks.Privmsg):
         if id is None:
             return
         try:
-            text = self.db.get(channel, type, id)
-            irc.reply(text)
+            x = self.db.get(channel, type, id)
+            irc.reply(x.text)
         except KeyError:
             irc.error('There is no %s with that id.' % type)
 
@@ -336,8 +286,8 @@ class FunDB(callbacks.Privmsg):
         if id is None:
             return
         try:
-            (text, by) = self.db.info(channel, type, id)
-            reply = '%s #%s: %r; Created by %s.' % (type, id, text, by)
+            x = self.db.get(channel, type, id)
+            reply = '%s #%s: %r; Created by %s.' % (type, x.id, x.text, x.by)
             irc.reply(reply)
         except KeyError:
             irc.error('There is no %s with that id.' % type)
@@ -365,14 +315,13 @@ class FunDB(callbacks.Privmsg):
         nick = privmsgs.getArgs(args)
         if not nick:
             raise callbacks.ArgumentError
-        t = self.db.random(channel, 'insult')
-        if t is None:
+        insult = self.db.random(channel, 'insult')
+        if insult is None:
             irc.error('There are currently no available insults.')
         else:
-            (id, insult) = t
             nick = self._replaceFirstPerson(nick, msg.nick)
-            insult = '%s: %s' % (nick, insult.replace('$who', nick))
-            irc.reply(self._formatResponse(insult, id, channel),
+            s = '%s: %s' % (nick, insult.text.replace('$who', nick))
+            irc.reply(self._formatResponse(s, insult.id, channel),
                       prefixName=False)
 
     def lart(self, irc, msg, args):
@@ -400,23 +349,21 @@ class FunDB(callbacks.Privmsg):
         if id:
             try:
                 lart = self.db.get(channel, 'lart', id)
-                t = (id, lart)
             except KeyError:
                 irc.error('There is no such lart.')
                 return
         else:
-            t = self.db.random(channel, 'lart')
-        if t is None:
+            lart = self.db.random(channel, 'lart')
+        if lart is None:
             irc.error('There are currently no available larts.')
         else:
-            (id, lart) = t
             nick = self._replaceFirstPerson(nick, msg.nick)
             reason = self._replaceFirstPerson(reason, msg.nick)
-            s = lart.replace('$who', nick)
+            s = lart.text.replace('$who', nick)
             if reason:
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
-            irc.reply(self._formatResponse(s, id, channel), action=True)
+            irc.reply(self._formatResponse(s, lart.id, channel), action=True)
 
     def praise(self, irc, msg, args):
         """[<channel>] [<id>] <text> [for <reason>]
@@ -442,23 +389,21 @@ class FunDB(callbacks.Privmsg):
         if id:
             try:
                 praise = self.db.get(channel, 'praise', id)
-                t = (id, praise)
             except KeyError:
                 irc.error('There is no such praise.')
                 return
         else:
-            t = self.db.random(channel, 'praise')
-        if t is None:
+            praise = self.db.random(channel, 'praise')
+        if praise is None:
             irc.error('There are currently no available praises.')
         else:
-            (id, praise) = t
             nick = self._replaceFirstPerson(nick, msg.nick)
             reason = self._replaceFirstPerson(reason, msg.nick)
-            s = praise.replace('$who', nick)
+            s = praise.text.replace('$who', nick)
             if reason:
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
-            irc.reply(self._formatResponse(s, id, channel), action=True)
+            irc.reply(self._formatResponse(s, praise.id, channel), action=True)
 
 Class = FunDB
 
