@@ -94,6 +94,10 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('topic reorder 2 1 3', r'bar.*foo.*baz')
         self.assertRegexp('topic reorder 3 -2 1', r'baz.*foo.*bar')
         self.assertError('topic reorder 0 1 2')
+        self.assertError('topic reorder 1 2')
+        self.assertError('topic reorder 2 3 4')
+        self.assertError('topic reorder 1 2 2')
+        self.assertError('topic reorder 1 1 2 3')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
