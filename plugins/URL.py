@@ -183,7 +183,11 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
             if len(url) >= minlen:
                 db = self.getDb(channel)
                 cursor = db.cursor()
-                (tinyurl, updateDb) = self._getTinyUrl(url, channel)
+                try:
+                    (tinyurl, updateDb) = self._getTinyUrl(url, channel)
+                except sqlite.OperationalError:
+                    irc.error('The database just decided to crap itself.')
+                    return
                 if tinyurl is None:
                     self.log.warning('tinyurl was None for url %r', url)
                     return
@@ -236,9 +240,12 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
     def _getTinyUrl(self, url, channel, cmd=False):
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT tinyurls.tinyurl FROM urls, tinyurls
-                          WHERE urls.url=%s AND
-                          tinyurls.url_id=urls.id""", url)
+        try:
+            cursor.execute("""SELECT tinyurls.tinyurl FROM urls, tinyurls
+                              WHERE urls.url=%s AND
+                              tinyurls.url_id=urls.id""", url)
+        except sqlite.OperationalError:
+            raise
         if cursor.rowcount == 0:
             updateDb = True
             try:
@@ -299,8 +306,12 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         r = self.registryValue('nonSnarfingRegexp', channel)
         if snarf and len(url) >= minlen and not r.search(url):
             return
-        (tinyurl, updateDb) = self._getTinyUrl(url, channel, cmd=True)
-        if tinyurl:
+        try:
+            (tinyurl, updateDb) = self._getTinyUrl(url, channel, cmd=True)
+        except sqlite.OperationalError:
+            irc.error('The database just decided to crap itself.')
+            return
+        if tinyurl is not None:
             if updateDb:
                 self._updateTinyDb(url, tinyurl, channel)
             irc.reply(tinyurl)
