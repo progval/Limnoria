@@ -29,6 +29,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+plugins = [
+    'Admin',
+    'Channel',
+    'Config',
+    'Math',
+    'Misc',
+    'Owner',
+    'User',
+    'Utilities',
+    ]
+
 import sys
 
 if sys.version_info < (2, 3, 0):
@@ -83,16 +94,6 @@ if clean:
         except Exception, e:
             print 'Couldn\'t remove former installation: %s' % e
             sys.exit(-1)
-
-plugins = [
-    'Admin',
-    'Channel',
-    'Config',
-    'Misc',
-    'Owner',
-    'User',
-    'Utilities',
-    ]
 
 packages = ['supybot',
             'supybot.drivers',
