@@ -44,6 +44,21 @@ class TopicTestCase(PluginTestCase, PluginDocumentation):
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], '#foo')
 
+    def testChangetopic(self):
+        _ = self.getMsg('join #foo')
+        _ = self.getMsg(' ')
+        _ = self.getMsg('addtopic #foo foo')
+        _ = self.getMsg('addtopic #foo bar')
+        _ = self.getMsg('addtopic #foo baz')
+        self.assertRegexp('changetopic #foo -1 s/baz/biff/',
+                          r'foo.*bar.*biff')
+        self.assertRegexp('changetopic #foo 1 s/bar/baz/',
+                          r'foo.*baz.*biff')
+        self.assertRegexp('changetopic #foo 0 s/foo/bar/',
+                          r'bar.*baz.*biff')
+        self.assertRegexp('changetopic #foo -2 s/baz/bazz/',
+                          r'bar.*bazz.*biff')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

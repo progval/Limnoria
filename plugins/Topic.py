@@ -175,6 +175,8 @@ class Topic(callbacks.Privmsg):
             irc.error(msg, 'You can only modify your own topics.')
             return
         newTopic = self.topicFormatter % (replacer(topic), name)
+        if number < 0:
+            number = len(topics)+1+number
         topics.insert(number, newTopic)
         newTopic = self.topicSeparator.join(topics)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
