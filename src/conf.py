@@ -81,7 +81,7 @@ be sent to the server if it requires one."""))
 supybot.register('server', registry.String('irc.freenode.net', """Determines
 what server the bot connects to."""))
 
-supybot.register('channels', registry.CommaSeparatedListOfStrings('#supybot',
+supybot.register('channels', registry.CommaSeparatedListOfStrings(['#supybot'],
 """Determines what channels the bot will join when it connects to the server.
 """))
 
@@ -141,6 +141,11 @@ the snarf message."""))
 
 # TODO: These should probably all be channel-specific.
 supybot.registerGroup('reply')
+supybot.reply.register('oneToOne', registry.Boolean(True, """Determines whether
+the bot will send multi-message replies in a single messsage or in multiple
+messages.  For safety purposes (so the bot can't possibly flood) it will
+normally send everything in a single message."""))
+
 supybot.reply.register('errorInPrivate', registry.Boolean(False, """
 Determines whether the bot will send error messages to users in private."""))
 
@@ -211,49 +216,52 @@ why these default to what they do."""))
 ###
 # Replies
 ###
-# TODO: These should be channel-specific.
 supybot.registerGroup('replies')
 
-supybot.replies.register('error', registry.NormalizedString("""An error has
-occurred and has been logged.  Please contact this bot's administrator for more
-information.""", """Determines what error message the bot gives when it wants
-to be ambiguous."""))
+supybot.replies.registerGroup('error', registry.GroupWithDefault(
+    registry.NormalizedString("""An error has occurred and has been logged.
+    Please contact this bot's administrator for more information.""", """
+    Determines what error message the bot gives when it wants to be
+    ambiguous.""")))
 
-supybot.replies.register('noCapability', registry.NormalizedString("""You
-don\'t have the %r capability.  If you think that you should have this
-capability, be sure that you are identified before trying again.  The 'whoami'
-command can tell you if you're identified.""", """Determines what error message
-is given when the bot is telling someone they aren't cool enough to use the
-command they tried to use."""))
+supybot.replies.registerGroup('noCapability', registry.GroupWithDefault(
+    registry.NormalizedString("""You don't have the %r capability.  If you
+    think that you should have this capability, be sure that you are identified
+    before trying again.  The 'whoami' command can tell you if you're
+    identified.""", """Determines what error message is given when the bot is
+    telling someone they aren't cool enough to use the command they tried to
+    use.""")))
 
-supybot.replies.register('success', registry.NormalizedString("""The operation
-succeeded.""", """Determines what message the bot replies with when a command
-succeeded."""))
+supybot.replies.registerGroup('success', registry.GroupWithDefault(
+    registry.NormalizedString("""The operation succeeded.""", """Determines
+    what message the bot replies with when a command succeeded.""")))
 
-supybot.replies.register('incorrectAuthentication',
-registry.NormalizedString("""Your hostmask doesn't match or your password is
-wrong.""", """Determines what message the bot replies wiwth when someone tries
-to use a command that requires being identified or having a password and
-neither credential is correct."""))
+supybot.replies.registerGroup('incorrectAuthentication',
+    registry.GroupWithDefault(
+    registry.NormalizedString("""Your hostmask doesn't match or your password
+    is wrong.""", """Determines what message the bot replies with when someone
+    tries to use a command that requires being identified or having a password
+    and neither credential is correct.""")))
 
-supybot.replies.register('noUser', registry.NormalizedString("""I can't find
-that user in my user database.""", """Determines what error message the bot
-replies with when someone tries to accessing some information on a user the
-bot doesn't know about."""))
+supybot.replies.registerGroup('noUser', registry.GroupWithDefault(
+    registry.NormalizedString("""I can't find that user in my user
+    database.""", """Determines what error message the bot replies with when
+    someone tries to accessing some information on a user the bot doesn't know
+    about.""")))
 
-supybot.replies.register('notRegistered', registry.NormalizedString("""
-You must be registered to use this command.  If you are already registered, you
-must either identify (using the identify command) or add a hostmask matching
-your current hostmask (using the addhostmask command).""", """Determines what
-error message the bot replies with when someone tries to do something that
-requires them to be registered but they're not currently recognized."""))
+supybot.replies.registerGroup('notRegistered', registry.GroupWithDefault(
+    registry.NormalizedString("""You must be registered to use this command.
+    If you are already registered, you must either identify (using the identify
+    command) or add a hostmask matching your current hostmask (using the
+    addhostmask command).""", """Determines what error message the bot replies
+    with when someone tries to do something that requires them to be registered
+    but they're not currently recognized.""")))
 
-# XXX: removed replyInvalidArgument.
+supybot.replies.registerGroup('requiresPrivacy', registry.GroupWithDefault(
+    registry.NormalizedString("""That operation cannot be done in a
+    channel.""", """Determines what error messages the bot sends to people who
+    try to do things in a channel that really should be done in private.""")))
 
-supybot.replies.register('requiresPrivacy', registry.NormalizedString("""
-That operation cannot be done in a channel.""", """Determines what error
-messages the bot sends to people who try to do things in a channel that really
-should be done in private."""))
 supybot.replies.register('possibleBug', registry.NormalizedString("""This may
 be a bug.  If you think it is, please file a bug report at
 <http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>.""",

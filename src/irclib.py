@@ -148,7 +148,7 @@ class IrcMsgQueue(object):
     def enqueue(self, msg):
         """Enqueues a given message."""
         if msg in self.msgs:
-            log.info('Not adding msg %s to queue' % msg)
+            log.warning('Not adding message %r to queue, already added.' % msg)
         else:
             self.msgs.add(msg)
             if msg.command in _high:

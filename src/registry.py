@@ -138,6 +138,10 @@ class NormalizedString(String):
         s = utils.normalizeWhitespace(s.strip())
         String.set(self, s)
 
+    def setValue(self, s):
+        s = utils.normalizeWhitespace(s.strip())
+        String.setValue(self, s)
+
 class StringSurroundedBySpaces(String):
     def set(self, s):
         String.set(self, s)
@@ -180,6 +184,9 @@ class Group(object):
         else:
             self.__nonExistentEntry(original)
             
+    def get(self, attr):
+        return self.__getattr__(attr)
+    
     def getChild(self, attr):
         return self.children[attr.lower()]
 
@@ -251,10 +258,6 @@ class GroupWithValue(Group):
     def __str__(self):
         return str(self.value)
 
-##     def getValues(self, getChildren=False):
-##         L = Group.getValues(self, getChildren=False)
-##         L.insert(0, (self.getName(), str(self.value)))
-##         return L
 
 class GroupWithDefault(GroupWithValue):
     def __init__(self, value):
@@ -264,22 +267,26 @@ class GroupWithDefault(GroupWithValue):
         v = copy.copy(self.value)
         v.set(s)
         self.register(attr, v)
-        
+
     def __getattr__(self, attr):
         try:
-            return Group.__getattr__(self, attr)
+            return GroupWithValue.__getattr__(self, attr)
         except NonExistentRegistryEntry:
-            return self.value
+            self.__makeChild(attr, str(self))
+            return self.__getattr__(attr)
 
     def setName(self, name):
-        Group.setName(self, name)
+        GroupWithValue.setName(self, name)
         for (k, v) in cache.iteritems():
             if k.startswith(self.name):
                 (_, group) = rsplit(k, '.', 1)
                 self.__makeChild(group, v)
 
-    def setChild(self, attr, s):
-        self.__setattr__(attr, s)
+    def getValues(self, getChildren=False):
+        L = GroupWithValue.getValues(self, getChildren)
+        me = str(self)
+        L = [v for v in L if str(v[1]) != me]
+        return L
 
 
 if __name__ == '__main__':

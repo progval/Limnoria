@@ -101,6 +101,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
 
     def __call__(self, irc, msg):
         callbacks.Privmsg.__call__(self, irc, msg)
+        irc = callbacks.IrcObjectProxyRegexp(irc, msg)
         feeds = self.configurables.getChannels('announce-news-feeds')
         for (channel, d) in feeds.iteritems():
             sep = self.configurables.get('headline-separator', channel)
@@ -127,9 +128,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
                     pre = prefix + name
                     if bold:
                         pre = ircutils.bold(pre)
-                    headlines = sep.join(newheadlines)
-                    s = '%s: %s' % (pre, headlines)
-                    irc.queueMsg(ircmsgs.privmsg(channel, s))
+                    irc.replies(headlines, prefixer=pre, joiner=sep)
                 
     def getFeed(self, url):
         now = time.time()

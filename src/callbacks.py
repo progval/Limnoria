@@ -296,38 +296,65 @@ class RichReplyMethods(object):
         return s
 
     def replySuccess(self, s='', **kwargs):
-        self.reply(self.__makeReply(conf.supybot.replies.success(), s),
-                   **kwargs)
+        v = conf.supybot.replies.success.get(self.msg.args[0])
+        s = self.__makeReply(v(), s)
+        self.reply(s, **kwargs)
 
     def replyError(self, s='', **kwargs):
-        self.reply(self.__makeReply(conf.supybot.replies.error(), s),
-                   **kwargs)
+        v = conf.supybot.replies.error.get(self.msg.args[0])
+        s = self.__makeReply(v(), s)
+        self.reply(s, **kwargs)
+
+    def replies(self, L, prefixer=''.join,
+                joiner=utils.commaAndify, onlyPrefixFirst=False):
+        if prefixer is None:
+            prefixer = ''
+        if joiner is None:
+            joiner = utils.commaAndify
+        if isinstance(prefixer, basestring):
+            prefixer = prefixer.__add__
+        if isinstance(joiner, basestring):
+            joiner = joiner.join
+        if conf.supybot.reply.oneToOne():
+            self.reply(prefixer(joiner(L)))
+        else:
+            first = True
+            for s in L:
+                if onlyPrefixFirst:
+                    if first:
+                        self.reply(prefixer(s))
+                        first = False
+                    else:
+                        self.reply(s)
+                else:
+                    self.reply(prefixer(s))
 
     def errorNoCapability(self, capability, s='', **kwargs):
         log.warning('Denying %s for lacking %r capability',
                     self.msg.prefix, capability)
-        noCapability = conf.supybot.replies.noCapability()
-        s = self.__makeReply(noCapability % capability, s)
+        v = conf.supybot.replies.noCapability.get(self.msg.args[0])
+        s = self.__makeReply(v() % capability, s)
         self.error(s, **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
+        v = conf.supybot.replies.possibleBug.get(self.msg.args[0])
         if s:
-            s += '  (%s)' % conf.supybot.replies.possibleBug()
+            s += '  (%s)' % v()
         else:
-            s = conf.supybot.replies.possibleBug()
+            s = v()
         self.error(s, **kwargs)
 
     def errorNotRegistered(self, s='', **kwargs):
-        notRegistered = conf.supybot.replies.notRegistered()
-        self.error(self.__makeReply(notRegistered, s), **kwargs)
+        v = conf.supybot.replies.notRegistered.get(self.msg.args[0])
+        self.error(self.__makeReply(v(), s), **kwargs)
 
     def errorNoUser(self, s='', **kwargs):
-        noUser = conf.supybot.replies.noUser()
-        self.error(self.__makeReply(noUser, s), **kwargs)
+        v = conf.supybot.replies.noUser.get(self.msg.args[0])
+        self.error(self.__makeReply(v(), s), **kwargs)
 
     def errorRequiresPrivacy(self, s='', **kwargs):
-        requiresPrivacy = conf.supybot.replies.requiresPrivacy()
-        self.error(self.__makeReply(requiresPrivacy, s), **kwargs)
+        v = conf.supybot.replies.requiresPrivacy.get(self.msg.args[0])
+        self.error(self.__makeReply(v(), s), **kwargs)
 
             
 class IrcObjectProxy(RichReplyMethods):
@@ -668,6 +695,8 @@ class Privmsg(irclib.IrcCallback):
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
             else:
+                # We want this to be under logging.DEBUG: it's not very useful,
+                # even for debugging things :)
                 self.log.log(0, 'Ignoring %s', msg.prefix)
         else:
             self.__parent.__call__(irc, msg)

@@ -182,12 +182,13 @@ class Factoids(plugins.ChannelDBHandler,
                 for result in cursor.fetchall():
                     factoids.append('(#%s) %s' % (counter, result[0]))
                     counter += 1
-                irc.reply('%r could be %s' % (key, ', or '.join(factoids)))
+                irc.replies(factoids, prefixer='%r could be ' % key,
+                            joiner=', or ', onlyPrefixFirst=True)
             else:
                 try:
                     irc.reply(cursor.fetchall()[number-1][0])
                 except IndexError:
-                    irc.error('That\'s not a valid number for this key.')
+                    irc.error('That\'s not a valid number for that key.')
                     return
 
     def lock(self, irc, msg, args):
