@@ -35,6 +35,15 @@ import conf
 
 class AdminTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Admin',)
+    def testChannels(self):
+        self.assertRegexp('channels', 'not.*in any')
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
+        self.assertRegexp('channels', '#foo')
+        self.irc.feedMsg(ircmsgs.join('#bar', prefix=self.prefix))
+        self.assertRegexp('channels', '#bar and #foo')
+        self.irc.feedMsg(ircmsgs.join('#Baz', prefix=self.prefix))
+        self.assertRegexp('channels', '#bar, #Baz, and #foo')
+
     def testIgnoreUnignore(self):
         try:
             self.assertNotError('admin ignore foo!bar@baz')

@@ -55,6 +55,54 @@ import callbacks
 
 class Admin(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
+    def __init__(self):
+        privmsgs.CapabilityCheckingPrivmsg.__init__(self)
+        self.joins = {}
+        
+    def do471(self, irc, msg):
+        try:
+            channel = msg.args[1]
+            (irc, msg) = self.joins[channel]
+            del self.joins[channel]
+            irc.error(msg, 'Cannot join %s, it\'s full.' % channel)
+        except KeyError:
+            self.log.warning('Got 471 without Admin.join being called.')
+
+    def do473(self, irc, msg):
+        try:
+            channel = msg.args[1]
+            (irc, msg) = self.joins[channel]
+            del self.joins[channel]
+            irc.error(msg, 'Cannot join %s, I was not invited.' % channel)
+        except KeyError:
+            self.log.warning('Got 473 without Admin.join being called.')
+
+    def do474(self, irc, msg):
+        try:
+            channel = msg.args[1]
+            (irc, msg) = self.joins[channel]
+            del self.joins[channel]
+            irc.error(msg, 'Cannot join %s, it\'s banned me.' % channel)
+        except KeyError:
+            self.log.warning('Got 474 without Admin.join being called.')
+            
+    def do475(self, irc, msg):
+        try:
+            channel = msg.args[1]
+            (irc, msg) = self.joins[channel]
+            del self.joins[channel]
+            irc.error(msg, 'Cannot join %s, my keyword was wrong.' % channel)
+        except KeyError:
+            self.log.warning('Got 475 without Admin.join being called.')
+
+    def doJoin(self, irc, msg):
+        if msg.prefix == irc.prefix:
+            try:
+                del self.joins[msg.args[0]]
+            except KeyError:
+                s = 'Joined a channel without Admin.join being called'
+                self.log.warning(s)
+    
     def join(self, irc, msg, args):
         """<channel>[,<key>] [<channel>[,<key>] ...]
 
@@ -74,8 +122,24 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 channels.append(channel)
         irc.queueMsg(ircmsgs.joins(channels, keys))
         for channel in channels:
+            self.joins[channel] = (irc, msg)
             if channel not in irc.state.channels:
                 irc.queueMsg(ircmsgs.who(channel))
+
+    def channels(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the channels the bot is on.  Must be given in private, in order
+        to protect the secrecy of secret channels.
+        """
+        if ircutils.isChannel(msg.args[0]):
+            raise callbacks.Error
+        L = irc.state.channels.keys()
+        if L:
+            utils.sortBy(ircutils.toLower, L)
+            irc.reply(msg, utils.commaAndify(L))
+        else:
+            irc.reply(msg, 'I\'m not currently in any channels.')
 
     def nick(self, irc, msg, args):
         """<nick>
