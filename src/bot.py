@@ -181,6 +181,7 @@ if __name__ == '__main__':
     import sys
     if '-p' in sys.argv:
         import profile, time
+        sys.argv.remove('-p')
         profile.run('main()', '%i.prof' % time.time())
     if '-O' in sys.argv:
         import psyco
