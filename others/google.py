@@ -118,7 +118,7 @@ def getLicense(license_key = None):
     for get, location in _licenseLocations:
         rc = get(license_key)
         if rc: return rc
-    usage()
+    #usage()
     raise NoLicenseKey, 'get a license key at http://www.google.com/apis/'
 
 def setProxy(http_proxy):

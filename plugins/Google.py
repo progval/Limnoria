@@ -275,7 +275,10 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         if not self.snarfer:
             return
         searchString = match.group(1)
-        data = search(searchString, safeSearch=1)
+        try:
+            data = search(searchString, safeSearch=1)
+        except google.NoLicenseKey:
+            return
         if data.results:
             url = data.results[0].URL
             irc.reply(msg, url)
