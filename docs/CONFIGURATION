@@ -1,0 +1,87 @@
+Runtime configuration of Supybot is handled via the Config plugin.
+You can get/set and list all of your configuration variables using
+this plugin.  The configuration structure is hierarchical - there is a
+base group which contains all of the configuration stuff (which is
+simply called "supybot"), and there are subgroups beneath that base
+group, some of which contain values (these should be thought of as your
+configuration settings).  So, everything in the configuration hierarchy
+is a group, but not everything in the hierarchy has an associated value.
+Let's take a look at a few examples before we dive into the use of the
+Config plugin, just to make sure that the configuration structure is
+clear first.
+
+Some of the more important configuration values are located directly
+under the base group - things like the bot's nick, it's ident, etc.
+Along with these config values are a few subgroups that contain other
+values.  Some of the more prominent subgroups are: plugins (where all
+the plugin-specific configuration is held), replies, commands, and
+directories.  There are other subgroups as well, but these are the ones
+we'll use in our example.
+
+Using the Config plugin, you can list the values in a subgroup and get
+or set any of the values anywhere in the configuration hierarchy.  For
+example, let's say you wanted to see what configuration values were
+under the "supybot" (the base group) hierarchy.  You would simply issue
+this command:
+
+config list supybot
+
+Which would return a list of things like this:
+
+nick, ident, user, server, password, channels, prefixChars,
+defaultCapabilities, ignores, defaultAllow, defaultIgnore,
+humanTimestampFormat, externalIP, pipeSyntax,
+followIdentificationThroughNickChanges, alwaysJoinOnInvite,
+showSimpleSyntax, maxHistoryLength, nickmods, throttleTime,
+snarfThrottle, threadAllCommands, httpPeekSize, pingServer,
+pingInterval, and flush
+
+These are all the configuration values you can set which are under the
+base "supybot" group.  Actually, their full names would each have a
+"supybot." appended on to the front of them, but it is omitted in the
+listing to shorten the output and it is assumed since you entered in
+"supybot" as the group to look under.
+
+Now, to see all of the available configuration groups under the base
+"supybot" group, we simply use the "--groups" flag to config list:
+
+config list --groups supybot
+
+Which returns a list of subgroups, like so:
+
+commands, databases, directories, drivers, log, plugins, replies, and
+reply
+
+These are all the subgroups of "supybot".  Again, the full name of
+these would have "supybot." prepended to them.  So really, we have
+supybot.commands, supybot.databases, etc.
+
+Note: an item can show up in both lists if it is a group that itself
+has a value.  For example, all plugins fall under this category, as
+their value is a boolean value determining whether or not that plugin
+is loaded when the bot is started.  
+
+One last listing example, and then we'll start actually reading and
+modifying the configuration values.  It's important to know that when
+you provide the group argument to config list that you must always
+provide the full name of the group.  For example, "config list
+commands" would be incorrect, even though we see "commands" in the
+listing above.  You must include the full name of the parent group as
+well.  In this case, that would be "supybot", so to list everything in
+the commands subgroup of supybot, we do:
+
+config list supybot.commands
+
+Which returns:
+
+defaultPlugins
+
+Okay, now that you should have the hang of using the Config plugin to
+explore all the configuration variables available to you, let's start
+looking at those values.
+
+The first (and perhaps most important) thing you should know about
+each configuration variable is that they all have an associated help
+string to tell you what they represent.  So the first command we'll
+cover is "config help".  To see the help string for any value or
+group, simply use "config help <group|value>":
