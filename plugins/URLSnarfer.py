@@ -193,7 +193,13 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
                   (count, int(count) == 1 and 'URL' or 'URLs'))
 
     def lasturls(self, irc, msg, args):
-        args.append('--nolimit')
+        """[<channel>] [--{from,with,at,proto,near}=<value>]
+
+        Uses arguments in the same way as lasturl; acts as if lasturl was given
+        the --nolimit option.
+        """
+        if '--nolimit' not in args:
+            args.append('--nolimit')
         self.lasturl(irc, msg, args)
 
     def lasturl(self, irc, msg, args):
