@@ -31,12 +31,21 @@
 
 from testsupport import *
 
+import world
 import ircdb
 
 class UserTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('User',)
     prefix1 = 'somethingElse!user@host.tld'
     prefix2 = 'EvensomethingElse!user@host.tld'
+##     def testHostmasks(self):
+##         self.assertNotError('hostmasks')
+##         original = self.prefix
+##         self.prefix = self.prefix1
+##         self.assertNotError('register foo bar')
+##         self.prefix = original
+##         self.assertRegexp('hostmasks foo', 'only.*your.*own')
+        
     def testRegisterUnregister(self):
         self.prefix = self.prefix1
         self.assertNotError('register foo bar')
@@ -73,8 +82,8 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         self.prefix = self.prefix2
         self.assertNotError('register bar baz')
         self.prefix = self.prefix1
-        self.assertError('changeusername foo bar')
-        self.assertNotError('changeusername foo baz')
+        self.assertError('changename foo bar')
+        self.assertNotError('changename foo baz')
 
     def testSetpassword(self):
         self.prefix = self.prefix1

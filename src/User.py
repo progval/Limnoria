@@ -53,9 +53,7 @@ import callbacks
 class User(callbacks.Privmsg):
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and ircutils.isChannel(msg.args[0]):
-            irc.error(msg, conf.replyRequiresPrivacy)
-            return False
-        else: return True
+            raise callbacks.Error, conf.replyRequiresPrivacy
 
     def list(self, irc, msg, args):
         """[<glob>]
@@ -98,8 +96,7 @@ class User(callbacks.Privmsg):
         for (option, arg) in optlist:
             if option == '--hashed':
                 hashed = True
-        if not self._checkNotChannel(irc, msg, password):
-            return
+        self._checkNotChannel(irc, msg, password)
         try:
             ircdb.users.getUserId(name)
             irc.error(msg, 'That name is already assigned to someone.')
@@ -128,8 +125,7 @@ class User(callbacks.Privmsg):
         Unregisters <name> from the user database.
         """
         (name, password) = privmsgs.getArgs(args, required=2)
-        if not self._checkNotChannel(irc, msg, password):
-            return
+        self._checkNotChannel(irc, msg, password)
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
@@ -142,7 +138,7 @@ class User(callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyIncorrectAuth)
 
-    def changeusername(self, irc, msg, args):
+    def changename(self, irc, msg, args):
         """<name> <new name> [<password>]
 
         Changes your current user database name to the new name given.
@@ -150,9 +146,8 @@ class User(callbacks.Privmsg):
         If you include the <password> parameter, this message must be sent
         to the bot privately (not on a channel).
         """
-        (name, newname, password) = privmsgs.getArgs(args, required=2,optional=1)
-        if not self._checkNotChannel(irc, msg, password):
-            return
+        (name,newname,password) = privmsgs.getArgs(args,required=2,optional=1)
+        self._checkNotChannel(irc, msg, password)
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
@@ -179,8 +174,7 @@ class User(callbacks.Privmsg):
         be sent to the bot privately (not on a channel).
         """
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
-        if not self._checkNotChannel(irc, msg, password):
-            return
+        self._checkNotChannel(irc, msg, password)
         if not ircutils.isUserHostmask(hostmask):
             irc.error(msg, 'That\'s not a valid hostmask.')
             return
@@ -219,8 +213,7 @@ class User(callbacks.Privmsg):
         this message must be sent to the bot privately (not on a channel).
         """
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
-        if not self._checkNotChannel(irc, msg, password):
-            return
+        self._checkNotChannel(irc, msg, password)
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
@@ -253,8 +246,7 @@ class User(callbacks.Privmsg):
         for (option, arg) in optlist:
             if option == '--hashed':
                 hashed = True
-        if not self._checkNotChannel(irc, msg, oldpassword+newpassword):
-            return
+        self._checkNotChannel(irc, msg, oldpassword+newpassword)
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
@@ -337,8 +329,7 @@ class User(callbacks.Privmsg):
         not in a channel.
         """
         (name, password) = privmsgs.getArgs(args, 2)
-        if not self._checkNotChannel(irc, msg):
-            return
+        self._checkNotChannel(irc, msg)
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
@@ -393,8 +384,7 @@ class User(callbacks.Privmsg):
         value.
         """
         (password, value) = privmsgs.getArgs(args, optional=1)
-        if not self._checkNotChannel(irc, msg, password):
-            return
+        self._checkNotChannel(irc, msg, password)
         try:
             id = ircdb.users.getUserId(msg.prefix)
             user = ircdb.users.getUser(id)

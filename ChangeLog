@@ -1,12 +1,12 @@
 2003-12-6  Jeremy Fincher  <jemfinch@supybot.org>
 	
-	* Added Math.icalc, a new command for doing integer arithmetic.
-	It requires...
-	
 	* Added a "trusted" capability that defaults to off (-trusted) and
 	is required for Utilities.re (with which it's possible to DoS the
 	bot) and for the new Math.icalc (with which it is trivially
 	possible to DoS the bot).
+	
+	* Added Math.icalc, a new command for doing integer arithmetic.
+	It requires the "trusted" capability.
 	
 	* Added the Fun.ping command, because MozBot has it.
 	
@@ -31,6 +31,8 @@
 	the bot is lobotomized.
 	
 	* Added a swap function to Math.rpn.
+
+	* Changed the name of User.changeusername to User.changename.
 	
 	* Changed the logging infrastructure significantly; each plugin
 	now has its own logger (and thus logfile), in addition to being
