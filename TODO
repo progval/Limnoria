@@ -1,6 +1,13 @@
 Roughly in order of precedence (the closer to the front of the file,
 the more likely it'll be done before next release):
 
+* URL snarfers need to run one at a time, in order for the _snarfed
+  queue to work properly.
+
+* We could use some better log formatting -- there's no reason
+  "supybot:" needs to be there, especially when we've disabled
+  plugin-specific logfiles.
+
 * Karma needs to use invalidCommand so it can be nested.
 
 * We need to store the key for channels in the registry and have an
