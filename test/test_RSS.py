@@ -51,12 +51,17 @@ if network:
             self.failUnless(m.args[1].count('||') == 1)
 
         def testRssAdd(self):
-            self.assertNotError('rss add advogato %s' % url)
-            self.assertNotError('advogato')
-            self.assertNotError('rss advogato')
-            self.assertNotError('rss remove advogato')
-            self.assertError('advogato')
-            self.assertError('rss advogato')
+            try:
+                orig = conf.supybot.reply.whenNotCommand()
+                conf.supybot.reply.whenNotCommand.setValue(True)
+                self.assertNotError('rss add advogato %s' % url)
+                self.assertNotError('advogato')
+                self.assertNotError('rss advogato')
+                self.assertNotError('rss remove advogato')
+                self.assertError('advogato')
+                self.assertError('rss advogato')
+            finally:
+                conf.supybot.reply.whenNotCommand.setValue(orig)
 
         def testCantAddFeedNamedRss(self):
             self.assertError('rss add rss %s' % url)
