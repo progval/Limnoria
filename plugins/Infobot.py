@@ -432,9 +432,14 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         return s
 
     _forceRe = re.compile(r'^no[,: -]+', re.I)
+    _karmaRe = re.compile(r'^\S+(?:\+\+|--)(?:\s+)?$')
     def doPrivmsg(self, irc, msg):
         try:
             if ircmsgs.isCtcp(msg):
+                return
+            # probably not necessary, but we'll see what the debug logs show
+            if getattr(irc, 'finished', False):
+                self.log.debug('Received a finished irc object. Bailing.')
                 return
             maybeAddressed = callbacks.addressed(irc.nick, msg,
                                                  whenAddressedByNick=True)
@@ -443,6 +448,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 payload = maybeAddressed
             else:
                 payload = msg.args[1]
+            if self._karmaRe.search(payload):
+                self.log.debug('Not snarfing a karma adjustment.')
+                return
             payload = self.normalize(payload)
             maybeForced = self._forceRe.sub('', payload)
             if maybeForced != payload:
