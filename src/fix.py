@@ -37,6 +37,7 @@ Fixes stuff that Python should have but doesn't.
 
 import string
 string.ascii = string.maketrans('', '')
+del string
 
 def ignore(*args, **kwargs):
     """Simply ignore the arguments sent to it."""
@@ -69,6 +70,7 @@ def ilen(iterator):
         i += 1
     return i
 itertools.ilen = ilen
+del itertools
 del ilen
 
 def group(seq, groupSize, noneFill=True):

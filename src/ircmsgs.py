@@ -39,6 +39,7 @@ object (which, as you'll read later, is quite...full-featured :))
 from fix import *
 
 import re
+import string
 
 import debug
 import ircutils

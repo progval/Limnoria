@@ -39,6 +39,7 @@ import re
 import new
 import math
 import cmath
+import string
 from itertools import imap
 
 import unum.units

@@ -38,6 +38,7 @@ from baseplugin import *
 
 import time
 import getopt
+import string
 import os.path
 
 import sqlite

@@ -45,6 +45,7 @@ import sets
 import time
 import shlex
 import getopt
+import string
 import inspect
 import textwrap
 import threading
