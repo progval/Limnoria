@@ -30,7 +30,8 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Messages a list of targets when new lines are added to any of a list of files,
+much like "tail -f" does on UNIX.
 """
 
 __revision__ = "$Id$"
@@ -38,6 +39,7 @@ __author__ = ''
 
 import supybot.plugins as plugins
 
+import os
 import getopt
 
 import supybot.conf as conf
@@ -45,6 +47,7 @@ import supybot.utils as utils
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
+import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 import supybot.plugins.LogToIrc as LogToIrc
 
@@ -70,54 +73,59 @@ conf.registerGlobalValue(conf.supybot.plugins.Tail, 'files',
 conf.registerGlobalValue(conf.supybot.plugins.Tail, 'notice',
     registry.Boolean(False, """Determines whether the bot will send its tail
     messages to the targets via NOTICEs rather than PRIVMSGs."""))
+conf.registerGlobalValue(conf.supybot.plugins.Tail, 'period',
+    registry.PositiveInteger(60, """Determines how often the bot will check
+    the files that are being tailed.  The number is in seconds.  This plugin
+    must be reloaded for changes to this period to take effect."""))
 
 class Tail(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
     def __init__(self):
         privmsgs.CapabilityCheckingPrivmsg.__init__(self)
-        self.lastPos = {}
+        self.files = {}
+        period = self.registryValue('period')
+        schedule.addPeriodicEvent(self._checkFiles, period, name=self.name())
         for filename in self.registryValue('files'):
             self._add(filename)
+
+    def die(self):
+        schedule.removeEvent(self.name())
 
     def __call__(self, irc, msg):
         irc = callbacks.SimpleProxy(irc, msg)
         self.lastIrc = irc
         self.lastMsg = msg
-        self._checkFiles()
 
     def _checkFiles(self):
+        self.log.info('Checking files.')
         for filename in self.registryValue('files'):
             self._checkFile(filename)
 
     def _checkFile(self, filename):
-        try:
-            fd = file(filename)
-        except EnvironmentError, e:
-            self.log.warning('Couldn\'t tail %s: %s', filename, e)
-            return
-        fd.seek(self.lastPos.get(filename, 0))
+        fd = self.files[filename]
+        pos = fd.tell()
         line = fd.readline()
         while line:
             line = line.strip()
             if line:
                 self._send(self.lastIrc, filename, line)
-            self.lastPos[filename] = fd.tell()
+            pos = fd.tell()
             line = fd.readline()
-        fd.close()
+        fd.seek(pos)
 
     def _add(self, filename):
         try:
             fd = file(filename)
         except EnvironmentError, e:
             self.log.warning('Couldn\'t open %s: %s', filename, e)
-            return
+            raise
         fd.seek(0, 2) # 0 bytes, offset from the end of the file.
-        self.lastPos[filename] = fd.tell()
-        fd.close()
+        self.files[filename] = fd
         self.registryValue('files').add(filename)
 
     def _remove(self, filename):
-        del self.lastPos[filename]
+        fd = self.files.pop(filename)
+        fd.close()
         self.registryValue('files').remove(filename)
         
     def _send(self, irc, filename, text):
@@ -126,8 +134,7 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
         notice = self.registryValue('notice')
         payload = '%s: %s' % (filename, text)
         for target in self.registryValue('targets'):
-            self.log.warning('Sending %r to %s.', payload, target)
-            irc.reply(payload, to=target, notice=notice)
+            irc.reply(payload, to=target, notice=notice, private=True)
             
     def add(self, irc, msg, args):
         """<filename>
