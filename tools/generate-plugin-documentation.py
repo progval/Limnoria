@@ -310,7 +310,12 @@ def genPlugins():
                 moduleInfo = imp.find_module(pluginName,
                                              conf.supybot.directories.plugins()
                                             )
-                module = imp.load_module(pluginName, *moduleInfo)
+                try:
+                    module = imp.load_module(pluginName, *moduleInfo)
+                except Exception, e:
+                    print 'Couldn\'t load %s: %s' % \
+                          (pluginName, utils.exnToString(e))
+                    continue
                 if not hasattr(module, 'Class'):
                     print '%s is not a plugin.' % filename
                     continue

@@ -296,8 +296,6 @@ class PeriodicFileDownloader(object):
             self.getFile(filename)
 
     def _downloadFile(self, filename, url, f):
-        if world.documenting:
-            return
         self.currentlyDownloading.add(filename)
         try:
             try:
@@ -336,6 +334,8 @@ class PeriodicFileDownloader(object):
             self.currentlyDownloading.remove(filename)
 
     def getFile(self, filename):
+        if world.documenting:
+            return
         (url, timeLimit, f) = self.periodicFiles[filename]
         if time.time() - self.lastDownloaded[filename] > timeLimit and \
            filename not in self.currentlyDownloading:
