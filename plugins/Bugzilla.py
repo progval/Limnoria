@@ -40,9 +40,7 @@ import os
 import re
 import csv
 import getopt
-import string
 import urllib
-import urllib2
 import xml.dom.minidom as minidom
 
 from itertools import imap, ifilter
@@ -55,6 +53,7 @@ import utils
 import plugins
 import ircutils
 import privmsgs
+import webutils
 import callbacks
 import structures
 
@@ -230,18 +229,26 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         """Given a URL and query list for a CSV bug list, it'll return
         all the bugs in a dict
         """
-        u = urllib2.urlopen(url + '/buglist.cgi', string.join(query, '&'))
+        bugs = {}    
+        try:
+            url = '%s/buglist.cgi?%s' % (url, '&'.join(query))
+            u = webutils.getUrlFd(url)
+        except webutils.WebError, e:
+            return bugs
         # actually read in the file
         csvreader = csv.reader(u)
         # read header
         fields = csvreader.next()
         # read the rest of the list
-        bugs = {}    
         for bug in csvreader:
-            try:
-                bugid = int(bug[0])
-            except ValueError:
+            if isinstance(bug, basestring):
+                bugid = bug
+            else:
                 bugid = bug[0]
+            try:
+                bugid = int(bugid)
+            except ValueError:
+                pass
             bugs[bugid] = {}
             i = 1
             for f in fields[1:]:
@@ -278,6 +285,9 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         bugs = self.urlquery2bugslist(url, query)
         bugids = bugs.keys()
         bugids.sort()
+        if not bugs:
+            irc.error('I could not find any bugs.')
+            return
         s = '%s match %r (%s): %s.' % \
             (utils.nItems('bug', len(bugs)), searchstr,
              ' AND '.join(keywords), utils.commaAndify(map(str, bugids)))
@@ -373,11 +383,9 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
 
     def _getbugxml(self, url, desc):
         try:
-            fh = urllib2.urlopen(url)
-        except urllib2.HTTPError, e:
+            bugxml = webutils.getUrl(url)
+        except webutils.WebError, e:
             raise IOError, 'Connection to %s bugzilla failed' % desc
-        bugxml = fh.read()
-        fh.close()
         if not bugxml:
             raise IOError, 'Error getting bug content from %s' % desc
         return bugxml
