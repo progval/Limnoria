@@ -43,7 +43,6 @@ import sets
 import time
 import random
 import os.path
-import urllib2
 import UserDict
 import threading
 

@@ -42,7 +42,6 @@ import sets
 import time
 import getopt
 import socket
-import urllib2
 import xml.sax
 
 import SOAP
@@ -55,6 +54,7 @@ import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
+import supybot.webutils as webutils
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 import supybot.structures as structures
@@ -381,10 +381,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         m = match.group(0)
         header = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; '
                                 'Windows NT 4.0)'}
-        request = urllib2.Request(m, headers=header)
-        fd = urllib2.urlopen(request)
-        text = fd.read()
-        fd.close()
+        request = webutils.Request(m, headers=header)
+        text = webutils.getUrl(request)
         mThread = None
         mGroup = None
         if 'threadm=' in m:
@@ -392,19 +390,15 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             if path is None:
                 return
             url = 'http://groups.google.com%s' % path.group(1)
-            request = urllib2.Request(url, headers=header)
-            fd = urllib2.urlopen(request)
-            text = fd.read()
-            fd.close()
+            request = webutils.Request(url, headers=header)
+            text = webutils.getUrl(request)
         elif 'selm=' in m:
             path = self._ggSelm.search(m)
             if m is None:
                 return
             url = 'http://groups.google.com/groups?%s' % path.group(0)
-            request = urllib2.Request(url, headers=header)
-            fd = urllib2.urlopen(request)
-            text = fd.read()
-            fd.close()
+            request = webutils.Request(url, headers=header)
+            text = webutils.getUrl(request)
         else:
             pass
         mThread = self._ggThread.search(text)

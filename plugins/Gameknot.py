@@ -39,7 +39,6 @@ import supybot.plugins as plugins
 
 import re
 import sets
-import urllib2
 
 import supybot.registry as registry
 
@@ -47,6 +46,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
+import supybot.webutils as webutils
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
@@ -89,9 +89,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     def getStats(self, name):
         gkprofile = 'http://www.gameknot.com/stats.pl?%s' % name
         try:
-            fd = urllib2.urlopen(gkprofile)
-            profile = fd.read()
-            fd.close()
+            profile = webutils.getUrl(gkprofile)
             rating = self._gkrating.search(profile).group(1)
             games = self._gkgames.search(profile).group(1)
             (w, l, d) = self._gkrecord.search(profile).groups()
@@ -150,8 +148,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             else:
                 raise callbacks.Error,'The format of the page was odd.  %s' % \
                       conf.supybot.replies.possibleBug()
-        except urllib2.URLError:
-            raise callbacks.Error, 'Couldn\'t connect to gameknot.com'
+        except webutils.WebError, e:
+            raise callbacks.Error, webutils.strError(e)
 
 
     def gkstats(self, irc, msg, args):
@@ -174,9 +172,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
         if not self.registryValue('gameSnarfer', msg.args[0]):
             return
         url = match.group(0)
-        fd = urllib2.urlopen(url)
-        s = fd.read()
-        fd.close()
+        s = webutils.getUrl(url)
         try:
             if 'no longer available' in s:
                 s = 'That game is no longer available.'

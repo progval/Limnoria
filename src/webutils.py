@@ -34,11 +34,13 @@ __revision__ = "$Id$"
 import supybot.fix as fix
 
 import re
-import supybot.conf as conf
 import socket
 import urllib2
 import urlparse
 
+import supybot.conf as conf
+
+Request = urllib2.Request
 class WebError(Exception):
     pass
 

@@ -38,10 +38,9 @@ __revision__ = "$Id$"
 
 import supybot.plugins as plugins
 
-import urllib2
-
 import supybot.utils as utils
 import supybot.privmsgs as privmsgs
+import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
 
@@ -237,8 +236,7 @@ class OSU(callbacks.Privmsg):
         s = '.'.join(args)
         url = 'http://www.ohio-state.edu/cgi-bin/inquiry2.cgi?keyword=%s' % s
         try:
-            fd = urllib2.urlopen(url)
-            data = fd.read()
+            data = webutils.getUrl(url)
             emails = []
             for line in data.splitlines():
                 line.strip()
