@@ -74,7 +74,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 keys.append(key)
             else:
                 chans.append(channel)
-        irc.queueMsg(ircmsgs.joins(channels, keys))
+        irc.queueMsg(ircmsgs.joins(chans, keys))
     do422 = do377 = do376
         
     def do471(self, irc, msg):
