@@ -540,7 +540,7 @@ class IrcChannelCreator(Creator):
     def ignore(self, rest, lineno):
         if self.name is None:
             raise ValueError, 'Unexpected channel description without channel.'
-        (pattern, expiration) = rest
+        (pattern, expiration) = rest.split()
         self.c.ignores[pattern] = int(float(expiration))
 
     def finish(self):
@@ -569,9 +569,11 @@ class UsersDictionary(utils.IterableMap):
                 reader.readFile(filename)
                 self.noFlush = False
                 self.flush()
-            except Exception, e:
+            except EnvironmentError, e:
                 log.error('Invalid user dictionary file, resetting to empty.')
                 log.error('Exact error: %s', utils.exnToString(e))
+            except Exception, e:
+                log.exception('Exact error:')
         finally:
             self.noFlush = False
 
