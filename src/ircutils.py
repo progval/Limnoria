@@ -321,10 +321,30 @@ def canonicalColor(s, bg=False, shift=0):
     else:
         return (fg, None)
 
+def stripBold(s):
+    """Returns the string s, with bold removed."""
+    return s.replace('\x02', '')
+
 _unColorRe = re.compile(r'\x03(?:\d{1,2},\d{1,2}|\d{1,2}|,\d{1,2}|)')
-def unColor(s):
-    """Removes the color from a string."""
+def stripColor(s):
+    """Returns the string s, with color removed."""
     return _unColorRe.sub('', s)
+
+def stripReverse(s):
+    """Returns the string s, with reverse-video removed."""
+    return s.replace('\x16', '')
+
+def stripUnderline(s):
+    """Returns the string s, with underlining removed."""
+    return s.replace('\x1f', '').replace('\x1F', '')
+
+def stripFormatting(s):
+    """Returns the string s, with all formatting removed."""
+    s = stripBold(s)
+    s = stripColor(s)
+    s = stripReverse(s)
+    s = stripUnderline(s)
+    return s.replace('\x0f', '').replace('\x0F', '')
 
 def isValidArgument(s):
     """Returns whether s is strictly a valid argument for an IRC message."""

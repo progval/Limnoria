@@ -93,6 +93,16 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(s[0], '\x02')
         self.assertEqual(s[-1], '\x02')
 
+    def testUnderline(self):
+        s = ircutils.underline('foo')
+        self.assertEqual(s[0], '\x1f')
+        self.assertEqual(s[-1], '\x1f')
+
+    def testReverse(self):
+        s = ircutils.reverse('foo')
+        self.assertEqual(s[0], '\x16')
+        self.assertEqual(s[-1], '\x16')
+
     def testMircColor(self):
         # No colors provided should return the same string
         s = 'foo'
@@ -113,6 +123,39 @@ class FunctionsTestCase(SupyTestCase):
             if k:
                 self.assertEqual(ircutils.mircColors[v], k)
 
+    def testStripBold(self):
+        self.assertEqual(ircutils.stripBold(ircutils.bold('foo')), 'foo')
+
+    def testStripColor(self):
+        self.assertEqual(ircutils.stripColor('\x02bold\x0302,04foo\x03bar\x0f'),
+                         '\x02boldfoobar\x0f')
+        self.assertEqual(ircutils.stripColor('\x03foo\x03'), 'foo')
+        self.assertEqual(ircutils.stripColor('\x03foo\x0F'), 'foo\x0F')
+        self.assertEqual(ircutils.stripColor('\x0312foo\x03'), 'foo')
+        self.assertEqual(ircutils.stripColor('\x0312,14foo\x03'), 'foo')
+        self.assertEqual(ircutils.stripColor('\x03,14foo\x03'), 'foo')
+        self.assertEqual(ircutils.stripColor('\x03,foo\x03'), ',foo')
+        self.assertEqual(ircutils.stripColor('\x0312foo\x0F'), 'foo\x0F')
+        self.assertEqual(ircutils.stripColor('\x0312,14foo\x0F'), 'foo\x0F')
+        self.assertEqual(ircutils.stripColor('\x03,14foo\x0F'), 'foo\x0F')
+        self.assertEqual(ircutils.stripColor('\x03,foo\x0F'), ',foo\x0F')
+
+    def testStripReverse(self):
+        self.assertEqual(ircutils.stripReverse(ircutils.reverse('foo')), 'foo')
+
+    def testStripUnderline(self):
+        self.assertEqual(ircutils.stripUnderline(ircutils.underline('foo')),
+                         'foo')
+
+    def testStripFormatting(self):
+        self.assertEqual(ircutils.stripFormatting(ircutils.bold('foo')), 'foo')
+        self.assertEqual(ircutils.stripFormatting(ircutils.reverse('foo')),
+                         'foo')
+        self.assertEqual(ircutils.stripFormatting(ircutils.underline('foo')),
+                         'foo')
+        self.assertEqual(ircutils.stripFormatting('\x02bold\x0302,04foo\x03'
+                                                  'bar\x0f'),
+                         'boldfoobar')
 
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'
@@ -175,20 +218,6 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(ircutils.joinModes(modes),
                          ['+be-l', plusB[1], plusE[1]])
 
-    def testUnColor(self):
-        self.assertEqual(ircutils.unColor('\x02bold\x0302,04foo\x03bar\x0f'),
-                                          '\x02boldfoobar\x0f')
-        self.assertEqual(ircutils.unColor('\x03foo\x03'), 'foo')
-        self.assertEqual(ircutils.unColor('\x03foo\x0F'), 'foo\x0F')
-        self.assertEqual(ircutils.unColor('\x0312foo\x03'), 'foo')
-        self.assertEqual(ircutils.unColor('\x0312,14foo\x03'), 'foo')
-        self.assertEqual(ircutils.unColor('\x03,14foo\x03'), 'foo')
-        self.assertEqual(ircutils.unColor('\x03,foo\x03'), ',foo')
-        self.assertEqual(ircutils.unColor('\x0312foo\x0F'), 'foo\x0F')
-        self.assertEqual(ircutils.unColor('\x0312,14foo\x0F'), 'foo\x0F')
-        self.assertEqual(ircutils.unColor('\x03,14foo\x0F'), 'foo\x0F')
-        self.assertEqual(ircutils.unColor('\x03,foo\x0F'), ',foo\x0F')
-
     def testDccIpStuff(self):
         def randomIP():
             def rand():
@@ -249,6 +278,7 @@ class IrcDictTestCase(SupyTestCase):
         self.failUnless(d == copy.copy(d))
         self.failUnless(d == copy.deepcopy(d))
 
+
 class IrcSetTestCase(SupyTestCase):
     def test(self):
         s = ircutils.IrcSet()
@@ -279,7 +309,6 @@ class IrcSetTestCase(SupyTestCase):
         self.failIf('foo' in s1)
         self.failIf('FOo' in s1)
 
-        
 
 class IrcStringTestCase(SupyTestCase):
     def testEquality(self):

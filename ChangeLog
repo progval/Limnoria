@@ -1,3 +1,7 @@
+	* Added ircutils.strip{Bold,Reverse,Underline,Formatting}, which
+	will remove the specified formatting or all forms of formatting
+	in the case of stripFormatting.
+
 	* Replaced Sourceforge.{rfe,bug} with Sourceforge.tracker, which
 	can query any tracker type (not just RFEs and bugs) and responds
 	with more information, a la trackerSnarfer.
