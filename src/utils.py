@@ -825,9 +825,9 @@ def callTracer(fd=None, basename=True):
 
 def toBool(s):
     s = s.strip().lower()
-    if s in ('true', 'on', 'enable', 'enabled'):
+    if s in ('true', 'on', 'enable', 'enabled', '1'):
         return True
-    elif s in ('false', 'off', 'disable', 'disabled'):
+    elif s in ('false', 'off', 'disable', 'disabled', '0'):
         return False
     else:
         raise ValueError, 'Invalid string for toBool: %s' % quoted(s)
