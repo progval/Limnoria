@@ -138,7 +138,7 @@ def recoverableException():
         if issubclass(e.__class__, exn):
             raise
     lastTimes.append(time.time())
-    if lastTimes[-1] - lastTimes[0] < 0.20:
+    if lastTimes[-1] - lastTimes[0] < 0.50:
         msg('Too many exceptions too quickly.  Bailing out.', 'high')
         exit()
     else:
