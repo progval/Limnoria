@@ -240,7 +240,7 @@ class Config(callbacks.Privmsg):
         name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
         if hasattr(wrapper, 'help'):
-            s = wrapper.help
+            s = wrapper.help()
             if s:
                 if hasattr(wrapper, 'value') and not wrapper._private:
                     s += '  (Current value: %s)' % wrapper
@@ -249,7 +249,6 @@ class Config(callbacks.Privmsg):
                 irc.reply('That configuration group exists, but seems to have '
                           'no help.  Try "config list %s" to see if it has '
                           'any children values.')
-                
         else:
             irc.error('%s has no help.' % name)
 

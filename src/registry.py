@@ -80,10 +80,10 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
     helpCache = sets.Set()
     fd = utils.transactionalFile(filename)
     for (name, value) in registry.getValues(getChildren=True):
-        if annotated and hasattr(value,'help') and value.help:
-            if not helpOnceOnly or value.help not in helpCache:
-                helpCache.add(value.help)
-                lines = textwrap.wrap(value.help)
+        if annotated and hasattr(value,'_help') and value._help:
+            if not helpOnceOnly or value._help not in helpCache:
+                helpCache.add(value._help)
+                lines = textwrap.wrap(value._help)
                 for (i, line) in enumerate(lines):
                     lines[i] = '# %s\n' % line
                 lines.insert(0, '###\n')
@@ -136,7 +136,7 @@ class Group(object):
     """A group; it doesn't hold a value unless handled by a subclass."""
     def __init__(self, help='',
                  supplyDefault=False, orderAlphabetically=False):
-        self.help = help
+        self._help = help
         self._name = 'unset'
         self._added = []
         self._children = utils.InsensitivePreservingDict()
@@ -163,11 +163,11 @@ class Group(object):
         raise NonExistentRegistryEntry, s
 
     def __makeChild(self, attr, s):
-        v = self.__class__(self._default, self.help)
+        v = self.__class__(self._default, self._help)
         v.set(s)
         v.__class__ = self.X
         v._supplyDefault = False
-        v.help = '' # Clear this so it doesn't print a bazillion times.
+        v._help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
         return v
 
@@ -178,6 +178,9 @@ class Group(object):
             return self.__makeChild(attr, str(self))
         else:
             self.__nonExistentEntry(attr)
+
+    def help(self):
+        return self._help
 
     def get(self, attr):
         # Not getattr(self, attr) because some nodes might have groups that
@@ -270,7 +273,7 @@ class Value(Group):
         self._default = default
         self._private = private
         self.showDefault = showDefault
-        self.help = utils.normalizeWhitespace(help.strip())
+        self._help = utils.normalizeWhitespace(help.strip())
         if setDefault:
             self.setValue(default)
 
@@ -400,7 +403,7 @@ class String(Value):
     _printable = string.printable[:-4]
     def _needsQuoting(self, s):
         return s.translate(string.ascii, self._printable) and s.strip() != s
-               
+
     def __str__(self):
         s = self.value
         if self._needsQuoting(s):
@@ -414,6 +417,11 @@ class OnlySomeStrings(String):
                                   'This is a bug.'
         self.__parent = super(OnlySomeStrings, self)
         self.__parent.__init__(*args, **kwargs)
+
+    def help(self):
+        strings = [s for s in self.validStrings if s]
+        return '%s  Valid strings: %s.' % \
+                (self._help, utils.commaAndify(strings))
 
     def error(self):
         raise InvalidRegistryValue, \
@@ -441,10 +449,10 @@ class NormalizedString(String):
         default = self.normalize(default)
         self.__parent = super(NormalizedString, self)
         self.__parent.__init__(default, *args, **kwargs)
-        
+
     def normalize(self, s):
         return utils.normalizeWhitespace(s.strip())
-    
+
     def set(self, s):
         s = self.normalize(s)
         self.__parent.set(s)
@@ -474,7 +482,7 @@ class Regexp(Value):
         self.sr = ''
         self.value = None
         super(Regexp, self).__init__(*args, **kwargs)
-        
+
     def error(self, e):
         raise InvalidRegistryValue, 'Value must be a regexp of the form %s' % e
 
