@@ -50,7 +50,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 import supybot.structures as structures
 
-def getChannel(msg, args, raiseError=True):
+def getChannel(msg, args=(), raiseError=True):
     """Returns the channel the msg came over or the channel given in args.
 
     If the channel was given in args, args is modified (the channel is
