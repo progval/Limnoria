@@ -274,7 +274,7 @@ def tokenize(s):
         args = Tokenizer(tokens).tokenize(s)
     except ValueError, e:
         raise SyntaxError, str(e)
-    debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
+    #debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
     return args
 
 def getCommands(tokens):
@@ -606,7 +606,6 @@ class Privmsg(irclib.IrcCallback):
         funcname = '%s.%s' % (f.im_class.__name__, f.im_func.func_name)
         debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
-    _r = re.compile(r'^([^\s[]+)(?:\[|\s+|$)')
     def doPrivmsg(self, irc, msg, rateLimit=True):
         s = addressed(irc.nick, msg)
         #debug.printf('Privmsg.doPrivmsg: s == %r' % s)
@@ -615,22 +614,24 @@ class Privmsg(irclib.IrcCallback):
             if ircdb.checkIgnored(msg.prefix, recipient):
                 debug.msg('Privmsg.doPrivmsg: ignoring %s.' % msg.prefix)
                 return
-            m = self._r.match(s)
-            if m and self.isCommand(canonicalName(m.group(1))):
-                if rateLimit:
-                    self.rateLimiter.put(msg)
-                    msg = self.rateLimiter.get()
-                if msg:
-                    try:
-                        args = tokenize(s)
+            try:
+                args = tokenize(s)
+            except SyntaxError, e:
+                irc.queueMsg(reply(msg, debug.exnToString(e)))
+                return
+            if args and isinstance(args[0], str):
+                args[0] = canonicalName(args[0])
+                if self.isCommand(args[0]):
+                    if rateLimit:
+                        self.rateLimiter.put(msg)
+                        msg = self.rateLimiter.get()
+                    if msg:
                         if conf.replyWhenNotCommand:
                             for command in getCommands(args):
                                 command = canonicalName(command)
                                 if not findCallbackForCommand(irc, command):
                                     return
                         self.Proxy(irc, msg, args)
-                    except SyntaxError, e:
-                        irc.queueMsg(reply(msg, debug.exnToString(e)))
 
 
 class IrcObjectProxyRegexp:
