@@ -516,7 +516,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             text = msg.nick
         m = ircmsgs.quit(text)
         world.upkeep()
-        for irc in world.ircs:
+        for irc in world.ircs[:]:
             irc.queueMsg(m)
             irc.die()
 
