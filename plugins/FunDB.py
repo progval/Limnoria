@@ -60,7 +60,7 @@ class DbiFunDBDB(object):
             __metaclass__ = dbi.Record
             __fields__ = [
                 'by',
-                ('text', str),
+                'text',
                 ]
             
     def __init__(self):

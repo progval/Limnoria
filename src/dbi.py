@@ -348,7 +348,7 @@ class Record(type):
                     setattr(self, name, defaults[name])
 
         def serialize(self):
-            return csv.join([str(getattr(self, name)) for name in fields])
+            return csv.join([repr(getattr(self, name)) for name in fields])
 
         def deserialize(self, s):
             unseenRecords = sets.Set(fields)

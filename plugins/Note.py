@@ -90,7 +90,7 @@ class DbiNoteDB(dbi.DB):
             'notified',
             'read',
             'public',
-            ('text', str)
+            'text',
             ]
 
     def setRead(self, id):
