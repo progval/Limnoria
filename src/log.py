@@ -391,7 +391,7 @@ _handler.setLevel(-1)
 class PluginLogFilter(logging.Filter):
     def filter(self, record):
         if conf.supybot.log.plugins.individualLogfiles():
-            if record.msg.name.startswith('supybot.plugins'):
+            if record.name.startswith('supybot.plugins'):
                 return False
         return True
 _handler.addFilter(PluginLogFilter())
