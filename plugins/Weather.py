@@ -380,7 +380,7 @@ class Weather(callbacks.Privmsg):
             irc.error(noLocationError, Raise=True)
         if 'Search results for' in text:
             irc.error('Multiple locations found.  Please be more specific.',
-                      raise=True)
+                      Raise=True)
         location = self._wunderLoc.search(text)
         temp = self._wunderFTemp.search(text)
         convert = self.registryValue('convert', msg.args[0])
