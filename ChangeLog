@@ -1,20 +1,47 @@
-	* Added the ability to reply to factoids without the "whatis" in
-	the Factoids plugin.  Now, you can use "@foo" instead of "@whatis
-	foo".
-	
 	* Changed the format of the user and channel databases to
 	something much more readable and user-editable.  Be sure, if
 	you're upgrading, to run tools/ircdbConvert.py on your user and
 	channel databases *BEFORE* installing the new version.
 	
+	* Updated almost every document we have, and added a
+	GETTING_STARTED document.  Yay!
+	
+	* Added several new options for Channel.kban: --exact, --nick,
+	--user, --host, for more flexibility in determining what the
+	banmask is.
+	
+	* Added a Scheduler plugin for scheduling events to occur at
+	specific times.
+
+	* Added a Herald plugin for announcing to the channel the arrival
+	of certain users.
+	
+	* Changed the reply method of the irc object given to plugins not
+	to require a msg object.
+	
+	* Added inter-factoid references for MoobotFactoids.  Simply
+	define a factoid as "see <factoid-key>" (and nothing else) and it
+	will automatically go pick up the value for that factoid and
+	display it in its place.  Sort of a "symlink" for MoobotFactoids.
+	
+	* Added the ability to reply to factoids without the "whatis" in
+	the Factoids plugin.  Now, you can use "@foo" instead of "@whatis
+	foo".
+	
 	* Added --{from,to} and --sent options to Note.sent.
 
+	* Changed Note.get to simply be "note".  Instead of "note get
+	145", you should use "note 145".
+	
 	* Changed channel capabilities to use a comma to separate the
 	channel from the capability instead of a period.  This is because
 	channels can include periods (but not commas) and since we now
 	allow "plugin.command" capabilities, there's no way to know
 	whether a given dot is separating the channel from the capability
 	or the plugin from the command.
+	
+	* Removed Admin.setprefixchar, since it's unneeded with the new
+	configuration.
 	
 	* Removed Status.bestuptime, since it was buggy and no one felt
 	like maintaining it.
@@ -24,46 +51,30 @@
 	
 	* Added Sourceforge.totalbugs and Sourceforge.totalrfes
 
-	* Removed Admin.setprefixchar, since it's unneeded with the new
-	configuration.
-	
-	* Changed the reply method of the irc object given to plugins not
-	to require a msg object.
-	
 	* Removed Owner.{set,unset} since they matter not.
 	
 	* Made the smileys and frowns configurable in ChannelDB.
 
-	* Added an INVITE handler in Admin, allowing users with the admin
-	capability to INVITE the bot to a channel.  There's also a config
-	variable, alwaysJoinOnInvite, that will cause the bot to join
-	a channel whenever someone invites it to a channel, not just users
-	with the admin capability.
-
 	* Added a vast array of new configurables -- check out the various
 	config commands in Configurable plugins to see.
-	
-	* Updated almost every document we have, and added a
-	GETTING_STARTED document.  Yay!
-	
-	* Added several new options for Channel.kban: --exact, --nick,
-	--user, --host, for more flexibility in determining what the
-	banmask is.
 	
 	* Added better error reporting for Admin.join, explaining to the
 	user if the bot can't join the channel.
 	
 	* Added a title-snarfer to the URL plugin.
 	
-	* Changed Note.get to simply be "note".  Instead of "note get
-	145", you should use "note 145".
+	* Added Relay.command, a command for sending commands to the bot
+	on a different network.
 	
-	* Added a Scheduler plugin for scheduling events to occur at
-	specific times.
+	* Added Bugzilla.search, a new command for searching a bugzilla
+	installation
+	 
+	* Added an INVITE handler in Admin, allowing users with the admin
+	capability to INVITE the bot to a channel.  There's also a config
+	variable, alwaysJoinOnInvite, that will cause the bot to join
+	a channel whenever someone invites it to a channel, not just users
+	with the admin capability.
 
-	* Added a Herald plugin for announcing to the channel the arrival
-	of certain users.
-	
 	* Added conf.requireChannelCommandsToBeSentInChannel for requiring
 	all channel-related commands to be sent in the channel.
 	
@@ -80,15 +91,9 @@
 	having the bot not prefix the nick of the person giving a command
 	to the reply.
 	
-	* Added Relay.command, a command for sending commands to the bot
-	on a different network.
-	
 	* Changed all "zegrep" stuff to "zgrep -e" stuff, since zegrep is
 	on fewer platforms than zgrep.
 
-	* Added Bugzilla.search, a new command for searching a bugzilla
-	installation
-	 
 2003-12-12 Jeremy Fincher <jemfinch@supybot.org>
 
 	* Version 0.76.1!  The birthday release!
