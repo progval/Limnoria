@@ -92,34 +92,34 @@ class IrcCallback(object):
 class IrcMsgQueue(object):
     """Class for a queue of IrcMsgs.  Eventually, it should be smart.
     """
-    __slots__ = ('msgs', 'modes', 'kicks', 'lowpriority')
+    __slots__ = ('msgs', 'highpriority', 'normal', 'lowpriority')
     def __init__(self):
         self.reset()
 
     def reset(self):
-        self.modes = queue()
-        self.kicks = queue()
+        self.highpriority = queue()
+        self.normal = queue()
         self.lowpriority = queue()
         self.msgs = set()
 
-    def enqueueMsg(self, msg):
+    def enqueue(self, msg):
         if msg in self.msgs:
             if not world.startup:
                 debug.debugMsg('Not adding msg %s to queue' % msg, 'normal')
         else:
             self.msgs.add(msg)
-            if msg.command == 'MODE':
-                self.modes.enqueue(msg)
-            elif msg.command == 'KICK':
-                self.kicks.enqueue(msg)
-            else:
+            if msg.command in ('MODE', 'KICK', 'PONG'):
+                self.highpriority.enqueue(msg)
+            elif msg.command in ('PING',):
                 self.lowpriority.enqueue(msg)
+            else:
+                self.normal.enqueue(msg)
 
-    def dequeueMsg(self):
-        if self.modes:
-            msg = self.modes.dequeue()
-        elif self.kicks:
-            msg = self.kicks.dequeue()
+    def dequeue(self):
+        if self.highpriority:
+            msg = self.highpriority.dequeue()
+        elif self.normal:
+            msg = self.normal.dequeue()
         elif self.lowpriority:
             msg = self.lowpriority.dequeue()
         else:
@@ -128,8 +128,8 @@ class IrcMsgQueue(object):
             self.msgs.remove(msg)
         return msg
 
-    def empty(self):
-        return not (self.modes or self.kicks or self.lowpriority)
+    def __nonzero__(self):
+        return (self.highpriority or self.normal or self.lowpriority)
 
 
 ###
@@ -282,18 +282,19 @@ class Irc(object):
         self.queue = IrcMsgQueue()
         self.fastqueue = queue()
         self.lastping = time.time()
+        self.lastpong = time.time()+60
         self.lastTake = 0
         self.driver = None # The driver should set this later.
-        self.queue.enqueueMsg(ircmsgs.user(self.user, self.ident))
-        self.queue.enqueueMsg(ircmsgs.nick(self.nick))
+        self.queue.enqueue(ircmsgs.user(self.user, self.ident))
+        self.queue.enqueue(ircmsgs.nick(self.nick))
 
     def reset(self):
         self._nickmods = copy.copy(conf.nickmods)
         self.state.reset()
         self.queue.reset()
         self.fastqueue = queue()
-        self.queue.enqueueMsg(ircmsgs.user(self.user, self.ident))
-        self.queue.enqueueMsg(ircmsgs.nick(self.nick))
+        self.queue.enqueue(ircmsgs.user(self.user, self.ident))
+        self.queue.enqueue(ircmsgs.nick(self.nick))
         for callback in self.callbacks:
             callback.reset()
 
@@ -313,7 +314,7 @@ class Irc(object):
         return ret
 
     def queueMsg(self, msg):
-        self.queue.enqueueMsg(msg)
+        self.queue.enqueue(msg)
 
     def sendMsg(self, msg):
         self.fastqueue.enqueue(msg)
@@ -323,12 +324,17 @@ class Irc(object):
         msg = None
         if self.fastqueue:
             msg = self.fastqueue.dequeue()
-        elif not self.queue.empty():
+        elif self.queue:
             if now - self.lastTake <= conf.throttleTime:
                 debug.debugMsg('Irc.takeMsg throttling.', 'verbose')
             else:
                 self.lastTake = now
-                msg = self.queue.dequeueMsg()
+                msg = self.queue.dequeue()
+        elif self.lastping - self.lastpong > 180:
+            # Our ping hasn't be responded to.
+            if hasattr(self.driver, 'scheduleReconnect'):
+                self.driver.scheduleReconnect()
+            self.driver.die()
         elif now > (self.lastping + conf.pingInterval):
             if now - self.lastTake <= conf.throttleTime:
                 debug.debugMsg('Irc.takeMsg throttling.', 'verbose')
@@ -393,10 +399,14 @@ class Irc(object):
                                   hostmasks=[msg.prefix])
                 ircdb.users.setUser(self.nick, u)
                 atexit.register(lambda: catch(ircdb.users.delUser(self.nick)))
-
-#        elif msg.command == 'ERROR':
-#            if msg.args[0].startswith('Closing Link'):
-#                self.driver.die()
+        elif msg.command == 'PONG':
+            self.lastpong = time.time()
+        elif msg.command == 'ERROR':
+            if msg.args[0].startswith('Closing Link'):
+                if hasattr(self.driver, 'scheduleReconnect'):
+                    self.driver.scheduleReconnect()
+                if self.driver:
+                    self.driver.die()
         # Now update the IrcState object.
         try:
             self.state.addMsg(self, msg)
