@@ -81,14 +81,26 @@ class PluginDoc(object):
             log.debug('command: %s', command)
             self.appendLine(command, 2)
             self.appendLine('')
-            try:
-                help =  inst.getCommandHelp([command])
-            except AssertionError:
-                help = 'nested?'
             com = getattr(self.mod.Class, command, False)
             doc = None
             if com:
                 doc = com.__doc__.splitlines()
+            else:
+                # this is a nested plugin
+                nclass = None
+                try:
+                    nroot, nname = command.split()
+                except ValueError:
+                    log.warning('Failed to find command, skipping %s', command)
+                    break
+                nclass = getattr(self.mod.Class, nroot, False)
+                if nclass:
+                    ncom = getattr(nclass, nname, False)
+                    doc = ncom.__doc__.splitlines()
+                else:
+                    log.warning('Failed to find nested pligun command, skipping %s',
+                        command)
+                    break
             if doc:
                 args = doc.pop(0)
                 doc = [l.strip() for l in doc]
@@ -98,6 +110,7 @@ class PluginDoc(object):
                 self.appendLine('')
             else:
                 self.appendLine('No help Associated with this command', 3)
+                self.appendLine('')
         self.appendLine('')
         return '\n'.join(self.lines)
 
