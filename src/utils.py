@@ -250,7 +250,7 @@ def perlReToReplacer(s):
         return lambda s: r.sub(replace, s, 1)
 
 def findBinaryInPath(s):
-    """Returns full path of a binary if it's in PATH, otherwise returns None."""
+    """Return full path of a binary if it's in PATH, otherwise return None."""
     cmdLine = None
     for dir in os.getenv('PATH').split(':'):
         filename = os.path.join(dir, s)
