@@ -57,6 +57,7 @@ if sqlite is not None:
             self.assertError('stats %s' % self.nick)
             self.assertNotError('stats %s' % self.nick)
             self.assertNotError('stats %s' % self.nick.upper())
+            self.assertNotError('stats')
 
         def testNoKeyErrorEscapeFromSeen(self):
             self.assertRegexp('seen asldfkjasdlfkj', 'I have not seen')

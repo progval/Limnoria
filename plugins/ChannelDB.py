@@ -408,14 +408,21 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                           WHERE name=%s""", name)
 
     def stats(self, irc, msg, args):
-        """[<channel>] <nick>
+        """[<channel>] [<name>]
 
-        Returns the statistics for <nick> on <channel>.  <channel> is only
-        necessary if the message isn't sent on the channel itself.
+        Returns the statistics for <name> on <channel>.  <channel> is only
+        necessary if the message isn't sent on the channel itself.  If <name>
+        isn't given, it defaults to the user sending the command.
         """
         channel = privmsgs.getChannel(msg, args)
-        name = privmsgs.getArgs(args)
-        if not ircdb.users.hasUser(name):
+        name = privmsgs.getArgs(args, needed=0, optional=1)
+        if not name:
+            try:
+                id = ircdb.users.getUserId(msg.prefix)
+            except KeyError:
+                irc.error(msg, 'I couldn\'t find you in my user database.')
+                return
+        elif not ircdb.users.hasUser(name):
             try:
                 hostmask = irc.state.nickToHostmask(name)
                 id = ircdb.users.getUserId(hostmask)
