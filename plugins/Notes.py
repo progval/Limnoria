@@ -42,7 +42,6 @@ Commands include:
 from baseplugin import *
 
 import time
-import string
 import os.path
 import operator
 
@@ -121,6 +120,34 @@ class Notes(callbacks.Privmsg):
         "Called when module is unloaded/reloaded."
         self.db.close()
     
+    def doJoin(self, irc, msg):
+        try:
+            name = ircdb.users.getUserName(msg.prefix)
+        except KeyError:
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM notes, users
+                          WHERE users.name=%s AND
+                                notes.to_id=users.id AND
+                                read=0""", name)
+        unread = int(cursor.fetchone()[0])
+        cursor.execute("""SELECT COUNT(*) FROM notes, users
+                          WHERE users.name=%s AND
+                                notes.to_id=users.id AND
+                                notified=0""", name)
+        unnotified = int(cursor.fetchone()[0])
+        if unread + unnotified == 0:
+            return
+        s = 'You have %s unread note%s ' \
+            '%s that I haven\'t told you about before now..' % \
+            (unread, unread == 1 and ';' or 's;', unnotified)
+        irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
+        cursor.execute("""UPDATE notes
+                          SET notified=1
+                          WHERE notes.to_id=(SELECT id
+                                             FROM users
+                                             WHERE name=%s)""", name)
+
     def sendnote(self, irc, msg, args):
         """<recipient> <text>
         
