@@ -609,4 +609,6 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        pass
+        myPrint("""Well, it looked like you cancelled out of the wizard before
+        it was done.  Unfortunately, I didn't get to write anything to file.
+        Please run the wizard again to completion.""")
