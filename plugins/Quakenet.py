@@ -83,6 +83,16 @@ digests = ircutils.IrcDict({
 toQ = 'Q@CServe.quakenet.org'
 fromQ = 'Q!TheQBot@CServe.quakenet.org'
 
+def _isQuakeNet(irc):
+    return irc.state.supported.get('NETWORK') == 'QuakeNet'
+
+def isQuakeNet(irc, msg, args, state):
+    if not _isQuakeNet(irc):
+        irc.error('It seems like you\'re not on QuakeNet.  '
+                  'This plugin should only be used on QuakeNet.', Raise=True)
+
+addConverter('isQuakeNet', isQuakeNet)
+        
 class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
     def __init__(self):
@@ -90,11 +100,8 @@ class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
         self.__parent.__init__()
         self.lastChallenge = None
 
-    def _isQuakeNet(self, irc):
-        return irc.state.supported.get('NETWORK') == 'QuakeNet'
-
     def outFilter(self, irc, msg):
-        if self._isQuakeNet(irc):
+        if _isQuakeNet(irc):
             if msg.command == 'PRIVMSG':
                 if msg.args[0] in ('NickServ', 'ChanServ'):
                     self.log.info('Filtering outgoing message to '
@@ -103,7 +110,7 @@ class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
         return msg
 
     def do376(self, irc, msg):
-        if self._isQuakeNet(irc):
+        if _isQuakeNet(irc):
             self._doAuth(irc, msg)
 
     def _doAuth(self, irc, msg):
@@ -113,7 +120,7 @@ class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
             self._sendToQ(irc, 'challenge')
             
     def doNotice(self, irc, msg):
-        if self._isQuakeNet(irc):
+        if _isQuakeNet(irc):
             if msg.prefix == fromQ:
                 self._doQ(irc, msg)
 
@@ -158,7 +165,7 @@ class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
         """
         self._sendToQ(text)
         irc.noReply()
-    q = wrap(q, ['text'])
+    q = wrap(q, ['isQuakeNet', 'text'])
 
     def auth(self, irc, msg, args):
         """takes no arguments
@@ -167,7 +174,7 @@ class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
         """
         self._sendToQ(irc, 'challenge')
         irc.noReply()
-    auth = wrap(auth)
+    auth = wrap(auth, ['isQuakeNet'])
 
 
 Class = Quakenet
