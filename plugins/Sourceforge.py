@@ -35,8 +35,6 @@ Accesses Sourceforge.net for various things
 
 import re
 import sets
-import socket
-import urllib2
 
 from itertools import ifilter, imap
 
@@ -47,6 +45,7 @@ __revision__ = "$Id$"
 import plugins
 import ircutils
 import privmsgs
+import webutils
 import callbacks
 
 
@@ -148,23 +147,19 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
 
     def _getTrackerURL(self, project, regex):
         try:
-            fd = urllib2.urlopen('%s%s' % (self._projectURL, project))
-            text = fd.read()
-            fd.close()
+            text = webutils.getUrl('%s%s' % (self._projectURL, project))
             m = regex.search(text)
             if m is None:
                 raise TrackerError, 'Invalid Tracker page'
             else:
                 return 'http://sourceforge.net%s%s' % (utils.htmlToText(
                     m.group(1)), self._hrefOpts)
-        except urllib2.HTTPError, e:
+        except webutils.WebException, e:
             raise callbacks.Error, str(e)
 
     def _getTrackerList(self, url):
         try:
-            fd = urllib2.urlopen(url)
-            text = fd.read()
-            fd.close()
+            text = webutils.getUrl(url)
             head = '#%s: %s'
             resp = [head % entry for entry in self._formatResp(text)]
             if resp:
@@ -173,14 +168,12 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return '%s' % utils.commaAndify(resp)
             raise callbacks.Error, 'No Trackers were found. (%s)' %\
                 conf.replyPossibleBug
-        except urllib2.HTTPError, e:
+        except webutils.WebException, e:
             raise callbacks.Error, e.msg()
         
     def _getTrackerInfo(self, irc, msg, url, num):
         try:
-            fd = urllib2.urlopen(url)
-            text = fd.read()
-            fd.close()
+            text = webutils.getUrl(url)
             head = '%s <http://sourceforge.net%s>'
             resp = [head % match for match in self._formatResp(text,num)]
             if resp:
@@ -188,7 +181,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return
             irc.error(msg, 'No Trackers were found. (%s)' %
                 conf.replyPossibleBug)
-        except urllib2.HTTPError, e:
+        except webutils.WebException, e:
             irc.error(msg, e.msg())
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
@@ -303,9 +296,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             return
         try:
             url = match.group(0)
-            fd = urllib2.urlopen(url)
-            s = fd.read()
-            fd.close()
+            s = webutils.getUrl(url)
             resp = []
             head = ''
             m = self._linkType.search(s)
@@ -326,7 +317,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                     resp.append('%s: %s' % self._bold(m.groups()))
             irc.reply(msg, '%s #%s: %s' % (ircutils.bold(linktype),
                 ircutils.bold(num), '; '.join(resp)), prefixName = False)
-        except (urllib2.HTTPError, socket.error), e:
+        except webutils.WebException, e:
             self.log.warning(str(e))
     sfSnarfer = privmsgs.urlSnarfer(sfSnarfer)
 
