@@ -80,7 +80,7 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load URLSnarfer')
 
-class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
+class URLSnarfer(ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         self.nextMsgs = {}
         callbacks.Privmsg.__init__(self)

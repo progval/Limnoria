@@ -77,7 +77,7 @@ be a lot more detailed. (Subject: "Another test news item", added by Strike on
 07:12 PM, September 12, 2003, expires at 08:36 PM, September 12, 2003)
 """)
 
-class News(callbacks.Privmsg, ChannelDBHandler):
+class News(ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)

@@ -57,7 +57,7 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Markov')
 
-class Markov(callbacks.Privmsg, ChannelDBHandler):
+class Markov(ChannelDBHandler, callbacks.Privmsg):
     threaded = True
     def __init__(self):
         ChannelDBHandler.__init__(self)

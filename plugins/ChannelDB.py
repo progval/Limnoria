@@ -75,7 +75,7 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
-class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
+class ChannelDB(ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
     regexps = sets.Set(['increaseKarma', 'decreaseKarma'])
     def __init__(self):
         ChannelDBHandler.__init__(self)
