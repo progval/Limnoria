@@ -185,9 +185,10 @@ registerGlobalValue(supybot, 'user',
     sends to the server."""))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
+    List = ircutils.IrcSet
+    
 registerGlobalValue(supybot, 'networks',
-    registry.SpaceSeparatedSetOfStrings([], """Determines what networks the bot
-    will connect to."""))
+    Networks([], """Determines what networks the bot will connect to."""))
 
 class Servers(registry.SpaceSeparatedListOfStrings):
     def normalize(self, s):
