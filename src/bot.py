@@ -111,7 +111,7 @@ def processConfigFile(filename):
             irc.addCallback(Class())
         world.startup = True
         lines = m.get_payload().splitlines()
-        (startup, after376) = tuple(itersplit(lines, lambda s: not s))
+        (startup, after376) = filter(None,itersplit(lines,lambda s: not s))[:2]
         #debug.printf('startup: %r' % startup)
         #debug.printf('after376: %r' % after376)
         for line in filter(None, startup):
