@@ -45,8 +45,8 @@ class MiscCommands(callbacks.Privmsg):
     def list(self, irc, msg, args):
         """[<module name>]
 
-        Lists the commands available in the given module.  If no module is
-        given, lists the public modules available.
+        Lists the commands available in the given plugin.  If no plugin is
+        given, lists the public plugins available.
         """
         name = privmsgs.getArgs(args, needed=0, optional=1)
         name = name.lower()
@@ -67,15 +67,15 @@ class MiscCommands(callbacks.Privmsg):
                     commands.sort()
                     irc.reply(msg, ', '.join(commands))
                     return
-            irc.error(msg, 'There is no module named %s, ' \
-                                 'or that module has no commands.' % name)
+            irc.error(msg, 'There is no plugin named %s, ' \
+                                 'or that plugin has no commands.' % name)
 
     def help(self, irc, msg, args):
         """<command>
 
         Gives the help for a specific command.  To find commands,
-        use the 'list' command to go see the commands offered by a module.
-        The 'list' command by itself will show you what modules have commands.
+        use the 'list' command to go see the commands offered by a plugin.
+        The 'list' command by itself will show you what plugins have commands.
         """
         command = privmsgs.getArgs(args, needed=0, optional=1)
         if not command:
@@ -100,17 +100,25 @@ class MiscCommands(callbacks.Privmsg):
                 if hasattr(cb, '__doc__') and cb.__doc__ is not None:
                     doclines = cb.__doc__.strip().splitlines()
                     help = ' '.join(map(str.strip, doclines))
+                    if not help.endswith('.'):
+                        help += '.'
+                    help += '  Use the list command to see what commands ' \
+                            'this plugin supports.'
                     irc.reply(msg, help)
                 else:
                     module = __import__(cb.__module__)
                     if hasattr(module, '__doc__') and module.__doc__:
                         doclines = module.__doc__.strip().splitlines()
                         help = ' '.join(map(str.strip, doclines))
+                        if not help.endswith('.'):
+                            help += '.'
+                        help += '  Use the list command to see what ' \
+                                'commands this plugin supports.'
                         irc.reply(msg, help)
                     else:
-                        irc.error(msg, 'That callback has no help.')
+                        irc.error(msg, 'That plugin has no help.')
             else:
-                irc.error(msg, 'There is no such command or callback.')
+                irc.error(msg, 'There is no such command or plugin.')
 
     def morehelp(self, irc, msg, args):
         """<command>
@@ -189,10 +197,10 @@ class MiscCommands(callbacks.Privmsg):
         """
         irc.reply(msg, repr(conf.prefixChars))
 
-    def moduleof(self, irc, msg, args):
+    def plugin(self, irc, msg, args):
         """<command>
 
-        Returns the module <command> is in.
+        Returns the plugin <command> is in.
         """
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         cb = irc.findCallback(command)
@@ -200,6 +208,21 @@ class MiscCommands(callbacks.Privmsg):
             irc.reply(msg, cb.name())
         else:
             irc.error(msg, 'There is no such command %s' % command)
+
+    def more(self, irc, msg, args):
+        """takes no arguments
+
+        If the last command was truncated due to IRC message length
+        limitations, returns the next chunk of the result of the last command.
+        """
+        userHostmask = msg.prefix.split('!', 1)[1]
+        try:
+            chunk = self._mores[userHostmask].pop()
+            irc.reply(msg, chunk)
+        except KeyError:
+            irc.error(msg, 'You haven\'t asked me a command!')
+        except IndexError:
+            irc.error(msg, 'That\'s all, there is no more.')
 
 
 Class = MiscCommands

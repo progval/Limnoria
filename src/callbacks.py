@@ -47,6 +47,7 @@ import time
 import shlex
 import getopt
 import inspect
+import textwrap
 import threading
 from cStringIO import StringIO
 
@@ -65,6 +66,7 @@ import debug
 ###
 def addressed(nick, msg):
     """If msg is addressed to 'name', returns the portion after the address.
+    Otherwise returns the empty string.
     """
     if msg.args[0] == nick:
         if msg.args[1][0] in conf.prefixChars:
@@ -336,10 +338,32 @@ class IrcObjectProxy:
             if isinstance(self.irc, self.__class__):
                 self.irc.reply(msg, s)
             else:
+                # The size of a PRIVMSG is:
+                # 1 for the colon
+                # len(prefix)
+                # 1 for the space
+                # 7 for the PRIVMSG
+                # 1 for the space
+                # len(target)
+                # 1 for the space
+                # 1 for the colon
+                # len(payload)
+                # 2 for the \r\n
+                # So non-variable stuff it's 1+1+7+1+1+1+2, or 14
+                # We'll estimate the channel length at 30, and we'll know the
+                # prefix length exactly.  We also might append the string
+                # " (more)" to the end, so that's 7 more characters.
+                # 512 - 51 == 461.
                 s = ircutils.safeArgument(s)
-                if len(s) + len(self.irc.prefix) > 512:
-                    s = 'My response would\'ve been too long.'
-                self.irc.queueMsg(reply(msg, s))
+                allowedLength = 461 - len(self.irc.prefix)
+                msgs = textwrap.wrap(s, allowedLength)
+                msgs.reverse()
+                response = msgs.pop()
+                if msgs:
+                    response += ' (more)'
+                mask = msg.prefix.split('!', 1)[1]
+                Privmsg._mores[mask] = msgs
+                self.irc.queueMsg(reply(msg, response))
         else:
             self.args[self.counter] = s
             self.evalArgs()
@@ -445,6 +469,7 @@ class Privmsg(irclib.IrcCallback):
     threaded = False
     public = True
     commandArgs = ['self', 'irc', 'msg', 'args']
+    _mores = {} # This must be class-scope, so all subclasses use the same one.
     def __init__(self):
         self.rateLimiter = RateLimiter()
         self.Proxy = IrcObjectProxy
