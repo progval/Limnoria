@@ -141,6 +141,7 @@ class Lookup(callbacks.Privmsg):
                     (key, value) = line.split(':', 1)
                 except ValueError:
                     irc.error(msg, 'Invalid line in %s: %r' % (filename, line))
+                    return
                 cursor.execute(sql, key, value)
             cursor.execute("CREATE INDEX %s_keys ON %s (key)" % (name, name))
             db.commit()
