@@ -116,7 +116,8 @@ class Python(callbacks.Privmsg):
                         info = imp.find_module(name, path)
                         newmodule = imp.load_module(name, *info)
                         path = [os.path.dirname(newmodule.__file__)]
-                        info[0].close()
+                        if info[0] is not None:
+                            info[0].close()
                     except ImportError:
                         irc.error(msg, 'No such module %s exists.' % name)
                         return

@@ -48,6 +48,7 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('pydoc string.translate')
         self.assertNotError('pydoc fnmatch.fnmatch')
         self.assertNotError('pydoc socket.socket')
+        self.assertNotError('pydoc logging.Logger')
 
     def testZen(self):
         self.assertNotError('zen')
