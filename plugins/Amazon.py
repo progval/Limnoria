@@ -63,6 +63,9 @@ def configure(advanced):
                   You can apply for a key at
                   http://www.amazon.com/webservices/""")
 
+class Region(registry.OnlySomeStrings):
+    validStrings = ('us', 'uk', 'de', 'jp')
+
 class LicenseKey(registry.String):
     def set(self, s):
         # In case we decide we need to recover
@@ -82,14 +85,20 @@ conf.registerChannelValue(conf.supybot.plugins.Amazon, 'linkSnarfer',
     registry.Boolean(False, """Determines whether the bot will reply to
     Amazon.com URLs in the channel with a description of the item at the
     URL."""))
+conf.registerChannelValue(conf.supybot.plugins.Amazon, 'region', Region('us',
+    """Determines the region that will be used when performing searches."""))
 
 class Amazon(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     callBefore = ['URL']
     regexps = ['amzSnarfer']
+    def __init__(self):
+        self.__parent = super(Amazon, self)
+        self.__parent.__init__()
+
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
-            super(Amazon, self).callCommand(name, irc, msg, *L, **kwargs)
+            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
         except amazon.NoLicenseKey, e:
             irc.error('You must have a free Amazon web services license key '
                       'in order to use this command.  You can get one at '
@@ -153,9 +162,11 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        bold = self.registryValue('bold', chan)
+        region = self.registryValue('region', chan)
         try:
-            book = amazon.searchByKeyword(isbn)
-            bold = self.registryValue('bold', msg.args[0])
+            book = amazon.searchByKeyword(isbn, locale=region)
             res = self._genResults(s, attribs, book, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -187,9 +198,11 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            books = amazon.searchByKeyword(keyword)
-            bold = self.registryValue('bold', msg.args[0])
+            books = amazon.searchByKeyword(keyword, locale=region)
             res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -227,9 +240,12 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            videos = amazon.searchByKeyword(keyword, product_line=product)
-            bold = self.registryValue('bold', msg.args[0])
+            videos = amazon.searchByKeyword(keyword, product_line=product,
+                                            locale=region)
             res = self._genResults(s, attribs, videos, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -259,9 +275,11 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'URL' : 'url'
                   }
         s = '%(title)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            item = amazon.searchByASIN(asin)
-            bold = self.registryValue('bold', msg.args[0])
+            item = amazon.searchByASIN(asin, locale=region)
             res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -294,9 +312,11 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'URL' : 'url'
                   }
         s = '%(title)s %(manufacturer)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            item = amazon.searchByUPC(upc)
-            bold = self.registryValue('bold', msg.args[0])
+            item = amazon.searchByUPC(upc, locale=region)
             res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -328,9 +348,11 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            books = amazon.searchByAuthor(author)
-            bold = self.registryValue('bold', msg.args[0])
+            books = amazon.searchByAuthor(author, locale=region)
             res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -427,9 +449,12 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s (%(media)s), by %(artist)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            items = amazon.searchByArtist(artist, product_line=product)
-            bold = self.registryValue('bold', msg.args[0])
+            items = amazon.searchByArtist(artist, product_line=product,
+                                          locale=region)
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -468,9 +493,12 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            items = amazon.searchByActor(actor, product_line=product)
-            bold = self.registryValue('bold', msg.args[0])
+            items = amazon.searchByActor(actor, product_line=product,
+                                         locale=region)
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -509,9 +537,12 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            items = amazon.searchByDirector(director, product_line=product)
-            bold = self.registryValue('bold', msg.args[0])
+            items = amazon.searchByDirector(director, product_line=product,
+                                            locale=region)
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -548,10 +579,13 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'URL' : 'url'
                   }
         s = '%(title)s; price: %(price)s%(url)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
             items = amazon.searchByManufacturer(manufacturer,
-                                                product_line=product)
-            bold = self.registryValue('bold', msg.args[0])
+                                                product_line=product,
+                                                locale=region)
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -565,9 +599,6 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
         if not self.registryValue('linkSnarfer', msg.args[0]):
             return
         match = match.group(1)
-        # attribs is limited to ProductName since the URL can link to
-        # *any* type of product.  The only attribute we know it will have
-        # is ProductName
         attribs = {'ProductName' : 'title',
                    'Manufacturer' : 'publisher',
                    'Authors' : 'author',
@@ -579,9 +610,11 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                   }
         s = '%(title)s; %(artist)s; %(author)s; %(mpaa)s; %(media)s; '\
             '%(date)s; %(publisher)s; price: %(price)s'
+        chan = msg.args[0]
+        region = self.registryValue('region', chan)
+        bold = self.registryValue('bold', chan)
         try:
-            item = amazon.searchByASIN(match)
-            bold = self.registryValue('bold', msg.args[0])
+            item = amazon.searchByASIN(match, locale=region)
             res = self._genResults(s, attribs, item, False, bold, 'title')
             if res:
                 res = utils.commaAndify(res)
