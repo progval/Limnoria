@@ -42,6 +42,7 @@ import dictclient
 import conf
 import debug
 import utils
+import ircutils
 import privmsgs
 import callbacks
 
@@ -125,7 +126,7 @@ class Dict(callbacks.Privmsg):
                 irc.reply(msg, 'No definition for %r could be found.' % word)
             else:
                 irc.reply(msg, 'No definition for %r could be found in %s' % \
-                          (word, dictionary))
+                          (word, ircutils.bold(dictionary)))
             return
         L = []
         for d in definitions:
@@ -144,7 +145,7 @@ class Dict(callbacks.Privmsg):
                 (utils.commaAndify(dbs), len(L), '; '.join(L))
             irc.reply(msg, s)
         else:
-            irc.reply('; '.join(L))
+            irc.reply(msg, '; '.join(L))
 
 
 Class = Dict
