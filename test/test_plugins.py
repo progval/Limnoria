@@ -57,15 +57,12 @@ class FunctionsTestCase(SupyTestCase):
             int(s)
         except ValueError:
             self.fail('$randomint wasn\'t an int.')
-        self.assertEqual(f(self.irc, msg, '$botnick'),
-                         self.irc.nick)
-        self.assertEqual(f(self.irc, msg, '$who'),
-                         msg.nick)
+        self.assertEqual(f(self.irc, msg, '$botnick'), self.irc.nick)
+        self.assertEqual(f(self.irc, msg, '$who'), msg.nick)
         self.assertEqual(f(self.irc, msg, '$WHO'),
                          msg.nick, 'stand. sub. not case-insensitive.')
-        self.assertEqual(f(self.irc, msg, '$nick'),
-                         msg.nick)
-        self.assert_(f(self.irc, msg, '$randomdate'))
+        self.assertEqual(f(self.irc, msg, '$nick'), msg.nick)
+        self.assertNotEqual(f(self.irc, msg, '$randomdate'), '$randomdate')
         q = f(self.irc,msg,'$randomdate\t$randomdate')
         dl = q.split('\t')
         if dl[0] == dl[1]:
