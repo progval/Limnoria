@@ -219,7 +219,8 @@ class Observer(callbacks.Privmsg):
 
         Removes the observer <name>.
         """
-        pass
+        irc.error('Sorry, this hasn\'t been implemented yet.  Complain to '
+                  'jemfinch and he\'ll probably implement it.')
 
 
 
