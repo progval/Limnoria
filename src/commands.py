@@ -147,11 +147,7 @@ def urlSnarfer(f):
 ###
 
 # This is just so we can centralize this, since it may change.
-def _int(s, Long=False):
-    if not Long:
-        Type = int
-    else:
-        Type = long
+def _int(s):
     base = 10
     if s.startswith('0x'):
         base = 16
@@ -163,62 +159,63 @@ def _int(s, Long=False):
         base = 8
         s = s[1:]
     try:
-        return Type(s, base)
+        return int(s, base)
     except ValueError:
         if base == 10:
-            return Type(float(s))
+            return int(float(s))
         else:
             raise
 
-def getInt(irc, msg, args, state, Type='integer', p=None, Long=False):
+def getInt(irc, msg, args, state, type='integer', p=None):
     try:
-        i = _int(args[0], Long)
+        i = _int(args[0])
         if p is not None:
             if not p(i):
-                irc.errorInvalid(Type, args[0])
+                irc.errorInvalid(type, args[0])
         state.args.append(i)
         del args[0]
     except ValueError:
-        irc.errorInvalid(Type, args[0])
+        irc.errorInvalid(type, args[0])
 
-def getNonInt(irc, msg, args, state, Type='non-integer value'):
+def getNonInt(irc, msg, args, state, type='non-integer value'):
     try:
         i = _int(args[0])
-        irc.errorInvalid(Type, args[0])
+        irc.errorInvalid(type, args[0])
     except ValueError:
         state.args.append(args.pop(0))
 
-def getLong(irc, msg, args, state, Type='long number'):
-    getInt(irc, msg, args, state, Type, Long=True)
+def getLong(irc, msg, args, state, type='long'):
+    getInt(irc, msg, args, state, type)
+    state.args[-1] = long(state.args[-1])
 
-def getFloat(irc, msg, args, state, Type='floating point number'):
+def getFloat(irc, msg, args, state, type='floating point number'):
     try:
         state.args.append(float(args[0]))
         del args[0]
     except ValueError:
-        irc.errorInvalid(Type, args[0])
+        irc.errorInvalid(type, args[0])
 
 def getPositiveInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
-           p=lambda i: i>0, Type='positive integer', *L)
+           p=lambda i: i>0, type='positive integer', *L)
 
 def getNonNegativeInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
-            p=lambda i: i>=0, Type='non-negative integer', *L)
+            p=lambda i: i>=0, type='non-negative integer', *L)
 
 def getIndex(irc, msg, args, state):
-    getInt(irc, msg, args, state, Type='index')
+    getInt(irc, msg, args, state, type='index')
     if state.args[-1] > 0:
         state.args[-1] -= 1
 
 def getId(irc, msg, args, state, kind=None):
-    Type = 'id'
+    type = 'id'
     if kind is not None and not kind.endswith('id'):
-        Type = kind + ' id'
+        type = kind + ' id'
     original = args[0]
     try:
         args[0] = args[0].lstrip('#')
-        getInt(irc, msg, args, state, Type=Type)
+        getInt(irc, msg, args, state, type=type)
     except Exception, e:
         args[0] = original
         raise
@@ -533,8 +530,8 @@ wrappers = ircutils.IrcDict({
     'now': getNow,
     'url': getUrl,
     'httpUrl': getHttpUrl,
-    'float': getFloat,
     'long': getLong,
+    'float': getFloat,
     'nonInt': getNonInt,
     'positiveInt': getPositiveInt,
     'nonNegativeInt': getNonNegativeInt,
