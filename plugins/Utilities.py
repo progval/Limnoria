@@ -80,12 +80,12 @@ class Utilities(callbacks.Privmsg):
 
         Returns all matches to <regexp> (in the form /regexp/flags) in text.
         """
-        (re, text) = privmsgs.getArgs(args, needed=2)
-        (_, re, flags) = re.split('/')
+        (regexp, text) = privmsgs.getArgs(args, needed=2)
+        (_, regexp, flags) = re.split('/')
         flag = 0
         for c in flags:
             flag &= getattr(re, c.upper())
-        r = re.compile(re, flag)
+        r = re.compile(regexp, flag)
         irc.reply(msg, ' '.join(r.findall(text)))
         
         
