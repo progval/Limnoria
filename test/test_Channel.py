@@ -96,6 +96,7 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         m = self.getMsg(' ')
         self.assertEqual(m, ircmsgs.kick(self.channel, 'foobar', self.nick))
         self.assertNotRegexp('kban adlkfajsdlfkjsd', 'KeyError')
+        self.assertNotRegexp('kban foobar time', 'ValueError')
         self.assertError('kban %s' % self.nick)
 
     def testLobotomizers(self):

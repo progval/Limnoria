@@ -183,7 +183,11 @@ class Channel(callbacks.Privmsg):
             self.log.warning('%r tried to make me kban myself.', msg.prefix)
             irc.error(msg, 'I cowardly refuse to kickban myself.')
             return
-        length = int(length or 0)
+        try:
+            length = int(length or 0)
+        except ValueError:
+            irc.error(msg, 'Ban length must be a valid integer.')
+            return
         try:
             bannedHostmask = irc.state.nickToHostmask(bannedNick)
         except KeyError:
