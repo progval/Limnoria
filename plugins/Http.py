@@ -49,13 +49,11 @@ import structures
 
 example = utils.wrapLines("""
 <jemfinch> @list Http
-<supybot> acronym, babelize, deepthought, foldoc, freshmeat, geekquote, netcraft, randomlanguage, stockquote, title, translate, weather
+<supybot> acronym, babelize, deepthought, freshmeat, geekquote, netcraft, randomlanguage, stockquote, title, translate, weather
 <jemfinch> @acronym ASAP
 <supybot> ASAP could be As Soon As Possible, or A Simplified Asset (disposal) Procedure, or A Stupid Acting Person (Dilbert comic strip), or Academic Strategic Alliances Program, or Accelerated Situational Awareness Prototype, or Accelerated Systems Applications and Products (data processing), or Acquisitions Strategies and Plans, or Administrative Services Automation Program, or Administrative Services Automation Project
 <jemfinch> @deepthought
 <supybot> #331: Probably one of the worst things about being a genie in a magic lamp is a little thing called "lamp stench."
-<jemfinch> @foldoc perl
-<supybot> < language , tool > A high-level programming language, started by Larry Wall in 1987 and developed as an open source project. It has an eclectic heritage, deriving from the ubiquitous C programming language and to a lesser extent from sed , awk , various Unix shell languages, Lisp , and at least a dozen other tools and languages. Originally developed for Unix , it is now available for many platforms .
 <jemfinch> @freshmeat supybot
 <supybot> SupyBot, last updated 2002-08-02 19:07:52, with a vitality percent of 0.00 and a popularity of 0.09, is in version 0.36.1.
 <jemfinch> (yeah, I haven't updated that in awhile :))
@@ -190,39 +188,6 @@ class Http(callbacks.Privmsg):
             m = 'I couldn\'t find a listing for %s' % symbol
             irc.error(msg, m)
             return
-
-    def foldoc(self, irc, msg, args):
-        """<something to lookup on foldoc>
-
-        FOLDOC is a searchable dictionary of acryonyms, jargon, programming
-        languages, tools, architecture, operating systems, networking, theory,
-        conventions, standards, methamatics, telecoms, electronics, history,
-        in fact anything having to do with computing.  This commands searches
-        that dictionary.
-        """
-        if not args:
-            raise callbacks.ArgumentError
-        search = '+'.join([urllib.quote(arg) for arg in args])
-        url = 'http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=%s' % search
-        try:
-            fd = urllib2.urlopen(url)
-            html = fd.read()
-            fd.close()
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
-            return
-        text = html.split('<P>\n', 2)[1]
-        text = text.replace('.\n', '.  ')
-        text = text.replace('\n', ' ')
-        text = utils.htmlToText(text)
-        text = text.strip()
-        if text:
-            irc.reply(msg, text)
-        else:
-            search = urllib.unquote(search)
-            s = 'There appears to be no definition for %s.' % search
-            irc.reply(msg, s)
-
 
     _cityregex = re.compile(
         r'<td><font size="4" face="arial"><b>'\

@@ -48,9 +48,6 @@ class HttpTest(PluginTestCase, PluginDocumentation):
         self.assertResponse('title http://www.slashdot.org/',
                             'Slashdot: News for nerds, stuff that matters')
 
-    def testFoldoc(self):
-        self.assertNotError('foldoc perl')
-
     def testGeekquote(self):
         self.assertNotError('geekquote')
         self.assertNotError('geekquote multiline')
