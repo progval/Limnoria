@@ -42,7 +42,7 @@ import types
 __all__ = ['RingBuffer', 'queue', 'MaxLengthQueue']
 
 class RingBuffer(object):
-    #__slots__ = ('L', 'i', 'full')
+    __slots__ = ('L', 'i', 'full', 'maxSize')
     def __init__(self, maxSize, seq=()):
         if maxSize <= 0:
             raise ValueError, 'maxSize must be > 0.'
@@ -144,6 +144,15 @@ class RingBuffer(object):
             return 'RingBuffer(%r, %r)' % (self.maxSize, list(self))
         else:
             return 'RingBuffer(%r, %r)' % (self.maxSize, list(self))
+
+    def __getstate__(self):
+        return (self.maxSize, self.full, self.i, self.L)
+
+    def __setstate__(self, (maxSize, full, i, L)):
+        self.maxSize = maxSize
+        self.full = full
+        self.i = i
+        self.L = L
 
 
 class queue(object):
