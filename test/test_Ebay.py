@@ -35,7 +35,8 @@ class EbayTest(ChannelPluginTestCase):
         def testAuction(self):
             self.assertNotError('auction 3053641570')
             # test 'Invalid Item' checking
-            self.assertRegexp('auction 2357056673', 'That auction is invalid')
+            self.assertRegexp('auction 2357056673',
+                              r'That auction (is invalid|has been removed)')
             self.assertError('auction foobar')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
