@@ -157,11 +157,10 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
             abbreviation = self.abbreviations[irc]
             s = '%s has left on %s' % (msg.nick, abbreviation)
             for otherIrc in self.ircs.itervalues():
-                if otherIrc == irc:
-                    continue
-                for channel in channels:
-                    if channel in otherIrc.state.channels:
-                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                if otherIrc != irc:
+                    for channel in channels:
+                        if channel in otherIrc.state.channels:
+                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
     def outFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
