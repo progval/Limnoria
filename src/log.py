@@ -69,7 +69,8 @@ class Logger(logging.Logger):
         eId = hex(hash(eStrId) & 0xFFFFF)
         logging.Logger.exception(self, *args)
         self.error('Exception id: %s', eId)
-        self.error('Exception string: %s', eStrId)
+        # The traceback should be sufficient if we want it.
+        # self.error('Exception string: %s', eStrId)
 
 
 class StdoutStreamHandler(logging.StreamHandler):
