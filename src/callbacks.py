@@ -75,7 +75,13 @@ def addressed(nick, msg):
             return msg.args[1].strip()
     elif ircutils.toLower(msg.args[1]).startswith(nick):
         try:
-            return msg.args[1].split(None, 1)[1].strip()
+            (maybeNick, rest) = msg.args[1].split(None, 1)
+            while not ircutils.isNick(maybeNick):
+                maybeNick = maybeNick[:-1]
+            if maybeNick == nick:
+                return rest
+            else:
+                return ''
         except IndexError:
             return ''
     elif msg.args[1] and msg.args[1][0] in conf.prefixChars:
