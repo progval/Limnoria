@@ -31,33 +31,6 @@
 
 """
 Provides a multitude of fun, useless commands.
-
-Commands include:
-  netstats
-  ord
-  chr
-  base
-  hexlify
-  unhexlify
-  xor
-  mimetype
-  md5
-  sha
-  urlquote
-  urlunquote
-  rot13
-  coin
-  dice
-  leet
-  cpustats
-  uptime
-  calc
-  objects
-  last
-  lastfrom
-  lithp
-  levenshtein
-  pydoc
 """
 
 from baseplugin import *
@@ -109,8 +82,10 @@ class FunCommands(callbacks.Privmsg):
         return msg
 
     def netstats(self, irc, msg, args):
-        "takes no arguments"
-        #debug.printf('HEY I GOT RELOADED')
+        """takes no arguments
+
+        Returns some interesting network-related statistics.
+        """
         irc.reply(msg,
                    'I have received %s messages for a total of %s bytes.  '\
                    'I have sent %s messages for a total of %s bytes.' %\
@@ -175,12 +150,20 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, ''.join(L))
         
     def hexlify(self, irc, msg, args):
-        "<text>; turn string into a hexstring."
+        """<text>
+
+        Returns a hexstring from the given string; a hexstring is a string
+        composed of the hexadecimal value of each character in the string
+        """
         text = privmsgs.getArgs(args)
         irc.reply(msg, binascii.hexlify(text))
 
     def unhexlify(self, irc, msg, args):
-        "<even number of hexadecimal digits>"
+        """<hexstring>
+
+        Returns the string corresponding to <hexstring>.  Obviously,
+        <hexstring> must be a string of hexadecimal digits.
+        """
         text = privmsgs.getArgs(args)
         try:
             s = binascii.unhexlify(text)
@@ -189,7 +172,12 @@ class FunCommands(callbacks.Privmsg):
             irc.error(msg, 'Invalid input.')
 
     def xor(self, irc, msg, args):
-        "<password> <text>"
+        """<password> <text>
+
+        Returns <text> XOR-encrypted with <password>.  See
+        http://www.yoe.org/developer/xor.html for information about XOR
+        encryption.
+        """
         (password, text) = privmsgs.getArgs(args, 2)
         passwordlen = len(password)
         i = 0
@@ -200,7 +188,10 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, ''.join(ret))
 
     def mimetype(self, irc, msg, args):
-        "<filename>"
+        """<filename>
+
+        Returns the mime type associated with <filename>
+        """
         filename = privmsgs.getArgs(args)
         (type, encoding) = mimetypes.guess_type(filename)
         if type is not None:
@@ -210,41 +201,70 @@ class FunCommands(callbacks.Privmsg):
             irc.reply(msg, s)
 
     def md5(self, irc, msg, args):
-        "<text>; returns the md5 sum of the text."
+        """<text>
+
+        Returns the md5 hash of a given string.  Read
+        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more information
+        about md5.
+        """
         text = privmsgs.getArgs(args)
         irc.reply(msg, md5.md5(text).hexdigest())
 
     def sha(self, irc, msg, args):
-        "<text>; returns the sha sum of the text."
+        """<text>
+
+        Returns the SHA hash of a given string.  Read
+        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information
+        about SHA.
+        """
         text = privmsgs.getArgs(args)
         irc.reply(msg, sha.sha(text).hexdigest())
 
     def urlquote(self, irc, msg, args):
-        "<text>; returns the URL quoted form of the text."
+        """<text>
+
+        Returns the URL quoted form of the text.
+        """
         text = privmsgs.getArgs(args)
         irc.reply(msg, urllib.quote(text))
 
     def urlunquote(self, irc, msg, args):
-        "<text>; returns the text un-URL quoted."
+        """<text>
+
+        Returns the text un-URL quoted.
+        """
         text = privmsgs.getArgs(args)
         s = urllib.unquote(text)
         irc.reply(msg, s)
 
     def rot13(self, irc, msg, args):
-        "<text>"
+        """<text>
+
+        Rotates <text> 13 characters to the right in the alphabet.  Rot13 is
+        commonly used for text that simply needs to be hidden from inadvertent
+        reading by roaming eyes, since it's easily reversible.
+        """
         text = privmsgs.getArgs(args)
         irc.reply(msg, text.encode('rot13'))
 
     def coin(self, irc, msg, args):
-        "takes no arguments"
+        """takes no arguments
+
+        Flips a coin and returns the result.
+        """
         if random.randrange(0, 2):
-            irc.reply(msg, 'The coin landed heads.')
+            irc.reply(msg, 'heads')
         else:
-            irc.reply(msg, 'The coin landed tails.')
+            irc.reply(msg, 'tails')
 
     _dicere = re.compile(r'(\d+)d(\d+)')
     def dice(self, irc, msg, args):
-        "<dice>d<sides> (e.g., 2d6 will roll 2 six-sided dice)"
+        """<dice>d<sides>
+
+        Rolls a die with <sides> number of sides <dice> times.
+        For example, 2d6 will roll 2 six-sided dice; 10d10 will roll 10
+        ten-sided dice.
+        """
         arg = privmsgs.getArgs(args)
         m = re.match(self._dicere, arg)
         if m:
@@ -262,7 +282,10 @@ class FunCommands(callbacks.Privmsg):
             irc.error(msg, 'Dice must be of the form <dice>d<sides>')
 
     def lithp(self, irc, msg, args):
-        "<text>"
+        """<text>
+
+        Returns the lisping version of <text>
+        """
         text = privmsgs.getArgs(args)
         text = text.replace('sh', 'th')
         text = text.replace('SH', 'TH')
@@ -284,7 +307,10 @@ class FunCommands(callbacks.Privmsg):
                 (re.compile(r'[sS]\b'), 'z'),
                 (re.compile(r'x'), '><'),)
     def leet(self, irc, msg, args):
-        "<text>"
+        """<text>
+
+        Returns the l33tspeak version of <text>
+        """
         s = privmsgs.getArgs(args)
         for (r, sub) in self._leetres:
             s = re.sub(r, sub, s)
@@ -292,7 +318,10 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, s)
 
     def cpustats(self, irc, msg, args):
-        "takes no arguments"
+        """takes no arguments
+
+        Returns some interesting CPU-related statistics on the bot.
+        """
         (user, system, childUser, childSystem, elapsed) = os.times()
         timeRunning = time.time() - world.startedAt
         threads = threading.activeCount()
@@ -331,7 +360,11 @@ class FunCommands(callbacks.Privmsg):
     _mathHex = re.compile(r'(0x[A-Fa-f\d]+)')
     _mathOctal = re.compile(r'(^|[^\dA-Fa-f])(0[0-7]+)')
     def calc(self, irc, msg, args):
-        "<math expr>"
+        """<math expression>
+
+        Returns the value of the evaluted <math expression>.  The syntax is
+        Python syntax; the type of arithmetic is floating point.
+        """
         text = privmsgs.getArgs(args)
         text = text.translate(string.ascii, '_[] \t')
         text = text.replace('lambda', '')
@@ -373,7 +406,9 @@ class FunCommands(callbacks.Privmsg):
             irc.reply(msg, debug.exnToString(e))
 
     def objects(self, irc, msg, args):
-        "takes no arguments.  Returns the number of Python objects in memory."
+        """takes no arguments.
+
+        Returns the number and types of Python objects in memory."""
         objs = gc.get_objects()
         classes = len([obj for obj in objs if inspect.isclass(obj)])
         functions = len([obj for obj in objs if inspect.isroutine(obj)])
@@ -389,7 +424,13 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, response)
 
     def last(self, irc, msg, args):
-        "[<channel>] <message number (defaults to 1, the last message)>"
+        """[<channel>] <message number>
+
+        Gets message number <message number> from the bot's history.
+        <message number> defaults to 1, the last message prior to this command
+        itself.  <channel> is only necessary if the message isn't sent in the
+        channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         n = privmsgs.getArgs(args, needed=0, optional=1)
         if n == '':
@@ -408,7 +449,11 @@ class FunCommands(callbacks.Privmsg):
             irc.error(msg, s)
 
     def lastfrom(self, irc, msg, args):
-        "[<channel>] <nick>"
+        """[<channel>] <nick>
+
+        Returns the last message in <channel> from <nick>.  <channel> is only 
+        necessary if the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
         for m in reviter(irc.state.history):
@@ -417,8 +462,10 @@ class FunCommands(callbacks.Privmsg):
                m.args[0] == channel:
                 if ircmsgs.isAction(m):
                     irc.reply(msg, '* %s %s' % (nick, ircmsgs.unAction(m)))
+                    return
                 else:
                     irc.reply(msg, '<%s> %s' % (nick, m.args[1]))
+                    return
                 return
         irc.error(msg, 'I don\'t remember a message from that person.')
 
