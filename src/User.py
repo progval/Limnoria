@@ -302,22 +302,25 @@ class User(callbacks.Privmsg):
         Returns the hostmasks of the user specified by <name>; if <name> isn't
         specified, returns the hostmasks of the user calling the command.
         """
+        def getHostmasks(user):
+            hostmasks = map(repr, user.hostmasks)
+            hostmasks.sort()
+            return utils.commaAndify(hostmasks)
         try:
             user = ircdb.users.getUser(msg.prefix)
             if name:
-                if name != user.name and not user.checkCapability('owner'):
+                if name != user.name and \
+                   not ircdb.checkCapability(msg.prefix, 'owner'):
                     irc.error('You may only retrieve your own hostmasks.',
                               Raise=True)
                 else:
                     try:
                         user = ircdb.users.getUser(name)
-                        hostmasks = map(repr, user.hostmasks)
-                        hostmasks.sort()
-                        irc.reply(utils.commaAndify(hostmasks))
+                        irc.reply(getHostmasks(user))
                     except KeyError:
                         irc.errorNoUser()
             else:
-                irc.reply(repr(user.hostmasks))
+                irc.reply(getHostmasks(user))
         except KeyError:
             irc.errorNotRegistered()
     hostmasks = wrap(hostmasks, ['private', additional('something')])
