@@ -93,6 +93,7 @@ class StdoutStreamHandler(logging.StreamHandler):
             # already wrapped by Python itself) wrap oddly.
             prefixLen = len(record.name) + 2 # ": "
             s = textwrap.fill(s, width=78, subsequent_indent=' '*prefixLen)
+            s.rstrip('\r\n')
         return s
 
     def emit(self, record):
