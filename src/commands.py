@@ -238,14 +238,6 @@ def getBoolean(irc, msg, args, state):
     except ValueError:
         irc.errorInvalid('boolean', args[0])
 
-def getChannelDb(irc, msg, args, state, **kwargs):
-    if not conf.supybot.databases.plugins.channelSpecific():
-        channel = conf.supybot.databases.plugins.channelSpecific.channel()
-        state.args.append(channel)
-        state.channel = channel
-    else:
-        getChannel(irc, msg, args, state, **kwargs)
-
 def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
     if args:
         for otherIrc in world.ircs:
@@ -364,6 +356,18 @@ def getChannel(irc, msg, args, state):
         raise callbacks.ArgumentError
     state.channel = channel
     state.args.append(channel)
+
+def getChannelDb(irc, msg, args, state, **kwargs):
+    channelSpecific = conf.supybot.databases.plugins.channelSpecific
+    try:
+        getChannel(irc, msg, args, state, **kwargs)
+        if state.channel and not conf.get(channelSpecific, state.channel):
+            state.channel = conf.get(channelSpecific.channel, state.channel)
+    except (callbacks.ArgumentError, IndexError):
+        if channelSpecific():
+            raise
+        else:
+            state.channel = channelSpecific.channel()
 
 def inChannel(irc, msg, args, state):
     if not state.channel:

@@ -802,7 +802,7 @@ registerChannelValue(supybot.databases.plugins, 'channelSpecific',
     this variable to take effect; also note that you may wish to set
     supybot.databases.plugins.channelSpecific.channel appropriately if you
     wish to share a certain channel's databases globally."""))
-registerGlobalValue(supybot.databases.plugins.channelSpecific, 'channel',
+registerChannelValue(supybot.databases.plugins.channelSpecific, 'channel',
     ValidChannel('#', """Determines what channel global (non-channel-specific)
     databases will be considered a part of.  This is helpful if you've been
     running channel-specific for awhile and want to turn the databases for your
