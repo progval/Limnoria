@@ -86,7 +86,10 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
         channel = msg.args[0]
         db = self.getDb(channel)
         cursor = db.cursor()
-        words = msg.args[1].split()
+        if ircmsgs.isAction(msg):
+            words = ircmsgs.unAction(msg).split()
+        else:
+            words = msg.args[1].split()
         isFirst = True
         for (first, second, follower) in window(words, 3):
             if isFirst:
