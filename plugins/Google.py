@@ -142,7 +142,7 @@ class LicenseKey(registry.String):
             if s:
                 google.setLicense(self.value)
         except AttributeError:
-            if not world.dying:
+            if world and not world.dying: # At shutdown world can be None.
                 raise callbacks.Error, \
                       'It appears that the initial import of ' \
                       'our underlying google.py module has ' \
