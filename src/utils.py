@@ -210,12 +210,9 @@ def dqrepr(s):
     # return '"' + repr("'\x00" + s)[6:]
     return '"%s"' % s.encode('string_escape').replace('"', '\\"')
 
-#XXX We're using this to centralize how we quote a string since %r/repr()
-# doesn't play nicely with unicode characters.  This eventually needs to be
-# replaced to *not* use repr()
 def quoted(s):
     """Returns a quoted s."""
-    return repr(s)
+    return '"%s"' % s
 
 nonEscapedSlashes = re.compile(r'(?<!\\)/')
 def perlReToPythonRe(s):
@@ -265,7 +262,6 @@ def perlReToReplacer(s):
     else:
         return lambda s: r.sub(replace, s, 1)
 
-# XXX Should we find a way to allow $1, $2, etc.?
 _perlVarSubstituteRe = re.compile(r'\$\{([^}]+)\}|\$([a-zA-Z][a-zA-Z0-9]*)')
 def perlVariableSubstitute(vars, text):
     def replacer(m):
@@ -782,11 +778,15 @@ class AtomicFile(file):
                 # (the target) already exists.  shutil.move handles those
                 # intricacies for us.
 
-                # XXX There's a bug in Python <= 2.4 that allows this to
-                #     clobber read-only files.  We should workaround this at
-                #     some point (probably by including a fixed shutil.py in
-                #     others/.
+                # This raises IOError if we can't write to the file.  Since
+                # in *nix, it only takes write perms to the *directory* to
+                # rename a file (and shutil.move will use os.rename if
+                # possible), we first check if we have the write permission
+                # and only then do we write.
+                fd = file(self.filename, 'a')
+                fd.close()
                 shutil.move(self.tempFilename, self.filename)
+                
         else:
             raise ValueError, 'AtomicFile.close called after rollback.'
 
