@@ -200,10 +200,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     continue
                 registerDefaultPlugin(name, s)
 
-    def inFilter(self, irc, msg):
-        if msg.command == 'PRIVMSG' and msg.nick == irc.nick:
-            self.log.warning('Somehow sent a message to myself: %r.', msg)
-            return None
+    def outFilter(self, irc, msg):
+        if msg.command == 'PRIVMSG' and not world.testing:
+            if ircutils.strEqual(msg.args[0], irc.nick):
+                self.log.warning('Tried to send a message to myself: %r.', msg)
+                return None
         return msg
     
     def isCommand(self, methodName):
