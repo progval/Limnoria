@@ -283,7 +283,7 @@ class String(Value):
             v = utils.safeEval(s)
             if not isinstance(v, basestring):
                 raise ValueError
-            self.value = v
+            self.setValue(v)
         except ValueError: # This catches utils.safeEval(s) errors too.
             raise InvalidRegistryValue, '%r is not a string.' % s
 
@@ -319,8 +319,9 @@ class Regexp(Value):
         try:
             if s:
                 self.value = utils.perlReToPythonRe(s)
+                self._lastModified = time.time()
             else:
-                self.value = None
+                self.setValue(None)
             self.sr = s
         except ValueError, e:
             raise InvalidRegistryValue, '%r is not a valid regexp: %s' % (s, e)
@@ -328,7 +329,7 @@ class Regexp(Value):
     def setValue(self, v):
         if v is None:
             self.sr = ''
-            self.value = None
+            Value.setValue(self, None)
         else:
             raise InvalidRegistryValue, \
                   'Can\'t set to a regexp, there would be an inconsistency ' \

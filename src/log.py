@@ -36,7 +36,6 @@ import fix
 import os
 import sys
 import time
-import cgitb
 import types
 import atexit
 import logging
@@ -57,16 +56,7 @@ class Formatter(logging.Formatter):
         for exn in deadlyExceptions:
             if issubclass(e.__class__, exn):
                 raise
-        if conf.supybot.log.detailedTracebacks():
-            try:
-                # Cgitb has bugs, and they break the bot.
-                #return cgitb.text((E, e, tb)).rstrip('\r\n')
-                return logging.Formatter.formatException(self, (E, e, tb))
-            except:
-                error('Cgitb.text raised an exception.')
-                return logging.Formatter.formatException(self, (E, e, tb))
-        else:
-            return logging.Formatter.formatException(self, (E, e, tb))
+        return logging.Formatter.formatException(self, (E, e, tb))
 
 
 class BetterStreamHandler(logging.StreamHandler):
@@ -198,15 +188,6 @@ conf.supybot.log.register('level', LogLevel(logging.INFO,
 """Determines what the minimum priority level logged will be.  Valid values are
 DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of increasing
 priority."""))
-conf.supybot.log.register('timestampFormat',
-registry.String('[%d-%b-%Y %H:%M:%S]',
-"""Determines the format string for timestamps in logfiles.  Refer to the
-Python documentation for the time module to see what formats are accepted."""))
-conf.supybot.log.register('detailedTracebacks', registry.Boolean(True, """
-Determines whether highly detailed tracebacks will be logged.  While more
-informative (and thus more useful for debugging) they also take a significantly
-greater amount of space in the logs.  Hopefully, however, such uncaught
-exceptions aren't very common."""))
 conf.supybot.log.register('stdout',
     registry.Boolean(True, """Determines whether the bot will log to
     stdout."""))
@@ -220,7 +201,11 @@ class BooleanRequiredFalseOnWindows(registry.Boolean):
 conf.supybot.log.stdout.register('colorized',
 BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs to
 stdout (if enabled) will be colorized with ANSI color."""))
-                          
+
+conf.supybot.log.register('timestampFormat',
+registry.String('[%d-%b-%Y %H:%M:%S]',
+"""Determines the format string for timestamps in logfiles.  Refer to the
+Python documentation for the time module to see what formats are accepted."""))
 if not os.path.exists(conf.supybot.directories.log()):
     os.mkdir(conf.supybot.directories.log(), 0755)
 

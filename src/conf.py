@@ -114,14 +114,13 @@ supybot.register('channels', SpaceSeparatedListOfChannels(['#supybot'], """
 Determines what channels the bot will join when it connects to the server."""))
 
 class ValidPrefixChars(registry.String):
-    def set(self, s):
-        registry.String.set(self, s)
-        if self.value.translate(string.ascii,
-                                '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
+    def setValue(self, v):
+        if v.translate(string.ascii, '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
             raise registry.InvalidRegistryValue, \
                   'Value must contain only ~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'
+        registry.String.setValue(self, v)
 
-supybot.register('prefixChars', ValidPrefixChars('@', """Determines what prefix
+supybot.register('prefixChars', ValidPrefixChars('', """Determines what prefix
 characters the bot will reply to.  A prefix character is a single character
 that the bot will use to determine what messages are addressed to it; when
 there are no prefix characters set, it just uses its nick."""))
@@ -361,20 +360,12 @@ supybot.drivers.register('poll', registry.Float(1.0, """Determines the default
 length of time a driver should block waiting for input."""))
 
 class ValidDriverModule(registry.String):
-    def set(self, s):
-        original = getattr(self, 'value', self.default)
-        registry.String.set(self, s)
-        if self.value not in ('socketDrivers',
-                              'twistedDrivers',
-                              'asyncoreDrivers'):
-            self.value = original
+    def setValue(self, v):
+        if v not in ('socketDrivers', 'twistedDrivers', 'asyncoreDrivers'):
             raise registry.InvalidRegistryValue, \
                   'Value must be one of "socketDrivers", "asyncoreDrivers", ' \
                   'or twistedDrivers.'
-        else:
-            # TODO: check to make sure Twisted is available if it's set to
-            # twistedDrivers.
-            pass
+        registry.String.setValue(self, v)
 
 supybot.drivers.register('module', ValidDriverModule('socketDrivers', """
 Determines what driver module the bot will use.  socketDrivers, a simple
