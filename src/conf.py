@@ -129,6 +129,9 @@ class ValidNick(registry.String):
         else:
             registry.String.setValue(self, v)
 
+class ValidNicks(registry.SpaceSeparatedListOf):
+    Value = ValidNick
+
 class ValidChannel(registry.String):
     """Value must be a valid IRC channel name."""
     def setValue(self, v):
@@ -142,7 +145,12 @@ class ValidChannel(registry.String):
             registry.String.setValue(self, v)
 
 registerGlobalValue(supybot, 'nick',
-   ValidNick('supybot', """Determines the bot's nick."""))
+   ValidNick('supybot', """Determines the bot's default nick."""))
+
+registerGlobalValue(supybot.nick, 'alternates', ValidNicks([], """Determines
+    what alternative nicks will be used if the primary nick (supybot.nick)
+    isn't available.  If none are given, or if all are taken, the primary nick
+    will be perturbed appropriately until an unused nick is found."""))
 
 registerGlobalValue(supybot, 'ident',
     ValidNick('supybot', """Determines the bot's ident string, if the server
@@ -449,13 +457,6 @@ registerChannelValue(supybot.replies, 'possibleBug',
 ###
 # End supybot.replies.
 ###
-
-# XXX: This should be SpaceSeparated, if it survives.
-supybot.register('nickmods', registry.CommaSeparatedListOfStrings(
-    '__%s__,%s^,%s`,%s_,%s__,_%s,__%s,[%s]'.split(','),
-    """A list of modifications to be made to a nick when the nick the bot tries
-    to get from the server is in use.  There should be one %s in each string;
-    this will get replaced with the original nick."""))
 
 registerGlobalValue(supybot, 'snarfThrottle',
     registry.Float(10.0, """A floating point number of seconds to throttle

@@ -36,6 +36,7 @@ import supybot.fix as fix
 import copy
 import sets
 import time
+import operator
 from itertools import imap, chain, cycle
 
 import supybot.log as log
@@ -332,7 +333,8 @@ class IrcState(IrcCommandDispatcher):
                 chan = ChannelState()
                 chan.addUser(msg.nick)
                 self.channels[channel] = chan
-                assert msg.nick == irc.nick, msg
+                # I don't know why this assert was here.
+                #assert msg.nick == irc.nick, msg
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
@@ -441,65 +443,86 @@ class Irc(IrcCommandDispatcher):
     _nickSetters = sets.Set(['001', '002', '003', '004', '250', '251', '252',
                              '254', '255', '265', '266', '372', '375', '376',
                              '333', '353', '332', '366', '005'])
-    def __init__(self, nick, user='', ident='',
-                 network='unset', password='', callbacks=None):
+    def __init__(self, network, callbacks=None):
         world.ircs.append(self)
-        self.originalNick = intern(nick)
-        self.originalNetwork = intern(network)
-        self.nick = self.originalNick
-        self.network = self.originalNetwork
-        self.nickmods = cycle(conf.supybot.nickmods())
-        self.password = password
-        self.user = intern(user or nick)  # Default to nick
-        self.ident = intern(ident or nick)  # Ditto.
-        self.prefix = '%s!%s@%s' % (nick, ident, 'unset.domain')
+        self.network = network
         if callbacks is None:
             self.callbacks = []
         else:
             self.callbacks = callbacks
         self.state = IrcState()
         self.queue = IrcMsgQueue()
-        self.lastTake = 0
-        self.server = 'unset'
-        self.afterConnect = False
         self.fastqueue = smallqueue()
-        self.lastping = time.time()
-        self.outstandingPing = False
         self.driver = None # The driver should set this later.
-        if self.password:
-            self.queue.enqueue(ircmsgs.password(self.password))
-        log.info('Sending NICK command, nick is %s.', self.nick)
-        self.queue.enqueue(ircmsgs.nick(self.nick))
-        log.info('Sending USER command, ident is %s, user is %s.',
-                 self.nick, self.user)
-        self.queue.enqueue(ircmsgs.user(self.ident, self.user))
+        self._setNonResettingVariables()
+        self._queueConnectMessages()
 
     def reset(self):
         """Resets the Irc object.  Called when the driver reconnects."""
-        self.nick = self.originalNick
-        self.network = self.originalNetwork
-        self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
+        self._setNonResettingVariables()
+        self._queueConnectMessages()
         self.state.reset()
         self.queue.reset()
+        self.fastqueue.reset()
+        for callback in self.callbacks:
+            callback.reset()
+
+    def _setNonResettingVariables(self):
+        # Configuration stuff.
+        self.nick = conf.supybot.nick()
+        self.user = conf.supybot.user()
+        self.ident = conf.supybot.ident()
+        self.alternateNicks = conf.supybot.nick.alternates()[:]
+        self.password = conf.supybot.networks.get(self.network).password()
+        self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
+        # The rest.
+        self.lastTake = 0
         self.server = 'unset'
         self.afterConnect = False
         self.lastping = time.time()
         self.outstandingPing = False
-        self.fastqueue = queue()
+
+    def _queueConnectMessages(self):
         if self.password:
-            self.queue.enqueue(ircmsgs.password(self.password))
-        self.queue.enqueue(ircmsgs.nick(self.nick))
-        self.queue.enqueue(ircmsgs.user(self.ident, self.user))
-        for callback in self.callbacks:
-            callback.reset()
+            log.info('Sending PASS command, not logging the password.')
+            self.queueMsg(ircmsgs.password(self.password))
+        log.info('Sending NICK command, nick is %s.', self.nick)
+        self.queueMsg(ircmsgs.nick(self.nick))
+        log.info('Sending USER command, ident is %s, user is %s.',
+                 self.ident, self.user)
+        self.queueMsg(ircmsgs.user(self.ident, self.user))
+
+    def _getNextNick(self):
+        if self.alternateNicks:
+            return self.alternateNicks.pop(0)
+        else:
+            nick = conf.supybot.nick()
+            for c in '`_^':
+                if nick.endswith(c):
+                    if len(nick) >= 9: # The max length on many servers.
+                        nick = nick.rstrip(c)
+                        continue
+                    else:
+                        return nick + c
+                else:
+                    return nick + c
+            for c in '`_^':
+                if nick.startswith(c):
+                    if len(nick) >= 9:
+                        nick = nick.lstrip(c)
+                        continue
+                    else:
+                        return c + nick
+                else:
+                    return c + nick
 
     def __repr__(self):
-        return '<irclib.Irc object for %s>' % self.server
+        return '<irclib.Irc object for %s>' % self.network
 
     def addCallback(self, callback):
         """Adds a callback to the callbacks list."""
         self.callbacks.append(callback)
-        utils.sortBy(lambda cb: cb.priority, self.callbacks)
+        utils.sortBy(operator.attrgetter('priority'), self.callbacks)
 
     def getCallback(self, name):
         """Gets a given callback by name."""
@@ -600,15 +623,16 @@ class Irc(IrcCommandDispatcher):
     def do376(self, msg):
         log.info('Got end of MOTD from %s', self.server)
         self.afterConnect = True
+        # Let's reset nicks in case we had to use a weird one.
+        self.alternateNicks = conf.supybot.nick.alternates()[:]
     do377 = do422 = do376
 
     def do433(self, msg):
         """Handles 'nickname already in use' messages."""
-        if self.nick != self.originalNick or not self.afterConnect:
-            newNick = self.nickmods.next() % self.originalNick
-            log.info('Got 433: %s is in use.  Trying %s.', self.nick, newNick)
-            self.sendMsg(ircmsgs.nick(newNick))
-    do432 = do433
+        newNick = self._getNextNick()
+        log.info('Got 433: %s is in use.  Trying %s.', self.nick, newNick)
+        self.sendMsg(ircmsgs.nick(newNick))
+    do432 = do433 # 432: Erroneous nickname.
 
     def doJoin(self, msg):
         if msg.nick == self.nick:

@@ -208,7 +208,6 @@ if __name__ == '__main__':
     defaultNetwork = conf.supybot.networks.default()
     network = conf.supybot.networks.get(defaultNetwork)
     server = network.server()
-    password = network.password()
     if ':' in server:
         serverAndPort = server.split(':', 1)
         serverAndPort[1] = int(serverAndPort[1])
@@ -251,8 +250,7 @@ if __name__ == '__main__':
     import supybot.callbacks as callbacks
     import supybot.Owner as Owner
 
-    irc = irclib.Irc(nick, user=user, ident=ident,
-                     network=defaultNetwork, password=password)
+    irc = irclib.Irc(network=defaultNetwork)
     callback = Owner.Class()
     irc.addCallback(callback)
     driver = drivers.newDriver(server, irc)

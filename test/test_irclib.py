@@ -304,7 +304,7 @@ class IrcStateTestCase(SupyTestCase):
 
 class IrcTestCase(SupyTestCase):
     def setUp(self):
-        self.irc = irclib.Irc('nick')
+        self.irc = irclib.Irc('test')
         _ = self.irc.takeMsg() # NICK
         _ = self.irc.takeMsg() # USER
 
@@ -325,6 +325,8 @@ class IrcTestCase(SupyTestCase):
         self.failUnless(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
 
     def testSendBeforeQueue(self):
+        while self.irc.takeMsg() is not None:
+            self.irc.takeMsg()
         self.irc.queueMsg(ircmsgs.IrcMsg('NOTICE #foo bar'))
         self.irc.sendMsg(ircmsgs.IrcMsg('PRIVMSG #foo yeah!'))
         msg = self.irc.takeMsg()
@@ -392,23 +394,35 @@ class IrcCallbackTestCase(SupyTestCase):
         self.assertEqual(doCommandCatcher.L, commands)
 
     def testFirstCommands(self):
-        nick = 'nick'
-        user = 'user any user'
-        password = 'password'
-        expected = [ircmsgs.nick(nick), ircmsgs.user(nick, user)]
-        irc = irclib.Irc(nick, user)
-        msgs = [irc.takeMsg()]
-        while msgs[-1] != None:
-            msgs.append(irc.takeMsg())
-        msgs.pop()
-        self.assertEqual(msgs, expected)
-        irc = irclib.Irc(nick, user, password=password)
-        msgs = [irc.takeMsg()]
-        while msgs[-1] != None:
-            msgs.append(irc.takeMsg())
-        msgs.pop()
-        expected.insert(0, ircmsgs.password(password))
-        self.assertEqual(msgs, expected)
+        try:
+            originalNick = conf.supybot.nick()
+            originalUser = conf.supybot.user()
+            originalPassword = conf.supybot.networks.test.password()
+            nick = 'nick'
+            conf.supybot.nick.setValue(nick)
+            user = 'user any user'
+            conf.supybot.user.setValue(user)
+            expected = [ircmsgs.nick(nick), ircmsgs.user('supybot', user)]
+            irc = irclib.Irc('test')
+            msgs = [irc.takeMsg()]
+            while msgs[-1] != None:
+                msgs.append(irc.takeMsg())
+            msgs.pop()
+            self.assertEqual(msgs, expected)
+            password = 'password'
+            conf.supybot.networks.test.password.setValue(password)
+            irc = irclib.Irc('test')
+            msgs = [irc.takeMsg()]
+            while msgs[-1] != None:
+                msgs.append(irc.takeMsg())
+            msgs.pop()
+            expected.insert(0, ircmsgs.password(password))
+            self.assertEqual(msgs, expected)
+        finally:
+            conf.supybot.nick.setValue(nick)
+            conf.supybot.user.setValue(user)
+            conf.supybot.networks.test.password.setValue(password)
+            conf.supybot.nick.setValue(nick)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
