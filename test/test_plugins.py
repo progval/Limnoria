@@ -60,6 +60,8 @@ class FunctionsTestCase(SupyTestCase):
                          self.irc.nick)
         self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$who'),
                          msg.nick)
+        self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$WHO'),
+                         msg.nick, 'stand. sub. not case-insensitive.')
         self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$nick'),
                          msg.nick)
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$randomdate'))
