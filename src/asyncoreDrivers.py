@@ -58,12 +58,12 @@ class AsyncoreRunnerDriver(drivers.IrcDriver):
 
 
 class AsyncoreDriver(asynchat.async_chat, object):
-    def __init__(self, (server, port), reconnect=True):
+    def __init__(self, (server, port), irc, reconnect=True):
         #debug.methodNamePrintf(self, '__init__')
         asynchat.async_chat.__init__(self)
         self.server = (server, port)
         self.reconnect = reconnect
-        self.irc = None # Satisfy PyChecker.
+        self.irc = irc
         self.buffer = ''
         self.set_terminator('\n')
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -81,14 +81,13 @@ class AsyncoreDriver(asynchat.async_chat, object):
             debug.msg('Scheduling reconnect at %s' % whenS, 'normal')
             def makeNewDriver():
                 self.irc.reset()
-                driver = self.__class__(self.server, reconnect=self.reconnect)
-                driver.irc = self.irc
+                driver = self.__class__(self.server, self.irc, self.reconnect)
                 driver.irc.driver = driver
             schedule.addEvent(makeNewDriver, when)
 
     def writable(self):
         #debug.methodNamePrintf(self, 'writable')
-        while self.connected:
+        while self.connected and self.irc:
             m = self.irc.takeMsg()
             if m:
                 self.push(str(m))

@@ -132,8 +132,7 @@ class Relay(callbacks.Privmsg):
         else:
             port = 6667
         newIrc = irclib.Irc(irc.nick, callbacks=irc.callbacks)
-        driver = asyncoreDrivers.AsyncoreDriver((server, port))
-        driver.irc = newIrc
+        driver = asyncoreDrivers.AsyncoreDriver((server, port), newIrc)
         newIrc.driver = driver
         self.ircs[abbreviation] = newIrc
         self.abbreviations[newIrc] = abbreviation

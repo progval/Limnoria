@@ -140,7 +140,7 @@ def processConfigFile(filename):
         irc.reset()
         world.startup = False
         irc.addCallback(ConfigAfter376(after376))
-        driver = asyncoreDrivers.AsyncoreDriver(server)
+        driver = asyncoreDrivers.AsyncoreDriver(server, irc)
         driver.irc = irc
     except IOError, e:
         reportConfigError(filename, e)
