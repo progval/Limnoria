@@ -65,23 +65,23 @@ def dump(map, fd=sys.stdout):
     for (key, value) in map.iteritems():
         fd.write('+%s,%s:%s->%s\n' % (len(key), len(value), key, value))
 
-def open(filename, mode='r'):
+def open(filename, mode='r', **kwargs):
     """Opens a database; used for compatibility with other database modules."""
     if mode == 'r':
-        return Reader(filename)
+        return Reader(filename, **kwargs)
     elif mode == 'w':
-        return ReaderWriter(filename)
+        return ReaderWriter(filename, **kwargs)
     elif mode == 'c':
         if os.path.exists(filename):
-            return ReaderWriter(filename)
+            return ReaderWriter(filename, **kwargs)
         else:
             maker = Maker(filename)
             maker.finish()
-            return ReaderWriter(filename)
+            return ReaderWriter(filename, **kwargs)
     elif mode == 'n':
         maker = Maker(filename)
         maker.finish()
-        return ReaderWriter(filename)
+        return ReaderWriter(filename, **kwargs)
     else:
         raise ValueError, 'Invalid flag: %s' % mode
 
@@ -334,8 +334,7 @@ class ReaderWriter(utils.IterableMap):
         except IOError:
             pass
         if removals or adds:
-            tempfilename = utils.mktemp('.db')
-            maker = Maker(tempfilename)
+            maker = Maker(self.filename)
             cdb = Reader(self.filename)
             for (key, value) in cdb.iteritems():
                 if key in removals:
@@ -352,7 +351,6 @@ class ReaderWriter(utils.IterableMap):
                     maker.add(key, value)
             cdb.close()
             maker.finish()
-            os.rename(tempfilename, self.filename)
         if os.path.exists(self.journalName):
             os.remove(self.journalName)
 
@@ -367,9 +365,15 @@ class ReaderWriter(utils.IterableMap):
 
     def _flushIfOverLimit(self):
         if self.maxmods:
-            if self.mods > self.maxmods:
-                self.flush()
-                self.mods = 0
+            if isinstance(self.maxmods, int):
+                if self.mods > self.maxmods:
+                    self.flush()
+                    self.mods = 0
+            elif isinstance(self.maxmods, float):
+                assert 0 <= self.maxmods
+                if self.mods / max(len(self.cdb), 100) > self.maxmods:
+                    self.flush()
+                    self.mods = 0
 
     def __getitem__(self, key):
         if key in self.removals:
