@@ -111,7 +111,7 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('channel', self.channel)
 
     def testNick(self):
-        self.assertNotError('alias sendingnick "echo $nick"')
+        self.assertNotError('alias sendingnick "rot13 [rot13 $nick]"')
         self.assertResponse('sendingnick', self.nick)
 
     def testAddRemoveAlias(self):
