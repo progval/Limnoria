@@ -77,7 +77,7 @@ class Fun(callbacks.Privmsg):
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'urlquote', 'md5','sha',
-                       'colorize']
+                       'colorize', 'squish']
     def outfilter(self, irc, msg, args, channel):
         """[<channel>] [<command>]
         
@@ -99,6 +99,15 @@ class Fun(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
     outfilter = privmsgs.checkChannelCapability(outfilter, 'op')
     
+    def squish(self, irc, msg, args):
+        """<text>
+
+        Removes all the spaces from <text>.
+        """
+        text = privmsgs.getArgs(args)
+        text = ''.join(text.split())
+        irc.reply(msg, text)
+
     def hexip(self, irc, msg, args):
         """<ip>
 

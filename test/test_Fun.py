@@ -51,6 +51,10 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
         for i in range(100):
             self.assertNotError('jeffk the quick brown fox is ghetto')
 
+    def testSquish(self):
+        self.assertResponse('squish foo bar baz', 'foobarbaz')
+        self.assertResponse('squish "foo bar baz"', 'foobarbaz')
+
     def testLithp(self):
         self.assertResponse('lithp jamessan', 'jamethan')
 
