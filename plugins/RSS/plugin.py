@@ -86,9 +86,9 @@ class RSS(callbacks.Plugin):
             feeds = self.registryValue('announce', channel)
             for name in feeds:
                 commandName = callbacks.canonicalName(name)
-                if self.isCommand(commandName):
+                if self.isCommandMethod(commandName):
                     name = commandName
-                    url = self.getCommandMethod(name).url
+                    url = getattr(self, name).url
                 else:
                     url = name
                 if self.willGetNewFeed(url):
