@@ -49,9 +49,9 @@ supybot.directories.conf: test-conf
 supybot.directories.log: test-logs
 supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
-supybot.log.level: DEBUG
-supybot.log.detailedTracebacks: False
-supybot.log.individualPluginLogfiles: True
+supybot.log.level: VERBOSE
+supybot.log.format: %(levelname)s %(message)s
+supybot.log.plugins.individualLogfiles: False
 supybot.throttleTime: 0
 supybot.reply.whenAddressedBy.chars: @
 supybot.protocols.irc.throttleTime: -1
@@ -79,6 +79,26 @@ import unittest
 
 import supybot.utils as utils
 import supybot.world as world
+
+import logging
+class TestLogFilter(logging.Filter):
+    bads = [
+        'No callbacks in',
+        'Invalid channel database',
+        'Exact error',
+        'Invalid user dictionary',
+        'because of noFlush',
+        'Queuing NICK',
+        'Queuing USER',
+        'IgnoresDB.reload failed',
+        'Starting log for',
+        ]
+    def filter(self, record):
+        for bad in self.bads:
+            if bad in record.msg:
+                return False
+        return True
+log._logger.addFilter(TestLogFilter())
 
 class path(str):
     """A class to represent platform-independent paths."""
