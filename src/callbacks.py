@@ -316,15 +316,16 @@ class IrcObjectProxy:
         self.finalEvaled = True
         originalName = self.args.pop(0)
         name = canonicalName(originalName)
-        callback = self.findCallback(name)
+        cb = self.findCallback(name)
         try:
-            if callback is not None:
+            if cb is not None:
                 anticap = ircdb.makeAntiCapability(name)
                 #debug.printf('Checking for %s' % anticap)
                 if ircdb.checkCapability(self.msg.prefix, anticap):
                     #debug.printf('Being prevented with anticap')
                     debug.msg('Preventing %s from calling %s' % \
                               (self.msg.nick, name), 'normal')
+                    self.error(self.msg, conf.replyNoCapability % name)
                     return
                 recipient = self.msg.args[0]
                 if ircutils.isChannel(recipient):
@@ -335,8 +336,13 @@ class IrcObjectProxy:
                         debug.msg('Preventing %s from calling %s' % \
                                   (self.msg.nick, name), 'normal')
                         return
-                command = getattr(callback, name)
-                callback.callCommand(command, self, self.msg, self.args)
+                command = getattr(cb, name)
+                if cb.threaded:
+                    t = CommandThread(cb.callCommand, command,
+                                      self, self.msg, self.args)
+                    t.start()
+                else:
+                    cb.callCommand(command, self, self.msg, self.args)
             else:
                 self.args.insert(0, originalName)
                 if not isinstance(self.irc, irclib.Irc):
@@ -384,7 +390,7 @@ class IrcObjectProxy:
                 # " (more)" to the end, so that's 7 more characters.
                 # 512 - 51 == 461.
                 s = ircutils.safeArgument(s)
-                allowedLength = 463 - len(self.irc.prefix)
+                allowedLength = 459 - len(self.irc.prefix)
                 msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
                 msgs.reverse()
                 response = msgs.pop()
@@ -425,7 +431,7 @@ class CommandThread(threading.Thread):
     """Just does some extra logging and error-recovery for commands that need
     to run in threads.
     """
-    def __init__(self, command, irc, msg, args):
+    def __init__(self, callCommand, command, irc, msg, args):
         self.command = command
         world.threadsSpawned += 1
         try:
@@ -437,8 +443,8 @@ class CommandThread(threading.Thread):
         except AttributeError:
             self.className = '<unknown>'
         name = '%s.%s with args %r' % (self.className, self.commandName, args)
-        threading.Thread.__init__(self, target=command, name=name,
-                                  args=(irc, msg, args))
+        threading.Thread.__init__(self, target=callCommand, name=name,
+                                  args=(command, irc, msg, args))
         debug.msg('Spawning thread %s' % name, 'verbose')
         self.irc = irc
         self.msg = msg
@@ -446,11 +452,7 @@ class CommandThread(threading.Thread):
 
     def run(self):
         try:
-            start = time.time()
             threading.Thread.run(self)
-            elapsed = time.time() - start
-            debug.msg('%s.%s took %s seconds.' % \
-                      (self.className, self.commandName, elapsed), 'verbose')
         except (getopt.GetoptError, ArgumentError):
             if hasattr(self.command, '__doc__'):
                 help = self.command.__doc__.splitlines()[0]
@@ -548,19 +550,14 @@ class Privmsg(irclib.IrcCallback):
             return False
 
     def callCommand(self, f, irc, msg, args):
-        if self.threaded:
-            thread = CommandThread(f, irc, msg, args)
-            thread.start()
-            #debug.printf('Spawned new thread: %s' % thread)
-        else:
-            # Exceptions aren't caught here because IrcObjectProxy.finalEval
-            # catches them and does The Right Thing.
-            start = time.time()
-            f(irc, msg, args)
-            elapsed = time.time() - start
-            funcname = f.im_func.func_name
-            debug.msg('%s.%s took %s seconds' % \
-                      (f.im_class.__name__, funcname, elapsed), 'verbose')
+        # Exceptions aren't caught here because IrcObjectProxy.finalEval
+        # catches them and does The Right Thing.
+        start = time.time()
+        f(irc, msg, args)
+        elapsed = time.time() - start
+        funcname = f.im_func.func_name
+        debug.msg('%s.%s took %s seconds' % \
+                  (f.im_class.__name__, funcname, elapsed), 'verbose')
 
     _r = re.compile(r'^([^\s[]+)(?:\[|\s+|$)')
     def doPrivmsg(self, irc, msg):

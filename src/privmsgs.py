@@ -90,7 +90,7 @@ def thread(f):
     """Makes sure a command spawns a thread when called."""
     def newf(self, irc, msg, args):
         ff = new.instancemethod(f, self, self.__class__)
-        t = callbacks.CommandThread(ff, irc, msg, args)
+        t = callbacks.CommandThread(self.callCommand, ff, irc, msg, args)
         t.start()
     newf.__doc__ = f.__doc__
     return newf
@@ -105,5 +105,6 @@ class CapabilityCheckingPrivmsg(callbacks.Privmsg):
             callbacks.Privmsg.callCommand(self, f, irc, msg, args)
         else:
             irc.error(msg, conf.replyNoCapability % self.capability)
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
