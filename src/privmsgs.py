@@ -289,6 +289,9 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         Loads the plugin <plugin> from the plugins/ directory.
         """
         name = getArgs(args)
+        if name in [cb.name() for cb in irc.callbacks]:
+            irc.error('Sorry, that module is already loaded.')
+            return
         try:
             moduleInfo = imp.find_module(name)
         except ImportError:
