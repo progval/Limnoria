@@ -64,17 +64,14 @@ def main():
     schedule.addPeriodicEvent(world.upkeep, 300)
     world.startedAt = started
     try:
-        try:
-            while world.ircs:
-                drivers.run()
-            log.info('No more Irc objects, exiting.')
-        except KeyboardInterrupt:
-            log.info('Exiting due to Ctrl-C.')
-            raise SystemExit, 'Goodbye!'
-        except:
-            log.exception('Exception raised out of drivers.run:')
-    finally:
-        registry.close(conf.supybot, args[0])
+        while world.ircs:
+            drivers.run()
+        log.info('No more Irc objects, exiting.')
+    except KeyboardInterrupt:
+        log.info('Exiting due to Ctrl-C.')
+        raise SystemExit, 'Goodbye!'
+    except:
+        log.exception('Exception raised out of drivers.run:')
 
 if __name__ == '__main__':
     ###
@@ -114,8 +111,9 @@ if __name__ == '__main__':
     if not args or len(args) > 1:
         parser.error() 
 
+    registryFilename = args.pop()
     try:
-        registry.open(args[0])
+        registry.open(registryFilename)
     except registry.InvalidRegistryFile, e:
         sys.stderr.write(str(e))
         sys.stderr.write('\n')
@@ -124,6 +122,12 @@ if __name__ == '__main__':
     import log
     import conf
     
+    def closeRegistry():
+        log.info('Writing registry file to %s', registryFilename)
+        registry.close(conf.supybot, registryFilename)
+        log.info('Finished writing registry file.')
+    atexit.register(closeRegistry)
+
     nick = options.nick or conf.supybot.nick.get()
     user = options.user or conf.supybot.user.get()
     ident = options.ident or conf.supybot.ident.get()
