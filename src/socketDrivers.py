@@ -121,11 +121,12 @@ class SocketDriver(drivers.IrcDriver):
     def reconnect(self):
         #debug.methodNamePrintf(self, 'reconnect')
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.conn.settimeout(conf.poll)
+        self.conn.settimeout(conf.poll*10) # Allow more time for connect.
         if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
             self.reconnectWaitsIndex += 1
         try:
             self.conn.connect(self.server)
+            self.conn.settimeout(conf.poll)
         except socket.error, e:
             if e.args[0] != 115:
                 debug.msg('Error connecting to %s: %s' % (self.server, e))
