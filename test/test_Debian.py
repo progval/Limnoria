@@ -58,7 +58,6 @@ class DebianTestCase(PluginTestCase, PluginDocumentation):
             pass
 
     def testDebversion(self):
-        self.assertNotError('version')
         self.assertRegexp('version lakjdfad', r'^No package.*\(all\)')
         self.assertRegexp('version unstable alkdjfad',
             r'^No package.*\(unstable\)')
@@ -68,7 +67,6 @@ class DebianTestCase(PluginTestCase, PluginDocumentation):
     def testDebfile(self):
         if not self.fileDownloaded:
             pass
-        self.assertNotError('file')
         self.assertRegexp('file --exact bin/gaim', r'net/gaim')
 
     def testDebincoming(self):
