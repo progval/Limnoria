@@ -44,7 +44,7 @@ def ignore(*args, **kwargs):
 
 def catch(f, *args, **kwargs):
     try:
-        f(*args, **kwargs)
+        return f(*args, **kwargs)
     except:
         pass
 
@@ -175,7 +175,7 @@ class queue(dict):
             return False
 
     def __repr__(self):
-        return 'queue(%s)' % ', '.join(map(str, self))
+        return 'queue(%s)' % ', '.join(map(repr, self.itervalues()))
 
 
 class IterableMap(object):
@@ -249,6 +249,8 @@ def enumerate(L):
         yield (i, L[i])
 
 def window(L, size):
+    if size <= 0:
+        raise ValueError, 'sizes <= 0 unallowed.'
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
 
