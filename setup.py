@@ -42,6 +42,7 @@ plugins = [
     'Network',
     'Misc',
     'Owner',
+    'Status',
     'User',
     'Utilities',
     ]
