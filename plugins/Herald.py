@@ -233,7 +233,7 @@ class Herald(callbacks.Privmsg):
             irc.errorNoUser()
             return
         try:
-            changer = utils.perlRegexpToReplacer(regexp)
+            changer = utils.perlReToReplacer(regexp)
         except ValueError, e:
             irc.error('That\'s not a valid regexp: %s.' % e)
             return
