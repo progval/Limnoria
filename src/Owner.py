@@ -384,7 +384,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
             Evaluates <expression> (which should be a Python expression) and
             returns its value.  If an exception is raised, reports the
-            exception.
+            exception (and logs the traceback to the bot's logfile).
             """
             if conf.allowEval:
                 s = privmsgs.getArgs(args)
@@ -398,7 +398,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 except SyntaxError, e:
                     irc.reply('%s: %r' % (utils.exnToString(e), s))
                 except Exception, e:
-                    irc.reply(utils.exnToString(e))
+                    self.log.exception('Uncaught exception in Owner.eval.  '
+                                       'This is not a bug.  Please do not '
+                                       'report it.')
+                    irc.reply(utils.exnToString(e)j
             else:
                 # There's a potential that allowEval got changed after we were
                 # loaded.  Let's be extra-special-safe.
