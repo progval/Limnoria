@@ -43,7 +43,6 @@ import gc
 import os
 import imp
 import sys
-import sets
 import getopt
 import logging
 import linecache
@@ -54,7 +53,6 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
-import supybot.drivers as drivers
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -174,18 +172,6 @@ class LogProxy(object):
         return getattr(self.log, attr)
 
 
-class LogErrorHandler(logging.Handler):
-    irc = None
-    def handle(self, record):
-        if record.levelno >= logging.ERROR:
-            if record.exc_info:
-                (_, e, _) = record.exc_info
-                s = 'Uncaught exception in %s: %s' % (record.module, e)
-            else:
-                s = record.msg
-            # Send to the owner dudes.
-
-
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
@@ -241,9 +227,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                 self.log.error('Error loading src/ plugin %s.  '
                                                'This is usually rather '
                                                'serious; these plugins are '
-                                               'almost always be loaded.',
-                                               name)
-
+                                               'almost always be loaded.',name)
                         except Exception, e:
                             log.exception('Failed to load %s:', name)
                 else:

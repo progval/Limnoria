@@ -41,10 +41,6 @@ import supybot.fix as fix
 
 import time
 import pprint
-import string
-import logging
-import smtplib
-import textwrap
 from itertools import imap
 
 import supybot.log as log
@@ -386,34 +382,6 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(imap(repr, ircdb.ignores.hostmasks)))
         else:
             irc.reply('I\'m not currently globally ignoring anyone.')
-
-    def reportbug(self, irc, msg, args):
-        """<description>
-
-        Reports a bug to a private mailing list supybot-bugs.  <description>
-        will be the subject of the email.  The most recent 10 or so messages
-        the bot receives will be sent in the body of the email.
-        """
-        description = privmsgs.getArgs(args)
-        messages = pprint.pformat(irc.state.history[-10:])
-        email = textwrap.dedent("""
-        Subject: %s
-        From: jemfinch@users.sourceforge.net
-        To: supybot-bugs@lists.sourceforge.net
-        Date: %s
-
-        Bug report for Supybot %s.
-        %s
-        """) % (description, time.ctime(), conf.version, messages)
-        email = email.strip()
-        email = email.replace('\n', '\r\n')
-        smtp = smtplib.SMTP('mail.sourceforge.net', 25)
-        smtp.sendmail('jemfinch@users.sf.net',
-                      ['supybot-bugs@lists.sourceforge.net'],
-                      email)
-        smtp.quit()
-        irc.replySuccess()
-    reportbug = privmsgs.thread(reportbug)
 
 
 Class = Admin

@@ -42,7 +42,6 @@ import os
 import sys
 import sre
 import time
-import types
 import atexit
 import threading
 

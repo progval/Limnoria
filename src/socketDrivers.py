@@ -40,7 +40,6 @@ __revision__ ="$Id$"
 import supybot.fix as fix
 
 import time
-import atexit
 import select
 import socket
 from itertools import imap
@@ -50,7 +49,6 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.drivers as drivers
-import supybot.ircmsgs as ircmsgs
 import supybot.schedule as schedule
 
 reconnectWaits = (0, 60, 300)

@@ -38,9 +38,6 @@ __revision__ = "$Id$"
 import supybot.fix as fix
 
 import types
-import pprint
-import string
-import threading
 from itertools import imap
 
 class RingBuffer(object):

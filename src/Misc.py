@@ -191,7 +191,7 @@ class Misc(callbacks.Privmsg):
             return
         name = privmsgs.getArgs(args)
         cb = irc.getCallback(name)
-        if cb is not None and cb.__doc__ and not getattr(cb, '_original'):
+        if cb is not None and cb.__doc__ and not hasattr(cb, '_original'):
             irc.reply(utils.normalizeWhitespace(cb.__doc__))
             return
         command = callbacks.canonicalName(name)

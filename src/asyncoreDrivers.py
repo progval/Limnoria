@@ -33,25 +33,20 @@ __revision__ = "$Id$"
 
 import supybot.fix as fix
 
-import re
 import sys
 import time
 import socket
 import asyncore
 import asynchat
 
-import supybot.log as log
 import supybot.conf as conf
-import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.world as world
 import supybot.drivers as drivers
-import supybot.ircmsgs as ircmsgs
 import supybot.schedule as schedule
 
 class AsyncoreRunnerDriver(drivers.IrcDriver):
     def run(self):
-        #log.debug(repr(asyncore.socket_map))
         try:
             timeout = conf.supybot.drivers.poll()
             if not asyncore.socket_map:
