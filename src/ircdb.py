@@ -519,7 +519,7 @@ class UsersDB(object):
     
 
 
-class ChannelsDictionary(object):
+class ChannelsDictionary(utils.IterableMap):
     def __init__(self, filename):
         self.filename = filename
         Set = sets.Set
@@ -548,6 +548,9 @@ class ChannelsDictionary(object):
     def reload(self):
         """Reloads the channel database from its file."""
         self.__init__(self.filename)
+
+    def iteritems(self):
+        return self.dict.iteritems()
 
 
 ###
