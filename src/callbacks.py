@@ -686,7 +686,13 @@ class PrivmsgRegexp(Privmsg):
             return
         fed = False
         for (r, method) in self.res:
+            spans = sets.Set()
             for m in r.finditer(msg.args[1]):
+                # There's a bug in finditer: http://www.python.org/sf/817234
+                if m.span() in spans:
+                    break
+                else:
+                    spans.add(m.span())
                 if not fed:
                     fed = True
                     self.rateLimiter.put(msg)
