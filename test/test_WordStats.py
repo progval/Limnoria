@@ -55,8 +55,8 @@ if sqlite is not None:
             self.assertResponse('wordstats', 'I am not currently keeping any '
                                              'word stats.')
             self.assertNotError('add lol')
-            self.assertResponse('wordstats', 'Currently keeping stats for: '
-                                             '\'lol\'')
+            self.assertResponse('wordstats',
+                                'I am currently keeping stats for lol.')
 
         def testWordStatsUser(self):
             self.assertNotError('add lol')

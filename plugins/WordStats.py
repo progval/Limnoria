@@ -279,6 +279,7 @@ class WordStats(callbacks.Privmsg):
             try:
                 L = ['%r: %s' % (word, count)
                      for (word,count) in self.db.getUserWordCounts(channel,id)]
+                L.sort()
                 irc.reply(utils.commaAndify(L))
             except KeyError:
                 irc.reply('I have no word stats for that person.')
