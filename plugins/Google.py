@@ -102,7 +102,7 @@ def search(log, queries, **kwargs):
         for (i, query) in enumerate(queries):
             if len(query.split(None, 1)) > 1:
                 queries[i] = repr(query)
-        data = google.doGoogleSearch(' '.join(query), **kwargs)
+        data = google.doGoogleSearch(' '.join(queries), **kwargs)
         now = time.time()
         totalSearches += 1
         totalTime += data.meta.searchTime
@@ -203,9 +203,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                 kwargs['filter'] = False
             else:
                 kwargs[option[2:]] = argument
-        for (i, arg) in enumerate(args):
-            if len(arg.split()) > 1:
-                args[i] = repr(arg)
         try:
             data = search(self.log, rest, **kwargs)
         except google.NoLicenseKey, e:
