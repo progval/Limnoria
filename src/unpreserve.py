@@ -53,7 +53,7 @@ class Reader(object):
             if not line.strip():
                 continue
             line = line.rstrip('\r\n')
-            line = line.replace('\t', ' '*8)
+            line = line.expandtabs()
             s = line.lstrip(' ')
             indent = len(line) - len(s)
             if indent != self.indent:
@@ -63,7 +63,6 @@ class Reader(object):
                 self.creator = self.Creator(*self.args, **self.kwargs)
                 self.modifiedCreator = False
                 self.indent = indent
-            (command, rest) = s.split(None, 1)
             command = self.normalizeCommand(command)
             self.modifiedCreator = True
             if hasattr(self.creator, command):
