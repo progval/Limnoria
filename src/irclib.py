@@ -243,9 +243,9 @@ class Irc(object):
 
     Handles PING commands already.
     """
-    _nickSetters = set(('001', '002', '003', '004', '250', '251', '252', '254',
+    _nickSetters = set('001', '002', '003', '004', '250', '251', '252', '254',
                         '255', '265', '266', '372', '375', '376', '333', '353',
-                        '332', '366'))
+                        '332', '366')
     def __init__(self, nick, user='', ident='', callbacks=None):
         world.ircs.append(self)
         self.nick = nick
@@ -344,16 +344,17 @@ class Irc(object):
         if msg.command == 'NICK' and msg.nick == self.nick:
             if ircdb.users.hasUser(self.nick):
                 ircdb.users.delUser(self.nick)
-            self.nick = ircutils.nick(msg.args[0])
-            (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             if ircdb.users.hasUser(self.prefix):
                 ircdb.users.delUser(self.prefix)
+            self.nick = ircutils.nick(msg.args[0])
+            (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             self.prefix = '%s!%s@%s' % (self.nick, user, domain)
         elif msg.command in self._nickSetters:
+            #debug.printf('msg.command in self._nickSetters')
             newnick = ircutils.nick(msg.args[0])
             if self.nick != newnick:
                 debug.printf('Hmm...self.nick != newnick.  Odd.')
-                self.nick = newnick
+            self.nick = newnick
         # Respond to PING requests.
         elif msg.command == 'PING':
             self.sendMsg(ircmsgs.pong(msg.args[0]))
