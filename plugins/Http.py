@@ -434,7 +434,7 @@ class Http(callbacks.Privmsg):
         url = '%s/pks/lookup?op=index&search=%s' % (host, urlClean)
         try:
             L = []
-            fd = urllib2.urlopen(url)
+            fd = webutils.getUrlFd(url)
             for line in iter(fd.next, ''):
                 info = self._pgpkeyre.search(line)
                 if info:
