@@ -300,6 +300,9 @@ if __name__ == '__main__':
             pid = os.getpid()
             fd.write('%s\n' % pid)
             fd.close()
+            def removePidFile():
+                os.remove(pidFile)
+            atexit.register(removePidFile)
         except EnvironmentError, e:
             log.error('Error opening pid file %s: %s', pidFile, e)
             
