@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-class BadWordsTestCase(PluginTestCase, PluginDocumentation):
+class BadWordsTestCase(PluginTestCase):
     plugins = ('BadWords', 'Utilities')
     badwords = ('shit', 'ass')
     def tearDown(self):
@@ -63,6 +63,12 @@ class BadWordsTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('badwords add %s' % ' '.join(self.badwords))
         self.assertNotError('badwords remove %s' % ' '.join(self.badwords))
         self._NegTest()
+
+    def testList(self):
+        self.assertNotError('badwords list')
+        self.assertNotError('badwords add shit')
+        self.assertNotError('badwords add ass')
+        self.assertResponse('badwords list', 'ass and shit')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

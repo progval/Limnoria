@@ -107,6 +107,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def __init__(self):
         privmsgs.CapabilityCheckingPrivmsg.__init__(self)
+        self.filtering = True
         self.lastModified = 0
         self.words = conf.supybot.plugins.BadWords.words
 
@@ -117,17 +118,20 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
         elif replaceMethod == 'nastyCharacters':
             return self.registryValue('nastyChars')[:len(m.group(1))]
 
+    def inFilter(self, irc, msg):
+        self.filtering = True
+        return msg
+        
     def outFilter(self, irc, msg):
-        if msg.command == 'PRIVMSG':
+        if self.filtering and msg.command == 'PRIVMSG':
             if self.lastModified < self.words.lastModified:
                 self.makeRegexp(self.words())
                 self.lastModified = time.time()
             s = msg.args[1]
             s = ircutils.stripFormatting(s)
             s = self.regexp.sub(self.sub, s)
-            return ircmsgs.privmsg(msg.args[0], s)
-        else:
-            return msg
+            msg = ircmsgs.privmsg(msg.args[0], s)
+        return msg
 
     def makeRegexp(self, iterable):
         s = '(%s)' % '|'.join(map(re.escape, iterable))
@@ -135,6 +139,19 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
             s = r'\b%s\b' % s
         self.regexp = re.compile(s, re.I)
 
+    def list(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the list of words being censored.
+        """
+        L = list(self.words())
+        if L:
+            self.filtering = False
+            utils.sortBy(str.lower, L)
+            irc.reply(utils.commaAndify(L))
+        else:
+            irc.reply('I\'m not currently censoring any bad words.')
+        
     def add(self, irc, msg, args):
         """<word> [<word> ...]
 
