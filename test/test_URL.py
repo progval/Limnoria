@@ -82,11 +82,10 @@ if sqlite is not None:
                 self.assertRegexp('url num', str(counter))
                 self.feedMsg(url)
                 counter += 1
-
             self.assertRegexp('url num', str(counter))
             self.assertRegexp('url last', re.escape(urls[-1]))
             self.assertRegexp('url last --proto https', re.escape(urls[-3]))
-            self.assertRegexp('url last --at gameknot.com', re.escape(urls[-2]))
+            self.assertRegexp('url last --at gameknot.com',re.escape(urls[-2]))
             self.assertRegexp('url last --with dhcp', re.escape(urls[-4]))
             self.assertRegexp('url last --from alsdkjf', '^No')
             self.assertNotError('url random')
@@ -103,25 +102,28 @@ if sqlite is not None:
 
         def testTinyurl(self):
             self.assertNotError('url config tinyurlsnarfer off')
-            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'\
-                'func=add&group_id=58965&atid=489447',
-                r'http://tinyurl.com/rqac')
+            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
+                              'func=add&group_id=58965&atid=489447',
+                              r'http://tinyurl.com/rqac')
             self.assertNotError('url config tinyurlsnarfer on')
-            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'\
-                'func=add&group_id=58965&atid=489447',
-                r'http://tinyurl.com/rqac')
-            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'\
-                'func=add&group_id=58965&atid=489447',
-                r'http://tinyurl.com/rqac')
+            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
+                              'func=add&group_id=58965&atid=489447',
+                              r'http://tinyurl.com/rqac')
+            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
+                              'func=add&group_id=58965&atid=489447',
+                              r'http://tinyurl.com/rqac')
 
+
+    class URLTestCase2(ChannelPluginTestCase, PluginDocumentation):
+        plugins = ('URL',)
         def testTinysnarf(self):
             self.assertNotError('url config tinyurlsnarfer on')
-            self.assertRegexp('http://sourceforge.net/tracker/?'\
-                'func=add&group_id=58965&atid=489447',
-                r'http://tinyurl.com/rqac.* \(was')
-            self.assertRegexp('http://www.urbandictionary.com/define.php?'\
-                'term=all+your+base+are+belong+to+us',
-                r'http://tinyurl.com/u479.* \(was')
+            self.assertRegexp('http://www.urbandictionary.com/define.php?'
+                              'term=all+your+base+are+belong+to+us',
+                              r'http://tinyurl.com/u479.* \(was')
+            self.assertRegexp('http://sourceforge.net/tracker/?'
+                              'func=add&group_id=58965&atid=489447',
+                              r'http://tinyurl.com/rqac.* \(was')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
