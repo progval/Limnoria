@@ -36,6 +36,18 @@ import shutil
 import os.path
 from iter import ifilter
 
+def writeLine(fd, line):
+    fd.write(line)
+    if not line.endswith('\n'):
+        fd.write('\n')
+
+def readLines(filename):
+    fd = file(filename)
+    try:
+        return [line.rstrip('\r\n') for line in fd.readlines()]
+    finally:
+        fd.close()
+        
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
     r = random.Random()
@@ -63,6 +75,13 @@ def nonEmptyLines(fd):
 
 def nonCommentNonEmptyLines(fd):
     return nonEmptyLines(nonCommentLines(fd))
+
+def chunks(fd, size):
+    return iter(lambda : fd.read(size), '')
+##     chunk = fd.read(size)
+##     while chunk:
+##         yield chunk
+##         chunk = fd.read(size)
 
 class AtomicFile(file):
     """Used for files that need to be atomically written -- i.e., if there's a
