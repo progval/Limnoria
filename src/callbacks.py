@@ -1151,7 +1151,6 @@ class PluginMixin(irclib.IrcCallback):
         return canonicalName(self.name())
     
     def __call__(self, irc, msg):
-        # This is for later dynamic scoping.
         if msg.command == 'PRIVMSG':
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
