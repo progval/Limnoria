@@ -289,7 +289,7 @@ def checkCommandCapability(msg, cb, command):
 
 class RichReplyMethods(object):
     """This is a mixin so these replies need only be defined once."""
-    def _makeReply(self, prefix, s):
+    def __makeReply(self, prefix, s):
         if s:
             s = '%s  %s' % (prefix, s)
         else:
@@ -297,10 +297,10 @@ class RichReplyMethods(object):
         return s
 
     def replySuccess(self, s='', **kwargs):
-        self.reply(self._makeReply(conf.replySuccess, s), **kwargs)
+        self.reply(self.__makeReply(conf.replySuccess, s), **kwargs)
 
     def replyError(self, s='', **kwargs):
-        self.reply(self._makeReply(conf.replyError, s), **kwargs)
+        self.reply(self.__makeReply(conf.replyError, s), **kwargs)
 
     def errorNoCapability(self, capability, s='', **kwargs):
         log.warning('Denying %s for lacking %r capability',
@@ -314,13 +314,13 @@ class RichReplyMethods(object):
         self.error(s, **kwargs)
 
     def errorNotRegistered(self, s='', **kwargs):
-        self.error(self._makeReply(conf.replyNotRegistered, s), **kwargs)
+        self.error(self.__makeReply(conf.replyNotRegistered, s), **kwargs)
 
     def errorNoUser(self, s='', **kwargs):
-        self.error(self._makeReply(conf.replyNoUser, s), **kwargs)
+        self.error(self.__makeReply(conf.replyNoUser, s), **kwargs)
 
     def errorRequiresPrivacy(self, s='', **kwargs):
-        self.error(self._makeReply(conf.replyRequiresPrivacy, s), **kwargs)
+        self.error(self.__makeReply(conf.replyRequiresPrivacy, s), **kwargs)
 
             
 class IrcObjectProxy(RichReplyMethods):
