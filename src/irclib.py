@@ -275,12 +275,14 @@ class IrcState(IrcCommandDispatcher):
     __metaclass__ = log.MetaFirewall
     __firewalled__ = {'addMsg': None}
     def __init__(self):
+        self.supported = utils.InsensitivePreservingDict()
         self.history=RingBuffer(conf.supybot.protocols.irc.maxHistoryLength())
         self.reset()
 
     def reset(self):
         """Resets the state to normal, unconnected state."""
         self.history.reset()
+        self.supported.clear()
         self.history.resize(conf.supybot.protocols.irc.maxHistoryLength())
         self.channels = ircutils.IrcDict()
         self.nicksToHostmasks = ircutils.IrcDict()
@@ -325,6 +327,33 @@ class IrcState(IrcCommandDispatcher):
         """Returns the hostmask for a given nick."""
         return self.nicksToHostmasks[nick]
 
+    _005converters = utils.InsensitivePreservingDict({
+        'modes': int,
+        'maxchannels': int,
+        'maxbans': int,
+        'maxtargets': int,
+        'nicklen': int,
+        'topiclen': int,
+        'kicklen': int,
+        
+        })
+    def _prefixParser(s):
+        (left, right) = s.split(')')
+        assert left[0] == '(', 'Odd PREFIX in 005: %s' % s
+        left = left[1:]
+        assert len(left) == len(right), 'Odd PREFIX in 005: %s' % s
+        return dict(zip(left, right))
+    _005converters['prefix'] = _prefixParser
+    del _prefixParser
+    def do005(self, irc, msg):
+        for arg in msg.args[1:-1]: # 0 is nick, -1 is "are supported"
+            if '=' in arg:
+                (name, value) = arg.split('=', 1)
+                converter = self._005converters.get(name, lambda x: x)
+                self.supported[name] = converter(value)
+            else:
+                self.supported[arg] = None
+        
     def do352(self, irc, msg):
         (nick, user, host) = (msg.args[5], msg.args[2], msg.args[3])
         hostmask = '%s!%s@%s' % (nick, user, host)
