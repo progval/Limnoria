@@ -31,6 +31,7 @@
 
 plugins = [
     'Admin',
+    'Alias',
     'AutoMode',
     'Anonymous',
     'Babelfish',
