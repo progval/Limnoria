@@ -59,8 +59,14 @@ class MiscCommands(callbacks.Privmsg):
         if conf.replyWhenNotCommand and msg.nick != irc.nick:
             s = callbacks.addressed(irc.nick, msg)
             if s:
-                tokens = callbacks.tokenize(s)
+                for cb in irc.callbacks:
+                    if isinstance(cb, callbacks.PrivmsgRegexp) or \
+                       isinstance(cb, callbacks.PrivmsgCommandAndRegexp):
+                        for (r, _) in cb.res:
+                            if r.search(msg.args[1]):
+                                return
                 notCommands = []
+                tokens = callbacks.tokenize(s)
                 for command in callbacks.getCommands(tokens):
                     if not callbacks.findCallbackForCommand(irc, command):
                         notCommands.append(repr(command))

@@ -32,7 +32,7 @@
 from test import *
 
 class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('MiscCommands', 'Utilities')
+    plugins = ('MiscCommands', 'Utilities', 'ChannelDB')
     def testReplyWhenNotCommand(self):
         conf.replyWhenNotCommand = True
         self.prefix = 'somethingElse!user@host.domain.tld'
@@ -40,6 +40,12 @@ class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
         self.assertRegexp('foo bar baz', 'not.*command')
         self.assertRegexp('foo | bar | baz', 'not.*commands')
         self.assertRegexp('baz [foo] [bar]', 'not.*commands')
+        conf.replyWhenNotCommand = False
+
+    def testNotReplyWhenRegexpsMatch(self):
+        conf.replyWhenNotCommand = True
+        self.prefix = 'somethingElse!user@host.domain.tld'
+        self.assertNoResponse('@coffee++', 2)
         conf.replyWhenNotCommand = False
         
     def testHelp(self):
