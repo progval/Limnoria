@@ -105,6 +105,9 @@ if sqlite is not None:
             self.assertRegexp('search jemfinch',
                               'my primary author')
 
+        def testWhatisOnNumbers(self):
+            self.assertNotError('learn 911 as emergency number')
+            self.assertRegexp('whatis 911', 'emergency number')
 
         def testNotZeroIndexed(self):
             self.assertNotError('learn foo as bar')

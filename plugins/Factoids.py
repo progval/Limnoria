@@ -131,7 +131,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        if args[-1].isdigit():
+        if len(args) > 1 and args[-1].isdigit():
             number = args.pop()
         else:
             number = ''

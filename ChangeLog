@@ -1,3 +1,5 @@
+	* Fixed bug #851254, Factoids.whatis didn't work on numeric keys.
+
 	* Added the ability to turn on/off the showing of ids in FunDB
 	excuse/insult/praise/lart.
 	
