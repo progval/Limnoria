@@ -39,6 +39,7 @@ import plugins
 
 import sets
 import time
+import sgmllib
 import threading
 from itertools import imap
 
