@@ -64,7 +64,11 @@ def main():
     import world
     import drivers
     import schedule
-    world.upkeep()
+    # We schedule this event rather than have it actually run because if there
+    # is a failure between now and the time it takes the Owner plugin to load
+    # all the various plugins, our registry file might be wiped.  That's bad.
+    when = time.time() + conf.supybot.upkeepInterval()
+    schedule.addEvent(world.upkeep, when, name='upkeep')
     world.startedAt = started
     while world.ircs:
         try:
