@@ -107,21 +107,17 @@ def partition(p, L):
 
 def any(p, seq):
     """Returns true if any element in seq satisfies predicate p."""
-    if p is None:
-        p = bool
-    for elt in seq:
-        if p(elt):
-            return True
-    return False
+    for elt in itertools.ifilter(p, seq):
+        return True
+    else:
+        return False
 
 def all(p, seq):
     """Returns true if all elements in seq satisfy predicate p."""
-    if p is None:
-        p = bool
-    for elt in seq:
-        if not p(elt):
-            return False
-    return True
+    for elt in itertools.ifilterfalse(p, seq):
+        return False
+    else:
+        return True
 
 def rsplit(s, sep=None, maxsplit=-1):
     """Equivalent to str.split, except splitting from the right."""
