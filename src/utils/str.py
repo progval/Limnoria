@@ -338,7 +338,7 @@ def timestamp(t):
         t = time.time()
     return time.ctime(t)
 
-_formatRe = re.compile('%(\.\d+f|[bfhiLnpqstu%])')
+_formatRe = re.compile('%(\.\d+f|[bfhiLnpqrstu%])')
 def format(s, *args, **kwargs):
     """w00t.
 
@@ -346,6 +346,7 @@ def format(s, *args, **kwargs):
     i: integer
     s: string
     f: float
+    r: repr
     b: form of the verb 'to be' (takes an int)
     h: form of the verb 'to have' (takes an int)
     L: commaAndify (takes a list of strings or a tuple of ([strings], and))
@@ -376,9 +377,11 @@ def format(s, *args, **kwargs):
                 return commaAndify(t)
             elif isinstance(t, tuple) and len(t) == 2:
                 if not isinstance(t[0], list):
-                    raise ValueError, 'Invalid list for %%L in format: %s' % t
+                    raise ValueError, \
+                          'Invalid list for %%L in format: %s' % t
                 if not isinstance(t[1], basestring):
-                    raise ValueError, 'Invalid string for %%L in format: %s' % t
+                    raise ValueError, \
+                          'Invalid string for %%L in format: %s' % t
                 return commaAndify(t[0], And=t[1])
             else:
                 raise ValueError, 'Invalid value for %%L in format: %s' % t
@@ -386,6 +389,8 @@ def format(s, *args, **kwargs):
             return pluralize(args.pop())
         elif char == 'q':
             return quoted(args.pop())
+        elif char == 'r':
+            return repr(args.pop())
         elif char == 'n':
             t = args.pop()
             if not isinstance(t, (tuple, list)):
