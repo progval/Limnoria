@@ -106,8 +106,16 @@ class PluginTestCase(unittest.TestCase):
             response = self.irc.takeMsg()
         self.failUnless(response)
         return response
-        
-    def assertNoError(self, query):
+
+    # These assertError/assertNoError are somewhat fragile.  The proper way to
+    # do them would be to use a proxy for the irc object and intercept .error.
+    # But that would be hard, so I don't bother.  When this breaks, it'll get
+    # fixed, but not until then.
+    def assertError(self, query):
+        msg = self._feedMsg(query)
+        self.failUnless(msg.args[1].startswith('Error:'))
+
+    def assertNotError(self, query):
         msg = self._feedMsg(query)
         self.failIf(msg.args[1].startswith('Error:'))
 
@@ -115,9 +123,23 @@ class PluginTestCase(unittest.TestCase):
         msg = self._feedMsg(query)
         self.assertEqual(msg.args[1], expectedResponse)
 
+    def assertRegexp(self, query, regexp):
+        msg = self._feedMsg(query)
+        self.failUnless(re.search(regexp, msg.args[1]))
+
+    def assertRegexps(self, query, regexps):
+        started = time.time()
+        total = len(expectedResponses)*self.timeout
+        while expectedResponses and time.time() - started < total:
+            msg = self._feedMsg(query)
+            self.failUnless(re.search(expectedResponses.pop(0), msg.args[1]))
+        self.failIf(time.time() - started > total)
+
     def assertResponses(self, query, expectedResponses):
         responses = []
-        while len(responses) < len(expectedResponses):
+        started = time.time()
+        while len(responses) < len(expectedResponses) and \
+                  time.time() - started > len(expectedResponses)*self.timeout:
             msg = self._feedMsg(query)
             self.failUnless(msg)
             responses.append(msg)
