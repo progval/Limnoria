@@ -51,10 +51,8 @@ pluginDirs = ['src', 'plugins']
 ###
 # Files.
 ###
-userfile = os.path.join(confDir, 'users.conf')
-channelfile = os.path.join(confDir, 'channels.conf')
-ignoresfile = os.path.join(confDir, 'ignores.conf')
-rawlogfile = os.path.join(logDir, 'raw.log')
+userfile = 'users.conf'
+channelfile = 'channels.conf'
 
 ###
 # logTimestampFormat: A format string defining how timestamps should be.  Check

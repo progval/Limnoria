@@ -500,8 +500,8 @@ class ChannelsDictionary(object):
 ###
 # Later, I might add some special handling for botnet.
 ###
-users = UsersDB(conf.userfile)
-channels = ChannelsDictionary(conf.channelfile)
+users = UsersDB(os.path.join(conf.confDir, conf.userfile))
+channels = ChannelsDictionary(os.path.join(conf.confDir, conf.channelfile))
 
 world.flushers.append(users.flush)
 world.flushers.append(channels.flush)
