@@ -32,7 +32,7 @@ from supybot.test import *
 import supybot.world as world
 import supybot.ircdb as ircdb
 
-class UserTestCase(PluginTestCase, PluginDocumentation):
+class UserTestCase(PluginTestCase):
     plugins = ('User',)
     prefix1 = 'somethingElse!user@host.tld'
     prefix2 = 'EvensomethingElse!user@host.tld'

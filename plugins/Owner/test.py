@@ -32,7 +32,7 @@ from supybot.test import *
 import supybot.conf as conf
 import supybot.plugins.Owner as Owner
 
-class OwnerTestCase(PluginTestCase, PluginDocumentation):
+class OwnerTestCase(PluginTestCase):
     plugins = ('Utilities', 'Relay', 'Network', 'Admin', 'Channel')
     def testHelpLog(self):
         self.assertHelp('help log')
