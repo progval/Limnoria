@@ -133,9 +133,15 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         itself.
         """
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        num = len(topics)
+        if num == 0 or num == 1:
+            irc.error(msg, 'I cannot reorder 1 or fewer topics.')
+            return
+        if len(args) != num:
+            irc.error(msg, 'All topic numbers must be specified.')
+            return
+        order = privmsgs.getArgs(args, required=num)
         if topics:
-            num = len(topics)
-            order = privmsgs.getArgs(args, required=num)
             for i,p in enumerate(order):
                 try:
                     p = int(p)
@@ -150,7 +156,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
                     irc.error(msg, 'The positions must be valid integers.')
                     return
             if utils.sorted(order) != range(num):
-                irc.error(msg, 'All topic numbers must be specified uniquely')
+                irc.error(msg, 'Duplicate topic numbers cannot be specified.')
                 return
             try:
                 newtopics = [topics[i] for i in order]

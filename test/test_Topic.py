@@ -90,7 +90,6 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         _ = self.getMsg('topic add foo')
         _ = self.getMsg('topic add bar')
         _ = self.getMsg('topic add baz')
-        self.assertHelp('topic reorder')
         self.assertRegexp('topic reorder 2 1 3', r'bar.*foo.*baz')
         self.assertRegexp('topic reorder 3 -2 1', r'baz.*foo.*bar')
         self.assertError('topic reorder 0 1 2')
@@ -99,6 +98,11 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('topic reorder 2 3 4')
         self.assertError('topic reorder 1 2 2')
         self.assertError('topic reorder 1 1 2 3')
+        _ = self.getMsg('topic remove 1')
+        _ = self.getMsg('topic remove 1')
+        self.assertError('topic reorder 1')
+        _ = self.getMsg('topic remove 1')
+        self.assertError('topic reorder 0')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
