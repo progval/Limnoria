@@ -34,6 +34,7 @@ Includes wrappers for commands.
 import time
 import types
 import getopt
+import inspect
 import threading
 
 import supybot.log as log
@@ -870,7 +871,14 @@ def wrap(f, specList=[], **kw):
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
         self.log.debug('State before call: %s' % state)
-        f(self, irc, msg, args, *state.args, **state.kwargs)
+        try:
+            f(self, irc, msg, args, *state.args, **state.kwargs)
+        except TypeError:
+            self.log.error('Spec: %s', specList)
+            self.log.error('Received args: %s', args)
+            funcArgs = inspect.getargs(f.func_code)[0][len(self.commandArgs):]
+            self.log.error('Extra args: %s', funcArgs)
+            raise
     return utils.gen.changeFunctionName(newf, f.func_name, f.__doc__)
 
 
