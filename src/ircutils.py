@@ -156,16 +156,9 @@ def bold(s):
 def validArgument(s):
     return '\r' not in s and '\n' not in s and '\x00' not in s
 
-nonFunkyArguments = string.printable+'\x02'
+notFunky = string.printable+'\x02'
 def funkyArgument(s):
-    if validArgument(s):
-        if s.translate(string.ascii, nonFunkyArguments) == '':
-            # All characters must be printable.
-            return False
-        else:
-            return True
-    else:
-        return True
+    return validArgument(s) and s.translate(string.ascii, nonFunky) != ''
 
 def reply(msg):
     if isChannel(msg.args[0]):
