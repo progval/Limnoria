@@ -35,7 +35,7 @@ import re
 
 import utils
 
-class FunTest(PluginTestCase, PluginDocumentation):
+class FunTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Fun',)
     def testNoErrors(self):
         self.assertNotError('leet foobar')
@@ -98,14 +98,15 @@ class FunTest(PluginTestCase, PluginDocumentation):
         self.assertNotRegexp('scramble %s' % s, s)
 
     def testoutfilter(self):
+        s = self.nick.encode('rot13')
         self.assertNotError('outfilter rot13')
-        self.assertResponse('rot13 foobar', 'foobar')
+        self.assertResponse('rot13 foobar', '%s: foobar' % s)
         self.assertNotError('outfilter rot13')
         self.assertResponse('rot13 foobar', 'sbbone')
         self.assertNotError('outfilter')
         self.assertResponse('rot13 foobar', 'sbbone')
         self.assertNotError('outfilter ROT13')
-        self.assertResponse('rot13 foobar', 'foobar')
+        self.assertResponse('rot13 foobar', '%s: foobar' % s)
         self.assertNotError('outfilter')
         self.assertResponse('rot13 foobar', 'sbbone')
         

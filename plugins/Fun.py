@@ -132,39 +132,43 @@ class MyFunProxy(object):
         
 class Fun(callbacks.Privmsg):
     def __init__(self):
-        self.filtercommands = []
+        self.outFilters = ircutils.IrcDict()
         callbacks.Privmsg.__init__(self)
 
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
-            s = msg.args[1]
-            for filtercommand in self.filtercommands:
-                myIrc = MyFunProxy()
-                filtercommand(myIrc, msg, [s])
-                s = myIrc.s
-            msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], s))
+            if msg.args[0] in self.outFilters:
+                s = msg.args[1]
+                methods = self.outFilters[msg.args[0]]
+                for filtercommand in methods:
+                    myIrc = MyFunProxy()
+                    filtercommand(myIrc, msg, [s])
+                    s = myIrc.s
+                msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], s))
         return msg
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'urlquote', 'md5','sha']
-    def outfilter(self, irc, msg, args):
-        """[<command>]
+    def outfilter(self, irc, msg, args, channel):
+        """[<channel>] [<command>]
         
         Sets the outFilter of this plugin to be <command>.  If no command is
-        given, unsets the outFilter.
+        given, unsets the outFilter.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
         """
         command = privmsgs.getArgs(args, needed=0, optional=1)
         if command:
             command = callbacks.canonicalName(command)
             if command in self._filterCommands:
-                self.filtercommands.append(getattr(self, command))
+                method = getattr(self, command)
+                self.outFilters.setdefault(channel, []).append(method)
                 irc.reply(msg, conf.replySuccess)
             else:
                 irc.error(msg, 'That\'s not a valid filter command.')
         else:
-            self.filtercommands = []
+            self.outFilters[channel] = []
             irc.reply(msg, conf.replySuccess)
-    outfilter = privmsgs.checkCapability(outfilter, 'admin')
+    outfilter = privmsgs.checkChannelCapability(outfilter, 'op')
     
     def hexip(self, irc, msg, args):
         """<ip>
