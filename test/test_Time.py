@@ -33,6 +33,22 @@ from testsupport import *
 
 class TimeTestCase(PluginTestCase):
     plugins = ('Time',)
+    def testSeconds(self):
+        self.assertResponse('seconds 1s', '1')
+        self.assertResponse('seconds 10s', '10')
+        self.assertResponse('seconds 1m', '60')
+        self.assertResponse('seconds 1m 1s', '61')
+        self.assertResponse('seconds 1h', '3600')
+        self.assertResponse('seconds 1h 1s', '3601')
+        self.assertResponse('seconds 1d', '86400')
+        self.assertResponse('seconds 1d 1s', '86401')
+        self.assertResponse('seconds 2s', '2')
+        self.assertResponse('seconds 2m', '120')
+        self.assertResponse('seconds 2d 2h 2m 2s', '180122')
+        self.assertResponse('seconds 1s', '1')
+        self.assertResponse('seconds 1y 1s', '31536001')
+        self.assertResponse('seconds 1w 1s', '604801')
+
         
 
 
