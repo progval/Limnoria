@@ -60,6 +60,7 @@ plugins = [
     'RSS',
     'Scheduler',
     'Seen',
+    'Services',
     'ShrinkUrl',
     'Status',
     'String',
