@@ -44,6 +44,7 @@ exported = ['ignore', 'reversed', 'window', 'group',
 
 import sys
 import new
+import atexit
 import string
 string.ascii = string.maketrans('', '')
 
@@ -213,7 +214,10 @@ if not hasattr(Exception, '_original__init__'):
         self._original__init__(*args, **kwargs)
     Exception.__init__ = __init__
 
-import atexit
+# Apparently, some things get dismantled a bit early, and we can get stuck in
+# a non-exiting loop because our Exception.__init__ raises an exception.  This
+# makes sure that we replace our __init__ with the original before things like
+# the sys module are dismantled.
 def _replace_original__init__():
     Exception.__init__ = Exception._original__init__
 atexit.register(_replace_original__init__)

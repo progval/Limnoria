@@ -625,7 +625,8 @@ registerGlobalValue(supybot.databases.users, 'timeoutIdentification',
     times out."""))
 registerGlobalValue(supybot.databases.users, 'hash',
     registry.Boolean(True, """Determines whether the passwords in the user
-    database will be hashed by default."""))
+    database will be hashed by default.  This only affects new users; users
+    already registered will maintain their current hashedness."""))
 
 registerGroup(supybot.databases, 'ignores')
 registerGlobalValue(supybot.databases.ignores, 'filename',
