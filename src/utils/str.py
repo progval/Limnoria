@@ -299,12 +299,12 @@ def nItems(n, item, between=None):
     assert isinstance(n, int), \
            'The order of the arguments to nItems changed again, sorry.'
     if between is None:
-        if n > 1:
+        if n != 1:
             return format('%s %p', n, item)
         else:
             return format('%s %s', n, item)
     else:
-        if n > 1:
+        if n != 1:
             return format('%s %s %p', n, between, item)
         else:
             return format('%s %s %s', n, between, item)

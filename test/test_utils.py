@@ -328,6 +328,7 @@ class StrTest(SupyTestCase):
 
     def testNItems(self):
         nItems = utils.str.nItems
+        self.assertEqual(nItems(0, 'tool'), '0 tools')
         self.assertEqual(nItems(1, 'tool', 'crazy'), '1 crazy tool')
         self.assertEqual(nItems(1, 'tool'), '1 tool')
         self.assertEqual(nItems(2, 'tool', 'crazy'), '2 crazy tools')
