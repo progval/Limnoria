@@ -48,11 +48,11 @@ import callbacks
 
 class Forums(callbacks.PrivmsgRegexp):
     threaded = True
-    _ggThread = re.compile(r'from thread &quot;<b>(.*?)</b>&quot;')
-    _ggGroup = re.compile(r'Newsgroups: <a.*?>(.*?)</a>')
+    _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
+    _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
     def googlegroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
-        request = urllib2.Request(match.group(0), headers=\
+        request = urllib2.Request(match.group(0)+'&frame=off', headers=\
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
         fd = urllib2.urlopen(request)
         text = fd.read()
