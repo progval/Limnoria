@@ -63,28 +63,45 @@ class AsyncoreRunnerDriver(drivers.IrcDriver):
 
 
 class AsyncoreDriver(asynchat.async_chat, object):
-    def __init__(self, (server, port), irc):
+    def __init__(self, irc):
         asynchat.async_chat.__init__(self)
-        self.server = (server, port)
         self.irc = irc
-        self.irc.driver = self
         self.buffer = ''
+        self.servers = ()
+        self.networkGroup = conf.supybot.networks.get(self.irc.network)
         self.set_terminator('\n')
+        # XXX: Use utils.getSocket.
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.connect(self.server)
+            self.connect(self._getNextServer())
         except socket.error, e:
-            log.warning('Error connecting to %s: %s', self.server[0], e)
+            log.warning('Error connecting to %s: %s', self.currentServer, e)
             self.reconnect(wait=True)
 
+    def _getServers(self):
+        # We do this, rather than itertools.cycle the servers in __init__,
+        # because otherwise registry updates given as setValues or sets
+        # wouldn't be visible until a restart.
+        return self.networkGroup.servers()[:] # Be sure to copy!
+
+    def _getNextServer(self):
+        if not self.servers:
+            self.servers = self._getServers()
+        assert self.servers, 'Servers value for %s is empty.' % \
+                             self.networkGroup.name
+        server = self.servers.pop(0)
+        self.currentServer = '%s:%s' % server
+        return server
+        
     def _scheduleReconnect(self, at=60):
         when = time.time() + at
         if not world.dying:
             whenS = log.timestamp(when)
-            log.info('Scheduling reconnect to %s at %s', self.server[0], whenS)
+            log.info('Scheduling reconnect to %s at %s',
+                     self.currentServer, whenS)
         def makeNewDriver():
             self.irc.reset()
-            driver = self.__class__(self.server, self.irc)
+            driver = self.__class__(self.irc)
         schedule.addEvent(makeNewDriver, when)
 
     def writable(self):

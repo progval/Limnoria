@@ -163,20 +163,41 @@ registerGlobalValue(supybot, 'user',
     registry.String('Supybot %s' % version, """Determines the user the bot
     sends to the server."""))
 
-# TODO: Make this check for validity.
 registerGroup(supybot, 'networks')
-registerGlobalValue(supybot.networks, 'default', registry.String('',
-    """Determines what the default network joined by the bot will be."""))
+registerGlobalValue(supybot.networks, 'default',
+    registry.String('', """Determines what the default network joined by the
+    bot will be."""))
 
-def registerNetwork(name, password='', server=''):
+class Servers(registry.SpaceSeparatedListOfStrings):
+    def normalize(self, s):
+        if ':' not in s:
+            s += ':6667'
+        return s
+
+    def convert(self, s):
+        s = self.normalize(s)
+        (server, port) = s.split(':')
+        port = int(port)
+        return (server, port)
+    
+    def __call__(self):
+        L = registry.SpaceSeparatedListOfStrings.__call__(self)
+        return map(self.convert, L)
+
+    def __str__(self):
+        return ' '.join(registry.SpaceSeparatedListOfStrings.__call__(self))
+        
+def registerNetwork(name, password='', servers=()):
     name = intern(name)
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,
         """Determines what password will be used on %s.  Yes, we know that
         technically passwords are server-specific and not network-specific,
         but this is the best we can do right now.""" % name))
-    registerGlobalValue(network, 'server', registry.String(server,
-        """Determines what server the bot will connect to for %s.""" % name))
+    registerGlobalValue(network, 'servers', Servers(servers,
+        """Determines what servers the bot will connect to for %s.  Each will
+        be tried in order, wrapping back to the first when the cycle is
+        completed.""" % name))
     return network
 
 # Let's fill our networks.

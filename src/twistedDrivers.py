@@ -92,12 +92,29 @@ class SupyIrcProtocol(LineReceiver):
 class SupyReconnectingFactory(ReconnectingClientFactory):
     maxDelay = 300
     protocol = SupyIrcProtocol
-    def __init__(self, (server, port), irc):
+    def __init__(self, irc):
         self.irc = irc
-        self.server = (server, port)
-        reactor.connectTCP(server, port, self)
+        self.networkGroup = conf.supybot.networks.get(self.irc.network)
+        self.servers = ()
+        reactor.connectTCP('', 0, self)
 
+    def _getServers(self):
+        # We do this, rather than itertools.cycle the servers in __init__,
+        # because otherwise registry updates given as setValues or sets
+        # wouldn't be visible until a restart.
+        return self.networkGroup.servers()[:] # Be sure to copy!
+
+    def _getNextServer(self):
+        if not self.servers:
+            self.servers = self._getServers()
+        assert self.servers, 'Servers value for %s is empty.' % \
+                             self.networkGroup.name
+        server = self.servers.pop(0)
+        self.currentServer = '%s:%s' % server
+        return server
+        
     def buildProtocol(self, addr):
+        addr = self._getNextServer()
         protocol = ReconnectingClientFactory.buildProtocol(self, addr)
         protocol.irc = self.irc
         return protocol

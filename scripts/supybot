@@ -109,7 +109,6 @@ if __name__ == '__main__':
     # -p (profiling)
     # -O (optimizing)
     # -n, --nick (nick)
-    # -s, --server (server)
     # --startup (commands to run onStart)
     # --connect (commands to run afterConnect)
     # --config (configuration values)
@@ -216,14 +215,6 @@ if __name__ == '__main__':
         sys.stderr.write('default when the bot starts.')
         sys.exit(-1)
 
-    server = network.server()
-    if ':' in server:
-        serverAndPort = server.split(':', 1)
-        serverAndPort[1] = int(serverAndPort[1])
-        server = tuple(serverAndPort)
-    else:
-        server = (server, 6667)
-
     if options.optimize:
         # This doesn't work anymore.
         __builtins__.__debug__ = False
@@ -262,7 +253,7 @@ if __name__ == '__main__':
     irc = irclib.Irc(network=defaultNetwork)
     callback = Owner.Class()
     irc.addCallback(callback)
-    driver = drivers.newDriver(server, irc)
+    driver = drivers.newDriver(irc)
 
     if options.debug:
         for (name, module) in sys.modules.iteritems():

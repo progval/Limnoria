@@ -53,29 +53,46 @@ import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 import supybot.schedule as schedule
 
-instances = 0
-originalPoll = conf.supybot.drivers.poll()
-def resetPoll():
-    log.info('Resetting supybot.drivers.poll to %s', originalPoll)
-    conf.supybot.drivers.poll.setValue(originalPoll)
-atexit.register(resetPoll)
-
+reconnectWaits = (0, 60, 300)
 class SocketDriver(drivers.IrcDriver):
-    def __init__(self, (server, port), irc, reconnectWaits=(0, 60, 300)):
-        global instances
-        instances += 1
-        conf.supybot.drivers.poll.setValue(originalPoll / instances)
-        self.server = (server, port)
-        drivers.IrcDriver.__init__(self) # Must come after server is set.
+    def __init__(self, irc):
         self.irc = irc
-        self.irc.driver = self
+        drivers.IrcDriver.__init__(self) # Must come after setting irc.
+        self.networkGroup = conf.supybot.networks.get(self.irc.network)
+        self.servers = ()
+        self.eagains = 0
         self.inbuffer = ''
         self.outbuffer = ''
         self.connected = False
-        self.eagains = 0
         self.reconnectWaitsIndex = 0
         self.reconnectWaits = reconnectWaits
         self.connect()
+
+    def _getServers(self):
+        # We do this, rather than itertools.cycle the servers in __init__,
+        # because otherwise registry updates given as setValues or sets
+        # wouldn't be visible until a restart.
+        return self.networkGroup.servers()[:] # Be sure to copy!
+
+    def _getNextServer(self):
+        if not self.servers:
+            self.servers = self._getServers()
+        assert self.servers, 'Servers value for %s is empty.' % \
+                             self.networkGroup.name
+        server = self.servers.pop(0)
+        self.currentServer = '%s:%s' % server
+        return server
+        
+    def _handleSocketError(self, e):
+        # (11, 'Resource temporarily unavailable') raised if connect
+        # hasn't finished yet.  We'll keep track of how many we get.
+        if e.args[0] != 11 and self.eagains > 120:
+            log.warning('Disconnect from %s: %s.',
+                        self.currentServer, e.args[1])
+            self.reconnect(wait=True)
+        else:
+            log.debug('Got EAGAIN, current count: %s.', self.eagains)
+            self.eagains += 1
 
     def _sendIfMsgs(self):
         msgs = [self.irc.takeMsg()]
@@ -89,15 +106,7 @@ class SocketDriver(drivers.IrcDriver):
                 self.outbuffer = self.outbuffer[sent:]
                 self.eagains = 0
             except socket.error, e:
-                # (11, 'Resource temporarily unavailable') raised if connect
-                # hasn't finished yet.
-                if e.args[0] != 11 and self.eagains > 120:
-                    server = '%s:%s' % self.server
-                    log.warning('Disconnect from %s: %s', server, e.args[1])
-                    self.reconnect(wait=True)
-                else:
-                    log.debug('Got EAGAIN, current count: %s', self.eagains)
-                    self.eagains += 1
+                self._handleSocketError(e)
 
     def run(self):
         if not self.connected:
@@ -119,13 +128,7 @@ class SocketDriver(drivers.IrcDriver):
         except socket.timeout:
             pass
         except socket.error, e:
-            # Same as with _sendIfMsgs.
-            if e.args[0] != 11 or self.eagains > 120:
-                log.warning('Disconnect from %s: %s', self.server, e)
-                self.reconnect(wait=True)
-            else:
-                log.debug('Got EAGAIN, current count: %s', self.eagains)
-                self.eagains += 1
+            self._handleSocketError(e)
             return
         self._sendIfMsgs()
 
@@ -133,7 +136,7 @@ class SocketDriver(drivers.IrcDriver):
         self.reconnect(reset=False, **kwargs)
         
     def reconnect(self, wait=False, reset=True):
-        server = '%s:%s' % self.server
+        server = self._getNextServer()
         if reset:
             log.debug('Resetting %s.', self.irc)
             self.irc.reset()
@@ -143,16 +146,17 @@ class SocketDriver(drivers.IrcDriver):
             log.info('Reconnect called on driver for %s.', self.irc)
             self.conn.close()
         elif not wait:
-            log.info('Connecting to %s.', server)
+            log.info('Connecting to %s.', self.currentServer)
         self.connected = False
         if wait:
-            log.info('Reconnect to %s waiting.', server)
+            log.info('Reconnect to %s waiting.', self.currentServer)
             self._scheduleReconnect()
             return
         try:
-            self.conn = utils.getSocket(self.server[0])
+            self.conn = utils.getSocket(server[0])
         except socket.error, e:
-            log.warning('Error connecting to %s: %s', server, e.args[1])
+            log.warning('Error connecting to %s: %s',
+                        self.currentServer, e.args[1])
             self.reconnect(wait=True)
             return
         # We allow more time for the connect here, since it might take longer.
@@ -161,7 +165,7 @@ class SocketDriver(drivers.IrcDriver):
         if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
             self.reconnectWaitsIndex += 1
         try:
-            self.conn.connect(self.server)
+            self.conn.connect(server)
             self.conn.settimeout(conf.supybot.drivers.poll())
         except socket.error, e:
             if e.args[0] == 115:
@@ -172,7 +176,7 @@ class SocketDriver(drivers.IrcDriver):
                          'check for %s', whenS)
                 schedule.addEvent(self._checkAndWriteOrReconnect, when)
             else:
-                log.warning('Error connecting to %s: %s', self.server[0], e)
+                log.warning('Error connecting to %s: %s', self.currentServer,e)
                 self.reconnect(wait=True)
             return
         self.connected = True
@@ -186,15 +190,15 @@ class SocketDriver(drivers.IrcDriver):
             self.connected = True
             self.reconnectWaitPeriodsIndex = 0
         else:
-            log.warning('Error connecting to %s: Timed out.', self.server[0])
+            log.warning('Error connecting to %s: Timed out.',self.currentServer)
             self.reconnect()
 
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         if not world.dying:
             whenS = log.timestamp(when)
-            server = '%s:%s' % self.server
-            log.info('Scheduling reconnect to %s at %s', server, whenS)
+            log.info('Scheduling reconnect to %s at %s',
+                     self.irc.network, whenS)
         schedule.addEvent(self.reconnect, when)
 
     def die(self):
@@ -203,7 +207,7 @@ class SocketDriver(drivers.IrcDriver):
         # self.irc.die() Kill off the ircs yourself, jerk!
 
     def name(self):
-        return '%s%s' % (self.__class__.__name__, self.server)
+        return '%s(%s)' % (self.__class__.__name__, self.irc)
 
 
 Driver = SocketDriver

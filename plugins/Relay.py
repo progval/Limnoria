@@ -183,13 +183,13 @@ class Relay(callbacks.Privmsg):
             if serverPort is None:
                 raise ValueError, '_connect requires a (server, port) if ' \
                                   'the network is not registered.'
-            conf.registerNetwork(network, server=('%s:%s' % serverPort))
+            conf.registerNetwork(network, servers=('%s:%s' % serverPort,))
         if makeNew:
             self.log.info('Creating new Irc for relaying to %s.', network)
             newIrc = irclib.Irc(network)
             newIrc.state.history = realIrc.state.history
             newIrc.callbacks = realIrc.callbacks
-            driver = drivers.newDriver(serverPort, newIrc)
+            driver = drivers.newDriver(newIrc)
         else:
             newIrc = realIrc
         self._addIrc(newIrc)

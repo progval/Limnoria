@@ -54,8 +54,6 @@ class IrcDriver(object):
     """Base class for drivers."""
     def __init__(self):
         add(self.name(), self)
-        if not hasattr(self, 'irc'):
-            self.irc = None # This is to satisfy PyChecker.
 
     def run(self):
         raise NotImplementedError
@@ -113,7 +111,7 @@ def run():
             del _drivers[name]
         _drivers[name] = driver
 
-def newDriver(server, irc, moduleName=None):
+def newDriver(irc, moduleName=None):
     """Returns a new driver for the given server using the irc given and using
     conf.supybot.driverModule to determine what driver to pick."""
     if moduleName is None:
@@ -128,9 +126,8 @@ def newDriver(server, irc, moduleName=None):
     elif not moduleName.startswith('supybot.'):
         moduleName = 'supybot.' + moduleName
     driverModule = __import__(moduleName, {}, {}, ['not empty'])
-    log.debug('Creating new driver for %s:%s (%s)',
-              server[0], server[1], moduleName)
-    driver = driverModule.Driver(server, irc)
+    log.debug('Creating new driver for %s.', irc)
+    driver = driverModule.Driver(irc)
     irc.driver = driver
     return driver
 
