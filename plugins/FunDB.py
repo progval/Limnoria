@@ -47,6 +47,7 @@ import sqlite
 import conf
 import ircdb
 import utils
+import world
 import ircmsgs
 import ircutils
 import privmsgs
