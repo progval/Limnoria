@@ -665,8 +665,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def disable(self, irc, msg, args):
         """[<plugin>] <command>
 
-        Disables the command <command> for all non-owner users.  If <plugin>
-        is given, only disables the <command> from <plugin>.
+        Disables the command <command> for all users (including the owners).
+        If <plugin> is given, only disables the <command> from <plugin>.  If
+        you want to disable a command for most users but not for yourself, set
+        a default capability of -plugin.command or -command (if you want to
+        disable the command in all plugins).
         """
         (plugin, command) = privmsgs.getArgs(args, optional=1)
         if not command:
@@ -683,8 +686,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def enable(self, irc, msg, args):
         """[<plugin>] <command>
 
-        Enables the command <command> for all non-owner users.  If <plugin>
-        if given, only enables the <command> from <plugin>.
+        Enables the command <command> for all users.  If <plugin>
+        if given, only enables the <command> from <plugin>.  This command is
+        the inverse of disable.
         """
         (plugin, command) = privmsgs.getArgs(args, optional=1)
         try:
