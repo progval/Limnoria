@@ -199,38 +199,39 @@ def bold(s):
 
 mircColors = {
     None: '',
-    'white': '0',
-    'black': '1',
-    'blue': '2',
-    'green': '3',
-    'red': '4',
-    'brown': '5',
-    'purple': '6',
-    'orange': '7',
-    'yellow': '8',
-    'light green': '9',
-    'teal': '10',
-    'light blue': '11',
-    'dark blue': '12',
-    'pink': '13',
-    'dark grey': '14',
-    'light grey': '15',
+    'white': 0,
+    'black': 1,
+    'blue': 2,
+    'green': 3,
+    'red': 4,
+    'brown': 5,
+    'purple': 6,
+    'orange': 7,
+    'yellow': 8,
+    'light green': 9,
+    'teal': 10,
+    'light blue': 11,
+    'dark blue': 12,
+    'pink': 13,
+    'dark grey': 14,
+    'light grey': 15,
 }
 
 for (k, v) in mircColors.items():
-    if v: # Ignore empty string for None.
-        i = int(v)
-        mircColors[v] = i
-        mircColors[i] = i
+    if k is not None: # Ignore empty string for None.
+        mircColors[v] = k
 
 def mircColor(s, fg=None, bg=None):
     """Returns s, with the appropriate mIRC color codes applied."""
     if fg is None and bg is None:
         return s
-    elif bg is None:
-        return '\x03%s%s\x03' % (mircColors[fg], s)
+    fg = mircColors[fg]
+    if bg is None:
+        return '\x03%s%s\x03' % (fg, s)
     else:
-        return '\x03%s,%s%s\x03' % (mircColors[fg], mircColors[bg], s)
+        if isinstance(bg, str):
+            bg = mircColors[bg]
+        return '\x03%s,%s%s\x03' % (fg, bg, s)
 			  
 
 def isValidArgument(s):
