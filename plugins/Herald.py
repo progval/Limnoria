@@ -34,6 +34,8 @@ Greets users who join the channel with a recognized hostmask with a nice
 little greeting.  Otherwise, can greet 
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os
