@@ -1,14 +1,19 @@
+	* Added Dunno.stats, to return the number of dunnos in the
+	database.
+	
 	* Added the Currency plugin, to perform currency conversions.
 
-	* Added conf.supybot.plugins.Karma.allowSelfRating, which determines
-	whether users are allowed to adjust the karma of their current nick.
+	* Added conf.supybot.plugins.Karma.allowSelfRating, which
+	determines whether users are allowed to adjust the karma of their
+	current nick.
 
-	* Added --nolimit option to Misc.last, which causes it to return all
-	matches that are in the history.
+	* Added --nolimit option to Misc.last, which causes it to return
+	all matches that are in the history.
 
 	* Added conf.supybot.plugins.Herald.defaultHerald, which provides
-	a default herald to use for unregistered users.  Herald.default was
-	also added as a friendly interface to managing the defaultHerald.
+	a default herald to use for unregistered users.  Herald.default
+	was also added as a friendly interface to managing the
+	defaultHerald.
 
 	* Added Weather.wunder, which uses wunderground.com to report the
 	current weather status.

@@ -30,8 +30,9 @@
 ###
 
 """
-The Dunno module is used to spice up the "replyWhenNotCommand" behavior with
-random "I dunno"-like responses.
+The Dunno module is used to spice up the 'replyWhenNotCommand' behavior with
+random 'I dunno'-like responses.  If you want something spicier than '<x> is
+not a valid command'-like responses, use this plugin.
 """
 
 __revision__ = "$Id$"
@@ -56,6 +57,11 @@ except ImportError:
 dbfilename = os.path.join(conf.supybot.directories.data(), 'Dunno.db')
 
 class Dunno(callbacks.Privmsg):
+    """This plugin was written initially to work with MoobotFactoids, the two
+    of them to provide a similar-to-moobot-and-blootbot interface for factoids.
+    Basically, it replaces the standard 'Error: <X> is not a valid command.'
+    messages with messages kept in a database, able to give more personable
+    responses."""
     priority = 100
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -208,6 +214,12 @@ class Dunno(callbacks.Privmsg):
                        new_dunno, id)
         self.db.commit()
         irc.replySuccess()
+
+    def stats(self, irc, msg, args):
+        """Returns the number of dunnos in the dunno database."""
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM dunnos""")
+        irc.reply(cursor.fetchone()[0])
         
 
 
