@@ -97,30 +97,33 @@ class PluginTestCase(unittest.TestCase):
             module = __import__(name)
             plugin = module.Class()
             self.irc.addCallback(plugin)
-        
-    def assertResponse(self, query, expectedResponse):
+
+    def _feedMsg(self, query):
         self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
         fed = time.time()
         response = self.irc.takeMsg()
         while response is None and time.time() - fed < self.timeout:
             response = self.irc.takeMsg()
         self.failUnless(response)
-        self.assertEqual(response.args[1], expectedResponse)
+        return response
+        
+    def assertNoError(self, query):
+        msg = self._feedMsg(query)
+        self.failIf(msg.args[1].startswith('Error:'))
+
+    def assertResponse(self, query, expectedResponse):
+        msg = self._feedMsg(query)
+        self.assertEqual(msg.args[1], expectedResponse)
 
     def assertResponses(self, query, expectedResponses):
-        self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
-        fed = time.time()
         responses = []
-        while len(responses) < len(expectedResponses) and \
-                  time.time() - fed < self.timeout :
-            m = self.irc.takeMsg()
-            if m:
-                responses.append(m)
-            else:
-                time.sleep(.1)
+        while len(responses) < len(expectedResponses):
+            msg = self._feedMsg(query)
+            self.failUnless(msg)
+            responses.append(msg)
         self.assertEqual(len(expectedResponses), len(responses))
-        for (response, expected) in zip(responses, expectedResponses):
-            self.assertEqual(response.args[1], expected)
+        for (msg, expected) in zip(responses, expectedResponses):
+            self.assertEqual(msg.args[1], expected)
             
     
 if __name__ == '__main__':
