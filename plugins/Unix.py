@@ -49,61 +49,29 @@ import select
 import string
 import struct
 
-
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 
+
 def configure(advanced):
-    from supybot.questions import output, expect, anything, something, yn
-    conf.registerPlugin('Unix', True)
-    spellCmd = utils.findBinaryInPath('aspell')
-    if not spellCmd:
-        spellCmd = utils.findBinaryInPath('ispell')
-    if not spellCmd:
-        output("""NOTE: I couldn't find aspell or ispell in your path, so that
-                  function of this module will not work.  You may choose to
-                  install it later.  To re-enable the command then, give the
-                  bot the command 'enable Unix.spell'.""")
-        capabilities = conf.supybot.capabilities()
-        capabilities.add('-Unix.spell')
-        conf.supybot.capabilities.setValue(capabilities)
-    fortuneCmd = utils.findBinaryInPath('fortune')
-    if not fortuneCmd:
-        output("""NOTE: I couldn't find fortune in your path, so that function
-                  of this module will not work.  You may choose to install it
-                  later.  To re-enable this command then, give the bot the
-                  command 'enable Unix.fortune'.""")
-        capabilities = conf.supybot.capabilities()
-        capabilities.add('-Unix.fortune')
-        conf.supybot.capabilities.setValue(capabilities)
-    wtfCmd = utils.findBinaryInPath('wtf')
-    if not wtfCmd:
-        output("""NOTE: I couldn't find wtf in your path, so that function of
-                  this module won't work.  You may choose to install it later;
-                  to re-enable this command then, give the bot the command
-                  'enable Unix.wtf'.""")
-        capabilities = conf.supybot.capabilities()
-        capabilities.add('-Unix.wtf')
-        conf.supybot.capabilities.setValue(capabilities)
     output("""The "progstats" command can reveal potentially sensitive
               information about your machine. Here's an example of its output:
 
               %s\n""" % progstats())
     if yn('Would you like to disable this command for non-owner users?',
           default=True):
-        capabilities = conf.supybot.capabilities()
-        capabilities.add('-Unix.progstats')
-        conf.supybot.capabilities.setValue(capabilities)
+        conf.supybot.commands.disabled().add('Unix.progstats')
 
 def progstats():
     pw = pwd.getpwuid(os.getuid())
-    response = 'Process ID %i running as user "%s" and as group "%s" ' \
+    response = 'Process ID %s running as user "%s" and as group "%s" ' \
                'from directory "%s" with the command line "%s".  ' \
                'Running on Python %s.' % \
                (os.getpid(), pw[0], pw[3],
-                os.getcwd(), " ".join(sys.argv),
+                os.getcwd(), ' '.join(sys.argv),
                 sys.version.translate(string.ascii, '\r\n'))
     return response
 
@@ -117,17 +85,32 @@ def pipeReadline(fd, timeout=2):
     else:
         raise TimeoutError
 
+conf.registerPlugin('Unix')
+conf.registerGroup(conf.supybot.plugins.Unix, 'fortune')
+conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'command',
+    registry.String(utils.findBinaryInPath('fortune') or '', """Determines what
+    command will be called for the fortune command."""))
+conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'short',
+    registry.Boolean(True, """Determines whether only short fortunes will be
+    used if possible."""))
+conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'file',
+    registry.String('', """Determines what specific file (if any) will be used
+    with the fortune command; if none is given, the system-wide default will
+    be used."""))
 
+conf.registerGroup(conf.supybot.plugins.Unix, 'spell')
+conf.registerGlobalValue(conf.supybot.plugins.Unix.spell, 'command',
+    registry.String(utils.findBinaryInPath('aspell') or \
+                    utils.findBinaryInPath('ispell') or '', """Determines what
+    command will be called for the spell command."""))
+
+conf.registerGroup(conf.supybot.plugins.Unix, 'wtf')
+conf.registerGlobalValue(conf.supybot.plugins.Unix.wtf, 'command',
+    registry.String(utils.findBinaryInPath('wtf') or '', """Determines what
+    command will be called for the wtf command."""))
+                    
 
 class Unix(callbacks.Privmsg):
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        self.spellCmd = utils.findBinaryInPath('aspell')
-        if not self.spellCmd:
-            self.spellCmd = utils.findBinaryInPath('ispell')
-        self.fortuneCmd = utils.findBinaryInPath('fortune')
-        self.wtfCmd = utils.findBinaryInPath('wtf')
-
     def errno(self, irc, msg, args):
         """<error number or code>
 
@@ -182,10 +165,12 @@ class Unix(callbacks.Privmsg):
         for the spelling of <word>.
         """
         # We are only checking the first word
-        if not self.spellCmd:
+        spellCmd = self.registryValue('spell.command')
+        if not spellCmd:
            irc.error('A spell checking command doesn\'t seem to be '
-                          'installed on this computer.')
-           return
+                     'installed on this computer.  If one is installed, '
+                     'reconfigure supybot.plugins.Unix.spell.command '
+                     'appropriately.', Raise=True)
         word = privmsgs.getArgs(args)
         if word and not word[0].isalpha():
             irc.error('<word> must begin with an alphabet character.')
@@ -193,8 +178,8 @@ class Unix(callbacks.Privmsg):
         if ' ' in word:
             irc.error('Spaces aren\'t allowed in the word.')
             return
+        (r, w) = popen2.popen4([spellCmd, '-a'])
         try:
-            (r, w) = popen2.popen4([self.spellCmd, '-a'])
             s = r.readline() # Banner, hopefully.
             if 'sorry' in s.lower():
                 irc.error(s)
@@ -231,14 +216,27 @@ class Unix(callbacks.Privmsg):
 
         Returns a fortune from the *nix fortune program.
         """
-        if self.fortuneCmd is not None:
-            (r, w) = popen2.popen4('%s -s' % self.fortuneCmd)
-            s = r.read()
-            w.close()
-            r.close()
-            irc.reply(' '.join(s.split()))
+        fortuneCmd = self.registryValue('fortune.command')
+        if fortuneCmd:
+            args = [fortuneCmd]
+            if self.registryValue('fortune.short'):
+                args.append('-s')
+            if self.registryValue('fortune.file'):
+                args.append(self.registryValue('fortune.file'))
+            (r, w) = popen2.popen4(args)
+            try:
+                lines = r.readlines()
+                lines = map(str.rstrip, lines)
+                lines = filter(None, lines)
+                irc.replies(lines, joiner=' ')
+            finally:
+                w.close()
+                r.close()
         else:
-            irc.error('I couldn\'t find the fortune command.')
+            irc.error('I couldn\'t find the fortune command on this system. '
+                      'If it is installed on this system, reconfigure the '
+                      'supybot.plugins.Unix.fortune.command configuration '
+                      'variable appropriately.')
 
     def wtf(self, irc, msg, args):
         """[is] <something>
@@ -247,18 +245,24 @@ class Unix(callbacks.Privmsg):
         appeared in NetBSD 1.5.  In most *nices, it's available in some sort
         of 'bsdgames' package.
         """
-        if self.wtfCmd is not None:
+        wtfCmd = self.registryValue('wtf.command')
+        if wtfCmd:
             if args and args[0] == 'is':
                 del args[0]
             something = privmsgs.getArgs(args)
             something = something.rstrip('?')
-            (r, w) = popen2.popen4([self.wtfCmd, something])
-            response = utils.normalizeWhitespace(r.readline().strip())
-            irc.reply(response)
-            r.close()
-            w.close()
+            (r, w) = popen2.popen4([wtfCmd, something])
+            try:
+                response = utils.normalizeWhitespace(r.readline().strip())
+                irc.reply(response)
+            finally:
+                r.close()
+                w.close()
         else:
-            irc.error('I couldn\'t find the wtf command.')
+            irc.error('I couldn\'t find the wtf command on this system.  '
+                      'If it is installed on this system, reconfigure the '
+                      'supybot.plugins.Unix.wtf.command configuration '
+                      'variable appropriately.')
 
 
 Class = Unix
