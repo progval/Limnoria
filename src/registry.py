@@ -32,10 +32,8 @@
 __revision__ = "$Id$"
 
 import re
-import copy
 import sets
 import time
-import types
 import textwrap
 
 import supybot.fix as fix
@@ -83,7 +81,7 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
     fd = utils.transactionalFile(filename)
     for (name, value) in registry.getValues(getChildren=True):
         if annotated and hasattr(value,'help') and value.help:
-            if not helpOnceOnly or value.help not in self.helpCache:
+            if not helpOnceOnly or value.help not in helpCache:
                 helpCache.add(value.help)
                 lines = textwrap.wrap(value.help)
                 for (i, line) in enumerate(lines):
