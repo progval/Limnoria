@@ -40,54 +40,54 @@ class SourceforgeTest(ChannelPluginTestCase):
     plugins = ('Sourceforge',)
     if network:
         def testAny(self):
-            m = self.getMsg('trackers --any bugs gaim')
+            m = self.getMsg('bugs --any gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
-            m = self.getMsg('trackers --any rfes gaim')
+            m = self.getMsg('rfes --any gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testClosed(self):
-            m = self.getMsg('trackers --closed bugs gaim')
+            m = self.getMsg('bugs --closed gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
-            m = self.getMsg('trackers --closed patches gaim')
+            m = self.getMsg('patches --closed gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testDeleted(self):
-            m = self.getMsg('trackers --deleted bugs gaim')
+            m = self.getMsg('bugs --deleted gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
-            m = self.getMsg('trackers --deleted rfes gaim')
+            m = self.getMsg('rfes --deleted gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testOpen(self):
-            m = self.getMsg('trackers --open bugs gaim')
+            m = self.getMsg('bugs --open gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
-            m = self.getMsg('trackers --open rfes gaim')
+            m = self.getMsg('rfes --open gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testTrackers(self):
-            self.assertHelp('trackers bugs')
-            self.assertRegexp('trackers bugs 83423', 'find the Bug')
+            self.assertHelp('bugs')
+            self.assertRegexp('bugs 83423', 'use the tracker')
             try:
                 original = Sf.defaultProject()
                 Sf.defaultProject.set('supybot')
-                self.assertRegexp('trackers bugs alkjfi83fa8', 'find the Bugs')
-                self.assertNotError('trackers rfes gaim')
-                self.assertNotError('trackers patches')
+                self.assertRegexp('bugs alkjfi83fa8', 'find the Bugs')
+                self.assertNotError('rfes gaim')
+                self.assertNotError('patches')
             finally:
                 Sf.defaultProject.set(original)
 
@@ -95,9 +95,9 @@ class SourceforgeTest(ChannelPluginTestCase):
             try:
                 original = Sf.defaultProject()
                 Sf.defaultProject.setValue('supybot')
-                self.assertNotError('trackers bugs')
+                self.assertNotError('bugs')
                 Sf.defaultProject.setValue('')
-                self.assertHelp('trackers bugs')
+                self.assertHelp('bugs')
             finally:
                 Sf.defaultProject.set(original)
 

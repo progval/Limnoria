@@ -96,11 +96,6 @@ conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'trackerSnarfer',
 conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'defaultProject',
     registry.String('', """Sets the default project to use in the case that no
     explicit project is given."""))
-#conf.registerGlobalValue(conf.supybot.plugins.Sourceforge,
-#    'enableSeparateTrackersCommands',
-#    registry.Boolean(True, """Determines whether the bot will recognize the
-#    tracker types as commands. For example, "@bugs supybot" would be the same
-#    as calling "@trackers bugs supybot"."""))
 
 class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     """
@@ -112,7 +107,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
 
     _reopts = re.I
     _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href='
-                         r'"([^"]+)">([^<]+)</a>', _reopts)
+                         r'"([^"]+)">([^<]+)</a>', re.I)
     _hrefOpts = '&set=custom&_assigned_to=0&_status=%s&_category=100' \
                 '&_group=100&order=artifact_id&sort=DESC'
     _resolution=re.compile(r'<b>(Resolution):</b> <a.+?<br>(.+?)</td>',_reopts)
@@ -132,20 +127,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         super(Sourceforge, self).__init__()
         self.__class__.sf = self.__class__.sourceforge
 
-#    def isCommand(self, methodName):
-#        if hasattr(self, methodName):
-#            return True
-#        if methodName not in ('bugs', 'rfes', 'patches'):
-#            return False
-#        elif self.registryValue('enableSeparateTrackersCommands'):
-#            return True
-#        else:
-#            return False
-
     def _formatResp(self, text, num=''):
         """
         Parses the Sourceforge query to return a list of tuples that
-        contain the bug/rfe information.
+        contain the tracker information.
         """
         if num:
             for item in ifilter(lambda s, n=num: s and n in s,
@@ -157,6 +142,9 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 yield (item[0], utils.htmlToText(item[2]))
 
     def _getTrackerURL(self, project, regex, status):
+        """
+        Searches the project's Summary page to find the proper tracker link.
+        """
         try:
             text = webutils.getUrl('%s%s' % (self._projectURL, project))
             m = regex.search(text)
@@ -169,6 +157,9 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             raise callbacks.Error, str(e)
 
     def _getTrackerList(self, url):
+        """
+        Searches the tracker list page and returns a list of the trackers.
+        """
         try:
             text = webutils.getUrl(url)
             if "No matches found." in text:
@@ -188,6 +179,9 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def _getTrackerInfo(self, url):
+        """
+        Parses the specific tracker page, returning useful information.
+        """
         try:
             s = webutils.getUrl(url)
             resp = []
@@ -231,33 +225,22 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                     'rfes': re.compile(r'"([^"]+)">RFE'),
                     'patches': re.compile(r'"([^"]+)">Patches'),
                    }
-    def trackers(self, irc, msg, args):
-        """[--{any,open,closed,deleted,pending}] {bugs,patches,rfes}
-        [<project>]
-
-        Returns a list of the most recent trackers filed against <project>.
-        <project> is not needed if there is a default project set.  Search
-        defaults to open trackers.
-        """
+    def _trackers(self, irc, args, msg, tracker):
         (optlist, rest) = getopt.getopt(args, '', self._statusOpt.keys())
-        (tracker, project) = privmsgs.getArgs(rest, optional=1)
+        project = privmsgs.getArgs(rest, required=0, optional=1)
         status = 'open'
         for (option, _) in optlist:
             option = option.lstrip('-').lower()
             if option in self._statusOpt:
                 status = option
         try:
-            int(tracker)
-            # They want the tracker command, they're giving us an id#.
-            s = 'Use the tracker command (e.g., tracker %s) for info about a'\
-                ' specific tracker.' % tracker
+            int(project)
+            s = 'Use the tracker command to get information about a specific'\
+                'tracker.'
             irc.error(s)
             return
         except ValueError:
             pass
-        tracker = tracker.lower()
-        if tracker not in self._trackerLink:
-            raise callbacks.ArgumentError
         if not project:
             project = self.registryValue('defaultProject', msg.args[0])
             if not project:
@@ -270,6 +253,33 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                       (e, tracker.capitalize()))
             return
         irc.reply(self._getTrackerList(url))
+
+    def bugs(self, irc, msg, args):
+        """[--{any,open,closed,deleted,pending}] [<project>]
+
+        Returns a list of the most recent bugs filed against <project>.
+        <project> is not needed if there is a default project set.  Search
+        defaults to open bugs.
+        """
+        self._trackers(irc, args, msg, 'bugs')
+
+    def rfes(self, irc, msg, args):
+        """[--{any,open,closed,deleted,pending}] [<project>]
+
+        Returns a list of the most recent rfes filed against <project>.
+        <project> is not needed if there is a default project set.  Search
+        defaults to open rfes.
+        """
+        self._trackers(irc, args, msg, 'rfes')
+
+    def patches(self, irc, msg, args):
+        """[--{any,open,closed,deleted,pending}] [<project>]
+
+        Returns a list of the most recent patches filed against <project>.
+        <project> is not needed if there is a default project set.  Search
+        defaults to open patches.
+        """
+        self._trackers(irc, args, msg, 'patches')
 
     _totbugs = re.compile(r'Bugs</a>\s+?\( <b>([^<]+)</b>', re.S | re.I)
     def _getNumBugs(self, project):
@@ -291,7 +301,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             return ''
 
     def total(self, irc, msg, args):
-        """[bugs|rfes] [<project>]
+        """{bugs,rfes} [<project>]
 
         Returns the total count of open bugs or rfes.  <project> is only
         necessary if a default project is not set.
