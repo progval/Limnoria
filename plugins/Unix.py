@@ -114,7 +114,6 @@ def pipeReadline(fd, timeout=0.75):
 class Unix(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        # Initialize a file descriptor for the spell module.
         self.spellCmd = utils.findBinaryInPath('aspell')
         if not self.spellCmd:
             self.spellCmd = utils.findBinaryInPath('ispell')
