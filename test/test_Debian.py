@@ -58,22 +58,21 @@ class DebianTestCase(PluginTestCase, PluginDocumentation):
             pass
 
     def testDebversion(self):
-        self.assertNotError('debversion')
-        self.assertRegexp('debversion lakjdfad', r'^No package.*\(all\)')
-        self.assertRegexp('debversion unstable alkdjfad',
+        self.assertNotError('version')
+        self.assertRegexp('version lakjdfad', r'^No package.*\(all\)')
+        self.assertRegexp('version unstable alkdjfad',
             r'^No package.*\(unstable\)')
-        self.assertRegexp('debversion gaim',
-            r'Total matches:.*gaim.*\(stable\)')
-        self.assertError('debversion unstable')
+        self.assertRegexp('version gaim', r'Total matches:.*gaim.*\(stable\)')
+        self.assertError('version unstable')
 
     def testDebfile(self):
         if not self.fileDownloaded:
             pass
-        self.assertNotError('debfile')
-        self.assertRegexp('debfile --exact bin/gaim', r'net/gaim')
+        self.assertNotError('file')
+        self.assertRegexp('file --exact bin/gaim', r'net/gaim')
 
     def testDebincoming(self):
-        self.assertNotError('debincoming')
+        self.assertNotError('incoming')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
