@@ -533,7 +533,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""SELECT created_by, count(key) FROM factoids
                           GROUP BY created_by
                           ORDER BY count(key) DESC LIMIT %s""", limit)
-        L = ['%s (%s)' % (ircdb.users.getUser(t[0]).name, t[1])
+        L = ['%s (%s)' % (ircdb.users.getUser(t[0]).name, int(t[1]))
              for t in cursor.fetchall()]
         return 'Most prolific %s: %s' % \
                (utils.pluralize(len(L), 'author'), utils.commaAndify(L))
