@@ -27,10 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-__revision__ = "$Id: __init__.py,v 1.44 2005/01/08 07:22:46 jamessan Exp $"
-
-import supybot.fix as fix
-
 import gc
 import os
 import re
@@ -106,7 +102,7 @@ class NoSuitableDatabase(Exception):
         return 'No suitable databases were found.  Suitable databases ' \
                'include %s.  If you have one of these databases installed, ' \
                'make sure it is listed in the supybot.databases ' \
-               'configuration variable.' % utils.commaAndify(self.suitable)
+               'configuration variable.' % utils.str.commaAndify(self.suitable)
 
 def DB(filename, types):
     filename = conf.supybot.directories.data.dirize(filename)
@@ -325,7 +321,7 @@ class ChannelUserDB(ChannelUserDictionary):
             log.debug('Exception: %s', utils.exnToString(e))
 
     def flush(self):
-        fd = utils.transactionalFile(self.filename, makeBackupIfSmaller=False)
+        fd = utils.file.AtomicFile(self.filename, makeBackupIfSmaller=False)
         writer = csv.writer(fd)
         items = self.items()
         if not items:
@@ -389,9 +385,9 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
 
     def getCommandHelp(self, name):
         help = self.__parent.getCommandHelp(name)
-        help = help.replace('$Types', utils.pluralize(self.name()))
+        help = help.replace('$Types', utils.str.pluralize(self.name()))
         help = help.replace('$Type', self.name())
-        help = help.replace('$types', utils.pluralize(self.name().lower()))
+        help = help.replace('$types', utils.str.pluralize(self.name().lower()))
         help = help.replace('$type', self.name().lower())
         return help
 
@@ -442,7 +438,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
     remove = wrap(remove, ['user', 'channeldb', 'id'])
 
     def searchSerializeRecord(self, record):
-        text = utils.quoted(utils.ellipsisify(record.text, 50))
+        text = utils.str.quoted(utils.str.ellipsisify(record.text, 50))
         return '#%s: %s' % (record.id, text)
 
     def search(self, irc, msg, args, channel, optlist, glob):
@@ -471,10 +467,10 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
             L.append(self.searchSerializeRecord(record))
         if L:
             L.sort()
-            irc.reply('%s found: %s' % (len(L), utils.commaAndify(L)))
+            irc.reply('%s found: %s' % (len(L), utils.str.commaAndify(L)))
         else:
             irc.reply('No matching %s were found.' %
-                      utils.pluralize(self.name().lower()))
+                      utils.str.pluralize(self.name().lower()))
     search = wrap(search, ['channeldb',
                            getopts({'by': 'otherUser',
                                     'regexp': 'regexpMatcher'}),
@@ -485,7 +481,8 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
         at = time.localtime(record.at)
         timeS = time.strftime(conf.supybot.reply.format.time(), at)
         return '%s #%s: %s (added by %s at %s)' % \
-               (self.name(), record.id, utils.quoted(record.text), name, timeS)
+               (self.name(), record.id,
+                utils.str.quoted(record.text), name, timeS)
 
     def get(self, irc, msg, args, channel, id):
         """[<channel>] <id>
@@ -527,7 +524,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
         """
         n = self.db.size(channel)
         irc.reply('There %s %s in my database.' %
-                  (utils.be(n), utils.nItems(self.name().lower(), n)))
+                  (utils.str.be(n), utils.str.nItems(self.name().lower(), n)))
     stats = wrap(stats, ['channeldb'])
 
 
@@ -592,7 +589,7 @@ class PeriodicFileDownloader(object):
                 self.log.warning('Error downloading %s: %s', url, e)
                 return
             confDir = conf.supybot.directories.data()
-            newFilename = os.path.join(confDir, utils.mktemp())
+            newFilename = os.path.join(confDir, utils.file.mktemp())
             outfd = file(newFilename, 'wb')
             start = time.time()
             s = infd.read(4096)

@@ -31,10 +31,6 @@
 Module for some slight database-independence for simple databases.
 """
 
-
-
-import supybot.fix as fix
-
 import csv
 import math
 import sets
@@ -262,8 +258,7 @@ class FlatfileMapping(MappingInterface):
 
     def vacuum(self):
         infd = file(self.filename)
-        outfd = utils.transactionalFile(self.filename,
-                                        makeBackupIfSmaller=False)
+        outfd = utils.file.AstomicFile(self.filename,makeBackupIfSmaller=False)
         outfd.write(infd.readline()) # First line, nextId.
         for line in infd:
             if not line.startswith('-'):

@@ -32,10 +32,6 @@ Database module, similar to dbhash.  Uses a format similar to (if not entirely
 the same as) DJB's CDB <http://cr.yp.to/cdb.html>.
 """
 
-
-
-import supybot.fix as fix
-
 import os
 import sys
 import sets
@@ -134,7 +130,7 @@ def make(dbFilename, readFilename=None):
 class Maker(object):
     """Class for making CDB databases."""
     def __init__(self, filename):
-        self.fd = utils.transactionalFile(filename)
+        self.fd = utils.file.AtomicFile(filename)
         self.filename = filename
         self.fd.seek(2048)
         self.hashPointers = [(0, 0)] * 256

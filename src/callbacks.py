@@ -38,10 +38,6 @@ how to use them.
 
 import supybot
 
-
-
-import supybot.fix as fix
-
 import re
 import copy
 import sets
@@ -166,7 +162,7 @@ def canonicalName(command):
     while command and command[-1] in special:
         reAppend = command[-1] + reAppend
         command = command[:-1]
-    return command.translate(string.ascii, special).lower() + reAppend
+    return command.translate(utils.str.chars, special).lower() + reAppend
 
 def reply(msg, s, prefixName=None, private=None,
           notice=None, to=None, action=None, error=False):
@@ -233,7 +229,7 @@ def getHelp(method, name=None):
     if doclines:
         help = ' '.join(doclines)
         s = '(%s) -- %s' % (ircutils.bold(s), help)
-    return utils.normalizeWhitespace(s)
+    return utils.str.normalizeWhitespace(s)
 
 def getSyntax(method, name=None):
     if name is None:
@@ -256,10 +252,10 @@ class Tokenizer(object):
     #
     # These are the characters valid in a token.  Everything printable except
     # double-quote, left-bracket, and right-bracket.
-    validChars = string.ascii.translate(string.ascii, '\x00\r\n \t')
+    validChars = utils.str.chars.translate(utils.str.chars, '\x00\r\n \t')
     def __init__(self, brackets='', pipe=False, quotes='"'):
         if brackets:
-            self.validChars = self.validChars.translate(string.ascii, brackets)
+            self.validChars=self.validChars.translate(utils.str.chars, brackets)
             self.left = brackets[0]
             self.right = brackets[1]
         else:
@@ -267,9 +263,9 @@ class Tokenizer(object):
             self.right = ''
         self.pipe = pipe
         if self.pipe:
-            self.validChars = self.validChars.translate(string.ascii, '|')
+            self.validChars = self.validChars.translate(utils.str.chars, '|')
         self.quotes = quotes
-        self.validChars = self.validChars.translate(string.ascii, quotes)
+        self.validChars = self.validChars.translate(utils.str.chars, quotes)
 
 
     def _handleToken(self, token):
@@ -459,7 +455,7 @@ class RichReplyMethods(object):
         if prefixer is None:
             prefixer = ''
         if joiner is None:
-            joiner = utils.commaAndify
+            joiner = utils.str.commaAndify
         if isinstance(prefixer, basestring):
             prefixer = prefixer.__add__
         if isinstance(joiner, basestring):
@@ -494,7 +490,7 @@ class RichReplyMethods(object):
             kwargs['Raise'] = True
         if isinstance(capability, basestring): # checkCommandCapability!
             log.warning('Denying %s for lacking %s capability.',
-                        self.msg.prefix, utils.quoted(capability))
+                        self.msg.prefix, utils.str.quoted(capability))
             if not self._getConfig(conf.supybot.reply.error.noCapability):
                 v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
@@ -750,7 +746,7 @@ class IrcObjectProxy(RichReplyMethods):
                               'Please specify the plugin whose command you '
                               'wish to call by using its name as a command '
                               'before %s.' %
-                              (command, utils.commaAndify(names), command))
+                              (command, utils.str.commaAndify(names), command))
         else:
             cb = cbs[0]
             del self.args[0] # Remove the command.
@@ -870,7 +866,7 @@ class IrcObjectProxy(RichReplyMethods):
                     response = msgs.pop()
                     if msgs:
                         n = ircutils.bold('(%s)')
-                        n %= utils.nItems('message', len(msgs), 'more')
+                        n %= utils.str.nItems('message', len(msgs), 'more')
                         response = '%s %s' % (response, n)
                     prefix = msg.prefix
                     if self.to and ircutils.isNick(self.to):
@@ -1123,7 +1119,7 @@ class Privmsg(irclib.IrcCallback):
         """Gets the given command from this plugin."""
         name = canonicalName(name)
         assert self.isCommand(name), '%s is not a command.' % \
-                                     utils.quoted(name)
+                                     utils.str.quoted(name)
         return getattr(self, name)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
@@ -1155,11 +1151,11 @@ class Privmsg(irclib.IrcCallback):
         command = self.getCommand(name)
         if hasattr(command, 'isDispatcher') and \
            command.isDispatcher and self.__doc__:
-            return utils.normalizeWhitespace(self.__doc__)
+            return utils.str.normalizeWhitespace(self.__doc__)
         elif hasattr(command, '__doc__'):
             return getHelp(command)
         else:
-            return 'The %s command has no help.' % utils.quoted(name)
+            return 'The %s command has no help.' % utils.str.quoted(name)
 
     def registryValue(self, name, channel=None, value=True):
         plugin = self.name()
@@ -1291,7 +1287,7 @@ class PrivmsgRegexp(Privmsg):
                     self.res.append((r, name))
                 except re.error, e:
                     self.log.warning('Invalid regexp: %s (%s)',
-                                     utils.quoted(value.__doc__), e)
+                                     utils.str.quoted(value.__doc__), e)
         utils.sortBy(operator.itemgetter(1), self.res)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):

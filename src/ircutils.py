@@ -34,16 +34,11 @@ nick class to handle nicks (so comparisons and hashing and whatnot work in an
 IRC-case-insensitive fashion), and numerous other things.
 """
 
-
-
-import supybot.fix as fix
-
 import re
 import time
 import random
 import string
 import textwrap
-from itertools import imap, ilen
 from cStringIO import StringIO as sio
 
 import supybot.utils as utils
@@ -109,7 +104,7 @@ def toLower(s, casemapping=None):
     elif casemapping == 'ascii': # freenode
         return s.lower()
     else:
-        raise ValueError, 'Invalid casemapping: %s' % utils.quoted(casemapping)
+        raise ValueError, 'Invalid casemapping: %r' % casemapping
 
 def strEqual(nick1, nick2):
     """s1, s2 => bool
@@ -197,11 +192,11 @@ def banmask(hostmask):
     """
     assert isUserHostmask(hostmask)
     host = hostFromHostmask(hostmask)
-    if utils.isIP(host):
+    if utils.net.isIP(host):
         L = host.split('.')
         L[-1] = '*'
         return '*!*@' + '.'.join(L)
-    elif utils.isIPV6(host):
+    elif utils.net.isIPV6(host):
         L = host.split(':')
         L[-1] = '*'
         return '*!*@' + ':'.join(L)
@@ -450,7 +445,7 @@ def safeArgument(s):
     if isinstance(s, unicode):
         s = s.encode('utf-8')
     elif not isinstance(s, basestring):
-        debug('Got a non-string in safeArgument: %s', utils.quoted(s))
+        debug('Got a non-string in safeArgument: %r', s)
         s = str(s)
     if isValidArgument(s):
         return s
@@ -466,7 +461,7 @@ def replyTo(msg):
 
 def dccIP(ip):
     """Returns in IP in the proper for DCC."""
-    assert utils.isIP(ip), \
+    assert utils.net.isIP(ip), \
            'argument must be a string ip in xxx.yyy.zzz.www format.'
     i = 0
     x = 256**3
@@ -483,7 +478,7 @@ def unDccIP(i):
         L.append(i % 256)
         i /= 256
     L.reverse()
-    return '.'.join(imap(str, L))
+    return '.'.join(utils.iter.imap(str, L))
 
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
@@ -662,7 +657,7 @@ def standardSubstitute(irc, msg, text, env=None):
         })
     if env is not None:
         vars.update(env)
-    return utils.perlVariableSubstitute(vars, text)
+    return utils.str.perlVariableSubstitute(vars, text)
 
 
 if __name__ == '__main__':

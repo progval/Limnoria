@@ -34,10 +34,6 @@ construct such messages in an easier way than the constructor for the IrcMsg
 object (which, as you'll read later, is quite...full-featured :))
 """
 
-
-
-import supybot.fix as fix
-
 import re
 import time
 import string
@@ -192,8 +188,8 @@ class IrcMsg(object):
         if self._repr is not None:
             return self._repr
         self._repr = 'IrcMsg(prefix=%s, command=%s, args=%r)' % \
-                     (utils.quoted(self.prefix), utils.quoted(self.command),
-                      self.args)
+                     (utils.str.quoted(self.prefix),
+                      utils.str.quoted(self.command), self.args)
         return self._repr
 
     def __reduce__(self):
@@ -586,7 +582,8 @@ def join(channel, key=None, prefix='', msg=None):
         return IrcMsg(prefix=prefix, command='JOIN', args=(channel,), msg=msg)
     else:
         if conf.supybot.protocols.irc.strictRfc():
-            assert key.translate(string.ascii, string.ascii[128:]) == key and \
+            assert key.translate(utils.str.chars,
+                                 utils.str.chars[128:]) == key and \
                    '\x00' not in key and \
                    '\r' not in key and \
                    '\n' not in key and \
@@ -613,7 +610,8 @@ def joins(channels, keys=None, prefix='', msg=None):
     else:
         for key in keys:
             if conf.supybot.protocols.irc.strictRfc():
-                assert key.translate(string.ascii,string.ascii[128:])==key and\
+                assert key.translate(utils.str.chars,
+                                     utils.str.chars[128:])==key and \
                        '\x00' not in key and \
                        '\r' not in key and \
                        '\n' not in key and \

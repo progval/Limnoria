@@ -30,8 +30,6 @@
 import sys
 import time
 
-from itertools import imap
-
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
@@ -287,12 +285,12 @@ class Channel(callbacks.Privmsg):
         self.log.debug('In kban')
         if not irc.isNick(bannedNick):
             self.log.warning('%s tried to kban a non nick: %s',
-                             utils.quoted(msg.prefix),
-                             utils.quoted(bannedNick))
+                             utils.str.quoted(msg.prefix),
+                             utils.str.quoted(bannedNick))
             raise callbacks.ArgumentError
         elif bannedNick == irc.nick:
             self.log.warning('%s tried to make me kban myself.',
-                             utils.quoted(msg.prefix))
+                             utils.str.quoted(msg.prefix))
             irc.error('I cowardly refuse to kickban myself.')
             return
         if not reason:
@@ -330,7 +328,7 @@ class Channel(callbacks.Privmsg):
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
                 self.log.warning('%s tried to make me kban myself.',
-                                 utils.quoted(msg.prefix))
+                                 utils.str.quoted(msg.prefix))
                 irc.error('I cowardly refuse to ban myself.')
                 return
             else:
@@ -354,7 +352,7 @@ class Channel(callbacks.Privmsg):
         elif ircdb.checkCapability(msg.prefix, capability):
             if ircdb.checkCapability(bannedHostmask, capability):
                 self.log.warning('%s tried to ban %s, but both have %s',
-                                 msg.prefix, utils.quoted(bannedHostmask),
+                                 msg.prefix, utils.str.quoted(bannedHostmask),
                                  capability)
                 irc.error('%s has %s too, you can\'t ban him/her/it.' %
                           (bannedNick, capability))
@@ -362,7 +360,7 @@ class Channel(callbacks.Privmsg):
                 doBan()
         else:
             self.log.warning('%s attempted kban without %s',
-                             utils.quoted(msg.prefix), capability)
+                             utils.str.quoted(msg.prefix), capability)
             irc.errorNoCapability(capability)
             exact,nick,user,host
     kban = wrap(kban,
@@ -515,7 +513,7 @@ class Channel(callbacks.Privmsg):
         # XXX Add the expirations.
         c = ircdb.channels.getChannel(channel)
         if c.bans:
-            irc.reply(utils.commaAndify(map(utils.dqrepr, c.bans)))
+            irc.reply(utils.str.commaAndify(map(utils.str.dqrepr, c.bans)))
         else:
             irc.reply('There are currently no permanent bans on %s' % channel)
     permbans = wrap(permbans, [('checkChannelCapability', 'op')])
@@ -561,11 +559,11 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         if len(c.ignores) == 0:
             s = 'I\'m not currently ignoring any hostmasks in %s' % \
-                utils.quoted(channel)
+                utils.str.quoted(channel)
             irc.reply(s)
         else:
             L = sorted(c.ignores)
-            irc.reply(utils.commaAndify(imap(repr, L)))
+            irc.reply(utils.str.commaAndify(map(repr, L)))
     ignores = wrap(ignores, [('checkChannelCapability', 'op')])
 
     def addcapability(self, irc, msg, args, channel, user, capabilities):
@@ -602,8 +600,9 @@ class Channel(callbacks.Privmsg):
         ircdb.users.setUser(user)
         if fail:
             irc.error('That user didn\'t have the %s %s.' %
-                      (utils.commaAndify(fail),
-                       utils.pluralize('capability', len(fail))), Raise=True)
+                      (utils.str.commaAndify(fail),
+                       utils.str.pluralize('capability', len(fail))),
+                      Raise=True)
         irc.replySuccess()
     removecapability = wrap(removecapability,
                             [('checkChannelCapability', 'op'),
@@ -662,8 +661,9 @@ class Channel(callbacks.Privmsg):
         ircdb.channels.setChannel(channel, chan)
         if fail:
             irc.error('I do not know about the %s %s.' %
-                      (utils.commaAndify(fail),
-                       utils.pluralize('capability', len(fail))), Raise=True)
+                      (utils.str.commaAndify(fail),
+                       utils.str.pluralize('capability', len(fail))),
+                      Raise=True)
         irc.replySuccess()
     unsetcapability = wrap(unsetcapability,
                            [('checkChannelCapability', 'op'),
@@ -774,7 +774,7 @@ class Channel(callbacks.Privmsg):
                 L.append(channel)
         if L:
             L.sort()
-            s = 'I\'m currently lobotomized in %s.' % utils.commaAndify(L)
+            s = 'I\'m currently lobotomized in %s.' % utils.str.commaAndify(L)
             irc.reply(s)
         else:
             irc.reply('I\'m not currently lobotomized in any channels.')
@@ -787,7 +787,7 @@ class Channel(callbacks.Privmsg):
         """
         L = list(irc.state.channels[channel].users)
         utils.sortBy(str.lower, L)
-        irc.reply(utils.commaAndify(L))
+        irc.reply(utils.str.commaAndify(L))
     nicks = wrap(nicks, ['inChannel']) # XXX Check that the caller is in chan.
 
     def alertOps(self, irc, channel, s, frm=None):

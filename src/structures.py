@@ -31,13 +31,9 @@
 Data structures for Python.
 """
 
-
-
-import supybot.fix as fix
-
 import time
 import types
-from itertools import imap, ilen
+from itertools import imap
 
 class RingBuffer(object):
     """Class to represent a fixed-size ring buffer."""
@@ -345,8 +341,12 @@ class TimeoutQueue(object):
                 yield elt
 
     def __len__(self):
-        return ilen(self)
-
+        # No dependency on utils.
+        # return ilen(self)
+        i = 0
+        for _ in self:
+            i += 1
+        return i
 
 class MaxLengthQueue(queue):
     __slots__ = ('length',)

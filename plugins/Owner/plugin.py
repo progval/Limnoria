@@ -27,16 +27,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot.fix as fix
-
 import gc
 import os
 import imp
 import sre
 import sys
-import getopt
 import socket
-import logging
 import linecache
 
 import supybot.log as log
@@ -424,7 +420,7 @@ class Owner(callbacks.Privmsg):
             return
         except ImportError, e:
             if name in str(e):
-                irc.error('No plugin named %s exists.' % utils.dqrepr(name))
+                irc.error('No plugin named %s exists.' % utils.str.dqrepr(name))
             else:
                 irc.error(str(e))
             return

@@ -27,18 +27,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-
-
 from __future__ import division
-
-import supybot.fix as fix
 
 import os
 import sets
 import time
 import string
 import operator
-from itertools import imap, ilen, ifilter
 
 import supybot.log as log
 import supybot.conf as conf
@@ -47,6 +42,7 @@ import supybot.world as world
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.unpreserve as unpreserve
+from utils.iter import imap, ilen, ifilter
 
 def isCapability(capability):
     return len(capability.split(None, 1)) == 1
@@ -114,7 +110,7 @@ def canonicalCapability(capability):
     return capability.lower()
 
 def unWildcardHostmask(hostmask):
-    return hostmask.translate(string.ascii, '!@*?')
+    return hostmask.translate(utils.str.chars, '!@*?')
 
 _invert = invertCapability
 class CapabilitySet(sets.Set):
@@ -228,7 +224,7 @@ class IrcUser(object):
         return '%s(id=%s, ignore=%s, password="", name=%s, hashed=%r, ' \
                'capabilities=%r, hostmasks=[], secure=%r)\n' % \
                (self.__class__.__name__, self.id, self.ignore,
-                utils.quoted(self.name), self.hashed, self.capabilities,
+                utils.str.quoted(self.name), self.hashed, self.capabilities,
                 self.secure)
 
     def __hash__(self):
@@ -611,7 +607,7 @@ class UsersDictionary(utils.IterableMap):
             if self.filename is not None:
                 L = self.users.items()
                 L.sort()
-                fd = utils.transactionalFile(self.filename)
+                fd = utils.file.AtomicFile(self.filename)
                 for (id, u) in L:
                     fd.write('user %s' % id)
                     fd.write(os.linesep)
@@ -657,7 +653,7 @@ class UsersDictionary(utils.IterableMap):
                               'Removing the offending hostmasks.')
                     for (id, hostmask) in ids.iteritems():
                         log.error('Removing %s from user %s.',
-                                  utils.quoted(hostmask), id)
+                                  utils.str.quoted(hostmask), id)
                         self.users[id].removeHostmask(hostmask)
                     raise DuplicateHostmask, 'Ids %r matched.' % ids
         else: # Not a hostmask, must be a name.
@@ -789,7 +785,7 @@ class ChannelsDictionary(utils.IterableMap):
         """Flushes the channel database to its file."""
         if not self.noFlush:
             if self.filename is not None:
-                fd = utils.transactionalFile(self.filename)
+                fd = utils.file.AtomicFile(self.filename)
                 for (channel, c) in self.channels.iteritems():
                     fd.write('channel %s' % channel)
                     fd.write(os.linesep)
@@ -845,7 +841,7 @@ class IgnoresDB(object):
     def open(self, filename):
         self.filename = filename
         fd = file(self.filename)
-        for line in utils.nonCommentNonEmptyLines(fd):
+        for line in utils.file.nonCommentNonEmptyLines(fd):
             try:
                 line = line.rstrip('\r\n')
                 L = line.split()
@@ -857,12 +853,12 @@ class IgnoresDB(object):
                 self.add(hostmask, expiration)
             except Exception, e:
                 log.error('Invalid line in ignores database: %s',
-                          utils.quoted(line))
+                          utils.str.quoted(line))
         fd.close()
 
     def flush(self):
         if self.filename is not None:
-            fd = utils.transactionalFile(self.filename)
+            fd = utils.file.AtomicFile(self.filename)
             now = time.time()
             for (hostmask, expiration) in self.hostmasks.items():
                 if now < expiration or not expiration:

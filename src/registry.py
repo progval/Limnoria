@@ -34,12 +34,11 @@ import time
 import string
 import textwrap
 
-import supybot.fix as fix
 import supybot.utils as utils
 
 def error(s):
-    """Replace me with something better from another module!"""
-    print '***', s
+   """Replace me with something better from another module!"""
+   print '***', s
 
 def exception(s):
     """Ditto!"""
@@ -68,7 +67,7 @@ def open(filename, clear=False):
     if clear:
         _cache.clear()
     _fd = file(filename)
-    fd = utils.nonCommentNonEmptyLines(_fd)
+    fd = utils.file.nonCommentNonEmptyLines(_fd)
     acc = ''
     for line in fd:
         line = line.rstrip('\r\n')
@@ -94,7 +93,7 @@ def open(filename, clear=False):
 
 def close(registry, filename, private=True):
     first = True
-    fd = utils.transactionalFile(filename)
+    fd = utils.file.AtomicFile(filename)
     for (name, value) in registry.getValues(getChildren=True):
         help = value.help()
         if help:
@@ -162,7 +161,7 @@ class Group(object):
     """A group; it doesn't hold a value unless handled by a subclass."""
     def __init__(self, help='', supplyDefault=False,
                  orderAlphabetically=False, private=False):
-        self._help = help
+        self._help = utils.str.normalizeWhitespace(help)
         self._name = 'unset'
         self._added = []
         self._children = utils.InsensitivePreservingDict()
@@ -299,7 +298,7 @@ class Value(Group):
         self.__parent.__init__(help, **kwargs)
         self._default = default
         self._showDefault = showDefault
-        self._help = utils.normalizeWhitespace(help.strip())
+        self._help = utils.str.normalizeWhitespace(help.strip())
         if setDefault:
             self.setValue(default)
 
@@ -309,7 +308,7 @@ class Value(Group):
         else:
             s = """%s has no docstring.  If you're getting this message,
             report it, because we forgot to put a proper help string here."""
-        e = InvalidRegistryValue(utils.normalizeWhitespace(s % self._name))
+        e = InvalidRegistryValue(utils.str.normalizeWhitespace(s % self._name))
         e.value = self
         raise e
 
@@ -356,7 +355,7 @@ class Boolean(Value):
     """Value must be either True or False (or On or Off)."""
     def set(self, s):
         try:
-            v = utils.toBool(s)
+            v = utils.str.toBool(s)
         except ValueError:
             if s.strip().lower() == 'toggle':
                 v = not self.value
@@ -440,7 +439,7 @@ class String(Value):
 
     _printable = string.printable[:-4]
     def _needsQuoting(self, s):
-        return s.translate(string.ascii, self._printable) and s.strip() != s
+        return s.translate(utils.str.chars, self._printable) and s.strip() != s
 
     def __str__(self):
         s = self.value
@@ -456,12 +455,12 @@ class OnlySomeStrings(String):
         self.__parent = super(OnlySomeStrings, self)
         self.__parent.__init__(*args, **kwargs)
         self.__doc__ = 'Valid values include %s.' % \
-                        utils.commaAndify(map(repr, self.validStrings))
+                        utils.str.commaAndify(map(repr, self.validStrings))
 
     def help(self):
         strings = [s for s in self.validStrings if s]
         return '%s  Valid strings: %s.' % \
-                (self._help, utils.commaAndify(strings))
+                (self._help, utils.str.commaAndify(strings))
 
     def normalize(self, s):
         lowered = s.lower()
@@ -487,7 +486,7 @@ class NormalizedString(String):
         self._showDefault = False
 
     def normalize(self, s):
-        return utils.normalizeWhitespace(s.strip())
+        return utils.str.normalizeWhitespace(s.strip())
 
     def set(self, s):
         s = self.normalize(s)
@@ -540,7 +539,7 @@ class Regexp(Value):
     def set(self, s):
         try:
             if s:
-                self.setValue(utils.perlReToPythonRe(s), sr=s)
+                self.setValue(utils.str.perlReToPythonRe(s), sr=s)
             else:
                 self.setValue(None)
         except ValueError, e:

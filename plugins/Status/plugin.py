@@ -76,9 +76,9 @@ class Status(callbacks.Privmsg):
             networks.setdefault(Irc.network, []).append(Irc.nick)
         networks = networks.items()
         networks.sort()
-        networks = ['%s as %s' % (net, utils.commaAndify(nicks))
+        networks = ['%s as %s' % (net, utils.str.commaAndify(nicks))
                     for (net, nicks) in networks]
-        L = ['I am connected to %s.' % utils.commaAndify(networks)]
+        L = ['I am connected to %s.' % utils.str.commaAndify(networks)]
         if world.profiling:
             L.append('I am currently in code profiling mode.')
         irc.reply('  '.join(L))
@@ -92,9 +92,10 @@ class Status(callbacks.Privmsg):
         threads = [t.getName() for t in threading.enumerate()]
         threads.sort()
         s = 'I have spawned %s; %s %s still currently active: %s.' % \
-            (utils.nItems('thread', world.threadsSpawned),
-             utils.nItems('thread', len(threads)), utils.be(len(threads)),
-             utils.commaAndify(threads))
+            (utils.str.nItems('thread', world.threadsSpawned),
+             utils.str.nItems('thread', len(threads)),
+             utils.str.be(len(threads)),
+             utils.str.commaAndify(threads))
         irc.reply(s)
     threads = wrap(threads)
 
@@ -137,7 +138,7 @@ class Status(callbacks.Privmsg):
                    'of system time, for a total of %.2f seconds of CPU ' \
                    'time.  %s' % (user, system, user + system, children)
         if self.registryValue('cpu.threads', target):
-            spawned = utils.nItems('thread', world.threadsSpawned)
+            spawned = utils.str.nItems('thread', world.threadsSpawned)
             response += 'I have spawned %s; I currently have %s still ' \
                         'running.' % (spawned, activeThreads)
         if self.registryValue('cpu.memory', target):
@@ -159,7 +160,7 @@ class Status(callbacks.Privmsg):
                 response += '  I\'m taking up %s kB of memory.' % mem
             except Exception:
                 self.log.exception('Uncaught exception in cpu.memory:')
-        irc.reply(utils.normalizeWhitespace(response))
+        irc.reply(utils.str.normalizeWhitespace(response))
     cpu = wrap(cpu)
 
     def cmd(self, irc, msg, args):
@@ -178,9 +179,9 @@ class Status(callbacks.Privmsg):
                        attr == callbacks.canonicalName(attr):
                         commands += 1
         s = 'I offer a total of %s in %s.  I have processed %s.' % \
-            (utils.nItems('command', commands),
-             utils.nItems('plugin', callbacksPrivmsg, 'command-based'),
-             utils.nItems('command', world.commandsProcessed))
+            (utils.str.nItems('command', commands),
+             utils.str.nItems('plugin', callbacksPrivmsg, 'command-based'),
+             utils.str.nItems('command', world.commandsProcessed))
         irc.reply(s)
     cmd = wrap(cmd)
 
@@ -199,7 +200,7 @@ class Status(callbacks.Privmsg):
                         commands.add(attr)
         commands = list(commands)
         commands.sort()
-        irc.reply(utils.commaAndify(commands))
+        irc.reply(utils.str.commaAndify(commands))
     commands = wrap(commands)
 
     def uptime(self, irc, msg, args):

@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,65 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ###
-    
-# We're just masquerading as a plugin :)
-import test
+
+"""
+Simple utility modules.
+"""
+
+import socket
+
+def getSocket(host):
+    """Returns a socket of the correct AF_INET type (v4 or v6) in order to
+    communicate with host.
+    """
+    host = socket.gethostbyname(host)
+    if isIP(host):
+        return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    elif isIPV6(host):
+        return socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    else:
+        raise socket.error, 'Something wonky happened.'
+
+def isIP(s):
+    """Returns whether or not a given string is an IPV4 address.
+
+    >>> isIP('255.255.255.255')
+    1
+
+    >>> isIP('abc.abc.abc.abc')
+    0
+    """
+    try:
+        return bool(socket.inet_aton(s))
+    except socket.error:
+        return False
+
+def bruteIsIPV6(s):
+    if s.count('::') <= 1:
+        L = s.split(':')
+        if len(L) <= 8:
+            for x in L:
+                if x:
+                    try:
+                        int(x, 16)
+                    except ValueError:
+                        return False
+            return True
+    return False
+
+def isIPV6(s):
+    """Returns whether or not a given string is an IPV6 address."""
+    try:
+        if hasattr(socket, 'inet_pton'):
+            return bool(socket.inet_pton(socket.AF_INET6, s))
+        else:
+            return bruteIsIPV6(s)
+    except socket.error:
+        try:
+            socket.inet_pton(socket.AF_INET6, '::')
+        except socket.error:
+            # We gotta fake it.
+            return bruteIsIPV6(s)
+        return False
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2004-2005, Jeremiah Fincher
+# Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from supybot.test import *
+def window(L, size):
+    """Returns a sliding 'window' through the list L of size size."""
+    assert not isinstance(L, int), 'Argument order swapped: window(L, size)'
+    if size < 1:
+        raise ValueError, 'size <= 0 disallowed.'
+    for i in xrange(len(L) - (size-1)):
+        yield L[i:i+size]
 
-import supybot.webutils as webutils
+def mapinto(f, L):
+    for (i, x) in enumerate(L):
+        L[i] = f(x)
 
-
-class WebutilsTestCase(SupyTestCase):
-    def testGetDomain(self):
-        self.assertEqual(webutils.getDomain('http://slashdot.org/foo/bar.exe'),
-                         'slashdot.org')
-
-    if network:
-        def testGetUrlWithSize(self):
-            url = 'http://slashdot.org/'
-            self.failUnless(len(webutils.getUrl(url, 1024)) == 1024)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -27,24 +27,22 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-
-
-import supybot.fix as fix
-
 import re
 import socket
 import urllib
 import urllib2
 import httplib
+import sgmllib
 import urlparse
+import htmlentitydefs
 
-import supybot.conf as conf
+from str import normalizeWhitespace
 
 Request = urllib2.Request
 urlquote = urllib.quote
 urlunquote = urllib.unquote
 
-class WebError(Exception):
+class Error(Exception):
     pass
 
 # XXX We should tighten this up a bit.
@@ -75,14 +73,18 @@ def strError(e):
     else:
         return str(e)
 
-_headers = {
-    'User-agent': 'Mozilla/4.0 (compatible; Supybot %s)' % conf.version,
+defaultHeaders = {
+    'User-agent': 'Mozilla/5.0 (compatible; utils.web python module)'
     }
+
+# Other modules should feel free to replace this with an appropriate
+# application-specific function.  Feel free to use a callable here.
+proxy = None
 
 def getUrlFd(url, headers=None):
     """Gets a file-like object for a url."""
     if headers is None:
-        headers = _headers
+        headers = defaultHeaders
     try:
         if not isinstance(url, urllib2.Request):
             if '#' in url:
@@ -90,7 +92,7 @@ def getUrlFd(url, headers=None):
             request = urllib2.Request(url, headers=headers)
         else:
             request = url
-        httpProxy = conf.supybot.protocols.http.proxy()
+        httpProxy = force(proxy)
         if httpProxy:
             request.set_proxy(httpProxy, 'http')
         fd = urllib2.urlopen(request)
@@ -124,6 +126,40 @@ def getUrl(url, size=None, headers=None):
 
 def getDomain(url):
     return urlparse.urlparse(url)[1]
+
+class HtmlToText(sgmllib.SGMLParser):
+    """Taken from some eff-bot code on c.l.p."""
+    entitydefs = htmlentitydefs.entitydefs.copy()
+    entitydefs['nbsp'] = ' '
+    def __init__(self, tagReplace=' '):
+        self.data = []
+        self.tagReplace = tagReplace
+        sgmllib.SGMLParser.__init__(self)
+
+    def unknown_starttag(self, tag, attr):
+        self.data.append(self.tagReplace)
+
+    def unknown_endtag(self, tag):
+        self.data.append(self.tagReplace)
+
+    def handle_data(self, data):
+        self.data.append(data)
+
+    def getText(self):
+        text = ''.join(self.data).strip()
+        return normalizeWhitespace(text)
+
+def htmlToText(s, tagReplace=' '):
+    """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
+    """
+    x = HtmlToText(tagReplace)
+    x.feed(s)
+    return x.getText()
+
+def mungeEmail(s):
+    s = s.replace('@', ' AT ')
+    s = s.replace('.', ' DOT ')
+    return s
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

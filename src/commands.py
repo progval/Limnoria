@@ -31,10 +31,6 @@
 Includes wrappers for commands.
 """
 
-
-
-import supybot.fix as fix
-
 import time
 import types
 import getopt
@@ -233,7 +229,7 @@ def getExpiry(irc, msg, args, state):
 
 def getBoolean(irc, msg, args, state):
     try:
-        state.args.append(utils.toBool(args[0]))
+        state.args.append(utils.str.toBool(args[0]))
         del args[0]
     except ValueError:
         irc.errorInvalid('boolean', args[0])
@@ -324,8 +320,8 @@ def _getRe(f):
             irc.errorInvalid('regular expression', s)
     return get
 
-getMatcher = _getRe(utils.perlReToPythonRe)
-getReplacer = _getRe(utils.perlReToReplacer)
+getMatcher = _getRe(utils.str.perlReToPythonRe)
+getReplacer = _getRe(utils.str.perlReToReplacer)
 
 def getNick(irc, msg, args, state):
     if ircutils.isNick(args[0]):
@@ -494,7 +490,7 @@ def getCommandName(irc, msg, args, state):
         state.args.append(callbacks.canonicalName(args.pop(0)))
 
 def getIp(irc, msg, args, state):
-    if utils.isIP(args[0]):
+    if utils.net.isIP(args[0]):
         state.args.append(args.pop(0))
     else:
         irc.errorInvalid('ip', args[0])
@@ -845,7 +841,7 @@ class Spec(object):
     def __init__(self, types, allowExtra=False):
         self.types = types
         self.allowExtra = allowExtra
-        utils.mapinto(contextify, self.types)
+        utils.seq.mapinto(contextify, self.types)
 
     def __call__(self, irc, msg, args, stateAttrs={}):
         state = self._state(self.types[:], stateAttrs)

@@ -29,14 +29,11 @@
 
 from __future__ import division
 
-import supybot.plugins as plugins
-
 import re
 import math
 import cmath
 import types
 import string
-from itertools import imap
 
 import supybot.utils as utils
 from supybot.commands import *
@@ -160,12 +157,12 @@ class Math(callbacks.Privmsg):
         crash to the bot with something like 10**10**10**10.  One consequence
         is that large values such as 10**24 might not be exact.
         """
-        if text != text.translate(string.ascii, '_[]'):
+        if text != text.translate(utils.str.chars, '_[]'):
             irc.error('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.')
             return
-        #text = text.translate(string.ascii, '_[] \t')
+        #text = text.translate(utils.str.chars, '_[] \t')
         if 'lambda' in text:
             irc.error('You can\'t use lambda in this command.')
             return
@@ -188,7 +185,7 @@ class Math(callbacks.Privmsg):
         text = self._mathRe.sub(handleMatch, text)
         try:
             self.log.info('evaluating %s from %s' %
-                          (utils.quoted(text), msg.prefix))
+                          (utils.str.quoted(text), msg.prefix))
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(self._complexToString(x))
         except OverflowError:
@@ -209,21 +206,21 @@ class Math(callbacks.Privmsg):
         math, and can thus cause the bot to suck up CPU.  Hence it requires
         the 'trusted' capability to use.
         """
-        if text != text.translate(string.ascii, '_[]'):
+        if text != text.translate(utils.str.chars, '_[]'):
             irc.error('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.')
             return
         # This removes spaces, too, but we'll leave the removal of _[] for
         # safety's sake.
-        text = text.translate(string.ascii, '_[] \t')
+        text = text.translate(utils.str.chars, '_[] \t')
         if 'lambda' in text:
             irc.error('You can\'t use lambda in this command.')
             return
         text = text.replace('lambda', '')
         try:
             self.log.info('evaluating %s from %s' %
-                          (utils.quoted(text), msg.prefix))
+                          (utils.str.quoted(text), msg.prefix))
             irc.reply(str(eval(text, self._mathEnv, self._mathEnv)))
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)
@@ -280,12 +277,12 @@ class Math(callbacks.Privmsg):
                         stack.append(eval(s, self._mathEnv, self._mathEnv))
                     except SyntaxError:
                         irc.error('%s is not a defined function.' %
-                                  utils.quoted(arg))
+                                  utils.str.quoted(arg))
                         return
         if len(stack) == 1:
             irc.reply(str(self._complexToString(complex(stack[0]))))
         else:
-            s = ', '.join(imap(self._complexToString, imap(complex, stack)))
+            s = ', '.join(map(self._complexToString, map(complex, stack)))
             irc.reply('Stack: [%s]' % s)
 
     def convert(self, irc, msg, args, number, unit1, unit2):

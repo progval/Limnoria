@@ -103,11 +103,13 @@ if clean:
             sys.exit(-1)
 
 packages = ['supybot',
+            'supybot.utils',
             'supybot.drivers',
             'supybot.plugins',] + \
             ['supybot.plugins.'+s for s in plugins]
 
 package_dir = {'supybot': 'src',
+               'supybot.utils': 'src/utils',
                'supybot.plugins': 'plugins',
                'supybot.drivers': 'src/drivers',}
 

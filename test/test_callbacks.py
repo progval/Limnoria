@@ -42,7 +42,7 @@ class TokenizerTestCase(SupyTestCase):
         self.assertEqual(tokenize(''), [])
 
     def testNullCharacter(self):
-        self.assertEqual(tokenize(utils.dqrepr('\0')), ['\0'])
+        self.assertEqual(tokenize(utils.str.dqrepr('\0')), ['\0'])
 
     def testSingleDQInDQString(self):
         self.assertEqual(tokenize('"\\""'), ['"'])

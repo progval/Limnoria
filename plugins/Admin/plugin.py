@@ -27,16 +27,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot
-
-__author__ = supybot.authors.jemfinch
-
-import supybot.fix as fix
-
 import sys
 import time
 import pprint
-from itertools import imap
 
 import supybot.log as log
 import supybot.conf as conf
@@ -164,7 +157,7 @@ class Admin(callbacks.Privmsg):
         L = irc.state.channels.keys()
         if L:
             utils.sortBy(ircutils.toLower, L)
-            irc.reply(utils.commaAndify(L))
+            irc.reply(utils.str.commaAndify(L))
         else:
             irc.reply('I\'m not currently in any channels.')
     channels = wrap(channels, ['private'])
@@ -194,7 +187,7 @@ class Admin(callbacks.Privmsg):
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
             irc.error('I can\'t change nicks, the server said %s.' %
-                      utils.quoted(msg.args[2]), private=True)
+                      utils.str.quoted(msg.args[2]), private=True)
         else:
             self.log.debug('Got 438 without Admin.nick being called.')
 
@@ -332,7 +325,7 @@ class Admin(callbacks.Privmsg):
         """
         # XXX Add the expirations.
         if ircdb.ignores.hostmasks:
-            irc.reply(utils.commaAndify(imap(repr, ircdb.ignores.hostmasks)))
+            irc.reply(utils.str.commaAndify(map(repr,ircdb.ignores.hostmasks)))
         else:
             irc.reply('I\'m not currently globally ignoring anyone.')
     ignores = wrap(ignores)

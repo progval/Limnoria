@@ -27,8 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot.fix as fix
-
 import os
 import sys
 import time

@@ -27,8 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot.fix as fix
-
 import gc
 import os
 import re
@@ -96,7 +94,7 @@ class SupyTestCase(unittest.TestCase):
     def setUp(self):
         log.critical('Beginning test case %s', self.id())
         threads = [t.getName() for t in threading.enumerate()]
-        log.critical('Threads: %s' % utils.commaAndify(threads))
+        log.critical('Threads: %s' % utils.str.commaAndify(threads))
         unittest.TestCase.setUp(self)
 
     def tearDown(self):

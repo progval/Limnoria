@@ -27,10 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot
-
-import supybot.plugins as plugins
-
 import time
 
 import supybot.conf as conf
@@ -172,19 +168,19 @@ class Network(callbacks.Privmsg):
                     normal.append(channel)
             L = []
             if ops:
-                L.append('is an op on %s' % utils.commaAndify(ops))
+                L.append('is an op on %s' % utils.str.commaAndify(ops))
             if halfops:
-                L.append('is a halfop on %s' % utils.commaAndify(halfops))
+                L.append('is a halfop on %s' % utils.str.commaAndify(halfops))
             if voices:
-                L.append('is voiced on %s' % utils.commaAndify(voices))
+                L.append('is voiced on %s' % utils.str.commaAndify(voices))
             if normal:
                 if L:
-                    L.append('is also on %s' % utils.commaAndify(normal))
+                    L.append('is also on %s' % utils.str.commaAndify(normal))
                 else:
-                    L.append('is on %s' % utils.commaAndify(normal))
+                    L.append('is on %s' % utils.str.commaAndify(normal))
         else:
             L = ['isn\'t on any non-secret channels']
-        channels = utils.commaAndify(L)
+        channels = utils.str.commaAndify(L)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
             signon = time.strftime(conf.supybot.reply.format.time(),
@@ -246,7 +242,7 @@ class Network(callbacks.Privmsg):
         """
         L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
         utils.sortBy(str.lower, L)
-        irc.reply(utils.commaAndify(L))
+        irc.reply(utils.str.commaAndify(L))
     networks = wrap(networks)
 
     def doPong(self, irc, msg):

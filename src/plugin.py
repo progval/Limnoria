@@ -49,7 +49,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
             files.extend(os.listdir(dir))
         except EnvironmentError: # OSError, IOError superclass.
             log.warning('Invalid plugin directory: %s; removing.',
-                        utils.quoted(dir))
+                        utils.str.quoted(dir))
             conf.supybot.directories.plugins().remove(dir)
     loweredFiles = map(str.lower, files)
     try:
@@ -72,7 +72,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
             log.warning('Deprecated plugin loaded: %s', name)
         else:
             raise Deprecated, 'Attempted to load deprecated plugin %s' % \
-                              utils.quoted(name)
+                              utils.str.quoted(name)
     if module.__name__ in sys.modules:
         sys.modules[module.__name__] = module
     linecache.checkcache()

@@ -28,7 +28,6 @@
 ###
 
 import os
-import getopt
 import signal
 
 import supybot.log as log
@@ -131,7 +130,7 @@ class Config(callbacks.Privmsg):
         """
         L = self._list(group)
         if L:
-            irc.reply(utils.commaAndify(L))
+            irc.reply(utils.str.commaAndify(L))
         else:
             irc.error('There don\'t seem to be any values in %s.' % group._name)
     list = wrap(list, ['configVar'])
@@ -148,7 +147,7 @@ class Config(callbacks.Privmsg):
                 if not ircutils.isChannel(possibleChannel):
                     L.append(name)
         if L:
-            irc.reply(utils.commaAndify(L))
+            irc.reply(utils.str.commaAndify(L))
         else:
             irc.reply('There were no matching configuration variables.')
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?

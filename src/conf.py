@@ -27,8 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot.fix as fix
-
 import os
 import sys
 import time
@@ -69,6 +67,12 @@ daemonized = False
 #                    command-line option to allow this stupidity.
 ###
 allowDefaultOwner = False
+
+###
+# Here we replace values in other modules as appropriate.
+###
+utils.web.defaultHeaders['User-agent'] = \
+                         'Mozilla/5.0 (Compatible; Supybot %s)' % version
 
 ###
 # The standard registry.
@@ -405,7 +409,7 @@ registerChannelValue(supybot.reply, 'showSimpleSyntax',
 class ValidPrefixChars(registry.String):
     """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?"""
     def setValue(self, v):
-        if v.translate(string.ascii, '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
+        if v.translate(utils.str.chars, '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
             self.error()
         registry.String.setValue(self, v)
 
@@ -579,9 +583,9 @@ registerChannelValue(supybot.commands.nested, 'pipeSyntax',
     example: 'bot: foo | bar'."""))
 
 registerGroup(supybot.commands, 'defaultPlugins',
-    orderAlphabetically=True, help=utils.normalizeWhitespace("""Determines
-    what commands have default plugins set, and which plugins are set to
-    be the default for each of those commands."""))
+    orderAlphabetically=True, help="""Determines what commands have default
+    plugins set, and which plugins are set to be the default for each of those
+    commands.""")
 registerGlobalValue(supybot.commands.defaultPlugins, 'importantPlugins',
     registry.SpaceSeparatedSetOfStrings(
         ['Admin', 'Channel', 'Config', 'Misc', 'Owner', 'User'],
@@ -704,12 +708,8 @@ registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', """Determines what directory temporary files
     are put into."""))
 
-# Remember, we're *meant* to replace this nice little wrapper.
-def transactionalFile(*args, **kwargs):
-    kwargs['tmpDir'] = supybot.directories.data.tmp()
-    kwargs['backupDir'] = supybot.directories.backup()
-    return utils.AtomicFile(*args, **kwargs)
-utils.transactionalFile = transactionalFile
+utils.file.AtomicFile.default.tmpDir = supybot.directories.data.tmp
+utils.file.AtomicFile.default.backupDir = supybot.directories.backup
 
 class PluginDirectories(registry.CommaSeparatedListOfStrings):
     def __call__(self):
@@ -931,6 +931,7 @@ registerGlobalValue(supybot.protocols.http, 'peekSize',
 registerGlobalValue(supybot.protocols.http, 'proxy',
     registry.String('', """Determines what proxy all HTTP requests should go
     through.  The value should be of the form 'host:port'."""))
+utils.web.proxy = supybot.protocols.http.proxy
 
 
 ###
@@ -945,7 +946,7 @@ registerGlobalValue(supybot, 'defaultIgnore',
 class IP(registry.String):
     """Value must be a valid IP."""
     def setValue(self, v):
-        if v and not (utils.isIP(v) or utils.isIPV6(v)):
+        if v and not (utils.net.isIP(v) or utils.net.isIPV6(v)):
             self.error()
         else:
             registry.String.setValue(self, v)

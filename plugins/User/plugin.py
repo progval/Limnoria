@@ -27,12 +27,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot.fix as fix
-
 import re
-import getopt
 import fnmatch
-from itertools import imap, ifilter
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -75,7 +71,7 @@ class User(callbacks.Privmsg):
                 users.append(u.name)
         if users:
             utils.sortBy(str.lower, users)
-            irc.reply(utils.commaAndify(users))
+            irc.reply(utils.str.commaAndify(users))
         else:
             if predicates:
                 irc.reply('There are no matching registered users.')
@@ -158,7 +154,7 @@ class User(callbacks.Privmsg):
         """
         try:
             id = ircdb.users.getUserId(newname)
-            irc.error('%s is already registered.' % utils.quoted(newname))
+            irc.error('%s is already registered.' % utils.str.quoted(newname))
             return
         except KeyError:
             pass
@@ -295,7 +291,7 @@ class User(callbacks.Privmsg):
         def getHostmasks(user):
             hostmasks = map(repr, user.hostmasks)
             hostmasks.sort()
-            return utils.commaAndify(hostmasks)
+            return utils.str.commaAndify(hostmasks)
         try:
             user = ircdb.users.getUser(msg.prefix)
             if name:
@@ -418,8 +414,8 @@ class User(callbacks.Privmsg):
         irc.reply('I have %s registered users '
                   'with %s registered hostmasks; '
                   '%s and %s.' % (users, hostmasks,
-                                  utils.nItems('owner', owners),
-                                  utils.nItems('admin', admins)))
+                                  utils.str.nItems('owner', owners),
+                                  utils.str.nItems('admin', admins)))
     stats = wrap(stats)
 
 

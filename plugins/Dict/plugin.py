@@ -53,7 +53,7 @@ class Dict(callbacks.Privmsg):
             conn = dictclient.Connection(server)
             dbs = conn.getdbdescs().keys()
             dbs.sort()
-            irc.reply(utils.commaAndify(dbs))
+            irc.reply(utils.str.commaAndify(dbs))
         except socket.error, e:
             irc.error(webutils.strError(e))
     dictionaries = wrap(dictionaries)
@@ -102,21 +102,21 @@ class Dict(callbacks.Privmsg):
         if not definitions:
             if dictionary == '*':
                 irc.reply('No definition for %s could be found.' %
-                          utils.quoted(word))
+                          utils.str.quoted(word))
             else:
                 irc.reply('No definition for %s could be found in %s' %
-                          (utils.quoted(word), ircutils.bold(dictionary)))
+                          (utils.str.quoted(word), ircutils.bold(dictionary)))
             return
         L = []
         for d in definitions:
             dbs.add(ircutils.bold(d.getdb().getname()))
             (db, s) = (d.getdb().getname(), d.getdefstr())
             db = ircutils.bold(db)
-            s = utils.normalizeWhitespace(s).rstrip(';.,')
+            s = utils.str.normalizeWhitespace(s).rstrip(';.,')
             L.append('%s: %s' % (db, s))
         utils.sortBy(len, L)
         if dictionary == '*' and len(dbs) > 1:
-            s = '%s responded: %s' % (utils.commaAndify(dbs), '; '.join(L))
+            s = '%s responded: %s' % (utils.str.commaAndify(dbs), '; '.join(L))
         else:
             s = '; '.join(L)
         irc.reply(s)

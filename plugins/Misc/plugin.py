@@ -27,15 +27,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot
-
-import supybot.fix as fix
-
 import os
 import sys
 import time
-
-from itertools import imap, ifilter
 
 import supybot.log as log
 import supybot.conf as conf
@@ -46,8 +40,9 @@ import supybot.ircdb as ircdb
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.webutils as webutils
 import supybot.callbacks as callbacks
+
+from supybot.utils.iter import ifilter
 
 class Misc(callbacks.Privmsg):
     def __init__(self):
@@ -123,7 +118,7 @@ class Misc(callbacks.Privmsg):
                         (not private and isPublic(cb))]
             names.sort()
             if names:
-                irc.reply(utils.commaAndify(names))
+                irc.reply(utils.str.commaAndify(names))
             else:
                 if private:
                     irc.reply('There are no private plugins.')
@@ -148,7 +143,7 @@ class Misc(callbacks.Privmsg):
                             commands.append(s)
                 if commands:
                     commands.sort()
-                    irc.reply(utils.commaAndify(commands))
+                    irc.reply(utils.str.commaAndify(commands))
                 else:
                     irc.error('That plugin exists, but it has no '
                               'commands with help.')
@@ -177,7 +172,7 @@ class Misc(callbacks.Privmsg):
                     L.append('%s %s' % (name, key))
         if L:
             L.sort()
-            irc.reply(utils.commaAndify(L))
+            irc.reply(utils.str.commaAndify(L))
         else:
             irc.reply('No appropriate commands were found.')
     apropos = wrap(apropos, ['lowered'])
@@ -211,7 +206,7 @@ class Misc(callbacks.Privmsg):
                 names = sorted([cb.name() for cb in cbs])
                 irc.error('That command exists in the %s plugins.  '
                           'Please specify exactly which plugin command '
-                          'you want help with.'% utils.commaAndify(names))
+                          'you want help with.'% utils.str.commaAndify(names))
             else:
                 getHelp(cbs[0])
         else:
@@ -235,9 +230,9 @@ class Misc(callbacks.Privmsg):
         Returns the version of the current bot.
         """
         try:
-            newest = webutils.getUrl('http://supybot.sf.net/version.txt')
+            newest = utils.web.getUrl('http://supybot.sf.net/version.txt')
             newest ='The newest version available online is %s.'%newest.strip()
-        except webutils.WebError, e:
+        except utils.web.Error, e:
             self.log.warning('Couldn\'t get website version: %r', e)
             newest = 'I couldn\'t fetch the newest version ' \
                      'from the Supybot website.'
@@ -265,13 +260,13 @@ class Misc(callbacks.Privmsg):
         if cbs:
             names = [cb.name() for cb in cbs]
             names.sort()
-            plugin = utils.commaAndify(names)
+            plugin = utils.str.commaAndify(names)
             if irc.nested:
-                irc.reply(utils.commaAndify(names))
+                irc.reply(utils.str.commaAndify(names))
             else:
                 irc.reply('The %s command is available in the %s %s.' %
-                          (utils.quoted(command), plugin,
-                           utils.pluralize('plugin', len(names))))
+                          (utils.str.quoted(command), plugin,
+                           utils.str.pluralize('plugin', len(names))))
         else:
             irc.error('There is no such command %s.' % command)
     plugin = wrap(plugin, ['commandName'])
@@ -287,7 +282,7 @@ class Misc(callbacks.Privmsg):
             return
         module = sys.modules[cb.__class__.__module__]
         if hasattr(module, '__author__') and module.__author__:
-            irc.reply(utils.mungeEmailForWeb(str(module.__author__)))
+            irc.reply(utils.web.mungeEmail(str(module.__author__)))
         else:
             irc.reply('That plugin doesn\'t have an author that claims it.')
     author = wrap(author, [('plugin')])
@@ -317,7 +312,7 @@ class Misc(callbacks.Privmsg):
             chunk = L.pop()
             if L:
                 chunk += ' \x02(%s)\x0F' % \
-                         utils.nItems('message', len(L), 'more')
+                         utils.str.nItems('message', len(L), 'more')
             irc.reply(chunk, True)
         except KeyError:
             irc.error('You haven\'t asked me a command; perhaps you want '
@@ -380,7 +375,7 @@ class Misc(callbacks.Privmsg):
                 nolimit = True
         iterable = ifilter(self._validLastMsg, reversed(irc.state.history))
         iterable.next() # Drop the first message.
-        predicates = list(utils.flatten(predicates.itervalues()))
+        predicates = list(utils.iter.flatten(predicates.itervalues()))
         resp = []
         if irc.nested and not \
           self.registryValue('last.nested.includeTimestamp'):
@@ -409,7 +404,7 @@ class Misc(callbacks.Privmsg):
             irc.error('I couldn\'t find a message matching that criteria in '
                       'my history of %s messages.' % len(irc.state.history))
         else:
-            irc.reply(utils.commaAndify(resp))
+            irc.reply(utils.str.commaAndify(resp))
     last = wrap(last, [getopts({'nolimit': '',
                                 'on': 'something',
                                 'with': 'something',
@@ -496,7 +491,7 @@ class Misc(callbacks.Privmsg):
             shortname[, shortname and shortname].
             """
             L = [getShortName(n) for n in longList]
-            return utils.commaAndify(L)
+            return utils.str.commaAndify(L)
         def sortAuthors():
             """
             Sort the list of 'long names' based on the number of contributions
@@ -520,7 +515,7 @@ class Misc(callbacks.Privmsg):
             hasContribs = False
             if getattr(module, '__author__', None):
                 author = 'was written by %s' % \
-                    utils.mungeEmailForWeb(str(module.__author__))
+                    utils.web.mungeEmail(str(module.__author__))
                 hasAuthor = True
             if getattr(module, '__contributors__', None):
                 contribs = sortAuthors()
@@ -532,7 +527,7 @@ class Misc(callbacks.Privmsg):
                 if contribs:
                     contrib = '%s %s contributed to it.' % \
                         (buildContributorsString(contribs),
-                        utils.has(len(contribs)))
+                        utils.str.has(len(contribs)))
                     hasContribs = True
                 elif hasAuthor:
                     contrib = 'has no additional contributors listed'
@@ -549,7 +544,7 @@ class Misc(callbacks.Privmsg):
             if not authorInfo:
                 return 'The nick specified (%s) is not a registered ' \
                        'contributor' % nick
-            fullName = utils.mungeEmailForWeb(str(authorInfo))
+            fullName = utils.web.mungeEmail(str(authorInfo))
             contributions = []
             if hasattr(module, '__contributors__'):
                 if authorInfo not in module.__contributors__:
@@ -558,22 +553,21 @@ class Misc(callbacks.Privmsg):
                 contributions = module.__contributors__[authorInfo]
             if getattr(module, '__author__', False) == authorInfo:
                 isAuthor = True
-            # XXX Partition needs moved to utils.
-            (nonCommands, commands) = fix.partition(lambda s: ' ' in s,
-                                                    contributions)
+            (nonCommands, commands) = utils.iter.partition(lambda s: ' ' in s,
+                                                           contributions)
             results = []
             if commands:
                 results.append(
-                    'the %s %s' %(utils.commaAndify(commands),
-                                  utils.pluralize('command',len(commands))))
+                    'the %s %s' %(utils.str.commaAndify(commands),
+                                  utils.str.pluralize('command',len(commands))))
             if nonCommands:
-                results.append('the %s' % utils.commaAndify(nonCommands))
+                results.append('the %s' % utils.str.commaAndify(nonCommands))
             if results and isAuthor:
                 return '%s wrote the %s plugin and also contributed %s' % \
-                    (fullName, cb.name(), utils.commaAndify(results))
+                    (fullName, cb.name(), utils.str.commaAndify(results))
             elif results and not isAuthor:
                 return '%s contributed %s to the %s plugin' % \
-                    (fullName, utils.commaAndify(results), cb.name())
+                    (fullName, utils.str.commaAndify(results), cb.name())
             elif isAuthor and not results:
                 return '%s wrote the %s plugin' % (fullName, cb.name())
             else:

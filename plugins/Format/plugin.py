@@ -144,7 +144,7 @@ class Format(callbacks.Privmsg):
 
         Returns the text surrounded by double quotes.
         """
-        irc.reply(utils.dqrepr(text))
+        irc.reply(utils.str.dqrepr(text))
     repr = wrap(repr, ['text'])
 
     def concat(self, irc, msg, args, first, second):

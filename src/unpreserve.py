@@ -27,8 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-
-
 class Reader(object):
     def __init__(self, Creator, *args, **kwargs):
         self.Creator = Creator

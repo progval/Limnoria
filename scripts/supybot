@@ -33,7 +33,7 @@
 This is the main program to run Supybot.
 """
 
-
+import supybot
 
 import re
 import os

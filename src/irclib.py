@@ -27,16 +27,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-
-
-import supybot.fix as fix
-
 import copy
 import sets
 import time
 import random
 import operator
-from itertools import imap, chain, cycle
 
 import supybot.log as log
 import supybot.conf as conf
@@ -45,6 +40,7 @@ import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
+from utils.iter import imap, chain, cycle
 from supybot.structures import queue, smallqueue, RingBuffer
 
 ###
@@ -173,7 +169,7 @@ class IrcMsgQueue(object):
            not conf.supybot.protocols.irc.queueDuplicateMessages():
             s = str(msg).strip()
             log.info('Not adding message %s to queue, already added.',
-                     utils.quoted(s))
+                     utils.str.quoted(s))
             return False
         else:
             self.msgs.add(msg)
@@ -642,7 +638,7 @@ class Irc(IrcCommandDispatcher):
         name = name.lower()
         def nameMatches(cb):
             return cb.name().lower() == name
-        (bad, good) = partition(nameMatches, self.callbacks)
+        (bad, good) = utils.iter.partition(nameMatches, self.callbacks)
         self.callbacks[:] = good
         return bad
 

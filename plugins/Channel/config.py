@@ -47,12 +47,12 @@ class BanmaskStyle(registry.SpaceSeparatedSetOfStrings):
                                   'This is a bug.'
         registry.SpaceSeparatedSetOfStrings.__init__(self, *args, **kwargs)
         self.__doc__ = 'Valid values include %s.' % \
-                        utils.commaAndify(map(repr, self.validStrings))
+                        utils.str.commaAndify(map(repr, self.validStrings))
 
     def help(self):
         strings = [s for s in self.validStrings if s]
         return '%s  Valid strings: %s.' % \
-                (self._help, utils.commaAndify(strings))
+                (self._help, utils.str.commaAndify(strings))
 
     def normalize(self, s):
         lowered = s.lower()
