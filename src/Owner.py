@@ -254,13 +254,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def __lt__(self, other):
         return True # We should always be the first plugin.
     
-    def _getIrc(self, network):
-        network = network.lower()
-        for irc in world.ircs:
-            if irc.network.lower() == network:
-                return irc
-        return None
-
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and not world.testing:
             if ircutils.strEqual(msg.args[0], irc.nick):
@@ -276,6 +269,26 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         # This has to be done somewhere, I figure here is as good place as any.
         callbacks.Privmsg._mores.clear()
         self.__parent.reset()
+
+    def _connect(self, network, serverPort=None):
+        try:
+            group = conf.supybot.networks.get(network)
+            (server, port) = group.servers()[0]
+        except (registry.NonExistentRegistryEntry, IndexError):
+            if serverPort is None:
+                raise ValueError, 'connect requires a (server, port) ' \
+                                  'if the network is not registered.'
+            conf.registerNetwork(network)
+            serverS = '%s:%s' % serverPort
+            conf.supybot.networks.get(network).servers.append(serverS)
+            assert conf.supybot.networks.get(network).servers()
+        self.log.info('Creating new Irc for %s.', network)
+        newIrc = irclib.Irc(network)
+        for irc in world.ircs:
+            if irc != newIrc:
+                newIrc.state.history = irc.state.history
+        driver = drivers.newDriver(newIrc)
+        return newIrc
 
     def do001(self, irc, msg):
         self.log.info('Loading plugins.')
@@ -696,28 +709,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         else:
             irc.error('There was no plugin %s.' % name)
 
-    def reconnect(self, irc, msg, args):
-        """[<network>]
-
-        Disconnects and then reconnects to <network>.  If no network is given,
-        disconnects and then reconnects to the network the command was given
-        on.
-        """
-        network = privmsgs.getArgs(args, required=0, optional=1)
-        if network:
-            badIrc = self._getIrc(network)
-            if badIrc is None:
-                irc.error('I\'m not currently connected on %s.' % network)
-                return
-        else:
-            badIrc = irc
-        try:
-            badIrc.driver.reconnect()
-            if badIrc != irc:
-                irc.replySuccess()
-        except AttributeError: # There's a cleaner way to do this, but I'm lazy.
-            irc.error('I couldn\'t reconnect.  You should restart me instead.')
-
     def defaultcapability(self, irc, msg, args):
         """{add|remove} <capability>
 
@@ -823,77 +814,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         except registry.NonExistentRegistryEntry:
             irc.errorInvalid('plugin', plugin, Raise=True)
         self.reload(irc, msg, args) # This makes the replySuccess.
-
-    def _connect(self, network, serverPort=None):
-        try:
-            group = conf.supybot.networks.get(network)
-            (server, port) = group.servers()[0]
-        except (registry.NonExistentRegistryEntry, IndexError):
-            if serverPort is None:
-                raise ValueError, 'connect requires a (server, port) ' \
-                                  'if the network is not registered.'
-            conf.registerNetwork(network)
-            serverS = '%s:%s' % serverPort
-            conf.supybot.networks.get(network).servers.append(serverS)
-            assert conf.supybot.networks.get(network).servers()
-        self.log.info('Creating new Irc for %s.', network)
-        newIrc = irclib.Irc(network)
-        for irc in world.ircs:
-            if irc != newIrc:
-                newIrc.state.history = irc.state.history
-        driver = drivers.newDriver(newIrc)
-        return newIrc
-
-    def connect(self, irc, msg, args):
-        """<network> [<host[:port]>]
-
-        Connects to another network at <host:port>.  If port is not provided, it
-        defaults to 6667, the default port for IRC.
-        """
-        (network, server) = privmsgs.getArgs(args, optional=1)
-        otherIrc = self._getIrc(network)
-        if otherIrc is not None:
-            irc.error('I\'m already connected to %s.' % network)
-            return
-        if server:
-            if ':' in server:
-                (server, port) = server.split(':')
-                port = int(port)
-            else:
-                port = 6667
-            serverPort = (server, port)
-        else:
-            try:
-                serverPort = conf.supybot.networks.get(network).servers()[0]
-            except (registry.NonExistentRegistryEntry, IndexError):
-                irc.error('A server must be provided if the network is not '
-                          'already registered.')
-                return
-        newIrc = self._connect(network, serverPort=serverPort)
-        conf.supybot.networks().add(network)
-        assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
-        irc.replySuccess('Connection to %s initiated.' % network)
-
-    def disconnect(self, irc, msg, args):
-        """<network> [<quit message>]
-
-        Disconnects and ceases to relay to and from the network represented by
-        the network <network>.  If <quit message> is given, quits the network
-        with the given quit message.
-        """
-        (network, quitMsg) = privmsgs.getArgs(args, optional=1)
-        if not quitMsg:
-            quitMsg = msg.nick
-        otherIrc = self._getIrc(network)
-        if otherIrc is not None:
-            # replySuccess here, rather than lower, in case we're being
-            # told to disconnect from the network we received the command on.
-            irc.replySuccess()
-            otherIrc.queueMsg(ircmsgs.quit(quitMsg))
-            otherIrc.die()
-        else:
-            irc.error('I\'m not connected to %s.' % network, Raise=True)
-        conf.supybot.networks().discard(network)
 
 
 Class = Owner

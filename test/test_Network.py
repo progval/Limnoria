@@ -31,21 +31,14 @@
 
 from testsupport import *
 
-if network:
-    class NetworkTestCase(PluginTestCase):
-        plugins = ['Network']
-        def testDns(self):
-            self.assertNotError('dns slashdot.org')
-            self.assertResponse('dns alsdkjfaslkdfjaslkdfj.com',
-                                'Host not found.')
+class NetworkTestCase(PluginTestCase):
+    plugins = ['Network', 'Utilities']
+    def testNetworks(self):
+        self.assertNotError('networks')
 
-        def testWhois(self):
-            self.assertNotError('network whois ohio-state.edu')
-            self.assertError('network whois www.ohio-state.edu')
-            self.assertNotError('network whois kuro5hin.org')
-            self.assertError('network whois www.kuro5hin.org')
-            self.assertNotError('network whois microsoft.com')
-            self.assertNotError('network whois inria.fr')
+    def testCommand(self):
+        self.assertResponse('network command %s echo 1' % self.irc.network,
+                            '1')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

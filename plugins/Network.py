@@ -30,124 +30,253 @@
 ###
 
 """
-Various network-related commands.
+Includes commands for connecting, disconnecting, and reconnecting to multiple
+networks, as well as several other utility functions related to IRC networks.
 """
 
+import supybot
+
 __revision__ = "$Id$"
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 
-import sets
-import socket
-import telnetlib
+import time
 
+import supybot.conf as conf
 import supybot.utils as utils
+import supybot.world as world
+import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 
 class Network(callbacks.Privmsg):
-    threaded = True
-    def dns(self, irc, msg, args):
-        """<host|ip>
+    _whois = {}
+    def _getIrc(self, network):
+        network = network.lower()
+        for irc in world.ircs:
+            if irc.network.lower() == network:
+                return irc
+        raise callbacks.Error, 'I\'m not currently connected to %s.' % network
 
-        Returns the ip of <host> or the reverse DNS hostname of <ip>.
+    def _getNetwork(self, irc, args):
+        try:
+            self._getIrc(args[0])
+            return args.pop(0)
+        except (callbacks.Error, IndexError):
+            return irc.network
+
+    def connect(self, irc, msg, args):
+        """<network> [<host[:port]>]
+
+        Connects to another network at <host:port>.  If port is not provided, it
+        defaults to 6667, the default port for IRC.
         """
-        host = privmsgs.getArgs(args)
-        if utils.isIP(host):
-            hostname = socket.getfqdn(host)
-            if hostname == host:
-                irc.reply('Host not found.')
+        (network, server) = privmsgs.getArgs(args, optional=1)
+        try:
+            otherIrc = self._getIrc(network)
+            irc.error('I\'m already connected to %s.' % network, Raise=True)
+        except callbacks.Error:
+            pass
+        if server:
+            if ':' in server:
+                (server, port) = server.split(':')
+                port = int(port)
             else:
-                irc.reply(hostname)
+                port = 6667
+            serverPort = (server, port)
         else:
             try:
-                ip = socket.gethostbyname(host)
-                if ip == '64.94.110.11': # Verisign sucks!
-                    irc.reply('Host not found.')
-                else:
-                    irc.reply(ip)
-            except socket.error:
-                irc.reply('Host not found.')
+                serverPort = conf.supybot.networks.get(network).servers()[0]
+            except (registry.NonExistentRegistryEntry, IndexError):
+                irc.error('A server must be provided if the network is not '
+                          'already registered.')
+                return
+        Owner = irc.getCallback('Owner')
+        newIrc = Owner._connect(network, serverPort=serverPort)
+        conf.supybot.networks().add(network)
+        assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
+        irc.replySuccess('Connection to %s initiated.' % network)
+    connect = privmsgs.checkCapability(connect, 'owner')
 
-    _tlds = sets.Set(['com', 'net', 'edu'])
-    _registrar = ['Sponsoring Registrar', 'Registrar', 'source']
-    _updated = ['Last Updated On', 'Domain Last Updated Date', 'Updated Date',
-                'Last Modified', 'changed']
-    _created = ['Created On', 'Domain Registration Date', 'Creation Date']
-    _expires = ['Expiration Date', 'Domain Expiration Date']
-    _status = ['Status', 'Domain Status', 'status']
-    def whois(self, irc, msg, args):
-        """<domain>
+    def disconnect(self, irc, msg, args):
+        """[<network>] [<quit message>]
 
-        Returns WHOIS information on the registration of <domain>.
+        Disconnects from the network represented by the network <network>.
+        If <quit message> is given, quits the network with the given quit
+        message.  <network> is only necessary if the network is different
+        from the network the command is sent on.
         """
-        domain = privmsgs.getArgs(args)
-        usertld = domain.split('.')[-1]
-        if '.' not in domain:
-            irc.error('<domain> must be in .com, .net, .edu, or .org.')
+        network = self._getNetwork(irc, args)
+        quitMsg = privmsgs.getArgs(args, required=0, optional=1)
+        if not quitMsg:
+            quitMsg = msg.nick
+        otherIrc = self._getIrc(network)
+        # replySuccess here, rather than lower, in case we're being
+        # told to disconnect from the network we received the command on.
+        irc.replySuccess()
+        otherIrc.queueMsg(ircmsgs.quit(quitMsg))
+        otherIrc.die()
+        conf.supybot.networks().discard(network)
+    disconnect = privmsgs.checkCapability(disconnect, 'owner')
+
+    def reconnect(self, irc, msg, args):
+        """[<network>]
+
+        Disconnects and then reconnects to <network>.  If no network is given,
+        disconnects and then reconnects to the network the command was given
+        on.
+        """
+        network = self._getNetwork(irc, args)
+        badIrc = self._getIrc(network)
+        try:
+            badIrc.driver.reconnect()
+            if badIrc != irc:
+                # No need to reply if we're reconnecting ourselves.
+                irc.replySuccess()
+        except AttributeError: # There's a cleaner way to do this, but I'm lazy.
+            irc.error('I couldn\'t reconnect.  You should restart me instead.')
+    reconnect = privmsgs.checkCapability(reconnect, 'owner')
+
+    def command(self, irc, msg, args):
+        """<network> <command> [<arg> ...]
+
+        Gives the bot <command> (with its associated <arg>s) on <network>.
+        """
+        if len(args) < 2:
+            raise callbacks.ArgumentError
+        network = args.pop(0)
+        otherIrc = self._getIrc(network)
+        Owner = irc.getCallback('Owner')
+        Owner.disambiguate(irc, args)
+        self.Proxy(otherIrc, msg, args)
+    command = privmsgs.checkCapability(command, 'admin')
+
+    ###
+    # whois command-related stuff.
+    ###
+    def do311(self, irc, msg):
+        nick = ircutils.toLower(msg.args[1])
+        if (irc, nick) not in self._whois:
             return
-        elif len(domain.split('.')) != 2:
-            irc.error('<domain> must be a domain, not a hostname.')
-            return
-        if usertld in self._tlds:
-            server = 'rs.internic.net'
-            search = '=%s' % domain
         else:
-            server = '%s.whois-servers.net' % usertld
-            search = domain
-        try:
-            t = telnetlib.Telnet(server, 43)
-        except socket.error, e:
-            irc.error(str(e))
+            self._whois[(irc, nick)][-1][msg.command] = msg
+
+    # These are all sent by a WHOIS response.
+    do301 = do311
+    do312 = do311
+    do317 = do311
+    do319 = do311
+    do320 = do311
+
+    def do318(self, irc, msg):
+        nick = msg.args[1]
+        loweredNick = ircutils.toLower(nick)
+        if (irc, loweredNick) not in self._whois:
             return
-        t.write(search)
-        t.write('\n')
-        s = t.read_all()
-        (registrar, updated, created, expires, status) = ('', '', '', '', '')
-        for line in s.splitlines():
-            line = line.strip()
-            if not line or ':' not in line:
-                continue
-            if not registrar and any(line.startswith, self._registrar):
-                registrar = ':'.join(line.split(':')[1:]).strip()
-            elif not updated and any(line.startswith, self._updated):
-                s = ':'.join(line.split(':')[1:]).strip()
-                updated = 'updated %s' % s
-            elif not created and any(line.startswith, self._created):
-                s = ':'.join(line.split(':')[1:]).strip()
-                created = 'registered %s' % s
-            elif not expires and any(line.startswith, self._expires):
-                s = ':'.join(line.split(':')[1:]).strip()
-                expires = 'expires %s' % s
-            elif not status and any(line.startswith, self._status):
-                status = ':'.join(line.split(':')[1:]).strip().lower()
-        if not status:
-            status = 'unknown'
-        try:
-            t = telnetlib.Telnet('whois.pir.org', 43)
-        except socket.error, e:
-            irc.error(str(e))
+        (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
+        hostmask = '@'.join(d['311'].args[2:4])
+        user = d['311'].args[-1]
+        if '319' in d:
+            channels = d['319'].args[-1].split()
+            ops = []
+            voices = []
+            normal = []
+            halfops = []
+            for channel in channels:
+                if channel.startswith('@'):
+                    ops.append(channel[1:])
+                elif channel.startswith('%'):
+                    halfops.append(channel[1:])
+                elif channel.startswith('+'):
+                    voices.append(channel[1:])
+                else:
+                    normal.append(channel)
+            L = []
+            if ops:
+                L.append('is an op on %s' % utils.commaAndify(ops))
+            if halfops:
+                L.append('is a halfop on %s' % utils.commaAndify(halfops))
+            if voices:
+                L.append('is voiced on %s' % utils.commaAndify(voices))
+            if normal:
+                if L:
+                    L.append('is also on %s' % utils.commaAndify(normal))
+                else:
+                    L.append('is on %s' % utils.commaAndify(normal))
+        else:
+            L = ['isn\'t on any non-secret channels']
+        channels = utils.commaAndify(L)
+        if '317' in d:
+            idle = utils.timeElapsed(d['317'].args[2])
+            signon = time.strftime(conf.supybot.humanTimestampFormat(),
+                                   time.localtime(float(d['317'].args[3])))
+        else:
+            idle = '<unknown>'
+            signon = '<unknown>'
+        if '312' in d:
+            server = d['312'].args[2]
+        else:
+            server = '<unknown>'
+        if '301' in d:
+            away = '  %s is away: %s.' % (nick, d['301'].args[2])
+        else:
+            away = ''
+        if '320' in d:
+            if d['320'].args[2]:
+                identify = ' identified'
+            else:
+                identify = ''
+        else:
+            identify = ''
+        s = '%s (%s) has been%s on server %s since %s (idle for %s) and ' \
+            '%s.%s' % (user, hostmask, identify, server, signon, idle,
+                       channels, away)
+        replyIrc.reply(s)
+        del self._whois[(irc, loweredNick)]
+
+    def do402(self, irc, msg):
+        nick = msg.args[1]
+        loweredNick = ircutils.toLower(nick)
+        if (irc, loweredNick) not in self._whois:
             return
-        t.write('registrar id ')
-        t.write(registrar)
-        t.write('\n')
-        s = t.read_all()
-        for line in s.splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith('Email'):
-                url = ' <registered at %s>' % line.split('@')[-1]
-            if line == 'Not a valid ID pattern':
-                url = ''
-        try:
-            s = '%s%s is %s; %s.' % (domain, url, status,
-                 ', '.join(filter(None, [created, updated, expires])))
-            irc.reply(s)
-        except NameError, e:
-            irc.error('I couldn\'t find such a domain.')
+        (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
+        del self._whois[(irc, loweredNick)]
+        s = 'There is no %s on %s.' % (nick, self._getIrcName(irc))
+        replyIrc.reply(s)
+    do401 = do402
+
+    def whois(self, irc, msg, args):
+        """[<network>] <nick>
+
+        Returns the WHOIS response <network> gives for <nick>.  <network> is
+        only necessary if the network is different than the network the command
+        is sent on.
+        """
+        network = self._getNetwork(irc, args)
+        nick = privmsgs.getArgs(args)
+        if not ircutils.isNick(nick):
+            irc.errorInvalid('nick', nick, Raise=True)
+        nick = ircutils.toLower(nick)
+        otherIrc = self._getIrc(network)
+        # The double nick here is necessary because single-nick WHOIS only works
+        # if the nick is on the same server (*not* the same network) as the user
+        # giving the command.  Yeah, it made me say wtf too.
+        otherIrc.queueMsg(ircmsgs.whois(nick, nick))
+        self._whois[(otherIrc, nick)] = (irc, msg, {})
+
+    def networks(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the networks to which the bot is currently connected.
+        """
+        L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
+        utils.sortBy(str.lower, L)
+        irc.reply(utils.commaAndify(L))
+        
 
 
 Class = Network

@@ -132,12 +132,6 @@ class Relay(callbacks.Privmsg):
         else:
             return irc.getRealIrc()
 
-    def _getIrc(self, name):
-        for irc in world.ircs:
-            if self._getIrcName(irc) == name:
-                return irc
-        raise KeyError, name
-
     def _getIrcName(self, irc):
         # We should allow abbreviations at some point.
         return irc.network
@@ -193,24 +187,6 @@ class Relay(callbacks.Privmsg):
         irc.replySuccess()
     part = privmsgs.checkCapability(part, 'owner')
 
-    def command(self, irc, msg, args):
-        """<network> <command> [<arg> ...]
-
-        Gives the bot <command> (with its associated <arg>s) on <network>.
-        """
-        if len(args) < 2:
-            raise callbacks.ArgumentError
-        network = args.pop(0)
-        try:
-            otherIrc = self._getIrc(network)
-        except KeyError:
-            irc.error('I\'m not currently on the network %r.' % network)
-            return
-        Owner = irc.getCallback('Owner')
-        Owner.disambiguate(irc, args)
-        self.Proxy(otherIrc, msg, args)
-    command = privmsgs.checkCapability(command, 'admin')
-
     def nicks(self, irc, msg, args):
         """[<channel>]
 
@@ -261,37 +237,6 @@ class Relay(callbacks.Privmsg):
                              (ircutils.bold(network), numUsers, usersS))
         users.sort()
         irc.reply('; '.join(users))
-
-    def whois(self, irc, msg, args):
-        """<nick>@<network>
-
-        Returns the WHOIS response <network> gives for <nick>.
-        """
-        nickAtNetwork = privmsgs.getArgs(args)
-        realIrc = self._getRealIrc(irc)
-        try:
-            (nick, network) = nickAtNetwork.split('@', 1)
-            if not ircutils.isNick(nick):
-                irc.error('%s is not an IRC nick.' % nick)
-                return
-            nick = ircutils.toLower(nick)
-        except ValueError: # If split doesn't work, we get an unpack error.
-            if len(world.ircs) == 2:
-                # If there are only two networks being relayed, we can safely
-                # pick the *other* one.
-                nick = ircutils.toLower(nickAtNetwork)
-                for otherIrc in world.ircs:
-                    if otherIrc != realIrc:
-                        network = self._getIrcName(otherIrc)
-            else:
-                raise callbacks.ArgumentError
-        try:
-            otherIrc = self._getIrc(network)
-        except KeyError:
-            irc.error('I\'m not on that network.')
-            return
-        otherIrc.queueMsg(ircmsgs.whois(nick, nick))
-        self._whois[(otherIrc, nick)] = (irc, msg, {})
 
     def ignore(self, irc, msg, args):
         """[<channel>] <nick|hostmask>

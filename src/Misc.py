@@ -630,51 +630,43 @@ class Misc(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         irc.reply(text, notice=True)
 
-    def networks(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the networks to which the bot is currently connected.
-        """
-        L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
-        utils.sortBy(str.lower, L)
-        irc.reply(utils.commaAndify(L))
-        
     def contributors(self, irc, msg, args):
-        """<plugin> [<nickname>]
+        """<plugin> [<nick>]
 
         Replies with a list of people who made contributions to a given plugin.
-        If <nickname> is specified, that person's specific contributions will
-        be listed.  Note: The <nickname> is the part inside of the parentheses
-        in the people listing
+        If <nick> is specified, that person's specific contributions will
+        be listed.  Note: The <nick> is the part inside of the parentheses
+        in the people listing.
         """
-        (plugin, nickname) = privmsgs.getArgs(args, required=1, optional=1)
-        nickname = nickname.lower()
+        (plugin, nick) = privmsgs.getArgs(args, required=1, optional=1)
+        nick = nick.lower()
         def getShortName(authorInfo):
             """
             Take an Authors object, and return only the name and nick values
-            in the format 'First Last (nickname)'
+            in the format 'First Last (nick)'.
             """
             return '%(name)s (%(nick)s)' % authorInfo.__dict__
         def buildContributorsString(longList):
             """
             Take a list of long names and turn it into :
-            shortname[, shortname and shortname]
+            shortname[, shortname and shortname].
             """
-            outList = [getShortName(n) for n in longList]
-            return utils.commaAndify(outList)
+            L = [getShortName(n) for n in longList]
+            return utils.commaAndify(L)
         def sortAuthors():
             """
             Sort the list of 'long names' based on the number of contributions
-            associated with each
+            associated with each.
             """
             L = module.__contributors__.items()
-            utils.sortBy(lambda elt: -len(elt[1]), L)
-            nameList = [pair[0] for pair in L]
-            return nameList
+            def negativeSecondElement(x):
+                return -x[1]
+            utils.sortBy(negativeSecondElement, L)
+            return [t[0] for t in L]
         def buildPeopleString(module):
             """
             Build the list of author + contributors (if any) for the requested
-            plugin
+            plugin.
             """
             head = 'The %s plugin' % plugin
             author = 'has not been claimed by an author'
@@ -682,11 +674,11 @@ class Misc(callbacks.Privmsg):
             contrib = 'has no contributors listed'
             hasAuthor = False
             hasContribs = False
-            if getattr(module, '__author__', False):
+            if getattr(module, '__author__', None):
                 author = 'was written by %s' % \
                     utils.mungeEmailForWeb(str(module.__author__))
                 hasAuthor = True
-            if getattr(module, '__contributors__', False):
+            if getattr(module, '__contributors__', None):
                 contribs = sortAuthors()
                 if hasAuthor:
                     try:
@@ -702,28 +694,31 @@ class Misc(callbacks.Privmsg):
                     contrib = 'has no additional contributors listed'
             if hasContribs and not hasAuthor:
                 conjunction = 'but'
-            return '%s %s %s %s' % (head, author, conjunction, contrib)
+            return ' '.join([head, author, conjunction, contrib])
         def buildPersonString(module):
             """
             Build the list of contributions (if any) for the requested person
             for the requested plugin
             """
             isAuthor = False
-            authorInfo = getattr(supybot.authors, nickname, False)
+            authorInfo = getattr(supybot.authors, nick, None)
             if not authorInfo:
-                return 'The nickname specified (%s) is not a registered ' \
-                       'contributor' % nickname
+                return 'The nick specified (%s) is not a registered ' \
+                       'contributor' % nick
             fullName = utils.mungeEmailForWeb(str(authorInfo))
             contributions = []
             if hasattr(module, '__contributors__'):
                 if authorInfo not in module.__contributors__:
                     return 'The %s plugin does not have \'%s\' listed as a ' \
-                           'contributor' % (plugin, nickname)
+                           'contributor' % (plugin, nick)
                 contributions = module.__contributors__[authorInfo]
             if getattr(module, '__author__', False) == authorInfo:
                 isAuthor = True
+            # XXX Partition needs moved to utils.
             splitContribs = fix.partition(lambda s: ' ' in s, contributions)
             results = []
+            # XXX Assign splitContribs to specific names based on what it means
+            #     semantically -- (foo, bar) = partition(...)
             if splitContribs[1]:
                 results.append(
                     'the %s %s' %(utils.commaAndify(splitContribs[1]),
@@ -747,7 +742,7 @@ class Misc(callbacks.Privmsg):
             irc.error('No such plugin %r exists.' % plugin)
             return
         module = sys.modules[cb.__class__.__module__]
-        if not nickname:
+        if not nick:
             irc.reply(buildPeopleString(module))
         else:
             irc.reply(buildPersonString(module))
