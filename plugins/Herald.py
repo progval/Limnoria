@@ -226,7 +226,7 @@ class Herald(callbacks.Privmsg):
         is only necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (userNickHostmask, regexp) = privmsg.getArgs(args, required=2)
+        (userNickHostmask, regexp) = privmsgs.getArgs(args, required=2)
         try:
             id = self._getId(irc, userNickHostmask)
         except KeyError:
