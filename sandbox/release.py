@@ -23,19 +23,22 @@ def error(s):
 
 def system(sh, errmsg=None):
     if errmsg is None:
-        errmsg = sh
+        errmsg = repr(sh)
     ret = os.system(sh)
-    if not ret:
+    if ret:
         error(errmsg + '  (error code: %s)' % ret)
     
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        error('Usage: %s <version>\n' % sys.argv[0])
+    if len(sys.argv) < 3:
+        error('Usage: %s <sf username> <version>\n' % sys.argv[0])
 
-    v = sys.argv[1]
+    (u, v) = sys.argv[1:]
     if not re.match(r'^\d+\.\d+\.\d+\w*$', v):
         error('Invalid version string: '
               'must be of the form MAJOR.MINOR.PATCHLEVEL.')
+
+    system('cvs -d:ext:%s@cvs.sf.net:/cvsroot/supybot co supybot' % u)
+    os.chdir('supybot')
         
     if firstLine('RELNOTES') != 'Version %s' % v:
         error('Invalid first line in RELNOTES.')
@@ -57,7 +60,7 @@ if __name__ == '__main__':
     shutil.rmtree('test')
     shutil.rmtree('sandbox')
     system('find . -name CVS | xargs rm -rf')
-    shutil.remove('.cvsignore')
+    os.remove('.cvsignore')
 
     os.chdir('..')
     shutil.move('supybot', 'Supybot-%s' % v)
@@ -66,13 +69,13 @@ if __name__ == '__main__':
     system('tar cjvf Supybot-%s.tar.bz2 Supybot-%s' % (v, v))
     system('zip -r Supybot-%s.zip Supybot-%s' % (v, v))
 
-##     ftp = ftplib.FTP('upload.sf.net')
-##     ftp.login()
-##     ftp.cwd('incoming')
-##     ftp.storbinary('STOR Supybot-%s.tar.gz' % v)
-##     ftp.storbinary('STOR Supybot-%s.tar.bz2' % v)
-##     ftp.storbinary('STOR Supybot-%s.zip' % v)
-##     ftp.close()
+    ftp = ftplib.FTP('upload.sf.net')
+    ftp.login()
+    ftp.cwd('incoming')
+    ftp.storbinary('STOR Supybot-%s.tar.gz' % v)
+    ftp.storbinary('STOR Supybot-%s.tar.bz2' % v)
+    ftp.storbinary('STOR Supybot-%s.zip' % v)
+    ftp.close()
 
 ##     fd = file('version.txt', 'w')
 ##     fd.write(v+'\n')
