@@ -102,6 +102,7 @@ class Relay(callbacks.Privmsg):
         self.lastmsg = ircmsgs.ping('this is just a fake message')
         self.channels = sets.Set()
         self.abbreviations = {}
+        self.originalIrc = None
 
     def inFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
@@ -114,6 +115,12 @@ class Relay(callbacks.Privmsg):
         self.lastmsg = msg
         return msg
 
+    def die(self):
+        for irc in self.abbreviations:
+            if irc != self.originalIrc:
+                irc.callbacks[:] = []
+                irc.die()
+
     def startrelay(self, irc, msg, args):
         """<network abbreviation for current server>
 
@@ -125,6 +132,7 @@ class Relay(callbacks.Privmsg):
         will show up as 'user@oftc'.
         """
         realIrc = irc.getRealIrc()
+        self.originalIrc = realIrc
         abbreviation = privmsgs.getArgs(args)
         self.ircs[abbreviation] = realIrc
         self.abbreviations[realIrc] = abbreviation
