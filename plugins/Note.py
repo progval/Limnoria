@@ -72,6 +72,10 @@ conf.registerGlobalValue(conf.supybot.plugins.Note, 'notifyOnJoinRepeatedly',
     notify people of their new messages when they join the channel.  That means
     when they join the channel, the bot will tell them they have unread
     messages, even if it's told them before."""))
+conf.registerUserValue(conf.users.plugins.Note, 'notifyWithNotice',
+    registry.Boolean(False, """Determines whether the bot will notify users of
+    new messages with a NOTICE, rather than a PRIVMSG, so their clients won't
+    open a new query window."""))
 
 class Ignores(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
@@ -141,52 +145,77 @@ class Note(callbacks.Privmsg):
             s = 'You have %s; ' \
                 '%s that I haven\'t told you about before now..' % \
                 (utils.nItems('note', unread, 'unread'), unnotified)
-            irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
+            maker = ircmsgs.privmsg
+            if self.userValue('notifyWithNotice', msg.prefix):
+                maker = ircmsgs.notice
+            irc.queueMsg(maker(msg.nick, s))
             cursor.execute("""UPDATE notes SET notified=1
                               WHERE notes.to_id=%s""", id)
             db.commit()
 
-    def send(self, irc, msg, args):
-        """<recipient> <text>
-
-        Sends a new note to the user specified.
-        """
-        (name, note) = privmsgs.getArgs(args, required=2)
+    def getUserId(self, irc, name):
         if ircdb.users.hasUser(name):
-            toId = ircdb.users.getUserId(name)
+            return ircdb.users.getUserId(name)
         else:
-            # name must be a nick, we'll try that.
             try:
-                hostmask = irc.state.nickToHostmask(name)
-                toId = ircdb.users.getUserId(hostmask)
+                hostmask = irc.state.nickToHosmtask(name)
+                return ircdb.users.getUserId(hostmask)
             except KeyError:
-                irc.errorNoUser()
-                return
+                return None
+        
+    def send(self, irc, msg, args):
+        """<recipient>,[<recipient>,[...]] <text>
+
+        Sends a new note to the user specified.  Multiple recipients may be
+        specified by separating their names by commas, with *no* spaces
+        between.
+        """
+        (names, note) = privmsgs.getArgs(args, required=2)
+        # Let's get the from user.
         try:
             fromId = ircdb.users.getUserId(msg.prefix)
             senderName = ircdb.users.getUser(fromId).name
         except KeyError:
             irc.errorNotRegistered()
             return
-        if senderName in self.userValue('ignores', name):
-            irc.error('That user has ignored messages from you.')
-            return
+        # Let's get the publicitousness.
         if ircutils.isChannel(msg.args[0]):
             public = 1
         else:
             public = 0
+
+        names = names.split(',')
+        ids = [self.getUserId(irc, name) for name in names]
+        badnames = []
+        if None in ids:
+            for (id, name) in zip(ids, names):
+                if id is None:
+                    badnames.append(name)
+            irc.errorNoUser(name=utils.commaAndify(badnames, And='or'))
+            return
+        
+        for name in names:
+            if senderName in self.userValue('ignores', name):
+                badnames.append(name)
+        if badnames:
+            irc.error('%s %s ignoring notes from you.' % \
+                      (utils.commaAndify(badnames), utils.be(len(badnames))))
+            return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         now = int(time.time())
-        cursor.execute("""INSERT INTO notes VALUES
-                          (NULL, %s, %s, %s, 0, 0, %s, %s)""",
-                       fromId, toId, now, public, note)
+        sent = []
+        for (name, toId) in zip(names, ids):
+            cursor.execute("""INSERT INTO notes VALUES
+                              (NULL, %s, %s, %s, 0, 0, %s, %s)""",
+                           fromId, toId, now, public, note)
+            cursor.execute("""SELECT id FROM notes WHERE
+                              from_id=%s AND to_id=%s AND added_at=%s""",
+                           fromId, toId, now)
+            s = 'note %s sent to %s' % (cursor.fetchone()[0], name)
+            sent.append(s)
         db.commit()
-        cursor.execute("""SELECT id FROM notes WHERE
-                          from_id=%s AND to_id=%s AND added_at=%s""",
-                       fromId, toId, now)
-        id = cursor.fetchone()[0]
-        irc.reply('Note #%s sent to %s.' % (id, name))
+        irc.reply(utils.commaAndify(sent).capitalize() + '.')
 
     def unsend(self, irc, msg, args):
         """<id>
