@@ -54,34 +54,17 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Sourceforge')
 
 example = utils.wrapLines("""
-09:33:19 <@jamessan|work> @bugs
-09:33:23 < supybot> jamessan|work: Bug #820702: ChannelDB bugs in stats., Bug
-                     #797823: Time reporting errors on win9x, Bug #794330:
-                     Website documentation isn't finished., Bug #708327:
-                     FreeBSD plugin doesn't automatically download the new
-                     INDEX, and Bug #708158: FreeBSD plugin's searchports
-                     doesn't do depends correctly.
-09:33:30 <@jamessan|work> @bugs supybot 797823
-09:33:33 < supybot> jamessan|work: Time reporting errors on win9x
-<http://sourceforge.net/tracker/index.php?func=detail&aid=797823&group_id=58965&atid=489447>
-09:33:37 <@jamessan|work> @bugs gaim
-09:33:46 < supybot> jamessan|work: Bug #821118: MSN Plugin cannot be loaded
-in
-                     0.71, Bug #820961: dock icon doesn't show up with..., Bug
-                     #820879: Cannot connect to a particular irc..., Bug
-                     #820831: &copy; or &reg; render im null, Bug #820776:
-gaim
-                     0.70 segfaults using certain..., Bug #820691: gaim 0.70
-                     fails to start up on..., Bug #820687: MSN duplicating
-                     buddies at signon, Bug (6 more messages)
-09:34:04 <@jamessan|work> @rfes pythoggoras
-09:34:08 < supybot> jamessan|work: RFE #728701: Ability to specify 'themed'
-                     configs at command line, RFE #720757: Improve CLI
-                     interface, RFE #719248: Add config file support, and RFE
-                     #717761: Tracker for adding GUI
-09:34:22 <@jamessan|work> @rfes pythoggoras 720757
-09:34:26 < supybot> jamessan|work: Improve CLI interface
-<http://sourceforge.net/tracker/index.php?func=detail&aid=720757&group_id=75946&atid=545548>
+<@jamessan|work> @bugs
+< supybot> jamessan|work: Bug #820702: ChannelDB bugs in stats., Bug #797823: Time reporting errors on win9x, Bug #794330: Website documentation isn't finished., Bug #708327: FreeBSD plugin doesn't automatically download the new INDEX, and Bug #708158: FreeBSD plugin's searchports doesn't do depends correctly.
+<@jamessan|work> @bugs supybot 797823
+< supybot> jamessan|work: Time reporting errors on win9x <http://sourceforge.net/tracker/index.php?func=detail&aid=797823&group_id=58965&atid=489447>
+<@jamessan|work> @bugs gaim
+< supybot> jamessan|work: Bug #821118: MSN Plugin cannot be loaded
+in 0.71, Bug #820961: dock icon doesn't show up with..., Bug #820879: Cannot connect to a particular irc..., Bug #820831: &copy; or &reg; render im null, Bug #820776: gaim 0.70 segfaults using certain..., Bug #820691: gaim 0.70 fails to start up on..., Bug #820687: MSN duplicating buddies at signon, Bug (6 more messages)
+<@jamessan|work> @rfes pythoggoras
+< supybot> jamessan|work: RFE #728701: Ability to specify 'themed' configs at command line, RFE #720757: Improve CLI interface, RFE #719248: Add config file support, and RFE #717761: Tracker for adding GUI
+<@jamessan|work> @rfes pythoggoras 720757
+< supybot> jamessan|work: Improve CLI interface <http://sourceforge.net/tracker/index.php?func=detail&aid=720757&group_id=75946&atid=545548>
 """)
 
 class Sourceforge(callbacks.Privmsg):
