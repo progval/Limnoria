@@ -58,6 +58,14 @@ class Babelfish(callbacks.Privmsg):
     _abbrevs['zh'] = 'chinese'
     for language in babelfish.available_languages:
         _abbrevs[language] = language
+
+    def languages(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the languages that Babelfish can translate to/from.
+        """
+        irc.reply(utils.commaAndify(babelfish.available_languages))
+
     def translate(self, irc, msg, args):
         """<from-language> [to] <to-language> <text>
 
