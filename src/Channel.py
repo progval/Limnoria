@@ -250,6 +250,9 @@ class Channel(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'op')
         if optlist:
             (nick, user, host) = ircutils.splitHostmask(bannedHostmask)
+            self.log.warning('*** nick: %s' % nick)
+            self.log.warning('*** user: %s' % user)
+            self.log.warning('*** host: %s' % host)
             bnick = '*'
             buser = '*'
             bhost = '*'
@@ -362,24 +365,6 @@ class Channel(callbacks.Privmsg):
         irc.replySuccess()
     unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
 
-    def _getBanmask(self, irc, arg):
-        if ircutils.isNick(arg):
-            if not conf.supybot.protocols.irc.strictRfc():
-                try:
-                    hostmask = irc.state.nickToHostmask(arg)
-                    banmask = ircutils.banmask(hostmask)
-                except KeyError:
-                    if ircutils.isUserHostmask(arg):
-                        banmask = arg
-            else:
-                hostmask = irc.state.nickToHostmask(arg)
-                banmask = ircutils.banmask(hostmask)
-        elif ircutils.isUserHostmask(arg):
-            banmask = arg
-        else:
-            banmask = None
-        return banmask
-
     def permban(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
 
@@ -389,8 +374,11 @@ class Channel(callbacks.Privmsg):
          necessary if the message isn't sent in the channel itself.
         """
         arg = privmsgs.getArgs(args)
-        banmask = self._getBanmask(irc, arg)
-        if banmask is None:
+        if ircutils.isNick(arg):
+            banmask = ircutils.banmask(irc.state.nickToHostmask(arg))
+        elif ircutils.isUserHostmask(arg):
+            banmask = arg
+        else:
             irc.error('That\'s not a valid nick or hostmask.')
             return
         c = ircdb.channels.getChannel(channel)
@@ -422,8 +410,11 @@ class Channel(callbacks.Privmsg):
         the channel itself.
         """
         arg = privmsgs.getArgs(args)
-        banmask = self._getBanmask(irc, arg)
-        if banmask is None:
+        if ircutils.isNick(arg):
+            banmask = ircutils.banmask(irc.state.nickToHostmask(arg))
+        elif ircutils.isUserHostmask(arg):
+            banmask = arg
+        else:
             irc.error('That\'s not a valid nick or hostmask.')
             return
         c = ircdb.channels.getChannel(channel)
