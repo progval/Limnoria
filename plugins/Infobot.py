@@ -33,6 +33,8 @@ Infobot compatibility, for the parts that we don't support already.
 
 import supybot
 
+deprecated = True
+
 __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
 
