@@ -55,6 +55,7 @@ import ircutils
 import privmsgs
 import callbacks
 
+    
 class Admin(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def __init__(self):
