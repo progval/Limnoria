@@ -159,7 +159,7 @@ class Format(callbacks.Privmsg):
         removed by concat.
         """
         irc.reply(first+second)
-    concat = wrap(concat, ['text', 'text'])
+    concat = wrap(concat, ['something', 'text'])
 
     def cut(self, irc, msg, args, size, text):
         """<size> <text>
