@@ -85,15 +85,16 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',
         _reopts)
 
-    _bid = re.compile(r'Current (bid):.+?<b>([^<]+?)<font', _reopts)
+    _bid = re.compile(r'((?:Current|Starting) bid):.+?<b>([^<]+?)<font',
+        _reopts)
     _winningBid = re.compile(r'(Winning bid|Sold for):.+?<b>([^<]+?)<font',
         _reopts)
     _time = re.compile(r'(Time left):.+?<b>([^<]+?)</b>', _reopts)
-    _bidder = re.compile(r'(High bidder):.+?<a href[^>]+>([^<]+)</a>.+?<a '\
-        'href[^>]+>(\d+)</a>', _reopts)
+    _bidder = re.compile(r'(High bidder):.+?(?:">(User ID) (kept private)'\
+        '</font>|<a href[^>]+>([^<]+)</a>.+?<a href[^>]+>(\d+)</a>)', _reopts)
     _winningBidder = re.compile(r'(Winning bidder|Buyer):.+?<a href[^>]+>'\
         '([^<]+)</a>.+?<a href[^>]+>(\d+)</a>', _reopts)
-    _buyNow = re.compile(r'alt="(Buy It Now)">.*?<b>([^<]+)</b>')
+    _buyNow = re.compile(r'alt="(Buy It Now)">.*?<b>([^<]+)</b>', _reopts)
     _seller = re.compile(r'(Seller information).+?<a href[^>]+>([^<]+)</a>'\
         '.+ViewFeedback.+">(\d+)</a>', _reopts)
     _searches = (_bid, _winningBid, _time, _bidder, _winningBidder, _buyNow,
@@ -120,8 +121,8 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         self._getResponse(irc, msg, url)
 
     def ebaySnarfer(self, irc, msg, match):
-        r"http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem(?:&item=\d+|"\
-            "&category=\d+)+"
+        r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?"\
+        r"eBayISAPI\.dll\?ViewItem(?:&item=\d+|&category=\d+)+"
         if not self.toggles.get('auction', channel=msg.args[0]):
             return
         url = match.group(0)
@@ -143,7 +144,11 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             m = r.search(s)
             if m:
                 if r in self._multiField:
-                    resp.append('%s: %s (%s)' % self._bold(m.groups()))
+                    #debug.printf(m.groups())
+                    # [:3] is to make sure that we don't pass a tuple with
+                    # more than 3 items. this allows self._bidder to work
+                    # since self._bidder returns a 5 item tuple
+                    resp.append('%s: %s (%s)' % self._bold(m.groups()[:3]))
                 else:
                     resp.append('%s: %s' % self._bold(m.groups()))
         if resp:

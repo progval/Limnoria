@@ -44,6 +44,16 @@ class EbayTest(PluginTestCase, PluginDocumentation):
         self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&'\
             'category=28033&item=3053353651', '.*Cisco 2524 Router - NO '\
             'RESERVE.*izontech \(.*')
+        # test snarfing other countries
+        self.assertRegexp('http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'\
+            'item=2357056673', 'Buffalo Pemmican')
+        self.assertRegexp('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'\
+            'item=2355464443', 'Any Clear Crazy')
+        self.assertRegexp('http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'\
+            'item=2762983161&category=4607', 'Apple Mac G4')
+        # test .com/.*/ws/eBat compatibility
+        self.assertRegexp('http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'\
+            'ViewItem&item=2439393310&category=33708', '88-89 CRX amber')
 
     def testToggle(self):
         self.assertHelp('ebay toggle')
