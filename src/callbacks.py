@@ -1056,9 +1056,11 @@ class Privmsg(irclib.IrcCallback):
                 if self._original:
                     self._original(irc, msg, args)
                 else:
-                    cb = irc.getCallback('Misc')
-                    if cb is not None:
-                        cb.help(irc, msg, [self.name()])
+                    if args:
+                        irc.error('%s is not a valid command in this plugin.' %
+                                  args[0])
+                    else:
+                        irc.error()
             if args:
                 name = canonicalName(args[0])
                 if name == canonicalName(self.name()):
