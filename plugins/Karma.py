@@ -74,7 +74,10 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
           something's karma is increased or decreased."""),
          ('karma-ranking-display', configurable.IntType, 3,
           """Determines how many highest/lowest karma things are shown when
-          karms is called with no arguments."""),]
+          karma is called with no arguments."""),
+         ('karma-most-display', configurable.IntType, 25,
+          """Determines how many karma things are shown when karma most is
+          called."""),]
     )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
@@ -203,12 +206,13 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                 self.log.error('Impossible condition in most: kind=%s' % kind)
                 irc.error(msg, conf.replyPossibleBug)
                 return
-            sql = "SELECT name, %s FROM karma ORDER BY %s DESC LIMIT 50" % \
-                  (orderby, orderby)
+            sql = "SELECT name, %s FROM karma ORDER BY %s DESC LIMIT %s" % \
+                  (orderby, orderby,
+                   self.configurables.get('karma-most-display', channel))
             db = self.getDb(channel)
             cursor = db.cursor()
             cursor.execute(sql)
-            L = ['%s: %s' % (name, i) for (name, i) in cursor.fetchall()]
+            L = ['%s: %s' % (name, int(i)) for (name, i) in cursor.fetchall()]
             if L:
                 irc.reply(msg, utils.commaAndify(L))
             else:

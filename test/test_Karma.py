@@ -126,6 +126,21 @@ if sqlite is not None:
             self.assertNoResponse('foo++', 2)
             self.assertNotError('karma config karma-response on')
             self.assertNotError('foo++')
+
+        def testKarmaMostDisplayConfigurable(self):
+            self.assertNoResponse('foo++', 1)
+            self.assertNoResponse('foo++', 1)
+            self.assertNoResponse('bar++', 1)
+            self.assertNoResponse('bar--', 1)
+            self.assertNoResponse('bar--', 1)
+            self.assertNoResponse('foo--', 1)
+            self.assertNoResponse('foo--', 1)
+            self.assertNoResponse('foo--', 1)
+            self.assertNoResponse('foo--', 1)
+            self.assertNotError('karma config karma-most-display 1')
+            self.assertRegexp('karma most active', '(?!bar)')
+            self.assertNotError('karma config karma-most-display 25')
+            self.assertRegexp('karma most active', 'bar')
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
