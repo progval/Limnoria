@@ -1,4 +1,4 @@
-#!/n/bronze/7/fincher/bin/python
+#!/usr/bin/env python
 
 ###
 # Copyright (c) 2002, Jeremiah Fincher
@@ -187,7 +187,7 @@ class Weather(callbacks.Privmsg):
             conds = conds.replace('Tsra', 'Thunder Storms')
             s = 'The current temperature in %s, %s is %s%s. Conditions: %s' % \
                 (city, state, temp, index, conds)
-            irc.reply(msg, s)
+            irc.reply(s)
         else:
             irc.error('The format of the page was odd.')
 
