@@ -160,5 +160,6 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
     def testShrink(self):
         self.assertResponse('shrink I love you', 'I l2e you')
         self.assertResponse('shrink internationalization', 'i18n')
+        self.assertResponse('shrink "I love you"', 'I l2e you')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -619,7 +619,7 @@ class Filter(callbacks.Privmsg):
         irc.reply(' '.join(['GNU/' + s for s in text.split()]))
     gnu = wrap(gnu, ['text'])
 
-    def shrink(self, irc, msg, args):
+    def shrink(self, irc, msg, args, text):
         """<text>
 
         Returns <text> with each word longer than
@@ -628,11 +628,12 @@ class Filter(callbacks.Privmsg):
         """
         L = []
         minimum = self.registryValue('shrink.minimum', msg.args[0])
-        for word in args:
+        for word in text.split():
             if len(word) >= minimum:
                 word = '%s%s%s' % (word[0], len(word)-2, word[-1])
             L.append(word)
         irc.reply(' '.join(L))
+    shrink = wrap(shrink, ['text'])
 
 
 Class = Filter
