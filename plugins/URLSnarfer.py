@@ -132,6 +132,16 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
             self.nextMsgs.setdefault(key, []).append((url, added))
         db.commit()
 
+    def _formatUrl(self, url, added, addedBy):
+        #debug.printf((url, added, addedBy))
+        when = time.strftime(conf.humanTimestampFormat,
+                             time.localtime(int(added)))
+        return '<%s> (added by %s at %s)' % (url, addedBy, when)
+
+    def _formatUrlWithId(self, id, url, added, addedBy):
+        #debug.printf((id, url, added, addedBy))
+        return '#%s: %s' % (id, self._formatUrl(url, added, addedBy))
+
     def randomurl(self, irc, msg, args):
         """[<channel>]
 
@@ -148,11 +158,25 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         if cursor.rowcount == 0:
             irc.reply(msg, 'I have no URLs in my database for %s' % channel)
         else:
-            (id, url, added, addedBy) = cursor.fetchone()
-            when = time.strftime(conf.humanTimestampFormat,
-                                 time.localtime(int(added)))
-            s = '<%s> (added by %s at %s)' % (url, addedBy, when)
-            irc.reply(msg, s)
+            irc.reply(msg, self._formatUrlWithId(*cursor.fetchone()))
+
+    def geturl(self, irc, msg, args):
+        """[<channel>] <id>
+
+        Gets the URL with id <id> from the URL database for <channel>.
+        <channel> is only necessary if not sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        id = privmsgs.getArgs(args)
+        cursor.execute("""SELECT url, added, added_by
+                          FROM urls
+                          WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'No URL was found with that id.')
+        else:
+            irc.reply(msg, self._formatUrl(*cursor.fetchone()))
 
     def numurls(self, irc, msg, args):
         """[<channel>]
@@ -168,22 +192,31 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         irc.reply(msg, 'I have %s %s in my database.' % \
                   (count, int(count) == 1 and 'URL' or 'URLs'))
 
+    def lasturls(self, irc, msg, args):
+        args.append('--nolimit')
+        self.lasturl(irc, msg, args)
+
     def lasturl(self, irc, msg, args):
-        """[<channel>] [--{from,with,at,proto,near}=<value>]
+        """[<channel>] [--{from,with,at,proto,near}=<value>] [--nolimit]
 
         Gives the last URL matching the given criteria.  --from is from whom
         the URL came; --at is the site of the URL; --proto is the protocol the
         URL used; --with is something inside the URL; --near is a string in the
-        messages before and after the link.  <channel> is only necessary if the
+        messages before and after the link.  If --nolimit is given, returns as
+        many URLs as can fit in the message. <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'with=', 'at=',
-                                                   'proto=', 'near='])
+                                                   'proto=', 'near=',
+                                                   'nolimit'])
         criteria = ['1=1']
         formats = []
+        nolimit = False
         for (option, argument) in optlist:
             option = option[2:] # Strip off the --.
+            if option == 'nolimit':
+                nolimit = True
             if option == 'from':
                 criteria.append('added_by LIKE %s')
                 formats.append(argument)
@@ -214,15 +247,20 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         criterion = ' AND '.join(criteria)
         sql = """SELECT url, added, added_by
                  FROM urls
-                 WHERE %s ORDER BY id DESC""" % criterion
+                 WHERE %s ORDER BY id DESC
+                 LIMIT 10""" % criterion
         cursor.execute(sql, *formats)
         if cursor.rowcount == 0:
             irc.reply(msg, 'No URLs matched that criteria.')
         else:
-            (url, added, added_by) = cursor.fetchone()
-            timestamp = time.strftime('%I:%M %p, %B %d, %Y',
-                                      time.localtime(int(added)))
-            s = '<%s>, added by %s at %s.' % (url, added_by, timestamp)
+            if nolimit:
+                urls = ['<%s>' % t[0] for t in cursor.fetchall()]
+                s = ircutils.privmsgPayload(urls, ', ', 400)
+            else:
+                (url, added, added_by) = cursor.fetchone()
+                timestamp = time.strftime('%I:%M %p, %B %d, %Y',
+                                          time.localtime(int(added)))
+                s = '<%s>, added by %s at %s.' % (url, added_by, timestamp)
             irc.reply(msg, s)
 
 

@@ -76,6 +76,8 @@ class URLSnarferTestCase(ChannelPluginTestCase):
             self.assertRegexp('numurls', str(counter))
             self.feedMsg(url)
             counter += 1
+            self.assertNotError('geturl %s' % counter)
+
         self.assertRegexp('numurls', str(counter))
         self.assertRegexp('lasturl', re.escape(urls[-1]))
         self.assertRegexp('lasturl --proto https', re.escape(urls[-3]))
