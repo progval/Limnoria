@@ -501,44 +501,5 @@ class CommaSeparatedListOfStrings(SeparatedListOf):
     joiner = ', '.join
 
 
-if __name__ == '__main__':
-#if 1:
-    import sys
-    sys.setrecursionlimit(40)
-    supybot = Group()
-    supybot.setName('supybot')
-    supybot.register('throttleTime', Float(1, """Determines the minimum
-    number of seconds the bot will wait between sending messages to the server.
-    """))
-    supybot.register('plugins')
-    supybot.plugins.register('Topic')
-    supybot.plugins.topic.register('separator',
-      StringSurroundedBySpaces(' || ', """Determines what separator the bot
-      uses to separate topic entries.""", supplyDefault=True))
-    supybot.plugins.topic.separator.get('#supybot').set(' |||| ')
-    supybot.plugins.topic.separator.set(' <> ')
-
-    supybot.throttleTime.set(10)
-
-    supybot.register('log')
-    supybot.log.register('stdout', Boolean(False, """Help for stdout."""))
-    supybot.log.stdout.register('colorized', Boolean(False,
-                                                     'Help colorized'))
-    supybot.log.stdout.setValue(True)
-
-    for (k, v) in supybot.getValues():
-        print '%s: %s' % (k, v)
-
-    print
-    print 'Asking children'
-    print
-
-    for (k, v) in supybot.getValues(getChildren=True):
-        print '%s: %s' % (k, v)
-
-    print supybot.throttleTime.help
-    print supybot.plugins.topic.separator.help
-
-
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
