@@ -200,9 +200,8 @@ class Relay(callbacks.Privmsg):
                 try:
                     Channel = otherIrc.state.channels[channel]
                 except KeyError:
-                    s = 'Somehow I\'m not in %s on %s.'% (channel, network)
-                    irc.error(s)
-                    return
+                    users.append('(not in %s on %s)' % (channel, network))
+                    continue
                 numUsers = 0
                 for s in Channel.users:
                     s = s.strip()
