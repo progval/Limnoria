@@ -363,7 +363,7 @@ def pluralize(s, i=2):
             return matchCase(s, s+'es')
         # Words ending with a consonant followed by a 'y' such as
         # 'try (tries)' or 'spy (spies)'
-        elif re.search(_pluralizeRegex, lowered):
+        elif _pluralizeRegex.search(lowered):
             return matchCase(s, s[:-1] + 'ies')
         # In all other cases, we simply add an 's' to the base word
         else:
