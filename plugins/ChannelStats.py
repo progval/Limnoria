@@ -140,7 +140,8 @@ class ChannelStat(irclib.IrcCommandDispatcher):
         self.kicks += 1
 
     def doPart(self, msg):
-        self.doPayload(*msg.args)
+        if len(msg.args) == 2:
+            self.doPayload(*msg.args)
         self.parts += 1
 
     def doMode(self, msg):
