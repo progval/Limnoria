@@ -296,10 +296,10 @@ def tokenize(s, brackets=None, channel=None):
             tokens = brackets
         if conf.channelValue(conf.supybot.reply.pipeSyntax, channel):
             tokens = '%s|' % tokens
+        log.stat('tokenize took %s seconds.' % (time.time() - start))
         return Tokenizer(tokens).tokenize(s)
     except ValueError, e:
         raise SyntaxError, str(e)
-    log.stat('tokenize took %s seconds.' % (time.time() - start))
 
 def getCommands(tokens):
     """Given tokens as output by tokenize, returns the command names."""
@@ -360,7 +360,7 @@ def checkCommandCapability(msg, cb, command):
             chanCommand = ircdb.makeChannelCapability(channel, command)
             chanPluginCommand = ircdb.makeChannelCapability(channel,
                                                             pluginCommand)
-            checkAtEnd += [chanCommand, chanPluginCommand]
+            checkAtEnd += [chanCommand, chanPlugin, chanPluginCommand]
             default &= ircdb.channels.getChannel(channel).defaultAllow
         return not (default or \
                     any(lambda x: ircdb.checkCapability(msg.prefix, x),
