@@ -67,6 +67,7 @@ def open(filename, clear=False):
     for (i, line) in enumerate(fd):
         line = line.rstrip('\r\n')
         try:
+            #print '***', repr(line)
             (key, value) = re.split(r'(?<!\\):', line, 1)
             key = key.strip()
             value = value.strip()
@@ -98,22 +99,13 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                         try:
                             original = value.value
                             value.value = value._default
-                            try:
-                                s = str(value)
-                            except Exception, e:
-                                s = 'Error converting to string: %s' % \
-                                    utils.exnToString(e)
-                            lines.append('# Default value: %s\n' % s)
+                            lines.append('# Default value: %s\n' % value)
                         finally:
                             value.value = original
                 lines.append('###\n')
                 fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
-            try:
-                s = str(value)
-            except Exception, e:
-                s = 'Error converting to string: %s' % utils.exnToString(e)
-            fd.write('%s: %s\n' % (name, s))
+            fd.write('%s: %s\n' % (name, value))
     fd.close()
 
 def isValidRegistryName(name):
@@ -153,15 +145,12 @@ class Group(object):
         class X(OriginalClass):
             """This class exists to differentiate those values that have
             been changed from their default from those that haven't."""
+            def set(self, *args):
+                self.__class__ = OriginalClass
+                self.set(*args)
             def setValue(self, *args):
-                comeBack = self._lastModified == 0
-                if not comeBack:
-                    print '***', 'Changing %s to its OriginalClass.'%self._name
-                    print '******', utils.stackTrace(compact=True)
                 self.__class__ = OriginalClass
                 self.setValue(*args)
-                if comeBack:
-                    self.__class__ = X
         self.X = X
 
     def __call__(self):
@@ -175,7 +164,7 @@ class Group(object):
         v = self.__class__(self._default, self.help)
         v.set(s)
         v.__class__ = self.X
-        v._lastModified = time.time()
+        v._supplyDefault = False
         v.help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
         return v
@@ -194,18 +183,17 @@ class Group(object):
         return self.__getattr__(attr)
 
     def setName(self, name):
+        #print '***', name
         self._name = name
         if name in _cache and self._lastModified < _lastModified:
+            #print '***>', _cache[name]
             self.set(_cache[name])
         if self._supplyDefault:
-            # We do this because otherwise these values won't get registered,
-            # and thus won't be saved unless they're used.  That's baaaaaaad.
             for (k, v) in _cache.iteritems():
-                if k.startswith(self._name) and k != self._name:
-                    rest = k[len(self._name)+1:] # +1 for leftmost dot.
-                    restGroups = split(rest)
-                    if len(restGroups) == 1:
-                        group = restGroups[0]
+                if k.startswith(self._name):
+                    rest = k[len(self._name)+1:] # +1 is for .
+                    parts = split(rest)
+                    if len(parts) == 1 and parts[0] == name:
                         try:
                             self.__makeChild(group, v)
                         except InvalidRegistryValue:
@@ -214,31 +202,22 @@ class Group(object):
 
     def register(self, name, node=None):
         if not isValidRegistryName(name):
-            raise InvalidRegistryName, repr(name)
+            raise InvalidRegistryName, name
         if node is None:
             node = Group()
-        if name in self._children:
-            # It's already here, let's copy some stuff over.
-            oldNode = self._children[name]
-            node._name = oldNode._name
-            node._added = oldNode._added
-            node._children = oldNode._children
-            for v in node._children.values():
-                if v.__class__ is oldNode.X:
-                    v.__class__ = node.X
-            node._lastModified = oldNode._lastModified
-        self._children[name] = node
-        if name not in self._added:
+        if name not in self._children: # XXX Is this right?
+            self._children[name] = node
             self._added.append(name)
-        names = split(self._name)
-        names.append(name)
-        fullname = join(names)
-        node.setName(fullname)
+            names = split(self._name)
+            names.append(name)
+            fullname = join(names)
+            node.setName(fullname)
         return node
 
     def unregister(self, name):
         try:
-            node = self._children.pop(name)
+            node = self._children[name]
+            del self._children[name]
             self._added.remove(name)
             if node._name in _cache:
                 del _cache[node._name]
@@ -285,12 +264,9 @@ class Value(Group):
         raise InvalidRegistryValue, utils.normalizeWhitespace(s)
 
     def setName(self, *args):
-        # If we're getting our name for the first time, we should definitely
-        # look in the _cache for our value.
         if self._name == 'unset':
             self._lastModified = 0
         Group.setName(self, *args)
-        # Now we can feel safe setting our _lastModified to now.
         self._lastModified = time.time()
 
     def set(self, s):
@@ -438,9 +414,9 @@ class OnlySomeStrings(String):
             self.error()
 
 class NormalizedString(String):
-    def __init__(self, default, help):
+    def __init__(self, default, help, **kwargs):
         default = self.normalize(default)
-        String.__init__(self, default, help)
+        String.__init__(self, default, help, **kwargs)
         
     def normalize(self, s):
         return utils.normalizeWhitespace(s.strip())
