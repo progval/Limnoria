@@ -170,7 +170,7 @@ class Unix(callbacks.Privmsg):
         """
         # We are only checking the first word
         word = privmsgs.getArgs(args)
-        if word and word[0] in '*&@+-~#!%^':
+        if word and word[0] in '.?*&@+-~#!%^':
             irc.error(msg, 'Initial spell metacharacters aren\'t allowed.')
             return
         if ' ' in word:
