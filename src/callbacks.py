@@ -616,7 +616,7 @@ class Privmsg(irclib.IrcCallback):
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
             else:
-                self.log.info('Ignoring %s', msg.prefix)
+                self.log.log(0, 'Ignoring %s', msg.prefix)
         else:
             self.__parent.__call__(irc, msg)
 
