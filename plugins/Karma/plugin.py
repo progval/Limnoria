@@ -127,7 +127,7 @@ class SqliteKarmaDB(object):
         cursor.execute("""SELECT COUNT(*) FROM karma
                           WHERE added-subtracted > %s""", karma)
         rank = int(cursor.fetchone()[0])
-        return rank
+        return rank+1
 
     def size(self, channel):
         db = self._getDb(channel)
