@@ -37,6 +37,7 @@ to have the <channel>.op capability.  This plugin is loaded by default.
 import time
 
 import conf
+import debug
 import ircdb
 import ircmsgs
 import schedule
@@ -127,6 +128,22 @@ class ChannelCommands(callbacks.Privmsg):
                 irc.error(msg, 'How can I do that?  I\'m not opped.')
         else:
             irc.error(msg, conf.replyNoCapability % capability)
+
+    def unban(self, irc, msg, args, channel):
+        """[<channel>] <hostmask>
+
+        Unbans <hostmask> on <channel>.  Especially useful for unbanning
+        yourself when you get unexpectedly (or accidentally) banned from
+        the channel.  <channel> is only necessary if the message isn't sent
+        in the channel itself.
+        """
+        hostmask = privmsgs.getArgs(args)
+        if irc.nick in irc.state.channels[channel].ops:
+            irc.queueMsg(ircmsgs.unban(channel, hostmask))
+            irc.reply(msg, conf.replySuccess)
+        else:
+            irc.error(msg, 'How can I unban someone?  I\'m not opped.')
+    unban = privmsgs.checkChannelCapability(unban, 'op')
 
     def lobotomize(self, irc, msg, args, channel):
         """[<channel>]
