@@ -286,7 +286,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         callbacks.Privmsg._mores.clear()
         self.__parent.reset()
 
-    def _connect(self, network, serverPort=None):
+    def _connect(self, network, serverPort=None, password=''):
         try:
             group = conf.supybot.networks.get(network)
             (server, port) = group.servers()[0]
@@ -294,7 +294,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             if serverPort is None:
                 raise ValueError, 'connect requires a (server, port) ' \
                                   'if the network is not registered.'
-            conf.registerNetwork(network)
+            conf.registerNetwork(network, password)
             serverS = '%s:%s' % serverPort
             conf.supybot.networks.get(network).servers.append(serverS)
             assert conf.supybot.networks.get(network).servers()
