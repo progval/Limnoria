@@ -447,6 +447,9 @@ class RichReplyMethods(object):
                 else:
                     self.reply(prefixer(s), **kwargs)
 
+    def noReply(self):
+        self.msg.tag('repliedTo')
+
     def _error(self, s, Raise=False, **kwargs):
         if Raise:
             raise Error, s
@@ -840,9 +843,6 @@ class IrcObjectProxy(RichReplyMethods):
                 self.error(formatArgumentError(self.commandMethod), **kwargs)
             else:
                 raise ArgumentError # We shouldn't get here, but just in case.
-
-    def noReply(self):
-        self.msg.tag('repliedTo')
 
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
