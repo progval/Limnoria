@@ -311,10 +311,19 @@ class TimeoutQueue(object):
         self.queue = queue
         self.timeout = timeout
 
+    def _getTimeout(self):
+        if callable(self.timeout):
+            return self.timeout()
+        else:
+            return self.timeout
+    
     def _clearOldElements(self):
         now = time.time()
-        while now - self.queue.peek()[0] > self.timeout:
+        while now - self.queue.peek()[0] > self._getTimeout():
             self.queue.dequeue()
+
+    def setTimeout(self, i):
+        self.timeout = i
 
     def enqueue(self, elt, at=None):
         if at is None:
@@ -330,7 +339,7 @@ class TimeoutQueue(object):
         # the resulting generator and elements that should've timed out are
         # yielded?  Hmm?  What happens then, smarty-pants?
         for (t, elt) in self.queue:
-            if time.time() - t < self.timeout:
+            if time.time() - t < self._getTimeout():
                 yield elt
 
     def __len__(self):
