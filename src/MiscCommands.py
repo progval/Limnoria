@@ -297,8 +297,8 @@ class MiscCommands(callbacks.Privmsg):
         userHostmask = msg.prefix.split('!', 1)[1]
         if nick:
             try:
-                (public, L) = self._mores[nick]
-                if public:
+                (private, L) = self._mores[nick]
+                if not private:
                     self._mores[userHostmask] = L[:]
                 else:
                     irc.error(msg, '%s has no public mores.' % nick)
