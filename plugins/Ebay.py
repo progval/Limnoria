@@ -39,6 +39,7 @@ __revision__ = "$Id$"
 __author__ = supybot.authors.jamessan
 
 import re
+import cgi
 import sets
 import getopt
 
@@ -117,9 +118,12 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(str(e))
 
     def ebaySnarfer(self, irc, msg, match):
-        r"http://cgi\.ebay\.(?:com(?:\.au)?|co\.uk|ca)/.*" \
-        r"eBayISAPI\.dll\?ViewItem(?:&(?:item|category)=\d+)+"
+        r'http://cgi\.ebay\.(?:com(?:\.au)?|co\.uk|ca)/.*' \
+        r'eBayISAPI\.dll\?ViewItem&([\S]+)'
         if not self.registryValue('auctionSnarfer', msg.args[0]):
+            return
+        queries = cgi.parse_qs(match.group(1))
+        if 'item' not in queries and 'category' not in queries:
             return
         url = match.group(0)
         try:
