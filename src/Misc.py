@@ -81,7 +81,7 @@ class Misc(callbacks.Privmsg):
             names = [cb.name() for cb in irc.callbacks
                      if evenPrivate or (hasattr(cb, 'public') and cb.public)]
             names.sort()
-            irc.reply(', '.join(names))
+            irc.reply(utils.commaAndify(names))
         else:
             cb = irc.getCallback(name)
             if cb is None:
@@ -100,7 +100,7 @@ class Misc(callbacks.Privmsg):
                             commands.append(s)
                 if commands:
                     commands.sort()
-                    irc.reply(', '.join(commands))
+                    irc.reply(utils.commaAndify(commands))
                 else:
                     irc.error('That plugin exists, but it has no '
                                    'commands with help.')
