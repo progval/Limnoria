@@ -275,6 +275,7 @@ class IrcState(IrcCommandDispatcher):
     def reset(self):
         """Resets the state to normal, unconnected state."""
         self.history.reset()
+        self.history.resize(conf.supybot.protocols.irc.maxHistoryLength())
         self.channels = ircutils.IrcDict()
         self.nicksToHostmasks = ircutils.IrcDict()
 

@@ -60,6 +60,13 @@ class RingBuffer(object):
         self.L = []
         self.i = 0
 
+    def resize(self, i):
+        if self.full:
+            L = list(self)
+            self.reset()
+            self.L = L
+        self.maxSize = i
+
     def __len__(self):
         return len(self.L)
 
@@ -85,12 +92,11 @@ class RingBuffer(object):
             self.L[self.i] = elt
             self.i += 1
             self.i %= len(self.L)
+        elif len(self) == self.maxSize:
+            self.full = True
+            self.append(elt)
         else:
-            if len(self) >= self.maxSize:
-                self.full = True
-                self.append(elt)
-            else:
-                self.L.append(elt)
+            self.L.append(elt)
 
     def extend(self, seq):
         for elt in seq:
