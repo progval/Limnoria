@@ -83,9 +83,6 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotRegexp('list', name)
         self.assertRegexp('list --private', name)
 
-    def testBug(self):
-        self.assertNotError('bug')
-
     def testVersion(self):
         self.assertNotError('version')
 

@@ -34,7 +34,11 @@ These are commands useful for administrating the bot; they all require their
 caller to have the 'admin' capability.  This plugin is loaded by default.
 """
 
+from fix import *
+
+import pprint
 import string
+import smtplib
 
 import conf
 import ircdb
@@ -184,6 +188,35 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         else:
             conf.prefixChars = s
             irc.reply(msg, conf.replySuccess)
+
+    def bug(self, irc, msg, args):
+        """<description>
+
+        Reports a bug to a private mailing list supybot-bugs.  <description>
+        will be the subject of the email.  The most recent 10 or so messages
+        the bot receives will be sent in the body of the email.
+        """
+        description = privmsgs.getArgs(args)
+        messages = pprint.pformat(irc.state.history[-10:])
+        email = textwrap.dedent("""
+        Subject: %s
+        From: jemfinch@users.sourceforge.net
+        To: supybot-bugs@lists.sourceforge.net
+        Date: %s
+
+        Bug report for Supybot %s.
+        %s
+        """) % (description, time.ctime(), conf.version, messages)
+        email = email.strip()
+        email = email.replace('\n', '\r\n')
+        #debug.printf(`email`)
+        smtp = smtplib.SMTP('mail.sourceforge.net', 25)
+        smtp.sendmail('jemfinch@users.sf.net',
+                      ['supybot-bugs@lists.sourceforge.net'],
+                      email)
+        smtp.quit()
+        irc.reply(msg, conf.replySuccess)
+    bug = privmsgs.thread(bug)
 
 
 Class = AdminCommands

@@ -39,8 +39,6 @@ import os
 import sys
 import time
 import getopt
-import pprint
-import smtplib
 import textwrap
 from itertools import ifilter
 
@@ -194,35 +192,6 @@ class MiscCommands(callbacks.Privmsg):
                 irc.error(msg, '%s has no help or syntax description.'%command)
         else:
             irc.error(msg, 'There is no such command %s.' % command)
-
-    def bug(self, irc, msg, args):
-        """<description>
-
-        Reports a bug to a private mailing list supybot-bugs.  <description>
-        will be the subject of the email.  The most recent 10 or so messages
-        the bot receives will be sent in the body of the email.
-        """
-        description = privmsgs.getArgs(args)
-        messages = pprint.pformat(irc.state.history[-10:])
-        email = textwrap.dedent("""
-        Subject: %s
-        From: jemfinch@users.sourceforge.net
-        To: supybot-bugs@lists.sourceforge.net
-        Date: %s
-
-        Bug report for Supybot %s.
-        %s
-        """) % (description, time.ctime(), conf.version, messages)
-        email = email.strip()
-        email = email.replace('\n', '\r\n')
-        debug.printf(`email`)
-        smtp = smtplib.SMTP('mail.sourceforge.net', 25)
-        smtp.sendmail('jemfinch@users.sf.net',
-                      ['supybot-bugs@lists.sourceforge.net'],
-                      email)
-        smtp.quit()
-        irc.reply(msg, conf.replySuccess)
-    bug = privmsgs.thread(bug)
 
     def hostmask(self, irc, msg, args):
         """<nick>
