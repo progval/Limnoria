@@ -48,11 +48,11 @@ class DebianTestCase(PluginTestCase):
                     pass
                 else:
                     print
-                    print "Downloading files, this may take awhile"
+                    print "Downloading files, this may take awhile."
                     filename = os.path.join(datadir, 'Contents-i386.gz')
                     while not os.path.exists(filename):
                         time.sleep(1)
-                    print "Download complete"
+                    print "Download complete."
                     print "Starting test ..."
                     self.fileDownloaded = True
             except KeyboardInterrupt:
