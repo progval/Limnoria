@@ -67,7 +67,6 @@ def open(filename, clear=False):
     for (i, line) in enumerate(fd):
         line = line.rstrip('\r\n')
         try:
-            #print '***', repr(line)
             (key, value) = re.split(r'(?<!\\):', line, 1)
             key = key.strip()
             value = value.strip()
@@ -137,7 +136,7 @@ class Group(object):
     """A group; it doesn't hold a value unless handled by a subclass."""
     def __init__(self, supplyDefault=False):
         self._name = 'unset'
-        self.added = []
+        self._added = []
         self._children = utils.InsensitivePreservingDict()
         self._lastModified = 0
         self._supplyDefault = supplyDefault
@@ -183,40 +182,48 @@ class Group(object):
         return self.__getattr__(attr)
 
     def setName(self, name):
-        #print '***', name
         self._name = name
         if name in _cache and self._lastModified < _lastModified:
-            #print '***>', _cache[name]
             self.set(_cache[name])
         if self._supplyDefault:
+            # We do this because otherwise these values won't get registered,
+            # and thus won't be saved unless they're used.  That's baaaaaaad.
             for (k, v) in _cache.iteritems():
-                if k.startswith(self._name):
-                    group = split(k)[-1]
-                    try:
-                        self.__makeChild(group, v)
-                    except InvalidRegistryValue:
-                        # It's probably supposed to be registered later.
-                        pass
+                if k.startswith(self._name) and k != self._name:
+                    rest = k[len(self._name)+1:] # +1 for leftmost dot.
+                    restGroups = split(rest)
+                    if len(restGroups) == 1:
+                        group = restGroups[0]
+                        try:
+                            self.__makeChild(group, v)
+                        except InvalidRegistryValue:
+                            # It's probably supposed to be registered later.
+                            pass
 
     def register(self, name, node=None):
         if not isValidRegistryName(name):
-            raise InvalidRegistryName, name
+            raise InvalidRegistryName, repr(name)
         if node is None:
-            node = Group(self._supplyDefault)
-        if name not in self._children: # XXX Is this right?
-            self._children[name] = node
-            self.added.append(name)
-            names = split(self._name)
-            names.append(name)
-            fullname = join(names)
-            node.setName(fullname)
+            node = Group()
+        if name in self._children:
+            # It's already here, let's copy some stuff over.
+            oldNode = self._children[name]
+            node._added = oldNode._added
+            node._children = oldNode._children
+        self._children[name] = node
+        if name not in self._added:
+            self._added.append(name)
+        names = split(self._name)
+        names.append(name)
+        fullname = join(names)
+        node.setName(fullname)
         return node
 
     def unregister(self, name):
         try:
             node = self._children[name]
             del self._children[name]
-            self.added.remove(name)
+            self._added.remove(name)
             if node._name in _cache:
                 del _cache[node._name]
             return node
@@ -229,7 +236,7 @@ class Group(object):
 
     def getValues(self, getChildren=False, fullNames=True):
         L = []
-        for name in self.added:
+        for name in self._added:
             node = self._children[name]
             if hasattr(node, 'value') or hasattr(node, 'help'):
                 if node.__class__ is not self.X:
