@@ -237,12 +237,15 @@ class Alias(callbacks.Privmsg):
             raise AliasError, 'There is no such alias.'
 
     def add(self, irc, msg, args):
-        """<name> <alias commands>
+        """<name> <alias>
 
-        Defines an alias <name> for the commands <commands>.  The <commands>
-        should be in the standard [command argument [nestedcommand argument]]
-        format.  Underscores can be used to represent arguments to the alias
-        itself; for instance ...
+        Defines an alias <name> that executes <alias>.  The <alias>
+        should be in the standard "command argument [nestedcommand argument]"
+        format.  $[digit] (like $1, $2, etc.) can be used to represent
+        arguments to the alias; they'll be filled with the first, second, etc.
+        arguments.  @1, @2 can be used for optional arguments.  $* simply
+        means "all remaining arguments," and cannot be combined with optional
+        arguments.
         """
         (name, alias) = privmsgs.getArgs(args, required=2)
         try:
