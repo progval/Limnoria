@@ -48,18 +48,18 @@ import privmsgs
 import registry
 import callbacks
 
-unitAbbrevs = utils.abbrev(['fahrenheit', 'celsius', 'centigrade', 'kelvin'])
-unitAbbrevs['c'] = 'celsius'
-unitAbbrevs['ce'] = 'celsius'
+unitAbbrevs = utils.abbrev(['Fahrenheit', 'Celsius', 'Centigrade', 'Kelvin'])
+unitAbbrevs['C'] = 'Celsius'
+unitAbbrevs['Ce'] = 'Celsius'
 
 class WeatherUnit(registry.String):
     def setValue(self, s):
-        print '***', repr(s)
-        s = s.lower()
+        #print '***', repr(s)
+        s = s.capitalize()
         if s not in unitAbbrevs:
             raise registry.InvalidRegistryValue,\
                 'Unit must be one of Fahrenheit, Celsius, or Kelvin.'
-        s = unitAbbrevs[s].capitalize()
+        s = unitAbbrevs[s]
         registry.String.setValue(self, s)
 
 class WeatherCommand(registry.String):
@@ -91,34 +91,29 @@ class Weather(callbacks.Privmsg):
         realCommand = getattr(self, realCommandName)
         realCommand(irc, msg, args)
         
+    def _toCelsius(self, temp, unit):
+        if unit == 'K':
+            return temp - 273.15
+        else:
+            return (temp - 32) * 5 /9
+
     def _getTemp(self, temp, deg, unit, chan):
-        default = self.registryValue('preferredUnit', chan)
-        unit = unit.lower()
+        assert unit == unit.upper()
+        assert temp == int(temp)
+        default = self.registryValue('temperatureUnit', chan)
         if unitAbbrevs[unit] == default:
             # Short circuit if we're the same unit as the default.
-            return deg.join([temp, unit.upper()])
-        try:
-            temp = int(temp)
-        except ValueError:
-            # Bail out if we can't even int the temp.
-            return deg.join([temp, unit.upper()])
-        if unit == 'f':
-            temp = (temp - 32) * 5 / 9
-            if default == 'Kelvin':
-                temp = temp + 273.15
-                unit = 'K'
-                deg = ' '
-            else:
-                unit = 'C'
-        elif unit == 'c':
-            if default == 'Kelvin':
-                temp = temp + 273.15
-                unit = 'K'
-                deg = ' '
-            elif default == 'Fahrenheit':
-                temp = temp * 9 / 5 + 32
-                unit = 'F'
-        return deg.join([str(temp), unit.upper()])
+            return '%s%s%s' % (temp, deg, unit)
+        temp = self._toCelsius(temp, unit)
+        unit = 'C'
+        if default == 'Kelvin':
+            temp = temp + 273.15
+            unit = 'K'
+            deg = ' '
+        elif default == 'Fahrenheit':
+            temp = temp * 9 / 5 + 32
+            unit = 'F'
+        return '%s%s%s' % (temp, deg, unit)
 
     _cityregex = re.compile(
         r'<td><font size="4" face="arial"><b>'
@@ -131,13 +126,13 @@ class Weather(callbacks.Privmsg):
         r'<font face="arial">([^<]+)</font></strong></td>', re.I)
     _tempregex = re.compile(
         r'<td valign="top" align="right"><strong><font face="arial">'
-        r'([^<]+)</font></strong></td>', re.I)
+        r'(-?\d+)(.*?)(F|C)</font></strong></td>', re.I)
     _chillregex = re.compile(
-        r'Wind Chill</font></strong>:</small></a></td>\s+<td align="right">'
+        r'Wind Chill</font></strong>:</small></td>\s+<td align="right">'
         r'<small><font face="arial">([^N][^<]+)</font></small></td>',
          re.I | re.S)
     _heatregex = re.compile(
-        r'Heat Index</font></strong>:</small></a></td>\s+<td align="right">'
+        r'Heat Index</font></strong>:</small></td>\s+<td align="right">'
         r'<small><font face="arial">([^N][^<]+)</font></small></td>',
          re.I | re.S)
     # States
@@ -225,9 +220,8 @@ class Weather(callbacks.Privmsg):
         state = state.strip()
         temp = self._tempregex.search(html)
         if temp is not None:
-            temp = temp.group(1)
-            (temp, deg, unit) = (temp[:-2], temp[-2], temp[-1])
-            temp = self._getTemp(temp, deg, unit, msg.args[0])
+            (temp, deg, unit) = temp.groups()
+            temp = self._getTemp(int(temp), deg, unit, msg.args[0])
         conds = self._condregex.search(html)
         if conds is not None:
             conds = conds.group(1)
@@ -236,11 +230,13 @@ class Weather(callbacks.Privmsg):
         if chill is not None:
             #self.log.warning(chill.groups())
             chill = chill.group(1)
+            chill = utils.htmlToText(chill)
             if int(chill[:-2]) < int(temp[:-2]):
                 index = ' (Wind Chill: %s)' % chill
         heat = self._heatregex.search(html)
         if heat is not None:
             heat = heat.group(1)
+            heat = utils.htmlToText(heat)
             if int(heat[:-2]) > int(temp[:-2]):
                 index = ' (Heat Index: %s)' % heat
         if temp and conds and city and state:
@@ -298,7 +294,7 @@ class Weather(callbacks.Privmsg):
             location = location.group(1)
             location = location.split('-')[-1].strip()
             (temp, deg, unit) = temp.groups()
-            temp = self._getTemp(temp, deg, unit, msg.args[0])
+            temp = self._getTemp(int(temp), deg, unit, msg.args[0])
             resp = 'The current temperature in %s is %s.' % (location, temp)
             resp = [resp]
             if conds is not None:
@@ -313,7 +309,7 @@ class Weather(callbacks.Privmsg):
             irc.error('Could not find weather information.')
 
 conf.registerPlugin('Weather')
-conf.registerChannelValue(conf.supybot.plugins.Weather, 'preferredUnit',
+conf.registerChannelValue(conf.supybot.plugins.Weather, 'temperatureUnit',
     WeatherUnit('Fahrenheit', """Sets the default temperature unit to use when
     reporting the weather."""))
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'weatherCommand',
