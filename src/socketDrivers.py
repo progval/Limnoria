@@ -78,6 +78,7 @@ class SocketDriver(drivers.IrcDriver):
     def run(self):
         #debug.methodNamePrintf(self, 'run')
         if not self.connected:
+            time.sleep(conf.poll) # Otherwise we might spin.
             return
         self._sendIfMsgs()
         try:
