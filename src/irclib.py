@@ -589,7 +589,7 @@ class Irc(IrcCommandDispatcher):
 
     def do433(self, msg):
         """Handles 'nickname already in use' messages."""
-        if self.nick != self.originalNick:
+        if self.nick != self.originalNick or not self.afterConnect:
             newNick = self.nickmods.next() % self.originalNick
             log.info('Got 433: %s is in use.  Trying %s.', self.nick, newNick)
             self.sendMsg(ircmsgs.nick(newNick))
