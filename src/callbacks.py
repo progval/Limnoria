@@ -761,7 +761,7 @@ class Privmsg(irclib.IrcCallback):
         start = time.time()
         method(irc, msg, *L)
         elapsed = time.time() - start
-        self.log.info('%s took %s seconds', name, elapsed)
+        self.log.debug('%s took %s seconds', name, elapsed)
 
     def registryValue(self, name, channel=None):
         plugin = self.name()
