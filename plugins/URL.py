@@ -81,7 +81,7 @@ conf.registerChannelValue(conf.supybot.plugins.URL, 'tinyurlSnarfer',
     supybot.plugins.URL.tinyurlSnarfer.minimumLength) it will post a smaller
     from tinyurl.com."""))
 conf.registerChannelValue(conf.supybot.plugins.URL.tinyurlSnarfer,
-    'maximumLength',
+    'minimumLength',
     registry.PositiveInteger(48, """The minimum length a URL must be before the
     tinyurl snarfer will snarf it."""))
 conf.registerChannelValue(conf.supybot.plugins.URL, 'titleSnarfer',
@@ -173,7 +173,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         channel = msg.args[0]
         if self.registryValue('tinyurlSnarfer', channel):
             url = match.group(0)
-            minlen = self.registryValue('tinyurlSnarfer.maximumLength',channel)
+            minlen = self.registryValue('tinyurlSnarfer.minimumLength',channel)
             if len(url) >= minlen:
                 db = self.getDb(channel)
                 cursor = db.cursor()
@@ -245,7 +245,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         return (tinyurl, updateDb)
 
     def _formatUrl(self, url, added, addedBy):
-        when = time.strftime(conf.supybot.supybot.humanTimestampFormat(),
+        when = time.strftime(conf.supybot.humanTimestampFormat(),
                              time.localtime(int(added)))
         return '<%s> (added by %s at %s)' % (url, addedBy, when)
 
@@ -279,7 +279,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
             return
         channel = msg.args[0]
         snarf = self.registryValue('tinyurlSnarfer', channel)
-        minlen = self.registryValue('tinyurlMinimumLength', channel)
+        minlen = self.registryValue('tinyurlSnarfer.minimumLength', channel)
         if snarf and len(url) >= minlen:
             return
         (tinyurl, updateDb) = self._getTinyUrl(url, channel, cmd=True)

@@ -75,17 +75,17 @@ if sqlite is not None:
     class URLTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('URL',)
         def setUp(self):
+            ChannelPluginTestCase.setUp(self)
             conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-            ChannePluginTestCase.setUp(self)
             
         def test(self):
             counter = 0
             self.assertNotError('url random')
             for url in urls:
-                self.assertRegexp('url num', str(counter))
+                self.assertRegexp('url stats', str(counter))
                 self.feedMsg(url)
                 counter += 1
-            self.assertRegexp('url num', str(counter))
+            self.assertRegexp('url stats', str(counter))
             self.assertRegexp('url last', re.escape(urls[-1]))
             self.assertRegexp('url last --proto https', re.escape(urls[-3]))
             self.assertRegexp('url last --at gameknot.com',re.escape(urls[-2]))
@@ -132,11 +132,11 @@ if sqlite is not None:
                     conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
                     self.assertRegexp('http://sourceforge.net/tracker/?'
                                       'func=add&group_id=58965&atid=489447',
-                                      r'http://tinyurl.com/rqac.* \(was')
+                                      r'http://tinyurl.com/rqac.* \(at')
                     self.assertRegexp(
                         'http://www.urbandictionary.com/define.php?'
                         'term=all+your+base+are+belong+to+us',
-                        r'http://tinyurl.com/u479.* \(was')
+                        r'http://tinyurl.com/u479.* \(at')
                 finally:
                     conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
 
@@ -144,7 +144,8 @@ if sqlite is not None:
                 try:
                     conf.supybot.plugins.URL.titleSnarfer.setValue(True)
                     self.assertResponse('http://microsoft.com/',
-                                        'Title: Microsoft Corporation')
+                                        'Title: Microsoft Corporation'
+                                        ' (at microsoft.com)')
                 finally:
                     conf.supybot.plugins.URL.titleSnarfer.setValue(False)
                     
