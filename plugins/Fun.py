@@ -260,7 +260,7 @@ class Fun(callbacks.Privmsg):
             irc.error('Dice must be of the form <dice>d<sides>')
 
     def objects(self, irc, msg, args):
-        """takes no arguments.
+        """takes no arguments
 
         Returns the number and types of Python objects in memory.
         """

@@ -74,7 +74,7 @@ conf.registerChannelValue(conf.supybot.plugins.Dict, 'default',
 class Dict(callbacks.Privmsg):
     threaded = True
     def dictionaries(self, irc, msg, args):
-        """takes no arguments.
+        """takes no arguments
 
         Returns the dictionaries valid for the dict command.
         """
@@ -88,7 +88,7 @@ class Dict(callbacks.Privmsg):
             irc.error(webutils.strError(e))
 
     def random(self, irc, msg, args):
-        """takes no arguments.
+        """takes no arguments
 
         Returns a random valid dictionary.
         """

@@ -139,7 +139,7 @@ class Scheduler(callbacks.Privmsg):
         # irc.replySuccess()
 
     def list(self, irc, msg, args):
-        """takes no arguments.
+        """takes no arguments
 
         Lists the currently scheduled events.
         """

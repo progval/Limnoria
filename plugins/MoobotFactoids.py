@@ -191,7 +191,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         db.commit()
 
     def randomfactoid(self, irc, msg, args):
-        """<takes no arguments>
+        """takes no arguments
 
         Displays a random factoid (along with its key) from the database.
         """
@@ -668,7 +668,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         irc.replySuccess()
 
     def randomfactoid(self, irc, msg, args):
-        """<takes no arguments>
+        """takes no arguments
 
         Displays a random factoid (along with its key) from the database.
         """
