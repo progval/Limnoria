@@ -50,6 +50,40 @@ import privmsgs
 import callbacks
 import structures
 
+example = """
+<jemfinch> @list Http
+<supybot> acronym, babelize, deepthought, foldoc, freshmeat, geekquote, netcraft, randomlanguage, stockquote, title, translate, weather
+<jemfinch> @acronym ASAP
+<supybot> ASAP could be As Soon As Possible, or A Simplified Asset (disposal) Procedure, or A Stupid Acting Person (Dilbert comic strip), or Academic Strategic Alliances Program, or Accelerated Situational Awareness Prototype, or Accelerated Systems Applications and Products (data processing), or Acquisitions Strategies and Plans, or Administrative Services Automation Program, or Administrative Services Automation Project
+<jemfinch> @deepthought
+<supybot> #331: Probably one of the worst things about being a genie in a magic lamp is a little thing called "lamp stench."
+<jemfinch> @translate en de "Probably one of the worst things about being a genie in a magic lamp is a little thing called \"lamp stench.\""
+<supybot> Vermutlich eins der schlechtesten Sachen ber Sein ein genie in einer magischen Lampe ist eine kleine Sache, die genannt wird "Lampe stench."
+<jemfinch> @babelize en de "Probably one of the worst things about being a genie in a magic lamp is a little thing called \"lamp stench.\""
+<supybot> From the worst its thing surplus is a genius in magic lamp a small thing, is characterized "lamp Gestank."
+<jemfinch> @foldoc perl
+<supybot> < language , tool > A high-level programming language, started by Larry Wall in 1987 and developed as an open source project. It has an eclectic heritage, deriving from the ubiquitous C programming language and to a lesser extent from sed , awk , various Unix shell languages, Lisp , and at least a dozen other tools and languages. Originally developed for Unix , it is now available for many platforms .
+<jemfinch> @freshmeat supybot
+<supybot> SupyBot, last updated 2002-08-02 19:07:52, with a vitality percent of 0.00 and a popularity of 0.09, is in version 0.36.1.
+<jemfinch> (yeah, I haven't updated that in awhile :))
+<jemfinch> @geekquote
+<supybot> <Coco13> Girls are a waste of polygons.
+<jemfinch> @netcraft slashdot.org
+<supybot> slashdot.org is running Apache/1.3.26 (Unix) mod_gzip/1.3.19.1a mod_perl/1.27 mod_ssl/2.8.10 OpenSSL/0.9.7a on Linux.
+<jemfinch> @stockquote MSFT
+<supybot> The current price of MSFT is 26.39, as of 11:22am EST.  A change of -0.18 from the last business day.
+<jemfinch> @title slashdot.org
+<supybot> Slashdot: News for nerds, stuff that matters
+<jemfinch> @weather 43221
+<supybot> The current temperature in Columbus, Ohio is 77F.  Conditions are Mist.
+<jemfinch> @weather Paris, FR
+<supybot> The current temperature in Paris, France is 27C.  Conditions are Fair.
+<jemfinch> @randomlanguage
+<supybot> Portuguese
+<jemfinch> @babelize en [randomlanguage] [deepthought]
+<supybot> # 355: When he was a small boy, had always wanted to be one acrobat. It looked at as thus much amusement, turning through air, to launch itself, fulling it it it he himself with the land in the shoulders of the person. Little knew that when finally one was changedded acrobat, would seem irritating thus. Years later, later this that stopped finally, joined did not work to it for it is as one acrobat after everything. Weirdo of the stre
+"""
+
 class FreshmeatException(Exception):
     pass
 
@@ -226,10 +260,6 @@ class Http(callbacks.Privmsg):
         Returns the approximate weather conditions for a given city.
         """
         
-        zip = privmsgs.getArgs(args)
-        zip = zip.replace(',','')  
-        zip = zip.lower().split()
-        
         #If we received more than one argument, then we have received
         #a city and state argument that we need to process.
         if len(args) > 1:
@@ -242,6 +272,7 @@ class Http(callbacks.Privmsg):
             city = '+'.join(args)
             city = city.rstrip(',')
             city = city.lower()
+            #debug.printf((state, city))
             #We must break the States up into two sections.  The US and
             #Canada are the only countries that require a State argument.
             
@@ -250,15 +281,19 @@ class Http(callbacks.Privmsg):
             elif state in self._fakeStates:
                 country = 'ca'
             else:
-                state = ''
                 country = state
+                state = ''
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
                   'pass=&dpp=&forecast=zandh&config=&'\
                   'place=%s&state=%s&country=%s' % \
                   (city, state, country)
+            #debug.printf(url)
 
         #We received a single argument.  Zipcode or station id.
         else:
+            zip = privmsgs.getArgs(args)
+            zip = zip.replace(',','')  
+            zip = zip.lower().split()
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
                   'config=&forecast=zandh&pands=%s&Submit=GO' % args[0]
 
