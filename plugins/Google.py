@@ -44,6 +44,7 @@ Commands include:
 from baseplugin import *
 
 import time
+import getopt
 import operator
 
 import google
@@ -59,6 +60,17 @@ def configure(onStart, afterConnect, advanced):
         key = anything('What is it?')
         onStart.append('load Google')
         onStart.append('googlelicensekey %s' % key)
+        if yn('Google depends on the Alias module for some commands.  ' \
+              'Is the Alias module loaded?') == 'n':
+            if yn('Would you like to load the Alias module now?') == 'y':
+                onStart.append('load Alias')
+            else:
+                print 'You can still use the Google module, but you won\'t ' \
+                      'be asked any further questions.'
+                return
+        onStart.append('alias googlelinux "google --restrict=linux $1"')
+        onStart.append('alias googlebsd "google --restrict=bsd $1"')
+        onStart.append('alias googlemac "google --restrict=mac $1"')
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key from http://www.google.com/apis/'
@@ -90,12 +102,11 @@ class Google(callbacks.Privmsg):
                 results.append('\x02%s\x02: %s' % (title, url))
             else:
                 results.append(url)
-        while reduce(operator.add, map((4).__add__,map(len, results)),0) > 400:
-            results.pop()
         if not results:
             return 'No matches found %s' % time
         else:
-            return '%s %s' % (' :: '.join(results), time)
+            response = ircutils.privmsgPayload(results, ' :: ', 400)
+            return '%s %s' % (response, time)
 
     def googlelicensekey(self, irc, msg, args):
         """<key>
@@ -109,51 +120,19 @@ class Google(callbacks.Privmsg):
     googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
         
     def google(self, irc, msg, args):
-        """<search string>
+        """<search string> [--{language,restrict,safe,filter}=<value>]
 
         Searches google.com for the given string.  As many results as can fit
-        are included.
+        are included.  Use options to set different values for the options
+        Google accepts.
         """
-        searchString = privmsgs.getArgs(args)
-        data = google.doGoogleSearch(searchString,
-                                     language='lang_en',
-                                     safeSearch=1)
-        irc.reply(msg, self.formatData(data))
-
-    def googlelinux(self, irc, msg, args):
-        """<search string>
-
-        Searches Google's Linux repository.
-        """
-        searchString = privmsgs.getArgs(args)
-        data=google.doGoogleSearch(searchString,
-                                   restrict='linux',
-                                   language='lang_en',
-                                   safeSearch=1)
-        irc.reply(msg, self.formatData(data))
-
-    def googlebsd(self, irc, msg, args):
-        """<search string>
-
-        Searches Google's BSD repository.
-        """
-        searchString = privmsgs.getArgs(args)
-        data = google.doGoogleSearch(searchString,
-                                     restrict='bsd',
-                                     language='lang_en',
-                                     safeSearch=1)
-        irc.reply(msg, self.formatData(data))
-
-    def googlemac(self, irc, msg, args):
-        """<search string>
-
-        Searches Google's Mac repository.
-        """
-        searchString = privmsgs.getArgs(args)
-        data = google.doGoogleSearch(searchString,
-                                     restrict='mac',
-                                     language='lang_en',
-                                     safeSearch=1)
+        (optlist, rest) = getopt.getopt(args, '', ['language=', 'restrict=',
+                                                   'safe=', 'filter='])
+        kwargs = {'language': 'lang_en', 'safeSearch': 1}
+        for (option, argument) in optlist:
+            kwargs[option[2:]] = argument
+        searchString = privmsgs.getArgs(rest)
+        data = google.doGoogleSearch(searchString, **kwargs)
         irc.reply(msg, self.formatData(data))
 
     def googlesite(self, irc, msg, args):
@@ -165,19 +144,6 @@ class Google(callbacks.Privmsg):
         data = google.doGoogleSearch(searchString,
                                      language='lang_en',
                                      safeSearch=1)
-        irc.reply(msg, self.formatData(data))
-
-    def googleplex(self, irc, msg, args):
-        """<search string> [language, restrict, safe, filter] keyword arguments
-
-        Search google, providing all your own options.
-        """
-        (args, kwargs) = privmsgs.getKeywordArgs(irc, msg)
-        searchString = ' '.join(args)
-        if 'safe' in kwargs:
-            kwargs['safeSearch'] = int(kwargs['safe'])
-            del kwargs['safe']
-        data = google.doGoogleSearch(searchString, **kwargs)
         irc.reply(msg, self.formatData(data))
 
     def googlespell(self, irc, msg, args):
