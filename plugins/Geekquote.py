@@ -32,6 +32,8 @@ Provides commands and snarfers for the various different Geekquote-based sites
 out there
 """
 
+__revision__ = "$Id$"
+
 import supybot
 
 __author__ = supybot.authors.skorobeus
@@ -43,12 +45,14 @@ import supybot.plugins as plugins
 
 import re
 import sets
+import time
 import getopt
 import socket
 import urllib
 import xml.dom.minidom
 from itertools import imap, ifilter
 
+import supybot.fix as fix
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import wrap
@@ -60,7 +64,7 @@ import supybot.callbacks as callbacks
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Geekquote', True)
-    output("""The Http plugin has the ability to watch for geekquote
+    output("""The Geekquote plugin has the ability to watch for geekquote
               (bash.org / qdb.us) URLs and respond to them as though the user
               had asked for the geekquote by ID""")
     if yn('Do you want the Geekquote snarfer enabled by default?'):
@@ -69,12 +73,21 @@ def configure(advanced):
 conf.registerPlugin('Geekquote')
 conf.registerChannelValue(conf.supybot.plugins.Geekquote, 'geekSnarfer',
     registry.Boolean(False, """Determines whether the bot will automatically
-    'snarf' Geekquote auction URLs and print information about them."""))
+    'snarf' Geekquote URLs and print information about them."""))
 
 class Geekquote(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     callBefore = ['URL']
     regexps = ['geekSnarfer']
+    
+    def __init__(self):
+        self.__parent = super(Geekquote, self)
+        self.__parent.__init__()
+        self.maxqdbPages = 403
+        self.lastqdbRandomTime = 0
+        self.randomData = {'qdb.us':[],
+                            'bash.org':[]
+                            }
 
     def callCommand(self, method, irc, msg, *L, **kwargs):
         try:
@@ -82,8 +95,11 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         except webutils.WebError, e:
             irc.error(str(e))
 
-    _gkREDict = {'bash.org':re.compile('<p class="qt">(?P<text>.*?)</p>', re.M | re.DOTALL),
-                'qdb.us':re.compile('<a href=\"/\?\d*\">.*<p>(?P<text>.*?)</p>', re.M | re.DOTALL)}
+    _qdbReString = r'<tr><td bgcolor="#(?:ffffff|e8e8e8)"><a href="/\d*?">'\
+                    r'#\d*?</a>.*?<p>(?P<text>.*?)</p></td></tr>'
+    _gkREDict = {'bash.org':re.compile(r'<p class="qt">(?P<text>.*?)</p>', 
+                    re.M | re.DOTALL),
+                'qdb.us':re.compile(_qdbReString, re.M | re.DOTALL)}
     def _gkBackend(self, irc, msg, site, id):
         if id:
             try:
@@ -93,17 +109,48 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
             #id = 'quote=%s' % id
         else:
             id = 'random'
-        html = webutils.getUrl('http://%s/?%s' % (site, id))
-        m = self._gkREDict[site].search(html)
-        if m is None:
-            irc.error('No quote found on %s. %s' % (site, id))
-            return
-        quote = utils.htmlToText(m.group(1))
-        quote = ' // '.join(quote.splitlines())
+        fetchData = True
+        quote = ''
+        if id == 'random':
+            timeRemaining = int(time.time()) - self.lastqdbRandomTime
+            if self.randomData[site]:
+                quote = self.randomData[site].pop()
+            else:
+                if (site == 'qdb.us' and 
+                            int(time.time()) - self.lastqdbRandomTime <= 90):
+                    id = 'browse=%s' % fix.choice(range(self.maxqdbPages))
+                quote = self._gkFetchData(site, id, random=True)
+        else:
+            quote = self._gkFetchData(site, id)
         irc.reply(quote)
 
+    def _gkFetchData(self, site, id, random=False):
+        html = ''
+        try:
+            html = webutils.getUrl('http://%s/?%s' % (site, id))
+        except webutils.WebError, e:
+            self.log.info('%s server returned the error: %s' % \
+                    (site, webutils.strError(e)))
+        s = ''
+        for item in self._gkREDict[site].finditer(html):
+            s = item.groupdict()['text']
+            s = ' // '.join(s.splitlines())
+            s = utils.htmlToText(s)
+            if random and s:
+                if s not in self.randomData[site]:
+                    self.randomData[site].append(s)
+            else:
+                break
+        if not s:
+            return 'Could not find a quote for id %s.' % id
+        else:
+            if random:
+                # To make sure and remove the first quote from the list so it
+                self.randomData[site].pop()
+            return s
+
     def geekSnarfer(self, irc, msg, match):
-        r"http://(?:www\.)?(?P<site>bash\.org|qdb\.us)/\?(?P<id>\d+)"
+        r'http://(?:www\.)?(?P<site>bash\.org|qdb\.us)/\?(?P<id>\d+)'
         if not self.registryValue('geekSnarfer', msg.args[0]):
             return
         id = match.groupdict()['id']
@@ -116,7 +163,7 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         """[<id>]
 
         Returns a random geek quote from bash.org; the optional argument
-        id specifies which quote to retrieve.
+        <id> specifies which quote to retrieve.
         """
         id = privmsgs.getArgs(args, required=0, optional=1)
         site = 'bash.org'
@@ -126,7 +173,7 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         """[<id>]
 
         Returns a random geek quote from qdb.us; the optional argument
-        id specifies which quote to retrieve.
+        <id> specifies which quote to retrieve.
         """
         id = privmsgs.getArgs(args, required=0, optional=1)
         site = 'qdb.us'
