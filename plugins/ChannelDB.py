@@ -383,7 +383,7 @@ class ChannelDB(plugins.ChannelDBHandler,
             seen = int(seen)
             if isinstance(name, int):
                 name = ircdb.users.getUser(int(name)).name
-            s = '%s was last seen here %s ago saying %r' % \
+            s = '%s was last seen here %s ago saying: %s' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
 
