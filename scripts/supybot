@@ -61,6 +61,7 @@ started = time.time()
 import supybot
 import supybot.utils as utils
 import supybot.registry as registry
+import supybot.questions as questions
 
 def main():
     import supybot.conf as conf
@@ -135,10 +136,6 @@ if __name__ == '__main__':
     parser.add_option('-O', action='count', dest='optimize',
                       help='-O optimizes asserts out of the code; ' \
                            '-OO optimizes asserts and uses psyco.')
-    parser.add_option('', '--network', action='store',
-                      dest='network', default='',
-                      help='network the bot should connect to (instead of '
-                           'using the configured default network')
     parser.add_option('-n', '--nick', action='store',
                       dest='nick', default='',
                       help='nick the bot should use')
@@ -226,18 +223,14 @@ if __name__ == '__main__':
     user = options.user or conf.supybot.user()
     ident = options.ident or conf.supybot.ident()
     
-    defaultNetwork = conf.supybot.networks.default()
-    if options.network:
-        defaultNetwork = options.network
-    try:
-        network = conf.supybot.networks.get(defaultNetwork)
-    except registry.NonExistentRegistryEntry:
-        sys.stderr.write('No default network defined.  Add a line to your ')
-        sys.stderr.write('registry that says (without the quotes), "supybot.')
-        sys.stderr.write('networks.default: <name>" where <name> is the name ')
-        sys.stderr.write('of the network you\'d like to connect to by ')
-        sys.stderr.write('default when the bot starts.')
+    networks = conf.supybot.networks()
+    if not networks:
+        questions.output("""No networks defined.  Perhaps you should re-run the
+        wizard?""", fd=sys.stderr)
+        # XXX We should turn off logging here for a prettier presentation.
         sys.exit(-1)
+
+    
 
     if options.optimize:
         # This doesn't work anymore.
@@ -270,22 +263,14 @@ if __name__ == '__main__':
         fd.close()
     registry.open(userdataFilename)
 
+    import supybot.Owner as Owner
     import supybot.irclib as irclib
     import supybot.ircmsgs as ircmsgs
     import supybot.drivers as drivers
     import supybot.callbacks as callbacks
-    import supybot.Owner as Owner
 
-    irc = irclib.Irc(network=defaultNetwork)
-    callback = Owner.Class()
-    irc.addCallback(callback)
-    try:
-        driver = drivers.newDriver(irc)
-    except Exception, e:
-        log.error(utils.normalizeWhitespace("""I couldn't create a network
-        driver for connecting to IRC.  The specific error was this: %s"""),
-        utils.exnToString(e))
-        sys.exit(-1)
+    owner = Owner.Class()
+    irclib._callbacks.append(owner)
 
     if options.debug:
         for (name, module) in sys.modules.iteritems():
