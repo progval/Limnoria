@@ -760,6 +760,7 @@ class FunCommands(callbacks.Privmsg):
 
 
     _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
+    _these.pop(0)
     def zen(self, irc, msg, args):
         """takes no arguments.
 
