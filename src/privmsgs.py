@@ -188,8 +188,8 @@ def urlSnarfer(f):
         url = match.group(0)
         for (qUrl, target, when) in _snarfed:
             if url == qUrl and target == channel and not world.testing:
-                self.log.info('Not snarfing %s from %r: in queue.',
-                              url, msg.prefix)
+                self.log.debug('Not snarfing %s from %r: in queue.',
+                               url, msg.prefix)
                 return
         else:
             _snarfed.enqueue((url, channel, now))
