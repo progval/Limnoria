@@ -211,6 +211,18 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         else:
             return '%s: %s' % (time, '; '.join(results))
 
+    def lucky(self, irc, msg, args):
+        """<search>
+
+        Does a google search, but only returns the first result.
+        """
+        data = search(self.log, args)
+        if data.results:
+            url = data.results[0].URL
+            irc.reply(url)
+        else:
+            irc.reply('Google found nothing.')
+        
     def google(self, irc, msg, args):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
 
