@@ -320,8 +320,8 @@ def getChannelOrNone(irc, msg, args, state):
         state.args.append(None)
 
 def checkChannelCapability(irc, msg, args, state, cap):
-    assert state.channel, \
-           'You must use a channel arg before you use checkChannelCapability.'
+    assert not state.channel, 'checkChannelCapability acts as a channel.'
+    getChannel(irc, msg, args, state)
     cap = ircdb.canonicalCapability(cap)
     cap = ircdb.makeChannelCapability(state.channel, cap)
     if not ircdb.checkCapability(msg.prefix, cap):
@@ -396,6 +396,7 @@ wrappers = ircutils.IrcDict({
     'something': getSomething,
     'text': anything,
     'somethingWithoutSpaces': getSomethingNoSpaces,
+    'capability': getSomethingNoSpaces,
     'channelDb': getChannelDb,
     'hostmask': getHostmask,
     'banmask': getBanmask,
@@ -483,7 +484,7 @@ def args(irc,msg,args, types=[], state=None,
                 state.args.append(default)
             else:
                 state.log.debug('Raising ArgumentError because of '
-                                'non-optional args.')
+                                'non-optional args: %r', spec)
                 raise callbacks.ArgumentError
 
     # First, we getopt stuff.
@@ -494,8 +495,16 @@ def args(irc,msg,args, types=[], state=None,
             assert opt in getopts
             log.debug('%s: %r', opt, arg)
             if arg is not None:
+                # This is a MESS.  But I can't think of a better way to do it.
                 assert getopts[opt] != ''
-                state.getopts.append((opt, callWrapper(getopts[opt])))
+                originalArgs = args
+                args = [arg]
+                originalLen = len(state.args)
+                callWrapper(getopts[opt])
+                args = originalArgs
+                assert originalLen == len(state.args)-1
+                assert not args
+                state.getopts.append((opt, state.args.pop()))
             else:
                 assert getopts[opt] == ''
                 state.getopts.append((opt, True))
