@@ -53,6 +53,8 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
+import supybot.irclib as irclib
+import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -182,16 +184,30 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                    'Misc', 'Owner', 'User'))
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        # Setup log object/command.
         self.log = LogProxy(self.log)
+        # Setup exec command.
         setattr(self.__class__, 'exec', self.__class__._exec)
+        # Setup Irc objects, connected to networks.  If world.ircs is already
+        # populated, chances are that we're being reloaded, so don't do this.
+        if not world.ircs:
+            for network in conf.supybot.networks():
+                try:
+                    self._connect(network)
+                except Exception, e:
+                    self.log.error('Could not connect to %s: %s.', network, e)
+        # Setup plugins and default plugins for commands.
         for (name, s) in registry._cache.iteritems():
             if name.startswith('supybot.plugins'):
                 try:
                     (_, _, name) = registry.split(name)
                 except ValueError: # unpack list of wrong size.
                     continue
-                if name == name.lower(): # This can't be right.
-                    name = name.capitalize() # Let's at least capitalize it.
+                # This is just for the prettiness of the configuration file.
+                # There are no plugins that are all-lowercase, so we'll at
+                # least attempt to capitalize them.
+                if name == name.lower():
+                    name = name.capitalize() 
                 conf.registerPlugin(name)
             if name.startswith('supybot.commands.defaultPlugins'):
                 try:
@@ -704,6 +720,74 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         setattr(cb.__class__, name, method)
         delattr(cb.__class__, command)
         irc.replySuccess()
+
+    def _connect(self, network, serverPort=None):
+        try:
+            group = conf.supybot.networks.get(network)
+            (server, port) = group.servers()[0]
+        except (registry.NonExistentRegistryEntry, IndexError):
+            if serverPort is None:
+                raise ValueError, 'connect requires a (server, port) ' \
+                                  'if the network is not registered.'
+            conf.registerNetwork(network)
+            serverS = '%s:%s' % serverPort
+            conf.supybot.networks.get(network).servers.append(serverS)
+            assert conf.supybot.networks.get(network).servers()
+        self.log.info('Creating new Irc for %s.', network)
+        newIrc = irclib.Irc(network)
+        for irc in world.ircs:
+            if irc != newIrc:
+                newIrc.state.history = irc.state.history
+        driver = drivers.newDriver(newIrc)
+        return newIrc
+
+    def connect(self, irc, msg, args):
+        """<network> [<host[:port]>]
+
+        Connects to another network at <host:port>.  If port is not provided, it
+        defaults to 6667, the default port for IRC.
+        """
+        (network, server) = privmsgs.getArgs(args, optional=1)
+        if server:
+            if ':' in server:
+                (server, port) = server.split(':')
+                port = int(port)
+            else:
+                port = 6667
+            serverPort = (server, port)
+        else:
+            try:
+                serverPort = conf.supybot.networks.get(network).servers()[0]
+            except IndexError:
+                irc.error('A server must be provided if the network is not '
+                          'already registered.')
+                return
+        newIrc = self._connect(network, serverPort=serverPort)
+        conf.supybot.networks().add(network)
+        assert newIrc.callbacks == irc.callbacks, 'callbacks list is different'
+        irc.replySuccess()
+
+    def disconnect(self, irc, msg, args):
+        """<network> [<quit message>]
+
+        Disconnects and ceases to relay to and from the network represented by
+        the network <network>.  If <quit message> is given, quits the network
+        with the given quit message.
+        """
+        (network, quitMsg) = privmsgs.getArgs(args, optional=1)
+        if not quitMsg:
+            quitMsg = msg.nick
+        for otherIrc in world.ircs:
+            if otherIrc.network == network:
+                # Here, rather than lower, in case we're being told to
+                # disconnect from the network we received the command on.
+                irc.replySuccess()
+                otherIrc.queueMsg(ircmsgs.quit(quitMsg))
+                otherIrc.die()
+                break
+        else:
+            irc.error('I\'m not connected to %s.' % network, Raise=True)
+        conf.supybot.networks().remove(network)
 
 
 

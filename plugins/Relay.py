@@ -94,9 +94,6 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'detectOtherRelayBots',
 conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
     conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
     will relay in."""))
-conf.registerGlobalValue(conf.supybot.plugins.Relay, 'networks',
-    Networks('', """Determines what networks the bot will join in order to relay
-    between."""))
 
 class Relay(callbacks.Privmsg):
     noIgnore = True
@@ -104,7 +101,6 @@ class Relay(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self._whois = {}
-        self.ircs = []
         self.relayedMsgs = {}
         self.lastmsg = {}
         self.ircstates = {}
@@ -113,7 +109,7 @@ class Relay(callbacks.Privmsg):
     def __call__(self, irc, msg):
         try:
             irc = self._getRealIrc(irc)
-            if irc not in self.ircs:
+            if irc not in self.ircstates:
                 self._addIrc(irc)
             self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
         finally:
@@ -121,21 +117,12 @@ class Relay(callbacks.Privmsg):
         callbacks.Privmsg.__call__(self, irc, msg)
 
     def do376(self, irc, msg):
-        if not self.ircs:
-            name = self._getIrcName(irc)
-            self.log.info('Registering initial Irc as %s.', name)
-            self._connect(name, irc, serverPort=None, makeNew=False)
         L = []
         for channel in self.registryValue('channels'):
             if channel not in irc.state.channels:
                 L.append(channel)
         if L:
             irc.queueMsg(ircmsgs.joins(L))
-        for network in self.registryValue('networks'):
-            ircNames = map(self._getIrcName, self.ircs)
-            if network not in ircNames:
-                self.log.info('Starting relay connection to %s.', network)
-                self._connect(network, irc)
     do377 = do422 = do376
 
     def _getRealIrc(self, irc):
@@ -145,7 +132,7 @@ class Relay(callbacks.Privmsg):
             return irc.getRealIrc()
 
     def _getIrc(self, name):
-        for irc in self.ircs:
+        for irc in world.ircs:
             if self._getIrcName(irc) == name:
                 return irc
         raise KeyError, name
@@ -154,70 +141,12 @@ class Relay(callbacks.Privmsg):
         # We should allow abbreviations at some point.
         return irc.network
 
-    def connect(self, irc, msg, args):
-        """<network> [<host:port>] (port defaults to 6667)
-
-        Connects to another network at <host:port>.  The network name is used
-        when relaying messages from that network to other networks.
-        """
-        realIrc = self._getRealIrc(irc)
-        (network, server) = privmsgs.getArgs(args, optional=1)
-        if server:
-            if ':' in server:
-                (server, port) = server.split(':')
-                port = int(port)
-            else:
-                port = 6667
-            serverPort = (server, port)
-        else:
-            serverPort = None
-        self._connect(network, realIrc, serverPort=serverPort)
-        irc.replySuccess()
-    connect = privmsgs.checkCapability(connect, 'owner')
-
     def _addIrc(self, irc):
         # Let's just be extra-special-careful here.
-        if irc not in self.ircs:
-            self.ircs.append(irc)
         if irc not in self.ircstates:
             self.ircstates[irc] = irclib.IrcState()
         if irc not in self.lastmsg:
             self.lastmsg[irc] = ircmsgs.ping('this is just a fake message')
-
-    def _connect(self, network, realIrc, serverPort=None, makeNew=True):
-        try:
-            group = conf.supybot.networks.get(network)
-            (server, port) = group.servers()[0]
-        except (registry.NonExistentRegistryEntry, IndexError):
-            if serverPort is None:
-                raise callbacks.Error, '_connect requires a (server, port) ' \
-                                       'if the network is not registered.'
-            conf.registerNetwork(network, servers=('%s:%s' % serverPort,))
-        if makeNew:
-            self.log.info('Creating new Irc for relaying to %s.', network)
-            newIrc = irclib.Irc(network)
-            newIrc.state.history = realIrc.state.history
-            newIrc.callbacks = realIrc.callbacks
-            driver = drivers.newDriver(newIrc)
-        else:
-            newIrc = realIrc
-        self._addIrc(newIrc)
-        networks = self.registryValue('networks')
-        networks.add(network)
-
-    def disconnect(self, irc, msg, args):
-        """<network>
-
-        Disconnects and ceases to relay to and from the network represented by
-        the network <network>.
-        """
-        network = privmsgs.getArgs(args)
-        otherIrc = self._getIrc(network)
-        otherIrc.driver.die()
-        world.ircs.remove(otherIrc)
-        self.ircs.remove(otherIrc) # Should we abstract this?
-        irc.replySuccess()
-    disconnect = privmsgs.checkCapability(disconnect, 'owner')
 
     def join(self, irc, msg, args):
         """<channel>
@@ -233,7 +162,7 @@ class Relay(callbacks.Privmsg):
             irc.error('%r is not a valid channel.' % channel)
             return
         self.registryValue('channels').add(channel)
-        for otherIrc in self.ircs: # Should we abstract this?
+        for otherIrc in world.ircs: # Should we abstract this?
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
         irc.replySuccess()
@@ -251,7 +180,7 @@ class Relay(callbacks.Privmsg):
             irc.error('%r is not a valid channel.' % channel)
             return
         self.registryValue('channels').remove(channel)
-        for otherIrc in self.ircs:
+        for otherIrc in world.ircs:
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
         irc.replySuccess()
@@ -275,15 +204,6 @@ class Relay(callbacks.Privmsg):
         self.Proxy(otherIrc, msg, args)
     command = privmsgs.checkCapability(command, 'admin')
 
-    def networks(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the networks to which the bot is currently connected.
-        """
-        L = ['%s: %s' % (irc.network, irc.server) for irc in self.ircs]
-        utils.sortBy(str.lower, L)
-        irc.reply(utils.commaAndify(L))
-        
     def nicks(self, irc, msg, args):
         """[<channel>]
 
@@ -297,7 +217,7 @@ class Relay(callbacks.Privmsg):
             irc.error('I\'m not relaying in %s.' % channel)
             return
         users = []
-        for otherIrc in self.ircs:
+        for otherIrc in world.ircs:
             network = self._getIrcName(otherIrc)
             ops = []
             halfops = []
@@ -349,11 +269,11 @@ class Relay(callbacks.Privmsg):
                 return
             nick = ircutils.toLower(nick)
         except ValueError: # If split doesn't work, we get an unpack error.
-            if len(self.ircs) == 2:
+            if len(world.ircs) == 2:
                 # If there are only two networks being relayed, we can safely
                 # pick the *other* one.
                 nick = ircutils.toLower(nickAtNetwork)
-                for otherIrc in self.ircs:
+                for otherIrc in world.ircs:
                     if otherIrc != realIrc:
                         network = self._getIrcName(otherIrc)
             else:
@@ -506,7 +426,7 @@ class Relay(callbacks.Privmsg):
 
     def _sendToOthers(self, irc, msg):
         assert msg.command == 'PRIVMSG' or msg.command == 'TOPIC'
-        for otherIrc in self.ircs:
+        for otherIrc in world.ircs:
             if otherIrc != irc:
                 if msg.args[0] in otherIrc.state.channels:
                     self._addRelayedMsg(msg)
@@ -517,7 +437,7 @@ class Relay(callbacks.Privmsg):
             return s and s[0] == '<' and s[-1] == '>'
         def punish():
             punished = False
-            for irc in self.ircs:
+            for irc in world.ircs:
                 if irc.nick in irc.state.channels[channel].ops:
                     self.log.info('Punishing %s in %s on %s for relaying.',
                                   msg.prefix, channel, irc.network)
@@ -687,13 +607,13 @@ class Relay(callbacks.Privmsg):
              self.registryValue('topicSync', msg.args[0]):
             (channel, topic) = msg.args
             if channel in self.registryValue('channels'):
-                for otherIrc in self.ircs:
+                for otherIrc in world.ircs:
                     if otherIrc != irc:
                         try:
                             if otherIrc.state.getTopic(channel) != topic:
                                 otherIrc.queueMsg(ircmsgs.topic(channel,topic))
                         except KeyError:
-                            self.log.warning('Odd, not on %s on %s -- '
+                            self.log.warning('Not on %s on %s -- '
                                              'Can\'t synchronize topics.',
                                              channel, otherIrc.server)
 
