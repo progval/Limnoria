@@ -45,7 +45,7 @@ supybot.directories.conf: test-conf
 supybot.directories.log: test-logs
 supybot.reply.whenNotCommand: False
 supybot.log.stdout: False
-supybot.log.minimumPriority: DEBUG
+supybot.log.level: DEBUG
 supybot.log.detailedTracebacks: False
 supybot.throttleTime: 0
 """)
