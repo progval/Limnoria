@@ -72,49 +72,6 @@ class IrcDriver(object):
     def name(self):
         return repr(self)
 
-
-class Interactive(IrcDriver):
-    """Interactive (stdin/stdout) driver for testing.
-
-    Python statements can be evaluated by beginning the line with a '#'
-
-    Variables can be set using the form "$variable=value", where value is
-    valid Python syntactical construct.
-
-    Variables are inserted for $variable in lines.
-    """
-    _varre = r'[^\\](\$[a-zA-Z_][a-zA-Z0-9_]*)'
-    _setre = re.compile('^' + _varre + r'\s*=\s*(.*)')
-    _replacere = re.compile(_varre)
-    _dict = {}
-    def run(self):
-        while 1:
-            msg = self.irc.takeMsg()
-            if not msg:
-                break
-            else:
-                sys.stdout.write(ansi.BOLD + ansi.YELLOW)
-                sys.stdout.write(str(msg))
-                sys.stdout.write(ansi.RESET)
-        line = sys.stdin.readline()
-        if line == "":
-            self.irc.die()
-            self.die()
-        elif line == os.linesep:
-            pass
-        elif self._setre.match(line):
-            (var, val) = self._setre.match(line).groups()
-            self._dict[var] = eval(val)
-        elif line[0] == '#':
-            print eval(line[1:])
-        else:
-            def f(m):
-                return self._dict.get(m.group(0), m.group(0))
-            line = self._replacere.sub(f, line.strip())
-            msg = ircmsgs.privmsg(self.irc.nick, line)
-            msg.prefix = 'nick!user@host.domain.tld'
-            self.irc.feedMsg(msg)
-
 def empty():
     """Returns whether or not the driver loop is empty."""
     return (len(_drivers) + len(_newDrivers)) == 0
