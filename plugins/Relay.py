@@ -135,7 +135,10 @@ class Relay(callbacks.Privmsg):
         relaying messages from that network to other networks, the users
         will show up as 'user@oftc'.
         """
-        realIrc = irc.getRealIrc()
+        if isinstance(irc, irclib.Irc):
+            realIrc = irc
+        else:
+            realIrc = irc.getRealIrc()
         self.originalIrc = realIrc
         abbreviation = privmsgs.getArgs(args)
         self.ircs[abbreviation] = realIrc
@@ -152,7 +155,10 @@ class Relay(callbacks.Privmsg):
         that network to other networks.
         """
         abbreviation, server = privmsgs.getArgs(args, needed=2)
-        realIrc = irc.getRealIrc()
+        if isinstance(irc, irclib.Irc):
+            realIrc = irc
+        else:
+            realIrc = irc.getRealIrc()
         if ':' in server:
             (server, port) = server.split(':')
             port = int(port)
@@ -240,7 +246,9 @@ class Relay(callbacks.Privmsg):
         the channel itself.  Returns the nicks of the people in the channel on
         the various networks the bot is connected to.
         """
-        if not isinstance(irc, irclib.Irc):
+        if isinstance(irc, irclib.Irc):
+            realIrc = irc
+        else:
             realIrc = irc.getRealIrc()
         channel = privmsgs.getChannel(msg, args)
         if channel not in self.channels:
@@ -260,11 +268,23 @@ class Relay(callbacks.Privmsg):
         Returns the WHOIS response <network> gives for <nick>.
         """
         nickAtNetwork = privmsgs.getArgs(args)
+        if isinstance(irc, irclib.Irc):
+            realIrc = irc
+        else:
+            realIrc = irc.getRealIrc()
         try:
             (nick, network) = nickAtNetwork.split('@', 1)
             nick = ircutils.toLower(nick)
         except ValueError:
-            raise callbacks.ArgumentError
+            if len(self.abbreviations) == 2:
+                # If there are only two networks being relayed, we can safely
+                # pick the *other* one.
+                nick = ircutils.toLower(nickAtNetwork)
+                for (keyIrc, net) in self.abbreviations.iteritems():
+                    if keyIrc != realIrc:
+                        network = net
+            else:
+                raise callbacks.ArgumentError
         if network not in self.ircs:
             irc.error(msg, 'I\'m not on that network.')
             return
