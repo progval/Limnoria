@@ -41,6 +41,7 @@ plugins = [
     'Games',
     'Google',
     'Herald',
+    'Internet',
     'Later',
     'Math',
     'Network',
