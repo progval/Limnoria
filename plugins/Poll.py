@@ -42,6 +42,7 @@ import ircutils
 import privmsgs
 import callbacks
 import conf
+import debug
 
 import os.path
 import time
@@ -71,13 +72,14 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                               id INTEGER PRIMARY KEY,
                               question TEXT,
                               started_by INTEGER,
-                              expires TIMESTAMP)""")
+                              expires INTEGER)""")
             cursor.execute("""CREATE TABLE options (
                               poll_id INTEGER,
                               option_id INTEGER,
                               option TEXT,
                               votes INTEGER,
-                              UNIQUE (poll_id, option_id) ON CONFLICT IGNORE)""")
+                              PRIMARY KEY (poll_id, option_id)
+                              ON CONFLICT IGNORE)""")
             cursor.execute("""CREATE TABLE votes (
                               user_id INTEGER,
                               poll_id INTEGER,
@@ -95,14 +97,14 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         channel = privmsgs.getChannel(msg, args)
         (lifespan, question) = privmsgs.getArgs(args, optional=1)
         try:
-            lifespan = float(lifespan)
+            lifespan = int(lifespan)
         except ValueError:
             if question:
                 question = '%s %s' % (lifespan, question)
             else:
                 question = lifespan
-            lifespan = 0.0
-        if lifespan != 0.0:
+            lifespan = 0
+        if lifespan:
             lifespan += time.time()
         if not question:
             raise callbacks.ArgumentError
@@ -115,8 +117,8 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""INSERT INTO polls VALUES
-                          (NULL, %s, %s, %s)""", question,
-                       userId, lifespan)
+                          (NULL, %%s, %s, %s)""" % (userId, lifespan),
+                       question)
         db.commit()
         cursor.execute("""SELECT id FROM polls WHERE question=%s""", question)
         id = cursor.fetchone()[0]
@@ -136,7 +138,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             lifespan = 0
         else:
             try:
-                lifespan = float(lifespan)
+                lifespan = int(lifespan)
             except ValueError:
                 irc.error(msg, 'The <lifespan> argument must be an integer.')
                 return
@@ -145,13 +147,13 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         except ValueError:
             irc.error(msg, 'The <id> argument must be an integer.')
             return
-        if lifespan != 0.0:
+        if lifespan:
             lifespan += time.time()
         
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""UPDATE polls SET expires=%s WHERE id=%s""",
-                       lifespan, id)
+        cursor.execute("""UPDATE polls SET expires=%s WHERE id=%s""" % \
+                       (lifespan, id))
         db.commit()
         irc.reply(msg, conf.replySuccess)
 
@@ -170,8 +172,8 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
 
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""UPDATE polls SET expires=%s WHERE id=%s""",
-                       int(time.time()), id)
+        cursor.execute("""UPDATE polls SET expires=%s WHERE id=%s""" % \
+                       (int(time.time()), id))
         db.commit()
         irc.reply(msg, conf.replySuccess)
 
@@ -211,44 +213,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                           WHERE poll_id=%s
                           AND votes=0
                           AND option=%%s""" % id, option)
-        id = cursor.fetchone()[0]
-        irc.reply(msg, '%s (option #%s)' % (conf.replySuccess, id))
-
-    def remove(self, irc, msg, args):
-        """[<channel>] <poll id> <option id>
-        
-        Remove option <option id> from poll <poll id>.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        (pollId, optionId) = privmsgs.getArgs(args, required=2)
-        try:
-            pollId = int(pollId)
-            optionId = int(optionId)
-        except ValueError:
-            irc.error(msg, 'The <poll id> and <option id> '
-                           'arguments must be integers.')
-            return
-
-        try:
-            userId = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
-            return
-
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT started_by FROM polls WHERE id=%s""" % pollId)
-        if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such poll.')
-            return
-        elif userId != cursor.fetchone()[0]:
-            irc.error(msg, 'That poll isn\'t yours.')
-            return
-
-        cursor.execute("""DELETE FROM options
-                          WHERE poll_id=%s
-                          AND option_id=%s""" % (pollId, optionId))
-        irc.reply(msg, conf.replySuccess)
+        irc.reply(msg, '%s (option #%s)' % (conf.replySuccess, cursor.fetchone()[0]))
 
     def vote(self, irc, msg, args):
         """[<channel>] <poll id> <option id>
@@ -274,12 +239,12 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT expires
-                          FROM polls WHERE id=%s""", id)
+                          FROM polls WHERE id=%s""" % id)
         if cursor.rowcount == 0:
             irc.error(msg, 'There is no such poll.')
             return
-        expires = float(cursor.fetchone()[0])
-        if expires != 0.0 and time.time() >= expires:
+        expires = cursor.fetchone()[0]
+        if expires and time.time() >= expires:
             irc.error(msg, 'That poll is closed.')
             return
 
@@ -291,10 +256,10 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             return
 
         cursor.execute("""SELECT vote FROM votes WHERE user_id=%s
-                          AND poll_id=%s""", userId, id)
+                          AND poll_id=%s""" % (userId, id))
         if cursor.rowcount == 0:
-            cursor.execute("""INSERT INTO votes VALUES (%s, %s, %s)""",
-                           userId, id, option)
+            cursor.execute("""INSERT INTO votes VALUES (%s, %s, %s)""" % \
+                           (userId, id, option))
             db.commit()
             irc.reply(msg, 'You voted option #%s on poll #%s.' % (option, id))
         else:
@@ -310,7 +275,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                               WHERE poll_id=%s AND option_id=%s""" \
                            % (id, option))
             cursor.execute("""UPDATE votes SET option_id=%s WHERE user_id=%s
-                              AND poll_id=%s""", option, userId, id)
+                              AND poll_id=%s""" % (option, userId, id))
             db.commit()
             irc.reply(msg, 'Your vote on poll #%s has been updated to option '
                            '#%s.' % (id, option))
@@ -330,7 +295,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM polls WHERE id=%s""", id)
+        cursor.execute("""SELECT * FROM polls WHERE id=%s""" % id)
         if cursor.rowcount == 0:
             irc.error(msg, 'There is no such poll.')
             return
@@ -340,7 +305,8 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         except KeyError:
             startedBy = 'an unknown user'
             return
-        reply = 'Results for poll #%s: "%s" by %s' % (id, question, startedBy)
+        reply = 'Results for poll #%s: "%s" by %s' % \
+                (ircutils.bold(id), question, ircutils.bold(startedBy))
         cursor.execute("""SELECT option_id, option, votes FROM options
                           WHERE poll_id=%s ORDER BY option_id""" % id)
         totalVotes = 0
@@ -348,29 +314,23 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         if cursor.rowcount == 0:
             reply = '%s - This poll has no options yet.' % reply
         else:
-            L = cursor.fetchall()
-            for (optionId, option, votes) in L:
-                totalVotes += votes
-            if totalVotes == 0:
-                reply = '%s - There have been no votes on this poll yet.' % reply
-            else:
-                for (optionId, option, votes) in L:
-                    if votes == 0:
-                        percent = 0
-                    else:
-                        percent = int(float(votes) / float(totalVotes) * 100.0)
-                    results.append('%s. %s: %s (%s%%)'\
-                                   % (ircutils.bold(option_id), option,
-                                      ircutils.bold(votes), percent))
-                reply = '%s - %s' % (reply, utils.commaAndify(results))
-        expires = float(expires)
-        if expires != 0.0:
+            for (optionId, option, votes) in cursor.fetchall():
+                if votes == 0:
+                    percent = 0
+                else:
+                    percent = int(float(votes) / float(totalVotes) * 100.0)
+                results.append('%s. %s: %s (%s%%)'\
+                               % (ircutils.bold(option_id), option,
+                                  ircutils.bold(votes), percent))
+            reply = '%s - %s' % (reply, utils.commaAndify(results))
+        expires = int(expires)
+        if expires:
             if time.time() >= expires:
                 reply = '%s - Poll is closed.' % reply
             else:
                 expires -= time.time()
                 reply = '%s - Poll expires in %s' % (reply,
-                        utils.timeElapsed(int(expires)))
+                        utils.timeElapsed(expires))
         irc.reply(msg, reply)
 
 
