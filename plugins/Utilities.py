@@ -69,7 +69,10 @@ class Utilities(callbacks.Privmsg):
 
     def arg(self, irc, msg, args):
         i = int(args.pop(0))
-        irc.reply(msg, args[i])
+        L = []
+        for arg in args:
+            L.extend(arg.split())
+        irc.reply(msg, L[i])
         
         
 Class = Utilities
