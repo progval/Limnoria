@@ -394,6 +394,8 @@ class Relay(callbacks.Privmsg):
         s = 'There is no %s on %s.' % (nick, self.abbreviations[irc])
         replyIrc.reply(replyMsg, s)
 
+    do401 = do402
+
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
         if self.color >= 1:
