@@ -28,8 +28,11 @@
 ###
 
 """
-Add a description of the plugin (to be presented to the user inside the wizard)
-here.
+Quotegrabs are like IRC sound bites.  When someone says something funny,
+incriminating, stupid, outrageous, ... anything that might be worth
+remembering, you can grab that quote for that person.  With this plugin, you
+can store many quotes per person and display their most recent quote, as well
+as see who "grabbed" the quote in the first place.
 """
 
 import supybot

@@ -27,14 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-"""
-Quotegrabs are like IRC sound bites.  When someone says something funny,
-incriminating, stupid, outrageous, ... anything that might be worth
-remembering, you can grab that quote for that person.  With this plugin, you
-can store many quotes per person and display their most recent quote, as well
-as see who "grabbed" the quote in the first place.
-"""
-
 import os
 import time
 import random
@@ -340,6 +332,5 @@ class QuoteGrabs(callbacks.Privmsg):
     search = wrap(search, ['channeldb', 'text'])
 
 Class = QuoteGrabs
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
