@@ -36,6 +36,7 @@ statistics about smileys, actions, characters, and words.
 
 Commands include:
   seen
+  stats
 """
 
 from baseplugin import *
@@ -46,6 +47,7 @@ import time
 import sqlite
 
 import debug
+import utils
 import ircdb
 import ircmsgs
 import privmsgs
@@ -241,20 +243,9 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
-            ago = int(time.time()) - seen
-            days = ago / 86400
-            ago %= 86400
-            hours = ago / 3600
-            ago %= 3600
-            minutes = ago / 60
-            seconds = ago % 60
-            s = '%s day%s %s hour%s %s minute%s %s second%sago' % \
-                (days, days == 1 and ',' or 's,',
-                 hours, hours == 1 and ',' or 's,',
-                 minutes, minutes == 1 and ',' or 's,',
-                 seconds, seconds == 1 and ' ' or 's ')
-            irc.reply(msg, '%s was last seen here at %s saying %r' % \
-                           (name, s, m))
+            s = '%s was last seen here %s ago saying %r' % \
+                (name, utils.timeElapsed(time.time(), seen), m)
+            irc.reply(msg, s)
 
     def stats(self, irc, msg, args):
         "[<channel>] (if not sent in the channel itself) <nick>"
