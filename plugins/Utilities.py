@@ -31,19 +31,19 @@
 
 """
 Various utility commands, mostly useful for manipulating nested commands.
-
-Commands include:
-  strjoin
-  strconcat
 """
 
 from baseplugin import *
 
-import re
+import string
 
 import utils
 import privmsgs
 import callbacks
+
+def configure(onStart, afterConnect, advanced):
+    from questions import expect, anything, yn
+    onStart.append('load Utilities')
 
 class Utilities(callbacks.Privmsg):
     def strjoin(self, irc, msg, args):
@@ -51,6 +51,30 @@ class Utilities(callbacks.Privmsg):
         sep = args.pop(0)
         args = flatten(map(callbacks.tokenize, args))
         irc.reply(msg, sep.join(args))
+
+    def strtranslate(self, irc, msg, args):
+        """<chars to translate> <chars to replace those with> <text>
+
+        Replaces <chars to translate> with <chars to replace those with> in
+        <text>.  The first and second arguments must necessarily be the same
+        length.
+        """
+        (bad, good, text) = privmsgs.getArgs(args, needed=3)
+        irc.reply(msg, text.translate(string.maketrans(bad, good)))
+
+    def strupper(self, irc, msg, args):
+        """<text>
+
+        Returns <text> uppercased.
+        """
+        irc.reply(msg, privmsgs.getArgs(args).upper())
+
+    def strlower(self, irc, msg, args):
+        """<text>
+
+        Returns <text> lowercased.
+        """
+        irc.reply(msg, privmsgs.getArgs(args).lower())
 
     def repr(self, irc, msg, args):
         """<text>
