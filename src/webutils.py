@@ -33,6 +33,7 @@ __revision__ = "$Id$"
 
 import fix
 
+import socket
 import urllib2
 
 class WebException(Exception):
