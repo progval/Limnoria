@@ -275,6 +275,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 inAtLeastOneChannel = True
         if not inAtLeastOneChannel:
             irc.replySuccess()
+        else:
+            irc.noReply()
 
     def addcapability(self, irc, msg, args, user, capability):
         """<name|hostmask> <capability>
