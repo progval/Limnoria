@@ -42,7 +42,6 @@ import textwrap
 from cStringIO import StringIO as sio
 
 import supybot.utils as utils
-import supybot.structures as structures
 
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
@@ -551,7 +550,7 @@ class FloodQueue(object):
                 # calls structures.TimeoutQueue.__repr__, which calls
                 # getTimeout.__repr__, which calls our __repr__, which calls...
                 getTimeout = lambda : self.getTimeout()
-                q = structures.TimeoutQueue(getTimeout)
+                q = utils.structures.TimeoutQueue(getTimeout)
                 self.queues[key] = q
                 return q
             else:

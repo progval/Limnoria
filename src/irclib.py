@@ -41,7 +41,7 @@ import supybot.ircutils as ircutils
 
 from utils.str import rsplit
 from utils.iter import imap, chain, cycle
-from supybot.structures import queue, smallqueue, RingBuffer
+from utils.structures import queue, smallqueue, RingBuffer
 
 ###
 # The base class for a callback to be registered with an Irc object.  Shows

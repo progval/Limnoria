@@ -45,7 +45,6 @@ import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-import supybot.structures as structures
 
 
 ###

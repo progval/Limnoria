@@ -40,7 +40,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-from supybot.structures import TimeoutQueue
+from supybot.utils.structures import TimeoutQueue
 
 filename = conf.supybot.directories.data.dirize('Herald.db')
 

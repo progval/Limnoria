@@ -44,7 +44,6 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-import supybot.structures as structures
 
 def search(log, queries, **kwargs):
     # We have to keep stats here, rather than in formatData or elsewhere,
@@ -95,7 +94,7 @@ def search(log, queries, **kwargs):
         log.exception('Uncaught SOAP exception in Google.search:')
         raise callbacks.Error, 'Error connecting to Google.com.'
 
-last24hours = structures.TimeoutQueue(86400)
+last24hours = utils.structures.TimeoutQueue(86400)
 totalTime = conf.supybot.plugins.Google.state.time()
 searches = conf.supybot.plugins.Google.state.searches()
 

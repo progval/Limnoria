@@ -37,7 +37,7 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-from supybot.structures import MultiSet, TimeoutQueue
+from supybot.utils.structures import MultiSet, TimeoutQueue
 
 class Relay(callbacks.Plugin):
     noIgnore = True

@@ -37,9 +37,8 @@ import sys
 import string
 import textwrap
 
-import supybot.structures as structures
-
 from iter import all, any
+from structures import TwoWayDictionary
 
 curry = new.instancemethod
 chars = string.maketrans('', '')
@@ -234,7 +233,7 @@ def ellipsisify(s, n):
     else:
         return (textwrap.wrap(s, n-3)[0] + '...')
 
-plurals = structures.TwoWayDictionary({})
+plurals = TwoWayDictionary({})
 def matchCase(s1, s2):
     """Matches the case of s1 in s2"""
     if s1.isupper():
