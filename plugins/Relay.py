@@ -393,16 +393,33 @@ class Relay(callbacks.Privmsg):
         user = d['311'].args[-1]
         if '319' in d:
             channels = d['319'].args[-1].split()
-            for (i, channel) in enumerate(channels):
-                channel = channel.replace('@', 'is an op on ')
-                channel = channel.replace('%', 'is a halfop on ')
-                channel = channel.replace('+', 'is voiced on ')
-                channels[i] = channel
+            ops = []
+            voices = []
+            normal = []
+            halfops = []
+            for channel in channels:
+                if channel.startswith('@'):
+                    ops.append(channel[:-1])
+                elif channel.startswith('%'):
+                    halfops.append(channel[:-1])
+                elif channel.startswith('+'):
+                    voices.append(channel[:-1])
+                else:
+                    normal.append(channel)
+            L = []
+            if ops:
+                L.append('is an op on %s' % utils.commaAndify(ops))
+            if halfops:
+                L.append('is a halfop on %s' % utils.commaAndify(halfops))
+            if voices:
+                L.append('is voiced on %s' % utils.commaAndify(voices))
+            if L:
+                L.append('is also on %s' % utils.commaAndify(normal))
+            else:
+                L.append('is on %s' % utils.commaAndify(normal))
         else:
-            channels = ['isn\'t on any non-secret channels']
-        if not channels[0].startswith('is'):
-            channels[0] = 'is on ' + channels[0]
-        channels = utils.commaAndify(channels)
+            L = ['isn\'t on any non-secret channels']
+        channels = utils.commaAndify(L)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
             signon = time.strftime(conf.humanTimestampFormat,
