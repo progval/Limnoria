@@ -52,7 +52,12 @@ class AsyncoreRunnerDriver(drivers.IrcDriver):
     def run(self):
         #log.debug(repr(asyncore.socket_map))
         try:
-            asyncore.poll(conf.supybot.drivers.poll())
+            timeout = conf.supybot.drivers.poll()
+            if len(asyncore.socket_map.keys()) < 1:
+                # FIXME: asyncore should take care of this... but it doesn't?
+                time.sleep(timeout)
+            else:
+                asyncore.poll(timeout)
         except:
             log.exception('Uncaught exception:')
 
