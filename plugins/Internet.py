@@ -69,7 +69,7 @@ class Internet(callbacks.Privmsg):
     dns = wrap(dns, ['something'])
 
     _tlds = sets.Set(['com', 'net', 'edu'])
-    _domain = ['Domain Name', 'Server Name']
+    _domain = ['Domain Name', 'Server Name', 'domain']
     _registrar = ['Sponsoring Registrar', 'Registrar', 'source']
     _updated = ['Last Updated On', 'Domain Last Updated Date', 'Updated Date',
                 'Last Modified', 'changed']
