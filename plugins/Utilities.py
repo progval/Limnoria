@@ -81,7 +81,7 @@ class Utilities(callbacks.Privmsg):
         Returns all matches to <regexp> (in the form /regexp/flags) in text.
         """
         (regexp, text) = privmsgs.getArgs(args, needed=2)
-        (_, regexp, flags) = re.split('/')
+        (_, regexp, flags) = regexp.split('/')
         flag = 0
         for c in flags:
             flag &= getattr(re, c.upper())
