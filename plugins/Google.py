@@ -91,14 +91,9 @@ def configure(advanced):
                   You can apply for a key at http://www.google.com/apis/""")
 
 
-totalSearches = 0
-totalTime = 0
-last24hours = structures.queue()
-
 def search(log, queries, **kwargs):
     assert not isinstance(queries, basestring), 'Old code: queries is a list.'
     try:
-        global totalSearches, totalTime, last24hours
         for (i, query) in enumerate(queries):
             if len(query.split(None, 1)) > 1:
                 queries[i] = repr(query)
@@ -106,12 +101,6 @@ def search(log, queries, **kwargs):
         if proxy:
             kwargs['http_proxy'] = proxy
         data = google.doGoogleSearch(' '.join(queries), **kwargs)
-        now = time.time()
-        totalSearches += 1
-        totalTime += data.meta.searchTime
-        last24hours.enqueue(now)
-        while last24hours and now - last24hours.peek() > 86400:
-            last24hours.dequeue()
         return data
     except socket.error, e:
         if e.args[0] == 110:
@@ -184,7 +173,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Google, 'licenseKey',
 
 conf.registerGroup(conf.supybot.plugins.Google, 'state')
 conf.registerGlobalValue(conf.supybot.plugins.Google.state, 'searches',
-    registry.Float(0.0, """Used to keep the total number of searches Google has
+    registry.Integer(0, """Used to keep the total number of searches Google has
     done for this bot.  You shouldn't modify this."""))
 conf.registerGlobalValue(conf.supybot.plugins.Google.state, 'time',
     registry.Float(0.0, """Used to keep the total amount of time Google has
@@ -195,14 +184,25 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        self.total = 0
-        self.totalTime = 0
+        self.total = self.registryValue('state.searches')
+        self.totalTime = self.registryValue('state.time')
         self.last24hours = structures.queue()
+        google.setLicense(self.registryValue('licenseKey'))
+
+    def die(self):
+        self.setRegistryValue('state.searches', self.total)
+        self.setRegistryValue('state.time', self.totalTime)
 
     def formatData(self, data, bold=True, max=0):
         if isinstance(data, basestring):
             return data
-        time = 'Search took %s seconds' % data.meta.searchTime
+        self.total += 1
+        self.totalTime += data.meta.searchTime
+        now = time.time()
+        while self.last24hours and now - self.last24hours.peek() > 86400:
+            self.last24hours.dequeue()
+        self.last24hours.enqueue(now)
+        t = 'Search took %s seconds' % data.meta.searchTime
         results = []
         if max:
             data.results = data.results[:max]
@@ -216,9 +216,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             else:
                 results.append(url)
         if not results:
-            return 'No matches found (%s)' % time
+            return 'No matches found (%s)' % t
         else:
-            return '%s: %s' % (time, '; '.join(results))
+            return '%s: %s' % (t, '; '.join(results))
 
     def lucky(self, irc, msg, args):
         """<search>
@@ -359,12 +359,12 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         Returns interesting information about this Google module.  Mostly
         useful for making sure you don't go over your 1000 requests/day limit.
         """
-        recent = len(last24hours)
+        recent = len(self.last24hours)
         irc.reply('This google module has been called %s total; '
                        '%s in the past 24 hours.  '
                        'Google has spent %s seconds searching for me.' %
-                  (utils.nItems('time', totalSearches),
-                   utils.nItems('time', recent), totalTime))
+                  (utils.nItems('time', self.total),
+                   utils.nItems('time', recent), self.totalTime))
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
