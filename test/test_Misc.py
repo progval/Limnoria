@@ -177,6 +177,14 @@ class MiscTestCase(ChannelPluginTestCase):
         m = self.getMsg('notice [list]')
         self.assertEqual(m.command, 'NOTICE')
 
+    def testNoticePrivate(self):
+        m = self.assertNotError('notice [private [list]]')
+        self.assertEqual(m.command, 'NOTICE')
+        self.assertEqual(m.args[0], self.nick)
+        m = self.assertNotError('private [notice [list]]')
+        self.assertEqual(m.command, 'NOTICE')
+        self.assertEqual(m.args[0], self.nick)
+
     def testHostmask(self):
         self.assertResponse('hostmask', self.prefix)
 
