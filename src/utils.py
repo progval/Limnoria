@@ -218,7 +218,8 @@ def quoted(s):
     return '"%s"' % s
 
 def _getSep(s):
-    assert len(s) >= 2
+    if len(s) < 2:
+        raise ValueError, 'string given to _getSep is too short: %r' % s
     if s.startswith('m') or s.startswith('s'):
         separator = s[1]
     else:
