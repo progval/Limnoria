@@ -182,9 +182,9 @@ def makePluginDocumentation(pluginWindow):
             morehelp = cgi.escape(morehelp)
             trClass = trClasses[trClass]
             fd.write(textwrap.dedent('''
-            <tr class="%s" name="%s" id="%s"><td>%s</td><td>%s</td>
+            <tr class="%s" id="%s"><td>%s</td><td>%s</td>
             <td class="detail">%s</td></tr>
-            ''' % (trClass, attr, attr, attr, help, morehelp)))
+            ''' % (trClass, attr, attr, help, morehelp)))
     fd.write('</table>\n')
     fd.write(textwrap.dedent('''
     </div>
@@ -226,7 +226,7 @@ def makeCommandsIndex():
     commands.sort()
     for i in ascii_lowercase:
         if i in firstChars:
-            fd.write('<a href="#%s">%s</a> ' % (i, i.capitalize()))
+            fd.write('<a href="#%s">%s</a> \n' % (i, i.capitalize()))
         else:
             fd.write('%s ' % i.capitalize())
     firstChars.clear()
@@ -236,16 +236,16 @@ def makeCommandsIndex():
         c = command[0]
         if c not in firstChars:
             if firstChars:
-                fd.write('\n</div><br />')
+                fd.write('</div><br />\n')
             fd.write('\n<div class="whitebox">')
             firstChars[c] = ''
-            fd.write('<div name="%s" id="%s" class="letter">%s</div>\n' %
-                     (c, c, c.capitalize()))
+            fd.write('<div id="%s" class="letter">%s</div>\n' %
+                     (c, c.capitalize()))
         plugins = commandDict[command]
         plugins.sort()
         fd.write('<strong>%s</strong>   (%s)<br />\n' %
                  (command,
-                  ', '.join([pluginLink % (p,command,p) for p in plugins])))
+                  ', \n\t'.join([pluginLink % (p,command,p) for p in plugins])))
     fd.write('\n</div>')
     fd.write(textwrap.dedent(genFooter()))
     fd.close()
