@@ -51,6 +51,11 @@ if sqlite is not None:
         def testNoKeyErrorStats(self):
             self.assertNotRegexp('stats sweede', 'KeyError')
 
+        def testSeen(self):
+            self.assertNotError('list')
+            self.assertNotError('seen %s' % self.nick)
+            self.assertNotError('seen %s' % self.nick.upper())
+
         def testKarma(self):
             self.assertRegexp('karma foobar', 'no karma')
             try:

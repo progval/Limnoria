@@ -84,56 +84,60 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
 
     def makeDb(self, filename):
         if os.path.exists(filename):
-            return sqlite.connect(filename)
-        db = sqlite.connect(filename)
-        cursor = db.cursor()
-        cursor.execute("""CREATE TABLE user_stats (
-                          id INTEGER PRIMARY KEY,
-                          name TEXT UNIQUE,
-                          last_seen TIMESTAMP,
-                          last_msg TEXT,
-                          smileys INTEGER,
-                          frowns INTEGER,
-                          chars INTEGER,
-                          words INTEGER,
-                          msgs INTEGER,
-                          actions INTEGER,
-                          joins INTEGER,
-                          parts INTEGER,
-                          kicks INTEGER,
-                          kicked INTEGER,
-                          modes INTEGER,
-                          topics INTEGER
-                          )""")
-        cursor.execute("""CREATE TABLE channel_stats (
-                          smileys INTEGER,
-                          frowns INTEGER,
-                          chars INTEGER,
-                          words INTEGER,
-                          msgs INTEGER,
-                          actions INTEGER,
-                          joins INTEGER,
-                          parts INTEGER,
-                          kicks INTEGER,
-                          modes INTEGER,
-                          topics INTEGER
-                          )""")
-        cursor.execute("""CREATE TABLE nick_seen (
-                          name TEXT UNIQUE ON CONFLICT REPLACE,
-                          last_seen TIMESTAMP,
-                          last_msg TEXT
-                          )""")
-        cursor.execute("""INSERT INTO channel_stats
-                          VALUES (0, 0, 0, 0, 0,
-                                  0, 0, 0, 0, 0, 0)""")
+            db = sqlite.connect(filename)
+        else:
+            db = sqlite.connect(filename)
+            cursor = db.cursor()
+            cursor.execute("""CREATE TABLE user_stats (
+                              id INTEGER PRIMARY KEY,
+                              name TEXT UNIQUE,
+                              last_seen TIMESTAMP,
+                              last_msg TEXT,
+                              smileys INTEGER,
+                              frowns INTEGER,
+                              chars INTEGER,
+                              words INTEGER,
+                              msgs INTEGER,
+                              actions INTEGER,
+                              joins INTEGER,
+                              parts INTEGER,
+                              kicks INTEGER,
+                              kicked INTEGER,
+                              modes INTEGER,
+                              topics INTEGER
+                              )""")
+            cursor.execute("""CREATE TABLE channel_stats (
+                              smileys INTEGER,
+                              frowns INTEGER,
+                              chars INTEGER,
+                              words INTEGER,
+                              msgs INTEGER,
+                              actions INTEGER,
+                              joins INTEGER,
+                              parts INTEGER,
+                              kicks INTEGER,
+                              modes INTEGER,
+                              topics INTEGER
+                              )""")
+            cursor.execute("""CREATE TABLE nick_seen (
+                              name TEXT UNIQUE ON CONFLICT REPLACE,
+                              last_seen TIMESTAMP,
+                              last_msg TEXT
+                              )""")
+            cursor.execute("""INSERT INTO channel_stats
+                              VALUES (0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, 0, 0)""")
 
-        cursor.execute("""CREATE TABLE karma (
-                          id INTEGER PRIMARY KEY,
-                          name TEXT UNIQUE ON CONFLICT IGNORE,
-                          added INTEGER,
-                          subtracted INTEGER
-                          )""")
-        db.commit()
+            cursor.execute("""CREATE TABLE karma (
+                              id INTEGER PRIMARY KEY,
+                              name TEXT UNIQUE ON CONFLICT IGNORE,
+                              added INTEGER,
+                              subtracted INTEGER
+                              )""")
+            db.commit()
+        def p(s1, s2):
+            return int(ircutils.nickEqual(s1, s2))
+        db.create_function('nickeq', 2, p)
         return db
 
     def doPrivmsg(self, irc, msg):
@@ -303,11 +307,11 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                     return
         else:
             table = 'nick_seen'
-        sql = """SELECT last_seen, last_msg FROM %s WHERE name=%%s""" % table
+        sql = "SELECT last_seen, last_msg FROM %s WHERE nickeq(name,%%s)"%table
         #debug.printf(sql)
         cursor.execute(sql, name)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'I have not seen %s.' % name)
+            irc.error(msg, 'I have not seen %s.' % name)
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
