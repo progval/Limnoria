@@ -135,16 +135,19 @@ class Note(callbacks.Privmsg):
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        cursor.execute("""SELECT COUNT(*) FROM notes
+        cursor.execute("""SELECT id FROM notes
                           WHERE notes.to_id=%s AND notified=0""", id)
-        unnotified = int(cursor.fetchone()[0])
+        unnotifiedIds = ['#%s' % t[0] for t in cursor.fetchall()]
+        unnotified = len(unnotifiedIds)
         if unnotified != 0 or repeatedly:
-            cursor.execute("""SELECT COUNT(*) FROM notes
+            cursor.execute("""SELECT id FROM notes
                               WHERE notes.to_id=%s AND read=0""", id)
-            unread = int(cursor.fetchone()[0])
-            s = 'You have %s; ' \
-                '%s that I haven\'t told you about before now..' % \
-                (utils.nItems('note', unread, 'unread'), unnotified)
+            unreadIds = ['#%s' % t[0] for t in cursor.fetchall()]
+            unread = len(unreadIds)
+            s = 'You have %s; %s that I haven\'t told you about before now.  '\
+                '%s %s still unread.' % \
+                (utils.nItems('note', unread, 'unread'), unnotified,
+                 utils.commaAndify(unreadIds), utils.be(unread))
             maker = ircmsgs.privmsg
             if self.userValue('notifyWithNotice', msg.prefix):
                 maker = ircmsgs.notice
