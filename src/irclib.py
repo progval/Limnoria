@@ -220,15 +220,16 @@ class IrcMsgQueue(object):
 # status of various modes (especially ops/halfops/voices) in channels, etc.
 ###
 class ChannelState(object):
-    __slots__ = ('users', 'ops', 'halfops',
+    __slots__ = ('users', 'ops', 'halfops', 'bans',
                  'voices', 'topic', 'modes', 'created')
     def __init__(self):
         self.topic = ''
         self.created = 0
-        self.users = ircutils.IrcSet()
         self.ops = ircutils.IrcSet()
-        self.halfops = ircutils.IrcSet()
+        self.bans = ircutils.IrcSet()
+        self.users = ircutils.IrcSet()
         self.voices = ircutils.IrcSet()
+        self.halfops = ircutils.IrcSet()
         self.modes = ircutils.IrcDict()
 
     def addUser(self, user):
@@ -265,13 +266,42 @@ class ChannelState(object):
         self.voices.discard(user)
 
     def setMode(self, mode, value=None):
-        assert mode not in 'ovh'
+        assert mode not in 'ovhbeq'
         self.modes[mode] = value
 
     def unsetMode(self, mode):
-        assert mode not in 'ovh'
+        assert mode not in 'ovhbeq'
         if mode in self.modes:
             del self.modes[mode]
+
+    def doMode(self, msg):
+        def getSet(c):
+            if c == 'o':
+                set = self.ops
+            elif c == 'v':
+                set = self.voices
+            elif c == 'h':
+                set = self.halfops
+            elif c == 'b':
+                set = self.bans
+            else: # We don't care yet, so we'll just return an empty set.
+                set = sets.Set()
+            return set
+        for (mode, value) in ircutils.separateModes(msg.args[1:]):
+            (action, modeChar) = mode
+            if modeChar in 'ovhbeq': # We don't handle e or q yet.
+                if action == '-':
+                    set = getSet(modeChar)
+                    set.discard(value)
+                elif action == '+':
+                    set = getSet(modeChar)
+                    set.add(value)
+            else:
+                if action == '+':
+                    self.setMode(modeChar, value)
+                else:
+                    assert action == '-'
+                    self.unsetMode(modeChar)
 
     def __getstate__(self):
         return [getattr(self, name) for name in self.__slots__]
@@ -420,30 +450,9 @@ class IrcState(IrcCommandDispatcher):
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
-        if ircutils.isChannel(channel):
-            chan = self.channels[channel]
-            for (mode, value) in ircutils.separateModes(msg.args[1:]):
-                if mode == '-o':
-                    chan.ops.discard(value)
-                elif mode == '+o':
-                    chan.ops.add(value)
-                elif mode == '-h':
-                    chan.halfops.discard(value)
-                elif mode == '+h':
-                    chan.halfops.add(value)
-                elif mode == '-v':
-                    chan.voices.discard(value)
-                elif mode == '+v':
-                    chan.voices.add(value)
-                elif mode[-1] in 'beq':
-                    pass # We don't need this right now.
-                else:
-                    modeChar = mode[1]
-                    if mode[0] == '+':
-                        chan.setMode(modeChar, value)
-                    else:
-                        assert mode[0] == '-'
-                        chan.unsetMode(modeChar)
+        if ircutils.isChannel(channel): # There can be user modes, as well.
+            chan = self.channels[channel] # ??? Do we need to catch KeyError?
+            chan.doMode(msg)
 
     def do324(self, irc, msg):
         channel = msg.args[1]
