@@ -46,22 +46,20 @@ import privmsgs
 import callbacks
 
 example = utils.wrapLines("""
---- Topic for #sourcereview is Welcome to #sourcereview, home of cool people. (jemfinch) || supybot now has an IMDB module! (jemfinch) || jemfinch, make lasturl show more information about the url in quesiton. (jemfinch) || jemfinch, think about how you're going to have threads notify the main loop that data is ready. (jemfinch)
---- Topic for #sourcereview set by supybot at Tue Aug 26 15:38:35
+--- Topic for #sourcereview is If you notice *anything* that seems unintuitive about supybot, post it at http://tinyurl.com/nvct (jemfinch) || Supybot 0.72.1 released! (jemfinch) || If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike)
+--- Topic for #sourcereview set by supybot at Mon Sep 29 15:56:10
 <jemfinch> @list Topic
 <supybot> jemfinch: addtopic, changetopic, removetopic, shuffletopic, topic
+<jemfinch> @removetopic 2
+--- supybot has changed the topic to: If you notice *anything* that seems unintuitive about supybot, post it at http://tinyurl.com/nvct (jemfinch) || If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike)
+<jemfinch> @addtopic Tenative release for Supybot 0.73.0 is set for sunday
+--- supybot has changed the topic to: If you notice *anything* that seems unintuitive about supybot, post it at http://tinyurl.com/nvct (jemfinch) || If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike) || Tenative release for Supybot 0.73.0 is set for sunday (jemfinch)
+<jemfinch> @changetopic -1 s/sun/Sun/
+--- supybot has changed the topic to: If you notice *anything* that seems unintuitive about supybot, post it at http://tinyurl.com/nvct (jemfinch) || If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike) || Tenative release for Supybot 0.73.0 is set for Sunday (jemfinch)
+<jemfinch> @gettopic -2
+<supybot> jemfinch: If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike)
 <jemfinch> @shuffletopic
---- supybot has changed the topic to: supybot now has an IMDB module! (jemfinch) || jemfinch, make lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch) || jemfinch, think about how you're going to have threads notify the main loop that data is ready. (jemfinch)
-<jemfinch> @removetopic 0
---- supybot has changed the topic to: jemfinch, make lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch) || jemfinch, think about how you're going to have threads notify the main loop that data is ready. (jemfinch)
-<jemfinch> @changetopic 0 s/make/MAKE/
---- supybot has changed the topic to: jemfinch, MAKE lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch) || jemfinch, think about how you're going to have threads notify the main loop that data is ready. (jemfinch)
-<jemfinch> @removetopic -1
---- supybot has changed the topic to: jemfinch, MAKE lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch)
-<jemfinch> @addtopic supybot will make a beta release soon!
---- supybot has changed the topic to: jemfinch, MAKE lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch) || supybot will make a beta release soon! (jemfinch)
-<jemfinch> @topic -1
-<supybot> jemfinch: supybot will make a beta release soon! (jemfinch)
+--- supybot has changed the topic to: If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike) || If you notice *anything* that seems unintuitive about supybot, post it at http://tinyurl.com/nvct (jemfinch) || Tenative release for Supybot 0.73.0 is set for Sunday (jemfinch)
 """)
 
 class Topic(callbacks.Privmsg):
