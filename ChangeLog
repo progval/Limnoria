@@ -1,3 +1,8 @@
+	* Changed User.{addhostmask,removehostmask,register,unregister}
+	to allow owner users to do what they will with their users.  You
+	can now add hostmasks, remove hostmasks, register users, and
+	unregister users willy-nilly.
+	
 	* Changed and moved several configuration variables.
 	supybot.{throttleTime,maxHistoryLength,pingServer,pingInterval}
 	all moved to supybot.protocols.irc; supybot.httpPeekSize moved to

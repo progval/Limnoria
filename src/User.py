@@ -107,7 +107,8 @@ class User(callbacks.Privmsg):
         """
         (optlist, rest) = getopt.getopt(args, '', ['hashed'])
         (name, password) = privmsgs.getArgs(rest, required=2)
-        hashed = False
+        addHostmask = True
+        hashed = conf.supybot.databases.users.hash()
         for (option, arg) in optlist:
             if option == '--hashed':
                 hashed = True
@@ -123,35 +124,42 @@ class User(callbacks.Privmsg):
             return
         try:
             u = ircdb.users.getUser(msg.prefix)
-            irc.error('Your hostmask is already registered to %s' % u.name)
-            return
+            if u.checkCapability('owner'):
+                addHostmask = False
+            else:
+                irc.error('Your hostmask is already registered to %s' % u.name)
+                return
         except KeyError:
             pass
         (id, user) = ircdb.users.newUser()
         user.name = name
         user.setPassword(password, hashed=hashed)
-        user.addHostmask(msg.prefix)
+        if addHostmask:
+            user.addHostmask(msg.prefix)
         ircdb.users.setUser(id, user)
         irc.replySuccess()
 
     def unregister(self, irc, msg, args):
-        """<name> <password>
+        """<name> [<password>]
 
-        Unregisters <name> from the user database.
+        Unregisters <name> from the user database.  If the user giving this
+        command is an owner user, the password is not necessary.
         """
-        (name, password) = privmsgs.getArgs(args, required=2)
+        (name, password) = privmsgs.getArgs(args, optional=1)
         self._checkNotChannel(irc, msg, password)
         try:
             id = ircdb.users.getUserId(name)
-            user = ircdb.users.getUser(id)
+            u = ircdb.users.getUser(id)
         except KeyError:
             irc.error('That username isn\'t registered.')
             return
-        if user.checkPassword(password):
-            ircdb.users.delUser(id)
-            irc.replySuccess()
-        else:
-            irc.error(conf.supybot.replies.incorrectAuthentication())
+        if not u.checkPassword(password):
+            u = ircdb.users.getUser(msg.prefix)
+            if not u.checkCapability('owner'):
+                irc.error(conf.supybot.replies.incorrectAuthentication())
+                return
+        ircdb.users.delUser(id)
+        irc.replySuccess()
 
     def changename(self, irc, msg, args):
         """<name> <new name> [<password>]
@@ -186,7 +194,9 @@ class User(callbacks.Privmsg):
         Adds the hostmask <hostmask> to the user specified by <name>.  The
         <password> may only be required if the user is not recognized by
         hostmask.  If you include the <password> parameter, this message must
-        be sent to the bot privately (not on a channel).
+        be sent to the bot privately (not on a channel).  <password> is also
+        not required if an owner user is giving the command on behalf of some
+        other user.
         """
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
         self._checkNotChannel(irc, msg, password)
@@ -210,17 +220,19 @@ class User(callbacks.Privmsg):
                 return
         except KeyError:
             pass
-        if user.checkHostmask(msg.prefix) or user.checkPassword(password):
-            try:
-                user.addHostmask(hostmask)
-            except ValueError, e:
-                irc.error(str(e))
+        if not user.checkPassword(password) and \
+           not user.checkHostmask(msg.prefix):
+            u = ircdb.users.getUser(msg.prefix)
+            if not u.checkCapability('owner'):
+                irc.error(conf.supybot.replies.incorrectAuthentication())
                 return
-            ircdb.users.setUser(id, user)
-            irc.replySuccess()
-        else:
-            irc.error(conf.supybot.replies.incorrectAuthentication())
+        try:
+            user.addHostmask(hostmask)
+        except ValueError, e:
+            irc.error(str(e))
             return
+        ircdb.users.setUser(id, user)
+        irc.replySuccess()
 
     def removehostmask(self, irc, msg, args):
         """<name> <hostmask> [<password>]
@@ -239,22 +251,24 @@ class User(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
             return
-        if user.checkHostmask(msg.prefix) or user.checkPassword(password):
-            try:
-                s = ''
-                if hostmask == 'all':
-                    user.hostmasks[:] = []
-                    s = 'All hostmasks removed.'
-                else:
-                    user.removeHostmask(hostmask)
-            except ValueError:
-                irc.error('There was no such hostmask.')
+        if not user.checkPassword(password) and \
+           not user.checkHostmask(msg.prefix):
+            u = ircdb.users.getUser(msg.prefix)
+            if not u.checkCapability('owner'):
+                irc.error(conf.supybot.replies.incorrectAuthentication())
                 return
-            ircdb.users.setUser(id, user)
-            irc.replySuccess(s)
-        else:
-            irc.error(conf.supybot.replies.incorrectAuthentication())
+        try:
+            s = ''
+            if hostmask == 'all':
+                user.hostmasks[:] = []
+                s = 'All hostmasks removed.'
+            else:
+                user.removeHostmask(hostmask)
+        except ValueError:
+            irc.error('There was no such hostmask.')
             return
+        ircdb.users.setUser(id, user)
+        irc.replySuccess(s)
 
     def setpassword(self, irc, msg, args):
         """[--hashed] <name> <old password> <new password>
@@ -263,12 +277,13 @@ class User(callbacks.Privmsg):
         <new password>.  Obviously this message must be sent to the bot
         privately (not in a channel).  If --hashed is given, the password will
         be hashed on disk (rather than being stored in plaintext.  If the
-        requesting user is an owner user, the <old password> needn't be
+        requesting user is an owner user (and the user whose password is being
+        changed isn't that same owner user), then <old password> needn't be
         correct.
         """
         (optlist, rest) = getopt.getopt(args, '', ['hashed'])
         (name, oldpassword, newpassword) = privmsgs.getArgs(rest, 3)
-        hashed = False
+        hashed = conf.supybot.databases.users.hash()
         for (option, arg) in optlist:
             if option == '--hashed':
                 hashed = True
@@ -279,9 +294,9 @@ class User(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
             return
-        requester = ircdb.users.getUser(msg.prefix)
+        u = ircdb.users.getUser(msg.prefix)
         if user.checkPassword(oldpassword) or \
-           (requester.checkCapability('owner') and not requester == user):
+           (u.checkCapability('owner') and not u == user):
             user.setPassword(newpassword, hashed=hashed)
             ircdb.users.setUser(id, user)
             irc.replySuccess()
