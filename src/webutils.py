@@ -101,7 +101,7 @@ def getUrlFd(url, headers=None):
     except urllib2.HTTPError, e:
         raise WebError, strError(e)
     except urllib2.URLError, e:
-        raise WebError, strError(e.reason[1])
+        raise WebError, strError(e.reason)
 
 def getUrl(url, size=None, headers=None):
     """Gets a page.  Returns a string that is the page gotten."""
