@@ -304,9 +304,8 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 self._updateTinyDb(url, tinyurl, channel)
             irc.reply(tinyurl)
         else:
-            s = 'Could not parse the TinyURL.com results page.  (%s)' % \
-                conf.replyPossibleBug
-            irc.error(s)
+            s = 'Could not parse the TinyURL.com results page.'
+            irc.errorPossibleBug(s)
     tiny = privmsgs.thread(tiny)
 
     def num(self, irc, msg, args):
@@ -320,7 +319,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM urls""")
         (count,) = cursor.fetchone()
-        irc.reply('I have %s %s in my database.' % \
+        irc.reply('I have %s %s in my database.' %
                   (count, int(count) == 1 and 'URL' or 'URLs'))
 
     def last(self, irc, msg, args):

@@ -84,7 +84,7 @@ def configure(onStart, afterConnect, advanced):
         if yn('Do you want the Google Groups link snarfer enabled by '
             'default?') == 'y':
             onStart.append('Google config groups-snarfer on')
-        if yn('Do you want the Google search snarfer enabled by default?')\
+        if yn('Do you want the Google search snarfer enabled by default?') \
             == 'y':
             onStart.append('Google config search-snarfer on')
         if 'load Alias' not in onStart:
@@ -92,7 +92,7 @@ def configure(onStart, afterConnect, advanced):
             if yn('Would you like to load the Alias module now?') == 'y':
                 onStart.append('load Alias')
             else:
-                print 'You can still use the Google module, but you won\'t '\
+                print 'You can still use the Google module, but you won\'t ' \
                       'have these extra commands enabled.'
                 return
         onStart.append('alias googlelinux "google --restrict=linux $1"')
@@ -289,12 +289,11 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         useful for making sure you don't go over your 1000 requests/day limit.
         """
         recent = len(last24hours)
-        irc.reply('This google module has been called %s time%stotal; '\
-                       '%s time%sin the past 24 hours.  ' \
-                       'Google has spent %s seconds searching for me.' % \
-                  (totalSearches, totalSearches != 1 and 's ' or ' ',
-                   recent, recent != 1 and 's ' or ' ',
-                   totalTime))
+        irc.reply('This google module has been called %s total; '
+                       '%s in the past 24 hours.  '
+                       'Google has spent %s seconds searching for me.' %
+                  (utils.nItems('time', totalSearches),
+                   utils.nItems('time', recent), totalTime))
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
@@ -320,7 +319,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         r"http://groups.google.com/[^\s]+"
         if not self.configurables.get('groups-snarfer', channel=msg.args[0]):
             return
-        request = urllib2.Request(match.group(0), headers=\
+        request = urllib2.Request(match.group(0), headers= \
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
         fd = urllib2.urlopen(request)
         text = fd.read()
@@ -350,8 +349,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             irc.reply('Google Groups: %s, %s' % (mGroup.group(1),
                 mThread.group(1)), prefixName = False)
         else:
-            irc.error('That doesn\'t appear to be a proper '\
-                'Google Groups page. (%s)' % conf.replyPossibleBug)
+            irc.errorPossibleBug('That doesn\'t appear to be a proper '
+                                 'Google Groups page.')
     googleGroups = privmsgs.urlSnarfer(googleGroups)
 
 

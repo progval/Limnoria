@@ -230,8 +230,8 @@ class Debian(callbacks.Privmsg,
             numberOfPackages = m.group(1)
         m = self._debtablere.search(html)
         if m is None:
-            irc.reply('No package found for %s (%s)' % \
-                             (urllib.unquote(package), branch))
+            irc.reply('No package found for %s (%s)' %
+                      (urllib.unquote(package), branch))
         else:
             tableData = m.group(1)
             rows = tableData.split('</TR>')
@@ -242,7 +242,7 @@ class Debian(callbacks.Privmsg,
                     s = '%s (%s)' % (pkgMatch.group(1), brMatch.group(1))
                     responses.append(s)
             resp = 'Total matches: %s, shown: %s.  %s' % \
-                (numberOfPackages, len(responses), ', '.join(responses))
+                   (numberOfPackages, len(responses), ', '.join(responses))
             irc.reply(resp)
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)

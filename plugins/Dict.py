@@ -129,7 +129,7 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
             if dictionary == '*':
                 irc.reply('No definition for %r could be found.' % word)
             else:
-                irc.reply('No definition for %r could be found in %s' % \
+                irc.reply('No definition for %r could be found in %s' %
                           (word, ircutils.bold(dictionary)))
             return
         L = []

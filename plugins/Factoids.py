@@ -268,10 +268,10 @@ class Factoids(plugins.ChannelDBHandler,
                 db.commit()
                 irc.replySuccess()
             else:
-                irc.error('%s factoids have that key.  ' \
-                               'Please specify which one to remove, ' \
-                               'or use * to designate all of them.' % \
-                               cursor.rowcount)
+                irc.error('%s factoids have that key.  '
+                          'Please specify which one to remove, '
+                          'or use * to designate all of them.' %
+                          cursor.rowcount)
 
     def random(self, irc, msg, args):
         """[<channel>]

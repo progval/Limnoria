@@ -104,10 +104,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     regexps = ['sfSnarfer']
 
     _reopts = re.I
-    _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href='\
-        '"([^"]+)">([^<]+)</a>', _reopts)
-    _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category=100'\
-        '&_group=100&order=artifact_id&sort=DESC'
+    _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href='
+                         r'"([^"]+)">([^<]+)</a>', re.I)
+    _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category=100' \
+                '&_group=100&order=artifact_id&sort=DESC'
     _resolution=re.compile(r'<b>(Resolution):</b> <a.+?<br>(.+?)</td>',_reopts)
     _assigned=re.compile(r'<b>(Assigned To):</b> <a.+?<br>(.+?)</td>', _reopts)
     _submitted = re.compile(r'<b>(Submitted By):</b><br>([^<]+)</td>', _reopts)
@@ -167,8 +167,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 if len(resp) > 10:
                     resp = imap(lambda s: utils.ellipsisify(s, 50), resp)
                 return '%s' % utils.commaAndify(resp)
-            raise callbacks.Error, 'No Trackers were found. (%s)' %\
-                conf.replyPossibleBug
+            raise callbacks.Error, 'No Trackers were found.  (%s)' % \
+                  conf.replyPossibleBug
         except webutils.WebError, e:
             raise callbacks.Error, e.msg()
         
@@ -180,8 +180,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             if resp:
                 irc.reply(resp[0])
                 return
-            irc.error('No Trackers were found. (%s)' %
-                conf.replyPossibleBug)
+            irc.errorPossibleBug('No Trackers were found.')
         except webutils.WebError, e:
             irc.error(e.msg())
 
@@ -195,8 +194,9 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         project = privmsgs.getArgs(args, required=0, optional=1)
         try:
             int(project)
-            irc.error('Use the bug command to get information about a '\
-                'specific bug.')
+            # They want the bug command, they're giving us an id#.
+            s = 'Use the bug command to get information about a specific bug.'
+            irc.error(s)
             return
         except ValueError:
             pass
@@ -246,8 +246,9 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         project = privmsgs.getArgs(args, required=0, optional=1)
         try:
             int(project)
-            irc.error('Use the rfe command to get information about a '\
-                'specific rfe.')
+            # They want a specific RFE, they gave us its id#.
+            s = 'Use the rfe command to get information about a specific rfe.'
+            irc.error(s)
             return
         except ValueError:
             pass
@@ -309,9 +310,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 head = '%s #%s:' % (ircutils.bold(linktype), num)
                 resp.append(desc)
             else:
-                s = '%s does not appear to be a proper Sourceforge ' \
-                    'Tracker page (%s)' % (url, conf.replyPossibleBug)
-                self.log.warning(s)
+                self.log.warning('Invalid Tracker page snarfed: %s', url)
             for r in self._res:
                 m = r.search(s)
                 if m:

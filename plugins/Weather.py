@@ -62,22 +62,22 @@ class Weather(callbacks.Privmsg):
             irc.error(str(e))
             
     _cityregex = re.compile(
-        r'<td><font size="4" face="arial"><b>'\
-        r'(.*?), (.*?),(.*?)</b></font></td>', re.IGNORECASE)
+        r'<td><font size="4" face="arial"><b>'
+        r'(.*?), (.*?),(.*?)</b></font></td>', re.I)
     _interregex = re.compile(
-        r'<td><font size="4" face="arial"><b>'\
-        r'([^,]+), ([^<]+)</b></font></td>', re.IGNORECASE)
+        r'<td><font size="4" face="arial"><b>'
+        r'([^,]+), ([^<]+)</b></font></td>', re.I)
     _condregex = re.compile(
-        r'<td width="100%" colspan="2" align="center"><strong>'\
-        r'<font face="arial">([^<]+)</font></strong></td>', re.IGNORECASE)
+        r'<td width="100%" colspan="2" align="center"><strong>'
+        r'<font face="arial">([^<]+)</font></strong></td>', re.I)
     _tempregex = re.compile(
-        r'<td valign="top" align="right"><strong><font face="arial">'\
-        r'([^<]+)</font></strong></td>', re.IGNORECASE)
+        r'<td valign="top" align="right"><strong><font face="arial">'
+        r'([^<]+)</font></strong></td>', re.I)
     _chillregex = re.compile(
-        r'Wind Chill</font></strong>:</small></a></td>\s+<td align="right">'\
+        r'Wind Chill</font></strong>:</small></a></td>\s+<td align="right">'
         r'<small><font face="arial">([^<]+)</font></small></td>', re.I | re.S)
     _heatregex = re.compile(
-        r'Heat Index</font></strong>:</small></a></td>\s+<td align="right">'\
+        r'Heat Index</font></strong>:</small></a></td>\s+<td align="right">'
         r'<small><font face="arial">([^<]+)</font></small></td>', re.I | re.S)
     # States
     _realStates = sets.Set(['ak', 'al', 'ar', 'az', 'ca', 'co', 'ct', 
@@ -124,16 +124,14 @@ class Weather(callbacks.Privmsg):
                 state = ''
 	    if country in self._countryMap.keys():
 	        country = self._countryMap[country]
-            url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
-                  'pass=&dpp=&forecast=zandh&config=&'\
-                  'place=%s&state=%s&country=%s' % \
-                  (city, state, country)
+            url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?' \
+                  'pass=&dpp=&forecast=zandh&config=&' \
+                  'place=%s&state=%s&country=%s' % (city, state, country)
 	    html = webutils.getUrl(url)
 	    if 'was not found' in html:
-	        url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
-		      'pass=&dpp=&forecast=zandh&config=&'\
-		      'place=%s&state=&country=%s' % \
-		      (city, state)
+	        url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?' \
+		      'pass=&dpp=&forecast=zandh&config=&' \
+		      'place=%s&state=&country=%s' % (city, state)
 		html = webutils.getUrl(url)
 		if 'was not found' in html:
 		    irc.error('No such location could be found.')
@@ -144,7 +142,7 @@ class Weather(callbacks.Privmsg):
             zip = privmsgs.getArgs(args)
             zip = zip.replace(',', '')  
             zip = zip.lower().split()
-            url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
+            url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?' \
                   'config=&forecast=zandh&pands=%s&Submit=GO' % args[0]
             html = webutils.getUrl(url)
 	    if 'was not found' in html:

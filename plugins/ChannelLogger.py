@@ -126,7 +126,7 @@ class ChannelLogger(irclib.IrcCallback):
         for channel in msg.args[0].split(','):
             log = self.getLog(channel)
             self.timestamp(log)
-            log.write('*** %s has joined %s\n' %\
+            log.write('*** %s has joined %s\n' %
                       (msg.nick or msg.prefix, channel))
 
     def doKick(self, irc, msg):
@@ -138,7 +138,7 @@ class ChannelLogger(irclib.IrcCallback):
         log = self.getLog(channel)
         self.timestamp(log)
         if kickmsg:
-            log.write('*** %s was kicked by %s (%s)\n' % \
+            log.write('*** %s was kicked by %s (%s)\n' %
                       (target, msg.nick, kickmsg))
         else:
             log.write('*** %s was kicked by %s\n' % (target, msg.nick))
@@ -154,7 +154,7 @@ class ChannelLogger(irclib.IrcCallback):
         if ircutils.isChannel(channel):
             log = self.getLog(channel)
             self.timestamp(log)
-            log.write('*** %s sets mode: %s %s\n' % \
+            log.write('*** %s sets mode: %s %s\n' %
                       (msg.nick or msg.prefix, msg.args[1],
                        ' '.join(msg.args[2:])))
 

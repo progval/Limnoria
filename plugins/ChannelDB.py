@@ -452,7 +452,7 @@ class ChannelDB(plugins.ChannelDBHandler,
         values = cursor.fetchone()
         s = '%s has sent %s; a total of %s, %s, ' \
             '%s, and %s; %s of those messages %s' \
-            '%s has joined %s, parted %s, quit %s, kicked someone %s, '\
+            '%s has joined %s, parted %s, quit %s, kicked someone %s, ' \
             'been kicked %s, changed the topic %s, ' \
             'and changed the mode %s.' % \
             (name, utils.nItems('message', values.msgs),
@@ -589,7 +589,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     username = ircdb.users.getUser(id).name
                     irc.error('%r has no wordstats' % username)
                     return
-                L = [('%r: %s' % (word, count)) for \
+                L = [('%r: %s' % (word, count)) for
                      (word, count) in cursor.fetchall()]
                 irc.reply(utils.commaAndify(L))
                 return
@@ -619,7 +619,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                 ers = '%rer' % word
                 ret = 'Top %s ' % utils.nItems(ers, numResultsShown)
                 ret += '(out of a total of %s seen):' % \
-                             utils.nItems(repr(word), total)
+                       utils.nItems(repr(word), total)
                 L = []
                 for (count, id) in results[:numResultsShown]:
                     username = ircdb.users.getUser(id).name

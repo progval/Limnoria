@@ -172,7 +172,7 @@ class Http(callbacks.Privmsg):
         previous day of a given compny (represented by a stock symbol).
         """
         symbol = privmsgs.getArgs(args)
-        url = 'http://finance.yahoo.com/d/quotes.csv?s=%s'\
+        url = 'http://finance.yahoo.com/d/quotes.csv?s=%s' \
               '&f=sl1d1t1c1ohgv&e=.csv' % symbol
         quote = webutils.getUrl(url)
         data = quote.split(',')
@@ -226,7 +226,7 @@ class Http(callbacks.Privmsg):
             if s.startswith('[not an acronym]'):
                 defs[i] = s.split('is ', 1)[1]
         if len(defs) == 0:
-            irc.reply('No definitions found.  (%s)' % conf.replyPossibleBug)
+            irc.reply('No definitions found.')
         else:
             s = ', or '.join(defs)
             irc.reply('%s could be %s' % (acronym, s))
@@ -268,11 +268,11 @@ class Http(callbacks.Privmsg):
                     beta = version.strip()
         finally:
             fd.close()
-        irc.reply('The latest stable kernel is %s; ' \
-                       'the latest beta kernel is %s.' % (stable, beta))
+        irc.reply('The latest stable kernel is %s; '
+                  'the latest beta kernel is %s.' % (stable, beta))
 
-    _pgpkeyre = re.compile(r'pub\s+\d{4}\w/<a '\
-        'href="([^"]+)">([^<]+)</a>[^>]+>([^<]+)</a>')
+    _pgpkeyre = re.compile(r'pub\s+\d{4}\w/<a href="([^"]+)">'
+                           r'([^<]+)</a>[^>]+>([^<]+)</a>')
     def pgpkey(self, irc, msg, args):
         """<search words>
 
@@ -299,8 +299,8 @@ class Http(callbacks.Privmsg):
             fd.close()
 
     _filextre = re.compile(
-        r'<strong>Extension:</strong>.*?<tr>.*?</tr>\s+<tr>\s+<td colspan='\
-        r'"2">(?:<a href[^>]+>([^<]+)</a>\s+|([^<]+))</td>\s+<td>'\
+        r'<strong>Extension:</strong>.*?<tr>.*?</tr>\s+<tr>\s+<td colspan='
+        r'"2">(?:<a href[^>]+>([^<]+)</a>\s+|([^<]+))</td>\s+<td>'
         r'(?:<a href[^>]+>([^<]+)</a>|<img src="images/spacer.gif"(.))',
         re.I|re.S)
     def extension(self, irc, msg, args):

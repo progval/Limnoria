@@ -147,7 +147,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 if len(ambiguousCommands) == 1: # Common case.
                     (command, names) = ambiguousCommands.popitem()
                     names.sort()
-                    s = 'The command %r is available in the %s plugins.  '\
+                    s = 'The command %r is available in the %s plugins.  ' \
                         'Please specify the plugin whose command you ' \
                         'wish to call by using its name as a command ' \
                         'before calling it.' % \
@@ -160,7 +160,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                  'plugins' %
                                  (command, utils.commaAndify(names)))
                     s = '%s; please specify from which plugins to ' \
-                                 'call these commands.' % '; '.join(L)
+                        'call these commands.' % '; '.join(L)
                 irc.queueMsg(callbacks.error(msg, s))
             else:
                 callbacks.IrcObjectProxy(irc, msg, tokens)

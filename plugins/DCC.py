@@ -80,7 +80,7 @@ class DCC(callbacks.Privmsg):
                         s = 'Error trying to determine the external IP ' \
                             'address of this machine via the host %s: %s'
                         self.log.warning(s, host, e)
-                        irc.reply(conf.replyError)
+                        irc.replyError()
                         return
                 i = ircutils.dccIP(ip)
                 sock.bind((host, 0))

@@ -286,7 +286,7 @@ class Fun(callbacks.Privmsg):
         response = 'I have %s objects: %s modules, %s classes, %s functions, '\
                    '%s dictionaries, %s lists, %s tuples, %s strings, and a ' \
                    'few other odds and ends.  ' \
-                   'I have a total of %s references.' %\
+                   'I have a total of %s references.' % \
                    (len(objs), modules, classes, functions,
                     dicts, lists, tuples, strings, refcounts)
         irc.reply(response)

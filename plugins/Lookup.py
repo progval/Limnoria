@@ -178,7 +178,7 @@ class Lookup(callbacks.Privmsg):
                 cursor.execute("CREATE INDEX %s_keys ON %s (key)" %(name,name))
                 db.commit()
             self.addCommand(name)
-            irc.reply('%s (lookup %s added)' % (conf.replySuccess, name))
+            irc.replySuccess('(lookup %s added)' % name)
     add = privmsgs.checkCapability(add, 'admin')
 
     def addCommand(self, name):

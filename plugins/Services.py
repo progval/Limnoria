@@ -82,7 +82,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         ChanServ, respectively,  They default to NickServ and ChanServ.
         """
         if ircutils.isChannel(msg.args[0]):
-            irc.error(conf.replyRequiresPrivacy)
+            irc.errorRequiresPrivacy()
             return
         (self.nick, self.password, nickserv, chanserv) = \
                     privmsgs.getArgs(args, required=2, optional=2)

@@ -472,7 +472,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
                 identify = ''
         else:
             identify = ''
-        s = '%s (%s) has been%s on server %s since %s (idle for %s) and '\
+        s = '%s (%s) has been%s on server %s since %s (idle for %s) and ' \
             '%s.%s' % (user, hostmask, identify, server, signon, idle,
                        channels, away)
         replyIrc.reply(replyMsg, s)

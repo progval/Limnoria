@@ -89,7 +89,7 @@ class Scheduler(callbacks.Privmsg):
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addEvent(f, time.time() + seconds)
         self.events[str(id)] = command
-        irc.reply('%s  Event #%s added.' % (conf.replySuccess, id))
+        irc.replySuccess('Event #%s added.' % id)
 
     def remove(self, irc, msg, args):
         """<id>
@@ -106,7 +106,7 @@ class Scheduler(callbacks.Privmsg):
                 pass
             try:
                 schedule.removeEvent(id)
-                irc.reply(conf.replySuccess)
+                irc.replySuccess()
             except KeyError:
                 irc.error('Invalid event id.')
         else:

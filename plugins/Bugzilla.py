@@ -198,8 +198,9 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             return
         queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
         try:
-            summary = self._get_short_bug_summary(queryurl, 'Snarfed '\
-                'Bugzilla URL', match.group(2))
+            summary = self._get_short_bug_summary(queryurl,
+                                                  'Snarfed Bugzilla URL',
+                                                  match.group(2))
         except BugzillaError, e:
             irc.reply(str(e))
             return

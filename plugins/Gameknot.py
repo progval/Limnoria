@@ -62,10 +62,10 @@ def configure(onStart, afterConnect, advanced):
         print 'that match a specific pattern (we call this a snarfer). When'
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
-        if yn('Do you want the Gameknot stats snarfer enabled by default?') ==\
+        if yn('Do you want the Gameknot stats snarfer enabled by default?')==\
                'n':
             onStart.append('Gameknot toggle stat off')
-        if yn('Do you want the Gameknot Game links snarfer enabled by '\
+        if yn('Do you want the Gameknot Game links snarfer enabled by '
               'default?') == 'n':
             onStart.append('Gameknot toggle stat off')
 
@@ -85,8 +85,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         )
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:</td><td class=sml>(\d+)</td></tr>')
-    _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
-        '"#FFFF00">(\d+)')
+    _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'
+                           r'"#FFFF00">(\d+)')
     _gkteam = re.compile(r'Team:(<.*?>)+(?P<name>.*?)</span>')
     _gkseen = re.compile(r'(seen on GK:\s+([^[]+ago)|.*?is hiding.*?)')
     def __init__(self):
@@ -158,8 +158,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             if ('User %s not found!' % name) in profile:
                 raise callbacks.Error, 'No user %s exists.' % name
             else:
-                raise callbacks.Error,'The format of the page was odd.  %s' %\
-                    conf.replyPossibleBug
+                raise callbacks.Error,'The format of the page was odd.  %s' % \
+                      conf.replyPossibleBug
         except urllib2.URLError:
             raise callbacks.Error, 'Couldn\'t connect to gameknot.com'
 
@@ -236,8 +236,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 (gameTitle, wName, wStats, bName, bStats, toMove)
             irc.reply(s, prefixName=False)
         except ValueError:
-            irc.error('That doesn\'t appear to be a proper Gameknot game.'\
-                ' (%s)' % conf.replyPossibleBug)
+            s = 'That doesn\'t appear to be a proper Gameknot game.'
+            irc.errorPossibleBug(s)
         except Exception, e:
             irc.error(utils.exnToString(e))
     gameknotSnarfer = privmsgs.urlSnarfer(gameknotSnarfer)

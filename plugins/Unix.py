@@ -91,9 +91,9 @@ def configure(onStart, afterConnect, advanced):
 
 def progstats():
     pw = pwd.getpwuid(os.getuid())
-    response = 'Process ID %i running as user "%s" and as group "%s" '\
-               'from directory "%s" with the command line "%s".  '\
-               'Running on Python %s.' %\
+    response = 'Process ID %i running as user "%s" and as group "%s" ' \
+               'from directory "%s" with the command line "%s".  ' \
+               'Running on Python %s.' % \
                (os.getpid(), pw[0], pw[3],
                 os.getcwd(), " ".join(sys.argv),
                 sys.version.translate(string.ascii, '\r\n'))

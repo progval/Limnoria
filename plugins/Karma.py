@@ -202,10 +202,6 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                 orderby = 'subtracted'
             elif kind == 'active':
                 orderby = 'added+subtracted'
-            else:
-                self.log.error('Impossible condition in most: kind=%s' % kind)
-                irc.error(conf.replyPossibleBug)
-                return
             sql = "SELECT name, %s FROM karma ORDER BY %s DESC LIMIT %s" % \
                   (orderby, orderby,
                    self.configurables.get('karma-most-display', channel))

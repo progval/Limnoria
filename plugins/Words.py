@@ -184,7 +184,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
                 return
             else:
                 addWord(self.dbHandler.getDb(), word, commit=True)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess()
 
     def crossword(self, irc, msg, args):
         """<word>

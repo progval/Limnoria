@@ -134,8 +134,8 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
             irc.queueMsg(ircmsgs.topic(channel, self.topics[channel]))
             if self.configurables.get('revenge', channel):
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick,
-                                      conf.replyNoCapability % \
-                                      _chanCap(channel, 'topic')))
+                                          conf.replyNoCapability %
+                                          _chanCap(channel, 'topic')))
         else:
             self.topics[channel] = msg.args[1]
 
@@ -162,7 +162,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
         channel = msg.args[0]
         kicked = msg.args[1].split(',')
         deop = False
-        if msg.nick != irc.nick and\
+        if msg.nick != irc.nick and \
            not ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
             for nick in kicked:
                 hostmask = irc.state.nickToHostmask(nick)
@@ -187,7 +187,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
         channel = msg.args[0]
         if not ircutils.isChannel(channel) or msg.nick == self.chanserv:
             return
-        if msg.nick != irc.nick and\
+        if msg.nick != irc.nick and \
            not ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
             for (mode, value) in ircutils.separateModes(msg.args[1:]):
                 if value == msg.nick:

@@ -208,7 +208,7 @@ class Todo(callbacks.Privmsg):
         cursor.execute("""SELECT id FROM todo 
                           WHERE added_at=%s AND userid=%s""", now, id)
         todoId = cursor.fetchone()[0]
-        irc.reply('%s (Todo #%s added)' % (conf.replySuccess, todoId))
+        irc.replySuccess('(Todo #%s added)' % (todoId))
 
     def remove(self, irc, msg, args):
         """<task id> [<task id> ...]
@@ -235,9 +235,9 @@ class Todo(callbacks.Privmsg):
                 invalid.append(taskid)
         #print 'Invalid tasks: %s' % repr(invalid)
         if invalid:
-            irc.error('No tasks were removed because the following '\
-                           'tasks could not be removed: %s' % \
-                           utils.commaAndify(invalid))
+            irc.error('No tasks were removed because the following '
+                      'tasks could not be removed: %s' %
+                      utils.commaAndify(invalid))
         else:
             for taskid in tasks:
                 cursor.execute("""UPDATE todo SET active = 0 WHERE id = %s""",

@@ -299,14 +299,16 @@ class RichReplyMethods(object):
     def replySuccess(self, s='', **kwargs):
         self.reply(self._makeReply(conf.replySuccess, s), **kwargs)
 
-    def replyPossibleBug(self, s='', **kwargs):
-        self.reply(self._makeReply(conf.replyPossibleBug, s), **kwargs)
-
     def replyError(self, s='', **kwargs):
         self.reply(self._makeReply(conf.replyError, s), **kwargs)
 
     def errorNoCapability(self, capability, s='', **kwargs):
         self.error(self._makeReply(conf.replyNoCapability % s, s), **kwargs)
+
+    def errorPossibleBug(self, s='', **kwargs):
+        if s:
+            s += '  (%s)' % conf.replyPossibleBug
+        self.error(s, **kwargs)
 
     def errorNotRegistered(self, s='', **kwargs):
         self.error(self._makeReply(conf.replyNotRegistered, s), **kwargs)

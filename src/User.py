@@ -286,7 +286,7 @@ class User(callbacks.Privmsg):
         specified, returns the hostmasks of the user calling the command.
         """
         if ircutils.isChannel(msg.args[0]):
-            irc.error(conf.replyRequiresPrivacy)
+            irc.errorRequiresPrivacy()
             return
         name = privmsgs.getArgs(args, required=0, optional=1)
         try:

@@ -121,7 +121,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         else:
             options = cursor.fetchall()
             optionstr = 'Options:'
-            optionstr += ''.join([' %s: %r' % (id, option) \
+            optionstr += ''.join([' %s: %r' % (id, option)
                                  for id, option in options])
         pollstr = 'Poll #%s: %r started by %s. %s. Poll is %s.' % \
                   (poll_id, question, starter, optionstr, statusstr)
@@ -148,7 +148,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         db.commit()
         cursor.execute("""SELECT id FROM polls WHERE question=%s""", question)
         id = cursor.fetchone()[0]
-        irc.reply('%s (poll #%s)' % (conf.replySuccess, id))
+        irc.replySuccess('(poll #%s)' % id)
 
     def close(self, irc, msg, args):
         """[<channel>] <id>

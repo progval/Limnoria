@@ -89,25 +89,25 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         callbacks.PrivmsgCommandAndRegexp.die(self)
 
     _reopts = re.I | re.S
-    _invalid = re.compile(r'(is invalid, still pending, or no longer in our '\
-        'database)', _reopts)
+    _invalid = re.compile(r'(is invalid, still pending, or no longer in our '
+                          r'database)', _reopts)
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',
-        _reopts)
+                       _reopts)
 
-    _bid = re.compile(r'((?:Current|Starting) bid):.+?<b>([^<]+?)<font',
-        _reopts)
+    _bid = re.compile(r'((?:Current|Starting) bid):.+?<b>([^<]+?)<fo', _reopts)
     _winningBid = re.compile(r'(Winning bid|Sold for):.+?<b>([^<]+?)<font',
-        _reopts)
+                             _reopts)
     _time = re.compile(r'(Time left):.+?<b>([^<]+?)</b>', _reopts)
-    _bidder = re.compile(r'(High bidder):.+?(?:">(User ID) (kept private)'\
-        '</font>|<a href[^>]+>([^<]+)</a>.+?<a href[^>]+>(\d+)</a>)', _reopts)
-    _winningBidder = re.compile(r'(Winning bidder|Buyer):.+?<a href[^>]+>'\
-        '([^<]+)</a>.+?<a href[^>]+>(\d+)</a>', _reopts)
+    _bidder = re.compile(r'(High bidder):.+?(?:">(User ID) (kept private)'
+                         r'</font>|<a href[^>]+>([^<]+)</a>.+?'
+                         r'<a href[^>]+>(\d+)</a>)', _reopts)
+    _winningBidder = re.compile(r'(Winning bidder|Buyer):.+?<a href[^>]+>'
+                               r'([^<]+)</a>.+?<a href[^>]+>(\d+)</a>',_reopts)
     _buyNow = re.compile(r'alt="(Buy It Now)">.*?<b>([^<]+)</b>', _reopts)
-    _seller = re.compile(r'(Seller information).+?<a href[^>]+>([^<]+)</a>'\
-        '.+ViewFeedback.+">(\d+)</a>', _reopts)
-    _searches = (_bid, _winningBid, _time, _bidder, _winningBidder, _buyNow,
-        _seller)
+    _seller = re.compile(r'(Seller information).+?<a href[^>]+>([^<]+)</a>'
+                         r'.+ViewFeedback.+">(\d+)</a>', _reopts)
+    _searches = (_bid, _winningBid, _time, _bidder,
+                 _winningBidder, _buyNow, _seller)
     _multiField = (_bidder, _winningBidder, _seller)
 
     def auction(self, irc, msg, args):
@@ -139,8 +139,6 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
 
     def _getResponse(self, url):
-        def bold(m):
-            return (ircutils.bold(m[0]),) + m[1:]
         try:
             fd = urllib2.urlopen(url)
             s = fd.read()
@@ -157,6 +155,8 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             resp.append('%s%s: %s' % (ircutils.bold('Item #'),
                                       ircutils.bold(num),
                                       utils.htmlToText(desc)))
+        def bold(L):
+            return (ircutils.bold(L[0]),) + L[1:]
         for r in self._searches:
             m = r.search(s)
             if m:

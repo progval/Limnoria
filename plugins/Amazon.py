@@ -136,7 +136,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                    'Authors' : 'author',
                    'URL' : 'url'
                   }
-        s = '"%(title)s", written by %(author)s; published by '\
+        s = '"%(title)s", written by %(author)s; published by ' \
             '%(publisher)s%(url)s'
         try:
             book = amazon.searchByKeyword(isbn)
@@ -169,7 +169,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                    'Authors' : 'author',
                    'URL' : 'url'
                   }
-        s = '"%(title)s", written by %(author)s; published by '\
+        s = '"%(title)s", written by %(author)s; published by ' \
             '%(publisher)s%(url)s'
         try:
             books = amazon.searchByKeyword(keyword)
@@ -208,7 +208,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                    'ReleaseDate' : 'date',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released '\
+        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             videos = amazon.searchByKeyword(keyword, product_line=product)
@@ -306,7 +306,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                    'Authors' : 'author',
                    'URL' : 'url'
                   }
-        s = '"%(title)s", written by %(author)s; published by '\
+        s = '"%(title)s", written by %(author)s; published by ' \
             '%(publisher)s%(url)s'
         try:
             books = amazon.searchByAuthor(author)
@@ -404,7 +404,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                    'Media' : 'media',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" (%(media)s), by %(artist)s; published by '\
+        s = '"%(title)s" (%(media)s), by %(artist)s; published by ' \
             '%(publisher)s%(url)s'
         try:
             items = amazon.searchByArtist(artist, product_line=product)
@@ -444,7 +444,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                    'ReleaseDate' : 'date',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released '\
+        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             items = amazon.searchByActor(actor, product_line=product)
@@ -484,7 +484,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                    'ReleaseDate' : 'date',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released '\
+        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             items = amazon.searchByDirector(director, product_line=product)

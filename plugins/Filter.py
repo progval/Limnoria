@@ -203,7 +203,7 @@ class Filter(callbacks.Privmsg):
         s = s.translate(self._leettrans)
         irc.reply(s)
 
-    _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'\
+    _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'
                              r'([a-zA-Z])(?:\b|(?![a-zA-Z]))')
     def scramble(self, irc, msg, args):
         """<text>

@@ -211,8 +211,8 @@ class IrcUser(object):
             self.hostmasks = hostmasks
 
     def __repr__(self):
-        return '%s(ignore=%s, password=%r, name=%r, hashed=%r, '\
-               'capabilities=%r, hostmasks=%r, secure=%r)\n' %\
+        return '%s(ignore=%s, password=%r, name=%r, hashed=%r, ' \
+               'capabilities=%r, hostmasks=%r, secure=%r)\n' % \
                (self.__class__.__name__,
                 self.ignore, self.password, self.name, self.hashed,
                 self.capabilities, self.hostmasks, self.secure)
@@ -308,8 +308,8 @@ class IrcChannel(object):
         self.lobotomized = lobotomized
 
     def __repr__(self):
-        return '%s(bans=%r, ignores=%r, capabilities=%r, '\
-               'lobotomized=%r, defaultAllow=%s)\n' %\
+        return '%s(bans=%r, ignores=%r, capabilities=%r, ' \
+               'lobotomized=%r, defaultAllow=%s)\n' % \
                (self.__class__.__name__, self.bans, self.ignores,
                 self.capabilities, self.lobotomized,
                 self.defaultAllow)

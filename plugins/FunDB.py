@@ -142,8 +142,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
             return
         if table == "lart" or table == "praise":
             if '$who' not in s:
-                irc.error('There must be a $who in the lart/praise '\
-                               'somewhere.')
+                irc.error('There must be a $who in the lart/praise somewhere')
                 return
         elif table not in self._tables:
             irc.error('"%s" is not valid. Valid values include %s.' %
@@ -157,8 +156,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
         cursor.execute(sql, s)
         id = cursor.fetchone()[0]
-        response = '%s (%s #%s)' % (conf.replySuccess, table, id)
-        irc.reply(response)
+        irc.replySuccess('(%s #%s)' % (table, id))
 
     def remove(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise> <id>
@@ -500,7 +498,7 @@ Class = FunDB
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 3 or len(sys.argv) > 4:
-        print 'Usage: %s <channel> <larts|excuses|insults|zipcodes> file'\
+        print 'Usage: %s <channel> <larts|excuses|insults|zipcodes> file' \
               ' [<console>]' % sys.argv[0]
         sys.exit(-1)
     if len(sys.argv) == 4:

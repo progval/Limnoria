@@ -94,7 +94,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
                  WHERE added_by=%s AND added_at=%s AND quote=%s"""
         cursor.execute(sql, msg.nick, quotetime, quote)
         quoteid = cursor.fetchone()[0]
-        irc.reply('%s (Quote #%s added)' % (conf.replySuccess, quoteid))
+        irc.replySuccess('(Quote #%s added)' % quoteid)
 
     def num(self, irc, msg, args):
         """[<channel>]
@@ -222,17 +222,18 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
             (id, added_by, added_at, quote) = cursor.fetchone()
             timestamp = time.strftime(conf.humanTimestampFormat,
                                       time.localtime(int(added_at)))
-            irc.reply('Quote %r added by %s at %s.' % \
-                           (quote, added_by, timestamp))
+            irc.reply('Quote %r added by %s at %s.' %
+                      (quote, added_by, timestamp))
         else:
             irc.error('There isn\'t a quote with that id.')
 
-    def remove(self, irc, msg, args, channel):
+    def remove(self, irc, msg, args):
         """[<channel>] <id>
 
         Removes quote <id> from the quotes database for <channel>.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
