@@ -44,7 +44,7 @@ from cStringIO import StringIO
 
 import supybot.conf as conf
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
@@ -97,7 +97,7 @@ class Filter(callbacks.Privmsg):
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
-                       'hebrew', 'undup']
+                       'hebrew', 'undup', 'gnu']
     def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
 
@@ -117,7 +117,8 @@ class Filter(callbacks.Privmsg):
             self.outFilters[channel] = []
             irc.replySuccess()
     outfilter = wrap(outfilter,
-                     [('checkChannelCapability', 'op'), '?commandName'])
+                     [('checkChannelCapability', 'op'),
+                      additional('commandName')])
 
     def hebrew(self, irc, msg, args, text):
         """<text>
@@ -605,6 +606,13 @@ class Filter(callbacks.Privmsg):
             write(c)
         irc.reply(out.getvalue())
     spellit = wrap(spellit, ['text'])
+
+    def gnu(self, irc, msg, args):
+        """<text>
+
+        Returns <text> as RMS would say it.
+        """
+        irc.reply(' '.join(['GNU/' + s for s in args]))
 
 
 Class = Filter

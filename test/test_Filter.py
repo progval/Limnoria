@@ -151,4 +151,7 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         s = ircmsgs.unAction(m)
         self.assertEqual(s, 'sbbone')
 
+    def testGnu(self):
+        self.assertResponse('gnu foo bar baz', 'GNU/foo GNU/bar GNU/baz')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
