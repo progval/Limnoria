@@ -55,7 +55,7 @@ if sqlite is not None:
 
         def testNote(self):
             # self.assertNotError('note 1')
-            self.assertError('note get blah')
+            self.assertError('note blah')
 
         def testNotes(self):
             self.assertNotError('note list')

@@ -188,7 +188,7 @@ class Note(callbacks.Privmsg):
             irc.error(msg, 'That note wasn\'t sent by you.')
             
 
-    def get(self, irc, msg, args):
+    def note(self, irc, msg, args):
         """<note id>
 
         Retrieves a single note by its unique note id.
