@@ -127,6 +127,7 @@ class Math(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         text = text.translate(string.ascii, '_[] \t')
         text = text.replace('lambda', '')
+        #debug.printf(text)
         def handleMatch(m):
             s = m.group(1)
             if s.startswith('0x'):
@@ -138,8 +139,12 @@ class Math(callbacks.Privmsg):
                     i = int(s)
             else:
                 i = float(s)
-            return str(complex(i))
+            x = complex(i)
+            if x == abs(x):
+                x = abs(x)
+            return str(x)
         text = self._mathRe.sub(handleMatch, text)
+        #debug.printf(text)
         try:
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(msg, self._complexToString(x))

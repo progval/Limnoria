@@ -42,6 +42,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('calc -((-5)**.5)', '-2.2360679775i')
         self.assertNotRegexp('calc [9, 5] + [9, 10]', 'TypeError')
         self.assertError('calc [9, 5] + [9, 10]')
+        self.assertNotError('calc degrees(2)')
 
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')
