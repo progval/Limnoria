@@ -407,8 +407,12 @@ class Relay(callbacks.Privmsg):
         else:
             idle = '<unknown>'
             signon = '<unknown>'
-        s = '%s (%s) has been online since %s (idle for %s) and %s.' % \
-            (user, hostmask, signon, idle, channels)
+        if '312' in d:
+            server = d['312'].args[2]
+        else:
+            server = '<unknown>'
+        s = '%s (%s) has been on server %s since %s (idle for %s) and %s.' % \
+            (user, hostmask, server, signon, idle, channels)
         replyIrc.reply(replyMsg, s)
         del self.whois[(irc, nick)]
 
