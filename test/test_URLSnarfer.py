@@ -86,6 +86,10 @@ class URLSnarferTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('lasturl --from alsdkjf', '^No')
         self.assertNotError('randomurl')
 
+    def testDefaultNotFancy(self):
+        self.feedMsg(urls[0])
+        self.assertResponse('lasturl', urls[0])
+
     def testAction(self):
         self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
         self.assertNotRegexp('lasturl', '\\x01')
