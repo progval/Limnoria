@@ -45,8 +45,8 @@ class UtilsTest(unittest.TestCase):
                               (61, '1 minute and 1 second'),
                               (62, '1 minute and 2 seconds'),
                               (122, '2 minutes and 2 seconds'),
-                              (3722, '1 hour, 2 minutes and 2 seconds'),
-                              (7322, '2 hours, 2 minutes and 2 seconds')]:
+                              (3722, '1 hour, 2 minutes, and 2 seconds'),
+                              (7322, '2 hours, 2 minutes, and 2 seconds')]:
             self.assertEqual(utils.timeElapsed(now - then), expected)
 
     def testEachSubstring(self):

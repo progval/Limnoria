@@ -164,7 +164,7 @@ def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
     if len(ret) == 1:
         return ret[0]
     else:
-        return ' and '.join([', '.join(ret[:-1]), ret[-1]])
+        return commaAndify(ret)
 
 def distance(s, t):
     """Returns the levenshtein edit distance between two strings."""
