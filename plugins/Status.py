@@ -236,13 +236,20 @@ class Status(callbacks.Privmsg):
         irc.reply(msg, utils.commaAndify(commands))
 
     def uptime(self, irc, msg, args):
-        """takes no arguments.
+        """takes no arguments
 
         Returns the amount of time the bot has been running.
         """
         response = 'I have been running for %s.' % \
                    utils.timeElapsed(time.time() - world.startedAt)
         irc.reply(msg, response)
+
+    def server(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the server the bot is on.
+        """
+        irc.reply(msg, irc.server)
 
 
 Class = Status
