@@ -27,7 +27,7 @@ class SupyIrcProtocol(LineReceiver):
     delimiter = '\n'
     MAX_LENGTH = 1024
     def __init__(self):
-        reactor.callLater(1, self.checkIrcForMsgs)
+        self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
 
     def lineReceived(self, line):
         start = time.time()
@@ -42,22 +42,28 @@ class SupyIrcProtocol(LineReceiver):
     def checkIrcForMsgs(self):
         if self.connected:
             msg = self.factory.irc.takeMsg()
-            while msg:
+            if msg:
                 self.transport.write(str(msg))
-                msg = self.factory.irc.takeMsg()
         self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
 
     def connectionLost(self):
         self.mostRecentCall.cancel()
 
+    def connectionMade(self):
+        self.factory.irc.driver = self
+        self.factory.irc.reset()
+        #self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
+
     def die(self):
         self.transport.loseConnection()
+        
 
 class SupyReconnectingFactory(ReconnectingClientFactory):
     maxDelay = 600
     protocol = SupyIrcProtocol
     def __init__(self, (server, port), irc):
         self.irc = irc
+        self.server = (server, port)
         reactor.connectTCP(server, port, self)
         
 
@@ -82,6 +88,8 @@ class MyShellFactory(ShellFactory):
 if conf.telnetEnable and __name__ != '__main__':
     reactor.listenTCP(conf.telnetPort, MyShellFactory())
         
+
+Driver = SupyReconnectingFactory
 
 try:
     ignore(poller)
