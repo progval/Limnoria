@@ -203,7 +203,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             # Now actually get the factoid and respond accordingly
             (type, text) = self.parseFactoid(irc, msg, fact)
             if type == "action":
-                irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), text))
+                irc.reply(msg, text, action=True)
             elif type == "reply":
                 irc.reply(msg, text, prefixName=False)
             elif type == "define":
