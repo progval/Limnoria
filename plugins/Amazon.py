@@ -92,7 +92,7 @@ class Amazon(callbacks.Privmsg):
             irc.reply(msg, str(s))
         except amazon.AmazonError, e:
             irc.reply(msg, 'No book was found with that ISBN.')
-        
+
 
 Class = Amazon
 
