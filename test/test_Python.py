@@ -60,18 +60,16 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
 
     if network:
         def testAspnRecipes(self):
-            self.assertNotError('python config aspn-snarfer on')
-            self.assertRegexp('http://aspn.activestate.com/ASPN/Cookbook/Python/'
-                              'Recipe/230113',
-                              'Implementation of sets using sorted lists')
+            try:
+                conf.supybot.plugins.Python.aspnSnarfer.setValue(True)
+                self.assertRegexp(
+                    'http://aspn.activestate.com/ASPN/Cookbook/Python/'
+                    'Recipe/230113',
+                    'Implementation of sets using sorted lists')
+            finally:
+                conf.supybot.plugins.Python.aspnSnarfer.setValue(False)
+                
 
-        def testConfig(self):
-            self.assertNotError('python config aspn-snarfer off')
-            self.assertNoResponse('http://aspn.activestate.com/ASPN/Cookbook/'
-                                  'Python/Recipe/230113')
-            self.assertNotError('python config aspn-snarfer on')
-            self.assertNotError('http://aspn.activestate.com/ASPN/Cookbook/'
-                                'Python/Recipe/230113')
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
