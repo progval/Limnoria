@@ -493,7 +493,10 @@ class IrcString(str):
 
 class IrcDict(utils.InsensitivePreservingDict):
     """Subclass of dict to make key comparison IRC-case insensitive."""
-    key = staticmethod(toLower)
+    def key(self, s):
+        if s is not None:
+            s = toLower(s)
+        return s
 
 
 class IrcSet(utils.NormalizingSet):

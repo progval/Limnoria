@@ -641,7 +641,12 @@ def isIPV6(s):
         return False
 
 class InsensitivePreservingDict(UserDict.DictMixin, object):
-    key = staticmethod(str.lower)
+    def key(self, s):
+        """Override this if you wish."""
+        if s is not None:
+            s = s.lower()
+        return s
+
     def __init__(self, dict=None, key=None):
         if key is not None:
             self.key = key
