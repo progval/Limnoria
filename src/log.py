@@ -249,20 +249,25 @@ class MetaFirewall(type):
 
 
 class ValidLogLevel(registry.String):
-    """This should be overridden."""
+    """Invalid log level."""
     minimumLevel = -1
     def set(self, s):
         s = s.upper()
         try:
             level = getattr(logging, s)
-            if level < self.minimumLevel:
-                self.error()
-            self.setValue(level)
         except AttributeError:
+            try:
+                level = int(s)
+            except ValueError:
+                self.error()
+        if level < self.minimumLevel:
             self.error()
+        self.setValue(level)
 
     def __str__(self):
-        return logging.getLevelName(self.value)
+        level = logging.getLevelName(self.value)
+        if level.startswith('Level'):
+            level = level.split()[-1]
 
 class LogLevel(ValidLogLevel):
     """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
