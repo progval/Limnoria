@@ -166,7 +166,7 @@ class Misc(callbacks.Privmsg):
                 else:
                     irc.error('There is no such command %s.' % name)
             else:
-                irc.error('There is no such plugin %s' % args[0])
+                irc.error('There is no such plugin %s.' % args[0])
             return
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         # Users might expect "@help @list" to work.
