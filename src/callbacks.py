@@ -416,12 +416,12 @@ class RichReplyMethods(object):
     def replySuccess(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.success)
         s = self.__makeReply(v, s)
-        self.reply(s, **kwargs)
+        return self.reply(s, **kwargs)
 
     def replyError(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.error)
         s = self.__makeReply(v, s)
-        self.reply(s, **kwargs)
+        return self.reply(s, **kwargs)
 
     def replies(self, L, prefixer=None, joiner=None,
                 onlyPrefixFirst=False, **kwargs):
@@ -434,18 +434,18 @@ class RichReplyMethods(object):
         if isinstance(joiner, basestring):
             joiner = joiner.join
         if conf.supybot.reply.oneToOne():
-            self.reply(prefixer(joiner(L)), **kwargs)
+            return self.reply(prefixer(joiner(L)), **kwargs)
         else:
             first = True
             for s in L:
                 if onlyPrefixFirst:
                     if first:
-                        self.reply(prefixer(s), **kwargs)
                         first = False
+                        return self.reply(prefixer(s), **kwargs)
                     else:
-                        self.reply(s, **kwargs)
+                        return self.reply(s, **kwargs)
                 else:
-                    self.reply(prefixer(s), **kwargs)
+                    return self.reply(prefixer(s), **kwargs)
 
     def noReply(self):
         self.msg.tag('repliedTo')
@@ -454,7 +454,7 @@ class RichReplyMethods(object):
         if Raise:
             raise Error, s
         else:
-            self.error(s, **kwargs)
+            return self.error(s, **kwargs)
 
     def errorNoCapability(self, capability, s='', **kwargs):
         if isinstance(capability, basestring): # checkCommandCapability!
@@ -463,12 +463,12 @@ class RichReplyMethods(object):
             if not self._getConfig(conf.supybot.reply.noCapabilityError):
                 v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
-                self._error(s, **kwargs)
+                return self._error(s, **kwargs)
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)
             v = self._getConfig(conf.supybot.replies.genericNoCapability)
-            self._error(self.__makeReply(v, s), **kwargs)
+            return self._error(self.__makeReply(v, s), **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.possibleBug)
@@ -476,11 +476,11 @@ class RichReplyMethods(object):
             s += '  (%s)' % v
         else:
             s = v
-        self._error(s, **kwargs)
+        return self._error(s, **kwargs)
 
     def errorNotRegistered(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.notRegistered)
-        self._error(self.__makeReply(v, s), **kwargs)
+        return self._error(self.__makeReply(v, s), **kwargs)
 
     def errorNoUser(self, s='', name='that user', **kwargs):
         v = self._getConfig(conf.supybot.replies.noUser)
@@ -488,11 +488,11 @@ class RichReplyMethods(object):
             v = v % name
         except TypeError:
             log.warning('supybot.replies.noUser should have one "%s" in it.')
-        self._error(self.__makeReply(v, s), **kwargs)
+        return self._error(self.__makeReply(v, s), **kwargs)
 
     def errorRequiresPrivacy(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.requiresPrivacy)
-        self._error(self.__makeReply(v, s), **kwargs)
+        return self._error(self.__makeReply(v, s), **kwargs)
 
     def errorInvalid(self, what, given=None, s='', repr=True, **kwargs):
         if given is not None:
@@ -503,7 +503,7 @@ class RichReplyMethods(object):
             v = '%s is not a valid %s.' % (given, what)
         else:
             v = 'That\'s not a valid %s.' % what
-        self._error(self.__makeReply(v, s), **kwargs)
+        return self._error(self.__makeReply(v, s), Raise=True, **kwargs)
 
 _repr = repr
 
@@ -521,9 +521,8 @@ class IrcObjectProxy(RichReplyMethods):
         if maxNesting and self.nested > maxNesting:
             log.warning('%s attempted more than %s levels of nesting.',
                         self.msg.prefix, maxNesting)
-            self.error('You\'ve attempted more nesting than is currently '
-                       'allowed on this bot.')
-            return
+            return self.error('You\'ve attempted more nesting than is '
+                              'currently allowed on this bot.')
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.
         self.args = copy.deepcopy(args)
@@ -580,7 +579,7 @@ class IrcObjectProxy(RichReplyMethods):
         try:
             cb.tokenizedCommand(self, self.msg, self.args)
         except Error, e:
-            self.error(str(e))
+            return self.error(str(e))
         except Exception, e:
             log.exception('Uncaught exception in %s.tokenizedCommand.' %
                           cb.name())
@@ -599,7 +598,7 @@ class IrcObjectProxy(RichReplyMethods):
         try:
             cb.invalidCommand(self, self.msg, self.args)
         except Error, e:
-            self.error(str(e))
+            return self.error(str(e))
         except Exception, e:
             log.exception('Uncaught exception in %s.invalidCommand.'%
                           cb.name())
@@ -613,9 +612,9 @@ class IrcObjectProxy(RichReplyMethods):
                 cb.log.exception('Uncaught exception in %s.%s:',
                                  cb.name(), name)
                 if conf.supybot.reply.detailedErrors():
-                    self.error(utils.exnToString(e))
+                    return self.error(utils.exnToString(e))
                 else:
-                    self.replyError()
+                    return self.replyError()
         finally:
             self.commandMethod = None
 
@@ -693,10 +692,13 @@ class IrcObjectProxy(RichReplyMethods):
             # No matching regexp commands, now we do invalidCommands.
             self._callInvalidCommands()
         elif len(cbs) > 1:
-            self.error('The command %s is available in the %s plugins.  '
-                       'Please specify the plugin whose command you wish '
-                       'to call by using its name as a command before %s.' %
-                       (command, sorted([cb.name() for cb in cbs]), command))
+            return self.error('The command %s is available in the %s plugins.  '
+                              'Please specify the plugin whose command you '
+                              'wish to call by using its name as a command '
+                              'before %s.' %
+                              (command,
+                               sorted([cb.name() for cb in cbs]),
+                               command))
         else:
             cb = cbs[0]
             del self.args[0] # Remove the command.
@@ -749,20 +751,22 @@ class IrcObjectProxy(RichReplyMethods):
                     s = s[:conf.supybot.reply.maximumLength()]
                     if conf.get(conf.supybot.reply.truncate, self.msg.args[0]):
                         s = s[:512]
-                    self.irc.reply(s, to=self.to,
-                                   notice=self.notice,
-                                   action=self.action,
-                                   private=self.private,
-                                   prefixName=self.prefixName,
-                                   noLengthCheck=self.noLengthCheck)
+                    return self.irc.reply(s, to=self.to,
+                                          notice=self.notice,
+                                          action=self.action,
+                                          private=self.private,
+                                          prefixName=self.prefixName,
+                                          noLengthCheck=self.noLengthCheck)
                 elif self.noLengthCheck:
                     # noLengthCheck only matters to IrcObjectProxy, so it's not
                     # used here.  Just in case you were wondering.
-                    self.irc.queueMsg(reply(msg, s, to=self.to,
-                                            notice=self.notice,
-                                            action=self.action,
-                                            private=self.private,
-                                            prefixName=self.prefixName))
+                    m = reply(msg, s, to=self.to,
+                              notice=self.notice,
+                              action=self.action,
+                              private=self.private,
+                              prefixName=self.prefixName)
+                    self.irc.queueMsg(m)
+                    return m
                 else:
                     s = ircutils.safeArgument(s)
                     allowedLength = 450 - len(self.irc.prefix)
@@ -834,13 +838,16 @@ class IrcObjectProxy(RichReplyMethods):
                 raise ArgumentError
         if s:
             if not isinstance(self.irc, irclib.Irc):
-                self.irc.error(s, **kwargs)
+                return self.irc.error(s, **kwargs)
             else:
-                self.irc.queueMsg(error(self.msg, s, **kwargs))
+                m = error(self.msg, s, **kwargs)
+                self.irc.queueMsg(m)
+                return m
         else:
             if self.commandMethod is not None:
                 # We can recurse here because it only gets called once.
-                self.error(formatArgumentError(self.commandMethod), **kwargs)
+                return self.error(formatArgumentError(self.commandMethod),
+                                  **kwargs)
             else:
                 raise ArgumentError # We shouldn't get here, but just in case.
 
