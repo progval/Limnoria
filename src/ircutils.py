@@ -266,7 +266,8 @@ def canonicalColor(s, bg=False, shift=0):
     else:
         return (fg, None)
 
-_unColorRe = re.compile('(\x0F|\x03(?:\\d+|\\d+,\\d+)?)')
+_unColorRe = re.compile('\x0F|(?:\x03(?:\\d+|\\d+,\\d+)?)')
+_unColorRe = re.compile('(?:\x03\\d{1,2},\\d{1,2})|\x03\\d{1,2}|\x03|\x0F')
 def unColor(s):
     return _unColorRe.sub('', s)
 
