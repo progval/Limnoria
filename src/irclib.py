@@ -465,7 +465,10 @@ class Irc(IrcCommandDispatcher):
         self.driver = None # The driver should set this later.
         if self.password:
             self.queue.enqueue(ircmsgs.password(self.password))
+        log.info('Sending NICK command, nick is %s.', self.nick)
         self.queue.enqueue(ircmsgs.nick(self.nick))
+        log.info('Sending USER command, ident is %s, user is %s.',
+                 self.nick, self.user)
         self.queue.enqueue(ircmsgs.user(self.ident, self.user))
 
     def reset(self):
@@ -485,6 +488,9 @@ class Irc(IrcCommandDispatcher):
         self.queue.enqueue(ircmsgs.user(self.ident, self.user))
         for callback in self.callbacks:
             callback.reset()
+
+    def __repr__(self):
+        return '<irclib.Irc object for %s>' % self.server
 
     def addCallback(self, callback):
         """Adds a callback to the callbacks list."""
