@@ -241,23 +241,28 @@ class Misc(callbacks.Privmsg):
         Returns the size of the various logfiles in use.  If given a specific
         logfile, returns only the size of that logfile.
         """
-        filename = privmsgs.getArgs(args, required=0, optional=1)
-        if filename:
-            if not filename.endswith('.log'):
+        filenameArg = privmsgs.getArgs(args, required=0, optional=1)
+        if filenameArg:
+            if not filenameArg.endswith('.log'):
                 irc.error(msg, 'That filename doesn\'t appear to be a log.')
                 return
-            filenames = [filename]
+            filenameArg = os.path.basename(filenameArg)
+        ret = []
+        for (dirname, _, filenames) in os.walk(conf.logDir):
+            if filenameArg:
+                if filenameArg in filenames:
+                    filename = os.path.join(dirname, filenameArg)
+                    stats = os.stat(filename)
+                    ret.append('%s: %s' % (filename, stats.st_size))
+            else:
+                for filename in filenames:
+                    stats = os.stat(os.path.join(dirname, filename))
+                    ret.append('%s: %s' % (filename, stats.st_size))
+        if ret:
+            ret.sort()
+            irc.reply(msg, utils.commaAndify(ret))
         else:
-            filenames = os.listdir(conf.logDir)
-        result = []
-        for file in filenames:
-            if file.endswith('.log'):
-                stats = os.stat(os.path.join(conf.logDir, file))
-                result.append((file, str(stats.st_size)))
-        if result:
-            irc.reply(msg, ', '.join(imap(': '.join, result)))
-        else:
-            irc.reply(msg, 'I couldn\'t find any logfiles.')
+            irc.error(msg, 'I couldn\'t find any logfiles.')
 
     def getprefixchar(self, irc, msg, args):
         """takes no arguments
