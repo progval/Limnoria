@@ -245,8 +245,9 @@ class Topic(callbacks.Privmsg):
         try:
             senderName = ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.errorNoUser()
-            return
+            senderName = msg.nick
+#            irc.errorNoUser()
+#            return
         if name and name != senderName and \
            not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
             irc.error('You can only modify your own topics.')
