@@ -53,10 +53,13 @@ import callbacks
 class FreshmeatException(Exception):
     pass
 
-def getPage(url):
+def getPage(url, size=None):
     """Gets a page.  Returns a string that is the page gotten."""
     fd = urllib2.urlopen(url)
-    text = fd.read()
+    if size is None:
+        text = fd.read()
+    else:
+        text = fd.read(size)
     fd.close()
     return text
 
@@ -85,7 +88,7 @@ class Http(callbacks.Privmsg):
         if '://' not in url:
             url = 'http://%s' % url
         try:
-            text = getPage(url)
+            text = getPage(url, size=4096)
             m = self._titleRe.search(text)
             if m is not None:
                 irc.reply(msg, utils.htmlToText(m.group(1).strip()))
