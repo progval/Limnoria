@@ -32,6 +32,9 @@ import cgi
 import sys
 import imp
 import supybot.log as log
+import supybot.conf as conf
+import supybot.registry as registry
+import supybot.utils as utils
 
 log.setLevel(10)
 
@@ -75,8 +78,10 @@ class PluginDoc(object):
         self.appendLine('Documentation for the %s plugin for'
                         'supybot' % self.mod.Class.__name__)
         self.appendLine('')
-        self.appendLine('Commands', 1)
-        self.appendLine('')
+        commands = inst.listCommands()
+        if len(commands):
+            self.appendLine('Commands', 1)
+            self.appendLine('')
         for command in inst.listCommands():
             log.debug('command: %s', command)
             self.appendLine(command, 2)
@@ -111,6 +116,39 @@ class PluginDoc(object):
             else:
                 self.appendLine('No help Associated with this command', 3)
                 self.appendLine('')
+            # now the config
+        self.appendLine('')
+        self.appendLine('Configuration', 1)
+        self.appendLine('')
+        try:
+            confs = conf.supybot.plugins.get(self.mod.Class.__name__)
+        except registry.NonExistentRegistryEntry:
+            log.info('No configuration for plugin %s', plugin)
+            self.appendLine('No help configuration with this plugin', 2)
+            self.appendLine('')
+            confs = None
+        confVars = None
+        if confs:
+            confVars = confs.getValues(getChildren=True)
+        if confVars:
+            for (c, v) in confVars:
+                try:
+                    self.appendLine(c, 2)
+                    self.appendLine('')
+                    default = str(v)
+                    #if isinstance(v._default, basestring):
+                        #default = utils.dqrepr(default)
+                    help = v.help()
+                    channelValue = v.channelValue
+                    self.appendLine('Default: %s' % default, 3)
+                    self.appendLine('')
+                    self.appendLine('Channel Specific: %s' % channelValue, 3)
+                    self.appendLine('')
+                    self.appendLine('Help: %s' % help, 3)
+                    self.appendLine('')
+                except registry.NonExistentRegistryEntry:
+                    self.appendLine('')
+                    pass
         self.appendLine('')
         return '\n'.join(self.lines)
 
