@@ -147,21 +147,15 @@ class Time(callbacks.Privmsg):
         else:
             irc.error('That\'s right now!')
 
-    def ctime(self, irc, msg, args):
+    def ctime(self, irc, msg, args, seconds):
         """[<seconds since epoch>]
 
         Returns the ctime for <seconds since epoch>, or the current ctime if
         no <seconds since epoch> is given.
         """
-        seconds = privmsgs.getArgs(args, required=0, optional=1)
-        if seconds:
-            try:
-                seconds = float(seconds)
-            except ValueError:
-                irc.errorInvalid('seconds', seconds, Raise=True)
-        else:
-            seconds = time.time()
         irc.reply(time.ctime(seconds))
+    ctime = wrap(ctime, [additional(('int', 'number of seconds since epoch'),
+                                    TIME.time)])
 
     def time(self, irc, msg, args, channel, format, seconds):
         """[<format>] [<seconds since epoch>]

@@ -300,7 +300,7 @@ class Fun(callbacks.Privmsg):
         length, use 0.
         """
         irc.reply(utils.soundex(text, length))
-    soundex = wrap(soundex, ['text', optional('int', 4)])
+    soundex = wrap(soundex, ['text', additional('int', 4)])
 
     # The list of words and algorithm are pulled straight the mozbot
     # MagicEightBall.bm module: http://tinyurl.com/7ytg7
@@ -339,7 +339,7 @@ class Fun(callbacks.Privmsg):
             irc.reply(self._checkTheBall(len(text)))
         else:
             irc.reply(self._checkTheBall(random.randint(0, 2)))
-    eightball = wrap(eightball, [optional('text')])
+    eightball = wrap(eightball, [additional('text')])
 
     _rouletteChamber = random.randrange(0, 6)
     _rouletteBullet = random.randrange(0, 6)
@@ -367,7 +367,7 @@ class Fun(callbacks.Privmsg):
             irc.reply('*click*')
             self._rouletteChamber += 1
             self._rouletteChamber %= 6
-    roulette = wrap(roulette, ['public', optional(('literal', 'spin'))])
+    roulette = wrap(roulette, ['public', additional(('literal', 'spin'))])
 
     def monologue(self, irc, msg, args, channel):
         """[<channel>]
