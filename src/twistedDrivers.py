@@ -69,15 +69,18 @@ class SupyIrcProtocol(LineReceiver):
             msg = self.irc.takeMsg()
             if msg:
                 self.transport.write(str(msg))
-        self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
+        if not self.irc.zombie:
+            self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
 
     def connectionLost(self, failure):
-        self.mostRecentCall.cancel()
         drivers.log.disconnect(self.factory.currentServer, errorMsg(failure))
         if not self.irc.zombie:
             self.irc.reset()
         else:
-            self.factory.continueTrying = False
+            # Let's take and take and take until our IRC is DESTROYED!
+            x = 1
+            while x:
+                x = self.irc.takeMsg()
 
     def connectionMade(self):
         self.irc.reset()
@@ -113,8 +116,6 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
 
     def clientConnectionLost(self, connector, r):
         (connector.host, connector.port) = self._getNextServer()
-        if self.irc.zombie:
-            self.continueTrying = False
         ReconnectingClientFactory.clientConnectionLost(self, connector, r)
 
     def startedConnecting(self, connector):
