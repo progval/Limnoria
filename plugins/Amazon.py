@@ -40,6 +40,7 @@ import amazon
 import conf
 import privmsgs
 import callbacks
+import utils
 
 
 def configure(onStart, afterConnect, advanced):
