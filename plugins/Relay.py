@@ -474,6 +474,23 @@ class Relay(callbacks.Privmsg):
                     if otherIrc != irc:
                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
+    def doKick(self, irc, msg):
+        if self.started:
+            if not isinstance(irc, irclib.Irc):
+                irc = irc.getRealIrc()
+            channel = msg.args[0]
+            if channel in self.channels:
+                abbrev = self.abbreviations[irc]
+                if len(msg.args) == 3:
+                    s = '%s@%s was kicked by %s@%s (%s)' % \
+                        (msg.args[1], abbrev, msg.nick, abbrev, msg.args[2])
+                else:
+                    s = '%s@%s was kicked by %s@%s' % \
+                        (msg.args[1], abbrev, msg.nick, abbrev)
+                for otherIrc in self.ircs.itervalues():
+                    if otherIrc != irc:
+                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+
     def doNick(self, irc, msg):
         if self.started:
             if not isinstance(irc, irclib.Irc):
