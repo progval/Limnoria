@@ -190,7 +190,7 @@ class Observer(callbacks.Privmsg):
         command = g.command()
         probability = g.probability()
         irc.reply('%s matches the regular expression %s and '
-                  'runs the command <<%s>> with a probability of %s' %
+                  'runs the command <<%s>> with a probability of %s.' %
                   (name, g, command, probability))
     info = wrap(info, ['something'])
 
