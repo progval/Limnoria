@@ -206,12 +206,12 @@ def itersplit(iterable, isSeparator, yieldEmpty=False):
     acc = []
     for element in iterable:
         if isSeparator(element):
-            if yieldEmpty or acc:
+            if acc or yieldEmpty:
                 yield acc
             acc = []
         else:
             acc.append(element)
-    if yieldEmpty or acc:
+    if acc or yieldEmpty:
         yield acc
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
