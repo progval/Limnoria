@@ -53,9 +53,17 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     print 'To use Google\'t Web Services, you must have a license key.'
     if yn('Do you have a license key?') == 'y':
-        key = anything('What is it?')
-        onStart.append('load Google')
-        onStart.append('googlelicensekey %s' % key)
+        key = something('What is it?')
+        while len(key) != 32:
+            print 'That\'s not a valid Google license key.'
+            if yn('Are you sure you have a valid Google license key?') == 'y':
+                key = something('What is it?')
+            else:
+                key = ''
+                break
+        if key:
+            onStart.append('load Google')
+            onStart.append('googlelicensekey %s' % key)
         if yn('Google depends on the Alias module for some commands.  ' \
               'Is the Alias module loaded?') == 'n':
             if yn('Would you like to load the Alias module now?') == 'y':
