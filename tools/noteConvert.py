@@ -4,7 +4,10 @@ import sys
 import sqlite
 
 import supybot.dbi as dbi
+import supybot.conf as conf
 import supybot.plugins.Note as Note
+
+conf.supybot.log.stdout.setValue(False)
 
 def main():
     if '-h' in sys.argv or '--help' in sys.argv or len(sys.argv) != 2:

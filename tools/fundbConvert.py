@@ -4,8 +4,12 @@ import sys
 import sqlite
 
 import supybot.dbi as dbi
+import supybot.conf as conf
+import supybot.ircutils as ircutils
 import supybot.plugins.Lart as Lart
 import supybot.plugins.Praise as Praise
+
+conf.supybot.log.stdout.setValue(False)
 
 def usage():
     print 'usage: %s <sqlitedb> <channel> [<botname>]' % sys.argv[0]
@@ -18,6 +22,9 @@ def main():
         sys.exit(1)
     sqldb = sys.argv[1]
     channel = sys.argv[2]
+    if not ircutils.isChannel(channel):
+        print '%s is an invalid channel name.'
+        sys.exit(1)
     if len(sys.argv) >= 4:
         botname = sys.argv[3]
     if not os.path.exists(sqldb):
