@@ -96,9 +96,6 @@ class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('unload MiscCommands')
         self.assertError('unload MiscCommands')
 
-    def testSay(self):
-        self.assertResponse('say %s foo' % self.irc.nick, 'foo')
-
     def testSetconf(self):
         try:
             originalConfAllowEval = conf.allowEval

@@ -336,14 +336,6 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         ircdb.channels.reload()
         irc.reply(msg, conf.replySuccess)
 
-    def say(self, irc, msg, args):
-        """<channel> <text>
-
-        Says <text> in <channel>
-        """
-        (channel, text) = privmsgs.getArgs(args, needed=2)
-        irc.queueMsg(ircmsgs.privmsg(channel, text))
-
     def connect(self, irc, msg, args):
         """<server> [<port>]
 
