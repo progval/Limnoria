@@ -226,7 +226,7 @@ class Group(object):
         for (name, child) in self.children.items():
             if hasattr(child, 'value'):
                 items.append((name, child))
-        utils.sortBy(lambda (k, _): (len(k), k.lower(), k), items)
+        utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
         for (name, value) in items:
             L.append(('%s.%s' % (self.getName(), self.originals[name]), value))
         if getChildren:
