@@ -719,63 +719,54 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         irc.replySuccess()
     disable = wrap(disable, [optional('plugin'), 'commandName'])
 
-    def enable(self, irc, msg, args):
+    def enable(self, irc, msg, args, plugin, command):
         """[<plugin>] <command>
 
         Enables the command <command> for all users.  If <plugin>
         if given, only enables the <command> from <plugin>.  This command is
         the inverse of disable.
         """
-        (plugin, command) = privmsgs.getArgs(args, optional=1)
         try:
-            if not command:
-                (plugin, command) = (None, plugin)
-                conf.supybot.commands.disabled().remove(command)
+            if plugin:
+                command = '%s.%s' % (plugin.name(), command)
+                self._disabled.remove(command, plugin.name())
             else:
-                name = '%s.%s' % (plugin, command)
-                conf.supybot.commands.disabled().remove(name)
-            self._disabled.remove(command, plugin)
+                self._disabled.remove(command)
+            conf.supybot.commands.disabled().remove(command)
             irc.replySuccess()
         except KeyError:
             irc.error('That command wasn\'t disabled.')
+    enable = wrap(enable, [optional('plugin'), 'commandName'])
 
-    def rename(self, irc, msg, args):
+    def rename(self, irc, msg, args, plugin, command, newName):
         """<plugin> <command> <new name>
 
         Renames <command> in <plugin> to the <new name>.
         """
-        (plugin, command, newName) = privmsgs.getArgs(args, required=3)
-        name = callbacks.canonicalName(newName)
-        if name != newName:
-            irc.errorInvalid('command name', name,
-                             'Try making it lowercase and removing dashes '
-                             'and underscores.', Raise=True)
-        cb = irc.getCallback(plugin)
-        if cb is None:
-            irc.errorInvalid('plugin', plugin, Raise=True)
-        if not cb.isCommand(command):
-            what = 'command in the %s plugin' % plugin
-            irc.errorInvalid(what, name, Raise=True)
-        if hasattr(cb, name):
+        if not plugin.isCommand(command):
+            what = 'command in the %s plugin' % plugin.name()
+            irc.errorInvalid(what, command)
+        if hasattr(plugin, newName):
             irc.error('The %s plugin already has an attribute named %s.' %
-                      (plugin, name))
+                      (plugin, newName))
             return
-        registerRename(cb.name(), command, name)
-        renameCommand(cb, command, newName)
+        registerRename(plugin.name(), command, newName)
+        renameCommand(plugin, command, newName)
         irc.replySuccess()
+    rename = wrap(rename, ['plugin', 'commandName', 'commandName'])
 
-    def unrename(self, irc, msg, args):
+    def unrename(self, irc, msg, args, plugin):
         """<plugin>
 
         Removes all renames in <plugin>.  The plugin will be reloaded after
         this command is run.
         """
-        plugin = privmsgs.getArgs(args)
         try:
-            conf.supybot.commands.renames.unregister(plugin)
+            conf.supybot.commands.renames.unregister(plugin.name())
         except registry.NonExistentRegistryEntry:
-            irc.errorInvalid('plugin', plugin, Raise=True)
-        self.reload(irc, msg, args) # This makes the replySuccess.
+            irc.errorInvalid('plugin', plugin.name())
+        self.reload(irc, msg, [plugin.name()]) # This makes the replySuccess.
+    unrename = wrap(unrename, ['plugin'])
 
 
 Class = Owner
