@@ -118,6 +118,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
         pass
 
     def die(self):
+        log.info('Driver for %s dying.', self.irc)
         self.close()
 
 

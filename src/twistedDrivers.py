@@ -84,6 +84,7 @@ class SupyIrcProtocol(LineReceiver):
         self.factory.irc.driver = self
 
     def die(self):
+        log.info('Driver for %s dying.', self.factory.irc)
         self.factory.continueTrying = False
         self.transport.loseConnection()
 
