@@ -100,12 +100,8 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                 if hasattr(value, 'value'):
                     if value._showDefault:
                         lines.append('#\n')
-                        try:
-                            original = value.value
-                            value.value = value._default
-                            lines.append('# Default value: %s\n' % value)
-                        finally:
-                            value.value = original
+                        x = value.__class__(value._default, value._help)
+                        lines.append('# Default value: %s\n' % x)
                 lines.append('###\n')
                 fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
