@@ -37,6 +37,9 @@ import ircmsgs
 
 class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Channel',)
+    def testLobotomies(self):
+        self.assertRegexp('lobotomies', 'not.*any')
+
     def testUnban(self):
         self.assertError('unban foo!bar@baz')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))

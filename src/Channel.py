@@ -377,6 +377,21 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         irc.reply(msg, ', '.join(c.capabilities))
 
+    def lobotomies(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the channels in which this bot is lobotomized.
+        """
+        L = []
+        for (channel, c) in ircdb.channels.iteritems():
+            if c.lobotomized:
+                L.append(channel)
+        if L:
+            s = 'I\'m currently lobotomized in %s.' % utils.commaAndify(L)
+            irc.reply(msg, s)
+        else:
+            irc.reply(msg, 'I\'m not currently lobotomized in any channels.')
+                        
 
 Class = Channel
 

@@ -1,3 +1,6 @@
+	* Added a Channel.lobotomies command to list the channels in which
+	the bot is lobotomized.
+	
 	* Added a swap function to Math.rpn.
 	
 	* Changed the logging infrastructure significantly; each plugin
