@@ -35,6 +35,7 @@ import fix
 
 import os
 import sys
+import cgitb
 import atexit
 import logging
 
@@ -61,8 +62,7 @@ class Formatter(logging.Formatter):
         for exn in deadlyExceptions:
             if issubclass(e.__class__, exn):
                 raise
-        ### TODO: formatException should use cgitb.
-        return logging.Formatter.formatException(self, (E, e, tb))
+        return cgitb.text((E, e, tb)).rstrip('\r\n')
 
 
 class DailyRotatingHandler(logging.FileHandler):
