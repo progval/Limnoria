@@ -190,7 +190,7 @@ class Channel(callbacks.Privmsg):
     kick = privmsgs.checkChannelCapability(kick, 'op')
 
     def kban(self, irc, msg, args):
-        """[<channel>] <nick> [<seconds>] [--{exact,nick,user,host}]
+        """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] 
 
         If you have the #channel.op capability, this will kickban <nick> for
         as many seconds as you specify, or else (if you specify 0 seconds or
