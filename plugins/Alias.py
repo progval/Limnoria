@@ -221,7 +221,8 @@ class Alias(callbacks.Privmsg):
     def addAlias(self, irc, name, alias, lock=False):
         if self._invalidCharsRe.search(name):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
-        if conf.supybot.pipeSyntax() and '|' in name:
+        channel = privmsgs.getChannel(irc.msg, irc.args)
+        if conf.supybot.reply.pipeSyntax.get(channel)() and '|' in name:
             raise AliasError, 'Names cannot contain pipes.'
         if irc.getCallback(name):
             raise AliasError, 'Names cannot coincide with names of plugins.'
