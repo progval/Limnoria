@@ -182,10 +182,10 @@ class ChannelState(object):
     __slots__ = ('users', 'ops', 'halfops', 'voices', 'topic')
     def __init__(self):
         self.topic = ''
-        self.users = ircutils.IrcSet() # sets.Set()
-        self.ops = ircutils.IrcSet() # sets.Set()
-        self.halfops = ircutils.IrcSet() # sets.Set()
-        self.voices = ircutils.IrcSet() # sets.Set()
+        self.users = ircutils.IrcSet()
+        self.ops = ircutils.IrcSet()
+        self.halfops = ircutils.IrcSet()
+        self.voices = ircutils.IrcSet()
 
     def addUser(self, user):
         "Adds a given user to the ChannelState.  Power prefixes are handled."

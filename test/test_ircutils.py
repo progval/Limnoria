@@ -32,6 +32,7 @@
 
 from test import *
 
+import copy
 import random
 
 import ircmsgs
@@ -205,6 +206,12 @@ class IrcDictTestCase(unittest.TestCase):
         d['#fOOBAR[]'] = 'blah'
         self.assertEqual('blah', d['#foobar{}'])
 
+    def testCopyable(self):
+        d = ircutils.IrcDict()
+        d['foo'] = 'bar'
+        self.failUnless(d == copy.copy(d))
+        self.failUnless(d == copy.deepcopy(d))
+
 class IrcSetTestCase(unittest.TestCase):
     def test(self):
         s = ircutils.IrcSet()
@@ -216,6 +223,26 @@ class IrcSetTestCase(unittest.TestCase):
         s.remove('FOo')
         self.failIf('foo' in s)
         self.failIf('FOo' in s)
+
+    def testCopy(self):
+        s = ircutils.IrcSet()
+        s.add('foo')
+        s.add('bar')
+        s1 = copy.deepcopy(s)
+        self.failUnless('foo' in s)
+        self.failUnless('FOO' in s)
+        s.discard('alfkj')
+        s.remove('FOo')
+        self.failIf('foo' in s)
+        self.failIf('FOo' in s)
+        self.failUnless('foo' in s1)
+        self.failUnless('FOO' in s1)
+        s1.discard('alfkj')
+        s1.remove('FOo')
+        self.failIf('foo' in s1)
+        self.failIf('FOo' in s1)
+
+        
 
 class IrcStringTestCase(unittest.TestCase):
     def testEquality(self):

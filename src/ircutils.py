@@ -39,6 +39,7 @@ IRC-case-insensitive fashion), and numerous other things.
 import fix
 
 import re
+import copy
 import sets
 import string
 import fnmatch
@@ -355,11 +356,19 @@ class IrcDict(dict):
     def __delitem__(self, s):
         self.__parent.__delitem__(IrcString(s))
 
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, self.__parent.__repr__())
+
+    def __reduce__(self):
+        return (self.__class__, (dict(self),))
+
 class IrcSet(sets.Set):
     """A sets.Set using IrcStrings instead of regular strings."""
-    def __init__(self):
+    def __init__(self, seq=()):
         self.__parent = super(IrcSet, self)
         self.__parent.__init__()
+        for elt in seq:
+            self.add(elt)
         
     def add(self, s):
         return self.__parent.add(IrcString(s))
@@ -372,8 +381,11 @@ class IrcSet(sets.Set):
 
     def __contains__(self, s):
         return self.__parent.__contains__(IrcString(s))
-
     has_key = __contains__
+
+    def __reduce__(self):
+        return (self.__class__, (list(self),))
+
 
 if __name__ == '__main__':
     import sys, doctest
