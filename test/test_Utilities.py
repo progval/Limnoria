@@ -73,4 +73,7 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotRegexp('re m/foo/ bar', 'has no attribute')
         self.assertResponse('re m/a\S+y/ "the bot angryman is hairy"','angry')
 
+    def testReNoEscapingUnpackListOfWrongSize(self):
+        self.assertNotRegexp('re foo bar baz', 'unpack list of wrong size')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -209,7 +209,10 @@ def perlReToPythonRe(s):
     """Converts a string representation of a Perl regular expression (i.e.,
     m/^foo$/i or /foo|bar/) to a Python regular expression.
     """
-    (kind, regexp, flags) = nonEscapedSlashes.split(s)
+    try:
+        (kind, regexp, flags) = nonEscapedSlashes.split(s)
+    except ValueError: # Unpack list of wrong size.
+        raise ValueError, 'Must be of the form m/.../ or /.../'
     regexp = regexp.replace('\\/', '/')
     if kind not in ('', 'm'):
         raise ValueError, 'Invalid kind: must be in ("", "m")'
@@ -229,7 +232,10 @@ def perlReToReplacer(s):
     s/foo/bar/g or s/foo/bar/i) to a Python function doing the equivalent
     replacement.
     """
-    (kind, regexp, replace, flags) = nonEscapedSlashes.split(s)
+    try:
+        (kind, regexp, replace, flags) = nonEscapedSlashes.split(s)
+    except ValueError: # Unpack list of wrong size.
+        raise ValueError, 'Must be of the form s/.../.../'
     replace = replace.replace('\\/', '/')
     if kind != 's':
         raise ValueError, 'Invalid kind: must be "s"'

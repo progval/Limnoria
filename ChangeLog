@@ -1,3 +1,6 @@
+	* Fixed bug #848475 -- bad error message from regexp-expecting
+	commands.
+	
 	* Stopped listing the plugin dispatcher command in the list of
 	commands for that plugin.
 	
