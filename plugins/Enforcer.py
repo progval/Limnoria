@@ -44,6 +44,7 @@ import ircutils
 import callbacks
 
 def configure(onStart, afterConnect, advanced):
+    from questions import expect, anything, something, yn
     onStart.append('load Enforcer')
     chanserv = something('What\'s the name of ChanServ on your network?')
     if yn('Do you want the bot to take revenge on rule breakers?') == 'y':
