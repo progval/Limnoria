@@ -515,7 +515,8 @@ class Irc(object):
     def die(self):
         for callback in self.callbacks:
             callback.die()
-        self.driver.die()
+        if self.driver is not None:
+            self.driver.die()
         if self in world.ircs:
             world.ircs.remove(self)
 
