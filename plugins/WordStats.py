@@ -59,7 +59,7 @@ class WordStats(callbacks.Privmsg, plugins.ChannelDBHandler):
         callbacks.Privmsg.die(self)
         plugins.ChannelDBHandler.die(self)
 
-   def makeDb(self, filename):
+    def makeDb(self, filename):
         if os.path.exists(filename):
             db = sqlite.connect(filename)
         else:
