@@ -246,8 +246,7 @@ class IrcCallbackTestCase(unittest.TestCase):
         for msg in msgs:
             doCommandCatcher(self.irc, msg)
         commands = map(makeCommand, msgs)
-        self.assertEqual(doCommandCatcher.L,
-                         list(flatten(zip(commands, commands))))
+        self.assertEqual(doCommandCatcher.L, commands)
 
     def testFirstCommands(self):
         oldconfthrottle = conf.throttleTime
