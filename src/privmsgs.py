@@ -132,7 +132,7 @@ def checkChannelCapability(f, capability):
 def thread(f):
     """Makes sure a command spawns a thread when called."""
     def newf(self, irc, msg, args, *L, **kwargs):
-        if threading.currentThread() is not world.mainThread:
+        if threading.currentThread() is world.mainThread:
             t = callbacks.CommandThread(target=irc._callCommand,
                                         args=(f.func_name, self),
                                         kwargs=kwargs)
