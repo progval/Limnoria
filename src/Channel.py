@@ -52,7 +52,6 @@ import supybot.ircmsgs as ircmsgs
 from supybot.commands import wrap
 import supybot.schedule as schedule
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
