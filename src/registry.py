@@ -409,6 +409,13 @@ class Regexp(Value):
             if s:
                 self.value = utils.perlReToPythonRe(s)
                 self._lastModified = time.time()
+                # Since we aren't calling self.setValue(), we need to run the
+                # following code.  If we don't, self.value isn't properly
+                # updated.
+                if self.supplyDefault:
+                    for (name, v) in self.children.items():
+                        if v.__class__ is self.X:
+                            self.unregister(name)
             else:
                 self.setValue(None)
             self.sr = s
