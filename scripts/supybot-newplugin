@@ -260,9 +260,9 @@ def main():
     else:
         threaded = 'pass'
     if kind == 'command':
-        className = 'callbacks.Privmsg'
+        className = 'callbacks.Plugin'
     else:
-        className = 'callbacks.PrivmsgRegexp'
+        className = 'callbacks.PluginRegexp'
     if name.endswith('.py'):
         name = name[:-3]
     while name[0].islower():
