@@ -74,6 +74,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
             self.close()
 
     def scheduleReconnect(self):
+        #debug.methodNamePrintf(self, 'scheduleReconnect')
         when = time.time() + 60
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
         debug.msg('Scheduling reconnect at %s' % whenS, 'normal')
@@ -94,9 +95,8 @@ class AsyncoreDriver(asynchat.async_chat, object):
         return asynchat.async_chat.writable(self)
 
     def handle_error(self):
-        debug.recoverableException()
-        self.scheduleReconnect()
-        self.close()
+        #debug.recoverableException()
+        self.handle_close()
 
     def collect_incoming_data(self, s):
         #debug.methodNamePrintf(self, 'collect_incoming_data')
@@ -121,9 +121,11 @@ class AsyncoreDriver(asynchat.async_chat, object):
     reconnect = handle_close
 
     def handle_connect(self):
+        #debug.methodNamePrintf(self, 'handle_connect')
         pass
 
     def die(self):
+        #debug.methodNamePrintf(self, 'die')
         self.close()
 
 
