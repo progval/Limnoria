@@ -140,7 +140,8 @@ class Math(callbacks.Privmsg):
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(msg, self._complexToString(x))
         except OverflowError:
-            irc.error(msg, 'Go get scanez, this is a *real* math problem!')
+            maxFloat = math.ldexp(0.9999999999999999, 1024)
+            irc.error(msg, 'The answer exceeded %s or so.' % maxFloat)
         except TypeError:
             irc.error(msg, 'Something in there wasn\'t a valid number.')
         except NameError, e:
