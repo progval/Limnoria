@@ -43,8 +43,8 @@ import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.plugins as plugins
-from supybot.commands import wrap
 import supybot.registry as registry
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -202,7 +202,7 @@ class Success(callbacks.Privmsg):
             irc.error('There is no success #%s.' % id)
     change = wrap(change, ['user', 'channeldb',
                            ('id', 'success'), 'regexpReplacer'])
-                            
+
 
     def stats(self, irc, msg, args, channel):
         """[<channel>]
