@@ -64,7 +64,7 @@ def main():
     import world
     import drivers
     import schedule
-    schedule.addPeriodicEvent(world.upkeep, 300)
+    world.upkeep()
     world.startedAt = started
     while world.ircs:
         try:

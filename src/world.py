@@ -50,6 +50,7 @@ import log
 import conf
 import drivers
 import ircutils
+import schedule
 
 startedAt = time.time() # Just in case it doesn't get set later.
 
@@ -97,6 +98,7 @@ def upkeep():
             log.info('%s Flushers flushed and garbage collected.', timestamp)
         else:
             log.info('%s Garbage collected.', timestamp)
+    schedule.addEvent(upkeep, time.time() + conf.supybot.upkeepInterval())
     return collected
 
 def makeDriversDie():
