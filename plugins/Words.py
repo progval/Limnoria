@@ -48,8 +48,8 @@ import conf
 import utils
 import privmsgs
 import callbacks
-import configurable
 import ircutils
+import registry
 
 
 def configure(onStart, afterConnect, advanced):
@@ -155,11 +155,24 @@ class HangmanGame:
         else:
             return 'a'
 
+    configurables = configurable.Dictionary(
+        [('tries', configurable.IntType, 6, 'Number of tries to guess a word'),
+         ('prefix', configurable.StrType, '-= HANGMAN =-',
+             'Prefix string of the hangman plugin'),
+         ('timeout', configurable.IntType, 300, 'Time before a game times out')]
+    )
+    
+conf.registerPlugin('Words')
+conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanMaxTries',
+    registry.Integer(6, """Number of tries to guess a word"""))
+conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanPrefix',
+    registry.String('{HM}', """Prefix string of the hangman plugin"""))
+conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanTimeout',
+    registry.Integer(300, """Time before a game times out"""))
 
 class Words(callbacks.Privmsg, configurable.Mixin):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
         dataDir = conf.supybot.directories.data()
         self.dbHandler = WordsDB(os.path.join(dataDir, 'Words'))
         try:
@@ -233,12 +246,6 @@ class Words(callbacks.Privmsg, configurable.Mixin):
     ###
     # HANGMAN
     ###
-    configurables = configurable.Dictionary(
-        [('tries', configurable.IntType, 6, 'Number of tries to guess a word'),
-         ('prefix', configurable.StrType, '-= HANGMAN =-',
-             'Prefix string of the hangman plugin'),
-         ('timeout', configurable.IntType, 300, 'Time before a game times out')]
-    )
     dicturl = 'http://www.unixhideout.com/freebsd/share/dict/words'
     games = ircutils.IrcDict()
     validLetters = [chr(c) for c in range(ord('a'), ord('z')+1)]
@@ -272,10 +279,10 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         if self.games[channel] is None:
             self.games[channel] = HangmanGame()
             game = self.games[channel]
-            game.timeout = self.configurables.get('timeout', channel)
+            game.timeout = conf.supybot.plugins.Words.hangmanTimeout()
             game.timeGuess = time.time()
-            game.tries = self.configurables.get('tries', channel)
-            game.prefix = self.configurables.get('prefix', channel) + ' '
+            game.tries = conf.supybot.plugins.Words.hangmanMaxTries()
+            game.prefix = conf.supybot.plugins.Words.hangmanPrefix() + ' '
             game.guessed = False
             game.unused = copy.copy(self.validLetters)
             game.hidden = game.getWord(self.dbHandler)
