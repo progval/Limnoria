@@ -150,7 +150,7 @@ def processConfigFile(filename):
         reportConfigError(filename, msg)
 
 def main():
-    (optlist, filenames) = getopt.getopt(sys.argv[1:], 'c:')
+    (optlist, filenames) = getopt.getopt(sys.argv[1:], 'Opc:')
     for (option, argument) in optlist:
         if option == '-c':
             myLocals = {}
