@@ -92,7 +92,7 @@ def configurePlugin(module, onStart, afterConnect, advanced):
         print # Blank line :)
         myPrint("""Done!""")
     else:
-        onStart.append('load %s' % name)
+        onStart.append('load %s' % module.__name__)
 
 def clearLoadedPlugins(onStart, plugins):
     for s in onStart:
