@@ -137,9 +137,12 @@ class ColorizedFormatter(Formatter):
                 color = ansi.RED
             elif record.levelno == logging.WARNING:
                 color = ansi.YELLOW
-            return ''.join([color,
-                            Formatter.format(self, record, *args, **kwargs),
-                            ansi.RESET])
+            if color:
+                return ''.join([color,
+                                Formatter.format(self, record, *args, **kwargs),
+                                ansi.RESET])
+            else:
+                return Formatter.format(self, record, *args, **kwargs)
         else:
             return Formatter.format(self, record, *args, **kwargs)
 
