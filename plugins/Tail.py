@@ -44,6 +44,7 @@ import getopt
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -138,32 +139,32 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
         for target in self.registryValue('targets'):
             irc.reply(payload, to=target, notice=notice, private=True)
             
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, filename):
         """<filename>
 
         Basically does the equivalent of tail -f to the targets.
         """
-        filename = privmsgs.getArgs(args)
         try:
             self._add(filename)
         except EnvironmentError, e:
             irc.error(utils.exnTostring(e))
             return
         irc.replySuccess()
+    add = wrap(add, ['filename'])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, filename):
         """<filename>
 
         Stops announcing the lines appended to <filename>.
         """
-        filename = privmsgs.getArgs(args)
         try:
             self._remove(filename)
             irc.replySuccess()
         except KeyError:
             irc.error('I\'m not currently announcing %s.' % filename)
+    remove = wrap(remove, ['filename'])
 
-    def target(self, irc, msg, args):
+    def target(self, irc, msg, args, optlist, targets):
         """[--remove] [<target> ...]
 
         If given no arguments, returns the current list of targets for this
@@ -171,12 +172,11 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
         the current list of targets.  If given --remove and any number of
         targets, will remove those targets from the current list of targets.
         """
-        (optlist, args) = getopt.getopt(args, '', ['remove'])
         remove = False
         for (option, arg) in optlist:
-            if option == '--remove':
+            if option == 'remove':
                 remove = True
-        if not args:
+        if not targets:
             L = self.registryValue('targets')
             if L:
                 utils.sortBy(ircutils.toLower, L)
@@ -185,6 +185,8 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
                 irc.reply('I\'m not currently targeting anywhere.')
         elif remove:
             pass #XXX
+
+    target = wrap(target, [getopts({'remove': ''}), any('something')])
         
 
 Class = Tail

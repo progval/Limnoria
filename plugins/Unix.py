@@ -49,6 +49,7 @@ import struct
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -121,12 +122,11 @@ conf.registerGlobalValue(conf.supybot.plugins.Unix.wtf, 'command',
 
 
 class Unix(callbacks.Privmsg):
-    def errno(self, irc, msg, args):
+    def errno(self, irc, msg, args, s):
         """<error number or code>
 
         Returns the number of an errno code, or the errno code of a number.
         """
-        s = privmsgs.getArgs(args)
         try:
             i = int(s)
             name = errno.errorcode[i]
@@ -140,6 +140,7 @@ class Unix(callbacks.Privmsg):
         except KeyError:
             name = '(unknown)'
         irc.reply('%s (#%s): %s' % (name, i, os.strerror(i)))
+    errno = wrap(errno, ['something'])
 
     def progstats(self, irc, msg, args):
         """takes no arguments
@@ -154,10 +155,10 @@ class Unix(callbacks.Privmsg):
         Returns the current pid of the process for this Supybot.
         """
         irc.reply(str(os.getpid()), private=True)
-    pid = privmsgs.checkCapability(pid, 'owner')
+    pid = wrap(pid, [('checkCapability', 'owner')])
 
     _cryptre = re.compile(r'[./0-9A-Za-z]')
-    def crypt(self, irc, msg, args):
+    def crypt(self, irc, msg, args, password, salt):
         """<password> [<salt>]
 
         Returns the resulting of doing a crypt() on <password>  If <salt> is
@@ -170,12 +171,12 @@ class Unix(callbacks.Privmsg):
             while self._cryptre.sub('', s) != '':
                 s = struct.pack('<h', random.randrange(2**16))
             return s
-        (password, salt) = privmsgs.getArgs(args, optional=1)
-        if salt == '':
+        if not salt:
             salt = makeSalt()
         irc.reply(crypt.crypt(password, salt))
+    crypt = wrap(crypt, ['something', optional('something')])
 
-    def spell(self, irc, msg, args):
+    def spell(self, irc, msg, args, word):
         """<word>
 
         Returns the result of passing <word> to aspell/ispell.  The results
@@ -189,7 +190,6 @@ class Unix(callbacks.Privmsg):
                      'installed on this computer.  If one is installed, '
                      'reconfigure supybot.plugins.Unix.spell.command '
                      'appropriately.', Raise=True)
-        word = privmsgs.getArgs(args)
         if word and not word[0].isalpha():
             irc.error('<word> must begin with an alphabet character.')
             return
@@ -228,6 +228,7 @@ class Unix(callbacks.Privmsg):
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(resp)
+    spell = wrap(spell, ['something'])
 
     def fortune(self, irc, msg, args):
         """takes no arguments
@@ -259,7 +260,7 @@ class Unix(callbacks.Privmsg):
                       'supybot.plugins.Unix.fortune.command configuration '
                       'variable appropriately.')
 
-    def wtf(self, irc, msg, args):
+    def wtf(self, irc, msg, args, _, something):
         """[is] <something>
 
         Returns wtf <something> is.  'wtf' is a *nix command that first
@@ -268,9 +269,6 @@ class Unix(callbacks.Privmsg):
         """
         wtfCmd = self.registryValue('wtf.command')
         if wtfCmd:
-            if args and args[0] == 'is':
-                del args[0]
-            something = privmsgs.getArgs(args)
             something = something.rstrip('?')
             (r, w) = popen2.popen4([wtfCmd, something])
             try:
@@ -284,6 +282,7 @@ class Unix(callbacks.Privmsg):
                       'If it is installed on this system, reconfigure the '
                       'supybot.plugins.Unix.wtf.command configuration '
                       'variable appropriately.')
+    wtf = wrap(wtf, [optional(('literal', ['is'])), 'something'])
 
 
 Class = Unix

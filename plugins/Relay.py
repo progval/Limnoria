@@ -46,11 +46,11 @@ from itertools import imap, ifilter
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
+from supybot.commands import *
 import supybot.irclib as irclib
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 from supybot.structures import RingBuffer
@@ -146,45 +146,38 @@ class Relay(callbacks.Privmsg):
                 irc.queueMsg(ircmsgs.who(channel))
                 irc.queueMsg(ircmsgs.names(channel))
 
-    def join(self, irc, msg, args):
-        """<channel>
+    def join(self, irc, msg, args, channel):
+        """[<channel>]
 
         Starts relaying between the channel <channel> on all networks.  If on a
         network the bot isn't in <channel>, he'll join.  This commands is
         required even if the bot is in the channel on both networks; he won't
         relay between those channels unless he's told to join both
-        channels.
+        channels.  If <channel> is not given, starts relaying on the channel
+        the message was sent in.
         """
-        channel = privmsgs.getArgs(args)
-        if not ircutils.isChannel(channel):
-            irc.error('%r is not a valid channel.' % channel)
-            return
         self.registryValue('channels').add(channel)
         for otherIrc in world.ircs: # Should we abstract this?
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
         irc.replySuccess()
-    join = privmsgs.checkCapability(join, 'owner')
+    join = wrap(join, ['channel'])
 
-    def part(self, irc, msg, args):
+    def part(self, irc, msg, args, channel):
         """<channel>
 
         Ceases relaying between the channel <channel> on all networks.  The bot
         will part from the channel on all networks in which it is on the
         channel.
         """
-        channel = privmsgs.getArgs(args)
-        if not ircutils.isChannel(channel):
-            irc.error('%r is not a valid channel.' % channel)
-            return
-        self.registryValue('channels').remove(channel)
+        self.registryValue('channels').discard(channel)
         for otherIrc in world.ircs:
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
         irc.replySuccess()
-    part = privmsgs.checkCapability(part, 'owner')
+    part = wrap(part, ['channel'])
 
-    def nicks(self, irc, msg, args):
+    def nicks(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the nicks of the people in the channel on the various networks
@@ -192,7 +185,6 @@ class Relay(callbacks.Privmsg):
         isn't sent on the channel itself.
         """
         realIrc = self._getRealIrc(irc)
-        channel = privmsgs.getChannel(msg, args)
         if channel not in self.registryValue('channels'):
             irc.error('I\'m not relaying in %s.' % channel)
             return
@@ -234,15 +226,7 @@ class Relay(callbacks.Privmsg):
                              (ircutils.bold(network), numUsers, usersS))
         users.sort()
         irc.reply('; '.join(users))
-
-    def ignore(self, irc, msg, args):
-        """[<channel>] <nick|hostmask>
-
-        Ignores everything said or done by <nick|hostmask> in <channel>.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        pass
+    nicks = wrap(nicks, ['channel'])
 
     def do311(self, irc, msg):
         irc = self._getRealIrc(irc)

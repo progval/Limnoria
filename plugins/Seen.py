@@ -51,10 +51,10 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -130,15 +130,13 @@ class Seen(callbacks.Privmsg):
             except KeyError:
                 pass # Not in the database.
 
-    def seen(self, irc, msg, args):
+    def seen(self, irc, msg, args, channel, name):
         """[<channel>] <nick>
 
         Returns the last time <nick> was seen and what <nick> was last seen
         saying. <channel> is only necessary if the message isn't sent on the
         channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        name = privmsgs.getArgs(args)
         try:
             results = []
             if '*' in name:
@@ -156,29 +154,31 @@ class Seen(callbacks.Privmsg):
                     (when, said) = info
                     L.append('%s (%s ago)' % 
                             (nick, utils.timeElapsed(time.time()-when)))
-                irc.reply('%s could be %s' % (name, utils.commaAndify(L, And='or')))
+                irc.reply('%s could be %s' %
+                          (name, utils.commaAndify(L, And='or')))
             else:
-                irc.reply('I haven\'t seen anyone matching %s' % name)
-                
+                irc.reply('I haven\'t seen anyone matching %s.' % name)
         except KeyError:
             irc.reply('I have not seen %s.' % name)
+    # XXX This should be channeldb, but ChannelUserDictionary does't support it.
+    seen = wrap(seen, ['channel', 'nick'])
 
-    def last(self, irc, msg, args):
+    def last(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the last thing said in <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         try:
             (when, said) = self.db.seen(channel, '<last>')
             irc.reply('Someone was last seen here %s ago saying: %s' %
                       (utils.timeElapsed(time.time()-when), said))
         except KeyError:
             irc.reply('I have never seen anyone.')
+    last = wrap(last, ['channel'])
 
 
-    def user(self, irc, msg, args):
+    def user(self, irc, msg, args, channel, user):
         """[<channel>] <name>
 
         Returns the last time <name> was seen and what <name> was last seen
@@ -187,23 +187,13 @@ class Seen(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        name = privmsgs.getArgs(args)
         try:
-            id = ircdb.users.getUserId(name)
-        except KeyError:
-            try:
-                hostmask = irc.state.nickToHostmask(name)
-                id = ircdb.users.getUserId(hostmask)
-            except KeyError:
-                irc.errorNoUser()
-                return
-        try:
-            (when, said) = self.db.seen(channel, id)
+            (when, said) = self.db.seen(channel, user.id)
             irc.reply('%s was last seen here %s ago saying: %s' %
-                      (name, utils.timeElapsed(time.time()-when), said))
+                      (user.name, utils.timeElapsed(time.time()-when), said))
         except KeyError:
             irc.reply('I have not seen %s.' % name)
+    user = wrap(user, ['channel', 'otherUser'])
 
 
 Class = Seen

@@ -44,6 +44,7 @@ import time
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.privmsgs as privmsgs
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
@@ -63,7 +64,7 @@ class Scheduler(callbacks.Privmsg):
             self.Proxy(irc.irc, msg, tokens)
         return f
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, seconds, command):
         """<seconds> <command>
 
         Schedules the command string <command> to run <seconds> seconds in the
@@ -72,25 +73,18 @@ class Scheduler(callbacks.Privmsg):
         command was given in (with no prefixed nick, a consequence of using
         echo).  Do pay attention to the quotes in that example.
         """
-        (seconds, command) = privmsgs.getArgs(args, required=2)
-        try:
-            seconds = int(seconds)
-        except ValueError:
-            irc.error('Invalid seconds value: %r' % seconds)
-            return
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addEvent(f, time.time() + seconds)
         f.eventId = id
         self.events[str(id)] = command
         irc.replySuccess('Event #%s added.' % id)
+    add = wrap(add, ['positiveInt', 'text'])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, id):
         """<id>
 
         Removes the event scheduled with id <id> from the schedule.
         """
-        id = privmsgs.getArgs(args)
-        id = id.lower()
         if id in self.events:
             del self.events[id]
             try:
@@ -104,8 +98,9 @@ class Scheduler(callbacks.Privmsg):
                 irc.error('Invalid event id.')
         else:
             irc.error('Invalid event id.')
+    remove = wrap(remove, ['lowered'])
 
-    def repeat(self, irc, msg, args):
+    def repeat(self, irc, msg, args, name, seconds, command):
         """<name> <seconds> <command>
 
         Schedules the command <command> to run every <seconds> seconds,
@@ -113,19 +108,7 @@ class Scheduler(callbacks.Privmsg):
         thereafter).  <name> is a name by which the command can be
         unscheduled.
         """
-        (name, seconds, command) = privmsgs.getArgs(args, required=3)
-        name = name.lower()
-        try:
-            seconds = int(seconds)
-        except ValueError:
-            irc.error('Invalid seconds: %r' % seconds)
-            return
-        try:
-            name = int(name)
-            irc.error('Names must not be an integer.')
-            return
-        except ValueError:
-            pass
+        name = name.lower() # XXX We should have a "compose" context for this.
         self.events[name] = command
         f = self._makeCommandFunction(irc, msg, command, remove=False)
         id = schedule.addPeriodicEvent(f, seconds, name)
@@ -133,6 +116,7 @@ class Scheduler(callbacks.Privmsg):
         # We don't reply because the command runs immediately.
         # But should we?  What if the command doesn't have visible output?
         # irc.replySuccess()
+    repeat = wrap(repeat, ['nonInt', 'positiveInt', 'text'])
 
     def list(self, irc, msg, args):
         """takes no arguments
@@ -147,6 +131,7 @@ class Scheduler(callbacks.Privmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('There are currently no scheduled commands.')
+    list = wrap(list)
 
 
 Class = Scheduler
