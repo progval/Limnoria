@@ -31,8 +31,24 @@
 
 from testsupport import *
 
-class ServicesTestCase(PluginTestCase, PluginDocumentation):
+class ServicesTestCase(PluginTestCase):
     plugins = ('Services',)
+    config = {
+        'plugins.Services.NickServ': 'NickServ',
+        'plugins.Services.ChanServ': 'ChanServ',
+        }
+
+    def testPasswordAndIdentify(self):
+        self.assertNotError('services password foo bar')
+        self.assertError('services identify') # Don't have a password.
+        self.assertNotError('services password %s baz' % self.nick)
+        m = self.assertNotError('services identify')
+        self.failUnless(m.args[0] == 'NickServ')
+        self.failUnless(m.args[1].lower() == 'identify baz')
+        self.assertNotError('services password %s biff' % self.nick)
+        m = self.assertNotError('services identify')
+        self.failUnless(m.args[0] == 'NickServ')
+        self.failUnless(m.args[1].lower() == 'identify biff')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

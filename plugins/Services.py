@@ -504,6 +504,9 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             if irc.nick in self.registryValue('nicks'):
                 self._doIdentify(irc, irc.nick)
                 irc.replySuccess()
+            else:
+                irc.error('I don\'t have a configured password for '
+                          'my current nick.')
         else:
             irc.error('You must set supybot.plugins.Services.NickServ before '
                       'I\'m able to do identify.')
