@@ -256,9 +256,10 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
 
     def testEmptyNest(self):
-        self.assertError('echo []')
         try:
             conf.replyWhenNotCommand = True
+            self.assertError('echo []')
+            conf.replyWhenNotCommand = False
             self.assertResponse('echo []', '[]')
         finally:
             conf.replyWhenNotCommand = False
