@@ -263,6 +263,7 @@ class IrcObjectProxy:
         self.args = args
         self.counter = 0
         self.finalEvaled = False
+        world.commandsProcessed += 1
         self.evalArgs()
 
     def findCallback(self, commandName):

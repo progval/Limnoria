@@ -50,6 +50,7 @@ import debug
 startedAt = 0.0
 
 threadsSpawned = 0
+commandsProcessed = 0
 ###
 # End Global Values.
 ###
