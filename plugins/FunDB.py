@@ -310,7 +310,7 @@ class FunDB(callbacks.Privmsg):
         (table, id, regexp) = privmsgs.getArgs(args, needed=3)
         table = table.lower()
         try:
-            ircdb.users.getUser(msg.prefix).name
+            name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
@@ -338,8 +338,8 @@ class FunDB(callbacks.Privmsg):
         else:
             old_entry = cursor.fetchone()[0]
             new_entry = replacer(old_entry)
-            sql = """UPDATE %ss SET %s=%%s WHERE id=%%s""" % (table, table)
-            cursor.execute(sql, new_entry, id)
+            sql = """UPDATE %ss SET %s=%%s, added_by=%%s WHERE id=%%s""" % (table, table)
+            cursor.execute(sql, new_entry, name, id)
             self.db.commit()
             irc.reply(msg, conf.replySuccess)
 
