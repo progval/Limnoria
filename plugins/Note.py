@@ -49,6 +49,7 @@ import ircdb
 import ircmsgs
 import plugins
 import privmsgs
+import registry
 import ircutils
 import callbacks
 
@@ -57,6 +58,19 @@ try:
 except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
+
+
+conf.registerPlugin('Note')
+conf.registerGlobalValue(conf.supybot.plugins.Note, 'notifyOnJoin',
+    registry.Boolean(False, """Determines whether the bot will notify people of
+    their new messages when they join the channel.  Normally it will notify
+    them when they send a message to the channel, since oftentimes joins are
+    the result of netsplits and not the actual presence of the user."""))
+conf.registerGlobalValue(conf.supybot.plugins.Note, 'notifyOnJoinRepeatedly',
+    registry.Boolean(False, """Determines whether the bot will repeatedly
+    notify people of their new messages when they join the channel.  That means
+    when they join the channel, the bot will tell them they have unread
+    messages, even if it's told them before."""))
 
 class NoteDb(plugins.DBHandler):
     def makeDb(self, filename):
@@ -79,8 +93,6 @@ class NoteDb(plugins.DBHandler):
             db.commit()
         return db
         
-
-
 class Note(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -99,6 +111,14 @@ class Note(callbacks.Privmsg):
         self.dbHandler.die()
 
     def doPrivmsg(self, irc, msg):
+        self._notify(irc, msg)
+
+    def doJoin(self, irc, msg):
+        if self.registryValue('notifyOnJoin'):
+            repeatedly = self.registryValue('notifyOnJoinRepeatedly')
+            self._notify(irc, msg, repeatedly)
+
+    def _notify(self, irc, msg, repeatedly=False):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
@@ -108,7 +128,7 @@ class Note(callbacks.Privmsg):
         cursor.execute("""SELECT COUNT(*) FROM notes
                           WHERE notes.to_id=%s AND notified=0""", id)
         unnotified = int(cursor.fetchone()[0])
-        if unnotified != 0:
+        if unnotified != 0 or repeatedly:
             cursor.execute("""SELECT COUNT(*) FROM notes
                               WHERE notes.to_id=%s AND read=0""", id)
             unread = int(cursor.fetchone()[0])
