@@ -528,6 +528,7 @@ class IrcChannelCreator(Creator):
 class UsersDictionary(utils.IterableMap):
     """A simple serialized-to-file User Database."""
     def __init__(self):
+        self.noFlush = False
         self.filename = None
         self.users = {}
         self.nextId = 0
@@ -539,10 +540,16 @@ class UsersDictionary(utils.IterableMap):
         self.filename = filename
         reader = unpreserve.Reader(IrcUserCreator, self)
         try:
-            reader.readFile(filename)
-        except Exception, e:
-            log.error('Invalid user dictionary file, starting from scratch.')
-            log.error('Exact error: %s', utils.exnToString(e))
+            self.noFlush = True
+            try:
+                reader.readFile(filename)
+                self.noFlush = False
+                self.flush()
+            except Exception, e:
+                log.error('Invalid user dictionary file, resetting to empty.')
+                log.error('Exact error: %s', utils.exnToString(e))
+        finally:
+            self.noFlush = False
 
     def reload(self):
         """Reloads the database from its file."""
@@ -560,17 +567,18 @@ class UsersDictionary(utils.IterableMap):
 
     def flush(self):
         """Flushes the database to its file."""
-        if self.filename is not None:
-            L = self.users.items()
-            L.sort()
-            fd = utils.transactionalFile(self.filename)
-            for (id, u) in L:
-                fd.write('user %s' % id)
-                fd.write(os.linesep)
-                u.preserve(fd, indent='  ')
-            fd.close()
-        else:
-            log.warning('UsersDictionary.flush called with no filename.')
+        if not self.noFlush:
+            if self.filename is not None:
+                L = self.users.items()
+                L.sort()
+                fd = utils.transactionalFile(self.filename)
+                for (id, u) in L:
+                    fd.write('user %s' % id)
+                    fd.write(os.linesep)
+                    u.preserve(fd, indent='  ')
+                fd.close()
+            else:
+                log.warning('UsersDictionary.flush called with no filename.')
 
     def close(self):
         self.flush()
@@ -682,7 +690,8 @@ class UsersDictionary(utils.IterableMap):
                         raise ValueError, s
         self.invalidateCache(id)
         self.users[id] = user
-        self.flush()
+        # This shouldn't happen; we flush automatically every once in awhile.
+        #self.flush()
 
     def delUser(self, id):
         """Removes a user from the database."""
@@ -709,29 +718,37 @@ class UsersDictionary(utils.IterableMap):
 
 class ChannelsDictionary(utils.IterableMap):
     def __init__(self):
+        self.noFlush = False
         self.filename = None
         self.channels = ircutils.IrcDict()
 
     def open(self, filename):
-        self.filename = filename
-        reader = unpreserve.Reader(IrcChannelCreator, self)
+        self.noFlush = True
         try:
-            reader.readFile(filename)
-        except Exception, e:
-            log.error('Invalid channel database, starting from scratch.')
-            log.error('Exact error: %s', utils.exnToString(e))
+            self.filename = filename
+            reader = unpreserve.Reader(IrcChannelCreator, self)
+            try:
+                reader.readFile(filename)
+                self.noFlush = False
+                self.flush()
+            except Exception, e:
+                log.error('Invalid channel database, resetting to empty.')
+                log.error('Exact error: %s', utils.exnToString(e))
+        finally:
+            self.noFlush = False
 
     def flush(self):
         """Flushes the channel database to its file."""
-        if self.filename is not None:
-            fd = utils.transactionalFile(self.filename)
-            for (channel, c) in self.channels.iteritems():
-                fd.write('channel %s' % channel)
-                fd.write(os.linesep)
-                c.preserve(fd, indent='  ')
-            fd.close()
-        else:
-            log.warning('ChannelsDictionary.flush without self.filename.')
+        if not self.noFlush:
+            if self.filename is not None:
+                fd = utils.transactionalFile(self.filename)
+                for (channel, c) in self.channels.iteritems():
+                    fd.write('channel %s' % channel)
+                    fd.write(os.linesep)
+                    c.preserve(fd, indent='  ')
+                fd.close()
+            else:
+                log.warning('ChannelsDictionary.flush without self.filename.')
 
     def close(self):
         self.flush()
