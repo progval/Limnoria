@@ -36,12 +36,12 @@ from questions import *
 
 import os
 import sys
+import logging
 import optparse
 
 import conf
-import debug
 
-debug.minimumPriority = 'high'
+conf.minimumLogPriority = logging.CRITICAL
 
 def main():
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
