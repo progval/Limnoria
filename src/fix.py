@@ -46,7 +46,7 @@ def catch(f, *args, **kwargs):
     try:
         return f(*args, **kwargs)
     except:
-        pass
+        return None
 
 class bool(int):
     def __new__(self, val=0):
