@@ -73,7 +73,7 @@ class TimeoutError(AssertionError):
     def __str__(self):
         return '%r timed out' % self.args[0]
 
-class TestPlugin(callbacks.Privmsg):
+class TestPlugin(callbacks.Plugin):
     def eval(self, irc, msg, args):
         """<text>
 
@@ -83,6 +83,8 @@ class TestPlugin(callbacks.Privmsg):
         """
         try:
             irc.reply(repr(eval(' '.join(args))))
+        except callbacks.ArgumentError:
+            raise
         except Exception, e:
             irc.reply(utils.exnToString(e))
 # Since we know we don't now need the Irc object, we just give None.  This
