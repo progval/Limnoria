@@ -441,4 +441,5 @@ class PrivmsgRegexp(Privmsg):
                 if msg:
                     irc = IrcObjectProxyRegexp(irc)
                     self.callCommand(method, irc, msg, m)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
