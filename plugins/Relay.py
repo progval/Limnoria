@@ -40,7 +40,6 @@ import supybot.plugins as plugins
 
 import re
 import sys
-import copy
 import time
 from itertools import imap, ifilter
 
