@@ -200,9 +200,9 @@ class Alias(callbacks.Privmsg):
         name = realName
         cb = callbacks.findCallbackForCommand(irc, name)
         if cb is not None and cb != self:
-            raise AliasError, 'A command with that name already exists.'
+            raise AliasError, 'A command with the name %r already exists.'%name
         if name in self.frozen:
-            raise AliasError, 'That alias is frozen.'
+            raise AliasError, 'Alias %r is frozen.' % name
         try:
             f = makeNewAlias(name, alias)
         except RecursiveAlias:
