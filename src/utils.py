@@ -453,7 +453,9 @@ def mktemp(suffix=''):
     return sha.sha(s + str(time.time())).hexdigest() + suffix
 
 def itersplit(isSeparator, iterable, maxsplit=-1, yieldEmpty=False):
-    """Splits an iterator based on a predicate isSeparator."""
+    """itersplit(isSeparator, iterable, maxsplit=-1, yieldEmpty=False)
+
+    Splits an iterator based on a predicate isSeparator."""
     acc = []
     for element in iterable:
         if maxsplit == 0 or not isSeparator(element):
