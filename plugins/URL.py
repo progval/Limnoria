@@ -198,7 +198,8 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         if self.registryValue('titleSnarfer', channel):
             url = match.group(0)
             try:
-                text = webutils.getUrl(url, size=conf.supybot.httpPeekSize())
+                size = conf.supybot.protocols.http.peekSize()
+                text = webutils.getUrl(url, size=size)
             except webutils.WebError, e:
                 self.log.info('Couldn\'t snarf title of %s, %s.', url, e)
                 return

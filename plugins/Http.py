@@ -90,7 +90,8 @@ class Http(callbacks.Privmsg):
         if not url.startswith('http://'):
             irc.error('Only HTTP urls are valid.')
             return
-        s = webutils.getUrl(url, size=conf.supybot.httpPeekSize())
+        size = conf.supybot.protocols.http.peekSize()
+        s = webutils.getUrl(url, size=size)
         m = self._doctypeRe.search(s)
         if m:
             s = utils.normalizeWhitespace(m.group(0))
@@ -113,13 +114,13 @@ class Http(callbacks.Privmsg):
             size = fd.headers['Content-Length']
             irc.reply('%s is %s bytes long.' % (url, size))
         except KeyError:
-            s = fd.read(conf.supybot.httpPeekSize())
-            if len(s) != conf.supybot.httpPeekSize():
+            size = conf.supybot.protocols.http.peekSize()
+            s = fd.read(size)
+            if len(s) != size:
                 irc.reply('%s is %s bytes long.' % (url, len(s)))
             else:
                 irc.reply('The server didn\'t tell me how long %s is '
-                          'but it\'s longer than %s bytes.' %
-                          (url,conf.supybot.httpPeekSize()))
+                          'but it\'s longer than %s bytes.' % (url, size)
 
     def title(self, irc, msg, args):
         """<url>
@@ -129,13 +130,14 @@ class Http(callbacks.Privmsg):
         url = privmsgs.getArgs(args)
         if '://' not in url:
             url = 'http://%s' % url
-        text = webutils.getUrl(url, size=conf.supybot.httpPeekSize())
+        size = conf.supybot.protocols.http.peekSize()
+        text = webutils.getUrl(url, size=size)
         m = self._titleRe.search(text)
         if m is not None:
             irc.reply(utils.htmlToText(m.group(1).strip()))
         else:
             irc.reply('That URL appears to have no HTML title '
-                      'within the first %s bytes.'%conf.supybot.httpPeekSize())
+                      'within the first %s bytes.' % size)
 
     def freshmeat(self, irc, msg, args):
         """<project name>
