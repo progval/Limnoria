@@ -115,6 +115,16 @@ class IrcMsgTestCase(SupyTestCase):
         self.assertRaises(ircmsgs.MalformedIrcMsg, ircmsgs.IrcMsg,
                           args=('biff',), prefix='foo!bar@baz')
 
+    def testTags(self):
+        m = ircmsgs.privmsg('foo', 'bar')
+        self.failIf(m.repliedTo)
+        m.tag('repliedTo')
+        self.failUnless(m.repliedTo)
+        m.tag('repliedTo')
+        self.failUnless(m.repliedTo)
+        m.tag('repliedTo', 12)
+        self.assertEqual(m.repliedTo, 12)
+
 class FunctionsTestCase(SupyTestCase):
     def testIsAction(self):
         L = [':jemfinch!~jfincher@ts26-2.homenet.ohio-state.edu PRIVMSG'
