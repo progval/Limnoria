@@ -405,7 +405,9 @@ def callerInGivenChannel(irc, msg, args, state):
         irc.errorInvalid('channel', args[0])
 
 def nickInChannel(irc, msg, args, state):
+    st = state.essence()
     inChannel(irc, msg, args, state)
+    state.args = st.args
     if args[0] not in irc.state.channels[state.channel].users:
         irc.error('%s is not in %s.' % (args[0], state.channel), Raise=True)
     state.args.append(args.pop(0))
