@@ -34,7 +34,7 @@ Provides simple commands for formatting text on IRC.
 """
 
 __revision__ = "$Id$"
-__author__ = ''
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import plugins
 
