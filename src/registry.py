@@ -311,7 +311,7 @@ class Group(object):
         items = self.values.items()
         for (name, child) in self.children.items():
             if hasattr(child, 'value'):
-                items.append((self.originals[name], child))
+                items.append((name, child))
         utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
         for (name, value) in items:
             if fullNames:
