@@ -47,9 +47,6 @@ except ImportError:
 import conf
 import debug
 
-# version: The version of the bot.
-version = '0.70.0'
-
 startedAt = 0.0
 
 threadsSpawned = 0

@@ -42,6 +42,7 @@ import time
 
 sys.path.append(os.pardir)
 
+import conf
 import debug
 import ircmsgs
 import callbacks
@@ -58,7 +59,7 @@ class Ctcp(callbacks.PrivmsgRegexp):
     def version(self, irc, msg, match):
         "\x01VERSION\x01"
         debug.msg('Received CTCP VERSION from %s' % msg.nick, 'normal')
-        s = '\x01VERSION SupyBot %s\x01' % world.version
+        s = '\x01VERSION SupyBot %s\x01' % conf.version
         irc.queueMsg(notice(msg.nick, s))
 
     def userinfo(self, irc, msg, match):

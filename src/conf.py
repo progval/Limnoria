@@ -195,6 +195,8 @@ driverModule = 'asyncoreDrivers'
 ###############################
 ###############################
 ###############################
+version ='0.70.0'
+
 import debug
 
 class ConfigurationDict(dict):

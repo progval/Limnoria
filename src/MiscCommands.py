@@ -37,7 +37,6 @@ import os
 import pprint
 
 import conf
-import world
 import debug
 import privmsgs
 import callbacks
@@ -147,7 +146,7 @@ class MiscCommands(callbacks.Privmsg):
 
         Returns the version of the current bot.
         """
-        irc.reply(msg, world.version)
+        irc.reply(msg, conf.version)
 
     def source(self, irc, msg, args):
         """takes no arguments
