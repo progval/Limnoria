@@ -384,6 +384,15 @@ class IrcObjectProxy(RichReplyMethods):
         except CannotNest, e:
             if not isinstance(self.irc, irclib.Irc):
                 self.error('Command %r cannot be nested.' % name)
+        except (SyntaxError, Error), e:
+            cb.log.info('Error return: %s', e)
+            self.error(str(e))
+        except Exception, e:
+            cb.log.exception('Uncaught exception:')
+            # TODO: Configuration variable for this detailed error.  Users
+            # should be able to specify that a plain error message get
+            # returned.
+            self.error(utils.exnToString(e))
             
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
@@ -415,29 +424,28 @@ class IrcObjectProxy(RichReplyMethods):
             # Ok, no regexp-based things matched.
             self._callInvalidCommands()
         else:
-            try:
-                if len(cbs) > 1:
-                    for cb in cbs:
-                        if cb.name().lower() == name:
-                            break
-                    else:
-                        # This should've been caught earlier, that's why we
-                        # assert instead of raising a ValueError or something.
-                        assert False, 'Non-disambiguated command.'
+            if len(cbs) > 1:
+                for cb in cbs:
+                    if cb.name().lower() == name:
+                        break
                 else:
-                    del self.args[0]
-                    cb = cbs[0]
-                if not checkCommandCapability(self.msg, cb, name):
-                    self.errorNoCapability(name)
-                    return
-                command = getattr(cb, name)
-                Privmsg.handled = True
-                if cb.threaded:
-                    t = CommandThread(target=self._callCommand, command,
-                                      self, self.msg, self.args)
-                    t.start()
-                else:
-                    self._callCommand(name, command, cb)
+                    # This should've been caught earlier, that's why we
+                    # assert instead of raising a ValueError or something.
+                    assert False, 'Non-disambiguated command.'
+            else:
+                del self.args[0]
+                cb = cbs[0]
+            if not checkCommandCapability(self.msg, cb, name):
+                self.errorNoCapability(name)
+                return
+            command = getattr(cb, name)
+            Privmsg.handled = True
+            if cb.threaded:
+                t = CommandThread(target=self._callCommand,
+                                  args=(name, command, cb))
+                t.start()
+            else:
+                self._callCommand(name, command, cb)
 
     def reply(self, s, noLengthCheck=False, prefixName=True,
               action=False, private=False, notice=False, to=None):
@@ -552,40 +560,15 @@ class CommandThread(threading.Thread):
     """Just does some extra logging and error-recovery for commands that need
     to run in threads.
     """
-    def __init__(self, callCommand, command, irc, msg, args, *L):
-        self.command = command
+    def __init__(self, target=None, args=None):
+        (name, command, cb) = args
         world.threadsSpawned += 1
-        try:
-            self.commandName = command.im_func.func_name
-        except AttributeError:
-            self.commandName = command.__name__
-        try:
-            self.className = command.im_class.__name__
-        except AttributeError:
-            self.className = '<unknown>'
-        name = '%s.%s with args %r' % (self.className, self.commandName, args)
-        threading.Thread.__init__(self, target=callCommand, name=name,
-                                  args=(command, irc, msg, args)+L)
-        log.debug('Spawning thread %s' % name)
-        self.irc = irc
-        self.msg = msg
+        threadName = 'Thread #%s for %s.%s' % (world.threadsSpawned,
+                                               cb.name(), name)
+        log.debug('Spawning thread %s' % threadName)
+        threading.Thread.__init__(self, target=target,
+                                  name=threadName, args=args)
         self.setDaemon(True)
-
-    def run(self):
-        try:
-            try:
-                original = self.command.im_class.threaded
-                self.command.im_class.threaded = True
-                threading.Thread.run(self)
-            finally:
-                self.command.im_class.threaded = original
-        except (getopt.GetoptError, ArgumentError):
-            name = self.commandName
-            self.irc.reply(formatArgumentError(self.command, name))
-        except CannotNest:
-            if not isinstance(self.irc.irc, irclib.Irc):
-                s = 'Command %r cannot be nested.' % self.commandName
-                self.irc.error(s)
 
 
 class ConfigIrcProxy(RichReplyMethods):
@@ -723,23 +706,13 @@ class Privmsg(irclib.IrcCallback):
         return getattr(self, methodName)
 
     def callCommand(self, method, irc, msg, *L):
+        self.log.critical(repr(method))
         name = method.im_func.func_name
         assert L, 'Odd, nothing in L.  This can\'t happen.'
         self.log.info('Command %s called with args %s by %s',
                       name, L[0], msg.prefix)
         start = time.time()
-        try:
-            method(irc, msg, *L)
-        except (getopt.GetoptError, ArgumentError, CannotNest):
-            # Not catching getopt.GetoptError, ArgumentError, CannotNest --
-            # those are handled by IrcObjectProxy.
-            raise
-        except (SyntaxError, Error), e:
-            self.log.info('Error return: %s', e)
-            irc.error(str(e))
-        except Exception, e:
-            self.log.exception('Uncaught exception:')
-            irc.error(utils.exnToString(e))
+        method(irc, msg, *L)
         elapsed = time.time() - start
         self.log.info('%s took %s seconds', name, elapsed)
 
@@ -806,6 +779,8 @@ class PrivmsgRegexp(Privmsg):
         try:
             self.__parent.callCommand(method, irc, msg, *L)
         except Exception, e:
+            # We catch exceptions here because IrcObjectProxy isn't doing our
+            # dirty work for us anymore.
             self.log.exception('Uncaught exception from callCommand:')
             irc.error(utils.exnToString(e))
 
