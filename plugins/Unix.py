@@ -174,6 +174,10 @@ class Unix(callbacks.Privmsg):
         for the spelling of <word>.
         """
         # We are only checking the first word
+        if not self.spellCmd:
+           irc.error(msg, 'A spell checking command doesn't seem to be '
+                          'installed on this computer.')
+           return
         word = privmsgs.getArgs(args)
         if word and not word[0].isalpha():
             irc.error(msg, '<word> must begin with an alphabet character.')
