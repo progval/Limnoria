@@ -392,16 +392,15 @@ class Relay(callbacks.Privmsg):
         user = d['311'].args[-1]
         if '319' in d:
             channels = d['319'].args[-1].split()
-            channels[0] = 'is on ' + channels[0]
+            for (i, channel) in enumerate(channels):
+                channel = channel.replace('@', 'is an op on ')
+                channel = channel.replace('%', 'is a halfop on ')
+                channel = channel.replace('+', 'is voiced on ')
+                channels[i] = channel
         else:
             channels = ['isn\'t on any channels']
-        for (i, channel) in enumerate(channels):
-            if channel[0] == '@':
-                channels[i] = 'is an op on %s' % channel[1:]
-            elif channel[0] == '+':
-                channels[i] = 'is voiced on %s' % channel[1:]
-            elif channel[0] == '%':
-                channels[i] = 'is a half-op on %s' % channel[1:]
+        if not channels[0].startswith('is'):
+            channels[0] = 'is on ' + channels[0]
         channels = utils.commaAndify(channels)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
