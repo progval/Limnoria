@@ -35,6 +35,8 @@ Removes all bold output by the bot.
 
 from baseplugin import *
 
+import re
+
 import ircmsgs
 import callbacks
 
@@ -47,10 +49,19 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load KillBold')
 
+# For some stupid reason, this doesn't work.
+## boldre = re.compile('(?:\x02([^\x02\x03\x0f]*\x03))|'
+##                     '(?:\x02([^\x02\x0f]*)(?:[\x02\x0f]|$))')
+boldre1 = re.compile('(?:\x02([^\x02\x03\x0f]*\x03))')
+boldre2 = re.compile('(?:\x02([^\x02\x0f]*)(?:[\x02\x0f]|$))')
+
 class KillBold(callbacks.Privmsg):
+    priority = 10
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
-            return ircmsgs.privmsg(msg.args[0],msg.args[1].replace('\x02', ''))
+            s = boldre1.sub(r'\1', msg.args[1])
+            s = boldre2.sub(r'\1', s)
+            return ircmsgs.privmsg(msg.args[0], s)
         else:
             return msg
 
