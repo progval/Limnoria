@@ -55,13 +55,12 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load Sourceforge')
-    if advanced:
-        print 'The Sourceforge plugin has the functionality to watch for URLs'
-        print 'that match a specific pattern (we call this a snarfer). When'
-        print 'supybot sees such a URL, he will parse the web page for'
-        print 'information and reply with the results.\n'
-        if yn('Do you want the Sourceforge snarfer enabled by default?') =='n':
-            onStart.append('Sourceforge config tracker-snarfer off')
+    print 'The Sourceforge plugin has the functionality to watch for URLs'
+    print 'that match a specific pattern (we call this a snarfer). When'
+    print 'supybot sees such a URL, he will parse the web page for'
+    print 'information and reply with the results.\n'
+    if yn('Do you want the Sourceforge snarfer enabled by default?') == 'y':
+        onStart.append('Sourceforge config tracker-snarfer on')
 
     print 'The bugs and rfes commands of the Sourceforge plugin can be set'
     print 'to query a default project when no project is specified.  If this'
@@ -73,6 +72,12 @@ def configure(onStart, afterConnect, advanced):
         project = anything('Project name:')
         if project:
             onStart.append('Sourceforge config defaultproject %s' % project)
+
+    if yn('Would you like to setup sf as an alias to Sourceforge?') == 'y':
+        if 'load Alias' not in onStart:
+            print 'This depends on the Alias module.'
+            if yn('Would you like to load the Alias plugin now?') == 'y':
+                onStart.append('load Alias')
 
 class TrackerError(Exception):
     pass
@@ -98,7 +103,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     _res =(_resolution, _assigned, _submitted, _priority, _status)
 
     configurables = plugins.ConfigurableDictionary(
-        [('tracker-snarfer', plugins.ConfigurableBoolType, True,
+        [('tracker-snarfer', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will reply to SF.net Tracker URLs in
           the channel with a nice summary of the tracker item."""),
          ('default-project', plugins.ConfigurableStrType, '',

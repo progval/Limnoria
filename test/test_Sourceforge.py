@@ -81,6 +81,7 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
 
     def testSnarfer(self):
         s = r'.*Status.*: \w+'
+        self.assertNotError('config tracker-snarfer on')
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'
                           'func=detail&aid=589953&group_id=58965&atid=489447',
                           s)
