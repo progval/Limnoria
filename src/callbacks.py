@@ -821,16 +821,18 @@ class Privmsg(irclib.IrcCallback):
         elapsed = time.time() - start
         self.log.debug('%s took %s seconds', name, elapsed)
 
-    def registryValue(self, name, channel=None):
+    def registryValue(self, name, channel=None, value=True):
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
         names = registry.split(name)
         for name in names:
             group = group.get(name)
-        if channel is None:
+        if channel is not None:
+            group = group.get(channel)
+        if value:
             return group()
         else:
-            return group.get(channel)()
+            return group
 
     def setRegistryValue(self, name, value, channel=None):
         plugin = self.name()
