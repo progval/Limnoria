@@ -82,10 +82,11 @@ example = utils.wrapLines("""
 <Cerlyn> @unalias rot26
 <supybot> Cerlyn: The operation succeeded.
 <jemfinch> @rot26 blah blah blah
+<jemfinch> (note that it did nothing)
 <jemfinch> @help slashdot
-<supybot> jemfinch: slashdot <an alias, None arguments> (for more help use the morehelp command)
-<jemfinch> hehe...I should fix that.
+<supybot> jemfinch: slashdot <an alias, 0 arguments> (for more help use the morehelp command)
 <jemfinch> @morehelp slashdot
+<supybot> jemfinch: Alias for 'rsstitles http://slashdot.org/slashdot.rss'
 """)
 
 class RecursiveAlias(Exception):
@@ -113,6 +114,8 @@ def makeNewAlias(name, alias):
     doDollars = bool(biggestDollar)
     if biggestDollar is not None:
         biggestDollar = int(biggestDollar)
+    else:
+        biggestDollar = 0
     def f(self, irc, msg, args):
         alias_ = alias
         if doChannel:
