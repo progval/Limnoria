@@ -73,7 +73,7 @@ class PollRecord(dbi.Record):
         format = conf.supybot.humanTimestampFormat()
         user = plugins.getUserName(self.by)
         if self.options:
-            options = 'Options: %s' % '; '.join(self.options)
+            options = 'Options: %s' % '; '.join(map(str, self.options))
         else:
             options = 'The poll has no options, yet'
         if self.status:
