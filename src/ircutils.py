@@ -161,8 +161,11 @@ def validArgument(s):
     return '\r' not in s and '\n' not in s and '\x00' not in s
 
 notFunky = string.printable+'\x02'
-def funkyArgument(s):
-    return validArgument(s) and s.translate(string.ascii, notFunky) != ''
+def safeArgument(s):
+    if validArgument(s) and s.translate(string.ascii, notFunky) == s:
+        return s
+    else:
+        return repr(s)
 
 def reply(msg):
     if isChannel(msg.args[0]):

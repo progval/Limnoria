@@ -78,8 +78,7 @@ def canonicalName(command):
 
 def reply(msg, s):
     """Makes a reply to msg with the payload s"""
-    if ircutils.funkyArgument(s):
-        s = repr(s)
+    s = ircutils.safeArgument(s)
     if ircutils.isChannel(msg.args[0]):
         m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
     else:
@@ -265,8 +264,7 @@ class IrcObjectProxy:
             if isinstance(self.irc, self.__class__):
                 self.irc.reply(msg, s)
             else:
-                if ircutils.funkyArgument(s):
-                    s = repr(s)
+                s = ircutils.safeArgument(s)
                 self.irc.queueMsg(reply(msg, s))
         else:
             self.args[self.counter] = s
