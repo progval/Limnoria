@@ -935,7 +935,7 @@ registerGlobalValue(supybot.protocols.http, 'peekSize',
 
 registerGlobalValue(supybot.protocols.http, 'proxy',
     registry.String('', """Determines what proxy all HTTP requests should go
-    through."""))
+    through.  The value should be of the form 'host:port'."""))
 
 
 ###
