@@ -104,7 +104,7 @@ errorReplyPrivate = False
 #               into the bot and see how it's working internally.  A lifesaver
 #               for development.
 ###
-telnetEnable = True
+telnetEnable = False
 telnetPort = 31337
 
 ###
