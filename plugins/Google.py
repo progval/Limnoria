@@ -364,7 +364,11 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             results.append((data.meta.estimatedTotalResultsCount, arg))
         results.sort()
         results.reverse()
-        s = ', '.join(['%r: %s' % (s, i) for (i, s) in results])
+        if self.registryValue(bold, msg.args[0]):
+            format = ircutils.bold
+        else:
+            format = repr
+        s = ', '.join(['%s: %s' % (format(s), i) for (i, s) in results])
         irc.reply(s)
 
     def spell(self, irc, msg, args):
