@@ -40,6 +40,7 @@ import plugins
 import os
 import re
 import sys
+import types
 
 import sqlite
 
@@ -104,9 +105,7 @@ class Lookup(callbacks.Privmsg):
         try:
             cursor.execute("""DROP TABLE %s""" % name)
             db.commit()
-            cb = irc.getCallback('Alias')
-            if cb is not None:
-                cb.removeAlias(name, evenIfLocked=True)
+            delattr(self.__class__, name)
             irc.reply(msg, conf.replySuccess)
         except sqlite.DatabaseError:
             irc.error(msg, 'No such lookup exists.')
@@ -125,12 +124,7 @@ class Lookup(callbacks.Privmsg):
         cursor = db.cursor()
         try:
             cursor.execute("""SELECT * FROM %s LIMIT 1""" % name)
-            cb = irc.getCallback('Alias')
-            if cb is not None:
-                try:
-                    cb.addAlias(irc, name, 'lookup %s @1' % name, lock=True)
-                except sys.modules[cb.__module__].AliasError, e:
-                    pass
+            self.addCommand(name)
             irc.reply(msg, conf.replySuccess)
         except sqlite.DatabaseError:
             # Good, there's no such database.
@@ -155,16 +149,19 @@ class Lookup(callbacks.Privmsg):
                 cursor.execute(sql, key, value)
             cursor.execute("CREATE INDEX %s_keys ON %s (key)" % (name, name))
             db.commit()
+            self.addCommand(name)
             cb = irc.getCallback('Alias')
-            if cb is not None:
-                try:
-                    cb.addAlias(irc, name, 'lookup %s @1' % name, lock=True)
-                except sys.modules[cb.__module__].AliasError, e:
-                    irc.error(msg, str(e))
-                    return
             irc.reply(msg, conf.replySuccess)
 
-    def lookup(self, irc, msg, args):
+    def addCommand(self, name):
+        def f(self, irc, msg, args):
+            args.insert(0, name)
+            self._lookup(irc, msg, args)
+        f = types.FunctionType(f.func_code, f.func_globals,
+                               f.func_name, closure=f.func_closure)
+        setattr(self.__class__, name, f)
+
+    def _lookup(self, irc, msg, args):
         """<name> <key>
 
         Looks up the value of <key> in the domain <name>.

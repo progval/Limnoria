@@ -42,7 +42,7 @@ import conf
 
 if sqlite:
     class LookupTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Lookup', 'Alias')
+        plugins = ('Lookup',)
         d = {
             'foo': 'bar',
             'bar': 'baz',
