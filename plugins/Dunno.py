@@ -137,8 +137,6 @@ class Dunno(callbacks.Privmsg):
     Basically, it replaces the standard 'Error: <X> is not a valid command.'
     messages with messages kept in a database, able to give more personable
     responses."""
-    priority = 100
-    callBefore = ['Misc']
     callAfter = ['MoobotFactoids']
     def __init__(self):
         callbacks.Privmsg.__init__(self)
