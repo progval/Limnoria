@@ -207,7 +207,7 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
                 numberOfPackages = m.group(1)
             m = self._debtablere.search(html)
             if m is None:
-                responses.append('No package found for: %s (%s)' % \
+                irc.reply(msg, 'No package found for: %s (%s)' % \
                                  (package, branch))
             else:
                 tableData = m.group(1)
@@ -218,9 +218,9 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
                     if pkgMatch and brMatch:
                         s = '%s (%s)' % (pkgMatch.group(1), brMatch.group(1))
                         responses.append(s)
-        s = 'Total matches: %s, shown: %s.  %s' % \
-            (numberOfPackages, len(responses), ', '.join(responses))
-        irc.reply(msg, s)
+                resp = 'Total matches: %s, shown: %s.  %s' % \
+                    (numberOfPackages, len(responses), ', '.join(responses))
+                irc.reply(msg, resp)
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
     def debincoming(self, irc, msg, args):
