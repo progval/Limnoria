@@ -40,6 +40,7 @@ class EbayTest(PluginTestCase, PluginDocumentation):
         self.assertError('auction foobar')
 
     def testSnarfer(self):
+        self.assertNotError('ebay config auction-snarfer on')
         self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
                           '&category=176&item=3053767552',
                          r'.*Cisco NP-4T.*Serial Module.*US \$74\.95.*')

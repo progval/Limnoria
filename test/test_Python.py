@@ -59,6 +59,7 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('zen')
 
     def testAspnRecipes(self):
+        self.assertNotError('python config aspn-snarfer on')
         self.assertRegexp('http://aspn.activestate.com/ASPN/Cookbook/Python/'
                           'Recipe/230113',
                           'Implementation of sets using sorted lists')
