@@ -78,6 +78,23 @@ def ilen(iterator):
     return i
 itertools.ilen = ilen
 
+def groupby(key, iterable):
+    if key is None:
+        key = lambda x: x
+    it = iter(iterable)
+    value = it.next() # If there are no items, this takes an early exit
+    oldkey = key(value)
+    group = [value]
+    for value in it:
+        newkey = key(value)
+        if newkey != oldkey:
+            yield group
+            group = []
+            oldkey = newkey
+        group.append(value)
+    yield group
+itertools.groupby = groupby
+
 def group(seq, groupSize, noneFill=True):
     """Groups a given sequence into sublists of length groupSize."""
     ret = []
