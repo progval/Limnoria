@@ -607,6 +607,12 @@ class IrcObjectProxy(RichReplyMethods):
     def _callCommand(self, name, cb):
         try:
             self.commandMethod = cb.getCommand(name)
+            if not world.isMainThread():
+                # If we're a threaded command, we may not reply quickly enough
+                # to prevent regexp stuff from running.  So we do this to make
+                # sure it doesn't happen.  Neither way (tagging or not tagging)
+                # is perfect, but this seems better than not tagging.
+                self.msg.tag('repliedTo')
             try:
                 cb.callCommand(name, self, self.msg, self.args)
             except Error, e:
