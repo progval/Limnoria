@@ -35,7 +35,7 @@ def wrapWithBold(f):
         return ret
     return ff
 
-from questions import yn, anything, something, expect
+from questions import yn, anything, something, expect, getpass
 yn = wrapWithBold(yn)
 expect = wrapWithBold(expect)
 anything = wrapWithBold(anything)
@@ -587,16 +587,18 @@ def main():
         write the bot script.""")
         if yn('Would you like to add any commands to be given to the bot '
               'before it connects to the server?') == 'y':
-            command = anything('What command?  Just press enter when done.')
+            command = True
             while command:
+                command = something('Command? ')
                 onStart.append(command)
-                command = anything('Another command?')
+                command = yn('Would you like to add another command?') == 'y'
         if yn('Would you like to add any commands to be given to the bot '
               'after it connects to the server?') == 'y':
-            command = anything('What command?  Just press enter when done.')
+            command = True
             while command:
+                command = Something('Command? ')
                 afterConnect.append(command)
-                command = anything('Another command?')
+                command = yn('Would you like to add another command?') == 'y'
 
     ###
     # Writing the bot script.
