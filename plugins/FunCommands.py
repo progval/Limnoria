@@ -55,6 +55,7 @@ Commands include:
   objects
   last
   lastfrom
+  lithp
 """
 
 from baseplugin import *
@@ -240,6 +241,11 @@ class FunCommands(callbacks.Privmsg):
         else:
             irc.error(msg, 'Dice must be of the form <dice>d<sides>')
 
+    def lithp(self, irc, msg, args):
+        "<text>"
+        text = privmsgs.getArgs(args)
+        irc.reply(msg, text.replace('s', 'th'))
+        
     _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
     _leetres = ((re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
                 (re.compile(r'fear'), 'ph33r'),
