@@ -30,7 +30,7 @@
 ###
 
 """
-Amazon module, to use Amazon's Web Services.  Currently only does ISBN lookups.
+Amazon module, to use Amazon's Web Services.
 """
 
 __revision__ = "$Id$"
@@ -63,7 +63,7 @@ def configure(onStart, afterConnect, advanced):
         conf.supybot.plugins.Amazon.licenseKey.set(key)
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
-        print 'You can apply for a key at http://www.amazon.com/webservices'
+        print 'You can apply for a key at http://www.amazon.com/webservices/'
 
 class LicenseKey(registry.String):
     def set(self, s):
