@@ -625,10 +625,6 @@ class context(object):
             self.converter = spec
 
     def __call__(self, irc, msg, args, state):
-##         if args and not (state.types or state.allowExtra):
-##             # We're the last context/type, we should combine the remaining
-##             # arguments into one string.
-##             args[:] = [' '.join(args)]
         log.debug('args before %r: %r', self, args)
         self.converter(irc, msg, args, state, *self.args)
         log.debug('args after %r: %r', self, args)
