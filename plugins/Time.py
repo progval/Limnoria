@@ -40,9 +40,13 @@ __contributors__ = {}
 import supybot.plugins as plugins
 
 import time
+TIME = time
+
+import dateutil.parser
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -62,6 +66,21 @@ conf.registerChannelValue(conf.supybot.plugins.Time, 'format',
     format string for timestamps.  Refer to the Python documentation for the
     time module to see what formats are accepted. If you set this variable to
     the empty string, the timestamp will not be shown."""))
+
+def parse(s):
+    todo = []
+    s = s.replace('noon', '12:00')
+    s = s.replace('midnight', '00:00')
+    if 'tomorrow' in s:
+        todo.append(lambda i: i + 86400)
+        s = s.replace('tomorrow', '')
+    if 'next week' in s:
+        todo.append(lambda i: i + 86400*7)
+        s = s.replace('next week', '')
+    i = int(time.mktime(dateutil.parser.parse(s, fuzzy=True).timetuple()))
+    for f in todo:
+        i = f(i)
+    return i
 
 class Time(callbacks.Privmsg):
     def seconds(self, irc, msg, args):
@@ -98,21 +117,35 @@ class Time(callbacks.Privmsg):
                 seconds += i
         irc.reply(str(seconds))
 
-    def _at(self, irc, msg, args):
+    def at(self, irc, msg, args):
         """<time string>
 
         Returns the number of seconds since epoch <time string> is.
         <time string> can be any number of natural formats; just try something
         and see if it will work.
         """
+        now = int(time.time())
         s = privmsgs.getArgs(args)
+        new = parse(s)
+        if new != now:
+            irc.reply(new)
+        else:
+            irc.error('That\'s right now!')
 
-    def _until(self, irc, msg, args):
+    def until(self, irc, msg, args):
         """<time string>
 
         Returns the number of seconds until <time string>.
         """
+        now = int(time.time())
         s = privmsgs.getArgs(args)
+        new = parse(s)
+        if new != now:
+            if new - now < 0:
+                new += 86400
+            irc.reply(new-now)
+        else:
+            irc.error('That\'s right now!')
 
     def ctime(self, irc, msg, args):
         """[<seconds since epoch>]
@@ -130,28 +163,20 @@ class Time(callbacks.Privmsg):
             seconds = time.time()
         irc.reply(time.ctime(seconds))
 
-    def time(self, irc, msg, args):
+    def time(self, irc, msg, args, channel, format, seconds):
         """[<format>] [<seconds since epoch>]
 
         Returns the current time in <format> format, or, if <format> is not
         given, uses the configurable format for the current channel.  If no
         <seconds since epoch> time is given, the current time is used.
         """
-        channel = privmsgs.getChannel(msg, args, raiseError=False)
-        (format, seconds) = privmsgs.getArgs(args, required=0, optional=2)
         if not format:
             if channel:
                 format = self.registryValue('format', channel)
             else:
                 format = self.registryValue('format')
-        if not seconds:
-            seconds = time.time()
-        else:
-            try:
-                seconds = float(seconds)
-            except ValueError:
-                irc.errorInvalid('seconds', seconds, Raise=True)
         irc.reply(time.strftime(format, time.localtime(seconds)))
+    time = wrap(time, ['channel?', 'nonInt?', ('?int', TIME.time)])
 
 
 Class = Time
