@@ -29,6 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Warns people when they join a channel if their ident is root.
+"""
+
 from baseplugin import *
 
 import irclib
