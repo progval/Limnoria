@@ -316,7 +316,7 @@ def main():
         if yn('You\'ve already got a default password of %s.  '
               'Do you want to change this?' % password) == 'y':
             serverpassword = ''
-    if not password:
+    if not serverpassword:
         myPrint("""Some servers require a password to connect to them.  Most
         public servers don't.  If you try to connect to a server and for some
         reason it just won't work, it might be that you need to set a
