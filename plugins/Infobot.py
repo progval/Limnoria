@@ -188,7 +188,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         self.irc = None
         self.msg = None
         self.force = False
-        self.replied = False
+        self.replied = True
         self.badForce = False
         self.addressed = False
 
@@ -361,7 +361,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 irc.error('Invalid regexp: %s' % regexp)
                 return
             else:
-                self.log.info('Invalid regexp: %s' % regexp)
+                self.log.debug('Invalid regexp: %s' % regexp)
                 return
         for method in [self.db.changeIs, self.db.changeAre]:
             try:
@@ -401,10 +401,10 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         if isAre in ('was', 'is', 'am'):
             if self.db.hasIs(key):
                 if also:
-                    self.log.info('Adding %r to %r.', key, value)
+                    self.log.debug('Adding %r to %r.', key, value)
                     value = '%s or %s' % (self.db.getIs(key), value)
                 elif self.force:
-                    self.log.info('Forcing %r to %r.', key, value)
+                    self.log.debug('Forcing %r to %r.', key, value)
                 elif self.badForce:
                     value = self.db.getIs(key)
                     self.reply('... but %s is %s, %s ...' % (key, value,
@@ -415,16 +415,16 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                     self.reply('But %s is %s, %s.' % (key, value, msg.nick))
                     return
                 else:
-                    self.log.info('Already have a %r key.', key)
+                    self.log.debug('Already have a %r key.', key)
                     return
             self.db.setIs(key, value)
         else:
             if self.db.hasAre(key):
                 if also:
-                    self.log.info('Adding %r to %r.', key, value)
+                    self.log.debug('Adding %r to %r.', key, value)
                     value = '%s or %s' % (self.db.getAre(key), value)
                 elif self.force:
-                    self.log.info('Forcing %r to %r.', key, value)
+                    self.log.debug('Forcing %r to %r.', key, value)
                 elif self.badForce:
                     value = self.db.getAre(key)
                     self.reply('... but %s are %s, %s ...' % (key, value,
@@ -435,7 +435,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                     self.reply('But %s are %s, %s.' % (key, value, msg.nick))
                     return
                 else:
-                    self.log.info('Already have a %r key.', key)
+                    self.log.debug('Already have a %r key.', key)
                     return
             self.db.setAre(key, value)
         if self.addressed or self.force or also:
