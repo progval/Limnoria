@@ -702,8 +702,11 @@ class AtomicFile(file):
     def close(self):
         if not self.rolledback:
             super(AtomicFile, self).close()
+            # We don't mind writing an empty file if the file we're overwriting
+            # doesn't exist.
             size = os.path.getsize(self.tempFilename)
-            if size or self.allowEmptyOverwrite:
+            originalExists = os.path.exists(self.filename)
+            if size or self.allowEmptyOverwrite or not originalExists:
                 if os.path.exists(self.tempFilename):
                     # We use shutil.move here instead of os.rename because
                     # the latter doesn't work on Windows when self.filename
