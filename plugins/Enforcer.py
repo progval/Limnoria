@@ -164,7 +164,7 @@ class Enforcer(callbacks.Privmsg):
             debug.msg('Enforcer not started.', 'normal')
             return
         channel = msg.args[0]
-        if not ircutils.isChannel(channel):
+        if not ircutils.isChannel(channel) or msg.nick == self.chanserv:
             return
         if msg.nick != irc.nick and\
            not ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
@@ -222,7 +222,7 @@ class Enforcer(callbacks.Privmsg):
 
     def __call__(self, irc, msg):
         if self.started:
-            if msg.prefix != self.chanserv and msg.nick != msg.prefix:
+            if msg.nick != self.chanserv and msg.nick != msg.prefix:
                 return callbacks.Privmsg.__call__(self, irc, msg)
         else:
             debug.msg('Enforcer plugin not started.  '
