@@ -162,7 +162,7 @@ class Misc(callbacks.Privmsg):
             L.sort()
             irc.reply(utils.commaAndify(L))
         else:
-            irc.error('No appropriate commands were found.')
+            irc.reply('No appropriate commands were found.')
 
     def help(self, irc, msg, args):
         """[<plugin>] <command>
