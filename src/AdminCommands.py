@@ -30,7 +30,8 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+These are commands useful for administrating the bot; they all require their
+caller to have the 'admin' capability.  This plugin is loaded by default.
 """
 
 import string

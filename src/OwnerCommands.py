@@ -29,6 +29,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides commands useful to the owner of the bot; the commands here require
+their caller to have the 'owner' capability.  This plugin is loaded by default.
+"""
+
 import os
 import gc
 import imp

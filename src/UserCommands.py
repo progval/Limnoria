@@ -30,7 +30,7 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Provides commands useful to users in general. This plugin is loaded by default.
 """
 
 import string

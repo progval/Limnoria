@@ -30,7 +30,8 @@
 ###
 
 """
-Basic channel management commands.
+Basic channel management commands.  Many of these commands require their caller
+to have the <channel>.op capability.  This plugin is loaded by default.
 """
 
 import time
