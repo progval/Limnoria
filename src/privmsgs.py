@@ -258,6 +258,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         irc.addCallback(callback)
         irc.reply(msg, conf.replySuccess)
 
+    '''
     def superreload(self, irc, msg, args):
         """<module name>
 
@@ -267,6 +268,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         name = getArgs(args)
         world.superReload(__import__(name))
         irc.reply(msg, conf.replySuccess)
+    '''
         
     def reload(self, irc, msg, args):
         """<callback name>
