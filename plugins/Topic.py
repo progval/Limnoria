@@ -135,7 +135,6 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if topics:
             num = len(topics)
-            order = ('',)*num
             order = privmsgs.getArgs(args, required=num)
             for i,p in enumerate(order):
                 try:
