@@ -66,6 +66,7 @@ if sqlite is not None:
 
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
+        config = {'reply.whenNotCommand': False}
         def setUp(self):
             PluginTestCase.setUp(self)
             # Create a valid user to use
