@@ -499,7 +499,9 @@ class RichReplyMethods(object):
                 v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
                 return self._error(s, **kwargs)
-            # XXX We should log that we're *not* giving a capability error.
+            else:
+                log.debug('Not sending capability error, '
+                          'supybot.reply.error.noCapability is False.')
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)
