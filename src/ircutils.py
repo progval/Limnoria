@@ -162,7 +162,7 @@ def validArgument(s):
 
 notFunky = string.printable+'\x02'
 def safeArgument(s):
-    if validArgument(s) and s.translate(string.ascii, notFunky) == s:
+    if validArgument(s) and s.translate(string.ascii, notFunky) == '':
         return s
     else:
         return repr(s)
