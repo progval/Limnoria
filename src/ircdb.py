@@ -707,7 +707,7 @@ class UsersDictionary(utils.IterableMap):
                     del self._hostmaskCache[hostmask]
                 del self._hostmaskCache[id]
 
-    def setUser(self, user):
+    def setUser(self, user, flush=True):
         """Sets a user (given its id) to the IrcUser given it."""
         self.nextId = max(self.nextId, user.id)
         try:
@@ -731,7 +731,8 @@ class UsersDictionary(utils.IterableMap):
                         raise DuplicateHostmask, hostmask
         self.invalidateCache(user.id)
         self.users[user.id] = user
-        self.flush()
+        if flush:
+            self.flush()
 
     def delUser(self, id):
         """Removes a user from the database."""

@@ -339,7 +339,7 @@ class User(callbacks.Plugin):
         if user.checkPassword(password):
             try:
                 user.addAuth(msg.prefix)
-                ircdb.users.setUser(user)
+                ircdb.users.setUser(user, flush=False)
                 irc.replySuccess()
             except ValueError:
                 irc.error('Your secure flag is true and your hostmask '
