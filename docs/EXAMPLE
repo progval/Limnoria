@@ -80,12 +80,12 @@ is available as examples/Random.py):
 Add the module docstring here.  This will be used by the setup.py script.
 """
 
-import plugins
+import supybot.plugins as plugins
 
-import conf
-import utils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):
@@ -409,7 +409,7 @@ __" where __ is the number the bot rolled.  So here's the code:
             irc.error('Dice have integer numbers of sides.  Use one.')
             return
         s = 'rolls a %s' % self.rng.randrange(1, n+1)
-	irc.reply(s, action=True)
+        irc.reply(s, action=True)
 
 There's a lot of stuff you haven't seen before in there.  The most
 important, though, is the first thing you'll notice that's different:
