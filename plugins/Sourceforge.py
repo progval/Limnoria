@@ -223,7 +223,11 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         fd.close()
         try:
             (num, desc) = self._sfTitle.search(s).groups()
-            linktype = self._linkType.search(s).group(1)[:-1]
+            linktype = self._linkType.search(s).group(1)
+            if linktype.endswith('es'):
+                linktype = linktype[:-2]
+            else:
+                linktype = linktype[:-1]
             irc.reply(msg, '%s #%s: %s' % (linktype, num, desc))
         except AttributeError, e:
             irc.queueMsg(callbacks.reply(msg,
