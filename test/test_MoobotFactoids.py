@@ -46,6 +46,16 @@ if sqlite is not None:
                 self.failUnless(MF.pickOptions('a') == 'a')
                 self.failUnless(MF.pickOptions('(a|b (c|d))') in
                                 ['a', 'b c', 'b d'])
+                self.failUnless(MF.pickOptions('(a|(b|)c)') in
+                                ['a', 'bc', 'c'])
+                self.failUnless(MF.pickOptions('(a(b|)|(c|)d)') in
+                                ['a', 'ab', 'cd', 'd'])
+                self.failUnless(MF.pickOptions('(a|)') in
+                                ['a', ''])
+                self.failUnless(MF.pickOptions('(|a)') in
+                                ['a', ''])
+                self.failUnless(MF.pickOptions('((a)|(b))') in
+                                ['(a)', '(b)'])
 
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
