@@ -43,10 +43,10 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -147,7 +147,7 @@ class Herald(callbacks.Privmsg):
                 raise KeyError
         return id
 
-    def default(self, irc, msg, args):
+    def default(self, irc, msg, args, channel, optlist, text):
         """[<channel>] [--remove|<msg>]
 
         If <msg> is given, sets the default herald to <msg>.  A <msg> of ""
@@ -155,108 +155,84 @@ class Herald(callbacks.Privmsg):
         current default herald.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        (optlist, rest) = getopt.getopt(args, '', ['remove'])
-        if optlist and rest:
+        if optlist and text:
             raise callbacks.ArgumentError
         for (option, _) in optlist:
-            if option == '--remove':
+            if option == 'remove':
                 self.setRegistryValue('default', '', channel)
                 irc.replySuccess()
                 return
-        text = privmsgs.getArgs(rest, required=0, optional=1)
-        if not text:
-            resp = self.registryValue('default', channel)
-            if not resp:
-                irc.reply('I do not have a default herald set.')
-                return
-            else:
-                irc.reply(resp)
-                return
-        self.setRegistryValue('default', text, channel)
-        irc.replySuccess()
+        if text:
+            self.setRegistryValue('default', text, channel)
+            irc.replySuccess()
+        else:
+            resp = self.registryValue('default', channel) or \
+                   'I do not have a default herald set for %s.' % channel
+            irc.reply(resp)
+    default = wrap(default, ['channel',
+                             getopts({'remove': ''}),
+                             additional('text')])
 
-    def get(self, irc, msg, args):
-        """[<channel>] <user|nick|hostmask>
+    def get(self, irc, msg, args, channel, user):
+        """[<channel>] [<user|nick|hostmask>]
 
         Returns the current herald message for <user> (or the user
-        <nick|hostmask> is currently identified or recognized as).  <channel>
+        <nick|hostmask> is currently identified or recognized as).  If <user>
+        is not given, defaults to the user giving the command.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        userNickHostmask = privmsgs.getArgs(args)
         try:
-            id = self._getId(irc, userNickHostmask)
-        except KeyError:
-            irc.errorNoUser()
-            return
-        try:
-            herald = self.db[channel, id]
+            herald = self.db[channel, user.id]
             irc.reply(herald)
         except KeyError:
-            irc.error('I have no herald for that user.')
+            irc.error('I have no herald for %s.' % user.name)
+    get = wrap(get, ['channel', first('otherUser', 'user')])
 
-    def add(self, irc, msg, args):
+    # I chose not to make <user|nick|hostmask> optional in this command because
+    # if it's not a valid username (e.g., if the user tyops and misspells a
+    # username), it may be nice not to clobber the user's herald.
+    def add(self, irc, msg, args, channel, user, herald):
         """[<channel>] <user|nick|hostmask> <msg>
 
         Sets the herald message for <user> (or the user <nick|hostmask> is
         currently identified or recognized as) to <msg>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        (userNickHostmask, herald) = privmsgs.getArgs(args, required=2)
-        try:
-            id = self._getId(irc, userNickHostmask)
-        except KeyError:
-            irc.errorNoUser()
-            return
-        self.db[channel, id] = herald
+        self.db[channel, user.id] = herald
         irc.replySuccess()
+    add = wrap(add, ['channel', 'otherUser', 'text'])
 
-    def remove(self, irc, msg, args):
-        """[<channel>] <user|nick|hostmask>
+    def remove(self, irc, msg, args, channel, user):
+        """[<channel>] [<user|nick|hostmask>]
 
         Removes the herald message set for <user>, or the user
-        <nick|hostmask> is currently identified or recognized as.
+        <nick|hostmask> is currently identified or recognized as.  If <user>
+        is not given, defaults to the user giving the command.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        userNickHostmask = privmsgs.getArgs(args)
         try:
-            id = self._getId(irc, userNickHostmask)
-        except KeyError:
-            irc.errorNoUser()
-            return
-        try:
-            del self.db[channel, id]
+            del self.db[channel, user.id]
             irc.replySuccess()
         except KeyError:
             irc.error('I have no herald for that user.')
+    remove = wrap(remove, ['channel', first('otherUser', 'user')])
 
-    def change(self, irc, msg, args):
-        """[<channel>] <user|nick|hostmask> <regexp>
+    def change(self, irc, msg, args, channel, user, changer):
+        """[<channel>] [<user|nick|hostmask>] <regexp>
 
         Changes the herald message for <user>, or the user <nick|hostmask> is
-        currently identified or recognized as, according to <regexp>.  <channel>
-        is only necessary if the message isn't sent in the channel itself.
+        currently identified or recognized as, according to <regexp>.  If
+        <user> is not given, defaults to the calling user. <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        (userNickHostmask, regexp) = privmsgs.getArgs(args, required=2)
-        try:
-            id = self._getId(irc, userNickHostmask)
-        except KeyError:
-            irc.errorNoUser()
-            return
-        try:
-            changer = utils.perlReToReplacer(regexp)
-        except ValueError, e:
-            irc.error('That\'s not a valid regexp: %s.' % e)
-            return
-        s = self.db[channel, id]
+        s = self.db[channel, user.id]
         newS = changer(s)
-        self.db[channel, id] = newS
+        self.db[channel, user.id] = newS
         irc.replySuccess()
+    change = wrap(change, ['channel',
+                          first('otherUser', 'user'),
+                           'regexpReplacer'])
 
 
 Class = Herald
