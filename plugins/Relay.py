@@ -364,6 +364,13 @@ class Relay(callbacks.Privmsg):
             channels[0] = 'is on ' + channels[0]
         else:
             channels = ['isn\'t on any channels.']
+        for (i, channel) in enumerate(channels):
+            if channel[0] == '@':
+                channels[i] = 'is an op on %s' % channel[1:]
+            elif channel[0] == '+':
+                channels[i] = 'is voiced on %s' % channel[1:]
+            elif channel[0] == '%':
+                channels[i] = 'is a half-op on %s' % channel[1:]
         channels = utils.commaAndify(channels)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
@@ -372,7 +379,7 @@ class Relay(callbacks.Privmsg):
         else:
             idle = '<unknown>'
             signon = '<unknown>'
-        s = '%s (%s) has been online since %s (idle for %s) and %s' % \
+        s = '%s (%s) has been online since %s (idle for %s) and %s.' % \
             (user, hostmask, signon, idle, channels)
         replyIrc.reply(replyMsg, s)
         del self.whois[(irc, nick)]
