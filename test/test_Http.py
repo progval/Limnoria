@@ -82,6 +82,7 @@ class HttpTest(PluginTestCase, PluginDocumentation):
         self.assertNotError('weather London, UK')
         self.assertNotError('weather Munich, de')
         self.assertNotError('weather Tucson, AZ')
+	self.assertError('weather hell')
 
     def testKernel(self):
         self.assertNotError('kernel')
