@@ -406,7 +406,7 @@ class RichReplyMethods(object):
 
     def _getConfig(self, wrapper):
         return conf.get(wrapper, self.msg.args[0])
-    
+
     def replySuccess(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.success)
         s = self.__makeReply(v, s)
@@ -526,7 +526,11 @@ class IrcObjectProxy(RichReplyMethods):
         self.notice = None
         self.private = None
         self.noLengthCheck = None
-        self.prefixName = conf.supybot.reply.withNickPrefix()
+        if ircutils.isChannel(self.msg.args[0]):
+            self.prefixName = conf.get(conf.supybot.reply.withNickPrefix,
+                                       self.msg.args[0])
+        else:
+            self.prefixName = conf.supybot.reply.withNickPrefix()
 
     def evalArgs(self):
         while self.counter < len(self.args):
@@ -556,7 +560,7 @@ class IrcObjectProxy(RichReplyMethods):
         except Exception, e:
             log.exception('Uncaught exception in %s.tokenizedCommand.' %
                           cb.name())
-            
+
     def _callInvalidCommands(self):
         log.debug('Calling invalidCommands.')
         for cb in self.irc.callbacks:
@@ -789,7 +793,7 @@ class IrcObjectProxy(RichReplyMethods):
 
     def noReply(self):
         self.msg.tag('repliedTo')
-        
+
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
         if isinstance(self.irc, irclib.Irc):
