@@ -302,7 +302,7 @@ class Irc(object):
         self.lastTake = 0
         self.fastqueue = queue()
         self.lastping = time.time()
-        self.outstandingPongs = set()
+        self.outstandingPing = False
         self.driver = None # The driver should set this later.
         if self.password:
             self.queue.enqueue(ircmsgs.password(self.password))
@@ -314,7 +314,7 @@ class Irc(object):
         self.state.reset()
         self.queue.reset()
         self.lastping = time.time()
-        self.outstandingPongs = set()
+        self.outstandingPongs = False
         self.fastqueue = queue()
         if self.password:
             self.queue.enqueue(ircmsgs.password(self.password))
@@ -348,24 +348,27 @@ class Irc(object):
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
-        elif len(self.outstandingPongs) >= 2:
-            # Our pings hasn't be responded to.
-            debug.msg('Reconnecting, 3 pings not replied to.', 'normal')
-            if hasattr(self.driver, 'scheduleReconnect'):
-                self.driver.scheduleReconnect()
-            self.driver.die()
         elif now > (self.lastping + conf.pingInterval):
-            if now - self.lastTake <= conf.throttleTime:
-                debug.msg('Irc.takeMsg throttling.', 'verbose')
+            if self.outstandingPing:
+                debug.msg('Reconnecting, ping not replied to.', 'normal')
+                self.driver.reconnect()
             else:
                 self.lastping = now
                 now = str(int(now))
-                self.outstandingPongs.add(now)
-                msg = ircmsgs.ping(str(int(now)))
+                self.outstandingPing = True
+                self.queueMsg(ircmsgs.ping(now))
         if msg:
             for callback in self.callbacks:
                 #debug.printf(repr(msg))
-                msg = callback.outFilter(self, msg)
+                try:
+                    outFilter = getattr(callback, 'outFilter')
+                except AttributeError, e:
+                    continue
+                try:
+                    msg = outFilter(self, msg)
+                except:
+                    debug.recoverableException()
+                    continue
                 if msg is None:
                     s = 'outFilter %s returned None' % callback.name()
                     debug.msg(s)
@@ -420,7 +423,7 @@ class Irc(object):
                 ircdb.users.setUser(self.nick, u)
                 atexit.register(lambda: catch(ircdb.users.delUser(self.nick)))
         elif msg.command == 'PONG':
-            self.outstandingPongs.remove(msg.args[1])
+            self.outstandingPing = False
         elif msg.command == 'ERROR':
             if msg.args[0].startswith('Closing Link'):
                 if hasattr(self.driver, 'scheduleReconnect'):
