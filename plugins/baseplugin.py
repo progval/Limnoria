@@ -12,6 +12,7 @@ import os
 import cdb
 import conf
 import world
+import ircutils
 import callbacks
 
 class ChannelDBHandler(object):
@@ -19,7 +20,7 @@ class ChannelDBHandler(object):
     """
     suffix = '.db'
     def __init__(self, suffix='.db'):
-        self.dbCache = {}
+        self.dbCache = ircutils.IrcDict()
         suffix = self.suffix
         if self.suffix and self.suffix[0] != '.':
             suffix = '.' + suffix
@@ -34,7 +35,6 @@ class ChannelDBHandler(object):
         return cdb.shelf(filename)
 
     def getDb(self, channel):
-        channel = ircutils.toLower(channel)
         try:
             return self.dbCache[channel]
         except KeyError:
