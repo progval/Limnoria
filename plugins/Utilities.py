@@ -38,12 +38,13 @@ __author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 
+import types
 import string
 
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 class Utilities(callbacks.Privmsg):
@@ -55,15 +56,15 @@ class Utilities(callbacks.Privmsg):
         """
         pass
 
-    def reply(self, irc, msg, args):
+    def reply(self, irc, msg, args, text):
         """<text>
 
         Replies with <text>.  Equivalent to the alias, 'echo $nick: $1'.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(text)
+    reply = wrap(reply, ['text'])
 
-    def success(self, irc, msg, args):
+    def success(self, irc, msg, args, text):
         """[<text>]
 
         Does nothing except to reply with a success message.  This is useful
@@ -72,8 +73,8 @@ class Utilities(callbacks.Privmsg):
         course, will break out of this command.  <text>, if given, will be
         appended to the end of the success message.
         """
-        text = privmsgs.getArgs(args, required=0, optional=1)
         irc.replySuccess(text)
+    success = wrap(success, [additional('text')])
 
     def last(self, irc, msg, args):
         """<text> [<text> ...]
@@ -85,7 +86,7 @@ class Utilities(callbacks.Privmsg):
         if args:
             irc.reply(args[-1])
         else:
-            raise callbacks.Error
+            raise callbacks.ArgumentError
 
     def strlen(self, irc, msg, args):
         """<text>
@@ -98,21 +99,19 @@ class Utilities(callbacks.Privmsg):
         total += len(args)-1 # spaces between the arguments.
         irc.reply(str(total))
 
-    def echo(self, irc, msg, args):
-        """takes any number of arguments
+    def echo(self, irc, msg, args, text):
+        """<text>
 
         Returns the arguments given it.  Uses our standard substitute on the
         string(s) given to it; $nick (or $who), $randomNick, $randomInt,
         $botnick, $channel, $user, $host, $today, $now, and $randomDate are all
         handled appropriately.
         """
-        if not args:
-            raise callbacks.ArgumentError
-        text = privmsgs.getArgs(args)
         text = plugins.standardSubstitute(irc, msg, text)
         irc.reply(text, prefixName=False)
+    echo = wrap(echo, ['text'])
 
-    def re(self, irc, msg, args):
+    def re(self, irc, msg, args, ff, text):
         """<regexp> <text>
 
         If <regexp> is of the form m/regexp/flags, returns the portion of
@@ -120,33 +119,20 @@ class Utilities(callbacks.Privmsg):
         s/regexp/replacement/flags, returns the result of applying such a
         regexp to <text>
         """
-        (regexp, text) = privmsgs.getArgs(args, required=2)
-        self.log.info('re command called with regexp %r from %s' %
-                      (regexp, msg.prefix))
-        if len(regexp) > 512:
-            irc.error('Your regexp is just plain too long.')
-            return
-        f = None
-        try:
-            r = utils.perlReToPythonRe(regexp)
-            f = lambda s: r.search(s) and r.search(s).group(0) or ''
-        except ValueError, e:
-            try:
-                f = utils.perlReToReplacer(regexp)
-            except ValueError, e:
-                irc.error('Invalid regexp: %s' % e.args[0])
-                return
-            if f is None:
-                irc.error('Invalid regexp: %s' % e.args[0])
-                return
+        if isinstance(ff, (types.FunctionType, types.MethodType)):
+            f = ff
+        else:
+            f = lambda s: ff.search(s) and ff.search(s).group(0) or ''
         if f('') and len(f(' ')) > len(f(''))+1: # Matches the empty string.
             s = 'You probably don\'t want to match the empty string.'
             irc.error(s)
         else:
             irc.reply(f(text))
-    re = privmsgs.checkCapability(re, 'trusted')
+    re = wrap(re, [('checkCapability', 'trusted'),
+                   first('regexpMatcher', 'regexpReplacer'),
+                   'text'])
 
-    def apply(self, irc, msg, args):
+    def apply(self, irc, msg, args, command):
         """<command> <text>
 
         Tokenizes <text> and calls <command> with the resulting arguments.
@@ -155,12 +141,13 @@ class Utilities(callbacks.Privmsg):
             raise callbacks.ArgumentError
         command = args.pop(0)
         args = [token and token or '""' for token in args]
-        text = privmsgs.getArgs(args)
+        text = ' '.join(args)
         commands = command.split()
         commands = map(callbacks.canonicalName, commands)
         tokens = callbacks.tokenize(text)
         allTokens = commands + tokens
         self.Proxy(irc, msg, allTokens)
+    apply = wrap(apply, ['something'], allowExtra=True)
 
 
 Class = Utilities
