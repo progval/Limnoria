@@ -284,7 +284,9 @@ class DB(object):
 
     def add(self, record):
         s = record.serialize()
-        return self.map.add(s)
+        id = self.map.add(s)
+        record.id = id
+        return id
 
     def remove(self, id):
         self.map.remove(id)
