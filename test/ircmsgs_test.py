@@ -137,3 +137,20 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircutils.separateModes(withExceptions.args[1:]),
                          [('+b', bans[0]), ('+b', bans[1]),
                           ('+e', exceptions[0])])
+
+    def testJoin(self):
+        channel = '#osu'
+        key = 'michiganSucks'
+        self.assertEqual(ircmsgs.join(channel).args, ('#osu',))
+        self.assertEqual(ircmsgs.join(channel, key).args,
+                         ('#osu', 'michiganSucks'))
+
+    def testJoins(self):
+        channels = ['#osu', '#umich']
+        keys = ['michiganSucks', 'osuSucks']
+        self.assertEqual(ircmsgs.joins(channels).args, ('#osu,#umich',))
+        self.assertEqual(ircmsgs.joins(channels, keys).args,
+                         ('#osu,#umich', 'michiganSucks,osuSucks'))
+        keys.pop()
+        self.assertEqual(ircmsgs.joins(channels, keys).args,
+                         ('#osu,#umich', 'michiganSucks'))

@@ -47,10 +47,21 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         """<channel> [<channel> ...]
 
         Tell the bot to join the whitespace-separated list of channels
-        you give it.
+        you give it.  If a channel requires a key, attach it behind the
+        channel name via a comma.  I.e., if you need to join both #a and #b,
+        and #a requires a key of 'aRocks', then you'd call 'join #a,aRocks #b'
         """
-        irc.queueMsg(ircmsgs.joins(args))
-        for channel in args:
+        keys = []
+        channels = []
+        for s in args:
+            if ',' in s:
+                (channel, key) = s.split(',', 1)
+                channels.insert(0, channel)
+                keys.insert(0, key)
+            else:
+                channels.append(channel)
+        irc.queueMsg(ircmsgs.joins(channels, keys))
+        for channel in channels:
             irc.queueMsg(ircmsgs.who(channel))
 
     def nick(self, irc, msg, args):

@@ -43,7 +43,8 @@ import ircutils
 class IrcMsg(object):
     """Class to represent an IRC message.
     """
-    __slots__ = ('_args', '_command', '_host', '_nick', '_prefix', '_user')
+    __slots__ = ('_args', '_command', '_host', '_nick',
+                 '_prefix', '_user', '_hash')
     def __init__(self, s='', command='', args=None, prefix='', msg=None):
         if not s and not command and not msg:
             raise ValueError, 'IRC messages require a command.'
@@ -128,7 +129,13 @@ class IrcMsg(object):
         return not (self == other)
 
     def __hash__(self):
-        return hash(self.command) & hash(self.prefix) & hash(self.args)
+        try:
+            return self._hash
+        except AttributeError:
+            self._hash = hash(self.command) & \
+                         hash(self.prefix) & \
+                         hash(self.args)
+            return self._hash
 
     def __repr__(self):
         return '%s(prefix=%r, command=%r, args=%r)' % \
@@ -339,15 +346,28 @@ def notice(recipient, msg, prefix=''):
     assert (isChannel(recipient) or isNick(recipient)) and msg
     return IrcMsg(prefix=prefix, command='NOTICE', args=(recipient, msg))
 
-def join(channel, prefix=''):
+def join(channel, key=None, prefix=''):
     """Returns a JOIN to a channel"""
     assert isChannel(channel)
-    return IrcMsg(prefix=prefix, command='JOIN', args=(channel,))
+    if key is None:
+        return IrcMsg(prefix=prefix, command='JOIN', args=(channel,))
+    else:
+        return IrcMsg(prefix=prefix, command='JOIN', args=(channel, key))
 
-def joins(channels, prefix=''):
+def joins(channels, keys=None, prefix=''):
     """Returns a JOIN to each of channels."""
     assert filter(isChannel, channels) == channels
-    return IrcMsg(prefix=prefix, command='JOIN', args=(','.join(channels),))
+    if keys is None:
+        keys = []
+    assert len(keys) <= len(channels)
+    if not keys:
+        return IrcMsg(prefix=prefix,
+                      command='JOIN',
+                      args=(','.join(channels),))
+    else:
+        return IrcMsg(prefix=prefix,
+                      command='JOIN',
+                      args=(','.join(channels), ','.join(keys)))
 
 def part(channel, msg='', prefix=''):
     """Returns a PART from channel with the message msg."""
