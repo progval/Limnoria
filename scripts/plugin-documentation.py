@@ -30,6 +30,7 @@
 ###
 
 import os
+import cgi
 import imp
 import sys
 import os.path
@@ -51,7 +52,7 @@ def makePluginDocumentation(filename):
     pluginName = filename.split('.')[0]
     moduleInfo = imp.find_module(pluginName)
 ##     try:
-    module = imp.load_module(filename, *moduleInfo)
+    module = imp.load_module(pluginName, *moduleInfo)
 ##     except ImportError, e:
 ##         print >>sys.stderr, "Plugin %s could not be imported:" % filename
 ##         print >>sys.stderr, e
@@ -64,9 +65,9 @@ def makePluginDocumentation(filename):
         fd = file('plugindocs/%s.html' % pluginName, 'w')
         fd.write(textwrap.dedent("""
         <html><title>Documentation for the %s plugin for Supybot</title>
-        <body>
+        <body>%s<br><br>
         <table><tr><td>Command</td><td>Args</td><td>Detailed Help</td></tr>
-        """) % pluginName)
+        """) % (pluginName, cgi.escape(module.__doc__)))
         for attr in dir(plugin):
             if plugin.isCommand(attr):
                 method = getattr(plugin, attr)
@@ -80,18 +81,20 @@ def makePluginDocumentation(filename):
                         morehelp = ' '.join(doclines)
                     fd.write(textwrap.dedent("""
                     <tr><td>%s</td><td>%s</td><td>%s</td></tr>
-                    """) % (attr, help, morehelp))
+                    """) % (attr, cgi.escape(help), cgi.escape(morehelp)))
         fd.write(textwrap.dedent("""
         </table>
         """))
         if hasattr(module, 'example'):
+            s = module.example.encode('string-escape')
+            s = s.replace('\\n', '\n')
             fd.write(textwrap.dedent("""
             <p>Here's an example session with this plugin:
             <pre>
             %s
             </pre>
             </p>
-            """) % module.example)
+            """) % cgi.escape(s))
         fd.close()
 
 if __name__ == '__main__':
