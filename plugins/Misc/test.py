@@ -31,7 +31,7 @@ from supybot.test import *
 
 class MiscTestCase(ChannelPluginTestCase):
 #    plugins = ('Misc', 'Utilities', 'Gameknot', 'Anonymous', 'Dict', 'User')
-    plugins = ('Misc', 'Utilities', 'Anonymous', 'Dict', 'User')
+    plugins = ('Misc', 'Utilities', 'Anonymous', 'Dict', 'User', 'String')
     def testReplyWhenNotCommand(self):
         try:
             original = str(conf.supybot.reply.whenNotCommand)
@@ -60,8 +60,8 @@ class MiscTestCase(ChannelPluginTestCase):
             original = str(conf.supybot.reply.whenNotCommand)
             conf.supybot.reply.whenNotCommand.set('True')
             self.prefix = 'somethingElse!user@host.domain.tld'
-            self.assertNotRegexp('STrLeN foobar', 'command')
-            self.assertResponse('StRlEn foobar', '6')
+            self.assertNotRegexp('LeN foobar', 'command')
+            self.assertResponse('lEn foobar', '6')
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
 
@@ -121,14 +121,14 @@ class MiscTestCase(ChannelPluginTestCase):
         # Test handling of invalid plugin
         self.assertRegexp('contributors InvalidPlugin', 'not a valid plugin')
         # Test handling of invalid person
-        self.assertRegexp('contributors Misc noname', 
+        self.assertRegexp('contributors Misc noname',
                           'not a registered contributor')
         # Test handling of valid person with no contributions
         # Note: This will break if the listed person ever makes a contribution
         # to the Misc plugin
         self.assertRegexp('contributors Misc bwp',
                           'listed as a contributor')
-        
+
     def testContributorsIsCaseInsensitive(self):
         self.assertNotError('contributors Misc Skorobeus')
         self.assertNotError('contributors Misc sKoRoBeUs')

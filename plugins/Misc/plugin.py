@@ -31,6 +31,8 @@ import os
 import sys
 import time
 
+import supybot
+
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *

@@ -33,7 +33,7 @@ import supybot.conf as conf
 
 class ConfigTestCase(ChannelPluginTestCase):
     # We add utilities so there's something in supybot.plugins.
-    plugins = ('Config', 'Ebay')
+    plugins = ('Config', 'Utilities')
     def testGet(self):
         self.assertNotRegexp('config get supybot.reply', r'registry\.Group')
         self.assertResponse('config supybot.protocols.irc.throttleTime', '0.0')

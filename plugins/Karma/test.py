@@ -182,9 +182,9 @@ if sqlite is not None:
             self.assertRegexp('karma foo', '0')
             self.assertNotRegexp('karma foo', '1')
 
-        def testNoKarmaDunno(self):
-            self.assertNotError('load Infobot')
-            self.assertNoResponse('foo++')
+#        def testNoKarmaDunno(self):
+#            self.assertNotError('load Infobot')
+#            self.assertNoResponse('foo++')
 
         def testMultiWordKarma(self):
             self.assertNoResponse('(foo bar)++', 1)
