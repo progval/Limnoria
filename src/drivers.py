@@ -49,8 +49,7 @@ _deadDrivers = []
 _newDrivers = []
 
 class IrcDriver(object):
-    """Base class for drivers.
-    """
+    """Base class for drivers."""
     def __init__(self):
         _newDrivers.append((self.name(), self))
         if not hasattr(self, 'irc'):
@@ -115,15 +114,19 @@ class Interactive(IrcDriver):
             self.irc.feedMsg(msg)
 
 def empty():
+    """Returns whether or not the driver loop is empty."""
     return (len(_drivers) + len(_newDrivers)) == 0
 
 def add(name, driver):
+    """Adds a given driver the loop with the given name."""
     _newDrivers.append((name, driver))
 
 def remove(name):
+    """Removes the driver with the given name from the loop."""
     _deadDrivers.append(name)
 
 def run():
+    """Runs the whole driver loop."""
     for (name, driver) in _drivers.iteritems():
         try:
             if name not in _deadDrivers:
@@ -137,13 +140,14 @@ def run():
         except KeyError:
             pass
     while _newDrivers:
-       (name, driver) = _newDrivers.pop()
-       if name in _drivers:
-           _drivers[name].die()
-           del _drivers[name]
-       _drivers[name] = driver
+        (name, driver) = _newDrivers.pop()
+        if name in _drivers:
+            _drivers[name].die()
+            del _drivers[name]
+        _drivers[name] = driver
 
 def newDriver(server, irc, moduleName=conf.driverModule):
+    """Returns a new driver for the given server using conf.driverModule."""
     driver = __import__(moduleName).Driver(server, irc)
     irc.driver = driver
     return driver
