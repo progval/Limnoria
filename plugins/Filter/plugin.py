@@ -53,9 +53,10 @@ class Filter(callbacks.Privmsg):
     output of the bot -- for instance, you could make everything the bot says
     be in leetspeak, or Morse code, or any number of other kinds of filters.
     Not very useful, but definitely quite fun :)"""
-    def __init__(self):
+    def __init__(self, irc):
+        self.__parent = super(Filter, self)
+        self.__parent.__init__(irc)
         self.outFilters = ircutils.IrcDict()
-        callbacks.Privmsg.__init__(self)
 
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':

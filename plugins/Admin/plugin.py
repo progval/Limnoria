@@ -42,9 +42,9 @@ import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
 class Admin(callbacks.Privmsg):
-    def __init__(self):
+    def __init__(self, irc):
         self.__parent = super(Admin, self)
-        self.__parent.__init__()
+        self.__parent.__init__(irc)
         self.joins = {}
         self.pendingNickChanges = {}
 

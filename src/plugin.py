@@ -81,7 +81,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
 def loadPluginClass(irc, module, register=None):
     """Loads the plugin Class from the given module into the given Irc."""
     try:
-        cb = module.Class()
+        cb = module.Class(irc)
     except AttributeError, e:
         if 'Class' in str(e):
             raise callbacks.Error, \

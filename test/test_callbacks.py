@@ -389,17 +389,17 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         ChannelPluginTestCase.tearDown(self)
 
     def testDispatching(self):
-        self.irc.addCallback(self.First())
-        self.irc.addCallback(self.Second())
+        self.irc.addCallback(self.First(self.irc))
+        self.irc.addCallback(self.Second(self.irc))
         self.assertResponse('firstcmd', 'foo')
         self.assertResponse('secondcmd', 'bar')
         self.assertResponse('first firstcmd', 'foo')
         self.assertResponse('second secondcmd', 'bar')
 
     def testAmbiguousError(self):
-        self.irc.addCallback(self.First())
+        self.irc.addCallback(self.First(self.irc))
         self.assertNotError('firstcmd')
-        self.irc.addCallback(self.FirstRepeat())
+        self.irc.addCallback(self.FirstRepeat(self.irc))
         self.assertError('firstcmd')
         self.assertError('firstcmd [firstcmd]')
         self.assertNotRegexp('firstcmd', '(foo.*baz|baz.*foo)')
@@ -407,15 +407,15 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse('firstrepeat firstcmd', 'baz')
 
     def testAmbiguousHelpError(self):
-        self.irc.addCallback(self.First())
-        self.irc.addCallback(self.FirstRepeat())
+        self.irc.addCallback(self.First(self.irc))
+        self.irc.addCallback(self.FirstRepeat(self.irc))
         self.assertError('help first')
 
     def testHelpDispatching(self):
-        self.irc.addCallback(self.First())
+        self.irc.addCallback(self.First(self.irc))
         self.assertHelp('help firstcmd')
         self.assertHelp('help first firstcmd')
-        self.irc.addCallback(self.FirstRepeat())
+        self.irc.addCallback(self.FirstRepeat(self.irc))
         self.assertError('help firstcmd')
         self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.
         self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
@@ -426,7 +426,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             irc.reply('bar') # We're going to check that this isn't an action.
 
     def testNotActionSecondReply(self):
-        self.irc.addCallback(self.TwoRepliesFirstAction())
+        self.irc.addCallback(self.TwoRepliesFirstAction(self.irc))
         self.assertAction('testactionreply', 'foo')
         m = self.getMsg(' ')
         self.failIf(m.args[1].startswith('\x01ACTION'))
@@ -445,8 +445,8 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('help first', r'%s')
 
     def testDefaultCommand(self):
-        self.irc.addCallback(self.First())
-        self.irc.addCallback(self.Third())
+        self.irc.addCallback(self.First(self.irc))
+        self.irc.addCallback(self.Third(self.irc))
         self.assertError('first blah')
         self.assertResponse('third foo bar baz', 'foo bar baz')
 
@@ -466,7 +466,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             original = str(conf.supybot.reply.whenNotCommand)
             conf.supybot.reply.whenNotCommand.set('True')
             self.assertRegexp('asdfjkl', 'not a valid command')
-            self.irc.addCallback(self.InvalidCommand())
+            self.irc.addCallback(self.InvalidCommand(self.irc))
             self.assertResponse('asdfjkl', 'foo')
             self.assertNoResponse(' ', 2)
         finally:
@@ -481,7 +481,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         try:
             original = str(conf.supybot.reply.whenNotCommand)
             conf.supybot.reply.whenNotCommand.set('True')
-            self.irc.addCallback(self.BadInvalidCommand())
+            self.irc.addCallback(self.BadInvalidCommand(self.irc))
             self.assertRegexp('asdfjkl', 'not a valid command')
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
@@ -494,7 +494,7 @@ class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
             "<foo>"
             raise callbacks.ArgumentError
     def testNoEscapingArgumentError(self):
-        self.irc.addCallback(self.PCAR())
+        self.irc.addCallback(self.PCAR(self.irc))
         self.assertResponse('test', 'test <foo>')
 
 class RichReplyMethodsTestCase(PluginTestCase):
@@ -503,7 +503,7 @@ class RichReplyMethodsTestCase(PluginTestCase):
         def error(self, irc, msg, args):
             irc.errorNoCapability('admin')
     def testErrorNoCapability(self):
-        self.irc.addCallback(self.NoCapability())
+        self.irc.addCallback(self.NoCapability(self.irc))
         self.assertRegexp('error', 'admin')
 
 
@@ -519,7 +519,7 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
             irc.reply('should be with notice due to private',
                       private=True)
     def test(self):
-        self.irc.addCallback(self.WithPrivateNotice())
+        self.irc.addCallback(self.WithPrivateNotice(self.irc))
         # Check normal behavior.
         m = self.assertNotError('normal')
         self.failIf(m.command == 'NOTICE')

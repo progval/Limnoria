@@ -45,8 +45,9 @@ import supybot.callbacks as callbacks
 from supybot.utils.iter import ifilter
 
 class Misc(callbacks.Privmsg):
-    def __init__(self):
-        super(Misc, self).__init__()
+    def __init__(self, irc):
+        self.__parent = super(Misc, self)
+        self.__parent.__init__(irc)
         self.invalidCommands = ircutils.FloodQueue(60)
 
     def callPrecedence(self, irc):

@@ -1030,7 +1030,7 @@ class Privmsg(irclib.IrcCallback):
     def isDisabled(self, command):
         return self._disabled.disabled(command, self.name())
 
-    def __init__(self):
+    def __init__(self, irc):
         self.__parent = super(Privmsg, self)
         myName = self.name()
         self.log = log.getPluginLogger(myName)
@@ -1274,9 +1274,9 @@ class PrivmsgRegexp(Privmsg):
     flags = re.I
     Proxy = SimpleProxy
     commandArgs = ['self', 'irc', 'msg', 'match']
-    def __init__(self):
+    def __init__(self, irc):
         self.__parent = super(PrivmsgRegexp, self)
-        self.__parent.__init__()
+        self.__parent.__init__(irc)
         self.res = []
         #for name, value in self.__class__.__dict__.iteritems():
         for name, value in self.__class__.__dict__.items():
@@ -1328,9 +1328,9 @@ class PrivmsgCommandAndRegexp(Privmsg):
     regexps = ()
     addressedRegexps = ()
     Proxy = SimpleProxy
-    def __init__(self):
+    def __init__(self, irc):
         self.__parent = super(PrivmsgCommandAndRegexp, self)
-        self.__parent.__init__()
+        self.__parent.__init__(irc)
         self.res = []
         self.addressedRes = []
         for name in self.regexps:

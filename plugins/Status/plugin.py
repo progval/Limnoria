@@ -45,8 +45,9 @@ import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 class Status(callbacks.Privmsg):
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
+    def __init__(self, irc):
+        self.__parent = super(Status, self)
+        self.__parent.__init__(irc)
         self.sentMsgs = 0
         self.recvdMsgs = 0
         self.sentBytes = 0

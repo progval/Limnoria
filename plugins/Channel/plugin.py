@@ -40,8 +40,9 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 class Channel(callbacks.Privmsg):
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
+    def __init__(self, irc):
+        self.__parent = super(Channel, self)
+        self.__parent.__init__(irc)
         self.invites = {}
 
     def doKick(self, irc, msg):

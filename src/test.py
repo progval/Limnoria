@@ -85,7 +85,9 @@ class TestPlugin(callbacks.Privmsg):
             irc.reply(repr(eval(' '.join(args))))
         except Exception, e:
             irc.reply(utils.exnToString(e))
-TestInstance = TestPlugin()
+# Since we know we don't now need the Irc object, we just give None.  This
+# might break if callbacks.Privmsg ever *requires* the Irc object.
+TestInstance = TestPlugin(None)
 conf.registerPlugin('TestPlugin', True, public=False)
 
 class SupyTestCase(unittest.TestCase):

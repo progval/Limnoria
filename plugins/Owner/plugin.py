@@ -124,9 +124,9 @@ class LogProxy(object):
 class Owner(callbacks.Privmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
-    def __init__(self, *args, **kwargs):
+    def __init__(self, irc):
         self.__parent = super(Owner, self)
-        self.__parent.__init__()
+        self.__parent.__init__(irc)
         # Setup log object/command.
         self.log = LogProxy(self.log)
         # Setup command flood detection.

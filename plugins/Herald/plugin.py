@@ -55,9 +55,9 @@ class HeraldDB(plugins.ChannelUserDB):
         return L[0]
 
 class Herald(callbacks.Privmsg):
-    def __init__(self):
+    def __init__(self, irc):
         self.__parent = super(Herald, self)
-        self.__parent.__init__()
+        self.__parent.__init__(irc)
         self.db = HeraldDB(filename)
         world.flushers.append(self.db.flush)
         self.lastParts = plugins.ChannelUserDictionary()
