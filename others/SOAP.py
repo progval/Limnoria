@@ -3570,7 +3570,11 @@ class SOAPProxy:
         return self.__call(None, body, {})
 
     def __getattr__(self, name):  # hook to catch method calls
-        return self.__Method(self.__call, name, config = self.config)
+        print '__getattr__ called with %s' % name
+        if name == '__del__':
+            raise AttributeError, name
+        else:
+            return self.__Method(self.__call, name, config = self.config)
 
     # To handle attribute wierdness
     class __Method:
@@ -3599,6 +3603,8 @@ class SOAPProxy:
                 self.__call__ = self.__r_call
 
         def __getattr__(self, name):
+            if name == '__del__':
+                raise AttributeError, name
             if self.__name[0] == "_":
                 # Don't nest method if it is a directive
                 return self.__class__(self.__call, name, self.__ns,
