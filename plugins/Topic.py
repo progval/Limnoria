@@ -67,6 +67,9 @@ class Topic(callbacks.Privmsg):
     topicSeparator = ' || '
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((\S+)\)')
+    def _splitTopic(self, topic):
+        return filter(None, topic.split(self.topicSeparator))
+
     def add(self, irc, msg, args, channel):
         """[<channel>] <topic>
 
@@ -99,12 +102,19 @@ class Topic(callbacks.Privmsg):
         message isn't sent in the channel itself.
         """
         newtopic = irc.state.getTopic(channel)
-        topics = newtopic.split(self.topicSeparator)
-        random.shuffle(topics)
-        newtopic = self.topicSeparator.join(topics)
-        while len(topics) > 1 and newtopic == irc.state.getTopic(channel):
+        topics = self._splitTopic(irc.state.getTopic(channel))
+        if len(topics) == 0 or len(topics) == 1:
+            irc.error(msg, 'I can\'t shuffle 1 or fewer topics.')
+            return
+        elif len(topics) == 2:
+            topics.reverse()
+            newtopic = self.topicSeparator.join(topics)
+        else:
             random.shuffle(topics)
             newtopic = self.topicSeparator.join(topics)
+            while newtopic == irc.state.getTopic(channel):
+                random.shuffle(topics)
+                newtopic = self.topicSeparator.join(topics)
         irc.queueMsg(ircmsgs.topic(channel, newtopic))
     shuffle = privmsgs.checkChannelCapability(shuffle, 'topic')
 
@@ -118,17 +128,22 @@ class Topic(callbacks.Privmsg):
         number = privmsgs.getArgs(args)
         try:
             number = int(number)
-            if number >= 0:
+            if number > 0:
                 number -= 1
+            elif number == 0:
+                irc.error(msg, 'That\'s not a valid topic number.')
+                return
         except ValueError:
             irc.error(msg, 'The argument must be a valid integer.')
             return
-        topics = irc.state.getTopic(channel).split(self.topicSeparator)
-        try:
-            irc.reply(msg, topics[number])
-        except IndexError:
-            irc.error(msg, 'That\'s not a valid topic.')
-            return
+        topics = self._splitTopic(irc.state.getTopic(channel))
+        if topics:
+            try:
+                irc.reply(msg, topics[number])
+            except IndexError:
+                irc.error(msg, 'That\'s not a valid topic.')
+        else:
+            irc.error(msg, 'There are no topics to get.')
     get = privmsgs.channel(get)
 
     def change(self, irc, msg, args, channel):
@@ -143,8 +158,11 @@ class Topic(callbacks.Privmsg):
         (number, regexp) = privmsgs.getArgs(args, needed=2)
         try:
             number = int(number)
-            if number >= 0:
+            if number > 0:
                 number -= 1
+            elif number == 0:
+                irc.error(msg, 'That\'s not a valid topic number.')
+                return
         except ValueError:
             irc.error(msg, 'The <number> argument must be a number.')
             return
@@ -156,7 +174,10 @@ class Topic(callbacks.Privmsg):
         except re.error, e:
             irc.error(msg, debug.exnToString(e))
             return
-        topics = irc.state.getTopic(channel).split(self.topicSeparator)
+        topics = self._splitTopic(irc.state.getTopic(channel))
+        if not topics:
+            irc.error(msg, 'There are no topics to change.')
+            return
         topic = topics.pop(number)
         match = self.topicUnformatter.match(topic)
         if match is None:
@@ -190,12 +211,15 @@ class Topic(callbacks.Privmsg):
         """
         try:
             number = int(privmsgs.getArgs(args))
-            if number >= 0:
+            if number > 0:
                 number -= 1
+            elif number == 0:
+                irc.error(msg, 'That\'s not a valid topic number.')
+                return
         except ValueError:
             irc.error(msg, 'The argument must be a number.')
             return
-        topics = irc.state.getTopic(channel).split(self.topicSeparator)
+        topics = self._splitTopic(irc.state.getTopic(channel))
         try:
             topic = topics.pop(number)
         except IndexError:

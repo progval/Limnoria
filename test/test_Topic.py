@@ -31,33 +31,51 @@
 
 from test import *
 
-class TopicTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Topic', 'Admin')
-    def testAddtopic(self):
-        _ = self.getMsg('join #foo')
-        _ = self.getMsg(' ') # Get the WHO.
-        m = self.getMsg('topic add #foo foo')
-        self.assertEqual(m.command, 'TOPIC')
-        self.assertEqual(m.args[0], '#foo')
-        self.assertEqual(m.args[1], 'foo (test)')
-        m = self.getMsg('topic add #foo bar')
-        self.assertEqual(m.command, 'TOPIC')
-        self.assertEqual(m.args[0], '#foo')
+class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
+    plugins = ('Topic',)
+    def testTopicRemove(self):
+        self.assertError('topic remove 1')
+        _ = self.getMsg('topic add foo')
+        _ = self.getMsg('topic add bar')
+        _ = self.getMsg('topic add baz')
+        self.assertError('topic remove 0')
+        self.assertNotError('topic remove 3')
+        self.assertNotError('topic remove 2')
+        self.assertNotError('topic remove 1')
+        self.assertError('topic remove 1')
 
-    def testChangetopic(self):
-        _ = self.getMsg('join #foo')
-        _ = self.getMsg(' ')
-        _ = self.getMsg('topic add #foo foo')
-        _ = self.getMsg('topic add #foo bar')
-        _ = self.getMsg('topic add #foo baz')
-        self.assertRegexp('topic change #foo -1 s/baz/biff/',
+    def testTopicGet(self):
+        self.assertError('topic get 1')
+        _ = self.getMsg('topic add foo')
+        _ = self.getMsg('topic add bar')
+        _ = self.getMsg('topic add baz')
+        self.assertRegexp('topic get 1', '^foo')
+        self.assertRegexp('topic get 2', '^bar')
+        self.assertRegexp('topic get 3', '^baz')
+        self.assertError('topic get 0')
+
+    def testTopicAdd(self):
+        m = self.getMsg('topic add foo')
+        self.assertEqual(m.command, 'TOPIC')
+        self.assertEqual(m.args[0], self.channel)
+        self.assertEqual(m.args[1], 'foo (test)')
+        m = self.getMsg('topic add bar')
+        self.assertEqual(m.command, 'TOPIC')
+        self.assertEqual(m.args[0], self.channel)
+
+    def testTopicChange(self):
+        _ = self.getMsg('topic add foo')
+        _ = self.getMsg('topic add bar')
+        _ = self.getMsg('topic add baz')
+        self.assertRegexp('topic change -1 s/baz/biff/',
                           r'foo.*bar.*biff')
-        self.assertRegexp('topic change #foo 2 s/bar/baz/',
+        self.assertRegexp('topic change 2 s/bar/baz/',
                           r'foo.*baz.*biff')
-        self.assertRegexp('topic change #foo 1 s/foo/bar/',
+        self.assertRegexp('topic change 1 s/foo/bar/',
                           r'bar.*baz.*biff')
-        self.assertRegexp('topic change #foo -2 s/baz/bazz/',
+        self.assertRegexp('topic change -2 s/baz/bazz/',
                           r'bar.*bazz.*biff')
+        self.assertError('topic change 0 s/baz/biff/')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
