@@ -312,14 +312,16 @@ class Http(callbacks.Privmsg):
 
         Returns information about the current version of the Linux kernel.
         """
-        fd = webutils.getUrlFd('http://www.kernel.org/kdist/finger_banner')
-        for line in fd:
-            (name, version) = line.split(':')
-            if 'latest stable' in name:
-                stable = version.strip()
-            elif 'latest beta' in name:
-                beta = version.strip()
-        fd.close()
+        try:
+            fd = webutils.getUrlFd('http://www.kernel.org/kdist/finger_banner')
+            for line in fd:
+                (name, version) = line.split(':')
+                if 'latest stable' in name:
+                    stable = version.strip()
+                elif 'latest beta' in name:
+                    beta = version.strip()
+        finally:
+            fd.close()
         irc.reply(msg, 'The latest stable kernel is %s; ' \
                        'the latest beta kernel is %s.' % (stable, beta))
 
