@@ -108,7 +108,12 @@ if __name__ == '__main__':
         while yn('Would you like to add a plugin?') == 'y':
             plugin = expect('What plugin?', plugins)
             moduleInfo = imp.find_module(plugin)
-            module = imp.load_module(plugin, *moduleInfo)
+            try:
+                module = imp.load_module(plugin, *moduleInfo)
+            except ImportError, e:
+                print 'Sorry, this plugin cannot be loaded.  You need the ' \
+                      'python module %s to load it.' % e.args[0].split()[-1]
+                continue
             print module.__doc__
             if yn('Would you like to add this plugin?') == 'y':
                 if hasattr(module, 'configure'):
