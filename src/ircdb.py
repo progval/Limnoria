@@ -43,11 +43,13 @@ import world
 import ircutils
 
 def fromChannelCapability(capability):
+    """Returns a (channel, capability) tuple from a channel capability."""
     if not isChannelCapability(capability):
         raise ValueError, '%s is not a channel capability' % capability
     return capability.split('.', 1)
 
 def isChannelCapability(capability):
+    """Returns True if capability is a channel capability; False otherwise."""
     if '.' in capability:
         (channel, capability) = capability.split('.', 1)
         return ircutils.isChannel(channel)
@@ -55,14 +57,19 @@ def isChannelCapability(capability):
         return False
 
 def makeChannelCapability(channel, capability):
+    """Makes a channel capability given a channel and a capability."""
     return '%s.%s' % (channel, capability)
 
 def isAntiCapability(capability):
+    """Returns True if capability is an anticapability; False otherwise."""
     if isChannelCapability(capability):
         (_, capability) = fromChannelCapability(capability)
     return capability[0] == '!'
 
 def makeAntiCapability(capability):
+    """Returns the anticapability of a given capability."""
+    assert not isAntiCapability(capability), 'makeAntiCapability does not ' \
+           'work on anticapabilities; you probably want invertCapability.'
     if '.' in capability:
         (channel, capability) = fromChannelCapability(capability)
         return '%s.!%s' % (channel, capability)
@@ -70,6 +77,7 @@ def makeAntiCapability(capability):
         return '!' + capability
 
 def unAntiCapability(capability):
+    """Takes an anticapability and returns the non-anti form."""
     if not isAntiCapability(capability):
         raise ValueError, '%s is not an anti capability' % capability
     if isChannelCapability(capability):
@@ -79,17 +87,19 @@ def unAntiCapability(capability):
         return capability[1:]
 
 def invertCapability(capability):
+    """Make a capability into an anticapability and vice versa."""
     if isAntiCapability(capability):
         return unAntiCapability(capability)
     else:
         return makeAntiCapability(capability)
 
 _normal = string.maketrans('\r\n', '  ')
-def normalize(s):
+def _normalize(s):
     return s.translate(_normal)
 
 
 class CapabilitySet(sets.Set):
+    """A subclass of set handling basic capability stuff."""
     def __init__(self, capabilities=()):
         sets.Set.__init__(self)
         for capability in capabilities:
@@ -128,6 +138,7 @@ class CapabilitySet(sets.Set):
         return '%s([%r])' % (self.__class__.__name__, ', '.join(self))
 
 class UserCapabilitySet(CapabilitySet):
+    """A subclass of CapabilitySet to handle the owner capability correctly."""
     def __contains__(self, capability):
         capability = ircutils.toLower(capability)
         if CapabilitySet.__contains__(self, 'owner'):
@@ -317,6 +328,7 @@ class IrcChannel(object):
         return False
 
 class UsersDB(object):
+    """A simple serialized-to-file User Database."""
     def __init__(self, filename):
         self.filename = filename
         if os.path.exists(filename):
@@ -324,7 +336,7 @@ class UsersDB(object):
             s = fd.read()
             fd.close()
             IrcSet = ircutils.IrcSet
-            (self.nextId, self.users) = eval(normalize(s))
+            (self.nextId, self.users) = eval(_normalize(s))
         else:
             self.nextId = 1
             self.users = [IrcUser(capabilities=['owner'],
@@ -333,14 +345,17 @@ class UsersDB(object):
         self._hostmaskCache = {}
 
     def reload(self):
+        """Reloads the database from its file."""
         self.__init__(self.filename)
 
     def flush(self):
+        """Flushes the database to its file."""
         fd = file(self.filename, 'w')
         fd.write(repr((self.nextId, self.users)))
         fd.close()
 
     def getUserId(self, s):
+        """Returns the user ID of a given name or hostmask."""
         if ircutils.isUserHostmask(s):
             try:
                 return self._hostmaskCache[s]
@@ -375,6 +390,7 @@ class UsersDB(object):
                     raise KeyError, s
 
     def getUser(self, id):
+        """Returns a user given its id, name, or hostmask."""
         if not isinstance(id, int):
             # Must be a string.  Get the UserId first.
             id = self.getUserId(id)
@@ -387,6 +403,7 @@ class UsersDB(object):
             raise KeyError, id
 
     def hasUser(self, id):
+        """Returns the database has a user given its id, name, or hostmask."""
         try:
             self.getUser(id)
             return True
@@ -394,6 +411,7 @@ class UsersDB(object):
             return False
 
     def setUser(self, id, user):
+        """Sets a user (given its id) to the IrcUser given it."""
         assert isinstance(id, int), 'setUser takes an integer userId.'
         if not 0 <= id < len(self.users) or self.users[id] is None:
             raise KeyError, id
@@ -422,6 +440,7 @@ class UsersDB(object):
         self.users[id] = user
 
     def delUser(self, id):
+        """Removes a user from the database."""
         if not 0 <= id < len(self.users) or self.users[id] is None:
             raise KeyError, id
         self.users[id] = None
@@ -431,6 +450,7 @@ class UsersDB(object):
             del self._hostmaskCache[hostmask]
 
     def newUser(self):
+        """Allocates a new user in the database and returns it and its id."""
         user = IrcUser()
         id = self.nextId
         self.nextId += 1
@@ -446,11 +466,12 @@ class ChannelsDictionary(object):
             s = fd.read()
             fd.close()
             Set = sets.Set
-            self.dict = eval(normalize(s))
+            self.dict = eval(_normalize(s))
         else:
             self.dict = {}
 
     def getChannel(self, channel):
+        """Returns an IrcChannel object for the given channel."""
         channel = channel.lower()
         if channel in self.dict:
             return self.dict[channel]
@@ -460,15 +481,18 @@ class ChannelsDictionary(object):
             return c
 
     def setChannel(self, channel, ircChannel):
+        """Sets a given channel to the IrcChannel object given."""
         channel = channel.lower()
         self.dict[channel] = ircChannel
 
     def flush(self):
+        """Flushes the channel database to its file."""
         fd = file(self.filename, 'w')
         fd.write(repr(self.dict))
         fd.close()
 
     def reload(self):
+        """Reloads the channel database from its file."""
         self.__init__(self.filename)
 
 
@@ -523,13 +547,14 @@ def _x(capability, ret):
         return ret
 
 def checkCapability(hostmask, capability, users=users, channels=channels):
+    """Checks that the user specified by name/hostmask has the capabilty given.
+    """
     #debug.printf('*** checking %s for %s' % (hostmask, capability))
     if world.startup:
         #debug.printf('world.startup is active.')
         return _x(capability, True)
     try:
-        id = users.getUserId(hostmask)
-        u = users.getUser(id)
+        u = users.getUser(hostmask)
     except KeyError:
         #debug.printf('user could not be found.')
         if isChannelCapability(capability):
