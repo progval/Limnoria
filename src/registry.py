@@ -307,8 +307,9 @@ class Value(Group):
             s = self.__doc__
         else:
             s = """%s has no docstring.  If you're getting this message,
-            report it, because we forgot to put a proper help string here."""
-        e = InvalidRegistryValue(utils.str.normalizeWhitespace(s % self._name))
+            report it, because we forgot to put a proper help string here."""%\
+            self._name
+        e = InvalidRegistryValue(utils.str.normalizeWhitespace(s))
         e.value = self
         raise e
 
