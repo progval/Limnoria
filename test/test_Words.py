@@ -37,7 +37,7 @@ class WordsTestCase(ChannelPluginTestCase, PluginDocumentation):
         PluginTestCase.setUp(self)
         # Add some words to for us to use
         fd = file('%s/words' % conf.supybot.directories.data(), 'w')
-        fd.writelines(['hello'])
+        fd.writelines(['hello again'])
         fd.close()
 
     # Putting in a comment to make this different.
@@ -51,7 +51,7 @@ class WordsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('guess j')
         self.assertError('letters')
         self.assertNotError('hangman')
-        self.assertNotError('guess hello')
+        self.assertNotError('guess hello again')
         self.assertNotError('hangman')
         self.assertNotError('guess j')
         self.assertNotError('g')
