@@ -333,20 +333,23 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def searchfactoids(self, irc, msg, args):
-        """[<channel>] <text>
+        """[<channel>] <regexp>
 
-        Searches the keyspace for keys containing <text> in them.  Can use
-        arbitrary SQL LIKE wildcards or shell glob wildcards.
+        Searches the keyspace for keys matching <regexp>.
         """
         channel = privmsgs.getChannel(msg, args)
-        keySearch = privmsgs.getArgs(args)
-        keySearch = keySearch.translate(self._sqlTrans)
-        if keySearch.translate(string.ascii, '%_*?') == '':
-            irc.error(msg, 'You can\'t search for just wildcards.')
+        regexp = privmsgs.getArgs(args)
+        try:
+            r = utils.perlReToPythonRe(regexp)
+            def p(s):
+                return int(bool(r.search(s)))
+        except ValueError, e:
+            irc.error(msg, 'Invalid regular expression.')
             return
         db = self.getDb(channel)
+        db.create_function('p', 1, p)
         cursor = db.cursor()
-        cursor.execute("""SELECT key FROM keys WHERE key LIKE %s""", keySearch)
+        cursor.execute("""SELECT key FROM keys WHERE p(key)""")
         if cursor.rowcount == 0:
             irc.reply(msg, 'No keys matched that query.')
         elif cursor.rowcount > 100:
