@@ -67,7 +67,8 @@ def addressed(nick, msg):
     """If msg is addressed to 'name', returns the portion after the address.
     Otherwise returns the empty string.
     """
-    if msg.args[0] == nick:
+    nick = ircutils.toLower(nick)
+    if ircutils.nickEqual(msg.args[0], nick):
         if msg.args[1][0] in conf.prefixChars:
             return msg.args[1][1:].strip()
         else:
@@ -77,7 +78,7 @@ def addressed(nick, msg):
             (maybeNick, rest) = msg.args[1].split(None, 1)
             while not ircutils.isNick(maybeNick):
                 maybeNick = maybeNick[:-1]
-            if maybeNick == nick:
+            if ircutils.nickEqual(maybeNick, nick):
                 return rest
             else:
                 return ''

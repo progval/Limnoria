@@ -116,7 +116,8 @@ class FunctionsTestCase(unittest.TestCase):
         nick = 'supybot'
         conf.prefixChars = '~!@'
         inChannel = ['~foo', '@foo', '!foo',
-                     '%s: foo' % nick, '%s foo' % nick]
+                     '%s: foo' % nick, '%s foo' % nick,
+                     '%s: foo' % nick.capitalize(), '%s: foo' % nick.upper()]
         inChannel = [ircmsgs.privmsg('#foo', s) for s in inChannel]
         badmsg = ircmsgs.privmsg('#foo', '%s:foo' % nick)
         self.failIf(callbacks.addressed(nick, badmsg))
