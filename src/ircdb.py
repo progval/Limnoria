@@ -489,14 +489,17 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
     else:
         return False
 
+def _x(capability, ret):
+    if isAntiCapability(capability):
+        return not ret
+    else:
+        return ret
+    
 def checkCapability(hostmask, capability, users=users, channels=channels):
     #debug.printf('*** checking %s for %s' % (hostmask, capability))
     if world.startup:
         #debug.printf('world.startup is active.')
-        if isAntiCapability(capability):
-            return False
-        else:
-            return True
+        return _x(capability, True)
     try:
         u = users.getUser(hostmask)
     except KeyError:
@@ -511,10 +514,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
                     return c.checkCapability(capability)
                 else:
                     #debug.printf('capability not in c.capabilities')
-                    if isAntiCapability(capability):
-                        return not c.defaultAllow
-                    else:
-                        return c.defaultAllow
+                    return _x(capability, c.defaultAllow)
             except KeyError:
                 #debug.printf('no such channel %s' % channel)
                 pass
@@ -526,10 +526,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
             return False
         else:
             #debug.printf('returning appropriate value given no good reason')
-            if isAntiCapability(capability):
-                return not conf.defaultAllow
-            else:
-                return conf.defaultAllow
+            return _x(capability, conf.defaultAllow)
     #debug.printf('user found.')
     if capability in u.capabilities:
         #debug.printf('found capability in u.capabilities.')
@@ -546,10 +543,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
                     return c.checkCapability(capability)
                 else:
                     #debug.printf('capability not in c.capabilities')
-                    if isAntiCapability(capability):
-                        return not c.defaultAllow
-                    else:
-                        return c.defaultAllow
+                    return _x(capability, c.defaultAllow)
             except KeyError:
                 #debug.printf('no such channel %s' % channel)
                 pass
@@ -561,10 +555,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
             return False
         else:
             #debug.printf('returning appropriate value given no good reason')
-            if isAntiCapability(capability):
-                return not conf.defaultAllow
-            else:
-                return conf.defaultAllow
+            return _x(capability, conf.defaultAllow)
         
 
 def checkCapabilities(hostmask, capabilities, requireAll=False):
