@@ -79,6 +79,19 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self._ghosted = re.compile('%s.*killed' % self.nick)
         irc.reply(msg, conf.replySuccess)
 
+    def do376(self, irc, msg):
+        debug.msg('Services.do376 called.', 'high')
+        if self.nickserv:
+            debug.msg('self.nickserv was true.', 'high')
+            identify = 'IDENTIFY %s' % self.password
+            # It's important that this next statement is irc.sendMsg, not
+            # irc.queueMsg.  We want this message to get through before any
+            # JOIN messages also being sent on 376.
+            debug.msg(`irc.fastqueue`, 'high')
+            irc.sendMsg(ircmsgs.privmsg(self.nickserv, identify))
+            debug.msg(`irc.fastqueue`, 'high')
+    do377 = do376
+
     _owned = re.compile('nick.*(?<!not)(?:registered|protected|owned)')
     def doNotice(self, irc, msg):
         if self.nickserv:
