@@ -199,6 +199,11 @@ class Note(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
+        try:
+            noteid = int(noteid)
+        except ValueError:
+            irc.error(msg, '%r is not a valid note id.' % noteid)
+            return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT note, to_id, from_id, added_at, public
