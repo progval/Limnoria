@@ -288,14 +288,23 @@ class User(callbacks.Privmsg):
     setpassword = wrap(setpassword, [getopts({'hashed':''}), 'otherUser',
                                      'something', 'something'])
 
-    def username(self, irc, msg, args, user):
+    def username(self, irc, msg, args, hostmask):
         """<hostmask|nick>
 
         Returns the username of the user specified by <hostmask> or <nick> if
         the user is registered.
         """
-        irc.reply(user.name)
-    username = wrap(username, ['otherUser'])
+        if ircutils.isNick(nickOrHostmask):
+            try:
+                hostmask = irc.state.nickToHostmask(hostmask)
+            except KeyError:
+                irc.error('I haven\'t seen %s.' % nick, Raise=True)
+        try:
+            user = ircdb.users.getUser(hostmask)
+            irc.reply(user.name)
+        except KeyError:
+            irc.error('I don\'t know who that is.')
+    username = wrap(username, [first('nick', 'hostmask')])
 
     def hostmasks(self, irc, msg, args, name):
         """[<name>]
