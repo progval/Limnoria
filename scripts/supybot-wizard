@@ -269,17 +269,18 @@ def main():
             this is the network name, not the actual server you plan to connect
             to.""")
             network = None
-        elif not isValidRegistryName:
+        elif not registry.isValidRegistryName(network):
             output("""That's not a valid name for one reason or another.  Please
             pick a simpler name, one more likely to be valid.""")
             network = None
 
     conf.supybot.networks.default.set(network)
     network = conf.registerNetwork(network)
-        
+
     defaultServer = None
     server = None
-    while not server:
+    ip = None
+    while not ip:
         serverString = something('What server would you like to connect to?',
                                  default=defaultServer)
         try:
@@ -599,13 +600,13 @@ def main():
             not yn('Would you like to turn off the bot\'s replies to messages '
                    'prefixed with its nick?', default=False))
 
-        # conf.supybot.showSimpleSyntax
+        # conf.supybot.reply.showSimpleSyntax
         output("""By default, when the bot receives a message with invalid
         arguments, the bot returns the full help (syntax and description) of
         the command.  If showOnlySyntax is set to True, though, the bot will
         return just the syntax of the command.  Of course, the help will still
         be available via the help command.""")
-        conf.supybot.showSimpleSyntax.setValue(
+        conf.supybot.reply.showSimpleSyntax.setValue(
             yn('Would you like to show only the syntax of commands when '
               'they\'re given invalid arguments?', default=False))
 
