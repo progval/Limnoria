@@ -83,7 +83,7 @@ class Filter(callbacks.Privmsg):
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
-                       'supa1337', 'colorstrip']
+                       'supa1337', 'colorstrip', 'aol']
     def outfilter(self, irc, msg, args, channel):
         """[<channel>] [<command>]
         

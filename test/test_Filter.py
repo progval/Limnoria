@@ -41,6 +41,7 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('leet foobar')
         self.assertNotError('supa1337 foobar')
         self.assertNotError('lithp meghan sweeney')
+        self.assertNotError('aol I\'m too legit to quit.')
 
     def testJeffk(self):
         for i in range(100):
