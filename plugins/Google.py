@@ -45,6 +45,7 @@ import urllib2
 import google
 
 import conf
+import debug
 import utils
 import ircmsgs
 import ircutils
@@ -78,12 +79,19 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('alias googlelinux "google --restrict=linux $1"')
         onStart.append('alias googlebsd "google --restrict=bsd $1"')
         onStart.append('alias googlemac "google --restrict=mac $1"')
-        print 'The Google plugin has the functionality to watch for URLs'
-        print 'that match a specific pattern (we call this a snarfer). When'
-        print 'supybot sees such a URL, he will parse the web page for'
-        print 'information and reply with the results.\n'
-        if yn('Do you want the Google snarfer enabled by default?') == 'n':
-            onStart.append('Google togglesnarfer')
+        if advanced:
+            print 'The Google plugin has the functionality to watch for URLs'
+            print 'that match a specific pattern (we call this a snarfer).'
+            print 'When supybot sees such a URL, he will parse the web page'
+            print 'for information and reply with the results.\n'
+            print 'Google has two available snarfers: Google Groups link'
+            print 'snarfing and a google search snarfer.\n'
+            if yn('Do you want the Google Groups link snarfer enabled by '\
+                'default?') == 'n':
+                onStart.append('Google togglesnarfer groups off')
+            if yn('Do you want the Google search snarfer enabled by default?')
+                == 'y':
+                onStart.append('Google togglesnarfer search on')
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key at http://www.google.com/apis/'
@@ -134,7 +142,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         super(self.__class__, self).__init__()
         self.total = 0
         self.totalTime = 0
-        self.snarfer = True
+        self.snarfers = {'groups' : True,
+                         'search' : False}
         self.last24hours = structures.queue()
 
     def formatData(self, data):
@@ -165,16 +174,41 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, conf.replySuccess)
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
 
-    def togglesnarfer(self, irc, msg, args):
-        """takes no argument
+    def _toggleHelper(self, irc, msg, state, snarfer):
+        if not state:
+            self.snarfers[snarfer] = not self.snarfers[snarfer]
+        elif state in self._enable:
+            self.snarfers[snarfer] = True
+        elif state in self._disable:
+            self.snarfers[snarfer] = False
+        resp = []
+        for k in self.snarfers:
+            if self.snarfers[k]:
+                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
+            else:
+                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
+        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
 
-        Disables the snarfer that responds to all Sourceforge Tracker links
+    _enable = ('on', 'enable')
+    _disable = ('off', 'disable')
+    def togglesnarfer(self, irc, msg, args):
+        """<groups|search> [<on|off>]
+
+        Toggles the snarfer that responds to Google Groups links or Google
+        searches. If nothing is specified, all snarfers will have their states
+        toggled (on -> off, off -> on).  If only a state is specified, all
+        snarfers will have their state set to the specified state.  If a
+        specific snarfer is specified, the changes will apply only to that
+        snarfer.
         """
-        self.snarfer = not self.snarfer
-        if self.snarfer:
-            irc.reply(msg, '%s (Snarfer is enabled)' % conf.replySuccess)
-        else:
-            irc.reply(msg, '%s (Snarfer is disabled)' % conf.replySuccess)
+        (snarfer, state) = privmsgs.getArgs(args, optional=1)
+        snarfer = snarfer.lower()
+        state = state.lower()
+        if snarfer not in self.snarfers:
+            raise callbacks.ArgumentError
+        if state and state not in self._enable and state not in self._disable:
+            raise callbacks.ArgumentError
+        self._toggleHelper(irc, msg, state, snarfer)
     togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
 
     def google(self, irc, msg, args):
@@ -278,7 +312,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
-        if not self.snarfer:
+        if not self.snarfers['search']:
             return
         searchString = match.group(1)
         try:
@@ -295,7 +329,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
-        if not self.snarfer:
+        if not self.snarfer['group']:
             return
         request = urllib2.Request(match.group(0), headers=\
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
