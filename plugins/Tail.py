@@ -90,6 +90,8 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
 
     def die(self):
         schedule.removeEvent(self.name())
+        for fd in self.files.values():
+            fd.close()
 
     def __call__(self, irc, msg):
         irc = callbacks.SimpleProxy(irc, msg)
