@@ -11,9 +11,16 @@ Channel capabilities have been changed; rather than being
 #channel.capability, they're now #channel,capability.  It's a bit
 uglier, we know, but dots can be valid in channel names, and we
 needed the dot for handling plugin.command capabilities.
+tools/ircdbConvert.py should update this for you.
+
+The on-disk format of the user/channel databases has changed to be far
+more readable.  A conversion utility is included, as mentioned before:
+tools/ircdbConvert.py.  Run this *before* installing this version, or
+it won't work correctly.
 
 Uh, we were just kidding about the upgrade script in 0.76.0 :)  It'll
-be a little while longer.
+be a little while longer.  We do have several little upgrade scripts,
+though.
 
 Version 0.76.1
 
