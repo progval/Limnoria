@@ -1,6 +1,9 @@
 Roughly in order of precedence (the closer to the front of the file,
 the more likely it'll be done before next release):
 
+* It'd be nice to be able to use a backslash to continue lines in the
+  registry, so we could linewrap long strings or lists.
+
 * URL snarfers need to run one at a time, in order for the _snarfed
   queue to work properly.
 
