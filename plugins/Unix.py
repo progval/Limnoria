@@ -93,6 +93,13 @@ conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'command',
 conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'short',
     registry.Boolean(True, """Determines whether only short fortunes will be
     used if possible."""))
+conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'equalWeight',
+    registry.Boolean(True, """Determines whether fortune will give equal
+    weight to the different fortune databases.  If false, then larger
+    databases will be given more weight."""))
+conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'offensive',
+    registry.Boolean(False, """Determines whether fortune will retrieve
+    offensive fortunes along with the normal fortunes."""))
 conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'files',
     registry.SpaceSeparatedListOfStrings([], """Determines what specific file
     (if any) will be used with the fortune command; if none is given, the
@@ -109,7 +116,7 @@ conf.registerGroup(conf.supybot.plugins.Unix, 'wtf')
 conf.registerGlobalValue(conf.supybot.plugins.Unix.wtf, 'command',
     registry.String(utils.findBinaryInPath('wtf') or '', """Determines what
     command will be called for the wtf command."""))
-                    
+
 
 class Unix(callbacks.Privmsg):
     def errno(self, irc, msg, args):
@@ -222,7 +229,11 @@ class Unix(callbacks.Privmsg):
             args = [fortuneCmd]
             if self.registryValue('fortune.short'):
                 args.append('-s')
-            args.extend(self.registryValue('fortune.files')))
+            if self.registryValue('fortune.equalWeight'):
+                args.append('-e')
+            if self.registryValue('fortune.offensive'):
+                args.append('-a')
+            args.extend(self.registryValue('fortune.files'))
             (r, w) = popen2.popen4(args)
             try:
                 lines = r.readlines()
