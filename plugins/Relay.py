@@ -127,7 +127,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         self.ircstates = ircstates
         self.lastmsg = lastmsg
         self.channels = channels
-        self._whois = ircutils.IrcDict()
+        self._whois = {}
         self.abbreviations = abbreviations
 
     def __call__(self, irc, msg):
