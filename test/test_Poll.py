@@ -41,7 +41,7 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
-    class PollTestCase(PluginTestCase, PluginDocumentation):
+    class PollTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('Poll', 'User')
         def testNew(self):
             #self.assertError('poll new Is this a question?')
