@@ -51,13 +51,6 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
-
-
 conf.registerPlugin('Karma')
 conf.registerChannelValue(conf.supybot.plugins.Karma, 'simpleOutput',
     registry.Boolean(False, """Determines whether the bot will output shorter
