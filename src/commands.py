@@ -515,6 +515,12 @@ def contextify(spec):
         spec = context(spec)
     return spec
 
+def setDefault(state, default):
+    if callable(default):
+        state.args.append(default())
+    else:
+        state.args.append(default)
+
 class context(object):
     def __init__(self, spec):
         self.args = ()
@@ -549,7 +555,7 @@ class additional(context):
             self.__parent.__call__(irc, msg, args, state)
         except IndexError:
             log.debug('Got IndexError, returning default.')
-            state.args.append(self.default)
+            setDefault(state, self.default)
 
 class optional(additional):
     def __call__(self, irc, msg, args, state):
@@ -557,7 +563,7 @@ class optional(additional):
             super(optional, self).__call__(irc, msg, args, state)
         except (callbacks.ArgumentError, callbacks.Error), e:
             log.debug('Got %s, returning default.', utils.exnToString(e))
-            state.args.append(self.default)
+            setDefault(state, self.default)
 
 class any(context):
     def __call__(self, irc, msg, args, state):
@@ -612,7 +618,7 @@ class getopts(context):
         state.args.append(getopts)
         args[:] = rest
         log.debug('args after %r: %r', self, args)
-                
+
 
 
 ###
@@ -640,7 +646,7 @@ class Spec(object):
         st = State()
         st.__dict__.update(attrs)
         return st
-    
+
     def __init__(self, types, allowExtra=False, combineRest=True):
         self.types = types
         self.allowExtra = allowExtra
@@ -667,10 +673,10 @@ class Spec(object):
 # This is used below, but we need to rename it so its name isn't
 # shadowed by our locals.
 _decorators = decorators
-def wrap(f, specList, decorators=None, **kw):
+def wrap(f, specList=[], decorators=None, **kw):
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
-        spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
+        state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
         f(self, irc, msg, args, *state.args, **state.kwargs)
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
     if decorators is not None:
