@@ -293,15 +293,25 @@ class User(callbacks.Privmsg):
         Returns the hostmasks of the user specified by <name>; if <name> isn't
         specified, returns the hostmasks of the user calling the command.
         """
-        if not args:
-            name = msg.prefix
-        else:
-            name = privmsgs.getArgs(args)
+        if ircutils.isChannel(msg.args[0]):
+            irc.error(msg, conf.replyRequiresPrivacy)
+            return
+        name = privmsgs.getArgs(args, required=0, optional=1)
         try:
-            user = ircdb.users.getUser(name)
-            irc.reply(msg, repr(user.hostmasks))
+            user = ircdb.users.getUser(msg.prefix)
+            if name:
+                if name != user.name and not user.checkCapability('owner'):
+                    irc.error(msg, 'You may only retrieve your own hostmasks.')
+                else:
+                    try:
+                        user = ircdb.users.getUser(name)
+                        irc.reply(msg, repr(user.hostmasks))
+                    except KeyError:
+                        irc.error(msg, conf.replyNoUser)
+            else:
+                irc.reply(msg, repr(user.hostmasks))
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(msg, conf.replyNotRegistered)
 
     def capabilities(self, irc, msg, args):
         """[<name>]
