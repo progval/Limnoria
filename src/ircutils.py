@@ -309,6 +309,7 @@ def stripUnderline(s):
 
 def stripFormatting(s):
     """Returns the string s, with all formatting removed."""
+    # stripColor has to go first because of some strings, check the tests.
     s = stripColor(s)
     s = stripBold(s)
     s = stripReverse(s)
