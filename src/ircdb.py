@@ -37,7 +37,7 @@ import os
 import sets
 import time
 import string
-from itertools import imap
+from itertools import imap, ilen, ifilter
 
 import log
 import conf
@@ -457,6 +457,9 @@ class UsersDB(object):
             return True
         except KeyError:
             return False
+
+    def numUsers(self):
+        return ilen(ifilter(None, self.users))-1 # -1 is for the bot user.
 
     def setUser(self, id, user):
         """Sets a user (given its id) to the IrcUser given it."""

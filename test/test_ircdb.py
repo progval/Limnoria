@@ -311,6 +311,27 @@ class UsersDBTestCase(unittest.TestCase):
             pass
         self.users = ircdb.UsersDB(self.filename)
 
+    def testNumUsers(self):
+        self.assertEqual(self.users.numUsers(), 0)
+        (id, u) = self.users.newUser()
+        hostmask = 'foo!bar@baz'
+        banmask = ircutils.banmask(hostmask)
+        u.addHostmask(banmask)
+        u.name = 'foo'
+        self.users.setUser(id, u)
+        self.assertEqual(self.users.numUsers(), 1)
+        (id, u) = self.users.newUser()
+        hostmask = 'biff!fladksfj@blakjdsf'
+        banmask = ircutils.banmask(hostmask)
+        u.addHostmask(banmask)
+        u.name = 'biff'
+        self.users.setUser(id, u)
+        self.assertEqual(self.users.numUsers(), 2)
+        self.users.delUser(2)
+        self.assertEqual(self.users.numUsers(), 1)
+        self.users.delUser(1)
+        self.assertEqual(self.users.numUsers(), 0)
+
     def testGetSetDelUser(self):
         self.assertRaises(KeyError, self.users.getUser, 'foo')
         self.assertRaises(KeyError, self.users.getUser, 'foo!bar@baz')

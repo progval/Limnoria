@@ -47,6 +47,8 @@
 	
 	* Fixed bug in Gameknot.gkstats when retrieving the stats for
 	users who haven't yet played a game.
+
+	* Added a numUsers() method to ircdb.UsersDB (ircdb.users).
 	
 2003-11-18  Jeremy Fincher  <jemfinch@users.sf.net>
 
