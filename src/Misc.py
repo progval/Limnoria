@@ -272,8 +272,8 @@ class Misc(callbacks.Privmsg):
                 try:
                     return s.split(None, 3)[2]
                 except:
-                    self.log.exception('Couldn\'t get id string from module '
-                                       '%s: %r', n, s)
+                    self.log.exception('Getting %s module\'s revision number '
+                                       'from __revision__ string: %s'%(n, s))
             if hasattr(module, '__revision__'):
                 if 'supybot' in module.__file__:
                     return getVersion(module.__revision__, name)
