@@ -117,6 +117,6 @@ if __name__ == '__main__':
     fd = file(name + '.py', 'w')
     fd.write(template % (name, name, className, threaded, name))
     fd.close()
-    print 'Your new plugin template is in plugins/%s.py' % name
+    print 'Your new plugin template is %s.py.' % name
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
