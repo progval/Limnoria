@@ -49,6 +49,17 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertRegexp('seen asldfkjasdlfkj', '^I have not seen')
         self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
 
+    def testAny(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, 'baz!foo@bar'))
+        self.assertRegexp('seen any', 'baz has joined')
+        self.irc.feedMsg(ircmsgs.part(self.channel, 'baz!foo@bar'))
+        self.assertRegexp('seen any', 'baz has parted')
+        self.irc.feedMsg(ircmsgs.mode(self.channel, args=('+o', 'baz'),
+                                      prefix='baz!foo@bar'))
+        self.assertRegexp('seen any baz', 'baz sets mode')
+        self.assertRegexp('seen any %s' % self.nick,
+                          '^%s was last seen' % self.nick)
+
     def testSeen(self):
         self.assertNotError('seen last')
         self.assertNotError('list')
