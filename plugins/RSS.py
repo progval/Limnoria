@@ -263,7 +263,7 @@ class RSS(callbacks.Privmsg):
         if url not in self.locks:
             self.locks[url] = threading.RLock()
         if hasattr(self.__class__, name):
-            s = 'I already have a command in this plugin named %s' % name
+            s = 'I already have a command in this plugin named %s.' % name
             raise callbacks.Error, s
         def f(self, irc, msg, args):
             args.insert(0, url)
