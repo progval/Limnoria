@@ -682,9 +682,8 @@ class AtomicFile(file):
         self.allowEmptyOverwrite = allowEmptyOverwrite
         self.tempFilename = '%s.%s' % (filename, mktemp())
         if tmpDir is not None:
-            dir = os.path.dirname(self.tempFilename)
-            dir = os.path.join(dir, tmpDir)
-            self.tempFilename = os.path.join(dir, self.tempFilename)
+            tempFilename = os.path.dirname(self.tempFilename)
+            self.tempFilename = os.path.join(tmpDir, tempFilename)
         super(self.__class__, self).__init__(self.tempFilename, 'w')
 
     def rollback(self):
