@@ -325,10 +325,10 @@ def stripBold(s):
     """Returns the string s, with bold removed."""
     return s.replace('\x02', '')
 
-_unColorRe = re.compile(r'\x03(?:\d{1,2},\d{1,2}|\d{1,2}|,\d{1,2}|)')
+_stripColorRe = re.compile(r'\x03(?:\d{1,2},\d{1,2}|\d{1,2}|,\d{1,2}|)')
 def stripColor(s):
     """Returns the string s, with color removed."""
-    return _unColorRe.sub('', s)
+    return _stripColorRe.sub('', s)
 
 def stripReverse(s):
     """Returns the string s, with reverse-video removed."""

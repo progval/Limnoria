@@ -617,7 +617,7 @@ class Relay(callbacks.Privmsg):
             abbreviations = self.abbreviations.values()
             rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
             rAction = re.compile(r'\* [^/]+@(?:%s) ' % '|'.join(abbreviations))
-            text = ircutils.unColor(msg.args[1])
+            text = ircutils.stripColor(msg.args[1])
             if not (rPrivmsg.match(text) or \
                     rAction.match(text) or \
                     'has left on ' in text or \

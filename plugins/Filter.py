@@ -345,13 +345,13 @@ class Filter(callbacks.Privmsg):
         L = [self._color(c) for c in text]
         irc.reply('%s%s' % (''.join(L), '\x03'))
 
-    def colorstrip(self, irc, msg, args):
+    def stripcolor(self, irc, msg, args):
         """<text>
 
         Returns <text> stripped of all color codes.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(ircutils.unColor(text))
+        irc.reply(ircutils.stripColor(text))
 
     def jeffk(self, irc, msg, args):
         """<text>
