@@ -372,7 +372,9 @@ hemisphere = 1/2.0 sphere
 #
 [data]
 bit       = !
+b         = bit
 kilobit   = 1000 bit   #           # based on power of 10
+kb        = kilobit
 byte      = 8 bit
 B         = byte       # byte
 kilobyte  = 1000 byte  #           # based on power of 2
