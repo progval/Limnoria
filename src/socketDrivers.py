@@ -131,7 +131,7 @@ class SocketDriver(drivers.IrcDriver):
         if self.connected:
             log.info('Reconnect called on driver for %s.' % self.irc)
             self.conn.close()
-        else:
+        elif not wait:
             log.info('Connecting to %s.' % ':'.join(map(str, self.server)))
         self.connected = False
         if wait:
@@ -158,6 +158,7 @@ class SocketDriver(drivers.IrcDriver):
             else:
                 log.warning('Error connecting to %s: %s', self.server[0], e)
                 self.reconnect(wait=True)
+            return
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
         
