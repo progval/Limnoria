@@ -270,6 +270,7 @@ class Weather(callbacks.Privmsg):
                 index = ' (Heat Index: %s)' % heat
         if temp and conds and city and state:
             conds = conds.replace('Tsra', 'Thunderstorms')
+            conds = conds.replace('Ts', 'Thunderstorms')
             s = 'The current temperature at %s, %s is %s%s. Conditions: %s.'% \
                 (city, state, temp, index, conds)
             irc.reply(s)
