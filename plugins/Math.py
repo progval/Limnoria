@@ -307,7 +307,7 @@ class Math(callbacks.Privmsg):
         except convertcore.UnitDataError, ude:
             irc.error(str(ude))
     convert = wrap(convert, [optional('float', 1.0), 'something',
-                             additional(('literal', 'to'), ''), 'something'])
+                             additional(('literal', 'to'), ''), 'text'])
 
     def units(self, irc, msg, args, type):
         """ [<type>]
@@ -318,7 +318,7 @@ class Math(callbacks.Privmsg):
         """
 
         irc.reply(convertcore.units(type))
-    units = wrap(units, [additional('something')])
+    units = wrap(units, [additional('text')])
 
 Class = Math
 
