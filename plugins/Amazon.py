@@ -80,6 +80,16 @@ conf.registerGlobalValue(conf.supybot.plugins.Amazon, 'licenseKey',
 class Amazon(callbacks.Privmsg):
     threaded = True
 
+    def callCommand(self, method, irc, msg, *L):
+        try:
+            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
+        except amazon.NoLicenseKey, e:
+            irc.error('You must have a free Amazon web services license key '
+                      'in order to use this command.  You can get one at '
+                      '<http://www.amazon.com/webservices>.  Once you have '
+                      'one, you can set it with the command '
+                      '"config supybot.plugins.Amazon.licensekey <key>".')
+
     def _genResults(self, reply, attribs, items, url, bold, bold_item):
         results = {}
         res = []
