@@ -191,8 +191,8 @@ class Enforcer(callbacks.Privmsg):
         channel = msg.args[0]
         chanserv = self.registryValue('ChanServ', channel)
         if not ircutils.isChannel(channel) or \
-           (self._isPowerful(irc, msg) and \
-            not self.registryValue('takeRevengeOnOps', channel):
+           (self._isPowerful(irc, msg) and
+            not self.registryValue('takeRevengeOnOps', channel)):
             return
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
             if value == msg.nick:
