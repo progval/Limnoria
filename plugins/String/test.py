@@ -75,6 +75,9 @@ def group(seq, groupSize, noneFill=True):
 
 class StringTestCase(PluginTestCase):
     plugins = ('String', 'Format', 'Status')
+    def testLen(self):
+        self.assertResponse('len foo', '3')
+
     def testNoErrors(self):
         self.assertNotError('levenshtein Python Perl')
 
