@@ -111,8 +111,9 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
 def isValidRegistryName(name):
     # Now we can have . and : in names.  I'm still gonna call shenanigans on
     # anyone who tries to have spaces (though technically I can't see any
-    # reason why it wouldn't work).
-    return len(name.split()) == 1
+    # reason why it wouldn't work).  We also reserve all names starting with
+    # underscores for internal use.
+    return len(name.split()) == 1 and not name.startswith('_')
 
 def escape(name):
     name = name.replace('\\', '\\\\')
@@ -135,12 +136,13 @@ def join(names):
 
 class Group(object):
     """A group; it doesn't hold a value unless handled by a subclass."""
-    def __init__(self, supplyDefault=False):
+    def __init__(self, supplyDefault=False, orderAlphabetically=False):
         self._name = 'unset'
         self._added = []
         self._children = utils.InsensitivePreservingDict()
         self._lastModified = 0
         self._supplyDefault = supplyDefault
+        self._orderAlphabetically = orderAlphabetically
         OriginalClass = self.__class__
         class X(OriginalClass):
             """This class exists to differentiate those values that have
@@ -240,6 +242,8 @@ class Group(object):
 
     def getValues(self, getChildren=False, fullNames=True):
         L = []
+        if self._orderAlphabetically:
+            self._added.sort()
         for name in self._added:
             node = self._children[name]
             if hasattr(node, 'value') or hasattr(node, 'help'):
