@@ -80,6 +80,12 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
                           r'bar.*bazz.*biff')
         self.assertError('topic change 0 s/baz/biff/')
 
+    def testConfig(self):
+        self.assertNotError('topic config separator <==>')
+        _ = self.getMsg('topic add foo')
+        m = self.getMsg('topic add bar')
+        self.failUnless('<==>' in m.args[1])
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -44,15 +44,36 @@ import conf
 import utils
 import ircdb
 import ircmsgs
+import plugins
 import privmsgs
 import callbacks
 
-class Topic(callbacks.Privmsg):
-    topicSeparator = ' || '
+def ConfigurableTopicSeparator(s):
+    s = plugins.ConfigurableStrType(s)
+    if s.lstrip() == s:
+        s = ' ' + s
+    if s.rstrip() == s:
+        s += ' '
+    return s
+
+class Topic(callbacks.Privmsg, plugins.Configurable):
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((\S+)\)')
-    def _splitTopic(self, topic):
-        return filter(None, topic.split(self.topicSeparator))
+    configurables = plugins.ConfigurableDictionary(
+        [('separator', plugins.ConfigurableStrType, ' || ',
+          "The separator between individual topics in the channel topic.")]
+    )
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
+
+    def _splitTopic(self, topic, channel):
+        separator = self.configurables.get('separator', channel)
+        return filter(None, topic.split(separator))
+
+    def _joinTopic(self, topics, channel):
+        separator = self.configurables.get('separator', channel)
+        return separator.join(topics)
 
     def add(self, irc, msg, args, channel):
         """[<channel>] <topic>
@@ -61,8 +82,9 @@ class Topic(callbacks.Privmsg):
         if the message isn't sent in the channel itself.
         """
         topic = privmsgs.getArgs(args)
-        if self.topicSeparator in topic:
-            s = 'You can\'t have %s in your topic' % self.topicSeparator
+        separator = self.configurables.get('separator', channel)
+        if separator in topic:
+            s = 'You can\'t have %s in your topic' % separator
             irc.error(msg, s)
             return
         currentTopic = irc.state.getTopic(channel)
@@ -72,8 +94,7 @@ class Topic(callbacks.Privmsg):
             name = msg.nick
         formattedTopic = self.topicFormatter % (topic, name)
         if currentTopic:
-            newTopic = self.topicSeparator.join((currentTopic,
-                                                 formattedTopic))
+            newTopic = self._joinTopic([currentTopic, formattedTopic], channel)
         else:
             newTopic = formattedTopic
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
@@ -86,19 +107,19 @@ class Topic(callbacks.Privmsg):
         message isn't sent in the channel itself.
         """
         newtopic = irc.state.getTopic(channel)
-        topics = self._splitTopic(irc.state.getTopic(channel))
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if len(topics) == 0 or len(topics) == 1:
             irc.error(msg, 'I can\'t shuffle 1 or fewer topics.')
             return
         elif len(topics) == 2:
             topics.reverse()
-            newtopic = self.topicSeparator.join(topics)
+            newtopic = self._joinTopic(topics, channel)
         else:
             random.shuffle(topics)
-            newtopic = self.topicSeparator.join(topics)
+            newtopic = self._joinTopic(topics, channel)
             while newtopic == irc.state.getTopic(channel):
                 random.shuffle(topics)
-                newtopic = self.topicSeparator.join(topics)
+                newtopic = self._joinTopic(topics, channel)
         irc.queueMsg(ircmsgs.topic(channel, newtopic))
     shuffle = privmsgs.checkChannelCapability(shuffle, 'topic')
 
@@ -120,7 +141,7 @@ class Topic(callbacks.Privmsg):
         except ValueError:
             irc.error(msg, 'The argument must be a valid integer.')
             return
-        topics = self._splitTopic(irc.state.getTopic(channel))
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if topics:
             try:
                 match = self.topicUnformatter.match(topics[number])
@@ -162,7 +183,7 @@ class Topic(callbacks.Privmsg):
         except re.error, e:
             irc.error(msg, utils.exnToString(e))
             return
-        topics = self._splitTopic(irc.state.getTopic(channel))
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if not topics:
             irc.error(msg, 'There are no topics to change.')
             return
@@ -185,7 +206,7 @@ class Topic(callbacks.Privmsg):
         if number < 0:
             number = len(topics)+1+number
         topics.insert(number, newTopic)
-        newTopic = self.topicSeparator.join(topics)
+        newTopic = self._joinTopic(topics, channel)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
     change = privmsgs.checkChannelCapability(change, 'topic')
 
@@ -207,7 +228,7 @@ class Topic(callbacks.Privmsg):
         except ValueError:
             irc.error(msg, 'The argument must be a number.')
             return
-        topics = self._splitTopic(irc.state.getTopic(channel))
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
         try:
             topic = topics.pop(number)
         except IndexError:
@@ -226,7 +247,7 @@ class Topic(callbacks.Privmsg):
            not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
             irc.error(msg, 'You can only remove your own topics.')
             return
-        newTopic = self.topicSeparator.join(topics)
+        newTopic = self._joinTopic(topics, channel)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
     remove = privmsgs.checkChannelCapability(remove, 'topic')
 
