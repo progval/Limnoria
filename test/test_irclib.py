@@ -225,6 +225,13 @@ class IrcStateTestCase(SupyTestCase):
                               conf.supybot.protocols.irc.maxHistoryLength():])
         conf.supybot.protocols.irc.maxHistoryLength.setValue(oldconfmaxhistory)
 
+    def testWasteland005(self):
+        state = irclib.IrcState()
+        # Here we're testing if PREFIX works without the (ov) there.
+        state.addMsg(self.irc, ircmsgs.IrcMsg(':desolate.wasteland.org 005 jemfinch NOQUIT WATCH=128 SAFELIST MODES=6 MAXCHANNELS=10 MAXBANS=100 NICKLEN=30 TOPICLEN=307 KICKLEN=307 CHANTYPES=&# PREFIX=@+ NETWORK=DALnet SILENCE=10 :are available on this server'))
+        self.assertEqual(state.supported['prefix']['o'], '@')
+        self.assertEqual(state.supported['prefix']['v'], '+')
+                     
     def testEmptyTopic(self):
         state = irclib.IrcState()
         state.addMsg(self.irc, ircmsgs.topic('#foo'))

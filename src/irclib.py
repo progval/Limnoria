@@ -339,11 +339,14 @@ class IrcState(IrcCommandDispatcher):
         
         })
     def _prefixParser(s):
-        (left, right) = s.split(')')
-        assert left[0] == '(', 'Odd PREFIX in 005: %s' % s
-        left = left[1:]
-        assert len(left) == len(right), 'Odd PREFIX in 005: %s' % s
-        return dict(zip(left, right))
+        if ')' in s:
+            (left, right) = s.split(')')
+            assert left[0] == '(', 'Odd PREFIX in 005: %s' % s
+            left = left[1:]
+            assert len(left) == len(right), 'Odd PREFIX in 005: %s' % s
+            return dict(zip(left, right))
+        else:
+            return dict(zip('ovh', s))
     _005converters['prefix'] = _prefixParser
     del _prefixParser
     def do005(self, irc, msg):
