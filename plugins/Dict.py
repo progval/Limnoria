@@ -44,6 +44,7 @@ import dictclient
 import conf
 import debug
 import utils
+import plugins
 import ircutils
 import privmsgs
 import callbacks
@@ -61,47 +62,46 @@ def configure(onStart, afterConnect, advanced):
         server = something('What server?')
         onStart.append('dictserver %s' % server)
 
-class Dict(callbacks.Privmsg):
+replyTimeout = 'Timeout on the dictd server.'
+class Dict(callbacks.Privmsg, plugins.Configurable):
     threaded = True
-    dictServer = 'dict.org'
+    configurables = plugins.ConfigurableDictionary(
+        [('server', plugins.ConfigurableStrType, 'dict.org',
+          """Determines what server the bot will connect to to receive
+          definitions from."""),]
+    )
     def __init__(self):
-        self.setDictServer(self.dictServer)
         callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
 
-    def setDictServer(self, server):
-        self.dictServer = server
-        try:
-            conn = dictclient.Connection(server, timeout=3)
-            self.dictdbs = sets.Set(conn.getdbdescs())
-        except socket.timeout:
-            debug.msg('Timeout on server %s' % server)
-            self.dictdbs = sets.Set([])
-            
-    def dictserver(self, irc, msg, args):
-        """[<dictd server>]
-
-        Sets the dictd server the plugin should use.
-        """
-        server = privmsgs.getArgs(args)
-        try:
-            self.setDictServer(server)
-            irc.reply(msg, conf.replySuccess)
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+    def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.Configurable.die(self)
 
     def dictionaries(self, irc, msg, args):
         """takes no arguments.
 
         Returns the dictionaries valid for the dict command.
         """
-        irc.reply(msg, utils.commaAndify(self.dictdbs))
+        try:
+            conn = dictclient.Connection(self.configurables.get('server'))
+            dbs = conf.getdbdescs()
+            dbs.sort()
+            irc.reply(msg, utils.commaAndify(dbs))
+        except socket.timeout:
+            irc.error(msg, replyTimeout)
 
     def random(self, irc, msg, args):
         """takes no arguments.
 
         Returns a random valid dictionary.
         """
-        irc.reply(msg, random.choice(list(self.dictdbs)))
+        try:
+            conn = dictclient.Connection(self.configurables.get('server'))
+            dbs = conf.getdbdescs()
+            irc.reply(msg, random.choice(dbs))
+        except socket.timeout:
+            irc.error(msg, replyTimeout)
 
     def dict(self, irc, msg, args):
         """[<dictionary>] <word>
@@ -111,13 +111,12 @@ class Dict(callbacks.Privmsg):
         if not args:
             raise callbacks.ArgumentError
         try:
-            conn = dictclient.Connection(self.dictServer)
+            conn = dictclient.Connection(self.configurables.get('server'))
         except socket.timeout:
             irc.error(msg, 'Timeout on the dict server.')
             return
-        if not self.dictdbs:
-            self.dictdbs = sets.Set(conn.getdbdescs())
-        if args[0] in self.dictdbs:
+        dbs = sets.Set(conn.getdbdescs())
+        if args[0] in dbs:
             dictionary = args.pop(0)
         else:
             dictionary = '*'

@@ -31,8 +31,8 @@
 
 from test import *
 
-class DictionaryTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Dictionary', 'Misc')
+class DictTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Dict', 'Misc')
     def testDict(self):
         self.assertNotError('dict slash')
         self.assertNotRegexp('dict web1913 slash', 'foldoc')
