@@ -45,6 +45,60 @@ if network:
             self.assertError('bug gaim')
             self.assertRegexp('bug lkadf 9', 'find the Bugs')
 
+        def testAny(self):
+            m = self.getMsg('bugs --any gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('bug --any gaim %s' % n)
+            m = self.getMsg('rfes --any gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('rfe --any gaim %s' % n)
+
+        def testClosed(self):
+            m = self.getMsg('bugs --closed gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('bug --closed gaim %s' % n)
+            m = self.getMsg('rfes --closed gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('rfe --closed gaim %s' % n)
+
+        def testDeleted(self):
+            m = self.getMsg('bugs --deleted gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('bug --deleted gaim %s' % n)
+            m = self.getMsg('rfes --deleted gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('rfe --deleted gaim %s' % n)
+
+        def testOpen(self):
+            m = self.getMsg('bugs --open gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('bug --open gaim %s' % n)
+            m = self.getMsg('rfes --open gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('rfe --open gaim %s' % n)
+
+        '''
+        Just assume pending works since we're not 99% guaranteed to have a
+        project that has pending bugs/rfes like we do with the others.
+        def testPending(self):
+            m = self.getMsg('bugs --pending gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('bug --pending gaim %s' % n)
+            m = self.getMsg('rfes --pending gaim')
+            self.failUnless(m, 'No response from Sourceforge.')
+            n = re.search('#(\d+)', m.args[1]).group(1)
+            self.assertNotError('rfe --pending gaim %s' % n)
+        '''
+
         def testBugs(self):
             self.assertHelp('bugs')
             self.assertNotError('config defaultproject supybot')
