@@ -118,12 +118,15 @@ class BetterFileHandler(logging.FileHandler):
     def emit(self, record):
         msg = self.format(record)
         if not hasattr(types, "UnicodeType"): #if no unicode support...
-            self.stream.write("%s\n" % msg)
+            self.stream.write(msg)
+            self.stream.write(os.linesep)
         else:
             try:
-                self.stream.write("%s\n" % msg)
+                self.stream.write(msg)
+                self.stream.write(os.linesep)
             except UnicodeError:
-                self.stream.write("%s\n" % msg.encode("UTF-8"))
+                self.stream.write(msg.encode("utf8"))
+                self.stream.write(os.linesep)
         self.flush()
 
 
