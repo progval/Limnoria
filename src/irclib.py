@@ -498,7 +498,11 @@ class IrcState(IrcCommandDispatcher):
         (channel, users) = msg.args[:2]
         chan = self.channels[channel]
         for user in users.split(','):
-            chan.removeUser(user)
+            if ircutils.strEqual(user, irc.nick):
+                del self.channels[channel]
+                return
+            else:
+                chan.removeUser(user)
 
     def doQuit(self, irc, msg):
         for channel in self.channels.itervalues():

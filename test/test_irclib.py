@@ -210,6 +210,13 @@ class IrcStateTestCase(SupyTestCase):
         nick = 'nick'
         prefix = 'nick!user@host'
     irc = FakeIrc()
+    def testKickRemovesChannel(self):
+        st = irclib.IrcState()
+        st.channels['#foo'] = irclib.ChannelState()
+        m = ircmsgs.kick('#foo', self.irc.nick, prefix=self.irc.prefix)
+        st.addMsg(self.irc, m)
+        self.failIf('#foo' in st.channels)
+        
     def testAddMsgRemovesOpsProperly(self):
         st = irclib.IrcState()
         st.channels['#foo'] = irclib.ChannelState()
