@@ -818,7 +818,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         else:
             try:
                 serverPort = conf.supybot.networks.get(network).servers()[0]
-            except IndexError:
+            except (registry.NonExistentRegistryEntry, IndexError):
                 irc.error('A server must be provided if the network is not '
                           'already registered.')
                 return
