@@ -151,7 +151,11 @@ class Group(object):
             for (k, v) in _cache.iteritems():
                 if k.startswith(self.name):
                     (_, group) = rsplit(k, '.', 1)
-                    self.__makeChild(group, v)
+                    try:
+                        self.__makeChild(group, v)
+                    except InvalidRegistryValue:
+                        # It's probably supposed to be registered later.
+                        pass
     
     def register(self, name, node=None):
         if node is None:
