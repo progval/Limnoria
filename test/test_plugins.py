@@ -93,7 +93,7 @@ class ToggleDictionaryTestCase(unittest.TestCase):
 
 
 class holder:
-    users = sets.Set(['foo', 'bar', 'baz'])
+    users = sets.Set(map(str, range(1000)))
 
 class FunctionsTestCase(unittest.TestCase):
     class irc:
@@ -124,6 +124,13 @@ class FunctionsTestCase(unittest.TestCase):
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$now'))
         n = plugins.standardSubstitute(self.irc, msg, '$randomnick')
         self.failUnless(n in self.irc.state.channels['#foo'].users)
+        n = plugins.standardSubstitute(self.irc, msg, '$randomnick '*100)
+        L = n.split()
+        self.failIf(all(L[0].__eq__, L), 'all $randomnicks were the same')
+        c = plugins.standardSubstitute(self.irc, msg, '$channel')
+        self.assertEqual(c, msg.args[0])
+        
+        
         
         
         

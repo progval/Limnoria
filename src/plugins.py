@@ -31,6 +31,7 @@
 
 import fix
 
+import gc
 import os
 import sys
 import sets
@@ -100,6 +101,7 @@ class ChannelDBHandler(object):
             except AttributeError: # In case it doesn't have a close method.
                 pass
             del db
+        gc.collect()
 
 
 class PeriodicFileDownloader(object):
@@ -309,31 +311,32 @@ class Toggleable(object):
             irc.error(msg, '%r isn\'t a valid name to toggle.  '
                            'Valid names are %s' % (name, self._toggleNames()))
 
-_randomnickRe = re.compile ("\$randomnick", re.I)
-_randomdateRe = re.compile ("\$randomdate", re.I)
-_randomintRe = re.compile ("\$randomint", re.I)
-_whoRe = re.compile ("\$who", re.I)
-_botnickRe = re.compile("\$botnick", re.I)
-_todayRe = re.compile("\$today", re.I)
-_nowRe = re.compile("\$now", re.I)
-def randInt(m):
-    return str(random.randint(-1000, 1000))
-
-def randDate(m):
-    t = pow(2,30)*random.random()+time.time()/4.0 
-    return time.ctime(t)
-
+_randomnickRe = re.compile(r'\$randomnick', re.I)
+_randomdateRe = re.compile(r'\$randomdate', re.I)
+_randomintRe = re.compile(r'\$randomint', re.I)
+_channelRe = re.compile(r'\$channel', re.I)
+_whoRe = re.compile(r'\$who', re.I)
+_botnickRe = re.compile(r'\$botnick', re.I)
+_todayRe = re.compile(r'\$today', re.I)
+_nowRe = re.compile(r'\$now', re.I)
 def standardSubstitute(irc, msg, text):
     """Do the standard set of substitutions on text, and return it"""
     if ircutils.isChannel(msg.args[0]):
         channel = msg.args[0]
     else:
-        channel = None
-    if channel:
-        user = random.choice(list(irc.state.channels[channel].users))
-        text = _randomnickRe.sub(user, text)
-    else:
-        text = _randomnickRe.sub('anyone', text)
+        channel = 'somewhere'
+    def randInt(m):
+        return str(random.randint(-1000, 1000))
+    def randDate(m):
+        t = pow(2,30)*random.random()+time.time()/4.0 
+        return time.ctime(t)
+    def randNick(m):
+        if channel != 'somewhere':
+            return random.choice(list(irc.state.channels[channel].users))
+        else:
+            return 'someone'
+    text = _channelRe.sub(channel, text)
+    text = _randomnickRe.sub(randNick, text)
     text = _randomdateRe.sub(randDate, text)
     text = _randomintRe.sub(randInt, text)
     text = _whoRe.sub(msg.nick, text)
