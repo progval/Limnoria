@@ -401,7 +401,10 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
 
     if startup:
         # Are we in special startup mode?
-        return True
+        if isAntiCapability(capability):
+            return False
+        else:
+            return True
     try:
         u = users.getUser(hostmask)
     except KeyError: # the user isn't in the database.
