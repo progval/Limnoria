@@ -214,6 +214,7 @@ def getId(irc, msg, args, state, kind=None):
         getInt(irc, msg, args, state, type=type)
     except Exception, e:
         args[0] = original
+        raise
 
 def getExpiry(irc, msg, args, state):
     now = int(time.time())
@@ -805,6 +806,7 @@ def wrap(f, specList=[], **kw):
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
+        self.log.debug('State before call: %s' % state)
         f(self, irc, msg, args, *state.args, **state.kwargs)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
