@@ -58,14 +58,9 @@ class ConfigAfter376(irclib.IrcCallback):
         self.commands = commands
 
     def do376(self, irc, msg):
-        #debug.printf('Firing ConfigAfter376 messages')
         for command in self.commands:
-            #debug.printf(irc.nick)
-            #debug.printf(command)
             msg = ircmsgs.privmsg(irc.nick, command, prefix=irc.prefix)
             irc.queueMsg(msg)
-
-    do377 = do376
 
 def handleConfigFile():
     nick = conf.config['nick']
@@ -76,10 +71,7 @@ def handleConfigFile():
     for Class in privmsgs.standardPrivmsgModules:
         callback = Class()
         if hasattr(callback, 'configure'):
-            fakeIrc = callback.configure()
-        # This is mostly a hack to make sure the load command works.
-        for cb in fakeIrc.callbacks:  # Should most always be empty.
-            irc.addCallback(cb)
+            callback.configure(irc)
         irc.addCallback(callback)
     irc.addCallback(ConfigAfter376(conf.config['afterConnect']))
     drivers.newDriver(conf.config['server'], irc)

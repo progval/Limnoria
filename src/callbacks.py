@@ -100,6 +100,10 @@ def reply(msg, s):
         m = reply(msg, 'My response would\'ve been too long.')
     return m
 
+def error(msg, s):
+    """Makes an error reply to msg with the appropriate error payload."""
+    return reply(msg, 'Error: ' + s)
+
 class RateLimiter:
     lastRequest = {}
     def __init__(self):
@@ -298,7 +302,7 @@ class IrcObjectProxy:
             self.reply(self.msg, debug.exnToString(e))
         except Exception, e:
             debug.recoverableException()
-            self.reply(self.msg, debug.exnToString(e))
+            self.error(self.msg, debug.exnToString(e))
 
     def reply(self, msg, s):
         if self.finalEvaled:
@@ -358,6 +362,31 @@ class CommandThread(threading.Thread):
             self.irc.error(self.msg, debug.exnToString(e))
 
 
+class ConfigIrcProxy(object):
+    def __init__(self, irc):
+        self.__dict__['irc'] = irc
+        
+    def reply(self, msg, s):
+        return None
+
+    def error(self, msg, s):
+        debug.msg('ConfigIrcProxy saw an error: %s' % s, 'normal')
+
+    findCallback = IrcObjectProxy.findCallback.im_func
+
+    def getRealIrc(self):
+        irc = self.__dict__['irc']
+        while(hasattr(irc, 'getRealIrc')):
+            irc = irc.getRealIrc()
+        return irc
+
+    def __getattr__(self, attr):
+        return getattr(self.getRealIrc(), attr)
+
+    def __setattr__(self, attr, value):
+        setattr(self.getRealIrc(), attr, value)
+
+    
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     threaded = False
@@ -367,14 +396,11 @@ class Privmsg(irclib.IrcCallback):
         self.rateLimiter = RateLimiter()
         self.Proxy = IrcObjectProxy
 
-    def configure(self):
+    def configure(self, irc):
         nick = conf.config['nick']
         user = conf.config['user']
         ident = conf.config['ident']
-        fakeIrc = irclib.Irc(nick, user, ident)
-        fakeIrc.error = lambda _, s: None #debug.printf(s)
-        fakeIrc.reply = lambda _, s: None #debug.printf(s)
-        fakeIrc.findCallback = lambda *args: None
+        fakeIrc = ConfigIrcProxy(irc)
         for args in conf.config['onStart']:
             args = args[:]
             command = args.pop(0)
@@ -388,7 +414,6 @@ class Privmsg(irclib.IrcCallback):
                     method(fakeIrc, msg, args)
                 finally:
                     world.startup = False
-        return fakeIrc
 
     def __call__(self, irc, msg):
         irclib.IrcCallback.__call__(self, irc, msg)

@@ -140,12 +140,13 @@ class Relay(callbacks.Privmsg):
         that network to other networks.
         """
         abbreviation, server = privmsgs.getArgs(args, needed=2)
+        realIrc = irc.getRealIrc()
         if ':' in server:
             (server, port) = server.split(':')
             port = int(port)
         else:
             port = 6667
-        newIrc = irclib.Irc(irc.nick, callbacks=irc.callbacks)
+        newIrc = irclib.Irc(irc.nick, callbacks=realIrc.callbacks)
         driver = drivers.newDriver((server, port), newIrc)
         newIrc.driver = driver
         self.ircs[abbreviation] = newIrc

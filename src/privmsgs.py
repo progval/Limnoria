@@ -206,7 +206,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
             i = 0
         for driver in drivers._drivers.itervalues():
             driver.die()
-        for irc in world.ircs:
+        for irc in world.ircs[:]:
             irc.die()
         debug.exit(i)
 
@@ -267,7 +267,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         linecache.checkcache()
         callback = module.Class()
         if hasattr(callback, 'configure'):
-            callback.configure()
+            callback.configure(irc)
         irc.addCallback(callback)
         irc.reply(msg, conf.replySuccess)
 
@@ -302,7 +302,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
                 linecache.checkcache()
                 callback = module.Class()
                 if hasattr(callback, 'configure'):
-                    callback.configure()
+                    callback.configure(irc)
                 irc.addCallback(callback)
                 irc.reply(msg, conf.replySuccess)
             except ImportError:
