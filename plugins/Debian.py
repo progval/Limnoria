@@ -280,6 +280,46 @@ class Debian(callbacks.Privmsg,
         else:
             irc.reply(utils.commaAndify(packages))
     incoming = privmsgs.thread(incoming)
+
+    _newpkgre = re.compile(r'<li><a href[^>]+>([^<]+)</a>')
+    def new(self, irc, msg, args):
+        """[--{main,contrib,non-free}] [<glob>]
+
+        Checks for packages that have been added to Debian's unstable branch
+        in the past week.  If no glob is specified, returns a list of all
+        packages.  If no section is specified, defaults to main.
+        """
+        options = ['main', 'contrib', 'non-free']
+        (optlist, rest) = getopt.getopt(args, '', options)
+        section = 'main'
+        for (option, _) in optlist:
+            option = option.lstrip('-')
+            if option in options:
+                section = option
+        glob = privmsgs.getArgs(rest, required=0, optional=1)
+        if not glob:
+            glob = '*'
+        if '?' not in glob and '*' not in glob:
+            glob = '*%s*' % glob
+        try:
+            fd = webutils.getUrlFd(
+                'http://packages.debian.org/unstable/newpkg_%s' % section)
+        except webutils.WebError, e:
+            irc.error(e)
+        packages = []
+        self.log.warning(section)
+        self.log.warning(glob)
+        for line in fd:
+            m = self._newpkgre.search(line)
+            if m:
+                m = m.group(1)
+                if fnmatch.fnmatch(m, glob):
+                    packages.append(m) 
+        fd.close()
+        if packages:
+            irc.reply(utils.commaAndify(packages))
+        else:
+            irc.error('No packages matched that search.')
         
 Class = Debian
 
