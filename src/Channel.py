@@ -289,7 +289,7 @@ class Channel(callbacks.Privmsg):
     kick = wrap(kick, [('checkChannelCapability', 'op'),
                        ('haveOp', 'kick someone'),
                        'nickInChannel',
-                       additional('anything')])
+                       additional('text')])
 
     def kban(self, irc, msg, args,
              optlist, channel, bannedNick, length, reason):
@@ -390,7 +390,7 @@ class Channel(callbacks.Privmsg):
                  ('haveOp', 'kick or ban someone'),
                  'nickInChannel',
                  optional('expiry', 0),
-                 additional('anything')])
+                 additional('text')])
 
     def unban(self, irc, msg, args, channel, hostmask):
         """[<channel>] <hostmask>
