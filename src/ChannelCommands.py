@@ -85,14 +85,18 @@ class ChannelCommands(callbacks.Privmsg):
     voice = privmsgs.checkChannelCapability(voice, 'voice')
     
     def cycle(self, irc, msg, args, channel):
-        """[<channel>]
+        """[<channel>] [<key>]
 
         The <channel> argument is only necessary if the message isn't being
         sent in the channel itself.  If you have the #channel.op capability,
         this will cause the bot to "cycle", or PART and then JOIN the channel.
+        If <key> is given, join the channel using that key.
         """
+        key = privmsgs.getArgs(args, needed=0, optional=1)
+        if not key:
+            key = None
         irc.queueMsg(ircmsgs.part(channel))
-        irc.queueMsg(ircmsgs.join(channel))
+        irc.queueMsg(ircmsgs.join(channel, key))
     cycle = privmsgs.checkChannelCapability(cycle, 'op')
 
     def kban(self, irc, msg, args):
