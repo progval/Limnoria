@@ -44,6 +44,7 @@ Add the module docstring here.  This will be used by the setup.py script.
 
 from baseplugin import *
 
+import utils
 import privmsgs
 import callbacks
 
@@ -56,9 +57,9 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load %s')
 
-example = """
+example = utils.wrapLines("""
 Add an example IRC session using this module here.
-"""
+""")
 
 class %s(%s):
     %s
