@@ -46,9 +46,10 @@ import urllib
 import inspect
 import mimetypes
 
-#import conf
+import conf
 import debug
 import utils
+import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
@@ -125,8 +126,44 @@ example = utils.wrapLines("""
 <jemfinch> @whois ohio-state.edu
 <supybot> jemfinch: ohio-state.edu <http://www.educause.edu/edudomain> is active; registered 18-aug-1987, updated 19-aug-2003, expires 18-aug-2004.
 """)
-
+class MyFunProxy(object):
+    def reply(self, msg, s):
+        self.s = s
+        
 class Fun(callbacks.Privmsg):
+    def __init__(self):
+        self.filtercommand = None
+        callbacks.Privmsg.__init__(self)
+
+    def outFilter(self, irc, msg):
+        if msg.command == 'PRIVMSG':
+            if self.filtercommand is not None:
+                myIrc = MyFunProxy()
+                self.filtercommand(myIrc, msg, [msg.args[1]])
+                msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], myIrc.s))
+        return msg
+
+    _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
+                       'scramble', 'morse', 'reverse']
+    def outfilter(self, irc, msg, args):
+        """[<command>]
+        
+        Sets the outFilter of this plugin to be <command>.  If no command is
+        given, unsets the outFilter.
+        """
+        command = privmsgs.getArgs(args, needed=0, optional=1)
+        if command:
+            command = callbacks.canonicalName(command)
+            if command in self._filterCommands:
+                self.filtercommand = getattr(self, command)
+                irc.reply(msg, conf.replySuccess)
+            else:
+                irc.error(msg, 'That\'s not a valid filter command.')
+        else:
+            self.filtercommand = None
+            irc.reply(msg, conf.replySuccess)
+    outfilter = privmsgs.checkCapability(outfilter, 'admin')
+    
     def hexip(self, irc, msg, args):
         """<ip>
 

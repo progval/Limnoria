@@ -91,4 +91,15 @@ class FunTest(PluginTestCase, PluginDocumentation):
         s = 'the recalc1trant jam3ssan tests his scramble fun><tion'
         self.assertNotRegexp('scramble %s' % s, s)
 
+    def testoutfilter(self):
+        self.assertNotError('outfilter rot13')
+        self.assertResponse('rot13 foobar', 'foobar')
+        self.assertNotError('outfilter')
+        self.assertResponse('rot13 foobar', 'sbbone')
+        self.assertNotError('outfilter ROT13')
+        self.assertResponse('rot13 foobar', 'foobar')
+        self.assertNotError('outfilter')
+        self.assertResponse('rot13 foobar', 'sbbone')
+        
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
