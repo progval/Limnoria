@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2002-2004, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,8 @@
 ###
 
 """
-This is for jemfinch's debugging only.  If this somehow gets added and
-committed, remove it immediately.  It must not be released.
+This is for debugging only.  If this somehow gets added and
+committed, remove it immediately.  It should not be released.
 """
 
 __revision__ = "$Id$"
