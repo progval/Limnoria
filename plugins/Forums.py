@@ -40,7 +40,6 @@ from baseplugin import *
 import re
 import urllib2
 
-import utils
 import debug
 import ircmsgs
 import ircutils
