@@ -357,15 +357,15 @@ if not os.path.exists(pluginLogDir):
     os.mkdir(pluginLogDir, 0755)
 
 try:
-    miscLogFilename = os.path.join(_logDir, 'misc.log')
-    _handler = BetterFileHandler(miscLogFilename)
+    messagesLogFilename = os.path.join(_logDir, 'messages.log')
+    _handler = BetterFileHandler(messagesLogFilename)
 except EnvironmentError, e:
     raise SystemExit, \
-          'Error opening miscellaneous logfile (%s).  ' \
+          'Error opening messages logfile (%s).  ' \
           'Generally, this is because you are running Supybot in a directory ' \
           'you don\'t have permissions to add files in, or you\'re running ' \
           'Supybot as a different user than you normal do.  The original ' \
-          'error was: %s' % (miscLogFilename, utils.gen.exnToString(e))
+          'error was: %s' % (messagesLogFilename, utils.gen.exnToString(e))
 _handler.setFormatter(formatter)
 _handler.setLevel(-1)
 class PluginLogFilter(logging.Filter):
