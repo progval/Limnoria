@@ -201,11 +201,12 @@ QuotesDB = plugins.DB('Quotes',
 
 class Quotes(callbacks.Privmsg):
     def __init__(self):
-        super(Quotes, self).__init__()
+        self.__parent = super(Quotes, self)
+        self.__parent.__init__()
         self.db = QuotesDB()
 
     def die(self):
-        super(Quotes, self).die()
+        self.__parent.die()
         self.db.close()
 
     def add(self, irc, msg, args):

@@ -178,7 +178,8 @@ filename=os.path.join(conf.supybot.directories.data(), 'WordStats.db')
 class WordStats(callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
-        super(WordStats, self).__init__()
+        self.__parent = super(WordStats, self)
+        self.__parent.__init__()
         self.db = WordStatsDB(filename)
         self.queried = False
         world.flushers.append(self.db.flush)
@@ -187,11 +188,11 @@ class WordStats(callbacks.Privmsg):
         if self.db.flush in world.flushers:
             world.flushers.remove(self.db.flush)
         self.db.close()
-        super(WordStats, self).die()
+        self.__parent.die()
 
     def callCommand(self, *args, **kwargs):
         self.queried = True
-        return super(WordStats, self).callCommand(*args, **kwargs)
+        return self.__parent.callCommand(*args, **kwargs)
 
     def doPrivmsg(self, irc, msg):
         # This depends on the fact that it's called after the command.

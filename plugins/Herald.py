@@ -88,7 +88,8 @@ conf.registerChannelValue(conf.supybot.plugins.Herald, 'throttleTimeAfterPart',
 
 class Herald(callbacks.Privmsg):
     def __init__(self):
-        super(Herald, self).__init__()
+        self.__parent = super(Herald, self)
+        self.__parent.__init__()
         self.db = HeraldDB(filename)
         world.flushers.append(self.db.flush)
         self.lastParts = plugins.ChannelUserDictionary()
@@ -98,7 +99,7 @@ class Herald(callbacks.Privmsg):
         if self.db.flush in world.flushers:
             world.flushers.remove(self.db.flush)
         self.db.close()
-        super(Herald, self).die()
+        self.__parent.die()
 
     def doJoin(self, irc, msg):
         channel = msg.args[0]

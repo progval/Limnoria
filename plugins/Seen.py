@@ -86,7 +86,8 @@ class Seen(callbacks.Privmsg):
     def __init__(self):
         self.db = SeenDB(filename)
         world.flushers.append(self.db.flush)
-        super(Seen, self).__init__()
+        self.__parent = super(Seen, self)
+        self.__parent.__init__()
 
     def die(self):
         if self.db.flush in world.flushers:
@@ -94,7 +95,7 @@ class Seen(callbacks.Privmsg):
         else:
             self.log.debug('Odd, no flush in flushers: %r', world.flushers)
         self.db.close()
-        super(Seen, self).die()
+        self.__parent.die()
 
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):

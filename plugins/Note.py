@@ -161,11 +161,12 @@ NoteDB = plugins.DB('Note', {'flat': DbiNoteDB})
 
 class Note(callbacks.Privmsg):
     def __init__(self):
-        super(Note, self).__init__()
+        self.__parent= super(Note, self)
+        self.__parent.__init__()
         self.db = NoteDB()
 
     def die(self):
-        super(Note, self).die()
+        self.__parent.die()
         self.db.close()
 
     def doPrivmsg(self, irc, msg):

@@ -131,14 +131,15 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _projectURL = 'http://sourceforge.net/projects/'
     _trackerURL = 'http://sourceforge.net/support/tracker.php?aid='
     def __init__(self):
-        super(Sourceforge, self).__init__()
+        self.__parent = super(Sourceforge, self)
+        self.__parent.__init__()
         self.__class__.sf = self.__class__.sourceforge
 
     def isCommand(self, name):
         if name in ('bug', 'rfe', 'patch'):
             return self.registryValue('enableSpecificTrackerCommands')
         else:
-            return super(Sourceforge, self).isCommand(name)
+            return self.__parent.isCommand(name)
 
     def _formatResp(self, text, num=''):
         """

@@ -176,12 +176,13 @@ NewsDB = plugins.DB('News',
 
 class News(callbacks.Privmsg):
     def __init__(self):
-        super(News, self).__init__()
+        self.__parent = super(News, self)
+        self.__parent.__init__()
         self.db = NewsDB()
         self.removeOld = False
 
     def die(self):
-        super(News, self).die()
+        self.__parent.die()
         self.db.close()
 
     def add(self, irc, msg, args, channel):

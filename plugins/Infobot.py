@@ -371,7 +371,8 @@ class Dunno(Exception):
 class Infobot(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['doForget', 'doChange', 'doFactoid', 'doUnknown']
     def __init__(self):
-        super(Infobot, self).__init__()
+        self.__parent = super(Infobot, self)
+        self.__parent.__init__()
         try:
             self.db = InfobotDB()
         except Exception:
@@ -385,7 +386,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         self.addressed = False
 
     def die(self):
-        super(Infobot, self).die()
+        self.__parent.die()
         self.db.close()
 
     def _error(self, s):
@@ -530,7 +531,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 self.log.debug('Bailing since we received an empty msg.')
                 return
             msg = ircmsgs.IrcMsg(args=(msg.args[0], payload), msg=msg)
-            super(Infobot, self).doPrivmsg(irc, msg)
+            self.__parent.doPrivmsg(irc, msg)
         finally:
             self.force = False
             self.replied = False
@@ -542,7 +543,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         try:
             self.irc = irc
             self.msg = msg
-            super(Infobot, self).callCommand(name, irc, msg, *L, **kwargs)
+            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
         finally:
             self.irc = None
             self.msg = None

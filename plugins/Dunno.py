@@ -140,12 +140,13 @@ class Dunno(callbacks.Privmsg):
     responses."""
     callAfter = ['MoobotFactoids']
     def __init__(self):
-        super(Dunno, self).__init__()
+        self.__parent = super(Dunno, self)
+        self.__parent.__init__()
         self.db = DunnoDB()
 
     def die(self):
         self.db.close()
-        super(Dunno, self).die()
+        self.__parent.die()
 
     def invalidCommand(self, irc, msg, tokens):
         channel = msg.args[0]
