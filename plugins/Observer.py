@@ -64,37 +64,55 @@ class Probability(registry.Float):
         else:
             super(Probability, self).setValue(v)
 
+class Observers(registry.SpaceSeparatedListOfStrings):
+    List = callbacks.CanonicalNameSet
+
+
+class ActiveObservers(registry.SpaceSeparatedListOfStrings):
+    String = callbacks.canonicalName
+
 conf.registerPlugin('Observer')
 # XXX These both need to be CanonicalStrings.
 conf.registerGlobalValue(conf.supybot.plugins.Observer, 'observers',
-    registry.SpaceSeparatedSetOfStrings([], """Determines what observers are
-    available.""", orderAlphabetically=True))
+    Observers([], """Determines what observers are available.""",
+    orderAlphabetically=True))
 conf.registerChannelValue(conf.supybot.plugins.Observer.observers, 'active',
-    registry.SpaceSeparatedListOfStrings([], """Determines what observers are
+    ActiveObservers([], """Determines what observers are
     active on a channel."""))
                           
 
-def registerObserver(name, regexpString=None,
-                     commandString=None, probability=1.0):
+def registerObserver(name, regexpString='',
+                     commandString='', probability=1.0):
     g = conf.registerGlobalValue(conf.supybot.plugins.Observer.observers,
             name, registry.Regexp(regexpString, """Determines what regexp must
             match for this observer to be executed."""))
-    if regexpString is not None:
+    if regexpString:
         g.set(regexpString) # This is in case it's been registered.
     conf.registerGlobalValue(g, 'command', registry.String('', """Determines
         what command will be run when this observer is executed."""))
+    if commandString:
+        g.command.setValue(commandString)
     conf.registerGlobalValue(g, 'probability', Probability(probability, """
         Determines what the probability of executing this observer is if it
         matches."""))
+    g.probability.setValue(probability)
     conf.supybot.plugins.Observer.observers().add(name)
     return g
 
 
 class Observer(callbacks.Privmsg):
+    commandCalled = False
     def _isValidObserverName(self, name):
         return name != 'active' and registry.isValidRegistryName(name)
     
+    def callCommand(self, *args, **kwargs):
+        self.commandCalled = True
+        super(Observer, self).callCommand(*args, **kwargs)
+            
     def doPrivmsg(self, irc, msg):
+        if self.commandCalled:
+            self.commandCalled = False
+            return
         channel = msg.args[0]
         Owner = irc.getCallback('Owner')
         observers = self.registryValue('observers')
@@ -116,7 +134,7 @@ class Observer(callbacks.Privmsg):
                 groups.insert(0, m.group(0))
                 for (i, group) in enumerate(groups):
                     command = command.replace('$%s' % i, group)
-                tokens = callbacks.tokenize(text, channel=channel)
+                tokens = callbacks.tokenize(command, channel=channel)
                 Owner.processTokens(irc, msg, tokens)
                 
     def list(self, irc, msg, args):
@@ -142,7 +160,7 @@ class Observer(callbacks.Privmsg):
         else:
             irc.reply('There were no relevant observers.')
 
-    def enable(self, irc, msg, args):
+    def enable(self, irc, msg, args, channel):
         """[<channel>] <name>
 
         Enables the observer <name> in <channel>.  <channel> is only
@@ -151,7 +169,7 @@ class Observer(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         if name not in self.registryValue('observers'):
             irc.error('There is no observer %s.' % name, Raise=True)
-        self.registryValue('observers.active', channel).add(name)
+        self.registryValue('observers.active', channel).append(name)
         irc.replySuccess()
     enable = privmsgs.checkChannelCapability(enable, 'op')
 
@@ -165,7 +183,7 @@ class Observer(callbacks.Privmsg):
         try:
             self.registryValue('observers.active', channel).remove(name)
             irc.replySuccess()
-        except KeyError:
+        except (KeyError, ValueError):
             irc.error('The observer %s was not active on %s.' % (name,channel))
     disable = privmsgs.checkChannelCapability(disable, 'op')
             
