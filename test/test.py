@@ -268,12 +268,15 @@ class ChannelPluginTestCase(PluginTestCase):
             drivers.run()
             response = self.irc.takeMsg()
         if response is not None:
-            args = list(response.args)
-            # Strip off nick: at beginning of response.
-            if args[1].startswith(self.nick) or \
-               args[1].startswith(ircutils.nickFromHostmask(self.prefix)):
-                args[1] = args[1].split(None, 1)[1]
-            ret = ircmsgs.privmsg(*args)
+            if response.command == 'PRIVMSG':
+                args = list(response.args)
+                # Strip off nick: at beginning of response.
+                if args[1].startswith(self.nick) or \
+                   args[1].startswith(ircutils.nickFromHostmask(self.prefix)):
+                    args[1] = args[1].split(None, 1)[1]
+                ret = ircmsgs.privmsg(*args)
+            else:
+                ret = response
         else:
             ret = None
         if self.myVerbose:
