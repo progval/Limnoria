@@ -240,11 +240,11 @@ class User(callbacks.Privmsg):
         try:
             s = ''
             if hostmask == 'all':
-                user.hostmasks[:] = []
+                user.hostmasks.clear()
                 s = 'All hostmasks removed.'
             else:
                 user.removeHostmask(hostmask)
-        except ValueError:
+        except KeyError:
             irc.error('There was no such hostmask.')
             return
         ircdb.users.setUser(user)

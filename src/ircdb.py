@@ -220,7 +220,7 @@ class IrcUser(object):
         for capability in capabilities:
             self.capabilities.add(capability)
         if hostmasks is None:
-            self.hostmasks = [] # A list of hostmasks used for recognition
+            self.hostmasks = ircutils.IrcSet() # hostmasks used for recognition
         else:
             self.hostmasks = hostmasks
 
@@ -296,11 +296,11 @@ class IrcUser(object):
         if len(unWildcardHostmask(hostmask)) < 8:
             raise ValueError, \
                   'Hostmask must contain at least 8 non-wildcard characters.'
-        self.hostmasks.append(hostmask)
+        self.hostmasks.add(hostmask)
 
     def removeHostmask(self, hostmask):
         """Removes a hostmask from the user's hostmasks."""
-        self.hostmasks = [s for s in self.hostmasks if s != hostmask]
+        self.hostmasks.remove(hostmask)
 
     def addAuth(self, hostmask):
         """Sets a user's authenticated hostmask.  This times out in 1 hour."""
@@ -496,7 +496,7 @@ class IrcUserCreator(Creator):
 
     def hostmask(self, rest, lineno):
         self._checkId()
-        self.u.hostmasks.append(rest)
+        self.u.hostmasks.add(rest)
 
     def capability(self, rest, lineno):
         self._checkId()
@@ -512,7 +512,7 @@ class IrcUserCreator(Creator):
                 # Some might argue that this is arbitrary, and perhaps it is.
                 # But we've got to do *something*, so we'll show some deference
                 # to our lower-numbered users.
-                self.u.hostmasks[:] = []
+                self.u.hostmasks.clear()
                 self.users.setUser(self.u)
             IrcUserCreator.u = None
 
