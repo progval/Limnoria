@@ -326,6 +326,9 @@ class Relay(callbacks.Privmsg):
             realIrc = irc.getRealIrc()
         try:
             (nick, network) = nickAtNetwork.split('@', 1)
+            if not ircutils.isNick(nick):
+                irc.error(msg, '%s is not an IRC nick.' % nick)
+                return
             nick = ircutils.toLower(nick)
         except ValueError:
             if len(self.abbreviations) == 2:
