@@ -555,6 +555,10 @@ class TwoWayDictionaryTestCase(unittest.TestCase):
         self.failUnless('foo' in d)
         self.failUnless('bar' in d)
 
+        d = TwoWayDictionary({1: 2})
+        self.failUnless(1 in d)
+        self.failUnless(2 in d)
+
     def testSetitem(self):
         d = TwoWayDictionary()
         d['foo'] = 'bar'
