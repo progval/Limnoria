@@ -481,6 +481,16 @@ def privmsg(recipient, msg, prefix=''):
         assert msg, 'msg must not be empty.'
     return IrcMsg(prefix=prefix, command='PRIVMSG', args=(recipient, msg))
 
+def dcc(recipient, kind, *args, **kwargs):
+    # Stupid Python won't allow (recipient, kind, *args, prefix=''), so we have
+    # to use the **kwargs form.  Blech.
+    assert ircutils.isNick(recipient), 'Can\'t DCC a channel.'
+    kind = kind.upper()
+    assert kind in ('SEND', 'CHAT', 'RESUME', 'ACCEPT'), 'Invalid DCC command.'
+    args.insert(0, kind)
+    return IrcMsg(prefix=kwargs.get('prefix', ''), command='PRIVMSG',
+                  args=(recipient, ' '.join(args)))
+
 def action(recipient, msg, prefix=''):
     """Returns a PRIVMSG ACTION to recipient with the message msg."""
     if conf.supybot.protocols.irc.strictRfc():
