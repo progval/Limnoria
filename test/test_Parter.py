@@ -36,7 +36,7 @@ import ircmsgs
 class ParterTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Parter',)
     def test(self):
-        self.assertNotError('autopart #foo')
+        self.assertNotError('config plugins.Parter.channels #foo')
         self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
         m = self.getMsg(' ')
         if m.command == 'WHO':
