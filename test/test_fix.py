@@ -71,11 +71,14 @@ class FunctionsTest(unittest.TestCase):
         self.failUnless(any(lambda i: i == 0, range(10)))
         self.failIf(any(None, range(1)))
         self.failUnless(any(None, range(2)))
+        self.failIf(any(None, []))
 
     def testAll(self):
         self.failIf(all(lambda i: i == 0, range(10)))
-        self.failUnless(any(lambda i: i % 2, range(2)))
-        self.failIf(any(lambda i: i % 2 == 0, [1, 3, 5]))
+        self.failIf(all(lambda i: i % 2, range(2)))
+        self.failIf(all(lambda i: i % 2 == 0, [1, 3, 5]))
+        self.failUnless(all(lambda i: i % 2 == 0, [2, 4, 6]))
+        self.failUnless(all(None, ()))
 
     def testPartition(self):
         L = range(10)
