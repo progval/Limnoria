@@ -230,7 +230,7 @@ class Misc(callbacks.Plugin):
 
         Returns a URL saying where to get Supybot.
         """
-        irc.reply('My source is at http://supybot.sf.net/')
+        irc.reply('My source is at http://supybot.com/')
     source = wrap(source)
 
     def plugin(self, irc, msg, args, command):
