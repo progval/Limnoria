@@ -31,7 +31,8 @@
 
 """
 Informal notes, mostly for compatibility with other bots.  Based entirely on
-nicks, currently not persistent, but hey, it does a job.
+nicks, it's an easy way to tell users who refuse to register notes when they
+arrive later.
 """
 
 __revision__ = "$Id$"
@@ -39,6 +40,7 @@ __author__ = ''
 
 import supybot.plugins as plugins
 
+import csv
 import time
 
 import supybot.log as log
@@ -62,11 +64,38 @@ conf.registerPlugin('Later')
 conf.registerGlobalValue(conf.supybot.plugins.Later, 'maximum',
     registry.NonNegativeInteger(0, """Determines the maximum number of messages
     to be queued for a user.  If it's 0, there is no maximum."""))
+conf.registerGlobalValue(conf.supybot.plugins.Later, 'private',
+    registry.Boolean(False, """Determines whether users will be notified in the
+    first place in which they're seen, or in private."""))
 
 class Later(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.notes = ircutils.IrcDict()
+        self.filename = conf.supybot.directories.data.dirize('Later.db')
+        self._openNotes()
+
+    def die(self):
+        self._closeNotes()
+
+    def _closeNotes(self):
+        fd = utils.transactionalFile(self.filename)
+        writer = csv.writer(fd)
+        for (nick, notes) in self.notes.iteritems():
+            for (time, whence, text) in notes:
+                writer.writerow([nick, time, whence, text])
+        fd.close()
+
+    def _openNotes(self):
+        try:
+            fd = file(self.filename)
+        except EnvironmentError, e:
+            self.log.warning('Couldn\'t open %s: %s', self.filename, e)
+            return
+        reader = csv.reader(fd)
+        for (nick, time, whence, text) in reader:
+            self._addNote(nick, whence, text, at=float(time), maximum=0)
+        fd.close()
 
     def _timestamp(self, when):
         #format = conf.supybot.humanTimestampFormat()
@@ -76,16 +105,19 @@ class Later(callbacks.Privmsg):
         except ValueError:
             return 'just now'
         
-    def _addNote(self, nick, whence, text):
+    def _addNote(self, nick, whence, text, at=None, maximum=None):
+        if at is None:
+            at = time.time()
+        if maximum is None:
+            maximum = self.registryValue('maximum')
         try:
             notes = self.notes[nick]
-            maximum = self.registryValue('maximum')
-            if len(notes) >= maximum:
+            if maximum and len(notes) >= maximum:
                 raise ValueError
             else:
-                notes.append[(time.time(), whence, text)]
+                notes.append[(at, whence, text)]
         except KeyError:
-            self.notes[nick] = [(time.time(), whence, text)]
+            self.notes[nick] = [(at, whence, text)]
         
     def tell(self, irc, msg, args):
         """<nick> <text>
@@ -103,9 +135,10 @@ class Later(callbacks.Privmsg):
         try:
             notes = self.notes.pop(msg.nick)
             irc = callbacks.SimpleProxy(irc, msg)
+            private = self.registryValue('private')
             for (when, whence, note) in notes:
                 s = 'Sent %s: <%s> %s' % (self._timestamp(when), whence, note)
-                irc.reply(s)
+                irc.reply(s, private=private)
         except KeyError:
             pass
             
