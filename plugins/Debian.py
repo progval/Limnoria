@@ -38,6 +38,7 @@ from baseplugin import *
 import gzip
 import popen2
 import random
+import os.path
 import urllib2
 import re, sre_constants
 from itertools import imap, ifilter
@@ -82,6 +83,7 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
                              'debian/dists/unstable/Contents-i386.gz',
                              86400, None)
         }
+    contents = os.path.join(conf.dataDir, 'Contents-i386.gz')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         PeriodicFileDownloader.__init__(self)
@@ -94,16 +96,20 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
 
     def debfile(self, irc, msg, args):
         self.getFile('Contents-i386.gz')
-        regexp = privmsgs.getArgs(args).lstrip('/')
+        # Make sure it's anchored, make sure it doesn't have a leading slash
+        # (the filenames don't have leading slashes, and people may not know
+        # that).
+        regexp = privmsgs.getArgs(args).lstrip('^/')
+        regexp = '^' + regexp
         try:
             r = re.compile(regexp, re.I)
         except sre_constants.error, e:
             irc.error(msg, e)
             return
         if self.usePythonZegrep:
-            fd = gzip.open('Contents-i386.gz')
+            fd = gzip.open(self.contents)
             fd = ifilter(imap(lambda line: r.search(line), fd))
-        (fd, _) = popen2.popen2(['zegrep', regexp, 'Contents-i386.gz'])
+        (fd, _) = popen2.popen2(['zegrep', regexp, self.contents])
         packages = []
         for line in fd:
             try:
