@@ -35,6 +35,7 @@ Accesses Sourceforge.net for various things
 
 import re
 import sets
+import socket
 import urllib2
 
 from itertools import ifilter, imap
@@ -314,7 +315,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 ircutils.bold(num), '; '.join(resp)), prefixName = False)
         except urllib2.HTTPError, e:
             debug.msg(e.msg())
-        except error, e:
+        except socket.error, e:
             debug.msg(e.msg())
     sfSnarfer = privmsgs.urlSnarfer(sfSnarfer)
 
