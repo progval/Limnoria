@@ -198,12 +198,11 @@ class Observer(callbacks.Privmsg):
         if name not in self.registryValue('observers'):
             irc.error('That\'s not a valid observer.', Raise=True)
         g = self.registryValue('observers.%s' % name, value=False)
-        regexp = g()
         command = g.command()
         probability = g.probability()
         irc.reply('%s matches the regular expression %s and '
                   'runs the command %s with a probability of %s' %
-                  (name, regexp, command, probability))
+                  (name, g, command, probability))
     info = wrap(info, ['something'])
 
     def add(self, irc, msg, args, name, probability, regexp, command):

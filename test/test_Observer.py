@@ -55,6 +55,10 @@ class ObserverTestCase(ChannelPluginTestCase):
         self.assertNotError('add foo m/foo/i echo I saw foo.')
         self.assertRegexp('observer list', 'foo')
 
+    def testInfo(self):
+        self.assertNotError('add foo m/foo/i echo I saw foo.')
+        self.assertNotRegexp('observer info foo', 'sre')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
