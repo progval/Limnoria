@@ -92,7 +92,7 @@ class Http(callbacks.Privmsg):
             callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
         except socket.gaierror, e:
             irc.error(msg, e.args[1])
-        except urllib2.HTTPError:
+        except urllib2.HTTPError, r:
             irc.error(msg, str(e))
 
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
