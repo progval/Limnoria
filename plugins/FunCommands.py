@@ -62,6 +62,8 @@ sys.stdout = StringIO()
 import this
 sys.stdout = sys.__stdout__
 
+import dictclient
+
 #import conf
 import debug
 import utils
@@ -460,16 +462,14 @@ class FunCommands(callbacks.Privmsg):
                   'children have taken %s seconds of user time and %s seconds'\
                   ' of system time for a total of %s seconds of CPU time.  ' \
                   'I\'ve taken a total of %s%% of this computer\'s time.  ' \
-                  'Out of %s spawned %s, I have %s active.  ' \
-                  'I have processed %s %s.' %\
+                  'Out of %s I have %s active.  ' \
+                  'I have processed %s.' %\
                     (user, system, user + system,
                      childUser, childSystem, childUser + childSystem,
                      (user+system+childUser+childSystem)/timeRunning,
-                     world.threadsSpawned,
-                     utils.pluralize(world.threadsSpawned, 'thread'),
+                     utils.nItems(world.threadsSpawned, 'thread', 'spawned'),
                      activeThreads,
-                     world.commandsProcessed,
-                     utils.pluralize(world.commandsProcessed, 'command'))
+                     utils.nItems(world.commandsProcessed, 'command'))
         irc.reply(msg, response)
 
     def uptime(self, irc, msg, args):
@@ -779,7 +779,10 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, random.sample(self._these, 1)[0])
 
     def dns(self, irc, msg, args):
-        """<host|ip>"""
+        """<host|ip>
+
+        Returns the ip of <host> or the reverse DNS hostname of <ip>.
+        """
         host = privmsgs.getArgs(args)
         if ircutils.isIP(host):
             hostname = socket.getfqdn(host)
@@ -794,6 +797,34 @@ class FunCommands(callbacks.Privmsg):
             except socket.error:
                 irc.error(msg, 'Host not found.')
     dns = privmsgs.thread(dns)
+
+    def dict(self, irc, msg, args):
+        """<word>
+
+        Looks up the definition of <word> on dict.org's dictd server.
+        """
+        word = privmsgs.getArgs(args)
+        conn = dictclient.Connection('dict.org')
+        definitions = conn.define('*', word)
+        if not definitions:
+            irc.reply(msg, 'No definition for %r could be found.')
+            return
+        L = []
+        utils.sortBy(lambda d: len(d.getdefstr()), definitions)
+        for d in definitions:
+            (db, s) = (d.getdb().getname(), d.getdefstr())
+            db = ircutils.bold(db)
+            s = utils.normalizeWhitespace(s).rstrip(';.,')
+            L.append('%s: %s' % (db, s))
+        ircutils.shrinkList(L, '; ')
+        if not L:
+            irc.reply(msg, 'No definitions small enough to fit into an IRC ' \
+                           'message were found.')
+            return
+        s = '%s, %s shown: %s' % \
+            (utils.nItems(len(definitions), 'result'), len(L), '; '.join(L))
+        irc.reply(msg, s)
+    dict = privmsgs.thread(dict)
 
 
 Class = FunCommands

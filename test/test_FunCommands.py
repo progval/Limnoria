@@ -98,6 +98,9 @@ class FunCommandsTest(PluginTestCase):
     def testDns(self):
         self.assertNotError('dns slashdot.org')
 
+    def testDict(self):
+        self.assertNotError('dict slash')
+
     
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
