@@ -51,6 +51,10 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertError('config help supybot.alsdkfj')
         self.assertNotError('config help supybot.replies.success')
 
+    def testHelpDoesNotAssertionError(self):
+        self.assertNotRegexp('config help supybot.commands.defaultPlugins.help',
+                             'AssertionError')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -153,7 +153,10 @@ class Config(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         wrapper = getWrapper(name)
-        irc.reply(wrapper.help)
+        if wrapper.help:
+            irc.reply(wrapper.help)
+        else:
+            irc.error('%s has no help.' % name)
 
     def default(self, irc, msg, args):
         """<name>
