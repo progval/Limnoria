@@ -780,7 +780,15 @@ registerGroup(supybot.databases, 'plugins')
 registerChannelValue(supybot.databases.plugins, 'channelSpecific',
     registry.Boolean(True, """Determines whether database-based plugins that
     can be channel-specific will be so.  This can be overridden by individual
-    channels."""))
+    channels.  Do note that the bot likely needs to be restarted for changes of
+    this variable to take effect; also note that you may wish to set
+    supybot.databases.plugins.channelSpecific.channel appropriately if you
+    wish to share a certain channel's databases globally."""))
+registerGlobalValue(supybot.databases.plugins.channelSpecific, 'channel',
+    ValidChannel('#', """Determines what channel global (non-channel-specific)
+    databases will be considered a part of.  This is helpful if you've been
+    running channel-specific for awhile and want to turn the databases for your
+    primary channel into global databases."""))
 
 class CDB(registry.Boolean):
     def connect(self, filename):

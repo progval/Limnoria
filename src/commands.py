@@ -240,8 +240,9 @@ def getBoolean(irc, msg, args, state):
 
 def getChannelDb(irc, msg, args, state, **kwargs):
     if not conf.supybot.databases.plugins.channelSpecific():
-        state.args.append(None)
-        state.channel = None
+        channel = conf.supybot.databases.plugins.channelSpecific.channel()
+        state.args.append(channel)
+        state.channel = channel
     else:
         getChannel(irc, msg, args, state, **kwargs)
 
