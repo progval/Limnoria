@@ -152,20 +152,33 @@ if sqlite is not None:
             self.assertError('moo =~ s/moo/')
 
         def testMost(self):
+            userPrefix1 = 'moo!bar@baz'; userNick1 = 'moo'
+            userPrefix2 = 'boo!bar@baz'; userNick2 = 'boo'
+            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                             'register %s bar' % userNick1,
+                                             prefix=userPrefix1))
+            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                             'register %s bar' % userNick2,
+                                             prefix=userPrefix2))
+            _ = self.irc.takeMsg()
+            _ = self.irc.takeMsg()
             # Check an empty database
-            self.assertResponse('most popular', 'I can\'t find any factoids.')
-            self.assertResponse('most authored', 'I can\'t find any factoids.')
-            self.assertResponse('most recent', 'I can\'t find any factoids.')
+            self.assertError('most popular')
+            self.assertError('most authored')
+            self.assertError('most recent')
             # Check singularity response
+            self.prefix = userPrefix1
             self.assertNotError('moogle is <reply>moo')
-            self.assertResponse('most popular', 'I can\'t find any factoids.')
-            self.assertResponse('most authored', 'Top 1 author: tester (1)') 
+            self.assertError('most popular')
+            self.assertResponse('most authored', 'Top 1 author: moo (1)') 
             self.assertResponse('most recent', '1 latest factoid: moogle') 
             self.assertResponse('moogle', 'moo')
             self.assertResponse('most popular', 'Top 1 factoid: moogle (1)')
             # Check plural response
+            self.prefix = userPrefix2
             self.assertNotError('mogle is <reply>mo')
-            self.assertResponse('most authored', 'Top 1 author: tester (2)') 
+            self.assertResponse('most authored', 'Top 2 authors: moo (1) and '\
+                'boo (1)') 
             self.assertResponse('most recent', '2 latest factoids: mogle and '\
                 'moogle') 
             self.assertResponse('moogle', 'moo')
@@ -173,6 +186,10 @@ if sqlite is not None:
             self.assertResponse('mogle', 'mo')
             self.assertResponse('most popular', 'Top 2 factoids: moogle (2) '\
                 'and mogle (1)')
+            # Check most author ordering
+            self.assertNotError('moo is <reply>oom')
+            self.assertResponse('most authored', 'Top 2 authors: boo (2) and '\
+                'moo (1)')
 
         def testListkeys(self):
             self.assertResponse('listkeys %', 'No keys matching \'%\' found.')
