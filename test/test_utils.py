@@ -118,6 +118,7 @@ class UtilsTest(unittest.TestCase):
         self.failUnless(r.search('/'))
         r = utils.perlReToPythonRe('m/cat/i')
         self.failUnless(r.search('CAT'))
+        self.assertRaises(ValueError, utils.perlReToPythonRe, 'm/?/')
 
     def testPerlReToReplacer(self):
         f = utils.perlReToReplacer('s/foo/bar/')

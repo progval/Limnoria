@@ -211,7 +211,10 @@ def perlReToPythonRe(s):
             flag |= getattr(re, c)
     except AttributeError:
         raise ValueError, 'Invalid flag: %s' % c
-    return re.compile(regexp, flag)
+    try:
+        return re.compile(regexp, flag)
+    except re.error, e:
+        raise ValueError, str(e)
 
 def perlReToReplacer(s):
     """Converts a string representation of a Perl regular expression (i.e.,
