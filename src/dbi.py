@@ -371,7 +371,7 @@ class Record(object):
             setattr(self, name, self.converters[name](strValue))
             unseenRecords.remove(name)
         for name in unseenRecords:
-            setattr(self, record, self.defaults[record])
+            setattr(self, name, self.defaults[name])
 
     
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
