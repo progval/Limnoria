@@ -72,8 +72,8 @@ class Anonymous(callbacks.Privmsg):
         Sends <text> to <channel>.
         """
         self._preCheck(irc, msg, channel)
-        self.log.info('Saying %s in %s due to %s.' % \
-                      utils.str.quoted(text), channel, msg.prefix)
+        self.log.info('Saying %q in %s due to %s.',
+                      text, channel, msg.prefix)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
         irc.noReply()
     say = wrap(say, ['inChannel', 'text'])
@@ -84,8 +84,8 @@ class Anonymous(callbacks.Privmsg):
         Performs <action> in <channel>.
         """
         self._preCheck(irc, msg, channel)
-        self.log.info('Performing %s in %s due to %s.'% \
-                      utils.str.quoted(text), channel, msg.prefix)
+        self.log.info('Performing %q in %s due to %s.',
+                      text, channel, msg.prefix)
         irc.queueMsg(ircmsgs.action(channel, text))
         irc.noReply()
     do = wrap(do, ['inChannel', 'text'])
