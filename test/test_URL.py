@@ -83,7 +83,6 @@ if sqlite is not None:
                 self.assertRegexp('url num', str(counter))
                 self.feedMsg(url)
                 counter += 1
-                self.assertNotError('url get %s' % counter)
 
             self.assertRegexp('url num', str(counter))
             self.assertRegexp('url last', re.escape(urls[-1]))
@@ -128,7 +127,7 @@ if sqlite is not None:
             self.assertNotError('url toggle tinyreply on')
             self.assertRegexp('http://sourceforge.net/tracker/?'\
                 'func=add&group_id=58965&atid=489447',
-                r'TinyURL: http://tinyurl.com/\w{4}')
+                r'http://tinyurl.com/\w{4}.* \(was')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

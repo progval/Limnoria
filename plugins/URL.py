@@ -50,6 +50,7 @@ import conf
 import debug
 import utils
 import ircmsgs
+import ircutils
 import privmsgs
 import callbacks
 
@@ -136,8 +137,8 @@ class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
                         cursor.execute("""INSERT INTO tinyurls VALUES
                             (NULL, %s, %s)""", id, tinyurl)
                     if self.toggles.get('tinyreply', channel=msg.args[0]):
-                        irc.queueMsg(callbacks.reply(msg, 'TinyURL: %s' %
-                            tinyurl, prefixName=False))
+                        irc.queueMsg(callbacks.reply(msg, '%s (was %s)' %
+                            (ircutils.bold(tinyurl), url), prefixName=False))
             key = (msg.nick, channel)
             self.nextMsgs.setdefault(key, []).append((url, added))
         db.commit()
@@ -201,24 +202,6 @@ class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
                 '(%s)' % conf.replyPossibleBug)
         else:
             irc.reply(msg, url)
-
-    def get(self, irc, msg, args):
-        """[<channel>] <id>
-
-        Gets the URL with id <id> from the URL database for <channel>.
-        <channel> is only necessary if not sent in the channel itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        id = privmsgs.getArgs(args)
-        cursor.execute("""SELECT url, added, added_by
-                          FROM urls
-                          WHERE id=%s""", id)
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'No URL was found with that id.')
-        else:
-            irc.reply(msg, self._formatUrl(*cursor.fetchone()))
 
     def num(self, irc, msg, args):
         """[<channel>]
