@@ -31,6 +31,9 @@
 
 from test import *
 
+import copy
+
+import conf
 import irclib
 import ircmsgs
 
@@ -94,3 +97,56 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         self.failIf(q)
         
         
+class IrcStateTestCase(unittest.TestCase):
+    class FakeIrc:
+        nick = 'nick'
+    irc = FakeIrc()
+    def testHistory(self):
+        oldconfmaxhistory = conf.maxHistory
+        conf.maxHistory = 10
+        state = irclib.IrcState()
+        for msg in msgs:
+            try:
+                state.addMsg(self.irc, msg)
+            except Exception:
+                pass
+            self.failIf(len(state.history) > conf.maxHistory)
+        self.assertEqual(len(state.history), conf.maxHistory)
+        self.assertEqual(list(state.history), msgs[len(msgs)-conf.maxHistory:])
+        conf.maxHistory = oldconfmaxhistory
+    
+
+
+class IrcTestCase(unittest.TestCase):
+    irc = irclib.Irc('nick')
+    def testPingResponse(self):
+        self.irc.feedMsg(ircmsgs.ping('123'))
+        self.assertEqual(ircmsgs.pong('123'), self.irc.takeMsg())
+
+    def test433Response(self):
+        self.irc.feedMsg(ircmsgs.IrcMsg('433 * %s :Nickname already in use.' %\
+                                        self.irc.nick))
+        msg = self.irc.takeMsg()
+        self.failUnless(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
+
+    def testReset(self):
+        for msg in msgs:
+            try:
+                self.irc.feedMsg(msg)
+            except:
+                pass
+        self.irc.reset()
+        self.failIf(self.irc.fastqueue)
+        self.failIf(self.irc.state.history)
+        self.failIf(self.irc.state.channels)
+        self.failIf(self.irc.outstandingPings)
+        self.assertEqual(self.irc._nickmods, conf.nickmods)
+
+    def testHistory(self):
+        self.irc.reset()
+        msg1 = ircmsgs.IrcMsg('PRIVMSG #linux :foo bar baz!')
+        self.irc.feedMsg(msg1)
+        self.assertEqual(self.irc.state.history[0], msg1)
+        msg2 = ircmsgs.IrcMsg('JOIN #sourcereview')
+        self.irc.feedMsg(msg2)
+        self.assertEqual(list(self.irc.state.history), [msg1, msg2])
