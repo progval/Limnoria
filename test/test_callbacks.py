@@ -82,15 +82,23 @@ class TokenizerTestCase(unittest.TestCase):
         self.assertRaises(SyntaxError, tokenize, '"foo') #"
 
     def testPipe(self):
-        self.assertRaises(SyntaxError, tokenize, '| foo')
-        self.assertRaises(SyntaxError, tokenize, 'foo ||bar')
-        self.assertRaises(SyntaxError, tokenize, 'bar |')
-        self.assertEqual(tokenize('foo | bar'), ['bar', ['foo']])
-        self.assertEqual(tokenize('foo | bar | baz'), ['baz', ['bar',['foo']]])
-        self.assertEqual(tokenize('foo bar | baz'), ['baz', ['foo', 'bar']])
-        self.assertEqual(tokenize('foo | bar baz'), ['bar', 'baz', ['foo']])
-        self.assertEqual(tokenize('foo bar | baz quux'),
-                         ['baz', 'quux', ['foo', 'bar']])
+        try:
+            conf.enablePipeSyntax = True
+            self.assertRaises(SyntaxError, tokenize, '| foo')
+            self.assertRaises(SyntaxError, tokenize, 'foo ||bar')
+            self.assertRaises(SyntaxError, tokenize, 'bar |')
+            self.assertEqual(tokenize('foo | bar'), ['bar', ['foo']])
+            self.assertEqual(tokenize('foo | bar | baz'),
+                             ['baz', ['bar',['foo']]])
+            self.assertEqual(tokenize('foo bar | baz'),
+                             ['baz', ['foo', 'bar']])
+            self.assertEqual(tokenize('foo | bar baz'),
+                             ['bar', 'baz', ['foo']])
+            self.assertEqual(tokenize('foo bar | baz quux'),
+                             ['baz', 'quux', ['foo', 'bar']])
+        finally:
+            conf.enablePipeSyntax = False
+        
 
 
 class FunctionsTestCase(unittest.TestCase):

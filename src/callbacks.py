@@ -195,8 +195,9 @@ class Tokenizer:
     #
     # These are the characters valid in a token.  Everything printable except
     # double-quote, left-bracket, and right-bracket.
-    validChars = string.ascii[33:].translate(string.ascii, '"[]|')
+    validChars = string.ascii[33:].translate(string.ascii, '"[]')
     def __init__(self, tokens=''):
+        # Add a '|' to tokens to have the pipe syntax.
         self.validChars = self.validChars.translate(string.ascii, tokens)
 
     def handleToken(self, token):
@@ -256,7 +257,11 @@ def tokenize(s):
     """A utility function to create a Tokenizer and tokenize a string."""
     start = time.time()
     try:
-        args = Tokenizer().tokenize(s)
+        if conf.enablePipeSyntax:
+            tokens = '|'
+        else:
+            tokens = ''
+        args = Tokenizer(tokens).tokenize(s)
     except ValueError, e:
         raise SyntaxError, str(e)
     debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')

@@ -92,6 +92,27 @@ allowEval = False
 replyWhenNotCommand = True
 
 ###
+# requireRegistration: Oftentimes a plugin will want to record who added or
+#                      changed or messed with it last.  Supybot's user database
+#                      is an excellent way to determine who exactly someone is.
+#                      You may, however, want something a little less
+#                      "intrustive," so you can set this variable to False to
+#                      tell such plugins that they should use the hostmask when
+#                      the user isn't registered with the user database.
+###
+requireRegistration = False
+
+###
+# enablePipeSyntax: Supybot allows nested commands; generally, commands are
+#                   nested via [square brackets].  Supybot can also use a
+#                   syntax more similar to Unix pipes.  What would be (and
+#                   still can be; the pipe syntax doesn't disable the bracket
+#                   syntax) "bot: bar [foo]" can now by "bot: foo | bar"
+#                   This variable enables such syntax.
+###
+enablePipeSyntax = False
+
+###
 # defaultCapabilities: Capabilities allowed to everyone by default.  You almost
 #                      certainly want to have !owner and !admin in here.
 ###
