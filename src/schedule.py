@@ -74,6 +74,9 @@ class Schedule(drivers.IrcDriver):
         # one of the nuked events, we don't want him removing new events with
         # his old id.
 
+    def name(self):
+        return 'Schedule'
+
     def addEvent(self, f, t, name=None):
         """Schedules an event f to run at time t.
 
