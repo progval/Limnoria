@@ -55,19 +55,11 @@ import supybot.registry as registry
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
-class Probability(registry.Float):
-    """Value must be a floating-point number between 0 and 1."""
-    def setValue(self, v):
-        if v < 0 or v > 1:
-            self.error()
-        else:
-            registry.Float.setValue(self, float(v))
-
 conf.registerPlugin('Markov')
 conf.registerGroup(conf.supybot.plugins.Markov, 'randomSpeaking')
 conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
-    'probability', Probability(0, """Determines the probability that will be
-    checked against to determine whether the bot should randomly say
+    'probability', registry.Probability(0, """Determines the probability that
+    will be checked against to determine whether the bot should randomly say
     something.  If 0, the bot will never say anything on it's own.  If 1, the
     bot will speak every time we make a check."""))
 conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,

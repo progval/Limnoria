@@ -54,21 +54,8 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Observer', True)
 
-class Probability(registry.Float):
-    """Value must be a floating point number in the range (0, 1]."""
-    def __init__(self, *args, **kwargs):
-        self.__parent = super(Probability, self)
-        self.__parent.__init__(*args, **kwargs)
-
-    def setValue(self, v):
-        if not 0 < v <= 1:
-            self.error()
-        else:
-            self.__parent.setValue(v)
-
 class Observers(registry.SpaceSeparatedListOfStrings):
     List = callbacks.CanonicalNameSet
-
 
 class ActiveObservers(registry.SpaceSeparatedListOfStrings):
     String = callbacks.canonicalName
@@ -94,9 +81,9 @@ def registerObserver(name, regexpString='',
         what command will be run when this observer is executed."""))
     if commandString:
         g.command.setValue(commandString)
-    conf.registerGlobalValue(g, 'probability', Probability(probability, """
-        Determines what the probability of executing this observer is if it
-        matches."""))
+    conf.registerGlobalValue(g, 'probability',
+        registry.Probability(probability, """ Determines what the probability
+        of executing this observer is if it matches."""))
     g.probability.setValue(probability)
     conf.supybot.plugins.Observer.observers().add(name)
     return g

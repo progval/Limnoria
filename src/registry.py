@@ -413,6 +413,18 @@ class PositiveFloat(Float):
         else:
             super(PositiveFloat, self).setValue(v)
 
+class Probability(Float):
+    """Value must be a floating point number in the range (0, 1]."""
+    def __init__(self, *args, **kwargs):
+        self.__parent = super(Probability, self)
+        self.__parent.__init__(*args, **kwargs)
+
+    def setValue(self, v):
+        if 0 <= v <= 1:
+            self.__parent.setValue(v)
+        else:
+            self.error()
+
 class String(Value):
     """Value is not a valid Python string."""
     def set(self, s):
