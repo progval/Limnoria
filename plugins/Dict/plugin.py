@@ -38,7 +38,6 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.registry as registry
-import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
 class Dict(callbacks.Privmsg):
@@ -55,7 +54,7 @@ class Dict(callbacks.Privmsg):
             dbs.sort()
             irc.reply(utils.str.commaAndify(dbs))
         except socket.error, e:
-            irc.error(webutils.strError(e))
+            irc.error(utils.web.strError(e))
     dictionaries = wrap(dictionaries)
 
     def random(self, irc, msg, args):
@@ -69,7 +68,7 @@ class Dict(callbacks.Privmsg):
             dbs = conn.getdbdescs().keys()
             irc.reply(random.choice(dbs))
         except socket.error, e:
-            irc.error(webutils.strError(e))
+            irc.error(utils.web.strError(e))
     random = wrap(random)
 
     def dict(self, irc, msg, args, words):
@@ -81,7 +80,7 @@ class Dict(callbacks.Privmsg):
             server = conf.supybot.plugins.Dict.server()
             conn = dictclient.Connection(server)
         except socket.error, e:
-            irc.error(webutils.strError(e), Raise=True)
+            irc.error(utils.web.strError(e), Raise=True)
         dbs = sets.Set(conn.getdbdescs())
         if words[0] in dbs:
             dictionary = words.pop(0)
