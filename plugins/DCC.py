@@ -41,6 +41,7 @@ import socket
 import textwrap
 import threading
 
+import conf
 import utils
 import world
 import ircmsgs
@@ -70,7 +71,17 @@ class DCC(callbacks.Privmsg):
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.settimeout(60)
                 host = ircutils.hostFromHostmask(irc.prefix)
-                ip = socket.gethostbyname(host)
+                if conf.externalIP is not None:
+                    ip = conf.externalIP
+                else:
+                    try:
+                        ip = socket.gethostbyname(host)
+                    except socket.error, e:
+                        s = 'Error trying to determine the external IP ' \
+                            'address of this machine via the host %s: %s'
+                        self.log.warning(s, host, e)
+                        irc.reply(msg, conf.replyError)
+                        return
                 i = ircutils.dccIP(ip)
                 sock.bind((host, 0))
                 port = sock.getsockname()[1]
