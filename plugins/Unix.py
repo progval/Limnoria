@@ -253,7 +253,11 @@ class Unix(callbacks.Privmsg):
                 lines = r.readlines()
                 lines = map(str.rstrip, lines)
                 lines = filter(None, lines)
-                irc.replies(lines, joiner=' ')
+                if lines:
+                    irc.replies(lines, joiner=' ')
+                else:
+                    irc.error('It seems the configured fortune command was '
+                              'not available.')
             finally:
                 w.close()
                 r.close()
@@ -273,16 +277,23 @@ class Unix(callbacks.Privmsg):
         """
         wtfCmd = self.registryValue('wtf.command')
         if wtfCmd:
+            def commandError():
+                irc.error('It seems the configured wtf command '
+                          'was not available.')
             something = something.rstrip('?')
             inst = popen2.Popen4([wtfCmd, something])
             (r, w) = (inst.fromchild, inst.tochild)
             try:
                 response = utils.normalizeWhitespace(r.readline().strip())
-                irc.reply(response)
+                if response:
+                    irc.reply(response)
+                else:
+                    commandError()
             finally:
                 r.close()
                 w.close()
                 inst.wait()
+                commandError()
         else:
             irc.error('I couldn\'t find the wtf command on this system.  '
                       'If it is installed on this system, reconfigure the '
