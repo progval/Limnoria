@@ -312,9 +312,10 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
             irc.reply(msg, s)
 
     def karma(self, irc, msg, args):
-        """[<channel>] <text>
+        """[<channel>] [<text>]
 
-        Returns the karma of <text>.  <channel> is only necessary if the
+        Returns the karma of <text>.  If <text> is not given, returns the top
+        three and bottom three karmas. <channel> is only necessary if the
         message isn't sent on the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
