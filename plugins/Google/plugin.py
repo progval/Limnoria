@@ -211,7 +211,7 @@ class Google(callbacks.PluginRegexp):
                                     'notsafe':'', 'similar':''}),
                            many('something')])
 
-    def metagoogle(self, irc, msg, args, optlist, text):
+    def meta(self, irc, msg, args, optlist, text):
         """<search> [--(language,restrict)=<value>] [--{similar,notsafe}]
 
         Searches google and gives all the interesting meta information about
@@ -237,10 +237,10 @@ class Google(callbacks.PluginRegexp):
                    meta.searchTime,
                    categories and format('  Categories include %L.',categories))
         irc.reply(s)
-    metagoogle = wrap(metagoogle, [getopts({'language':'something',
-                                            'restrict':'something',
-                                            'notsafe':'', 'similar':''}),
-                                   many('something')])
+    meta= wrap(meta, [getopts({'language':'something',
+                               'restrict':'something',
+                               'notsafe':'', 'similar':''}),
+                      many('something')])
 
     _cacheUrlRe = re.compile('<code>([^<]+)</code>')
     def cache(self, irc, msg, args, url):
