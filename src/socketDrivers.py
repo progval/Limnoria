@@ -151,8 +151,9 @@ class SocketDriver(drivers.IrcDriver):
             if e.args[0] == 115:
                 now = time.time()
                 when = now + 60
+                whenS = log.timestamp(when)
                 log.info('Connection in progress, scheduling connectedness '
-                         'check for %s', when)
+                         'check for %s', whenS)
                 schedule.addEvent(self._checkAndWriteOrReconnect, when)
             else:
                 log.warning('Error connecting to %s: %s', self.server[0], e)
@@ -173,9 +174,9 @@ class SocketDriver(drivers.IrcDriver):
             
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
-        when = log.timestamp(when)
+        whenS = log.timestamp(when)
         if not world.dying:
-            log.info('Scheduling reconnect to %s at %s', self.server, when)
+            log.info('Scheduling reconnect to %s at %s', self.server, whenS)
         schedule.addEvent(self.reconnect, when)
 
     def die(self):
