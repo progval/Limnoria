@@ -109,7 +109,7 @@ class Lookup(callbacks.Privmsg):
                 name = name[len('supybot.plugins.lookup.lookups.'):]
                 if '.' in name:
                     continue
-                self.addRegistryValue(name, value())
+                self.addRegistryValue(name, value)
         group = conf.supybot.plugins.Lookup.lookups
         for (name, value) in group.getValues(fullNames=False):
             name = name.lower() # Just in case.
