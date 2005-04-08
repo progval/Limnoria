@@ -30,6 +30,7 @@
 ###
 
 import os
+import shutil
 
 import supybot
 
@@ -185,8 +186,8 @@ if __name__ == '__main__':
     parser = optparse.OptionParser(usage='Usage: %prog [options] [plugins]',
                                    version='Supybot %s' % conf.version)
     parser.add_option('-c', '--clean', action='store_true', default=False,
-                      dest='clean', help='Cleans the various data/conf/logs'
-                      'directories before running tests.')
+                      dest='clean', help='Cleans the various data/conf/logs '
+                      'directories after generating the docs.')
     parser.add_option('--no-escape',
                       action='store_false', default=True, dest='escape',
                       help='Disables escaping of html entities e.g., < as '
@@ -194,7 +195,7 @@ if __name__ == '__main__':
     parser.add_option('--plugins-dir',
                       action='append', dest='pluginsDirs', default=[],
                       help='Looks in in the given directory for plugins and '
-                      'loads the tests from all of them.')
+                      'generates documentation for all of them.')
     (options, args) = parser.parse_args()
 
     # This must go before checking for args, of course.
@@ -227,5 +228,10 @@ if __name__ == '__main__':
 
     for Plugin in plugins:
         genDoc(Plugin, options.escape)
+
+    if options.clean:
+        shutil.rmtree(conf.supybot.directories.log())
+        shutil.rmtree(conf.supybot.directories.conf())
+        shutil.rmtree(conf.supybot.directories.data())
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=78:
