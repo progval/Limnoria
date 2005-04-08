@@ -1,0 +1,45 @@
+.\" Process this file with
+.\" groff -man -Tascii supybot-plugin-doc.1
+.\"
+.TH SUPYBOT-PLUGIN-DOC 1 "APRIL 2005"
+.SH NAME
+supybot-plugin-doc \- Generates the documentation for a Supybot plugin
+.SH SYNOPSIS
+.B supybot-plugin-doc
+.RI [ options ]
+.SH DESCRIPTION
+.B supybot-plugin-doc
+is used to generate documentation (STX format) for a
+.IR supybot (1)
+plugin.
+.SH OPTIONS
+.TP
+.B \-\^\-version
+Show version of program.
+.TP
+.BR \-h ", " \-\^\-help
+Show summary of options.
+.TP
+.BI \-c ", " \-\^\-clean
+Clean the various data/conf/log directories after generating the docs.
+.TP
+.BR \-\^\-no\-escape
+Disables escaping of html entities e.g., < as &lt;.  This is useful for making
+documentation that will not be rendered as STX on a website.
+.TP
+.BI \-\^\-plugins\-dir= PLUGINSDIRS
+Looks in the given directory for plugins and generates documentation for all of
+them.
+.SH "SEE ALSO"
+.IR python (1),
+.IR supybot (1),
+.IR supybot-test (1),
+.IR supybot-botchk (1),
+.IR supybot-wizard (1),
+.IR supybot-adduser (1),
+.IR supybot-plugin-create (1)
+.SH AUTHOR
+This manual page was originally written by James Vega
+<vega dot james at gmail dot com>.  Permission is granted to copy,
+distribute and/or modify this document under the terms of the Supybot
+license, a BSD-style license.
