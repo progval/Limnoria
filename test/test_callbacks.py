@@ -534,11 +534,13 @@ class SourceNestedPluginTestCase(PluginTestCase):
         cb = self.E(self.irc)
         self.irc.addCallback(cb)
         self.assertEqual(cb.getCommand(['f']), ['f'])
+        self.assertEqual(cb.getCommand(['g']), ['g'])
         self.assertEqual(cb.getCommand(['e', 'f']), ['e', 'f'])
         self.assertEqual(cb.getCommand(['e', 'g', 'h']), ['e', 'g', 'h'])
         self.assertEqual(cb.getCommand(['e', 'g', 'i', 'j']),
                                        ['e', 'g', 'i', 'j'])
         self.assertResponse('e f', 'f')
+        self.assertResponse('e g', 'g')
         self.assertResponse('e g h', 'h')
         self.assertResponse('e g i j', 'j')
         self.assertHelp('help f')
@@ -553,7 +555,7 @@ class SourceNestedPluginTestCase(PluginTestCase):
         self.assertEqual(cb.getCommand(['e', 'same']), ['e', 'same'])
         self.assertResponse('e same', 'same')
 
-                
+
 class WithPrivateNoticeTestCase(ChannelPluginTestCase):
     plugins = ('Utilities',)
     class WithPrivateNotice(callbacks.Plugin):
@@ -641,8 +643,8 @@ class ProxyTestCase(SupyTestCase):
         self.failUnless(len(d) == 1)
         self.failUnless(d[irc] == 'foo')
         self.failUnless(d[proxy] == 'foo')
-        
-                         
+
+
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
