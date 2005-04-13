@@ -519,7 +519,7 @@ class RichReplyMethods(object):
 
 _repr = repr
 
-class IrcReplyProxy(RichReplyMethods):
+class ReplyIrcProxy(RichReplyMethods):
     """This class is a thin wrapper around an irclib.Irc object that gives it
     the reply() and error() methods (as well as everything in RichReplyMethods,
     based on those two)."""
@@ -569,9 +569,9 @@ class IrcReplyProxy(RichReplyMethods):
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
-SimpleProxy = IrcReplyProxy # Backwards-compatibility
+SimpleProxy = ReplyIrcProxy # Backwards-compatibility
 
-class IrcObjectProxy(IrcReplyProxy):
+class NestedCommandsIrcProxy(ReplyIrcProxy):
     "A proxy object to allow proper nested of commands (even threaded ones)."
     _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, args, nested=0):
@@ -580,7 +580,7 @@ class IrcObjectProxy(IrcReplyProxy):
         self.msg = msg
         self.nested = nested
         if not self.nested and isinstance(irc, self.__class__):
-            # This means we were given an IrcObjectProxy isntead of an
+            # This means we were given an NestedCommandsIrcProxy instead of an
             # irclib.Irc, and so we're obviously nested.  But nested wasn't
             # set!  So we take our given Irc's nested value.
             self.nested += irc.nested
@@ -633,14 +633,14 @@ class IrcObjectProxy(IrcReplyProxy):
                 self.counter += 1
             else:
                 assert isinstance(self.args[self.counter], list)
-                # It's a list.  So we spawn another IrcObjectProxy
+                # It's a list.  So we spawn another NestedCommandsIrcProxy
                 # to evaluate its args.  When that class has finished
                 # evaluating its args, it will call our reply method, which
                 # will subsequently call this function again, and we'll
                 # pick up where we left off via self.counter.
                 self.__class__(self, self.msg,
                                self.args[self.counter], nested=self.nested+1)
-                # We have to return here because the new IrcObjectProxy
+                # We have to return here because the new NestedCommandsIrcProxy
                 # might not have called our reply method instantly, since
                 # its command might be threaded.  So (obviously) we can't
                 # just fall through to self.finalEval.
@@ -721,7 +721,7 @@ class IrcObjectProxy(IrcReplyProxy):
     def finalEval(self):
         # Now that we've already iterated through our args and made sure
         # that any list of args was evaluated (by spawning another
-        # IrcObjectProxy to evaluated it into a string), we can finally
+        # NestedCommandsIrcProxy to evaluated it into a string), we can finally
         # evaluated our own list of arguments.
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
@@ -809,8 +809,8 @@ class IrcObjectProxy(IrcReplyProxy):
                                           prefixName=self.prefixName,
                                           noLengthCheck=self.noLengthCheck)
                 elif self.noLengthCheck:
-                    # noLengthCheck only matters to IrcObjectProxy, so it's not
-                    # used here.  Just in case you were wondering.
+                    # noLengthCheck only matters to NestedCommandsIrcProxy, so
+                    # it's not used here.  Just in case you were wondering.
                     m = reply(msg, s, to=self.to,
                               notice=self.notice,
                               action=self.action,
@@ -922,6 +922,7 @@ class IrcObjectProxy(IrcReplyProxy):
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
+IrcObjectProxy = NestedCommandsIrcProxy
 
 class CommandThread(world.SupyThread):
     """Just does some extra logging and error-recovery for commands that need
@@ -1164,7 +1165,7 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
     threaded = False
     noIgnore = False
     classModule = None
-    Proxy = IrcObjectProxy
+    Proxy = NestedCommandsIrcProxy
     def __init__(self, irc):
         myName = self.name()
         self.log = log.getPluginLogger(myName)
