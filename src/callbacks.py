@@ -652,13 +652,25 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
 
     def _callInvalidCommands(self):
         log.debug('Calling invalidCommands.')
+        threaded = False
+        cbs = []
         for cb in self.irc.callbacks:
             if hasattr(cb, 'invalidCommand'):
-                log.debug('Trying to call %s.invalidCommand.' % cb.name())
+                cbs.append(cb)
+                threaded = threaded or cb.threaded
+        def callInvalidCommands():
+            for cb in cbs:
                 self._callInvalidCommand(cb)
                 if self.msg.repliedTo:
                     log.debug('Done calling invalidCommands: %s.',cb.name())
                     return
+        if threaded:
+            name = 'Thread #%s (for invalidCommands)' % world.threadsSpawned
+            t = world.SupyThread(callInvalidCommands, name=name)
+            t.setDaemon(True)
+            t.start()
+        else:
+            callInvalidCommands()
 
     def _callInvalidCommand(self, cb):
         try:
