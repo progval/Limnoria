@@ -168,7 +168,7 @@ class IrcMsgQueue(object):
     def enqueue(self, msg):
         """Enqueues a given message."""
         if msg in self and \
-           conf.supybot.protocols.irc.refuseToQueueDuplicateMessages():
+           conf.supybot.protocols.irc.queuing.duplicates():
             s = str(msg).strip()
             log.info('Not adding message %q to queue, already added.', s)
             return False

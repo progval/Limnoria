@@ -140,7 +140,7 @@ class IrcMsgQueueTestCase(SupyTestCase):
         self.assertEqual(self.msgs[1], q.dequeue())
 
     def testNoIdenticals(self):
-        configVar = conf.supybot.protocols.irc.refuseToQueueDuplicateMessages
+        configVar = conf.supybot.protocols.irc.queuing.duplicates
         original = configVar()
         try:
             configVar.setValue(True)

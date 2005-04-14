@@ -934,7 +934,8 @@ registerGlobalValue(supybot.protocols.irc.ping, 'interval',
     registry.Integer(120, """Determines the number of seconds between sending
     pings to the server, if pings are being sent to the server."""))
 
-registerGlobalValue(supybot.protocols.irc, 'refuseToQueueDuplicateMessages',
+registerGroup(supybot.protocols.irc, 'queuing')
+registerGlobalValue(supybot.protocols.irc.queuing, 'duplicates',
     registry.Boolean(False, """Determines whether the bot will refuse duplicate
     messages to be queued for delivery to the server.  This is a safety
     mechanism put in place to prevent plugins from sending the same message
