@@ -522,6 +522,7 @@ class SourceNestedPluginTestCase(PluginTestCase):
                     J
                     """
                     irc.reply('j')
+
         class same(callbacks.Commands):
             def same(self, irc, msg, args):
                 """takes no arguments
@@ -534,16 +535,17 @@ class SourceNestedPluginTestCase(PluginTestCase):
         cb = self.E(self.irc)
         self.irc.addCallback(cb)
         self.assertEqual(cb.getCommand(['f']), ['f'])
-        self.assertEqual(cb.getCommand(['g']), ['g'])
+        self.assertEqual(cb.getCommand(['same']), ['same'])
         self.assertEqual(cb.getCommand(['e', 'f']), ['e', 'f'])
         self.assertEqual(cb.getCommand(['e', 'g', 'h']), ['e', 'g', 'h'])
         self.assertEqual(cb.getCommand(['e', 'g', 'i', 'j']),
                                        ['e', 'g', 'i', 'j'])
         self.assertResponse('e f', 'f')
-        self.assertResponse('e g', 'g')
+        self.assertResponse('e same', 'same')
         self.assertResponse('e g h', 'h')
         self.assertResponse('e g i j', 'j')
         self.assertHelp('help f')
+        self.assertHelp('help same')
         self.assertHelp('help e g h')
         self.assertHelp('help e g i j')
         self.assertRegexp('list e', 'f, g h, g i j, and same')
