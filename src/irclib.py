@@ -139,7 +139,7 @@ class IrcCallback(IrcCommandDispatcher):
 # later point) reorder messages based on priority or penalty calculations.
 ###
 _high = frozenset(['MODE', 'KICK', 'PONG', 'NICK', 'PASS', 'CAPAB'])
-_low = frozenset(['PRIVMSG', 'PING', 'WHO', 'NOTICE'])
+_low = frozenset(['PRIVMSG', 'PING', 'WHO', 'NOTICE', 'JOIN'])
 class IrcMsgQueue(object):
     """Class for a queue of IrcMsgs.  Eventually, it should be smart.
 
@@ -153,7 +153,7 @@ class IrcMsgQueue(object):
     the 'high priority' ones before the normal ones before the 'low priority'
     ones.
     """
-    __slots__ = ('msgs', 'highpriority', 'normal', 'lowpriority')
+    __slots__ = ('msgs', 'highpriority', 'normal', 'lowpriority', 'lastJoin')
     def __init__(self, iterable=()):
         self.reset()
         for msg in iterable:
@@ -161,6 +161,7 @@ class IrcMsgQueue(object):
 
     def reset(self):
         """Clears the queue."""
+        self.lastJoin = 0
         self.highpriority = smallqueue()
         self.normal = smallqueue()
         self.lowpriority = smallqueue()
@@ -190,6 +191,14 @@ class IrcMsgQueue(object):
             msg = self.normal.dequeue()
         elif self.lowpriority:
             msg = self.lowpriority.dequeue()
+            if msg.command == 'JOIN':
+                limit = conf.supybot.protocols.irc.queuing.rateLimit.join()
+                now = time.time()
+                if self.lastJoin + limit <= now:
+                    self.lastJoin = now
+                else:
+                    self.lowpriority.enqueue(msg)
+                    msg = None
         return msg
 
     def __contains__(self, msg):

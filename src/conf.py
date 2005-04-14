@@ -942,6 +942,11 @@ registerGlobalValue(supybot.protocols.irc.queuing, 'duplicates',
     multiple times; most of the time it doesn't matter, unless you're doing
     certain kinds of plugin hacking."""))
 
+registerGroup(supybot.protocols.irc.queuing, 'rateLimit')
+registerGlobalValue(supybot.protocols.irc.queuing.rateLimit, 'join',
+    registry.Float(0, """Determines how many seconds must elapse between JOINs
+    sent to the server."""))
+
 ###
 # supybot.protocols.http
 ###
