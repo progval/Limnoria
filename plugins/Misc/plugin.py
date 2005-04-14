@@ -188,17 +188,6 @@ class Misc(callbacks.Plugin):
                              callbacks.formatCommand(command)))
     help = wrap(help, [many('something')])
 
-    def hostmask(self, irc, msg, args, nick):
-        """[<nick>]
-
-        Returns the hostmask of <nick>.  If <nick> isn't given, return the
-        hostmask of the person giving the command.
-        """
-        if not nick:
-            nick = msg.nick
-        irc.reply(irc.state.nickToHostmask(nick))
-    hostmask = wrap(hostmask, [additional('seenNick')])
-
     def version(self, irc, msg, args):
         """takes no arguments
 

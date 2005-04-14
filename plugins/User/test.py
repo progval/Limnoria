@@ -36,16 +36,22 @@ class UserTestCase(PluginTestCase):
     plugins = ('User',)
     prefix1 = 'somethingElse!user@host.tld'
     prefix2 = 'EvensomethingElse!user@host.tld'
-    def testHostmasks(self):
-        self.assertError('hostmasks')
+    def testHostmaskList(self):
+        self.assertError('hostmask list')
         original = self.prefix
         self.prefix = self.prefix1
         self.assertNotError('register foo bar')
         self.prefix = original
-        self.assertError('hostmasks foo')
-        self.assertNotError('addhostmask foo [hostmask] bar')
-        self.assertNotError('hostmasks foo')
-        self.assertNotRegexp('hostmasks foo', 'IrcSet')
+        self.assertError('hostmask list foo')
+        self.assertNotError('hostmask add foo [hostmask] bar')
+        self.assertNotError('hostmask add foo')
+        self.assertNotRegexp('hostmask add foo', 'IrcSet')
+
+    def testHostmask(self):
+        self.assertResponse('hostmask', self.prefix)
+        self.assertError('@hostmask asdf')
+        m = self.irc.takeMsg()
+        self.failIf(m is not None, m)
 
     def testRegisterUnregister(self):
         self.prefix = self.prefix1

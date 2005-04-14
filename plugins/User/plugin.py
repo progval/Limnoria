@@ -165,86 +165,6 @@ class User(callbacks.Plugin):
     changename = wrap(changename, ['private', 'otherUser', 'something',
                                    additional('something', '')])
 
-    def addhostmask(self, irc, msg, args, user, hostmask, password):
-        """[<name>] [<hostmask>] [<password>]
-
-        Adds the hostmask <hostmask> to the user specified by <name>.  The
-        <password> may only be required if the user is not recognized by
-        hostmask.  If you include the <password> parameter, this message must
-        be sent to the bot privately (not on a channel).  <password> is also
-        not required if an owner user is giving the command on behalf of some
-        other user.  If <hostmask> is not given, it defaults to your current
-        hostmask.  If <name> is not given, it defaults to your currently
-        identified name.
-        """
-        if not hostmask:
-            hostmask = msg.prefix
-        if not ircutils.isUserHostmask(hostmask):
-            irc.errorInvalid('hostmask', hostmask, 'Make sure your hostmask '
-                      'includes a nick, then an exclamation point (!), then '
-                      'a user, then an at symbol (@), then a host.  Feel '
-                      'free to use wildcards (* and ?, which work just like '
-                      'they do on the command line) in any of these parts.',
-                      Raise=True)
-        try:
-            otherId = ircdb.users.getUserId(hostmask)
-            if otherId != user.id:
-                irc.error('That hostmask is already registered.', Raise=True)
-        except KeyError:
-            pass
-        if not user.checkPassword(password) and \
-           not user.checkHostmask(msg.prefix):
-            try:
-                u = ircdb.users.getUser(msg.prefix)
-            except KeyError:
-                irc.error(conf.supybot.replies.incorrectAuthentication(),
-                          Raise=True)
-            if not u._checkCapability('owner'):
-                irc.error(conf.supybot.replies.incorrectAuthentication(),
-                          Raise=True)
-        try:
-            user.addHostmask(hostmask)
-        except ValueError, e:
-            irc.error(str(e), Raise=True)
-        try:
-            ircdb.users.setUser(user)
-        except ValueError, e:
-            irc.error(str(e), Raise=True)
-        irc.replySuccess()
-    addhostmask = wrap(addhostmask, [first('otherUser', 'user'),
-                                     optional('something'),
-                                     additional('something', '')])
-
-    def removehostmask(self, irc, msg, args, user, hostmask, password):
-        """<name> <hostmask> [<password>]
-
-        Removes the hostmask <hostmask> from the record of the user specified
-        by <name>.  If the hostmask given is 'all' then all hostmasks will be
-        removed.  The <password> may only be required if the user is not
-        recognized by his hostmask.  If you include the <password> parameter,
-        this message must be sent to the bot privately (not on a channel).
-        """
-        if not user.checkPassword(password) and \
-           not user.checkHostmask(msg.prefix):
-            u = ircdb.users.getUser(msg.prefix)
-            if not u._checkCapability('owner'):
-                irc.error(conf.supybot.replies.incorrectAuthentication())
-                return
-        try:
-            s = ''
-            if hostmask == 'all':
-                user.hostmasks.clear()
-                s = 'All hostmasks removed.'
-            else:
-                user.removeHostmask(hostmask)
-        except KeyError:
-            irc.error('There was no such hostmask.')
-            return
-        ircdb.users.setUser(user)
-        irc.replySuccess(s)
-    removehostmask = wrap(removehostmask, ['private', 'otherUser', 'something',
-                                           additional('something', '')])
-
     def setpassword(self, irc, msg, args, user, password,newpassword):
         """<name> <old password> <new password>
 
@@ -282,34 +202,130 @@ class User(callbacks.Plugin):
             irc.error('I don\'t know who that is.')
     username = wrap(username, [first('nick', 'hostmask')])
 
-    def hostmasks(self, irc, msg, args, name):
-        """[<name>]
+    class hostmask(callbacks.Commands):
+        def hostmask(self, irc, msg, args, nick):
+            """[<nick>]
 
-        Returns the hostmasks of the user specified by <name>; if <name> isn't
-        specified, returns the hostmasks of the user calling the command.
-        """
-        def getHostmasks(user):
-            hostmasks = map(repr, user.hostmasks)
-            hostmasks.sort()
-            return format('%L', hostmasks)
-        try:
-            user = ircdb.users.getUser(msg.prefix)
-            if name:
-                if name != user.name and \
-                   not ircdb.checkCapability(msg.prefix, 'owner'):
-                    irc.error('You may only retrieve your own hostmasks.',
-                              Raise=True)
+            Returns the hostmask of <nick>.  If <nick> isn't given, return the
+            hostmask of the person giving the command.
+            """
+            if not nick:
+                nick = msg.nick
+            irc.reply(irc.state.nickToHostmask(nick))
+        hostmask = wrap(hostmask, [additional('seenNick')])
+
+        def list(self, irc, msg, args, name):
+            """[<name>]
+
+            Returns the hostmasks of the user specified by <name>; if <name>
+            isn't specified, returns the hostmasks of the user calling the
+            command.
+            """
+            def getHostmasks(user):
+                hostmasks = map(repr, user.hostmasks)
+                hostmasks.sort()
+                return format('%L', hostmasks)
+            try:
+                user = ircdb.users.getUser(msg.prefix)
+                if name:
+                    if name != user.name and \
+                       not ircdb.checkCapability(msg.prefix, 'owner'):
+                        irc.error('You may only retrieve your own hostmasks.',
+                                  Raise=True)
+                    else:
+                        try:
+                            user = ircdb.users.getUser(name)
+                            irc.reply(getHostmasks(user))
+                        except KeyError:
+                            irc.errorNoUser()
                 else:
-                    try:
-                        user = ircdb.users.getUser(name)
-                        irc.reply(getHostmasks(user))
-                    except KeyError:
-                        irc.errorNoUser()
-            else:
-                irc.reply(getHostmasks(user))
-        except KeyError:
-            irc.errorNotRegistered()
-    hostmasks = wrap(hostmasks, ['private', additional('something')])
+                    irc.reply(getHostmasks(user))
+            except KeyError:
+                irc.errorNotRegistered()
+        list = wrap(list, ['private', additional('something')])
+
+        def add(self, irc, msg, args, user, hostmask, password):
+            """[<name>] [<hostmask>] [<password>]
+
+            Adds the hostmask <hostmask> to the user specified by <name>.  The
+            <password> may only be required if the user is not recognized by
+            hostmask.  If you include the <password> parameter, this message
+            must be sent to the bot privately (not on a channel).  <password>
+            is also not required if an owner user is giving the command on
+            behalf of some other user.  If <hostmask> is not given, it defaults
+            to your current hostmask.  If <name> is not given, it defaults to
+            your currently identified name.
+            """
+            if not hostmask:
+                hostmask = msg.prefix
+            if not ircutils.isUserHostmask(hostmask):
+                irc.errorInvalid('hostmask', hostmask,
+                                 'Make sure your hostmask includes a nick, '
+                                 'then an exclamation point (!), then a user, '
+                                 'then an at symbol (@), then a host.  Feel '
+                                 'free to use wildcards (* and ?, which work '
+                                 'just like they do on the command line) in '
+                                 'any of these parts.',
+                                 Raise=True)
+            try:
+                otherId = ircdb.users.getUserId(hostmask)
+                if otherId != user.id:
+                    irc.error('That hostmask is already registered.',
+                              Raise=True)
+            except KeyError:
+                pass
+            if not user.checkPassword(password) and \
+               not user.checkHostmask(msg.prefix):
+                try:
+                    u = ircdb.users.getUser(msg.prefix)
+                except KeyError:
+                    irc.error(conf.supybot.replies.incorrectAuthentication(),
+                              Raise=True)
+                if not u._checkCapability('owner'):
+                    irc.error(conf.supybot.replies.incorrectAuthentication(),
+                              Raise=True)
+            try:
+                user.addHostmask(hostmask)
+            except ValueError, e:
+                irc.error(str(e), Raise=True)
+            try:
+                ircdb.users.setUser(user)
+            except ValueError, e:
+                irc.error(str(e), Raise=True)
+            irc.replySuccess()
+        add = wrap(add, [first('otherUser', 'user'), optional('something'),
+                         additional('something', '')])
+
+        def remove(self, irc, msg, args, user, hostmask, password):
+            """<name> <hostmask> [<password>]
+
+            Removes the hostmask <hostmask> from the record of the user
+            specified by <name>.  If the hostmask given is 'all' then all
+            hostmasks will be removed.  The <password> may only be required if
+            the user is not recognized by his hostmask.  If you include the
+            <password> parameter, this message must be sent to the bot
+            privately (not on a channel).
+            """
+            if not user.checkPassword(password) and \
+               not user.checkHostmask(msg.prefix):
+                u = ircdb.users.getUser(msg.prefix)
+                if not u._checkCapability('owner'):
+                    irc.error(conf.supybot.replies.incorrectAuthentication())
+                    return
+            try:
+                s = ''
+                if hostmask == 'all':
+                    user.hostmasks.clear()
+                    s = 'All hostmasks removed.'
+                else:
+                    user.removeHostmask(hostmask)
+            except KeyError:
+                irc.error('There was no such hostmask.')
+                return
+            ircdb.users.setUser(user)
+            irc.replySuccess(s)
+        remove = wrap(remove, ['private', 'otherUser', 'something',
+                               additional('something', '')])
 
     def capabilities(self, irc, msg, args, user):
         """[<name>]
