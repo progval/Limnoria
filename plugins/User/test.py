@@ -97,7 +97,7 @@ class UserTestCase(PluginTestCase):
         self.assertNotError('register foo bar')
         password = ircdb.users.getUser(self.prefix).password
         self.assertNotEqual(password, 'bar')
-        self.assertNotError('setpassword foo bar baz')
+        self.assertNotError('set password foo bar baz')
         self.assertNotEqual(ircdb.users.getUser(self.prefix).password,password)
         self.assertNotEqual(ircdb.users.getUser(self.prefix).password, 'baz')
 

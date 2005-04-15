@@ -165,24 +165,47 @@ class User(callbacks.Plugin):
     changename = wrap(changename, ['private', 'otherUser', 'something',
                                    additional('something', '')])
 
-    def setpassword(self, irc, msg, args, user, password,newpassword):
-        """<name> <old password> <new password>
+    class set(callbacks.Commands):
+        def password(self, irc, msg, args, user, password, newpassword):
+            """<name> <old password> <new password>
 
-        Sets the new password for the user specified by <name> to
-        <new password>.  Obviously this message must be sent to the bot
-        privately (not in a channel). If the requesting user is an owner user
-        (and the user whose password is being changed isn't that same owner
-        user), then <old password> needn't be correct.
-        """
-        u = ircdb.users.getUser(msg.prefix)
-        if user.checkPassword(password) or \
-           (u._checkCapability('owner') and not u == user):
-            user.setPassword(newpassword)
-            ircdb.users.setUser(user)
-            irc.replySuccess()
-        else:
-            irc.error(conf.supybot.replies.incorrectAuthentication())
-    setpassword = wrap(setpassword, ['otherUser', 'something', 'something'])
+            Sets the new password for the user specified by <name> to <new
+            password>.  Obviously this message must be sent to the bot
+            privately (not in a channel). If the requesting user is an owner
+            user (and the user whose password is being changed isn't that same
+            owner user), then <old password> needn't be correct.
+            """
+            u = ircdb.users.getUser(msg.prefix)
+            if user.checkPassword(password) or \
+               (u._checkCapability('owner') and not u == user):
+                user.setPassword(newpassword)
+                ircdb.users.setUser(user)
+                irc.replySuccess()
+            else:
+                irc.error(conf.supybot.replies.incorrectAuthentication())
+        password = wrap(password, ['otherUser', 'something', 'something'])
+
+        def secure(self, irc, msg, args, user, password, value):
+            """<password> [<True|False>]
+
+            Sets the secure flag on the user of the person sending the message.
+            Requires that the person's hostmask be in the list of hostmasks for
+            that user in addition to the password being correct.  When the
+            secure flag is set, the user *must* identify before he can be
+            recognized.  If a specific True/False value is not given, it
+            inverts the current value.
+            """
+            if value is None:
+                value = not user.secure
+            if user.checkPassword(password) and \
+               user.checkHostmask(msg.prefix, useAuth=False):
+                user.secure = value
+                ircdb.users.setUser(user)
+                irc.reply('Secure flag set to %s' % value)
+            else:
+                irc.error(conf.supybot.replies.incorrectAuthentication())
+        secure = wrap(secure, ['private', 'user', 'something',
+                               additional('boolean')])
 
     def username(self, irc, msg, args, hostmask):
         """<hostmask|nick>
@@ -394,28 +417,6 @@ class User(callbacks.Plugin):
         except KeyError:
             irc.reply('I don\'t recognize you.')
     whoami = wrap(whoami)
-
-    def setsecure(self, irc, msg, args, user, password, value):
-        """<password> [<True|False>]
-
-        Sets the secure flag on the user of the person sending the message.
-        Requires that the person's hostmask be in the list of hostmasks for
-        that user in addition to the password being correct.  When the secure
-        flag is set, the user *must* identify before he can be recognized.
-        If a specific True/False value is not given, it inverts the current
-        value.
-        """
-        if value is None:
-            value = not user.secure
-        if user.checkPassword(password) and \
-           user.checkHostmask(msg.prefix, useAuth=False):
-            user.secure = value
-            ircdb.users.setUser(user)
-            irc.reply('Secure flag set to %s' % value)
-        else:
-            irc.error(conf.supybot.replies.incorrectAuthentication())
-    setsecure = wrap(setsecure, ['private', 'user', 'something',
-                                 additional('boolean')])
 
     def stats(self, irc, msg, args):
         """takes no arguments
