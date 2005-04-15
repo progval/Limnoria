@@ -195,12 +195,6 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertNotError('more %s' % nick.upper())
         self.assertNotError('more %s' % nick.lower())
 
-    def testHostmask(self):
-        self.assertResponse('hostmask', self.prefix)
-        self.assertError('@hostmask asdf')
-        m = self.irc.takeMsg()
-        self.failIf(m is not None, m)
-
     def testApropos(self):
         self.assertNotError('apropos f')
         self.assertRegexp('apropos asldkfjasdlkfja', 'No appropriate commands')
