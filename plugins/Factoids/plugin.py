@@ -64,7 +64,13 @@ def getFactoid(irc, msg, args, state):
     state.args.append(' '.join(key))
     state.args.append(' '.join(value))
 
+def getFactoidId(irc, msg, args, state):
+    Type = 'key id'
+    p = lambda i: i > 0
+    callConverter('int', irc, msg, args, state, Type, p)
+
 addConverter('factoid', getFactoid)
+addConverter('factoidId', getFactoidId)
 
 class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def makeDb(self, filename):
@@ -133,7 +139,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           LIMIT 20""", key)
         return [t[0] for t in cursor.fetchall()]
 
-    def _replyFactoids(self, irc, channel, key, factoids, number=0, error=True):
+    def _replyFactoids(self, irc, channel, key, factoids,
+                       number=0, error=True):
         if factoids:
             if number:
                 try:
@@ -157,7 +164,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         elif error:
             irc.error('No factoid matches that key.')
 
-    def tokenizedCommand(self, irc, msg, tokens):
+    def invalidCommand(self, irc, msg, tokens):
         if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
             if self.registryValue('replyWhenInvalidCommand', channel):
@@ -174,7 +181,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         """
         factoids = self._lookupFactoid(channel, key)
         self._replyFactoids(irc, channel, key, factoids, number)
-    whatis = wrap(whatis, ['channel', reverse(optional('int', 0)), 'text'])
+    whatis = wrap(whatis, ['channel',
+                           reverse(optional('factoidId', 0)), 'text'])
 
     def lock(self, irc, msg, args, channel, key):
         """[<channel>] <key>
@@ -233,7 +241,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             if number is not None:
                 results = cursor.fetchall()
                 try:
-                    (_, id) = results[number]
+                    (_, id) = results[number-1]
                 except IndexError:
                     irc.error('Invalid factoid number.')
                     return
@@ -247,7 +255,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           cursor.rowcount)
     forget = wrap(forget, ['channel',
                            reverse(optional(first(('literal', '*'),
-                                                  'id'))),
+                                                  'factoidId'))),
                            'text'])
 
     def random(self, irc, msg, args, channel):
@@ -328,7 +336,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         db.commit()
         irc.replySuccess()
     change = wrap(change, ['channel', 'something',
-                           ('id', 'key id'), 'regexpReplacer'])
+                           'factoidId', 'regexpReplacer'])
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args, channel, optlist, globs):

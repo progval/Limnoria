@@ -127,16 +127,18 @@ if sqlite:
             self.assertError('learn foo is bar')
             self.assertNotError('learn foo as bar')
             self.assertRegexp('whatis foo', 'bar')
+            orig = conf.supybot.plugins.Factoids.learnSeparator()
             try:
                 conf.supybot.plugins.Factoids.learnSeparator.setValue('is')
                 self.assertError('learn bar as baz')
                 self.assertNotError('learn bar is baz')
                 self.assertRegexp('whatis bar', 'baz')
             finally:
-                conf.supybot.plugins.Factoids.learnSeparator.setValue('as')
+                conf.supybot.plugins.Factoids.learnSeparator.setValue(orig)
 
         def testShowFactoidIfOnlyOneMatch(self):
             m1 = self.assertNotError('factoids search m/foo|bar/')
+            orig = conf.supybot.plugins.Factoids.showFactoidIfOnlyOneMatch()
             try:
                 conf.supybot.plugins.Factoids. \
                     showFactoidIfOnlyOneMatch.setValue(False)
@@ -144,11 +146,18 @@ if sqlite:
                 self.failUnless(m1.args[1].startswith(m2.args[1]))
             finally:
                 conf.supybot.plugins.Factoids. \
-                    showFactoidIfOnlyOneMatch.setValue(True)
+                    showFactoidIfOnlyOneMatch.setValue(orig)
 
         def testInvalidCommand(self):
-            self.assertNotError('learn foo as bar')
-            self.assertRegexp('foo', 'bar')
+            orig = conf.supybot.plugins.Factoids.replyWhenInvalidCommand()
+            try:
+                conf.supybot.plugins.Factoids.\
+                    replyWhenInvalidCommand.setValue(True)
+                self.assertNotError('learn foo as bar')
+                self.assertRegexp('foo', 'bar')
+            finally:
+                conf.supybot.plugins.Factoids.\
+                    replyWhenInvalidCommand.setValue(orig)
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
