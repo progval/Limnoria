@@ -172,17 +172,23 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 factoids = self._lookupFactoid(channel, key)
                 self._replyFactoids(irc, channel, key, factoids, error=False)
 
-    def whatis(self, irc, msg, args, channel, number, key):
+    def whatis(self, irc, msg, args, channel, words):
         """[<channel>] <key> [<number>]
 
         Looks up the value of <key> in the factoid database.  If given a
         number, will return only that exact factoid.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
+        number = None
+        if len(words) > 1:
+            if words[-1].isdigit():
+                number = int(words.pop())
+                if number <= 0:
+                    irc.errorInvalid('key id')
+        key = ' '.join(words)
         factoids = self._lookupFactoid(channel, key)
         self._replyFactoids(irc, channel, key, factoids, number)
-    whatis = wrap(whatis, ['channel',
-                           reverse(optional('factoidId', 0)), 'text'])
+    whatis = wrap(whatis, ['channel', many('something')])
 
     def lock(self, irc, msg, args, channel, key):
         """[<channel>] <key>
@@ -212,7 +218,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         irc.replySuccess()
     unlock = wrap(unlock, ['channel', 'text'])
 
-    def forget(self, irc, msg, args, channel, number, key):
+    def forget(self, irc, msg, args, channel, words):
         """[<channel>] <key> [<number>|*]
 
         Removes the factoid <key> from the factoids database.  If there are
@@ -221,8 +227,16 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         factoids associated with a key.  <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
-        if number == '*':
-            number = True
+        number = None
+        if len(words) > 1:
+            if words[-1].isdigit():
+                number = int(words.pop())
+                if number <= 0:
+                    irc.errorInvalid('key id')
+            elif words[-1] == '*':
+                words.pop()
+                number = True
+        key = ' '.join(words)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT keys.id, factoids.id
@@ -253,10 +267,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           'Please specify which one to remove, '
                           'or use * to designate all of them.' %
                           cursor.rowcount)
-    forget = wrap(forget, ['channel',
-                           reverse(optional(first(('literal', '*'),
-                                                  'factoidId'))),
-                           'text'])
+    forget = wrap(forget, ['channel', many('something')])
 
     def random(self, irc, msg, args, channel):
         """[<channel>]
