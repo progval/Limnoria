@@ -543,7 +543,7 @@ class ReplyIrcProxy(RichReplyMethods):
     def __ne__(self, other):
         return not (self == other)
     __rne__ = __ne__
-    
+
     def error(self, s, msg=None, **kwargs):
         if 'Raise' in kwargs and kwargs['Raise']:
             if s:
@@ -666,7 +666,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     return
         if threaded:
             name = 'Thread #%s (for invalidCommands)' % world.threadsSpawned
-            t = world.SupyThread(callInvalidCommands, name=name)
+            t = world.SupyThread(target=callInvalidCommands, name=name)
             t.setDaemon(True)
             t.start()
         else:
@@ -1051,7 +1051,7 @@ class Commands(BasePlugin):
 
     def canonicalName(self):
         return canonicalName(self.name())
-    
+
     def isDisabled(self, command):
         return self._disabled.disabled(command, self.name())
 
@@ -1097,7 +1097,7 @@ class Commands(BasePlugin):
         if self.isCommandMethod(first):
             return [first]
         return []
-    
+
     def getCommandMethod(self, command):
         """Gets the given command from this plugin."""
         #print '*** %s.getCommandMethod(%r)' % (self.name(), command)
@@ -1127,7 +1127,7 @@ class Commands(BasePlugin):
                     commands.append(' '.join([name, command]))
         commands.sort()
         return commands
-    
+
     def callCommand(self, command, irc, msg, *args, **kwargs):
         method = self.getCommandMethod(command)
         method(irc, msg, *args, **kwargs)
@@ -1190,7 +1190,7 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
 
     def canonicalName(self):
         return canonicalName(self.name())
-    
+
     def __call__(self, irc, msg):
         irc = SimpleProxy(irc, msg)
         if msg.command == 'PRIVMSG':
@@ -1300,13 +1300,13 @@ class PluginRegexp(Plugin):
             irc.error(str(e))
         except Exception, e:
             self.log.exception('Uncaught exception in _callRegexp:')
-            
+
     def invalidCommand(self, irc, msg, tokens):
         s = ' '.join(tokens)
         for (r, name) in self.addressedRes:
             for m in r.finditer(s):
                 self._callRegexp(name, irc, msg, m)
-                
+
     def doPrivmsg(self, irc, msg):
         if msg.isError:
             return
