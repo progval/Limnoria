@@ -544,7 +544,8 @@ class Owner(callbacks.Plugin):
         """
         try:
             if plugin:
-                command = '%s.%s' % (plugin.name(), command)
+                # This is unnecessary and was breaking things.
+                #command = '%s.%s' % (plugin.name(), command)
                 self._disabled.remove(command, plugin.name())
             else:
                 self._disabled.remove(command)
