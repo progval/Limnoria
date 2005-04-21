@@ -528,7 +528,7 @@ class Owner(callbacks.Plugin):
                 irc.error('%s is not a command in the %s plugin.' %
                           (command, plugin.name()))
                 return
-            self._disabled.add(command, plugin.name())
+            self._disabled.add(pluginCommand, plugin.name())
         else:
             conf.supybot.commands.disabled().add(command)
             self._disabled.add(command)
@@ -544,8 +544,7 @@ class Owner(callbacks.Plugin):
         """
         try:
             if plugin:
-                # This is unnecessary and was breaking things.
-                #command = '%s.%s' % (plugin.name(), command)
+                command = '%s.%s' % (plugin.name(), command)
                 self._disabled.remove(command, plugin.name())
             else:
                 self._disabled.remove(command)
