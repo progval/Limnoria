@@ -224,8 +224,6 @@ class Alias(callbacks.Plugin):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
         if '|' in name:
             raise AliasError, 'Names cannot contain pipes.'
-        if irc.getCallback(name):
-            raise AliasError, 'Names cannot coincide with names of plugins.'
         realName = callbacks.canonicalName(name)
         if name != realName:
             s = format('That name isn\'t valid.  Try %q instead.', realName)
