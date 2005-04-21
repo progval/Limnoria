@@ -1277,12 +1277,14 @@ class PluginRegexp(Plugin):
     flags = re.I
     regexps = ()
     addressedRegexps = ()
+    unaddressedRegexps = ()
     Proxy = SimpleProxy
     def __init__(self, irc):
         self.__parent = super(PluginRegexp, self)
         self.__parent.__init__(irc)
         self.res = []
         self.addressedRes = []
+        self.unaddressedRes = []
         for name in self.regexps:
             method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
@@ -1291,6 +1293,10 @@ class PluginRegexp(Plugin):
             method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
             self.addressedRes.append((r, name))
+        for name in self.unaddressedRegexps:
+            method = getattr(self, name)
+            r = re.compile(method.__doc__, self.flags)
+            self.unaddressedRes.append((r, name))
 
     def _callRegexp(self, name, irc, msg, m):
         method = getattr(self, name)
@@ -1311,6 +1317,10 @@ class PluginRegexp(Plugin):
         if msg.isError:
             return
         proxy = self.Proxy(irc, msg)
+        if not msg.addressed:
+            for (r, name) in self.unaddressedRes:
+                for m in r.finditer(msg.args[1]):
+                    self._callRegexp(name, proxy, msg, m)
         for (r, name) in self.res:
             for m in r.finditer(msg.args[1]):
                 self._callRegexp(name, proxy, msg, m)
