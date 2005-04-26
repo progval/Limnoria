@@ -147,12 +147,12 @@ class Plugin(callbacks.Plugin):
             contrib = 'has no contributors listed.'
             hasAuthor = False
             hasContribs = False
-            if getattr(module, '__author__', None):
+            if hasattr(module, '__author__'):
                 if module.__author__ != supybot.authors.unknown:
                     author = 'was written by %s' % \
                         utils.web.mungeEmail(str(module.__author__))
                     hasAuthor = True
-            if getattr(module, '__contributors__', None):
+            if hasattr(module, '__contributors__'):
                 contribs = sortAuthors()
                 if hasAuthor:
                     try:
@@ -175,7 +175,14 @@ class Plugin(callbacks.Plugin):
             for the requested plugin
             """
             isAuthor = False
-            authorInfo = getattr(supybot.authors, nick, None)
+            authorInfo = None
+            moduleContribs = module.__contributors__.keys()
+            lnick = nick.lower()
+            for contrib in moduleContribs:
+                if contrib.nick.lower() == lnick:
+                    authorInfo = contrib
+                    break
+            authorInfo = authorInfo or getattr(supybot.authors, nick, None)
             if not authorInfo:
                 return 'The nick specified (%s) is not a registered ' \
                        'contributor.' % nick
@@ -186,8 +193,7 @@ class Plugin(callbacks.Plugin):
                     return 'The %s plugin does not have \'%s\' listed as a ' \
                            'contributor.' % (cb.name(), nick)
                 contributions = module.__contributors__[authorInfo]
-            if getattr(module, '__author__', False) == authorInfo:
-                isAuthor = True
+            isAuthor = getattr(module, '__author__', False) == authorInfo
             (nonCommands, commands) = utils.iter.partition(lambda s: ' ' in s,
                                                            contributions)
             results = []

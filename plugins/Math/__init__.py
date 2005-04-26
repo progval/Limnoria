@@ -42,7 +42,7 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {supybot.Author('Keith Jones', 'kmj', ''): 'convert'}
+__contributors__ = {supybot.Author('Keith Jones', 'kmj', ''): ['convert']}
 
 import config
 import plugin

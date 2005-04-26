@@ -42,7 +42,7 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {supybot.authors.jamessan:'whois'}
+__contributors__ = {supybot.authors.jamessan: ['whois']}
 
 import config
 import plugin
