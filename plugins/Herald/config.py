@@ -44,6 +44,9 @@ conf.registerChannelValue(Herald, 'heralding',
     registry.Boolean(True, """Determines whether messages will be sent to the
     channel when a recognized user joins; basically enables or disables the
     plugin."""))
+conf.registerGlobalValue(Herald, 'requireCapability',
+    registry.String('', """Determines what capability (if any) is required to
+    add/change/remove the herald of another user."""))
 conf.registerChannelValue(Herald, 'throttle',
     registry.PositiveInteger(600, """Determines the minimum number of seconds
     between heralds."""))

@@ -30,7 +30,6 @@
 import os
 import time
 
-import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -178,6 +177,18 @@ class Herald(callbacks.Plugin):
             irc.error('I have no herald for %s.' % user.name)
     get = wrap(get, ['channel', first('otherUser', 'user')])
 
+    def _preCheck(self, irc, msg, user):
+        capability = self.registryValue('requireCapability')
+        if capability:
+            try:
+                u = ircdb.users.getUser(msg.prefix)
+            except KeyError:
+                irc.errorNotRegistered(Raise=True)
+            else:
+                if u != user:
+                    if not ircdb.checkCapability(msg.prefix, capability):
+                        irc.errorNoCapability(capability, Raise=True)
+
     # I chose not to make <user|nick> optional in this command because
     # if it's not a valid username (e.g., if the user tyops and misspells a
     # username), it may be nice not to clobber the user's herald.
@@ -188,6 +199,7 @@ class Herald(callbacks.Plugin):
         currently identified or recognized as) to <msg>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
+        self._preCheck(irc, msg, user)
         self.db[channel, user.id] = herald
         irc.replySuccess()
     add = wrap(add, ['channel', 'otherUser', 'text'])
@@ -201,6 +213,7 @@ class Herald(callbacks.Plugin):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        self._preCheck(irc, msg, user)
         try:
             del self.db[channel, user.id]
             irc.replySuccess()
@@ -216,6 +229,7 @@ class Herald(callbacks.Plugin):
         <user> is not given, defaults to the calling user. <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
+        self._preCheck(irc, msg, user)
         s = self.db[channel, user.id]
         newS = changer(s)
         self.db[channel, user.id] = newS
