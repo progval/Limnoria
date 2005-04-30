@@ -29,12 +29,32 @@
 
 import re
 
+from HTMLParser import HTMLParser
+
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+
+class Title(HTMLParser):
+    def __init__(self, *args, **kwargs):
+        self.inTitle = False
+        self.title = None
+        HTMLParser.__init__(self, *args, **kwargs)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'title':
+            self.inTitle = True
+
+    def handle_data(self, data):
+        if self.inTitle:
+            self.title = data
+
+    def handle_endtag(self, tag):
+        if tag == 'title':
+            self.inTitle = False
 
 class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
@@ -45,8 +65,7 @@ class Web(callbacks.PluginRegexp):
             super(Web, self).callCommand(command, irc, msg, *args, **kwargs)
         except utils.web.Error, e:
             irc.reply(str(e))
-            
-    _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
+
     def titleSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]+"
         channel = msg.args[0]
@@ -66,10 +85,11 @@ class Web(callbacks.PluginRegexp):
             except utils.web.Error, e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 return
-            m = self._titleRe.search(text)
-            if m is not None:
+            parser = Title()
+            parser.feed(text)
+            if parser.title is not None:
                 domain = utils.web.getDomain(url)
-                title = utils.web.htmlToText(m.group(1).strip())
+                title = utils.web.htmlToText(parser.title.strip())
                 s = format('Title: %s (at %s)', title, domain)
                 irc.reply(s, prefixName=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
@@ -137,9 +157,10 @@ class Web(callbacks.PluginRegexp):
         """
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size)
-        m = self._titleRe.search(text)
-        if m is not None:
-            irc.reply(utils.web.htmlToText(m.group(1).strip()))
+        parser = Title()
+        parser.feed(text)
+        if parser.title is not None:
+            irc.reply(utils.web.htmlToText(parser.title.strip()))
         else:
             irc.reply(format('That URL appears to have no HTML title '
                              'within the first %i bytes.', size))

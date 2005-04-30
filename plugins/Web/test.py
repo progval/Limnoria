@@ -29,7 +29,7 @@
 
 from supybot.test import *
 
-class WebTestCase(PluginTestCase):
+class WebTestCase(ChannelPluginTestCase):
     plugins = ('Web',)
     if network:
         def testHeaders(self):
@@ -68,9 +68,15 @@ class WebTestCase(PluginTestCase):
                                 'jupiter_dark_spot_031023.html',
                                 'Mystery Spot on Jupiter Baffles Astronomers')
             # Checks for @title not-working correctly
-            self.assertResponse('title '\
+            self.assertResponse('title '
                 'http://www.catb.org/~esr/jargon/html/F/foo.html',
                 'foo')
+            # Checks for only grabbing the real title tags instead of title
+            # tags inside, for example, script tags. Bug #1190350
+            self.assertNotRegexp('title '
+                'http://www.irinnews.org/report.asp?ReportID=45910&'
+                'SelectRegion=West_Africa&SelectCountry=CHAD',
+                r'document\.write\(')
 
         def testNetcraft(self):
             self.assertNotError('netcraft slashdot.org')
