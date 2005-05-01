@@ -134,7 +134,10 @@ class Todo(callbacks.Plugin):
         will return a list of task ids that that user has added to their todo
         list.
         """
-        u = ircdb.users.getUser(msg.prefix)
+        try:
+            u = ircdb.users.getUser(msg.prefix)
+        except KeyError:
+            u = None
         # List the active tasks for the given user
         if not taskid:
             try:
