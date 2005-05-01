@@ -134,6 +134,7 @@ class Todo(callbacks.Plugin):
         will return a list of task ids that that user has added to their todo
         list.
         """
+        u = ircdb.users.getUser(msg.prefix)
         # List the active tasks for the given user
         if not taskid:
             try:
@@ -147,7 +148,10 @@ class Todo(callbacks.Plugin):
                 irc.reply(format('%s for %s: %L',
                                  Todo, user.name, tasks))
             except dbi.NoRecordError:
-                irc.reply('That user has no todos.')
+                if u != user:
+                    irc.reply('That user has no tasks in their todo list.')
+                else:
+                    irc.reply('You have no tasks in your todo list.')
                 return
         # Reply with the user's task
         else:
