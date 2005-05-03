@@ -107,7 +107,7 @@ class Relay(callbacks.Plugin):
                 networkGroup = conf.supybot.networks.get(otherIrc.network)
                 otherIrc.queueMsg(networkGroup.channels.join(channel))
         irc.replySuccess()
-    join = wrap(join, ['channel'])
+    join = wrap(join, ['channel', 'admin'])
 
     def part(self, irc, msg, args, channel):
         """<channel>
@@ -121,7 +121,7 @@ class Relay(callbacks.Plugin):
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
         irc.replySuccess()
-    part = wrap(part, ['channel'])
+    part = wrap(part, ['channel', 'admin'])
 
     def nicks(self, irc, msg, args, channel):
         """[<channel>]
@@ -316,7 +316,7 @@ class Relay(callbacks.Plugin):
                 if s in normalized:
                     return True
         return False
-        
+
     def _punishRelayers(self, msg):
         assert self._checkRelayMsg(msg), 'Punishing without checking.'
         who = msg.prefix
@@ -336,7 +336,7 @@ class Relay(callbacks.Plugin):
                         kmsg = 'You seem to be relaying, punk.'
                         irc.sendMsg(ircmsgs.kick(channel, msg.nick, kmsg))
                 else:
-                    notPunishing(irc, 'not opped') 
+                    notPunishing(irc, 'not opped')
 
     def doPrivmsg(self, irc, msg):
         (channel, text) = msg.args
@@ -367,7 +367,7 @@ class Relay(callbacks.Plugin):
                 s = self._formatPrivmsg(msg.nick, network, msg)
                 m = self._msgmaker(channel, s)
                 self._sendToOthers(irc, m)
-            
+
     def _msgmaker(self, target, s):
         msg = dynamic.msg
         channel = dynamic.channel
@@ -376,7 +376,7 @@ class Relay(callbacks.Plugin):
             return ircmsgs.notice(target, s)
         else:
             return ircmsgs.privmsg(target, s)
-            
+
     def doJoin(self, irc, msg):
         irc = self._getRealIrc(irc)
         channel = msg.args[0]
@@ -463,7 +463,7 @@ class Relay(callbacks.Plugin):
                                 otherIrc.queueMsg(m)
                             else:
                                 self.queuedTopics.remove((otherIrc, newTopic))
-                            
+
                     except KeyError:
                         self.log.warning('Not on %s on %s, '
                                          'can\'t sync topics.',
