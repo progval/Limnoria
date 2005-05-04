@@ -40,6 +40,7 @@ plugins = [
     'Config',
     'Ctcp',
     'Dict',
+    'Factoids',
     'Filter',
     'Format',
     'Games',
@@ -52,6 +53,7 @@ plugins = [
     'Limiter',
     'Math',
     'Misc',
+    'MoobotFactoids',
     'Network',
     'NickCapture',
     'Nickometer',
@@ -119,7 +121,7 @@ except ImportError, e:
     sys.stderr.write(textwrap.fill(s))
     sys.stderr.write(os.linesep*2)
     sys.exit(-1)
-    
+
 srcFiles = glob.glob(os.path.join('src', '*.py'))
 pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
 
