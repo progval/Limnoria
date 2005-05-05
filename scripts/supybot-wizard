@@ -263,9 +263,9 @@ def main():
         conf.supybot.directories.plugins.setValue(pluginDirs)
     else:
         output("""Your bot needs to create some directories in order to store
-        the various log, config, and data files.""", default=os.curdir)
+        the various log, config, and data files.""")
         basedir = something("""Where would you like to create these
-                            directories?""")
+                            directories?""", default=os.curdir)
         # conf.supybot.directories.log
         (logDir, basedir) = getDirectoryName('logs', prompt=False)
         conf.supybot.directories.log.setValue(logDir)
