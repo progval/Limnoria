@@ -69,7 +69,8 @@ def getPlugins(pluginDirs):
             continue
     plugins = sets.Set([])
     for filename in filenames:
-        if filename.endswith('.py') and filename[0].isupper():
+        if (filename.endswith('.py') or os.path.isdir(filename)) \
+           and filename[0].isupper():
             plugins.add(os.path.splitext(filename)[0])
     plugins.discard('Owner')
     plugins = list(plugins)
