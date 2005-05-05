@@ -1,3 +1,87 @@
+Version 0.83.0rc1
+
+There have been some fairly significant changes since our last release.
+
+First, plugins are now a directory of files rather than a single file.
+This makes it much easier for an individual plugin to supply any
+3rd-party modules it may depend on and resolves some bugs we had with
+reloading plugins.  supybot-plugin-create (nee supybot-newplugin) has
+been updated to reflect this.  A side effect of using a directory-based
+plugin is that @load/@reload are now case-sensitive.  "@load foo" is not
+the same as "@load Foo".
+
+As part of the conversion to the new plugin format, some plugins were
+broken up into more focused plugins.  Also, not all of the plugins that
+we used to ship are part of this release.  Some we moved to the
+supybot-plugins package and some others (which would be candidates for
+supybot-plugins) have yet to be converted to the new format.
+
+Second, we've updated the scripts that ship with Supybot.  As noted in
+the previous section, supybot-newplugin is now named
+supybot-plugin-create.  We've also added the following scripts:
+
+supybot-botchk - Handy script for starting the bot and keeping it
+                 running.  Ideal for having cron automatically start the
+                 bot.
+supybot-plugin-doc - Generates documentation for the specified
+                     plugin(s).  Currently, the documentation is
+                     generated using Structured TeXt so that it can
+                     easily be uploaded to our website.
+supybot-plugin-package - The beginning of a script to make a plugin
+                         package which can be uploaded to our website
+                         for general consumption.
+supybot-test - Runs a plugin's test suite.
+
+Third, we've broken supybot.utils into focused sub-modules.  There's no
+longer a supybot.fix module and we now have the following modules:
+
+supybot.utils.file - utilities for dealing with files (e.g. the old
+                     supybot.utils.transactionalFile is now
+                     supybot.utils.file.AtomicFile)
+supybot.utils.iter - utilities for dealing with iterables (all, any,
+                     partition, groupBy, choice, etc)
+supybot.utils.gen - general purpose utilities which are imported into
+                    the supybot.utils namespace
+supybot.utils.net - utilities for dealing with the network
+supybot.utils.python - utilities for dealing with Python
+supybot.utils.seq - utilities for dealing with sequences
+supybot.utils.str - utilities for dealing with strings (including our
+                    new format() function)
+supybot.utils.structures - general purpose structures used in Supybot
+supybot.utils.web - utilities for dealing with the web (used to be
+                    supybot.webutils)
+
+Fourth, we've added source-nested plugins (using the class
+callbacks.Commands).  This allows you to group similar commands
+together.  Some examples are:
+
+Channel.{ban add,ban list,ban remove}
+User.{hostmask add,hostmask list,hostmask remove}
+
+Fifth, we've removed the privmsgs module.  All of the functionality
+that was offered in that module is now available by using commands.wrap.
+Use of this is documented at:
+http://supybot.com/documentation/help/tutorial/wrap
+
+Sixth, we've renamed some plugin-related API changes.  Some classes had
+their names changed.  The old names are still available for
+backwards-compatibility.
+
+callbacks.Privmsg -> callbacks.Plugin
+callbacks.PrivmsgCommandAndRegexp -> callbacks.PluginRegexp
+callbacks.IrcObjectProxy -> callbacks.NestedCommandsIrcProxy
+
+callbacks.PrivmsgRegexp was removed since its functionality is covered
+by setting using PluginRegexp.
+
+Also, the prototype for a plugin's __init__ method changed:
+
+def __init__(self): -> def __init__(self, irc):
+
+Remember to pass the irc object on when you call the parent class's
+__init__ method.
+
+
 Version 0.80.0
 
 We *finally* hit 0.80.0!  This release is completely compatible with
