@@ -61,17 +61,17 @@ import supybot.questions as questions
 from supybot.questions import output, yn, anything, something, expect, getpass
 
 def getPlugins(pluginDirs):
-    filenames = []
+    plugins = set([])
+    join = os.path.join
     for pluginDir in pluginDirs:
         try:
-            filenames.extend(os.listdir(pluginDir))
+            for filename in os.listdir(pluginDir):
+                fname = join(pluginDir, filename)
+                if (filename.endswith('.py') or os.path.isdir(fname)) \
+                   and filename[0].isupper():
+                    plugins.add(os.path.splitext(filename)[0])
         except OSError:
             continue
-    plugins = sets.Set([])
-    for filename in filenames:
-        if (filename.endswith('.py') or os.path.isdir(filename)) \
-           and filename[0].isupper():
-            plugins.add(os.path.splitext(filename)[0])
     plugins.discard('Owner')
     plugins = list(plugins)
     plugins.sort()
