@@ -661,3 +661,5 @@ if __name__ == '__main__':
         output("""Well, it looks like you canceled out of the wizard before
         it was done.  Unfortunately, I didn't get to write anything to file.
         Please run the wizard again to completion.""")
+
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
