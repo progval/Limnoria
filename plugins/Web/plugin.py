@@ -86,7 +86,11 @@ class Web(callbacks.PluginRegexp):
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 return
             parser = Title()
-            parser.feed(text)
+            try:
+                parser.feed(text)
+            except HTMLParserError:
+                self.log.debug('Unable to parse %u', url)
+                return
             if parser.title is not None:
                 domain = utils.web.getDomain(url)
                 title = utils.web.htmlToText(parser.title.strip())
@@ -158,7 +162,11 @@ class Web(callbacks.PluginRegexp):
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size)
         parser = Title()
-        parser.feed(text)
+        try:
+            parser.feed(text)
+        except HTMLParserError:
+            irc.reply(format('That URL appears to have no HTML title within '
+                             'the first %i bytes.', size))
         if parser.title is not None:
             irc.reply(utils.web.htmlToText(parser.title.strip()))
         else:
