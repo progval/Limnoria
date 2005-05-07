@@ -28,8 +28,7 @@
 ###
 
 import re
-
-from HTMLParser import HTMLParser
+import HTMLParser
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -38,11 +37,11 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class Title(HTMLParser):
+class Title(HTMLParser.HTMLParser):
     def __init__(self, *args, **kwargs):
         self.inTitle = False
         self.title = None
-        HTMLParser.__init__(self, *args, **kwargs)
+        HTMLParser.HTMLParser.__init__(self, *args, **kwargs)
 
     def handle_starttag(self, tag, attrs):
         if tag == 'title':
@@ -88,7 +87,7 @@ class Web(callbacks.PluginRegexp):
             parser = Title()
             try:
                 parser.feed(text)
-            except HTMLParserError:
+            except HTMLParser.HTMLParseError:
                 self.log.debug('Unable to parse %u', url)
                 return
             if parser.title is not None:
@@ -164,9 +163,10 @@ class Web(callbacks.PluginRegexp):
         parser = Title()
         try:
             parser.feed(text)
-        except HTMLParserError:
+        except HTMLParser.HTMLParseError:
             irc.reply(format('That URL appears to have no HTML title within '
                              'the first %i bytes.', size))
+            return
         if parser.title is not None:
             irc.reply(utils.web.htmlToText(parser.title.strip()))
         else:
