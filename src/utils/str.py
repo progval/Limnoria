@@ -308,6 +308,19 @@ def nItems(n, item, between=None):
         else:
             return format('%s %s %s', n, between, item)
 
+def nth(i):
+    i = int(i)
+    if i % 100 in (11,12,13):
+        return 'th'
+    test = i % 10
+    if test == 1:
+        return 'st'
+    if test == 2:
+        return 'nd'
+    if test == 3:
+        return 'rd'
+    return 'th'
+
 def be(i):
     """Returns the form of the verb 'to be' based on the number i."""
     if i == 1:
