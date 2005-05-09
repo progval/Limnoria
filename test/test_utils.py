@@ -370,6 +370,12 @@ class StrTest(SupyTestCase):
         self.assertEqual(nItems(2, 'tool', 'crazy'), '2 crazy tools')
         self.assertEqual(nItems(2, 'tool'), '2 tools')
 
+    def testOrdinal(self):
+        ordinal = utils.str.ordinal
+        self.assertEqual(ordinal(3), '3rd')
+        self.assertEqual(ordinal('3'), '3rd')
+        self.assertRaises(ValueError, ordinal, 'a')
+
     def testEllipsisify(self):
         f = utils.str.ellipsisify
         self.assertEqual(f('x'*30, 30), 'x'*30)

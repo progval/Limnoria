@@ -308,18 +308,23 @@ def nItems(n, item, between=None):
         else:
             return format('%s %s %s', n, between, item)
 
-def nth(i):
+def ordinal(i):
+    """Returns i + the ordinal indicator for the number.
+
+    Example: ordinal(3) => '3rd'
+    """
     i = int(i)
     if i % 100 in (11,12,13):
-        return 'th'
+        return '%sth' % i
+    ord = 'th'
     test = i % 10
     if test == 1:
-        return 'st'
-    if test == 2:
-        return 'nd'
-    if test == 3:
-        return 'rd'
-    return 'th'
+        ord = 'st'
+    elif test == 2:
+        ord = 'nd'
+    elif test == 3:
+        ord = 'rd'
+    return '%s%s' % (i, ord)
 
 def be(i):
     """Returns the form of the verb 'to be' based on the number i."""
