@@ -136,8 +136,9 @@ class Misc(callbacks.Plugin):
                                  'This probably means that it has some '
                                  'configuration variables that can be '
                                  'changed in order to modify its behavior.  '
-                                 'Try "config list %s" to see what '
-                                 'configuration variables it has.', cb.name()))
+                                 'Try "config list supybot.plugins.%s" to see '
+                                 'what configuration variables it has.',
+                                 cb.name()))
     list = wrap(list, [getopts({'private':''}), additional('plugin')])
 
     def apropos(self, irc, msg, args, s):
