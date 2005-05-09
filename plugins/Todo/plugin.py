@@ -35,6 +35,7 @@ import operator
 
 import supybot.dbi as dbi
 import supybot.conf as conf
+import supybot.ircdb as ircdb
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
