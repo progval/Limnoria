@@ -52,8 +52,9 @@
 	channel topic, removing topics at the beginning as necessary to
 	squeeze the new topic in.
 
-	* Added Seen.any, which behaves like Seen.{seen,last,user} except it
-	reports the last activity of any type (not just chat).
+	* Added Seen.any, which reports the last time anything was said
+	by anyone, rather tahn just the last time a specific user said
+	something.
 
 	* Added Web.fetch, which replies with the text of the given URL.
 	This might be useful in combination with Utilities.re command,
