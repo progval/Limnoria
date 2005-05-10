@@ -30,9 +30,8 @@
 	channel topic, removing topics at the beginning as necessary to
 	squeeze the new topic in.
 
-	* Added Seen.any, which reports the last time anything was said
-	by anyone, rather tahn just the last time a specific user said
-	something.
+	* Added Seen.any, which behaves like Seen.{seen,last,user} except it
+	reports the last activity of any type (not just chat).
 
 	* Added Web.fetch, which replies with the text of the given URL.
 	This might be useful in combination with Utilities.re command,
@@ -93,7 +92,7 @@
 	* Fixed Owner.enable so that commands can actually be re-enabled.
 
 	* Fixed Bug #1190350, incorrect extraction of a website's title.
-	
+
 	* Added various functions to supybot.utils.file (touch, writeLine,
 	readLines, chunks).
 
