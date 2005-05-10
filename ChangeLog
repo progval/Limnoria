@@ -2,55 +2,63 @@
 
 	* Version 0.83.0rc1!
 
-	* Added Web plugin.
-
-	* Added Reply plugin.
-
-	* Added Games plugin.
-
-	* Added String plugin.
-
-	* Added supybot-botchk script.
-
-	* Added Topic.fit, which removes leading topics (if needed) to make
-	room for the new topic.
-
-	* Added netsplit throttling to Herald.
-
-	* Added SSL server support for the Twisted driver.
-
-	* Added Seen.any, which reports the last time anything happened with a
-	user instead of just the last time they said something.
-
-	* Added conf.supybot.plugins.ShrinkUrl.bold, which specifies whether
-	the plugin should use bold in its responses.
-
-	* Added Web.fetch, which replies with the text of the given URL.
-
-	* Added Note.next to retrieve the next unread note (patch from Sune
-	Foldager).
-
-	* Added supybot-botchk script, useful for starting Supybot and keeping
-	it running.
+	* Added supybot-botchk script.  This script can be run from a
+	cron job to make sure your Supybot restarts when the computer it
+	runs on is rebooted, and can make sure the bot restarts if it
+	ever crashes (which it shouldn't).  It also allows restarting the
+	bot without shelling out to the box it runs on; if you quit the
+	bot, it'll automatically restart.
 
 	* Added supybot-plugin-doc script, which generates documentation for a
 	plugin.
 
-	* Added various functions to supybot.utils.file (touch, writeLine,
-	readLines, chunks).
+	* Added SSL server support for the Twisted driver.
+
+	* Added Web plugin, which contains most of the commands that were
+	in the (formerly included) Http plugin.
+
+	* Added Reply plugin, which contains several commands that were
+	in the Misc and Utilities plugins.
+
+	* Added Games plugin, which contains several commands that were
+	in the (formerly included) Fun plugin.
+
+	* Added String plugin, which contains several commands that were
+	also in the formerly included Fun plugin.
+
+	* Added Topic.fit, which adds a new topic to the end of the
+	channel topic, removing topics at the beginning as necessary to
+	squeeze the new topic in.
+
+	* Added Seen.any, which reports the last time anything was said
+	by anyone, rather tahn just the last time a specific user said
+	something.
+
+	* Added Web.fetch, which replies with the text of the given URL.
+	This might be useful in combination with Utilities.re command,
+	for pseudo-parsing URLs within aliases.
+
+	* Added Note.next to retrieve the next unread note (patch from Sune
+	Foldager.  Come back, Sune!).
+
+	* Updated User.capabilities always to respond in private (for
+	owner users) and to prevent non-owner-users from retrieving other
+	user's capabilities.
+
+	* Updated Relay.{join,part} so they require the admin capability.
+
+	* Updated Plugin.contributors to pull author/contributor information
+	from the plugin in addition to the authors already hard-coded in
+	Supybot.
 
 	* Added conf.supybot.protocols.irc.queuing.rateLimit.join to throttle
 	how fast Supybot joins channels.
 
-	* Added unaddressedRegexps to callbacks.PluginRegexp as a complement
-	to addressedRegexps.
-
 	* Added supybot.plugins.Herald.requireCapability, which specifies the
 	capability a user needs to affect another user's herald.
 
-	* Changed the order of the arguments to utils.str.nItems.
-
-	* Changed Todo's db format to a single flatfile db per user.
+	* Added conf.supybot.plugins.ShrinkUrl.bold, which specifies whether
+	the plugin should use bold in its responses.
 
 	* Renamed conf.supybot.plugins.Herald.throttleTime to
 	conf.supybot.plugins.Herald.throttle.
@@ -65,19 +73,12 @@
 	* Renamed conf.supybot.protocols.irc.queueDuplicateMessages to
 	conf.supybot.protocols.irc.queuing.duplicates.
 
-	* Removed the extra argument to utils.str.pluralize which specified
-	whether or not to pluralize the string.
-
-	* Updated User.capabilities to always respond in private and prevent
-	people from retrieving other user's capabilities.
-
 	* Updated Alias.add so that alias names can coincide with plugin names.
 
-	* Updated Plugin.contributors to pull author/contributor information
-	from the plugin in addition to the authors already hard-coded in
-	Supybot.
+	* Added netsplit throttling to Herald.  Now if only we could do
+	that to Relay...
 
-	* Updated Relay.{join,part} so the require the admin capability.
+	* Changed Todo's db format to a single flatfile db per user.
 
 	* Fixed a bug where the nickInChannel converter would add the channel
 	to the args list.
@@ -92,6 +93,19 @@
 	* Fixed Owner.enable so that commands can actually be re-enabled.
 
 	* Fixed Bug #1190350, incorrect extraction of a website's title.
+	
+	* Added various functions to supybot.utils.file (touch, writeLine,
+	readLines, chunks).
+
+	* Renamed the 'regexps' attribute in callbacks.PluginRegexp
+	(formerly callbacks.PrivmsgCommandAndRegexp) to unaddressedRegexps
+	to callbacks.PluginRegexp so as to complement addressedRegexps.
+
+	* Removed the extra argument to utils.str.pluralize which specified
+	whether or not to pluralize the string.
+
+	* Changed the order of the arguments to utils.str.nItems.
+
 
 2005-01-16 James Vega <jamessan@supybot.com>
 
