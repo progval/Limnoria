@@ -71,8 +71,8 @@ class Plugin(callbacks.Plugin):
         """
         (maxL, cbs) = irc.findCallbacksForArgs(command)
         L = []
-        for cb in cbs:
-            if maxL == command:
+        if maxL == command:
+            for cb in cbs:
                 L.append(cb.name())
         command = callbacks.formatCommand(command)
         if L:
