@@ -56,7 +56,8 @@ class AliasTestCase(ChannelPluginTestCase):
         self.assertError('alias add foo "[bar] baz"')
 
     def testDoesNotOverwriteCommands(self):
-        self.assertError('alias add alias "echo foo bar baz"')
+        # We don't have dispatcher commands anymore
+        #self.assertError('alias add alias "echo foo bar baz"')
         self.assertError('alias add add "echo foo bar baz"')
         self.assertError('alias add remove "echo foo bar baz"')
         self.assertError('alias add lock "echo foo bar baz"')
