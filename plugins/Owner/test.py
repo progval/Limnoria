@@ -39,7 +39,7 @@ class OwnerTestCase(PluginTestCase):
         self.assertHelp('help log')
 
     def testSrcAmbiguity(self):
-        self.assertError('addcapability foo bar')
+        self.assertError('capability add foo bar')
 
     def testIrcquote(self):
         self.assertResponse('ircquote PRIVMSG %s :foo' % self.irc.nick, 'foo')
@@ -84,14 +84,14 @@ class OwnerTestCase(PluginTestCase):
     def testRename(self):
         self.assertError('rename Admin ignore IGNORE')
         self.assertError('rename Admin ignore ig-nore')
-        self.assertNotError('rename Admin removecapability rmcap')
-        self.assertNotRegexp('list Admin', 'removecapability')
+        self.assertNotError('rename Admin "capability remove" rmcap')
+        self.assertNotRegexp('list Admin', 'capability remove')
         self.assertRegexp('list Admin', 'rmcap')
         self.assertNotError('reload Admin')
-        self.assertNotRegexp('list Admin', 'removecapability')
+        self.assertNotRegexp('list Admin', 'capability remove')
         self.assertRegexp('list Admin', 'rmcap')
         self.assertNotError('unrename Admin')
-        self.assertRegexp('list Admin', 'removecapability')
+        self.assertRegexp('list Admin', 'capability remove')
         self.assertNotRegexp('list Admin', 'rmcap')
 
     def testDefaultPluginErrorsWhenCommandNotInPlugin(self):
