@@ -37,7 +37,7 @@ class NoteTestCase(PluginTestCase):
         # setup a user
         self.prefix = 'foo!bar@baz'
         self.assertNotError('register inkedmn bar')
-        self.assertNotError('addhostmask inkedmn test2!bar@baz')
+        self.assertNotError('hostmask add inkedmn test2!bar@baz')
 
     def testSendnote(self):
         self.assertRegexp('note send inkedmn test', '#1')
