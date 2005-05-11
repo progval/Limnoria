@@ -705,7 +705,7 @@ class Channel(callbacks.Plugin):
                                      'called %s.', plugin.name(), command)
         elif command:
             # findCallbackForCommand
-            if irc.findCallbackForCommand(command):
+            if filter(None, irc.findCallbacksForArgs([command])):
                 s = '-%s' % command
             else:
                 failMsg = format('No plugin or command named %s could be '
@@ -743,7 +743,7 @@ class Channel(callbacks.Plugin):
                                      'called %s.', plugin.name(), command)
         elif command:
             # findCallbackForCommand
-            if irc.findCallbackForCommand(command):
+            if filter(None, irc.findCallbacksForArgs([command])):
                 s = '-%s' % command
             else:
                 failMsg = format('No plugin or command named %s could be '

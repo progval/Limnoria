@@ -67,7 +67,7 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertRegexp('channel capability list', 'baz')
         self.assertNotError('channel capability unset -foo baz')
         self.assertError('channel capability unset baz')
-        
+
     def testEnableDisable(self):
         self.assertNotRegexp('channel capability list', '-Channel')
         self.assertError('channel enable channel')
@@ -159,7 +159,8 @@ class ChannelTestCase(ChannelPluginTestCase):
 ##        self.assertBan('kban --user foobar', '*!user@*')
 ##        self.assertBan('kban --nick foobar', 'foobar!*@*')
 ##        self.assertBan('kban --nick --user foobar', 'foobar!user@*')
-##        self.assertBan('kban --nick --host foobar', 'foobar!*@host.domain.tld')
+##        self.assertBan('kban --nick --host foobar',
+##                       'foobar!*@host.domain.tld')
 ##        self.assertBan('kban --user --host foobar', '*!user@host.domain.tld')
 ##        self.assertBan('kban --nick --user --host foobar',
 ##                       'foobar!user@host.domain.tld')
