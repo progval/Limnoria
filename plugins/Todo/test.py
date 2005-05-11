@@ -44,7 +44,7 @@ class TodoTestCase(PluginTestCase):
     def testTodo(self):
         # Should not error, but no tasks yet.
         self.assertNotError('todo')
-        self.assertRegexp('todo', 'has no Todos')
+        self.assertRegexp('todo', 'You have no tasks')
         # Add a task
         self.assertNotError('todo add wash my car')
         self.assertRegexp('todo', '#1: wash my car')
