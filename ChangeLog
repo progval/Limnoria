@@ -1,3 +1,25 @@
+2005-05-12 James Vega <jamessan@supybot.com>
+
+	* Version 0.83.0rc2!
+
+	* Added News, Unix, and Insult plugins which were missing in the
+	previous RC.
+
+	* Updated Misc.list to show the full configuration variable name when
+	the plugin has no commands.
+
+	* Fixed an HtmlParseError exception in Web's title command and
+	titleSnarfer.
+
+	* Fixed an ImportError exception when calling Todo.todo with no
+	arguments.
+
+	* Fixed a bug where Channel.{enable,disable} would throw an exception
+	if only a command names was specified.
+
+	* Added utils.str.ordinal (patch from genjamin AT gmail DOT com).
+
+
 2005-05-02 James Vega <jamessan@supybot.com>
 
 	* Version 0.83.0rc1!
@@ -53,8 +75,8 @@
 	* Added conf.supybot.protocols.irc.queuing.rateLimit.join to throttle
 	how fast Supybot joins channels.
 
-	* Added supybot.plugins.Herald.requireCapability, which specifies the
-	capability a user needs to affect another user's herald.
+	* Added conf.supybot.plugins.Herald.requireCapability, which specifies
+	the capability a user needs to affect another user's herald.
 
 	* Added conf.supybot.plugins.ShrinkUrl.bold, which specifies whether
 	the plugin should use bold in its responses.
