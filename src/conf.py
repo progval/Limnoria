@@ -43,7 +43,7 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 ###
 # version: This should be pretty obvious.
 ###
-version = '0.83.0rc1+darcs'
+version = '0.83.0rc2'
 
 ###
 # *** The following variables are affected by command-line options.  They are
