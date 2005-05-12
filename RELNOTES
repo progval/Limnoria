@@ -1,6 +1,14 @@
+Version 0.83.0rc2
+
+This release candidate contains a few bug-fixes and some plugins we
+forgot in the last RC.  Otherwise, everything is compatible.
+
+
 Version 0.83.0rc1
 
 There have been some fairly significant changes since our last release.
+This means that you should uninstall your previous version before
+installing this version.
 
 First, plugins are now a directory of files rather than a single file.
 This makes it much easier for an individual plugin to supply any
