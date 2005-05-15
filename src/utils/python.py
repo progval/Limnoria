@@ -28,6 +28,7 @@
 ###
 
 import types
+import threading
 
 def changeFunctionName(f, name, doc=None):
     if doc is None:
@@ -61,4 +62,32 @@ class Acquire(object):
     def __getattr__(self, attr):
         return getattr(self.__parent, attr)
     
+
+class Synchronized(type):
+    def __new__(cls, name, bases, dict):
+        if '__synchronized__' in dict:
+            def synchronized(f):
+                def g(self, *args, **kwargs):
+                    self._Synchronized_rlock.acquire()
+                    try:
+                        f(self, *args, **kwargs)
+                    finally:
+                        self._Synchronized_rlock.release()
+                return changeFunctionName(g, f.func_name, f.__doc__)
+            for attr in dict['__synchronized__']:
+                dict[attr] = synchronized(dict[attr])
+            original__init__ = dict.get('__init__')
+            def __init__(self, *args, **kwargs):
+                if not hasattr(self, '_Synchronized_rlock'):
+                    self._Synchronized_rlock = threading.RLock()
+                if original__init__:
+                    original__init__(self, *args, **kwargs)
+                else:
+                    # newclass is defined below.
+                    super(newclass, self).__init__(*args, **kwargs)
+            dict['__init__'] = __init__
+        newclass = super(Synchronized, cls).__new__(cls, name, bases, dict)
+        return newclass
+                    
+                
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
