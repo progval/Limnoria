@@ -75,7 +75,12 @@ class Synchronized(type):
                         self._Synchronized_rlock.release()
                 return changeFunctionName(g, f.func_name, f.__doc__)
             for attr in dict['__synchronized__']:
-                dict[attr] = synchronized(dict[attr])
+                if attr in dict:
+                    dict[attr] = synchronized(dict[attr])
+                else:
+                    def f(self, *args, **kwargs):
+                        getattr(super(newclass, self), attr)(args, kwargs)
+                    dict[attr] = synchronized(changeFunctionName(f, attr))
             original__init__ = dict.get('__init__')
             def __init__(self, *args, **kwargs):
                 if not hasattr(self, '_Synchronized_rlock'):
