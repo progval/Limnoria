@@ -28,7 +28,9 @@
 ###
 
 def window(L, size):
-    """Returns a sliding 'window' through the list L of size size."""
+    """list * size -> window iterable
+
+    Returns a sliding 'window' through the list L of size size."""
     assert not isinstance(L, int), 'Argument order swapped: window(L, size)'
     if size < 1:
         raise ValueError, 'size <= 0 disallowed.'
