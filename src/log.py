@@ -331,18 +331,14 @@ def firewall(f, errorHandler=None):
 class MetaFirewall(type):
     def __new__(cls, name, bases, dict):
         firewalled = {}
-        for base in bases:
-            if hasattr(base, '__firewalled__'):
-                firewalled.update(base.__firewalled__)
         if '__firewalled__' in dict:
             firewalled.update(dict['__firewalled__'])
         for attr in firewalled:
-            if attr in dict:
-                try:
-                    errorHandler = firewalled[attr]
-                except:
-                    errorHandler = None
-                dict[attr] = firewall(dict[attr], errorHandler)
+            try:
+                errorHandler = firewalled[attr]
+            except:
+                errorHandler = None
+            dict[attr] = firewall(dict[attr], errorHandler)
         return super(MetaFirewall, cls).__new__(cls, name, bases, dict)
         #return type.__new__(cls, name, bases, dict)
 

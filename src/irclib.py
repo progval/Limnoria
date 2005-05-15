@@ -75,7 +75,9 @@ class IrcCallback(IrcCommandDispatcher):
                       '__lt__': lambda self: 0,
                       'inFilter': lambda self, irc, msg: msg,
                       'outFilter': lambda self, irc, msg: msg,
-                      'name': lambda self: self.__class__.__name__,}
+                      'name': lambda self: self.__class__.__name__,
+                      'callPrecedence': lambda self, irc: ([], []),
+                      }
 
     def __init__(self, *args, **kwargs):
         super(IrcCallback, self).__init__(*args, **kwargs)
