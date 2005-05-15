@@ -31,6 +31,7 @@ class Object(object):
     def __ne__(self, other):
         return not self == other
     
+
 class TupleSubclass(type):
     def __new__(cls, name, bases, dict):
         assert tuple in bases

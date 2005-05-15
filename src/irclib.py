@@ -72,7 +72,6 @@ class IrcCallback(IrcCommandDispatcher):
     __firewalled__ = {'die': None,
                       'reset': None,
                       '__call__': None,
-                      '__lt__': lambda self: 0,
                       'inFilter': lambda self, irc, msg: msg,
                       'outFilter': lambda self, irc, msg: msg,
                       'name': lambda self: self.__class__.__name__,
