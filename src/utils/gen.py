@@ -218,14 +218,6 @@ class IterableMap(object):
         return False
 
 
-def changeFunctionName(f, name, doc=None):
-    if doc is None:
-        doc = f.__doc__
-    newf = types.FunctionType(f.func_code, f.func_globals, name,
-                              f.func_defaults, f.func_closure)
-    newf.__doc__ = doc
-    return newf
-
 class InsensitivePreservingDict(UserDict.DictMixin, object):
     def key(self, s):
         """Override this if you wish."""

@@ -64,7 +64,7 @@ def thread(f):
             t.start()
         else:
             f(self, irc, msg, args, *L, **kwargs)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
+    return utils.python.changeFunctionName(newf, f.func_name, f.__doc__)
 
 class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):
@@ -132,7 +132,7 @@ def urlSnarfer(f):
             L = list(L)
             t = UrlSnarfThread(target=doSnarf, url=url)
             t.start()
-    newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
+    newf = utils.python.changeFunctionName(newf, f.func_name, f.__doc__)
     return newf
 
 
@@ -878,6 +878,7 @@ class Spec(object):
         return state
 
 def wrap(f, specList=[], name=None, **kw):
+    name = name or f.func_name
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
@@ -890,7 +891,7 @@ def wrap(f, specList=[], name=None, **kw):
             funcArgs = inspect.getargs(f.func_code)[0][len(self.commandArgs):]
             self.log.error('Extra args: %s', funcArgs)
             raise
-    return utils.changeFunctionName(newf, name or f.func_name, f.__doc__) 
+    return utils.python.changeFunctionName(newf, name, f.__doc__) 
 
 __all__ = [
     # Contexts.

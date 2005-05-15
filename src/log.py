@@ -325,7 +325,7 @@ def firewall(f, errorHandler=None):
                 except Exception, e:
                     logException(self, 'Uncaught exception in errorHandler')
 
-    m = utils.gen.changeFunctionName(m, f.func_name, f.__doc__)
+    m = utils.python.changeFunctionName(m, f.func_name, f.__doc__)
     return m
 
 class MetaFirewall(type):

@@ -27,6 +27,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import types
+
+def changeFunctionName(f, name, doc=None):
+    if doc is None:
+        doc = f.__doc__
+    newf = types.FunctionType(f.func_code, f.func_globals, name,
+                              f.func_defaults, f.func_closure)
+    newf.__doc__ = doc
+    return newf
+
 class Object(object):
     def __ne__(self, other):
         return not self == other

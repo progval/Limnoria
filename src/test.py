@@ -128,7 +128,7 @@ class PluginTestCase(SupyTestCase):
                         run = False
             if run:
                 originalRunTest()
-        runTest = utils.changeFunctionName(runTest, methodName)
+        runTest = utils.python.changeFunctionName(runTest, methodName)
         setattr(self.__class__, methodName, runTest)
         SupyTestCase.__init__(self, methodName=methodName)
         self.originals = {}
