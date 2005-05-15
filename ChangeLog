@@ -52,9 +52,9 @@
 	channel topic, removing topics at the beginning as necessary to
 	squeeze the new topic in.
 
-	* Added Seen.any, which reports the last time anything was said
-	by anyone, rather tahn just the last time a specific user said
-	something.
+	* Added Seen.any, which reports the last time a person was seen
+	at all, rather than just the last time a person said something in
+	a PRIVMSG.
 
 	* Added Web.fetch, which replies with the text of the given URL.
 	This might be useful in combination with Utilities.re command,
