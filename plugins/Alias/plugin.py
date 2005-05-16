@@ -159,7 +159,7 @@ def makeNewAlias(name, alias):
         self.Proxy(irc, msg, tokens)
     doc =format('<an alias, %n>\n\nAlias for %q.',
                 (biggestDollar, 'argument'), alias)
-    f = utils.changeFunctionName(f, name, doc)
+    f = utils.python.changeFunctionName(f, name, doc)
     return f
 
 class Alias(callbacks.Plugin):

@@ -262,7 +262,7 @@ class RSS(callbacks.Plugin):
         def f(self, irc, msg, args):
             args.insert(0, url)
             self.rss(irc, msg, args)
-        f = utils.changeFunctionName(f, name, docstring)
+        f = utils.python.changeFunctionName(f, name, docstring)
         f.url = url # Used by __call__.
         self.feedNames.add(name)
         setattr(self.__class__, name, f)

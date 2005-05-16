@@ -891,7 +891,7 @@ def wrap(f, specList=[], name=None, **kw):
             funcArgs = inspect.getargs(f.func_code)[0][len(self.commandArgs):]
             self.log.error('Extra args: %s', funcArgs)
             raise
-    return utils.python.changeFunctionName(newf, name, f.__doc__) 
+    return utils.python.changeFunctionName(newf, name, f.__doc__)
 
 __all__ = [
     # Contexts.
