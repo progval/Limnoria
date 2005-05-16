@@ -65,7 +65,13 @@ class Acquire(object):
 
 class Synchronized(type):
     def __new__(cls, name, bases, dict):
+        sync = set()
+        for base in bases:
+            if hasattr(base, '__synchronized__'):
+                sync.update(base.__synchronized__)
         if '__synchronized__' in dict:
+            sync.update(dict['__synchronized__'])
+        if sync:
             def synchronized(f):
                 def g(self, *args, **kwargs):
                     self._Synchronized_rlock.acquire()
@@ -74,13 +80,9 @@ class Synchronized(type):
                     finally:
                         self._Synchronized_rlock.release()
                 return changeFunctionName(g, f.func_name, f.__doc__)
-            for attr in dict['__synchronized__']:
+            for attr in sync:
                 if attr in dict:
                     dict[attr] = synchronized(dict[attr])
-                else:
-                    def f(self, *args, **kwargs):
-                        getattr(super(newclass, self), attr)(args, kwargs)
-                    dict[attr] = synchronized(changeFunctionName(f, attr))
             original__init__ = dict.get('__init__')
             def __init__(self, *args, **kwargs):
                 if not hasattr(self, '_Synchronized_rlock'):
