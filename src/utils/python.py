@@ -64,29 +64,32 @@ class Acquire(object):
     
 
 class Synchronized(type):
+    METHODS = '__synchronized__'
+    LOCK = '_Synchronized_rlock'
     def __new__(cls, name, bases, dict):
         sync = set()
         for base in bases:
-            if hasattr(base, '__synchronized__'):
-                sync.update(base.__synchronized__)
-        if '__synchronized__' in dict:
-            sync.update(dict['__synchronized__'])
+            if hasattr(base, Synchronized.METHODS):
+                sync.update(getattr(base, Synchronized.METHODS))
+        if Synchronized.METHODS in dict:
+            sync.update(dict[Synchronized.METHODS])
         if sync:
             def synchronized(f):
                 def g(self, *args, **kwargs):
-                    self._Synchronized_rlock.acquire()
+                    lock = getattr(self, Synchronized.LOCK)
+                    lock.acquire()
                     try:
                         f(self, *args, **kwargs)
                     finally:
-                        self._Synchronized_rlock.release()
+                        lock.release()
                 return changeFunctionName(g, f.func_name, f.__doc__)
             for attr in sync:
                 if attr in dict:
                     dict[attr] = synchronized(dict[attr])
             original__init__ = dict.get('__init__')
             def __init__(self, *args, **kwargs):
-                if not hasattr(self, '_Synchronized_rlock'):
-                    self._Synchronized_rlock = threading.RLock()
+                if not hasattr(self, Synchronized.LOCK):
+                    setattr(self, Synchronized.LOCK, threading.RLock())
                 if original__init__:
                     original__init__(self, *args, **kwargs)
                 else:
