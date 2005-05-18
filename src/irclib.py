@@ -723,11 +723,6 @@ class Irc(IrcCommandDispatcher):
             if world.testing:
                 self.state.addMsg(self, msg)
             log.debug('Outgoing message: %s', str(msg).rstrip('\r\n'))
-            if msg.command == 'JOIN':
-                channels = msg.args[0].split(',')
-                for channel in channels:
-                    # Let's make this more accurate.
-                    self.startedSync[channel] = time.time()
             return msg
         elif self.zombie:
             # We kill the driver here so it doesn't continue to try to
@@ -913,16 +908,12 @@ class Irc(IrcCommandDispatcher):
 
     def do315(self, msg):
         channel = msg.args[1]
-        popped = False
         if channel in self.startedSync:
             now = time.time()
             started = self.startedSync.pop(channel)
             elapsed = now - started
             log.info('Join to %s on %s synced in %.2f seconds.',
                      channel, self.network, elapsed)
-            popped = True
-        if popped and not self.startedSync:
-            log.info('All channels synced on %s.', self.network)
 
     def doError(self, msg):
         """Handles ERROR messages."""
