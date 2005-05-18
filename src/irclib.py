@@ -691,7 +691,6 @@ class Irc(IrcCommandDispatcher):
                 s = 'Ping sent at %s not replied to.' % \
                     log.timestamp(self.lastping)
                 log.warning(s)
-                # Let's notify the plugins that we're reconnecting.
                 self.feedMsg(ircmsgs.error(s))
                 self.driver.reconnect()
             elif not self.zombie:
@@ -703,7 +702,7 @@ class Irc(IrcCommandDispatcher):
             for callback in reversed(self.callbacks):
                 msg = callback.outFilter(self, msg)
                 if msg is None:
-                    log.debug('%s.outFilter returned None.' % callback.name())
+                    log.debug('%s.outFilter returned None.', callback.name())
                     return self.takeMsg()
                 world.debugFlush()
             if len(str(msg)) > 512:
@@ -785,7 +784,7 @@ class Irc(IrcCommandDispatcher):
             try:
                 m = callback.inFilter(self, msg)
                 if not m:
-                    log.debug('%s.inFilter returned None' % callback.name())
+                    log.debug('%s.inFilter returned None', callback.name())
                     return
                 msg = m
             except:
@@ -959,7 +958,7 @@ class Irc(IrcCommandDispatcher):
 
     def _reallyDie(self):
         """Makes the Irc object die.  Dead."""
-        log.info('Irc object for %s dying.' % self.network)
+        log.info('Irc object for %s dying.', self.network)
         # XXX This hasattr should be removed, I'm just putting it here because
         #     we're so close to a release.  After 0.80.0 we should remove this
         #     and fix whatever AttributeErrors arise in the drivers themselves.

@@ -92,18 +92,18 @@ class Ctcp(callbacks.PluginRegexp):
 
     def ctcpTime(self, irc, msg, match):
         "\x01TIME\x01"
-        self.log.info('Received CTCP TIME from %s' % msg.prefix)
+        self.log.info('Received CTCP TIME from %s', msg.prefix)
         self._reply(irc, msg, 'TIME %s' % time.ctime())
 
     def ctcpFinger(self, irc, msg, match):
         "\x01FINGER\x01"
-        self.log.info('Received CTCP FINGER from %s' % msg.prefix)
+        self.log.info('Received CTCP FINGER from %s', msg.prefix)
         self._reply(irc, msg,
                     'FINGER Supybot, the best Python IRC bot in existence!')
 
     def ctcpSource(self, irc, msg, match):
         "\x01SOURCE\x01"
-        self.log.info('Received CTCP SOURCE from %s' % msg.prefix)
+        self.log.info('Received CTCP SOURCE from %s', msg.prefix)
         self._reply(irc, msg,
                     'SOURCE http://www.sourceforge.net/projects/supybot/')
 

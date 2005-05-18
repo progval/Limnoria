@@ -221,7 +221,7 @@ class Owner(callbacks.Plugin):
                     # letter.
                     if name[0].isupper() and not irc.getCallback(name):
                         # This is debug because each log logs its beginning.
-                        self.log.debug('Loading %s.' % name)
+                        self.log.debug('Loading %s.', name)
                         try:
                             m = plugin.loadPluginModule(name,
                                                         ignoreDeprecation=True)
@@ -257,7 +257,7 @@ class Owner(callbacks.Plugin):
         if s:
             ignored = ircdb.checkIgnored(msg.prefix)
             if ignored:
-                self.log.info('Ignoring command from %s.' % msg.prefix)
+                self.log.info('Ignoring command from %s.', msg.prefix)
                 return
             try:
                 tokens = callbacks.tokenize(s, channel=msg.args[0])

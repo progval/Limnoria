@@ -139,8 +139,8 @@ def upkeep():
         #    registry.open(registryFilename)
     if not dying:
         log.debug('Regexp cache size: %s', len(sre._cache))
-        log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
-        log.debug('HostmaskPatternEqual cache size: %s' %
+        log.debug('Pattern cache size: %s', len(ircutils._patternCache))
+        log.debug('HostmaskPatternEqual cache size: %s',
                   len(ircutils._hostmaskPatternEqualCache))
         #timestamp = log.timestamp()
         if doFlush:

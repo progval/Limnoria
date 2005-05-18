@@ -74,7 +74,7 @@ def numberShifts(s):
 
 class Nickometer(callbacks.Plugin):
     def punish(self, damage, reason):
-        self.log.debug('%s lameness points awarded: %s' % (damage, reason))
+        self.log.debug('%s lameness points awarded: %s', damage, reason)
         return damage
 
     def nickometer(self, irc, msg, args, nick):
@@ -145,8 +145,8 @@ class Nickometer(callbacks.Plugin):
             nick=re.sub('^([^[\]]*)(\[)(.*)(\])([^[\]]*)$', '\1\3\5', nick, 1)
             if nick == nickInitial:
                 break
-            self.log.debug('Removed some matching brackets \'%s\' => \'%s\'' %
-                                                        (nickInitial, nick));
+            self.log.debug('Removed some matching brackets %r => %r',
+                           nickInitial, nick)
         # ... and punish for unmatched brackets
         unmatched = re.findall('[][(){}]', nick)
         if len(unmatched) > 0:
@@ -224,8 +224,7 @@ class Nickometer(callbacks.Plugin):
                   (originalNick, score_string))
 
         self.log.debug('Calculated lameness score for %s as %s '
-                       '(raw score was %s)' %
-                       (originalNick, score_string, score))
+                       '(raw score was %s)', originalNick, score_string, score)
     nickometer = wrap(nickometer, [additional('text')])
 
 Class = Nickometer

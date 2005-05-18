@@ -78,7 +78,7 @@ class UrlSnarfThread(world.SupyThread):
         try:
             super(UrlSnarfThread, self).run()
         except utils.web.Error, e:
-            log.debug('Exception in urlSnarfer: %s' % utils.exnToString(e))
+            log.debug('Exception in urlSnarfer: %s', utils.exnToString(e))
 
 class SnarfQueue(ircutils.FloodQueue):
     timeout = conf.supybot.snarfThrottle
@@ -365,7 +365,7 @@ def getChannelDb(irc, msg, args, state, **kwargs):
         channel = channelSpecific.link()
         if not conf.get(channelSpecific.link.allow, channel):
             log.warning('channelSpecific.link is globally set to %s, but '
-                        '%s disallows linking to its db.' % (channel, channel))
+                        '%s disallowed linking to its db.', channel, channel)
             raise
         else:
             channel = channelSpecific.getChannelLink(channel)
@@ -882,7 +882,7 @@ def wrap(f, specList=[], name=None, **kw):
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
-        self.log.debug('State before call: %s' % state)
+        self.log.debug('State before call: %s', state)
         try:
             f(self, irc, msg, args, *state.args, **state.kwargs)
         except TypeError:

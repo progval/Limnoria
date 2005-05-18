@@ -285,9 +285,9 @@ class Channel(callbacks.Plugin):
         capability = ircdb.makeChannelCapability(channel, 'op')
         def makeBanmask(bannedHostmask, options):
             (nick, user, host) = ircutils.splitHostmask(bannedHostmask)
-            self.log.debug('*** nick: %s' % nick)
-            self.log.debug('*** user: %s' % user)
-            self.log.debug('*** host: %s' % host)
+            self.log.debug('*** nick: %s', nick)
+            self.log.debug('*** user: %s', user)
+            self.log.debug('*** host: %s', host)
             bnick = '*'
             buser = '*'
             bhost = '*'

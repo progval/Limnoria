@@ -512,7 +512,7 @@ class MoobotFactoids(callbacks.Plugin):
 
     def _lock(self, irc, msg, channel, user, key, locking=True):
         #self.log.debug('in _lock')
-        #self.log.debug('id: %s' % id)
+        #self.log.debug('id: %s', id)
         id = user.id
         info = self.db.getFactinfo(channel, key)
         if not info:
@@ -527,8 +527,8 @@ class MoobotFactoids(callbacks.Plugin):
                irc.error(format('Factoid %q is not locked.', key))
                return
         # Can only lock/unlock own factoids unless you're an admin
-        #self.log.debug('admin?: %s' % ircdb.checkCapability(id, 'admin'))
-        #self.log.debug('created_by: %s' % created_by)
+        #self.log.debug('admin?: %s', ircdb.checkCapability(id, 'admin'))
+        #self.log.debug('created_by: %s', created_by)
         if not (ircdb.checkCapability(id, 'admin') or created_by == id):
             if locking:
                 s = 'lock'
