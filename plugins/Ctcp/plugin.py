@@ -136,9 +136,7 @@ class Ctcp(callbacks.PluginRegexp):
                 L = []
                 for (reply, nicks) in self.versions.iteritems():
                     if nicks:
-                        L.append('%s responded with %s' %
-                                 (utils.commaAndify(nicks),
-                                  utils.quoted(reply)))
+                        L.append(format('%L responded with %q', nicks, reply))
                     else:
                         L.append(reply)
                 irc.reply(utils.commaAndify(L))
