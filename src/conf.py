@@ -499,9 +499,9 @@ registerChannelValue(supybot.replies, 'notRegistered',
     registry.NormalizedString("""You must be registered to use this command.
     If you are already registered, you must either identify (using the identify
     command) or add a hostmask matching your current hostmask (using the
-    addhostmask command).""", """Determines what error message the bot replies
-    with when someone tries to do something that requires them to be registered
-    but they're not currently recognized."""))
+    "hostmask add" command).""", """Determines what error message the bot
+    replies with when someone tries to do something that requires them to be
+    registered but they're not currently recognized."""))
 
 registerChannelValue(supybot.replies, 'noCapability',
     registry.NormalizedString("""You don't have the %s capability.  If you
