@@ -42,6 +42,7 @@ import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.irclib as irclib
 import supybot.plugin as plugin
+import supybot.plugins as plugins
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
@@ -229,8 +230,11 @@ class Owner(callbacks.Plugin):
                         except callbacks.Error, e:
                             # This is just an error message.
                             log.warning(str(e))
-                        except ImportError, e:
-                            log.warning('Failed to load %s: %s.', name, e)
+                        except (plugins.NoSuitableDatabase, ImportError), e:
+                            s = 'Failed to load %s: %s' % (name, e)
+                            if not s.endswith('.'):
+                                s += '.'
+                            log.warning(s)
                         except Exception, e:
                             log.exception('Failed to load %s:', name)
                 else:
