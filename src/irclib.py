@@ -893,14 +893,16 @@ class Irc(IrcCommandDispatcher):
             self.sendMsg(ircmsgs.mode(self.nick, umodes))
     do377 = do422 = do376
 
-    def do433(self, msg):
-        """Handles 'nickname already in use' messages."""
+    def do43x(self, msg, problem):
         if not self.afterConnect:
             newNick = self._getNextNick()
             assert newNick != self.nick
-            log.info('Got 433: %s is in use.  Trying %s.', self.nick, newNick)
+            log.info('Got 433: %s %s.  Trying %s.',self.nick, problem, newNick)
             self.sendMsg(ircmsgs.nick(newNick))
-    do432 = do433 # 432: Erroneous nickname.
+    def do433(self, msg):
+        self.do43x(msg, 'is in use')
+    def do432(self, msg):
+        self.do43x(msg, 'is not a valid nickname')
 
     def doJoin(self, msg):
         if msg.nick == self.nick:
