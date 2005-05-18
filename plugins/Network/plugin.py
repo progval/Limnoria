@@ -59,7 +59,9 @@ class Network(callbacks.Plugin):
         """
         try:
             otherIrc = self._getIrc(network)
-            irc.error('I\'m already connected to %s.' % network, Raise=True)
+            irc.error('I\'m already connected to %s.' % network)
+            return # We've gotta return here.  This is ugly code, but I'm not
+                   # quite sure what to do about it.
         except callbacks.Error:
             pass
         if server:
