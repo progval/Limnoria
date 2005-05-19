@@ -65,8 +65,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.reconnectWaits = reconnectWaits
         #Only connect to non-SSL servers
         if self.networkGroup.get('ssl').value:
-            drivers.log.error('The Socket driver can not connect to SSL \
-                                servers. Stopping.')
+            drivers.log.error('The Socket driver can not connect to SSL '
+                              'servers.  Try the Twisted driver instead.')
         else:
             self.connect()
 
