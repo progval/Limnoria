@@ -40,7 +40,7 @@ import supybot.callbacks as callbacks
 class Ctcp(callbacks.PluginRegexp):
     public = False
     regexps = ('ctcpPing', 'ctcpVersion', 'ctcpUserinfo',
-               'ctcpTime', 'ctcpFinger', 'ctcpSource') 
+               'ctcpTime', 'ctcpFinger', 'ctcpSource')
     def __init__(self, irc):
         self.__parent = super(Ctcp, self)
         self.__parent.__init__(irc)
@@ -66,7 +66,7 @@ class Ctcp(callbacks.PluginRegexp):
                 self.ignores[ignoreMask] = now + expires
                 return
         self.__parent.callCommand(command, irc, msg, *args, **kwargs)
-        
+
     def _reply(self, irc, msg, s):
         s = '\x01%s\x01' % s
         irc.reply(s, notice=True, private=True, to=msg.nick)
@@ -115,7 +115,7 @@ class Ctcp(callbacks.PluginRegexp):
                 return
             if version == 'VERSION':
                 self.versions.setdefault(payload, []).append(msg.nick)
-        
+
     def version(self, irc, msg, args, channel, optlist):
         """[<channel>] [--nicks]
 
@@ -139,7 +139,7 @@ class Ctcp(callbacks.PluginRegexp):
                         L.append(format('%L responded with %q', nicks, reply))
                     else:
                         L.append(reply)
-                irc.reply(utils.commaAndify(L))
+                irc.reply(format('%L', L))
             else:
                 irc.reply('I received no version responses.')
         wait = self.registryValue('versionWait')
