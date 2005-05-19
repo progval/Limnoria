@@ -675,6 +675,11 @@ registerGlobalValue(supybot.drivers, 'module',
     applications.  twistedDrivers is very stable and simple, and if you've got
     Twisted installed, is probably your best bet."""))
 
+registerGlobalValue(supybot.drivers, 'maxReconnectWait',
+    registry.PositiveFloat(300.0, """Determines the maximum time the bot will
+    wait before attempting to reconnect to an IRC server.  The bot may, of
+    course, reconnect earlier if possible."""))
+
 ###
 # supybot.directories, for stuff relating to directories.
 ###
