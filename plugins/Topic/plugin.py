@@ -168,6 +168,9 @@ class Topic(callbacks.Plugin):
     def do332(self, irc, msg):
         if msg.args[1] in self.watchingFor332:
             self.watchingFor332.remove(msg.args[1])
+            # Store an undo for the topic when we join a channel.  This allows
+            # us to undo the first topic change that takes place in a channel.
+            self._addUndo(msg.args[1], [msg.args[2]])
 
     def topic(self, irc, msg, args, channel):
         """[<channel>]
