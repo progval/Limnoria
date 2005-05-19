@@ -132,6 +132,8 @@ class TopicTestCase(ChannelPluginTestCase):
         self.assertRegexp('topic set -1 bar', 'bar')
         self.assertNotRegexp('topic set -1 baz', 'bar')
         self.assertResponse('topic set foo bar baz', 'foo bar baz')
+        # Catch a bug we had where setting topic 1 would reset the whole topic
+        self.assertNotResponse('topic set 1 bar', 'bar')
 
     def testUndo(self):
         try:

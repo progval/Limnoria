@@ -315,14 +315,14 @@ class Topic(callbacks.Plugin):
         sets the entire topic.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
-        if number:
+        if number is not None:
             topics = self._splitTopic(irc.state.getTopic(channel), channel)
             topics[number] = topic
         else:
             topics = [topic]
         self._sendTopics(irc, channel, topics)
     set = wrap(set, ['canChangeTopic',
-                     optional('topicNumber', 0),
+                     optional('topicNumber'),
                      rest(('topic', False))])
 
     def remove(self, irc, msg, args, channel, number):
