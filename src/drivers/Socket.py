@@ -45,9 +45,6 @@ import supybot.drivers as drivers
 import supybot.schedule as schedule
 from supybot.utils.iter import imap
 
-# XXX Shouldn't the reconnect wait (at least the last one) be configurable?
-reconnectWaits = [0, 60, 300]
-
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
         self.irc = irc
@@ -61,20 +58,28 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.zombie = False
         self.scheduled = None
         self.connected = False
-        self.reconnectWaitsIndex = 0
-        self.reconnectWaits = reconnectWaits
-        #Only connect to non-SSL servers
+        self.resetDelay()
+        # Only connect to non-SSL servers
         if self.networkGroup.get('ssl').value:
             drivers.log.error('The Socket driver can not connect to SSL '
                               'servers.  Try the Twisted driver instead.')
         else:
             self.connect()
 
+    def getDelay(self):
+        ret = self.currentDelay
+        self.currentDelay = min(self.currentDelay * 2,
+                                conf.supybot.drivers.maxReconnectWait())
+        return ret
+
+    def resetDelay(self):
+        self.currentDelay = 10.0
+
     def _getNextServer(self):
         oldServer = getattr(self, 'currentServer', None)
         server = self.__parent._getNextServer()
         if self.currentServer != oldServer:
-            self.reconnectWaitsIndex = 0
+            self.resetDelay()
         return server
 
     def _handleSocketError(self, e):
@@ -82,7 +87,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         # hasn't finished yet.  We'll keep track of how many we get.
         if e.args[0] != 11 and self.eagains > 120:
             drivers.log.disconnect(self.currentServer, e)
-            self.reconnect(wait=True)
+            self.scheduleReconnect()
         else:
             log.debug('Got EAGAIN, current count: %s.', self.eagains)
             self.eagains += 1
@@ -113,7 +118,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self._sendIfMsgs()
         try:
             self.inbuffer += self.conn.recv(1024)
-            self.eagains = 0
+            self.eagains = 0 # If we successfully recv'ed, we can reset this.
             lines = self.inbuffer.split('\n')
             self.inbuffer = lines.pop()
             for line in lines:
@@ -131,8 +136,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def connect(self, **kwargs):
         self.reconnect(reset=False, **kwargs)
 
-    def reconnect(self, wait=False, reset=True):
-        self.scheduled = False
+    def reconnect(self, reset=True):
+        self.scheduled = None
         if self.connected:
             drivers.log.reconnect(self.irc.network)
             self.conn.close()
@@ -142,9 +147,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.irc.reset()
         else:
             drivers.log.debug('Not resetting %s.', self.irc)
-        if wait:
-            self._scheduleReconnect()
-            return
         server = self._getNextServer()
         drivers.log.connect(self.currentServer)
         try:
@@ -153,18 +155,16 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn.bind((vhost, 0))
         except socket.error, e:
             drivers.log.connectError(self.currentServer, e)
-            if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
-                self.reconnectWaitsIndex += 1
-            self.reconnect(wait=True)
+            self.scheduleReconnect()
             return
         # We allow more time for the connect here, since it might take longer.
         # At least 10 seconds.
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
-        if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
-            self.reconnectWaitsIndex += 1
         try:
             self.conn.connect(server)
             self.conn.settimeout(conf.supybot.drivers.poll())
+            self.connected = True
+            self.resetDelay()
         except socket.error, e:
             if e.args[0] == 115:
                 now = time.time()
@@ -175,10 +175,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 schedule.addEvent(self._checkAndWriteOrReconnect, when)
             else:
                 drivers.log.connectError(self.currentServer, e)
-                self.reconnect(wait=True)
+                self.scheduleReconnect()
             return
-        self.connected = True
-        self.reconnectWaitPeriodsIndex = 0
 
     def _checkAndWriteOrReconnect(self):
         drivers.log.debug('Checking whether we are connected.')
@@ -186,15 +184,21 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         if w:
             drivers.log.debug('Socket is writable, it might be connected.')
             self.connected = True
-            self.reconnectWaitPeriodsIndex = 0
+            self.resetDelay()
         else:
             drivers.log.connectError(self.currentServer, 'Timed out')
             self.reconnect()
 
-    def _scheduleReconnect(self):
-        when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
+    def scheduleReconnect(self):
+        when = time.time() + self.getDelay()
         if not world.dying:
             drivers.log.reconnect(self.irc.network, when)
+        if self.scheduled:
+            drivers.log.error('Scheduling a second reconnect when one is '
+                              'already scheduled.  This is a bug; please '
+                              'report it, with an explanation of what caused '
+                              'this to happen.')
+            schedule.removeEvent(self.scheduled)
         self.scheduled = schedule.addEvent(self.reconnect, when)
 
     def die(self):
