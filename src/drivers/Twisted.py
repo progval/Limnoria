@@ -27,8 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-
-
 import time
 
 import supybot.log as log
@@ -84,7 +82,7 @@ class SupyIrcProtocol(LineReceiver):
         else:
             drivers.log.disconnect(self.factory.currentServer, errorMsg(r))
         if self.irc.zombie:
-            self.factory.continueTrying = False
+            self.factory.stopTrying()
             while self.irc.takeMsg():
                 continue
         else:
@@ -96,7 +94,7 @@ class SupyIrcProtocol(LineReceiver):
 
     def die(self):
         drivers.log.die(self.irc)
-        self.factory.continueTrying = False
+        self.factory.stopTrying()
         self.transport.loseConnection()
 
     def reconnect(self, wait=None):
@@ -136,8 +134,7 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
     def clientConnectionFailed(self, connector, r):
         drivers.log.connectError(self.currentServer, errorMsg(r))
         (connector.host, connector.port) = self._getNextServer()
-        if not r.check(error.TimeoutError):
-            ReconnectingClientFactory.clientConnectionFailed(self, connector,r)
+        ReconnectingClientFactory.clientConnectionFailed(self, connector,r)
 
     def clientConnectionLost(self, connector, r):
         (connector.host, connector.port) = self._getNextServer()
