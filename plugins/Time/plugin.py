@@ -112,7 +112,7 @@ class Time(callbacks.Plugin):
         if new != now:
             if new - now < 0:
                 new += 86400
-            irc.reply(new-now)
+            irc.reply(str(new-now))
         else:
             irc.error('That\'s right now!')
     until = wrap(until, ['text'])

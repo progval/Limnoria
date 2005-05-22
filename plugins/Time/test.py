@@ -51,6 +51,11 @@ class TimeTestCase(PluginTestCase):
         self.assertNotError('ctime')
         self.assertNotError('time %Y')
 
+    def testNoNestedErrors(self):
+        self.assertNotError('echo [until 4:00]')
+        self.assertNotError('echo [at now]')
+        self.assertNotError('echo [seconds 4m]')
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 
