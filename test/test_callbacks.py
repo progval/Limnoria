@@ -261,6 +261,21 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(callbacks.tokenize('bar [baz]'), ['bar', ['baz']])
 
 
+class AmbiguityTestCase(PluginTestCase):
+    plugins = ('Misc',) # Something so it doesn't complain.
+    class Foo(callbacks.Plugin):
+        def bar(self, irc, msg, args):
+            irc.reply('foo.bar')
+    class Bar(callbacks.Plugin):
+        def bar(self, irc, msg, args):
+            irc.reply('bar.bar')
+
+    def testAmbiguityWithCommandSameNameAsPlugin(self):
+        self.irc.addCallback(self.Foo(self.irc))
+        self.assertResponse('bar', 'foo.bar')
+        self.irc.addCallback(self.Bar(self.irc))
+        self.assertResponse('bar', 'bar.bar')
+    
 class PrivmsgTestCase(ChannelPluginTestCase):
     plugins = ('Utilities', 'Misc',)
     conf.allowEval = True

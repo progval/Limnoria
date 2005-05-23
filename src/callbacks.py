@@ -705,7 +705,14 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         cbs = [cb for (cb, L) in cbs if L == maxL]
         if len(maxL) == 1:
             # Special case: one arg determines the callback.  In this case, we
-            # have to check defaultPlugins.
+            # have to check, in order:
+            # 1. Whether the arg is the same as the name of a callback.  This
+            #    callback would then win.
+            for cb in cbs:
+                if cb.canonicalName() == maxL[0]:
+                    return (maxL, [cb])
+
+            # 2. Whether a defaultplugin is defined.
             defaultPlugins = conf.supybot.commands.defaultPlugins
             try:
                 defaultPlugin = defaultPlugins.get(maxL[0])()
@@ -719,7 +726,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         # actually have that command.
                         return (maxL, [cb])
             except registry.NonExistentRegistryEntry:
-                pass # No default plugin defined.
+                pass
+
+            # 3. Whether an importantPlugin is one of the responses.
             important = defaultPlugins.importantPlugins()
             important = map(canonicalName, important)
             importants = []
