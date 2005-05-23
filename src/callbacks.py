@@ -819,6 +819,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         # action=True implies noLengthCheck=True and prefixName=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         target = self.private and self.to or self.msg.args[0]
+        s = str(s) # Allow non-string esses.
         if self.finalEvaled:
             try:
                 if isinstance(self.irc, self.__class__):

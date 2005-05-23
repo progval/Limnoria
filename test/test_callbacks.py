@@ -275,6 +275,20 @@ class AmbiguityTestCase(PluginTestCase):
         self.assertResponse('bar', 'foo.bar')
         self.irc.addCallback(self.Bar(self.irc))
         self.assertResponse('bar', 'bar.bar')
+
+class ProperStringificationOfReplyArgs(PluginTestCase):
+    plugins = ('Misc',) # Same as above.
+    class NonString(callbacks.Plugin):
+        def int(self, irc, msg, args):
+            irc.reply(1)
+    class ExpectsString(callbacks.Plugin):
+        def lower(self, irc, msg, args):
+            irc.reply(args[0].lower())
+
+    def test(self):
+        self.irc.addCallback(self.NonString(self.irc))
+        self.irc.addCallback(self.ExpectsString(self.irc))
+        self.assertResponse('expectsstring lower [nonstring int]', '1')
     
 class PrivmsgTestCase(ChannelPluginTestCase):
     plugins = ('Utilities', 'Misc',)
