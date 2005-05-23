@@ -35,12 +35,13 @@ import supybot.ircdb as ircdb
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 
-from twisted.internet import reactor, error, ssl
+from twisted.internet import reactor, error
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import ReconnectingClientFactory
 
 try:
     from OpenSSL import SSL
+    from twisted.internet import ssl
 except ImportError:
     drivers.log.debug('PyOpenSSL is not available, '
                       'cannot connect to SSL servers.')
