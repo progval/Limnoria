@@ -128,7 +128,6 @@ if __name__ == '__main__':
     ###
     # Options:
     # -p (profiling)
-    # -O (optimizing)
     # -n, --nick (nick)
     # --startup (commands to run onStart)
     # --connect (commands to run afterConnect)
@@ -137,9 +136,6 @@ if __name__ == '__main__':
                                    version='Supybot %s' % version)
     parser.add_option('-P', '--profile', action='store_true', dest='profile',
                       help='enables profiling')
-    parser.add_option('-O', action='count', dest='optimize',
-                      help='-O optimizes asserts out of the code; ' \
-                           '-OO optimizes asserts and uses psyco.')
     parser.add_option('-n', '--nick', action='store',
                       dest='nick', default='',
                       help='nick the bot should use')
@@ -241,16 +237,6 @@ if __name__ == '__main__':
         wizard?""", fd=sys.stderr)
         # XXX We should turn off logging here for a prettier presentation.
         sys.exit(-1)
-
-    if options.optimize:
-        # This doesn't work anymore.
-        __builtins__.__debug__ = False
-        if options.optimize > 1:
-            try:
-                import psyco
-                psyco.full()
-            except ImportError:
-                log.warning('Psyco isn\'t installed, cannot -OO.')
 
     if os.name == 'posix' and options.daemon:
         def fork():
