@@ -250,7 +250,9 @@ if __name__ == '__main__':
         fork()
         os.setsid()
         # What the heck does this do?  I wonder if it breaks anything...
-        os.umask(0)
+        # ...It did.  I don't know why, but it seems largely useless.  It seems
+        # to me reasonable that we should respect the user's umask.
+        #os.umask(0)
         # Let's not do this for now (at least until I can make sure it works):
         # Actually, let's never do this -- we'll always have files open in the
         # bot directories, so they won't be able to be unmounted anyway.
