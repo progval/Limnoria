@@ -51,12 +51,6 @@ def main():
     parser.add_option('-p', '--password', action='store', default='',
                       dest='password',
                       help='password for the user.')
-    parser.add_option('-x', '--hashed', action='store_const', const=1,
-                      default=0, dest='hashed',
-                      help='hash encrypt the password.')
-    parser.add_option('-n', '--plain', action='store_const', const=2,
-                      default=0, dest='hashed',
-                      help='store the password in plain text.')
     parser.add_option('-c', '--capability', action='append',
                       dest='capabilities', metavar='CAPABILITY',
                       help='capability the user should have; '
@@ -106,14 +100,6 @@ def main():
     else:
         password = options.password
     
-    if options.hashed is 0:
-        hashed = yn('Do you want the password to be hashed instead of '
-                    'storing it as plain text?', default=False)
-    elif options.hashed is 1:
-        hashed = True
-    else:
-        hashed = False
-
     if not options.capabilities:
         capabilities = []
         prompt = 'Would you like to give %s a capability?' % name
@@ -125,7 +111,7 @@ def main():
 
     user = ircdb.users.newUser()
     user.name = name
-    user.setPassword(password, hashed=hashed)
+    user.setPassword(password)
     for capability in capabilities:
         user.addCapability(capability)
     ircdb.users.setUser(user)
