@@ -86,7 +86,7 @@ class User(callbacks.Plugin):
         Registers <name> with the given password <password> and the current
         hostmask of the person registering.  You shouldn't register twice; if
         you're not recognized as a user but you've already registered, use the
-        addhostmask command to add another hostmask to your already-registered
+        hostmask add command to add another hostmask to your already-registered
         user, or use the identify command to identify just for a session.
         This command (and all other commands that include a password) must be
         sent to the bot privately, not in a channel.
