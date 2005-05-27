@@ -1068,9 +1068,6 @@ class Commands(BasePlugin):
     def name(self):
         return self.__class__.__name__
 
-    def __call__(self, *args, **kwargs):
-        super(Commands, self).__call__(*args, **kwargs)
-
     def canonicalName(self):
         return canonicalName(self.name())
 
