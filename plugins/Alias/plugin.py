@@ -28,6 +28,7 @@
 ###
 
 import re
+import new
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -166,7 +167,7 @@ class Alias(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Alias, self)
         self.__parent.__init__(irc)
-        # Schema: {alias: [command, locked]}
+        # Schema: {alias: [command, locked, commandMethod]}
         self.aliases = {}
         # XXX This should go.  aliases should be a space separate list, etc.
         group = conf.supybot.plugins.Alias.aliases
@@ -183,14 +184,35 @@ class Alias(callbacks.Plugin):
             name = name.lower() # Just in case.
             command = value()
             locked = value.locked()
-            self.aliases[name] = [command, locked]
-        for (alias, (command, locked)) in self.aliases.items():
+            self.aliases[name] = [command, locked, None]
+        for (alias, (command, locked, _)) in self.aliases.items():
             try:
                 self.addAlias(irc, alias, command, locked)
             except Exception, e:
                 self.log.exception('Exception when trying to add alias %s.  '
                                    'Removing from the Alias database.', alias)
                 del self.aliases[alias]
+
+    def isCommandMethod(self, name):
+        if not self.__parent.isCommandMethod(name):
+            if name in self.aliases:
+                return True
+            else:
+                return False
+        else:
+            return True
+
+    def listCommands(self):
+        commands = self.__parent.listCommands()
+        commands.extend(self.aliases.keys())
+        commands.sort()
+        return commands
+
+    def getCommandMethod(self, command):
+        try:
+            return self.__parent.getCommandMethod(command)
+        except AttributeError:
+            return self.aliases[command[0]][2]
 
     def lock(self, irc, msg, args, name):
         """<alias>
@@ -234,11 +256,12 @@ class Alias(callbacks.Plugin):
                 s = 'You can\'t overwrite commands in this plugin.'
                 raise AliasError, s
         if name in self.aliases:
-            (currentAlias, locked) = self.aliases[name]
+            (currentAlias, locked, _) = self.aliases[name]
             if locked and currentAlias != alias:
                 raise AliasError, format('Alias %q is locked.', name)
         try:
             f = makeNewAlias(name, alias)
+            f = new.instancemethod(f, self, Alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
         if name in self.aliases:
@@ -248,14 +271,12 @@ class Alias(callbacks.Plugin):
                                                     registry.String(alias, ''))
         conf.supybot.plugins.Alias.aliases.get(name).register('locked',
                                                     registry.Boolean(lock, ''))
-        setattr(self.__class__, name, f)
-        self.aliases[name] = [alias, lock]
+        self.aliases[name] = [alias, lock, f]
 
     def removeAlias(self, name, evenIfLocked=False):
         name = callbacks.canonicalName(name)
-        if hasattr(self, name) and self.isCommandMethod(name):
+        if name in self.aliases and self.isCommandMethod(name):
             if evenIfLocked or not self.aliases[name][1]:
-                delattr(self.__class__, name)
                 del self.aliases[name]
                 conf.supybot.plugins.Alias.aliases.unregister(name)
             else:
