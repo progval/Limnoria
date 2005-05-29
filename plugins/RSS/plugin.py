@@ -44,7 +44,7 @@ import supybot.callbacks as callbacks
 
 def getFeedName(irc, msg, args, state):
     if not registry.isValidRegistryName(args[0]):
-        irc.errorInvalid('feed name', name,
+        irc.errorInvalid('feed name', args[0],
                          'Feed names must not include spaces.')
     state.args.append(callbacks.canonicalName(args.pop(0)))
 addConverter('feedName', getFeedName)
@@ -289,6 +289,7 @@ class RSS(callbacks.Plugin):
             return
         self.feedNames.remove(name)
         delattr(self.__class__, name)
+        conf.supybot.plugins.RSS.feeds().remove(name)
         conf.supybot.plugins.RSS.feeds.unregister(name)
         irc.replySuccess()
     remove = wrap(remove, ['feedName'])
