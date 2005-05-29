@@ -43,7 +43,8 @@ def canChangeTopic(irc, msg, args, state):
     callConverter('channel', irc, msg, args, state)
     callConverter('inChannel', irc, msg, args, state)
     if state.channel not in irc.state.channels:
-        irc.error(format('I\'m not currently in %s.', state.channel),Raise=True)
+        irc.error(format('I\'m not currently in %s.', state.channel),
+                  Raise=True)
     c = irc.state.channels[state.channel]
     if irc.nick not in c.ops and 't' in c.modes:
         irc.error(format('I can\'t change the topic, I\'m not opped '
