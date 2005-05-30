@@ -384,6 +384,14 @@ class StrTest(SupyTestCase):
 
 
 class IterTest(SupyTestCase):
+    def testLimited(self):
+        L = range(10)
+        self.assertEqual([], list(utils.iter.limited(L, 0)))
+        self.assertEqual([0], list(utils.iter.limited(L, 1)))
+        self.assertEqual([0, 1], list(utils.iter.limited(L, 2)))
+        self.assertEqual(range(10), list(utils.iter.limited(L, 10)))
+        self.assertRaises(ValueError, list, utils.iter.limited(L, 11))
+        
     def testRandomChoice(self):
         choice = utils.iter.choice
         self.assertRaises(IndexError, choice, {})

@@ -158,4 +158,15 @@ def startswith(long, short):
     except StopIteration:
         return True
 
+def limited(iterable, limit):
+    i = limit
+    iterable = iter(iterable)
+    try:
+        while i:
+            yield iterable.next()
+            i -= 1
+    except StopIteration:
+        raise ValueError, 'Expected %s elements in iterable (%r), got %s.' % \
+              (limit, iterable, limit-i)
+
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
