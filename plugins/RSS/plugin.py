@@ -307,7 +307,7 @@ class RSS(callbacks.Plugin):
         if name not in self.feedNames:
             irc.error('That\'s not a valid RSS feed command name.')
             return
-        self.feedNames.pop(name)
+        del self.feedNames[name]
         conf.supybot.plugins.RSS.feeds().remove(name)
         conf.supybot.plugins.RSS.feeds.unregister(name)
         irc.replySuccess()
