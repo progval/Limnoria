@@ -60,6 +60,7 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss add advogato %s' % url)
             self.assertNotError('rss announce advogato')
             self.assertNotRegexp('rss announce', r'ValueError')
+            self.assertNotError('rss remove advogato')
 
         def testRss(self):
             self.assertNotError('rss %s' % url)

@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import new
 import time
 import socket
 import sgmllib
@@ -58,7 +59,8 @@ class RSS(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(RSS, self)
         self.__parent.__init__(irc)
-        self.feedNames = callbacks.CanonicalNameSet()
+        # Schema is feed : [url, command]
+        self.feedNames = callbacks.CanonicalNameDict()
         self.locks = {}
         self.lastRequest = {}
         self.cachedFeeds = {}
@@ -72,6 +74,27 @@ class RSS(callbacks.Plugin):
                 continue
             self.makeFeedCommand(name, url)
             self.getFeed(url) # So announced feeds don't announce on startup.
+
+    def isCommandMethod(self, name):
+        if not self.__parent.isCommandMethod(name):
+            if name in self.feedNames:
+                return True
+            else:
+                return False
+        else:
+            return True
+
+    def listCommands(self):
+        commands = self.__parent.listCommands()
+        commands.extend(self.feedNames.keys())
+        commands.sort()
+        return commands
+
+    def getCommandMethod(self, command):
+        try:
+            return self.__parent.getCommandMethod(command)
+        except AttributeError:
+            return self.feedNames[command[0]][1]
 
     def _registerFeed(self, name, url=''):
         self.registryValue('feeds').add(name)
@@ -87,8 +110,7 @@ class RSS(callbacks.Plugin):
             for name in feeds:
                 commandName = callbacks.canonicalName(name)
                 if self.isCommandMethod(commandName):
-                    name = commandName
-                    url = getattr(self, name).url
+                    url = self.feedNames[commandName][0]
                 else:
                     url = name
                 if self.willGetNewFeed(url):
@@ -255,17 +277,15 @@ class RSS(callbacks.Plugin):
         """, name, url)
         if url not in self.locks:
             self.locks[url] = threading.RLock()
-        if hasattr(self.__class__, name) and \
-           not hasattr(getattr(self, name), 'url'):
+        if self.isCommandMethod(name):
             s = format('I already have a command in this plugin named %s.',name)
             raise callbacks.Error, s
         def f(self, irc, msg, args):
             args.insert(0, url)
             self.rss(irc, msg, args)
         f = utils.python.changeFunctionName(f, name, docstring)
-        f.url = url # Used by __call__.
-        self.feedNames.add(name)
-        setattr(self.__class__, name, f)
+        f = new.instancemethod(f, self, RSS)
+        self.feedNames[name] = (url, f)
         self._registerFeed(name, url)
 
     def add(self, irc, msg, args, name, url):
@@ -287,8 +307,7 @@ class RSS(callbacks.Plugin):
         if name not in self.feedNames:
             irc.error('That\'s not a valid RSS feed command name.')
             return
-        self.feedNames.remove(name)
-        delattr(self.__class__, name)
+        self.feedNames.pop(name)
         conf.supybot.plugins.RSS.feeds().remove(name)
         conf.supybot.plugins.RSS.feeds.unregister(name)
         irc.replySuccess()
