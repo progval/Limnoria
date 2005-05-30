@@ -1,3 +1,11 @@
+Version 0.83.0rc3
+
+This release candidate contains mostly bug-fixes.
+
+Incompatibilities:
+utils.changeFunctionName was moved to utils.python.changeFunctionName
+
+
 Version 0.83.0rc2
 
 This release candidate contains a few bug-fixes and some plugins we

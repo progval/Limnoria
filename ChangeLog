@@ -1,3 +1,46 @@
+2005-05-30 James Vega <jamessan@supybot.com>
+
+	* Version 0.83.0rc3!
+
+	* Updated Topic such that it can undo the first topic change performed
+	in a channel.
+
+	* Removed -O and -OO options for scripts/supybot.
+
+	* Removed password hashing options for scripts/supybot-adduser.
+
+	* Fixed a bug where RSS.remove wasn't removing the feed from
+	conf.supybot.plugins.RSS.feeds.
+
+	* Fixed a bug in Topic.set where setting the first topic would change
+	the entire topic.
+
+	* Fixed an AttributeError in the Ctcp plugin.
+
+	* Fixed a problem where Supybot would attempt to connect to a network
+	it was already connected to.
+
+	* Fixed a problem where a command with the same name as its plugin had
+	to be invoked as "plugin command".
+
+	* Fixed an exception when irc.reply was called with a non-string
+	argument.
+
+	* Fixed an ImportError in Twisted driver when OpenSSL wasn't
+	available.
+
+	* Updated Socket driver to fix some longstanding issues.
+
+	* Added supybot.drivers.maxReconnectWait, which determines the maximum
+	amount of time the bot will wait before attempting to reconnect to an
+	IRC server.
+
+	* Added utils.python.Synchronized metaclass to ensure synchronized
+	access to class methods.
+
+	* Moved utils.changeFunctionName to utils.python.changeFunctionName.
+
+
 2005-05-12 James Vega <jamessan@supybot.com>
 
 	* Version 0.83.0rc2!
