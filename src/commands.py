@@ -120,6 +120,9 @@ def urlSnarfer(f):
         def doSnarf():
             _snarfLock.acquire()
             try:
+                # This has to be *after* we've acquired the lock so we can be
+                # sure that all previous urlSnarfers have already run to
+                # completion.
                 if msg.repliedTo:
                     self.log.debug('Not snarfing, msg is already repliedTo.')
                     return
