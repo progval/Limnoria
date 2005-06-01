@@ -133,7 +133,14 @@ class TopicTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('topic set -1 baz', 'bar')
         self.assertResponse('topic set foo bar baz', 'foo bar baz')
         # Catch a bug we had where setting topic 1 would reset the whole topic
-        self.assertNotResponse('topic set 1 bar', 'bar')
+        orig = conf.supybot.plugins.Topic.format()
+        sep = conf.supybot.plugins.Topic.separator()
+        try:
+            conf.supybot.plugins.Topic.format.setValue('$topic')
+            self.assertResponse('topic add baz', 'foo bar baz%sbaz' % sep)
+            self.assertResponse('topic set 1 bar', 'bar%sbaz' % sep)
+        finally:
+            conf.supybot.plugins.Topic.format.setValue(orig)
 
     def testUndo(self):
         try:
