@@ -47,6 +47,15 @@ class UserTestCase(PluginTestCase):
         self.assertNotError('hostmask add foo')
         self.assertNotRegexp('hostmask add foo', 'IrcSet')
 
+    def testHostmaskListHandlesEmptyListGracefully(self):
+        self.assertError('hostmask list')
+        self.prefix = self.prefix1
+        self.assertNotError('register foo bar')
+        self.assertNotError('hostmask remove foo %s' % self.prefix1)
+        self.assertNotError('identify foo bar')
+        self.assertRegexp('hostmask list', 'no registered hostmasks')
+        
+
     def testHostmask(self):
         self.assertResponse('hostmask', self.prefix)
         self.assertError('@hostmask asdf')

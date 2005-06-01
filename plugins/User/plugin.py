@@ -246,8 +246,11 @@ class User(callbacks.Plugin):
             """
             def getHostmasks(user):
                 hostmasks = map(repr, user.hostmasks)
-                hostmasks.sort()
-                return format('%L', hostmasks)
+                if hostmasks:
+                    hostmasks.sort()
+                    return format('%L', hostmasks)
+                else:
+                    irc.reply(format('%s has no registered hostmasks.', user))
             try:
                 user = ircdb.users.getUser(msg.prefix)
                 if name:
