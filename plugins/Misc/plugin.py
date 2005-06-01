@@ -85,7 +85,7 @@ class Misc(callbacks.Plugin):
                 cb = irc.getCallback(tokens[0])
                 if cb:
                     plugin = cb.name()
-                    irc.reply(format('The %q plugin is loaded, but there is '
+                    irc.error(format('The %q plugin is loaded, but there is '
                                      'no command named %q in it.  Try "list '
                                      '%s" to see the commands in the %q '
                                      'plugin.', plugin, tokens[1],
