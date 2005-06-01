@@ -81,8 +81,20 @@ class Misc(callbacks.Plugin):
         # Now, for normal handling.
         channel = msg.args[0]
         if conf.get(conf.supybot.reply.whenNotCommand, channel):
-            command = tokens and tokens[0] or ''
-            irc.errorInvalid('command', command, repr=False)
+            if len(tokens) >= 2:
+                cb = irc.getCallback(tokens[0])
+                if cb:
+                    plugin = cb.name()
+                    irc.reply(format('The %q plugin is loaded, but there is '
+                                     'no command named %q in it.  Try "list '
+                                     '%s" to see the commands in the %q '
+                                     'plugin.', plugin, tokens[1],
+                                     plugin, plugin))
+                else:
+                    irc.errorInvalid('command', tokens[0], repr=False)
+            else:
+                command = tokens and tokens[0] or ''
+                irc.errorInvalid('command', command, repr=False)
         else:
             if tokens:
                 # echo [] will get us an empty token set, but there's no need

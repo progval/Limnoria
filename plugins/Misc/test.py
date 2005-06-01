@@ -35,12 +35,21 @@ class MiscTestCase(ChannelPluginTestCase):
                'Channel', 'Dict', 'User', 'String')
     def testReplyWhenNotCommand(self):
         try:
-            original = str(conf.supybot.reply.whenNotCommand)
-            conf.supybot.reply.whenNotCommand.set('True')
+            original = conf.supybot.reply.whenNotCommand()
+            conf.supybot.reply.whenNotCommand.setValue(True)
             self.prefix = 'somethingElse!user@host.domain.tld'
+            self.assertRegexp('foo', 'not.*command')
             self.assertRegexp('foo bar baz', 'not.*command')
         finally:
-            conf.supybot.reply.whenNotCommand.set(original)
+            conf.supybot.reply.whenNotCommand.setValue(original)
+
+    def testReplyWhenNotCommandButFirstCommandIsPluginName(self):
+        try:
+            original = conf.supybot.reply.whenNotCommand()
+            conf.supybot.reply.whenNotCommand.setValue(True)
+            self.assertRegexp('misc foo', '"list Misc"')
+        finally:
+            conf.supybot.reply.whenNotCommand.setValue(original)
 
 #    if network:
 #        def testNotReplyWhenRegexpsMatch(self):
