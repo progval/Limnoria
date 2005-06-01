@@ -347,7 +347,8 @@ class Services(callbacks.Plugin):
                                  'I can send commands to ChanServ.', command)
             else:
                 irc.error('You must set supybot.plugins.Services.ChanServ '
-                          'before I\'m able to do get voiced.', Raise=True)
+                          'before I\'m able to send the %s command.' % command,
+                          Raise=True)
 
     def op(self, irc, msg, args, channel):
         """[<channel>]
