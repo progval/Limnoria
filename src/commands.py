@@ -169,16 +169,16 @@ def getInt(irc, msg, args, state, type='integer', p=None):
         i = _int(args[0])
         if p is not None:
             if not p(i):
-                irc.errorInvalid(type, args[0])
+                state.errorInvalid(type, args[0])
         state.args.append(i)
         del args[0]
     except ValueError:
-        irc.errorInvalid(type, args[0])
+        state.errorInvalid(type, args[0])
 
 def getNonInt(irc, msg, args, state, type='non-integer value'):
     try:
         i = _int(args[0])
-        irc.errorInvalid(type, args[0])
+        state.errorInvalid(type, args[0])
     except ValueError:
         state.args.append(args.pop(0))
 
@@ -191,7 +191,7 @@ def getFloat(irc, msg, args, state, type='floating point number'):
         state.args.append(float(args[0]))
         del args[0]
     except ValueError:
-        irc.errorInvalid(type, args[0])
+        state.errorInvalid(type, args[0])
 
 def getPositiveInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
@@ -227,14 +227,14 @@ def getExpiry(irc, msg, args, state):
         state.args.append(expires)
         del args[0]
     except ValueError:
-        irc.errorInvalid('number of seconds', args[0])
+        state.errorInvalid('number of seconds', args[0])
 
 def getBoolean(irc, msg, args, state):
     try:
         state.args.append(utils.str.toBool(args[0]))
         del args[0]
     except ValueError:
-        irc.errorInvalid('boolean', args[0])
+        state.errorInvalid('boolean', args[0])
 
 def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
     if args:
@@ -250,15 +250,15 @@ def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
 
 def getHaveOp(irc, msg, args, state, action='do that'):
     if state.channel not in irc.state.channels:
-        irc.error('I\'m not even in %s.' % state.channel, Raise=True)
+        state.error('I\'m not even in %s.' % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isOp(irc.nick):
-        irc.error('I need to be opped to %s.' % action, Raise=True)
+        state.error('I need to be opped to %s.' % action, Raise=True)
 
 def validChannel(irc, msg, args, state):
     if irc.isChannel(args[0]):
         state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('channel', args[0])
+        state.errorInvalid('channel', args[0])
 
 def getHostmask(irc, msg, args, state):
     if ircutils.isUserHostmask(args[0]):
@@ -269,7 +269,7 @@ def getHostmask(irc, msg, args, state):
             state.args.append(hostmask)
             del args[0]
         except KeyError:
-            irc.errorInvalid('nick or hostmask', args[0])
+            state.errorInvalid('nick or hostmask', args[0])
 
 def getBanmask(irc, msg, args, state):
     getHostmask(irc, msg, args, state)
@@ -280,11 +280,11 @@ def getUser(irc, msg, args, state):
     try:
         state.args.append(ircdb.users.getUser(msg.prefix))
     except KeyError:
-        irc.errorNotRegistered(Raise=True)
+        state.errorNotRegistered(Raise=True)
 
 def getOtherUser(irc, msg, args, state):
     if ircutils.isUserHostmask(args[0]):
-        irc.errorNoUser(args[0])
+        state.errorNoUser(args[0])
     try:
         state.args.append(ircdb.users.getUser(args[0]))
         del args[0]
@@ -295,7 +295,7 @@ def getOtherUser(irc, msg, args, state):
             state.args.append(ircdb.users.getUser(hostmask))
             del args[0]
         except (KeyError, callbacks.Error):
-            irc.errorNoUser(name=args[0])
+            state.errorNoUser(name=args[0])
 
 def _getRe(f):
     def get(irc, msg, args, state, convert=True):
@@ -316,10 +316,10 @@ def _getRe(f):
                 else:
                     state.args.append(s)
             else:
-                irc.errorInvalid('regular expression', s)
+                state.errorInvalid('regular expression', s)
         except IndexError:
             args[:] = original
-            irc.errorInvalid('regular expression', s)
+            state.errorInvalid('regular expression', s)
     return get
 
 getMatcher = _getRe(utils.str.perlReToPythonRe)
@@ -329,11 +329,11 @@ def getNick(irc, msg, args, state):
     if ircutils.isNick(args[0]):
         if 'nicklen' in irc.state.supported:
             if len(args[0]) > irc.state.supported['nicklen']:
-                irc.errorInvalid('nick', args[0],
+                state.errorInvalid('nick', args[0],
                                  'That nick is too long for this server.')
         state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('nick', args[0])
+        state.errorInvalid('nick', args[0])
 
 def getSeenNick(irc, msg, args, state, errmsg=None):
     try:
@@ -342,7 +342,7 @@ def getSeenNick(irc, msg, args, state, errmsg=None):
     except KeyError:
         if errmsg is None:
             errmsg = 'I haven\'t seen %s.' % args[0]
-        irc.error(errmsg, Raise=True)
+        state.error(errmsg, Raise=True)
 
 def getChannel(irc, msg, args, state):
     if args and irc.isChannel(args[0]):
@@ -379,12 +379,12 @@ def inChannel(irc, msg, args, state):
     if not state.channel:
         getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
-        irc.error('I\'m not in %s.' % state.channel, Raise=True)
+        state.error('I\'m not in %s.' % state.channel, Raise=True)
 
 def onlyInChannel(irc, msg, args, state):
     if not (irc.isChannel(msg.args[0]) and msg.args[0] in irc.state.channels):
-        irc.error('This command may only be given in a channel that I am in.',
-                  Raise=True)
+        state.error('This command may only be given in a channel that I am in.',
+                    Raise=True)
     else:
         state.channel = msg.args[0]
         state.args.append(state.channel)
@@ -396,18 +396,18 @@ def callerInGivenChannel(irc, msg, args, state):
             if msg.nick in irc.state.channels[channel].users:
                 state.args.append(args.pop(0))
             else:
-                irc.error('You must be in %s.' % channel, Raise=True)
+                state.error('You must be in %s.' % channel, Raise=True)
         else:
-            irc.error('I\'m not in %s.' % channel, Raise=True)
+            state.error('I\'m not in %s.' % channel, Raise=True)
     else:
-        irc.errorInvalid('channel', args[0])
+        state.errorInvalid('channel', args[0])
 
 def nickInChannel(irc, msg, args, state):
     originalArgs = state.args[:]
     inChannel(irc, msg, args, state)
     state.args = originalArgs
     if args[0] not in irc.state.channels[state.channel].users:
-        irc.error('%s is not in %s.' % (args[0], state.channel), Raise=True)
+        state.error('%s is not in %s.' % (args[0], state.channel), Raise=True)
     state.args.append(args.pop(0))
 
 def getChannelOrNone(irc, msg, args, state):
@@ -422,7 +422,7 @@ def checkChannelCapability(irc, msg, args, state, cap):
     cap = ircdb.canonicalCapability(cap)
     cap = ircdb.makeChannelCapability(state.channel, cap)
     if not ircdb.checkCapability(msg.prefix, cap):
-        irc.errorNoCapability(cap, Raise=True)
+        state.errorNoCapability(cap, Raise=True)
 
 def getOp(irc, msg, args, state):
     checkChannelCapability(irc, msg, args, state, 'op')
@@ -442,7 +442,7 @@ def getSomething(irc, msg, args, state, errorMsg=None, p=None):
     if not args[0] or not p(args[0]):
         if errorMsg is None:
             errorMsg = 'You must not give the empty string as an argument.'
-        irc.error(errorMsg, Raise=True)
+        state.error(errorMsg, Raise=True)
     else:
         state.args.append(args.pop(0))
 
@@ -453,18 +453,18 @@ def getSomethingNoSpaces(irc, msg, args, state, *L):
 
 def private(irc, msg, args, state):
     if irc.isChannel(msg.args[0]):
-        irc.errorRequiresPrivacy(Raise=True)
+        state.errorRequiresPrivacy(Raise=True)
 
 def public(irc, msg, args, state, errmsg=None):
     if not irc.isChannel(msg.args[0]):
         if errmsg is None:
             errmsg = 'This message must be sent in a channel.'
-        irc.error(errmsg, Raise=True)
+        state.error(errmsg, Raise=True)
 
 def checkCapability(irc, msg, args, state, cap):
     cap = ircdb.canonicalCapability(cap)
     if not ircdb.checkCapability(msg.prefix, cap):
-        irc.errorNoCapability(cap, Raise=True)
+        state.errorNoCapability(cap, Raise=True)
 
 def owner(irc, msg, args, state):
     checkCapability(irc, msg, args, state, 'owner')
@@ -485,26 +485,26 @@ def getUrl(irc, msg, args, state):
     if utils.web.urlRe.match(args[0]):
         state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('url', args[0])
+        state.errorInvalid('url', args[0])
 
 def getEmail(irc, msg, args, state):
     if utils.net.emailRe.match(args[0]):
         state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('email', args[0])
+        state.errorInvalid('email', args[0])
 
 def getHttpUrl(irc, msg, args, state):
     if utils.web.httpUrlRe.match(args[0]):
         state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('http url', args[0])
+        state.errorInvalid('http url', args[0])
 
 def getNow(irc, msg, args, state):
     state.args.append(int(time.time()))
 
 def getCommandName(irc, msg, args, state):
     if ' ' in args[0]:
-        irc.errorInvalid('command name', args[0])
+        state.errorInvalid('command name', args[0])
     else:
         state.args.append(callbacks.canonicalName(args.pop(0)))
 
@@ -512,13 +512,13 @@ def getIp(irc, msg, args, state):
     if utils.net.isIP(args[0]):
         state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('ip', args[0])
+        state.errorInvalid('ip', args[0])
 
 def getLetter(irc, msg, args, state):
     if len(args[0]) == 1:
         state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('letter', args[0])
+        state.errorInvalid('letter', args[0])
 
 def getMatch(irc, msg, args, state, regexp, errmsg):
     m = regexp.search(args[0])
@@ -526,7 +526,7 @@ def getMatch(irc, msg, args, state, regexp, errmsg):
         state.args.append(m)
         del args[0]
     else:
-        irc.error(errmsg, Raise=True)
+        state.error(errmsg, Raise=True)
 
 def getLiteral(irc, msg, args, state, literals, errmsg=None):
     # ??? Should we allow abbreviations?
@@ -536,7 +536,7 @@ def getLiteral(irc, msg, args, state, literals, errmsg=None):
     if args[0] in abbrevs:
         state.args.append(abbrevs[args.pop(0)])
     elif errmsg is not None:
-        irc.error(errmsg, Raise=True)
+        state.error(errmsg, Raise=True)
     else:
         raise callbacks.ArgumentError
 
@@ -550,7 +550,7 @@ def getPlugin(irc, msg, args, state, require=True):
         state.args.append(cb)
         del args[0]
     elif require:
-        irc.errorInvalid('plugin', args[0])
+        state.errorInvalid('plugin', args[0])
     else:
         state.args.append(None)
 
@@ -558,7 +558,7 @@ def getIrcColor(irc, msg, args, state):
     if args[0] in ircutils.mircColors:
         state.args.append(ircutils.mircColors[args.pop(0)])
     else:
-        irc.errorInvalid('irc color')
+        state.errorInvalid('irc color')
 
 def getText(irc, msg, args, state):
     if args:
@@ -717,6 +717,7 @@ class optional(additional):
             super(optional, self).__call__(irc, msg, args, state)
         except (callbacks.ArgumentError, callbacks.Error), e:
             log.debug('Got %s, returning default.', utils.exnToString(e))
+            state.errored = False
             setDefault(state, self.default)
 
 class any(context):
@@ -838,6 +839,14 @@ class State(object):
         self.kwargs = {}
         self.types = types
         self.channel = None
+        self.errored = False
+
+    def __getattr__(self, attr):
+        if attr.startswith('error'):
+            self.errored = True
+            return getattr(dynamic.irc, attr)
+        else:
+            raise AttributeError, attr
 
     def essence(self):
         st = State(self.types)
@@ -886,14 +895,18 @@ def wrap(f, specList=[], name=None, **kw):
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
         self.log.debug('State before call: %s', state)
-        try:
-            f(self, irc, msg, args, *state.args, **state.kwargs)
-        except TypeError:
-            self.log.error('Spec: %s', specList)
-            self.log.error('Received args: %s', args)
-            funcArgs = inspect.getargs(f.func_code)[0][len(self.commandArgs):]
-            self.log.error('Extra args: %s', funcArgs)
-            raise
+        if state.errored:
+            self.log.debug('Refusing to call %s due to state.errored.', f)
+        else:
+            try:
+                f(self, irc, msg, args, *state.args, **state.kwargs)
+            except TypeError:
+                self.log.error('Spec: %s', specList)
+                self.log.error('Received args: %s', args)
+                code = f.func_code
+                funcArgs = inspect.getargs(code)[0][len(self.commandArgs):]
+                self.log.error('Extra args: %s', funcArgs)
+                raise
     return utils.python.changeFunctionName(newf, name, f.__doc__)
 
 __all__ = [

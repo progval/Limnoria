@@ -96,7 +96,7 @@ def getConfigVar(irc, msg, args, state):
         state.args.append(group)
         del args[0]
     except registry.InvalidRegistryName, e:
-        irc.errorInvalid('configuration variable', str(e))
+        state.errorInvalid('configuration variable', str(e))
 addConverter('configVar', getConfigVar)
 
 class Config(callbacks.Plugin):

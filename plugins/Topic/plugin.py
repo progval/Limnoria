@@ -43,18 +43,18 @@ def canChangeTopic(irc, msg, args, state):
     callConverter('channel', irc, msg, args, state)
     callConverter('inChannel', irc, msg, args, state)
     if state.channel not in irc.state.channels:
-        irc.error(format('I\'m not currently in %s.', state.channel),
-                  Raise=True)
+        state.error(format('I\'m not currently in %s.', state.channel),
+                    Raise=True)
     c = irc.state.channels[state.channel]
     if irc.nick not in c.ops and 't' in c.modes:
-        irc.error(format('I can\'t change the topic, I\'m not opped '
-                         'and %s is +t.', state.channel), Raise=True)
+        state.error(format('I can\'t change the topic, I\'m not opped '
+                           'and %s is +t.', state.channel), Raise=True)
 
 def getTopic(irc, msg, args, state, format=True):
     separator = state.cb.registryValue('separator', state.channel)
     if separator in args[0]:
-        irc.errorInvalid('topic', args[0],
-                         format('The topic must not include %q.', separator))
+        state.errorInvalid('topic', args[0],
+                           format('The topic must not include %q.', separator))
     topic = args.pop(0)
     if format:
         env = {'topic': topic}
@@ -64,7 +64,7 @@ def getTopic(irc, msg, args, state, format=True):
 
 def getTopicNumber(irc, msg, args, state):
     def error(s):
-        irc.errorInvalid('topic number', s)
+        state.errorInvalid('topic number', s)
     try:
         n = int(args[0])
         if not n:
@@ -77,8 +77,8 @@ def getTopicNumber(irc, msg, args, state):
     separator = state.cb.registryValue('separator', state.channel)
     topics = splitTopic(topic, separator)
     if not topics:
-        irc.error(format('There are no topics in %s.', state.channel),
-                  Raise=True)
+        state.error(format('There are no topics in %s.', state.channel),
+                    Raise=True)
     try:
         topics[n]
     except IndexError:

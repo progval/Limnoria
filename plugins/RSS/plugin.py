@@ -45,8 +45,8 @@ import supybot.callbacks as callbacks
 
 def getFeedName(irc, msg, args, state):
     if not registry.isValidRegistryName(args[0]):
-        irc.errorInvalid('feed name', args[0],
-                         'Feed names must not include spaces.')
+        state.errorInvalid('feed name', args[0],
+                           'Feed names must not include spaces.')
     state.args.append(callbacks.canonicalName(args.pop(0)))
 addConverter('feedName', getFeedName)
 
