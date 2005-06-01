@@ -505,9 +505,12 @@ class Channel(callbacks.Plugin):
             message isn't sent in the channel itself.
             """
             c = ircdb.channels.getChannel(channel)
-            c.removeBan(banmask)
-            ircdb.channels.setChannel(channel, c)
-            irc.replySuccess()
+            try:
+                c.removeBan(banmask)
+                ircdb.channels.setChannel(channel, c)
+                irc.replySuccess()
+            except KeyError:
+                irc.error('There are no persistent bans for that hostmask.')
         remove = wrap(remove, ['op', 'hostmask'])
 
         def list(self, irc, msg, args, channel):
@@ -551,9 +554,12 @@ class Channel(callbacks.Plugin):
             necessary if the message isn't sent in the channel itself.
             """
             c = ircdb.channels.getChannel(channel)
-            c.removeIgnore(banmask)
-            ircdb.channels.setChannel(channel, c)
-            irc.replySuccess()
+            try:
+                c.removeIgnore(banmask)
+                ircdb.channels.setChannel(channel, c)
+                irc.replySuccess()
+            except KeyError:
+                irc.error('There are no ignores for that hostmask.')
         remove = wrap(remove, ['op', 'hostmask'])
 
         def list(self, irc, msg, args, channel):
