@@ -384,7 +384,7 @@ class Misc(callbacks.Plugin):
 
         Checks to see if the bot is alive.
         """
-        irc.reply('pong', prefixName=False)
+        irc.reply('pong', prefixNick=False)
 
 Class = Misc
 

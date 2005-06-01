@@ -241,7 +241,7 @@ class FunctionsTestCase(SupyTestCase):
                          callbacks.reply(channelMsg, 'foo'))
         self.assertEqual(ircmsgs.privmsg(channelMsg.args[0],
                                          'foo'),
-                         callbacks.reply(channelMsg, 'foo', prefixName=False))
+                         callbacks.reply(channelMsg, 'foo', prefixNick=False))
         self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
                          callbacks.reply(channelMsg, 'foo',
                                          notice=True, private=True))

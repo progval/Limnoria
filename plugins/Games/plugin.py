@@ -121,7 +121,7 @@ class Games(callbacks.Plugin):
         """
         if spin:
             self._rouletteBullet = random.randrange(0, 6)
-            irc.reply('*SPIN* Are you feeling lucky?', prefixName=False)
+            irc.reply('*SPIN* Are you feeling lucky?', prefixNick=False)
             return
         channel = msg.args[0]
         if self._rouletteChamber == self._rouletteBullet:
@@ -131,7 +131,7 @@ class Games(callbacks.Plugin):
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick, 'BANG!'))
             else:
                 irc.reply('*BANG* Hey, who put a blank in here?!',
-                          prefixName=False)
+                          prefixNick=False)
             irc.reply('reloads and spins the chambers.', action=True)
         else:
             irc.reply('*click*')

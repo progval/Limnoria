@@ -71,7 +71,7 @@ class Reply(callbacks.Plugin):
 
         Replies with <text>.  Equivalent to the alias, 'echo $nick: $1'.
         """
-        irc.reply(text, prefixName=True)
+        irc.reply(text, prefixNick=True)
     reply = wrap(reply, ['text'])
 
 Class = Reply

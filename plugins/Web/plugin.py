@@ -94,7 +94,7 @@ class Web(callbacks.PluginRegexp):
                 domain = utils.web.getDomain(url)
                 title = utils.web.htmlToText(parser.title.strip())
                 s = format('Title: %s (at %s)', title, domain)
-                irc.reply(s, prefixName=False)
+                irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
 
     def headers(self, irc, msg, args, url):

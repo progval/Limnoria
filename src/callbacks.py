@@ -157,7 +157,7 @@ def canonicalName(command):
         command = command[:-1]
     return command.translate(utils.str.chars, special).lower() + reAppend
 
-def reply(msg, s, prefixName=None, private=None,
+def reply(msg, s, prefixNick=None, private=None,
           notice=None, to=None, action=None, error=False):
     msg.tag('repliedTo')
     # Ok, let's make the target:
@@ -171,14 +171,14 @@ def reply(msg, s, prefixName=None, private=None,
         notice = conf.get(conf.supybot.reply.withNotice, channel)
     if private is None:
         private = conf.get(conf.supybot.reply.inPrivate, channel)
-    if prefixName is None:
-        prefixName = conf.get(conf.supybot.reply.withNickPrefix, channel)
+    if prefixNick is None:
+        prefixNick = conf.get(conf.supybot.reply.withNickPrefix, channel)
     if error:
         notice =conf.get(conf.supybot.reply.error.withNotice, channel) or notice
         private=conf.get(conf.supybot.reply.error.inPrivate, channel) or private
         s = 'Error: ' + s
     if private:
-        prefixName = False
+        prefixNick = False
         if to is None:
             target = msg.nick
         else:
@@ -189,7 +189,7 @@ def reply(msg, s, prefixName=None, private=None,
     s = ircutils.safeArgument(s)
     if not s and not action:
         s = 'Error: I tried to send you an empty message.'
-    if prefixName and ircutils.isChannel(target):
+    if prefixNick and ircutils.isChannel(target):
         # Let's may sure we don't do, "#channel: foo.".
         if not ircutils.isChannel(to):
             s = '%s: %s' % (to, s)
@@ -617,10 +617,10 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         self.private = None
         self.noLengthCheck = None
         if ircutils.isChannel(self.msg.args[0]):
-            self.prefixName = conf.get(conf.supybot.reply.withNickPrefix,
+            self.prefixNick = conf.get(conf.supybot.reply.withNickPrefix,
                                        self.msg.args[0])
         else:
-            self.prefixName = conf.supybot.reply.withNickPrefix()
+            self.prefixNick = conf.supybot.reply.withNickPrefix()
 
     def evalArgs(self):
         while self.counter < len(self.args):
@@ -782,14 +782,14 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             else:
                 cb._callCommand(command, self, self.msg, args)
 
-    def reply(self, s, noLengthCheck=False, prefixName=None,
+    def reply(self, s, noLengthCheck=False, prefixNick=None,
               action=None, private=None, notice=None, to=None, msg=None):
         """reply(s) -> replies to msg with s
 
         Keyword arguments:
           noLengthCheck=False: True if the length shouldn't be checked
                                (used for 'more' handling)
-          prefixName=True:     False if the nick shouldn't be prefixed to the
+          prefixNick=True:     False if the nick shouldn't be prefixed to the
                                reply.
           action=False:        True if the reply should be an action.
           private=False:       True if the reply should be in private.
@@ -805,18 +805,18 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                'Old code alert: there is no longer a "msg" argument to reply.'
         if msg is None:
             msg = self.msg
-        if prefixName is not None:
-            self.prefixName = prefixName
+        if prefixNick is not None:
+            self.prefixNick = prefixNick
         if action is not None:
             self.action = self.action or action
-            self.prefixName = False
+            self.prefixNick = False
         if notice is not None:
             self.notice = self.notice or notice
         if private is not None:
             self.private = self.private or private
         if to is not None:
             self.to = self.to or to
-        # action=True implies noLengthCheck=True and prefixName=False
+        # action=True implies noLengthCheck=True and prefixNick=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         target = self.private and self.to or self.msg.args[0]
         s = str(s) # Allow non-string esses.
@@ -828,7 +828,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                           notice=self.notice,
                                           action=self.action,
                                           private=self.private,
-                                          prefixName=self.prefixName,
+                                          prefixNick=self.prefixNick,
                                           noLengthCheck=self.noLengthCheck)
                 elif self.noLengthCheck:
                     # noLengthCheck only matters to NestedCommandsIrcProxy, so
@@ -837,7 +837,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                               notice=self.notice,
                               action=self.action,
                               private=self.private,
-                              prefixName=self.prefixName)
+                              prefixNick=self.prefixNick)
                     self.irc.queueMsg(m)
                     return m
                 else:
@@ -867,7 +867,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         m = reply(msg, s, to=self.to,
                                   notice=self.notice,
                                   private=self.private,
-                                  prefixName=self.prefixName)
+                                  prefixNick=self.prefixNick)
                         self.irc.queueMsg(m)
                         return m
                     msgs = ircutils.wrap(s, allowedLength)
@@ -879,7 +879,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         m = reply(msg, response, to=self.to,
                                   notice=self.notice,
                                   private=self.private,
-                                  prefixName=self.prefixName)
+                                  prefixNick=self.prefixNick)
                         self.irc.queueMsg(m)
                         # XXX We should somehow allow these to be returned, but
                         #     until someone complains, we'll be fine :)  We
@@ -909,7 +909,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                             action=self.action,
                                             notice=self.notice,
                                             private=self.private,
-                                            prefixName=self.prefixName)
+                                            prefixNick=self.prefixNick)
                     self.irc.queueMsg(m)
                     return m
             finally:

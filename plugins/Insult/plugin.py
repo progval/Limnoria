@@ -72,10 +72,10 @@ class Insult(callbacks.Plugin):
         """
         tempinsult = self._buildInsult()
         if not victim:
-            irc.reply(tempinsult, prefixName=False)
+            irc.reply(tempinsult, prefixNick=False)
         else:
             irc.reply(format('%s - %s ', victim, tempinsult),
-                      prefixName=False)
+                      prefixNick=False)
     insult = wrap(insult, [additional('text')])
 
 

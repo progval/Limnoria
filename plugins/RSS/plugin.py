@@ -187,7 +187,7 @@ class RSS(callbacks.Plugin):
                         sep = ircutils.bold(sep)
                     headlines = self.buildHeadlines(newheadlines, channel)
                     irc.replies(headlines, prefixer=pre, joiner=sep,
-                                to=channel, prefixName=False, private=True)
+                                to=channel, prefixNick=False, private=True)
         finally:
             self.releaseLock(url)
 

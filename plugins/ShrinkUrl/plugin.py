@@ -137,7 +137,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                     s = format('%u (at %s)', ircutils.bold(shorturl), domain)
                 else:
                     s = format('%u (at %s)', shorturl, domain)
-                m = irc.reply(s, prefixName=False)
+                m = irc.reply(s, prefixNick=False)
                 m.tag('shrunken')
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
 

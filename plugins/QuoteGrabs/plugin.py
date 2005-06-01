@@ -219,7 +219,7 @@ class QuoteGrabs(callbacks.Plugin):
 
     def _sendGrabMsg(self, irc, msg):
         s = 'jots down a new quote for %s' % msg.nick
-        irc.reply(s, action=True, prefixName=False)
+        irc.reply(s, action=True, prefixNick=False)
 
     def grab(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>

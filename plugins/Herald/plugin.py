@@ -116,7 +116,7 @@ class Herald(callbacks.Plugin):
                        return
                 self.lastHerald[channel, id] = now
                 herald = ircutils.standardSubstitute(irc, msg, herald)
-                irc.reply(herald, prefixName=False)
+                irc.reply(herald, prefixNick=False)
 
     def doPart(self, irc, msg):
         try:

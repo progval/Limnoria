@@ -347,9 +347,9 @@ class MoobotFactoids(callbacks.Plugin):
                 if type == 'action':
                     irc.reply(text, action=True)
                 elif type == 'reply':
-                    irc.reply(text, prefixName=False)
+                    irc.reply(text, prefixNick=False)
                 elif type == 'define':
-                    irc.reply(format('%s is %s', key, text), prefixName=False)
+                    irc.reply(format('%s is %s', key, text), prefixNick=False)
                 else:
                     assert False, 'Spurious type from _parseFactoid'
             else:

@@ -320,7 +320,7 @@ class Google(callbacks.PluginRegexp):
             return
         if data.results:
             url = data.results[0].URL
-            irc.reply(url, prefixName=False)
+            irc.reply(url, prefixNick=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
 
     _ggThread = re.compile(r'Subject: <b>([^<]+)</b>', re.I)
@@ -355,7 +355,7 @@ class Google(callbacks.PluginRegexp):
         if mThread and mGroup:
             irc.reply(format('Google Groups: %s, %s',
                              mGroup.group(1), mThread.group(1)),
-                      prefixName=False)
+                      prefixNick=False)
         else:
             self.log.debug('Unable to snarf.  %s doesn\'t appear to be a '
                            'proper Google Groups page.', match.group(1))

@@ -80,7 +80,7 @@ class Utilities(callbacks.Plugin):
         handled appropriately.
         """
         text = ircutils.standardSubstitute(irc, msg, text)
-        irc.reply(text, prefixName=False)
+        irc.reply(text, prefixNick=False)
     echo = wrap(echo, ['text'])
 
     def shuffle(self, irc, msg, args, things):
