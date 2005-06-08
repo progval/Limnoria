@@ -1050,16 +1050,16 @@ class SynchronizedAndFirewalled(log.MetaFirewall, utils.python.Synchronized):
     pass # Necessary for the metaclass compatibility issue.
 
 class Commands(BasePlugin):
-    # For awhile, a comment stood here to say, "Eventually callCommand."  But
-    # that's wrong, because we can't do generic error handling in this
-    # callCommand -- plugins need to be able to override callCommand and do
-    # error handling there (see the Http plugin for an example).
     __metaclass__ = SynchronizedAndFirewalled
     __synchronized__ = (
         '__call__',
         'callCommand',
         'invalidCommand',
         )
+    # For awhile, a comment stood here to say, "Eventually callCommand."  But
+    # that's wrong, because we can't do generic error handling in this
+    # callCommand -- plugins need to be able to override callCommand and do
+    # error handling there (see the Web plugin for an example).
     __firewalled__ = {'isCommand': None,
                       '_callCommand': None}
     commandArgs = ['self', 'irc', 'msg', 'args']
