@@ -289,9 +289,9 @@ class ProperStringificationOfReplyArgs(PluginTestCase):
         self.irc.addCallback(self.NonString(self.irc))
         self.irc.addCallback(self.ExpectsString(self.irc))
         self.assertResponse('expectsstring lower [nonstring int]', '1')
-    
+
 class PrivmsgTestCase(ChannelPluginTestCase):
-    plugins = ('Utilities', 'Misc',)
+    plugins = ('Utilities', 'Misc', 'Web', 'Karma')
     conf.allowEval = True
     timeout = 2
     def testEmptySquareBrackets(self):
@@ -504,6 +504,15 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             self.assertRegexp('asdfjkl', 'not a valid command')
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
+
+    def testSecondInvalidCommandRespondsWithThreadedInvalidCommands(self):
+        try:
+            orig = conf.supybot.plugins.Karma.response()
+            conf.supybot.plugins.Karma.response.setValue(True)
+            self.assertNotRegexp('echo [foo++] [foo++]', 'not a valid')
+            _ = self.irc.takeMsg()
+        finally:
+            conf.supybot.plugins.Karma.response.setValue(orig)
 
 
 class PluginRegexpTestCase(PluginTestCase):
