@@ -61,6 +61,7 @@ class SupyThread(threading.Thread):
         global threadsSpawned
         threadsSpawned += 1
         super(SupyThread, self).__init__(*args, **kwargs)
+        log.debug('Spawning thread %q.', self.getName())
         
 commandsProcessed = 0
 
