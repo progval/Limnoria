@@ -451,7 +451,7 @@ class RichReplyMethods(object):
             return msg
 
     def noReply(self):
-        self.msg.tag('repliedTo')
+        self.repliedTo = True
 
     def _error(self, s, Raise=False, **kwargs):
         if Raise:
@@ -579,6 +579,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         self.irc = irc
         self.msg = msg
         self.nested = nested
+        self.repliedTo = False
         if not self.nested and isinstance(irc, self.__class__):
             # This means we were given an NestedCommandsIrcProxy instead of an
             # irclib.Irc, and so we're obviously nested.  But nested wasn't
@@ -624,6 +625,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
 
     def evalArgs(self):
         while self.counter < len(self.args):
+            self.repliedTo = False
             if isinstance(self.args[self.counter], basestring):
                 # If it's a string, just go to the next arg.  There is no
                 # evaluation to be done for strings.  If, at some point,
@@ -660,9 +662,18 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 threaded = threaded or cb.threaded
         def callInvalidCommands():
             for cb in cbs:
-                self._callInvalidCommand(cb)
-                if self.msg.repliedTo:
+                log.debug('Calling %s.invalidCommand.', cb.name())
+                try:
+                    cb.invalidCommand(self, self.msg, self.args)
+                except Error, e:
+                    self.error(str(e))
+                except Exception, e:
+                    log.exception('Uncaught exception in %s.invalidCommand.',
+                                  cb.name())
+                log.debug('Finished calling %s.invalidCommand.', cb.name())
+                if self.repliedTo:
                     log.debug('Done calling invalidCommands: %s.',cb.name())
+                    self.repliedTo = False
                     return
         if threaded:
             name = 'Thread #%s (for invalidCommands)' % world.threadsSpawned
@@ -671,15 +682,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             t.start()
         else:
             callInvalidCommands()
-
-    def _callInvalidCommand(self, cb):
-        try:
-            cb.invalidCommand(self, self.msg, self.args)
-        except Error, e:
-            return self.error(str(e))
-        except Exception, e:
-            log.exception('Uncaught exception in %s.invalidCommand.'%
-                          cb.name())
 
     def findCallbacksForArgs(self, args):
         """Returns a two-tuple of (command, plugins) that has the command
@@ -803,6 +805,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         # False use or.
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
+        self.repliedTo = True
         if msg is None:
             msg = self.msg
         if prefixNick is not None:
