@@ -661,6 +661,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 cbs.append(cb)
                 threaded = threaded or cb.threaded
         def callInvalidCommands():
+            self.repliedTo = False
             for cb in cbs:
                 log.debug('Calling %s.invalidCommand.', cb.name())
                 try:
@@ -673,7 +674,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 log.debug('Finished calling %s.invalidCommand.', cb.name())
                 if self.repliedTo:
                     log.debug('Done calling invalidCommands: %s.',cb.name())
-                    self.repliedTo = False
                     return
         if threaded:
             name = 'Thread #%s (for invalidCommands)' % world.threadsSpawned
