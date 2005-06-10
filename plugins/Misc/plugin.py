@@ -278,9 +278,12 @@ class Misc(callbacks.Plugin):
         """
         predicates = {}
         nolimit = False
+        skipfirst = True
         if ircutils.isChannel(msg.args[0]):
             predicates['in'] = lambda m: ircutils.strEqual(m.args[0],
                                                            msg.args[0])
+        else:
+            skipfirst = False
         for (option, arg) in optlist:
             if option == 'from':
                 def f(m, arg=arg):
@@ -290,6 +293,8 @@ class Misc(callbacks.Plugin):
                 def f(m, arg=arg):
                     return ircutils.strEqual(m.args[0], arg)
                 predicates['in'] = f
+                if arg != msg.args[0]:
+                    skipfirst = False
             elif option == 'on':
                 def f(m, arg=arg):
                     return m.receivedOn == arg
@@ -312,7 +317,10 @@ class Misc(callbacks.Plugin):
             elif option == 'nolimit':
                 nolimit = True
         iterable = ifilter(self._validLastMsg, reversed(irc.state.history))
-        iterable.next() # Drop the first message.
+        if skipfirst:
+            # Drop the first message only if our current channel is the same as
+            # the channel we've been instructed to look at.
+            iterable.next()
         predicates = list(utils.iter.flatten(predicates.itervalues()))
         resp = []
         if irc.nested and not \
