@@ -384,6 +384,14 @@ class StrTest(SupyTestCase):
 
 
 class IterTest(SupyTestCase):
+    def testOne(self):
+        L = range(3)
+        i = iter(L)
+        self.assertEqual(utils.iter.one(i), 0)
+        self.assertEqual(utils.iter.one(i), 1)
+        self.assertEqual(utils.iter.one(i), 2)
+        self.assertRaises(ValueError, utils.iter.one, i)
+
     def testLimited(self):
         L = range(10)
         self.assertEqual([], list(utils.iter.limited(L, 0)))
