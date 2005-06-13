@@ -51,6 +51,18 @@ class CommandsTestCase(SupyTestCase):
         self.assertRaises(callbacks.Error,
                           self.assertState, spec, given, given)
 
+    def assertStateErrored(self, spec, given, target='test', errored=True,
+                           **kwargs):
+        msg = ircmsgs.privmsg(target, 'foo')
+        realIrc = getTestIrc()
+        realIrc.nick = 'test'
+        realIrc.state.supported['chantypes'] = '#'
+        irc = callbacks.SimpleProxy(realIrc, msg)
+        myspec = Spec(spec, **kwargs)
+        state = myspec(irc, msg, given)
+        self.assertEqual(state.errored, errored,
+                         'Expected %r, got %r' % (errored, state.errored))
+
 
 class GeneralContextTestCase(CommandsTestCase):
     def testEmptySpec(self):
@@ -135,7 +147,7 @@ class GeneralContextTestCase(CommandsTestCase):
         self.assertState(spec, ['bar'], ['bar'])
         self.assertState(spec, ['baz'], ['baz'])
         self.assertError(spec, ['ba'])
-        
+
 class ConverterTestCase(CommandsTestCase):
     def testUrlAllowsHttps(self):
         url = 'https://foo.bar/baz'
@@ -152,6 +164,10 @@ class ConverterTestCase(CommandsTestCase):
 class FirstTestCase(CommandsTestCase):
     def testRepr(self):
         self.failUnless(repr(first('int')))
+
+    def testFirstConverterFailsAndNotErroredState(self):
+        self.assertStateErrored([first('int', 'something')], ['words'],
+                                errored=False)
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 

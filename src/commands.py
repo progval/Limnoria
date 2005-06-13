@@ -757,15 +757,19 @@ class first(context):
         self.specs = map(contextify, specs)
 
     def __call__(self, irc, msg, args, state):
+        errored = False
         for spec in self.specs:
             try:
                 spec(irc, msg, args, state)
                 return
             except Exception, e:
+                errored = state.errored
+                state.errored = False
                 continue
         if hasattr(self, 'default'):
             state.args.append(self.default)
         else:
+            state.errored = errored
             raise e
 
 class reverse(context):
