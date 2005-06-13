@@ -30,7 +30,7 @@
 from supybot.test import *
 
 class TimeTestCase(PluginTestCase):
-    plugins = ('Time',)
+    plugins = ('Time','Utilities')
     def testSeconds(self):
         self.assertResponse('seconds 1s', '1')
         self.assertResponse('seconds 10s', '10')
