@@ -235,7 +235,6 @@ class Topic(callbacks.Plugin):
         Shuffles the topics in <channel>.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        newtopic = irc.state.getTopic(channel)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if len(topics) == 0 or len(topics) == 1:
             irc.error('I can\'t shuffle 1 or fewer topics.', Raise=True)
