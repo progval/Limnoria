@@ -1177,8 +1177,6 @@ class Commands(BasePlugin):
         except (SyntaxError, Error), e:
             self.log.debug('Error return: %s', utils.exnToString(e))
             irc.error(str(e))
-        except Error, e:
-            irc.error(str(e))
         except Exception, e:
             self.log.exception('Uncaught exception in %s.', command)
             if conf.supybot.reply.error.detailed():
