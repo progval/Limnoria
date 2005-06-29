@@ -80,7 +80,7 @@ class IrcCallback(IrcCommandDispatcher):
 
     def __init__(self, *args, **kwargs):
         super(IrcCallback, self).__init__(*args, **kwargs)
-        
+
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, self.name())
 
@@ -104,7 +104,7 @@ class IrcCallback(IrcCommandDispatcher):
         assert self not in after, '%s was in its own after.' % self.name()
         assert self not in before, '%s was in its own before.' % self.name()
         return (before, after)
-                
+
     def inFilter(self, irc, msg):
         """Used for filtering/modifying messages as they're entering.
 
@@ -244,7 +244,7 @@ class ChannelState(object):
         return nick in self.voices
     def isHalfop(self, nick):
         return nick in self.halfops
-    
+
     def addUser(self, user):
         "Adds a given user to the ChannelState.  Power prefixes are handled."
         nick = user.lstrip('@%+')
@@ -363,7 +363,7 @@ class IrcState(IrcCommandDispatcher):
     def __reduce__(self):
         return (self.__class__, (self.history, self.supported,
                                  self.nicksToHostmasks, self.channels))
-    
+
     def __eq__(self, other):
         return self.history == other.history and \
                self.channels == other.channels and \
@@ -400,7 +400,6 @@ class IrcState(IrcCommandDispatcher):
     _005converters = utils.InsensitivePreservingDict({
         'modes': int,
         'keylen': int,
-        'maxbans': int,
         'nicklen': int,
         'userlen': int,
         'hostlen': int,
@@ -425,6 +424,34 @@ class IrcState(IrcCommandDispatcher):
             return dict(zip('ovh', s))
     _005converters['prefix'] = _prefixParser
     del _prefixParser
+    def _maxlistParser(s):
+        modes = ''
+        limits = []
+        pairs = s.split(',')
+        for pair in pairs:
+            (mode, limit) = pair.split(':', 1)
+            modes += mode
+            limits += (int(limit),) * len(mode)
+        return dict(zip(modes, limits))
+    _005converters['maxlist'] = _maxlistParser
+    del _maxlistParser
+    def _maxbansParser(s):
+        # IRCd using a MAXLIST style string (IRCNet)
+        if ':' in s:
+            modes = ''
+            limits = []
+            pairs = s.split(',')
+            for pair in pairs:
+                (mode, limit) = pair.split(':', 1)
+                modes += mode
+                limits += (int(limit),) * len(mode)
+            d = dict(zip(modes, limits))
+            assert 'b' in d
+            return d['b']
+        else:
+            return int(s)
+    _005converters['maxbans'] = _maxbansParser
+    del _maxbansParser
     def do005(self, irc, msg):
         for arg in msg.args[1:-1]: # 0 is nick, -1 is "are supported"
             if '=' in arg:
@@ -437,7 +464,7 @@ class IrcState(IrcCommandDispatcher):
                     log.error('Name: %s, Converter: %s', name, converter)
             else:
                 self.supported[arg] = None
-        
+
     def do352(self, irc, msg):
         # WHO reply.
         (nick, user, host) = (msg.args[5], msg.args[2], msg.args[3])

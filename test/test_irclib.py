@@ -236,7 +236,7 @@ class IrcStateTestCase(SupyTestCase):
         m = ircmsgs.kick('#foo', self.irc.nick, prefix=self.irc.prefix)
         st.addMsg(self.irc, m)
         self.failIf('#foo' in st.channels)
-        
+
     def testAddMsgRemovesOpsProperly(self):
         st = irclib.IrcState()
         st.channels['#foo'] = irclib.ChannelState()
@@ -283,7 +283,13 @@ class IrcStateTestCase(SupyTestCase):
         state.addMsg(self.irc, ircmsgs.IrcMsg(':desolate.wasteland.org 005 jemfinch NOQUIT WATCH=128 SAFELIST MODES=6 MAXCHANNELS=10 MAXBANS=100 NICKLEN=30 TOPICLEN=307 KICKLEN=307 CHANTYPES=&# PREFIX=@+ NETWORK=DALnet SILENCE=10 :are available on this server'))
         self.assertEqual(state.supported['prefix']['o'], '@')
         self.assertEqual(state.supported['prefix']['v'], '+')
-                     
+
+    def testIRCNet005(self):
+        state = irclib.IrcState()
+        # Testing IRCNet's misuse of MAXBANS
+        state.addMsg(self.irc, ircmsgs.IrcMsg(':irc.inet.tele.dk 005 adkwbot WALLCHOPS KNOCK EXCEPTS INVEX MODES=4 MAXCHANNELS=20 MAXBANS=beI:100 MAXTARGETS=4 NICKLEN=9 TOPICLEN=120 KICKLEN=90 :are supported by this server'))
+        self.assertEqual(state.supported['maxbans'], 100)
+
     def testEmptyTopic(self):
         state = irclib.IrcState()
         state.addMsg(self.irc, ircmsgs.topic('#foo'))
