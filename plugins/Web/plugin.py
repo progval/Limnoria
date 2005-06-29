@@ -88,8 +88,8 @@ class Web(callbacks.PluginRegexp):
             try:
                 parser.feed(text)
             except HTMLParser.HTMLParseError:
-                self.log.debug('Unable to parse %u', url)
-                return
+                self.log.debug('Encountered a problem parsing %u.  Title may '
+                               'already be set, though', url)
             if parser.title is not None:
                 domain = utils.web.getDomain(url)
                 title = utils.web.htmlToText(parser.title.strip())
@@ -164,9 +164,8 @@ class Web(callbacks.PluginRegexp):
         try:
             parser.feed(text)
         except HTMLParser.HTMLParseError:
-            irc.reply(format('That URL appears to have no HTML title within '
-                             'the first %i bytes.', size))
-            return
+            self.log.debug('Encountered a problem parsing %u.  Title may '
+                           'already be set, though', url)
         if parser.title is not None:
             irc.reply(utils.web.htmlToText(parser.title.strip()))
         else:
