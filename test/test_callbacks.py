@@ -291,7 +291,7 @@ class ProperStringificationOfReplyArgs(PluginTestCase):
         self.assertResponse('expectsstring lower [nonstring int]', '1')
 
 class PrivmsgTestCase(ChannelPluginTestCase):
-    plugins = ('Utilities', 'Misc', 'Web', 'Karma')
+    plugins = ('Utilities', 'Misc', 'Web', 'Karma', 'String')
     conf.allowEval = True
     timeout = 2
     def testEmptySquareBrackets(self):
@@ -322,14 +322,14 @@ class PrivmsgTestCase(ChannelPluginTestCase):
                             '\x01ACTION foo\x01')
 
     def testReplyWithNickPrefix(self):
-        self.feedMsg('@strlen foo')
+        self.feedMsg('@len foo')
         m = self.irc.takeMsg()
         self.failUnless(m is not None, 'm: %r' % m)
         self.failUnless(m.args[1].startswith(self.nick))
         try:
             original = conf.supybot.reply.withNickPrefix()
             conf.supybot.reply.withNickPrefix.setValue(False)
-            self.feedMsg('@strlen foobar')
+            self.feedMsg('@len foobar')
             m = self.irc.takeMsg()
             self.failUnless(m is not None)
             self.failIf(m.args[1].startswith(self.nick))
