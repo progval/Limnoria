@@ -694,7 +694,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             if not hasattr(cb, 'getCommand'):
                 continue
             L = cb.getCommand(args)
-            log.debug('%s.getCommand(%r) returned %r', cb.name(), args, L)
+            #log.debug('%s.getCommand(%r) returned %r', cb.name(), args, L)
             if L and L >= maxL:
                 maxL = L
                 cbs.append((cb, L))
