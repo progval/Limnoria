@@ -922,6 +922,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             self.evalArgs()
 
     def error(self, s='', Raise=False, **kwargs):
+        self.repliedTo = True
         if Raise:
             if s:
                 raise Error, s
