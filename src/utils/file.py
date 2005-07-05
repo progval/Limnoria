@@ -36,6 +36,32 @@ import shutil
 import os.path
 from iter import ifilter
 
+def contents(filename):
+    return file(filename).read()
+
+def open(filename, mode='wb', *args, **kwargs):
+    """filename -> file object.
+
+    Returns a file object for filename, creating as many directories as may be
+    necessary.  I.e., if the filename is ./foo/bar/baz, and . exists, and ./foo
+    exists, but ./foo/bar does not exist, bar will be created before opening
+    baz in it.
+    """
+    if mode not in ('w', 'wb'):
+        raise ValueError, 'utils.file.open expects to write.'
+    (dirname, basename) = os.path.split(filename)
+    os.makedirs(dirname)
+    return file(filename, mode, *args, **kwargs)
+
+def copy(src, dst):
+    """src, dst -> None
+
+    Copies src to dst, using this module's 'open' function to open dst.
+    """
+    srcfd = file(src)
+    dstfd = open(dst, 'wb')
+    shutil.copyfileobj(srcfd, dstfd)
+    
 def writeLine(fd, line):
     fd.write(line)
     if not line.endswith('\n'):
