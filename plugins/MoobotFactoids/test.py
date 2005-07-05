@@ -65,7 +65,7 @@ class OptionListTestCase(SupyTestCase):
         self._testOptions('((a)|(b))', ['(a)', '(b)'])
 
 class FactoidsTestCase(ChannelPluginTestCase):
-    plugins = ('MoobotFactoids', 'User', 'String', 'Utilities')
+    plugins = ('MoobotFactoids', 'User', 'String', 'Utilities', 'Web')
     config = {'reply.whenNotCommand': False}
     def setUp(self):
         ChannelPluginTestCase.setUp(self)
