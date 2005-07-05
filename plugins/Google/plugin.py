@@ -405,7 +405,7 @@ class Google(callbacks.PluginRegexp):
             s = utils.web.htmlToText(s)
             irc.reply(s)
         else:
-            irc.reply('Google return not phonebook results.')
+            irc.reply('Google\'s phonebook didn\'t come up with anything.')
     phonebook = wrap(phonebook, ['text'])
 
 
