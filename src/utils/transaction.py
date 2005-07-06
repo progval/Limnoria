@@ -78,12 +78,12 @@ class TransactionMixin(python.Object):
     def _replacement(self, filename):
         return self.dirize(self.REPLACEMENTS, self.escape(filename))
     
-    def checkCwd(self):
+    def _checkCwd(self):
         expected = File.contents(self.dirize('cwd'))
         if os.getcwd() != expected:
             raise InvalidCwd(expected)
         
-    def journalCommands(self):
+    def _journalCommands(self):
         journal = file(self._journalName)
         for line in journal:
             line = line.rstrip('\n')
@@ -116,7 +116,7 @@ class Transaction(TransactionMixin):
         cwd.write(os.getcwd())
         cwd.close()
 
-    def journalCommand(self, command, *args):
+    def _journalCommand(self, command, *args):
         File.writeLine(self._journal,
                        '%s %s' % (command, ' '.join(map(str, args))))
         self._journal.flush()
@@ -125,24 +125,24 @@ class Transaction(TransactionMixin):
         File.copy(filename, self._original(filename))
 
     def replace(self, filename):
-        self.checkCwd()
+        self._checkCwd()
         self._makeOriginal(filename)
-        self.journalCommand('replace', filename)
+        self._journalCommand('replace', filename)
         return File.open(self._replacement(filename))
 
     def append(self, filename):
-        self.checkCwd()
+        self._checkCwd()
         length = os.stat(filename).st_size
-        self.journalCommand('append', filename, length)
+        self._journalCommand('append', filename, length)
         replacement = self._replacement(filename)
         File.copy(filename, replacement)
         return file(replacement, 'a')
 
     def commit(self, removeWhenComplete=True):
         self._journal.close()
-        self.checkCwd()
+        self._checkCwd()
         File.touch(self.dirize('commit'))
-        for (command, args) in self.journalCommands():
+        for (command, args) in self._journalCommands():
             methodName = 'commit%s' % command.capitalize()
             getattr(self, methodName)(*args)
         File.touch(self.dirize('committed'))
@@ -158,10 +158,10 @@ class Transaction(TransactionMixin):
 
 class Rollback(TransactionMixin):
     def rollback(self, removeWhenComplete=True):
-        self.checkCwd()
+        self._checkCwd()
         if not os.path.exists(self.dirize('commit')):
             return # No action taken; commit hadn't begun.
-        for (command, args) in self.journalCommands():
+        for (command, args) in self._journalCommands():
             methodName = 'rollback%s' % command.capitalize()
             getattr(self, methodName)(*args)
         if removeWhenComplete:
