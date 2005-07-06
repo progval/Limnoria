@@ -108,7 +108,7 @@ class Transaction(TransactionMixin):
         try:
             os.rename(self.txnDir, self.dir)
         except EnvironmentError, e:
-            raise TransactionAcquisitionFailure(self.txnDir, e)
+            raise FailedAcquisition(self.txnDir, e)
         os.mkdir(self.dirize(self.ORIGINALS))
         os.mkdir(self.dirize(self.REPLACEMENTS))
         self._journal = file(self._journalName, 'a')
