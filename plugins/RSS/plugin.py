@@ -256,9 +256,13 @@ class RSS(callbacks.Plugin):
 
     def getHeadlines(self, feed):
         headlines = []
+        if 'encoding' in feed:
+            conv = lambda s: s.encode(feed['encoding'], 'replace')
+        else:
+            conv = lambda s: s
         for d in feed['items']:
             if 'title' in d:
-                title = utils.web.htmlToText(d['title']).strip()
+                title = conv(utils.web.htmlToText(d['title']).strip())
                 link = d.get('link')
                 if link:
                     headlines.append((title, link))

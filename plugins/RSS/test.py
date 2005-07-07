@@ -75,6 +75,10 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertError('advogato')
             self.assertError('rss advogato')
 
+        def testNonAsciiFeeds(self):
+            self.assertNotError('rss http://www.heise.de/newsticker/heise.rdf')
+            self.assertNotError('rss http://www.golem.de/rss.php?feed=ATOM0.3')
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 
