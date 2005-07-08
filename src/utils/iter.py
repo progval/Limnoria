@@ -148,11 +148,6 @@ def ilen(iterable):
         i += 1
     return i
 
-def one(iterable):
-    for x in iterable:
-        return x
-    raise ValueError, 'Empty iterable: %r' % iterable
-
 def startswith(long, short):
     longI = iter(long)
     shortI = iter(short)
