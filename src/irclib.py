@@ -290,24 +290,24 @@ class ChannelState(object):
     def doMode(self, msg):
         def getSet(c):
             if c == 'o':
-                set = self.ops
+                Set = self.ops
             elif c == 'v':
-                set = self.voices
+                Set = self.voices
             elif c == 'h':
-                set = self.halfops
+                Set = self.halfops
             elif c == 'b':
-                set = self.bans
+                Set = self.bans
             else: # We don't care yet, so we'll just return an empty set.
-                set = set()
-            return set
+                Set = set()
+            return Set
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
             (action, modeChar) = mode
             if modeChar in 'ovhbeq': # We don't handle e or q yet.
-                set = getSet(modeChar)
+                Set = getSet(modeChar)
                 if action == '-':
-                    set.discard(value)
+                    Set.discard(value)
                 elif action == '+':
-                    set.add(value)
+                    Set.add(value)
             else:
                 if action == '+':
                     self.setMode(modeChar, value)
