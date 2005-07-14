@@ -117,7 +117,7 @@ class Format(callbacks.Plugin):
     def capitalize(self, irc, msg, args, text):
         """<text>
 
-        Returns <text> lowercased.
+        Returns <text> capitalized.
         """
         irc.reply(text.capitalize())
     capitalize = wrap(capitalize, ['text'])
@@ -125,7 +125,7 @@ class Format(callbacks.Plugin):
     def title(self, irc, msg, args, text):
         """<text>
 
-        Returns <text> lowercased.
+        Returns <text> titlecased.
         """
         irc.reply(text.title())
     title = wrap(title, ['text'])
@@ -169,7 +169,7 @@ class Format(callbacks.Plugin):
         except IndexError:
             irc.errorInvalid('field')
     field = wrap(field, ['index', 'text'])
-                     
+
     def format(self, irc, msg, args):
         """<format string> [<arg> ...]
 
