@@ -155,6 +155,16 @@ class Transaction(TransactionMixin):
     def commitAppend(self, filename, length):
         shutil.copy(self._replacement(filename), filename)
 
+    # XXX need to be able to create files transactionally. (easy; just be sure
+    #     the file doesn't exist in the real tree; remove it in rollback if it
+    #     exists)
+    # XXX need to be able to delete files transactionally. (easy; just be sure
+    #     the file exists in the real tree and keep a copy of it; in rollback
+    #     just copy the file back)
+    # XXX need to be able to rename files transactionally. (hard; especially
+    #     with renames that depend on one another.  It might be easier to do
+    #     rename separate from relocate.)
+
 
 class Rollback(TransactionMixin):
     def rollback(self, removeWhenComplete=True):
