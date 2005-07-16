@@ -160,6 +160,13 @@ class Network(callbacks.Plugin):
             normal = []
             halfops = []
             for channel in channels:
+                chan = irc.state.channels.get(channel)
+                if chan:
+                    # Skip channels the callee isn't in.  This prevents us
+                    # leaking information when the channel is +s or the target
+                    # is +i
+                    if replyMsg.nick not in chan.users:
+                        continue
                 if channel.startswith('@'):
                     ops.append(channel[1:])
                 elif channel.startswith('%'):
