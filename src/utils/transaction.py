@@ -94,25 +94,8 @@ class TransactionMixin(python.Object):
 
 class Transaction(TransactionMixin):
     # XXX Transaction needs to be made threadsafe.
-    
-    # XXX There needs to be a way, given a transaction, to get a
-    #     "sub-transaction", which:
-    #
-    #     1. Doesn't try to grab the txnDir and move it, but instead is just
-    #        given the actual directory being used and uses that.
-    #     2. Acquires the lock of the original transaction, only releasing it
-    #        when its .commit method is called (assuming Transaction is
-    #        threadsafe).
-    #     3. Has a no-op .commit method (i.e., doesn't commit).
-    #
-    #     This is so that, for instance, an object with an active Transaction
-    #     can give other objects a Transaction-ish object without worrying that
-    #     the transaction will be committed, while still allowing those objects
-    #     to work properly with real transactions (i.e., they still call
-    #     as they would on a normal Transaction, it just has no effect with a
-    #     sub-transaction).
     def __init__(self, *args, **kwargs):
-        """Transaction(root, txnDir) -> None
+        """Transaction(txnDir) -> None
 
         txnDir is the directory that will hold the transaction's working files
         and such.  If it can't be renamed, there is probably an active
@@ -142,6 +125,26 @@ class Transaction(TransactionMixin):
     def _makeOriginal(self, filename):
         File.copy(filename, self._original(filename))
 
+    # XXX There needs to be a way, given a transaction, to get a
+    #     "sub-transaction", which:
+    #
+    #     1. Doesn't try to grab the txnDir and move it, but instead is just
+    #        given the actual directory being used and uses that.
+    #     2. Acquires the lock of the original transaction, only releasing it
+    #        when its .commit method is called (assuming Transaction is
+    #        threadsafe).
+    #     3. Has a no-op .commit method (i.e., doesn't commit).
+    #
+    #     This is so that, for instance, an object with an active Transaction
+    #     can give other objects a Transaction-ish object without worrying that
+    #     the transaction will be committed, while still allowing those objects
+    #     to work properly with real transactions (i.e., they still call
+    #     as they would on a normal Transaction, it just has no effect with a
+    #     sub-transaction).
+    #     The method that returns a subtransaction should be called "child."
+    def child(self):
+        raise NotImplementedError
+    
     # XXX create, replace, etc. return file objects.  This class should keep a
     #     list of such file descriptors and only allow a commit if all of them
     #     are closed.  Trying to commit with open file objects should raise an
