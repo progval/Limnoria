@@ -124,7 +124,29 @@ class Transaction(TransactionMixin):
     def _makeOriginal(self, filename):
         File.copy(filename, self._original(filename))
 
+    # XXX create, replace, etc. return file objects.  This class should keep a
+    #     list of such file descriptors and only allow a commit if all of them
+    #     are closed.  Trying to commit with open file objects should raise an
+    #     exception.
+    def create(self, filename):
+        """
+        Returns a file object for a filename that should be created (with
+        the contents as they were written to the filename) when the transaction
+        is committed.
+        """
+        raise NotImplementedError # XXX.
+
+    def mkdir(self, filename):
+        raise NotImplementedError # XXX
+
+    def delete(self, filename):
+        raise NotImplementedError # XXX
+
     def replace(self, filename):
+        """
+        Returns a file object for a filename that should be replaced by the
+        contents written to the file object when the transaction is committed.
+        """
         self._checkCwd()
         self._makeOriginal(filename)
         self._journalCommand('replace', filename)
@@ -155,12 +177,6 @@ class Transaction(TransactionMixin):
     def commitAppend(self, filename, length):
         shutil.copy(self._replacement(filename), filename)
 
-    # XXX need to be able to create files transactionally. (easy; just be sure
-    #     the file doesn't exist in the real tree; remove it in rollback if it
-    #     exists)
-    # XXX need to be able to delete files transactionally. (easy; just be sure
-    #     the file exists in the real tree and keep a copy of it; in rollback
-    #     just copy the file back)
     # XXX need to be able to rename files transactionally. (hard; especially
     #     with renames that depend on one another.  It might be easier to do
     #     rename separate from relocate.)
