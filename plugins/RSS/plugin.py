@@ -395,13 +395,13 @@ class RSS(callbacks.Plugin):
         except registry.NonExistentRegistryEntry:
             pass
         feed = self.getFeed(url)
-        info = feed.get('channel')
+        info = feed.get('feed')
         if not info:
             irc.error('I couldn\'t retrieve that RSS feed.')
             return
-        # check the 'modified' key, if it's there, convert it here first
-        if 'modified' in feed:
-            seconds = time.mktime(feed['modified'])
+        # check the 'modified_parsed' key, if it's there, convert it here first
+        if 'modified' in info:
+            seconds = time.mktime(info['modified_parsed'])
             now = time.mktime(time.gmtime())
             when = utils.timeElapsed(now - seconds) + ' ago'
         else:
