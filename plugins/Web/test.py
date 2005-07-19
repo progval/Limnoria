@@ -66,7 +66,8 @@ class WebTestCase(ChannelPluginTestCase):
             self.assertResponse('title '
                                 'http://www.space.com/scienceastronomy/'
                                 'jupiter_dark_spot_031023.html',
-                                'Mystery Spot on Jupiter Baffles Astronomers')
+                                'SPACE.com -- Mystery Spot on Jupiter Baffles '
+                                'Astronomers')
             # Checks for @title not-working correctly
             self.assertResponse('title '
                 'http://www.catb.org/~esr/jargon/html/F/foo.html',
@@ -77,6 +78,9 @@ class WebTestCase(ChannelPluginTestCase):
                 'http://www.irinnews.org/report.asp?ReportID=45910&'
                 'SelectRegion=West_Africa&SelectCountry=CHAD',
                 r'document\.write\(')
+            # Checks that title parser grabs the full title instead of just
+            # part of it.
+            self.assertRegexp('title http://www.n-e-r-d.com/', 'N.*E.*R.*D')
 
         def testNetcraft(self):
             self.assertNotError('netcraft slashdot.org')

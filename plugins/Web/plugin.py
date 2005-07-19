@@ -28,7 +28,8 @@
 ###
 
 import re
-import HTMLParser
+import sgmllib
+import htmlentitydefs
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -37,23 +38,31 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class Title(HTMLParser.HTMLParser):
-    def __init__(self, *args, **kwargs):
+class Title(sgmllib.SGMLParser):
+    entitydefs = htmlentitydefs.entitydefs.copy()
+    entitydefs['nbsp'] = ' '
+    def __init__(self):
         self.inTitle = False
-        self.title = None
-        HTMLParser.HTMLParser.__init__(self, *args, **kwargs)
+        self.title = ''
+        sgmllib.SGMLParser.__init__(self)
 
-    def handle_starttag(self, tag, attrs):
-        if tag == 'title':
-            self.inTitle = True
+    def start_title(self, attrs):
+        self.inTitle = True
+
+    def end_title(self):
+        self.inTitle = False
+
+    def unknown_entityref(self, name):
+        if self.inTitle:
+            self.title += ' '
+
+    def unknown_charref(self, name):
+        if self.inTitle:
+            self.title += ' '
 
     def handle_data(self, data):
         if self.inTitle:
-            self.title = data
-
-    def handle_endtag(self, tag):
-        if tag == 'title':
-            self.inTitle = False
+            self.title += data
 
 class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
@@ -90,7 +99,7 @@ class Web(callbacks.PluginRegexp):
             except HTMLParser.HTMLParseError:
                 self.log.debug('Encountered a problem parsing %u.  Title may '
                                'already be set, though', url)
-            if parser.title is not None:
+            if parser.title:
                 domain = utils.web.getDomain(url)
                 title = utils.web.htmlToText(parser.title.strip())
                 s = format('Title: %s (at %s)', title, domain)
@@ -166,7 +175,7 @@ class Web(callbacks.PluginRegexp):
         except HTMLParser.HTMLParseError:
             self.log.debug('Encountered a problem parsing %u.  Title may '
                            'already be set, though', url)
-        if parser.title is not None:
+        if parser.title:
             irc.reply(utils.web.htmlToText(parser.title.strip()))
         else:
             irc.reply(format('That URL appears to have no HTML title '
