@@ -43,17 +43,6 @@ class Object(object):
         return not self == other
     
 
-class TupleSubclass(type):
-    def __new__(cls, name, bases, dict):
-        assert tuple in bases
-        assert '__attrs__' in dict
-        for (i, attr) in enumerate(dict['__attrs__']):
-            dict[attr] = property(lambda self, i=i: self[i])
-        del dict['__attrs__']
-        # XXX Check the length of the iterable given.
-        return super(TupleSubclass, cls).__new__(cls, name, bases, dict)
-        
-        
 class Synchronized(type):
     METHODS = '__synchronized__'
     LOCK = '_Synchronized_rlock'
