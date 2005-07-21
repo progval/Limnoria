@@ -54,15 +54,6 @@ class TupleSubclass(type):
         return super(TupleSubclass, cls).__new__(cls, name, bases, dict)
         
         
-class Acquire(object):
-    # Mixin for acquiring attributes from parents.
-    def __init__(self, attr):
-        self.__parent = attr
-
-    def __getattr__(self, attr):
-        return getattr(self.__parent, attr)
-    
-
 class Synchronized(type):
     METHODS = '__synchronized__'
     LOCK = '_Synchronized_rlock'
