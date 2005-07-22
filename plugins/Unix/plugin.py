@@ -154,6 +154,10 @@ class Unix(callbacks.Plugin):
                 # aspell puts extra whitespace, ignore it
                 while not line.strip('\r\n'):
                     line = pipeReadline(r)
+                # cache an extra line in case aspell's first line says the word
+                # is spelled correctly, but subsequent lines offer spelling
+                # suggestions
+                line2 = pipeReadline(r)
             except TimeoutError:
                 irc.error('The spell command timed out.')
                 return
@@ -162,6 +166,10 @@ class Unix(callbacks.Plugin):
             w.close()
             inst.wait()
         # parse the output
+        # aspell will sometimes list spelling suggestions after a '*' or '+'
+        # line for complex words.
+        if line[0] in '*+' and line2.strip('\r\n'):
+            line = line2
         if line[0] in '*+':
             resp = format('%q may be spelled correctly.', word)
         elif line[0] == '#':
