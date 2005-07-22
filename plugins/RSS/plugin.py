@@ -408,7 +408,7 @@ class RSS(callbacks.Plugin):
             when = 'time unavailable'
         # The rest of the entries are all available in the channel key
         response = format('Title: %s;  URL: %u;  '
-                          'Description: %s;  Last updated %s.',
+                          'Description: %s;  Last updated: %s.',
                           info.get('title', 'unavailable').strip(),
                           info.get('link', 'unavailable').strip(),
                           info.get('description', 'unavailable').strip(),
