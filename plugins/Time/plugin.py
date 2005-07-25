@@ -58,7 +58,7 @@ class Time(callbacks.Plugin):
 
         Returns the number of seconds in the number of <years>, <weeks>,
         <days>, <hours>, <minutes>, and <seconds> given.  An example usage is
-        "seconds 2h 30m", which would return 9000, which is 3600*2 + 30*60.
+        "seconds 2h 30m", which would return 9000, which is '3600*2 + 30*60'.
         Useful for scheduling events at a given number of seconds in the
         future.
         """
