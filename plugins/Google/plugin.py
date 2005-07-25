@@ -213,7 +213,7 @@ class Google(callbacks.PluginRegexp):
                            many('something')])
 
     def meta(self, irc, msg, args, optlist, text):
-        """<search> [--(language,restrict)=<value>] [--{similar,notsafe}]
+        """<search> [--{language,restrict} <value>] [--{similar,notsafe}]
 
         Searches google and gives all the interesting meta information about
         the search.  See the help for the google command for a detailed
