@@ -83,7 +83,14 @@ class PluginDoc(object):
         if escaped and self.escape:
             line = cgi.escape(line)
         if self.escape:
-            line = line.replace('[', '&#91;').replace(']', '&#93;')
+            sections = line.split("'")
+            slen = len(sections) - 1
+            # Don't want to escape characters inside of single-quoted strings
+            if slen and slen % 2 == 0:
+                for i in xrange(0, 2, slen):
+                    sections[i] = sections[i].replace('[', '&#91;')
+                    sections[i] = sections[i].replace(']', '&#93;')
+            line = "'".join(sections)
         indent = '  ' * indent
         lines = textwrap.wrap(line, 79,
                               initial_indent=indent,
@@ -144,7 +151,7 @@ class PluginDoc(object):
             indent = origindent + 1
             try:
                 default = str(v)
-                if isinstance(v._default, basestring):
+                if isinstance(v._default, basestring) or v._default is None:
                     default = utils.str.dqrepr(default)
                 help = v.help()
                 channelValue = v.channelValue
