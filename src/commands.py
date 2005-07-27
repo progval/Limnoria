@@ -692,7 +692,7 @@ class rest(context):
             except Exception, e:
                 args[:] = original
         else:
-            raise callbacks.ArgumentError
+            raise IndexError
 
 # additional means:  Look for this (and make sure it's of this type).  If
 # there are no arguments for us to check, then use our default.
