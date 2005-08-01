@@ -772,9 +772,12 @@ class ChannelsDictionary(utils.IterableMap):
                 reader.readFile(filename)
                 self.noFlush = False
                 self.flush()
-            except Exception, e:
+            except EnvironmentError, e:
                 log.error('Invalid channel database, resetting to empty.')
                 log.error('Exact error: %s', utils.exnToString(e))
+            except Exception, e:
+                log.error('Invalid channel database, resetting to empty.')
+                log.exception('Exact error:')
         finally:
             self.noFlush = False
 
