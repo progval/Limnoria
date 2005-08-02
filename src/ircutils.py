@@ -114,10 +114,9 @@ def strEqual(nick1, nick2):
 
 nickEqual = strEqual
 
-_nickchars = r'_[]\`^{}|-'
-nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
+_nickchars = r'[]\`_^{|}'
+nickRe = re.compile(r'^[A-Za-z%s][-0-9A-Za-z%s]*$'
                     % (re.escape(_nickchars), re.escape(_nickchars)))
-
 def isNick(s, strictRfc=True, nicklen=None):
     """s => bool
     Returns True if s is a valid IRC nick."""

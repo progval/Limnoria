@@ -187,6 +187,8 @@ class FunctionsTestCase(SupyTestCase):
             self.failIf(ircutils.isNick(''))
             self.failIf(ircutils.isNick('8foo'))
             self.failIf(ircutils.isNick('10'))
+            self.failIf(ircutils.isNick('-'))
+            self.failIf(ircutils.isNick('-foo'))
             conf.supybot.protocols.irc.strictRfc.setValue(False)
             self.failUnless(ircutils.isNick('services@something.undernet.net'))
         finally:
