@@ -128,7 +128,7 @@ class SqliteQuoteGrabsDB(object):
         cursor = db.cursor()
         cursor.execute("""SELECT id, quote FROM quotegrabs
                           WHERE nickeq(nick, %s)
-                          ORDER BY id ASC""", nick)
+                          ORDER BY id DESC""", nick)
         return [QuoteGrabsRecord(id, text=quote)
                 for (id, quote) in cursor.fetchall()]
 

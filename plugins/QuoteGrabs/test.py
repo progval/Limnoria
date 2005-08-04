@@ -60,7 +60,7 @@ class QuoteGrabsTestCase(ChannelPluginTestCase):
                                          prefix=testPrefix))
         self.assertNotError('grab foo')
         self.assertResponse('quotegrabs list foo',
-                            '#1: test and #2: %s...' %\
+                            '#2: %s... and #1: test' %\
                             ('a'*43)) # 50 - length of "#2: ..."
 
     def testDuplicateGrabs(self):
@@ -109,7 +109,7 @@ class QuoteGrabsTestCase(ChannelPluginTestCase):
         self.assertError('quotegrabs search test')  # still none in db
         self.assertNotError('grab foo')
         self.assertNotError('quotegrabs search test')
-        
+
 
 class QuoteGrabsNonChannelTestCase(QuoteGrabsTestCase):
     config = { 'databases.plugins.channelSpecific' : False }
