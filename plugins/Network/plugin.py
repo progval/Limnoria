@@ -162,10 +162,15 @@ class Network(callbacks.Plugin):
             for channel in channels:
                 chan = irc.state.channels.get(channel)
                 if chan:
-                    # Skip channels the callee isn't in.  This prevents us
-                    # leaking information when the channel is +s or the target
-                    # is +i
+                    # Skip channels the callee isn't in.  This helps prevents
+                    # us leaking information when the channel is +s or the
+                    # target is +i
                     if replyMsg.nick not in chan.users:
+                        continue
+                    # Skip +s channels the target is in only if the reply isn't
+                    # being sent to that channel
+                    if 's' in chan.modes and \
+                       not ircutils.strEqual(replyMsg.args[0], channel):
                         continue
                 if channel.startswith('@'):
                     ops.append(channel[1:])
