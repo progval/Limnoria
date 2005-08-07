@@ -273,6 +273,7 @@ class Services(callbacks.Plugin):
             # This is a catch-all for redundant messages from nickserv.
             pass
         elif ('now recognized' in s) or \
+             ('already identified' in s) or \
              ('now identified' in s):
             # freenode, oftc, arstechnica, zirc, ....
             # sorcery
