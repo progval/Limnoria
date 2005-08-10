@@ -74,6 +74,7 @@ def getCapability(name):
 
 def _reload():
     ircdb.users.reload()
+    ircdb.ignores.reload()
     ircdb.channels.reload()
     registry.open(world.registryFilename)
 
@@ -177,7 +178,7 @@ class Config(callbacks.Plugin):
             irc.replySuccess()
         else:
             irc.errorNoCapability(capability)
-        
+
     def channel(self, irc, msg, args, channel, group, value):
         """[<channel>] <name> [<value>]
 
