@@ -82,7 +82,8 @@ class IrcCallback(IrcCommandDispatcher):
         super(IrcCallback, self).__init__(*args, **kwargs)
 
     def __repr__(self):
-        return '<%s %s>' % (self.__class__.__name__, self.name())
+        return '<%s %s %s>' % \
+               (self.__class__.__name__, self.name(), object.__repr__(self))
 
     def name(self):
         """Returns the name of the callback."""

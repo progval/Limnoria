@@ -203,10 +203,11 @@ class Owner(callbacks.Plugin):
             if irc != newIrc:
                 newIrc.state.history = irc.state.history
         driver = drivers.newDriver(newIrc)
+        self._loadPlugins(newIrc)
         return newIrc
 
-    def do001(self, irc, msg):
-        self.log.info('Loading plugins (connected to %s).', irc.network)
+    def _loadPlugins(self, irc):
+        self.log.info('Loading plugins (connecting to %s).', irc.network)
         alwaysLoadImportant = conf.supybot.plugins.alwaysLoadImportant()
         important = conf.supybot.commands.defaultPlugins.importantPlugins()
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):

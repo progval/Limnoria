@@ -328,7 +328,7 @@ if __name__ == '__main__':
     import supybot.plugins.Owner as Owner
 
     owner = Owner.Class()
-    irclib._callbacks.append(owner)
+    #irclib._callbacks.append(owner)
 
     if options.profile:
         import profile
