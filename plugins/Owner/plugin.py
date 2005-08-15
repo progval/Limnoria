@@ -124,6 +124,8 @@ class Owner(callbacks.Plugin):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
     def __init__(self, irc=None):
+        if irc is not None:
+            assert not irc.getCallback(self.name())
         self.__parent = super(Owner, self)
         self.__parent.__init__(irc)
         # Setup log object/command.
@@ -254,7 +256,8 @@ class Owner(callbacks.Plugin):
     do422 = do377 = do376
 
     def doPrivmsg(self, irc, msg):
-        assert self is irc.callbacks[0], 'Owner isn\'t first callback.'
+        assert self is irc.callbacks[0], \
+               'Owner isn\'t first callback: %r' % irc.callbacks
         if ircmsgs.isCtcp(msg):
             return
         s = callbacks.addressed(irc.nick, msg)
