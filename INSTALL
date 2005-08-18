@@ -82,11 +82,9 @@ interpreter.  Exit by pressing CTRL-Z and then Return.  Now that that's
 setup, you'll want to cd into the directory that was created when you
 unzipped Supybot; I'll assume you unzipped it to 'C:\Supybot' for these
 instructions.  From 'C:\Supybot', run 'python setup.py install'.  This
-will install Supybot under 'C:\Python23\'.  If you want to install Supybot
-to a non-default location, see the notes at the end of this section.
-You will now have several new programs installed in
-'C:\Python23\Scripts\'.  The two that might be of particular interest to
-you, the new user, are 'supybot' and 'supybot-wizard'.  The former,
-'supybot', is the script to run an actual bot; the latter,
-'supybot-wizard', is an in-depth wizard that provides a nice user
-interface for creating a registry file for your bot.
+will install Supybot under 'C:\Python23\'.  You will now have several new
+programs installed in 'C:\Python23\Scripts\'.  The two that might be of
+particular interest to you, the new user, are 'supybot' and 'supybot-wizard'.
+The former, 'supybot', is the script to run an actual bot; the latter,
+'supybot-wizard', is an in-depth wizard that provides a nice user interface for
+creating a registry file for your bot.
