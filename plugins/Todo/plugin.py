@@ -44,7 +44,7 @@ import supybot.callbacks as callbacks
 
 class TodoRecord(dbi.Record):
     __fields__ = [
-          'priority',
+          ('priority', int),
           'at',
           'task',
           'active',
