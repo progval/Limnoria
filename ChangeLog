@@ -1,3 +1,57 @@
+2005-08-30  James Vega  <jamessan@supybot.com>
+
+	* Version 0.83.0!
+
+	* Updated the Services plugin to realize it is identified when
+	NickServ says that the bot is already identified.
+
+	* Updated Network.whois so that +s channels are only returned when in
+	that channel.
+
+	* Updated RSS.info to retrieve the proper information from
+	rssparser's results.
+
+	* Updated the RSS plugin to encode the headlines in the proper
+	charset, if the feed specifies an encoding.
+
+	* Fixed a bug in Todo.todo when negative priorities are used.
+
+	* Fixed a bug in Web where the entire title was not correctly parsed
+	from the web page.
+
+	* Fixed a bug in Web where the title was correctly parsed, but a later
+	parsing problem caused the command to not reply with the title.
+
+	* Fixed a bug in Misc.last where the last message in a channel was
+	skipped when the command was not called in that channel.
+
+	* Fixed a bug in Channel.ban remove and Channel.ignore remove when
+	there were no bans or ignores.
+
+	* Fixed a bug in User.hostmask list when there are no registered
+	hostmasks.
+
+	* Changed irc.reply's prefixName keyword argument to prefixNick.
+
+	* Updated the socket handling to properly detect when an IPV6
+	connection should be made.
+
+	* Updated irclib to handle IRCds (like IRCNet) which send a
+	MAXLIST-style value for the MAXBAN 005 key.
+
+	* Updated the plugin loading to happen during __init__ instead of when
+	receiving the 001 message.  This allows the bot to connect to networks
+	that require a CTCP response on connect.
+
+	* Updated the SIGHUP handler to reload the ignoresdb.
+
+	* Fixed a bug in ircutils.isNick so that it no longer allows nicks to
+	start with a hyphen.
+
+	* Fixed a bug in the first spec which would cause an error to be
+	raised if the first converter failed.
+
+
 2005-05-30 James Vega <jamessan@supybot.com>
 
 	* Version 0.83.0rc3!

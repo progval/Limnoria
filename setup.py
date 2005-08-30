@@ -154,7 +154,7 @@ package_dir = {'supybot': 'src',
 for plugin in plugins:
     package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
 
-version = '0.83.0rc3+darcs'
+version = '0.83.0'
 setup(
     # Metadata
     name='supybot',
