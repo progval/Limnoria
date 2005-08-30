@@ -53,6 +53,13 @@ copyright = '''
 # Copyright (c) %s, %%s
 # All rights reserved.
 #
+%%s
+###
+''' % time.strftime('%Y')
+# Here we use strip() instead of lstrip() on purpose.
+copyright = copyright.strip()
+
+license = '''
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -76,10 +83,8 @@ copyright = '''
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-###
-''' % time.strftime('%Y')
-# Here we use strip() instead of lstrip() on purpose.
-copyright = copyright.strip()
+'''
+license = license.lstrip()
 
 pluginTemplate = '''
 %s
@@ -187,6 +192,7 @@ Insert a description of your plugin here, with any notes, etc. about using it.
 
 def main():
     global copyright
+    global license
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
                                    version='Supybot %s' % conf.version)
     parser.add_option('-n', '--name', action='store', dest='name',
@@ -232,6 +238,9 @@ def main():
         appropriately?
         """).strip())
 
+        if not yn('Do you wish to use Supybot\'s license for your plugin?'):
+            license = '#'
+
     if threaded:
         threaded = 'threaded = True'
     else:
@@ -243,7 +252,7 @@ def main():
         name = something('What should the name of the plugin be?')
         if name.endswith('.py'):
             name = name[:-3]
-    copyright %= realName
+    copyright %= (realName, license)
 
     # Make the directory.
     os.mkdir(name)
