@@ -31,7 +31,7 @@
 	* Fixed a bug in User.hostmask list when there are no registered
 	hostmasks.
 
-	* Changed irc.reply's prefixName keyword argument to prefixNick.
+	* Changed the prefixName keyword argument to prefixNick.
 
 	* Updated the socket handling to properly detect when an IPV6
 	connection should be made.

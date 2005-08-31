@@ -1,3 +1,12 @@
+Version 0.83.0
+
+This far overdue release contains mostly bug-fixes.
+
+Incompatibilities:
+Changed the prefixName keyword argument (which appears in various places
+in callbacks.py and the reply-related irc methods) to prefixNick.
+
+
 Version 0.83.0rc3
 
 This release candidate contains mostly bug-fixes.
