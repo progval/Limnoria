@@ -132,18 +132,11 @@ class Owner(callbacks.Plugin):
         self.log = LogProxy(self.log)
         # Setup command flood detection.
         self.commands = ircutils.FloodQueue(60)
-        # Setup Irc objects, connected to networks.  If world.ircs is already
-        # populated, chances are that we're being reloaded, so don't do this.
-        if not world.ircs:
-            for network in conf.supybot.networks():
-                try:
-                    self._connect(network)
-                except socket.error, e:
-                    self.log.error('Could not connect to %s: %s.', network, e)
-                except Exception, e:
-                    self.log.exception('Exception connecting to %s:', network)
-                    self.log.error('Could not connect to %s: %s.', network, e)
         # Setup plugins and default plugins for commands.
+        #
+        # This needs to be done before we connect to any networks so that the
+        # children of supybot.plugins (the actual plugins) exist and can be
+        # loaded.
         for (name, s) in registry._cache.iteritems():
             if 'alwaysLoadDefault' in name or 'alwaysLoadImportant' in name:
                 continue
@@ -164,6 +157,17 @@ class Owner(callbacks.Plugin):
                 except ValueError: # unpack list of wrong size.
                     continue
                 registerDefaultPlugin(name, s)
+        # Setup Irc objects, connected to networks.  If world.ircs is already
+        # populated, chances are that we're being reloaded, so don't do this.
+        if not world.ircs:
+            for network in conf.supybot.networks():
+                try:
+                    self._connect(network)
+                except socket.error, e:
+                    self.log.error('Could not connect to %s: %s.', network, e)
+                except Exception, e:
+                    self.log.exception('Exception connecting to %s:', network)
+                    self.log.error('Could not connect to %s: %s.', network, e)
 
     def callPrecedence(self, irc):
         return ([], [cb for cb in irc.callbacks if cb is not self])
