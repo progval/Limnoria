@@ -1,4 +1,11 @@
-2005-08-30  James Vega  <jamessan@supybot.com>
+2005-09-01  James Vega <jamessan@supybot.com>
+
+	* Version 0.83.1!
+
+	* Fixed a bug in Owner where plugins would not be automatically loaded
+	unless the bot was connected to more than one network.
+
+2005-08-30  James Vega <jamessan@supybot.com>
 
 	* Version 0.83.0!
 
