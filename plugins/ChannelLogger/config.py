@@ -79,7 +79,7 @@ conf.registerGlobalValue(ChannelLogger.directories, 'timestamp',
     registry.Boolean(False, """Determines whether the bot will use a timestamp
     (determined by supybot.plugins.ChannelLogger.directories.timestamp.format)
     if using directories."""))
-conf.registerGlobalValue(ChannelLogger.timestamp, 'format',
+conf.registerGlobalValue(ChannelLogger.directories.timestamp, 'format',
     registry.String('%B', """Determines what timestamp format will be used in
     the directory stucture for channel logs if
     supybot.plugins.ChannelLogger.directories.timestamp is True."""))
