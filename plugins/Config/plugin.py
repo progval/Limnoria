@@ -224,9 +224,9 @@ class Config(callbacks.Plugin):
             else:
                 irc.reply('That configuration group exists, but seems to have '
                           'no help.  Try "config list %s" to see if it has '
-                          'any children values.')
+                          'any children values.' % group._name)
         else:
-            irc.error('%s has no help.' % name)
+            irc.error('%s has no help.' % group._name)
     help = wrap(help, ['configVar'])
 
     def default(self, irc, msg, args, group):
