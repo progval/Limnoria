@@ -54,7 +54,7 @@ class UserTestCase(PluginTestCase):
         self.assertNotError('hostmask remove foo %s' % self.prefix1)
         self.assertNotError('identify foo bar')
         self.assertRegexp('hostmask list', 'no registered hostmasks')
-        
+
 
     def testHostmask(self):
         self.assertResponse('hostmask', self.prefix)
@@ -67,8 +67,22 @@ class UserTestCase(PluginTestCase):
         self.assertNotError('register foo bar')
         self.assertError('register foo baz')
         self.failUnless(ircdb.users.getUserId('foo'))
+        self.assertError('unregister foo')
         self.assertNotError('unregister foo bar')
         self.assertRaises(KeyError, ircdb.users.getUserId, 'foo')
+
+    def testDisallowedUnregistration(self):
+        self.prefix = self.prefix1
+        self.assertNotError('register foo bar')
+        orig = conf.supybot.databases.users.allowUnregistration()
+        conf.supybot.databases.users.allowUnregistration.setValue(False)
+        try:
+            self.assertError('unregister foo')
+            m = self.irc.takeMsg()
+            self.failIf(m is not None, m)
+            self.failUnless(ircdb.users.getUserId('foo'))
+        finally:
+            conf.supybot.databases.users.allowUnregistration.setValue(orig)
 
     def testList(self):
         self.prefix = self.prefix1

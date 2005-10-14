@@ -135,7 +135,8 @@ class User(callbacks.Plugin):
                 self.log.warning('%s tried to unregister user %s.',
                                  msg.prefix, user.name)
                 irc.error('This command has been disabled.  You\'ll have to '
-                          'ask the owner of this bot to unregister your user.')
+                          'ask the owner of this bot to unregister your user.',
+                          Raise=True)
         if isOwner or user.checkPassword(password):
             ircdb.users.delUser(user.id)
             irc.replySuccess()
