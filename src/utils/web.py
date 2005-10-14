@@ -66,7 +66,7 @@ def strError(e):
         return TIMED_OUT
     elif n == 104:
         return RESET_BY_PEER
-    elif n in (8, 7, 3, 2, -2):
+    elif n in (8, 7, 3, 2, -2, -3):
         return UNKNOWN_HOST
     elif n == 403:
         return FORBIDDEN
