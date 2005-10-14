@@ -255,6 +255,8 @@ class IrcUser(object):
 
     def checkPassword(self, password):
         """Checks the user's password."""
+        if password is None:
+            return False
         if self.hashed:
             (salt, _) = self.password.split('|')
             return (self.password == utils.saltHash(password, salt=salt))
