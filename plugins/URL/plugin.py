@@ -105,6 +105,7 @@ class URL(callbacks.Plugin):
         f = None
         nolimit = False
         for (option, arg) in optlist:
+            arg = arg.lower()
             if option == 'nolimit':
                 nolimit = True
             elif option == 'from':
@@ -112,16 +113,16 @@ class URL(callbacks.Plugin):
                     return ircutils.strEqual(record.by, arg)
             elif option == 'with':
                 def f(record, arg=arg):
-                    return arg in record.url
+                    return arg in record.url.lower()
             elif option == 'without':
                 def f(record, arg=arg):
-                    return arg not in record.url
+                    return arg not in record.url.lower()
             elif option == 'proto':
                 def f(record, arg=arg):
-                    return record.url.startswith(arg)
+                    return record.url.lower().startswith(arg)
             elif option == 'near':
                 def f(record, arg=arg):
-                    return arg in record.near
+                    return arg in record.near.lower()
             if f is not None:
                 predicates.append(f)
         def predicate(record):
