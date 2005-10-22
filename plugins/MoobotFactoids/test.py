@@ -63,6 +63,8 @@ class OptionListTestCase(SupyTestCase):
         self._testOptions('(a|)', ['a', ''])
         self._testOptions('(|a)', ['a', ''])
         self._testOptions('((a)|(b))', ['(a)', '(b)'])
+        self._testOptions('^\\%(\\%(foo\\)\\@<!.\\)*$',
+                          ['^\\%(\\%(foo\\)\\@<!.\\)*$'])
 
 class FactoidsTestCase(ChannelPluginTestCase):
     plugins = ('MoobotFactoids', 'User', 'String', 'Utilities', 'Web')
