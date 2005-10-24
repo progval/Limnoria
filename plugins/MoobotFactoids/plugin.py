@@ -52,19 +52,13 @@ class OptionList(object):
             if not token:
                 return '(%s' % ''.join(ret) #)
             elif token == ')':
-                if len(ret) > 1:
-                    if '|' in ret:
-                        L = map(''.join,
-                                utils.iter.split('|'.__eq__, ret,
-                                                 yieldEmpty=True))
-                        return utils.iter.choice(L)
-                    else:
-                        return ''.join(ret)
-                    return [x for x in ret if x != '|']
-                elif len(ret) == 1:
-                        return '(%s)' % ret[0]
+                if '|' in ret:
+                    L = map(''.join,
+                            utils.iter.split('|'.__eq__, ret,
+                                             yieldEmpty=True))
+                    return utils.iter.choice(L)
                 else:
-                    return '()'
+                    return '(%s)' % ''.join(ret)
             elif token == '(':
                 ret.append(self._insideParens(lexer))
             elif token == '|':
