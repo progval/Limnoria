@@ -248,13 +248,13 @@ class ChannelState(object):
 
     def addUser(self, user):
         "Adds a given user to the ChannelState.  Power prefixes are handled."
-        nick = user.lstrip('@%+')
+        nick = user.lstrip('@%+&~')
         if not nick:
             return
-        while user and user[0] in '@%+':
+        while user and user[0] in '@%+&~':
             (marker, user) = (user[0], user[1:])
             assert user, 'Looks like my caller is passing chars, not nicks.'
-            if marker == '@':
+            if marker in '@&~':
                 self.ops.add(nick)
             elif marker == '%':
                 self.halfops.add(nick)
