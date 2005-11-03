@@ -53,7 +53,7 @@ class SqliteKarmaDB(object):
         except ImportError:
             raise callbacks.Error, 'You need to have PySQLite installed to ' \
                                    'use Karma.  Download it at ' \
-                                   '<http://pysqlite.sf.net/>'
+                                   '<http://pysqlite.org/>'
         filename = plugins.makeChannelFilename(self.filename, channel)
         if filename in self.dbs:
             return self.dbs[filename]

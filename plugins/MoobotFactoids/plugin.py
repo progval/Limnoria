@@ -102,7 +102,7 @@ class SqliteMoobotDB(object):
         except ImportError:
             raise callbacks.Error, \
                   'You need to have PySQLite installed to use this ' \
-                  'plugin.  Download it at <http://pysqlite.sf.net/>'
+                  'plugin.  Download it at <http://pysqlite.org/>'
         if channel in self.dbs:
             return self.dbs[channel]
         filename = plugins.makeChannelFilename(self.filename, channel)

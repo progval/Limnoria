@@ -43,7 +43,7 @@ try:
     import sqlite
 except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
+                           'plugin.  Download it at <http://pysqlite.org/>'
 
 def getFactoid(irc, msg, args, state):
     assert not state.channel
