@@ -77,8 +77,6 @@ class Praise(plugins.ChannelIdDatabasePlugin):
                 return
         text = self._replaceFirstPerson(praise.text, msg.nick)
         reason = self._replaceFirstPerson(reason, msg.nick)
-        if target.endswith('.'):
-            target = target.rstrip('.')
         target = self._replaceFirstPerson(target, msg.nick)
         text = text.replace('$who', target)
         if reason:
