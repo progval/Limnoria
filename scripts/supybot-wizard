@@ -172,9 +172,8 @@ def main():
     if args:
         parser.error('This program takes no non-option arguments.')
     output("""This is a wizard to help you start running supybot.  What it
-    will do is create a single Python file whose effect will be that of
-    starting an IRC bot with the options you select here.  So hold on tight
-    and be ready to be interrogated :)""")
+    will do is create the necessary config files based on the options you
+    select here.  So hold on tight and be ready to be interrogated :)""")
 
 
     output("""First of all, we can bold the questions you're asked so you can
