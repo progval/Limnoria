@@ -251,6 +251,8 @@ class ChannelState(object):
         nick = user.lstrip('@%+&~')
         if not nick:
             return
+        # & is used to denote protected users in UnrealIRCd
+        # ~ is used to denote channel owner in UnrealIRCd
         while user and user[0] in '@%+&~':
             (marker, user) = (user[0], user[1:])
             assert user, 'Looks like my caller is passing chars, not nicks.'
