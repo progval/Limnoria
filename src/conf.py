@@ -259,7 +259,7 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
         else:
             return ircmsgs.join(channel)
 
-def registerNetwork(name, password=''):
+def registerNetwork(name, password='', ssl=False):
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,
         """Determines what password will be used on %s.  Yes, we know that
@@ -271,7 +271,7 @@ def registerNetwork(name, password=''):
         completed.""" % name))
     registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
         """Determines what channels the bot will join only on %s.""" % name))
-    registerGlobalValue(network, 'ssl', registry.Boolean(False,
+    registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         """Determines whether the bot will attempt to connect with SSL sockets
         to %s.""" % name))
     registerChannelValue(network.channels, 'key', registry.String('',

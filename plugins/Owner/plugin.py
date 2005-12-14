@@ -188,7 +188,7 @@ class Owner(callbacks.Plugin):
         callbacks.IrcObjectProxy._mores.clear()
         self.__parent.reset()
 
-    def _connect(self, network, serverPort=None, password=''):
+    def _connect(self, network, serverPort=None, password='', ssl=False):
         try:
             group = conf.supybot.networks.get(network)
             (server, port) = group.servers()[0]
@@ -196,7 +196,7 @@ class Owner(callbacks.Plugin):
             if serverPort is None:
                 raise ValueError, 'connect requires a (server, port) ' \
                                   'if the network is not registered.'
-            conf.registerNetwork(network, password)
+            conf.registerNetwork(network, password, ssl)
             serverS = '%s:%s' % serverPort
             conf.supybot.networks.get(network).servers.append(serverS)
             assert conf.supybot.networks.get(network).servers(), \

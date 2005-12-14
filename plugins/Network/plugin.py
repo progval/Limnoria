@@ -49,13 +49,14 @@ class Network(callbacks.Plugin):
             raise callbacks.Error, \
                   'I\'m not currently connected to %s.' % network
 
-    def connect(self, irc, msg, args, network, server, password):
-        """<network> [<host[:port]>] [<password>]
+    def connect(self, irc, msg, args, opts, network, server, password):
+        """[--ssl] <network> [<host[:port]>] [<password>]
 
         Connects to another network (which will be represented by the name
         provided in <network>) at <host:port>.  If port is not provided, it
         defaults to 6667, the default port for IRC.  If password is
-        provided, it will be sent to the server in a PASS command.
+        provided, it will be sent to the server in a PASS command.  If --ssl is
+        provided, an SSL connection will be attempted.
         """
         try:
             otherIrc = self._getIrc(network)
@@ -80,11 +81,12 @@ class Network(callbacks.Plugin):
                 return
         Owner = irc.getCallback('Owner')
         newIrc = Owner._connect(network, serverPort=serverPort,
-                                password=password)
+                                password=password, ssl=ssl)
         conf.supybot.networks().add(network)
         assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
         irc.replySuccess('Connection to %s initiated.' % network)
-    connect = wrap(connect, ['owner', 'something', additional('something'),
+    connect = wrap(connect, ['owner', getopts({'ssl': ''}), 'something',
+                             additional('something'),
                              additional('something', '')])
 
     def disconnect(self, irc, msg, args, otherIrc, quitMsg):
