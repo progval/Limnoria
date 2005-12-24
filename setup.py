@@ -125,9 +125,6 @@ except ImportError, e:
     sys.stderr.write(os.linesep*2)
     sys.exit(-1)
 
-srcFiles = glob.glob(os.path.join('src', '*.py'))
-pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
-
 if clean:
     previousInstall = os.path.join(get_python_lib(), 'supybot')
     if os.path.exists(previousInstall):
