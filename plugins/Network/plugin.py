@@ -65,6 +65,10 @@ class Network(callbacks.Plugin):
                    # quite sure what to do about it.
         except callbacks.Error:
             pass
+        ssl = False
+        for (opt, arg) in opts:
+            if opt == 'ssl':
+                ssl = True
         if server:
             if ':' in server:
                 (server, port) = server.split(':')
