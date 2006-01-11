@@ -32,6 +32,9 @@ from supybot.test import *
 class GoogleTestCase(ChannelPluginTestCase):
     plugins = ('Google',)
     if network:
+        def testCalcHandlesMultiplicationSymbol(self):
+            self.assertNotRegexp('google calc seconds in a century', r'215')
+
         def testCalc(self):
             self.assertNotRegexp('google calc e^(i*pi)+1', r'didn\'t')
 

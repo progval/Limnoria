@@ -370,7 +370,7 @@ class Google(callbacks.PluginRegexp):
     _calcRe = re.compile(r'<td nowrap><font size=\+1><b>(.*?)</b>', re.I)
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
-    _calcTimesRe = re.compile(r'&times;')
+    _calcTimesRe = re.compile(r'&(?:times|#215);')
     def calc(self, irc, msg, args, expr):
         """<expression>
 
