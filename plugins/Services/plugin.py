@@ -218,6 +218,7 @@ class Services(callbacks.Plugin):
         channel = None
         m = self._chanRe.search(s)
         networkGroup = conf.supybot.networks.get(irc.network)
+        on = 'on %s' % irc.network
         if m is not None:
             channel = m.group(1)
         if 'all bans' in s or 'unbanned from' in s:
@@ -225,33 +226,36 @@ class Services(callbacks.Plugin):
             # You have been unbanned from (oftc)
             irc.sendMsg(networkGroup.channels.join(channel))
         elif 'isn\'t registered' in s:
-            self.log.warning('Received "%s isn\'t registered" from ChanServ',
-                             channel)
+            self.log.warning('Received "%s isn\'t registered" from ChanServ %',
+                             channel, on)
         elif 'this channel has been registered' in s:
-            self.log.debug('Got "Registered channel" from ChanServ.')
+            self.log.debug('Got "Registered channel" from ChanServ %s.', on)
         elif 'already opped' in s:
             # This shouldn't happen, Services.op should refuse to run if
             # we already have ops.
-            self.log.debug('Got "Already opped" from ChanServ.')
+            self.log.debug('Got "Already opped" from ChanServ %s.', on)
         elif 'access level' in s and 'is required' in s:
-            self.log.warning('Got "Access level required" from ChanServ.')
+            self.log.warning('Got "Access level required" from ChanServ %s.',
+                             on)
         elif 'inviting' in s:
-            self.log.debug('Got "Inviting to channel" from ChanServ.')
+            self.log.debug('Got "Inviting to channel" from ChanServ %s.', on)
         else:
-            self.log.warning('Got unexpected notice from ChanServ: %r.', msg)
+            self.log.warning('Got unexpected notice from ChanServ %s: %r.',
+                             on, msg)
 
     def doNickservNotice(self, irc, msg):
         nick = self._getNick()
         s = ircutils.stripFormatting(msg.args[1].lower())
+        on = 'on %s' % irc.network
         networkGroup = conf.supybot.networks.get(irc.network)
         if 'incorrect' in s or 'denied' in s:
-            log = 'Received "Password Incorrect" from NickServ.  ' \
-                  'Resetting password to empty.'
+            log = 'Received "Password Incorrect" from NickServ %s.  ' \
+                  'Resetting password to empty.' % on
             self.log.warning(log)
             self.sentGhost = False
             self._setNickServPassword(nick, '')
         elif self._ghosted(s):
-            self.log.info('Received "GHOST succeeded" from NickServ.')
+            self.log.info('Received "GHOST succeeded" from NickServ %s.', on)
             self.sentGhost = False
             self.identified = False
             irc.queueMsg(ircmsgs.nick(nick))
@@ -265,10 +269,10 @@ class Services(callbacks.Plugin):
             # freenode, arstechnica, chatjunkies
             # oftc, zirc.org
             # sorcery
-            self.log.info('Received "Registered nick" from NickServ.')
+            self.log.info('Received "Registered nick" from NickServ %s.', on)
         elif '/msg' in s and 'id' in s and 'password' in s:
             # Usage info for identify command; ignore.
-            self.log.debug('Got usage info for identify command.')
+            self.log.debug('Got usage info for identify command %s.', on)
         elif ('please choose a different nick' in s): # oftc, part 3
             # This is a catch-all for redundant messages from nickserv.
             pass
@@ -277,7 +281,7 @@ class Services(callbacks.Plugin):
              ('now identified' in s):
             # freenode, oftc, arstechnica, zirc, ....
             # sorcery
-            self.log.info('Received "Password accepted" from NickServ.')
+            self.log.info('Received "Password accepted" from NickServ %s.', on)
             self.identified = True
             for channel in irc.state.channels.keys():
                 self.checkPrivileges(irc, channel)
@@ -291,31 +295,33 @@ class Services(callbacks.Plugin):
             # zirc.org has this, it requires an auth code.
             email = s.split()[-1]
             self.log.warning('Received "Nick not yet authenticated" from '
-                             'NickServ.  Check email at %s and send the auth '
-                             'command to NickServ.', email)
+                             'NickServ %s.  Check email at %s and send the '
+                             'auth command to NickServ.', on, email)
         else:
-            self.log.debug('Unexpected notice from NickServ: %q.', s)
+            self.log.debug('Unexpected notice from NickServ %s: %q.', on, s)
 
     def checkPrivileges(self, irc, channel):
         chanserv = self.registryValue('ChanServ')
+        on = 'on %s' % irc.network
         if chanserv and self.registryValue('ChanServ.op', channel):
             if irc.nick not in irc.state.channels[channel].ops:
-                self.log.info('Requesting op from %s in %s.',
-                              chanserv, channel)
+                self.log.info('Requesting op from %s in %s %s.',
+                              chanserv, channel, on)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'op %s' % channel))
         if chanserv and self.registryValue('ChanServ.halfop', channel):
             if irc.nick not in irc.state.channels[channel].halfops:
-                self.log.info('Requesting halfop from %s in %s.',
-                              chanserv, channel)
+                self.log.info('Requesting halfop from %s in %s %s.',
+                              chanserv, channel, on)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'halfop %s' % channel))
         if chanserv and self.registryValue('ChanServ.voice', channel):
             if irc.nick not in irc.state.channels[channel].voices:
-                self.log.info('Requesting voice from %s in %s.',
-                              chanserv, channel)
+                self.log.info('Requesting voice from %s in %s %s.',
+                              chanserv, channel, on)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'voice %s' % channel))
 
     def doMode(self, irc, msg):
         chanserv = self.registryValue('ChanServ')
+        on = 'on %s' % irc.network
         if ircutils.strEqual(msg.nick, chanserv):
             channel = msg.args[0]
             if len(msg.args) == 3:
@@ -323,11 +329,14 @@ class Services(callbacks.Plugin):
                     mode = msg.args[1]
                     info = self.log.info
                     if mode == '+o':
-                        info('Received op from ChanServ in %s.', channel)
+                        info('Received op from ChanServ in %s %s.',
+                             channel, on)
                     elif mode == '+h':
-                        info('Received halfop from ChanServ in %s.', channel)
+                        info('Received halfop from ChanServ in %s %s.',
+                             channel, on)
                     elif mode == '+v':
-                        info('Received voice from ChanServ in %s.', channel)
+                        info('Received voice from ChanServ in %s %s.',
+                             channel, on)
 
     def do366(self, irc, msg): # End of /NAMES list; finished joining a channel
         if self.identified:
@@ -377,7 +386,9 @@ class Services(callbacks.Plugin):
 
     def do474(self, irc, msg):
         channel = msg.args[1]
-        self.log.info('Banned from %s, attempting ChanServ unban.', channel)
+        on = 'on %s' % irc.network
+        self.log.info('Banned from %s, attempting ChanServ unban %s.',
+                      channel, on)
         self._chanservCommand(irc, channel, 'unban', log=True)
         # Success log in doChanservNotice.
 
@@ -395,7 +406,7 @@ class Services(callbacks.Plugin):
 
     def do473(self, irc, msg):
         channel = msg.args[1]
-        self.log.info('%s is +i, attempting ChanServ invite.', channel)
+        self.log.info('%s is +i, attempting ChanServ invite %s.', channel, on)
         self._chanservCommand(irc, channel, 'invite', log=True)
 
     def invite(self, irc, msg, args, channel):
@@ -414,7 +425,7 @@ class Services(callbacks.Plugin):
         if ircutils.strEqual(msg.nick, self.registryValue('ChanServ')):
             channel = msg.args[1]
             networkGroup = conf.supybot.networks.get(irc.network)
-            self.log.info('Joining %s, invited by ChanServ.', channel)
+            self.log.info('Joining %s, invited by ChanServ %s.', channel, on)
             irc.queueMsg(networkGroup.channels.join(channel))
 
     def identify(self, irc, msg, args):
