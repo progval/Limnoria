@@ -669,11 +669,11 @@ class ValidDriverModule(registry.OnlySomeStrings):
 
 registerGlobalValue(supybot.drivers, 'module',
     ValidDriverModule('default', """Determines what driver module the bot will
-    use.  socketDrivers, a simple driver based on timeout sockets, is used by
-    default because it's simple and stable.  asyncoreDrivers is a bit older
-    (and less well-maintained) but allows you to integrate with asyncore-based
-    applications.  twistedDrivers is very stable and simple, and if you've got
-    Twisted installed, is probably your best bet."""))
+    use.  Socket, a simple driver based on timeout sockets, is used by default
+    because it's simple and stable.  Twisted is very stable and simple, and if
+    you've got Twisted installed, is probably your best bet.  If this setting
+    is left as default and Twisted-support is detected, the Twisted driver will
+    be used in favor of the Socket driver."""))
 
 registerGlobalValue(supybot.drivers, 'maxReconnectWait',
     registry.PositiveFloat(300.0, """Determines the maximum time the bot will
