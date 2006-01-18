@@ -63,12 +63,12 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual('foo', join(['foo']))
         self.assertEqual('foo.bar', join(['foo', 'bar']))
         self.assertEqual('foo\\.bar', join(['foo.bar']))
-        
+
     def testJoinAndSplitAreInverses(self):
         for s in ['foo', 'foo.bar', 'foo\\.bar']:
             self.assertEqual(s, join(split(s)))
             self.assertEqual(split(s), split(join(split(s))))
-        
+
 
 
 class ValuesTestCase(SupyTestCase):
@@ -167,5 +167,11 @@ class ValuesTestCase(SupyTestCase):
         self.assertRaises(registry.InvalidRegistryValue,
                           v.setValue, re.compile(r'foo'))
 
+    def testBackslashes(self):
+        conf.supybot.reply.whenAddressedBy.chars.set('\\')
+        filename = conf.supybot.directories.conf.dirize('backslashes.conf')
+        registry.close(conf.supybot, filename)
+        registry.open(filename)
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars(), '\\')
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

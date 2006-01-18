@@ -68,13 +68,18 @@ def open(filename, clear=False):
     _fd = file(filename)
     fd = utils.file.nonCommentNonEmptyLines(_fd)
     acc = ''
+    slashEnd = re.compile(r'\\*$')
     for line in fd:
         line = line.rstrip('\r\n')
         # XXX There should be some way to determine whether or not we're
         #     starting a new variable or not.  As it is, if there's a backslash
         #     at the end of every line in a variable, it won't be read, and
         #     worse, the error will pass silently.
-        if line.endswith('\\'):
+        #
+        # If the line ends in an odd number of backslashes, then there is a
+        # line-continutation.
+        m = slashEnd.search(line)
+        if m and len(m.group(0)) % 2:
             acc += line[:-1]
             continue
         else:
@@ -82,7 +87,7 @@ def open(filename, clear=False):
         try:
             (key, value) = re.split(r'(?<!\\):', acc, 1)
             key = key.strip()
-            value = value.strip()
+            value = value.strip().replace('\\\\', '\\')
             acc = ''
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line %r' % acc
@@ -119,7 +124,7 @@ def close(registry, filename, private=True):
                                   value._name)
             lines.append('###\n')
             fd.writelines(lines)
-        if hasattr(value, 'value'): # This lets us print help for non-valued.
+        if hasattr(value, 'value'): # This lets us print help for non-values.
             try:
                 if private or not value._private:
                     s = value.serialize()
@@ -340,7 +345,7 @@ class Value(Group):
         return repr(self())
 
     def serialize(self):
-        return str(self)
+        return str(self).replace('\\', '\\\\')
 
     # We tried many, *many* different syntactic methods here, and this one was
     # simply the best -- not very intrusive, easily overridden by subclasses,
@@ -496,7 +501,7 @@ class NormalizedString(String):
         self.__parent.setValue(s)
 
     def serialize(self):
-        s = str(self)
+        s = str(self).replace('\\', '\\\\')
         prefixLen = len(self._name) + 2
         lines = textwrap.wrap(s, width=76-prefixLen)
         last = len(lines)-1
