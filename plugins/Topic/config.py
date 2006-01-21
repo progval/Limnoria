@@ -53,7 +53,7 @@ conf.registerChannelValue(Topic, 'separator',
     used between individually added topics in the channel topic."""))
 conf.registerChannelValue(Topic, 'format',
     TopicFormat('$topic ($nick)', """Determines what format is used to add
-    topics in the topic.  All the standard substitutes apply, in addiction to
+    topics in the topic.  All the standard substitutes apply, in addition to
     "$topic" for the topic itself."""))
 conf.registerChannelValue(Topic, 'recognizeTopiclen',
     registry.Boolean(True, """Determines whether the bot will recognize the
