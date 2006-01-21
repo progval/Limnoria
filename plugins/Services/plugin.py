@@ -406,6 +406,7 @@ class Services(callbacks.Plugin):
 
     def do473(self, irc, msg):
         channel = msg.args[1]
+        on = 'on %s' % irc.network
         self.log.info('%s is +i, attempting ChanServ invite %s.', channel, on)
         self._chanservCommand(irc, channel, 'invite', log=True)
 
@@ -424,6 +425,7 @@ class Services(callbacks.Plugin):
     def doInvite(self, irc, msg):
         if ircutils.strEqual(msg.nick, self.registryValue('ChanServ')):
             channel = msg.args[1]
+            on = 'on %s' % irc.network
             networkGroup = conf.supybot.networks.get(irc.network)
             self.log.info('Joining %s, invited by ChanServ %s.', channel, on)
             irc.queueMsg(networkGroup.channels.join(channel))
