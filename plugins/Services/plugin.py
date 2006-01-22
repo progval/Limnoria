@@ -259,6 +259,9 @@ class Services(callbacks.Plugin):
             self.sentGhost = False
             self.identified = False
             irc.queueMsg(ircmsgs.nick(nick))
+        elif 'is not registered' in s:
+            self.log.info('Received "Nick not registered" from NickServ %s.',
+                          on)
         elif 'currently' in s and 'isn\'t' in s or 'is not' in s:
             # The nick isn't online, let's change our nick to it.
             self.sentGhost = False
