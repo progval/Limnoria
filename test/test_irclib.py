@@ -496,5 +496,5 @@ class IrcCallbackTestCase(SupyTestCase):
             conf.supybot.user.setValue(originalUser)
             conf.supybot.networks.test.password.setValue(originalPassword)
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

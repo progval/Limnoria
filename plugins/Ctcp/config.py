@@ -65,4 +65,4 @@ conf.registerGlobalValue(conf.supybot.abuse.flood.ctcp, 'punishment',
     registry.PositiveInteger(300, """Determines how many seconds the bot will
     ignore CTCP messages from users who flood it with CTCP messages."""))
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

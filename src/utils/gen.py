@@ -315,4 +315,4 @@ def callTracer(fd=None, basename=True):
             print >>fd, '%s: %s(%s)' % (filename, funcname, lineno)
     return tracer
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

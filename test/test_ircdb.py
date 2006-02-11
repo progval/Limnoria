@@ -560,5 +560,5 @@ class CheckCapabilityTestCase(IrcdbTestCase):
             conf.supybot.capabilities.default.set(str(originalConfDefaultAllow))
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

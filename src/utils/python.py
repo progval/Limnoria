@@ -80,4 +80,4 @@ class Synchronized(type):
         return newclass
                     
                 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:

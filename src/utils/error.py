@@ -42,4 +42,4 @@ class Error(Exception):
         else:
             return self.msg
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:

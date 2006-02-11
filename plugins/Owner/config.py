@@ -52,4 +52,4 @@ conf.registerGlobalValue(Owner, 'quitMsg',
 conf.registerGroup(conf.supybot.commands, 'renames', orderAlphabetically=True)
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

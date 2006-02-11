@@ -58,4 +58,4 @@ conf.registerGlobalValue(Web.fetch, 'maximum',
     registry.NonNegativeInteger(0, """Determines the maximum number of
     bytes the bot will download via the 'fetch' command in this plugin."""))
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

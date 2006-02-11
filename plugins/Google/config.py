@@ -133,4 +133,4 @@ conf.registerGlobalValue(Google.state, 'time',
     spent searching for this bot.  You shouldn't modify this."""))
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

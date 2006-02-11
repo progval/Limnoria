@@ -118,4 +118,4 @@ class WebTestCase(ChannelPluginTestCase):
             conf.supybot.plugins.Web.nonSnarfingRegexp.set('')
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

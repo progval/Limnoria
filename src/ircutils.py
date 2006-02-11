@@ -661,4 +661,4 @@ def standardSubstitute(irc, msg, text, env=None):
 if __name__ == '__main__':
     import sys, doctest
     doctest.testmod(sys.modules['__main__'])
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -51,4 +51,4 @@ conf.registerGlobalValue(String.levenshtein, 'max',
     this variable, to limit the size of arguments passed to the levenshtein
     command."""))
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

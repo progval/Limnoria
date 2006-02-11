@@ -3974,4 +3974,4 @@ class SOAPServer(SocketServer.TCPServer):
     def registerKWFunction(self, function, namespace = '', funcName = None):
         self.registerFunction(MethodSig(function,keywords=1), namespace,
         funcName)
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

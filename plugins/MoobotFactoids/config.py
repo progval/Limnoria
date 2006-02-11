@@ -49,4 +49,4 @@ conf.registerChannelValue(MoobotFactoids,
     when the 'most' command is called."""))
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
+# vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78

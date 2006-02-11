@@ -166,4 +166,4 @@ class FilterTest(ChannelPluginTestCase):
         self.assertResponse('shrink internationalization, localization',
                             'i18n, l10n')
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

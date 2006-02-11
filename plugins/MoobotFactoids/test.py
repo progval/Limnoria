@@ -342,4 +342,4 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertRegexp('random', r'bar|baz')
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:

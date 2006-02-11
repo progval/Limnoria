@@ -56,4 +56,4 @@ class ReplyNonChannelTestCase(PluginTestCase):
         m = self.assertAction('action foo', 'foo')
         self.failIf(m.args[0] == self.irc.nick)
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

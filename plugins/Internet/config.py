@@ -45,4 +45,4 @@ Internet = conf.registerPlugin('Internet')
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

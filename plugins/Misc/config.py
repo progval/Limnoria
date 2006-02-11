@@ -60,4 +60,4 @@ conf.registerChannelValue(Misc.last.nested,
     nick will be included in the output of last when it is part of a nested
     command"""))
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

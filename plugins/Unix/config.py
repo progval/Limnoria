@@ -86,4 +86,4 @@ conf.registerGlobalValue(Unix.wtf, 'command',
     command will be called for the wtf command."""))
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -1024,4 +1024,4 @@ registerGlobalValue(supybot.debug, 'flushVeryOften',
     what's breaking or when, but think that it might be logged."""))
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
