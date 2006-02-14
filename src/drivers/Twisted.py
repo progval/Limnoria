@@ -35,9 +35,16 @@ import supybot.ircdb as ircdb
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 
+from twisted.names import client
 from twisted.internet import reactor, error
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import ReconnectingClientFactory
+
+
+# This hack prevents the standard Twisted resolver from starting any
+# threads, which allows for a clean shut-down in Twisted>=2.0
+reactor.installResolver(client.createResolver())
+
 
 try:
     from OpenSSL import SSL
