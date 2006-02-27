@@ -259,7 +259,7 @@ class Karma(callbacks.Plugin):
             self._doKarma(irc, channel, thing)
 
     def doPrivmsg(self, irc, msg):
-        if not msg.repliedTo:
+        if not (msg.addressed or msg.repliedTo):
             channel = msg.args[0]
             if irc.isChannel(channel) and \
                self.registryValue('allowUnaddressedKarma', channel):
