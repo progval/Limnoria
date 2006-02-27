@@ -259,6 +259,9 @@ class Karma(callbacks.Plugin):
             self._doKarma(irc, channel, thing)
 
     def doPrivmsg(self, irc, msg):
+        # We don't handle this if we've been addressed because invalidCommand
+        # will handle it for us.  This prevents us from accessing the db twice
+        # and therefore crashing.
         if not (msg.addressed or msg.repliedTo):
             channel = msg.args[0]
             if irc.isChannel(channel) and \
