@@ -140,7 +140,7 @@ __contributors__ is a dictionary mapping supybot.Author instances to lists of
 things they contributed. If someone adds a command named foo to your plugin,
 the list for that author should be ["foo"], or perhaps even ["added foo
 command"]. The main author shouldn't be referenced here, as it is assumed that
-everything that wasn't contributed my someone else was done by the main author.
+everything that wasn't contributed by someone else was done by the main author.
 For now we have no contributors, so we'll leave it blank.
 
 Lastly, the __url__ attribute should just reference the download URL for the
@@ -287,7 +287,7 @@ random number from our RNG and takes no arguments. Here's what that looks like:
 
 And that's it. Now here are the important points.
 
-First and foremost, all plugin commands must be have all-lowercase function
+First and foremost, all plugin commands must have all-lowercase function
 names. If they aren't all lowercase they won't show up in a plugin's list of
 commands (nor will they be useable in general). If you look through a plugin
 and see a function that's not in all lowercase, it is not a plugin command.
@@ -306,7 +306,7 @@ Next, in the docstring there are two major components. First, the very first
 line dictates the argument list to be displayed when someone calls the help
 command for this command (i.e., help random). Then you leave a blank line and
 start the actual help string for the function. Don't worry about the fact that
-it's tabbed in or anything like that, as we the help command normalizes it to
+it's tabbed in or anything like that, as the help command normalizes it to
 make it look nice. This part should be fairly brief but sufficient to explain
 the function and what (if any) arguments it requires. Remember that this should
 fit in one IRC message which is typically around a 450 character limit.
@@ -347,7 +347,7 @@ it can be any hashable object). Here's what this command looks like:
     seed = wrap(seed, ['float'])
 
 You'll notice first that argument list now includes an extra argument, seed. If
-you read the wrap tutorial linked above, you should understand how this arg
+you read the wrap tutorial mentioned above, you should understand how this arg
 list gets populated with values. Thanks to wrap we don't have to worry about
 type-checking or value-checking or anything like that. We just specify that it
 must be a float in the wrap portion and we can use it in the body of the
@@ -446,7 +446,7 @@ with plugin.py!
 test.py
 =======
   Plugin tests go here.
-  
+
 Now that we've gotten our plugin written, we want to make sure it works. Sure,
 an easy way to do a somewhat quick check is to start up a bot, load the plugin,
 and run a few commands on it. If all goes well there, everything's probably
@@ -554,12 +554,12 @@ wisdom with regards to Supybot plugin-writing.
       first point above, the developers themselves can help you even more than
       the docs can (though we prefer you read the docs first).
 
-    * Publish your plugins on this website. We made some custom stuff on this
+    * Publish your plugins on our website. We made some custom stuff on the
       website just to cater to publishing plugins. Use it, share your plugins
       with the world and make Supybot all that more attractive for other users
       so they will want to write their plugins for Supybot as well.
 
-    * Read, read, read all the documentation on this website. I just spent a
+    * Read, read, read all the documentation on our website. I just spent a
       lot of time getting a bunch of these tutorials out and getting things up
       to date, so while Supybot documentation in the past hasn't been stellar,
       it certainly is very good now.
