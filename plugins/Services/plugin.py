@@ -281,6 +281,7 @@ class Services(callbacks.Plugin):
             pass
         elif ('now recognized' in s) or \
              ('already identified' in s) or \
+             ('password accepted' in s) or \
              ('now identified' in s):
             # freenode, oftc, arstechnica, zirc, ....
             # sorcery
