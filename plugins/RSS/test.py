@@ -45,9 +45,6 @@ class RSSTestCase(ChannelPluginTestCase):
         def testRssinfo(self):
             self.assertNotError('rss info %s' % url)
             self.assertNotError('rss add advogato %s' % url)
-            # For some reason conf.supybot.plugins.RSS.feeds.advogato is
-            # empty, which is why this test is failing.  Works in practice,
-            # but not here.  :(
             self.assertNotError('rss info advogato')
             self.assertNotError('rss info AdVogATo')
             self.assertNotError('rss remove advogato')
@@ -78,6 +75,7 @@ class RSSTestCase(ChannelPluginTestCase):
         def testNonAsciiFeeds(self):
             self.assertNotError('rss http://www.heise.de/newsticker/heise.rdf')
             self.assertNotError('rss http://www.golem.de/rss.php?feed=ATOM0.3')
+            self.assertNotError('rss info http://br-linux.org/main/index.xml')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
