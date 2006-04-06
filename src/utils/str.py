@@ -355,7 +355,7 @@ def timestamp(t):
         t = time.time()
     return time.ctime(t)
 
-_formatRe = re.compile('%(\.\d+f|[bfhiLnpqrstu%])')
+_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrstu%])')
 def format(s, *args, **kwargs):
     """w00t.
 
