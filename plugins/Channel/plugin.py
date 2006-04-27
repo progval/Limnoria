@@ -517,12 +517,19 @@ class Channel(callbacks.Plugin):
             """[<channel>]
 
             If you have the #channel,op capability, this will show you the
-            current bans on #channel.
+            current persistent bans on #channel.
             """
-            # XXX Add the expirations.
             c = ircdb.channels.getChannel(channel)
             if c.bans:
-                irc.reply(format('%L', map(utils.str.dqrepr, c.bans)))
+                bans = []
+                for ban in c.bans:
+                    if c.bans[ban]:
+                        bans.append(format('%q (expires %t)',
+                                           ban, c.bans[ban]))
+                    else:
+                        bans.append(format('%q (never expires)',
+                                           ban, c.bans[ban]))
+                irc.reply(format('%L', bans))
             else:
                 irc.reply(format('There are no persistent bans on %s.',
                                  channel))
