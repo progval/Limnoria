@@ -219,7 +219,7 @@ class Alias(callbacks.Plugin):
 
         Locks an alias so that no one else can change it.
         """
-        if hasattr(self, name) and self.isCommandMethod(name):
+        if name in self.aliases and self.isCommandMethod(name):
             self.aliases[name][1] = True
             conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(True)
             irc.replySuccess()
@@ -232,7 +232,7 @@ class Alias(callbacks.Plugin):
 
         Unlocks an alias so that people can define new aliases over it.
         """
-        if hasattr(self, name) and self.isCommandMethod(name):
+        if name in self.aliases and self.isCommandMethod(name):
             self.aliases[name][1] = False
             conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(False)
             irc.replySuccess()
