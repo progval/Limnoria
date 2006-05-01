@@ -524,7 +524,7 @@ class StringSurroundedBySpaces(String):
 
 class StringWithSpaceOnRight(String):
     def setValue(self, v):
-        if v.rstrip() == v:
+        if v and v.rstrip() == v:
             v += ' '
         super(StringWithSpaceOnRight, self).setValue(v)
 
