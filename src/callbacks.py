@@ -703,7 +703,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 assert utils.iter.startswith(L, args), \
                        'getCommand must return a prefix of the args given.  ' \
                        '(args given: %r, returned: %r)' % (args, L)
-        log.debug('findCallbacksForCommands: %r', cbs)
+        log.debug('findCallbacksForArgs: %r', cbs)
         cbs = [cb for (cb, L) in cbs if L == maxL]
         if len(maxL) == 1:
             # Special case: one arg determines the callback.  In this case, we
