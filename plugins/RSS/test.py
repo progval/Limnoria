@@ -31,7 +31,7 @@ from supybot.test import *
 
 url = 'http://www.advogato.org/rss/articles.xml'
 class RSSTestCase(ChannelPluginTestCase):
-    plugins = ('RSS',)
+    plugins = ('RSS','Plugin')
     def testRssAddBadName(self):
         self.assertError('rss add "foo bar" %s' % url)
 
@@ -57,6 +57,7 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss add advogato %s' % url)
             self.assertNotError('rss announce advogato')
             self.assertNotRegexp('rss announce', r'ValueError')
+            self.assertNotError('rss announce --remove advogato')
             self.assertNotError('rss remove advogato')
 
         def testRss(self):
@@ -69,6 +70,7 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('advogato')
             self.assertNotError('rss advogato')
             self.assertNotError('rss remove advogato')
+            self.assertNotRegexp('list RSS', 'advogato')
             self.assertError('advogato')
             self.assertError('rss advogato')
 
