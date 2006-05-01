@@ -516,7 +516,7 @@ class NormalizedString(String):
 
 class StringSurroundedBySpaces(String):
     def setValue(self, v):
-        if v.lstrip() == v:
+        if v and v.lstrip() == v:
             v= ' ' + v
         if v.rstrip() == v:
             v += ' '
