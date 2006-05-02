@@ -254,15 +254,20 @@ class RSS(callbacks.Plugin):
         finally:
             self.releaseLock(url)
 
+    def _getConverter(self, feed):
+        toText = utils.web.htmlToText
+        if 'encoding' in feed:
+            return lambda s: toText(s).strip().encode(feed['encoding'],
+                                                      'replace')
+        else:
+            return lambda s: toText(s).strip()
+
     def getHeadlines(self, feed):
         headlines = []
-        if 'encoding' in feed:
-            conv = lambda s: s.encode(feed['encoding'], 'replace')
-        else:
-            conv = lambda s: s
+        conv = self._getConverter(feed)
         for d in feed['items']:
             if 'title' in d:
-                title = conv(utils.web.htmlToText(d['title']).strip())
+                title = conv(d['title'])
                 link = d.get('link')
                 if link:
                     headlines.append((title, link))
@@ -395,6 +400,7 @@ class RSS(callbacks.Plugin):
         except registry.NonExistentRegistryEntry:
             pass
         feed = self.getFeed(url)
+        conv = self._getConverter(feed)
         info = feed.get('feed')
         if not info:
             irc.error('I couldn\'t retrieve that RSS feed.')
@@ -406,13 +412,13 @@ class RSS(callbacks.Plugin):
             when = utils.timeElapsed(now - seconds) + ' ago'
         else:
             when = 'time unavailable'
+        title = conv(info.get('title', 'unavailable'))
+        desc = conv(info.get('description', 'unavailable'))
         # The rest of the entries are all available in the channel key
         response = format('Title: %s;  URL: %u;  '
                           'Description: %s;  Last updated: %s.',
-                          info.get('title', 'unavailable').strip(),
-                          info.get('link', 'unavailable').strip(),
-                          info.get('description', 'unavailable').strip(),
-                          when)
+                          title, info.get('link', 'unavailable').strip(),
+                          desc, when)
         irc.reply(utils.str.normalizeWhitespace(response))
     info = wrap(info, [first('url', 'feedName')])
 
