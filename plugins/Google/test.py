@@ -50,9 +50,12 @@ class GoogleTestCase(ChannelPluginTestCase):
             self.assertNotRegexp('google calc 1000^2', r'\s+,\s+')
 
         def testNoNoLicenseKeyError(self):
-            conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
-            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
-            self.assertNoResponse(' ')
+            orig = conf.supybot.plugins.Google.searchSnarfer()
+            try:
+                conf.supybot.plugins.Google.searchSnarfer.setValue(True)
+                self.assertSnarfNoResponse('google blah')
+            finally:
+                conf.supybot.plugins.Google.searchSnarfer.setValue(orig)
 
         def testGroupsSnarfer(self):
             orig = conf.supybot.plugins.Google.groupsSnarfer()
