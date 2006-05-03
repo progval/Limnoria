@@ -31,6 +31,7 @@ from supybot.test import *
 
 class WebTestCase(ChannelPluginTestCase):
     plugins = ('Web',)
+    timeout = 10
     if network:
         def testHeaders(self):
             self.assertError('headers ftp://ftp.cdrom.com/pub/linux')
