@@ -35,7 +35,7 @@ import supybot.utils as utils
 import supybot.callbacks as callbacks
 
 class FilterTest(ChannelPluginTestCase):
-    plugins = ('Filter', 'Utilities')
+    plugins = ('Filter', 'Utilities', 'Reply')
     def testNoErrors(self):
         self.assertNotError('leet foobar')
         self.assertNotError('supa1337 foobar')
