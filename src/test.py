@@ -107,8 +107,8 @@ class SupyTestCase(unittest.TestCase):
 
 
 class PluginTestCase(SupyTestCase):
-    """Subclass this to write a test case for a plugin.  See test/test_Fun.py
-    for an example.
+    """Subclass this to write a test case for a plugin.  See
+    plugins/Plugin/test.py for an example.
     """
     timeout = 10
     plugins = None
@@ -123,7 +123,7 @@ class PluginTestCase(SupyTestCase):
                 for cb in self.irc.callbacks:
                     cbModule = sys.modules[cb.__class__.__module__]
                     if hasattr(cbModule, 'deprecated') and cbModule.deprecated:
-                        print 
+                        print
                         print 'Ignored, %s is deprecated.' % cb.name()
                         run = False
             if run:
