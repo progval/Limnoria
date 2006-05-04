@@ -44,7 +44,7 @@ entire plugin.  For example, the rot13 command is in the Filter plugin.  If a
 user should be able to use another rot13 command, but not the one in the Format
 plugin, they would simply need to be given '-Format.rot13' anticapability.
 Similarly, if a user were to be banned from using the Filter plugin altogether,
-they would simply need to be given the '-Format' anticapability.
+they would simply need to be given the '-Filter' anticapability.
 
 Channel Capabilities
 --------------------
