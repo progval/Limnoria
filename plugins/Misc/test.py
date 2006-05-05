@@ -27,6 +27,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
+
 from supybot.test import *
 
 class MiscTestCase(ChannelPluginTestCase):
@@ -172,9 +174,10 @@ class MiscTestCase(ChannelPluginTestCase):
         orig = tsConfig()
         try:
             tsConfig.setValue(True)
-            self.feedMsg('foo bar baz')
-            self.assertRegexp('echo [last]',
-                              '\[\d+:\d+:\d+\] foo bar baz')
+            self.getMsg('foo bar baz')
+            chars = conf.supybot.reply.whenAddressedBy.chars()
+            chars = re.escape(chars)
+            self.assertRegexp('echo [last]', r'. [%s]foo bar baz' % chars)
         finally:
             tsConfig.setValue(orig)
 
@@ -184,8 +187,10 @@ class MiscTestCase(ChannelPluginTestCase):
         try:
             nickConfig.setValue(True)
             self.feedMsg('foo bar baz')
+            chars = conf.supybot.reply.whenAddressedBy.chars()
+            chars = re.escape(chars)
             self.assertRegexp('echo [last]',
-                              '<%s> foo bar baz' % self.nick)
+                              '<%s> [%s]foo bar baz' % (self.nick, chars))
         finally:
             nickConfig.setValue(orig)
 
