@@ -233,7 +233,8 @@ class BooleanRequiredFalseOnWindows(registry.Boolean):
     def set(self, s):
         registry.Boolean.set(self, s)
         if self.value and os.name == 'nt':
-            raise InvalidRegistryValue, 'Value cannot be true on Windows.'
+            raise registry.InvalidRegistryValue, \
+                  'Value cannot be true on Windows.'
 
 conf.registerGlobalValue(conf.supybot.log, 'stdout',
     registry.Boolean(True, """Determines whether the bot will log to
@@ -334,7 +335,7 @@ class MetaFirewall(type):
             for attr in dict['__firewalled__']:
                 try:
                     errorHandler = firewalled[attr]
-                except: # This is raw here so people can still use tuples. 
+                except: # This is raw here so people can still use tuples.
                     errorHandler = None
                 dict[attr] = firewall(dict[attr], errorHandler)
         return super(MetaFirewall, cls).__new__(cls, name, bases, dict)
