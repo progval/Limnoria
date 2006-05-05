@@ -30,8 +30,7 @@
 from supybot.test import *
 
 class MiscTestCase(ChannelPluginTestCase):
-#    plugins = ('Misc', 'Utilities', 'Gameknot', 'Anonymous', 'Dict', 'User')
-    plugins = ('Misc', 'Utilities', 'Anonymous',
+    plugins = ('Misc', 'Utilities', 'Anonymous', 'Plugin',
                'Channel', 'Dict', 'User', 'String')
     def testReplyWhenNotCommand(self):
         try:
@@ -101,7 +100,7 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertNotError('list misc')
 
     def testListPrivate(self):
-        # If Ctcp changes to public, these tests will break.  So if
+        # If Anonymous changes to public, these tests will break.  So if
         # the next assert fails, change the plugin we test for public/private
         # to some other non-public plugin.
         name = 'Anonymous'
@@ -131,7 +130,9 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertNotError('source')
 
     def testTell(self):
-        m = self.getMsg('tell foo [plugin tell]')
+        # This test fails because the test is seeing us as owner and Misc.tell
+        # allows the owner to send messages to people the bot hasn't seen.
+        m = self.getMsg('tell aljsdkfh [plugin tell]')
         self.failUnless('let you do' in m.args[1])
         m = self.getMsg('tell #foo [plugin tell]')
         self.failUnless('No need for' in m.args[1])
