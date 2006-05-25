@@ -108,7 +108,7 @@ def toLower(s, casemapping=None):
 def strEqual(nick1, nick2):
     """s1, s2 => bool
     Returns True if nick1 == nick2 according to IRC case rules."""
-    assert isinstance(nick1, basestring) 
+    assert isinstance(nick1, basestring)
     assert isinstance(nick2, basestring)
     return toLower(nick1) == toLower(nick2)
 
@@ -287,7 +287,10 @@ def mircColor(s, fg=None, bg=None):
         return '\x03%s%s\x03' % (fg.zfill(2), s)
     elif fg is None:
         bg = mircColors[str(bg)]
-        return '\x03,%s%s\x03' % (bg.zfill(2), s)
+        # According to the mirc color doc, a fg color MUST be specified if a
+        # background color is specified.  So, we'll specify 00 (white) if the
+        # user doesn't specify one.
+        return '\x0300,%s%s\x03' % (bg.zfill(2), s)
     else:
         fg = mircColors[str(fg)]
         bg = mircColors[str(bg)]
