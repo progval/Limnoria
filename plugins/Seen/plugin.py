@@ -64,7 +64,7 @@ class SeenDB(plugins.ChannelUserDB):
         self[channel, '<last>'] = (seen, saying)
 
     def seenWildcard(self, channel, nick):
-        nicks = []
+        nicks = ircutils.IrcSet()
         nickRe = re.compile('.*'.join(nick.split('*')), re.I)
         for (searchChan, searchNick) in self.keys():
             #print 'chan: %s ... nick: %s' % (searchChan, searchNick)
@@ -78,7 +78,7 @@ class SeenDB(plugins.ChannelUserDB):
                     s = nickRe.match(searchNick).group()
                 except AttributeError:
                     continue
-                nicks.append(s)
+                nicks.add(s)
         L = [[nick, self.seen(channel, nick)] for nick in nicks]
         def negativeTime(x):
             return -x[1][0]
