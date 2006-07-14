@@ -100,7 +100,7 @@ class Plugin(callbacks.Plugin):
             return
         module = cb.classModule
         if hasattr(module, '__author__') and module.__author__:
-            irc.reply(utils.web.mungeEmail(str(module.__author__)))
+            irc.reply(str(module.__author__))
         else:
             irc.reply('That plugin doesn\'t have an author that claims it.')
     author = wrap(author, [('plugin')])
