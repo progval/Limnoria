@@ -28,6 +28,7 @@
 ###
 
 import re
+import time
 
 import config
 
@@ -38,6 +39,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
+
+ghostDelay = 60
 
 class Services(callbacks.Plugin):
     """This plugin handles dealing with Services on networks that provide them.
@@ -57,7 +60,7 @@ class Services(callbacks.Plugin):
 
     def reset(self):
         self.channels = []
-        self.sentGhost = False
+        self.sentGhost = None
         self.identified = False
         self.waitingJoins = []
 
@@ -118,8 +121,9 @@ class Services(callbacks.Plugin):
             s = 'Tried to ghost without a NickServ or password set.'
             self.log.warning(s)
             return
-        if self.sentGhost:
-            self.log.warning('Refusing to send GHOST twice.')
+        if self.sentGhost and time.time() < (self.sentGhost + ghostDelay):
+            self.log.warning('Refusing to send GHOST more than once every '
+                             '%s seconds.' % ghostDelay)
         elif not password:
             self.log.warning('Not ghosting: no password set.')
             return
@@ -129,7 +133,7 @@ class Services(callbacks.Plugin):
             ghost = 'GHOST %s %s' % (nick, password)
             # Ditto about the sendMsg (see _doIdentify).
             irc.sendMsg(ircmsgs.privmsg(nickserv, ghost))
-            self.sentGhost = True
+            self.sentGhost = time.time()
 
     def __call__(self, irc, msg):
         disabled = self.registryValue('disabledNetworks')
@@ -144,7 +148,8 @@ class Services(callbacks.Plugin):
         password = self._getNickServPassword(nick)
         if nick and nickserv and password and \
            not ircutils.strEqual(nick, irc.nick):
-            if irc.afterConnect and not self.sentGhost:
+            if irc.afterConnect and self.sentGhost is None or \
+               (self.sentGhost + ghostDelay) < time.time():
                 if nick in irc.state.nicksToHostmasks:
                     self._doGhost(irc)
                 else:
@@ -152,7 +157,7 @@ class Services(callbacks.Plugin):
 
     def do001(self, irc, msg):
         # New connection, make sure sentGhost is False.
-        self.sentGhost = False
+        self.sentGhost = None
 
     def do376(self, irc, msg):
         nick = self._getNick()
@@ -252,11 +257,11 @@ class Services(callbacks.Plugin):
             log = 'Received "Password Incorrect" from NickServ %s.  ' \
                   'Resetting password to empty.' % on
             self.log.warning(log)
-            self.sentGhost = False
+            self.sentGhost = time.time()
             self._setNickServPassword(nick, '')
         elif self._ghosted(s):
             self.log.info('Received "GHOST succeeded" from NickServ %s.', on)
-            self.sentGhost = False
+            self.sentGhost = None
             self.identified = False
             irc.queueMsg(ircmsgs.nick(nick))
         elif 'is not registered' in s:
@@ -264,7 +269,7 @@ class Services(callbacks.Plugin):
                           on)
         elif 'currently' in s and 'isn\'t' in s or 'is not' in s:
             # The nick isn't online, let's change our nick to it.
-            self.sentGhost = False
+            self.sentGhost = None
             irc.queueMsg(ircmsgs.nick(nick))
         elif ('owned by someone else' in s) or \
              ('nickname is registered and protected' in s) or \
