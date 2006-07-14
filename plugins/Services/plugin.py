@@ -40,8 +40,6 @@ import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
-ghostDelay = 60
-
 class Services(callbacks.Plugin):
     """This plugin handles dealing with Services on networks that provide them.
     Basically, you should use the "password" command to tell the bot a nick to
@@ -117,6 +115,7 @@ class Services(callbacks.Plugin):
             return
         nickserv = self.registryValue('NickServ')
         password = self._getNickServPassword(nick)
+        ghostDelay = self.registryValue('ghostDelay')
         if not nickserv or not password:
             s = 'Tried to ghost without a NickServ or password set.'
             self.log.warning(s)
@@ -146,6 +145,7 @@ class Services(callbacks.Plugin):
             return
         nickserv = self.registryValue('NickServ')
         password = self._getNickServPassword(nick)
+        ghostDelay = self.registryValue('ghostDelay')
         if nick and nickserv and password and \
            not ircutils.strEqual(nick, irc.nick):
             if irc.afterConnect and self.sentGhost is None or \

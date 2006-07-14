@@ -66,17 +66,19 @@ conf.registerGlobalValue(Services, 'nicks',
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
     List = ircutils.IrcSet
-    
+
 conf.registerGlobalValue(Services, 'disabledNetworks',
     Networks(['QuakeNet'], """Determines what networks this plugin will be
     disabled on."""))
 
-conf.registerGlobalValue(Services,
-    'noJoinsUntilIdentified',
+conf.registerGlobalValue(Services, 'noJoinsUntilIdentified',
     registry.Boolean(False, """Determines whether the bot will not join any
     channels until it is identified.  This may be useful, for instances, if
     you have a vhost that isn't set until you're identified, or if you're
     joining +r channels that won't allow you to join unless you identify."""))
+conf.registerGlobalValue(Services, 'ghostDelay',
+    registry.PositiveInteger(60, """Determines how many seconds the bot will
+    wait between successive GHOST attempts."""))
 conf.registerGlobalValue(Services, 'NickServ',
     ValidNickOrEmptyString('', """Determines what nick the 'NickServ' service
     has."""))
