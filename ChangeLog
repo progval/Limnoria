@@ -1,3 +1,61 @@
+2006-07-23  James Vega <jamessan@supybot.com>
+
+	* Version 0.83.2! (A long overdue bugfix release)
+
+	* Added ADVANCED_PLUGIN_CONFIG, ADVANCED_PLUGIN_TESTING, CAPABILITIES,
+	USING_UTILS, USING_WRAP, STYLE, and PLUGIN_TUTORIAL docs.
+
+	* Updated the Services plugin such that it will not spam GHOST
+	commands faster than once every 60 seconds (or as set by
+	supybot.plugins.Services.ghostDelay).
+
+	* Updated the Seen plugin so that performing @seen with a leading
+	wildcard will not result in duplicate nicks in the response.
+
+	* Updated RSS to handle the feed's advertised character encoding in
+	more of its commands.
+
+	* Updated "Channel.ban list" to show how long until the ban expires.
+
+	* Fixed the bug where addressed karma adjustments would cause the bot
+	to crash.
+
+	* Fixed Alias.lock and Alias.unlock to work properly now that the
+	alias functions are no longer attributes of the Alias plugin.
+
+	* Fixed a Windows-specific NameError in log.py.
+
+	* Fixed Config.help to actually perform the string substitution of the
+	given config name.
+
+	* Replace Twisted with Socket as the default network driver.
+
+	* Added an --ssl option to Network.connect.
+
+	* Added a question about SSL network connections in supybot-wizard.
+
+	* Added recognition of UnrealIRCd's protected users and channelowners
+	as ops.
+
+	* Updated URL.last to perform a case-insensitive search.
+
+	* Updated the Author class so it performs the email munging.  This
+	prevents munging occurring for punctuation in a person's name.
+
+	* Updated ircutils' color handling to specify a default foreground
+	color of white if only a background color is specified.
+
+	* Updated registry.StringWithSpaceOnRight to accept the empty string.
+
+	* Updated registry.StringSurroundedBySpaces to be a single space if
+	given an empty string.
+
+	* Updated utils.str.format to recognize digits before the '.' in %f
+	formatting.
+
+	* Stop explicitly setting a umask.  Instead we'll just obey the user's
+	umask.
+
 2005-09-01  James Vega <jamessan@supybot.com>
 
 	* Version 0.83.1!
