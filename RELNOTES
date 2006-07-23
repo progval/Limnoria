@@ -1,3 +1,9 @@
+Version 0.83.2
+
+Mainly bug fix release.  The most noticeable change being a value of
+'default' for supybot.drivers.module will use Socket instead of Twisted.
+
+
 Version 0.83.1
 
 No incompatibilities, just fixing an important bug with plugin loading.
