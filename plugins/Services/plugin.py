@@ -148,8 +148,8 @@ class Services(callbacks.Plugin):
         ghostDelay = self.registryValue('ghostDelay')
         if nick and nickserv and password and \
            not ircutils.strEqual(nick, irc.nick):
-            if irc.afterConnect and self.sentGhost is None or \
-               (self.sentGhost + ghostDelay) < time.time():
+            if irc.afterConnect and (self.sentGhost is None or
+               (self.sentGhost + ghostDelay) < time.time()):
                 if nick in irc.state.nicksToHostmasks:
                     self._doGhost(irc)
                 else:
