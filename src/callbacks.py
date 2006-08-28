@@ -214,10 +214,13 @@ def error(msg, s, **kwargs):
     msg.tag('isError')
     return reply(msg, s, **kwargs)
 
-def getHelp(method, name=None):
+def getHelp(method, name=None, doc=None):
     if name is None:
         name = method.__name__
-    doclines = method.__doc__.splitlines()
+    if doc is None:
+        doclines = method.__doc__.splitlines()
+    else:
+        doclines = doc.splitlines()
     s = '%s %s' % (name, doclines.pop(0))
     if doclines:
         help = ' '.join(doclines)
