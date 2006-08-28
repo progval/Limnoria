@@ -99,14 +99,16 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         db.commit()
         return db
 
-    def learn(self, irc, msg, args, channel, key, factoid):
-        """[<channel>] <key> as <value>
+    def getCommandHelp(self, command):
+        method = self.getCommandMethod(command)
+        if method.im_func.func_name == 'learn':
+            s = self.registryValue('learnSeparator', dynamic.msg.args[0])
+            return callbacks.getHelp(method,
+                                     doc=method._fake__doc__ % (s, s),
+                                     name=callbacks.formatCommand(command))
+        return super(Factoids, self).getCommandHelp(self, command)
 
-        Associates <key> with <value>.  <channel> is only necessary if the
-        message isn't sent on the channel itself.  The word 'as' is necessary
-        to separate the key from the value.  It can be changed to another
-        word via the learnSeparator registry value.
-        """
+    def learn(self, irc, msg, args, channel, key, factoid):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s", key)
@@ -129,6 +131,15 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         else:
             irc.error('That factoid is locked.')
     learn = wrap(learn, ['factoid'])
+    learn._fake__doc__ = """[<channel>] <key> %s <value>
+
+                         Associates <key> with <value>.  <channel> is only
+                         necessary if the message isn't sent on the channel
+                         itself.  The word '%s' is necessary to separate the
+                         key from the value.  It can be changed to another word
+                         via the learnSeparator registry value.
+                         """
+
 
     def _lookupFactoid(self, channel, key):
         db = self.getDb(channel)
