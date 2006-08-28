@@ -139,7 +139,9 @@ class RSS(callbacks.Plugin):
         if self.registryValue(config, channel):
             for headline in headlines:
                 if headline[1]:
-                    newheadlines.append(format('%s %u', *headline))
+                    newheadlines.append(format('%s %u',
+                                               headline[0],
+                                               headline[1].encode('utf-8')))
                 else:
                     newheadlines.append(format('%s', headline[0]))
         else:
