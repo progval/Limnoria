@@ -1090,6 +1090,8 @@ class Commands(BasePlugin):
         # name = canonicalName(name)
         if self.isDisabled(name):
             return False
+        if name != canonicalName(name):
+            return False
         if hasattr(self, name):
             method = getattr(self, name)
             if inspect.ismethod(method):
