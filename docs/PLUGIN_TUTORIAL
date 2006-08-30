@@ -236,7 +236,11 @@ At the top, same as always, is the standard copyright block to be used and
 abused at your leisure.
 
 Next, some standard imports. Not all of them are used at the moment, but you
-probably will use many (if not most) of them, so just let them be.
+probably will use many (if not most) of them, so just let them be.  Since
+we'll be making use of Python's standard 'random' module, you'll need to add
+the following line to the list of imports::
+
+  import random
 
 Now, the plugin class itself. What you're given is a skeleton: a simple
 subclass of callbacks.Plugin for you to start with. The only real content it
