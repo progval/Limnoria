@@ -28,7 +28,7 @@
 ###
 
 import re
-import sgmllib
+import HTMLParser
 import htmlentitydefs
 
 import supybot.conf as conf
@@ -38,31 +38,31 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-class Title(sgmllib.SGMLParser):
+class Title(HTMLParser.HTMLParser):
     entitydefs = htmlentitydefs.entitydefs.copy()
     entitydefs['nbsp'] = ' '
+    entitydefs['apos'] = '\''
     def __init__(self):
         self.inTitle = False
         self.title = ''
-        sgmllib.SGMLParser.__init__(self)
+        HTMLParser.HTMLParser.__init__(self)
 
-    def start_title(self, attrs):
-        self.inTitle = True
+    def handle_starttag(self, tag, attrs):
+        if tag == 'title':
+            self.inTitle = True
 
-    def end_title(self):
-        self.inTitle = False
-
-    def unknown_entityref(self, name):
-        if self.inTitle:
-            self.title += ' '
-
-    def unknown_charref(self, name):
-        if self.inTitle:
-            self.title += ' '
+    def handle_endtag(self, tag):
+        if tag == 'title':
+            self.inTitle = False
 
     def handle_data(self, data):
         if self.inTitle:
             self.title += data
+
+    def handle_entityref(self, name):
+        if self.inTitle:
+            if name in self.entitydefs:
+                self.title += self.entitydefs[name]
 
 class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
@@ -172,7 +172,7 @@ class Web(callbacks.PluginRegexp):
         parser = Title()
         try:
             parser.feed(text)
-        except sgmllib.SGMLParseError:
+        except HTMLParser.HTMLParseError:
             self.log.debug('Encountered a problem parsing %u.  Title may '
                            'already be set, though', url)
         if parser.title:
