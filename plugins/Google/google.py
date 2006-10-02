@@ -3,7 +3,7 @@ Python wrapper for Google web APIs
 
 This module allows you to access Google's web APIs through SOAP,
 to do things like search Google and get the results programmatically.
-Described U{here <http://www.google.com/apis/>}
+Described U{here <http://code.google.com/apis/soapsearch/>}
   
 You need a Google-provided license key to use these services.
 Follow the link above to get one.  These functions will look in
@@ -141,8 +141,8 @@ querytype:
   -p, --spelling= <word>   check spelling
 
 IMPORTANT NOTE: all Google functions require a valid license key;
-visit http://www.google.com/apis/ to get one.  %(program)s will look in
-these places (in order) and use the first license key it finds:
+visit http://code.google.com/apis/soapsearch/ to get one.  %(program)s will
+look in these places (in order) and use the first license key it finds:
   * the key specified on the command line""" % vars()
     for get, location in _licenseLocations[2:]:
         print "  *", location
@@ -153,7 +153,8 @@ these places (in order) and use the first license key it finds:
 
 def setLicense(license_key):
     """
-    Set the U{Google APIs <http://www.google.com/api>} license key
+    Set the U{Google APIs <http://code.google.com/apis/soapsearch/>} license
+    key
     
     @param license_key: The new key to use
     @type  license_key: String
@@ -165,7 +166,8 @@ def setLicense(license_key):
     
 def getLicense(license_key = None):
     """
-    Get the U{Google APIs <http://www.google.com/api>} license key
+    Get the U{Google APIs <http://code.google.com/apis/soapsearch/>} license
+    key
     
     The key can be read from any number of locations.  See the module-leve
     documentation for the search order.
@@ -178,7 +180,8 @@ def getLicense(license_key = None):
         rc = get(license_key)
         if rc: return rc
     _usage()
-    raise NoLicenseKey, 'get a license key at http://www.google.com/apis/'
+    raise NoLicenseKey, 'get a license key at '\
+                        'http://code.google.com/apis/soapsearch/'
 
 
 def setProxy(http_proxy):
@@ -351,10 +354,10 @@ def doGoogleSearch( q, start = 0, maxResults = 10, filter = 1,
     """
     Search Google using the SOAP API and return the results.
 
-    You need a license key to call this function; see the
-    U{Google APIs <http://www.google.com/apis/>} site to get one.
-    Then you can either pass it to this function every time, or
-    set it globally; see the L{google} module-level docs for details.
+    You need a license key to call this function; see the U{Google APIs
+    <http://code.google.com/apis/soapsearch/>} site to get one.  Then you can
+    either pass it to this function every time, or set it globally; see the
+    L{google} module-level docs for details.
     
     See U{http://www.google.com/help/features.html}
     for examples of advanced features.  Anything that works at the 
@@ -370,7 +373,7 @@ def doGoogleSearch( q, start = 0, maxResults = 10, filter = 1,
     C{outputencoding} parameters.
     
     You can download the API documentation 
-    U{http://www.google.com/apis/download.html <here>}.
+    U{http://code.google.com/apis/soapsearch/download.html <here>}.
     
     @param q: search string.  
     @type  q: String
@@ -437,7 +440,7 @@ def doGetCachedPage( url, license_key = None, http_proxy = None ):
     Retrieve a page from the Google cache.
 
     You need a license key to call this function; see the
-    U{Google APIs <http://www.google.com/apis/>} site to get one.
+    U{Google APIs <http://code.google.com/apis/soapsearch/>} site to get one.
     Then you can either pass it to this function every time, or
     set it globally; see the L{google} module-level docs for details.
     
@@ -466,7 +469,7 @@ def doSpellingSuggestion( phrase, license_key = None, http_proxy = None ):
     Get spelling suggestions from Google
 
     You need a license key to call this function; see the
-    U{Google APIs <http://www.google.com/apis/>} site to get one.
+    U{Google APIs <http://code.google.com/apis/soapsearch/>} site to get one.
     Then you can either pass it to this function every time, or
     set it globally; see the L{google} module-level docs for details.
 

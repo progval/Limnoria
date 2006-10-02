@@ -200,8 +200,8 @@ class Google(callbacks.PluginRegexp):
         except google.NoLicenseKey, e:
             irc.error('You must have a free Google web services license key '
                       'in order to use this command.  You can get one at '
-                      '<http://google.com/apis/>.  Once you have one, you can '
-                      'set it with the command '
+                      '<http://code.google.com/apis/soapsearch/>.  Once you '
+                      'have one, you can set it with the command '
                       '"config supybot.plugins.Google.licenseKey <key>".')
             return
         bold = self.registryValue('bold', msg.args[0])

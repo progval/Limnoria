@@ -61,7 +61,8 @@ def configure(advanced):
             conf.supybot.plugins.Google.searchSnarfer.setValue(True)
     else:
         output("""You'll need to get a key before you can use this plugin.
-                  You can apply for a key at http://www.google.com/apis/""")
+                  You can apply for a key at
+                  http://code.google.com/apis/soapsearch/""")
 
 class LicenseKey(registry.String):
     def setValue(self, s):
