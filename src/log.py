@@ -177,33 +177,16 @@ class MultiLogger(object):
     def __init__(self, loggers):
         self.loggers = loggers
 
-    def debug(self, msg, *args, **kwargs):
-        for logger in self.loggers:
-            logger.debug(msg, *args, **kwargs)
-
-    def info(self, msg, *args, **kwargs):
-        for logger in self.loggers:
-            logger.info(msg, *args, **kwargs)
-
-    def warning(self, msg, *args, **kwargs):
-        for logger in self.loggers:
-            logger.warning(msg, *args, **kwargs)
-
-    def error(self, msg, *args, **kwargs):
-        for logger in self.loggers:
-            logger.error(msg, *args, **kwargs)
-
-    def critical(self, msg, *args, **kwargs):
-        for logger in self.loggers:
-            logger.critical(msg, *args, **kwargs)
-
-    def exception(self, msg, *args, **kwargs):
-        for logger in self.loggers:
-            logger.exception(msg, *args, **kwargs)
-
-    def log(self, level, msg, *args, **kwargs):
-        for logger in self.loggers:
-            logger.log(level, msg, *args, **kwargs)
+    def __getattr__(self, attr):
+        def f(*args, **kwargs):
+            for logger in self.loggers:
+                getattr(logger, attr)(*args, **kwargs)
+        if attr in ('debug', 'info', 'warning', 'error', 'critical',
+                    'exception', 'log'):
+            return f
+        else:
+            raise AttributeError('%r object has no attribute %r' %
+                                 (self.__class__.__name__, attr))
 
 # These are not.
 logging.setLoggerClass(Logger)
