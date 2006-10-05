@@ -115,7 +115,7 @@ class StdoutStreamHandler(logging.StreamHandler):
 
     def disable(self):
         self.setLevel(sys.maxint) # Just in case.
-        _logger.removeHandler(self)
+        _stdoutLogger.removeHandler(self)
         logging._acquireLock()
         try:
             del logging._handlers[self]
@@ -173,9 +173,43 @@ class ColorizedFormatter(Formatter):
 formatter = Formatter('NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
 pluginFormatter = PluginFormatter('NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
 
+class MultiLogger(object):
+    def __init__(self, loggers):
+        self.loggers = loggers
+
+    def debug(self, msg, *args, **kwargs):
+        for logger in self.loggers:
+            logger.debug(msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        for logger in self.loggers:
+            logger.info(msg, *args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        for logger in self.loggers:
+            logger.warning(msg, *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        for logger in self.loggers:
+            logger.error(msg, *args, **kwargs)
+
+    def critical(self, msg, *args, **kwargs):
+        for logger in self.loggers:
+            logger.critical(msg, *args, **kwargs)
+
+    def exception(self, msg, *args, **kwargs):
+        for logger in self.loggers:
+            logger.exception(msg, *args, **kwargs)
+
+    def log(self, level, msg, *args, **kwargs):
+        for logger in self.loggers:
+            logger.log(level, msg, *args, **kwargs)
+
 # These are not.
 logging.setLoggerClass(Logger)
 _logger = logging.getLogger('supybot')
+_stdoutLogger = logging.getLogger('supybotStdout')
+_multiLogger = MultiLogger((_logger, _stdoutLogger))
 
 class ValidLogLevel(registry.String):
     """Invalid log level."""
@@ -207,6 +241,13 @@ class LogLevel(ValidLogLevel):
     def setValue(self, v):
         ValidLogLevel.setValue(self, v)
         _logger.setLevel(self.value) # _logger defined later.
+
+class StdoutLogLevel(ValidLogLevel):
+    """Invalid log level.  Value must be either DEBUG, INFO, WARNING,
+    ERROR, or CRITICAL."""
+    def setValue(self, v):
+        ValidLogLevel.setValue(self, v)
+        _stdoutLogger.setLevel(self.value) # _stdoutLogger defined later.
 
 conf.registerGlobalValue(conf.supybot.directories, 'log',
     conf.Directory('logs', """Determines what directory the bot will store its
@@ -250,6 +291,10 @@ conf.registerGlobalValue(conf.supybot.log.stdout, 'format',
     """Determines what the bot's logging format will be.  The relevant
     documentation on the available formattings is Python's documentation on
     its logging module."""))
+conf.registerGlobalValue(conf.supybot.log.stdout, 'level',
+    StdoutLogLevel(logging.INFO, """Determines what the minimum priority level
+    logged will be.  Valid values are DEBUG, INFO, WARNING, ERROR, and
+    CRITICAL, in order of increasing priority."""))
 
 conf.registerGroup(conf.supybot.log, 'plugins')
 conf.registerGlobalValue(conf.supybot.log.plugins, 'individualLogfiles',
@@ -263,12 +308,12 @@ conf.registerGlobalValue(conf.supybot.log.plugins, 'format',
 
 
 # These just make things easier.
-debug = _logger.debug
-info = _logger.info
-warning = _logger.warning
-error = _logger.error
-critical = _logger.critical
-exception = _logger.exception
+debug = _multiLogger.debug
+info = _multiLogger.info
+warning = _multiLogger.warning
+error = _multiLogger.error
+critical = _multiLogger.critical
+exception = _multiLogger.exception
 
 # These were just begging to be replaced.
 registry.error = error
@@ -283,7 +328,7 @@ ircutils.debug = debug
 
 def getPluginLogger(name):
     if not conf.supybot.log.plugins.individualLogfiles():
-        return _logger
+        return _multiLogger
     log = logging.getLogger('supybot.plugins.%s' % name)
     if not log.handlers:
         filename = os.path.join(pluginLogDir, '%s.log' % name)
@@ -379,7 +424,9 @@ if not conf.daemonized:
     _stdoutFormatter = ColorizedFormatter('IF YOU SEE THIS, FILE A BUG!')
     _stdoutHandler.setFormatter(_stdoutFormatter)
     _stdoutHandler.setLevel(-1)
-    _logger.addHandler(_stdoutHandler)
+    _stdoutHandler.addFilter(PluginLogFilter())
+    _stdoutLogger.addHandler(_stdoutHandler)
+    _stdoutLogger.setLevel(conf.supybot.log.stdout.level())
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
