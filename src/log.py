@@ -115,7 +115,7 @@ class StdoutStreamHandler(logging.StreamHandler):
 
     def disable(self):
         self.setLevel(sys.maxint) # Just in case.
-        _stdoutLogger.removeHandler(self)
+        _logger.removeHandler(self)
         logging._acquireLock()
         try:
             del logging._handlers[self]
@@ -169,30 +169,38 @@ class ColorizedFormatter(Formatter):
         else:
             return Formatter.format(self, record, *args, **kwargs)
 
+conf.registerGlobalValue(conf.supybot.directories, 'log',
+    conf.Directory('logs', """Determines what directory the bot will store its
+    logfiles in."""))
+
+_logDir = conf.supybot.directories.log()
+if not os.path.exists(_logDir):
+    os.mkdir(_logDir, 0755)
+
+pluginLogDir = os.path.join(_logDir, 'plugins')
+
+if not os.path.exists(pluginLogDir):
+    os.mkdir(pluginLogDir, 0755)
+
+try:
+    messagesLogFilename = os.path.join(_logDir, 'messages.log')
+    _handler = BetterFileHandler(messagesLogFilename)
+except EnvironmentError, e:
+    raise SystemExit, \
+          'Error opening messages logfile (%s).  ' \
+          'Generally, this is because you are running Supybot in a directory ' \
+          'you don\'t have permissions to add files in, or you\'re running ' \
+          'Supybot as a different user than you normal do.  The original ' \
+          'error was: %s' % (messagesLogFilename, utils.gen.exnToString(e))
+
 # These are public.
 formatter = Formatter('NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
 pluginFormatter = PluginFormatter('NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
 
-class MultiLogger(object):
-    def __init__(self, loggers):
-        self.loggers = loggers
-
-    def __getattr__(self, attr):
-        def f(*args, **kwargs):
-            for logger in self.loggers:
-                getattr(logger, attr)(*args, **kwargs)
-        if attr in ('debug', 'info', 'warning', 'error', 'critical',
-                    'exception', 'log'):
-            return f
-        else:
-            raise AttributeError('%r object has no attribute %r' %
-                                 (self.__class__.__name__, attr))
-
 # These are not.
 logging.setLoggerClass(Logger)
 _logger = logging.getLogger('supybot')
-_stdoutLogger = logging.getLogger('supybotStdout')
-_multiLogger = MultiLogger((_logger, _stdoutLogger))
+_stdoutHandler = StdoutStreamHandler(sys.stdout)
 
 class ValidLogLevel(registry.String):
     """Invalid log level."""
@@ -223,18 +231,14 @@ class LogLevel(ValidLogLevel):
     ERROR, or CRITICAL."""
     def setValue(self, v):
         ValidLogLevel.setValue(self, v)
-        _logger.setLevel(self.value) # _logger defined later.
+        _handler.setLevel(self.value)
 
 class StdoutLogLevel(ValidLogLevel):
     """Invalid log level.  Value must be either DEBUG, INFO, WARNING,
     ERROR, or CRITICAL."""
     def setValue(self, v):
         ValidLogLevel.setValue(self, v)
-        _stdoutLogger.setLevel(self.value) # _stdoutLogger defined later.
-
-conf.registerGlobalValue(conf.supybot.directories, 'log',
-    conf.Directory('logs', """Determines what directory the bot will store its
-    logfiles in."""))
+        _stdoutHandler.setLevel(self.value)
 
 conf.registerGroup(conf.supybot, 'log')
 conf.registerGlobalValue(conf.supybot.log, 'format',
@@ -291,12 +295,12 @@ conf.registerGlobalValue(conf.supybot.log.plugins, 'format',
 
 
 # These just make things easier.
-debug = _multiLogger.debug
-info = _multiLogger.info
-warning = _multiLogger.warning
-error = _multiLogger.error
-critical = _multiLogger.critical
-exception = _multiLogger.exception
+debug = _logger.debug
+info = _logger.info
+warning = _logger.warning
+error = _logger.error
+critical = _logger.critical
+exception = _logger.exception
 
 # These were just begging to be replaced.
 registry.error = error
@@ -311,7 +315,7 @@ ircutils.debug = debug
 
 def getPluginLogger(name):
     if not conf.supybot.log.plugins.individualLogfiles():
-        return _multiLogger
+        return _logger
     log = logging.getLogger('supybot.plugins.%s' % name)
     if not log.handlers:
         filename = os.path.join(pluginLogDir, '%s.log' % name)
@@ -370,46 +374,25 @@ class MetaFirewall(type):
         #return type.__new__(cls, name, bases, dict)
 
 
-_logDir = conf.supybot.directories.log()
-if not os.path.exists(_logDir):
-    os.mkdir(_logDir, 0755)
-
-pluginLogDir = os.path.join(_logDir, 'plugins')
-
-if not os.path.exists(pluginLogDir):
-    os.mkdir(pluginLogDir, 0755)
-
-try:
-    messagesLogFilename = os.path.join(_logDir, 'messages.log')
-    _handler = BetterFileHandler(messagesLogFilename)
-except EnvironmentError, e:
-    raise SystemExit, \
-          'Error opening messages logfile (%s).  ' \
-          'Generally, this is because you are running Supybot in a directory ' \
-          'you don\'t have permissions to add files in, or you\'re running ' \
-          'Supybot as a different user than you normal do.  The original ' \
-          'error was: %s' % (messagesLogFilename, utils.gen.exnToString(e))
-_handler.setFormatter(formatter)
-_handler.setLevel(-1)
 class PluginLogFilter(logging.Filter):
     def filter(self, record):
         if conf.supybot.log.plugins.individualLogfiles():
             if record.name.startswith('supybot.plugins'):
                 return False
         return True
+
+_handler.setFormatter(formatter)
 _handler.addFilter(PluginLogFilter())
 
+_handler.setLevel(conf.supybot.log.level())
 _logger.addHandler(_handler)
-_logger.setLevel(conf.supybot.log.level())
+_logger.setLevel(-1)
 
+_stdoutFormatter = ColorizedFormatter('IF YOU SEE THIS, FILE A BUG!')
+_stdoutHandler.setFormatter(_stdoutFormatter)
+_stdoutHandler.setLevel(conf.supybot.log.stdout.level())
 if not conf.daemonized:
-    _stdoutHandler = StdoutStreamHandler(sys.stdout)
-    _stdoutFormatter = ColorizedFormatter('IF YOU SEE THIS, FILE A BUG!')
-    _stdoutHandler.setFormatter(_stdoutFormatter)
-    _stdoutHandler.setLevel(-1)
-    _stdoutHandler.addFilter(PluginLogFilter())
-    _stdoutLogger.addHandler(_stdoutHandler)
-    _stdoutLogger.setLevel(conf.supybot.log.stdout.level())
+    _logger.addHandler(_stdoutHandler)
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
