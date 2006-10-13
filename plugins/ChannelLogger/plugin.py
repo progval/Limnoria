@@ -55,14 +55,13 @@ class ChannelLogger(callbacks.Plugin):
         self.lastMsgs = {}
         self.lastStates = {}
         self.logs = {}
-        world.flushers.append(self.flush)
+        self.flusher = self.flush
+        world.flushers.append(self.flusher)
 
     def die(self):
         for log in self._logs():
             log.close()
-        world.flushers = [x for x in world.flushers
-                          if hasattr(x, 'im_class') and
-                          x.im_class is not self.__class__]
+        world.flushers = [x for x in world.flushers if x is not self.flusher]
 
     def __call__(self, irc, msg):
         try:
