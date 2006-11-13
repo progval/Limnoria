@@ -68,7 +68,7 @@ class Lart(plugins.ChannelIdDatabasePlugin):
                 irc.error(format('There are no larts in my database '
                                  'for %s.', channel))
                 return
-        text = self._replaceFirstPerson(lart.text, msg.nick)
+        text = lart.text
         if ircutils.strEqual(target, irc.nick):
             target = msg.nick
             reason = self._replaceFirstPerson('trying to dis me', irc.nick)

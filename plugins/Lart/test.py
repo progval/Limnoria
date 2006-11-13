@@ -29,13 +29,28 @@
 
 from supybot.test import *
 
-class LartTestCase(PluginTestCase):
-    plugins = ('Lart',)
+class LartTestCase(ChannelPluginTestCase):
+    plugins = ('Lart', 'User')
+
+    def setUp(self):
+        ChannelPluginTestCase.setUp(self)
+        # Create a valid user to use
+        self.prefix = 'mf!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.nick, 'register tester moo',
+                                         prefix=self.prefix))
+        m = self.irc.takeMsg() # Response to register.
 
     def testAdd(self):
         self.assertError('lart add foo')  # needs $who
+        self.assertNotError('lart add smacks $who')
 
-    def testPraise(self):
+    def testLart(self):
         self.assertError('lart foo')  # no praises!
+        self.assertNotError('lart add smacks $who')
+        self.assertAction('lart foo', 'smacks foo')
+
+    def testMeInReason(self):
+        self.assertNotError('lart add makes $who sit by me')
+        self.assertAction('lart foo', 'makes foo sit by me')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
