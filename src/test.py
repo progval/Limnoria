@@ -331,7 +331,8 @@ class PluginTestCase(SupyTestCase):
         self.failUnless(ircmsgs.isAction(m), '%r is not an action.' % m)
         if expectedResponse is not None:
             s = ircmsgs.unAction(m)
-            self.assertEqual(s, expectedResponse, '%r != %r' % (s, m))
+            self.assertEqual(s, expectedResponse,
+                             '%r != %r' % (s, expectedResponse))
         return m
 
     def assertSnarfAction(self, query, expectedResponse=None, **kwargs):
