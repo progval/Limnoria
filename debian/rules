@@ -1,6 +1,0 @@
-#!/usr/bin/make -f
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/python-distutils.mk
-
-DEB_INSTALL_MANPAGES_supybot := docs/man/supybot-adduser.1 docs/man/supybot-newplugin.1\
-	docs/man/supybot.1 docs/man/supybot-wizard.1
