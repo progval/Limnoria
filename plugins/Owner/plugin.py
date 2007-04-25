@@ -29,10 +29,14 @@
 
 import gc
 import os
-import sre
 import sys
 import socket
 import linecache
+
+if sys.version_info >= (2, 5, 0):
+    import re as sre
+else:
+    import sre
 
 import supybot.log as log
 import supybot.conf as conf

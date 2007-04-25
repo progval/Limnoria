@@ -34,10 +34,14 @@ Module for general worldly stuff, like global variables and whatnot.
 import gc
 import os
 import sys
-import sre
 import time
 import atexit
 import threading
+
+if sys.version_info >= (2, 5, 0):
+    import re as sre
+else:
+    import sre
 
 import supybot.log as log
 import supybot.conf as conf
@@ -62,7 +66,7 @@ class SupyThread(threading.Thread):
         threadsSpawned += 1
         super(SupyThread, self).__init__(*args, **kwargs)
         log.debug('Spawning thread %q.', self.getName())
-        
+
 commandsProcessed = 0
 
 ircs = [] # A list of all the IRCs.
