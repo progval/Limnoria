@@ -136,11 +136,11 @@ class GenTest(SupyTestCase):
 
     def testSorted(self):
         L = ['a', 'c', 'b']
-        self.assertEqual(utils.sorted(L), ['a', 'b', 'c'])
+        self.assertEqual(sorted(L), ['a', 'b', 'c'])
         self.assertEqual(L, ['a', 'c', 'b'])
         def mycmp(x, y):
             return -cmp(x, y)
-        self.assertEqual(utils.sorted(L, mycmp), ['c', 'b', 'a'])
+        self.assertEqual(sorted(L, mycmp), ['c', 'b', 'a'])
 
     def testTimeElapsed(self):
         self.assertRaises(ValueError, utils.timeElapsed, 0,
@@ -391,7 +391,7 @@ class IterTest(SupyTestCase):
         self.assertEqual([0, 1], list(utils.iter.limited(L, 2)))
         self.assertEqual(range(10), list(utils.iter.limited(L, 10)))
         self.assertRaises(ValueError, list, utils.iter.limited(L, 11))
-        
+
     def testRandomChoice(self):
         choice = utils.iter.choice
         self.assertRaises(IndexError, choice, {})

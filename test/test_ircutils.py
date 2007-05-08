@@ -109,10 +109,10 @@ class FunctionsTestCase(SupyTestCase):
         # Test positional args
         self.assertEqual('\x0300foo\x03', ircutils.mircColor(s, 'white'))
         self.assertEqual('\x031,02foo\x03',ircutils.mircColor(s,'black','blue'))
-        self.assertEqual('\x03,03foo\x03', ircutils.mircColor(s, None, 'green'))
+        self.assertEqual('\x0300,03foo\x03', ircutils.mircColor(s, None, 'green'))
         # Test keyword args
         self.assertEqual('\x0304foo\x03', ircutils.mircColor(s, fg='red'))
-        self.assertEqual('\x03,05foo\x03', ircutils.mircColor(s, bg='brown'))
+        self.assertEqual('\x0300,05foo\x03', ircutils.mircColor(s, bg='brown'))
         self.assertEqual('\x036,07foo\x03',
                          ircutils.mircColor(s, bg='orange', fg='purple'))
 
@@ -203,8 +203,8 @@ class FunctionsTestCase(SupyTestCase):
             self.failIf(ircutils.isNick('foo bar'))
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(original)
-            
-                       
+
+
 
     def testBanmask(self):
         for msg in msgs:
@@ -229,7 +229,7 @@ class FunctionsTestCase(SupyTestCase):
     def testNickFromHostmask(self):
         self.assertEqual(ircutils.nickFromHostmask('nick!user@host.domain.tld'),
                          'nick')
-        
+
     def testToLower(self):
         self.assertEqual('jemfinch', ircutils.toLower('jemfinch'))
         self.assertEqual('{}|^', ircutils.toLower('[]\\~'))
