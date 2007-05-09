@@ -33,7 +33,7 @@ import socket
 import sgmllib
 import threading
 
-import rssparser
+import feedparser
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -227,11 +227,11 @@ class RSS(callbacks.Plugin):
             if self.willGetNewFeed(url):
                 try:
                     self.log.debug('Downloading new feed from %u', url)
-                    results = rssparser.parse(url)
+                    results = feedparser.parse(url)
                     if 'bozo_exception' in results:
                         raise results['bozo_exception']
                 except sgmllib.SGMLParseError:
-                    self.log.exception('Uncaught exception from rssparser:')
+                    self.log.exception('Uncaught exception from feedparser:')
                     raise callbacks.Error, 'Invalid (unparsable) RSS feed.'
                 except socket.timeout:
                     return error('Timeout downloading feed.')
