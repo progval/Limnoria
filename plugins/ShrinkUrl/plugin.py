@@ -197,7 +197,8 @@ class ShrinkUrl(callbacks.PluginRegexp):
         tinyurl = self._getTinyUrl(url)
         if tinyurl is not None:
             m = irc.reply(tinyurl)
-            m.tag('shrunken')
+            if m is not None:
+                m.tag('shrunken')
         else:
             s = 'Could not parse the TinyURL.com results page.'
             irc.errorPossibleBug(s)
