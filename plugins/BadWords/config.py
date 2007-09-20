@@ -94,8 +94,10 @@ conf.registerChannelValue(BadWords, 'kick',
     registry.Boolean(False, """Determines whether the bot will kick people with
     a warning when they use bad words."""))
 conf.registerChannelValue(BadWords.kick, 'message',
-    registry.String("""You have been kicked for using a word prohibited on this
-    channel.  Please use more appropriate language in the future."""))
+    registry.NormalizedString("""You have been kicked for using a word
+    prohibited in the presence of this bot.  Please use more appropriate
+    language in the future.""", """Determines the kick message used by the bot
+    when kicking users for saying bad words."""))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -66,11 +66,14 @@ class BadWords(callbacks.Privmsg):
         self.filtering = True
         return msg
 
+    def updateRegexp(self):
+        if self.lastModified < self.words.lastModified:
+            self.makeRegexp(self.words())
+            self.lastModified = time.time()
+        
     def outFilter(self, irc, msg):
         if self.filtering and msg.command == 'PRIVMSG':
-            if self.lastModified < self.words.lastModified:
-                self.makeRegexp(self.words())
-                self.lastModified = time.time()
+            self.updateRegexp()
             s = msg.args[1]
             if self.registryValue('stripFormatting'):
                 s = ircutils.stripFormatting(s)
@@ -79,17 +82,17 @@ class BadWords(callbacks.Privmsg):
         return msg
 
     def doPrivmsg(self, irc, msg):
+        self.updateRegexp()
         s = ircutils.stripFormatting(msg.args[1])
         channel = msg.args[0]
         if ircutils.isChannel(channel) and self.registryValue('kick', channel):
-            if self.regexp.match(s):
+            if self.regexp.search(s):
                 if irc.nick in irc.state.channels[channel].ops:
                     message = self.registryValue('kick.message', channel)
                     irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
                 else:
-                    self.log('Should kick %s from %s, but am not opped.',
-                             msg.nick, channel)
-        callbacks.Privmsg.doPrivmsg(self, irc, msg)
+                    self.log.warning('Should kick %s from %s, but not opped.',
+                                     msg.nick, channel)
 
     def makeRegexp(self, iterable):
         s = '(%s)' % '|'.join(map(re.escape, iterable))
