@@ -58,7 +58,7 @@ class Protector(callbacks.Plugin):
 
     def isProtected(self, irc, channel, hostmask):
         cap = ircdb.makeChannelCapability(channel, 'protected')
-        if ircdb.checkCapability(msg.prefix, cap):
+        if ircdb.checkCapability(hostmask, cap):
             self.log.debug('%s is protected on %s, it has %s.',
                            hostmask, channel, cap)
             return True
@@ -68,7 +68,7 @@ class Protector(callbacks.Plugin):
 
     def demote(self, channel, nick):
         irc.queueMsg(ircmsgs.deop(channel, nick))
-        
+
     def __call__(self, irc, msg):
         def ignore(reason):
             self.log.debug('Ignoring %q, %s.', msg, reason)
@@ -145,7 +145,7 @@ class Protector(callbacks.Plugin):
                 protected.append(nick)
         if not self.isOp(irc, channel, msg.prefix):
             self.demote(channel, msg.nick)
-            
+
 
 Class = Protector
 
