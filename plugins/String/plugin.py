@@ -108,16 +108,13 @@ class String(callbacks.Plugin):
         irc.reply(utils.str.soundex(text, length))
     soundex = wrap(soundex, ['somethingWithoutSpaces', additional('int', 4)])
 
-    def len(self, irc, msg, args):
+    def len(self, irc, msg, args, text):
         """<text>
 
         Returns the length of <text>.
         """
-        total = 0
-        for arg in args:
-            total += len(arg)
-        total += len(args)-1 # spaces between the arguments.
-        irc.reply(str(total))
+        irc.reply(str(len(text)))
+    len = wrap(len, ['text'])
 
     def re(self, irc, msg, args, ff, text):
         """<regexp> <text>

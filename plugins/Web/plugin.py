@@ -96,7 +96,7 @@ class Web(callbacks.PluginRegexp):
             parser = Title()
             try:
                 parser.feed(text)
-            except sgmllib.SGMLParseError:
+            except HTMLParser.HTMLParseError:
                 self.log.debug('Encountered a problem parsing %u.  Title may '
                                'already be set, though', url)
             if parser.title:
