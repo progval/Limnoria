@@ -171,7 +171,7 @@ class IrcMsg(object):
                self.prefix == other.prefix and \
                self.args == other.args
     __req__ = __eq__ # I don't know exactly what this does, but it can't hurt.
-    
+
     def __ne__(self, other):
         return not (self == other)
     __rne__ = __ne__ # Likewise as above.
@@ -317,6 +317,8 @@ def prettyPrint(msg, addRecipients=False, timestampFormat=None, showNick=True):
         s = '*** %s changes topic to %s' % (nickorprefix(), msg.args[1])
     elif msg.command == 'NICK':
         s = '*** %s is now known as %s' % (msg.nick, msg.args[0])
+    else:
+        s = utils.str.format('--- Unknown command %q', ' '.join(msg.args))
     at = getattr(msg, 'receivedAt', None)
     if timestampFormat and at:
         s = '%s %s' % (time.strftime(timestampFormat, time.localtime(at)), s)
