@@ -8,7 +8,7 @@
 	* Added support for different log levels on stdout vs the log file.
 
 	* Fixed a bug where the bot always reacted to invalid command floods
-	even if supybot.abuse.flood.invalidcommand indicated not to.
+	even if supybot.abuse.flood.command.invalid indicated not to.
 	(Closes: #1716878)
 
 	* Fixed a bug where the RSS plugin would lower-case URLs, thus making
