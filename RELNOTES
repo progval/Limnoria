@@ -1,3 +1,9 @@
+Version 0.83.3
+
+Overdue bug fix and Python2.5-compatible release.  No significant changes to
+worry about from the user perspective.
+
+
 Version 0.83.2
 
 Mainly bug fix release.  The most noticeable change being a value of
