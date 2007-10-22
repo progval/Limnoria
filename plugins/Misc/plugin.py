@@ -63,6 +63,7 @@ class Misc(callbacks.Plugin):
         maximum = conf.supybot.abuse.flood.command.invalid.maximum()
         self.invalidCommands.enqueue(msg)
         if self.invalidCommands.len(msg) > maximum and \
+           conf.supybot.abuse.flood.command.invalid() and \
            not ircdb.checkCapability(msg.prefix, 'owner'):
             punishment = conf.supybot.abuse.flood.command.invalid.punishment()
             banmask = '*!%s@%s' % (msg.user, msg.host)

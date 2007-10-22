@@ -204,6 +204,7 @@ _stdoutHandler = StdoutStreamHandler(sys.stdout)
 
 class ValidLogLevel(registry.String):
     """Invalid log level."""
+    handler = None
     minimumLevel = -1
     def set(self, s):
         s = s.upper()
@@ -216,6 +217,8 @@ class ValidLogLevel(registry.String):
                 self.error()
         if level < self.minimumLevel:
             self.error()
+        if self.handler is not None:
+            self.handler.setLevel(level)
         self.setValue(level)
 
     def __str__(self):
@@ -229,16 +232,12 @@ class ValidLogLevel(registry.String):
 class LogLevel(ValidLogLevel):
     """Invalid log level.  Value must be either DEBUG, INFO, WARNING,
     ERROR, or CRITICAL."""
-    def setValue(self, v):
-        ValidLogLevel.setValue(self, v)
-        _handler.setLevel(self.value)
+    handler = _handler
 
 class StdoutLogLevel(ValidLogLevel):
     """Invalid log level.  Value must be either DEBUG, INFO, WARNING,
     ERROR, or CRITICAL."""
-    def setValue(self, v):
-        ValidLogLevel.setValue(self, v)
-        _stdoutHandler.setLevel(self.value)
+    handler = _stdoutHandler
 
 conf.registerGroup(conf.supybot, 'log')
 conf.registerGlobalValue(conf.supybot.log, 'format',

@@ -1,3 +1,60 @@
+2007-10-22  James Vega <jamessan@supybot.com>
+
+	* Version 0.83.3!
+
+	* Added the BadWords plugin from supybot-plugins and updated the
+	plugin to allow kicking of people who use defined BadWords.
+
+	* Added support for different log levels on stdout vs the log file.
+
+	* Fixed a bug where the bot always reacted to invalid command floods
+	even if supybot.abuse.flood.command.invalid indicated not to.
+	(Closes: #1716878)
+
+	* Fixed a bug where the RSS plugin would lower-case URLs, thus making
+	them impossible to retrieve.  (Closes: #1666786)
+
+	* Fixed ircmsgs.prettyPrint to handle unrecognized commands.
+	(Closes: #1630963)
+
+	* Fixed a bug in the Services plugin where the bot would continuously
+	send Ghost commands.
+
+	* Fixed Google.calc to handle a change in Google's HTML.
+
+	* Fixed a bug where Plugin.list was listing functions which weren't
+	valid commands.
+
+	* Fixed RSS's handling of encodings to eliminate some ascii conversion
+	errors.
+
+	* Updated the rssparser using plugins with the renamed and newer
+	feedparser 4.1 in order to properly handle Bugzilla RSS feeds.
+
+	* Updated PLUGIN_TUTORIAL to specify that the user needs to import
+	Python's random module.
+
+	* Updated the Web plugin so it uses HTMLParser over sgmllib's parser
+	since sgmllib's enters an infinite loop on invalid input.
+
+	* Updated getHelp() so callers can pass in the help string.  This is
+	used in the Factoids plugin to dynamically generate a help string
+	based on a config value.
+
+	* Updated questions.py so bolding is handled better.  User input,
+	default values, and defined choices are no longer bolded.
+
+	* Updated String.len to use wrap().  This greatly simplifies the
+	command and introduces better argument handling.
+
+	* Updated a few uses of sre to use re if the bot is running under
+	Python 2.5.
+
+	* Fixed test cases for mircColor and sorted (thanks dcraven).
+
+	* Updated assertAction's error message to give useful information
+	about what went wrong.
+
 2006-07-23  James Vega <jamessan@supybot.com>
 
 	* Version 0.83.2! (A long overdue bugfix release)

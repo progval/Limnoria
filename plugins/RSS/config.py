@@ -40,7 +40,7 @@ def configure(advanced):
     conf.registerPlugin('RSS', True)
 
 
-class AnnouncedFeeds(registry.SpaceSeparatedListOfStrings):
+class FeedNames(registry.SpaceSeparatedListOfStrings):
     List = callbacks.CanonicalNameSet
 
 RSS = conf.registerPlugin('RSS')
@@ -55,15 +55,15 @@ conf.registerChannelValue(RSS, 'announcementPrefix',
     is prepended (if any) to the new news item announcements made in the
     channel."""))
 conf.registerChannelValue(RSS, 'announce',
-    AnnouncedFeeds([], """Determines which RSS feeds should be announced in the
-    channel; valid input is a list of strings (either registered RSS feeds or
-    RSS feed URLs) separated by spaces."""))
+    registry.SpaceSeparatedSetOfStrings([], """Determines which RSS feeds
+    should be announced in the channel; valid input is a list of strings
+    (either registered RSS feeds or RSS feed URLs) separated by spaces."""))
 conf.registerGlobalValue(RSS, 'waitPeriod',
     registry.PositiveInteger(1800, """Indicates how many seconds the bot will
     wait between retrieving RSS feeds; requests made within this period will
     return cached results."""))
 conf.registerGlobalValue(RSS, 'feeds',
-    AnnouncedFeeds([], """Determines what feeds should be accessible as
+    FeedNames([], """Determines what feeds should be accessible as
     commands."""))
 conf.registerChannelValue(RSS, 'showLinks',
     registry.Boolean(False, """Determines whether the bot will list the link
