@@ -28,6 +28,7 @@
 ###
 
 import re
+import math
 import types
 
 import supybot.log as log
@@ -274,6 +275,7 @@ class ChannelStats(callbacks.Plugin):
     stats = wrap(stats, ['channeldb', additional('something')])
 
     _env = {'__builtins__': types.ModuleType('__builtins__')}
+    _env.update(math.__dict__)
     def rank(self, irc, msg, args, channel, expr):
         """[<channel>] <stat expression>
 
@@ -288,11 +290,9 @@ class ChannelStats(callbacks.Plugin):
         if expr != expr.translate(utils.str.chars, '_[]'):
             irc.error('There\'s really no reason why you should have '
                       'underscores or brackets in your mathematical '
-                      'expression.  Please remove them.')
-            return
+                      'expression.  Please remove them.', Raise=True)
         if 'lambda' in expr:
-            irc.error('You can\'t use lambda in this command.')
-            return
+            irc.error('You can\'t use lambda in this command.', Raise=True)
         expr = expr.lower()
         users = []
         for ((c, id), stats) in self.db.items():
@@ -305,12 +305,10 @@ class ChannelStats(callbacks.Plugin):
                 except ZeroDivisionError:
                     v = float('inf')
                 except NameError, e:
-                    irc.error('You referenced an invalid stat variable:',
-                              str(e).split()[1], Raise=True)
+                    irc.errorInvalid('stat variable', str(e).split()[1])
                 except Exception, e:
                     irc.error(utils.exnToString(e), Raise=True)
-                else:
-                    users.append((v, ircdb.users.getUser(id).name))
+                users.append((v, ircdb.users.getUser(id).name))
         users.sort()
         users.reverse()
         s = utils.str.commaAndify(['#%s %s (%.3g)' % (i, u, v)

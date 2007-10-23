@@ -83,8 +83,9 @@ class ChannelStatsTestCase(ChannelPluginTestCase):
         self.assertNotError('channelstats stats %s' % self.nick)
         self.assertNotError('channelstats stats %s' % self.nick.upper())
         self.assertNotError('channelstats stats')
-        
         self.assertNotError('channelstats rank chars / msgs')
+        self.assertNotError('channelstats rank kicks/kicked') # Tests inf
+        self.assertNotError('channelstats rank log(msgs)')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
