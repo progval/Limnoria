@@ -113,7 +113,7 @@ class Later(callbacks.Plugin):
             irc.replySuccess()
         except ValueError:
             irc.error('That person\'s message queue is already full.')
-    tell = wrap(tell, ['nick', 'text'])
+    tell = wrap(tell, ['something', 'text'])
 
     def notes(self, irc, msg, args, nick):
         """[<nick>]
@@ -137,6 +137,19 @@ class Later(callbacks.Plugin):
             else:
                 irc.error('I have no notes waiting to be delivered.')
     notes = wrap(notes, [additional('something')])
+
+    def remove(self, irc, msg, args, nick):
+        """<nick>
+
+        Removes the notes waiting on <nick>.
+        """
+        try:
+            del self._notes[nick]
+            self._flushNotes()
+            irc.replySuccess()
+        except KeyError:
+            irc.error('There were no notes for %r' % nick)
+    remove = wrap(remove, [('checkCapability', 'admin'), 'something'])
 
     def doPrivmsg(self, irc, msg):
         notes = self._notes.pop(msg.nick, [])
