@@ -43,8 +43,8 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 class ChannelStat(irclib.IrcCommandDispatcher):
-    self._values = ['actions', 'chars', 'frowns', 'joins', 'kicks','modes',
-                    'msgs', 'parts', 'quits', 'smileys', 'topics', 'words']
+    _values = ['actions', 'chars', 'frowns', 'joins', 'kicks','modes',
+               'msgs', 'parts', 'quits', 'smileys', 'topics', 'words']
     def __init__(self, actions=0, chars=0, frowns=0, joins=0, kicks=0, modes=0,
                  msgs=0, parts=0, quits=0, smileys=0, topics=0, words=0):
         self.actions = actions
@@ -278,10 +278,10 @@ class ChannelStats(callbacks.Plugin):
         """[<channel>] <stat expression>
 
         Returns the ranking of users according to the given stat expression.
-        Valid variables in the stat expression include 'chars', 'words',
-        'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits', 'kicks',
-        'kicked', 'topics', and 'modes'.  Any simple mathematical expression
-        involving those variables is permitted.
+        Valid variables in the stat expression include 'msgs', 'chars',
+        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',
+        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical
+        expression involving those variables is permitted.
         """
         # XXX I could do this the right way, and abstract out a safe eval,
         #     or I could just copy/paste from the Math plugin.
@@ -302,15 +302,19 @@ class ChannelStats(callbacks.Plugin):
                     e[attr] = float(getattr(stats, attr))
                 try:
                     v = eval(expr, e, e)
-                    users.append((v, ircdb.users.getUser(id).name))
+                except ZeroDivisionError:
+                    v = float('inf')
                 except NameError, e:
                     irc.error('You referenced an invalid stat variable:',
-                              str(e).split()[1])
+                              str(e).split()[1], raise=True)
                 except Exception, e:
-                    irc.error(utils.exnToString(e))
+                    irc.error(utils.exnToString(e), raise=True)
+                finally:
+                    users.append((v, ircdb.users.getUser(id).name))
         users.sort()
         users.reverse()
-        s = utils.str.commaAndify(['%s (%.2f)' % (u, v) for (v, u) in users])
+        s = utils.str.commaAndify(['#%s %s (%.3g)' % (i, u, v)
+                                   for (i, (v, u)) in enumerate(users)])
         irc.reply(s)
     rank = wrap(rank, ['channeldb', 'text'])
 
