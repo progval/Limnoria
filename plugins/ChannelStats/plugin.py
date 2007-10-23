@@ -306,9 +306,9 @@ class ChannelStats(callbacks.Plugin):
                     v = float('inf')
                 except NameError, e:
                     irc.error('You referenced an invalid stat variable:',
-                              str(e).split()[1], raise=True)
+                              str(e).split()[1], Raise=True)
                 except Exception, e:
-                    irc.error(utils.exnToString(e), raise=True)
+                    irc.error(utils.exnToString(e), Raise=True)
                 finally:
                     users.append((v, ircdb.users.getUser(id).name))
         users.sort()
