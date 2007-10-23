@@ -28,6 +28,7 @@
 ###
 
 import re
+import types
 
 import supybot.log as log
 import supybot.conf as conf
@@ -42,6 +43,8 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 class ChannelStat(irclib.IrcCommandDispatcher):
+    self._values = ['actions', 'chars', 'frowns', 'joins', 'kicks','modes',
+                    'msgs', 'parts', 'quits', 'smileys', 'topics', 'words']
     def __init__(self, actions=0, chars=0, frowns=0, joins=0, kicks=0, modes=0,
                  msgs=0, parts=0, quits=0, smileys=0, topics=0, words=0):
         self.actions = actions
@@ -56,8 +59,6 @@ class ChannelStat(irclib.IrcCommandDispatcher):
         self.smileys = smileys
         self.topics = topics
         self.words = words
-        self._values = ['actions', 'chars', 'frowns', 'joins', 'kicks','modes',
-                       'msgs', 'parts', 'quits', 'smileys', 'topics', 'words']
     def values(self):
         return [getattr(self, s) for s in self._values]
 
@@ -105,10 +106,10 @@ class ChannelStat(irclib.IrcCommandDispatcher):
 
 
 class UserStat(ChannelStat):
+    _values = ChannelStat._values + ['kicked']
     def __init__(self, kicked=0, *args):
         ChannelStat.__init__(self, *args)
         self.kicked = kicked
-        self._values.insert(0, 'kicked')
 
     def doKick(self, msg):
         self.doPayload(msg.args[0], msg.args[2])
@@ -271,6 +272,47 @@ class ChannelStats(callbacks.Plugin):
             irc.error(format('I have no stats for that %s in %s.',
                              name, channel))
     stats = wrap(stats, ['channeldb', additional('something')])
+
+    _env = {'__builtins__': types.ModuleType('__builtins__')}
+    def rank(self, irc, msg, args, channel, expr):
+        """[<channel>] <stat expression>
+
+        Returns the ranking of users according to the given stat expression.
+        Valid variables in the stat expression include 'chars', 'words',
+        'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits', 'kicks',
+        'kicked', 'topics', and 'modes'.  Any simple mathematical expression
+        involving those variables is permitted.
+        """
+        # XXX I could do this the right way, and abstract out a safe eval,
+        #     or I could just copy/paste from the Math plugin.
+        if expr != expr.translate(utils.str.chars, '_[]'):
+            irc.error('There\'s really no reason why you should have '
+                      'underscores or brackets in your mathematical '
+                      'expression.  Please remove them.')
+            return
+        if 'lambda' in expr:
+            irc.error('You can\'t use lambda in this command.')
+            return
+        expr = expr.lower()
+        users = []
+        for ((c, id), stats) in self.db.items():
+            if ircutils.strEqual(c, channel) and ircdb.users.hasUser(id):
+                e = self._env.copy()
+                for attr in stats._values:
+                    e[attr] = float(getattr(stats, attr))
+                try:
+                    v = eval(expr, e, e)
+                    users.append((v, ircdb.users.getUser(id).name))
+                except NameError, e:
+                    irc.error('You referenced an invalid stat variable:',
+                              str(e).split()[1])
+                except Exception, e:
+                    irc.error(utils.exnToString(e))
+        users.sort()
+        users.reverse()
+        s = utils.str.commaAndify(['%s (%.2f)' % (u, v) for (v, u) in users])
+        irc.reply(s)
+    rank = wrap(rank, ['channeldb', 'text'])
 
     def channelstats(self, irc, msg, args, channel):
         """[<channel>]
