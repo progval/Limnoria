@@ -35,6 +35,14 @@ class LaterTestCase(PluginTestCase):
         self.assertNotError('later tell foo bar')
         self.assertNotError('later tell foo baz')
 
+    def testLaterRemove(self):
+        self.assertNotError('later tell foo 1')
+        self.assertNotError('later tell bar 1')
+        self.assertRegexp('later notes', 'bar.*foo')
+        self.assertNotError('later remove bar')
+        self.assertNotRegexp('later notes', 'bar.*foo')
+        self.assertRegexp('later notes', 'foo')
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
