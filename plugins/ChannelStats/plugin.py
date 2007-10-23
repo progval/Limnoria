@@ -309,7 +309,7 @@ class ChannelStats(callbacks.Plugin):
                               str(e).split()[1], Raise=True)
                 except Exception, e:
                     irc.error(utils.exnToString(e), Raise=True)
-                finally:
+                else:
                     users.append((v, ircdb.users.getUser(id).name))
         users.sort()
         users.reverse()
