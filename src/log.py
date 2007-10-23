@@ -247,8 +247,10 @@ conf.registerGlobalValue(conf.supybot.log, 'format',
     its logging module."""))
 conf.registerGlobalValue(conf.supybot.log, 'level',
     LogLevel(logging.INFO, """Determines what the minimum priority level logged
-    will be.  Valid values are DEBUG, INFO, WARNING, ERROR,
-    and CRITICAL, in order of increasing priority."""))
+    to file will be.  Do note that this value does not affect the level logged
+    to stdout; for that, you should set the value of supybot.log.stdout.level.
+    Valid values are DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of
+    increasing priority."""))
 conf.registerGlobalValue(conf.supybot.log, 'timestampFormat',
     registry.String('%Y-%m-%dT%H:%M:%S', """Determines the format string for
     timestamps in logfiles.  Refer to the Python documentation for the time
