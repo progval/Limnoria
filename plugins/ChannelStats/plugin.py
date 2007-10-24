@@ -107,7 +107,7 @@ class ChannelStat(irclib.IrcCommandDispatcher):
 
 
 class UserStat(ChannelStat):
-    _values = ChannelStat._values + ['kicked']
+    _values = ['kicked'] + ChannelStat._values
     def __init__(self, kicked=0, *args):
         ChannelStat.__init__(self, *args)
         self.kicked = kicked
