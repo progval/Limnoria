@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
@@ -75,7 +76,7 @@ class Filter(callbacks.Plugin):
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
-                       'hebrew', 'undup', 'gnu', 'shrink']
+                       'hebrew', 'undup', 'gnu', 'shrink', 'azn', 'uniud']
     def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
 
@@ -609,6 +610,62 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     shrink = wrap(shrink, ['text'])
 
+    _azn_trans = string.maketrans('rlRL', 'lrLR')
+    def azn(self, irc, msg, args, text):
+        """<text>
+
+        Returns <text> with the l's made into r's and r's made into l's.
+        """
+        text = text.translate(self._azn_trans)
+        irc.reply(text)
+    azn = wrap(azn, ['text'])
+
+    _uniudMap = {
+        ' ': u' ', '!': u'\u00a1', '"': u'\u201e', '#': u'#', '$': u'$',
+        '%': u'%', '&': u'\u214b', "'": u'\u0375', '(': u')', ')': u'(',
+        '*': u'*', '+': u'+', ',': u'\u2018', '-': u'-', '.': u'\u02d9',
+        '/': u'/', '0': u'0', '1': u'1', '2': u'', '3': u'', '4': u'',
+        '5': u'\u1515', '6': u'9', '7': u'', '8': u'8', '9': u'6', ':': u':',
+        ';': u'\u22c5\u0315', '<': u'>', '=': u'=', '>': u'<', '?': u'\u00bf',
+        '@': u'@', 'A': u'\u13cc', 'B': u'\u03f4', 'C': u'\u0186', 'D': u'p',
+        'E': u'\u018e', 'F': u'\u2132', 'G': u'\u2141', 'H': u'H', 'I': u'I',
+        'J': u'\u017f\u0332', 'K': u'\u029e', 'L': u'\u2142', 'M': u'\u019c',
+        'N': u'N', 'O': u'O', 'P': u'd', 'Q': u'\u053e', 'R': u'\u0222',
+        'S': u'S', 'T': u'\u22a5', 'U': u'\u144e', 'V': u'\u039b', 'W': u'M',
+        'X': u'X', 'Y': u'\u2144', 'Z': u'Z', '[': u']', '\\': u'\\',
+        ']': u'[', '^': u'\u203f', '_': u'\u203e', '`': u'\u0020\u0316',
+        'a': u'\u0250', 'b': u'q', 'c': u'\u0254', 'd': u'p', 'e': u'\u01dd',
+        'f': u'\u025f', 'g': u'\u0253', 'h': u'\u0265', 'i': u'\u0131\u0323',
+        'j': u'\u017f\u0323', 'k': u'\u029e', 'l': u'\u01ae', 'm': u'\u026f',
+        'n': u'u', 'o': u'o', 'p': u'd', 'q': u'b', 'r': u'\u0279', 's': u's',
+        't': u'\u0287', 'u': u'n', 'v': u'\u028c', 'w': u'\u028d', 'x': u'x',
+        'y': u'\u028e', 'z': u'z', '{': u'}', '|': u'|', '}': u'{',
+        '~': u'\u223c',
+    }
+    def uniud(self, irc, msg, args, text):
+        """<text>
+
+        Returns <text> rotated 180 degrees.
+        """
+        turned = []
+        tlen = 0
+        for c in text:
+            if c in self._uniudMap:
+                tmp = self._uniudMap[c]
+                if not len(tmp):
+                    tmp = u'\ufffd'
+                turned.insert(0, tmp)
+                tlen += 1
+            elif c == '\t':
+                tablen = 8 - tlen % 8
+                turned.insert(0, ' ' * tablen)
+                tlen += tablen
+            elif ord(c) >= 32:
+                turned.insert(0, c)
+                tlen += 1
+        s = '%s \x02 \x02' % ''.join(map(lambda x: x.encode('utf-8'), turned))
+        irc.reply(s)
+    uniud = wrap(uniud, ['text'])
 
 Class = Filter
 
