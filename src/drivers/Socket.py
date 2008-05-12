@@ -85,7 +85,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def _handleSocketError(self, e):
         # (11, 'Resource temporarily unavailable') raised if connect
         # hasn't finished yet.  We'll keep track of how many we get.
-        if e.args[0] != 11 and self.eagains > 120:
+        if e.args[0] != 11 or self.eagains > 120:
             drivers.log.disconnect(self.currentServer, e)
             self.scheduleReconnect()
         else:
