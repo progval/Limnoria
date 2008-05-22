@@ -249,6 +249,8 @@ def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
         state.args.append(irc)
 
 def getHaveOp(irc, msg, args, state, action='do that'):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error('I\'m not even in %s.' % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isOp(irc.nick):
