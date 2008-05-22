@@ -404,7 +404,7 @@ def main():
         Twisted installed as only the Twisted drivers supports SSL
         connections.""")
         if yn('Do you want to use an SSL connection?', default=False):
-            network.ssl.set(True)
+            network.ssl.setValue(True)
 
     # conf.supybot.networks.<network>.password
     output("""Some servers require a password to connect to them.  Most
