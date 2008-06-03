@@ -187,7 +187,7 @@ if __name__ == '__main__':
             sys.stderr.write('Failed to load plugin %s: %s\n' % (pluginName,e))
             sys.stderr.write('(pluginDirs: %s)' %
                              conf.supybot.directories.plugins())
-            sys.exit(-1)
+            continue
         if hasattr(pluginModule, 'test'):
             test.suites.append(load(pluginModule.test))
 
