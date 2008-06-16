@@ -185,7 +185,7 @@ if __name__ == '__main__':
             pluginModule = plugin.loadPluginModule(pluginName)
         except (ImportError, callbacks.Error), e:
             sys.stderr.write('Failed to load plugin %s: %s\n' % (pluginName,e))
-            sys.stderr.write('(pluginDirs: %s)' %
+            sys.stderr.write('(pluginDirs: %s)\n' %
                              conf.supybot.directories.plugins())
             continue
         if hasattr(pluginModule, 'test'):

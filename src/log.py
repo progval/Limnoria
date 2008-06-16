@@ -355,24 +355,35 @@ def firewall(f, errorHandler=None):
             logException(self)
             if errorHandler is not None:
                 try:
-                    errorHandler(self, *args, **kwargs)
+                    return errorHandler(self, *args, **kwargs)
                 except Exception, e:
                     logException(self, 'Uncaught exception in errorHandler')
-
     m = utils.python.changeFunctionName(m, f.func_name, f.__doc__)
     return m
 
 class MetaFirewall(type):
-    def __new__(cls, name, bases, dict):
-        if '__firewalled__' in dict:
-            for attr in dict['__firewalled__']:
-                try:
-                    errorHandler = firewalled[attr]
-                except: # This is raw here so people can still use tuples.
-                    errorHandler = None
-                dict[attr] = firewall(dict[attr], errorHandler)
-        return super(MetaFirewall, cls).__new__(cls, name, bases, dict)
-        #return type.__new__(cls, name, bases, dict)
+    def __new__(cls, name, bases, classdict):
+        firewalled = {}
+        for base in bases:
+            if hasattr(base, '__firewalled__'):
+                cls.updateFirewalled(firewalled, base.__firewalled__)
+        cls.updateFirewalled(firewalled, classdict.get('__firewalled__', []))
+        for (attr, errorHandler) in firewalled.iteritems():
+            if attr in classdict:
+                classdict[attr] = firewall(classdict[attr], errorHandler)
+        return super(MetaFirewall, cls).__new__(cls, name, bases, classdict)
+
+    def getErrorHandler(cls, dictOrTuple, name):
+        if isinstance(dictOrTuple, dict):
+            return dictOrTuple[name]
+        else:
+            return None
+    getErrorHandler = classmethod(getErrorHandler)
+
+    def updateFirewalled(cls, firewalled, __firewalled__):
+        for attr in __firewalled__:
+            firewalled[attr] = cls.getErrorHandler(__firewalled__, attr)
+    updateFirewalled = classmethod(updateFirewalled)
 
 
 class PluginLogFilter(logging.Filter):
