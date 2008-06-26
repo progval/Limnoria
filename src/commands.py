@@ -498,6 +498,8 @@ def getEmail(irc, msg, args, state):
 def getHttpUrl(irc, msg, args, state):
     if utils.web.httpUrlRe.match(args[0]):
         state.args.append(args.pop(0))
+    elif utils.web.httpUrlRe.match('http://' + args[0]):
+        state.args.append('http://' + args.pop(0))
     else:
         state.errorInvalid('http url', args[0])
 
