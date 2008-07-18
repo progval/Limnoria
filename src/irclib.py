@@ -79,7 +79,9 @@ class IrcCallback(IrcCommandDispatcher):
                       }
 
     def __init__(self, *args, **kwargs):
-        super(IrcCallback, self).__init__(*args, **kwargs)
+        #object doesn't take any args, so the buck stops here.
+        #super(IrcCallback, self).__init__(*args, **kwargs)
+        pass
 
     def __repr__(self):
         return '<%s %s %s>' % \
