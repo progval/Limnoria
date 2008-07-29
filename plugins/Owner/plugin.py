@@ -301,7 +301,8 @@ class Owner(callbacks.Plugin):
 
         Sets the default plugin for <command> to <plugin>.  If --remove is
         given, removes the current default plugin for <command>.  If no plugin
-        is given, returns the current default plugin set for <command>.
+        is given, returns the current default plugin set for <command>.  See
+        also, supybot.commands.defaultPlugins.importantPlugins.
         """
         remove = False
         for (option, arg) in optlist:
