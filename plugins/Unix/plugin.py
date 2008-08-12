@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -112,7 +113,7 @@ class Unix(callbacks.Plugin):
         def makeSalt():
             s = '\x00'
             while self._cryptre.sub('', s) != '':
-                s = struct.pack('<h', random.randrange(2**16))
+                s = struct.pack('<h', random.randrange(-(2**15), 2**15))
             return s
         if not salt:
             salt = makeSalt()
