@@ -113,7 +113,7 @@ class Unix(callbacks.Plugin):
         def makeSalt():
             s = '\x00'
             while self._cryptre.sub('', s) != '':
-                s = struct.pack('<h', random.randrange(-(2**15), 2**15))
+                s = struct.pack('<h', random.randrange(-(2**15), 2**15-1))
             return s
         if not salt:
             salt = makeSalt()
