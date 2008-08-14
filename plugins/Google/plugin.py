@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,10 +33,8 @@ import cgi
 import time
 import socket
 import urllib
-import xml.sax
 
-import SOAP
-import google
+import simplejson
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -45,74 +44,10 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-def search(log, queries, **kwargs):
-    # We have to keep stats here, rather than in formatData or elsewhere,
-    # because not all searching functions use formatData -- fight, lucky, etc.
-    assert not isinstance(queries, basestring), 'Old code: queries is a list.'
-    try:
-        for (i, query) in enumerate(queries):
-            if len(query.split(None, 1)) > 1:
-                queries[i] = repr(query)
-        proxy = conf.supybot.protocols.http.proxy()
-        if proxy:
-            kwargs['http_proxy'] = proxy
-        query = ' '.join(queries).decode('utf-8')
-        data = google.doGoogleSearch(query, **kwargs)
-        searches = conf.supybot.plugins.Google.state.searches() + 1
-        conf.supybot.plugins.Google.state.searches.setValue(searches)
-        time = conf.supybot.plugins.Google.state.time() + data.meta.searchTime
-        conf.supybot.plugins.Google.state.time.setValue(time)
-        last24hours.enqueue(None)
-        return data
-    except socket.error, e:
-        if e.args[0] == 110:
-            raise callbacks.Error, 'Connection timed out to Google.com.'
-        else:
-            raise callbacks.Error, 'Error connecting to Google.com.'
-    except SOAP.HTTPError, e:
-        log.info('HTTP Error accessing Google: %s', e)
-        raise callbacks.Error, 'Error connecting to Google.com.'
-    except SOAP.faultType, e:
-        if 'Invalid authorization key' in e.faultstring:
-            raise callbacks.Error, 'Invalid Google license key.'
-        elif 'Problem looking up user record' in e.faultstring:
-            raise callbacks.Error, \
-                  'Google seems to be having trouble looking up the user for '\
-                  'your license key.  This probably isn\'t a problem on your '\
-                  'side; it\'s probably a bug on Google\'s side.  It seems '\
-                  'to happen intermittently.'
-        else:
-            log.exception('Unexpected SOAPpy error:')
-            raise callbacks.Error, \
-                  'Unexpected error from Google; please report this to the ' \
-                  'Supybot developers.'
-    except xml.sax.SAXException, e:
-        log.exception('Uncaught SAX error:')
-        raise callbacks.Error, 'Google returned an unparsable response.  ' \
-                               'The full traceback has been logged.'
-# We don't use SOAPpy anymore, apparently.
-##     except SOAPpy.Error, e:
-##         log.exception('Uncaught SOAP exception in Google.search:')
-##         raise callbacks.Error, 'Error connecting to Google.com.'
-
-last24hours = utils.structures.TimeoutQueue(86400)
-totalTime = conf.supybot.plugins.Google.state.time()
-searches = conf.supybot.plugins.Google.state.searches()
-
 class Google(callbacks.PluginRegexp):
     threaded = True
     callBefore = ['Web']
     regexps = ['googleSnarfer', 'googleGroups']
-    def __init__(self, irc):
-        self.__parent = super(Google, self)
-        self.__parent.__init__(irc)
-        google.setLicense(self.registryValue('licenseKey'))
-
-    def callCommand(self, command, irc, msg, *args, **kwargs):
-        try:
-            self.__parent.callCommand(command, irc, msg, *args, **kwargs)
-        except xml.sax.SAXReaderNotAvailable, e:
-            irc.error('No XML parser available.')
 
     _colorGoogles = {}
     def _getColorGoogle(self, m):
@@ -139,16 +74,61 @@ class Google(callbacks.PluginRegexp):
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
 
+    _gsearchUrl = 'http://ajax.googleapis.com/ajax/services/search/web'
+    def search(self, query, channel, options={}):
+        """Perform a search using Google's AJAX API.
+        search("search phrase", options={})
+
+        Valid options are:
+            smallsearch - True/False (Default: False)
+            safesearch - {active,moderate,off} (Default: "moderate")
+            language - Restrict search to documents in the given language
+                       (Default: "lang_en")
+        """
+        ref = self.registryValue('referer')
+        if not ref:
+            ref = 'http://%s/%s' % (dynamic.irc.server,
+                                    dynamic.irc.nick)
+        headers = utils.web.defaultHeaders
+        headers['Referer'] = ref
+        opts = {'q': query, 'v': '1.0'}
+        for (k, v) in options.iteritems():
+            if k == 'smallsearch':
+                if v:
+                    opts['rsz'] = 'small'
+                else:
+                    opts['rsz'] = 'large'
+            elif k == 'safesearch':
+                opts['safe'] = v
+            elif k == 'language':
+                opts['lr'] = v
+        defLang = self.registryValue('defaultLanguage', channel)
+        if 'lr' not in opts and defLang:
+            opts['lr'] = defLang
+        if 'safe' not in opts:
+            opts['safe'] = self.registryValue('safeSearch', dynamic.channel)
+        if 'rsz' not in opts:
+            opts['safe'] = 'large'
+
+        fd = utils.web.getUrlFd('%s?%s' % (self._gsearchUrl,
+                                           urllib.urlencode(opts)),
+                                headers)
+        json = simplejson.load(fd)
+        fd.close()
+        if json['responseStatus'] != 200:
+            raise callbacks.Error, 'We broke The Google!'
+        return json
+
     def formatData(self, data, bold=True, max=0):
         if isinstance(data, basestring):
             return data
-        t = format('Search took %.2f seconds', data.meta.searchTime)
         results = []
         if max:
-            data.results = data.results[:max]
-        for result in data.results:
-            title = utils.web.htmlToText(result.title.encode('utf-8'))
-            url = result.URL
+            data = data[:max]
+        for result in data:
+            title = utils.web.htmlToText(result['titleNoFormatting']\
+                                         .encode('utf-8'))
+            url = result['unescapedUrl']
             if title:
                 if bold:
                     title = ircutils.bold(title)
@@ -156,107 +136,58 @@ class Google(callbacks.PluginRegexp):
             else:
                 results.append(url)
         if not results:
-            return format('No matches found. (%s)', t)
+            return format('No matches found.')
         else:
-            return format('%s: %s', t, '; '.join(results))
+            return format('; '.join(results))
 
     def lucky(self, irc, msg, args, text):
         """<search>
 
         Does a google search, but only returns the first result.
         """
-        data = search(self.log, text)
-        if data.results:
-            url = data.results[0].URL
-            irc.reply(url)
+        data = self.search(text, msg.args[0], {'smallsearch': True})
+        if data['responseData']['results']:
+            url = data['responseData']['results'][0]['unescapedUrl']
+            irc.reply(url.encode('utf-8'))
         else:
             irc.reply('Google found nothing.')
-    lucky = wrap(lucky, [many('something')])
+    lucky = wrap(lucky, ['text'])
 
     def google(self, irc, msg, args, optlist, text):
-        """<search> [--{language,restrict} <value>] [--{notsafe,similar}]
+        """<search> [--{safesearch,language} <value>]
 
         Searches google.com for the given string.  As many results as can fit
-        are included.  --language accepts a language abbreviation; --restrict
-        restricts the results to certain classes of things; --similar tells
-        Google not to filter similar results. --notsafe allows possibly
-        work-unsafe results.
+        are included.  --language accepts a language abbreviation; --safesearch
+        accepts a filtering level ('active', 'moderate', 'off').
         """
-        kwargs = {}
-        if self.registryValue('safeSearch', channel=msg.args[0]):
-            kwargs['safeSearch'] = 1
-        lang = self.registryValue('defaultLanguage', channel=msg.args[0])
-        if lang:
-            kwargs['language'] = lang
-        for (option, argument) in optlist:
-            if option == 'notsafe':
-                kwargs['safeSearch'] = False
-            elif option == 'similar':
-                kwargs['filter'] = False
-            else:
-                kwargs[option] = argument
-        try:
-            data = search(self.log, text, **kwargs)
-        except google.NoLicenseKey, e:
-            irc.error('You must have a free Google web services license key '
-                      'in order to use this command.  You can get one at '
-                      '<http://code.google.com/apis/soapsearch/>.  Once you '
-                      'have one, you can set it with the command '
-                      '"config supybot.plugins.Google.licenseKey <key>".')
+        if 'language' in optlist and optlist['language'].lower() not in \
+           conf.supybot.plugins.Google.safesearch.validStrings:
+            irc.errorInvalid('language')
+        data = self.search(text, msg.args[0], dict(optlist))
+        if data['responseStatus'] != 200:
+            irc.reply('We broke The Google!')
             return
         bold = self.registryValue('bold', msg.args[0])
         max = self.registryValue('maximumResults', msg.args[0])
-        irc.reply(self.formatData(data, bold=bold, max=max))
+        irc.reply(self.formatData(data['responseData']['results'],
+                                  bold=bold, max=max))
     google = wrap(google, [getopts({'language':'something',
-                                    'restrict':'something',
-                                    'notsafe':'', 'similar':''}),
-                           many('something')])
+                                    'safesearch':''}),
+                           'text'])
 
-    def meta(self, irc, msg, args, optlist, text):
-        """<search> [--{language,restrict} <value>] [--{similar,notsafe}]
-
-        Searches google and gives all the interesting meta information about
-        the search.  See the help for the google command for a detailed
-        description of the parameters.
-        """
-        kwargs = {'language': 'lang_en', 'safeSearch': 1}
-        for option, argument in optlist:
-            if option == 'notsafe':
-                kwargs['safeSearch'] = False
-            elif option == 'similar':
-                kwargs['filter'] = False
-            else:
-                kwargs[option[2:]] = argument
-        data = search(self.log, text, **kwargs)
-        meta = data.meta
-        categories = [d['fullViewableName'] for d in meta.directoryCategories]
-        categories = [format('%q', s.replace('_', ' ')) for s in categories]
-        s = format('Search for %q returned %s %i results in %.2f seconds.%s',
-                   meta.searchQuery,
-                   meta.estimateIsExact and 'exactly' or 'approximately',
-                   meta.estimatedTotalResultsCount,
-                   meta.searchTime,
-                   categories and format('  Categories include %L.',categories))
-        irc.reply(s)
-    meta= wrap(meta, [getopts({'language':'something',
-                               'restrict':'something',
-                               'notsafe':'', 'similar':''}),
-                      many('something')])
-
-    _cacheUrlRe = re.compile('<code>([^<]+)</code>')
     def cache(self, irc, msg, args, url):
         """<url>
 
         Returns a link to the cached version of <url> if it is available.
         """
-        html = google.doGetCachedPage(url)
-        m = self._cacheUrlRe.search(html)
-        if m is not None:
-            url = m.group(1)
-            url = utils.web.htmlToText(url)
-            irc.reply(url)
-        else:
-            irc.error('Google seems to have no cache for that site.')
+        data = self.search(url, msg.args[0], {'smallsearch': True})
+        if data['responseData']['results']:
+            m = data['responseData']['results'][0]
+            if m['cacheUrl']:
+                url = m['cacheUrl'].encode('utf-8')
+                irc.reply(url)
+                return
+        irc.error('Google seems to have no cache for that site.')
     cache = wrap(cache, ['url'])
 
     def fight(self, irc, msg, args):
@@ -265,11 +196,12 @@ class Google(callbacks.PluginRegexp):
         Returns the results of each search, in order, from greatest number
         of results to least.
         """
-
+        channel = msg.args[0]
         results = []
         for arg in args:
-            data = search(self.log, [arg])
-            results.append((data.meta.estimatedTotalResultsCount, arg))
+            data = self.search(arg, channel, {'smallsearch': True})
+            count = data['responseData']['cursor']['estimatedResultCount']
+            results.append((int(count), arg))
         results.sort()
         results.reverse()
         if self.registryValue('bold', msg.args[0]):
@@ -279,35 +211,38 @@ class Google(callbacks.PluginRegexp):
         s = ', '.join([format('%s: %i', bold(s), i) for (i, s) in results])
         irc.reply(s)
 
-    def spell(self, irc, msg, args, word):
-        """<word>
+    _gtranslateUrl='http://ajax.googleapis.com/ajax/services/language/translate'
+    def translate(self, irc, msg, args, fromLang, toLang, text):
+        """<from-language> [to] <to-language> <text>
 
-        Returns Google's spelling recommendation for <word>.
+        Returns <text> translated from <from-language> into <to-language>.
+        Beware that translating to or from languages that use multi-byte
+        characters may result in some very odd results.
         """
-        result = google.doSpellingSuggestion(word)
-        if result:
-            irc.reply(result)
-        else:
-            irc.reply('No spelling suggestion made.  This could mean that '
-                      'the word you gave is spelled right; it could also '
-                      'mean that its spelling was too whacked out even for '
-                      'Google to figure out.')
-    spell = wrap(spell, ['text'])
-
-    def stats(self, irc, msg, args):
-        """takes no arguments
-
-        Returns interesting information about this Google module.  Mostly
-        useful for making sure you don't go over your 1000 requests/day limit.
-        """
-        recent = len(last24hours)
-        time = self.registryValue('state.time')
-        searches = self.registryValue('state.searches')
-        irc.reply(format('This google module has made %n total; '
-                         '%i in the past 24 hours.  '
-                         'Google has spent %.2f seconds searching for me.',
-                         (searches, 'search'), recent, time))
-    stats = wrap(stats)
+        channel = msg.args[0]
+        ref = self.registryValue('referer')
+        if not ref:
+            ref = 'http://%s/%s' % (dynamic.irc.server,
+                                    dynamic.irc.nick)
+        headers = utils.web.defaultHeaders
+        headers['Referer'] = ref
+        opts = {'q': text, 'v': '1.0'}
+        if 'lang_%s' % fromLang.lower() not in \
+           conf.supybot.plugins.Google.defaultLanguage.validStrings:
+            irc.errorInvalid('from language')
+        if 'lang_%s' % toLang.lower() not in \
+           conf.supybot.plugins.Google.defaultLanguage.validStrings:
+            irc.errorInvalid('to language')
+        opts['langpair'] = '%s|%s' % (fromLang, toLang)
+        fd = utils.web.getUrlFd('%s?%s' % (self._gtranslateUrl,
+                                           urllib.urlencode(opts)),
+                                headers)
+        json = simplejson.load(fd)
+        fd.close()
+        if json['responseStatus'] != 200:
+            raise callbacks.Error, 'We broke The Google!'
+        irc.reply(json['responseData']['translatedText'].encode('utf-8'))
+    translate = wrap(translate, ['something', 'to', 'something', 'text'])
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
@@ -315,8 +250,9 @@ class Google(callbacks.PluginRegexp):
             return
         searchString = match.group(1)
         try:
-            data = search(self.log, [searchString], safeSearch=1)
-        except google.NoLicenseKey:
+            data = self.search(searchString, msg.args[0],
+                               {'smallsearch': True})
+        except callbacks.Error:
             return
         if data.results:
             url = data.results[0].URL

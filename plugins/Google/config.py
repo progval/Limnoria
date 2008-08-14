@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,74 +31,50 @@
 import supybot.conf as conf
 import supybot.registry as registry
 
-import google
-
 def configure(advanced):
-    from supybot.questions import output, expect, anything, something, yn
-    output('To use Google\'t Web Services, you must have a license key.')
-    if yn('Do you have a license key?'):
-        key = something('What is it?')
-        while len(key) != 32:
-            output('That\'s not a valid Google license key.')
-            if yn('Are you sure you have a valid Google license key?'):
-                key = something('What is it?')
-            else:
-                key = ''
-                break
-        if key:
-            conf.registerPlugin('Google', True)
-            conf.supybot.plugins.Google.licenseKey.setValue(key)
-        output("""The Google plugin has the functionality to watch for URLs
-                  that match a specific pattern. (We call this a snarfer)
-                  When supybot sees such a URL, it will parse the web page
-                  for information and reply with the results.
+    from supybot.questions import output, yn
+    conf.registerPlugin('Google', True)
+    output("""The Google plugin has the functionality to watch for URLs
+              that match a specific pattern. (We call this a snarfer)
+              When supybot sees such a URL, it will parse the web page
+              for information and reply with the results.
 
-                  Google has two available snarfers: Google Groups link
-                  snarfing and a google search snarfer.""")
-        if yn('Do you want the Google Groups link snarfer enabled by '
-            'default?'):
-            conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
-        if yn('Do you want the Google search snarfer enabled by default?'):
-            conf.supybot.plugins.Google.searchSnarfer.setValue(True)
-    else:
-        output("""You'll need to get a key before you can use this plugin.
-                  You can apply for a key at
-                  http://code.google.com/apis/soapsearch/""")
-
-class LicenseKey(registry.String):
-    def setValue(self, s):
-        if s and len(s) != 32:
-            raise registry.InvalidRegistryValue, 'Invalid Google license key.'
-        try:
-            s = s or ''
-            registry.String.setValue(self, s)
-            if s:
-                google.setLicense(self.value)
-        except AttributeError:
-            if world and not world.dying: # At shutdown world can be None.
-                raise callbacks.Error, \
-                      'It appears that the initial import of ' \
-                      'our underlying google.py module has ' \
-                      'failed.  Once the cause of that problem ' \
-                      'has been diagnosed and fixed, the bot ' \
-                      'will need to be restarted in order to ' \
-                      'load this plugin.'
+              Google has two available snarfers: Google Groups link
+              snarfing and a google search snarfer.""")
+    if yn('Do you want the Google Groups link snarfer enabled by '
+        'default?'):
+        conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
+    if yn('Do you want the Google search snarfer enabled by default?'):
+        conf.supybot.plugins.Google.searchSnarfer.setValue(True)
 
 class Language(registry.OnlySomeStrings):
-    validStrings = ['lang_' + s for s in 'ar zh-CN zh-TW cs da nl en et fi fr '
-                                         'de el iw hu is it ja ko lv lt no pt '
-                                         'pl ro ru es sv tr'.split()]
+    validStrings = ['lang_' + s for s in 'ar bg ca zh-CN zh-TW hr cs da nl en '
+                                         'et fi fr de el iw hu is id it ja ko '
+                                         'lv lt no pl pt ro ru sr sk sl es sv '
+                                         'tr'.split()]
     validStrings.append('')
     def normalize(self, s):
         if not s.startswith('lang_'):
             s = 'lang_' + s
-        if not s.endswith('CN') or s.endswith('TW'):
-            s = s.lower()
-        else:
-            s = s.lower()[:-2] + s[-2:]
+        s = s[:-2].lower() + s[-2:]
         return s
 
+class NumSearchResults(registry.PositiveInteger):
+    """Value must be 1 <= n <= 8"""
+    def setValue(self, v):
+        if v > 8:
+            self.error()
+        super(NumSearchResults, self).setValue(v)
+
+class SafeSearch(registry.OnlySomeStrings):
+    validStrings = ['active', 'moderate', 'off']
+
 Google = conf.registerPlugin('Google')
+conf.registerGlobalValue(Google, 'referer',
+    registry.String('', """Determines the URL that will be sent to Google for
+    the Referer field of the search requests.  If this value is empty, a
+    Referer will be generated in the following format:
+    http://$server/$botName"""))
 conf.registerChannelValue(Google, 'groupsSnarfer',
     registry.Boolean(False, """Determines whether the groups snarfer is
     enabled.  If so, URLs at groups.google.com will be snarfed and their
@@ -113,25 +90,14 @@ conf.registerChannelValue(Google, 'colorfulFilter',
 conf.registerChannelValue(Google, 'bold',
     registry.Boolean(True, """Determines whether results are bolded."""))
 conf.registerChannelValue(Google, 'maximumResults',
-    registry.PositiveInteger(10, """Determines the maximum number of results
-    returned from the google command."""))
+    NumSearchResults(8, """Determines the maximum number of results returned
+    from the google command."""))
 conf.registerChannelValue(Google, 'defaultLanguage',
     Language('lang_en', """Determines what default language is used in
     searches.  If left empty, no specific language will be requested."""))
 conf.registerChannelValue(Google, 'safeSearch',
-    registry.Boolean(True, "Determines whether safeSearch is on by default."))
-conf.registerGlobalValue(Google, 'licenseKey',
-    LicenseKey('', """Sets the Google license key for using Google's Web
-    Services API.  This is necessary before you can do any searching with this
-    module.""", private=True))
-
-conf.registerGroup(Google, 'state')
-conf.registerGlobalValue(Google.state, 'searches',
-    registry.Integer(0, """Used to keep the total number of searches Google has
-    done for this bot.  You shouldn't modify this."""))
-conf.registerGlobalValue(Google.state, 'time',
-    registry.Float(0.0, """Used to keep the total amount of time Google has
-    spent searching for this bot.  You shouldn't modify this."""))
-
+    SafeSearch('moderate', """Determines what level of safeSearch to use by
+    default.  'active' - most filtering, 'moderate' - default filtering, 'off'
+    - no filtering"""))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

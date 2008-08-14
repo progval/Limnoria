@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -46,16 +47,17 @@ class GoogleTestCase(ChannelPluginTestCase):
                                  'the speed of light '
                                  'in microns / fortnight', '&times;')
 
+        def testSearch(self):
+            self.assertNotError('google foo')
+
+        def testFight(self):
+            self.assertRegexp('fight supybot moobot', r'.*supybot.*: \d+')
+
+        def testTranslate(self):
+            self.assertRegexp('translate en es hello world', 'mundo')
+
         def testCalcDoesNotHaveExtraSpaces(self):
             self.assertNotRegexp('google calc 1000^2', r'\s+,\s+')
-
-        def testNoNoLicenseKeyError(self):
-            orig = conf.supybot.plugins.Google.searchSnarfer()
-            try:
-                conf.supybot.plugins.Google.searchSnarfer.setValue(True)
-                self.assertSnarfNoResponse('google blah')
-            finally:
-                conf.supybot.plugins.Google.searchSnarfer.setValue(orig)
 
         def testGroupsSnarfer(self):
             orig = conf.supybot.plugins.Google.groupsSnarfer()
@@ -112,15 +114,5 @@ class GoogleTestCase(ChannelPluginTestCase):
                         '%40posting.google.com')
             finally:
                 conf.supybot.plugins.Google.groupsSnarfer.setValue(orig)
-
-    def testInvalidKeyCaught(self):
-        conf.supybot.plugins.Google.licenseKey.set(
-                'abcdefghijklmnopqrstuvwxyz123456')
-        self.assertNotRegexp('google foobar', 'faultType')
-        self.assertNotRegexp('google foobar', 'SOAP')
-
-    def testStats(self):
-        self.assertNotError('google stats')
-
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
