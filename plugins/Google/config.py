@@ -56,7 +56,10 @@ class Language(registry.OnlySomeStrings):
     def normalize(self, s):
         if not s.startswith('lang_'):
             s = 'lang_' + s
-        s = s[:-2].lower() + s[-2:]
+        if not s.endswith('CN') or s.endswith('TW'):
+            s = s.lower()
+        else:
+            s = s.lower()[:-2] + s[-2:]
         return s
 
 class NumSearchResults(registry.PositiveInteger):
