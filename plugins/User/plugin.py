@@ -358,7 +358,8 @@ class User(callbacks.Plugin):
         """[<name>]
 
         Returns the capabilities of the user specified by <name>; if <name>
-        isn't specified, returns the hostmasks of the user calling the command.
+        isn't specified, returns the capabilities of the user calling the
+        command.
         """
         try:
             u = ircdb.users.getUser(msg.prefix)
