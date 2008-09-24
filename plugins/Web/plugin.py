@@ -177,6 +177,8 @@ class Web(callbacks.PluginRegexp):
                            'already be set, though', url)
         if parser.title:
             irc.reply(utils.web.htmlToText(parser.title.strip()))
+        elif len(text) < size:
+            irc.reply('That URL appears to have no HTML title.')
         else:
             irc.reply(format('That URL appears to have no HTML title '
                              'within the first %i bytes.', size))
