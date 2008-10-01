@@ -272,14 +272,10 @@ class Google(callbacks.PluginRegexp):
         if not self.registryValue('searchSnarfer', msg.args[0]):
             return
         searchString = match.group(1)
-        try:
-            data = self.search(searchString, msg.args[0],
-                               {'smallsearch': True})
-        except callbacks.Error:
-            return
-        if data.results:
-            url = data.results[0].URL
-            irc.reply(url, prefixNick=False)
+        data = self.search(searchString, msg.args[0], {'smallsearch': True})
+        if data['responseData']['results']:
+            url = data['responseData']['results'][0]['unescapedUrl']
+            irc.reply(url.encode('utf-8'), prefixNick=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
 
     _ggThread = re.compile(r'Subject: <b>([^<]+)</b>', re.I)
