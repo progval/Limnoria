@@ -49,6 +49,9 @@ class GoogleTestCase(ChannelPluginTestCase):
 
         def testSearch(self):
             self.assertNotError('google foo')
+            self.assertRegexp('google dupa', r'dupa')
+            # Unicode check
+            self.assertNotError('google ae')
 
         def testFight(self):
             self.assertRegexp('fight supybot moobot', r'.*supybot.*: \d+')
