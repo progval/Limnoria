@@ -108,7 +108,7 @@ class Google(callbacks.PluginRegexp):
         if 'safe' not in opts:
             opts['safe'] = self.registryValue('safeSearch', dynamic.channel)
         if 'rsz' not in opts:
-            opts['safe'] = 'large'
+            opts['rsz'] = 'large'
 
         fd = utils.web.getUrlFd('%s?%s' % (self._gsearchUrl,
                                            urllib.urlencode(opts)),
