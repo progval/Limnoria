@@ -128,7 +128,7 @@ class Google(callbacks.PluginRegexp):
         for result in data:
             title = utils.web.htmlToText(result['titleNoFormatting']\
                                          .encode('utf-8'))
-            url = result['unescapedUrl']
+            url = result['unescapedUrl'].encode('utf-8')
             if title:
                 if bold:
                     title = ircutils.bold(title)
