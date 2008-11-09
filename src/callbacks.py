@@ -183,6 +183,8 @@ def reply(msg, s, prefixNick=None, private=None,
             target = msg.nick
         else:
             target = to
+    if action:
+        prefixNick = False
     if to is None:
         to = msg.nick
     # Ok, now let's make the payload:
