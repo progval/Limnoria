@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,6 +31,7 @@
 import gc
 import os
 import sys
+import time
 import socket
 import linecache
 
@@ -274,6 +276,21 @@ class Owner(callbacks.Plugin):
             ignored = ircdb.checkIgnored(msg.prefix)
             if ignored:
                 self.log.info('Ignoring command from %s.', msg.prefix)
+                return
+            maximum = conf.supybot.abuse.flood.command.maximum()
+            self.commands.enqueue(msg)
+            if conf.supybot.abuse.flood.command() \
+               and self.commands.len(msg) > maximum \
+               and not ircdb.checkCapability(msg.prefix, 'owner'):
+                punishment = conf.supybot.abuse.flood.command.punishment()
+                banmask = ircutils.banmask(msg.prefix)
+                self.log.info('Ignoring %s for %s seconds due to an apparent '
+                              'command flood.', banmask, punishment)
+                ircdb.ignores.add(banmask, time.time() + punishment)
+                irc.reply('You\'ve given me %s commands within the last '
+                          'minute; I\'m now ignoring you for %s.' %
+                          (maximum,
+                           utils.timeElapsed(punishment, seconds=False))
                 return
             try:
                 tokens = callbacks.tokenize(s, channel=msg.args[0])
