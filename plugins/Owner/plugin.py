@@ -290,7 +290,7 @@ class Owner(callbacks.Plugin):
                 irc.reply('You\'ve given me %s commands within the last '
                           'minute; I\'m now ignoring you for %s.' %
                           (maximum,
-                           utils.timeElapsed(punishment, seconds=False))
+                           utils.timeElapsed(punishment, seconds=False)))
                 return
             try:
                 tokens = callbacks.tokenize(s, channel=msg.args[0])
