@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -69,7 +70,7 @@ class ServersMixin(object):
     def __init__(self, irc, servers=()):
         self.networkGroup = conf.supybot.networks.get(irc.network)
         self.servers = servers
-        super(ServersMixin, self).__init__(irc)
+        super(ServersMixin, self).__init__()
 
     def _getServers(self):
         # We do this, rather than utils.iter.cycle the servers in __init__,

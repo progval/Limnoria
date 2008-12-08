@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1054,7 +1055,7 @@ class BasePlugin(object):
                 setattr(self, attr, cb)
                 self.cbs.append(cb)
                 cb.log = log.getPluginLogger('%s.%s' % (self.name(),cb.name()))
-        super(BasePlugin, self).__init__(*args, **kwargs)
+        super(BasePlugin, self).__init__()
 
 class SynchronizedAndFirewalled(log.MetaFirewall, utils.python.Synchronized):
     pass # Necessary for the metaclass compatibility issue.
