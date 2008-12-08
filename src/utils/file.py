@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,13 +29,14 @@
 ###
 
 import os
-import md5
-import sha
 import time
 import random
 import shutil
 import os.path
+
 from iter import ifilter
+
+import crypt
 
 def contents(filename):
     return file(filename).read()
@@ -61,7 +63,7 @@ def copy(src, dst):
     srcfd = file(src)
     dstfd = open(dst, 'wb')
     shutil.copyfileobj(srcfd, dstfd)
-    
+
 def writeLine(fd, line):
     fd.write(line)
     if not line.endswith('\n'):
@@ -77,11 +79,11 @@ def readLines(filename):
 def touch(filename):
     fd = file(filename, 'w')
     fd.close()
-        
+
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
     r = random.Random()
-    m = md5.md5(suffix)
+    m = crypt.md5(suffix)
     r.seed(time.time())
     s = str(r.getstate())
     period = random.random()
@@ -93,7 +95,7 @@ def mktemp(suffix=''):
         m.update(s)
         m.update(str(now))
         s = m.hexdigest()
-    return sha.sha(s + str(time.time())).hexdigest() + suffix
+    return crypt.sha(s + str(time.time())).hexdigest() + suffix
 
 def nonCommentLines(fd):
     for line in fd:
@@ -190,7 +192,7 @@ class AtomicFile(file):
                 fd = file(self.filename, 'a')
                 fd.close()
                 shutil.move(self.tempFilename, self.filename)
-                
+
         else:
             raise ValueError, 'AtomicFile.close called after rollback.'
 

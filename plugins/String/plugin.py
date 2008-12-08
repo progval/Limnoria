@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,8 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import md5
-import sha
 import types
 
 import supybot.utils as utils
@@ -156,7 +155,7 @@ class String(callbacks.Plugin):
         http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more information
         about md5.
         """
-        irc.reply(md5.md5(text).hexdigest())
+        irc.reply(utils.crypt.md5(text).hexdigest())
     md5 = wrap(md5, ['text'])
 
     def sha(self, irc, msg, args, text):
@@ -166,7 +165,7 @@ class String(callbacks.Plugin):
         http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information
         about SHA.
         """
-        irc.reply(sha.sha(text).hexdigest())
+        irc.reply(utils.crypt.sha(text).hexdigest())
     sha = wrap(sha, ['text'])
 
 Class = String

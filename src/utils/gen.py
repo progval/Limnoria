@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,9 +30,7 @@
 
 import os
 import sys
-import md5
 import new
-import sha
 import time
 import types
 import compiler
@@ -42,6 +41,8 @@ import traceback
 from str import format
 from file import mktemp
 from iter import imap, all
+
+import crypt
 
 def abbrev(strings, d=None):
     """Returns a dictionary mapping unambiguous abbreviations to full forms."""
@@ -133,9 +134,9 @@ def saltHash(password, salt=None, hash='sha'):
     if salt is None:
         salt = mktemp()[:8]
     if hash == 'sha':
-        hasher = sha.sha
+        hasher = crypt.sha
     elif hash == 'md5':
-        hasher = md5.md5
+        hasher = crypt.md5
     return '|'.join([salt, hasher(salt + password).hexdigest()])
 
 def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):

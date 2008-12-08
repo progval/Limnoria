@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,7 +55,7 @@ def force(x):
     else:
         return x
 __builtins__['force'] = force
-        
+
 if sys.version_info < (2, 4, 0):
     def reversed(L):
         """Iterates through a sequence in reverse."""
@@ -97,11 +98,12 @@ if sys.version_info < (2, 4, 0):
 # __builtins__ appropriately.
 from gen import *
 import net
-import web
 import seq
 import str
+import web
 import file
 import iter
+import crypt
 import error
 import python
 import transaction
