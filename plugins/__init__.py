@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,7 +34,6 @@ import re
 import csv
 import sys
 import math
-import sets
 import time
 import random
 import fnmatch
@@ -533,7 +533,7 @@ class PeriodicFileDownloader(object):
                     self.lastDownloaded[filename] = 0
             else:
                 self.lastDownloaded[filename] = 0
-            self.currentlyDownloading = sets.Set()
+            self.currentlyDownloading = set()
             self.downloadedCounter[filename] = 0
             self.getFile(filename)
 
