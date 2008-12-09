@@ -45,9 +45,15 @@ urlunquote = urllib.unquote
 class Error(Exception):
     pass
 
-# XXX We should tighten this up a bit.
-urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
-httpUrlRe = re.compile(r"(https?://[^\])>\s]+)", re.I)
+octet = r'(?:2(?:[0-4]\d|5[0-5])|1\d\d|\d{1,2})'
+ipAddr = r'%s(?:\.%s){3}' % (octet, octet)
+# Base domain regex off RFC 1034 and 1738
+label = r'[0-9a-z][-0-9a-z]*[0-9a-z]?'
+domain = r'%s(?:\.%s)*\.[a-z][-0-9a-z]*[a-z]?' % (label, label)
+urlRe = re.compile(r'(\w+://(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)'
+                   % (domain, ipAddr), re.I)
+httpUrlRe = re.compile(r'(https?://(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)'
+                       % (domain, ipAddr), re.I)
 
 REFUSED = 'Connection refused.'
 TIMED_OUT = 'Connection timed out.'
