@@ -50,7 +50,7 @@ class WebTestCase(ChannelPluginTestCase):
 
         def testTitle(self):
             self.assertResponse('title http://www.slashdot.org/',
-                                'Slashdot: News for nerds, stuff that matters')
+                                'Slashdot - News for nerds, stuff that matters')
             # Amazon add a bunch of scripting stuff to the top of their page,
             # so we need to allow for a larger peekSize
 # Actually, screw Amazon. Even bumping this up to 10k doesn't give us enough
