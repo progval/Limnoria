@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -177,7 +178,7 @@ class MiscTestCase(ChannelPluginTestCase):
             self.getMsg('foo bar baz')
             chars = conf.supybot.reply.whenAddressedBy.chars()
             chars = re.escape(chars)
-            self.assertRegexp('echo [last]', r'. [%s]foo bar baz' % chars)
+            self.assertRegexp('echo [last]', r'[%s]foo bar baz' % chars)
         finally:
             tsConfig.setValue(orig)
 
@@ -186,7 +187,7 @@ class MiscTestCase(ChannelPluginTestCase):
         orig = nickConfig()
         try:
             nickConfig.setValue(True)
-            self.feedMsg('foo bar baz')
+            self.getMsg('foo bar baz')
             chars = conf.supybot.reply.whenAddressedBy.chars()
             chars = re.escape(chars)
             self.assertRegexp('echo [last]',
