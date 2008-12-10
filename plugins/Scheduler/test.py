@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -52,6 +53,18 @@ class SchedulerTestCase(ChannelPluginTestCase):
                 id = s
                 break
         self.failUnless(id, 'Couldn\'t find id in reply.')
+        self.assertNotError('scheduler remove %s' % id)
+        self.assertNoResponse(' ', 5)
+
+    # Need this test to run first so it has id 0 for its event
+    def test00RemoveZero(self):
+        id = None
+        m = self.assertNotError('scheduler add 5 echo testRemoveZero')
+        for s in m.args[1].split():
+            s = s.lstrip('#')
+            if s.isdigit():
+                id = s
+                break
         self.assertNotError('scheduler remove %s' % id)
         self.assertNoResponse(' ', 5)
 
