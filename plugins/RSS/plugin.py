@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,8 +34,6 @@ import socket
 import sgmllib
 import threading
 
-import feedparser
-
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -42,6 +41,13 @@ from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+
+try:
+    import feedparser
+except ImportError:
+    raise callbacks.Error, \
+            'You need to have feedparser installed to use this plugin.  ' \
+            'Download it at <http://feedparser.org/>'
 
 def getFeedName(irc, msg, args, state):
     if not registry.isValidRegistryName(args[0]):
