@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,13 +30,18 @@
 
 import socket
 
-import dictclient
-
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+
+try:
+    import dictclient
+except ImportError:
+    raise callbacks.Error, \
+            'You need to have dictclient installed to use this plugin.  ' \
+            'Download it at <http://quux.org:70/devel/dictclient>'
 
 class Dict(callbacks.Plugin):
     threaded = True

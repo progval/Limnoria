@@ -1,1 +1,6 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This is a simple plugin to allow querying dictionaries for word
+definitions.
+
+In order to use this plugin you must have the following modules
+installed:
+- dictclient: http://quux.org:70/devel/dictclient
