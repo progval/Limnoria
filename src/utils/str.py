@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -349,7 +350,7 @@ def toBool(s):
     else:
         raise ValueError, 'Invalid string for toBool: %s' % quoted(s)
 
-# Replace me!
+# When used with Supybot, this is overriden when supybot.conf is loaded
 def timestamp(t):
     if t is None:
         t = time.time()
