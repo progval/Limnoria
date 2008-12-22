@@ -1199,8 +1199,11 @@ class Commands(BasePlugin):
 
     def getCommandHelp(self, command):
         method = self.getCommandMethod(command)
+        help = getHelp
+        if conf.get(conf.supybot.reply.showSimpleSyntax, dynamic.msg.args[0]):
+            help = getSyntax
         if hasattr(method, '__doc__'):
-            return getHelp(method, name=formatCommand(command))
+            return help(method, name=formatCommand(command))
         else:
             return format('The %q command has no help.',formatCommand(command))
 
