@@ -230,10 +230,13 @@ def getHelp(method, name=None, doc=None):
         s = '(%s) -- %s' % (ircutils.bold(s), help)
     return utils.str.normalizeWhitespace(s)
 
-def getSyntax(method, name=None):
+def getSyntax(method, name=None, doc=None):
     if name is None:
         name = method.__name__
-    doclines = method.__doc__.splitlines()
+    if doc is None:
+        doclines = method.__doc__.splitlines()
+    else:
+        doclines = doc.splitlines()
     return '%s %s' % (name, doclines[0])
 
 class Error(Exception):
