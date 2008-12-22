@@ -353,17 +353,6 @@ def tokenize(s, channel=None):
     except ValueError, e:
         raise SyntaxError, str(e)
 
-def formatArgumentError(method, name=None):
-    if name is None:
-        name = method.__name__
-    if hasattr(method, '__doc__') and method.__doc__:
-        if conf.get(conf.supybot.reply.showSimpleSyntax, dynamic.channel):
-            return getSyntax(method, name=name)
-        else:
-            return getHelp(method, name=name)
-    else:
-        return 'Invalid arguments for %s.' % method.__name__
-
 def formatCommand(command):
     return ' '.join(command)
 
@@ -1185,8 +1174,11 @@ class Commands(BasePlugin):
         except (getopt.GetoptError, ArgumentError), e:
             self.log.debug('Got %s, giving argument error.',
                            utils.exnToString(e))
-            method = self.getCommandMethod(command)
-            irc.reply(formatArgumentError(method, name=formatCommand(command)))
+            help = self.getCommandHelp(command)
+            if help.endswith('command has no help.'):
+                irc.error('Invalid arguments for %s.' % method.__name__)
+            else:
+                irc.reply(help)
         except (SyntaxError, Error), e:
             self.log.debug('Error return: %s', utils.exnToString(e))
             irc.error(str(e))
