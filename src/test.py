@@ -56,9 +56,9 @@ suites = []
 
 originalCallbacksGetHelp = callbacks.getHelp
 lastGetHelp = 'x'*1000
-def cachingGetHelp(method, name=None):
+def cachingGetHelp(method, name=None, doc=None):
     global lastGetHelp
-    lastGetHelp = originalCallbacksGetHelp(method, name)
+    lastGetHelp = originalCallbacksGetHelp(method, name, doc)
     return lastGetHelp
 callbacks.getHelp = cachingGetHelp
 
