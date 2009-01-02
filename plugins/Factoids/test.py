@@ -159,5 +159,8 @@ if sqlite:
                 conf.supybot.plugins.Factoids.\
                     replyWhenInvalidCommand.setValue(orig)
 
+    def testQuoteHandling(self):
+        self.assertNotError('learn foo as "\\"bar\\""')
+        self.assertRegexp('whatis foo', r'"bar"')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
