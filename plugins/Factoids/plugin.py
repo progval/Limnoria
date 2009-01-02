@@ -328,9 +328,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         counter = 0
         for (added_by, added_at) in factoids:
             counter += 1
-            added_at = time.strftime(conf.supybot.reply.format.time(),
-                                     time.localtime(int(added_at)))
-            L.append(format('#%i was added by %s at %s',
+            L.append(format('#%i was added by %s at %t',
                             counter, added_by, added_at))
         factoids = '; '.join(L)
         s = format('Key %q is %s and has %n associated with it: %s',
