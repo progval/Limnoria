@@ -202,12 +202,6 @@ class Alias(callbacks.Plugin):
         else:
             return True
 
-    def listCommands(self):
-        commands = self.__parent.listCommands()
-        commands.extend(self.aliases.keys())
-        commands.sort()
-        return commands
-
     def getCommandMethod(self, command):
         try:
             return self.__parent.getCommandMethod(command)
