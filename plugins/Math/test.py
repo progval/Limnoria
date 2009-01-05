@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -125,7 +126,10 @@ class MathTestCase(PluginTestCase):
     def testCalcMaxMin(self):
         self.assertResponse('calc max(1,2)', '2')
         self.assertResponse('calc min(1,2)', '1')
-        
+
+    def testCalcStrFloat(self):
+        self.assertResponse('calc 3+33333333333333', '33333333333336')
+
     def testICalc(self):
         self.assertResponse('icalc 1^1', '0')
         self.assertResponse('icalc 10**24', '1' + '0'*24)

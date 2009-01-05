@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -181,6 +182,11 @@ class Math(callbacks.Plugin):
             x = complex(i)
             if x == abs(x):
                 x = abs(x)
+                # Need to use string-formatting here instead of str() because
+                # use of str() on large numbers loses information:
+                # str(float(33333333333333)) => '3.33333333333e+13'
+                # float('3.33333333333e+13') => 33333333333300.0
+                return '%f' % x
             return str(x)
         text = self._mathRe.sub(handleMatch, text)
         try:
