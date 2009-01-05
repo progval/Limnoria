@@ -1135,7 +1135,13 @@ class Commands(BasePlugin):
             assert command[0] == self.canonicalName()
             return self.getCommandMethod(command[1:])
         else:
-            return getattr(self, command[0])
+            method = getattr(self, command[0])
+            if inspect.ismethod(method):
+                code = method.im_func.func_code
+                if inspect.getargs(code)[0] == self.commandArgs:
+                    return method
+                else:
+                    raise AttributeError
 
     def listCommands(self):
         commands = []
