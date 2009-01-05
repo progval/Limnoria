@@ -1146,7 +1146,7 @@ class Commands(BasePlugin):
     def listCommands(self):
         commands = []
         for s in dir(self):
-            if self.isCommand(s):
+            if self.isCommandMethod(s):
                 commands.append(s)
         for cb in self.cbs:
             name = cb.canonicalName()
