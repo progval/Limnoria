@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,11 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import time
-
 import supybot.log as log
 import supybot.conf as conf
-import supybot.ircdb as ircdb
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 
@@ -71,7 +69,6 @@ class SupyIrcProtocol(LineReceiver):
         self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
 
     def lineReceived(self, line):
-        start = time.time()
         msg = drivers.parseMsg(line)
         if msg is not None:
             self.irc.feedMsg(msg)
@@ -138,7 +135,7 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
                 ssl.ClientContextFactory(), bindAddress=(vhost, 0))
         else:
             drivers.log.error('PyOpenSSL is not available. Not connecting.')
-       
+
     def clientConnectionFailed(self, connector, r):
         drivers.log.connectError(self.currentServer, errorMsg(r))
         (connector.host, connector.port) = self._getNextServer()
