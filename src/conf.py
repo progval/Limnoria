@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -671,9 +672,7 @@ registerGlobalValue(supybot.drivers, 'module',
     ValidDriverModule('default', """Determines what driver module the bot will
     use.  Socket, a simple driver based on timeout sockets, is used by default
     because it's simple and stable.  Twisted is very stable and simple, and if
-    you've got Twisted installed, is probably your best bet.  If this setting
-    is left as default and Twisted-support is detected, the Twisted driver will
-    be used in favor of the Socket driver."""))
+    you've got Twisted installed, is probably your best bet."""))
 
 registerGlobalValue(supybot.drivers, 'maxReconnectWait',
     registry.PositiveFloat(300.0, """Determines the maximum time the bot will
