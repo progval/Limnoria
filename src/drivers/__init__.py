@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ class IrcDriver(object):
     """Base class for drivers."""
     def __init__(self, *args, **kwargs):
         add(self.name(), self)
-        super(IrcDriver, self).__init__(*args, **kwargs)
+        super(IrcDriver, self).__init__()
 
     def run(self):
         raise NotImplementedError
