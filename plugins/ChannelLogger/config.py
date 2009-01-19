@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,6 +40,8 @@ def configure(advanced):
     conf.registerPlugin('ChannelLogger', True)
 
 ChannelLogger = conf.registerPlugin('ChannelLogger')
+conf.registerChannelValue(ChannelLogger, 'enable',
+    registry.Boolean(True, """Determines whether logging is enabled."""))
 conf.registerGlobalValue(ChannelLogger, 'flushImmediately',
     registry.Boolean(False, """Determines whether channel logfiles will be
     flushed anytime they're written to, rather than being buffered by the

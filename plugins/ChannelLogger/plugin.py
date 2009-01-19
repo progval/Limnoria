@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -162,6 +163,8 @@ class ChannelLogger(callbacks.Plugin):
         return ircutils.toLower(channel)
 
     def doLog(self, irc, channel, s, *args):
+        if not self.registryValue('enable', channel):
+            return
         s = format(s, *args)
         channel = self.normalizeChannel(irc, channel)
         log = self.getLog(irc, channel)
