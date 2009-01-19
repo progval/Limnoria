@@ -474,7 +474,7 @@ class Channel(callbacks.Plugin):
             c.addBan(banmask, expires)
             ircdb.channels.setChannel(channel, c)
             irc.replySuccess()
-        add = wrap(add, ['op', 'hostmask', additional('expiry', 0)])
+        add = wrap(add, ['op', 'banmask', additional('expiry', 0)])
 
         def remove(self, irc, msg, args, channel, banmask):
             """[<channel>] <hostmask>
@@ -530,7 +530,7 @@ class Channel(callbacks.Plugin):
             c.addIgnore(banmask, expires)
             ircdb.channels.setChannel(channel, c)
             irc.replySuccess()
-        add = wrap(add, ['op', 'hostmask', additional('expiry', 0)])
+        add = wrap(add, ['op', 'banmask', additional('expiry', 0)])
 
         def remove(self, irc, msg, args, channel, banmask):
             """[<channel>] <hostmask>
