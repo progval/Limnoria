@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,42 +41,10 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Channel', True)
 
-class BanmaskStyle(registry.SpaceSeparatedSetOfStrings):
-    validStrings = ('exact', 'nick', 'user', 'host')
-    def __init__(self, *args, **kwargs):
-        assert self.validStrings, 'There must be some valid strings.  ' \
-                                  'This is a bug.'
-        registry.SpaceSeparatedSetOfStrings.__init__(self, *args, **kwargs)
-        self.__doc__ = format('Valid values include %L.',
-                              map(repr, self.validStrings))
-
-    def help(self):
-        strings = [s for s in self.validStrings if s]
-        return format('%s  Valid strings: %L.', self._help, strings)
-
-    def normalize(self, s):
-        lowered = s.lower()
-        L = list(map(str.lower, self.validStrings))
-        try:
-            i = L.index(lowered)
-        except ValueError:
-            return s # This is handled in setValue.
-        return self.validStrings[i]
-
-    def setValue(self, v):
-        v = map(self.normalize, v)
-        for s in v:
-            if s not in self.validStrings:
-                self.error()
-        registry.SpaceSeparatedSetOfStrings.setValue(self, self.List(v))
-
 Channel = conf.registerPlugin('Channel')
 conf.registerChannelValue(Channel, 'alwaysRejoin',
     registry.Boolean(True, """Determines whether the bot will always try to
     rejoin a channel whenever it's kicked from the channel."""))
-conf.registerChannelValue(Channel, 'banmask',
-    BanmaskStyle(['user', 'host'], """Determines what will be used as the
-    default banmask style."""))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

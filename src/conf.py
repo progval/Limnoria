@@ -900,6 +900,71 @@ registerGroup(supybot, 'protocols')
 # supybot.protocols.irc
 ###
 registerGroup(supybot.protocols, 'irc')
+
+class Banmask(registry.SpaceSeparatedSetOfStrings):
+    validStrings = ('exact', 'nick', 'user', 'host')
+    def __init__(self, *args, **kwargs):
+        assert self.validStrings, 'There must be some valid strings.  ' \
+                                  'This is a bug.'
+        self.__parent = super(Banmask, self)
+        self.__parent.__init__(*args, **kwargs)
+        self.__doc__ = format('Valid values include %L.',
+                              map(repr, self.validStrings))
+
+    def help(self):
+        strings = [s for s in self.validStrings if s]
+        return format('%s  Valid strings: %L.', self._help, strings)
+
+    def normalize(self, s):
+        lowered = s.lower()
+        L = list(map(str.lower, self.validStrings))
+        try:
+            i = L.index(lowered)
+        except ValueError:
+            return s # This is handled in setValue.
+        return self.validStrings[i]
+
+    def setValue(self, v):
+        v = map(self.normalize, v)
+        for s in v:
+            if s not in self.validStrings:
+                self.error()
+        self.__parent.setValue(self.List(v))
+
+    def makeBanmask(self, hostmask, options=None):
+        """Create a banmask from the given hostmask.  If a style of banmask
+        isn't specified via options, the value of
+        conf.supybot.protocols.irc.banmask is used.
+
+        A variable named 'channel' (defining the channel the ban is taking
+        place in) is expected to be in the environment of the caller of this
+        function.
+
+        options - A list specifying which parts of the hostmask should
+        explicitly be matched: nick, user, host.  If 'exact' is given, then
+        only the exact hostmask will be used."""
+        assert ircutils.isChannel(dynamic.channel)
+        (nick, user, host) = ircutils.splitHostmask(hostmask)
+        bnick = '*'
+        buser = '*'
+        bhost = '*'
+        if not options:
+            options = get(supybot.protocols.irc.banmask, dynamic.channel)
+        for option in options:
+            if option == 'nick':
+                bnick = nick
+            elif option == 'user':
+                buser = user
+            elif option == 'host':
+                bhost = host
+            elif option == 'exact':
+                return hostmask
+        return ircutils.joinHostmask(bnick, buser, bhost)
+
+registerChannelValue(supybot.protocols.irc, 'banmask',
+    Banmask(['user', 'host'], """Determines what will be used as the
+    default banmask style."""))
+
 registerGlobalValue(supybot.protocols.irc, 'strictRfc',
     registry.Boolean(False, """Determines whether the bot will strictly follow
     the RFC; currently this only affects what strings are considered to be

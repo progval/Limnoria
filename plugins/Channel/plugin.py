@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -283,30 +284,8 @@ class Channel(callbacks.Plugin):
         except KeyError:
             irc.error(format('I haven\'t seen %s.', bannedNick), Raise=True)
         capability = ircdb.makeChannelCapability(channel, 'op')
-        def makeBanmask(bannedHostmask, options):
-            (nick, user, host) = ircutils.splitHostmask(bannedHostmask)
-            self.log.debug('*** nick: %s', nick)
-            self.log.debug('*** user: %s', user)
-            self.log.debug('*** host: %s', host)
-            bnick = '*'
-            buser = '*'
-            bhost = '*'
-            for option in options:
-                if option == 'nick':
-                    bnick = nick
-                elif option == 'user':
-                    buser = user
-                elif option == 'host':
-                    bhost = host
-                elif option == 'exact':
-                    (bnick, buser, bhost) = \
-                                   ircutils.splitHostmask(bannedHostmask)
-            return ircutils.joinHostmask(bnick, buser, bhost)
-        if optlist:
-            banmask = makeBanmask(bannedHostmask, [o[0] for o in optlist])
-        else:
-            banmask = makeBanmask(bannedHostmask,
-                                  self.registryValue('banmask', channel))
+        banmaskstyle = conf.supybot.protocols.irc.banmask
+        banmask = banmaskstyle.makeBanmask(bannedHostmask, [o[0] for o in optlist])
         # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
