@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -79,7 +80,8 @@ class AutoMode(callbacks.Plugin):
                         # We're not in the channel anymore.
                         pass
                 schedule.addEvent(unban, time.time()+period)
-            irc.queueMsg(ircmsgs.ban(channel, msg.prefix))
+            banmask =conf.supybot.protocols.irc.banmask.makeBanmask(msg.prefix)
+            irc.queueMsg(ircmsgs.ban(channel, banmask))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
 
 
