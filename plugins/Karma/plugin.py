@@ -356,26 +356,6 @@ class Karma(callbacks.Plugin):
         irc.replySuccess()
     clear = wrap(clear, [('checkChannelCapability', 'op'), 'text'])
 
-    def getName(self, nick, msg, match):
-        addressed = callbacks.addressed(nick, msg)
-        name = callbacks.addressed(nick,
-                   ircmsgs.IrcMsg(prefix='',
-                                  args=(msg.args[0], match.group(1)),
-                                  msg=msg))
-        if not name:
-            name = match.group(1)
-        if not addressed:
-            if not self.registryValue('allowUnaddressedKarma'):
-                return ''
-            if not msg.args[1].startswith(match.group(1)):
-                return ''
-            name = match.group(1)
-        elif addressed:
-            if not addressed.startswith(name):
-                return ''
-        name = name.strip('()')
-        return name
-
     def dump(self, irc, msg, args, channel, filename):
         """[<channel>] <filename>
 
