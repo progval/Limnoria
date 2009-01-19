@@ -268,7 +268,6 @@ class Channel(callbacks.Plugin):
         itself.
         """
         # Check that they're not trying to make us kickban ourself.
-        self.log.debug('In kban')
         if not irc.isNick(bannedNick):
             self.log.warning('%q tried to kban a non nick: %q',
                              msg.prefix, bannedNick)
@@ -288,11 +287,13 @@ class Channel(callbacks.Plugin):
         banmask = banmaskstyle.makeBanmask(bannedHostmask, [o[0] for o in optlist])
         # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
-            if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
+            if ircutils.hostmaskPatternEqual(bannedHostmask, irc.prefix):
                 self.log.warning('%q tried to make me kban myself.',msg.prefix)
                 irc.error('I cowardly refuse to ban myself.')
                 return
             else:
+                self.log.warning('Using exact hostmask since banmask would '
+                                 'ban myself.')
                 banmask = bannedHostmask
         # Now, let's actually get to it.  Check to make sure they have
         # #channel,op and the bannee doesn't have #channel,op; or that the
