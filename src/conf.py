@@ -33,7 +33,6 @@ import sys
 import time
 import socket
 
-import supybot.cdb as cdb
 import supybot.utils as utils
 import supybot.registry as registry
 import supybot.ircutils as ircutils
@@ -864,6 +863,7 @@ registerChannelValue(supybot.databases.plugins.channelSpecific.link, 'allow',
 
 class CDB(registry.Boolean):
     def connect(self, filename):
+        import supybot.cdb as cdb
         basename = os.path.basename(filename)
         journalName = supybot.directories.data.tmp.dirize(basename+'.journal')
         return cdb.open(filename, 'c',
