@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -275,8 +276,10 @@ def getHostmask(irc, msg, args, state):
 
 def getBanmask(irc, msg, args, state):
     getHostmask(irc, msg, args, state)
-    # XXX Channel-specific stuff.
-    state.args[-1] = ircutils.banmask(state.args[-1])
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    banmaskstyle = conf.supybot.protocols.irc.banmask
+    state.args[-1] = banmaskstyle.makeBanmask(state.args[-1])
 
 def getUser(irc, msg, args, state):
     try:
