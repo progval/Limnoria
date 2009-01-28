@@ -48,8 +48,8 @@ from supybot.utils.iter import imap
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
         self.irc = irc
-        self.__parent = super(SocketDriver, self)
-        self.__parent.__init__(irc)
+        drivers.IrcDriver.__init__(self, irc)
+        drivers.ServersMixin.__init__(self, irc)
         self.conn = None
         self.servers = ()
         self.eagains = 0
@@ -77,7 +77,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     def _getNextServer(self):
         oldServer = getattr(self, 'currentServer', None)
-        server = self.__parent._getNextServer()
+        server = drivers.ServersMixin._getNextServer(self)
         if self.currentServer != oldServer:
             self.resetDelay()
         return server
