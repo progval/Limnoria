@@ -54,7 +54,7 @@ class Language(registry.OnlySomeStrings):
                                          'tr'.split()]
     validStrings.append('')
     def normalize(self, s):
-        if not s.startswith('lang_'):
+        if s and not s.startswith('lang_'):
             s = 'lang_' + s
         if not s.endswith('CN') or s.endswith('TW'):
             s = s.lower()
