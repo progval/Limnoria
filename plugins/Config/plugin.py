@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -85,7 +86,6 @@ def _hupHandler(sig, frame):
 if os.name == 'posix':
     signal.signal(signal.SIGHUP, _hupHandler)
 
-
 def getConfigVar(irc, msg, args, state):
     name = args[0]
     if name.startswith('conf.'):
@@ -99,6 +99,13 @@ def getConfigVar(irc, msg, args, state):
     except registry.InvalidRegistryName, e:
         state.errorInvalid('configuration variable', str(e))
 addConverter('configVar', getConfigVar)
+
+def getSettableConfigVar(irc, msg, args, state):
+    getConfigVar(irc, msg, args, state)
+    if not hasattr(state.args[-1], 'set'):
+        state.errorInvalid('settable configuration variable',
+                           state.args[-1]._name)
+addConverter('settableConfigVar', getSettableConfigVar)
 
 class Config(callbacks.Plugin):
     def callCommand(self, command, irc, msg, *args, **kwargs):
@@ -195,7 +202,8 @@ class Config(callbacks.Plugin):
             self._setValue(irc, msg, group, value)
         else:
             self._getValue(irc, msg, group)
-    channel = wrap(channel, ['channel', 'configVar', additional('text')])
+    channel = wrap(channel, ['channel', 'settableConfigVar',
+                             additional('text')])
 
     def config(self, irc, msg, args, group, value):
         """<name> [<value>]
@@ -208,7 +216,7 @@ class Config(callbacks.Plugin):
             self._setValue(irc, msg, group, value)
         else:
             self._getValue(irc, msg, group)
-    config = wrap(config, ['configVar', additional('text')])
+    config = wrap(config, ['settableConfigVar', additional('text')])
 
     def help(self, irc, msg, args, group):
         """<name>
@@ -236,7 +244,7 @@ class Config(callbacks.Plugin):
         """
         v = group.__class__(group._default, '')
         irc.reply(str(v))
-    default = wrap(default, ['configVar'])
+    default = wrap(default, ['settableConfigVar'])
 
     def reload(self, irc, msg, args):
         """takes no arguments
