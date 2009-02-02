@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -164,6 +164,8 @@ def reply(msg, s, prefixNick=None, private=None,
     # Ok, let's make the target:
     # XXX This isn't entirely right.  Consider to=#foo, private=True.
     target = ircutils.replyTo(msg)
+    if ircutils.isChannel(to):
+        target = to
     if ircutils.isChannel(target):
         channel = target
     else:
