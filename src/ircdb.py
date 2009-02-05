@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1062,10 +1063,7 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
         else:
             if checkCapability(hostmask, capability):
                 return True
-    if requireAll:
-        return True
-    else:
-        return False
+    return requireAll
 
 ###
 # supybot.capabilities
