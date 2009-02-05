@@ -48,6 +48,9 @@ class AutoMode(callbacks.Plugin):
             return
         fallthrough = self.registryValue('fallthrough', channel)
         def do(type):
+            if ircdb.checkCapability(msg.prefix, 'owner') and not \
+               self.registryValue('owner'):
+                raise Continue
             cap = ircdb.makeChannelCapability(channel, type)
             if ircdb.checkCapability(msg.prefix, cap):
                 if self.registryValue(type, channel):

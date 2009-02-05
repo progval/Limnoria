@@ -42,6 +42,8 @@ def configure(advanced):
 AutoMode = conf.registerPlugin('AutoMode')
 conf.registerChannelValue(AutoMode, 'enable',
     registry.Boolean(True, """Determines whether this plugin is enabled."""))
+conf.registerGlobalValue(AutoMode, 'owner',
+    registry.Boolean(True, """Determines whether this plugin will automode owners."""))
 conf.registerChannelValue(AutoMode, 'fallthrough',
     registry.Boolean(False, """Determines whether the bot will "fall through" to
     halfop/voicing when auto-opping is turned off but auto-halfopping/voicing
