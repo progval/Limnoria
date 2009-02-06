@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -112,36 +112,42 @@ def quoted(s):
     """Returns a quoted s."""
     return '"%s"' % s
 
-def _getSep(s):
+_openers = '{[(<'
+_closers = '}])>'
+def _getSep(s, allowBraces=False):
     if len(s) < 2:
         raise ValueError, 'string given to _getSep is too short: %r' % s
+    if allowBraces:
+        braces = _closers
+    else:
+        braces = _openers + _closers
     if s.startswith('m') or s.startswith('s'):
         separator = s[1]
     else:
         separator = s[0]
-    if separator.isalnum() or separator in '{}[]()<>':
+    if separator.isalnum() or separator in braces:
         raise ValueError, \
               'Invalid separator: separator must not be alphanumeric or in ' \
-              '"{}[]()<>"'
+              '"%s"' % braces
     return separator
-
-def _getSplitterRe(s):
-    separator = _getSep(s)
-    return re.compile(r'(?<!\\)%s' % re.escape(separator))
 
 def perlReToPythonRe(s):
     """Converts a string representation of a Perl regular expression (i.e.,
     m/^foo$/i or /foo|bar/) to a Python regular expression.
     """
-    sep = _getSep(s)
-    splitter = _getSplitterRe(s)
+    opener = closer = _getSep(s, True)
+    if opener in '{[(<':
+        closer = _closers[_openers.index(opener)]
+    opener = re.escape(opener)
+    closer = re.escape(closer)
+    matcher = re.compile(r'm?%s((?:\\.|[^\\])*)%s(.*)' % (opener, closer))
     try:
-        (kind, regexp, flags) = splitter.split(s)
-    except ValueError: # Unpack list of wrong size.
+        (regexp, flags) = matcher.match(s).groups()
+    except AttributeError: # Unpack list of wrong size.
         raise ValueError, 'Must be of the form m/.../ or /.../'
-    regexp = regexp.replace('\\'+sep, sep)
-    if kind not in ('', 'm'):
-        raise ValueError, 'Invalid kind: must be in ("", "m")'
+    regexp = regexp.replace('\\'+opener, opener)
+    if opener != closer:
+        regexp = regexp.replace('\\'+closer, closer)
     flag = 0
     try:
         for c in flags.upper():
@@ -159,17 +165,17 @@ def perlReToReplacer(s):
     replacement.
     """
     sep = _getSep(s)
-    splitter = _getSplitterRe(s)
+    escaped = re.escape(sep)
+    matcher = re.compile(r's%s((?:\\.|[^\\])*)%s((?:\\%s|[^\\])*)%s(.*)'
+                         % (escaped, escaped, escaped, escaped))
     try:
-        (kind, regexp, replace, flags) = splitter.split(s)
-    except ValueError: # Unpack list of wrong size.
+        (regexp, replace, flags) = matcher.match(s).groups()
+    except AttributeError: # Unpack list of wrong size.
         raise ValueError, 'Must be of the form s/.../.../'
     regexp = regexp.replace('\x08', r'\b')
     replace = replace.replace('\\'+sep, sep)
     for i in xrange(10):
         replace = replace.replace(chr(i), r'\%s' % i)
-    if kind != 's':
-        raise ValueError, 'Invalid kind: must be "s"'
     g = False
     if 'g' in flags:
         g = True

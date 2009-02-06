@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -276,6 +277,8 @@ class StrTest(SupyTestCase):
     def testP2PReDifferentSeparator(self):
         r = utils.str.perlReToPythonRe('m!foo!')
         self.failUnless(r.search('foo'))
+        r = utils.str.perlReToPythonRe('m{cat}')
+        self.failUnless(r.search('cat'))
 
     def testPerlReToReplacer(self):
         PRTR = utils.str.perlReToReplacer
@@ -291,6 +294,8 @@ class StrTest(SupyTestCase):
         self.assertEqual(f('foobarbaz'), 'foorz')
         f = PRTR('s/ba\\///g')
         self.assertEqual(f('fooba/rba/z'), 'foorz')
+        f = PRTR('s/ba\\\\//g')
+        self.assertEqual(f('fooba\\rba\\z'), 'foorz')
         f = PRTR('s/cat/dog/i')
         self.assertEqual(f('CATFISH'), 'dogFISH')
         f = PRTR('s/foo/foo\/bar/')
