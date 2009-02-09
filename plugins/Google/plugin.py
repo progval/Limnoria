@@ -81,7 +81,7 @@ class Google(callbacks.PluginRegexp):
 
         Valid options are:
             smallsearch - True/False (Default: False)
-            safesearch - {active,moderate,off} (Default: "moderate")
+            filter - {active,moderate,off} (Default: "moderate")
             language - Restrict search to documents in the given language
                        (Default: "lang_en")
         """
@@ -98,7 +98,7 @@ class Google(callbacks.PluginRegexp):
                     opts['rsz'] = 'small'
                 else:
                     opts['rsz'] = 'large'
-            elif k == 'safesearch':
+            elif k == 'filter':
                 opts['safe'] = v
             elif k == 'language':
                 opts['lr'] = v
@@ -106,7 +106,7 @@ class Google(callbacks.PluginRegexp):
         if 'lr' not in opts and defLang:
             opts['lr'] = defLang
         if 'safe' not in opts:
-            opts['safe'] = self.registryValue('safeSearch', dynamic.channel)
+            opts['safe'] = self.registryValue('searchFilter', dynamic.channel)
         if 'rsz' not in opts:
             opts['rsz'] = 'large'
 
@@ -154,10 +154,10 @@ class Google(callbacks.PluginRegexp):
     lucky = wrap(lucky, ['text'])
 
     def google(self, irc, msg, args, optlist, text):
-        """<search> [--{safesearch,language} <value>]
+        """<search> [--{filter,language} <value>]
 
         Searches google.com for the given string.  As many results as can fit
-        are included.  --language accepts a language abbreviation; --safesearch
+        are included.  --language accepts a language abbreviation; --filter
         accepts a filtering level ('active', 'moderate', 'off').
         """
         if 'language' in optlist and optlist['language'].lower() not in \
@@ -172,7 +172,7 @@ class Google(callbacks.PluginRegexp):
         irc.reply(self.formatData(data['responseData']['results'],
                                   bold=bold, max=max))
     google = wrap(google, [getopts({'language':'something',
-                                    'safesearch':''}),
+                                    'filter':''}),
                            'text'])
 
     def cache(self, irc, msg, args, url):

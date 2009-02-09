@@ -98,9 +98,9 @@ conf.registerChannelValue(Google, 'maximumResults',
 conf.registerChannelValue(Google, 'defaultLanguage',
     Language('lang_en', """Determines what default language is used in
     searches.  If left empty, no specific language will be requested."""))
-conf.registerChannelValue(Google, 'safeSearch',
-    SafeSearch('moderate', """Determines what level of safeSearch to use by
-    default.  'active' - most filtering, 'moderate' - default filtering, 'off'
-    - no filtering"""))
+conf.registerChannelValue(Google, 'searchFilter',
+    SafeSearch('moderate', """Determines what level of search filtering to use
+    by default.  'active' - most filtering, 'moderate' - default filtering,
+    'off' - no filtering"""))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
