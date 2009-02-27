@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004, Daniel DiPaolo
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -52,28 +53,28 @@ class QuoteGrabsTestCase(ChannelPluginTestCase):
 
     def testList(self):
         testPrefix = 'foo!bar@baz'
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'testList',
                                          prefix=testPrefix))
         self.assertNotError('grab foo')
-        self.assertResponse('quotegrabs list foo', '#1: test')
+        self.assertResponse('quotegrabs list foo', '#1: testList')
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'a' * 80,
                                          prefix=testPrefix))
         self.assertNotError('grab foo')
         self.assertResponse('quotegrabs list foo',
-                            '#2: %s... and #1: test' %\
+                            '#2: %s... and #1: testList' %\
                             ('a'*43)) # 50 - length of "#2: ..."
 
     def testDuplicateGrabs(self):
         testPrefix = 'foo!bar@baz'
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'testDupe',
                                          prefix=testPrefix))
         self.assertNotError('grab foo')
         self.assertNotError('grab foo') # note:NOTanerror,stillwon'tdupe
-        self.assertResponse('quotegrabs list foo', '#1: test')
+        self.assertResponse('quotegrabs list foo', '#1: testDupe')
 
     def testCaseInsensitivity(self):
         testPrefix = 'foo!bar@baz'
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'testCI',
                                          prefix=testPrefix))
         self.assertNotError('grab FOO')
         self.assertNotError('quote foo')
@@ -85,26 +86,26 @@ class QuoteGrabsTestCase(ChannelPluginTestCase):
     def testRandom(self):
         testPrefix = 'foo!bar@baz'
         self.assertError('random')
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'testRandom',
                                          prefix=testPrefix))
         self.assertError('random')  # still none in the db
         self.assertNotError('grab foo')
-        self.assertResponse('random', '<foo> test')
-        self.assertResponse('random foo', '<foo> test')
-        self.assertResponse('random FOO', '<foo> test')
+        self.assertResponse('random', '<foo> testRandom')
+        self.assertResponse('random foo', '<foo> testRandom')
+        self.assertResponse('random FOO', '<foo> testRandom')
 
     def testGet(self):
         testPrefix= 'foo!bar@baz'
         self.assertError('quotegrabs get asdf')
         self.assertError('quotegrabs get 1')
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'testGet',
                                          prefix=testPrefix))
         self.assertNotError('grab foo')
         self.assertNotError('quotegrabs get 1')
 
     def testSearch(self):
         testPrefix= 'foo!bar@baz'
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'testSearch',
                                          prefix=testPrefix))
         self.assertError('quotegrabs search test')  # still none in db
         self.assertNotError('grab foo')

@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004, Daniel DiPaolo
+# Copyright (c) 2008, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -50,11 +51,9 @@ class QuoteGrabsRecord(dbi.Record):
         ]
 
     def __str__(self):
-        at = time.strftime(conf.supybot.reply.format.time(),
-                           time.localtime(float(self.at)))
         grabber = plugins.getUserName(self.grabber)
-        return '%s (Said by: %s; grabbed by %s at %s)' % \
-                  (self.text, self.hostmask, grabber, at)
+        return format('%s (Said by: %s; grabbed by %s at %t)',
+                      self.text, self.hostmask, grabber, self.at)
 
 class SqliteQuoteGrabsDB(object):
     def __init__(self, filename):
@@ -152,8 +151,7 @@ class SqliteQuoteGrabsDB(object):
             raise dbi.NoRecordError
         return cursor.fetchone()[0]
 
-    def add(self, msg, by):
-        channel = msg.args[0]
+    def add(self, channel, msg, by):
         db = self._getDb(channel)
         cursor = db.cursor()
         text = ircmsgs.prettyPrint(msg)
@@ -193,29 +191,27 @@ class QuoteGrabs(callbacks.Plugin):
     def doPrivmsg(self, irc, msg):
         irc = callbacks.SimpleProxy(irc, msg)
         if irc.isChannel(msg.args[0]):
-            (channel, payload) = msg.args
-            words = self.registryValue('randomGrabber.minimumWords',
-                                       channel)
-            length = self.registryValue('randomGrabber.minimumCharacters',
-                                        channel)
+            (chan, payload) = msg.args
+            words = self.registryValue('randomGrabber.minimumWords', chan)
+            length = self.registryValue('randomGrabber.minimumCharacters',chan)
             grabTime = \
-            self.registryValue('randomGrabber.averageTimeBetweenGrabs',
-                               channel)
-            if self.registryValue('randomGrabber', channel):
+            self.registryValue('randomGrabber.averageTimeBetweenGrabs', chan)
+            channel = plugins.getChannel(chan)
+            if self.registryValue('randomGrabber', chan):
                 if len(payload) > length and len(payload.split()) > words:
                     try:
                         last = int(self.db.select(channel, msg.nick))
                     except dbi.NoRecordError:
-                        self._grab(irc, msg, irc.prefix)
+                        self._grab(irc, channel, msg, irc.prefix)
                         self._sendGrabMsg(irc, msg)
                     else:
                         elapsed = int(time.time()) - last
-                        if random.random()*elapsed > grabTime/2:
-                            self._grab(irc, msg, irc.prefix)
+                        if (random.random() * elapsed) > (grabTime / 2):
+                            self._grab(channel, irc, msg, irc.prefix)
                             self._sendGrabMsg(irc, msg)
 
-    def _grab(self, irc, msg, addedBy):
-        self.db.add(msg, addedBy)
+    def _grab(self, channel, irc, msg, addedBy):
+        self.db.add(channel, msg, addedBy)
 
     def _sendGrabMsg(self, irc, msg):
         s = 'jots down a new quote for %s' % msg.nick
@@ -239,7 +235,7 @@ class QuoteGrabs(callbacks.Plugin):
         for m in reversed(irc.state.history):
             if m.command == 'PRIVMSG' and ircutils.nickEqual(m.nick, nick) \
                     and ircutils.strEqual(m.args[0], chan):
-                self._grab(irc, m, msg.prefix)
+                self._grab(channel, irc, m, msg.prefix)
                 irc.replySuccess()
                 return
         irc.error('I couldn\'t find a proper message to grab.')

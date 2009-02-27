@@ -90,7 +90,7 @@ class SqliteKarmaDB(object):
     def gets(self, channel, things):
         db = self._getDb(channel)
         cursor = db.cursor()
-        normalizedThings = dict(zip(map(str.lower, things), things))
+        normalizedThings = dict(zip(map(lambda s: s.lower(), things), things))
         criteria = ' OR '.join(['normalized=%s'] * len(normalizedThings))
         sql = """SELECT name, added-subtracted FROM karma
                  WHERE %s ORDER BY added-subtracted DESC""" % criteria

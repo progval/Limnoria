@@ -65,15 +65,17 @@ def expect(prompt, possibilities, recursed=False, default=None,
         if len(prompt) > 70:
             prompt = '%s %s' % (originalPrompt, choices % '/ '.join(possibilities))
     if default is not None:
-        prompt = '%s (default: %s)' % (prompt, default)
+        if useBold:
+            prompt = '%s %s(default: %s)' % (prompt, ansi.RESET, default)
+        else:
+            prompt = '%s (default: %s)' % (prompt, default)
     prompt = textwrap.fill(prompt)
     prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
     if useBold:
+        prompt += ansi.RESET
         print >>fd, ansi.BOLD,
     s = raw_input(prompt)
-    if useBold:
-        print >>fd, ansi.RESET
     s = s.strip()
     print >>fd
     if possibilities:
@@ -125,11 +127,10 @@ def getpass(prompt='Enter password: ', secondPrompt='Re-enter password: '):
         prompt += ' '
     while True:
         if useBold:
+            prompt += ansi.RESET
             sys.stdout.write(ansi.BOLD)
         password = getPass(prompt)
         secondPassword = getPass(secondPrompt)
-        if useBold:
-            print ansi.RESET
         if password != secondPassword:
             output('Passwords don\'t match.')
         else:

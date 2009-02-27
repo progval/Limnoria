@@ -110,7 +110,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             return help(method,
                         doc=method._fake__doc__ % (s, s),
                         name=callbacks.formatCommand(command))
-        return self.__parent.getCommandHelp(command)
+        return super(Factoids, self).getCommandHelp(self, command)
 
     def learn(self, irc, msg, args, channel, key, factoid):
         db = self.getDb(channel)
@@ -328,7 +328,9 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         counter = 0
         for (added_by, added_at) in factoids:
             counter += 1
-            L.append(format('#%i was added by %s at %t',
+            added_at = time.strftime(conf.supybot.reply.format.time(),
+                                     time.localtime(int(added_at)))
+            L.append(format('#%i was added by %s at %s',
                             counter, added_by, added_at))
         factoids = '; '.join(L)
         s = format('Key %q is %s and has %n associated with it: %s',
