@@ -3,7 +3,6 @@
 import os
 import re
 import sys
-import ftplib
 import shutil
 
 def firstLines(filename, n):
@@ -28,9 +27,21 @@ def system(sh, errmsg=None):
     if ret:
         error(errmsg + '  (error code: %s)' % ret)
 
+def usage():
+    error('Usage: %s [-s] <sf username> <version>\nSpecify -s to pass it on '
+          'to the relevant git commands.' % sys.argv[0])
+
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        error('Usage: %s <sf username> <version>\n' % sys.argv[0])
+    if len(sys.argv) < 3 or len(sys.argv) > 4:
+        usage()
+
+    sign = ''
+    if len(sys.argv) == 4:
+        if sys.argv[1] == '-s':
+            sign = '-s'
+            sys.argv.pop(1)
+        else:
+            usage()
 
     print 'Check version string for validity.'
     (u, v) = sys.argv[1:]
@@ -40,11 +51,12 @@ if __name__ == '__main__':
 
     if os.path.exists('supybot'):
         error('I need to make the directory "supybot" but it already exists.'
-              '  Change to an appropriate directory or rmeove the supybot '
+              '  Change to an appropriate directory or remove the supybot '
               'directory to continue.')
-    print 'Checking out fresh tree from Darcs.'
-    system('darcs get http://source.supybot.com/supybot/')
+    print 'Checking out fresh tree from git.'
+    system('git clone ssh://%s@supybot.git.sourceforge.net/gitroot/supybot', u)
     os.chdir('supybot')
+    system('git checkout -b maint origin/maint')
 
     print 'Checking RELNOTES version line.'
     if firstLine('RELNOTES') != 'Version %s' % v:
@@ -52,7 +64,7 @@ if __name__ == '__main__':
 
     print 'Checking ChangeLog version line.'
     (first, _, third) = firstLines('ChangeLog', 3)
-    if not re.match(r'^200\d-\d{2}-\d{2}\s+\w+.*<\S+@\S+>$', first):
+    if not re.match(r'^20\d\d-\d{2}-\d{2}\s+\w+.*<\S+@\S+>$', first):
         error('Invalid first line in ChangeLog.')
     if not re.match(r'^\t\* Version %s!$' % v, third):
         error('Invalid third line in ChangeLog.')
@@ -62,15 +74,16 @@ if __name__ == '__main__':
     for fn in versionFiles:
         sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % (v, fn)
         system(sh, 'Error changing version in %s' % fn)
-    system('darcs record -m "Updated to %s." %s' % (v, ' '.join(versionFiles)))
+    system('git commit -a %s -m \'Updated to %s.\' %s'
+           % (sign, v, ' '.join(versionFiles)))
 
     print 'Tagging release.'
-    system('darcs tag -m release-%s' % v.replace('.', '_'))
+    system('git tag %s -m %s' % (sign, v))
 
-    print 'Removing test, sandbox, and _darcs.'
+    print 'Removing test, sandbox.'
     shutil.rmtree('test')
     shutil.rmtree('sandbox')
-    system('find . -name _darcs | xargs rm -rf')
+    shutil.rmtree('.git')
 
     os.chdir('..')
     dirname = 'Supybot-%s' % v
@@ -87,23 +100,17 @@ if __name__ == '__main__':
     system('zip -r Supybot-%s.zip %s' % (v, dirname))
 
     print 'Uploading package files to upload.sf.net.'
-    ftp = ftplib.FTP('upload.sf.net')
-    ftp.login()
-    ftp.cwd('incoming')
-    for filename in ['Supybot-%s.tar.gz',
-                     'Supybot-%s.tar.bz2',
-                     'Supybot-%s.zip']:
-        filename = filename % v
-        print 'Uploading %s to SF.net.' % filename
-        ftp.storbinary('STOR %s' % filename, file(filename))
-    ftp.close()
+    system('scp Supybot-%s.tar.gz Supybot-%s.tar.bz2 Supybot-%s.zip '
+           '%s@frs.sourceforge.net:uploads' % (v, v, v, u))
 
-    print 'Committing %s+darcs to version files.' % v
+    print 'Committing %s+git to version files.' % v
+    system('git checkout master')
     for fn in versionFiles:
         sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % \
-             (v + '+cvs', fn)
+             (v + '+git', fn)
         system(sh, 'Error changing version in %s' % fn)
-    system('darcs record -m "Updated to %s." %s' % (v, ' '.join(versionFiles)))
+    system('git commit %s -m \'Updated to %s.\' %s'
+           % (sign, v, ' '.join(versionFiles)))
 
     print 'Copying new version.txt over to project webserver.'
     system('echo %s > version.txt' % v)
