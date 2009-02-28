@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -55,9 +56,9 @@ class RSSTestCase(ChannelPluginTestCase):
 
         def testAnnounce(self):
             self.assertNotError('rss add advogato %s' % url)
-            self.assertNotError('rss announce advogato')
+            self.assertNotError('rss announce add advogato')
             self.assertNotRegexp('rss announce', r'ValueError')
-            self.assertNotError('rss announce --remove advogato')
+            self.assertNotError('rss announce remove advogato')
             self.assertNotError('rss remove advogato')
 
         def testRss(self):
@@ -81,4 +82,3 @@ class RSSTestCase(ChannelPluginTestCase):
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
-

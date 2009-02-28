@@ -324,47 +324,51 @@ class RSS(callbacks.Plugin):
         irc.replySuccess()
     remove = wrap(remove, ['feedName'])
 
-    def announce(self, irc, msg, args, channel, optlist, rest):
-        """[<channel>] [--remove] [<name|url> ...]
+    class announce(callbacks.Commands):
+        def list(self, irc, msg, args, channel):
+            """[<channel>]
 
-        Adds the list of <name|url> to the current list of announced feeds in
-        the channel given.  Valid feeds include the names of registered feeds
-        as well as URLs for a RSS feeds.  <channel> is only necessary if the
-        message isn't sent in the channel itself.  If no arguments are
-        specified, replies with the current list of feeds to announce.  If
-        --remove is given, the specified feeds will be removed from the list
-        of feeds to announce.
-        """
-        remove = False
-        announce = conf.supybot.plugins.RSS.announce
-        for (option, _) in optlist:
-            if option == 'remove':
-                if not rest:
-                    raise callbacks.ArgumentError
-                remove = True
-        def addFeed(feed):
-            if feed not in feeds:
-                feeds.add(feed)
-        def removeFeed(feed):
-            if feed in feeds:
-                feeds.remove(feed)
-        if rest:
-            if remove:
-                updater = removeFeed
-            else:
-                updater = addFeed
-            feeds = announce.get(channel)()
-            for feed in rest:
-                updater(feed)
-            announce.get(channel).setValue(feeds)
-            irc.replySuccess()
-        elif not rest:
+            Returns the list of feeds announced in <channel>.  <channel> is
+            only necessary if the message isn't sent in the channel itself.
+            """
+            announce = conf.supybot.plugins.RSS.announce
             feeds = format('%L', list(announce.get(channel)()))
             irc.reply(feeds or 'I am currently not announcing any feeds.')
-            return
-    announce = wrap(announce, [('checkChannelCapability', 'op'),
-                               getopts({'remove':''}),
-                               any(first('url', 'feedName'))])
+        list = wrap(list, [optional('channel')])
+
+        def add(self, irc, msg, args, channel, feeds):
+            """[<channel>] <name|url> [<name|url> ...]
+
+            Adds the list of feeds to the current list of announced feeds in
+            <channel>.  Valid feeds include the names of registered feeds as
+            well as URLs for RSS feeds.  <channel> is only necessary if the
+            message isn't sent in the channel itself.
+            """
+            announce = conf.supybot.plugins.RSS.announce
+            S = announce.get(channel)()
+            for feed in feeds:
+                S.add(feed)
+            announce.get(channel).setValue(S)
+            irc.replySuccess()
+        add = wrap(add, [('checkChannelCapability', 'op'),
+                         many(first('url', 'feedName'))])
+
+        def remove(self, irc, msg, args, channel, feeds):
+            """[<channel>] <name|url> [<name|url> ...]
+
+            Removes the list of feeds from the current list of announced feeds
+            in <channel>.  Valid feeds include the names of registered feeds as
+            well as URLs for RSS feeds.  <channel> is only necessary if the
+            message isn't sent in the channel itself.
+            """
+            announce = conf.supybot.plugins.RSS.announce
+            S = announce.get(channel)()
+            for feed in feeds:
+                S.discard(feed)
+            announce.get(channel).setValue(S)
+            irc.replySuccess()
+        remove = wrap(remove, [('checkChannelCapability', 'op'),
+                               many(first('url', 'feedName'))])
 
     def rss(self, irc, msg, args, url, n):
         """<url> [<number of headlines>]
