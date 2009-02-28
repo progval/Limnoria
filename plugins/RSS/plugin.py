@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -89,12 +89,6 @@ class RSS(callbacks.Plugin):
                 return False
         else:
             return True
-
-    def listCommands(self):
-        commands = self.__parent.listCommands()
-        commands.extend(self.feedNames.keys())
-        commands.sort()
-        return commands
 
     def getCommandMethod(self, command):
         try:
