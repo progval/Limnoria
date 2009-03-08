@@ -62,7 +62,7 @@ conf.registerChannelValue(ChannelLogger, 'rotateLogs',
     timestamp for the log changes.  The timestamp is set according to
     the 'filenameTimestamp' configuration variable."""))
 conf.registerChannelValue(ChannelLogger, 'filenameTimestamp',
-    registry.String('%d-%a-%Y', """Determines how to represent the timestamp
+    registry.String('%Y-%m-%d', """Determines how to represent the timestamp
     used for the filename in rotated logs.  When this timestamp changes, the
     old logfiles will be closed and a new one started. The format characters
     for the timestamp are in the time.strftime docs at python.org.  In order
