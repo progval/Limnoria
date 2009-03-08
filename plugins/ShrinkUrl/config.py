@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -49,6 +50,9 @@ conf.registerChannelValue(ShrinkUrl, 'shrinkSnarfer',
     supybot.plugins.ShrinkUrl.minimumLength) it will post a
     smaller URL from either ln-s.net or tinyurl.com, as denoted in
     supybot.plugins.ShrinkUrl.default."""))
+conf.registerChannelValue(ShrinkUrl.shrinkSnarfer, 'showDomain',
+    registry.Boolean(True, """Determines whether the snarfer will show the
+    domain of the URL being snarfed along with the shrunken URL."""))
 conf.registerChannelValue(ShrinkUrl, 'minimumLength',
     registry.PositiveInteger(48, """The minimum length a URL must be before
     the bot will shrink it."""))

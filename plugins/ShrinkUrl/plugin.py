@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -132,11 +133,14 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 if shorturl is None:
                     self.log.info('Couldn\'t get shorturl for %u', url)
                     return
-                domain = utils.web.getDomain(url)
-                if self.registryValue('bold'):
-                    s = format('%u (at %s)', ircutils.bold(shorturl), domain)
+                if self.registryValue('shrinkSnarfer.showDomain', channel):
+                    domain = ' (at %s)' % utils.web.getDomain(url)
                 else:
-                    s = format('%u (at %s)', shorturl, domain)
+                    domain = ''
+                if self.registryValue('bold'):
+                    s = format('%u%s', ircutils.bold(shorturl), domain)
+                else:
+                    s = format('%u%s', shorturl, domain)
                 m = irc.reply(s, prefixNick=False)
                 m.tag('shrunken')
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
