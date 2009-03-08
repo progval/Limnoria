@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -323,6 +324,19 @@ class Misc(callbacks.Plugin):
             # the channel we've been instructed to look at.
             iterable.next()
         predicates = list(utils.iter.flatten(predicates.itervalues()))
+        # Make sure the user can't get messages from channels they aren't in
+        def userInChannel(m):
+            return m.args[0] in irc.state.channels \
+                    and msg.nick in irc.state.channels[m.args[0]].users
+        predicates.append(userInChannel)
+        # Make sure the user can't get messages from a +s channel unless
+        # they're calling the command from that channel or from a query
+        def notSecretMsg(m):
+            return not irc.isChannel(msg.args[0]) \
+                    or msg.args[0] == m.args[0] \
+                    or (m.args[0] in irc.state.channels \
+                        and 's' not in irc.state.channels[m.args[0]].modes)
+        predicates.append(notSecretMsg)
         resp = []
         if irc.nested and not \
           self.registryValue('last.nested.includeTimestamp'):
