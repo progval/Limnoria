@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,10 +41,6 @@ from supybot.commands import *
 import supybot.callbacks as callbacks
 
 convertcore = utils.python.universalImport('convertcore', 'our_convertcore')
-try:
-    import convertcore
-except ImportError:
-    import our_convertcore as convertcore
 
 baseArg = ('int', 'base', lambda i: i <= 36)
 
