@@ -42,12 +42,7 @@ import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-try:
-    import feedparser
-except ImportError:
-    raise callbacks.Error, \
-            'You need to have feedparser installed to use this plugin.  ' \
-            'Download it at <http://feedparser.org/>'
+feedparser = utils.python.universalImport('feedparser', 'our_feedparser')
 
 def getFeedName(irc, msg, args, state):
     if not registry.isValidRegistryName(args[0]):
