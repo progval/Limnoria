@@ -40,6 +40,7 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
 
+convertcore = utils.python.universalImport('convertcore', 'our_convertcore')
 try:
     import convertcore
 except ImportError:

@@ -27,8 +27,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
 import types
 import threading
+
+def universalImport(*names):
+    f = sys._getframe(1)
+    for name in names:
+        try:
+            ret = __import__(name, globals=f.f_globals)
+        except ImportError:
+            continue
+        else:
+            return ret
+    raise ImportError, ','.join(names)
 
 def changeFunctionName(f, name, doc=None):
     if doc is None:
