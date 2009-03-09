@@ -40,7 +40,10 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
 
-import convertcore
+try:
+    import convertcore
+except ImportError:
+    import our_convertcore as convertcore
 
 baseArg = ('int', 'base', lambda i: i <= 36)
 
