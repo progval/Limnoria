@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +33,10 @@ import types
 import threading
 
 def universalImport(*names):
+    """Attempt to import the given modules, in order, returning the first
+    successfully imported module.  ImportError will be raised, as usual, if
+    no imports succeed.  To emulate ``from ModuleA import ModuleB'', pass the
+    string 'ModuleA.ModuleB'"""
     f = sys._getframe(1)
     for name in names:
         try:
@@ -39,6 +44,11 @@ def universalImport(*names):
         except ImportError:
             continue
         else:
+            if '.' in name:
+                parts = name.split('.')[1:]
+                while parts:
+                    ret = getattr(ret, parts[0])
+                    del parts[0]
             return ret
     raise ImportError, ','.join(names)
 
