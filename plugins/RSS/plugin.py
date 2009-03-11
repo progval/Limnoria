@@ -42,7 +42,7 @@ import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-feedparser = utils.python.universalImport('feedparser', 'our_feedparser')
+feedparser = utils.python.universalImport('feedparser', 'local.feedparser')
 
 def getFeedName(irc, msg, args, state):
     if not registry.isValidRegistryName(args[0]):
