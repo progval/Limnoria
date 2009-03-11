@@ -105,7 +105,7 @@ class %s(callbacks.Plugin):
 Class = %s
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 '''.lstrip() # This removes the newlines that precede and follow the text.
 
 configTemplate = '''
@@ -282,4 +282,4 @@ if __name__ == '__main__':
         finished.  Obviously, nothing was written, but just run this script
         again whenever you want to generate a template for a plugin.""")
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
