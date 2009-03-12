@@ -1230,7 +1230,9 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
     def __call__(self, irc, msg):
         irc = SimpleProxy(irc, msg)
         if msg.command == 'PRIVMSG':
-            if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
+            if self.noIgnore or \
+               not ircutils.isUserHostmask(msg.prefix) or \ # Some services impl.
+               not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
         else:
             self.__parent.__call__(irc, msg)
