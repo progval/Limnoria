@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
 import copy
 import time
 import random
@@ -762,6 +763,7 @@ class Irc(IrcCommandDispatcher):
         else:
             return None
 
+    _numericErrorCommandRe = re.compile(r'^[45][0-9][0-9]$')
     def feedMsg(self, msg):
         """Called by the IrcDriver; feeds a message received."""
         msg.tag('receivedBy', self)
@@ -797,6 +799,8 @@ class Irc(IrcCommandDispatcher):
         method = self.dispatchCommand(msg.command)
         if method is not None:
             method(msg)
+        elif self._numericErrorCommandRe.search(msg.command):
+            log.error('Unhandled error message from server: %r' % msg)
 
         # Now update the IrcState object.
         try:
@@ -951,7 +955,7 @@ class Irc(IrcCommandDispatcher):
 
     def doError(self, msg):
         """Handles ERROR messages."""
-        log.info('Error message from %s: %s', self.network, msg.args[0])
+        log.warning('Error message from %s: %s', self.network, msg.args[0])
         if not self.zombie:
            if msg.args[0].startswith('Closing Link'):
               self.driver.reconnect()
