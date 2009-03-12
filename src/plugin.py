@@ -38,13 +38,17 @@ import supybot.conf as conf
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
+installDir = os.path.dirname(sys.modules[__name__].__file__)
+_pluginsDir = os.path.join(installDir, 'plugins')
+
 class Deprecated(ImportError):
     pass
 
 def loadPluginModule(name, ignoreDeprecation=False):
     """Loads (and returns) the module for the plugin with the given name."""
     files = []
-    pluginDirs = conf.supybot.directories.plugins()
+    pluginDirs = conf.supybot.directories.plugins()[:]
+    pluginDirs.append(_pluginsDir)
     for dir in pluginDirs:
         try:
             files.extend(os.listdir(dir))
