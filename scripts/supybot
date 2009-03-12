@@ -329,7 +329,6 @@ if __name__ == '__main__':
     import supybot.plugins.Owner as Owner
 
     owner = Owner.Class()
-    #irclib._callbacks.append(owner)
 
     if options.profile:
         import profile
@@ -339,4 +338,4 @@ if __name__ == '__main__':
         main()
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

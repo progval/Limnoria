@@ -2,6 +2,7 @@
 
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -105,7 +106,7 @@ class %s(callbacks.Plugin):
 Class = %s
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 '''.lstrip() # This removes the newlines that precede and follow the text.
 
 configTemplate = '''
@@ -253,12 +254,13 @@ def main():
         if name.endswith('.py'):
             name = name[:-3]
     copyright %= (realName, license)
+    pathname = name
 
     # Make the directory.
-    os.mkdir(name)
+    os.mkdir(pathname)
 
     def writeFile(filename, s):
-        fd = file(os.path.join(name, filename), 'w')
+        fd = file(os.path.join(pathname, filename), 'w')
         try:
             fd.write(s)
         finally:
@@ -271,6 +273,11 @@ def main():
     writeFile('test.py', testTemplate % (copyright, name, name))
     writeFile('README.txt', readmeTemplate)
 
+    pathname = os.path.join(pathname, 'local')
+    os.mkdir(pathname)
+    writeFile('__init__.py',
+              '# Stub so local is a module, used for third-party modules\n')
+
     print 'Your new plugin template is in the %s directory.' % name
 
 if __name__ == '__main__':
@@ -282,4 +289,4 @@ if __name__ == '__main__':
         finished.  Obviously, nothing was written, but just run this script
         again whenever you want to generate a template for a plugin.""")
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
