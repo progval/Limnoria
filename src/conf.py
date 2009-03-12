@@ -37,9 +37,6 @@ import supybot.utils as utils
 import supybot.registry as registry
 import supybot.ircutils as ircutils
 
-installDir = os.path.dirname(sys.modules[__name__].__file__)
-_pluginsDir = os.path.join(installDir, 'plugins')
-
 ###
 # version: This should be pretty obvious.
 ###
@@ -737,18 +734,11 @@ registerGlobalValue(supybot.directories.data, 'tmp',
 utils.file.AtomicFile.default.tmpDir = supybot.directories.data.tmp
 utils.file.AtomicFile.default.backupDir = supybot.directories.backup
 
-class PluginDirectories(registry.CommaSeparatedListOfStrings):
-    def __call__(self):
-        v = registry.CommaSeparatedListOfStrings.__call__(self)
-        if _pluginsDir not in v:
-            v.append(_pluginsDir)
-        return v
-
 registerGlobalValue(supybot.directories, 'plugins',
-    PluginDirectories([], """Determines what directories the bot will
-    look for plugins in.  Accepts a comma-separated list of strings.  This
-    means that to add another directory, you can nest the former value and add
-    a new one.  E.g. you can say: bot: 'config supybot.directories.plugins
+    registry.CommaSeparatedListOfStrings([], """Determines what directories the
+    bot will look for plugins in.  Accepts a comma-separated list of strings.
+    This means that to add another directory, you can nest the former value and
+    add a new one.  E.g. you can say: bot: 'config supybot.directories.plugins
     [config supybot.directories.plugins], newPluginDirectory'."""))
 
 registerGlobalValue(supybot, 'plugins',
