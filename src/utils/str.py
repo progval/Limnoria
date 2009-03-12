@@ -166,8 +166,8 @@ def perlReToReplacer(s):
     """
     sep = _getSep(s)
     escaped = re.escape(sep)
-    matcher = re.compile(r's%s((?:\\.|[^\\])*)%s((?:\\%s|[^\\])*)%s(.*)'
-                         % (escaped, escaped, escaped, escaped))
+    matcher = re.compile(r's%s((?:\\.|[^\\])*)%s((?:\\.|[^\\])*)%s(.*)'
+                         % (escaped, escaped, escaped))
     try:
         (regexp, replace, flags) = matcher.match(s).groups()
     except AttributeError: # Unpack list of wrong size.
