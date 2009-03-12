@@ -64,6 +64,20 @@ class BadWords(callbacks.Privmsg):
 
     def inFilter(self, irc, msg):
         self.filtering = True
+        # We need to check for bad words here rather than in doPrivmsg because
+        # messages don't get to doPrivmsg is the user is ignored.
+        if msg.command == 'PRIVMSG':
+            self.updateRegexp()
+            s = ircutils.stripFormatting(msg.args[1])
+            channel = msg.args[0]
+            if ircutils.isChannel(channel) and self.registryValue('kick', channel):
+                if self.regexp.search(s):
+                    if irc.nick in irc.state.channels[channel].ops:
+                        message = self.registryValue('kick.message', channel)
+                        irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
+                    else:
+                        self.log.warning('Should kick %s from %s, but not opped.',
+                                         msg.nick, channel)
         return msg
 
     def updateRegexp(self):
@@ -80,19 +94,6 @@ class BadWords(callbacks.Privmsg):
             s = self.regexp.sub(self.sub, s)
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
-
-    def doPrivmsg(self, irc, msg):
-        self.updateRegexp()
-        s = ircutils.stripFormatting(msg.args[1])
-        channel = msg.args[0]
-        if ircutils.isChannel(channel) and self.registryValue('kick', channel):
-            if self.regexp.search(s):
-                if irc.nick in irc.state.channels[channel].ops:
-                    message = self.registryValue('kick.message', channel)
-                    irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
-                else:
-                    self.log.warning('Should kick %s from %s, but not opped.',
-                                     msg.nick, channel)
 
     def makeRegexp(self, iterable):
         s = '(%s)' % '|'.join(map(re.escape, iterable))
