@@ -34,8 +34,6 @@ import time
 import socket
 import urllib
 
-import simplejson
-
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -43,6 +41,8 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+
+simplejson = universalImport('json', 'simplejson', 'local.simplejson')
 
 class Google(callbacks.PluginRegexp):
     threaded = True
