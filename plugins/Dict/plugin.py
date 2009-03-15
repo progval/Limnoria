@@ -37,7 +37,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 try:
-    import dictclient
+    dictclient = universalImport('dictclient', 'local.dictclient')
 except ImportError:
     raise callbacks.Error, \
             'You need to have dictclient installed to use this plugin.  ' \
