@@ -34,6 +34,7 @@ plugins = [
     'Alias',
     'Anonymous',
     'AutoMode',
+    'BadWords',
     'Channel',
     'ChannelLogger',
     'ChannelStats',
@@ -140,13 +141,27 @@ packages = ['supybot',
             'supybot.drivers',
             'supybot.plugins',] + \
             ['supybot.plugins.'+s for s in plugins] + \
-            ['supybot.plugins.Time.dateutil',]
+            [
+             'supybot.plugins.Dict.local',
+             'supybot.plugins.Math.local',
+             'supybot.plugins.Google.local',
+             'supybot.plugins.Google.local.simplejson',
+             'supybot.plugins.RSS.local',
+             'supybot.plugins.Time.dateutil',
+            ]
 
 package_dir = {'supybot': 'src',
                'supybot.utils': 'src/utils',
                'supybot.plugins': 'plugins',
                'supybot.drivers': 'src/drivers',
-               'supybot.plugins.Time.dateutil': 'plugins/Time/dateutil',}
+               'supybot.plugins.Google.local': 'plugins/Google/local',
+               'supybot.plugins.Google.local.simplejson':
+               'plugins/Google/local/simplejson',
+               'supybot.plugins.Dict.local': 'plugins/Dict/local',
+               'supybot.plugins.Math.local': 'plugins/Math/local',
+               'supybot.plugins.RSS.local': 'plugins/RSS/local',
+               'supybot.plugins.Time.dateutil': 'plugins/Time/dateutil',
+              }
 
 for plugin in plugins:
     package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
