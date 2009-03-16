@@ -29,11 +29,25 @@ def system(sh, errmsg=None):
 
 def usage():
     error('Usage: %s [-s] <sf username> <version>\nSpecify -s to pass it on '
-          'to the relevant git commands.' % sys.argv[0])
+          'to the relevant git commands.\nMust be called from a git checkout.'
+          % sys.argv[0])
+
+def checkGitRepo():
+    system('git rev-parse --is-inside-work-tree 2>/dev/null',
+           'Must be run from a git checkout.')
+    system('test "$(git rev-parse --show-cdup >/dev/null)" = ""',
+           'Must be run from the top-level directory of the git checkout.')
+    system('git rev-parse --verify HEAD >/dev/null '
+           '&& git update-index --refresh'
+           '&& git diff-files --quiet'
+           '&& git diff-files --cached --quiet HEAD --',
+           'Your tree is unclean. Can\'t run from here.')
 
 if __name__ == '__main__':
     if len(sys.argv) < 3 or len(sys.argv) > 4:
         usage()
+
+    checkGitRepo()
 
     sign = ''
     if len(sys.argv) == 4:
@@ -54,9 +68,8 @@ if __name__ == '__main__':
               '  Change to an appropriate directory or remove the supybot '
               'directory to continue.')
     print 'Checking out fresh tree from git.'
-    system('git clone ssh://%s@supybot.git.sourceforge.net/gitroot/supybot', u)
+    system('git clone git+ssh://%s@supybot.git.sourceforge.net/gitroot/supybot', u)
     os.chdir('supybot')
-    system('git checkout -b maint origin/maint')
 
     print 'Checking RELNOTES version line.'
     if firstLine('RELNOTES') != 'Version %s' % v:
@@ -78,7 +91,11 @@ if __name__ == '__main__':
            % (sign, v, ' '.join(versionFiles)))
 
     print 'Tagging release.'
-    system('git tag %s -m %s' % (sign, v))
+    system('git tag %s -m "Release %s" %s' % (sign or '-a', v, v))
+
+    print 'Pushing release commits.'
+    system('git push origin master')
+    system('git push --tags')
 
     print 'Removing test, sandbox.'
     shutil.rmtree('test')
@@ -105,16 +122,19 @@ if __name__ == '__main__':
 
     print 'Committing %s+git to version files.' % v
     system('git checkout master')
+    system('git pull')
     for fn in versionFiles:
         sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % \
              (v + '+git', fn)
         system(sh, 'Error changing version in %s' % fn)
     system('git commit %s -m \'Updated to %s.\' %s'
            % (sign, v, ' '.join(versionFiles)))
+    system('git push origin master')
 
     print 'Copying new version.txt over to project webserver.'
     system('echo %s > version.txt' % v)
     system('scp version.txt %s@shell.sf.net:/home/groups/s/su/supybot/htdocs'%u)
+    system('rm version.txt')
 
 #    print 'Generating documentation.'
 #    # docFiles is in the format {directory: files}
