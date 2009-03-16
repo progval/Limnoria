@@ -29,63 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-plugins = [
-    'Admin',
-    'Alias',
-    'Anonymous',
-    'AutoMode',
-    'BadWords',
-    'Channel',
-    'ChannelLogger',
-    'ChannelStats',
-    'Config',
-    'Ctcp',
-    'Dict',
-    'Factoids',
-    'Filter',
-    'Format',
-    'Games',
-    'Google',
-    'Herald',
-    'Insult',
-    'Internet',
-    'Karma',
-    'Lart',
-    'Later',
-    'Limiter',
-    'Math',
-    'Misc',
-    'MoobotFactoids',
-    'Network',
-    'News',
-    'NickCapture',
-    'Nickometer',
-    'Note',
-    'Owner',
-    'Plugin',
-    'Praise',
-    'Protector',
-    'Quote',
-    'QuoteGrabs',
-    'Relay',
-    'Reply',
-    'RSS',
-    'Scheduler',
-    'Seen',
-    'Services',
-    'ShrinkUrl',
-    'Status',
-    'String',
-    'Time',
-    'Todo',
-    'Topic',
-    'Unix',
-    'URL',
-    'User',
-    'Utilities',
-    'Web',
-    ]
-
 import sys
 
 if sys.version_info < (2, 3, 0):
@@ -102,6 +45,9 @@ while '--clean' in sys.argv:
 import glob
 import shutil
 import os.path
+
+plugins = [s for s in os.listdir('plugins') if
+           os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
 def normalizeWhitespace(s):
     return ' '.join(s.split())
