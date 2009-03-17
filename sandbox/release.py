@@ -93,43 +93,34 @@ if __name__ == '__main__':
     print 'Tagging release.'
     system('git tag %s -m "Release %s" %s' % (sign or '-a', v, v))
 
-    print 'Pushing release commits.'
-    system('git push origin master')
-    system('git push --tags')
-
-    print 'Removing test, sandbox.'
-    shutil.rmtree('test')
-    shutil.rmtree('sandbox')
-    shutil.rmtree('.git')
-
-    os.chdir('..')
-    dirname = 'Supybot-%s' % v
-    print 'Renaming directory to %s.' % dirname
-    if os.path.exists(dirname):
-        shutil.rmtree(dirname)
-    shutil.move('supybot', dirname)
-
-    print 'Creating tarball (gzip).'
-    system('tar czvf Supybot-%s.tar.gz %s' % (v, dirname))
-    print 'Creating tarball (bzip2).'
-    system('tar cjvf Supybot-%s.tar.bz2 %s' % (v, dirname))
-    print 'Creating zip.'
-    system('zip -r Supybot-%s.zip %s' % (v, dirname))
-
-    print 'Uploading package files to upload.sf.net.'
-    system('scp Supybot-%s.tar.gz Supybot-%s.tar.bz2 Supybot-%s.zip '
-           '%s@frs.sourceforge.net:uploads' % (v, v, v, u))
-
     print 'Committing %s+git to version files.' % v
-    system('git checkout master')
-    system('git pull')
     for fn in versionFiles:
         sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % \
              (v + '+git', fn)
         system(sh, 'Error changing version in %s' % fn)
     system('git commit %s -m \'Updated to %s.\' %s'
            % (sign, v, ' '.join(versionFiles)))
+
+    print 'Pushing commits.'
     system('git push origin master')
+    system('git push --tags')
+
+    print 'Creating tarball (gzip).'
+    system('git archive --prefix=Supybot-%s/ --format=tar %s '
+           '| gzip -c >../Supybot-%s.tar.gz' % (v, v, v))
+    print 'Creating tarball (bzip2).'
+    system('git archive --prefix=Supybot-%s/ --format=tar %s '
+           '| bzip2 -c >../Supybot-%s.tar.bz2' % (v, v, v))
+    print 'Creating zip.'
+    system('git archive --prefix=Supybot-%s/ --format=zip %s '
+           '>../Supybot-%s.zip' % (v, v))
+
+    os.chdir('..')
+    shutil.rmtree('supybot')
+
+    print 'Uploading package files to upload.sf.net.'
+    system('scp Supybot-%s.tar.gz Supybot-%s.tar.bz2 Supybot-%s.zip '
+           '%s@frs.sourceforge.net:uploads' % (v, v, v, u))
 
     print 'Copying new version.txt over to project webserver.'
     system('echo %s > version.txt' % v)
