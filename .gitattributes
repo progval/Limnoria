@@ -1,0 +1,3 @@
+test export-ignore
+sandbox export-ignore
+.git* export-ignore
