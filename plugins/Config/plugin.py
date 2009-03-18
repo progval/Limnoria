@@ -161,8 +161,11 @@ class Config(callbacks.Plugin):
             irc.reply('There were no matching configuration variables.')
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?
 
-    def _getValue(self, irc, msg, group):
+    def _getValue(self, irc, msg, group, addChannel=False):
         value = str(group) or ' '
+        if addChannel and irc.isChannel(msg.args[0]) and not irc.nested:
+            s = str(group.get(msg.args[0]))
+            value = 'Global: %s; %s: %s' % (value, msg.args[0], s)
         if hasattr(group, 'value'):
             if not group._private:
                 irc.reply(value)
@@ -215,7 +218,7 @@ class Config(callbacks.Plugin):
         if value is not None:
             self._setValue(irc, msg, group, value)
         else:
-            self._getValue(irc, msg, group)
+            self._getValue(irc, msg, group, addChannel=group.channelValue)
     config = wrap(config, ['settableConfigVar', additional('text')])
 
     def help(self, irc, msg, args, group):
