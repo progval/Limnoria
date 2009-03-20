@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,14 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-simplejson = universalImport('json', 'simplejson', 'local.simplejson')
+try:
+    simplejson = utils.python.universalImport('json', 'simplejson',
+                                              'local.simplejson')
+except ImportError:
+    raise callbacks.Error, \
+            'You need Python2.6 or the simplejson module installed to use ' \
+            'this plugin.  Download the module at ' \
+            '<http://undefined.org/python/#simplejson>.'
 
 class Google(callbacks.PluginRegexp):
     threaded = True
