@@ -2,6 +2,7 @@
 
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,8 +32,8 @@
 
 import sys
 
-if sys.version_info < (2, 3, 0):
-    sys.stderr.write("Supybot requires Python 2.3 or newer.\n")
+if sys.version_info < (2, 4, 0):
+    sys.stderr.write("Supybot requires Python 2.4 or newer.\n")
     sys.exit(-1)
 
 import textwrap

@@ -1,14 +1,7 @@
 Common
 
-  First things first: Supybot *requires* at least Python 2.3.  There
-ain't no getting around it.  We do not require any version greater than
-2.3, but we will be compatible with any version of Python >= 2.3.  If
-you're a Python developer, you probably know how superior 2.3 is to
-previous incarnations.  If you're not, just think about the difference
-between a bowl of plain vanilla ice cream and a banana split.  Or
-something like that.  Either way, *We're* Python developers and we like
-banana splits.  So, be sure to install python2.3 or greater before
-continuing.  You can get it from http://www.python.org/.
+  First things first: Supybot *requires* at least Python 2.4.  There
+ain't no getting around it.  You can get it from http://www.python.org/.
 
   Recommended Software
 
@@ -30,8 +23,8 @@ UNIX/Linux/*BSD
 
   If you're installing Python using your distributor's packages, you may
 need a python-dev package installed, too.  If you don't have a
-'/usr/lib/python2.3/distutils' directory or
-'/usr/lib/python2.3/config/Makefile' (assuming '/usr/lib/python2.3' is
+'/usr/lib/python2.4/distutils' directory or
+'/usr/lib/python2.4/config/Makefile' (assuming '/usr/lib/python2.4' is
 where your Python libs are installed), then you will need a python-dev
 package.
 
@@ -57,9 +50,9 @@ registry file for your bot.
   Supybot libraries.  It is also recommended that you setup a proper
   PYTHONPATH environment variable in your shell's init file.
 
-      bash -- 'export PYTHONPATH=$HOME/lib/python2.3/site-packages'
+      bash -- 'export PYTHONPATH=$HOME/lib/python2.4/site-packages'
 
-      (t)csh -- 'setenv PYTHONPATH $HOME/lib/python2.3/site-packages'
+      (t)csh -- 'setenv PYTHONPATH $HOME/lib/python2.4/site-packages'
 
 Windows
 
@@ -76,15 +69,15 @@ Python's directory to your path.  If you installed Python using the
 default settings, you would then do the following in the command prompt
 (otherwise change the path to match your settings)::
 
-    set PATH=C:\Python23\;%PATH%
+    set PATH=C:\Python24\;%PATH%
 
   You should now be able to type 'python' to start the Python
 interpreter.  Exit by pressing CTRL-Z and then Return.  Now that that's
 setup, you'll want to cd into the directory that was created when you
 unzipped Supybot; I'll assume you unzipped it to 'C:\Supybot' for these
 instructions.  From 'C:\Supybot', run 'python setup.py install'.  This
-will install Supybot under 'C:\Python23\'.  You will now have several new
-programs installed in 'C:\Python23\Scripts\'.  The two that might be of
+will install Supybot under 'C:\Python24\'.  You will now have several new
+programs installed in 'C:\Python24\Scripts\'.  The two that might be of
 particular interest to you, the new user, are 'supybot' and 'supybot-wizard'.
 The former, 'supybot', is the script to run an actual bot; the latter,
 'supybot-wizard', is an in-depth wizard that provides a nice user interface for
