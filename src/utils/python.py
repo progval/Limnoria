@@ -40,7 +40,8 @@ def universalImport(*names):
     f = sys._getframe(1)
     for name in names:
         try:
-            ret = __import__(name, globals=f.f_globals)
+            # __import__ didn't gain keyword arguments until 2.5
+            ret = __import__(name, f.f_globals)
         except ImportError:
             continue
         else:
