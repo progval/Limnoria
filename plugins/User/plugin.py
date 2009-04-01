@@ -176,9 +176,12 @@ class User(callbacks.Plugin):
             user (and the user whose password is being changed isn't that same
             owner user), then <old password> needn't be correct.
             """
-            u = ircdb.users.getUser(msg.prefix)
+            try:
+                u = ircdb.users.getUser(msg.prefix)
+            except KeyError:
+                u = None
             if user.checkPassword(password) or \
-               (u._checkCapability('owner') and not u == user):
+               (u and u._checkCapability('owner') and not u == user):
                 user.setPassword(newpassword)
                 ircdb.users.setUser(user)
                 irc.replySuccess()
