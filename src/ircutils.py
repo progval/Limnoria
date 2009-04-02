@@ -140,7 +140,7 @@ def isChannel(s, chantypes='#&+!', channellen=50):
            len(s) <= channellen and \
            len(s.split(None, 1)) == 1
 
-_patternCache = {}
+_patternCache = utils.structures.CacheDict(1000) # Arbitrarily chosen.
 def _hostmaskPatternEqual(pattern, hostmask):
     try:
         return _patternCache[pattern](hostmask) is not None
@@ -168,7 +168,7 @@ def _hostmaskPatternEqual(pattern, hostmask):
         _patternCache[pattern] = f
         return f(hostmask) is not None
 
-_hostmaskPatternEqualCache = {}
+_hostmaskPatternEqualCache = utils.structures.CacheDict{1000) # Arbitrarily chosen.}
 def hostmaskPatternEqual(pattern, hostmask):
     """pattern, hostmask => bool
     Returns True if hostmask matches the hostmask pattern pattern."""

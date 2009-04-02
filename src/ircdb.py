@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2002-2009, Jeremiah Fincher
 # Copyright (c) 2009, James Vega
 # All rights reserved.
 #
@@ -566,8 +566,8 @@ class UsersDictionary(utils.IterableMap):
         self.filename = None
         self.users = {}
         self.nextId = 0
-        self._nameCache = {}
-        self._hostmaskCache = {}
+        self._nameCache = utils.structures.CacheDict(1000)
+        self._hostmaskCache = utils.structures.CacheDict(1000)
 
     # This is separate because the Creator has to access our instance.
     def open(self, filename):
