@@ -1123,5 +1123,16 @@ class TestTimeoutQueue(SupyTestCase):
         q.reset()
         self.failIf(1 in q)
 
+class TestCacheDict(SupyTestCase):
+    def testMaxNeverExceeded(self):
+        max = 10
+        d = CacheDict(10)
+        for i in xrange(max**2):
+            d[i] = i
+            self.failUnless(len(d) <= max)
+            self.failUnless(i in d)
+            self.failUnless(d[i] == i)
+            
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

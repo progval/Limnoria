@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2002-2009, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@ Data structures for Python.
 
 import time
 import types
+import UserDict
 from itertools import imap
 
 class RingBuffer(object):
@@ -416,6 +417,31 @@ class MultiSet(object):
     def __contains__(self, elt):
         return elt in self.d
 
+
+class CacheDict(UserDict.DictMixin):
+    def __init__(self, max, **kwargs):
+        self.d = dict(**kwargs)
+        self.max = max
+
+    def __getitem__(self, key):
+        return self.d[key]
+
+    def __setitem__(self, key, value):
+        if len(self.d) >= self.max:
+            self.d.clear()
+        self.d[key] = value
+
+    def __delitem__(self, key):
+        del self.d[key]
+
+    def keys(self):
+        return self.d.keys()
+    
+    def iteritems(self):
+        return self.d.iteritems()
+
+    def __iter__(self):
+        return iter(self.d)
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2005-2009, Jeremiah Fincher
 # Copyright (c) 2009, James Vega
 # All rights reserved.
 #
@@ -30,6 +30,7 @@
 
 import sys
 import types
+import UserDict
 import threading
 
 def universalImport(*names):
@@ -101,6 +102,6 @@ class Synchronized(type):
             dict['__init__'] = __init__
         newclass = super(Synchronized, cls).__new__(cls, name, bases, dict)
         return newclass
-                    
-                
+
+
 # vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:
