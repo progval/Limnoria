@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -55,7 +56,7 @@ class Limiter(callbacks.Plugin):
             if currentLimit - currentUsers < minimum:
                 self._enforce(irc, ircmsgs.limit(channel,currentUsers+maximum))
             elif currentLimit - currentUsers > maximum:
-                self._enforce(irc, ircmsgs.limit(channel,currentUsers-minimum))
+                self._enforce(irc, ircmsgs.limit(channel,currentUsers+minimum))
 
     def doJoin(self, irc, msg):
         if not ircutils.strEqual(msg.nick, irc.nick):
