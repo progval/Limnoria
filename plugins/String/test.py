@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -104,6 +105,7 @@ class StringTestCase(PluginTestCase):
         self.assertNotRegexp('encode aldkfja foobar', 'LookupError')
         self.assertNotRegexp('decode asdflkj foobar', 'LookupError')
         self.assertResponse('decode zlib [encode zlib %s]' % s, s)
+        self.assertRegexp('decode base64 $BCfBg7;9D;R(B', 'padded with')
 
     def testRe(self):
         self.assertResponse('re "m/system time/" [status cpu]', 'system time')

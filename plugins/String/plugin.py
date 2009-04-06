@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
 ###
 
 import types
+import binascii
 
 import supybot.utils as utils
 from supybot.commands import *
@@ -81,6 +82,10 @@ class String(callbacks.Plugin):
             irc.reply(text.decode(encoding).encode('utf-8'))
         except LookupError:
             irc.errorInvalid('encoding', encoding)
+        except binascii.Error:
+            irc.errorInvalid('base64 string',
+                             s='Base64 strings must be a multiple of 4 in '
+                               'length, padded with \'=\' if necessary.')
     decode = wrap(decode, ['something', 'text'])
 
     def levenshtein(self, irc, msg, args, s1, s2):
