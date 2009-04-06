@@ -63,7 +63,7 @@ class String(callbacks.Plugin):
 
         Returns an encoded form of the given text; the valid encodings are
         available in the documentation of the Python codecs module:
-        <http://www.python.org/doc/lib/node127.html>.
+        <http://docs.python.org/library/codecs.html#standard-encodings>.
         """
         try:
             irc.reply(text.encode(encoding))
@@ -76,7 +76,7 @@ class String(callbacks.Plugin):
 
         Returns an un-encoded form of the given text; the valid encodings are
         available in the documentation of the Python codecs module:
-        <http://www.python.org/doc/lib/node127.html>.
+        <http://docs.python.org/library/codecs.html#standard-encodings>.
         """
         try:
             irc.reply(text.decode(encoding).encode('utf-8'))
