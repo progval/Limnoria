@@ -73,6 +73,10 @@ addConverter('factoid', getFactoid)
 addConverter('factoidId', getFactoidId)
 
 class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
+    def __init__(self, irc):
+        callbacks.Plugin.__init__(self, irc)
+        plugins.ChannelDBHandler.__init__(self)
+
     def makeDb(self, filename):
         if os.path.exists(filename):
             return sqlite.connect(filename)
