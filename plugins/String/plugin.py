@@ -66,7 +66,7 @@ class String(callbacks.Plugin):
         <http://docs.python.org/library/codecs.html#standard-encodings>.
         """
         try:
-            irc.reply(text.encode(encoding))
+            irc.reply(text.encode(encoding).rstrip('\n'))
         except LookupError:
             irc.errorInvalid('encoding', encoding)
     encode = wrap(encode, ['something', 'text'])
