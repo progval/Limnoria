@@ -279,12 +279,12 @@ class User(callbacks.Plugin):
 
             Adds the hostmask <hostmask> to the user specified by <name>.  The
             <password> may only be required if the user is not recognized by
-            hostmask.  If you include the <password> parameter, this message
-            must be sent to the bot privately (not on a channel).  <password>
-            is also not required if an owner user is giving the command on
-            behalf of some other user.  If <hostmask> is not given, it defaults
-            to your current hostmask.  If <name> is not given, it defaults to
-            your currently identified name.
+            hostmask.  <password> is also not required if an owner user is
+            giving the command on behalf of some other user.  If <hostmask> is
+            not given, it defaults to your current hostmask.  If <name> is not
+            given, it defaults to your currently identified name.  This message
+            must be sent to the bot privately (not on a channel) since it may
+            contain a password.
             """
             if not hostmask:
                 hostmask = msg.prefix
@@ -323,8 +323,8 @@ class User(callbacks.Plugin):
             except ValueError, e:
                 irc.error(str(e), Raise=True)
             irc.replySuccess()
-        add = wrap(add, [first('otherUser', 'user'), optional('something'),
-                         additional('something', '')])
+        add = wrap(add, ['private', first('otherUser', 'user'),
+                         optional('something'), additional('something', '')])
 
         def remove(self, irc, msg, args, user, hostmask, password):
             """<name> <hostmask> [<password>]
@@ -332,9 +332,9 @@ class User(callbacks.Plugin):
             Removes the hostmask <hostmask> from the record of the user
             specified by <name>.  If the hostmask given is 'all' then all
             hostmasks will be removed.  The <password> may only be required if
-            the user is not recognized by his hostmask.  If you include the
-            <password> parameter, this message must be sent to the bot
-            privately (not on a channel).
+            the user is not recognized by his hostmask.  This message must be
+            sent to the bot privately (not on a channel) since it may contain a
+            password.
             """
             if not user.checkPassword(password) and \
                not user.checkHostmask(msg.prefix):
