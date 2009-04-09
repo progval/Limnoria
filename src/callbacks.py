@@ -1309,8 +1309,10 @@ Privmsg = Plugin # Backwards compatibility.
 
 class PluginRegexp(Plugin):
     """Same as Plugin, except allows the user to also include regexp-based
-    callbacks.  All regexp-based callbacks must be specified in a set (or
-    list) attribute "regexps".
+    callbacks.  All regexp-based callbacks must be specified in the set (or
+    list) attribute "regexps", "addressedRegexps", or "unaddressedRegexps"
+    depending on whether they should always be triggered, triggered only when
+    the bot is addressed, or triggered only when the bot isn't addressed.
     """
     flags = re.I
     # 'regexps' methods are called whether the message is addressed or not.
