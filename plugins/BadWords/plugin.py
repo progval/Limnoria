@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -84,15 +85,16 @@ class BadWords(callbacks.Privmsg):
         if self.lastModified < self.words.lastModified:
             self.makeRegexp(self.words())
             self.lastModified = time.time()
-        
+
     def outFilter(self, irc, msg):
         if self.filtering and msg.command == 'PRIVMSG':
             self.updateRegexp()
             s = msg.args[1]
             if self.registryValue('stripFormatting'):
                 s = ircutils.stripFormatting(s)
-            s = self.regexp.sub(self.sub, s)
-            msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
+            t = self.regexp.sub(self.sub, s)
+            if t != s:
+                msg = ircmsgs.privmsg(msg.args[0], t, msg=msg)
         return msg
 
     def makeRegexp(self, iterable):
