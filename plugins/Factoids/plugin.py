@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -114,7 +115,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             return help(method,
                         doc=method._fake__doc__ % (s, s),
                         name=callbacks.formatCommand(command))
-        return super(Factoids, self).getCommandHelp(self, command)
+        return super(Factoids, self).getCommandHelp(command)
 
     def learn(self, irc, msg, args, channel, key, factoid):
         db = self.getDb(channel)
