@@ -152,13 +152,14 @@ class PluginDoc(object):
                 self.appendLine(help, indent)
             self.genConfig(v, indent)
 
-def genDoc(m):
+def genDoc(m, options):
     Plugin = PluginDoc(m)
     print 'Generating documentation for %s...' % Plugin.name
+    path = os.path.join(options.outputdir, '%s.stx' % Plugin.name)
     try:
-        fd = file('%s.stx' % Plugin.name, 'w')
+        fd = file(path, 'w')
     except EnvironmentError, e:
-        sys.stderr.write('Unable to open %s.stx for writing.' % Plugin.name)
+        sys.stderr.write('Unable to open %s for writing.' % path)
         sys.exit(-1)
     try:
         fd.write(Plugin.renderSTX())
@@ -176,6 +177,9 @@ if __name__ == '__main__':
     parser.add_option('-c', '--clean', action='store_true', default=False,
                       dest='clean', help='Cleans the various data/conf/logs '
                       'directories after generating the docs.')
+    parser.add_option('-o', '--output-dir', dest='outputDir', default='.',
+                      help='Specifies the directory in which to write the '
+                      'documentation for the plugin.')
     parser.add_option('--plugins-dir',
                       action='append', dest='pluginsDirs', default=[],
                       help='Looks in in the given directory for plugins and '
@@ -210,7 +214,7 @@ if __name__ == '__main__':
         plugins.add(pluginModule)
 
     for Plugin in plugins:
-        genDoc(Plugin)
+        genDoc(Plugin, options)
 
     if options.clean:
         shutil.rmtree(conf.supybot.directories.log())
