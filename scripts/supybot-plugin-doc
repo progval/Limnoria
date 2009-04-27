@@ -2,6 +2,7 @@
 
 ###
 # Copyright (c) 2005, Ali Afshar
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -59,7 +60,6 @@ import supybot.log as log
 import supybot.conf as conf
 conf.supybot.flush.setValue(False)
 
-import cgi
 import sys
 import textwrap
 
@@ -71,26 +71,14 @@ import supybot.registry as registry
 world.documenting = True
 
 class PluginDoc(object):
-    def __init__(self, mod, escape):
+    def __init__(self, mod):
         self.mod = mod
         self.inst = self.mod.Class(None)
         self.name = self.mod.Class.__name__
-        self.escape = escape
         self.lines = []
 
-    def appendLine(self, line, indent=0, escaped=False):
+    def appendLine(self, line, indent=0):
         line = line.strip()
-        if escaped and self.escape:
-            line = cgi.escape(line)
-        if self.escape:
-            sections = line.split("'")
-            slen = len(sections) - 1
-            # Don't want to escape characters inside of single-quoted strings
-            if slen and slen % 2 == 0:
-                for i in xrange(0, 2, slen):
-                    sections[i] = sections[i].replace('[', '&#91;')
-                    sections[i] = sections[i].replace(']', '&#93;')
-            line = "'".join(sections)
         indent = '  ' * indent
         lines = textwrap.wrap(line, 79,
                               initial_indent=indent,
@@ -104,20 +92,17 @@ class PluginDoc(object):
         self.appendLine('Purpose', 1)
         pdoc = getattr(self.mod, '__doc__',
                        'My author didn\'t give me a purpose.')
-        self.appendLine(pdoc, 2, escaped=True)
+        self.appendLine(pdoc, 2)
         cdoc = getattr(self.mod.Class, '__doc__', None)
         if cdoc is not None:
             self.appendLine('Usage', 1)
-            self.appendLine(cdoc, 2, escaped=True)
+            self.appendLine(cdoc, 2)
         commands = self.inst.listCommands()
         if len(commands):
             self.appendLine('Commands', 1)
             for command in commands:
                 log.debug('command: %s', command)
-                if self.escape:
-                    line = '* **%s** ' % command
-                else:
-                    line = '* %s ' % command
+                line = '* %s ' % command
                 command = command.split()
                 doc = self.inst.getCommandHelp(command)
                 if doc:
@@ -126,8 +111,8 @@ class PluginDoc(object):
                     args = args.split('(', 1)[1]
                     args = args[len(' '.join(command)):].strip()
                     help = help.split('--', 1)[1].strip()
-                    self.appendLine(line + args, 2, escaped=True)
-                    self.appendLine(help, 3, escaped=True)
+                    self.appendLine(line + args, 2)
+                    self.appendLine(help, 3)
                 else:
                     self.appendLine('No help associated with this command', 3)
         # now the config
@@ -162,17 +147,13 @@ class PluginDoc(object):
                     cv = 'is'
                 else:
                     cv = 'is not'
-                if self.escape:
-                    default = '**%s**' % default
                 self.appendLine('This config variable defaults to %s and %s '
                                 'channel specific.' % (default, cv), indent)
-                if self.escape:
-                    help = cgi.escape(help)
                 self.appendLine(help, indent)
             self.genConfig(v, indent)
 
-def genDoc(m, escape):
-    Plugin = PluginDoc(m, escape)
+def genDoc(m):
+    Plugin = PluginDoc(m)
     print 'Generating documentation for %s...' % Plugin.name
     try:
         fd = file('%s.stx' % Plugin.name, 'w')
@@ -195,10 +176,6 @@ if __name__ == '__main__':
     parser.add_option('-c', '--clean', action='store_true', default=False,
                       dest='clean', help='Cleans the various data/conf/logs '
                       'directories after generating the docs.')
-    parser.add_option('--no-escape',
-                      action='store_false', default=True, dest='escape',
-                      help='Disables escaping of html entities e.g., < as '
-                      '&lt;. This is useful for making offline documentation.')
     parser.add_option('--plugins-dir',
                       action='append', dest='pluginsDirs', default=[],
                       help='Looks in in the given directory for plugins and '
@@ -208,7 +185,6 @@ if __name__ == '__main__':
     # This must go before checking for args, of course.
     for pluginDir in options.pluginsDirs:
         for name in glob.glob(os.path.join(pluginDir, '*')):
-            #print '***', name
             if os.path.isdir(name):
                 args.append(name)
 
@@ -234,7 +210,7 @@ if __name__ == '__main__':
         plugins.add(pluginModule)
 
     for Plugin in plugins:
-        genDoc(Plugin, options.escape)
+        genDoc(Plugin)
 
     if options.clean:
         shutil.rmtree(conf.supybot.directories.log())
