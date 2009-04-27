@@ -116,7 +116,7 @@ if __name__ == '__main__':
         try:
             file(options.pidfile, 'r+')
         except EnvironmentError, e:
-            debug('pidfile (%s) is not writable: %s', options.pidfile, e)
+            debug('pidfile (%s) is not writable: %s' % (options.pidfile, e))
             sys.exit(-1)
         debug('Bot not found, starting.')
         home = os.environ['HOME']
