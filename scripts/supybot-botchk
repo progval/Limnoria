@@ -111,6 +111,13 @@ if __name__ == '__main__':
             debug('Pid %s is not the bot.' % pid)
 
     if not foundBot:
+        # First, we check if the pidfile is writable.  If not, supybot will just exit,
+        # so we go ahead and refuse to start it.
+        try:
+            file(options.pidfile, 'r+')
+        except EnvironmentError, e:
+            fatal('pidfile (%s) is not writable: %s', options.pidfile, e)
+            sys.exit(-1)
         debug('Bot not found, starting.')
         home = os.environ['HOME']
         inst = popen2.Popen4('sh')
