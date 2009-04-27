@@ -105,6 +105,12 @@ class NoSuitableDatabase(Exception):
                       self.suitable)
 
 def DB(filename, types):
+    # We don't care if any of the DBs are actually available when
+    # documenting, so just fake that we found something suitable
+    if world.documenting:
+        def junk(*args, **kwargs):
+            pass
+        return junk
     filename = conf.supybot.directories.data.dirize(filename)
     def MakeDB(*args, **kwargs):
         for type in conf.supybot.databases():
