@@ -1200,8 +1200,10 @@ class Commands(BasePlugin):
     def getCommandHelp(self, command):
         method = self.getCommandMethod(command)
         help = getHelp
-        if conf.get(conf.supybot.reply.showSimpleSyntax, dynamic.msg.args[0]):
-            help = getSyntax
+        m = dynamic.msg
+        if m is not None:
+            if conf.get(conf.supybot.reply.showSimpleSyntax, m.args[0]):
+                help = getSyntax
         if hasattr(method, '__doc__'):
             return help(method, name=formatCommand(command))
         else:
