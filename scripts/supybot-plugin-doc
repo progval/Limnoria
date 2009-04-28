@@ -162,7 +162,7 @@ class PluginDoc(object):
 def genDoc(m, options):
     Plugin = PluginDoc(m)
     print 'Generating documentation for %s...' % Plugin.name
-    path = os.path.join(options.outputdir, '%s.stx' % Plugin.name)
+    path = os.path.join(options.outputDir, '%s.stx' % Plugin.name)
     try:
         fd = file(path, 'w')
     except EnvironmentError, e:
