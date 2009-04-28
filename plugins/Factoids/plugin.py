@@ -107,10 +107,12 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def getCommandHelp(self, command):
         method = self.getCommandMethod(command)
         if method.im_func.func_name == 'learn':
-            s = self.registryValue('learnSeparator', dynamic.msg.args[0])
+            chan = None
+            if dynamic.msg is not None:
+                chan = dynamic.msg.args[0]
+            s = self.registryValue('learnSeparator', chan)
             help = callbacks.getHelp
-            if conf.get(conf.supybot.reply.showSimpleSyntax,
-                        dynamic.msg.args[0]):
+            if conf.get(conf.supybot.reply.showSimpleSyntax, chan):
                 help = callbacks.getSyntax
             return help(method,
                         doc=method._fake__doc__ % (s, s),
