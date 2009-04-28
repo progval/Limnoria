@@ -31,17 +31,23 @@
 ###
 
 import os
+import sys
 import shutil
 
 import supybot
+
+def error(s):
+    sys.stderr.write('%s\n' % s)
+    sys.exit(-1)
 
 # We need to do this before we import conf.
 if not os.path.exists('doc-conf'):
     os.mkdir('doc-conf')
 
 registryFilename = os.path.join('doc-conf', 'doc.conf')
-fd = file(registryFilename, 'w')
-fd.write("""
+try:
+    fd = file(registryFilename, 'w')
+    fd.write("""
 supybot.directories.data: doc-data
 supybot.directories.conf: doc-conf
 supybot.directories.log: doc-logs
@@ -51,7 +57,9 @@ supybot.log.format: %(levelname)s %(message)s
 supybot.log.plugins.individualLogfiles: False
 supybot.databases: sqlite anydbm cdb flat pickle
 """)
-fd.close()
+    fd.close()
+except EnvironmentError, e:
+    error('Unable to open %s for writing.' % registryFilename)
 
 import supybot.registry as registry
 registry.open(registryFilename)
@@ -60,7 +68,6 @@ import supybot.log as log
 import supybot.conf as conf
 conf.supybot.flush.setValue(False)
 
-import sys
 import textwrap
 
 import supybot.utils as utils
@@ -159,8 +166,7 @@ def genDoc(m, options):
     try:
         fd = file(path, 'w')
     except EnvironmentError, e:
-        sys.stderr.write('Unable to open %s for writing.' % path)
-        sys.exit(-1)
+        error('Unable to open %s for writing.' % path)
     try:
         fd.write(Plugin.renderSTX())
     finally:
@@ -207,10 +213,10 @@ if __name__ == '__main__':
         try:
             pluginModule = plugin.loadPluginModule(pluginName)
         except ImportError, e:
-            sys.stderr.write('Failed to load plugin %s: %s\n' % (pluginName,e))
-            sys.stderr.write('(pluginDirs: %s)' %
-                             conf.supybot.directories.plugins())
-            sys.exit(-1)
+            s = 'Failed to load plugin %s: %s\n' \
+                '%s(pluginDirs: %s)' % (pluginName, e, s,
+                                        conf.supybot.directories.plugins())
+            error(s)
         plugins.add(pluginModule)
 
     for Plugin in plugins:
