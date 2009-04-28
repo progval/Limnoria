@@ -90,12 +90,12 @@ name and password.  Now that you're identified, you can do anything that
 requires any privilege: that includes all the commands in the Owner and Admin
 plugins, which you may want to take a look at (using the list and help
 commands, of course).  One command in particular that you might want to use
-(it's from the User plugin) is the 'addhostmask' command: it lets you add a
+(it's from the User plugin) is the 'hostmask add' command: it lets you add a
 hostmask to your user record so the bot recognizes you by your hostmask instead
 of requiring you always to identify with it before it recognizes you.  Use the
 'help' command to see how this command works.  Here's how I often use it::
 
-    addhostmask myuser [hostmask] mypassword
+    hostmask add myuser [hostmask] mypassword
 
   You may not have seen that '[hostmask]' syntax before.  Supybot allows nested
 commands, which means that any command's output can be nested as an argument to
