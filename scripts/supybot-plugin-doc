@@ -162,13 +162,18 @@ class PluginDoc(object):
 def genDoc(m, options):
     Plugin = PluginDoc(m)
     print 'Generating documentation for %s...' % Plugin.name
-    path = os.path.join(options.outputDir, '%s.stx' % Plugin.name)
+    path = os.path.join(options.outputDir, '%s.%s' % (Plugin.name,
+                                                      options.format))
     try:
         fd = file(path, 'w')
     except EnvironmentError, e:
         error('Unable to open %s for writing.' % path)
+    f = getattr(Plugin, 'render%s' % options.format.upper(), None)
+    if f is None:
+        fd.close()
+        error('Unknown render format: `%s\'' % options.format)
     try:
-        fd.write(Plugin.renderSTX())
+        fd.write(f())
     finally:
         fd.close()
 
@@ -186,6 +191,9 @@ if __name__ == '__main__':
     parser.add_option('-o', '--output-dir', dest='outputDir', default='.',
                       help='Specifies the directory in which to write the '
                       'documentation for the plugin.')
+    parser.add_option('-f', '--format', dest='format', choices=['rst', 'stx'],
+                      default='stx', help='Specifies which output format to '
+                      'use.')
     parser.add_option('--plugins-dir',
                       action='append', dest='pluginsDirs', default=[],
                       help='Looks in in the given directory for plugins and '
