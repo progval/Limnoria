@@ -82,6 +82,7 @@ class PluginDoc(object):
         self.mod = mod
         self.inst = self.mod.Class(None)
         self.name = self.mod.Class.__name__
+        self.appendExtraBlankLine = False
         self.lines = []
 
     def appendLine(self, line, indent=0):
@@ -91,9 +92,62 @@ class PluginDoc(object):
                               initial_indent=indent,
                               subsequent_indent=indent)
         self.lines.extend(lines)
+        if self.appendExtraBlankLine:
+            self.lines.append('')
+
+    def renderRST(self):
+        self.appendExtraBlankLine = False
+        s = 'Documentation for the %s plugin for Supybot' % self.name
+        self.appendLine(s)
+        self.appendLine('=' * len(s))
         self.lines.append('')
+        self.appendLine('Purpose')
+        self.appendLine('-------')
+        pdoc = getattr(self.mod, '__doc__',
+                       'My author didn\'t give me a purpose.')
+        self.appendLine(pdoc)
+        self.lines.append('')
+        cdoc = getattr(self.mod.Class, '__doc__', None)
+        if cdoc is not None:
+            self.appendLine('Usage')
+            self.appendLine('-----')
+            self.appendLine(cdoc)
+            self.lines.append('')
+        commands = self.inst.listCommands()
+        if len(commands):
+            self.appendLine('Commands')
+            self.appendLine('--------')
+            self.lines.append('')
+            for command in commands:
+                log.debug('command: %s', command)
+                line = '%s ' % command
+                command = command.split()
+                doc = self.inst.getCommandHelp(command)
+                if doc:
+                    doc = doc.replace('\x02', '')
+                    (args, help) = doc.split(')', 1)
+                    args = args.split('(', 1)[1]
+                    args = args[len(' '.join(command)):].strip()
+                    help = help.split('--', 1)[1].strip()
+                    self.appendLine(line + args)
+                    self.appendLine(help, 1)
+                else:
+                    self.appendLine('No help associated with this command')
+        self.lines.append('')
+        # now the config
+        self.appendLine('Configuration')
+        self.appendLine('-------------')
+        try:
+            confs = conf.supybot.plugins.get(self.name)
+        except registry.NonExistentRegistryEntry:
+            log.info('No configuration for plugin %s', plugin)
+            self.appendLine('No help configuration with this plugin')
+        else:
+            self.genConfig(confs, 2)
+        return '\n'.join(self.lines) + '\n'
 
     def renderSTX(self):
+        self.appendExtraBlankLine = True
         self.appendLine('Documentation for the %s plugin for '
                         'Supybot' % self.name)
         self.appendLine('Purpose', 1)
