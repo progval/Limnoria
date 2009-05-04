@@ -259,8 +259,13 @@ optional, the default value is shown.
     sanity-checking to make sure the channel exists on the current IRC network.
 
 "inChannel"
-    Requires that the command be called from within any channel that the bot is
-    currently in.
+    Requires that the command be called from within any channel that the bot
+    is currently in or with one of those channels used as an argument to the
+    command.
+
+"onlyInChannel"
+    Requires that the command be called from within any channel that the bot
+    is currently in.
 
 "nickInChannel"
     Requires that the argument be a nick that is in the current channel, and
