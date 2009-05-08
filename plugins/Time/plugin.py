@@ -30,12 +30,12 @@
 import time
 TIME = time # For later use.
 
-import dateutil.parser
-
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
+
+parser = utils.python.universalImport('dateutil.parser', 'local.dateutil.parser')
 
 def parse(s):
     todo = []
@@ -47,7 +47,7 @@ def parse(s):
     if 'next week' in s:
         todo.append(lambda i: i + 86400*7)
         s = s.replace('next week', '')
-    i = int(time.mktime(dateutil.parser.parse(s, fuzzy=True).timetuple()))
+    i = int(time.mktime(parser.parse(s, fuzzy=True).timetuple()))
     for f in todo:
         i = f(i)
     return i

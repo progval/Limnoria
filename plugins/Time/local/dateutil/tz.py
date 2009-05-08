@@ -11,9 +11,9 @@ import datetime
 import struct
 import time
 
-relativedelta = None
-parser = None
-rrule = None
+import relativedelta
+import parser
+rrule = None # XXX Where does this come from?  Why isn't it here?
 
 __all__ = ["tzutc", "tzoffset", "tzlocal", "tzfile",
            "tzrange", "tzstr", "tzical", "gettz"]
@@ -443,9 +443,6 @@ class tzrange(datetime.tzinfo):
     def __init__(self, stdabbr, stdoffset=None,
                  dstabbr=None, dstoffset=None,
                  start=None, end=None):
-        global relativedelta
-        if not relativedelta:
-            from dateutil import relativedelta
         self._std_abbr = stdabbr
         self._dst_abbr = dstabbr
         if stdoffset is not None:
@@ -519,9 +516,6 @@ class tzrange(datetime.tzinfo):
 class tzstr(tzrange):
     
     def __init__(self, s):
-        global parser
-        if not parser:
-            from dateutil import parser
         self._s = s
 
         res = parser._parsetz(s)
@@ -654,6 +648,7 @@ class _tzicalvtz(datetime.tzinfo):
 
 class tzical:
     def __init__(self, fileobj):
+        # XXX This should be fixed, but doesn't seem to be in our dateutil.
         global rrule
         if not rrule:
             from dateutil import rrule
