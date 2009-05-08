@@ -117,7 +117,6 @@ class PluginDoc(object):
         if len(commands):
             self.appendLine('Commands')
             self.appendLine('--------')
-            self.lines.append('')
             for command in commands:
                 log.debug('command: %s', command)
                 line = '%s ' % command
@@ -133,17 +132,24 @@ class PluginDoc(object):
                     self.appendLine(help, 1)
                 else:
                     self.appendLine('No help associated with this command')
-        self.lines.append('')
+                self.lines.append('')
         # now the config
-        self.appendLine('Configuration')
-        self.appendLine('-------------')
         try:
             confs = conf.supybot.plugins.get(self.name)
+            self.appendLine('Configuration')
+            self.appendLine('-------------')
         except registry.NonExistentRegistryEntry:
             log.info('No configuration for plugin %s', plugin)
-            self.appendLine('No help configuration with this plugin')
+            self.appendLine('No configuration for this plugin')
         else:
-            self.genConfig(confs, 2)
+            for confValues in self.genConfig(confs, 0):
+                (name, isChan, help, default, indent) = confValues
+                self.appendLine('%s' % name, indent - 1)
+                self.appendLine('This config variable defaults to %s and %s '
+                                'channel specific.' % (default,isChan), indent)
+                self.lines.append('')
+                self.appendLine(help, indent)
+                self.lines.append('')
         return '\n'.join(self.lines) + '\n'
 
     def renderSTX(self):
@@ -177,14 +183,19 @@ class PluginDoc(object):
                 else:
                     self.appendLine('No help associated with this command', 3)
         # now the config
-        self.appendLine('Configuration', 1)
         try:
             confs = conf.supybot.plugins.get(self.name)
+            self.appendLine('Configuration', 1)
         except registry.NonExistentRegistryEntry:
             log.info('No configuration for plugin %s', plugin)
-            self.appendLine('No help configuration with this plugin', 2)
+            self.appendLine('No configuration for this plugin', 2)
         else:
-            self.genConfig(confs, 2)
+            for confValues in self.genConfig(confs, 2):
+                (name, isChan, help, default, indent) = confValues
+                self.appendLine('* %s' % name, indent - 1)
+                self.appendLine('This config variable defaults to %s and %s '
+                                'channel specific.' % (default,isChan), indent)
+                self.appendLine(help, indent)
         return '\n'.join(self.lines) + '\n'
 
     def genConfig(self, item, origindent):
@@ -192,8 +203,7 @@ class PluginDoc(object):
         if not confVars:
             return
         for (c, v) in confVars:
-            name = '* %s' % v._name
-            self.appendLine(name, origindent)
+            name = v._name
             indent = origindent + 1
             try:
                 default = str(v)
@@ -208,10 +218,9 @@ class PluginDoc(object):
                     cv = 'is'
                 else:
                     cv = 'is not'
-                self.appendLine('This config variable defaults to %s and %s '
-                                'channel specific.' % (default, cv), indent)
-                self.appendLine(help, indent)
-            self.genConfig(v, indent)
+                yield (name, cv, help, default, indent)
+            for confValues in self.genConfig(v, indent):
+                yield confValues
 
 def genDoc(m, options):
     Plugin = PluginDoc(m)
