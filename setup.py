@@ -94,7 +94,8 @@ packages = ['supybot',
              'supybot.plugins.Google.local',
              'supybot.plugins.Google.local.simplejson',
              'supybot.plugins.RSS.local',
-             'supybot.plugins.Time.dateutil',
+             'supybot.plugins.Time.local',
+             'supybot.plugins.Time.local.dateutil',
             ]
 
 package_dir = {'supybot': 'src',
@@ -107,7 +108,9 @@ package_dir = {'supybot': 'src',
                'supybot.plugins.Dict.local': 'plugins/Dict/local',
                'supybot.plugins.Math.local': 'plugins/Math/local',
                'supybot.plugins.RSS.local': 'plugins/RSS/local',
-               'supybot.plugins.Time.dateutil': 'plugins/Time/dateutil',
+               'supybot.plugins.Time.local': 'plugins/Time/local',
+               'supybot.plugins.Time.local.dateutil':
+               'plugins/Time/local/dateutil',
               }
 
 for plugin in plugins:
