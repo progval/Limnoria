@@ -1,25 +1,30 @@
 # -*- coding:iso-8859-1 -*-
-# Gotten from: http://moin.conectiva.com.br/DateUtil
-
 """
-Copyright (c) 2003  Gustavo Niemeyer <niemeyer@conectiva.com>
+Copyright (c) 2003-2007  Gustavo Niemeyer <gustavo@niemeyer.net>
 
 This module offers extensions to the standard python 2.3+
 datetime module.
 """
-__author__ = "Gustavo Niemeyer <niemeyer@conectiva.com>"
+__author__ = "Gustavo Niemeyer <gustavo@niemeyer.net>"
 __license__ = "PSF License"
 
-import os.path
-import string
-import sys
-import time
-
 import datetime
+import string
+import time
+import sys
+import os
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 import relativedelta
 import tz
 
+
 __all__ = ["parse", "parserinfo"]
+
 
 # Some pointers:
 #
@@ -30,12 +35,9 @@ __all__ = ["parse", "parserinfo"]
 # http://search.cpan.org/author/MUIR/Time-modules-2003.0211/lib/Time/ParseDate.pm
 # http://stein.cshl.org/jade/distrib/docs/java.text.SimpleDateFormat.html
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
 
-class _timelex:
+class _timelex(object):
+
     def __init__(self, instream):
         if isinstance(instream, basestring):
             instream = StringIO(instream)
@@ -64,6 +66,8 @@ class _timelex:
                 nextchar = self.charstack.pop(0)
             else:
                 nextchar = self.instream.read(1)
+                while nextchar == '\x00':
+                    nextchar = self.instream.read(1)
             if not nextchar:
                 self.eof = True
                 break
@@ -139,6 +143,7 @@ class _timelex:
         return list(cls(s))
     split = classmethod(split)
 
+
 class _resultbase(object):
 
     def __init__(self):
@@ -156,7 +161,8 @@ class _resultbase(object):
     def __repr__(self):
         return self._repr(self.__class__.__name__)
 
-class parserinfo:
+
+class parserinfo(object):
 
     # m from a.m/p.m, t from ISO T separator
     JUMP = [" ", ".", ",", ";", "-", "/", "'",
@@ -204,7 +210,7 @@ class parserinfo:
         self.yearfirst = yearfirst
 
         self._year = time.localtime().tm_year
-        self._century = self._year/100*100
+        self._century = self._year//100*100
 
     def _convert(self, lst):
         dct = {}
@@ -281,10 +287,10 @@ class parserinfo:
         return True
 
 
-class parser:
+class parser(object):
 
-    def __init__(self, parserinfo=parserinfo):
-        self.info = parserinfo()
+    def __init__(self, info=None):
+        self.info = info or parserinfo()
 
     def parse(self, timestr, default=None,
                     ignoretz=False, tzinfos=None,
@@ -355,15 +361,18 @@ class parser:
 
                 # Check if it's a number
                 try:
-                    value = float(l[i])
+                    value_repr = l[i]
+                    value = float(value_repr)
                 except ValueError:
                     value = None
+
                 if value is not None:
                     # Token is a number
                     len_li = len(l[i])
                     i += 1
                     if (len(ymd) == 3 and len_li in (2, 4)
-                        and (i >= len_l or l[i] != ':')):
+                        and (i >= len_l or (l[i] != ':' and
+                                            info.hms(l[i]) is None))):
                         # 19990101T23[59]
                         s = l[i-1]
                         res.hour = int(s[:2])
@@ -380,10 +389,7 @@ class parser:
                             # 19990101T235959[.59]
                             res.hour = int(s[:2])
                             res.minute = int(s[2:4])
-                            value = float(s[4:])
-                            res.second = int(value)
-                            if value%1:
-                                res.microsecond = int(1000000*(value%1))
+                            res.second, res.microsecond = _parsems(s[4:])
                     elif len_li == 8:
                         # YYYYMMDD
                         s = l[i-1]
@@ -417,15 +423,15 @@ class parser:
                                 if value%1:
                                     res.second = int(60*(value%1))
                             elif idx == 2:
-                                res.second = int(value)
-                                if value%1:
-                                    res.microsecond = int(1000000*(value%1))
+                                res.second, res.microsecond = \
+                                    _parsems(value_repr)
                             i += 1
                             if i >= len_l or idx == 2:
                                 break
                             # 12h00
                             try:
-                                value = float(l[i])
+                                value_repr = l[i]
+                                value = float(value_repr)
                             except ValueError:
                                 break
                             else:
@@ -445,10 +451,7 @@ class parser:
                             res.second = int(60*(value%1))
                         i += 1
                         if i < len_l and l[i] == ':':
-                            value = float(l[i+1])
-                            res.second = int(value)
-                            if value%1:
-                                res.microsecond = int(1000000*(value%1))
+                            res.second, res.microsecond = _parsems(l[i+1])
                             i += 2
                     elif i < len_l and l[i] in ('-', '/', '.'):
                         sep = l[i]
@@ -693,7 +696,8 @@ def parse(timestr, parserinfo=None, **kwargs):
     else:
         return DEFAULTPARSER.parse(timestr, **kwargs)
 
-class _tzparser:
+
+class _tzparser(object):
 
     class _result(_resultbase):
 
@@ -737,6 +741,8 @@ class _tzparser:
                     if (i < len_l and
                         (l[i] in ('+', '-') or l[i][0] in "0123456789")):
                         if l[i] in ('+', '-'):
+                            # Yes, that's right.  See the TZ variable
+                            # documentation.
                             signal = (1,-1)[l[i] == '+']
                             i += 1
                         else:
@@ -859,11 +865,22 @@ class _tzparser:
 
         except (IndexError, ValueError, AssertionError):
             return None
-
+        
         return res
+
 
 DEFAULTTZPARSER = _tzparser()
 def _parsetz(tzstr):
     return DEFAULTTZPARSER.parse(tzstr)
+
+
+def _parsems(value):
+    """Parse a I[.F] seconds value into (seconds, microseconds)."""
+    if "." not in value:
+        return int(value), 0
+    else:
+        i, f = value.split(".")
+        return int(i), int(f.ljust(6, "0")[:6])
+
 
 # vim:ts=4:sw=4:et

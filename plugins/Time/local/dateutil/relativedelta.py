@@ -1,10 +1,10 @@
 """
-Copyright (c) 2003  Gustavo Niemeyer <niemeyer@conectiva.com>
+Copyright (c) 2003-2007  Gustavo Niemeyer <gustavo@niemeyer.net>
 
 This module offers extensions to the standard python 2.3+
 datetime module.
 """
-__author__ = "Gustavo Niemeyer <niemeyer@conectiva.com>"
+__author__ = "Gustavo Niemeyer <gustavo@niemeyer.net>"
 __license__ = "PSF License"
 
 import datetime
@@ -15,7 +15,7 @@ __all__ = ["relativedelta", "MO", "TU", "WE", "TH", "FR", "SA", "SU"]
 class weekday(object):
     __slots__ = ["weekday", "n"]
 
-    def __init__(self, weekday, n=0):
+    def __init__(self, weekday, n=None):
         self.weekday = weekday
         self.n = n
 
@@ -201,27 +201,27 @@ Here is the behavior of operations with relativedelta:
 
     def _fix(self):
         if abs(self.microseconds) > 999999:
-            s = self.microseconds/abs(self.microseconds)
+            s = self.microseconds//abs(self.microseconds)
             div, mod = divmod(self.microseconds*s, 1000000)
             self.microseconds = mod*s
             self.seconds += div*s
         if abs(self.seconds) > 59:
-            s = self.seconds/abs(self.seconds)
+            s = self.seconds//abs(self.seconds)
             div, mod = divmod(self.seconds*s, 60)
             self.seconds = mod*s
             self.minutes += div*s
         if abs(self.minutes) > 59:
-            s = self.minutes/abs(self.minutes)
+            s = self.minutes//abs(self.minutes)
             div, mod = divmod(self.minutes*s, 60)
             self.minutes = mod*s
             self.hours += div*s
         if abs(self.hours) > 23:
-            s = self.hours/abs(self.hours)
+            s = self.hours//abs(self.hours)
             div, mod = divmod(self.hours*s, 24)
             self.hours = mod*s
             self.days += div*s
         if abs(self.months) > 11:
-            s = self.months/abs(self.months)
+            s = self.months//abs(self.months)
             div, mod = divmod(self.months*s, 12)
             self.months = mod*s
             self.years += div*s
@@ -235,7 +235,7 @@ Here is the behavior of operations with relativedelta:
     def _set_months(self, months):
         self.months = months
         if abs(self.months) > 11:
-            s = self.months/abs(self.months)
+            s = self.months//abs(self.months)
             div, mod = divmod(self.months*s, 12)
             self.months = mod*s
             self.years = div*s
@@ -392,7 +392,7 @@ Here is the behavior of operations with relativedelta:
             if self.weekday.weekday != other.weekday.weekday:
                 return False
             n1, n2 = self.weekday.n, other.weekday.n
-            if n1 != n2 and not (n1 in (0, 1) and n2 in (0, 1)):
+            if n1 != n2 and not ((not n1 or n1 == 1) and (not n2 or n2 == 1)):
                 return False
         return (self.years == other.years and
                 self.months == other.months and
