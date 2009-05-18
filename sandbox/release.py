@@ -105,7 +105,7 @@ if __name__ == '__main__':
         sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % \
              (v + '+git', fn)
         system(sh, 'Error changing version in %s' % fn)
-    system('git commit %s -m \'Updated to %s.\' %s'
+    system('git commit %s -m \'Updated to %s+git.\' %s'
            % (sign, v, ' '.join(versionFiles)))
 
     if not dryrun:
