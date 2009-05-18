@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tascii supybot-plugin-doc.1
 .\"
-.TH SUPYBOT-PLUGIN-DOC 1 "APRIL 2005"
+.TH SUPYBOT-PLUGIN-DOC 1 "May 2009"
 .SH NAME
 supybot-plugin-doc \- Generates the documentation for a Supybot plugin
 .SH SYNOPSIS
@@ -9,7 +9,8 @@ supybot-plugin-doc \- Generates the documentation for a Supybot plugin
 .RI [ options ]
 .SH DESCRIPTION
 .B supybot-plugin-doc
-is used to generate documentation (STX format) for a
+is used to generate documentation (StructuredText or reStructuredText format)
+for a
 .IR supybot (1)
 plugin.
 .SH OPTIONS
@@ -20,12 +21,14 @@ Show version of program.
 .BR \-h ", " \-\^\-help
 Show summary of options.
 .TP
-.BI \-c ", " \-\^\-clean
+.BR \-c ", " \-\^\-clean
 Clean the various data/conf/log directories after generating the docs.
 .TP
-.BR \-\^\-no\-escape
-Disables escaping of html entities e.g., < as &lt;.  This is useful for making
-documentation that will not be rendered as STX on a website.
+.BR \-o ", " \-\^\-output\-dir= \fIOUTPUTDIR
+Specifies the directory in which to write the documentation for the plugin.
+.TP
+.BR \-f ", " \-\^\-format= \fIFORMAT
+Specifies which output format to use.  Choices are 'rst' or 'stx'.
 .TP
 .BI \-\^\-plugins\-dir= PLUGINSDIRS
 Looks in the given directory for plugins and generates documentation for all of
