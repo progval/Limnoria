@@ -55,6 +55,7 @@ import optparse
 
 import supybot.ansi as ansi
 import supybot.utils as utils
+import supybot.plugin as plugin
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 
@@ -254,7 +255,7 @@ def main():
         somewhere else.""")
         pluginDirs = conf.supybot.directories.plugins()
         output("""Currently, the bot knows about the following directories:""")
-        output(format('%L', pluginDirs))
+        output(format('%L', pluginDirs + [plugin._pluginsDir]))
         while yn('Would you like to add another plugin directory?  '
                  'Adding a local plugin directory is good style.',
                  default=True):
@@ -451,7 +452,7 @@ def main():
         else:
             conf.registerPlugin(module.__name__, currentValue=True)
 
-    plugins = getPlugins(pluginDirs)
+    plugins = getPlugins(pluginDirs + [plugin._pluginsDir])
     for s in ('Admin', 'User', 'Channel', 'Misc', 'Config'):
         m = loadPlugin(s)
         if m is not None:
