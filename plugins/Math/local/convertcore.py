@@ -3,29 +3,29 @@
 # formatted to fit your irc bot.
 #
 # The original version is a nifty PyQt application written by Douglas Bell,
-# available at  http://www.bellz.org/convertall/.
+# available at  http://convertall.bellz.org/
 #
 # Below is the original copyright. Doug Bell rocks.
 # The hijacker is Keith Jones, and he has no bomb in his shoe.
 #
 #****************************************************************************
 
-#****************************************************************************
-# convertcore.py, provides non-GUI base classes for data
-#
-# ConvertAll, a units conversion program
-# Copyright (C) 2002, Douglas W. Bell
-#
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the GNU General Public License, Version 2.  This program is
-# distributed in the hope that it will be useful, but WITTHOUT ANY WARRANTY.
-#*****************************************************************************
-
 import re, copy, sys, os.path, StringIO
 
 import supybot.conf as conf
 import supybot.registry as registry
 
+unitData = \
+"""
+#*****************************************************************************
+# units.dat, the units data file, version 0.3.1
+#
+# ConvertAll, a units conversion program
+# Copyright (C) 2005, Douglas W. Bell
+#
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the GNU General Public License, Version 2.  This program is
+# distributed in the hope that it will be useful, but WITTHOUT ANY WARRANTY.
 #*****************************************************************************
 #
 # Units are defined by an optional quantity and an equivalent unit or unit
@@ -44,8 +44,8 @@ import supybot.registry as registry
 # followed by either equations or equivalency lists for the definition.
 # For equations, two are given, separated by a ';'.  Both are functions of
 # "x", the first going from the unit to the equivalent unit and the second
-# one in reverse.  Any valid Python expression returning a float (including
-# the functions in the math module) should work.  The equivalency list is a
+# one in reverse.  Any valid Python expression returning a float (including 
+# the functions in the math module) should work.  The equivalency list is a 
 # python list of tuples giving points for linear interpolation.
 #
 # All units must reduce to primitive units, which are indicated by an '!'
@@ -55,8 +55,6 @@ import supybot.registry as registry
 #
 ##############################################################################
 
-unitData = \
-"""
 #
 # mass units
 #
@@ -77,6 +75,8 @@ tonne             = 1000 kg            # # metric
 metric ton        = tonne
 megagram          = tonne
 kilotonne         = 1000 tonne         # # metric
+gigagram          = 1e9 gram
+teragram          = 1e12 gram
 carat             = 0.2 gram
 ct                = carat              # carat
 amu               = 1.66053873e-27 kg  # atomic mass
@@ -87,6 +87,10 @@ lbm               = pound              # pound
 ounce             = 1/16.0 pound
 oz                = ounce              # ounce
 lid               = ounce              # # drug slang
+pound troy        = 5760 grain
+lb troy           = pound troy         # pound troy
+ounce troy        = 1/12.0 lb troy
+oz troy           = ounce troy         # ounce troy
 ton               = 2000 lb            # # non-metric
 kiloton           = 1000 ton           # # non-metric
 slug              = lbf*s^2/ft
@@ -117,7 +121,6 @@ kilometer            = km
 megameter            = 1000 km
 angstrom             = 1e-10 m
 fermi                = 1e-15 m        # # nuclear sizes
-barn                 = 1e-24 m        # # particle physics
 inch                 = 2.54 cm
 in                   = inch           # inch
 inches               = inch
@@ -145,6 +148,7 @@ pica                 = 12 point
 caliber              = 0.01 inch      # # bullet sizes
 football field       = 100 yd
 marathon             = 46145 yd
+mil Swedish          = 10 km
 au                   = 1.49597870691e11 m   # astronomical unit
 astronomical unit    = au
 light year           = 365.25 light speed * day
@@ -302,10 +306,13 @@ T              = tesla          # tesla
 # molecular units
 #
 [molecular qty]
-mol          = !         # mole
-mole         = mol
+mol          = !           # mole       # gram mole
+mole         = mol         #            # gram mole
+gram mole    = mol
 kilomole     = 1000 mol
-kmol         = kilomole  # kilomole
+kmol         = kilomole    # kilomole
+pound mole   = mol*lbm/gram
+lbmol        = pound mole  # pound mole
 [size of a mol]
 avogadro     = gram/amu*mol
 
@@ -371,35 +378,47 @@ hemisphere = 1/2.0 sphere
 # information units
 #
 [data]
-bit       = !
-kilobit   = 1000 bit   #           # based on power of 10
-byte      = 8 bit
-B         = byte       # byte
-kilobyte  = 1000 byte  #           # based on power of 2
-kB        = kilobyte   # kilobyte  # based on power of 2
-megabyte  = 1000 kB    #           # based on power of 2
-MB        = megabyte   # megabyte  # based on power of 2
-gigabyte  = 1000 MB    #           # based on power of 2
-GB        = gigabyte   # gigabyte  # based on power of 2
-terabyte  = 1000 GB    #           # based on power of 2
-TB        = terabyte   # terabyte  # based on power of 2
-petabyte  = 1000 TB    #           # based on power of 2
-PB        = petabyte   # petabyte  # based on power of 2
+bit              = !
+kilobit          = 1000 bit          #                  # based on power of 10
+megabit          = 1000 kilobit      #                  # based on power of 10
+byte             = 8 bit
+B                = byte              # byte
+kilobyte         = 1024 byte         #                  # based on power of 2
+kB               = kilobyte          # kilobyte         # based on power of 2
+megabyte         = 1024 kB           #                  # based on power of 2
+MB               = megabyte          # megabyte         # based on power of 2
+gigabyte         = 1024 MB           #                  # based on power of 2
+GB               = gigabyte          # gigabyte         # based on power of 2
+terabyte         = 1024 GB           #                  # based on power of 2
+TB               = terabyte          # terabyte         # based on power of 2
+petabyte         = 1024 TB           #                  # based on power of 2
+PB               = petabyte          # petabyte         # based on power of 2
 
-kibibyte  = 1024 byte
-KiB       = kibibyte   # kibibyte
-mebibyte  = 1024 KiB
-MiB       = mebibyte   # mebibyte
-gibibyte  = 1024 MiB
-GiB       = gibibyte   # gibibyte
-tebibyte  = 1024 GiB
-TiB       = tebibyte   # tebibyte
-pebibyte  = 1024 TiB
-PiB       = pebibyte   # pebibyte
+kilobyte IEC std = 1000 byte         #                  # based on power of 10
+kB IEC std       = kilobyte IEC std  # kilobyte         # based on power of 10
+megabyte IEC std = 1000 kB IEC std   #                  # based on power of 10
+MB IEC std       = megabyte IEC std  # megabyte         # based on power of 10
+gigabyte IEC std = 1000 MB IEC std   #                  # based on power of 10
+GB IEC std       = gigabyte IEC std  # gigabyte         # based on power of 10
+terabyte IEC std = 1000 GB IEC std   #                  # based on power of 10
+TB IEC std       = terabyte IEC std  # terabyte         # based on power of 10
+petabyte IEC std = 1000 TB IEC std   #                  # based on power of 10
+PB IEC std       = petabyte IEC std  # petabyte         # based on power of 10
+
+kibibyte         = 1024 byte
+KiB              = kibibyte          # kibibyte
+mebibyte         = 1024 KiB
+MiB              = mebibyte          # mebibyte
+gibibyte         = 1024 MiB
+GiB              = gibibyte          # gibibyte
+tebibyte         = 1024 GiB
+TiB              = tebibyte          # tebibyte
+pebibyte         = 1024 TiB
+PiB              = pebibyte          # pebibyte
 
 [data transfer]
-bps       = bit/sec    # bits / second
-kbps      = 1000 bps   # kilobits / sec.  # based on power of 10
+bps              = bit/sec           # bits / second
+kbps             = 1000 bps          # kilobits / sec.  # based on power of 10
 
 
 #
@@ -463,61 +482,78 @@ ozf            = ounce force     # ounce force
 # area units
 #
 [area]
-square meter  = m^2
+barn          = 1e-28 m^2       # # particle physics
 are           = 100 m^2
+decare        = 10 are
+dekare        = 10 are
 hectare       = 100 are
 acre          = 10 chain^2
 section       = mile^2
 township      = 36 section
 homestead     = 160 acre
+rai           = 1600 m^2        # # Thai
+ngaan         = 400 m^2         # # Thai
 circular inch = 1/4.0 pi*in^2   # # area of 1 inch circle
 circular mil  = 1/4.0 pi*mil^2  # # area of 1 mil circle
+
 
 #
 # volume units
 #
 [volume]
-cc               = cm^3         # cubic centimeter
-cubic centimeter = cc
-liter            = 1000 cc
-L                = liter        # liter
-litre            = liter
-deciliter        = 0.1 liter
-centiliter       = 0.01 liter
-milliliter       = cc
-mL               = milliliter   # milliliter
-dekaliter        = 10 liter
-hectoliter       = 100 liter
-kiloliter        = 1000 liter
-kL               = kiloliter    # kiloliter
-cubic meter      = kiloliter
-megaliter        = 1000 kiloliter
-gallon           = 231 in^3
-gal              = gallon       # gallon
-quart            = 1/4.0 gallon
-qt               = quart        # quart
-pint             = 1/2.0 quart
-pt               = pint         # pint
-fluid ounce      = 1/16.0 pint
-fl oz            = fluid ounce  # fluid ounce
-ounce fluid      = fluid ounce
-cup              = 8 fl oz
-tablespoon       = 1/16.0 cup
-tbsp             = tablespoon   # tablespoon
-teaspoon         = 1/3.0 tbsp
-tsp              = teaspoon     # teaspoon
-barrel           = 42 gallon
-bbl              = barrel       # barrel
-shot             = 1.5 fl oz
-fifth            = 1/5.0 gallon # # alcohol
-wine bottle      = 750 mL
-magnum           = 1.5 liter    # # alcohol
-keg              = 15.5 gallon  # # beer
-bushel           = 2150.42 in^3
-peck             = 1/4.0 bushel
-cord             = 128 ft^3
-board foot       = ft^2*in
-board feet       = board foot
+cc                   = cm^3                 # cubic centimeter
+cubic centimeter     = cc
+liter                = 1000 cc
+l                    = liter                # liter
+litre                = liter
+deciliter            = 0.1 liter
+centiliter           = 0.01 liter
+milliliter           = cc
+ml                   = milliliter           # milliliter
+dekaliter            = 10 liter
+hectoliter           = 100 liter
+kiloliter            = 1000 liter
+kl                   = kiloliter            # kiloliter
+megaliter            = 1000 kiloliter
+gallon               = 231 in^3             #             # US liquid
+gal                  = gallon               # gallon      # US liquid
+quart                = 1/4.0 gallon         #             # US liquid
+qt                   = quart                # quart       # US liquid
+pint                 = 1/2.0 quart          #             # US liquid
+pt                   = pint                 # pint        # US liquid
+fluid ounce          = 1/16.0 pint          #             # US
+fl oz                = fluid ounce          # fluid ounce # US
+ounce fluid          = fluid ounce          #             # US
+imperial gallon      = 4.54609 liter
+imp gal              = imperial gallon      # imperial gallon
+gallon imperial      = imperial gallon
+imperial quart       = 1/4.0 imp gal
+imp qt               = imperial quart       # imperial quart
+quart imperial       = imperial quart
+imperial pint        = 1/8.0 imp gal
+imp pt               = imperial pint        # imperial pint
+pint imperial        = imperial pint
+imperial fluid ounce = 1/160.0 imp gal
+imp fl oz            = imperial fluid ounce # imperial fluid ounce
+cup                  = 8 fl oz
+tablespoon           = 1/16.0 cup
+tbsp                 = tablespoon           # tablespoon
+teaspoon             = 1/3.0 tbsp
+tsp                  = teaspoon             # teaspoon
+barrel               = 42 gallon
+bbl                  = barrel               # barrel
+shot                 = 1.5 fl oz
+fifth                = 1/5.0 gallon         #             # alcohol
+wine bottle          = 750 ml
+magnum               = 1.5 liter            #             # alcohol
+keg                  = 15.5 gallon          #             # beer
+hogshead wine        = 63 gal
+hogshead beer        = 54 gal
+bushel               = 2150.42 in^3
+peck                 = 1/4.0 bushel
+cord                 = 128 ft^3
+board foot           = ft^2*in
+board feet           = board foot
 
 
 #
@@ -529,7 +565,7 @@ kt          = knot             # knot
 light speed = 2.99792458e8 m/s
 mph         = mi/hr            # miles/hour
 kph         = km/hr            # kilometers/hour
-mach        = 331.46 m/s       # # speed sound at STP
+mach        = 340.29 m/s       # # speed sound at STP
 [rot. velocity]
 rpm         = rev/min          # rev/min
 rps         = rev/sec          # rev/sec
@@ -543,12 +579,12 @@ gph         = gal/hr           # gallons/hour
 gpm         = gal/min          # gallons/minute
 cfs         = ft^3/sec         # cu ft/second
 cfm         = ft^3/min         # cu ft/minute
-lpm         = L/min            # liter/min
+lpm         = l/min            # liter/min
 [gas flow]
 sccm        = atm*cc/min       # std cc/min      # pressure * flow
 sccs        = atm*cc/sec       # std cc/sec      # pressure * flow
-slpm        = atm*L/min        # std liter/min   # pressure * flow
-slph        = atm*L/hr         # std liter/hour  # pressure * flow
+slpm        = atm*l/min        # std liter/min   # pressure * flow
+slph        = atm*l/hr         # std liter/hour  # pressure * flow
 scfh        = atm*ft^3/hour    # std cu ft/hour  # pressure * flow
 scfm        = atm*ft^3/min     # std cu ft/min   # pressure * flow
 
@@ -559,10 +595,14 @@ scfm        = atm*ft^3/min     # std cu ft/min   # pressure * flow
 [pressure]
 Pa                    = N/m^2                    # pascal
 pascal                = Pa
+hPa                   = 100 Pa                   # hectopascal
+hectopascal           = hPa
 kPa                   = 1000 Pa                  # kilopascal
 kilopascal            = kPa
 MPa                   = 1000 kPa                 # megapascal
 megapascal            = MPa
+GPa                   = 1000 MPa                 # gigapascal
+gigapascal            = GPa
 atm                   = 101325 Pa                # atmosphere
 atmosphere            = atm
 bar                   = 1e5 Pa
@@ -571,6 +611,7 @@ millibar              = mbar
 microbar              = 0.001 mbar
 decibar               = 0.1 bar
 kilobar               = 1000 bar
+megabar               = 1000 kilobar
 mm Hg                 = mm*density Hg*gravity
 millimeter of Hg      = mm Hg
 torr                  = mm Hg
@@ -693,6 +734,7 @@ Sv              = sievert       # sievert # equiv. dose
 rem             = 0.01 Sv       # # roentgen equiv mammal
 millirem        = 0.001 rem     # # roentgen equiv mammal
 
+
 #
 # viscosity
 #
@@ -716,9 +758,12 @@ cSt          = centistokes # centistokes
 gravity                = 9.80665 m/s^2
 [constant]
 gravity constant       = 6.673e-11 N*m^2/kg^2
-gas constant           = 8.314472 J/mol*K     # R  # based on gram mol
+gas constant           = 8.314472 J/mol*K     # R
 [fuel consumpt.]
 mpg                    = mi/gal               # miles/gallon
+liter per 100 km       = [mpg] 3.785411784 / (x * 0.01609344) ; \
+                         3.785411784 / (x * 0.01609344) # # non-linear
+
 """
 
 
