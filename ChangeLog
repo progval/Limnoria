@@ -1,3 +1,173 @@
+2009-05-18  James Vega <jamessan@supybot.com>
+
+	* Version 0.83.4!
+
+	* Fixed a bug where we were attempting to tag a non-existent IrcMsg.
+
+	* Fixed a bug where the Web plugin was not catching the correct
+	exception.
+
+	* Fixed a bug where the Protector plugin was attempting to use a
+	non-existent variable.
+
+	* Added verbiage to supybot.log.level indicating that it doesn't
+	control the logging level for stdout and pointing out the correct
+	config variable.
+
+	* Added a new rank command to the ChannelStats plugin.
+
+	* Added a new remove command to the Later plugin.
+
+	* Added new azn and uniud commands to the Filter plugin.
+
+	* Fixed a bug in the Socket driver that could cause it to continually
+	attempt to reconnect to a server which is unavailable.
+
+	* Fixed a bug in supybot-wizard that would cause it to abort if the user
+	chose to use SSL.
+
+	* Fixed the haveOp context to call getChannel if it wasn't already
+	called.
+
+	* Fixed a bug in supybot-test where the entire test run would end if one
+	plugin couldn't be loaded.
+
+	* Updated the httpUrl context to prepend 'http://' if that would result
+	in a valid HTTP URL.  A noticeable benefit is that users can now call
+	"@title slashdot.org" instead of requiring the user to call
+	"@title http://slashdot.org".
+
+	* Fixed Supybot to be compatible with Python 2.6
+
+	* Added a note to Owner.defaultplugin's help to point out
+	supybot.commands.defaultPlugin.importantPlugins, which affects which
+	plugins have priorities over ambiguous command names.
+
+	* Rewrote the Google plugin to use the new AJAX API since Google
+	hasn't been giving out new keys for the SOAP API.
+
+	* Added a new translate command to the Google plugin.
+
+	* Fixed a copy/paste error in the help for User.capabilities.
+
+	* Updated Web.title to give a more appropriate message if the URL
+	definitely has no title.
+
+	* Fixed irc.reply so prefixNick is not used when action=True.
+
+	* Implemented the command flood prevention, controlled by
+	supybot.abuse.flood.command.*, thanks to a patch from nebajoth.
+
+	* Added utils/crypt.py to provide a uniform interface to the Python
+	crypt functionality regardless of the Python version being used.
+
+	* Fixed the urlRe and httpUrlRe regexes in utils/web.py to be more
+	correct about what they match.  They now match according to RFCs 1034
+	and 1738.
+
+	* Updated getSyntax to allow the syntax string to be specified,
+	similar to getHelp.
+
+	* Updated getCommandHelp to respect supybot.reply.showSimpleSyntax.
+
+	* Updated Factoids.getCommandHelp to respect
+	supybot.reply.showSimpleSyntax.
+
+	* Fixed a bug where getCommandMethod would return methods that weren't
+	actually commands.  This was exposed by adding a die Alias.
+
+	* Removed supybot.plugins.Channel.banmask in favor of a general config
+	variable, supybot.protocols.irc.banmask.
+
+	* Updated AutoMode to respect supybot.protocols.irc.banmask when
+	banning.
+
+	* Updated Channel.ignore.add and Channel.ban.add to respect
+	supybot.protocols.irc.banmask.
+
+	* Fixed Channel.kban so that it will fall back to an exact hostmask
+	instead of refusing to ban the user when the banmask would also match
+	the bot's hostmask.
+
+	* Added the ability to disable ChannelLogger's logging on a
+	per-channel basis.
+
+	* Fixed Config so it will respond with an error when the set, get, or
+	default commands are called on config groups that don't have values.
+
+	* Added a new config variable, supybot.plugins.AutoMode.owner, which
+	can be used to prevent AutoMode behavior from applying to the owner(s)
+	(since the owner has all capabilities).
+
+	* Fixed the regex parsing in utils/str.py to correctly handle multiple
+	backslashes before the search/replace separator.
+
+	* Renamed supybot.plugins.Google.safeSearch to
+	supybot.plugins.Google.searchFilter since the behavior and valid
+	values changed as part of the switch to the AJAX API.
+
+	* Updated RSS.announce to have list, add, and remove sub-commands
+	instead of the old option-parsing interface.
+
+	* Added a new config variable,
+	supybot.plugins.ShrinkUrl.shrinkSnarfer.showDomain, which controls
+	whether the shrinkSnarfer displays the domain of the original URL
+	along with the shrunken URL.
+
+	* Updated the default value for
+	supybot.plugins.ChannelLogger.filenameTimestamp so it sorts
+	chronologically.
+
+	* Updated Misc.last to prevent users from retrieving messages from
+	channels they aren't in or from private channels when they're in
+	another channel.
+
+	* Fixed supybot.directories.plugins so the directory Supybot is
+	installed to is not included.  This change makes the config file work
+	across Python upgrades without user-intervention.
+
+	* Updated Config.config to show both the global and channel-specific
+	value (if it exists) of the variable.
+
+	* Fixed Google.calc to work around a change in Google's HTML.  This
+	change should be more resilient to future HTML changes.
+
+	* Fixed a bug where User.set.password could not be used if your
+	current hostmask wasn't recognized.
+
+	* Fixed a bug in Limiter where the limit could be set to fewer than
+	the current number of users in the channel.
+
+	* Updated String to give a more useful message when decoding a base64
+	string fails.
+
+	* Updated User.hostmask.add to require it be called in private since a
+	password may be given as part of the command.
+
+	* Updated BadWords to only strip the formatting of messages which have
+	a bad word in them.
+
+	* Fixed a bug in the supybot script where it would continue to run
+	even if it was unable to create the pidFile.  This could cause
+	multiple instances of supybot to run simultaneously if using
+	supybot-botchk were being used to keep supybot running.
+
+	* Updated plugins.DB to return a fake database check when generating
+	documentation.  This allows the user to generate docs without having
+	the required database plugins installed.
+
+	* Updated supybot-plugin-doc to be able to generate reStructuredText.
+
+	* Removed the Insult plugin.
+
+	* Added the Dunno plugin, which can be taught responses to use in
+	place of the normal invalid command response.
+
+	* Added the Success plugin, which can be taught responses to use in
+	place of the normal operation succeeded response.
+
+	* Updated the data file for Math's convert command.
+
 2007-10-22  James Vega <jamessan@supybot.com>
 
 	* Version 0.83.3!

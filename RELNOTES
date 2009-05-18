@@ -1,3 +1,32 @@
+Version 0.83.4
+
+This release contains fixes for Python2.6 compability as well as a re-written
+Google plugin which uses the AJAX API.  The re-written plugin gained a
+translate command and no longer needs an API key.
+
+ChannelLogger has a new config variable, supybot.plugins.ChannelLogger.enable,
+which can be used on a per-channel basis to determine whether that channel is
+logged.
+
+The RSS announce command has been restructured into the commands "announce
+list", "announce remove", and "announce add" in order to simplify the
+command's use.
+
+The supybot.directories.plugins config variable now determines its global
+directory dynamically instead of adding the directory to the value.  This
+means values like '/usr/lib/python2.5/site-packages/supybot/plugins' can be
+removed from the variable.  This should help ease transitioning a Supybot
+config from one Python release to another.
+
+Incompatibilities:
+supybot.plugins.Google.safeSearch has been renamed to
+supybot.plugins.Google.searchFilter
+
+supybot.plugins.Channel.banmask has been removed in favor of a new
+supybot.protocols.irc.banmask config variable.  This general config variable
+is used by the various commands which would need to know what style of banmask
+to use.
+
 Version 0.83.3
 
 Overdue bug fix and Python2.5-compatible release.  No significant changes to
