@@ -35,14 +35,14 @@ def usage():
           % sys.argv[0])
 
 def checkGitRepo():
-    system('git rev-parse --is-inside-work-tree 2>/dev/null',
+    system('test "$(git rev-parse --is-inside-work-tree)" = "true"',
            'Must be run from a git checkout.')
     system('test "$(git rev-parse --show-cdup >/dev/null)" = ""',
            'Must be run from the top-level directory of the git checkout.')
     system('git rev-parse --verify HEAD >/dev/null '
            '&& git update-index --refresh'
            '&& git diff-files --quiet'
-           '&& git diff-files --cached --quiet HEAD --',
+           '&& git diff-index --cached --quiet HEAD --',
            'Your tree is unclean. Can\'t run from here.')
 
 if __name__ == '__main__':
