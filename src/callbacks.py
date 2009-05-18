@@ -1197,13 +1197,15 @@ class Commands(BasePlugin):
             else:
                 irc.replyError()
 
-    def getCommandHelp(self, command):
+    def getCommandHelp(self, command, simpleSyntax=None):
         method = self.getCommandMethod(command)
         help = getHelp
         chan = None
         if dynamic.msg is not None:
             chan = dynamic.msg.args[0]
-        if conf.get(conf.supybot.reply.showSimpleSyntax, chan):
+        if simpleSyntax is None:
+            simpleSyntax = conf.get(conf.supybot.reply.showSimpleSyntax, chan)
+        if simpleSyntax:
             help = getSyntax
         if hasattr(method, '__doc__'):
             return help(method, name=formatCommand(command))

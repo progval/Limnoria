@@ -197,7 +197,7 @@ class Misc(callbacks.Plugin):
                                  'you want help with.', names))
             else:
                 assert cbs, 'Odd, maxL == command, but no cbs.'
-                irc.reply(cbs[0].getCommandHelp(command))
+                irc.reply(cbs[0].getCommandHelp(command, False))
         else:
             irc.error(format('There is no command %q.',
                              callbacks.formatCommand(command)))
