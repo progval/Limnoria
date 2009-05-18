@@ -32,8 +32,8 @@
 
 import sys
 
-if sys.version_info < (2, 4, 0):
-    sys.stderr.write("Supybot requires Python 2.4 or newer.\n")
+if sys.version_info < (2, 3, 0):
+    sys.stderr.write("Supybot requires Python 2.3 or newer.\n")
     sys.exit(-1)
 
 import textwrap

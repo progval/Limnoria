@@ -1,6 +1,6 @@
 Common
 
-  First things first: Supybot *requires* at least Python 2.4.  There
+  First things first: Supybot *requires* at least Python 2.3.  There
 ain't no getting around it.  You can get it from http://www.python.org/.
 
   Recommended Software
