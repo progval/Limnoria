@@ -40,7 +40,7 @@ import supybot.ircutils as ircutils
 ###
 # version: This should be pretty obvious.
 ###
-version = '0.83.3'
+version = '0.83.4'
 
 ###
 # *** The following variables are affected by command-line options.  They are
