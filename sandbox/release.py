@@ -28,8 +28,10 @@ def system(sh, errmsg=None):
         error(errmsg + '  (error code: %s)' % ret)
 
 def usage():
-    error('Usage: %s [-s] <sf username> <version>\nSpecify -s to pass it on '
-          'to the relevant git commands.\nMust be called from a git checkout.'
+    error('Usage: %s [-s|-n] <sf username> <version>\nSpecify -s to pass it on '
+          'to the relevant git commands.\nSpecify -n to perform a dry-run '
+          'release.  No commits or tags are pushed and no files are uploaded.'
+          '\nMust be called from a git checkout.'
           % sys.argv[0])
 
 def checkGitRepo():
@@ -44,15 +46,19 @@ def checkGitRepo():
            'Your tree is unclean. Can\'t run from here.')
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3 or len(sys.argv) > 4:
+    if len(sys.argv) < 3 or len(sys.argv) > 5:
         usage()
 
     checkGitRepo()
 
     sign = ''
-    if len(sys.argv) == 4:
+    dryrun = False
+    while len(sys.argv) > 3:
         if sys.argv[1] == '-s':
             sign = '-s'
+            sys.argv.pop(1)
+        elif sys.argv[1] == '-n':
+            dryrun = True
             sys.argv.pop(1)
         else:
             usage()
@@ -101,9 +107,10 @@ if __name__ == '__main__':
     system('git commit %s -m \'Updated to %s.\' %s'
            % (sign, v, ' '.join(versionFiles)))
 
-    print 'Pushing commits.'
-    system('git push origin master')
-    system('git push --tags')
+    if not dryrun:
+        print 'Pushing commits and tag.'
+        system('git push origin master')
+        system('git push --tags')
 
     print 'Creating tarball (gzip).'
     system('git archive --prefix=Supybot-%s/ --format=tar %s '
@@ -118,14 +125,15 @@ if __name__ == '__main__':
     os.chdir('..')
     shutil.rmtree('supybot')
 
-    print 'Uploading package files to upload.sf.net.'
-    system('scp Supybot-%s.tar.gz Supybot-%s.tar.bz2 Supybot-%s.zip '
-           '%s@frs.sourceforge.net:uploads' % (v, v, v, u))
+    if not dryrun:
+        print 'Uploading package files to upload.sf.net.'
+        system('scp Supybot-%s.tar.gz Supybot-%s.tar.bz2 Supybot-%s.zip '
+               '%s@frs.sourceforge.net:uploads' % (v, v, v, u))
 
-    print 'Copying new version.txt over to project webserver.'
-    system('echo %s > version.txt' % v)
-    system('scp version.txt %s@shell.sf.net:/home/groups/s/su/supybot/htdocs'%u)
-    system('rm version.txt')
+        print 'Copying new version.txt over to project webserver.'
+        system('echo %s > version.txt' % v)
+        system('scp version.txt %s@shell.sf.net:/home/groups/s/su/supybot/htdocs'%u)
+        system('rm version.txt')
 
 #    print 'Generating documentation.'
 #    # docFiles is in the format {directory: files}
