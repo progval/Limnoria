@@ -74,8 +74,8 @@ if __name__ == '__main__':
               '  Change to an appropriate directory or remove the supybot '
               'directory to continue.')
     print 'Checking out fresh tree from git.'
-    system(
-        'git clone git+ssh://%s@supybot.git.sourceforge.net/gitroot/supybot'%u)
+    system('git clone git+ssh://%s@supybot.git.sourceforge.net/gitroot/supybot'
+           % u)
     os.chdir('supybot')
 
     print 'Checking RELNOTES version line.'
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     for fn in versionFiles:
         sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % (v, fn)
         system(sh, 'Error changing version in %s' % fn)
-    system('git commit -a %s -m \'Updated to %s.\' %s'
+    system('git commit %s -m \'Updated to %s.\' %s'
            % (sign, v, ' '.join(versionFiles)))
 
     print 'Tagging release.'
