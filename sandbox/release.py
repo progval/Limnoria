@@ -133,7 +133,8 @@ if __name__ == '__main__':
 
         print 'Copying new version.txt over to project webserver.'
         system('echo %s > version.txt' % v)
-        system('scp version.txt %s@shell.sf.net:/home/groups/s/su/supybot/htdocs'%u)
+        system('scp version.txt %s@web.sf.net:/home/groups/s/su/supybot/htdocs'
+               %u)
         system('rm version.txt')
 
 #    print 'Generating documentation.'
