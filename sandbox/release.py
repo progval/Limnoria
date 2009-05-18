@@ -121,7 +121,7 @@ if __name__ == '__main__':
            '| bzip2 -c >../Supybot-%s.tar.bz2' % (v, v, v))
     print 'Creating zip.'
     system('git archive --prefix=Supybot-%s/ --format=zip %s '
-           '>../Supybot-%s.zip' % (v, v))
+           '>../Supybot-%s.zip' % (v, v, v))
 
     os.chdir('..')
     shutil.rmtree('supybot')
