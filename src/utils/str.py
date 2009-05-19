@@ -302,7 +302,7 @@ def nItems(n, item, between=None):
     >>> nItems(10, 'clock', between='grandfather')
     '10 grandfather clocks'
     """
-    assert isinstance(n, int), \
+    assert isinstance(n, int) or isinstance(n, long), \
            'The order of the arguments to nItems changed again, sorry.'
     if between is None:
         if n != 1:
