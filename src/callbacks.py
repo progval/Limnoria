@@ -1145,20 +1145,21 @@ class Commands(BasePlugin):
                 else:
                     raise AttributeError
 
-    def listCommands(self):
-        commands = []
+    def listCommands(self, pluginCommands=[]):
+        commands = set(pluginCommands)
         for s in dir(self):
             if self.isCommandMethod(s):
-                commands.append(s)
+                commands.add(s)
         for cb in self.cbs:
             name = cb.canonicalName()
             for command in cb.listCommands():
                 if command == name:
-                    commands.append(command)
+                    commands.add(command)
                 else:
-                    commands.append(' '.join([name, command]))
-        commands.sort()
-        return commands
+                    commands.add(' '.join([name, command]))
+        L = list(commands)
+        L.sort()
+        return L
 
     def callCommand(self, command, irc, msg, *args, **kwargs):
         method = self.getCommandMethod(command)

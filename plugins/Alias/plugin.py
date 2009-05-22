@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -201,6 +202,9 @@ class Alias(callbacks.Plugin):
                 return False
         else:
             return True
+
+    def listCommands(self):
+        return self.__parent.listCommands(self.aliases.keys())
 
     def getCommandMethod(self, command):
         try:

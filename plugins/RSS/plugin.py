@@ -90,6 +90,9 @@ class RSS(callbacks.Plugin):
         else:
             return True
 
+    def listCommands(self):
+        return self.__parent.listCommands(self.feedNames.keys())
+
     def getCommandMethod(self, command):
         try:
             return self.__parent.getCommandMethod(command)
