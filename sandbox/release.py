@@ -130,12 +130,15 @@ if __name__ == '__main__':
         print 'Uploading package files to upload.sf.net.'
         system('scp Supybot-%s.tar.gz Supybot-%s.tar.bz2 Supybot-%s.zip '
                '%s@frs.sourceforge.net:uploads' % (v, v, v, u))
+        os.unlink('Supybot-%s.tar.gz' % v)
+        os.unlink('Supybot-%s.tar.bz2' % v)
+        os.unlink('Supybot-%s.zip' % v)
 
         print 'Copying new version.txt over to project webserver.'
         system('echo %s > version.txt' % v)
         system('scp version.txt %s@web.sf.net:/home/groups/s/su/supybot/htdocs'
                %u)
-        system('rm version.txt')
+        os.unlink('version.txt')
 
 #    print 'Generating documentation.'
 #    # docFiles is in the format {directory: files}
