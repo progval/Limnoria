@@ -1,3 +1,25 @@
+2009-05-25  James Vega <jamessan@supybot.com>
+
+	* Version 0.83.4.1!
+
+	* Fixed a bug in Factoids where the help could not be retrieved for
+	any command.
+
+	* Fixed a bug where Plugin.list wouldn't list any aliases/RSS feeds
+	from the Alias/RSS plugins.
+
+	* Updated Google to ensure the third-party json module (different API
+	than simplejson) isn't loaded.  Based on a patch from Ricky Zhou.
+
+	* Updated Channel.nicks so it doesn't reply with nicks from secret
+	channels outside of that channel.
+
+	* Updated Channel.{op,halfop,voice,deop,dehalfop,devoice} commands so
+	they respect the server's "max mode changes per message" setting.
+
+	* Updated utils.str.nItems to accept long as well as int.  Thanks to
+	Ricky Zhou for the patch.
+
 2009-05-18  James Vega <jamessan@supybot.com>
 
 	* Version 0.83.4!

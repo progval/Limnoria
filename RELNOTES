@@ -1,3 +1,11 @@
+Version 0.83.4.1
+
+Simple bug-fix release for a couple changes that were introduced last minute
+before the previous release.
+
+No incompatibilities.
+
+
 Version 0.83.4
 
 This release contains fixes for Python2.6 compability as well as a re-written
