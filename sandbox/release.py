@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     print 'Check version string for validity.'
     (u, v) = sys.argv[1:]
-    if not re.match(r'^\d+\.\d+\.\d+\w*$', v):
+    if not re.match(r'^\d+\.\d+\.\d+(\.\d+)?\w*$', v):
         error('Invalid version string: '
               'must be of the form MAJOR.MINOR.PATCHLEVEL.')
 
