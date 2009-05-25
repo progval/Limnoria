@@ -56,6 +56,12 @@ class Channel(callbacks.Plugin):
         irc.queueMsg(msg)
         irc.noReply()
 
+    def _sendMsgs(self, irc, nicks, f):
+        numModes = irc.state.supported.get('modes', 1)
+        for i in range(0, len(nicks), numModes):
+            irc.queueMsg(f(nicks[i:i + numModes]))
+        irc.noReply()
+
     def mode(self, irc, msg, args, channel, modes):
         """[<channel>] <mode> [<arg> ...]
 
@@ -126,7 +132,9 @@ class Channel(callbacks.Plugin):
         """
         if not nicks:
             nicks = [msg.nick]
-        self._sendMsg(irc, ircmsgs.ops(channel, nicks))
+        def f(L):
+            return ircmsgs.ops(channel, L)
+        self._sendMsgs(irc, nicks, f)
     op = wrap(op, ['op', ('haveOp', 'op someone'), any('nickInChannel')])
 
     def halfop(self, irc, msg, args, channel, nicks):
@@ -139,7 +147,9 @@ class Channel(callbacks.Plugin):
         """
         if not nicks:
             nicks = [msg.nick]
-        self._sendMsg(irc, ircmsgs.halfops(channel, nicks))
+        def f(L):
+            return ircmsgs.halfops(channel, L)
+        self._sendMsgs(irc, nicks, f)
     halfop = wrap(halfop, ['halfop', ('haveOp', 'halfop someone'),
                            any('nickInChannel')])
 
@@ -161,7 +171,9 @@ class Channel(callbacks.Plugin):
             capability = 'voice'
         capability = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, capability):
-            self._sendMsg(irc, ircmsgs.voices(channel, nicks))
+            def f(L):
+                return ircmsgs.voices(channel, L)
+            self._sendMsgs(irc, nicks, f)
         else:
             irc.errorNoCapability(capability)
     voice = wrap(voice, ['channel', ('haveOp', 'voice someone'),
@@ -180,7 +192,9 @@ class Channel(callbacks.Plugin):
                       'yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        self._sendMsg(irc, ircmsgs.deops(channel, nicks))
+        def f(L):
+            return ircmsgs.deops(channel, L)
+        self._sendMsgs(irc, nicks, f)
     deop = wrap(deop, ['op', ('haveOp', 'deop someone'),
                        any('nickInChannel')])
 
@@ -197,12 +211,12 @@ class Channel(callbacks.Plugin):
                       'dehalfop me yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        self._sendMsg(irc, ircmsgs.dehalfops(channel, nicks))
+        def f(L):
+            return ircmsgs.dehalfops(channel, L)
+        self._sendMsgs(irc, nicks, f)
     dehalfop = wrap(dehalfop, ['halfop', ('haveOp', 'dehalfop someone'),
                                any('nickInChannel')])
 
-    # XXX We should respect the MODES part of an 005 here.  Helper function
-    #     material.
     def devoice(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
 
@@ -216,7 +230,9 @@ class Channel(callbacks.Plugin):
                       'me yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        self._sendMsg(irc, ircmsgs.devoices(channel, nicks))
+        def f(L):
+            return ircmsgs.devoices(channel, L)
+        self._sendMsgs(irc, nicks, f)
     devoice = wrap(devoice, ['voice', ('haveOp', 'devoice someone'),
                              any('nickInChannel')])
 
@@ -247,8 +263,8 @@ class Channel(callbacks.Plugin):
         kicklen = irc.state.supported.get('kicklen', sys.maxint)
         if len(reason) > kicklen:
             irc.error('The reason you gave is longer than the allowed '
-                      'length for a KICK reason on this server.')
-            return
+                      'length for a KICK reason on this server.',
+                      Raise=True)
         self._sendMsg(irc, ircmsgs.kick(channel, nick, reason))
     kick = wrap(kick, ['op', ('haveOp', 'kick someone'),
                        'nickInChannel', additional('text')])

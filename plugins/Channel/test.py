@@ -116,7 +116,17 @@ class ChannelTestCase(ChannelPluginTestCase):
                         m.args == (self.channel, '+o', 'foo'))
         m = self.getMsg('op foo bar')
         self.failUnless(m.command == 'MODE' and
-                        m.args == (self.channel, '+oo', 'foo', 'bar'))
+                        m.args == (self.channel, '+o', 'foo'))
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+o', 'bar'))
+        self.irc.state.supported['MODES'] = 2
+        m = self.getMsg('op foo bar')
+        try:
+            self.failUnless(m.command == 'MODE' and
+                            m.args == (self.channel, '+oo', 'foo', 'bar'))
+        finally:
+            self.irc.state.supported['MODES'] = 1
 
     def testHalfOp(self):
         self.assertError('halfop')
@@ -127,7 +137,10 @@ class ChannelTestCase(ChannelPluginTestCase):
                         m.args == (self.channel, '+h', 'foo'))
         m = self.getMsg('halfop foo bar')
         self.failUnless(m.command == 'MODE' and
-                        m.args == (self.channel, '+hh', 'foo', 'bar'))
+                        m.args == (self.channel, '+h', 'foo'))
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+h', 'bar'))
 
     def testVoice(self):
         self.assertError('voice')
@@ -138,7 +151,10 @@ class ChannelTestCase(ChannelPluginTestCase):
                         m.args == (self.channel, '+v', 'foo'))
         m = self.getMsg('voice foo bar')
         self.failUnless(m.command == 'MODE' and
-                        m.args == (self.channel, '+vv', 'foo', 'bar'))
+                        m.args == (self.channel, '+v', 'foo'))
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+v', 'bar'))
 
     def assertBan(self, query, hostmask, **kwargs):
         m = self.getMsg(query, **kwargs)
