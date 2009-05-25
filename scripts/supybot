@@ -124,7 +124,7 @@ def main():
     log.info('Total CPU time taken: %s seconds.', user+system)
     log.info('No more Irc objects, exiting.')
 
-version = '0.83.4.1'
+version = '0.83.4.1+git'
 if __name__ == '__main__':
     ###
     # Options:
