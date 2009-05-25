@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -169,23 +170,33 @@ class ChannelTestCase(ChannelPluginTestCase):
 ##        self.assertError('kban %s' % self.irc.nick)
 
     def testBan(self):
-        self.assertNotError('ban add foo!bar@baz')
-        self.assertNotError('ban remove foo!bar@baz')
-        orig = conf.supybot.protocols.irc.strictRfc()
+        origban = conf.supybot.protocols.irc.banmask()
         try:
-            conf.supybot.protocols.irc.strictRfc.setValue(True)
-            # something wonky is going on here. irc.error (src/Channel.py|449)
-            # is being called but the assert is failing
-            self.assertError('ban add not!a.hostmask')
-            self.assertNotRegexp('ban add not!a.hostmask', 'KeyError')
+            conf.supybot.protocols.irc.banmask.setValue(['exact'])
+            self.assertNotError('ban add foo!bar@baz')
+            self.assertNotError('ban remove foo!bar@baz')
+            orig = conf.supybot.protocols.irc.strictRfc()
+            try:
+                conf.supybot.protocols.irc.strictRfc.setValue(True)
+                # something wonky is going on here. irc.error (src/Channel.py|449)
+                # is being called but the assert is failing
+                self.assertError('ban add not!a.hostmask')
+                self.assertNotRegexp('ban add not!a.hostmask', 'KeyError')
+            finally:
+                conf.supybot.protocols.irc.strictRfc.setValue(orig)
         finally:
-            conf.supybot.protocols.irc.strictRfc.setValue(orig)
+            conf.supybot.protocols.irc.banmask.setValue(origban)
 
     def testIgnore(self):
-        self.assertNotError('channel ignore add foo!bar@baz')
-        self.assertResponse('channel ignore list', "'foo!bar@baz'")
-        self.assertNotError('channel ignore remove foo!bar@baz')
-        self.assertError('ban add not!a.hostmask')
+        orig = conf.supybot.protocols.irc.banmask()
+        try:
+            conf.supybot.protocols.irc.banmask.setValue(['exact'])
+            self.assertNotError('channel ignore add foo!bar@baz')
+            self.assertResponse('channel ignore list', "'foo!bar@baz'")
+            self.assertNotError('channel ignore remove foo!bar@baz')
+            self.assertError('ban add not!a.hostmask')
+        finally:
+            conf.supybot.protocols.irc.banmask.setValue(orig)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
