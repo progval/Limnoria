@@ -140,13 +140,15 @@ def getDirectoryName(default, basedir=os.curdir, prompt=True):
             os.makedirs(dir)
             done = True
         except OSError, e:
-            if e.args[0] != 17: # File exists.
+            # 17 is File exists for Linux (and likely other POSIX systems)
+            # 183 is the same for Windows
+            if e.args[0] == 17 or (os.name == 'nt' and e.args[0] == 183):
+                done = True
+            else:
                 output("""Sorry, I couldn't make that directory for some
                 reason.  The Operating System told me %s.  You're going to
                 have to pick someplace else.""" % e)
                 prompt = True
-            else:
-                done = True
     return (dir, os.path.dirname(orig_dir))
 
 def main():
