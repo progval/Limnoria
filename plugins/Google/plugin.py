@@ -42,15 +42,21 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
+simplejson = None
+
 try:
-    simplejson = utils.python.universalImport('json', 'simplejson',
-                                              'local.simplejson')
+    simplejson = utils.python.universalImport('json')
+except ImportError:
+    pass
+
+try:
     # The 3rd party simplejson module was included in Python 2.6 and renamed to
     # json.  Unfortunately, this conflicts with the 3rd party json module.
     # Luckily, the 3rd party json module has a different interface so we test
     # to make sure we aren't using it.
-    if hasattr(simplejson, 'read'):
-        raise ImportError
+    if simplejson is None or hasattr(simplejson, 'read'):
+        simplejson = utils.python.universalImport('simplejson',
+                                                  'local.simplejson')
 except ImportError:
     raise callbacks.Error, \
             'You need Python2.6 or the simplejson module installed to use ' \
