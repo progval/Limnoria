@@ -651,6 +651,9 @@ registerGlobalValue(supybot.abuse.flood.command.invalid, 'punishment',
     value is higher than supybot.abuse.flood.command.punishment, since it's far
     less likely (and far more annoying) for users to flood witih invalid
     commands than for them to flood with valid commands."""))
+registerGlobalValue(supybot.abuse.flood.command.invalid, 'notify',
+    registry.Boolean(True, """Determines whether the bot will notify people that they're
+    being ignored for invalid command flooding."""))
 
 
 ###

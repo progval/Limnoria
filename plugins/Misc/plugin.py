@@ -75,10 +75,11 @@ class Misc(callbacks.Plugin):
                                  'observed.  Consider ignoring this bot '
                                  'permanently.')
             ircdb.ignores.add(banmask, time.time() + punishment)
-            irc.reply('You\'ve given me %s invalid commands within the last '
-                      'minute; I\'m now ignoring you for %s.' %
-                      (maximum,
-                       utils.timeElapsed(punishment, seconds=False)))
+            if conf.supybot.abuse.flood.command.invalid.notify():
+                irc.reply('You\'ve given me %s invalid commands within the last '
+                          'minute; I\'m now ignoring you for %s.' %
+                          (maximum,
+                           utils.timeElapsed(punishment, seconds=False)))
             return
         # Now, for normal handling.
         channel = msg.args[0]
