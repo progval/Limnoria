@@ -231,16 +231,6 @@ class Google(callbacks.PluginRegexp):
         irc.reply(s)
 
     _gtranslateUrl='http://ajax.googleapis.com/ajax/services/language/translate'
-    _transLangs = {'Arabic': 'ar', 'Bulgarian': 'bg',
-                   'Chinese_simplified': 'zh-CN',
-                   'Chinese_traditional': 'zh-TW', 'Croatian': 'hr',
-                   'Czech': 'cs', 'Danish': 'da', 'Dutch': 'nl',
-                   'English': 'en', 'Finnish': 'fi', 'French': 'fr',
-                   'German': 'de', 'Greek': 'el', 'Hindi': 'hi',
-                   'Italian': 'it', 'Japanese': 'ja', 'Korean': 'ko',
-                   'Norwegian': 'no', 'Polish': 'pl', 'Portuguese': 'pt',
-                   'Romanian': 'ro', 'Russian': 'ru', 'Spanish': 'es',
-                   'Swedish': 'sv'}
     def translate(self, irc, msg, args, fromLang, toLang, text):
         """<from-language> [to] <to-language> <text>
 
@@ -257,22 +247,22 @@ class Google(callbacks.PluginRegexp):
         headers['Referer'] = ref
         opts = {'q': text, 'v': '1.0'}
         lang = conf.supybot.plugins.Google.defaultLanguage
-        if fromLang.capitalize() in self._transLangs:
-            fromLang = self._transLangs[fromLang.capitalize()]
+        if fromLang.capitalize() in lang.transLangs:
+            fromLang = lang.transLangs[fromLang.capitalize()]
         elif lang.normalize('lang_'+fromLang)[5:] \
-                not in self._transLangs.values():
+                not in lang.transLangs.values():
             irc.errorInvalid('from language', fromLang,
                              format('Valid languages are: %L',
-                                    self._transLangs.keys()))
+                                    lang.transLangs.keys()))
         else:
             fromLang = lang.normalize('lang_'+fromLang)[5:]
-        if toLang.capitalize() in self._transLangs:
-            toLang = self._transLangs[toLang.capitalize()]
+        if toLang.capitalize() in lang.transLangs:
+            toLang = lang.transLangs[toLang.capitalize()]
         elif lang.normalize('lang_'+toLang)[5:] \
-                not in self._transLangs.values():
+                not in lang.transLangs.values():
             irc.errorInvalid('to language', toLang,
                              format('Valid languages are: %L',
-                                    self._transLangs.keys()))
+                                    lang.transLangs.keys()))
         else:
             toLang = lang.normalize('lang_'+toLang)[5:]
         opts['langpair'] = '%s|%s' % (fromLang, toLang)

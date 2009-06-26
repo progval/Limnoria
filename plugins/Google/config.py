@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,15 +48,41 @@ def configure(advanced):
         conf.supybot.plugins.Google.searchSnarfer.setValue(True)
 
 class Language(registry.OnlySomeStrings):
-    validStrings = ['lang_' + s for s in 'ar bg ca zh-CN zh-TW hr cs da nl en '
-                                         'et fi fr de el iw hu is id it ja ko '
-                                         'lv lt no pl pt ro ru sr sk sl es sv '
-                                         'tr'.split()]
+    transLangs = {'Afrikaans': 'af', 'Albanian': 'sq', 'Amharic': 'am',
+                  'Arabic': 'ar', 'Armenian': 'hy', 'Azerbaijani': 'az',
+                  'Basque': 'eu', 'Belarusian': 'be', 'Bengali': 'bn',
+                  'Bulgarian': 'bg', 'Burmese': 'my', 'Catalan': 'ca',
+                  'Chinese': 'zh', 'Chinese_simplified': 'zh-CN',
+                  'Chinese_traditional': 'zh-TW', 'Croatian': 'hr',
+                  'Czech': 'cs', 'Danish': 'da', 'Dhivehi': 'dv',
+                  'Dutch': 'nl', 'English': 'en', 'Esperanto': 'eo',
+                  'Estonian': 'et', 'Filipino': 'tl', 'Finnish': 'fi',
+                  'French': 'fr', 'Galician': 'gl', 'Georgian': 'ka',
+                  'German': 'de', 'Greek': 'el', 'Gujarati': 'gu',
+                  'Hebrew': 'iw', 'Hindi': 'hi', 'Hungarian': 'hu',
+                  'Icelandic': 'is', 'Indonesian': 'id', 'Inuktitut': 'iu',
+                  'Italian': 'it', 'Japanese': 'ja', 'Kannada': 'kn',
+                  'Kazakh': 'kk', 'Khmer': 'km', 'Korean': 'ko',
+                  'Kurdish': 'ku', 'Kyrgyz': 'ky', 'Laothian': 'lo',
+                  'Latvian': 'lv', 'Lithuanian': 'lt', 'Macedonian': 'mk',
+                  'Malay': 'ms', 'Malayalam': 'ml', 'Maltese': 'mt',
+                  'Marathi': 'mr', 'Mongolian': 'mn', 'Nepali': 'ne',
+                  'Norwegian': 'no', 'Oriya': 'or', 'Pashto': 'ps',
+                  'Persian': 'fa', 'Polish': 'pl', 'Portuguese': 'pt-PT',
+                  'Punjabi': 'pa', 'Romanian': 'ro', 'Russian': 'ru',
+                  'Sanskrit': 'sa', 'Serbian': 'sr', 'Sindhi': 'sd',
+                  'Sinhalese': 'si', 'Slovak': 'sk', 'Slovenian': 'sl',
+                  'Spanish': 'es', 'Swedish': 'sv', 'Tajik': 'tg',
+                  'Tamil': 'ta', 'Tagalog': 'tl', 'Telugu': 'te',
+                  'Thai': 'th', 'Tibetan': 'bo', 'Turkish': 'tr',
+                  'Ukranian': 'uk', 'Urdu': 'ur', 'Uzbek': 'uz',
+                  'Uighur': 'ug', 'Vietnamese': 'vi'}
+    validStrings = ['lang_' + s for s in transLangs.values()]
     validStrings.append('')
     def normalize(self, s):
         if s and not s.startswith('lang_'):
             s = 'lang_' + s
-        if not s.endswith('CN') or s.endswith('TW'):
+        if not s.endswith('CN') or s.endswith('TW') or s.endswith('PT'):
             s = s.lower()
         else:
             s = s.lower()[:-2] + s[-2:]
