@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2004, Daniel DiPaolo
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -202,7 +202,7 @@ class QuoteGrabs(callbacks.Plugin):
                     try:
                         last = int(self.db.select(channel, msg.nick))
                     except dbi.NoRecordError:
-                        self._grab(irc, channel, msg, irc.prefix)
+                        self._grab(channel, irc, msg, irc.prefix)
                         self._sendGrabMsg(irc, msg)
                     else:
                         elapsed = int(time.time()) - last
