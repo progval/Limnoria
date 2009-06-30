@@ -813,7 +813,7 @@ class Channel(callbacks.Plugin):
         capability.
         """
         self.alertOps(irc, channel, text, frm=msg.nick)
-    alert = wrap(alert, ['op', 'text'])
+    alert = wrap(alert, ['inChannel', 'text'])
 
 
 Class = Channel
