@@ -41,6 +41,10 @@ def mapinto(f, L):
     for (i, x) in enumerate(L):
         L[i] = f(x)
 
+def renumerate(L):
+    for i in xrange(len(L)-1, -1, -1):
+        yield (i, L[i])
+
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

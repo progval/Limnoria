@@ -46,6 +46,12 @@ class UtilsTest(SupyTestCase):
 
 
 class SeqTest(SupyTestCase):
+    def testRenumerate(self):
+        for i in xrange(5):
+            L = list(enumerate(range(i)))
+            LL = list(utils.seq.renumerate(range(i)))
+            self.assertEqual(L, LL[::-1])
+        
     def testWindow(self):
         L = range(10)
         def wwindow(*args):

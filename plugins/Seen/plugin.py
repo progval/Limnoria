@@ -291,6 +291,47 @@ class Seen(callbacks.Plugin):
         self._user(irc, channel, user)
     user = wrap(user, ['channel', 'otherUser'])
 
+    def since(self, irc, msg, args, channel,  nick):
+        """[<channel>] <nick>
+
+        Returns the messages since <nick> last left the channel.
+        """
+        if nick is None:
+            nick = msg.nick
+        if nick not in irc.state.channels[channel].users:
+            irc.error(format('You must be in %s to use this command.', channel))
+            return
+        end = None # By default, up until the most recent message.
+        for (i, m) in utils.seq.renumerate(irc.state.history):
+            if end is None and m.command == 'JOIN' and \
+               ircutils.strEqual(m.args[0], channel) and \
+               ircutils.strEqual(m.nick, nick):
+                end = i
+            if m.command == 'PART' and \
+               ircutils.strEqual(m.nick, nick) and \
+               ircutils.strEqual(m.args[0], channel):
+                break
+            elif m.command == 'QUIT' and ircutils.strEqual(m.nick, nick):
+                # XXX We assume the person was in-channel at this point.
+                break
+            elif m.command == 'KICK' and \
+                 ircutils.strEqual(m.args[1], nick) and \
+                 ircutils.strEqual(m.args[0], channel):
+                break
+        else: # I never use this; it only kicks in when the for loop exited normally.
+            irc.error(format('I couldn\'t find in my history of %s messages '
+                             'where %r last left the %s',
+                             len(irc.state.history), nick, channel))
+            return
+        msgs = [m for m in irc.state.history[i:end]
+                if m.command == 'PRIVMSG' and ircutils.strEqual(m.args[0], channel)]
+        if msgs:
+            irc.reply(format('%L', map(ircmsgs.prettyPrint, msgs)))
+        else:
+            irc.reply(format('Either %s didn\'t leave, '
+                             'or no messages were sent while %s was gone.', nick, nick))
+    since = wrap(since, ['channel', additional('nick')])
+
 Class = Seen
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
