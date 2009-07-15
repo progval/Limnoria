@@ -352,8 +352,8 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         self.db.close()
         self.__parent.die()
 
-    def getCommandHelp(self, name):
-        help = self.__parent.getCommandHelp(name)
+    def getCommandHelp(self, name, simpleSyntax=None):
+        help = self.__parent.getCommandHelp(name, simpleSyntax)
         help = help.replace('$Types', format('%p', self.name()))
         help = help.replace('$Type', self.name())
         help = help.replace('$types', format('%p', self.name().lower()))
