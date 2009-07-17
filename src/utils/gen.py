@@ -77,6 +77,7 @@ def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
     be used.
     """
     ret = []
+    before = False
     def Format(s, i):
         if i or leadingZeroes or ret:
             if short:
@@ -84,6 +85,12 @@ def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
             else:
                 ret.append(format('%n', (i, s)))
     elapsed = int(elapsed)
+
+    # Handle negative times
+    if elapsed < 0:
+        before = True
+        elapsed = -elapsed
+
     assert years or weeks or days or \
            hours or minutes or seconds, 'One flag must be True'
     if years:
@@ -107,10 +114,14 @@ def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
             Format('second', secs)
     if not ret:
         raise ValueError, 'Time difference not great enough to be noted.'
+    result = ''
     if short:
-        return ' '.join(ret)
+        result = ' '.join(ret)
     else:
-        return format('%L', ret)
+        result = format('%L', ret)
+    if before:
+        result += ' ago'
+    return result
 
 def findBinaryInPath(s):
     """Return full path of a binary if it's in PATH, otherwise return None."""
