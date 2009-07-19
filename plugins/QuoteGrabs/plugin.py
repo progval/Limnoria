@@ -105,7 +105,7 @@ class SqliteQuoteGrabsDB(object):
             raise dbi.NoRecordError
         (id, by, quote, hostmask, at, grabber) = cursor.fetchone()
         return QuoteGrabsRecord(id, by=by, text=quote, hostmask=hostmask,
-                                at=at, grabber=grabber)
+                                at=int(at), grabber=grabber)
 
     def random(self, channel, nick):
         db = self._getDb(channel)
