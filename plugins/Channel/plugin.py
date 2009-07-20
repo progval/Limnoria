@@ -248,15 +248,15 @@ class Channel(callbacks.Plugin):
         self._sendMsg(irc, networkGroup.channels.join(channel))
     cycle = wrap(cycle, ['op'])
 
-    def kick(self, irc, msg, args, channel, nick, reason):
-        """[<channel>] <nick> [<reason>]
+    def kick(self, irc, msg, args, channel, nicks, reason):
+        """[<channel>] <nick>[, <nick>, ...] [<reason>]
 
-        Kicks <nick> from <channel> for <reason>.  If <reason> isn't given,
+        Kicks <nick>(s) from <channel> for <reason>.  If <reason> isn't given,
         uses the nick of the person making the command as the reason.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        if ircutils.strEqual(nick, irc.nick):
+        if utils.iter.any(lambda n: ircutils.strEqual(n, irc.nick), nicks):
             irc.error('I cowardly refuse to kick myself.', Raise=True)
         if not reason:
             reason = msg.nick
@@ -265,9 +265,10 @@ class Channel(callbacks.Plugin):
             irc.error('The reason you gave is longer than the allowed '
                       'length for a KICK reason on this server.',
                       Raise=True)
-        self._sendMsg(irc, ircmsgs.kick(channel, nick, reason))
+        for nick in nicks:
+            self._sendMsg(irc, ircmsgs.kick(channel, nick, reason))
     kick = wrap(kick, ['op', ('haveOp', 'kick someone'),
-                       'nickInChannel', additional('text')])
+                       commalist('nickInChannel'), additional('text')])
 
     def kban(self, irc, msg, args,
              channel, optlist, bannedNick, expiry, reason):
