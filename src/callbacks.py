@@ -528,6 +528,7 @@ class ReplyIrcProxy(RichReplyMethods):
         self.msg = msg
 
     def getRealIrc(self):
+        """Returns the real irclib.Irc object underlying this proxy chain."""
         if isinstance(self.irc, irclib.Irc):
             return self.irc
         else:
@@ -572,7 +573,7 @@ class ReplyIrcProxy(RichReplyMethods):
 SimpleProxy = ReplyIrcProxy # Backwards-compatibility
 
 class NestedCommandsIrcProxy(ReplyIrcProxy):
-    "A proxy object to allow proper nested of commands (even threaded ones)."
+    "A proxy object to allow proper nesting of commands (even threaded ones)."
     _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, args, nested=0):
         assert isinstance(args, list), 'Args should be a list, not a string.'
@@ -939,13 +940,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         else:
             raise ArgumentError
 
-    def getRealIrc(self):
-        """Returns the real irclib.Irc object underlying this proxy chain."""
-        if isinstance(self.irc, irclib.Irc):
-            return self.irc
-        else:
-            return self.irc.getRealIrc()
-
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
@@ -1061,7 +1055,7 @@ class Commands(BasePlugin):
         'callCommand',
         'invalidCommand',
         )
-    # For awhile, a comment stood here to say, "Eventually callCommand."  But
+    # For a while, a comment stood here to say, "Eventually callCommand."  But
     # that's wrong, because we can't do generic error handling in this
     # callCommand -- plugins need to be able to override callCommand and do
     # error handling there (see the Web plugin for an example).
@@ -1237,7 +1231,7 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
         irc = SimpleProxy(irc, msg)
         if msg.command == 'PRIVMSG':
             if self.noIgnore or \
-               not ircdb.checkIgnored(msg.prefix,msg.args[0]) or \
+               not ircdb.checkIgnored(msg.prefix, msg.args[0]) or \
                not ircutils.isUserHostmask(msg.prefix):  # Some services impl.
                 self.__parent.__call__(irc, msg)
         else:
