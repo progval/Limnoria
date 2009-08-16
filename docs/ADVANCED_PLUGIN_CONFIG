@@ -48,12 +48,12 @@ config.py code imports the four most useful functions from that module:
           - acceptEmpty (optional): Defaults to False. Specifies whether or not
             to accept no input as an answer.
 
-    * "anything" is basically a special case of except which takes anything
+    * "anything" is basically a special case of expect which takes anything
       (including no input) and has no default value specified. It takes only
       one argument:
           - prompt: The text to be displayed
 
-    * "something" is also a special case of except, requiring some input and
+    * "something" is also a special case of expect, requiring some input and
       allowing an optional default. It takes the following arguments:
           - prompt: The text to be displayed
           - default (optional): Defaults to None. The default value to use if
@@ -63,7 +63,7 @@ config.py code imports the four most useful functions from that module:
       a "y" for yes, or "n" for no. It takes the following arguments:
           - prompt: The text to be displayed
           - default (optional): Defaults to None. Default value to use if the
-            user doesn't put anything.
+            user doesn't input anything.
 
 All of these functions, with the exception of "yn", return whatever string
 results as the answer whether it be input from the user or specified as the

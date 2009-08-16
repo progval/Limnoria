@@ -47,10 +47,10 @@ from utils.structures import queue, smallqueue, RingBuffer
 ###
 # The base class for a callback to be registered with an Irc object.  Shows
 # the required interface for callbacks -- name(),
-# inFilter(irc, msg), outFilter(irc, msg), and __call__(irc, msg) [used so
-# functions can be used as callbacks conceivable, and so if refactoring ever
+# inFilter(irc, msg), outFilter(irc, msg), and __call__(irc, msg) [used so as
+# to make functions used as callbacks conceivable, and so if refactoring ever
 # changes the nature of the callbacks from classes to functions, syntactical
-# changes elsewhere won't be required.
+# changes elsewhere won't be required.]
 ###
 
 class IrcCommandDispatcher(object):
@@ -153,7 +153,7 @@ class IrcMsgQueue(object):
     maintain a priority queue of the messages would be the ideal way to do
     intelligent queuing.
 
-    As it stands, however, we simple keep track of 'high priority' messages,
+    As it stands, however, we simply keep track of 'high priority' messages,
     'low priority' messages, and normal messages, and just make sure to return
     the 'high priority' ones before the normal ones before the 'low priority'
     ones.

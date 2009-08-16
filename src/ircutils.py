@@ -28,10 +28,10 @@
 ###
 
 """
-Provides a great number of useful utility functions IRC.  Things to muck around
-with hostmasks, set bold or color on strings, IRC-case-insensitive dicts, a
-nick class to handle nicks (so comparisons and hashing and whatnot work in an
-IRC-case-insensitive fashion), and numerous other things.
+Provides a great number of useful utility functions for IRC.  Things to muck
+around with hostmasks, set bold or color on strings, IRC-case-insensitive
+dicts, a nick class to handle nicks (so comparisons and hashing and whatnot
+work in an IRC-case-insensitive fashion), and numerous other things.
 """
 
 import re
@@ -461,9 +461,9 @@ def replyTo(msg):
         return msg.nick
 
 def dccIP(ip):
-    """Returns in IP in the proper for DCC."""
+    """Converts an IP string to the DCC integer form."""
     assert utils.net.isIP(ip), \
-           'argument must be a string ip in xxx.yyy.zzz.www format.'
+           'argument must be a string ip in xxx.xxx.xxx.xxx format.'
     i = 0
     x = 256**3
     for quad in ip.split('.'):

@@ -251,7 +251,7 @@ class ArgumentError(Error):
 
 class Tokenizer(object):
     # This will be used as a global environment to evaluate strings in.
-    # Evaluation is, of course, necessary in order to allowed escaped
+    # Evaluation is, of course, necessary in order to allow escaped
     # characters to be properly handled.
     #
     # These are the characters valid in a token.  Everything printable except
@@ -332,7 +332,7 @@ class Tokenizer(object):
             if not args:
                 raise SyntaxError, '"|" with nothing following.  I ' \
                                    'obviously can\'t do a pipe with ' \
-                                   'nothing before the |.'
+                                   'nothing after the |.'
             args.append(ends.pop())
             while ends:
                 args[-1].append(ends.pop())

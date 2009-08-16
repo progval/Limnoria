@@ -38,9 +38,9 @@ import supybot.callbacks as callbacks
 
 class Plugin(callbacks.Plugin):
     """This plugin exists to help users manage their plugins.  Use 'plugin
-    list' to list the loaded plugins; use 'plugin help' to get this sort of
-    help from other plugins; use the 'plugin' command itself to determine what
-    plugin a command exists in."""
+    list' to list the loaded plugins; use 'plugin help' to get the description
+    of a plugin; use the 'plugin' command itself to determine what plugin a
+    command exists in."""
     def help(self, irc, msg, args, cb):
         """<plugin>
 

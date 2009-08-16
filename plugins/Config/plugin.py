@@ -67,8 +67,9 @@ def getCapability(name):
     while parts:
         part = parts.pop()
         if ircutils.isChannel(part):
-            # If a registry value has a channel in it, it requires a channel.op
-            # capability, or so we assume.  We'll see if we're proven wrong.
+            # If a registry value has a channel in it, it requires a
+            # 'channel,op' capability, or so we assume.  We'll see if we're
+            # proven wrong.
             capability = ircdb.makeChannelCapability(part, 'op')
         ### Do more later, for specific capabilities/sections.
     return capability

@@ -126,7 +126,7 @@ class String(callbacks.Plugin):
         If <regexp> is of the form m/regexp/flags, returns the portion of
         <text> that matches the regexp.  If <regexp> is of the form
         s/regexp/replacement/flags, returns the result of applying such a
-        regexp to <text>
+        regexp to <text>.
         """
         if isinstance(ff, (types.FunctionType, types.MethodType)):
             f = ff

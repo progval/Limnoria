@@ -124,11 +124,11 @@ Customizing Wrap
 Converters alone are a pretty powerful tool, but for even more advanced (yet
 simpler!) argument handling you may want to use contexts. Contexts describe how
 the converters are applied to the arguments, while the converters themselves
-actually do the actual parsing and validation.
+do the actual parsing and validation.
 
 For example, one of the contexts is "optional". By using this context, you're
 saying that a given argument is not required, and if the supplied converter
-doesn't find something it likes, we should use some default. Yet another
+doesn't find anything it likes, we should use some default. Yet another
 example is the "reverse" context. This context tells the supplied converter to
 look at the last argument and work backwards instead of the normal
 first-to-last way of looking at arguments.
@@ -139,14 +139,16 @@ will work as-is. However, contexts let you do some very powerful things in very
 easy ways, and are a good thing to know how to use.
 
 Now, how do you use them? Well, they are in the global namespace of
-src/commands.py, so your previous import line will import them all, so you can
+src/commands.py, so your previous import line will import them all; you can
 call them just as you call wrap. In fact, the way you use them is you simply
-call the context function you want to use, passing in the converter and its
-arguments in as arguments. It's quite simple. Here's an example:
+call the context function you want to use, with the converter (and its
+arguments) as arguments. It's quite simple. Here's an example:
 
    commandname = wrap(commandname, [optional('int'), many('something')])
 
-In this example, our command is looking for an optional integer argument first. Then, after that, any number of arguments which can be anything (as long as they are something, of course).
+In this example, our command is looking for an optional integer argument first.
+Then, after that, any number of arguments which can be anything (as long as
+they are something, of course).
 
 Do note, however, that the type of the arguments that are returned can be
 changed if you apply a context to it. So, optional("int") may very well return
@@ -176,9 +178,9 @@ optional, the default value is shown.
 
 "int", type="integer", p=None
     Gets an integer. The "type" text can be used to customize the error message
-    received when the argument is not an integer. p is an optional predicate to
-    test the integer with. If p(i) fails (where i is the integer arg parsed out
-    of the argument string), the arg will not be accepted.
+    received when the argument is not an integer. "p" is an optional predicate
+    to test the integer with. If p(i) fails (where i is the integer arg parsed
+    out of the argument string), the arg will not be accepted.
 
 "index"
     Basically ("int", "index"), but with a twist. This will take a 1-based
@@ -222,7 +224,7 @@ optional, the default value is shown.
 
 "letter"
     Looks for a single letter. (Technically, it looks for any one-element
-    sequence)
+    sequence).
 
 "haveOp", action="do that"
     Simply requires that the bot have ops in the channel that the command is
@@ -251,7 +253,7 @@ optional, the default value is shown.
 
 "seenNick"
     Checks that the arg is a nick that the bot has seen (NOTE: this is limited
-    by the size of the history buffer that the bot has)
+    by the size of the history buffer that the bot has).
 
 "channel"
     Gets a channel to use the command in. If the channel isn't supplied, uses

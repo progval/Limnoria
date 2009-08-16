@@ -40,10 +40,10 @@ def configure(advanced):
 
 URL = conf.registerPlugin('URL')
 conf.registerChannelValue(URL, 'nonSnarfingRegexp',
-    registry.Regexp(None, """Determines what URLs are to be snarfed and stored
-    in the database in the channel; URLs matching the regexp given will not be
-    snarfed.  Give the empty string if you have no URLs that you'd like to
-    exclude from being snarfed."""))
+    registry.Regexp(None, """Determines what URLs are not to be snarfed and
+    stored in the database for the channel; URLs matching the given regexp will
+    not be snarfed.  Give the empty string if you have no URLs that you'd like
+    to exclude from being snarfed."""))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

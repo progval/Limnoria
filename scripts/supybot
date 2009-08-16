@@ -129,7 +129,7 @@ version = '0.83.4.1+git'
 if __name__ == '__main__':
     ###
     # Options:
-    # -p (profiling)
+    # -P (profiling)
     # -n, --nick (nick)
     # --startup (commands to run onStart)
     # --connect (commands to run afterConnect)
@@ -177,12 +177,12 @@ if __name__ == '__main__':
             sys.exit(-1)
 
     if len(args) > 1:
-        parser.error("""Only one configuration option should be specified.""")
+        parser.error("""Only one configuration file should be specified.""")
     elif not args:
         parser.error(utils.str.normalizeWhitespace("""It seems you've given me
-        no configuration file.  If you have a configuration file, be sure to
-        tell its filename.  If you don't have a configuration file, read
-        docs/GETTING_STARTED and follow its directions."""))
+        no configuration file.  If you do have a configuration file, be sure to
+        specify the filename.  If you don't have a configuration file, read
+        docs/GETTING_STARTED and follow the instructions."""))
     else:
         registryFilename = args.pop()
         try:

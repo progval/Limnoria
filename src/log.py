@@ -47,7 +47,7 @@ import supybot.ircutils as ircutils
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
 
 ###
-# This is for testing, of course.  Mostly is just disables the firewall code
+# This is for testing, of course.  Mostly it just disables the firewall code
 # so exceptions can propagate.
 ###
 testing = False

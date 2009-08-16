@@ -36,7 +36,7 @@ class AnonymousTestCase(ChannelPluginTestCase):
         try:
             orig = conf.supybot.plugins.Anonymous.requireRegistration()
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
-            m = self.assertNotError('anonymous say %s foo!'%self.channel)
+            m = self.assertNotError('anonymous say %s foo!' % self.channel)
             self.failUnless(m.args[1] == 'foo!')
         finally:
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(orig)

@@ -61,7 +61,7 @@ class IrcMsg(object):
     any of three major (sets of) arguments.
 
     Called with no keyword arguments, it takes a single string that is a raw
-    IRC message (such as one taken straight from the network.
+    IRC message (such as one taken straight from the network).
 
     Called with keyword arguments, it *requires* a command parameter.  Args is
     optional, but with most commands will be necessary.  Prefix is obviously

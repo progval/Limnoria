@@ -55,7 +55,7 @@ network = True
 suites = []
 
 originalCallbacksGetHelp = callbacks.getHelp
-lastGetHelp = 'x'*1000
+lastGetHelp = 'x' * 1000
 def cachingGetHelp(method, name=None, doc=None):
     global lastGetHelp
     lastGetHelp = originalCallbacksGetHelp(method, name, doc)

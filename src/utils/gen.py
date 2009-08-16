@@ -72,9 +72,9 @@ def abbrev(strings, d=None):
 def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
                 weeks=True, days=True, hours=True, minutes=True, seconds=True):
     """Given <elapsed> seconds, returns a string with an English description of
-    how much time as passed.  leadingZeroes determines whether 0 days, 0 hours,
-    etc. will be printed; the others determine what larger time periods should
-    be used.
+    the amount of time passed.  leadingZeroes determines whether 0 days, 0
+    hours, etc. will be printed; the others determine what larger time periods
+    should be used.
     """
     ret = []
     before = False

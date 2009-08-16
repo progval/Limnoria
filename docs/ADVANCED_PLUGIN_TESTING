@@ -146,16 +146,16 @@ would self.nick be set.
 As for the rest of the method, you'll notice a few things that are available
 to the plugin test author. self.prefix refers to the hostmask of the
 hypothetical test user which will be "talking" to the bot, issuing commands.
-We set it to some generically fake hostmask, and then we use feedMsg to feed
-it a private message (using the bot's nick, accessible via self.nick) to
-register the username "tester" with the password "moo". We have to do it this
-way (rather than what you'll find out is the standard way of issuing commands
-to the bot in test cases a little later) because registration must be done in
-private. And lastly, since feedMsg doesn't dequeue any messages from the bot
-after getting fed a message, we perform a getMsg to get the response. You're
-not expected to know all this yet, but do take note of it since using these
-methods in test-writing is not uncommon. These utility methods as well as all
-of the available assertions are covered in the next section.
+We set it to some generically fake hostmask, and then we use feedMsg to send
+a private message (using the bot's nick, accessible via self.nick) to the bot
+registering the username "tester" with the password "moo". We have to do it
+this way (rather than what you'll find out is the standard way of issuing
+commands to the bot in test cases a little later) because registration must be
+done in private. And lastly, since feedMsg doesn't dequeue any messages from
+the bot after being fed a message, we perform a getMsg to get the response.
+You're not expected to know all this yet, but do take note of it since using
+these methods in test-writing is not uncommon. These utility methods as well as
+all of the available assertions are covered in the next section.
 
 So, now in any of the test methods we write, we'll be able to count on the
 fact that there will be a registered user "tester" with a password of "moo",
