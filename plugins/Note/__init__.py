@@ -43,7 +43,7 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {'inkedmn': ['Original implementation.']}
+__contributors__ = { supybot.authors.inkedmn: ['Original implementation.'] }
 
 import config
 import plugin
