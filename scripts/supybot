@@ -45,7 +45,8 @@ import signal
 import cStringIO as StringIO
 
 if sys.version_info < (2, 3, 0):
-    sys.stderr.write('This program requires Python >= 2.3.0\n')
+    sys.stderr.write('This program requires Python >= 2.3.0')
+    sys.stderr.write(os.linesep)
     sys.exit(-1)
 
 def _termHandler(signalNumber, stackFrame):
@@ -171,7 +172,8 @@ if __name__ == '__main__':
 
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
-            sys.stderr.write('Dude, don\'t even try to run this as root.\n')
+            sys.stderr.write('Dude, don\'t even try to run this as root.')
+            sys.stderr.write(os.linesep)
             sys.exit(-1)
 
     if len(args) > 1:
@@ -208,9 +210,10 @@ if __name__ == '__main__':
         errmsg = textwrap.fill('%s: %s' % (name, e),
                                width=78, subsequent_indent=' '*len(name))
         sys.stderr.write(errmsg)
-        sys.stderr.write('\n')
+        sys.stderr.write(os.linesep)
         sys.stderr.write('Please fix this error in your configuration file '
-                         'and restart your bot.\n')
+                         'and restart your bot.')
+        sys.stderr.write(os.linesep)
         sys.exit(-1)
     import supybot.conf as conf
     import supybot.world as world
@@ -292,7 +295,7 @@ if __name__ == '__main__':
         try:
             fd = file(pidFile, 'w')
             pid = os.getpid()
-            fd.write('%s\n' % pid)
+            fd.write('%s%s' % (pid, os.linesep))
             fd.close()
             def removePidFile():
                 try:
