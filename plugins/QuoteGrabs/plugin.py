@@ -128,6 +128,8 @@ class SqliteQuoteGrabsDB(object):
         cursor.execute("""SELECT id, quote FROM quotegrabs
                           WHERE nickeq(nick, %s)
                           ORDER BY id DESC""", nick)
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError
         return [QuoteGrabsRecord(id, text=quote)
                 for (id, quote) in cursor.fetchall()]
 
@@ -165,6 +167,27 @@ class SqliteQuoteGrabsDB(object):
         cursor.execute("""INSERT INTO quotegrabs
                           VALUES (NULL, %s, %s, %s, %s, %s)""",
                        msg.nick, msg.prefix, by, int(time.time()), text)
+        db.commit()
+
+    def remove(self, channel, grab=None):
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        if grab is not None:
+            # the testing if there actually *is* the to-be-deleted record is
+            # strictly unnecessary -- the DELETE operation would "succeed"
+            # anyway, but it's silly to just keep saying 'OK' no matter what,
+            # so...
+            cursor.execute("""SELECT * FROM quotegrabs WHERE id = %s""", grab)
+            if cursor.rowcount == 0:
+                raise dbi.NoRecordError
+            cursor.execute("""DELETE FROM quotegrabs WHERE id = %s""", grab)
+        else:
+            cursor.execute("""SELECT * FROM quotegrabs WHERE id = (SELECT MAX(id)
+                FROM quotegrabs)""")
+            if cursor.rowcount == 0:
+                raise dbi.NoRecordError
+            cursor.execute("""DELETE FROM quotegrabs WHERE id = (SELECT MAX(id)
+                FROM quotegrabs)""")
         db.commit()
 
     def search(self, channel, text):
@@ -240,6 +263,23 @@ class QuoteGrabs(callbacks.Plugin):
                 return
         irc.error('I couldn\'t find a proper message to grab.')
     grab = wrap(grab, ['channeldb', 'nick'])
+
+    def ungrab(self, irc, msg, args, channel, grab):
+        """[<channel>] <number>
+
+        Removes the grab <number> (the last by default) on <channel>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        try:
+            self.db.remove(channel, grab)
+            irc.replySuccess()
+        except dbi.NoRecordError:
+            if grab is None:
+                irc.error('Nothing to ungrab.')
+            else:
+                irc.error('Invalid grab number.')
+    ungrab = wrap(ungrab, ['channeldb', optional('id')])
 
     def quote(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
