@@ -51,6 +51,38 @@ class QuoteGrabsTestCase(ChannelPluginTestCase):
         self.assertNotError('grab foo')
         self.assertResponse('quote foo', '* foo moos')
 
+    def testUngrab(self):
+        testPrefix = 'foo!bar@baz'
+        # nothing yet
+        self.assertError('ungrab')
+        self.assertError('ungrab 2')
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        # still not grabbed
+        self.assertError('ungrab')
+        self.assertError('ungrab 3')
+        # grab and ungrab a quote
+        self.assertNotError('grab foo')
+        self.assertNotError('ungrab')
+
+        self.assertNotError('grab foo')
+        # this is not there...
+        self.assertError('ungrab 8883')
+        # ...unlike this...
+        self.assertNotError('ungrab 1')
+        # ...but not now anymore :-D
+        self.assertError('ungrab')
+        # grab two quotes and ungrab them by id
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        self.assertNotError('grab foo')
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'another',
+                                         prefix=testPrefix))
+        self.assertNotError('grab foo')
+        self.assertNotError('ungrab 1')
+        self.assertNotError('ungrab 2')
+        self.assertError('ungrab')
+
     def testList(self):
         testPrefix = 'foo!bar@baz'
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'testList',
@@ -110,7 +142,6 @@ class QuoteGrabsTestCase(ChannelPluginTestCase):
         self.assertError('quotegrabs search test')  # still none in db
         self.assertNotError('grab foo')
         self.assertNotError('quotegrabs search test')
-
 
 class QuoteGrabsNonChannelTestCase(QuoteGrabsTestCase):
     config = { 'databases.plugins.channelSpecific' : False }
