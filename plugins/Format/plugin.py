@@ -35,14 +35,6 @@ from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-def configure(advanced):
-    # This will be called by setup.py to configure this module.  Advanced is
-    # a bool that specifies whether the user identified himself as an advanced
-    # user or not.  You should effect your configuration by manipulating the
-    # registry as appropriate.
-    from supybot.questions import expect, anything, something, yn
-    conf.registerPlugin('Format', True)
-
 class Format(callbacks.Plugin):
     def bold(self, irc, msg, args, text):
         """<text>
