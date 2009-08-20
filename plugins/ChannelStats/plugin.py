@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -60,6 +61,7 @@ class ChannelStat(irclib.IrcCommandDispatcher):
         self.smileys = smileys
         self.topics = topics
         self.words = words
+
     def values(self):
         return [getattr(self, s) for s in self._values]
 
@@ -311,7 +313,7 @@ class ChannelStats(callbacks.Plugin):
                 users.append((v, ircdb.users.getUser(id).name))
         users.sort()
         users.reverse()
-        s = utils.str.commaAndify(['#%s %s (%.3g)' % (i, u, v)
+        s = utils.str.commaAndify(['#%s %s (%.3g)' % (i+1, u, v)
                                    for (i, (v, u)) in enumerate(users)])
         irc.reply(s)
     rank = wrap(rank, ['channeldb', 'text'])
