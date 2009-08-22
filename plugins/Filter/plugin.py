@@ -109,7 +109,7 @@ class Filter(callbacks.Plugin):
         text = filter(lambda c: c not in 'aeiou', text)
         irc.reply(text)
     hebrew = wrap(hebrew, ['text'])
-        
+
     def squish(self, irc, msg, args, text):
         """<text>
 
@@ -620,32 +620,50 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     azn = wrap(azn, ['text'])
 
+    # TODO: 2,4,;
+    # XXX suckiest: B,K,P,Q,T
+    # alternatives: 3: U+2107
     _uniudMap = {
-        ' ': u' ', '!': u'\u00a1', '"': u'\u201e', '#': u'#', '$': u'$',
-        '%': u'%', '&': u'\u214b', "'": u'\u0375', '(': u')', ')': u'(',
-        '*': u'*', '+': u'+', ',': u'\u2018', '-': u'-', '.': u'\u02d9',
-        '/': u'/', '0': u'0', '1': u'1', '2': u'', '3': u'', '4': u'',
-        '5': u'\u1515', '6': u'9', '7': u'', '8': u'8', '9': u'6', ':': u':',
-        ';': u'\u22c5\u0315', '<': u'>', '=': u'=', '>': u'<', '?': u'\u00bf',
-        '@': u'@', 'A': u'\u13cc', 'B': u'\u03f4', 'C': u'\u0186', 'D': u'p',
-        'E': u'\u018e', 'F': u'\u2132', 'G': u'\u2141', 'H': u'H', 'I': u'I',
-        'J': u'\u017f\u0332', 'K': u'\u029e', 'L': u'\u2142', 'M': u'\u019c',
-        'N': u'N', 'O': u'O', 'P': u'd', 'Q': u'\u053e', 'R': u'\u0222',
-        'S': u'S', 'T': u'\u22a5', 'U': u'\u144e', 'V': u'\u039b', 'W': u'M',
-        'X': u'X', 'Y': u'\u2144', 'Z': u'Z', '[': u']', '\\': u'\\',
-        ']': u'[', '^': u'\u203f', '_': u'\u203e', '`': u'\u0020\u0316',
-        'a': u'\u0250', 'b': u'q', 'c': u'\u0254', 'd': u'p', 'e': u'\u01dd',
-        'f': u'\u025f', 'g': u'\u0253', 'h': u'\u0265', 'i': u'\u0131\u0323',
-        'j': u'\u017f\u0323', 'k': u'\u029e', 'l': u'\u01ae', 'm': u'\u026f',
-        'n': u'u', 'o': u'o', 'p': u'd', 'q': u'b', 'r': u'\u0279', 's': u's',
-        't': u'\u0287', 'u': u'n', 'v': u'\u028c', 'w': u'\u028d', 'x': u'x',
-        'y': u'\u028e', 'z': u'z', '{': u'}', '|': u'|', '}': u'{',
-        '~': u'\u223c',
+    ' ': u' ',      '0': u'0',      '@': u'@',
+    '!': u'\u00a1', '1': u'1',      'A': u'\u2200',
+    '"': u'\u201e', '2': u'\u2681', 'B': u'q',
+    '#': u'#',      '3': u'\u0190', 'C': u'\u0186',
+    '$': u'$',      '4': u'\u2683', 'D': u'\u15e1',
+    '%': u'%',      '5': u'\u1515', 'E': u'\u018e',
+    '&': u'\u214b', '6': u'9',      'F': u'\u2132',
+    "'": u'\u0375', '7': u'L',      'G': u'\u2141',
+    '(': u')',      '8': u'8',      'H': u'H',
+    ')': u'(',      '9': u'6',      'I': u'I',
+    '*': u'*',      ':': u':',      'J': u'\u148b',
+    '+': u'+',      ';': u';',      'K': u'\u029e',
+    ',': u'\u2018', '<': u'>',      'L': u'\u2142',
+    '-': u'-',      '=': u'=',      'M': u'\u019c',
+    '.': u'\u02d9', '>': u'<',      'N': u'N',
+    '/': u'/',      '?': u'\u00bf', 'O': u'O',
+
+    'P': u'd',      '`': u'\u02ce', 'p': u'd',
+    'Q': u'b',      'a': u'\u0250', 'q': u'b',
+    'R': u'\u1d1a', 'b': u'q',      'r': u'\u0279',
+    'S': u'S',      'c': u'\u0254', 's': u's',
+    'T': u'\u22a5', 'd': u'p',      't': u'\u0287',
+    'U': u'\u144e', 'e': u'\u01dd', 'u': u'n',
+    'V': u'\u039b', 'f': u'\u214e', 'v': u'\u028c',
+    'W': u'M',      'g': u'\u0253', 'w': u'\u028d',
+    'X': u'X',      'h': u'\u0265', 'x': u'x',
+    'Y': u'\u2144', 'i': u'\u1d09', 'y': u'\u028e',
+    'Z': u'Z',      'j': u'\u027f', 'z': u'z',
+    '[': u']',      'k': u'\u029e', '{': u'}',
+    '\\': u'\\',    'l': u'\u05df', '|': u'|',
+    ']': u'[',      'm': u'\u026f', '}': u'{',
+    '^': u'\u2335', 'n': u'u',      '~': u'~',
+    '_': u'\u203e', 'o': u'o',
     }
+
     def uniud(self, irc, msg, args, text):
         """<text>
 
-        Returns <text> rotated 180 degrees.
+        Returns <text> rotated 180 degrees. Only really works for ASCII
+        printable characters.
         """
         turned = []
         tlen = 0
