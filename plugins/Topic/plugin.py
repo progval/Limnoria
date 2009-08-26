@@ -232,6 +232,21 @@ class Topic(callbacks.Plugin):
             # We're joining a channel, let's watch for the topic.
             self.watchingFor332.add(msg.args[0])
 
+    def do315(self, irc, msg):
+        # Try to restore the topic when not set yet.
+        channel = msg.args[1]
+        c = irc.state.channels[channel]
+        if irc.nick not in c.ops and 't' in c.modes:
+            self.log.debug('Not trying to restore topic in %s. I\'m not opped '
+                               'and %s is +t.', channel, channel)
+            return
+        if c.topic == '':
+            try:
+                topics = self.lastTopics[channel]
+                self._sendTopics(irc, channel, topics)
+            except KeyError:
+                self.log.debug('No topic to auto-restore in %s.', channel)
+
     def do332(self, irc, msg):
         if msg.args[1] in self.watchingFor332:
             self.watchingFor332.remove(msg.args[1])
