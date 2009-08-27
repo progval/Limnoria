@@ -174,11 +174,11 @@ class RSS(callbacks.Plugin):
                          'Unable to download feed.'):
                     self.log.debug('%s %u', s, url)
                     return
-            def canonize(headline):
+            def normalize(headline):
                 return (tuple(headline[0].lower().split()), headline[1])
-            oldheadlines = set(map(canonize, oldheadlines))
+            oldheadlines = set(map(normalize, oldheadlines))
             for (i, headline) in enumerate(newheadlines):
-                if canonize(headline) in oldheadlines:
+                if normalize(headline) in oldheadlines:
                     newheadlines[i] = None
             newheadlines = filter(None, newheadlines) # Removes Nones.
             if newheadlines:

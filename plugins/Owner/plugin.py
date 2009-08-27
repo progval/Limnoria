@@ -82,7 +82,7 @@ def registerRename(plugin, command=None, newName=None):
 def renameCommand(cb, name, newName):
     assert not hasattr(cb, newName), 'Cannot rename over existing attributes.'
     assert newName == callbacks.canonicalName(newName), \
-           'newName must already be canonized.'
+           'newName must already be normalized.'
     if name != newName:
         method = getattr(cb.__class__, name)
         setattr(cb.__class__, newName, method)

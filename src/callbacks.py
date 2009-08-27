@@ -1078,7 +1078,7 @@ class Commands(BasePlugin):
         # This function is ugly, but I don't want users to call methods like
         # doPrivmsg or __init__ or whatever, and this is good to stop them.
 
-        # Don't canonize this name: consider outFilter(self, irc, msg).
+        # Don't normalize this name: consider outFilter(self, irc, msg).
         # name = canonicalName(name)
         if self.isDisabled(name):
             return False
