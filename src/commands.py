@@ -278,6 +278,7 @@ def getBanmask(irc, msg, args, state):
     getHostmask(irc, msg, args, state)
     if not state.channel:
         getChannel(irc, msg, args, state)
+    channel = state.channel
     banmaskstyle = conf.supybot.protocols.irc.banmask
     state.args[-1] = banmaskstyle.makeBanmask(state.args[-1])
 
