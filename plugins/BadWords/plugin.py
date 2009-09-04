@@ -87,7 +87,7 @@ class BadWords(callbacks.Privmsg):
             self.lastModified = time.time()
 
     def outFilter(self, irc, msg):
-        if self.filtering and msg.command == 'PRIVMSG':
+        if self.filtering and msg.command == 'PRIVMSG' and self.words():
             self.updateRegexp()
             s = msg.args[1]
             if self.registryValue('stripFormatting'):
