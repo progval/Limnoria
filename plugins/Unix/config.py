@@ -66,7 +66,7 @@ conf.registerGlobalValue(Unix.fortune, 'equal',
     fortune program."""))
 conf.registerGlobalValue(Unix.fortune, 'offensive',
     registry.Boolean(False, """Determines whether fortune will retrieve
-    offensive fortunes along with the normal fortunes.  This sends the -o
+    offensive fortunes along with the normal fortunes.  This sends the -a
     option to the fortune program."""))
 conf.registerGlobalValue(Unix.fortune, 'files',
     registry.SpaceSeparatedListOfStrings([], """Determines what specific file
