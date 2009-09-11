@@ -864,9 +864,9 @@ registerGroup(supybot.databases, 'types')
 registerGlobalValue(supybot.databases.types, 'cdb', CDB(True, """Determines
     whether CDB databases will be allowed as a database implementation."""))
 registerGlobalValue(supybot.databases.types.cdb, 'maximumModifications',
-    registry.Float(0.5, """Determines how often CDB databases will have their
-    modifications flushed to disk.  When the number of modified records is
-    greater than this part of the number of unmodified records, the database
+    registry.Probability(0.5, """Determines how often CDB databases will have
+    their modifications flushed to disk.  When the number of modified records
+    is greater than this fraction of the total number of records, the database
     will be entirely flushed to disk."""))
 
 # XXX Configuration variables for dbi, sqlite, flat, mysql, etc.
