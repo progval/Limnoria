@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -87,17 +88,21 @@ defaultHeaders = {
 # application-specific function.  Feel free to use a callable here.
 proxy = None
 
-def getUrlFd(url, headers=None):
-    """Gets a file-like object for a url."""
+def getUrlFd(url, headers=None, data=None):
+    """getUrlFd(url, headers=None, data=None)
+
+    Opens the given url and returns a file object.  Headers and data are
+    dicts as per urllib2.Request's arguments."""
     if headers is None:
         headers = defaultHeaders
     try:
         if not isinstance(url, urllib2.Request):
             if '#' in url:
                 url = url[:url.index('#')]
-            request = urllib2.Request(url, headers=headers)
+            request = urllib2.Request(url, headers=headers, data=data)
         else:
             request = url
+            request.add_data(data)
         httpProxy = force(proxy)
         if httpProxy:
             request.set_proxy(httpProxy, 'http')
@@ -117,9 +122,13 @@ def getUrlFd(url, headers=None):
     except ValueError, e:
         raise Error, strError(e)
 
-def getUrl(url, size=None, headers=None):
-    """Gets a page.  Returns a string that is the page gotten."""
-    fd = getUrlFd(url, headers=headers)
+def getUrl(url, size=None, headers=None, data=None):
+    """getUrl(url, size=None, headers=None, data=None)
+
+    Gets a page.  Returns a string that is the page gotten.  Size is an integer
+    number of bytes to read from the URL.  Headers and data are dicts as per
+    urllib2.Request's arguments."""
+    fd = getUrlFd(url, headers=headers, data=data)
     try:
         if size is None:
             text = fd.read()
