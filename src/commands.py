@@ -292,6 +292,8 @@ def getUser(irc, msg, args, state):
         state.errorNotRegistered(Raise=True)
 
 def getOtherUser(irc, msg, args, state):
+    # Although ircdb.users.getUser could accept a hostmask, we're explicitly
+    # excluding that from our interface with this check
     if ircutils.isUserHostmask(args[0]):
         state.errorNoUser(args[0])
     try:
