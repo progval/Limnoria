@@ -42,6 +42,7 @@ from str import normalizeWhitespace
 Request = urllib2.Request
 urlquote = urllib.quote
 urlunquote = urllib.unquote
+urlencode = urllib.urlencode
 
 class Error(Exception):
     pass
@@ -92,7 +93,7 @@ def getUrlFd(url, headers=None, data=None):
     """getUrlFd(url, headers=None, data=None)
 
     Opens the given url and returns a file object.  Headers and data are
-    dicts as per urllib2.Request's arguments."""
+    a dict and string, respectively, as per urllib2.Request's arguments."""
     if headers is None:
         headers = defaultHeaders
     try:
