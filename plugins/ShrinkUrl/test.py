@@ -114,7 +114,4 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
             finally:
                 conf.supybot.plugins.ShrinkUrl.nonSnarfingRegexp.setValue(snarf)
 
-
-
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
-

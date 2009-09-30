@@ -40,30 +40,25 @@ import supybot.callbacks as callbacks
 
 class CdbShrunkenUrlDB(object):
     def __init__(self, filename):
-        self.tinyDb = conf.supybot.databases.types.cdb.connect(
-            filename.replace('.db', '.Tiny.db'))
-        self.lnDb = conf.supybot.databases.types.cdb.connect(
-            filename.replace('.db', '.Ln.db'))
+        self.dbs = {}
+        cdb = conf.supybot.databases.types.cdb
+        for service in conf.supybot.plugins.ShrinkUrl.default.validStrings:
+            dbname = filename.replace('.db', service.capitalize() + '.db')
+            self.dbs[service] = cdb.connect(dbname)
 
-    def getTiny(self, url):
-        return self.tinyDb[url]
+    def get(self, service, url):
+        return self.dbs[service][url]
 
-    def setTiny(self, url, tinyurl):
-        self.tinyDb[url] = tinyurl
-
-    def getLn(self, url):
-        return self.lnDb[url]
-
-    def setLn(self, url, lnurl):
-        self.lnDb[url] = lnurl
+    def set(self, service, url, shrunkurl):
+        self.dbs[service][url] = shrunkurl
 
     def close(self):
-        self.tinyDb.close()
-        self.lnDb.close()
+        for service in self.dbs:
+            self.dbs[service].close()
 
     def flush(self):
-        self.tinyDb.flush()
-        self.lnDb.flush()
+        for service in self.dbs:
+            self.dbs[service].flush()
 
 ShrunkenUrlDB = plugins.DB('ShrinkUrl', {'cdb': CdbShrunkenUrlDB})
 
@@ -148,13 +143,13 @@ class ShrinkUrl(callbacks.PluginRegexp):
     def _getLnUrl(self, url):
         url = utils.web.urlquote(url)
         try:
-            return (self.db.getLn(url), '200')
+            return (self.db.get('ln', url), '200')
         except KeyError:
             text = utils.web.getUrl('http://ln-s.net/home/api.jsp?url=' + url)
             (code, lnurl) = text.split(None, 1)
             lnurl = lnurl.strip()
             if code == '200':
-                self.db.setLn(url, lnurl)
+                self.db.set('ln', url, lnurl)
             else:
                 lnurl = None
             return (lnurl, code)
@@ -169,7 +164,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
             return
         (lnurl, error) = self._getLnUrl(url)
         if lnurl is not None:
-            domain = utils.web.getDomain(url)
             m = irc.reply(lnurl)
             m.tag('shrunken')
         else:
@@ -179,7 +173,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
     _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url):
         try:
-            return self.db.getTiny(url)
+            return self.db.get('tiny', url)
         except KeyError:
             s = utils.web.getUrl('http://tinyurl.com/create.php?url=' + url)
             m = self._tinyRe.search(s)
@@ -187,7 +181,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 tinyurl = None
             else:
                 tinyurl = m.group(1)
-                self.db.setTiny(url, tinyurl)
+                self.db.set('tiny', url, tinyurl)
             return tinyurl
 
     def tiny(self, irc, msg, args, url):
