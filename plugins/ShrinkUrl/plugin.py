@@ -199,6 +199,35 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.errorPossibleBug(str(e))
     tiny = thread(wrap(tiny, ['url']))
 
+    _xrlApi = 'http://metamark.net/api/rest/simple'
+    def _getXrlUrl(self, url):
+        quotedurl = utils.web.urlquote(url)
+        try:
+            return self.db.get('xrl', quotedurl)
+        except KeyError:
+            data = utils.web.urlencode({'long_url': url})
+            text = utils.web.getUrl(self._xrlApi, data=data)
+            if text.startswith('ERROR:'):
+                raise ShrinkError, text[6:]
+            self.db.set('xrl', quotedurl, text)
+            return text
+
+    def xrl(self, irc, msg, args, url):
+        """<url>
+
+        Returns an xrl.us version of <url>.
+        """
+        if len(url) < 17:
+            irc.error('Stop being a lazy-biotch and type the URL yourself.')
+            return
+        try:
+            xrlurl = self._getXrlUrl(url)
+            m = irc.reply(xrlurl)
+            if m is not None:
+                m.tag('shrunken')
+        except ShrinkError, e:
+            irc.error(str(e))
+    xrl = thread(wrap(xrl, ['url']))
 
 Class = ShrinkUrl
 

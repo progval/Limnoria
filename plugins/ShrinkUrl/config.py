@@ -40,7 +40,7 @@ def configure(advanced):
         conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
 
 class ShrinkService(registry.OnlySomeStrings):
-    validStrings = ('ln', 'tiny')
+    validStrings = ('ln', 'tiny', 'xrl')
 
 ShrinkUrl = conf.registerPlugin('ShrinkUrl')
 conf.registerChannelValue(ShrinkUrl, 'shrinkSnarfer',

@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -93,6 +94,38 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
                     'http://www.urbandictionary.com/define.php?'
                     'term=all+your+base+are+belong+to+us',
                     r'http://ln-s.net/2\$K.* \(at')
+            finally:
+                conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(False)
+
+        def testXrlurl(self):
+            try:
+                conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(False)
+                self.assertRegexp(
+                    'shrinkurl xrl http://sourceforge.net/tracker/?'
+                    'func=add&group_id=58965&atid=489447',
+                    r'http://xrl.us/bfnyi6')
+                conf.supybot.plugins.ShrinkUrl.default.setValue('xrl')
+                conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
+                self.assertRegexp(
+                    'shrinkurl xrl http://sourceforge.net/tracker/?'
+                    'func=add&group_id=58965&atid=489447',
+                    r'http://xrl.us/bfnyi6')
+            finally:
+                conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(False)
+
+        def testXrlsnarf(self):
+            try:
+                conf.supybot.snarfThrottle.setValue(1)
+                conf.supybot.plugins.ShrinkUrl.default.setValue('xrl')
+                conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
+                self.assertSnarfRegexp(
+                    'http://sourceforge.net/tracker/?func=add&'
+                    'group_id=58965&atid=489447',
+                    r'http://xrl.us/bfnyi6.* \(at')
+                self.assertSnarfRegexp(
+                    'http://www.urbandictionary.com/define.php?'
+                    'term=all+your+base+are+belong+to+us',
+                    r'http://xrl.us/bfnyji.* \(at')
             finally:
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(False)
 
