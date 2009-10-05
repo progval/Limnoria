@@ -51,7 +51,7 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
 
         def testTinysnarf(self):
             try:
-                conf.supybot.snarfThrottle.setValue(1)
+                conf.supybot.snarfThrottle.setValue(.5)
                 conf.supybot.plugins.ShrinkUrl.default.setValue('tiny')
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
                 self.assertSnarfRegexp(
@@ -83,7 +83,7 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
 
         def testLnsnarf(self):
             try:
-                conf.supybot.snarfThrottle.setValue(1)
+                conf.supybot.snarfThrottle.setValue(.5)
                 conf.supybot.plugins.ShrinkUrl.default.setValue('ln')
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
                 self.assertSnarfRegexp(
@@ -115,7 +115,7 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
 
         def testXrlsnarf(self):
             try:
-                conf.supybot.snarfThrottle.setValue(1)
+                conf.supybot.snarfThrottle.setValue(.5)
                 conf.supybot.plugins.ShrinkUrl.default.setValue('xrl')
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
                 self.assertSnarfRegexp(
@@ -133,7 +133,7 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
             tiny = conf.supybot.plugins.ShrinkUrl.shrinkSnarfer()
             snarf = conf.supybot.plugins.ShrinkUrl.nonSnarfingRegexp()
             try:
-                conf.supybot.snarfThrottle.setValue(1)
+                conf.supybot.snarfThrottle.setValue(.5)
                 conf.supybot.plugins.ShrinkUrl.default.setValue('tiny')
                 conf.supybot.plugins.ShrinkUrl.nonSnarfingRegexp.set('m/sf/')
                 conf.supybot.plugins.ShrinkUrl.minimumLength.setValue(10)
