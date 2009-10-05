@@ -62,6 +62,9 @@ class CdbShrunkenUrlDB(object):
 
 ShrunkenUrlDB = plugins.DB('ShrinkUrl', {'cdb': CdbShrunkenUrlDB})
 
+class ShrinkError(Exception):
+    pass
+
 class ShrinkUrl(callbacks.PluginRegexp):
     regexps = ['shrinkSnarfer']
     def __init__(self, irc):
@@ -87,7 +90,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 try:
                     shortUrl = getattr(self, '_get%sUrl' % cmd)(url)
                     text = text.replace(url, shortUrl)
-                except (utils.web.Error, AttributeError):
+                except (utils.web.Error, AttributeError, ShrinkError):
                     pass
         newMsg = ircmsgs.privmsg(channel, text, msg=msg)
         newMsg.tag('shrunken')
@@ -118,7 +121,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             if len(url) >= minlen:
                 try:
                     shorturl = getattr(self, '_get%sUrl' % cmd)(url)
-                except (utils.web.Error, AttributeError):
+                except (utils.web.Error, AttributeError, ShrinkError):
                     self.log.info('Couldn\'t get shorturl for %u', url)
                     return
                 if self.registryValue('shrinkSnarfer.showDomain', channel):
@@ -138,16 +141,16 @@ class ShrinkUrl(callbacks.PluginRegexp):
     def _getLnUrl(self, url):
         url = utils.web.urlquote(url)
         try:
-            return (self.db.get('ln', url), '200')
+            return self.db.get('ln', url)
         except KeyError:
             text = utils.web.getUrl('http://ln-s.net/home/api.jsp?url=' + url)
-            (code, lnurl) = text.split(None, 1)
-            lnurl = lnurl.strip()
+            (code, text) = text.split(None, 1)
+            text = text.strip()
             if code == '200':
-                self.db.set('ln', url, lnurl)
+                self.db.set('ln', url, text)
+                return text
             else:
-                lnurl = None
-            return (lnurl, code)
+                raise ShrinkError, text
 
     def ln(self, irc, msg, args, url):
         """<url>
@@ -157,13 +160,13 @@ class ShrinkUrl(callbacks.PluginRegexp):
         if len(url) < 17:
             irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
-        (lnurl, error) = self._getLnUrl(url)
-        if lnurl is not None:
+        try:
+            lnurl = self._getLnUrl(url)
             m = irc.reply(lnurl)
             if m is not None:
                 m.tag('shrunken')
-        else:
-            irc.error(error)
+        except ShrinkError, e:
+            irc.error(str(e))
     ln = thread(wrap(ln, ['url']))
 
     _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
@@ -174,10 +177,9 @@ class ShrinkUrl(callbacks.PluginRegexp):
             s = utils.web.getUrl('http://tinyurl.com/create.php?url=' + url)
             m = self._tinyRe.search(s)
             if m is None:
-                tinyurl = None
-            else:
-                tinyurl = m.group(1)
-                self.db.set('tiny', url, tinyurl)
+                raise ShrinkError, 'Could not parse the TinyURL.com results.'
+            tinyurl = m.group(1)
+            self.db.set('tiny', url, tinyurl)
             return tinyurl
 
     def tiny(self, irc, msg, args, url):
@@ -188,14 +190,13 @@ class ShrinkUrl(callbacks.PluginRegexp):
         if len(url) < 20:
             irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
-        tinyurl = self._getTinyUrl(url)
-        if tinyurl is not None:
+        try:
+            tinyurl = self._getTinyUrl(url)
             m = irc.reply(tinyurl)
             if m is not None:
                 m.tag('shrunken')
-        else:
-            s = 'Could not parse the TinyURL.com results page.'
-            irc.errorPossibleBug(s)
+        except ShrinkError, e:
+            irc.errorPossibleBug(str(e))
     tiny = thread(wrap(tiny, ['url']))
 
 
