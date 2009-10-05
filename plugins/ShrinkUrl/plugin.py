@@ -83,14 +83,11 @@ class ShrinkUrl(callbacks.PluginRegexp):
         for m in utils.web.httpUrlRe.finditer(text):
             url = m.group(1)
             if len(url) > self.registryValue('minimumLength', channel):
-                cmd = self.registryValue('default', channel)
+                cmd = self.registryValue('default', channel).capitalize()
                 try:
-                    if cmd == 'ln':
-                        (shortUrl, _) = self._getLnUrl(url)
-                    elif cmd == 'tiny':
-                        shortUrl = self._getTinyUrl(url)
+                    shortUrl = getattr(self, '_get%sUrl' % cmd)(url)
                     text = text.replace(url, shortUrl)
-                except utils.web.Error:
+                except (utils.web.Error, AttributeError):
                     pass
         newMsg = ircmsgs.privmsg(channel, text, msg=msg)
         newMsg.tag('shrunken')
@@ -117,14 +114,11 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 self.log.debug('Matched nonSnarfingRegexp: %u', url)
                 return
             minlen = self.registryValue('minimumLength', channel)
-            cmd = self.registryValue('default', channel)
+            cmd = self.registryValue('default', channel).capitalize()
             if len(url) >= minlen:
-                shorturl = None
-                if cmd == 'tiny':
-                    shorturl = self._getTinyUrl(url)
-                elif cmd == 'ln':
-                    (shorturl, _) = self._getLnUrl(url)
-                if shorturl is None:
+                try:
+                    shorturl = getattr(self, '_get%sUrl' % cmd)(url)
+                except (utils.web.Error, AttributeError):
                     self.log.info('Couldn\'t get shorturl for %u', url)
                     return
                 if self.registryValue('shrinkSnarfer.showDomain', channel):
@@ -136,7 +130,8 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 else:
                     s = format('%u%s', shorturl, domain)
                 m = irc.reply(s, prefixNick=False)
-                m.tag('shrunken')
+                if m is not None:
+                    m.tag('shrunken')
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
     shrinkSnarfer.__doc__ = utils.web.httpUrlRe
 
@@ -165,7 +160,8 @@ class ShrinkUrl(callbacks.PluginRegexp):
         (lnurl, error) = self._getLnUrl(url)
         if lnurl is not None:
             m = irc.reply(lnurl)
-            m.tag('shrunken')
+            if m is not None:
+                m.tag('shrunken')
         else:
             irc.error(error)
     ln = thread(wrap(ln, ['url']))
