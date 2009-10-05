@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -75,7 +76,6 @@ class Web(callbacks.PluginRegexp):
             irc.reply(str(e))
 
     def titleSnarfer(self, irc, msg, match):
-        r"https?://[^\])>\s]+"
         channel = msg.args[0]
         if not irc.isChannel(channel):
             return
@@ -105,6 +105,7 @@ class Web(callbacks.PluginRegexp):
                 s = format('Title: %s (at %s)', title, domain)
                 irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
+    titleSnarfer.__doc__ = utils.web.httpUrlRe
 
     def headers(self, irc, msg, args, url):
         """<url>

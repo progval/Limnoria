@@ -107,7 +107,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
         return msg
 
     def shrinkSnarfer(self, irc, msg, match):
-        r"https?://[^\])>\s]{13,}"
         channel = msg.args[0]
         if not irc.isChannel(channel):
             return
@@ -139,6 +138,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 m = irc.reply(s, prefixNick=False)
                 m.tag('shrunken')
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
+    shrinkSnarfer.__doc__ = utils.web.httpUrlRe
 
     def _getLnUrl(self, url):
         url = utils.web.urlquote(url)
