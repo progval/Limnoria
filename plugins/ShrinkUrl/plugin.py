@@ -229,6 +229,34 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.error(str(e))
     xrl = thread(wrap(xrl, ['url']))
 
+    _x0Api = 'http://api.x0.no/?%s'
+    def _getX0Url(self, url):
+        try:
+            return self.db.get('x0', url)
+        except KeyError:
+            text = utils.web.getUrl(self._x0Api % url)
+            if text.startswith('ERROR:'):
+                raise ShrinkError, text[6:]
+            self.db.set('x0', url, text)
+            return text
+
+    def x0(self, irc, msg, args, url):
+        """<url>
+
+        Returns an x0.no version of <url>.
+        """
+        if len(url) < 17:
+            irc.error('Stop being a lazy-biotch and type the URL yourself.')
+            return
+        try:
+            x0url = self._getX0Url(url)
+            m = irc.reply(x0url)
+            if m is not None:
+                m.tag('shrunken')
+        except ShrinkError, e:
+            irc.error(str(e))
+    x0 = thread(wrap(x0, ['url']))
+
 Class = ShrinkUrl
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +29,7 @@
 ###
 
 """
-Shrinks URLs using tinyurl.com and ln-s.net.
+Shrinks URLs using various URL shrinking services.
 """
 
 import supybot
@@ -40,7 +41,8 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {supybot.authors.jamessan: ['xrl.us support']}
+__contributors__ = {supybot.authors.jamessan: ['xrl.us support',
+                                               'x0.no support']}
 
 import config
 import plugin
