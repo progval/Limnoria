@@ -157,9 +157,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
 
         Returns an ln-s.net version of <url>.
         """
-        if len(url) < 17:
-            irc.error('Stop being a lazy-biotch and type the URL yourself.')
-            return
         try:
             lnurl = self._getLnUrl(url)
             m = irc.reply(lnurl)
@@ -187,9 +184,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
 
         Returns a TinyURL.com version of <url>
         """
-        if len(url) < 20:
-            irc.error('Stop being a lazy-biotch and type the URL yourself.')
-            return
         try:
             tinyurl = self._getTinyUrl(url)
             m = irc.reply(tinyurl)
@@ -217,9 +211,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
 
         Returns an xrl.us version of <url>.
         """
-        if len(url) < 17:
-            irc.error('Stop being a lazy-biotch and type the URL yourself.')
-            return
         try:
             xrlurl = self._getXrlUrl(url)
             m = irc.reply(xrlurl)
@@ -245,9 +236,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
 
         Returns an x0.no version of <url>.
         """
-        if len(url) < 17:
-            irc.error('Stop being a lazy-biotch and type the URL yourself.')
-            return
         try:
             x0url = self._getX0Url(url)
             m = irc.reply(x0url)
