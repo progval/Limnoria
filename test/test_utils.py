@@ -317,21 +317,6 @@ class StrTest(SupyTestCase):
         f = utils.str.perlReToReplacer('s/\b(\w+)\b/\1./g')
         self.assertEqual(f('foo bar baz'), 'foo. bar. baz.')
 
-    def testPerlVariableSubstitute(self):
-        f = utils.str.perlVariableSubstitute
-        vars = {'foo': 'bar', 'b a z': 'baz', 'b': 'c', 'i': 100,
-                'f': lambda: 'called'}
-        self.assertEqual(f(vars, '$foo'), 'bar')
-        self.assertEqual(f(vars, '${foo}'), 'bar')
-        self.assertEqual(f(vars, '$b'), 'c')
-        self.assertEqual(f(vars, '${b}'), 'c')
-        self.assertEqual(f(vars, '$i'), '100')
-        self.assertEqual(f(vars, '${i}'), '100')
-        self.assertEqual(f(vars, '$f'), 'called')
-        self.assertEqual(f(vars, '${f}'), 'called')
-        self.assertEqual(f(vars, '${b a z}'), 'baz')
-        self.assertEqual(f(vars, '$b:$i'), 'c:100')
-
     def testCommaAndify(self):
         f = utils.str.commaAndify
         L = ['foo']

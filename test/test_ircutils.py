@@ -204,7 +204,26 @@ class FunctionsTestCase(SupyTestCase):
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(original)
 
+    def testStandardSubstitute(self):
+        # Stub out random msg and irc objects that provide what
+        # standardSubstitute wants
+        msg = ircmsgs.IrcMsg(':%s PRIVMSG #channel :stuff' % self.hostmask)
+        class Irc(object):
+            nick = 'bob'
+        irc = Irc()
 
+        f = ircutils.standardSubstitute
+        vars = {'foo': 'bar', 'b': 'c', 'i': 100,
+                'f': lambda: 'called'}
+        self.assertEqual(f(irc, msg, '$foo', vars), 'bar')
+        self.assertEqual(f(irc, msg, '${foo}', vars), 'bar')
+        self.assertEqual(f(irc, msg, '$b', vars), 'c')
+        self.assertEqual(f(irc, msg, '${b}', vars), 'c')
+        self.assertEqual(f(irc, msg, '$i', vars), '100')
+        self.assertEqual(f(irc, msg, '${i}', vars), '100')
+        self.assertEqual(f(irc, msg, '$f', vars), 'called')
+        self.assertEqual(f(irc, msg, '${f}', vars), 'called')
+        self.assertEqual(f(irc, msg, '$b:$i', vars), 'c:100')
 
     def testBanmask(self):
         for msg in msgs:

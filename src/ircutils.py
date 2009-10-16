@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -508,6 +509,12 @@ class IrcDict(utils.InsensitivePreservingDict):
             s = toLower(s)
         return s
 
+class CallableValueIrcDict(IrcDict):
+    def __getitem__(self, k):
+        v = super(IrcDict, self).__getitem__(k)
+        if callable(v):
+            v = v()
+        return v
 
 class IrcSet(utils.NormalizingSet):
     """A sets.Set using IrcStrings instead of regular strings."""
@@ -634,7 +641,7 @@ def standardSubstitute(irc, msg, text, env=None):
             return 'someone'
     ctime = time.ctime()
     localtime = time.localtime()
-    vars = IrcDict({
+    vars = CallableValueIrcDict({
         'who': msg.nick,
         'nick': msg.nick,
         'user': msg.user,
@@ -658,8 +665,9 @@ def standardSubstitute(irc, msg, text, env=None):
         })
     if env is not None:
         vars.update(env)
-    return utils.str.perlVariableSubstitute(vars, text)
-
+    t = string.Template(text)
+    t.idpattern = '[a-zA-Z][a-zA-Z0-9]*'
+    return t.safe_substitute(vars)
 
 if __name__ == '__main__':
     import sys, doctest
