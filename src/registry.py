@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -550,13 +551,12 @@ class Regexp(Value):
             self.error(e)
 
     def setValue(self, v, sr=None):
-        parent = super(Regexp, self)
         if v is None:
             self.sr = ''
-            parent.setValue(None)
+            self.__parent.setValue(None)
         elif sr is not None:
             self.sr = sr
-            parent.setValue(v)
+            self.__parent.setValue(v)
         else:
             raise InvalidRegistryValue, \
                   'Can\'t setValue a regexp, there would be an inconsistency '\
@@ -619,6 +619,20 @@ class CommaSeparatedListOfStrings(SeparatedListOf):
         return re.split(r'\s*,\s*', s)
     joiner = ', '.join
 
+class TemplatedString(String):
+    requiredTemplates = []
+    def __init__(self, *args, **kwargs):
+        assert self.requiredTemplates, \
+               'There must be some templates.  This is a bug.'
+        self.__parent = super(String, self)
+        self.__parent.__init__(*args, **kwargs)
+
+    def setValue(self, v):
+        def hasTemplate(s):
+            return re.search(r'\$%s\b|\${%s}' % (s, s), v) is not None
+        if utils.iter.all(hasTemplate, self.requiredTemplates):
+            self.__parent.setValue(v)
+        else:
+            self.error()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
-
