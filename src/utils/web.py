@@ -47,15 +47,16 @@ urlencode = urllib.urlencode
 class Error(Exception):
     pass
 
-octet = r'(?:2(?:[0-4]\d|5[0-5])|1\d\d|\d{1,2})'
-ipAddr = r'%s(?:\.%s){3}' % (octet, octet)
+_octet = r'(?:2(?:[0-4]\d|5[0-5])|1\d\d|\d{1,2})'
+_ipAddr = r'%s(?:\.%s){3}' % (_octet, _octet)
 # Base domain regex off RFC 1034 and 1738
-label = r'[0-9a-z][-0-9a-z]*[0-9a-z]?'
-domain = r'%s(?:\.%s)*\.[a-z][-0-9a-z]*[a-z]?' % (label, label)
-urlRe = re.compile(r'(\w+://(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)'
-                   % (domain, ipAddr), re.I)
-httpUrlRe = re.compile(r'(https?://(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)'
-                       % (domain, ipAddr), re.I)
+_label = r'[0-9a-z][-0-9a-z]*[0-9a-z]?'
+_domain = r'%s(?:\.%s)*\.[a-z][-0-9a-z]*[a-z]?' % (_label, _label)
+_urlRe = r'(\w+://(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain, _ipAddr)
+urlRe = re.compile(_urlRe, re.I)
+_httpUrlRe = r'(https?://(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain,
+                                                                 _ipAddr)
+httpUrlRe = re.compile(_httpUrlRe, re.I)
 
 REFUSED = 'Connection refused.'
 TIMED_OUT = 'Connection timed out.'

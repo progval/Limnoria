@@ -105,7 +105,7 @@ class Web(callbacks.PluginRegexp):
                 s = format('Title: %s (at %s)', title, domain)
                 irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
-    titleSnarfer.__doc__ = utils.web.httpUrlRe
+    titleSnarfer.__doc__ = utils.web._httpUrlRe
 
     def headers(self, irc, msg, args, url):
         """<url>

@@ -136,7 +136,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 if m is not None:
                     m.tag('shrunken')
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
-    shrinkSnarfer.__doc__ = utils.web.httpUrlRe
+    shrinkSnarfer.__doc__ = utils.web._httpUrlRe
 
     def _getLnUrl(self, url):
         url = utils.web.urlquote(url)
