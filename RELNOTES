@@ -4,6 +4,10 @@ utils.str.perlVariableSubstitute is deprecated in favor of using Python's
 string.Template directly.  perlVariableSubstitute will be removed in a future
 release.
 
+Factoids' config variable supybot.plugins.Factoids.factoidPrefix has been
+replaced by supybot.plugins.Factoids.format, which allows the user to
+determine exactly how replies to Factoid queries are formatted.
+
 
 Version 0.83.4.1
 

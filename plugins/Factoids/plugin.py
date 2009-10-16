@@ -164,7 +164,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           LIMIT 20""", key)
         return [t[0] for t in cursor.fetchall()]
 
-    def _replyFactoids(self, irc, channel, key, factoids,
+    def _replyFactoids(self, irc, msg, key, factoids,
                        number=0, error=True):
         if factoids:
             if number:
@@ -174,17 +174,21 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                     irc.error('That\'s not a valid number for that key.')
                     return
             else:
-                intro = self.registryValue('factoidPrefix', channel)
-                prefix = format('%q %s', key, intro)
+                env = {'key': key}
+                def prefixer(v):
+                    env['value'] = v
+                    formatter = self.registryValue('format', msg.args[0])
+                    return ircutils.standardSubstitute(irc, msg,
+                                                       formatter, env)
                 if len(factoids) == 1:
-                    irc.reply(prefix + factoids[0])
+                    irc.reply(prefixer(factoids[0]))
                 else:
                     factoidsS = []
                     counter = 1
                     for factoid in factoids:
                         factoidsS.append(format('(#%i) %s', counter, factoid))
                         counter += 1
-                    irc.replies(factoidsS, prefixer=prefix,
+                    irc.replies(factoidsS, prefixer=prefixer,
                                 joiner=', or ', onlyPrefixFirst=True)
         elif error:
             irc.error('No factoid matches that key.')
@@ -195,7 +199,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             if self.registryValue('replyWhenInvalidCommand', channel):
                 key = ' '.join(tokens)
                 factoids = self._lookupFactoid(channel, key)
-                self._replyFactoids(irc, channel, key, factoids, error=False)
+                self._replyFactoids(irc, msg, key, factoids, error=False)
 
     def whatis(self, irc, msg, args, channel, words):
         """[<channel>] <key> [<number>]
@@ -212,7 +216,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                     irc.errorInvalid('key id')
         key = ' '.join(words)
         factoids = self._lookupFactoid(channel, key)
-        self._replyFactoids(irc, channel, key, factoids, number)
+        self._replyFactoids(irc, msg, key, factoids, number)
     whatis = wrap(whatis, ['channel', many('something')])
 
     def lock(self, irc, msg, args, channel, key):
