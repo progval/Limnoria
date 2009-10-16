@@ -39,13 +39,9 @@ def configure(advanced):
     conf.registerPlugin('Topic', True)
 
 
-class TopicFormat(registry.String):
+class TopicFormat(registry.TemplatedString):
     "Value must include $topic, otherwise the actual topic would be left out."
-    def setValue(self, v):
-        if '$topic' in v or '${topic}' in v:
-            registry.String.setValue(self, v)
-        else:
-            self.error()
+    requiredTemplates = ['topic']
 
 Topic = conf.registerPlugin('Topic')
 conf.registerChannelValue(Topic, 'separator',
