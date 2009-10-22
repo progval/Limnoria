@@ -103,7 +103,7 @@ class SqliteMoobotDB(object):
             raise callbacks.Error, \
                   'You need to have PySQLite installed to use this ' \
                   'plugin.  Download it at ' \
-                  '<http://trace.edgewall.org/wiki/PySqlite>'
+                  '<http://code.google.com/p/pysqlite/>'
         if channel in self.dbs:
             return self.dbs[channel]
         filename = plugins.makeChannelFilename(self.filename, channel)

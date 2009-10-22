@@ -45,7 +45,7 @@ try:
 except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at ' \
-                           '<http://trace.edgewall.org/wiki/PySqlite>'
+                           '<http://code.google.com/p/pysqlite/>'
 
 def getFactoid(irc, msg, args, state):
     assert not state.channel
