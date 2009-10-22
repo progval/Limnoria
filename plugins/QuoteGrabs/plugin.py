@@ -70,7 +70,7 @@ class SqliteQuoteGrabsDB(object):
         except ImportError:
             raise callbacks.Error, 'You need to have PySQLite installed to ' \
                                    'use QuoteGrabs.  Download it at ' \
-                                   '<http://pysqlite.org/>'
+                                   '<http://trace.edgewall.org/wiki/PySqlite>'
         filename = plugins.makeChannelFilename(self.filename, channel)
         def p(s1, s2):
             return int(ircutils.nickEqual(s1, s2))
