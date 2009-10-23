@@ -331,8 +331,10 @@ handle argument parsing for plugin commands in a very nice and very powerful
 way. With no arguments, we simply need to just wrap it. For more in-depth
 information on using wrap check out the wrap tutorial (The astute Python
 programmer may note that this is very much like a decorator, and that's
-precisely what it is. However rather than use the @decorator syntax from Python
-2.4 we elect to stick with this syntax to remain compatible with Python 2.3.)
+precisely what it is. However, we developed this before decorators existed and
+haven't changed the syntax due to our earlier requirement to stay compatible
+with Python 2.3.  As we now require Python 2.4 or greater, this may eventually
+change to support work via decorators.)
 
 Now let's create a command with some arguments and see how we use those in our
 plugin commands. Let's allow the user to seed our RNG with their own seed

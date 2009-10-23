@@ -39,8 +39,8 @@ def error(s):
         sys.stderr.write(os.linesep)
     sys.exit(-1)
 
-if sys.version_info < (2, 3, 0):
-    error('This program requires Python >= 2.3.0')
+if sys.version_info < (2, 4, 0):
+    error('This program requires Python >= 2.4.0')
 
 import supybot
 
