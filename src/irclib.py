@@ -251,15 +251,16 @@ class ChannelState(utils.python.Object):
 
     def addUser(self, user):
         "Adds a given user to the ChannelState.  Power prefixes are handled."
-        nick = user.lstrip('@%+&~')
+        nick = user.lstrip('@%+&~!')
         if not nick:
             return
         # & is used to denote protected users in UnrealIRCd
         # ~ is used to denote channel owner in UnrealIRCd
-        while user and user[0] in '@%+&~':
+        # ! is used to denote protected users in UltimateIRCd
+        while user and user[0] in '@%+&~!':
             (marker, user) = (user[0], user[1:])
             assert user, 'Looks like my caller is passing chars, not nicks.'
-            if marker in '@&~':
+            if marker in '@&~!':
                 self.ops.add(nick)
             elif marker == '%':
                 self.halfops.add(nick)
