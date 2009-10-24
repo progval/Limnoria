@@ -3,7 +3,6 @@ EVERYONE:
 Read LICENSE.  It's a 2-clause BSD license, but you should read it
 anyway.
 
-
 USERS:
 ------
 If you're upgrading, read RELNOTES.  There is also much documentation
@@ -22,8 +21,7 @@ WINDOWS USERS:
 The wizards (supybot-wizard, supybot-newplugin, and
 supybot-adduser) are all installed to your Python directory's
 \Scripts.  What that *probably* means is that you'll run them like
-this: C:\Python23\python C:\Python23\Scripts\supybot-wizard
-
+this: C:\Python2x\python C:\Python2x\Scripts\supybot-wizard
 
 DEVELOPERS:
 -----------
