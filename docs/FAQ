@@ -109,18 +109,16 @@ Why doesn't `Karma` seem to work for me?
 Why won't Supybot respond to private messages?
 
   The most likely cause is that you are running your bot on the Freenode
-  network. Around Sept. 2005, Freenode enabled a `default policy`_ that
-  disallows users from messaging other users unless they are registered
-  with NickServ. So, the reason you aren't seeing a response from your
-  Supybot is:
+  network. Around Sept. 2005, Freenode added a user mode which
+  registered user could set that `blocks`_ private messages from
+  unregistered users.  So, the reason you aren't seeing a response from
+  your Supybot is:
 
-  * Your Supybot is not registered with NickServ and
+  * Your Supybot is not registered with NickServ, you are registered,
+    and you have set the +E user mode for yourself.
 
-    o you haven't registered with NickServ
-
-  * or you have registered with NickServ
-
-    o but you haven't allowed `unregistered users`_ to message you
+  * or you have registered your Supybot with NickServ, you aren't
+    registered, and your Supybot has the +E user mode set.
 
 Can users with the "admin" capability change configuration?
 
@@ -192,8 +190,7 @@ Is Python installed?
 
 .. _plugin index: http://supybot.com/plugins.html
 .. _website: http://supybot.com/
-.. _default policy: http://freenode.net/faq.shtml#privmsg
-.. _unregistered users: http://freenode.net/faq.shtml#fromunreg
+.. _blocks: http://freenode.net/faq.shtml#blockingmessages
 .. _tsocks: http://tsocks.sourceforge.net
 .. _Sourceforge: http://sourceforge.net/
 .. _project page: http://sourceforge.net/projects/supybot
