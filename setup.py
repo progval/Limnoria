@@ -158,7 +158,6 @@ setup(
              'scripts/supybot-adduser',
              'scripts/supybot-plugin-doc',
              'scripts/supybot-plugin-create',
-             'scripts/supybot-plugin-package',
              ]
     )
 
