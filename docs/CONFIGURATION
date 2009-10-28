@@ -87,7 +87,7 @@ this::
             bots snarfing the same URLs and having the snarfed URL in
             the output of the snarf message.  (Current value: 10.0)
 
-Pretty simply, eh?
+Pretty simple, eh?
 
 Now if you're curious what the current value of a configuration variable
 is, you'll use the ``config`` command with one argument, the name of the

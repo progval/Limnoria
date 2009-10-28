@@ -287,7 +287,7 @@ random number from our RNG and takes no arguments. Here's what that looks like:
         Returns the next random number from the random number generator.
         """
         irc.reply(str(self.rng.random()))
-        random = wrap(random)
+    random = wrap(random)
 
 And that's it. Now here are the important points.
 

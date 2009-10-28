@@ -217,7 +217,7 @@ class Nickometer(callbacks.Plugin):
         percentage = 100 * (1 + math.tanh((score - 400.0) / 400.0)) * \
                      (1 - 1 / (1 + score / 5.0)) / 2
 
-        # if it's above 99.9%, show as many digits as is insteresting
+        # if it's above 99.9%, show as many digits as is interesting
         score_string=re.sub('(99\\.9*\\d|\\.\\d).*','\\1',`percentage`)
 
         irc.reply('The "lame nick-o-meter" reading for "%s" is %s%%.' %
