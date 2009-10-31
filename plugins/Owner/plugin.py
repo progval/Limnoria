@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -100,32 +100,6 @@ registerDefaultPlugin('capabilities', 'User')
 registerDefaultPlugin('addcapability', 'Admin')
 registerDefaultPlugin('removecapability', 'Admin')
 
-class holder(object):
-    pass
-
-# This is used so we can support a "log" command as well as a "self.log"
-# Logger.
-class LogProxy(object):
-    """<text>
-
-    Logs <text> to the global Supybot log at critical priority.  Useful for
-    marking logfiles for later searching.
-    """
-    __name__ = 'log' # Necessary for help.
-    def __init__(self, log):
-        self.log = log
-        self.im_func = holder()
-        self.im_func.func_name = 'log'
-
-    def __call__(self, irc, msg, args, text):
-        log.critical(text)
-        irc.replySuccess()
-    __call__ = wrap(__call__, ['text'])
-
-    def __getattr__(self, attr):
-        return getattr(self.log, attr)
-
-
 class Owner(callbacks.Plugin):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
@@ -134,8 +108,6 @@ class Owner(callbacks.Plugin):
             assert not irc.getCallback(self.name())
         self.__parent = super(Owner, self)
         self.__parent.__init__(irc)
-        # Setup log object/command.
-        self.log = LogProxy(self.log)
         # Setup command flood detection.
         self.commands = ircutils.FloodQueue(60)
         # Setup plugins and default plugins for commands.
@@ -184,10 +156,6 @@ class Owner(callbacks.Plugin):
                 self.log.warning('Tried to send a message to myself: %r.', msg)
                 return None
         return msg
-
-    def isCommandMethod(self, name):
-        return name == 'log' or \
-               self.__parent.isCommandMethod(name)
 
     def reset(self):
         # This has to be done somewhere, I figure here is as good place as any.
@@ -297,6 +265,16 @@ class Owner(callbacks.Plugin):
                 self.Proxy(irc, msg, tokens)
             except SyntaxError, e:
                 irc.queueMsg(callbacks.error(msg, str(e)))
+
+    def logmark(self, irc, msg, args, text):
+        """<text>
+
+        Logs <text> to the global Supybot log at critical priority.  Useful for
+        marking logfiles for later searching.
+        """
+        self.log.critical(text)
+        irc.replySuccess()
+    logmark = wrap(logmark, ['text'])
 
     def announce(self, irc, msg, args, text):
         """<text>
@@ -622,4 +600,3 @@ class Owner(callbacks.Plugin):
 Class = Owner
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
-
