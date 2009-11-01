@@ -926,20 +926,17 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         isn't specified via options, the value of
         conf.supybot.protocols.irc.banmask is used.
 
-        A variable named 'channel' (defining the channel the ban is taking
-        place in) is expected to be in the environment of the caller of this
-        function.
-
         options - A list specifying which parts of the hostmask should
         explicitly be matched: nick, user, host.  If 'exact' is given, then
         only the exact hostmask will be used."""
-        assert ircutils.isChannel(dynamic.channel)
+        channel = dynamic.channel
+        assert channel is None or ircutils.isChannel(channel)
         (nick, user, host) = ircutils.splitHostmask(hostmask)
         bnick = '*'
         buser = '*'
         bhost = '*'
         if not options:
-            options = get(supybot.protocols.irc.banmask, dynamic.channel)
+            options = get(supybot.protocols.irc.banmask, channel)
         for option in options:
             if option == 'nick':
                 bnick = nick
