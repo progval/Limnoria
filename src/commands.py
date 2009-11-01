@@ -280,10 +280,7 @@ def getBanmask(irc, msg, args, state):
         getChannel(irc, msg, args, state)
     channel = state.channel
     banmaskstyle = conf.supybot.protocols.irc.banmask
-    try:
-        state.args[-1] = banmaskstyle.makeBanmask(state.args[-1])
-    except AssertionError:
-        state.errorInvalid('channel', channel)
+    state.args[-1] = banmaskstyle.makeBanmask(state.args[-1])
 
 def getUser(irc, msg, args, state):
     try:
