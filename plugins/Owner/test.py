@@ -82,8 +82,8 @@ class OwnerTestCase(PluginTestCase):
         self.assertNotError('enable foo')
 
     def testRename(self):
-        self.assertError('rename Admin ignore IGNORE')
-        self.assertError('rename Admin ignore ig-nore')
+        self.assertError('rename Admin join JOIN')
+        self.assertError('rename Admin join jo-in')
         self.assertNotError('rename Admin "capability remove" rmcap')
         self.assertNotRegexp('list Admin', 'capability remove')
         self.assertRegexp('list Admin', 'rmcap')
