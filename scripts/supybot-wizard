@@ -45,7 +45,6 @@ if sys.version_info < (2, 4, 0):
 import supybot
 
 import re
-import sets
 import time
 import pydoc
 import pprint
