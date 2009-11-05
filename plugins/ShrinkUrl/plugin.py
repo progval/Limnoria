@@ -166,18 +166,15 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.error(str(e))
     ln = thread(wrap(ln, ['url']))
 
-    _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url):
         try:
             return self.db.get('tiny', url)
         except KeyError:
-            s = utils.web.getUrl('http://tinyurl.com/create.php?url=' + url)
-            m = self._tinyRe.search(s)
-            if m is None:
-                raise ShrinkError, 'Could not parse the TinyURL.com results.'
-            tinyurl = m.group(1)
-            self.db.set('tiny', url, tinyurl)
-            return tinyurl
+            text = utils.web.getUrl('http://tinyurl.com/api-create.php?url=' + url)
+            if text.startswith('Error'):
+                raise ShrinkError, text[5:]
+            self.db.set('tiny', url, text)
+            return text
 
     def tiny(self, irc, msg, args, url):
         """<url>

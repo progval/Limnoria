@@ -32,7 +32,7 @@ from supybot.test import *
 
 class ShrinkUrlTestCase(ChannelPluginTestCase):
     plugins = ('ShrinkUrl',)
-    config = {'supybot.snarfThrottle': .5}
+    config = {'supybot.snarfThrottle': 0}
 
     sfUrl ='http://sourceforge.net/tracker/?func=add&group_id=58965&atid=48947'
     udUrl = 'http://www.urbandictionary.com/define.php?' \
