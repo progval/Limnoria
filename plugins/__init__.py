@@ -62,7 +62,7 @@ try:
             mxCrap[name] = module
             sys.modules.pop(name)
     # Now that the mx crap is gone, we can import sqlite.
-    import sqlite
+    import sqlite3 as sqlite
     # And now we'll put it back, even though it sucks.
     sys.modules.update(mxCrap)
     # Just in case, we'll do this as well.  It doesn't seem to work fine by
@@ -176,7 +176,7 @@ class ChannelDBHandler(object):
             db = self.makeDb(self.makeFilename(channel))
         else:
             db = self.dbCache[channel]
-        db.autocommit = 1
+        db.isolation_level = None
         return db
 
     def die(self):
