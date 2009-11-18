@@ -426,12 +426,12 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             irc.reply('No keys matched that query.')
         elif len(results) == 1 and \
              self.registryValue('showFactoidIfOnlyOneMatch', channel):
-            self.whatis(irc, msg, [results[0]])
+            self.whatis(irc, msg, [results[0][0]])
         elif len(results) > 100:
             irc.reply('More than 100 keys matched that query; '
                       'please narrow your query.')
         else:
-            keys = [repr(t[0]) for t in cursor.fetchall()]
+            keys = [repr(t[0]) for t in results]
             s = format('%L', keys)
             irc.reply(s)
     search = wrap(search, ['channel',
