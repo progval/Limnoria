@@ -127,11 +127,13 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("SELECT id, locked FROM keys WHERE key LIKE ?", (key,))
-        if cursor.rowcount <= 0:
+        results = cursor.fetchall()
+        if len(results) == 0:
             cursor.execute("""INSERT INTO keys VALUES (NULL, ?, 0)""", (key,))
             db.commit()
             cursor.execute("SELECT id, locked FROM keys WHERE key LIKE ?", (key,))
-        (id, locked) = map(int, cursor.fetchone())
+            results = cursor.fetchall()
+        (id, locked) = map(int, results[0])
         capability = ircdb.makeChannelCapability(channel, 'factoids')
         if not locked:
             if ircdb.users.hasUser(msg.prefix):
@@ -297,7 +299,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 irc.error('%s factoids have that key.  '
                           'Please specify which one to remove, '
                           'or use * to designate all of them.' %
-                          cursor.rowcount)
+                          len(results))
     forget = wrap(forget, ['channel', many('something')])
 
     def random(self, irc, msg, args, channel):
@@ -311,9 +313,10 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("""SELECT fact, key_id FROM factoids
                           ORDER BY random()
                           LIMIT 3""")
-        if cursor.rowcount != 0:
+        results = cursor.fetchall()
+        if len(results) != 0:
             L = []
-            for (factoid, id) in cursor.fetchall():
+            for (factoid, id) in results:
                 cursor.execute("""SELECT key FROM keys WHERE id=?""", (id,))
                 (key,) = cursor.fetchone()
                 L.append('"%s": %s' % (ircutils.bold(key), factoid))
@@ -332,10 +335,11 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("SELECT id, locked FROM keys WHERE key LIKE ?", (key,))
-        if cursor.rowcount == 0:
+        results = cursor.fetchall()
+        if len(results) == 0:
             irc.error('No factoid matches that key.')
             return
-        (id, locked) = map(int, cursor.fetchone())
+        (id, locked) = map(int, results[0])
         cursor.execute("""SELECT  added_by, added_at FROM factoids
                           WHERE key_id=?
                           ORDER BY id""", (id,))
@@ -413,16 +417,17 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             criteria.append('TARGET LIKE ?')
             formats.append(glob.translate(self._sqlTrans))
         cursor = db.cursor()
-        sql = """SELECT keys.key FROM ? WHERE ?""" % \
+        sql = """SELECT keys.key FROM %s WHERE %s""" % \
               (', '.join(tables), ' AND '.join(criteria))
         sql = sql.replace('TARGET', target)
         cursor.execute(sql, formats)
-        if cursor.rowcount == 0:
+        results = cursor.fetchall()
+        if len(results) == 0:
             irc.reply('No keys matched that query.')
-        elif cursor.rowcount == 1 and \
+        elif len(results) == 1 and \
              self.registryValue('showFactoidIfOnlyOneMatch', channel):
             self.whatis(irc, msg, [cursor.fetchone()[0]])
-        elif cursor.rowcount > 100:
+        elif len(results) > 100:
             irc.reply('More than 100 keys matched that query; '
                       'please narrow your query.')
         else:
