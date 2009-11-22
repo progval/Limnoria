@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,6 +32,7 @@ import os
 import sys
 import time
 import threading
+import subprocess
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -142,12 +144,17 @@ class Status(callbacks.Plugin):
                 if plat.startswith('linux') or plat.startswith('sunos') or \
                    plat.startswith('freebsd') or plat.startswith('openbsd') or \
                    plat.startswith('darwin'):
+                    cmd = 'ps -o rss -p %s' % pid
                     try:
-                        r = os.popen('ps -o rss -p %s' % pid)
-                        r.readline() # VSZ Header.
-                        mem = r.readline().strip()
-                    finally:
-                        r.close()
+                        inst = subprocess.Popen(cmd.split(), close_fds=True,
+                                                stdin=file(os.devnull),
+                                                stdout=subprocess.PIPE,
+                                                stderr=subprocess.PIPE)
+                    except OSError:
+                        irc.error('Unable to run ps command.', Raise=True)
+                    (out, _) = inst.communicate()
+                    inst.wait()
+                    mem = out.splitlines()[1]
                 elif sys.platform.startswith('netbsd'):
                     mem = '%s kB' % os.stat('/proc/%s/mem' % pid)[7]
                 response += '  I\'m taking up %s kB of memory.' % mem

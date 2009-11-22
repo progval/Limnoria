@@ -2,6 +2,7 @@
 
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -59,8 +60,8 @@ if __name__ == '__main__':
     # import supybot.conf as conf
     import os
     import sys
-    import popen2
     import optparse
+    import subprocess
 
     parser = optparse.OptionParser(usage='Usage: %prog [options]')
     parser.add_option('', '--verbose', action='store_true',
@@ -120,17 +121,18 @@ if __name__ == '__main__':
             sys.exit(-1)
         debug('Bot not found, starting.')
         home = os.environ['HOME']
-        inst = popen2.Popen4('sh')
+        inst = subprocess.Popen('sh', close_fds=True, stderr=subprocess.STDOUT,
+                                stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         for filename in ('.login', '.bash_profile', '.profile', '.bashrc'):
             filename = os.path.join(home, filename)
             if os.path.exists(filename):
                 debug('Found %s, sourcing.' % filename)
-                inst.tochild.write('source %s' % filename + os.linesep)
+                inst.communicate('source %s' % filename + os.linesep)
         cmdline = "%s --daemon %s" % (options.supybot, options.conffile)
         debug('Sending cmdline to sh process.')
-        inst.tochild.write(cmdline + os.linesep)
-        inst.tochild.close()
-        debug('Received from sh process: %r' % inst.fromchild.read())
+        (stdout, _) = inst.communicate(cmdline + os.linesep)
+        inst.stdin.close()
+        debug('Received from sh process: %r' % stdout)
         ret = inst.wait()
         debug('Bot started, command line %r returned %s.' % (cmdline, ret))
         sys.exit(ret)
