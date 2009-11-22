@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,10 +34,10 @@ import pwd
 import sys
 import crypt
 import errno
-import popen2
 import random
 import select
 import struct
+import subprocess
 
 import supybot.utils as utils
 from supybot.commands import *
@@ -130,46 +130,45 @@ class Unix(callbacks.Plugin):
         # We are only checking the first word
         spellCmd = self.registryValue('spell.command')
         if not spellCmd:
-           irc.error('A spell checking command doesn\'t seem to be '
-                     'installed on this computer.  If one is installed, '
-                     'reconfigure supybot.plugins.Unix.spell.command '
-                     'appropriately.', Raise=True)
+           irc.error('The spell checking command is not configured.  If one '
+                     'is installed, reconfigure '
+                     'supybot.plugins.Unix.spell.command appropriately.',
+                     Raise=True)
         if word and not word[0].isalpha():
             irc.error('<word> must begin with an alphabet character.')
             return
         if ' ' in word:
             irc.error('Spaces aren\'t allowed in the word.')
             return
-        inst = popen2.Popen4([spellCmd, '-a'])
-        (r, w) = (inst.fromchild, inst.tochild)
         try:
-            s = r.readline() # Banner, hopefully.
-            if 'sorry' in s.lower():
-                irc.error(s)
-                return
-            w.write(word)
-            w.write('\n')
-            w.flush()
-            try:
-                line = pipeReadline(r)
-                # aspell puts extra whitespace, ignore it
-                while not line.strip('\r\n'):
-                    line = pipeReadline(r)
-                # cache an extra line in case aspell's first line says the word
-                # is spelled correctly, but subsequent lines offer spelling
-                # suggestions
-                line2 = pipeReadline(r)
-            except TimeoutError:
-                irc.error('The spell command timed out.')
-                return
-        finally:
-            r.close()
-            w.close()
-            inst.wait()
+            inst = subprocess.Popen([spellCmd, '-a'], close_fds=True,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    stdin=subprocess.PIPE)
+        except OSError, e:
+            irc.error(e, Raise=True)
+        ret = inst.poll()
+        if ret is not None:
+            s = inst.stderr.readline()
+            if not s:
+                s = inst.stdout.readline()
+            s = s.rstrip('\r\n')
+            s = s.lstrip('Error: ')
+            irc.error(s, Raise=True)
+        (out, err) = inst.communicate(word)
+        inst.wait()
+        lines = filter(None, out.splitlines())
+        lines.pop(0) # Banner
+        if not lines:
+            irc.error('No results found.', Raise=True)
+        line = lines.pop(0)
+        line2 = ''
+        if lines:
+            line2 = lines.pop(0)
         # parse the output
         # aspell will sometimes list spelling suggestions after a '*' or '+'
         # line for complex words.
-        if line[0] in '*+' and line2.strip('\r\n'):
+        if line[0] in '*+' and line2:
             line = line2
         if line[0] in '*+':
             resp = format('%q may be spelled correctly.', word)
@@ -199,24 +198,23 @@ class Unix(callbacks.Plugin):
             if self.registryValue('fortune.offensive'):
                 args.append('-a')
             args.extend(self.registryValue('fortune.files'))
-            inst = popen2.Popen4(args)
-            (r, w) = (inst.fromchild, inst.tochild)
             try:
-                lines = r.readlines()
-                lines = map(str.rstrip, lines)
-                lines = filter(None, lines)
-                if lines:
-                    irc.replies(lines, joiner=' ')
-                else:
-                    irc.error('It seems the configured fortune command was '
-                              'not available.')
-            finally:
-                w.close()
-                r.close()
-                inst.wait()
+                inst = subprocess.Popen(args, close_fds=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        stdin=file(os.devnull))
+            except OSError, e:
+                irc.error('It seems the configured fortune command was '
+                          'not available.', Raise=True)
+            (out, err) = inst.communicate()
+            inst.wait()
+            lines = out.splitlines()
+            lines = map(str.rstrip, lines)
+            lines = filter(None, lines)
+            irc.replies(lines, joiner=' ')
         else:
-            irc.error('I couldn\'t find the fortune command on this system. '
-                      'If it is installed on this system, reconfigure the '
+            irc.error('The fortune command is not configured. If fortune is '
+                      'installed on this system, reconfigure the '
                       'supybot.plugins.Unix.fortune.command configuration '
                       'variable appropriately.')
 
@@ -229,31 +227,27 @@ class Unix(callbacks.Plugin):
         """
         wtfCmd = self.registryValue('wtf.command')
         if wtfCmd:
-            def commandError():
-                irc.error('It seems the configured wtf command '
-                          'was not available.')
             something = something.rstrip('?')
-            inst = popen2.Popen4([wtfCmd, something])
-            (r, w) = (inst.fromchild, inst.tochild)
             try:
-                response = utils.str.normalizeWhitespace(r.readline().strip())
-                if response:
-                    irc.reply(response)
-                else:
-                    commandError()
-            finally:
-                r.close()
-                w.close()
-                inst.wait()
+                inst = subprocess.Popen([wtfCmd, something], close_fds=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=file(os.devnull),
+                                        stdin=file(os.devnull))
+            except OSError:
+                irc.error('It seems the configured wtf command was not '
+                          'available.', Raise=True)
+            (out, _) = inst.communicate()
+            inst.wait()
+            if out:
+                response = out.splitlines()[0].strip()
+                response = utils.str.normalizeWhitespace(response)
+                irc.reply(response)
         else:
-            irc.error('I couldn\'t find the wtf command on this system.  '
-                      'If it is installed on this system, reconfigure the '
+            irc.error('The wtf command is not configured.  If it is installed '
+                      'on this system, reconfigure the '
                       'supybot.plugins.Unix.wtf.command configuration '
                       'variable appropriately.')
     wtf = wrap(wtf, [optional(('literal', ['is'])), 'something'])
 
-
 Class = Unix
-
-
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
