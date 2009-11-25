@@ -127,13 +127,6 @@ def main():
 
 version = '0.83.4.1+git'
 if __name__ == '__main__':
-    ###
-    # Options:
-    # -P (profiling)
-    # -n, --nick (nick)
-    # --startup (commands to run onStart)
-    # --connect (commands to run afterConnect)
-    # --config (configuration values)
     parser = optparse.OptionParser(usage='Usage: %prog [options] configFile',
                                    version='Supybot %s' % version)
     parser.add_option('-P', '--profile', action='store_true', dest='profile',
