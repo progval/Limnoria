@@ -290,18 +290,18 @@ class ProperStringificationOfReplyArgs(PluginTestCase):
         self.irc.addCallback(self.ExpectsString(self.irc))
         self.assertResponse('expectsstring lower [nonstring int]', '1')
 
-class PrivmsgTestCaseWithKarma(ChannelPluginTestCase):
-    plugins = ('Utilities', 'Misc', 'Web', 'Karma', 'String')
-    conf.allowEval = True
-    timeout = 2
-    def testSecondInvalidCommandRespondsWithThreadedInvalidCommands(self):
-        try:
-            orig = conf.supybot.plugins.Karma.response()
-            conf.supybot.plugins.Karma.response.setValue(True)
-            self.assertNotRegexp('echo [foo++] [foo++]', 'not a valid')
-            _ = self.irc.takeMsg()
-        finally:
-            conf.supybot.plugins.Karma.response.setValue(orig)
+## class PrivmsgTestCaseWithKarma(ChannelPluginTestCase):
+##     plugins = ('Utilities', 'Misc', 'Web', 'Karma', 'String')
+##     conf.allowEval = True
+##     timeout = 2
+##     def testSecondInvalidCommandRespondsWithThreadedInvalidCommands(self):
+##         try:
+##             orig = conf.supybot.plugins.Karma.response()
+##             conf.supybot.plugins.Karma.response.setValue(True)
+##             self.assertNotRegexp('echo [foo++] [foo++]', 'not a valid')
+##             _ = self.irc.takeMsg()
+##         finally:
+##             conf.supybot.plugins.Karma.response.setValue(orig)
 
     
 class PrivmsgTestCase(ChannelPluginTestCase):
