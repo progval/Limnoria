@@ -219,7 +219,8 @@ class Google(callbacks.PluginRegexp):
         results = []
         for arg in args:
             data = self.search(arg, channel, {'smallsearch': True})
-            count = data['responseData']['cursor']['estimatedResultCount']
+            count = data['responseData']['cursor'].get('estimatedResultCount',
+                                                       0)
             results.append((int(count), arg))
         results.sort()
         results.reverse()
