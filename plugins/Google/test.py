@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008-2009, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,7 @@ class GoogleTestCase(ChannelPluginTestCase):
 
         def testFight(self):
             self.assertRegexp('fight supybot moobot', r'.*supybot.*: \d+')
+            self.assertNotError('fight ... !')
 
         def testTranslate(self):
             self.assertRegexp('translate en es hello world', 'mundo')
