@@ -144,10 +144,7 @@ everything that wasn't contributed by someone else was done by the main author.
 For now we have no contributors, so we'll leave it blank.
 
 Lastly, the __url__ attribute should just reference the download URL for the
-plugin. We encourage you to use the supybot.com website for distributing
-plugins and have gone to great lengths to make distributing them nice and easy
-to do so. Since this is just an example, we'll leave this blank, but
-supybot-plugin-create shows an example URL of a plugin home here on supybot.com
+plugin. Since this is just an example, we'll leave this blank.
 
 The rest of __init__.py really shouldn't be touched unless you are using
 third-party modules in your plugin. If you are, then you need to take special
@@ -551,7 +548,7 @@ wisdom with regards to Supybot plugin-writing.
       the core developers. We (the Supybot dev team) can't possibly document
       all the awesome things that Supybot plugins can do, but we try.
       Nevertheless there are some really cool things that can be done that
-      aren't very well-documented on this site.
+      aren't very well-documented.
 
     * Hack new functionality into existing plugins first if writing a new
       plugin is too daunting.
@@ -560,14 +557,10 @@ wisdom with regards to Supybot plugin-writing.
       first point above, the developers themselves can help you even more than
       the docs can (though we prefer you read the docs first).
 
-    * Publish your plugins on our website. We made some custom stuff on the
-      website just to cater to publishing plugins. Use it, share your plugins
-      with the world and make Supybot all that more attractive for other users
-      so they will want to write their plugins for Supybot as well.
+    * Share your plugins with the world and make Supybot all that more
+      attractive for other users so they will want to write their plugins for
+      Supybot as well.
 
-    * Read, read, read all the documentation on our website. I just spent a
-      lot of time getting a bunch of these tutorials out and getting things up
-      to date, so while Supybot documentation in the past hasn't been stellar,
-      it certainly is very good now.
+    * Read, read, read all the documentation.
 
     * And of course, have fun writing your plugins.
