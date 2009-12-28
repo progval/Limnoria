@@ -539,7 +539,10 @@ class FloodQueue(object):
                                                       repr(self.queues))
 
     def key(self, msg):
-        return msg.user + '@' + msg.host
+        # This really ought to be configurable without subclassing, but for
+        # now, it works.
+        # used to be msg.user + '@' + msg.host but that was too easily abused.
+        return msg.host
 
     def getTimeout(self):
         if callable(self.timeout):
