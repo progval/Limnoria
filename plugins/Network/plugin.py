@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -166,7 +167,19 @@ class Network(callbacks.Plugin):
             normal = []
             halfops = []
             for channel in channels:
+                origchan = channel
+                channel = channel.lstrip('@%+~!')
+                # UnrealIRCd uses & for user modes and disallows it as a
+                # channel-prefix, flying in the face of the RFC.  Have to
+                # handle this specially when processing WHOIS response.
+                testchan = channel.lstrip('&')
+                if testchan != channel and irc.isChannel(testchan):
+                    channel = testchan
+                diff = len(channel) - len(origchan)
+                modes = origchan[:diff]
                 chan = irc.state.channels.get(channel)
+                # The user is in a channel the bot is in, so the ircd may have
+                # responded with otherwise private data.
                 if chan:
                     # Skip channels the callee isn't in.  This helps prevents
                     # us leaking information when the channel is +s or the
@@ -178,14 +191,14 @@ class Network(callbacks.Plugin):
                     if 's' in chan.modes and \
                        not ircutils.strEqual(replyMsg.args[0], channel):
                         continue
-                if channel.startswith('@'):
-                    ops.append(channel[1:])
-                elif channel.startswith('%'):
-                    halfops.append(channel[1:])
-                elif channel.startswith('+'):
-                    voices.append(channel[1:])
-                else:
+                if not modes:
                     normal.append(channel)
+                elif utils.iter.any(lambda c: c in modes,('@', '&', '~', '!')):
+                    ops.append(channel[1:])
+                elif utils.iter.any(lambda c: c in modes, ('%',)):
+                    halfops.append(channel[1:])
+                elif utils.iter.any(lambda c: c in modes, ('+',)):
+                    voices.append(channel[1:])
             L = []
             if ops:
                 L.append(format('is an op on %L', ops))
