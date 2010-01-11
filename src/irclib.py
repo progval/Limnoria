@@ -774,7 +774,7 @@ class Irc(IrcCommandDispatcher):
         else:
             channel = None
         preInFilter = str(msg).rstrip('\r\n')
-        log.debug('Incoming message: %s', preInFilter)
+        log.debug('Incoming message (%s): %s', self.network, preInFilter)
 
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
         # messages with our nick instead of our prefix.  We'll fix that here.
