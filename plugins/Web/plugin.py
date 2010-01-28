@@ -36,6 +36,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
+import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
@@ -78,6 +79,8 @@ class Web(callbacks.PluginRegexp):
     def titleSnarfer(self, irc, msg, match):
         channel = msg.args[0]
         if not irc.isChannel(channel):
+            return
+        if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
             return
         if callbacks.addressed(irc.nick, msg):
             return
