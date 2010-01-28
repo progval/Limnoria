@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -339,6 +340,8 @@ class Relay(callbacks.Plugin):
                     notPunishing(irc, 'not opped')
 
     def doPrivmsg(self, irc, msg):
+        if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
+            return
         (channel, text) = msg.args
         if irc.isChannel(channel):
             irc = self._getRealIrc(irc)
@@ -350,9 +353,6 @@ class Relay(callbacks.Plugin):
                     self.log.debug('Refusing to relay %s, ignored by %s.',
                                    msg.prefix, ignore)
                     return
-            if ircmsgs.isCtcp(msg) and \
-               'AWAY' not in text and 'ACTION' not in text:
-                return
             # Let's try to detect other relay bots.
             if self._checkRelayMsg(msg):
                 if self.registryValue('punishOtherRelayBots', channel):

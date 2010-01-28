@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -83,8 +83,11 @@ class ChannelStat(irclib.IrcCommandDispatcher):
         self.smileys += len(sRe.findall(payload))
 
     def doPrivmsg(self, msg):
+        isAction = ircmsgs.isAction(msg)
+        if ircmsgs.isCtcp(msg) and not isAction:
+            return
         self.doPayload(*msg.args)
-        if ircmsgs.isAction(msg):
+        if isAction:
             self.actions += 1
 
     def doTopic(self, msg):

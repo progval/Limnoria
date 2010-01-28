@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -265,6 +266,7 @@ class Karma(callbacks.Plugin):
         if not (msg.addressed or msg.repliedTo):
             channel = msg.args[0]
             if irc.isChannel(channel) and \
+               not ircmsgs.isCtcp(msg) and \
                self.registryValue('allowUnaddressedKarma', channel):
                 irc = callbacks.SimpleProxy(irc, msg)
                 thing = msg.args[1].rstrip()

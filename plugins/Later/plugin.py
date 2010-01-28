@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,6 +35,7 @@ import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
@@ -152,6 +154,8 @@ class Later(callbacks.Plugin):
     remove = wrap(remove, [('checkCapability', 'admin'), 'something'])
 
     def doPrivmsg(self, irc, msg):
+        if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
+            return
         notes = self._notes.pop(msg.nick, [])
         # Let's try wildcards.
         removals = []

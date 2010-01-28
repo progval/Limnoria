@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004, Brett Kelly
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -121,7 +122,7 @@ class DbiNoteDB(dbi.DB):
             for (to, ids) in cache.items():
                 while id in ids:
                     ids.remove(id)
-        
+
 NoteDB = plugins.DB('Note', {'flat': DbiNoteDB})
 
 class Note(callbacks.Plugin):
@@ -135,6 +136,8 @@ class Note(callbacks.Plugin):
         self.db.close()
 
     def doPrivmsg(self, irc, msg):
+        if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
+            return
         self._notify(irc, msg)
 
     def doJoin(self, irc, msg):

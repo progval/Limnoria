@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2004, Daniel DiPaolo
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -212,6 +212,8 @@ class QuoteGrabs(callbacks.Plugin):
         self.db = QuoteGrabsDB()
 
     def doPrivmsg(self, irc, msg):
+        if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
+            return
         irc = callbacks.SimpleProxy(irc, msg)
         if irc.isChannel(msg.args[0]):
             (chan, payload) = msg.args
