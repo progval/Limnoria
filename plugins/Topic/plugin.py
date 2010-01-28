@@ -27,17 +27,22 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import re
+import os
 import random
+import shutil
+import tempfile
+import cPickle as pickle
 
 import supybot.conf as conf
+import supybot.ircdb as ircdb
 import supybot.utils as utils
+import supybot.world as world
 from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-import supybot.ircdb as ircdb
+
 
 def canChangeTopic(irc, msg, args, state):
     assert not state.channel
@@ -96,6 +101,9 @@ addConverter('canChangeTopic', canChangeTopic)
 def splitTopic(topic, separator):
     return filter(None, topic.split(separator))
 
+datadir = conf.supybot.directories.data()
+filename = conf.supybot.directories.data.dirize('Topic.pickle')
+
 class Topic(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Topic, self)
@@ -104,6 +112,39 @@ class Topic(callbacks.Plugin):
         self.redos = ircutils.IrcDict()
         self.lastTopics = ircutils.IrcDict()
         self.watchingFor332 = ircutils.IrcSet()
+        try:
+            pkl = open(filename, 'rb')
+            try:
+                self.undos = pickle.load(pkl)
+                self.redos = pickle.load(pkl)
+                self.lastTopics = pickle.load(pkl)
+                self.watchingFor332 = pickle.load(pkl)
+            except Exception, e:
+                self.log.debug('Unable to load pickled data: %s', e)
+            pkl.close()
+        except IOError, e:
+            self.log.debug('Unable to open pickle file: %s', e)
+        world.flushers.append(self._flush)
+
+    def die(self):
+        world.flushers.remove(self._flush)
+        self.__parent.die()
+
+    def _flush(self):
+        try:
+            pklfd, tempfn = tempfile.mkstemp(suffix='topic', dir=datadir)
+            pkl = os.fdopen(pklfd, 'wb')
+            try:
+                pickle.dump(self.undos, pkl)
+                pickle.dump(self.redos, pkl)
+                pickle.dump(self.lastTopics, pkl)
+                pickle.dump(self.watchingFor332, pkl)
+            except Exception, e:
+                self.log.warning('Unable to store pickled data: %s', e)
+            pkl.close()
+            shutil.move(tempfn, filename)
+        except (IOError, shutil.Error), e:
+            self.log.warning('File error: %s', e)
 
     def _splitTopic(self, topic, channel):
         separator = self.registryValue('separator', channel)
@@ -165,10 +206,10 @@ class Topic(callbacks.Plugin):
     def _checkManageCapabilities(self, irc, msg, channel):
         """Check if the user has any of the required capabilities to manage
         the channel topic.
-        
+
         The list of required capabilities is in requireManageCapability
         channel config.
-        
+
         Also allow if the user is a chanop. Since he can change the topic
         manually anyway.
         """
