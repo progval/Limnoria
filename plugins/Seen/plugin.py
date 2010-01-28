@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -136,6 +137,8 @@ class Seen(callbacks.Plugin):
                 irc.queueMsg(ircmsgs.names(channel))
 
     def doPrivmsg(self, irc, msg):
+        if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
+            return
         if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
             said = ircmsgs.prettyPrint(msg)

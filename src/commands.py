@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -109,10 +109,11 @@ def urlSnarfer(f):
     def newf(self, irc, msg, match, *L, **kwargs):
         url = match.group(0)
         channel = msg.args[0]
-        if not irc.isChannel(channel):
+        if not irc.isChannel(channel) or (ircmsgs.isCtcp(msg) and not
+                                          ircmsgs.isAction(msg)):
             return
         if ircdb.channels.getChannel(channel).lobotomized:
-            self.log.info('Not snarfing in %s: lobotomized.', channel)
+            self.log.debug('Not snarfing in %s: lobotomized.', channel)
             return
         if _snarfed.has(channel, url):
             self.log.info('Throttling snarf of %s in %s.', url, channel)

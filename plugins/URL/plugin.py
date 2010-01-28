@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -65,6 +66,8 @@ class URL(callbacks.Plugin):
         self.db = URLDB()
 
     def doPrivmsg(self, irc, msg):
+        if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
+            return
         channel = msg.args[0]
         if irc.isChannel(channel):
             if ircmsgs.isAction(msg):
