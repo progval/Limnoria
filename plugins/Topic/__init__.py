@@ -42,7 +42,7 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {}
+__contributors__ = { supybot.authors.stepnem: ['persistence support'] }
 
 import config
 import plugin

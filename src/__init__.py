@@ -1,3 +1,4 @@
+# coding: utf-8
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
@@ -56,6 +57,7 @@ class authors(object): # This is basically a bag.
     bwp = Author('Brett Phipps', 'bwp', 'phippsb@gmail.com')
     bear = Author('Mike Taylor', 'bear', 'bear@code-bear.com')
     grantbow = Author('Grant Bowman', 'Grantbow', 'grantbow@grantbow.com')
+    stepnem = Author('Štěpán Němec', 'stepnem', 'stepnem@gmail.com')
     unknown = Author('Unknown author', 'unknown', 'unknown@supybot.org')
 
     # Let's be somewhat safe about this.
