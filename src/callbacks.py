@@ -275,7 +275,7 @@ class Tokenizer(object):
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
             token = token[1:-1]
-            token = token.decode('string-escape')
+            token = token.decode('string_escape')
         return token
 
     def _insideBrackets(self, lexer):

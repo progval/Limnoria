@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2004-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,7 @@ def open(filename, clear=False):
         try:
             (key, value) = re.split(r'(?<!\\):', acc, 1)
             key = key.strip()
-            value = value.strip().replace('\\\\', '\\')
+            value = value.strip().decode('string_escape')
             acc = ''
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line %r' % acc
@@ -144,7 +144,7 @@ def isValidRegistryName(name):
     return len(name.split()) == 1 and not name.startswith('_')
 
 def escape(name):
-    name = name.replace('\\', '\\\\')
+    name = name.encode('string_escape')
     name = name.replace(':', '\\:')
     name = name.replace('.', '\\.')
     return name
@@ -152,7 +152,7 @@ def escape(name):
 def unescape(name):
     name = name.replace('\\.', '.')
     name = name.replace('\\:', ':')
-    name = name.replace('\\\\', '\\')
+    name = name.decode('string_escape')
     return name
 
 _splitRe = re.compile(r'(?<!\\)\.')
@@ -346,7 +346,7 @@ class Value(Group):
         return repr(self())
 
     def serialize(self):
-        return str(self).replace('\\', '\\\\')
+        return str(self).encode('string_escape')
 
     # We tried many, *many* different syntactic methods here, and this one was
     # simply the best -- not very intrusive, easily overridden by subclasses,
@@ -502,7 +502,7 @@ class NormalizedString(String):
         self.__parent.setValue(s)
 
     def serialize(self):
-        s = str(self).replace('\\', '\\\\')
+        s = self.__parent.serialize()
         prefixLen = len(self._name) + 2
         lines = textwrap.wrap(s, width=76-prefixLen)
         last = len(lines)-1
