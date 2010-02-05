@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -43,6 +44,8 @@ if sqlite:
             self.assertRegexp('random', 'primary author')
 
         def testLearn(self):
+            self.assertError('learn as my primary author')
+            self.assertError('learn jemfinch as')
             self.assertNotError('learn jemfinch as my primary author')
             self.assertNotError('info jemfinch')
             self.assertRegexp('whatis jemfinch', 'my primary author')
