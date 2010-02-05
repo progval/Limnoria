@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -63,6 +63,8 @@ def getFactoid(irc, msg, args, state):
             key.append(args.pop(0))
         else:
             value.append(args.pop(0))
+    if not key or not value:
+        raise callbacks.ArgumentError
     state.args.append(' '.join(key))
     state.args.append(' '.join(value))
 
