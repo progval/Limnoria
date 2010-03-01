@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -206,8 +206,8 @@ class ChannelLogger(callbacks.Plugin):
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
             self.doLog(irc, channel,
-                       '*** %s has joined %s\n',
-                       msg.nick or msg.prefix, channel)
+                       '*** %s <%s> has joined %s\n',
+                       msg.nick, msg.prefix, channel)
 
     def doKick(self, irc, msg):
         if len(msg.args) == 3:
@@ -226,7 +226,8 @@ class ChannelLogger(callbacks.Plugin):
     def doPart(self, irc, msg):
         for channel in msg.args[0].split(','):
             self.doLog(irc, channel,
-                       '*** %s has left %s\n', msg.nick, channel)
+                       '*** %s <%s> has left %s\n',
+                       msg.nick, msg.prefix, channel)
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
@@ -248,7 +249,9 @@ class ChannelLogger(callbacks.Plugin):
             irc = irc.getRealIrc()
         for (channel, chan) in self.lastStates[irc].channels.iteritems():
             if msg.nick in chan.users:
-                self.doLog(irc, channel, '*** %s has quit IRC\n', msg.nick)
+                self.doLog(irc, channel,
+                           '*** %s <%s> has quit IRC\n',
+                           msg.nick, msg.prefix)
 
     def outFilter(self, irc, msg):
         # Gotta catch my own messages *somehow* :)

@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -292,13 +293,17 @@ def prettyPrint(msg, addRecipients=False, timestampFormat=None, showNick=True):
         else:
             s = '-%s- %s' % (nick(), msg.args[1])
     elif msg.command == 'JOIN':
-        s = '*** %s has joined %s' % (msg.nick, msg.args[0])
+        prefix = msg.prefix
+        if msg.nick:
+            prefix = '%s <%s>' % (msg.nick, prefix)
+        s = '*** %s has joined %s' % (prefix, msg.args[0])
     elif msg.command == 'PART':
         if len(msg.args) > 1:
             partmsg = ' (%s)' % msg.args[1]
         else:
             partmsg = ''
-        s = '*** %s has parted %s%s' % (msg.nick, msg.args[0], partmsg)
+        s = '*** %s <%s> has parted %s%s' % (msg.nick, msg.prefix,
+                                             msg.args[0], partmsg)
     elif msg.command == 'KICK':
         if len(msg.args) > 2:
             kickmsg = ' (%s)' % msg.args[1]
@@ -312,7 +317,7 @@ def prettyPrint(msg, addRecipients=False, timestampFormat=None, showNick=True):
             quitmsg = ' (%s)' % msg.args[0]
         else:
             quitmsg = ''
-        s = '*** %s has quit IRC%s' % (msg.nick, quitmsg)
+        s = '*** %s <%s> has quit IRC%s' % (msg.nick, msg.prefix, quitmsg)
     elif msg.command == 'TOPIC':
         s = '*** %s changes topic to %s' % (nickorprefix(), msg.args[1])
     elif msg.command == 'NICK':
