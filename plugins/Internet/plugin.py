@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -61,7 +62,6 @@ class Internet(callbacks.Plugin):
                 irc.reply('Host not found.')
     dns = wrap(dns, ['something'])
 
-    _tlds = set(['com', 'net', 'edu'])
     _domain = ['Domain Name', 'Server Name', 'domain']
     _registrar = ['Sponsoring Registrar', 'Registrar', 'source']
     _updated = ['Last Updated On', 'Domain Last Updated Date', 'Updated Date',
@@ -76,24 +76,15 @@ class Internet(callbacks.Plugin):
         """
         usertld = domain.split('.')[-1]
         if '.' not in domain:
-            irc.error('<domain> must be in .com, .net, .edu, or .org.')
+            irc.errorInvalid('domain')
             return
-        elif len(domain.split('.')) != 2:
-            irc.error('<domain> must be a domain, not a hostname.')
-            return
-        if usertld in self._tlds:
-            server = 'rs.internic.net'
-            search = '=%s' % domain
-        else:
-            server = '%s.whois-servers.net' % usertld
-            search = domain
         try:
-            t = telnetlib.Telnet(server, 43)
+            t = telnetlib.Telnet('%s.whois-servers.net' % usertld, 43)
         except socket.error, e:
             irc.error(str(e))
             return
-        t.write(search)
-        t.write('\n')
+        t.write(domain)
+        t.write('\r\n')
         s = t.read_all()
         server = registrar = updated = created = expires = status = ''
         for line in s.splitlines():
