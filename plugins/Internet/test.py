@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,11 +40,10 @@ class InternetTestCase(PluginTestCase):
 
         def testWhois(self):
             self.assertNotError('internet whois ohio-state.edu')
-            self.assertError('internet whois www.ohio-state.edu')
             self.assertNotError('internet whois kuro5hin.org')
-            self.assertError('internet whois www.kuro5hin.org')
             self.assertNotError('internet whois microsoft.com')
             self.assertNotError('internet whois inria.fr')
+            self.assertNotError('internet whois slime.com.au')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
