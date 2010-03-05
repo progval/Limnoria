@@ -96,6 +96,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           key_id INTEGER,
                           added_by TEXT,
                           added_at TIMESTAMP,
+                          usage_count INTEGER,
                           fact TEXT
                           )""")
         cursor.execute("""CREATE TRIGGER remove_factoids
@@ -141,8 +142,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             else:
                 name = msg.nick
             cursor.execute("""INSERT INTO factoids VALUES
-                              (NULL, %s, %s, %s, %s)""",
-                           id, name, int(time.time()), factoid)
+                              (NULL, %s, %s, %s, %s, %s)""",
+                           id, name, int(time.time()), 0, factoid)
             db.commit()
             irc.replySuccess()
         else:
@@ -161,18 +162,33 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def _lookupFactoid(self, channel, key):
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT factoids.fact FROM factoids, keys
+        cursor.execute("""SELECT factoids.fact, factoids.id FROM factoids, keys
                           WHERE keys.key LIKE %s AND factoids.key_id=keys.id
                           ORDER BY factoids.id
                           LIMIT 20""", key)
-        return [t[0] for t in cursor.fetchall()]
-
-    def _replyFactoids(self, irc, msg, key, factoids,
+        return cursor.fetchall()
+        #return [t[0] for t in cursor.fetchall()]
+    
+    def _updateRank(self, channel, factoids):
+        if self.registryValue('keepRankInfo', channel):
+            db = self.getDb(channel)
+            cursor = db.cursor()
+            for (fact,id) in factoids:
+                cursor.execute("""SELECT factoids.usage_count
+                          FROM factoids
+                          WHERE factoids.id=%s""", id)
+                old_count = cursor.fetchall()[0][0]
+                cursor.execute("UPDATE factoids SET usage_count=%s WHERE id=%s", old_count + 1, id)
+                db.commit()
+        
+    def _replyFactoids(self, irc, msg, key, channel, factoids,
                        number=0, error=True):
         if factoids:
+            print factoids
             if number:
                 try:
-                    irc.reply(factoids[number-1])
+                    irc.reply(factoids[number-1][0])
+                    self._updateRank(channel, [factoids[number-1]])
                 except IndexError:
                     irc.error('That\'s not a valid number for that key.')
                     return
@@ -184,15 +200,16 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                     return ircutils.standardSubstitute(irc, msg,
                                                        formatter, env)
                 if len(factoids) == 1:
-                    irc.reply(prefixer(factoids[0]))
+                    irc.reply(prefixer(factoids[0][0]))
                 else:
                     factoidsS = []
                     counter = 1
                     for factoid in factoids:
-                        factoidsS.append(format('(#%i) %s', counter, factoid))
+                        factoidsS.append(format('(#%i) %s', counter, factoid[0]))
                         counter += 1
                     irc.replies(factoidsS, prefixer=prefixer,
                                 joiner=', or ', onlyPrefixFirst=True)
+                self._updateRank(channel, factoids)
         elif error:
             irc.error('No factoid matches that key.')
 
@@ -202,7 +219,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             if self.registryValue('replyWhenInvalidCommand', channel):
                 key = ' '.join(tokens)
                 factoids = self._lookupFactoid(channel, key)
-                self._replyFactoids(irc, msg, key, factoids, error=False)
+                self._replyFactoids(irc, msg, key, channel, factoids, error=False)
 
     def whatis(self, irc, msg, args, channel, words):
         """[<channel>] <key> [<number>]
@@ -219,9 +236,30 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                     irc.errorInvalid('key id')
         key = ' '.join(words)
         factoids = self._lookupFactoid(channel, key)
-        self._replyFactoids(irc, msg, key, factoids, number)
+        self._replyFactoids(irc, msg, key, channel, factoids, number)
     whatis = wrap(whatis, ['channel', many('something')])
 
+    def factrank(self, irc, msg, args, channel):
+        """[<channel>]
+        
+        Returns a list of top-ranked factoid keys, sorted by usage count 
+        (rank). The number of factoid keys returned is set by the 
+        rankListLength registry value. <channel> is only necessary if the 
+        message isn't sent in the channel itself.
+        """
+        numfacts = self.registryValue('rankListLength', channel)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT keys.key, factoids.usage_count
+                          FROM keys, factoids
+                          WHERE factoids.key_id=keys.id
+                          ORDER BY factoids.usage_count DESC
+                          LIMIT %s""", numfacts)
+        factkeys = cursor.fetchall()
+        s = [ "#%d %s (%d)" % (i, key[0], key[1]) for i, key in enumerate(factkeys) ]
+        irc.reply(", ".join(s))
+    factrank = wrap(factrank, ['channel'])
+    
     def lock(self, irc, msg, args, channel, key):
         """[<channel>] <key>
 

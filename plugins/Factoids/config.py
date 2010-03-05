@@ -63,5 +63,10 @@ conf.registerChannelValue(Factoids, 'format',
     the response given when a factoid's value is requested.  All the standard
     substitutes apply, in addition to "$key" for the factoid's key and "$value"
     for the factoid's value."""))
-
+conf.registerChannelValue(Factoids, 'keepRankInfo',
+    registry.Boolean(True, """Determines whether we keep updating the usage
+    count for each factoid, for popularity ranking."""))
+conf.registerChannelValue(Factoids, 'rankListLength',
+    registry.Integer(20, """Determines the number of factoid keys returned
+    by the factrank command."""))
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
