@@ -184,7 +184,6 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def _replyFactoids(self, irc, msg, key, channel, factoids,
                        number=0, error=True):
         if factoids:
-            print factoids
             if number:
                 try:
                     irc.reply(factoids[number-1][0])
