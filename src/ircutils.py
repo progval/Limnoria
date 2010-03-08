@@ -642,7 +642,7 @@ def standardSubstitute(irc, msg, text, env=None):
                 return msg.nick
         else:
             return 'someone'
-    ctime = time.ctime()
+    ctime = time.strftime("%a %b %d %H:%M:%S %Y")
     localtime = time.localtime()
     vars = CallableValueIrcDict({
         'who': msg.nick,
@@ -664,7 +664,7 @@ def standardSubstitute(irc, msg, text, env=None):
         'h': localtime[3], 'hr': localtime[3], 'hour': localtime[3],
         'm': localtime[4], 'min': localtime[4], 'minute': localtime[4],
         's': localtime[5], 'sec': localtime[5], 'second': localtime[5],
-        'tz': time.tzname[time.daylight],
+        'tz': time.strftime('%Z', localtime),
         })
     if env is not None:
         vars.update(env)
