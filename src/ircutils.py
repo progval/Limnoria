@@ -644,6 +644,7 @@ def standardSubstitute(irc, msg, text, env=None):
             return 'someone'
     ctime = time.strftime("%a %b %d %H:%M:%S %Y")
     localtime = time.localtime()
+    gmtime = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime())
     vars = CallableValueIrcDict({
         'who': msg.nick,
         'nick': msg.nick,
@@ -652,6 +653,7 @@ def standardSubstitute(irc, msg, text, env=None):
         'channel': channel,
         'botnick': irc.nick,
         'now': ctime, 'ctime': ctime,
+        'utc': gmtime, 'gmt': gmtime,
         'randnick': randNick, 'randomnick': randNick,
         'randdate': randDate, 'randomdate': randDate,
         'rand': randInt, 'randint': randInt, 'randomint': randInt,
