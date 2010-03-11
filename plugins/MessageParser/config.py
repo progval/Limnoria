@@ -48,6 +48,11 @@ conf.registerChannelValue(MessageParser, 'enable',
     registry.Boolean(True, """Determines whether the
     message parser is enabled.  If enabled, will trigger on regexps
     added to the regexp db."""))
-
+conf.registerChannelValue(MessageParser, 'keepRankInfo',
+    registry.Boolean(True, """Determines whether we keep updating the usage
+    count for each regexp, for popularity ranking."""))
+conf.registerChannelValue(MessageParser, 'rankListLength',
+    registry.Integer(20, """Determines the number of regexps returned
+    by the triggerrank command."""))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
