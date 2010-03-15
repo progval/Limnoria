@@ -178,7 +178,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             irc.reply('There is no such regexp trigger.')
             return
             
-        irc.reply("The trigger for regexp '%s' is '%s'" % (regexp, action))
+        irc.reply("The action for regexp trigger '%s' is '%s'" % (regexp, action))
     show = wrap(show, ['channel', 'something'])
 
     def listall(self, irc, msg, args, channel):
