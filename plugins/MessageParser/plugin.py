@@ -106,9 +106,6 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             
             if len(actions) > 0:
                 irc.replies(actions, prefixNick=False)
-
-            #if re.search('some stuff', msgtext):
-            #    irc.reply('some stuff detected', prefixNick=False)
     
     def add(self, irc, msg, args, channel, regexp, action):
         """[<channel>] <regexp> <action>
@@ -136,7 +133,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             db.commit()
             irc.replySuccess()
         else:
-            irc.error('That trigger is locked.')
+            irc.reply('That trigger is locked.')
+            return
     add = wrap(add, ['channel', 'something', 'something'])
     
     def remove(self, irc, msg, args, channel, regexp):
@@ -152,10 +150,12 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         if cursor.rowcount != 0:
             (id, locked) = map(int, cursor.fetchone())
         else:
-            irc.error('There is no such regexp trigger.')
+            irc.reply('There is no such regexp trigger.')
+            return
         
         if locked:
-            irc.error('This regexp trigger is locked.')
+            irc.reply('This regexp trigger is locked.')
+            return
         
         cursor.execute("""DELETE FROM triggers WHERE id=%s""", id)
         db.commit()
@@ -175,7 +175,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         if cursor.rowcount != 0:
             (regexp, action) = cursor.fetchone()
         else:
-            irc.error('There is no such regexp trigger.')
+            irc.reply('There is no such regexp trigger.')
+            return
             
         irc.reply("The trigger for regexp '%s' is '%s'" % (regexp, action))
     show = wrap(show, ['channel', 'something'])
@@ -193,7 +194,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         if cursor.rowcount != 0:
             regexps = cursor.fetchall()
         else:
-            irc.error('There is no available regexp triggers.')
+            irc.reply('There are no regexp triggers in the database.')
+            return
         
         s = [ regexp[0] for regexp in regexps ]
         irc.reply("'" + "','".join(s) + "'")
