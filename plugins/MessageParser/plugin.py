@@ -237,7 +237,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             return
         
         s = [ regexp[0] for regexp in regexps ]
-        irc.reply("'" + "','".join(s) + "'")
+        irc.reply('"' + '","'.join(s) + '"')
     listall = wrap(listall, ['channel'])
 
     def triggerrank(self, irc, msg, args, channel):
