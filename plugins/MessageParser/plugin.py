@@ -54,6 +54,10 @@ import sqlite3
 import threading
 import supybot.world as world
 
+
+import supybot.log as log
+
+
 class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
     """This plugin can set regexp triggers to activate the bot.
     Use 'add' command to add regexp trigger, 'remove' to remove."""
@@ -105,6 +109,15 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             cursor.execute("UPDATE triggers SET usage_count=? WHERE regexp=?", (old_count + 1, regexp,))
             db.commit()
     
+    def _runCommandFunction(self, irc, msg, command):
+        """Run a command from message, as if command was sent over IRC."""
+        # need to encode it from unicode, since sqlite stores text as unicode.
+        tokens = callbacks.tokenize(unicode.encode(command, 'utf8'))        
+        try:
+            self.Proxy(irc.irc, msg, tokens)
+        except Exception, e:
+            log.exception('Uncaught exception in scheduled function:')
+    
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         if not irc.isChannel(channel):
@@ -125,8 +138,10 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                         action = re.sub(r'\$' + str(i+1), match.group(i+1), action)
                     actions.append(action)
             
-            if len(actions) > 0:
-                irc.replies(actions, prefixNick=False)
+            #if len(actions) > 0:
+                # irc.replies(actions, prefixNick=False)
+            for action in actions:
+                self._runCommandFunction(irc, msg, action)
     
     def add(self, irc, msg, args, channel, regexp, action):
         """[<channel>] <regexp> <action>
@@ -143,7 +158,6 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             (id, locked) = map(int, results[0])
         else:
             locked = False
-        #capability = ircdb.makeChannelCapability(channel, 'factoids')
         if not locked:
             if ircdb.users.hasUser(msg.prefix):
                 name = ircdb.users.getUser(msg.prefix).name
