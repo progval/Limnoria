@@ -255,7 +255,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           ORDER BY factoids.usage_count DESC
                           LIMIT %s""", numfacts)
         factkeys = cursor.fetchall()
-        s = [ "#%d %s (%d)" % (i, key[0], key[1]) for i, key in enumerate(factkeys) ]
+        s = [ "#%d %s (%d)" % (i+1, key[0], key[1]) for i, key in enumerate(factkeys) ]
         irc.reply(", ".join(s))
     factrank = wrap(factrank, ['channel'])
     
