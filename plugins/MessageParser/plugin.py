@@ -41,13 +41,18 @@ import re
 import os
 import time
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at ' \
-                           '<http://code.google.com/p/pysqlite/>'
+#try:
+    #import sqlite
+#except ImportError:
+    #raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           #'plugin.  Download it at ' \
+                           #'<http://code.google.com/p/pysqlite/>'
 
+import sqlite3
+
+# these are needed cuz we are overriding getdb
+import threading
+import supybot.world as world
 
 class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
     """This plugin can set regexp triggers to activate the bot.
@@ -58,9 +63,10 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         plugins.ChannelDBHandler.__init__(self)
     
     def makeDb(self, filename):
+        """Create the database and connect to it."""
         if os.path.exists(filename):
-            return sqlite.connect(filename)
-        db = sqlite.connect(filename)
+            return sqlite3.connect(filename)
+        db = sqlite3.connect(filename)
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE triggers (
                           id INTEGER PRIMARY KEY,
@@ -74,15 +80,29 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         db.commit()
         return db
     
+    # override this because sqlite3 doesn't have autocommit
+    # use isolation_level instead.
+    def getDb(self, channel):
+        """Use this to get a database for a specific channel."""
+        currentThread = threading.currentThread()
+        if channel not in self.dbCache and currentThread == world.mainThread:
+            self.dbCache[channel] = self.makeDb(self.makeFilename(channel))
+        if currentThread != world.mainThread:
+            db = self.makeDb(self.makeFilename(channel))
+        else:
+            db = self.dbCache[channel]
+        db.isolation_level = None
+        return db
+    
     def _updateRank(self, channel, regexp):
         if self.registryValue('keepRankInfo', channel):
             db = self.getDb(channel)
             cursor = db.cursor()
             cursor.execute("""SELECT usage_count
                       FROM triggers
-                      WHERE regexp=%s""", regexp)
+                      WHERE regexp=?""", (regexp,))
             old_count = cursor.fetchall()[0][0]
-            cursor.execute("UPDATE triggers SET usage_count=%s WHERE regexp=%s", old_count + 1, regexp)
+            cursor.execute("UPDATE triggers SET usage_count=? WHERE regexp=?", (old_count + 1, regexp,))
             db.commit()
     
     def doPrivmsg(self, irc, msg):
@@ -94,9 +114,10 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             db = self.getDb(channel)
             cursor = db.cursor()
             cursor.execute("SELECT regexp, action FROM triggers")
-            if cursor.rowcount == 0:
+            results = cursor.fetchall()
+            if len(results) == 0:
                 return
-            for (regexp, action) in cursor.fetchall():
+            for (regexp, action) in results:
                 match = re.search(regexp, msg.args[1])
                 if match is not None:
                     self._updateRank(channel, regexp)
@@ -116,9 +137,10 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         etc. being interpolated from the regexp match groups."""
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT id, locked FROM triggers WHERE regexp=%s", regexp)
-        if cursor.rowcount != 0:
-            (id, locked) = map(int, cursor.fetchone())
+        cursor.execute("SELECT id, locked FROM triggers WHERE regexp=?", (regexp,))
+        results = cursor.fetchall()
+        if len(results) != 0:
+            (id, locked) = map(int, results[0])
         else:
             locked = False
         #capability = ircdb.makeChannelCapability(channel, 'factoids')
@@ -128,8 +150,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             else:
                 name = msg.nick
             cursor.execute("""INSERT INTO triggers VALUES
-                              (NULL, %s, %s, %s, %s, %s, %s)""",
-                           regexp, name, int(time.time()), 0, action, 0)
+                              (NULL, ?, ?, ?, ?, ?, ?)""",
+                           (regexp, name, int(time.time()), 0, action, 0,))
             db.commit()
             irc.replySuccess()
         else:
@@ -146,9 +168,10 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         """
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT id, locked FROM triggers WHERE regexp=%s", regexp)
-        if cursor.rowcount != 0:
-            (id, locked) = map(int, cursor.fetchone())
+        cursor.execute("SELECT id, locked FROM triggers WHERE regexp=?", (regexp,))
+        results = cursor.fetchall()
+        if len(results) != 0:
+            (id, locked) = map(int, results[0])
         else:
             irc.reply('There is no such regexp trigger.')
             return
@@ -157,7 +180,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             irc.reply('This regexp trigger is locked.')
             return
         
-        cursor.execute("""DELETE FROM triggers WHERE id=%s""", id)
+        cursor.execute("""DELETE FROM triggers WHERE id=?""", (id,))
         db.commit()
         irc.replySuccess()
     remove = wrap(remove, ['channel', 'something'])
@@ -171,9 +194,10 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         """
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT regexp, action FROM triggers WHERE regexp=%s", regexp)
-        if cursor.rowcount != 0:
-            (regexp, action) = cursor.fetchone()
+        cursor.execute("SELECT regexp, action FROM triggers WHERE regexp=?", (regexp,))
+        results = cursor.fetchall()
+        if len(results) != 0:
+            (regexp, action) = results[0]
         else:
             irc.reply('There is no such regexp trigger.')
             return
@@ -191,8 +215,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("SELECT regexp FROM triggers")
-        if cursor.rowcount != 0:
-            regexps = cursor.fetchall()
+        results = cursor.fetchall()
+        if len(results) != 0:
+            regexps = results
         else:
             irc.reply('There are no regexp triggers in the database.')
             return
@@ -215,7 +240,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("""SELECT regexp, usage_count
                           FROM triggers
                           ORDER BY usage_count DESC
-                          LIMIT %s""", numregexps)
+                          LIMIT ?""", (numregexps,))
         regexps = cursor.fetchall()
         s = [ "#%d %s (%d)" % (i+1, regexp[0], regexp[1]) for i, regexp in enumerate(regexps) ]
         irc.reply(", ".join(s))
