@@ -134,15 +134,14 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             if len(results) == 0:
                 return
             for (regexp, action) in results:
-                match = re.search(regexp, msg.args[1])
-                if match is not None:
-                    self._updateRank(channel, regexp)
-                    for (i, j) in enumerate(match.groups()):
-                        action = re.sub(r'\$' + str(i+1), match.group(i+1), action)
-                    actions.append(action)
+                for match in re.finditer(regexp, msg.args[1]):
+                    if match is not None:
+                        thisaction = action
+                        self._updateRank(channel, regexp)
+                        for (i, j) in enumerate(match.groups()):
+                            thisaction = re.sub(r'\$' + str(i+1), match.group(i+1), thisaction)
+                        actions.append(thisaction)
             
-            #if len(actions) > 0:
-                # irc.replies(actions, prefixNick=False)
             for action in actions:
                 self._runCommandFunction(irc, msg, action)
     
