@@ -72,8 +72,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
     def makeDb(self, filename):
         """Create the database and connect to it."""
         if os.path.exists(filename):
-            return sqlite3.connect(filename)
+            db = sqlite3.connect(filename)
+            db.text_factory = str
+            return db
         db = sqlite3.connect(filename)
+        db.text_factory = str
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE triggers (
                           id INTEGER PRIMARY KEY,
@@ -115,7 +118,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
     def _runCommandFunction(self, irc, msg, command):
         """Run a command from message, as if command was sent over IRC."""
         # need to encode it from unicode, since sqlite stores text as unicode.
-        tokens = callbacks.tokenize(unicode.encode(command, 'utf8'))        
+        tokens = callbacks.tokenize(command)        
         try:
             self.Proxy(irc.irc, msg, tokens)
         except Exception, e:
