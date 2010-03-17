@@ -48,7 +48,10 @@ import time
                            #'plugin.  Download it at ' \
                            #'<http://code.google.com/p/pysqlite/>'
 
-import sqlite3
+try:
+    import sqlite3
+except:
+    from pysqlite2 import dbapi2 as sqlite3 # for python2.4
 
 # these are needed cuz we are overriding getdb
 import threading
