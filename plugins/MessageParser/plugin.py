@@ -129,6 +129,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         if not irc.isChannel(channel):
             return
         if self.registryValue('enable', channel):
+            if callbacks.addressed(irc.nick, msg): #message is direct command
+                return
             actions = []
             db = self.getDb(channel)
             cursor = db.cursor()
