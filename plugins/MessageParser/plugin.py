@@ -167,6 +167,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             locked = 0
             usage_count = 0
         if not locked:
+            try:
+                re.compile(regexp)
+            except Exception, e:
+                irc.error('Invalid python regexp: %s' % (e,))
+                return
             if ircdb.users.hasUser(msg.prefix):
                 name = ircdb.users.getUser(msg.prefix).name
             else:
