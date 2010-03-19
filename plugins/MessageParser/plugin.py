@@ -286,6 +286,41 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                         getopts({'id': '',}),
                         'something'])
 
+    def info(self, irc, msg, args, channel, optlist, regexp):
+        """[<channel>] [--id] <regexp>
+
+        Display information about <regexp> in the triggers database.
+        <channel> is only necessary if the message isn't sent in the channel 
+        itself.
+        If option --id specified, will retrieve by regexp id, not content.
+        """
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        target = 'regexp'
+        for (option, arg) in optlist:
+            if option == 'id':
+                target = 'id'
+        sql = "SELECT * FROM triggers WHERE %s=?" % (target,)
+        cursor.execute(sql, (regexp,))
+        results = cursor.fetchall()
+        if len(results) != 0:
+            (id, regexp, added_by, added_at, usage_count, action, locked) = results[0]
+        else:
+            irc.reply('There is no such regexp trigger.')
+            return
+            
+        irc.reply("The regexp trigger id is %d, regexp is \"%s\", and action is \"%s\". It was added by user %s on %s, has been triggered %d times, and is %s." % (id, 
+                    regexp, 
+                    action,
+                    added_by,
+                    time.strftime(conf.supybot.reply.format.time(),
+                                     time.localtime(int(added_at))),
+                    usage_count,
+                    locked and "locked" or "not locked",))
+    info = wrap(info, ['channel', 
+                        getopts({'id': '',}),
+                        'something'])
+
     def listall(self, irc, msg, args, channel):
         """[<channel>]
 
