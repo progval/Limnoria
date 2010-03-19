@@ -250,16 +250,22 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         irc.replySuccess()
     unlock = wrap(unlock, ['channel', 'text'])
 
-    def show(self, irc, msg, args, channel, regexp):
-        """[<channel>] <regexp>
+    def show(self, irc, msg, args, channel, optlist, regexp):
+        """[<channel>] [--id] <regexp>
 
         Looks up the value of <regexp> in the triggers database.
         <channel> is only necessary if the message isn't sent in the channel 
         itself.
+        If option --id specified, will retrieve by regexp id, not content.
         """
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT regexp, action FROM triggers WHERE regexp=?", (regexp,))
+        target = 'regexp'
+        for (option, arg) in optlist:
+            if option == 'id':
+                target = 'id'
+        sql = "SELECT regexp, action FROM triggers WHERE %s=?" % (target,)
+        cursor.execute(sql, (regexp,))
         results = cursor.fetchall()
         if len(results) != 0:
             (regexp, action) = results[0]
@@ -267,8 +273,10 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             irc.reply('There is no such regexp trigger.')
             return
             
-        irc.reply("The action for regexp trigger '%s' is '%s'" % (regexp, action))
-    show = wrap(show, ['channel', 'something'])
+        irc.reply("The action for regexp trigger \"%s\" is \"%s\"" % (regexp, action))
+    show = wrap(show, ['channel', 
+                        getopts({'id': '',}),
+                        'something'])
 
     def listall(self, irc, msg, args, channel):
         """[<channel>]
