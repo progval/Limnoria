@@ -159,12 +159,13 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         etc. being interpolated from the regexp match groups."""
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT id, locked FROM triggers WHERE regexp=?", (regexp,))
+        cursor.execute("SELECT id, usage_count, locked FROM triggers WHERE regexp=?", (regexp,))
         results = cursor.fetchall()
         if len(results) != 0:
-            (id, locked) = map(int, results[0])
+            (id, usage_count, locked) = map(int, results[0])
         else:
-            locked = False
+            locked = 0
+            usage_count = 0
         if not locked:
             if ircdb.users.hasUser(msg.prefix):
                 name = ircdb.users.getUser(msg.prefix).name
@@ -172,7 +173,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                 name = msg.nick
             cursor.execute("""INSERT INTO triggers VALUES
                               (NULL, ?, ?, ?, ?, ?, ?)""",
-                           (regexp, name, int(time.time()), 0, action, 0,))
+                            (regexp, name, int(time.time()), usage_count, action, locked,))
             db.commit()
             irc.replySuccess()
         else:
