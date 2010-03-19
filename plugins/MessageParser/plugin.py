@@ -358,7 +358,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                           ORDER BY usage_count DESC
                           LIMIT ?""", (numregexps,))
         regexps = cursor.fetchall()
-        s = [ "#%d %s (%d)" % (i+1, regexp[0], regexp[1]) for i, regexp in enumerate(regexps) ]
+        s = [ "#%d \"%s\" (%d)" % (i+1, regexp[0], regexp[1]) for i, regexp in enumerate(regexps) ]
         irc.reply(", ".join(s))
     rank = wrap(rank, ['channel'])
 
