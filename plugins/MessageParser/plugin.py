@@ -186,16 +186,22 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             return
     add = wrap(add, ['channel', 'something', 'something'])
     
-    def remove(self, irc, msg, args, channel, regexp):
-        """[<channel>] <regexp>]
+    def remove(self, irc, msg, args, channel, optlist, regexp):
+        """[<channel>] [--id] <regexp>]
 
         Removes the trigger for <regexp> from the triggers database.  
         <channel> is only necessary if
         the message isn't sent in the channel itself.
+        If option --id specified, will retrieve by regexp id, not content.
         """
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT id, locked FROM triggers WHERE regexp=?", (regexp,))
+        target = 'regexp'
+        for (option, arg) in optlist:
+            if option == 'id':
+                target = 'id'
+        sql = "SELECT id, locked FROM triggers WHERE %s=?" % (target,)
+        cursor.execute(sql, (regexp,))
         results = cursor.fetchall()
         if len(results) != 0:
             (id, locked) = map(int, results[0])
@@ -210,7 +216,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("""DELETE FROM triggers WHERE id=?""", (id,))
         db.commit()
         irc.replySuccess()
-    remove = wrap(remove, ['channel', 'something'])
+    remove = wrap(remove, ['channel',
+                            getopts({'id': '',}),
+                            'something'])
 
     def lock(self, irc, msg, args, channel, regexp):
         """[<channel>] <regexp>
