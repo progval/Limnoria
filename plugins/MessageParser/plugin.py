@@ -362,6 +362,26 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         irc.reply(", ".join(s))
     rank = wrap(rank, ['channel'])
 
+    def vacuum(self, irc, msg, args, channel):
+        """[<channel>]
+        
+        Vacuums the database for <channel>.
+        See SQLite vacuum doc here: http://www.sqlite.org/lang_vacuum.html
+        <channel> is only necessary if the message isn't sent in 
+        the channel itself.
+        First check if user has the required capability specified in plugin 
+        config requireVacuumCapability.
+        """
+        capability = self.registryValue('requireVacuumCapability')
+        if capability:
+            if not ircdb.checkCapability(msg.prefix, capability):
+                irc.errorNoCapability(capability, Raise=True)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""VACUUM""")
+        db.commit()
+        irc.replySuccess()
+    vacuum = wrap(vacuum, ['channel'])
 
 Class = MessageParser
 

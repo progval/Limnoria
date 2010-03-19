@@ -54,5 +54,8 @@ conf.registerChannelValue(MessageParser, 'keepRankInfo',
 conf.registerChannelValue(MessageParser, 'rankListLength',
     registry.Integer(20, """Determines the number of regexps returned
     by the triggerrank command."""))
+conf.registerChannelValue(MessageParser, 'requireVacuumCapability',
+    registry.String('admin', """Determines the capability required (if any) to 
+    vacuum the database."""))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
