@@ -321,7 +321,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                         getopts({'id': '',}),
                         'something'])
 
-    def listall(self, irc, msg, args, channel):
+    def list(self, irc, msg, args, channel):
         """[<channel>]
 
         Lists regexps present in the triggers database.
@@ -340,9 +340,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         
         s = [ "\"%s\" (%d)" % (regexp[0], regexp[1]) for regexp in regexps ]
         irc.reply(', '.join(s))
-    listall = wrap(listall, ['channel'])
+    list = wrap(list, ['channel'])
 
-    def triggerrank(self, irc, msg, args, channel):
+    def rank(self, irc, msg, args, channel):
         """[<channel>]
         
         Returns a list of top-ranked regexps, sorted by usage count 
@@ -360,7 +360,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         regexps = cursor.fetchall()
         s = [ "#%d %s (%d)" % (i+1, regexp[0], regexp[1]) for i, regexp in enumerate(regexps) ]
         irc.reply(", ".join(s))
-    triggerrank = wrap(triggerrank, ['channel'])
+    rank = wrap(rank, ['channel'])
 
 
 Class = MessageParser
