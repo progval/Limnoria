@@ -338,8 +338,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             irc.reply('There are no regexp triggers in the database.')
             return
         
-        s = [ "%s (%d)" % (regexp[0], regexp[1]) for regexp in regexps ]
-        irc.reply('"' + '","'.join(s) + '"')
+        s = [ "\"%s\" (%d)" % (regexp[0], regexp[1]) for regexp in regexps ]
+        irc.reply(', '.join(s))
     listall = wrap(listall, ['channel'])
 
     def triggerrank(self, irc, msg, args, channel):
