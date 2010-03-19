@@ -207,6 +207,44 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         irc.replySuccess()
     remove = wrap(remove, ['channel', 'something'])
 
+    def lock(self, irc, msg, args, channel, regexp):
+        """[<channel>] <regexp>
+
+        Locks the <regexp> so that it cannot be
+        removed or overwritten to.  <channel> is only necessary if the message isn't
+        sent in the channel itself.
+        """
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("SELECT id FROM triggers WHERE regexp=?", (regexp,))
+        results = cursor.fetchall()
+        if len(results) == 0:
+            irc.reply('There is no such regexp trigger.')
+            return
+        cursor.execute("UPDATE triggers SET locked=1 WHERE regexp=?", (regexp,))
+        db.commit()
+        irc.replySuccess()
+    lock = wrap(lock, ['channel', 'text'])
+
+    def unlock(self, irc, msg, args, channel, regexp):
+        """[<channel>] <regexp>
+
+        Unlocks the entry associated with <regexp> so that it can be
+        removed or overwritten.  <channel> is only necessary if the message isn't
+        sent in the channel itself.
+        """
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("SELECT id FROM triggers WHERE regexp=?", (regexp,))
+        results = cursor.fetchall()
+        if len(results) == 0:
+            irc.reply('There is no such regexp trigger.')
+            return
+        cursor.execute("UPDATE triggers SET locked=0 WHERE regexp=?", (regexp,))
+        db.commit()
+        irc.replySuccess()
+    unlock = wrap(unlock, ['channel', 'text'])
+
     def show(self, irc, msg, args, channel, regexp):
         """[<channel>] <regexp>
 
