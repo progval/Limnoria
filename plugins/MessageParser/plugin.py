@@ -275,11 +275,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
 
         Lists regexps present in the triggers database.
         <channel> is only necessary if the message isn't sent in the channel 
-        itself.
+        itself. Regexp ID listed in paretheses.
         """
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT regexp FROM triggers")
+        cursor.execute("SELECT regexp, id FROM triggers")
         results = cursor.fetchall()
         if len(results) != 0:
             regexps = results
@@ -287,7 +287,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             irc.reply('There are no regexp triggers in the database.')
             return
         
-        s = [ regexp[0] for regexp in regexps ]
+        s = [ "%s (%d)" % (regexp[0], regexp[1]) for regexp in regexps ]
         irc.reply('"' + '","'.join(s) + '"')
     listall = wrap(listall, ['channel'])
 
