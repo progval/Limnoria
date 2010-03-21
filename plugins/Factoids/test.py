@@ -99,8 +99,8 @@ if sqlite:
             self.assertRegexp('factoids search --regexp m/^j/ *ss*',
                               'jamessan')
             self.assertRegexp('factoids search --regexp /^j/',
-                              'jemfinch.*jamessan')
-            self.assertRegexp('factoids search j*', 'jemfinch.*jamessan')
+                              'jamessan.*jemfinch')
+            self.assertRegexp('factoids search j*', 'jamessan.*jemfinch')
             self.assertRegexp('factoids search *ke*',
                               'inkedmn.*strike|strike.*inkedmn')
             self.assertRegexp('factoids search ke',
