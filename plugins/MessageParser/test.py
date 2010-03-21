@@ -30,8 +30,46 @@
 
 from supybot.test import *
 
-class MessageParserTestCase(PluginTestCase):
-    plugins = ('MessageParser',)
+try:
+    import sqlite3
+except ImportError:
+    from pysqlite2 import dbapi2 as sqlite3 # for python2.4
 
 
+class MessageParserTestCase(ChannelPluginTestCase):
+    plugins = ('MessageParser','Utilities',) #utilities for the 'echo'
+    
+    def testAdd(self):
+        self.assertError('messageparser add') #no args
+        self.assertError('messageparser add "stuff"') #no action arg
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertRegexp('messageparser show "stuff"', '.*i saw some stuff.*')
+        
+        self.assertError('messageparser add "[a" "echo stuff"') #invalid regexp
+        self.assertError('messageparser add "(a" "echo stuff"') #invalid regexp
+        self.assertNotError('messageparser add "stuff" "echo i saw no stuff"') #overwrite existing regexp
+        self.assertRegexp('messageparser show "stuff"', '.*i saw no stuff.*')
+        
+    def testShow(self):
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertRegexp('messageparser show "nostuff"', 'there is no such regexp trigger')
+        self.assertRegexp('messageparser show "stuff"', '.*i saw some stuff.*')
+        self.assertRegexp('messageparser show --id 1', '.*i saw some stuff.*')
+    
+    def testInfo(self):
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertRegexp('messageparser info "nostuff"', 'there is no such regexp trigger')
+        self.assertRegexp('messageparser info "stuff"', '.*i saw some stuff.*')
+        self.assertRegexp('messageparser info --id 1', '.*i saw some stuff.*')
+        self.assertRegexp('messageparser info "stuff"', 'has been triggered 0 times')
+        self.feedMsg('this message has some stuff in it')
+        self.getMsg(' ')
+        self.assertRegexp('messageparser info "stuff"', 'has been triggered 1 times')
+    
+    def testTrigger(self):
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.feedMsg('this message has some stuff in it')
+        m = self.getMsg(' ')
+        self.failUnless(str(m).startswith('PRIVMSG #test :i saw some stuff'))
+        
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
