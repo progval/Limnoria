@@ -50,7 +50,7 @@ import time
 
 try:
     import sqlite3
-except:
+except ImportError:
     from pysqlite2 import dbapi2 as sqlite3 # for python2.4
 
 # these are needed cuz we are overriding getdb
