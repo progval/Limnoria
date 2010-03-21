@@ -71,5 +71,52 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.feedMsg('this message has some stuff in it')
         m = self.getMsg(' ')
         self.failUnless(str(m).startswith('PRIVMSG #test :i saw some stuff'))
+    
+    def testLock(self):
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertNotError('messageparser lock "stuff"')
+        self.assertError('messageparser add "stuff" "echo some other stuff"')
+        self.assertError('messageparser remove "stuff"')
+        self.assertRegexp('messageparser info "stuff"', 'is locked')
+    
+    def testUnlock(self):
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertNotError('messageparser lock "stuff"')
+        self.assertError('messageparser remove "stuff"')
+        self.assertNotError('messageparser unlock "stuff"')
+        self.assertRegexp('messageparser info "stuff"', 'is not locked')
+        self.assertNotError('messageparser remove "stuff"')
+        
+    def testRank(self):
+        self.assertRegexp('messageparser rank', 
+                'There are no regexp triggers in the database\.')
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertRegexp('messageparser rank', '#1 "stuff" \(0\)')
+        self.assertNotError('messageparser add "aoeu" "echo vowels are nice!"')
+        self.assertRegexp('messageparser rank', '#1 "stuff" \(0\), #2 "aoeu" \(0\)')
+        self.feedMsg('instead of asdf, dvorak has aoeu')
+        self.getMsg(' ')
+        self.assertRegexp('messageparser rank', '#1 "aoeu" \(1\), #2 "stuff" \(0\)')
+        
+    def testList(self):
+        self.assertRegexp('messageparser list', 
+                'There are no regexp triggers in the database\.')
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertRegexp('messageparser list', '"stuff" \(1\)')
+        self.assertNotError('messageparser add "aoeu" "echo vowels are nice!"')
+        self.assertRegexp('messageparser list', '"stuff" \(1\), "aoeu" \(2\)')
+        
+    def testRemove(self):
+        self.assertError('messageparser remove "stuff"')
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertNotError('messageparser lock "stuff"')
+        self.assertError('messageparser remove "stuff"')
+        self.assertNotError('messageparser unlock "stuff"')
+        self.assertNotError('messageparser remove "stuff"')
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertNotError('messageparser remove --id 1')
+        
+    def testVacuum(self):
+        pass
         
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

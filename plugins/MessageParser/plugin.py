@@ -182,7 +182,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             db.commit()
             irc.replySuccess()
         else:
-            irc.reply('That trigger is locked.')
+            irc.error('That trigger is locked.')
             return
     add = wrap(add, ['channel', 'something', 'something'])
     
@@ -206,11 +206,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         if len(results) != 0:
             (id, locked) = map(int, results[0])
         else:
-            irc.reply('There is no such regexp trigger.')
+            irc.error('There is no such regexp trigger.')
             return
         
         if locked:
-            irc.reply('This regexp trigger is locked.')
+            irc.error('This regexp trigger is locked.')
             return
         
         cursor.execute("""DELETE FROM triggers WHERE id=?""", (id,))
@@ -232,7 +232,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("SELECT id FROM triggers WHERE regexp=?", (regexp,))
         results = cursor.fetchall()
         if len(results) == 0:
-            irc.reply('There is no such regexp trigger.')
+            irc.error('There is no such regexp trigger.')
             return
         cursor.execute("UPDATE triggers SET locked=1 WHERE regexp=?", (regexp,))
         db.commit()
@@ -251,7 +251,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("SELECT id FROM triggers WHERE regexp=?", (regexp,))
         results = cursor.fetchall()
         if len(results) == 0:
-            irc.reply('There is no such regexp trigger.')
+            irc.error('There is no such regexp trigger.')
             return
         cursor.execute("UPDATE triggers SET locked=0 WHERE regexp=?", (regexp,))
         db.commit()
@@ -278,7 +278,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         if len(results) != 0:
             (regexp, action) = results[0]
         else:
-            irc.reply('There is no such regexp trigger.')
+            irc.error('There is no such regexp trigger.')
             return
             
         irc.reply("The action for regexp trigger \"%s\" is \"%s\"" % (regexp, action))
@@ -304,12 +304,15 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute(sql, (regexp,))
         results = cursor.fetchall()
         if len(results) != 0:
-            (id, regexp, added_by, added_at, usage_count, action, locked) = results[0]
+            (id, regexp, added_by, added_at, usage_count, 
+                    action, locked) = results[0]
         else:
-            irc.reply('There is no such regexp trigger.')
+            irc.error('There is no such regexp trigger.')
             return
             
-        irc.reply("The regexp trigger id is %d, regexp is \"%s\", and action is \"%s\". It was added by user %s on %s, has been triggered %d times, and is %s." % (id, 
+        irc.reply("The regexp id is %d, regexp is \"%s\", and action is"
+                    " \"%s\". It was added by user %s on %s, has been "
+                    "triggered %d times, and is %s." % (id, 
                     regexp, 
                     action,
                     added_by,
@@ -358,6 +361,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                           ORDER BY usage_count DESC
                           LIMIT ?""", (numregexps,))
         regexps = cursor.fetchall()
+        if len(regexps) == 0:
+            irc.reply('There are no regexp triggers in the database.')
+            return
         s = [ "#%d \"%s\" (%d)" % (i+1, regexp[0], regexp[1]) for i, regexp in enumerate(regexps) ]
         irc.reply(", ".join(s))
     rank = wrap(rank, ['channel'])
