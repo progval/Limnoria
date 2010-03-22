@@ -117,13 +117,27 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
     
     def _runCommandFunction(self, irc, msg, command):
         """Run a command from message, as if command was sent over IRC."""
-        # need to encode it from unicode, since sqlite stores text as unicode.
         tokens = callbacks.tokenize(command)        
         try:
             self.Proxy(irc.irc, msg, tokens)
         except Exception, e:
             log.exception('Uncaught exception in scheduled function:')
     
+    def _checkManageCapabilities(self, irc, msg, channel):
+        """Check if the user has any of the required capabilities to manage
+        the regexp database."""
+        capabilities = self.registryValue('requireManageCapability')
+        if capabilities:
+            for capability in re.split(r'\s*;\s*', capabilities):
+                if capability.startswith('channel,'):
+                    capability = ircdb.makeChannelCapability(channel, capability[8:])
+                if capability and ircdb.checkCapability(msg.prefix, capability):
+                    #print "has capability:", capability
+                    return True
+            return False
+        else:
+            return True
+        
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         if not irc.isChannel(channel):
@@ -157,6 +171,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         necessary if the message isn't sent on the channel
         itself.  Action is echoed upon regexp match, with variables $1, $2, 
         etc. being interpolated from the regexp match groups."""
+        if not self._checkManageCapabilities(irc, msg, channel):
+            capabilities = self.registryValue('requireManageCapability')
+            irc.errorNoCapability(capabilities, Raise=True)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("SELECT id, usage_count, locked FROM triggers WHERE regexp=?", (regexp,))
@@ -194,6 +211,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         the message isn't sent in the channel itself.
         If option --id specified, will retrieve by regexp id, not content.
         """
+        if not self._checkManageCapabilities(irc, msg, channel):
+            capabilities = self.registryValue('requireManageCapability')
+            irc.errorNoCapability(capabilities, Raise=True)
         db = self.getDb(channel)
         cursor = db.cursor()
         target = 'regexp'
@@ -227,6 +247,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         removed or overwritten to.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
+        if not self._checkManageCapabilities(irc, msg, channel):
+            capabilities = self.registryValue('requireManageCapability')
+            irc.errorNoCapability(capabilities, Raise=True)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("SELECT id FROM triggers WHERE regexp=?", (regexp,))
@@ -246,6 +269,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         removed or overwritten.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
+        if not self._checkManageCapabilities(irc, msg, channel):
+            capabilities = self.registryValue('requireManageCapability')
+            irc.errorNoCapability(capabilities, Raise=True)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("SELECT id FROM triggers WHERE regexp=?", (regexp,))

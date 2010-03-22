@@ -52,6 +52,22 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.assertNotError('messageparser add "stuff" "echo i saw no stuff"') #overwrite existing regexp
         self.assertRegexp('messageparser show "stuff"', '.*i saw no stuff.*')
         
+        
+        try:
+            world.testing = False
+            origuser = self.prefix
+            self.prefix = 'stuff!stuff@stuff'
+            self.assertNotError('register nottester stuff', private=True)
+            
+            self.assertError('messageparser add "aoeu" "echo vowels are nice"')
+            origconf = conf.supybot.plugins.MessageParser.requireManageCapability()
+            conf.supybot.plugins.MessageParser.requireManageCapability.setValue('')
+            self.assertNotError('messageparser add "aoeu" "echo vowels are nice"')
+        finally:
+            world.testing = True
+            self.prefix = origuser
+            conf.supybot.plugins.MessageParser.requireManageCapability.setValue(origconf)
+        
     def testShow(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertRegexp('messageparser show "nostuff"', 'there is no such regexp trigger')

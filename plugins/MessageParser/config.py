@@ -39,7 +39,6 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('MessageParser', True)
 
-
 MessageParser = conf.registerPlugin('MessageParser')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(MessageParser, 'someConfigVariableName',
@@ -57,5 +56,13 @@ conf.registerChannelValue(MessageParser, 'rankListLength',
 conf.registerChannelValue(MessageParser, 'requireVacuumCapability',
     registry.String('admin', """Determines the capability required (if any) to 
     vacuum the database."""))
-
+conf.registerChannelValue(MessageParser, 'requireManageCapability',
+    registry.String('admin; channel,op', 
+    """Determines the 
+    capabilities required (if any) to manage the regexp database,
+    including add, remove, lock, unlock. Use 'channel,capab' for 
+    channel-level capabilities.
+    Note that absence of an explicit anticapability means user has 
+    capability."""))
+    
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
