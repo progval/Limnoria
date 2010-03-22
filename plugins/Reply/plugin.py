@@ -73,7 +73,16 @@ class Reply(callbacks.Plugin):
         """
         irc.reply(text, prefixNick=True)
     reply = wrap(reply, ['text'])
-
+    
+    def replies(self, irc, msg, args, strings): 
+        """<str> [<str> ...] 
+ 
+        Replies with each of its arguments <str> in separate replies, depending 
+        the configuration of supybot.reply.oneToOne. 
+        """ 
+        irc.replies(strings)
+    replies = wrap(replies, [many('something')])
+    
 Class = Reply
 
 
