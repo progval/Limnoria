@@ -37,7 +37,9 @@ except ImportError:
 
 
 class MessageParserTestCase(ChannelPluginTestCase):
-    plugins = ('MessageParser','Utilities',) #utilities for the 'echo'
+    plugins = ('MessageParser','Utilities','User') 
+    #utilities for the 'echo'
+    #user for register for testVacuum
     
     def testAdd(self):
         self.assertError('messageparser add') #no args
@@ -117,6 +119,40 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.assertNotError('messageparser remove --id 1')
         
     def testVacuum(self):
-        pass
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+        self.assertNotError('messageparser remove "stuff"')
+        self.assertNotError('messageparser vacuum')
+        # disable world.testing since we want new users to not
+        # magically be endowed with the admin capability
+        try:
+            world.testing = False
+            original = self.prefix
+            self.prefix = 'stuff!stuff@stuff'
+            self.assertNotError('register nottester stuff', private=True)
+            self.assertError('messageparser vacuum')
+            
+            orig = conf.supybot.plugins.MessageParser.requireVacuumCapability()
+            conf.supybot.plugins.MessageParser.requireVacuumCapability.setValue('')
+            self.assertNotError('messageparser vacuum')
+        finally:
+            world.testing = True
+            self.prefix = original
+            conf.supybot.plugins.MessageParser.requireVacuumCapability.setValue(orig)
+    
+    def testKeepRankInfo(self):
+        orig = conf.supybot.plugins.MessageParser.keepRankInfo()
+        
+        try:
+            conf.supybot.plugins.MessageParser.keepRankInfo.setValue(False)
+            self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+            self.feedMsg('instead of asdf, dvorak has aoeu')
+            self.getMsg(' ')
+            self.assertRegexp('messageparser info "stuff"', 'has been triggered 0 times')
+        finally:
+            conf.supybot.plugins.MessageParser.keepRankInfo.setValue(orig)
+        
+        self.feedMsg('this message has some stuff in it')
+        self.getMsg(' ')
+        self.assertRegexp('messageparser info "stuff"', 'has been triggered 1 times')
         
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
