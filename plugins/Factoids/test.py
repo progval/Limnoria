@@ -157,6 +157,9 @@ class FactoidsTestCase(ChannelPluginTestCase):
                 replyWhenInvalidCommand.setValue(True)
             self.assertNotError('learn foo as bar')
             self.assertRegexp('foo', 'bar')
+            self.assertNotError('learn mooz as cowz')
+            self.assertRegexp('moo', 'mooz')
+            self.assertError('nosuchthing')
         finally:
             conf.supybot.plugins.Factoids.\
                 replyWhenInvalidCommand.setValue(orig)
