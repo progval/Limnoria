@@ -197,6 +197,16 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         return cursor.fetchall()
         #return [t[0] for t in cursor.fetchall()]
     
+    def _searchFactoid(self, channel, key):
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        key = '%' + key + '%'
+        cursor.execute("""SELECT key FROM keys
+                          WHERE key LIKE ?
+                          LIMIT 20""", (key,))
+        return cursor.fetchall()
+    
+    
     def _updateRank(self, channel, factoids):
         if self.registryValue('keepRankInfo', channel):
             db = self.getDb(channel)
@@ -246,7 +256,16 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             if self.registryValue('replyWhenInvalidCommand', channel):
                 key = ' '.join(tokens)
                 factoids = self._lookupFactoid(channel, key)
-                self._replyFactoids(irc, msg, key, channel, factoids, error=False)
+                if factoids:
+                    self._replyFactoids(irc, msg, key, channel, factoids, error=False)
+                else:
+                    if self.registryValue('replyWhenInvalidCommandSearchKeys'):
+                        factoids = self._searchFactoid(channel, key)
+                        #print 'searchfactoids result:', factoids, '>'
+                        if factoids:
+                            keylist = ["'%s'" % (fact[0],) for fact in factoids]
+                            keylist = ', '.join(keylist)
+                            irc.reply("I do not know about '%s', but I do know about these similar topics: %s" % (key, keylist))
 
     def whatis(self, irc, msg, args, channel, words):
         """[<channel>] <key> [<number>]
