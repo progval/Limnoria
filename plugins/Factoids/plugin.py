@@ -270,7 +270,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     whatis = wrap(whatis, ['channel', many('something')])
 
     @internationalizeDocstring
-    def factrank(self, irc, msg, args, channel):
+    def rank(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns a list of top-ranked factoid keys, sorted by usage count
@@ -289,7 +289,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         factkeys = cursor.fetchall()
         s = [ "#%d %s (%d)" % (i+1, key[0], key[1]) for i, key in enumerate(factkeys) ]
         irc.reply(", ".join(s))
-    factrank = wrap(factrank, ['channel'])
+    rank = wrap(rank, ['channel'])
 
     @internationalizeDocstring
     def lock(self, irc, msg, args, channel, key):
