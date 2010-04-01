@@ -125,6 +125,12 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertNotError('learn foo as bar')
         self.assertNotRegexp('info foo', '2 factoids')
 
+    def testInfoUsageCount(self):
+        self.assertNotError('learn moo as cow')
+        self.assertRegexp('info moo', 'recalled 0 times')
+        self.assertNotError('whatis moo')
+        self.assertRegexp('info moo', 'recalled 1 time')
+
     def testLearnSeparator(self):
         self.assertError('learn foo is bar')
         self.assertNotError('learn foo as bar')

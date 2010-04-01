@@ -424,18 +424,19 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             irc.error('No factoid matches that key.')
             return
         (id, locked) = map(int, results[0])
-        cursor.execute("""SELECT  added_by, added_at FROM factoids
+        cursor.execute("""SELECT  added_by, added_at, usage_count FROM factoids
                           WHERE key_id=?
                           ORDER BY id""", (id,))
         factoids = cursor.fetchall()
         L = []
         counter = 0
-        for (added_by, added_at) in factoids:
+        for (added_by, added_at, usage_count) in factoids:
             counter += 1
             added_at = time.strftime(conf.supybot.reply.format.time(),
                                      time.localtime(int(added_at)))
-            L.append(format('#%i was added by %s at %s',
-                            counter, added_by, added_at))
+            L.append(format('#%i was added by %s at %s, and has been recalled '
+                            '%n',
+                            counter, added_by, added_at, (usage_count, 'time')))
         factoids = '; '.join(L)
         s = format('Key %q is %s and has %n associated with it: %s',
                    key, locked and 'locked' or 'not locked',
