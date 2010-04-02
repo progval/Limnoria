@@ -170,6 +170,15 @@ class FactoidsTestCase(ChannelPluginTestCase):
             conf.supybot.plugins.Factoids.\
                 replyWhenInvalidCommand.setValue(orig)
     
+    def testAlias(self):
+        self.assertNotError('learn foo as bar')
+        self.assertNotError('alias foo zoog')
+        self.assertRegexp('whatis zoog', 'bar')
+        self.assertNotError('learn foo as snorp')
+        self.assertError('alias foo gnoop')
+        self.assertNotError('alias foo gnoop 2')
+        self.assertRegexp('whatis gnoop', 'snorp')
+    
     def testRank(self):
         self.assertNotError('learn foo as bar')
         self.assertNotError('learn moo as cow')
