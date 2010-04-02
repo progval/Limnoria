@@ -630,10 +630,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         sql = """SELECT keys.key FROM %s WHERE %s""" % \
               (', '.join(tables), ' AND '.join(criteria))
         sql = sql + " ORDER BY keys.key"
-        print sql
         sql = sql.replace('TARGET', target)
-        print sql
-        print formats
         cursor.execute(sql, formats)
         results = cursor.fetchall()
         if len(results) == 0:
