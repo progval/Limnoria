@@ -309,6 +309,76 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     whatis = wrap(whatis, ['channel', many('something')])
 
     @internationalizeDocstring
+    def alias(self, irc, msg, args, channel, oldkey, newkey, number):
+        """[<channel>] <oldkey> <newkey> [<number>]
+
+        Adds a new key <newkey> for factoid associated with <oldkey>.
+        <number> is only necessary if there's more than one factoid associated
+        with <oldkey>.
+
+        The same action can be accomplished by using the 'learn' function with
+        a new key but an existing (verbatim) factoid content.
+        """
+        def _getNewKey(channel, newkey, arelation):
+            db = self.getDb(channel)
+            cursor = db.cursor()
+            cursor.execute("""SELECT id FROM keys WHERE key=?""", (newkey,))
+            newkey_info = cursor.fetchall()
+            if len(newkey_info) == 1:
+                # check if we already have the requested relation
+                cursor.execute("""SELECT id FROM relations WHERE
+                            key_id=? and fact_id=?""",
+                            (arelation[1], arelation[2]))
+                existentrelation = cursor.fetchall()
+                if len(existentrelation) != 0:
+                    newkey_info = False
+            if len(newkey_info) == 0:
+                cursor.execute("""INSERT INTO keys VALUES (NULL, ?)""",
+                            (newkey,))
+                db.commit()
+                cursor.execute("""SELECT id FROM keys WHERE key=?""", (newkey,))
+                newkey_info = cursor.fetchall()
+            return newkey_info
+
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT relations.id, relations.key_id, relations.fact_id
+                        FROM keys, relations
+                        WHERE keys.key=? AND
+                        relations.key_id=keys.id""", (oldkey,))
+        results = cursor.fetchall()
+        if len(results) == 0:
+            irc.error(_('No factoid matches that key.'))
+            return
+        elif len(results) == 1:
+            newkey_info = _getNewKey(channel, newkey, results[0])
+            if newkey_info is not False:
+                cursor.execute("""INSERT INTO relations VALUES(NULL, ?, ?, ?)""",
+                            (newkey_info[0][0], results[0][2], 0,))
+                irc.replySuccess()
+            else:
+                irc.error(_('This key-factoid relationship already exists.'))
+        elif len(results) > 1:
+            try:
+                arelation = results[number-1]
+            except IndexError:
+                irc.error(_("That's not a valid number for that key."))
+                return
+            except TypeError:
+                irc.error(_("This key has more than one factoid associated "
+                        "with it, but you have not provided a number."))
+                return
+            newkey_info = _getNewKey(channel, newkey, arelation)
+            if newkey_info is not False:
+                cursor.execute("""INSERT INTO relations VALUES(NULL, ?, ?, ?)""",
+                            (newkey_info[0][0], arelation[2], 0,))
+                irc.replySuccess()
+            else:
+                irc.error(_('This key-factoid relationship already exists.'))
+
+    alias = wrap(alias, ['channel', 'something', 'something', optional('int')])
+
+    @internationalizeDocstring
     def rank(self, irc, msg, args, channel):
         """[<channel>]
 
