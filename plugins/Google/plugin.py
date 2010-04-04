@@ -279,14 +279,14 @@ class Google(callbacks.PluginRegexp):
         if fromLang != '':
             irc.reply(json['responseData']['translatedText'].encode('utf-8'))
         else:
-            detected_language = json['responseData']['detectedSourceLanguage']
+            detected_language = json['responseData']['detectedSourceLanguage'].encode('utf-8')
+            translation = json['responseData']['translatedText'].encode('utf-8')
             try:
                 long_lang_name = [k for k,v in lang.transLangs.iteritems() if v == detected_language][0]
             except IndexError: #just in case google adds langs we don't know about
                 long_lang_name = detected_language
             responsestring = "(Detected source language: %s) %s" % \
-                (long_lang_name,
-                json['responseData']['translatedText'].encode('utf-8'))
+                (long_lang_name, translation)
             irc.reply(responsestring)
     translate = wrap(translate, ['something', 'to', 'something', 'text'])
 
