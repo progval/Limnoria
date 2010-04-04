@@ -276,7 +276,18 @@ class Google(callbacks.PluginRegexp):
         fd.close()
         if json['responseStatus'] != 200:
             raise callbacks.Error, 'We broke The Google!'
-        irc.reply(json['responseData']['translatedText'].encode('utf-8'))
+        if fromLang != '':
+            irc.reply(json['responseData']['translatedText'].encode('utf-8'))
+        else:
+            detected_language = json['responseData']['detectedSourceLanguage']
+            try:
+                long_lang_name = [k for k,v in lang.transLangs.iteritems() if v == detected_language][0]
+            except IndexError: #just in case google adds langs we don't know about
+                long_lang_name = detected_language
+            responsestring = "(Detected source language: %s) %s" % \
+                (long_lang_name,
+                json['responseData']['translatedText'].encode('utf-8'))
+            irc.reply(responsestring)
     translate = wrap(translate, ['something', 'to', 'something', 'text'])
 
     def googleSnarfer(self, irc, msg, match):
