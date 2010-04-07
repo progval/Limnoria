@@ -54,6 +54,9 @@ try:
 except ImportError:
     from pysqlite2 import dbapi2 as sqlite3 # for python2.4
 
+import re
+from supybot.utils.seq import dameraulevenshtein
+
 # these are needed cuz we are overriding getdb
 import threading
 import supybot.world as world
@@ -219,15 +222,37 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         #return [t[0] for t in cursor.fetchall()]
     
     def _searchFactoid(self, channel, key):
+        """Try to typo-match input to possible factoids.
+        
+        Assume first letter is correct, to reduce processing time.        
+        First, try a simple wildcard search.
+        If that fails, use the Damerau-Levenshtein edit-distance metric.
+        """
+        # if you made a typo in a two-character key, boo on you.
+        if len(key) < 3:
+            return []
+            
         db = self.getDb(channel)
         cursor = db.cursor()
-        key = '%' + key + '%'
-        cursor.execute("""SELECT key FROM keys
-                          WHERE key LIKE ?
-                          LIMIT 20""", (key,))
-        return cursor.fetchall()
-    
-    
+        cursor.execute("""SELECT key FROM keys WHERE key LIKE ?""", ('%' + key + '%',))
+        wildcardkeys = cursor.fetchall()
+        if len(wildcardkeys) > 0:
+            return [line[0] for line in wildcardkeys]
+        
+        cursor.execute("""SELECT key FROM keys WHERE key LIKE ?""", (key[0] + '%',))
+        flkeys = cursor.fetchall()
+        if len(flkeys) == 0:
+            return []
+        flkeys = [line[0] for line in flkeys]
+        dl_metrics = [dameraulevenshtein(key, sourcekey) for sourcekey in flkeys]
+        dict_metrics = dict(zip(flkeys, dl_metrics))
+        if min(dl_metrics) <= 2:
+            return [key for key,item in dict_metrics.iteritems() if item <= 2]
+        if min(dl_metrics) <= 3:
+            return [key for key,item in dict_metrics.iteritems() if item <= 3]
+        
+        return []
+                
     def _updateRank(self, channel, factoids):
         if self.registryValue('keepRankInfo', channel):
             db = self.getDb(channel)
@@ -283,9 +308,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 else:
                     if self.registryValue('replyWhenInvalidCommandSearchKeys'):
                         factoids = self._searchFactoid(channel, key)
-                        #print 'searchfactoids result:', factoids, '>'
                         if factoids:
-                            keylist = ["'%s'" % (fact[0],) for fact in factoids]
+                            keylist = ["'%s'" % (fact,) for fact in factoids]
                             keylist = ', '.join(keylist)
                             irc.reply("I do not know about '%s', but I do know about these similar topics: %s" % (key, keylist))
 

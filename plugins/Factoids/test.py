@@ -165,6 +165,10 @@ class FactoidsTestCase(ChannelPluginTestCase):
             self.assertRegexp('foo', 'bar')
             self.assertNotError('learn mooz as cowz')
             self.assertRegexp('moo', 'mooz')
+            self.assertRegexp('mzo', 'mooz')
+            self.assertRegexp('moz', 'mooz')
+            self.assertNotError('learn moped as pretty fast')
+            self.assertRegexp('moe', 'mooz.*moped')
             self.assertError('nosuchthing')
         finally:
             conf.supybot.plugins.Factoids.\
