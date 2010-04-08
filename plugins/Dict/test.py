@@ -43,5 +43,10 @@ class DictTestCase(PluginTestCase):
         def testRandomDictionary(self):
             self.assertNotError('random')
             self.assertNotError('dict [random] moo')
+        
+        def testSynonym(self):
+            self.assertNotError('synonym stuff')
+            self.assertNotError('synonym someone goes home')
+            self.assertRegexp('synonym nanotube', 'nanotube')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
