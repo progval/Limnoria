@@ -63,7 +63,14 @@ conf.registerGroup(Topic, 'undo')
 conf.registerChannelValue(Topic.undo, 'max',
     registry.NonNegativeInteger(10, """Determines the number of previous
     topics to keep around in case the undo command is called."""))
-
+conf.registerChannelValue(Topic, 'requireManageCapability',
+    registry.String('admin; channel,op', 
+    """Determines the 
+    capabilities required (if any) to make any topic changes,
+    (everything except for read-only operations). Use 'channel,capab' for 
+    channel-level capabilities.
+    Note that absence of an explicit anticapability means user has 
+    capability."""))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
