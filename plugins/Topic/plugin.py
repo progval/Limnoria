@@ -46,6 +46,7 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Topic')
 
+import supybot.ircdb as ircdb
 
 def canChangeTopic(irc, msg, args, state):
     assert not state.channel
@@ -207,7 +208,6 @@ class Topic(callbacks.Plugin):
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
         irc.noReply()
 
-    @internationalizeDocstring
     def _checkManageCapabilities(self, irc, msg, channel):
         """Check if the user has any of the required capabilities to manage
         the channel topic.
@@ -219,7 +219,7 @@ class Topic(callbacks.Plugin):
         manually anyway.
         """
         c = irc.state.channels[channel]
-        if msg.nick in c.ops or msg.nick in c.halfops or 't' not in c.modes:
+        if msg.nick in c.ops:
             return True
         capabilities = self.registryValue('requireManageCapability')
         if capabilities:
@@ -403,6 +403,9 @@ class Topic(callbacks.Plugin):
         index into the topics.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
+        if not self._checkManageCapabilities(irc, msg, channel):
+            capabilities = self.registryValue('requireManageCapability')
+            irc.errorNoCapability(capabilities, Raise=True)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         irc.reply(topics[number])
     get = wrap(get, ['inChannel', 'topicNumber'])
