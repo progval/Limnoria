@@ -202,6 +202,8 @@ class Later(callbacks.Plugin):
 
     def _formatNote(self, when, whence, note):
         return _('Sent %s: <%s> %s') % (self._timestamp(when), whence, note)
+
+    doJoin = doPrivmsg
 Later = internationalizeDocstring(Later)
 
 
