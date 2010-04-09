@@ -43,6 +43,11 @@ class LaterTestCase(PluginTestCase):
         self.assertNotRegexp('later notes', 'bar.*foo')
         self.assertRegexp('later notes', 'foo')
 
+    def testNickValidation(self):
+        self.assertError('later tell 1foo bar')
+        self.assertError('later tell foo$moo zoob')
+        self.assertNotError('later tell foo: baz')
+        self.assertRegexp('later notes', 'foo\.')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
