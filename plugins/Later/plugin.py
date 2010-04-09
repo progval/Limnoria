@@ -198,7 +198,7 @@ class Later(callbacks.Plugin):
     def _formatNote(self, when, whence, note):
         return 'Sent %s: <%s> %s' % (self._timestamp(when), whence, note)
 
-
+    doJoin = doPrivmsg
 
 Class = Later
 
