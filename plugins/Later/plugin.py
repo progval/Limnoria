@@ -39,7 +39,6 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-
 class Later(callbacks.Plugin):
     """Used to do things later; currently, it only allows the sending of
     nick-based notes.  Do note (haha!) that these notes are *not* private
@@ -99,7 +98,26 @@ class Later(callbacks.Plugin):
         if '?' in nick or '*' in nick and nick not in self.wildcards:
             self.wildcards.append(nick)
         self._flushNotes()
-
+    
+    def _validateNick(self, nick):
+        """Validate nick according to the IRC RFC 2812 spec.
+        
+        Reference: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1
+        
+        Some irc clients' tab-completion feature appends 'address' characters
+        to nick, such as ':' or ','. We try correcting for that by trimming
+        a char off the end.
+        
+        If nick incorrigibly invalid, return False, otherwise, 
+        return (possibly trimmed) nick.
+        """
+        if not ircutils.isNick(nick, strictRfc=True):
+            if not ircutils.isNick(nick[:-1], strictRfc=True):
+                return False
+            else:
+                return nick[:-1]
+        return nick
+    
     def tell(self, irc, msg, args, nick, text):
         """<nick> <text>
 
@@ -110,8 +128,12 @@ class Later(callbacks.Plugin):
         if ircutils.strEqual(nick, irc.nick):
             irc.error('I can\'t send notes to myself.')
             return
+        validnick = self._validateNick(nick)
+        if validnick is False:
+            irc.error('That is an invalid IRC nick. Please check your input.')
+            return
         try:
-            self._addNote(nick, msg.nick, text)
+            self._addNote(validnick, msg.nick, text)
             irc.replySuccess()
         except ValueError:
             irc.error('That person\'s message queue is already full.')
