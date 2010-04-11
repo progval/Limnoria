@@ -45,5 +45,8 @@ conf.registerGlobalValue(Later, 'maximum',
 conf.registerGlobalValue(Later, 'private',
     registry.Boolean(True, """Determines whether users will be notified in the
     first place in which they're seen, or in private."""))
-
+conf.registerGlobalValue(Later, 'tellOnJoin',
+    registry.Boolean(True, """Determines whether users will be notified upon
+    joining any channel the bot is in, or only upon sending a message."""))
+    
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
