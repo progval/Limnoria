@@ -99,6 +99,15 @@ class Format(callbacks.Plugin):
     translate = wrap(translate, ['something', 'something', 'text'])
 
     @internationalizeDocstring
+    def replace(self, irc, msg, args, bad, good, text):
+        """<substring to translate> <substring to replace it with> <text>
+
+        Replaces all non-overlapping occurrences of <substring to translate>
+        with <substring to replace it with> in <text>.
+        """
+        irc.reply(text.replace(bad, good))
+    replace = wrap(replace, ['something', 'something', 'text'])
+
     def upper(self, irc, msg, args, text):
         """<text>
 
