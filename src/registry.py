@@ -539,7 +539,10 @@ class Regexp(Value):
         self.__parent.__init__(*args, **kwargs)
 
     def error(self, e):
-        self.__parent.error('Value must be a regexp of the form %s' % e)
+        s = 'Value must be a regexp of the form m/.../ or /.../. %s' % e
+        e = InvalidRegistryValue(s)
+        e.value = self
+        raise e
 
     def set(self, s):
         try:
