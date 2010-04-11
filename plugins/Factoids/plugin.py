@@ -40,13 +40,6 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-#try:
-    #import sqlite3 as sqlite
-#except ImportError:
-    #raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           #'plugin.  Download it at ' \
-                           #'<http://code.google.com/p/pysqlite/>'
-
 try:
     import sqlite3
 except ImportError:
@@ -54,10 +47,6 @@ except ImportError:
 
 import re
 from supybot.utils.seq import dameraulevenshtein
-
-# these are needed cuz we are overriding getdb
-import threading
-import supybot.world as world
 
 def getFactoid(irc, msg, args, state):
     assert not state.channel
@@ -119,20 +108,6 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           usage_count INTEGER
                           )""")
         db.commit()
-        return db
-
-    # override this because sqlite3 doesn't have autocommit
-    # use isolation_level instead.
-    def getDb(self, channel):
-        """Use this to get a database for a specific channel."""
-        currentThread = threading.currentThread()
-        if channel not in self.dbCache and currentThread == world.mainThread:
-            self.dbCache[channel] = self.makeDb(self.makeFilename(channel))
-        if currentThread != world.mainThread:
-            db = self.makeDb(self.makeFilename(channel))
-        else:
-            db = self.dbCache[channel]
-        db.isolation_level = None
         return db
 
     def getCommandHelp(self, command, simpleSyntax=None):
