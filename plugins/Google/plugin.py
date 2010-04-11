@@ -294,7 +294,8 @@ class Google(callbacks.PluginRegexp):
         json = simplejson.load(fd)
         fd.close()
         if json['responseStatus'] != 200:
-            raise callbacks.Error, 'We broke The Google!'
+            raise callbacks.Error, 'Google says: Response Status %s: %s.' % \
+                    (json['responseStatus'], json['responseDetails'],)
         if fromLang != '':
             irc.reply(json['responseData']['translatedText'].encode('utf-8'))
         else:
