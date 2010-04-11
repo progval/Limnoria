@@ -44,10 +44,13 @@ class LaterTestCase(PluginTestCase):
         self.assertRegexp('later notes', 'foo')
 
     def testNickValidation(self):
+        origconf = conf.supybot.protocols.irc.strictRfc()
+        conf.supybot.protocols.irc.strictRfc.setValue('True')
         self.assertError('later tell 1foo bar')
         self.assertError('later tell foo$moo zoob')
         self.assertNotError('later tell foo: baz')
         self.assertRegexp('later notes', 'foo\.')
+        conf.supybot.protocols.irc.strictRfc.setValue(origconf)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

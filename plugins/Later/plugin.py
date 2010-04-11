@@ -99,7 +99,7 @@ class Later(callbacks.Plugin):
             self.wildcards.append(nick)
         self._flushNotes()
     
-    def _validateNick(self, nick):
+    def _validateNick(self, irc, nick):
         """Validate nick according to the IRC RFC 2812 spec.
         
         Reference: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1
@@ -111,8 +111,8 @@ class Later(callbacks.Plugin):
         If nick incorrigibly invalid, return False, otherwise, 
         return (possibly trimmed) nick.
         """
-        if not ircutils.isNick(nick, strictRfc=True):
-            if not ircutils.isNick(nick[:-1], strictRfc=True):
+        if not irc.isNick(nick):
+            if not irc.isNick(nick[:-1]):
                 return False
             else:
                 return nick[:-1]
@@ -128,7 +128,7 @@ class Later(callbacks.Plugin):
         if ircutils.strEqual(nick, irc.nick):
             irc.error('I can\'t send notes to myself.')
             return
-        validnick = self._validateNick(nick)
+        validnick = self._validateNick(irc, nick)
         if validnick is False:
             irc.error('That is an invalid IRC nick. Please check your input.')
             return
