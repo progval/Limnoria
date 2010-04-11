@@ -284,6 +284,9 @@ class Google(callbacks.PluginRegexp):
             toLang = lang.normalize('lang_'+toLang)[5:]
         if fromLang == 'auto':
             fromLang = ''
+        if toLang == 'auto':
+            irc.error("Destination language cannot be 'auto'.")
+            return
         opts['langpair'] = '%s|%s' % (fromLang, toLang)
         fd = utils.web.getUrlFd('%s?%s' % (self._gtranslateUrl,
                                            urllib.urlencode(opts)),
