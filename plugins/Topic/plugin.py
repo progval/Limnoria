@@ -219,7 +219,7 @@ class Topic(callbacks.Plugin):
         manually anyway.
         """
         c = irc.state.channels[channel]
-        if msg.nick in c.ops:
+        if msg.nick in c.ops or msg.nick in c.halfops or 't' not in c.modes:
             return True
         capabilities = self.registryValue('requireManageCapability')
         if capabilities:

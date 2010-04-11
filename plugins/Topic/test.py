@@ -73,6 +73,10 @@ class TopicTestCase(ChannelPluginTestCase):
 
     def testManageCapabilities(self):
         try:
+            self.irc.feedMsg(ircmsgs.mode(self.channel, args=('+o', self.nick),
+                                      prefix=self.prefix))
+            self.irc.feedMsg(ircmsgs.mode(self.channel, args=('+t'),
+                                      prefix=self.prefix))
             world.testing = False
             origuser = self.prefix
             self.prefix = 'stuff!stuff@stuff'
