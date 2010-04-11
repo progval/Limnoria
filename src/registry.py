@@ -311,8 +311,10 @@ class Value(Group):
         if setDefault:
             self.setValue(default)
 
-    def error(self):
-        if self.__doc__:
+    def error(self, message=None):
+        if message:
+            s = message
+        elif self.__doc__:
             s = self.__doc__
         else:
             s = """%s has no docstring.  If you're getting this message,
@@ -543,10 +545,7 @@ class Regexp(Value):
         self.__parent.__init__(*args, **kwargs)
 
     def error(self, e):
-        s = 'Value must be a regexp of the form m/.../ or /.../. %s' % e
-        e = InvalidRegistryValue(s)
-        e.value = self
-        raise e
+        self.__parent.error('%s' % e)
 
     def set(self, s):
         try:
