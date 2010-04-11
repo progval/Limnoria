@@ -54,6 +54,10 @@ class FormatTestCase(PluginTestCase):
 
     def testTranslate(self):
         self.assertResponse('translate 123 456 1234567890', '4564567890')
+        self.assertError('translate 123 1234 123125151')
+    
+    def testReplace(self):
+        self.assertResponse('replace # %23 bla#foo', 'bla%23foo')
 
     def testUpper(self):
         self.assertResponse('upper foo', 'FOO')
