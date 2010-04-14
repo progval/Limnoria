@@ -62,18 +62,18 @@ def getChannel(msg, args=()):
         raise callbacks.Error, 'Command must be sent in a channel or ' \
                                'include a channel in its arguments.'
 
-def getArgs(args, required=1, optional=0):
+def getArgs(args, required=1, optional=0, wildcard=0):
     if len(args) < required:
         raise callbacks.ArgumentError
     if len(args) < required + optional:
         ret = list(args) + ([''] * (required + optional - len(args)))
     elif len(args) >= required + optional:
-        ret = list(args[:required + optional - 1])
-        ret.append(' '.join(args[required + optional - 1:]))
-    if len(ret) == 1:
-        return ret[0]
-    else:
-        return ret
+        if not wildcard:
+            ret = list(args[:required + optional - 1])
+            ret.append(' '.join(args[required + optional - 1:]))
+        else:
+            ret = list(args)
+    return ret
 
 class AliasError(Exception):
     pass
@@ -119,11 +119,9 @@ def makeNewAlias(name, alias):
             channel = getChannel(msg, args)
             alias = alias.replace('$channel', channel)
         tokens = callbacks.tokenize(alias)
-        if not wildcard and biggestDollar or biggestAt:
-            args = getArgs(args, required=biggestDollar, optional=biggestAt)
-            # Gotta have a mutable sequence (for replace).
-            if biggestDollar + biggestAt == 1: # We got a string, no tuple.
-                args = [args]
+        if biggestDollar or biggestAt:
+            args = getArgs(args, required=biggestDollar, optional=biggestAt,
+                            wildcard=wildcard)
         def regexpReplace(m):
             idx = int(m.group(1))
             return args[idx-1]
