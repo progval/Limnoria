@@ -157,8 +157,11 @@ def makeNewAlias(name, alias):
                 return False
             everythingReplace(tokens)
         self.Proxy(irc, msg, tokens)
-    doc =format('<an alias, %n>\n\nAlias for %q.',
-                (biggestDollar, 'argument'), alias)
+    flexargs = ''
+    if biggestDollar and (wildcard or biggestAt):
+        flexargs = ' at least'
+    doc =format('<an alias,%s %n>\n\nAlias for %q.',
+                flexargs, (biggestDollar, 'argument'), alias)
     f = utils.python.changeFunctionName(f, name, doc)
     return f
 
