@@ -41,6 +41,11 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Karma')
 
+try:
+    import sqlite3
+except ImportError:
+    from pysqlite2 import dbapi2 as sqlite3 # for python2.4
+
 class SqliteKarmaDB(object):
     def __init__(self, filename):
         self.dbs = ircutils.IrcDict()
@@ -51,19 +56,16 @@ class SqliteKarmaDB(object):
             db.close()
 
     def _getDb(self, channel):
-        try:
-            import sqlite
-        except ImportError:
-            raise callbacks.Error, 'You need to have PySQLite installed to ' \
-                                   'use Karma.  Download it at ' \
-                                   '<http://code.google.com/p/pysqlite/>'
         filename = plugins.makeChannelFilename(self.filename, channel)
         if filename in self.dbs:
             return self.dbs[filename]
         if os.path.exists(filename):
-            self.dbs[filename] = sqlite.connect(filename)
-            return self.dbs[filename]
-        db = sqlite.connect(filename)
+            db = sqlite3.connect(filename)
+            db.text_factory = str
+            self.dbs[filename] = db
+            return db
+        db = sqlite3.connect(filename)
+        db.text_factory = str
         self.dbs[filename] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE karma (
@@ -84,20 +86,21 @@ class SqliteKarmaDB(object):
         thing = thing.lower()
         cursor = db.cursor()
         cursor.execute("""SELECT added, subtracted FROM karma
-                          WHERE normalized=%s""", thing)
-        if cursor.rowcount == 0:
+                          WHERE normalized=?""", (thing,))
+        results = cursor.fetchall()
+        if len(results) == 0:
             return None
         else:
-            return map(int, cursor.fetchone())
+            return map(int, results[0])
 
     def gets(self, channel, things):
         db = self._getDb(channel)
         cursor = db.cursor()
         normalizedThings = dict(zip(map(lambda s: s.lower(), things), things))
-        criteria = ' OR '.join(['normalized=%s'] * len(normalizedThings))
+        criteria = ' OR '.join(['normalized=?'] * len(normalizedThings))
         sql = """SELECT name, added-subtracted FROM karma
                  WHERE %s ORDER BY added-subtracted DESC""" % criteria
-        cursor.execute(sql, *normalizedThings)
+        cursor.execute(sql, normalizedThings.keys())
         L = [(name, int(karma)) for (name, karma) in cursor.fetchall()]
         for (name, _) in L:
             del normalizedThings[name.lower()]
@@ -109,26 +112,27 @@ class SqliteKarmaDB(object):
         db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT name, added-subtracted FROM karma
-                          ORDER BY added-subtracted DESC LIMIT %s""", limit)
+                          ORDER BY added-subtracted DESC LIMIT ?""", (limit,))
         return [(t[0], int(t[1])) for t in cursor.fetchall()]
 
     def bottom(self, channel, limit):
         db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT name, added-subtracted FROM karma
-                          ORDER BY added-subtracted ASC LIMIT %s""", limit)
+                          ORDER BY added-subtracted ASC LIMIT ?""", (limit,))
         return [(t[0], int(t[1])) for t in cursor.fetchall()]
 
     def rank(self, channel, thing):
         db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT added-subtracted FROM karma
-                          WHERE name=%s""", thing)
-        if cursor.rowcount == 0:
+                          WHERE name=?""", (thing,))
+        results = cursor.fetchall()
+        if len(results) == 0:
             return None
-        karma = int(cursor.fetchone()[0])
+        karma = int(results[0][0])
         cursor.execute("""SELECT COUNT(*) FROM karma
-                          WHERE added-subtracted > %s""", karma)
+                          WHERE added-subtracted > ?""", (karma,))
         rank = int(cursor.fetchone()[0])
         return rank+1
 
@@ -142,20 +146,20 @@ class SqliteKarmaDB(object):
         db = self._getDb(channel)
         cursor = db.cursor()
         normalized = name.lower()
-        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, %s, 0, 0)""",
-                       name, normalized)
+        cursor.execute("""INSERT INTO karma VALUES (NULL, ?, ?, 0, 0)""",
+                       (name, normalized,))
         cursor.execute("""UPDATE karma SET added=added+1
-                          WHERE normalized=%s""", normalized)
+                          WHERE normalized=?""", (normalized,))
         db.commit()
 
     def decrement(self, channel, name):
         db = self._getDb(channel)
         cursor = db.cursor()
         normalized = name.lower()
-        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, %s, 0, 0)""",
-                       name, normalized)
+        cursor.execute("""INSERT INTO karma VALUES (NULL, ?, ?, 0, 0)""",
+                       (name, normalized,))
         cursor.execute("""UPDATE karma SET subtracted=subtracted+1
-                          WHERE normalized=%s""", normalized)
+                          WHERE normalized=?""", (normalized,))
         db.commit()
 
     def most(self, channel, kind, limit):
@@ -179,7 +183,7 @@ class SqliteKarmaDB(object):
         cursor = db.cursor()
         normalized = name.lower()
         cursor.execute("""UPDATE karma SET subtracted=0, added=0
-                          WHERE normalized=%s""", normalized)
+                          WHERE normalized=?""", (normalized,))
         db.commit()
 
     def dump(self, channel, filename):
@@ -203,13 +207,13 @@ class SqliteKarmaDB(object):
         for (name, added, subtracted) in reader:
             normalized = name.lower()
             cursor.execute("""INSERT INTO karma
-                              VALUES (NULL, %s, %s, %s, %s)""",
-                           name, normalized, added, subtracted)
+                              VALUES (NULL, ?, ?, ?, ?)""",
+                           (name, normalized, added, subtracted,))
         db.commit()
         fd.close()
 
 KarmaDB = plugins.DB('Karma',
-                     {'sqlite': SqliteKarmaDB})
+                     {'sqlite3': SqliteKarmaDB})
 
 class Karma(callbacks.Plugin):
     callBefore = ('Factoids', 'MoobotFactoids', 'Infobot')
