@@ -58,11 +58,11 @@ conf.registerChannelValue(Factoids, 'replyWhenInvalidCommand',
     registry.Boolean(True,  """Determines whether the bot will reply to invalid
     commands by searching for a factoid; basically making the whatis
     unnecessary when you want all factoids for a given key."""))
-conf.registerChannelValue(Factoids, 'replyWhenInvalidCommandSearchKeys',
-    registry.Boolean(True,  """If replyWhenInvalidCommand is True, and you
-    supply a nonexistent factoid as a command, this setting make the bot try a 
-    wildcard search for factoid keys, returning a list of matching keys,
-    before giving up with an invalid command error."""))
+conf.registerChannelValue(Factoids, 'replyApproximateSearchKeys',
+    registry.Boolean(True,  """If you try to look up a nonexistent factoid,
+    this setting make the bot try to find some possible matching keys through 
+    several approximate matching algorithms and return a list of matching keys,
+    before giving up."""))
 conf.registerChannelValue(Factoids, 'format',
     FactoidFormat('$key could be $value.', """Determines the format of
     the response given when a factoid's value is requested.  All the standard

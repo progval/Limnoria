@@ -157,22 +157,22 @@ class FactoidsTestCase(ChannelPluginTestCase):
                 showFactoidIfOnlyOneMatch.setValue(orig)
 
     def testInvalidCommand(self):
-        orig = conf.supybot.plugins.Factoids.replyWhenInvalidCommand()
-        try:
-            conf.supybot.plugins.Factoids.\
-                replyWhenInvalidCommand.setValue(True)
-            self.assertNotError('learn foo as bar')
-            self.assertRegexp('foo', 'bar')
-            self.assertNotError('learn mooz as cowz')
-            self.assertRegexp('moo', 'mooz')
-            self.assertRegexp('mzo', 'mooz')
-            self.assertRegexp('moz', 'mooz')
-            self.assertNotError('learn moped as pretty fast')
-            self.assertRegexp('moe', 'mooz.*moped')
-            self.assertError('nosuchthing')
-        finally:
-            conf.supybot.plugins.Factoids.\
-                replyWhenInvalidCommand.setValue(orig)
+        self.assertNotError('learn foo as bar')
+        self.assertRegexp('foo', 'bar')
+        self.assertNotError('learn mooz as cowz')
+        self.assertRegexp('moo', 'mooz')
+        self.assertRegexp('mzo', 'mooz')
+        self.assertRegexp('moz', 'mooz')
+        self.assertNotError('learn moped as pretty fast')
+        self.assertRegexp('moe', 'mooz.*moped')
+        self.assertError('nosuchthing')
+    
+    def testWhatis(self):
+        self.assertNotError('learn foo as bar')
+        self.assertRegexp('whatis foo', 'bar')
+        self.assertRegexp('whatis foob', 'foo')
+        self.assertNotError('learn foob as barb')
+        self.assertRegexp('whatis foom', 'foo.*foob')
     
     def testAlias(self):
         self.assertNotError('learn foo as bar')
