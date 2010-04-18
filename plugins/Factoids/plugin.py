@@ -194,7 +194,6 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           ORDER BY factoids.id
                           LIMIT 20""", (key,))
         return cursor.fetchall()
-        #return [t[0] for t in cursor.fetchall()]
     
     def _searchFactoid(self, channel, key):
         """Try to typo-match input to possible factoids.
@@ -272,6 +271,16 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         elif error:
             irc.error(_('No factoid matches that key.'))
 
+    def _replyApproximateFactoids(self, irc, msg, channel, key, error=True):
+        if self.registryValue('replyApproximateSearchKeys'):
+            factoids = self._searchFactoid(channel, key)
+            if factoids:
+                keylist = ["'%s'" % (fact,) for fact in factoids]
+                keylist = ', '.join(keylist)
+                irc.reply("I do not know about '%s', but I do know about these similar topics: %s" % (key, keylist))
+            elif error:
+                irc.error('No factoid matches that key.')
+
     def invalidCommand(self, irc, msg, tokens):
         if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
@@ -281,12 +290,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 if factoids:
                     self._replyFactoids(irc, msg, key, channel, factoids, error=False)
                 else:
-                    if self.registryValue('replyWhenInvalidCommandSearchKeys'):
-                        factoids = self._searchFactoid(channel, key)
-                        if factoids:
-                            keylist = ["'%s'" % (fact,) for fact in factoids]
-                            keylist = ', '.join(keylist)
-                            irc.reply("I do not know about '%s', but I do know about these similar topics: %s" % (key, keylist))
+                    self._replyApproximateFactoids(irc, msg, channel, key, error=False)
 
     @internationalizeDocstring
     def whatis(self, irc, msg, args, channel, words):
@@ -304,7 +308,10 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                     irc.errorInvalid(_('key id'))
         key = ' '.join(words)
         factoids = self._lookupFactoid(channel, key)
-        self._replyFactoids(irc, msg, key, channel, factoids, number)
+        if factoids:
+            self._replyFactoids(irc, msg, key, channel, factoids, number)
+        else:
+            self._replyApproximateFactoids(irc, msg, channel, key)
     whatis = wrap(whatis, ['channel', many('something')])
 
     @internationalizeDocstring
