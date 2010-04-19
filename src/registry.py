@@ -311,10 +311,8 @@ class Value(Group):
         if setDefault:
             self.setValue(default)
 
-    def error(self, message=None):
-        if message:
-            s = message
-        elif self.__doc__:
+    def error(self):
+        if self.__doc__:
             s = self.__doc__
         else:
             s = """%s has no docstring.  If you're getting this message,
@@ -545,7 +543,7 @@ class Regexp(Value):
         self.__parent.__init__(*args, **kwargs)
 
     def error(self, e):
-        self.__parent.error('%s' % e)
+        self.__parent.error('Value must be a regexp of the form %s' % e)
 
     def set(self, s):
         try:
