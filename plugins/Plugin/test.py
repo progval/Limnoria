@@ -30,11 +30,15 @@
 from supybot.test import *
 
 class PluginTestCase(PluginTestCase):
-    plugins = ('Plugin', 'Utilities')
+    plugins = ('Plugin', 'Utilities', 'Admin', 'Format')
     def testPlugin(self):
         self.assertRegexp('plugin plugin', 'available.*Plugin plugin')
         self.assertResponse('echo [plugin plugin]', 'Plugin')
-
+    
+    def testPlugins(self):
+        self.assertRegexp('plugins join', '(Format.*Admin|Admin.*Format)')
+        self.assertRegexp('plugins plugin', 'Plugin')
+    
     def testList(self):
         self.assertRegexp('plugin list', 'Plugin.*Utilities')
 
