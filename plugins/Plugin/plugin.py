@@ -72,7 +72,10 @@ class Plugin(callbacks.Plugin):
     def plugin(self, irc, msg, args, command):
         """<command>
 
-        Returns the plugin(s) that <command> is in.
+        Returns the name of the plugin that would be used to call <command>.
+        
+        If it is not uniquely determined, returns list of all plugins that
+        contain <command>.
         """
         (maxL, cbs) = irc.findCallbacksForArgs(command)
         L = []
@@ -94,7 +97,40 @@ class Plugin(callbacks.Plugin):
             irc.error(format(_('There is no command %q.'), command))
     plugin = wrap(plugin, [many('something')])
 
+    def _findCallbacks(self, irc, command):
+        command = map(callbacks.canonicalName, command)
+        plugin_list = []
+        for cb in irc.callbacks:
+            if not hasattr(cb, 'getCommand'):
+                continue
+            commandlist = cb.getCommand(command)
+            if commandlist:
+                plugin_list.append(cb.name())
+        return plugin_list
+
     @internationalizeDocstring
+    def plugins(self, irc, msg, args, command):
+        """<command>
+
+        Returns the names of all plugins that contain <command>.
+        """
+        L = self._findCallbacks(irc, command)
+        command = callbacks.formatCommand(command)
+        if L:
+            if irc.nested:
+                irc.reply(format('%L', L))
+            else:
+                if len(L) > 1:
+                    plugin = 'plugins'
+                else:
+                    plugin = 'plugin'
+                irc.reply(format('The %q command is available in the %L %s.',
+                                 command, L, plugin))
+        else:
+            irc.error(format('There is no command %q.', command))
+    plugins = wrap(plugins, [many('something')])
+
+>>>>>>> 3005752... fix docstring for Plugin.plugin command so it actually says what the command will do.
     def author(self, irc, msg, args, cb):
         """<plugin>
 
