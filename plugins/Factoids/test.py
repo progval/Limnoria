@@ -189,6 +189,11 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertRegexp('factoids rank', '#1 foo \(0\), #2 moo \(0\)')
         self.assertRegexp('whatis moo', '.*cow.*')
         self.assertRegexp('factoids rank', '#1 moo \(1\), #2 foo \(0\)')
+        self.assertRegexp('factoids rank 1', '#1 moo \(1\)')
+        self.assertNotRegexp('factoids rank 1', 'foo')
+        self.assertRegexp('factoids rank --plain', 'moo, foo')
+        self.assertRegexp('factoids rank --plain --alpha', 'foo, moo')
+        self.assertResponse('factoids rank --plain 1', 'moo')
     
     def testQuoteHandling(self):
         self.assertNotError('learn foo as "\\"bar\\""')
