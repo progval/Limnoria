@@ -72,6 +72,12 @@ conf.registerChannelValue(RSS, 'showLinks',
     along with the title of the feed when the rss command is called.
     supybot.plugins.RSS.announce.showLinks affects whether links will be
     listed when a feed is automatically announced.""")))
+conf.registerGlobalValue(RSS, 'defaultNumberOfHeadlines',
+    registry.PositiveInteger(1, """Indicates how many headlines an rss feed
+    will output by default, if no number is provided."""))
+conf.registerChannelValue(RSS, 'initialAnnounceHeadlines',
+    registry.PositiveInteger(5, """Indicates how many headlines an rss feed
+    will output when it is first added to announce for a channel."""))
 
 conf.registerGroup(RSS, 'announce')
 conf.registerChannelValue(RSS.announce, 'showLinks',
