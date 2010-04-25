@@ -183,6 +183,8 @@ class RSS(callbacks.Plugin):
             newheadlines = filter(None, newheadlines) # Removes Nones.
             if newheadlines:
                 for channel in channels:
+                    if len(oldheadlines) == 0:
+                        newheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
                     bold = self.registryValue('bold', channel)
                     sep = self.registryValue('headlineSeparator', channel)
                     prefix = self.registryValue('announcementPrefix', channel)
@@ -392,6 +394,8 @@ class RSS(callbacks.Plugin):
         headlines = self.buildHeadlines(headlines, channel, 'showLinks')
         if n:
             headlines = headlines[:n]
+        else:
+            headlines = headlines[:self.registryValue('defaultNumberOfHeadlines')]
         sep = self.registryValue('headlineSeparator', channel)
         if self.registryValue('bold', channel):
             sep = ircutils.bold(sep)
