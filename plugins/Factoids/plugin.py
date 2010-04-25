@@ -380,26 +380,49 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                         
     alias = wrap(alias, ['channel', 'something', 'something', optional('int')])
     
-    def rank(self, irc, msg, args, channel):
-        """[<channel>]
+    def rank(self, irc, msg, args, channel, optlist, number):
+        """[<channel>] [--plain] [--alpha] [<number>]
         
         Returns a list of top-ranked factoid keys, sorted by usage count 
-        (rank). The number of factoid keys returned is set by the 
-        rankListLength registry value. <channel> is only necessary if the 
-        message isn't sent in the channel itself.
+        (rank). If <number> is not provided, the default number of factoid keys
+        returned is set by the rankListLength registry value. 
+        
+        If --plain option is given, rank numbers and usage counts are not 
+        included in output.
+        
+        If --alpha option is given in addition to --plain, keys are sorted
+        alphabetically, instead of by rank.
+        
+        <channel> is only necessary if the message isn't sent in the channel 
+        itself.
         """
-        numfacts = self.registryValue('rankListLength', channel)
+        if not number:
+            number = self.registryValue('rankListLength', channel)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT keys.key, relations.usage_count
                           FROM keys, relations
                           WHERE relations.key_id=keys.id
                           ORDER BY relations.usage_count DESC
-                          LIMIT ?""", (numfacts,))
+                          LIMIT ?""", (number,))
         factkeys = cursor.fetchall()
-        s = [ "#%d %s (%d)" % (i+1, key[0], key[1]) for i, key in enumerate(factkeys) ]
+        plain=False
+        alpha=False
+        for (option, arg) in optlist:
+            if option == 'plain':
+                plain = True
+            elif option =='alpha':
+                alpha = True
+        if plain:
+            s = [ "%s" % (key[0],) for i, key in enumerate(factkeys) ]
+            if alpha:
+                s.sort()
+        else:
+            s = [ "#%d %s (%d)" % (i+1, key[0], key[1]) for i, key in enumerate(factkeys) ]
         irc.reply(", ".join(s))
-    rank = wrap(rank, ['channel'])
+    rank = wrap(rank, ['channel', 
+                        getopts({'plain': '', 'alpha': '',}), 
+                        optional('int')])
     
     def lock(self, irc, msg, args, channel, key):
         """[<channel>] <key>
