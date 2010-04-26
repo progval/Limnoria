@@ -72,7 +72,9 @@ if __name__ == '__main__':
     parser.add_option('', '--pidfile',
                       help='Determines what file to look in for the pid of '
                       'the running bot.  This should be relative to the '
-                      'given bot directory.')
+                      'given bot directory. Note that for this to actually '
+                      'work, you have to make a matching entry in the '
+                      'supybot.pidFile config in the supybot registry.')
     parser.add_option('', '--supybot', default='supybot',
                       help='Determines where the supybot executable is '
                       'located.  If not given, assumes that supybot is '
