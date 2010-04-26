@@ -337,7 +337,7 @@ class RSS(callbacks.Plugin):
             announce = conf.supybot.plugins.RSS.announce
             feeds = format('%L', list(announce.get(channel)()))
             irc.reply(feeds or 'I am currently not announcing any feeds.')
-        list = wrap(list, [optional('channel')])
+        list = wrap(list, ['channel',])
 
         def add(self, irc, msg, args, channel, feeds):
             """[<channel>] <name|url> [<name|url> ...]
