@@ -170,11 +170,8 @@ class Misc(callbacks.Plugin):
                     if s in command:
                         commands.setdefault(command, []).append(cb.name())
         for (key, names) in commands.iteritems():
-            if len(names) == 1:
-                L.append(key)
-            else:
-                for name in names:
-                    L.append('%s %s' % (name, key))
+            for name in names:
+                L.append('%s %s' % (name, key))
         if L:
             L.sort()
             irc.reply(format('%L', L))
