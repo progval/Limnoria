@@ -121,7 +121,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         try:
             self.Proxy(irc.irc, msg, tokens)
         except Exception, e:
-            log.exception('Uncaught exception in scheduled function:')
+            log.exception('Uncaught exception in function called by MessageParser:')
     
     def _checkManageCapabilities(self, irc, msg, channel):
         """Check if the user has any of the required capabilities to manage
