@@ -174,6 +174,14 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertNotError('learn foob as barb')
         self.assertRegexp('whatis foom', 'foo.*foob')
     
+    def testStandardSubstitute(self):
+        self.assertNotError('learn foo as this is $channel, and hour is $hour')
+        self.assertRegexp('whatis foo', 'this is #test, and hour is \d{1,2}')
+        self.assertNotError('learn bar as this is $$channel escaped')
+        self.assertRegexp('whatis bar', 'this is \$channel')
+        self.assertNotError('learn bar as this is $minute')
+        self.assertRegexp('whatis bar', '\$channel.*\d{1,2}')
+        
     def testAlias(self):
         self.assertNotError('learn foo as bar')
         self.assertNotError('alias foo zoog')

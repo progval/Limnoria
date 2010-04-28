@@ -243,7 +243,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         if factoids:
             if number:
                 try:
-                    irc.reply(factoids[number-1][0])
+                    irc.reply(ircutils.standardSubstitute(irc, msg, 
+                                    factoids[number-1][0]))
                     self._updateRank(channel, [factoids[number-1]])
                 except IndexError:
                     irc.error('That\'s not a valid number for that key.')
@@ -256,12 +257,15 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                     return ircutils.standardSubstitute(irc, msg,
                                                        formatter, env)
                 if len(factoids) == 1:
-                    irc.reply(prefixer(factoids[0][0]))
+                    irc.reply(ircutils.standardSubstitute(irc, msg, 
+                                    prefixer(factoids[0][0])))
                 else:
                     factoidsS = []
                     counter = 1
                     for factoid in factoids:
-                        factoidsS.append(format('(#%i) %s', counter, factoid[0]))
+                        factoidsS.append(format('(#%i) %s', counter, 
+                                ircutils.standardSubstitute(irc, msg, 
+                                        factoid[0])))
                         counter += 1
                     irc.replies(factoidsS, prefixer=prefixer,
                                 joiner=', or ', onlyPrefixFirst=True)
