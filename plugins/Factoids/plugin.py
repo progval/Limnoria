@@ -239,12 +239,17 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 db.commit()
         
     def _replyFactoids(self, irc, msg, key, channel, factoids,
-                       number=0, error=True):
+                       number=0, error=True, raw=False):
+        def format_fact(text):
+            if raw:
+                return text
+            else:
+                return ircutils.standardSubstitute(irc, msg, text)
+        
         if factoids:
             if number:
                 try:
-                    irc.reply(ircutils.standardSubstitute(irc, msg, 
-                                    factoids[number-1][0]))
+                    irc.reply(format_fact(factoids[number-1][0]))
                     self._updateRank(channel, [factoids[number-1]])
                 except IndexError:
                     irc.error('That\'s not a valid number for that key.')
@@ -257,15 +262,13 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                     return ircutils.standardSubstitute(irc, msg,
                                                        formatter, env)
                 if len(factoids) == 1:
-                    irc.reply(ircutils.standardSubstitute(irc, msg, 
-                                    prefixer(factoids[0][0])))
+                    irc.reply(format_fact(prefixer(factoids[0][0])))
                 else:
                     factoidsS = []
                     counter = 1
                     for factoid in factoids:
                         factoidsS.append(format('(#%i) %s', counter, 
-                                ircutils.standardSubstitute(irc, msg, 
-                                        factoid[0])))
+                                format_fact(factoid[0])))
                         counter += 1
                     irc.replies(factoidsS, prefixer=prefixer,
                                 joiner=', or ', onlyPrefixFirst=True)
@@ -294,13 +297,19 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 else:
                     self._replyApproximateFactoids(irc, msg, channel, key, error=False)
 
-    def whatis(self, irc, msg, args, channel, words):
-        """[<channel>] <key> [<number>]
+    def whatis(self, irc, msg, args, channel, optlist, words):
+        """[<channel>] [--raw] <key> [<number>]
 
         Looks up the value of <key> in the factoid database.  If given a
-        number, will return only that exact factoid.  <channel> is only
-        necessary if the message isn't sent in the channel itself.
+        number, will return only that exact factoid. If '--raw' option is
+        given, no variable substitution will take place on the factoid.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
+        raw = False
+        for (option, arg) in optlist:
+            if option == 'raw':
+                raw = True
         number = None
         if len(words) > 1:
             if words[-1].isdigit():
@@ -310,10 +319,12 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         key = ' '.join(words)
         factoids = self._lookupFactoid(channel, key)
         if factoids:
-            self._replyFactoids(irc, msg, key, channel, factoids, number)
+            self._replyFactoids(irc, msg, key, channel, factoids, number, raw=raw)
         else:
             self._replyApproximateFactoids(irc, msg, channel, key)
-    whatis = wrap(whatis, ['channel', many('something')])
+    whatis = wrap(whatis, ['channel', 
+                            getopts({'raw': '',}),
+                            many('something')])
     
     def alias(self, irc, msg, args, channel, oldkey, newkey, number):
         """[<channel>] <oldkey> <newkey> [<number>]
