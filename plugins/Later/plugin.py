@@ -30,6 +30,7 @@
 
 import csv
 import time
+import datetime
 
 import supybot.log as log
 import supybot.conf as conf
@@ -118,6 +119,31 @@ class Later(callbacks.Plugin):
                 return nick[:-1]
         return nick
     
+    def _deleteExpired(self):
+        expiry = self.registryValue('messageExpiry')
+        curtime = time.time()
+        nickremovals=[]
+        for (nick, notes) in self._notes.iteritems():
+            removals = []
+            for (notetime, whence, text) in notes:
+                td = datetime.timedelta(seconds=(curtime - notetime))
+                if td.days > expiry:
+                    removals.append((notetime, whence, text))
+            for note in removals:
+                notes.remove(note)
+            if len(notes) == 0:
+                nickremovals.append(nick)
+        for nick in nickremovals:
+            del self._notes[nick]
+        self._flushNotes()
+    
+    ## Note: we call _deleteExpired from 'tell'. This means that it's possible
+    ## for expired notes to remain in the database for longer than the maximum,
+    ## if no tell's are called. 
+    ## However, the whole point of this is to avoid crud accumulation in the 
+    ## database, so it's fine that we only delete expired notes when we try 
+    ## adding new ones.
+        
     def tell(self, irc, msg, args, nick, text):
         """<nick> <text>
 
@@ -125,6 +151,7 @@ class Later(callbacks.Plugin):
         contain wildcard characters, and the first matching nick will be
         given the note.
         """
+        self._deleteExpired()
         if ircutils.strEqual(nick, irc.nick):
             irc.error('I can\'t send notes to myself.')
             return
