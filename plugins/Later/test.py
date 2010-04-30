@@ -30,7 +30,7 @@
 from supybot.test import *
 import time
 
-class LaterTestCase(PluginTestCase):
+class LaterTestCase(ChannelPluginTestCase):
     plugins = ('Later',)
     def testLaterWorksTwice(self):
         self.assertNotError('later tell foo bar')
@@ -62,5 +62,17 @@ class LaterTestCase(PluginTestCase):
         self.assertNotRegexp('later notes', 'foo')
         self.assertRegexp('later notes', 'moo')
 
+    def testNoteSend(self):
+        self.assertNotError('later tell foo stuff')
+        self.assertNotError('later tell bar more stuff')
+        self.assertRegexp('later notes', 'bar.*foo')
+        testPrefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        m = self.getMsg(' ')
+        self.failUnless(str(m).startswith('PRIVMSG foo :Sent just now: <test> stuff'))
+        self.assertNotRegexp('later notes', 'foo')
+        self.assertRegexp('later notes', 'bar')
+        
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
