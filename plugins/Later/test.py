@@ -28,6 +28,7 @@
 ###
 
 from supybot.test import *
+import time
 
 class LaterTestCase(PluginTestCase):
     plugins = ('Later',)
@@ -51,6 +52,15 @@ class LaterTestCase(PluginTestCase):
         self.assertNotError('later tell foo: baz')
         self.assertRegexp('later notes', 'foo\.')
         conf.supybot.protocols.irc.strictRfc.setValue(origconf)
+
+    def testNoteExpiry(self):
+        cb = self.irc.getCallback('Later')
+        # add a note 40 days in the past
+        cb._addNote('foo', 'test', 'some stuff', at=(time.time() - 3456000))
+        self.assertRegexp('later notes', 'foo')
+        self.assertNotError('later tell moo stuff')
+        self.assertNotRegexp('later notes', 'foo')
+        self.assertRegexp('later notes', 'moo')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

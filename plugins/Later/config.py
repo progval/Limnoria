@@ -51,5 +51,9 @@ conf.registerGlobalValue(Later, 'private',
 conf.registerGlobalValue(Later, 'tellOnJoin',
     registry.Boolean(True, _("""Determines whether users will be notified upon
     joining any channel the bot is in, or only upon sending a message.""")))
+conf.registerGlobalValue(Later, 'messageExpiry',
+    registry.NonNegativeInteger(30, _("""Determines the maximum number of
+    days that a message will remain queued for a user. After this time elapses,
+    the message will be deleted. If this value is 0, there is no maximum.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
