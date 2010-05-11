@@ -315,7 +315,8 @@ class ChannelStats(callbacks.Plugin):
         expr = expr.lower()
         users = []
         for ((c, id), stats) in self.db.items():
-            if ircutils.strEqual(c, channel) and ircdb.users.hasUser(id):
+            if ircutils.strEqual(c, channel) and \
+               (id == 0 or ircdb.users.hasUser(id)):
                 e = self._env.copy()
                 for attr in stats._values:
                     e[attr] = float(getattr(stats, attr))
@@ -327,7 +328,10 @@ class ChannelStats(callbacks.Plugin):
                     irc.errorInvalid('stat variable', str(e).split()[1])
                 except Exception, e:
                     irc.error(utils.exnToString(e), Raise=True)
-                users.append((v, ircdb.users.getUser(id).name))
+                if id == 0:
+                    users.append((v, irc.nick))
+                else:
+                    users.append((v, ircdb.users.getUser(id).name))
         users.sort()
         users.reverse()
         s = utils.str.commaAndify(['#%s %s (%.3g)' % (i+1, u, v)
