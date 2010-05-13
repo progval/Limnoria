@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
 import os
 import re
 import random
