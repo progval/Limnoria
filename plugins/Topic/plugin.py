@@ -28,6 +28,7 @@
 ###
 
 import os
+import re
 import random
 import shutil
 import tempfile
