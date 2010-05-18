@@ -48,14 +48,10 @@ def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
     print '***', s % args
 
+userHostmaskRe = re.compile(r'^\S+!\S+@\S+$')
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
-    p1 = s.find('!')
-    p2 = s.find('@')
-    if p1 < p2-1 and p1 >= 1 and p2 >= 3 and len(s) > p2+1:
-        return True
-    else:
-        return False
+    return userHostmaskRe.match(s) is not None
 
 def isServerHostmask(s):
     """s => bool
@@ -66,19 +62,19 @@ def nickFromHostmask(hostmask):
     """hostmask => nick
     Returns the nick from a user hostmask."""
     assert isUserHostmask(hostmask)
-    return hostmask.split('!', 1)[0]
+    return splitHostmask(hostmask)[0]
 
 def userFromHostmask(hostmask):
     """hostmask => user
     Returns the user from a user hostmask."""
     assert isUserHostmask(hostmask)
-    return hostmask.split('!', 1)[1].split('@', 1)[0]
+    return splitHostmask(hostmask)[1]
 
 def hostFromHostmask(hostmask):
     """hostmask => host
     Returns the host from a user hostmask."""
     assert isUserHostmask(hostmask)
-    return hostmask.split('@', 1)[1]
+    return splitHostmask(hostmask)[2]
 
 def splitHostmask(hostmask):
     """hostmask => (nick, user, host)
@@ -86,13 +82,13 @@ def splitHostmask(hostmask):
     assert isUserHostmask(hostmask)
     nick, rest = hostmask.split('!', 1)
     user, host = rest.split('@', 1)
-    return (nick, user, host)
+    return (intern(nick), intern(user), intern(host))
 
 def joinHostmask(nick, ident, host):
     """nick, user, host => hostmask
     Joins the nick, ident, host into a user hostmask."""
     assert nick and ident and host
-    return '%s!%s@%s' % (nick, ident, host)
+    return intern('%s!%s@%s' % (nick, ident, host))
 
 _rfc1459trans = string.maketrans(string.ascii_uppercase + r'\[]~',
                                  string.ascii_lowercase + r'|{}^')
