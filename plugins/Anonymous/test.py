@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Daniel DiPaolo
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,14 +33,20 @@ from supybot.test import *
 class AnonymousTestCase(ChannelPluginTestCase):
     plugins = ('Anonymous',)
     def testSay(self):
-        m = self.assertError('anonymous say %s I love you!' % self.channel)
+        self.assertError('anonymous say %s I love you!' % self.channel)
+        self.assertError('anonymous say %s I love you!' % self.nick)
+        origreg = conf.supybot.plugins.Anonymous.requireRegistration()
+        origpriv = conf.supybot.plugins.Anonymous.allowPrivateTarget()
         try:
-            orig = conf.supybot.plugins.Anonymous.requireRegistration()
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
             m = self.assertNotError('anonymous say %s foo!' % self.channel)
             self.failUnless(m.args[1] == 'foo!')
+            conf.supybot.plugins.Anonymous.allowPrivateTarget.setValue(True)
+            m = self.assertNotError('anonymous say %s foo!' % self.nick)
+            self.failUnless(m.args[1] == 'foo!')
         finally:
-            conf.supybot.plugins.Anonymous.requireRegistration.setValue(orig)
+            conf.supybot.plugins.Anonymous.requireRegistration.setValue(origreg)
+            conf.supybot.plugins.Anonymous.allowPrivateTarget.setValue(origpriv)
 
     def testAction(self):
         m = self.assertError('anonymous do %s loves you!' % self.channel)
