@@ -36,6 +36,12 @@ import sgmllib
 import urlparse
 import htmlentitydefs
 
+sockerrors = (socket.error,)
+try:
+    sockerrors += (socket.sslerror,)
+except AttributeError:
+    pass
+
 from str import normalizeWhitespace
 
 Request = urllib2.Request
@@ -106,7 +112,7 @@ def getUrlFd(url, headers=None):
         return fd
     except socket.timeout, e:
         raise Error, TIMED_OUT
-    except (socket.error, socket.sslerror), e:
+    except sockerrors, e:
         raise Error, strError(e)
     except httplib.InvalidURL, e:
         raise Error, 'Invalid URL: %s' % e
