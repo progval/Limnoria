@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -56,8 +57,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.inbuffer = ''
         self.outbuffer = ''
         self.zombie = False
-        self.scheduled = None
         self.connected = False
+        self.writeCheckTime = None
+        self.nextReconnectTime = None
         self.resetDelay()
         # Only connect to non-SSL servers
         if self.networkGroup.get('ssl').value:
@@ -87,6 +89,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         # hasn't finished yet.  We'll keep track of how many we get.
         if e.args[0] != 11 or self.eagains > 120:
             drivers.log.disconnect(self.currentServer, e)
+            try:
+                self.conn.close()
+            except:
+                pass
+            self.connected = False
             self.scheduleReconnect()
         else:
             log.debug('Got EAGAIN, current count: %s.', self.eagains)
@@ -110,6 +117,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self._reallyDie()
 
     def run(self):
+        now = time.time()
+        if self.nextReconnectTime is not None and now > self.nextReconnectTime:
+            self.reconnect()
+        elif self.writeCheckTime is not None and now > self.writeCheckTime:
+            self._checkAndWriteOrReconnect()
         if not self.connected:
             # We sleep here because otherwise, if we're the only driver, we'll
             # spin at 100% CPU while we're disconnected.
@@ -137,7 +149,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.reconnect(reset=False, **kwargs)
 
     def reconnect(self, reset=True):
-        self.scheduled = None
+        self.nextReconnectTime = None
         if self.connected:
             drivers.log.reconnect(self.irc.network)
             self.conn.close()
@@ -172,13 +184,14 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 whenS = log.timestamp(when)
                 drivers.log.debug('Connection in progress, scheduling '
                                   'connectedness check for %s', whenS)
-                schedule.addEvent(self._checkAndWriteOrReconnect, when)
+                self.writeCheckTime = when
             else:
                 drivers.log.connectError(self.currentServer, e)
                 self.scheduleReconnect()
             return
 
     def _checkAndWriteOrReconnect(self):
+        self.writeCheckTime = None
         drivers.log.debug('Checking whether we are connected.')
         (_, w, _) = select.select([], [self.conn], [], 0)
         if w:
@@ -193,18 +206,19 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         when = time.time() + self.getDelay()
         if not world.dying:
             drivers.log.reconnect(self.irc.network, when)
-        if self.scheduled:
-            drivers.log.error('Scheduling a second reconnect when one is '
-                              'already scheduled.  This is a bug; please '
+        if self.nextReconnectTime:
+            drivers.log.error('Updating next reconnect time when one is '
+                              'already present.  This is a bug; please '
                               'report it, with an explanation of what caused '
                               'this to happen.')
-            schedule.removeEvent(self.scheduled)
-        self.scheduled = schedule.addEvent(self.reconnect, when)
+        self.nextReconnectTime = when
 
     def die(self):
         self.zombie = True
-        if self.scheduled:
-            schedule.removeEvent(self.scheduled)
+        if self.nextReconnectTime is not None:
+            self.nextReconnectTime = None
+        if self.writeCheckTime is not None:
+            self.writeCheckTime = None
         drivers.log.die(self.irc)
 
     def _reallyDie(self):
