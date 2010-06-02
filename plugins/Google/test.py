@@ -38,6 +38,7 @@ class GoogleTestCase(ChannelPluginTestCase):
 
         def testCalc(self):
             self.assertNotRegexp('google calc e^(i*pi)+1', r'didn\'t')
+            self.assertNotRegexp('google calc 1 usd in gbp', r'didn\'t')
 
         def testHtmlHandled(self):
             self.assertNotRegexp('google calc '
