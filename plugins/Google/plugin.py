@@ -332,7 +332,7 @@ class Google(callbacks.PluginRegexp):
         url = r'http://google.com/search?q=' + s
         return url
 
-    _calcRe = re.compile(r'<img src=/images/calc_img\.gif.*?<b>(.*?)</b>', re.I)
+    _calcRe = re.compile(r'<h\d class="?r"?.*?<b>(.*?)</b>', re.I)
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
     _calcTimesRe = re.compile(r'&(?:times|#215);')
