@@ -124,7 +124,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('true')
         else:
             irc.reply('false')
-    ceq = wrap(ceq, ['something', 'something'])
+    ceq = wrap(ceq, ['anything', 'anything'])
     
     def ne(self, irc, msg, args, item1, item2):
         """<item1> <item2>
@@ -136,19 +136,19 @@ class Conditional(callbacks.Plugin):
             irc.reply('true')
         else:
             irc.reply('false')
-    ne = wrap(ne, ['something', 'something'])
+    ne = wrap(ne, ['anything', 'anything'])
     
     def gt(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
         Does a string comparison on <item1> and <item2>. 
-        Returns true if they <item1> is greater than <item2>.
+        Returns true if <item1> is greater than <item2>.
         """
         if item1 > item2:
             irc.reply('true')
         else:
             irc.reply('false')
-    gt = wrap(gt, ['something', 'something'])
+    gt = wrap(gt, ['anything', 'anything'])
     
     def ge(self, irc, msg, args, item1, item2):
         """<item1> <item2>
@@ -160,7 +160,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('true')
         else:
             irc.reply('false')
-    ge = wrap(ge, ['something', 'something'])
+    ge = wrap(ge, ['anything', 'anything'])
     
     def lt(self, irc, msg, args, item1, item2):
         """<item1> <item2>
@@ -172,7 +172,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('true')
         else:
             irc.reply('false')
-    lt = wrap(lt, ['something', 'something'])
+    lt = wrap(lt, ['anything', 'anything'])
     
     def le(self, irc, msg, args, item1, item2):
         """<item1> <item2>
@@ -184,7 +184,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('true')
         else:
             irc.reply('false')
-    le = wrap(le, ['something', 'something'])
+    le = wrap(le, ['anything', 'anything'])
 
     def match(self, irc, msg, args, item1, item2):
         """<item1> <item2>
