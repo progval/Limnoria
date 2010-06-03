@@ -98,11 +98,24 @@ class Utilities(callbacks.Plugin):
     def shuffle(self, irc, msg, args, things):
         """<arg> [<arg> ...]
 
-        Shuffles the arguments given it.
+        Shuffles the arguments given.
         """
         random.shuffle(things)
         irc.reply(' '.join(things))
     shuffle = wrap(shuffle, [many('anything')])
+
+    @internationalizeDocstring
+    def sample(self, irc, msg, args, num, things):
+        """<num> <arg> [<arg> ...]
+
+        Randomly chooses <num> items out of the arguments given.
+        """
+        try:
+            samp = random.sample(things, num)
+            irc.reply(' '.join(samp))
+        except ValueError, e:
+            irc.error('%s' % (e,))
+    sample = wrap(sample, ['positiveInt', many('anything')])
 
     @internationalizeDocstring
     def apply(self, irc, msg, args, command, rest):

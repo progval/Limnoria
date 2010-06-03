@@ -59,4 +59,10 @@ class UtilitiesTestCase(PluginTestCase):
     def testShuffle(self):
         self.assertResponse('shuffle a', 'a')
 
+    def testSample(self):
+        self.assertResponse('sample 1 a', 'a')
+        self.assertError('sample moo')
+        self.assertError('sample 5 moo')
+        self.assertRegexp('sample 2 a b c', '^[a-c] [a-c]$')
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

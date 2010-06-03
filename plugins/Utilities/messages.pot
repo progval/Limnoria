@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-20 09:39+CEST\n"
+"POT-Creation-Date: 2011-02-20 11:27+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,11 +66,20 @@ msgstr ""
 msgid ""
 "<arg> [<arg> ...]\n"
 "\n"
-"        Shuffles the arguments given it.\n"
+"        Shuffles the arguments given.\n"
 "        "
 msgstr ""
 
 #: plugin.py:109
+#, docstring
+msgid ""
+"<num> <arg> [<arg> ...]\n"
+"\n"
+"        Randomly chooses <num> items out of the arguments given.\n"
+"        "
+msgstr ""
+
+#: plugin.py:122
 #, docstring
 msgid ""
 "<command> <text>\n"
