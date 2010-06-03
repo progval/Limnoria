@@ -118,6 +118,15 @@ class Utilities(callbacks.Plugin):
     sample = wrap(sample, ['positiveInt', many('anything')])
 
     @internationalizeDocstring
+    def countargs(self, irc, msg, args, things):
+        """<arg> [<arg> ...]
+
+        Counts the arguments given.
+        """
+        irc.reply(len(things))
+    countargs = wrap(countargs, [any('anything')])
+
+    @internationalizeDocstring
     def apply(self, irc, msg, args, command, rest):
         """<command> <text>
 

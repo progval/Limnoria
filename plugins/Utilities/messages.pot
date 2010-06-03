@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-20 11:27+CET\n"
+"POT-Creation-Date: 2011-02-20 11:29+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,6 +80,15 @@ msgid ""
 msgstr ""
 
 #: plugin.py:122
+#, docstring
+msgid ""
+"<arg> [<arg> ...]\n"
+"\n"
+"        Counts the arguments given.\n"
+"        "
+msgstr ""
+
+#: plugin.py:131
 #, docstring
 msgid ""
 "<command> <text>\n"

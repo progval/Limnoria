@@ -65,4 +65,9 @@ class UtilitiesTestCase(PluginTestCase):
         self.assertError('sample 5 moo')
         self.assertRegexp('sample 2 a b c', '^[a-c] [a-c]$')
 
+    def testCountargs(self):
+        self.assertResponse('countargs a b c', '3')
+        self.assertResponse('countargs a "b c"', '2')
+        self.assertResponse('countargs', '0')
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

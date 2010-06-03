@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-02-20 11:27+CET\n"
+"POT-Creation-Date: 2011-02-20 11:29+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -90,6 +90,17 @@ msgstr ""
 "Choisi de façon aléatoire un certain <nombre> d'<argument>s."
 
 #: plugin.py:122
+msgid ""
+"<arg> [<arg> ...]\n"
+"\n"
+"        Counts the arguments given.\n"
+"        "
+msgstr ""
+"<argument> [<argument> ...]\n"
+"\n"
+"Retorune le nombre d'<argument>s donnés."
+
+#: plugin.py:131
 msgid ""
 "<command> <text>\n"
 "\n"
