@@ -104,6 +104,14 @@ class Utilities(callbacks.Plugin):
             irc.error('%s' % (e,))
     sample = wrap(sample, ['positiveInt', many('anything')])
 
+    def countargs(self, irc, msg, args, things):
+        """<arg> [<arg> ...]
+
+        Counts the arguments given.
+        """
+        irc.reply(len(things))
+    countargs = wrap(countargs, [any('anything')])
+
     def apply(self, irc, msg, args, command, rest):
         """<command> <text>
 
