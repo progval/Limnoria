@@ -777,11 +777,12 @@ class Channel(callbacks.Plugin):
                            optional(('plugin', False)),
                            additional('commandName')])
 
-    def nicks(self, irc, msg, args, channel):
-        """[<channel>]
+    def nicks(self, irc, msg, args, channel, optlist):
+        """[<channel>] [--count]
 
         Returns the nicks in <channel>.  <channel> is only necessary if the
-        message isn't sent in the channel itself.
+        message isn't sent in the channel itself. Returns only the number of 
+        nicks if --count option is provided.
         """
         # Make sure we don't elicit information about private channels to
         # people or channels that shouldn't know
@@ -791,9 +792,14 @@ class Channel(callbacks.Plugin):
              msg.nick not in irc.state.channels[channel].users):
             irc.error('You don\'t have access to that information.')
         L = list(irc.state.channels[channel].users)
-        utils.sortBy(str.lower, L)
-        irc.reply(utils.str.commaAndify(L))
-    nicks = wrap(nicks, ['inChannel'])
+        keys = [option for (option, arg) in optlist]
+        if 'count' not in keys:
+            utils.sortBy(str.lower, L)
+            irc.reply(utils.str.commaAndify(L))
+        else:
+            irc.reply(str(len(L)))
+    nicks = wrap(nicks, ['inChannel', 
+                        getopts({'count':''})])
 
     def alertOps(self, irc, channel, s, frm=None):
         """Internal message for notifying all the #channel,ops in a channel of
