@@ -66,7 +66,7 @@ class SupyIrcProtocol(LineReceiver):
     delimiter = '\n'
     MAX_LENGTH = 1024
     def __init__(self):
-        self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
+        self.mostRecentCall = reactor.callLater(0.1, self.checkIrcForMsgs)
 
     def lineReceived(self, line):
         msg = drivers.parseMsg(line)
@@ -76,9 +76,10 @@ class SupyIrcProtocol(LineReceiver):
     def checkIrcForMsgs(self):
         if self.connected:
             msg = self.irc.takeMsg()
-            if msg:
+            while msg:
                 self.transport.write(str(msg))
-        self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
+                msg = self.irc.takeMsg()
+        self.mostRecentCall = reactor.callLater(0.1, self.checkIrcForMsgs)
 
     def connectionLost(self, r):
         self.mostRecentCall.cancel()
