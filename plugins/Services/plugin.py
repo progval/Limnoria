@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -62,6 +63,13 @@ class Services(callbacks.Plugin):
         self.identified = False
         self.waitingJoins = []
 
+    def isDisabled(self, irc):
+        disabled = self.registryValue('disabledNetworks')
+        if irc.network in disabled or \
+           irc.state.supported.get('NETWORK', '') in disabled:
+            return True
+        return False
+
     def outFilter(self, irc, msg):
         if msg.command == 'JOIN':
             if not self.identified:
@@ -75,9 +83,6 @@ class Services(callbacks.Plugin):
     def _getNick(self):
         return conf.supybot.nick()
 
-##     def _getNickServ(self, network):
-##         return self.registryValue('NickServ', network)
-
     def _getNickServPassword(self, nick):
         # This should later be nick-specific.
         assert nick in self.registryValue('nicks')
@@ -89,6 +94,8 @@ class Services(callbacks.Plugin):
         self.setRegistryValue('NickServ.password.%s' % nick, password)
 
     def _doIdentify(self, irc, nick=None):
+        if self.isDisabled(irc):
+            return
         if nick is None:
             nick = self._getNick()
         if nick not in self.registryValue('nicks'):
@@ -109,6 +116,8 @@ class Services(callbacks.Plugin):
         irc.sendMsg(ircmsgs.privmsg(nickserv, identify))
 
     def _doGhost(self, irc, nick=None):
+        if self.isDisabled(irc):
+            return
         if nick is None:
             nick = self._getNick()
         if nick not in self.registryValue('nicks'):
@@ -135,11 +144,9 @@ class Services(callbacks.Plugin):
             self.sentGhost = time.time()
 
     def __call__(self, irc, msg):
-        disabled = self.registryValue('disabledNetworks')
-        if irc.network in disabled or \
-           irc.state.supported.get('NETWORK', '') in disabled:
-            return
         self.__parent.__call__(irc, msg)
+        if self.isDisabled(irc):
+            return
         nick = self._getNick()
         if nick not in self.registryValue('nicks'):
             return
@@ -160,6 +167,8 @@ class Services(callbacks.Plugin):
         self.sentGhost = None
 
     def do376(self, irc, msg):
+        if self.isDisabled(irc):
+            return
         nick = self._getNick()
         if nick not in self.registryValue('nicks'):
             return
@@ -182,6 +191,8 @@ class Services(callbacks.Plugin):
     do422 = do377 = do376
 
     def do433(self, irc, msg):
+        if self.isDisabled(irc):
+            return
         nick = self._getNick()
         if nick not in self.registryValue('nicks'):
             return
@@ -219,6 +230,8 @@ class Services(callbacks.Plugin):
 
     _chanRe = re.compile('\x02(.*?)\x02')
     def doChanservNotice(self, irc, msg):
+        if self.isDisabled(irc):
+            return
         s = msg.args[1].lower()
         channel = None
         m = self._chanRe.search(s)
@@ -249,6 +262,8 @@ class Services(callbacks.Plugin):
                              on, msg)
 
     def doNickservNotice(self, irc, msg):
+        if self.isDisabled(irc):
+            return
         nick = self._getNick()
         s = ircutils.stripFormatting(msg.args[1].lower())
         on = 'on %s' % irc.network
@@ -310,6 +325,8 @@ class Services(callbacks.Plugin):
             self.log.debug('Unexpected notice from NickServ %s: %q.', on, s)
 
     def checkPrivileges(self, irc, channel):
+        if self.isDisabled(irc):
+            return
         chanserv = self.registryValue('ChanServ')
         on = 'on %s' % irc.network
         if chanserv and self.registryValue('ChanServ.op', channel):
@@ -329,6 +346,8 @@ class Services(callbacks.Plugin):
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'voice %s' % channel))
 
     def doMode(self, irc, msg):
+        if self.isDisabled(irc):
+            return
         chanserv = self.registryValue('ChanServ')
         on = 'on %s' % irc.network
         if ircutils.strEqual(msg.nick, chanserv):
@@ -351,6 +370,12 @@ class Services(callbacks.Plugin):
         if self.identified:
             channel = msg.args[1] # nick is msg.args[0].
             self.checkPrivileges(irc, channel)
+
+    def callCommand(self, command, irc, msg, *args, **kwargs):
+        if self.isDisabled(irc):
+            irc.error('Services plugin is disabled on this network',
+                      Raise=True)
+        self.__parent.callCommand(command, irc, msg, *args, **kwargs)
 
     def _chanservCommand(self, irc, channel, command, log=False):
         chanserv = self.registryValue('ChanServ')
@@ -394,6 +419,8 @@ class Services(callbacks.Plugin):
     voice = wrap(voice, [('checkChannelCapability', 'op'), 'inChannel'])
 
     def do474(self, irc, msg):
+        if self.isDisabled(irc):
+            return
         channel = msg.args[1]
         on = 'on %s' % irc.network
         self.log.info('Banned from %s, attempting ChanServ unban %s.',
@@ -414,6 +441,8 @@ class Services(callbacks.Plugin):
     unban = wrap(unban, [('checkChannelCapability', 'op')])
 
     def do473(self, irc, msg):
+        if self.isDisabled(irc):
+            return
         channel = msg.args[1]
         on = 'on %s' % irc.network
         self.log.info('%s is +i, attempting ChanServ invite %s.', channel, on)
