@@ -63,7 +63,7 @@ class Services(callbacks.Plugin):
         self.identified = False
         self.waitingJoins = []
 
-    def isDisabled(self, irc):
+    def disabled(self, irc):
         disabled = self.registryValue('disabledNetworks')
         if irc.network in disabled or \
            irc.state.supported.get('NETWORK', '') in disabled:
@@ -94,7 +94,7 @@ class Services(callbacks.Plugin):
         self.setRegistryValue('NickServ.password.%s' % nick, password)
 
     def _doIdentify(self, irc, nick=None):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         if nick is None:
             nick = self._getNick()
@@ -116,7 +116,7 @@ class Services(callbacks.Plugin):
         irc.sendMsg(ircmsgs.privmsg(nickserv, identify))
 
     def _doGhost(self, irc, nick=None):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         if nick is None:
             nick = self._getNick()
@@ -145,7 +145,7 @@ class Services(callbacks.Plugin):
 
     def __call__(self, irc, msg):
         self.__parent.__call__(irc, msg)
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         nick = self._getNick()
         if nick not in self.registryValue('nicks'):
@@ -167,7 +167,7 @@ class Services(callbacks.Plugin):
         self.sentGhost = None
 
     def do376(self, irc, msg):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         nick = self._getNick()
         if nick not in self.registryValue('nicks'):
@@ -191,7 +191,7 @@ class Services(callbacks.Plugin):
     do422 = do377 = do376
 
     def do433(self, irc, msg):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         nick = self._getNick()
         if nick not in self.registryValue('nicks'):
@@ -230,7 +230,7 @@ class Services(callbacks.Plugin):
 
     _chanRe = re.compile('\x02(.*?)\x02')
     def doChanservNotice(self, irc, msg):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         s = msg.args[1].lower()
         channel = None
@@ -262,7 +262,7 @@ class Services(callbacks.Plugin):
                              on, msg)
 
     def doNickservNotice(self, irc, msg):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         nick = self._getNick()
         s = ircutils.stripFormatting(msg.args[1].lower())
@@ -325,7 +325,7 @@ class Services(callbacks.Plugin):
             self.log.debug('Unexpected notice from NickServ %s: %q.', on, s)
 
     def checkPrivileges(self, irc, channel):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         chanserv = self.registryValue('ChanServ')
         on = 'on %s' % irc.network
@@ -346,7 +346,7 @@ class Services(callbacks.Plugin):
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'voice %s' % channel))
 
     def doMode(self, irc, msg):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         chanserv = self.registryValue('ChanServ')
         on = 'on %s' % irc.network
@@ -372,7 +372,7 @@ class Services(callbacks.Plugin):
             self.checkPrivileges(irc, channel)
 
     def callCommand(self, command, irc, msg, *args, **kwargs):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             irc.error('Services plugin is disabled on this network',
                       Raise=True)
         self.__parent.callCommand(command, irc, msg, *args, **kwargs)
@@ -419,7 +419,7 @@ class Services(callbacks.Plugin):
     voice = wrap(voice, [('checkChannelCapability', 'op'), 'inChannel'])
 
     def do474(self, irc, msg):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         channel = msg.args[1]
         on = 'on %s' % irc.network
@@ -441,7 +441,7 @@ class Services(callbacks.Plugin):
     unban = wrap(unban, [('checkChannelCapability', 'op')])
 
     def do473(self, irc, msg):
-        if self.isDisabled(irc):
+        if self.disabled(irc):
             return
         channel = msg.args[1]
         on = 'on %s' % irc.network
