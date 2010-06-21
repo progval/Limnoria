@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,7 +34,10 @@ import supybot.registry as registry
 
 def registerNick(nick, password=''):
     p = conf.supybot.plugins.Services.Nickserv.get('password')
-    v = p.register(nick, registry.String(password, '', private=True))
+    h = 'Determines what password the bot will use with NickServ when ' \
+        'identifying as %s.' % nick
+    v = p.register(nick, registry.String(password, h, private=True))
+    v.channelValue = False
     if password:
         v.setValue(password)
 
@@ -82,9 +86,7 @@ conf.registerGlobalValue(Services, 'ghostDelay',
 conf.registerGlobalValue(Services, 'NickServ',
     ValidNickOrEmptyString('', """Determines what nick the 'NickServ' service
     has."""))
-conf.registerGroup(Services.NickServ, 'password',
-    registry.String('', """Determines what password the bot will use with
-    NickServ.""", private=True))
+conf.registerGroup(Services.NickServ, 'password')
 conf.registerGlobalValue(Services, 'ChanServ',
     ValidNickOrEmptyString('', """Determines what nick the 'ChanServ' service
     has."""))
