@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -43,7 +44,11 @@ class Utilities(callbacks.Plugin):
         Does nothing.  Useful sometimes for sequencing commands when you don't
         care about their non-error return values.
         """
-        pass
+        if irc.nested:
+            msg.tag('ignored')
+            # Need to call NestedCommandsIrcProxy.reply to continue evaluation
+            # of the remaining nested commands.
+            irc.reply('')
     # Do be careful not to wrap this unless you do any('something').
 
     def success(self, irc, msg, args, text):

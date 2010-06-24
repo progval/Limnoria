@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -920,7 +920,14 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             finally:
                 self._resetReplyAttributes()
         else:
-            self.args[self.counter] = s
+            if msg.ignored:
+                # Since the final reply string is constructed via
+                # ' '.join(self.args), the args index for ignored commands
+                # needs to be popped to avoid extra spaces in the final reply.
+                self.args.pop(self.counter)
+                msg.tag('ignored', False)
+            else:
+                self.args[self.counter] = s
             self.evalArgs()
 
     def error(self, s='', Raise=False, **kwargs):
