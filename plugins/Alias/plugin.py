@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -263,13 +263,13 @@ class Alias(callbacks.Plugin):
             f = new.instancemethod(f, self, Alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
+        aliasGroup = self.registryValue('aliases', value=False)
         if name in self.aliases:
             # We gotta remove it so its value gets updated.
-            conf.supybot.plugins.Alias.aliases.unregister(name)
-        conf.supybot.plugins.Alias.aliases.register(name,
-                                                    registry.String(alias, ''))
-        conf.supybot.plugins.Alias.aliases.get(name).register('locked',
-                                                    registry.Boolean(lock, ''))
+            aliasGroup.unregister(name)
+        conf.registerGlobalValue(aliasGroup, name, registry.String(alias, ''))
+        conf.registerGlobalValue(aliasGroup.get(name), 'locked',
+                                 registry.Boolean(lock, ''))
         self.aliases[name] = [alias, lock, f]
 
     def removeAlias(self, name, evenIfLocked=False):
