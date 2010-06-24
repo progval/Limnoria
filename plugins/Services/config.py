@@ -36,8 +36,8 @@ def registerNick(nick, password=''):
     p = conf.supybot.plugins.Services.Nickserv.get('password')
     h = 'Determines what password the bot will use with NickServ when ' \
         'identifying as %s.' % nick
-    v = p.register(nick, registry.String(password, h, private=True))
-    v.channelValue = False
+    v = conf.registerGlobalValue(p, nick,
+                                 registry.String(password, h, private=True))
     if password:
         v.setValue(password)
 
