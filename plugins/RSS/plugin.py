@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ class RSS(callbacks.Plugin):
     def _registerFeed(self, name, url=''):
         self.registryValue('feeds').add(name)
         group = self.registryValue('feeds', value=False)
-        group.register(name, registry.String(url, ''))
+        conf.registerGlobalValue(group, name, registry.String(url, ''))
 
     def __call__(self, irc, msg):
         self.__parent.__call__(irc, msg)
