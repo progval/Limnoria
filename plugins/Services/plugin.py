@@ -71,7 +71,7 @@ class Services(callbacks.Plugin):
         return False
 
     def outFilter(self, irc, msg):
-        if msg.command == 'JOIN':
+        if msg.command == 'JOIN' and not self.disabled(irc):
             if not self.identified:
                 if self.registryValue('noJoinsUntilIdentified'):
                     self.log.info('Holding JOIN to %s until identified.',
