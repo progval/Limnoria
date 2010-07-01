@@ -86,6 +86,9 @@ class FilterTest(ChannelPluginTestCase):
 
     def testBinary(self):
         self.assertResponse('binary A', '01000001')
+    
+    def testUnbinary(self):
+        self.assertResponse('unbinary 011011010110111101101111', 'moo')
 
     def testRot13(self):
         for s in map(str, range(1000, 1010)):
