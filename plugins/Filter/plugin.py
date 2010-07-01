@@ -156,6 +156,16 @@ class Filter(callbacks.Plugin):
         irc.reply(''.join(L))
     binary = wrap(binary, ['text'])
 
+    def unbinary(self, irc, msg, args, text):
+        """<text>
+        
+        Returns the character representation of binary <text>.
+        Assumes ASCII, 8 digits per character.
+        """
+        L = [chr(int(text[i:(i+8)], 2)) for i in xrange(0, len(text), 8)]
+        irc.reply(''.join(L))
+    unbinary = wrap(unbinary, ['text'])
+
     def hexlify(self, irc, msg, args, text):
         """<text>
 
