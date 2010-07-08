@@ -87,5 +87,9 @@ conf.registerGlobalValue(Unix.wtf, 'command',
     registry.String(utils.findBinaryInPath('wtf') or '', _("""Determines what
     command will be called for the wtf command.""")))
 
+conf.registerGroup(Unix, 'ping')
+conf.registerGlobalValue(Unix.ping, 'command', 
+    registry.String(utils.findBinaryInPath('ping') or '', """Determines what 
+    command will be called for the ping command."""))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -256,5 +256,36 @@ class Unix(callbacks.Plugin):
                       'variable appropriately.'))
     wtf = wrap(wtf, [optional(('literal', ['is'])), 'something'])
 
+    def ping(self, irc, msg, args, host):
+        """<host or ip>
+        Sends an ICMP echo request to the specified host
+        """
+        pingCmd = self.registryValue('ping.command')
+        if not pingCmd:
+           irc.error('The ping command is not configured.  If one '
+                     'is installed, reconfigure '
+                     'supybot.plugins.Unix.ping.command appropriately.',
+                     Raise=True)
+        else:
+            try: host = host.group(0)
+            except AttributeError: pass
+
+            inst = subprocess.Popen([pingCmd,'-c','1', host], 
+                                    stdout=subprocess.PIPE, 
+                                    stderr=subprocess.PIPE,
+                                    stdin=file(os.devnull))
+            
+            result = inst.communicate()
+            
+            if result[1]: # stderr
+                irc.reply(' '.join(result[1].split()))
+            else:
+                response = result[0].split("\n");
+                irc.reply(' '.join(response[1].split()[3:5]).split(':')[0] 
+                          + ': ' + ' '.join(response[-3:]))
+    
+    _hostExpr = re.compile(r'^[a-z0-9][a-z0-9\.-]*$', re.I)
+    ping = wrap(ping, [first('ip', ('matches', _hostExpr, 'Invalid hostname'))])
+
 Class = Unix
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
