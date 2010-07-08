@@ -64,5 +64,10 @@ if os.name == 'posix':
             def testFortune(self):
                 self.assertNotError('fortune')
 
+        if utils.findBinaryInPath('ping') is not None:
+            def testPing(self):
+                self.assertNotError('ping')
+
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
