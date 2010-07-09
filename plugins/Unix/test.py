@@ -67,7 +67,8 @@ if os.name == 'posix':
 
         if utils.findBinaryInPath('ping') is not None:
             def testPing(self):
-                self.assertNotError('ping')
+                self.assertNotError('unix ping localhost')
+                self.assertError('unix ping')
 
 
 
