@@ -269,12 +269,16 @@ class Unix(callbacks.Plugin):
         else:
             try: host = host.group(0)
             except AttributeError: pass
-
-            inst = subprocess.Popen([pingCmd,'-c','1', host], 
-                                    stdout=subprocess.PIPE, 
-                                    stderr=subprocess.PIPE,
-                                    stdin=file(os.devnull))
             
+            try:
+                inst = subprocess.Popen([pingCmd,'-c','1', host], 
+                                        stdout=subprocess.PIPE, 
+                                        stderr=subprocess.PIPE,
+                                        stdin=file(os.devnull))
+            except OSError, e:
+                irc.error('It seems the configured ping command was '
+                          'not available (%s).' % e, Raise=True)
+
             result = inst.communicate()
             
             if result[1]: # stderr
