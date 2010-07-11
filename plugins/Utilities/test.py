@@ -30,7 +30,7 @@
 from supybot.test import *
 
 class UtilitiesTestCase(PluginTestCase):
-    plugins = ('Utilities',)
+    plugins = ('Utilities', 'String')
     def testIgnore(self):
         self.assertNoResponse('utilities ignore foo bar baz', 1)
         self.assertError('utilities ignore [re m/foo bar]')
