@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,12 @@ class ShrinkUrl(callbacks.PluginRegexp):
         for m in utils.web.httpUrlRe.finditer(text):
             url = m.group(1)
             if len(url) > self.registryValue('minimumLength', channel):
-                cmd = self.registryValue('default', channel).capitalize()
+                try:
+                    cmd = self.registryValue('serviceRotation',
+                                             channel, value=False)
+                    cmd = cmd.getService().capitalize()
+                except ValueError:
+                    cmd = self.registryValue('default', channel).capitalize()
                 try:
                     shortUrl = getattr(self, '_get%sUrl' % cmd)(url)
                     text = text.replace(url, shortUrl)
@@ -117,7 +122,12 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 self.log.debug('Matched nonSnarfingRegexp: %u', url)
                 return
             minlen = self.registryValue('minimumLength', channel)
-            cmd = self.registryValue('default', channel).capitalize()
+            try:
+                cmd = self.registryValue('serviceRotation',
+                                         channel, value=False)
+                cmd = cmd.getService().capitalize()
+            except ValueError:
+                cmd = self.registryValue('default', channel).capitalize()
             if len(url) >= minlen:
                 try:
                     shorturl = getattr(self, '_get%sUrl' % cmd)(url)

@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,29 @@ def configure(advanced):
         conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
 
 class ShrinkService(registry.OnlySomeStrings):
+    """Valid values include 'ln', 'tiny', 'xrl', and 'x0'."""
     validStrings = ('ln', 'tiny', 'xrl', 'x0')
+
+class ShrinkCycle(registry.SpaceSeparatedListOfStrings):
+    """Valid values include 'ln', 'tiny', 'xrl', and 'x0'."""
+    Value = ShrinkService
+
+    def __init__(self, *args, **kwargs):
+        super(ShrinkCycle, self).__init__(*args, **kwargs)
+        self.lastIndex = -1
+
+    def setValue(self, v):
+        super(ShrinkCycle, self).setValue(v)
+        self.lastIndex = -1
+
+    def getService(self):
+        L = self()
+        if L:
+            self.lastIndex = (self.lastIndex + 1) % len(L)
+            return L[self.lastIndex]
+        raise ValueError, \
+                'No services have been configured for rotation.  ' \
+                'See conf.supybot.plugins.ShrinkUrl.serviceRotation.'
 
 ShrinkUrl = conf.registerPlugin('ShrinkUrl')
 conf.registerChannelValue(ShrinkUrl, 'shrinkSnarfer',
@@ -70,6 +92,8 @@ conf.registerChannelValue(ShrinkUrl, 'default',
 conf.registerGlobalValue(ShrinkUrl, 'bold',
     registry.Boolean(True, """Determines whether this plugin will bold certain
     portions of its replies."""))
-
+conf.registerChannelValue(ShrinkUrl, 'serviceRotation',
+    ShrinkCycle([], """If set to a non-empty value, specifies the list of
+    services to rotate through for the shrinkSnarfer and outFilter."""))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
