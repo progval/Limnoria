@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,15 +48,31 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
             }
     if network:
         def testShrink(self):
+            for (service, testdata) in self.tests.iteritems():
+                for (url, shrunkurl) in testdata:
+                    self.assertRegexp('shrinkurl %s %s' % (service, url),
+                                      shrunkurl)
+
+        def testShrinkCycle(self):
+            cycle = conf.supybot.plugins.ShrinkUrl.serviceRotation
             snarfer = conf.supybot.plugins.ShrinkUrl.shrinkSnarfer
-            orig = snarfer()
+            origcycle = cycle()
+            origsnarfer = snarfer()
             try:
-                for (service, testdata) in self.tests.iteritems():
-                    for (url, shrunkurl) in testdata:
-                        self.assertRegexp('shrinkurl %s %s' % (service, url),
-                                          shrunkurl)
+                self.assertNotError(
+                    'config plugins.ShrinkUrl.serviceRotation ln x0')
+                self.assertError(
+                    'config plugins.ShrinkUrl.serviceRotation ln x1')
+                snarfer.setValue(True)
+                self.assertSnarfRegexp(self.udUrl, r'%s.* \(at' %
+                                       self.tests['ln'][1][1])
+                self.assertSnarfRegexp(self.udUrl, r'%s.* \(at' %
+                                       self.tests['x0'][1][1])
+                self.assertSnarfRegexp(self.udUrl, r'%s.* \(at' %
+                                       self.tests['ln'][1][1])
             finally:
-                snarfer.setValue(orig)
+                cycle.setValue(origcycle)
+                snarfer.setValue(origsnarfer)
 
         def _snarf(self, service):
             shrink = conf.supybot.plugins.ShrinkUrl
