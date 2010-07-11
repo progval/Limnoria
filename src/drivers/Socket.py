@@ -46,6 +46,13 @@ import supybot.drivers as drivers
 import supybot.schedule as schedule
 from supybot.utils.iter import imap
 
+try:
+    import ssl
+except ImportError:
+    drivers.log.debug('ssl module is not available, '
+                      'cannot connect to SSL servers.')
+    ssl = None
+
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
         self.irc = irc
@@ -61,12 +68,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.writeCheckTime = None
         self.nextReconnectTime = None
         self.resetDelay()
-        # Only connect to non-SSL servers
-        if self.networkGroup.get('ssl').value:
-            drivers.log.error('The Socket driver can not connect to SSL '
-                              'servers.  Try the Twisted driver instead.')
-        else:
-            self.connect()
+        self.connect()
 
     def getDelay(self):
         ret = self.currentDelay
@@ -139,6 +141,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
+        except ssl.SSLError, e:
+            if e.args[0] == 'The read operation timed out':
+                pass
+            else:
+                self._handleSocketError(e)
+                return
         except socket.error, e:
             self._handleSocketError(e)
             return
@@ -163,6 +171,14 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         drivers.log.connect(self.currentServer)
         try:
             self.conn = utils.net.getSocket(server[0])
+            if self.networkGroup.get('ssl').value:
+                if ssl:
+                    self.plainconn = self.conn
+                    self.conn = ssl.wrap_socket(self.conn)
+                else:
+                    drivers.log.error('ssl module not available, '
+                              'cannot connect to SSL servers.')
+                    return
             vhost = conf.supybot.protocols.irc.vhost()
             self.conn.bind((vhost, 0))
         except socket.error, e:
