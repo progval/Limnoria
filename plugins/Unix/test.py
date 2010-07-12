@@ -67,9 +67,25 @@ if os.name == 'posix':
 
         if utils.findBinaryInPath('ping') is not None:
             def testPing(self):
-                self.assertNotError('unix ping localhost')
+                self.assertNotError('unix ping 127.0.0.1')
                 self.assertError('unix ping')
-
-
+                self.assertError('unix ping -localhost')
+                self.assertError('unix ping local%host')
+            def testPingCount(self):
+                self.assertNotError('unix ping --c 1 127.0.0.1')
+                self.assertError('unix ping --c a 127.0.0.1')
+                self.assertRegexp('unix ping --c 11 127.0.0.1','10 packets')
+                self.assertRegexp('unix ping 127.0.0.1','5 packets')
+            def testPingInterval(self):
+                self.assertNotError('unix ping --i 1 --c 1 127.0.0.1')
+                self.assertError('unix ping --i a --c 1 127.0.0.1')
+                # Super-user privileged interval setting
+                self.assertError('unix ping --i 0.1 --c 1 127.0.0.1') 
+            def testPingTtl(self):
+                self.assertNotError('unix ping --t 64 --c 1 127.0.0.1')
+                self.assertError('unix ping --t a --c 1 127.0.0.1')
+            def testPingWait(self):
+                self.assertNotError('unix ping --W 1 --c 1 127.0.0.1')
+                self.assertError('unix ping --W a --c 1 127.0.0.1')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
