@@ -159,18 +159,27 @@ class Google(callbacks.PluginRegexp):
         else:
             return format('; '.join(results))
 
-    def lucky(self, irc, msg, args, text):
-        """<search>
+    def lucky(self, irc, msg, args, opts, text):
+        """[--snippet] <search>
 
         Does a google search, but only returns the first result.
+        If option --snippet is given, returns also the page text snippet.
         """
+        opts = dict(opts)
         data = self.search(text, msg.args[0], {'smallsearch': True})
         if data['responseData']['results']:
             url = data['responseData']['results'][0]['unescapedUrl']
-            irc.reply(url.encode('utf-8'))
+            if opts.has_key('snippet'):
+                snippet = " | " + data['responseData']['results'][0]['content']
+                snippet = snippet.replace('<b>', '')
+                snippet = snippet.replace('</b>', '')
+            else:
+                snippet = ""
+            result = url + snippet
+            irc.reply(result.encode('utf-8'))
         else:
             irc.reply('Google found nothing.')
-    lucky = wrap(lucky, ['text'])
+    lucky = wrap(lucky, [getopts({'snippet':'',}), 'text'])
 
     def google(self, irc, msg, args, optlist, text):
         """<search> [--{filter,language} <value>]
