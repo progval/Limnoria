@@ -170,9 +170,8 @@ class Google(callbacks.PluginRegexp):
         if data['responseData']['results']:
             url = data['responseData']['results'][0]['unescapedUrl']
             if opts.has_key('snippet'):
-                snippet = " | " + data['responseData']['results'][0]['content']
-                snippet = snippet.replace('<b>', '')
-                snippet = snippet.replace('</b>', '')
+                snippet = data['responseData']['results'][0]['content']
+                snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
             else:
                 snippet = ""
             result = url + snippet
