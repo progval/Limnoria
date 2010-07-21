@@ -162,8 +162,11 @@ class Filter(callbacks.Plugin):
         Returns the character representation of binary <text>.
         Assumes ASCII, 8 digits per character.
         """
-        L = [chr(int(text[i:(i+8)], 2)) for i in xrange(0, len(text), 8)]
-        irc.reply(''.join(L))
+        try:
+            L = [chr(int(text[i:(i+8)], 2)) for i in xrange(0, len(text), 8)]
+            irc.reply(''.join(L))
+        except ValueError:
+            irc.error('Invalid input.')
     unbinary = wrap(unbinary, ['text'])
 
     def hexlify(self, irc, msg, args, text):
