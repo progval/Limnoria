@@ -87,4 +87,8 @@ if os.name == 'posix':
                 self.assertNotError('unix ping --W 1 --c 1 127.0.0.1')
                 self.assertError('unix ping --W a --c 1 127.0.0.1')
 
+        def testCall(self):
+            self.assertNotError('unix call /bin/ping -c 1 localhost')
+            self.assertRegexp('unix call /bin/ping -c 1 localhost', 'ping statistics')
+            self.assertError('unix call /usr/bin/nosuchcommandaoeuaoeu')
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
