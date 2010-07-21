@@ -38,6 +38,7 @@ import random
 import select
 import struct
 import subprocess
+import shlex
 
 import supybot.utils as utils
 from supybot.commands import *
@@ -313,6 +314,32 @@ class Unix(callbacks.Plugin):
     ping = thread(wrap(ping, [getopts({'c':'positiveInt','i':'float',
                                 't':'positiveInt','W':'positiveInt'}), 
                        first('ip', ('matches', _hostExpr, 'Invalid hostname'))]))
+
+    def call(self, irc, msg, args, text):
+        """<command to call with any arguments> 
+        Calls any command available on the system, and returns its output.
+        Requires owner capability.
+        Note that being restricted to owner, this command does not do any
+        sanity checking on input/output. So it is up to you to make sure
+        you don't run anything that will spamify your channel or that 
+        will bring your machine to its knees. 
+        """
+        args = shlex.split(text)
+        try:
+            inst = subprocess.Popen(args, stdout=subprocess.PIPE, 
+                                          stderr=subprocess.PIPE,
+                                          stdin=file(os.devnull))
+        except OSError, e:
+            irc.error('It seems the requested command was '
+                      'not available (%s).' % e, Raise=True)
+        result = inst.communicate()
+        if result[1]: # stderr
+            irc.error(' '.join(result[1].split()))
+        if result[0]: # stdout
+            response = result[0].split("\n");
+            response = [l for l in response if l]
+            irc.replies(response)
+    call = thread(wrap(call, ["owner", "text"]))
 
 Class = Unix
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
