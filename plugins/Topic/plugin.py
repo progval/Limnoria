@@ -89,7 +89,7 @@ def getTopicNumber(irc, msg, args, state):
     try:
         topics[n]
     except IndexError:
-        error(str(n))
+        error(args[0])
     del args[0]
     while n < 0:
         n += len(topics)
