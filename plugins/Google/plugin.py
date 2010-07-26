@@ -168,14 +168,14 @@ class Google(callbacks.PluginRegexp):
         opts = dict(opts)
         data = self.search(text, msg.args[0], {'smallsearch': True})
         if data['responseData']['results']:
-            url = data['responseData']['results'][0]['unescapedUrl']
+            url = data['responseData']['results'][0]['unescapedUrl'].encode('utf-8')
             if opts.has_key('snippet'):
-                snippet = data['responseData']['results'][0]['content']
+                snippet = data['responseData']['results'][0]['content'].encode('utf-8')
                 snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
             else:
                 snippet = ""
             result = url + snippet
-            irc.reply(result.encode('utf-8'))
+            irc.reply(result)
         else:
             irc.reply('Google found nothing.')
     lucky = wrap(lucky, [getopts({'snippet':'',}), 'text'])
