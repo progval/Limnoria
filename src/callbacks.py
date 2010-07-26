@@ -126,7 +126,7 @@ def _addressed(nick, msg, prefixChars=None, nicks=None,
                     # There should be some separator between the nick and the
                     # previous alphanumeric character.
                     return possiblePayload
-    if conf.supybot.reply.whenNotAddressed():
+    if get(conf.supybot.reply.whenNotAddressed):
         return payload
     else:
         return ''
