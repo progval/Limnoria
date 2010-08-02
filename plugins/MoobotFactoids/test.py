@@ -31,11 +31,10 @@
 from supybot.test import *
 #import supybot.plugin as plugin
 import supybot.ircutils as ircutils
-
 try:
-    import sqlite
+    import sqlite3
 except ImportError:
-    sqlite = None
+    from pysqlite2 import dbapi2 as sqlite3 # for python2.4
 
 MF = plugin.loadPluginModule('MoobotFactoids')
 MFconf = conf.supybot.plugins.MoobotFactoids
@@ -223,7 +222,7 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertRegexp('most authored',
                             'Most prolific authors:.*moo.*(1).*boo.*(1)')
         self.assertRegexp('most recent',
-                            "2 latest factoids:.*mogle.*moogle.*")
+                            "2 latest factoids:.*moogle.*mogle.*")
         self.assertResponse('moogle', 'moo')
         self.assertRegexp('most popular',
                             "Top 1 requested factoid:.*moogle.*(2)")
