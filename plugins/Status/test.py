@@ -71,6 +71,8 @@ class StatusTestCase(PluginTestCase):
     def testThreads(self):
         self.assertNotError('threads')
 
+    def testProcesses(self):
+        self.assertNotError('processes')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
