@@ -37,6 +37,7 @@ import sys
 import time
 import atexit
 import threading
+import multiprocessing
 
 if sys.version_info >= (2, 5, 0):
     import re as sre
@@ -62,6 +63,15 @@ class SupyThread(threading.Thread):
         threadsSpawned += 1
         super(SupyThread, self).__init__(*args, **kwargs)
         log.debug('Spawning thread %q.', self.getName())
+
+processesSpawned = 1 # Starts at one for the initial process.
+class SupyProcess(multiprocessing.Process):
+    def __init__(self, *args, **kwargs):
+        global processesSpawned
+        processesSpawned += 1
+        super(SupyProcess, self).__init__(*args, **kwargs)
+        log.debug('Spawning process %q.', self.name)
+
 
 commandsProcessed = 0
 
