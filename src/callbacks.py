@@ -993,11 +993,11 @@ class CommandProcess(world.SupyProcess):
     to run in processes.
     """
     def __init__(self, target=None, args=(), kwargs={}):
-        self.command = args[0]
-        self.cb = target.im_self
+        pn = kwargs.pop('pn', 'Unknown')
+        cn = kwargs.pop('cn', 'unknown')
         procName = 'Process #%s (for %s.%s)' % (world.processesSpawned,
-                                                 self.cb.name(),
-                                                 self.command)
+                                                 pn,
+                                                 cn)
         log.debug('Spawning process %s (args: %r)', procName, args)
         self.__parent = super(CommandProcess, self)
         self.__parent.__init__(target=target, name=procName,
