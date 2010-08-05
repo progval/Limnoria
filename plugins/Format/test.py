@@ -58,6 +58,7 @@ class FormatTestCase(PluginTestCase):
     
     def testReplace(self):
         self.assertResponse('replace # %23 bla#foo', 'bla%23foo')
+        self.assertResponse('replace foo "" blafoobar', 'blabar')
 
     def testUpper(self):
         self.assertResponse('upper foo', 'FOO')
