@@ -82,7 +82,7 @@ def process(f, *args, **kwargs):
     p.join(timeout)
     if p.is_alive():
         p.terminate()
-        q.put("%s aborted due to timeout." % (p.name,))
+        return "%s aborted due to timeout." % (p.name,)
     try:
         v = q.get(block=False)
     except Queue.Empty:
