@@ -37,6 +37,8 @@ import types
 import getopt
 import inspect
 import threading
+import multiprocessing #python2.6 or later!
+import Queue
 
 import supybot.log as log
 import supybot.conf as conf
@@ -66,6 +68,29 @@ def thread(f):
         else:
             f(self, irc, msg, args, *L, **kwargs)
     return utils.python.changeFunctionName(newf, f.func_name, f.__doc__)
+
+def process(f, *args, **kwargs):
+    """Runs a function in a subprocess.
+    Takes an extra timeout argument, which, if supplied, limits the length 
+    of execution of target function to <timeout> seconds."""
+    timeout = kwargs.pop('timeout')
+    q = multiprocessing.Queue()
+    def newf(f, q, *args, **kwargs):
+        r = f(*args, **kwargs)
+        q.put(r)
+    targetArgs = (f, q,) + args
+    p = world.SupyProcess(target=newf,
+                                args=targetArgs, kwargs=kwargs)
+    p.start()
+    p.join(timeout)
+    if p.is_alive():
+        p.terminate()
+        q.put("Function call aborted due to timeout.")
+    try:
+        v = q.get(block=False)
+    except Queue.Empty:
+        v = "Nothing returned."
+    return v
 
 class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):

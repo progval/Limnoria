@@ -976,6 +976,23 @@ class CommandThread(world.SupyThread):
         finally:
             self.cb.threaded = self.originalThreaded
 
+class CommandProcess(world.SupyProcess):
+    """Just does some extra logging and error-recovery for commands that need
+    to run in processes.
+    """
+    def __init__(self, target=None, args=(), kwargs={}):
+        self.command = args[0]
+        self.cb = target.im_self
+        procName = 'Process #%s (for %s.%s)' % (world.processesSpawned,
+                                                 self.cb.name(),
+                                                 self.command)
+        log.debug('Spawning process %s (args: %r)', procName, args)
+        self.__parent = super(CommandProcess, self)
+        self.__parent.__init__(target=target, name=procName,
+                               args=args, kwargs=kwargs)
+    
+    def run(self):
+        self.__parent.run()
 
 class CanonicalString(registry.NormalizedString):
     def normalize(self, s):
