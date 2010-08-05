@@ -138,7 +138,7 @@ class String(callbacks.Plugin):
             s = 'You probably don\'t want to match the empty string.'
             irc.error(s)
         else:
-            v = commands.process(f, text, timeout=10)
+            v = commands.process(f, text, timeout=10, pn=self.name(), cn='re')
             irc.reply(v)
     re = thread(wrap(re, [first('regexpMatcher', 'regexpReplacer'),
                    'text']))
