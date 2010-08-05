@@ -33,10 +33,12 @@ import binascii
 
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.commands as commands
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
+import multiprocessing
 
 class String(callbacks.Plugin):
     def ord(self, irc, msg, args, letter):
@@ -136,10 +138,10 @@ class String(callbacks.Plugin):
             s = 'You probably don\'t want to match the empty string.'
             irc.error(s)
         else:
-            irc.reply(f(text))
-    re = wrap(re, [('checkCapability', 'trusted'),
-                   first('regexpMatcher', 'regexpReplacer'),
-                   'text'])
+            v = commands.process(f, text, timeout=10, pn=self.name(), cn='re')
+            irc.reply(v)
+    re = thread(wrap(re, [first('regexpMatcher', 'regexpReplacer'),
+                   'text']))
 
     def xor(self, irc, msg, args, password, text):
         """<password> <text>

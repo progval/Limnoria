@@ -93,6 +93,18 @@ class Status(callbacks.Plugin):
                    (len(threads), 'thread'), len(threads), threads)
         irc.reply(s)
     threads = wrap(threads)
+    
+    def processes(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the number of processes that have been spawned.
+        """
+        # TODO: maintain a dict of active subprocesses, so we can
+        # include a list thereof in output, linke in threads(). maybe?
+        s = format('I have spawned %n.',
+                   (world.processesSpawned, 'process'))
+        irc.reply(s)
+    processes = wrap(processes)
 
     def net(self, irc, msg, args):
         """takes no arguments
