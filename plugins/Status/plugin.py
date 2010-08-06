@@ -32,6 +32,7 @@ import os
 import sys
 import time
 import threading
+import multiprocessing
 import subprocess
 
 import supybot.conf as conf
@@ -97,12 +98,15 @@ class Status(callbacks.Plugin):
     def processes(self, irc, msg, args):
         """takes no arguments
 
-        Returns the number of processes that have been spawned.
+        Returns the number of processes that have been spawned, and list of
+        ones that are still active.
         """
-        # TODO: maintain a dict of active subprocesses, so we can
-        # include a list thereof in output, linke in threads(). maybe?
-        s = format('I have spawned %n.',
-                   (world.processesSpawned, 'process'))
+        ps = [multiprocessing.current_process().name]
+        ps = ps + [p.name for p in multiprocessing.active_children()]
+        s = format('I have spawned %n; %n %b still currently active: %L.',
+                   (world.processesSpawned, 'process'),
+                   (len(ps), 'process'),
+                   len(ps), ps)
         irc.reply(s)
     processes = wrap(processes)
 
