@@ -81,8 +81,11 @@ def process(f, *args, **kwargs):
     
     q = multiprocessing.Queue()
     def newf(f, q, *args, **kwargs):
-        r = f(*args, **kwargs)
-        q.put(r)
+        try:
+            r = f(*args, **kwargs)
+            q.put(r)
+        except Exception as e:
+            q.put(e)
     targetArgs = (f, q,) + args
     p = callbacks.CommandProcess(target=newf,
                                 args=targetArgs, kwargs=kwargs)
@@ -95,6 +98,8 @@ def process(f, *args, **kwargs):
         v = q.get(block=False)
     except Queue.Empty:
         v = "Nothing returned."
+    if isinstance(v, Exception):
+        v = "Error: " + str(v)
     return v
 
 class UrlSnarfThread(world.SupyThread):
