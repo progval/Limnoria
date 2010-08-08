@@ -105,7 +105,7 @@ class String(callbacks.Plugin):
                       'it with some smaller inputs.')
         else:
             irc.reply(str(utils.str.distance(s1, s2)))
-    levenshtein = wrap(levenshtein, ['something', 'text'])
+    levenshtein = thread(wrap(levenshtein, ['something', 'text']))
 
     def soundex(self, irc, msg, args, text, length):
         """<string> [<length>]
