@@ -32,6 +32,7 @@ import sys
 import imp
 import os.path
 import linecache
+import re
 
 from . import callbacks, conf, log, registry
 
@@ -52,6 +53,13 @@ def loadPluginModule(name, ignoreDeprecation=False):
         except EnvironmentError: # OSError, IOError superclass.
             log.warning('Invalid plugin directory: %s; removing.', dir)
             conf.supybot.directories.plugins().remove(dir)
+    if name not in files:
+        matched_names = filter(lambda x: re.search(r'(?i)^%s$' % (name,), x),
+                                files)
+        if len(matched_names) == 1:
+            name = matched_names[0]
+        else:
+            raise ImportError, name
     moduleInfo = imp.find_module(name, pluginDirs)
     try:
         module = imp.load_module(name, *moduleInfo)
