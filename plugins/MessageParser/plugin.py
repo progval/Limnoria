@@ -368,7 +368,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             return
         
         s = [ "\"%s\" (%d)" % (regexp[0], regexp[1]) for regexp in regexps ]
-        irc.reply(', '.join(s))
+        separator = self.registryValue('listSeparator', channel)
+        irc.reply(separator.join(s))
     list = wrap(list, ['channel'])
 
     def rank(self, irc, msg, args, channel):
