@@ -90,7 +90,7 @@ if __name__ == '__main__':
         error('Invalid third line in ChangeLog.')
 
     print 'Updating version in version files.'
-    versionFiles = ('src/conf.py', 'scripts/supybot', 'setup.py')
+    versionFiles = ['src/version.py']
     for fn in versionFiles:
         sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % (v, fn)
         system(sh, 'Error changing version in %s' % fn)
