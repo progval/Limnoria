@@ -1,0 +1,10 @@
+#!/bin/bash
+# Use this script to make commits. It will automatically update the version
+# string to have a datetime stamp, prior to committing.
+# All arguments get passed to git commit, so of course, use the -a option so that 
+# the version change gets added to the commit.
+echo "Updating version..."
+perl -pi -e  "s/^version\s*=\s*['\"]([\S]+)[ '\"].*/version = '\1 ($( date -Iseconds ))'/" src/version.py
+if [ "$?" -eq "0" ]; then
+    git commit $@
+fi
