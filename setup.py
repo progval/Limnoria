@@ -47,6 +47,8 @@ import glob
 import shutil
 import os.path
 
+from src.version import version
+
 plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
@@ -116,7 +118,6 @@ package_dir = {'supybot': 'src',
 for plugin in plugins:
     package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
 
-version = '0.83.4.1+git'
 setup(
     # Metadata
     name='supybot',
