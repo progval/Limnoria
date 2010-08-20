@@ -47,6 +47,8 @@ import glob
 import shutil
 import os.path
 
+from src.version import version
+
 plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
@@ -124,7 +126,6 @@ for plugin in plugins:
     if os.path.exists(locale_path):
         package_data.update({locale_name: ['locale/'+s for s in os.listdir(locale_path)]})
 
-version = '0.83.4.1+git+fr3'
 setup(
     # Metadata
     name='supybot',
