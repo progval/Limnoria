@@ -47,7 +47,10 @@ import glob
 import shutil
 import os.path
 
-from src.version import version
+# grab version from src directly, since we do not yet have supybot 
+# available as a module.
+sys.path.append('./src')
+from version import version
 
 plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
