@@ -1,3 +1,7 @@
+=============
+Configuration
+=============
+
 Introduction
 ------------
 So you've got your Supybot up and running and there are some things you

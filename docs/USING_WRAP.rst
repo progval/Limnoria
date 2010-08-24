@@ -1,12 +1,10 @@
-Using the commands.wrap to parse your command's arguments.
-----------------------------------------------------------
+Using commands.wrap to parse your command's arguments.
+------------------------------------------------------
 This document illustrates how to use the new 'wrap' function present in Supybot
 0.80 to handle argument parsing and validation for your plugin's commands.
 
 Introduction
 ============
-  What is 'wrap'?
-
 To plugin developers for older (pre-0.80) versions of Supybot, one of the more
 annoying aspects of writing commands was handling the arguments that were
 passed in. In fact, many commands often had to duplicate parsing and
@@ -23,10 +21,8 @@ will massively ease the task of writing commands.
 
 Using Wrap
 ==========
-  How can I use 'wrap'?
-
 First off, to get the wrap function, it is recommended (strongly) that you use
-the following import line:
+the following import line::
 
    from supybot.commands import *
 
@@ -38,7 +34,7 @@ Let's write a quickie command that uses wrap to get a feel for how it makes our
 lives better. Let's write a command that repeats a string of text a given
 number of times. So you could say "repeat 3 foo" and it would say "foofoofoo".
 Not a very useful command, but it will serve our purpose just fine. Here's how
-it would be done without wrap:
+it would be done without wrap::
 
    def repeat(self, irc, msg, args):
        """<num> <text>
@@ -54,7 +50,7 @@ it would be done without wrap:
 
 Note that all of the argument validation and parsing takes up 5 of the 6 lines
 (and you should have seen it before we had privmsg.getArgs!). Now, here's what
-our command will look like with wrap applied:
+our command will look like with wrap applied::
 
    def repeat(self, irc, msg, args, num, text):
        """<num> <text>
@@ -76,11 +72,9 @@ to do to use it.
 
 Syntax Changes
 ==============
-  How will I need to change my plugin commands to take advantage of 'wrap'?
-
 There are two syntax changes to the old style that are implemented. First, the
 definition of the command function must be changed. The basic syntax for the
-new definition is:
+new definition is::
 
    def commandname(self, irc, msg, args, <arg1>, <arg2>, ...):
 
@@ -88,13 +82,15 @@ Where arg1 and arg2 (up through as many as you want) are the variables that
 will store the parsed arguments. "Now where do these parsed arguments come
 from?" you ask. Well, that's where the second syntax change comes in. The
 second syntax change is the actual use of the wrap function itself to decorate
-our command names. The basic decoration syntax is:
+our command names. The basic decoration syntax is::
 
    commandname = wrap(commandname, [converter1, converter2, ...])
 
-NOTE: This should go on the line immediately following the body of the
-command's definition, so it can easily be located (and it obviously must go
-after the command's definition so that commandname is defined).
+.. note::
+
+  This should go on the line immediately following the body of the command's
+  definition, so it can easily be located (and it obviously must go after the
+  command's definition so that commandname is defined).
 
 Each of the converters in the above listing should be one of the converters in
 commands.py (I will describe each of them in detail later.) The converters are
@@ -108,7 +104,7 @@ builtin namespace by overriding the builtin int.
 As you will find out when you look through the list of converters below, some
 of the converters actually take arguments. The syntax for supplying them (since
 we aren't actually calling the converters, but simply specifying them), is to
-wrap the converter name and args list into a tuple. For example:
+wrap the converter name and args list into a tuple. For example::
 
  commandname = wrap(commandname, [(converterWithArgs, arg1, arg2),
                                   converterWithoutArgs1, converterWithoutArgs2])
@@ -119,8 +115,6 @@ any.
 
 Customizing Wrap
 ================
-  Is there a way to affect how I apply my wraps? We call them contexts.
-
 Converters alone are a pretty powerful tool, but for even more advanced (yet
 simpler!) argument handling you may want to use contexts. Contexts describe how
 the converters are applied to the arguments, while the converters themselves
@@ -142,7 +136,7 @@ Now, how do you use them? Well, they are in the global namespace of
 src/commands.py, so your previous import line will import them all; you can
 call them just as you call wrap. In fact, the way you use them is you simply
 call the context function you want to use, with the converter (and its
-arguments) as arguments. It's quite simple. Here's an example:
+arguments) as arguments. It's quite simple. Here's an example::
 
    commandname = wrap(commandname, [optional('int'), many('something')])
 
@@ -159,220 +153,269 @@ thing that just "something" would return, but rather a list of "something"s.
 
 Converter List
 ==============
-  What converters are available for me to use?
-
 Below is a list of all the available converters to use with wrap. If the
 converter accepts any arguments, they are listed after it and if they are
 optional, the default value is shown.
 
-"id", kind="integer"
-    Returns something that looks like an integer ID number. Takes an optional
+* id, kind="integer"
+
+  - Returns something that looks like an integer ID number. Takes an optional
     "kind" argument for you to state what kind of ID you are looking for,
     though this doesn't affect the integrity-checking. Basically requires that
     the argument be an integer, does no other integrity-checking, and provides
     a nice error message with the kind in it.
 
-"ip"
-    Checks and makes sure the argument looks like a valid IP and then returns
+* ip
+
+  - Checks and makes sure the argument looks like a valid IP and then returns
     it.
 
-"int", type="integer", p=None
-    Gets an integer. The "type" text can be used to customize the error message
+* int, type="integer", p=None
+
+  - Gets an integer. The "type" text can be used to customize the error message
     received when the argument is not an integer. "p" is an optional predicate
     to test the integer with. If p(i) fails (where i is the integer arg parsed
     out of the argument string), the arg will not be accepted.
 
-"index"
-    Basically ("int", "index"), but with a twist. This will take a 1-based
+* index
+
+  - Basically ("int", "index"), but with a twist. This will take a 1-based
     index and turn it into a 0-based index (which is more useful in code). It
     doesn't transform 0, and it maintains negative indices as is (note that it
     does allow them!).
 
-"color"
-    Accepts arguments that describe a text color code (e.g., "black", "light
+* color
+
+  - Accepts arguments that describe a text color code (e.g., "black", "light
     blue") and returns the mIRC color code for that color. (Note that many
     other IRC clients support the mIRC color code scheme, not just mIRC)
 
-"now"
-    Simply returns the current timestamp as an arg, does not reference or
+* now
+
+  - Simply returns the current timestamp as an arg, does not reference or
     modify the argument list.
 
-"url"
-    Checks for a valid URL.
+* url
 
-"httpUrl"
-    Checks for a valid HTTP URL.
+  - Checks for a valid URL.
 
-"long", type="long"
-    Basically the same as int minus the predicate, except that it converts the
+* httpUrl
+
+  - Checks for a valid HTTP URL.
+
+* long, type="long"
+
+  - Basically the same as int minus the predicate, except that it converts the
     argument to a long integer regardless of the size of the int.
 
-"float", type="floating point number"
-    Basically the same as int minus the predicate, except that it converts the
+* float, type="floating point number"
+
+  - Basically the same as int minus the predicate, except that it converts the
     argument to a float.
 
-"nonInt", type="non-integer value"
-    Accepts everything but integers, and returns them unchanged. The "type"
+* nonInt, type="non-integer value"
+
+  - Accepts everything but integers, and returns them unchanged. The "type"
     value, as always, can be used to customize the error message that is
     displayed upon failure.
 
-"positiveInt"
-    Accepts only positive integers.
+* positiveInt
 
-"nonNegativeInt"
-    Accepts only non-negative integers.
+  - Accepts only positive integers.
 
-"letter"
-    Looks for a single letter. (Technically, it looks for any one-element
+* nonNegativeInt
+
+  - Accepts only non-negative integers.
+
+* letter
+
+  - Looks for a single letter. (Technically, it looks for any one-element
     sequence).
 
-"haveOp", action="do that"
-    Simply requires that the bot have ops in the channel that the command is
+* haveOp, action="do that"
+
+  - Simply requires that the bot have ops in the channel that the command is
     called in. The action parameter completes the error message: "I need to be
     opped to ...".
 
-"expiry"
-    Takes a number of seconds and adds it to the current time to create an
+* expiry
+
+  - Takes a number of seconds and adds it to the current time to create an
     expiration timestamp.
 
-"literal", literals, errmsg=None
-    Takes a required sequence or string (literals) and any argument that
+* literal, literals, errmsg=None
+
+  - Takes a required sequence or string (literals) and any argument that
     uniquely matches the starting substring of one of the literals is
-    transformed into the full literal. For example, with ("literal", ("bar",
-    "baz", "qux")), you'd get "bar" for "bar", "baz" for "baz", and "qux" for
-    any of "q", "qu", or "qux". "b" and "ba" would raise errors because they
-    don't uniquely identify one of the literals in the list. You can override
-    errmsg to provide a specific (full) error message, otherwise the default
-    argument error message is displayed.
+    transformed into the full literal. For example, with ``("literal", ("bar",
+    "baz", "qux"))``, you'd get "bar" for "bar", "baz" for "baz", and "qux"
+    for any of "q", "qu", or "qux". "b" and "ba" would raise errors because
+    they don't uniquely identify one of the literals in the list. You can
+    override errmsg to provide a specific (full) error message, otherwise the
+    default argument error message is displayed.
 
-"to"
-    Returns the string "to" if the arg is any form of "to" (case-insensitive).
+* to
 
-"nick"
-    Checks that the arg is a valid nick on the current IRC server.
+  - Returns the string "to" if the arg is any form of "to" (case-insensitive).
 
-"seenNick"
-    Checks that the arg is a nick that the bot has seen (NOTE: this is limited
+* nick
+
+  - Checks that the arg is a valid nick on the current IRC server.
+
+* seenNick
+
+  - Checks that the arg is a nick that the bot has seen (NOTE: this is limited
     by the size of the history buffer that the bot has).
 
-"channel"
-    Gets a channel to use the command in. If the channel isn't supplied, uses
+* channel
+
+  - Gets a channel to use the command in. If the channel isn't supplied, uses
     the channel the message was sent in. If using a different channel, does
     sanity-checking to make sure the channel exists on the current IRC network.
 
-"inChannel"
-    Requires that the command be called from within any channel that the bot
+* inChannel
+
+  - Requires that the command be called from within any channel that the bot
     is currently in or with one of those channels used as an argument to the
     command.
 
-"onlyInChannel"
-    Requires that the command be called from within any channel that the bot
+* onlyInChannel
+
+  - Requires that the command be called from within any channel that the bot
     is currently in.
 
-"nickInChannel"
-    Requires that the argument be a nick that is in the current channel, and
+* nickInChannel
+
+  - Requires that the argument be a nick that is in the current channel, and
     returns that nick.
 
-"networkIrc", errorIfNoMatch=False
-    Returns the IRC object of the specified IRC network. If one isn't
+* networkIrc, errorIfNoMatch=False
+
+  - Returns the IRC object of the specified IRC network. If one isn't
     specified, the IRC object of the IRC network the command was called on is
     returned.
 
-"callerInGivenChannel"
-    Takes the given argument as a channel and makes sure that the caller is in
+* callerInGivenChannel
+
+  - Takes the given argument as a channel and makes sure that the caller is in
     that channel.
 
-"plugin", require=True
-    Returns the plugin specified by the arg or None. If require is True, an
+* plugin, require=True
+
+  - Returns the plugin specified by the arg or None. If require is True, an
     error is raised if the plugin cannot be retrieved.
 
-"boolean"
-    Converts the text string to a boolean value. Acceptable true values are:
+* boolean
+
+  - Converts the text string to a boolean value. Acceptable true values are:
     "1", "true", "on", "enable", or "enabled" (case-insensitive). Acceptable
     false values are: "0", false", "off", "disable", or "disabled"
     (case-insensitive).
 
-"lowered"
-    Returns the argument lowered (NOTE: it is lowered according to IRC
+* lowered
+
+  - Returns the argument lowered (NOTE: it is lowered according to IRC
     conventions, which does strange mapping with some punctuation characters).
 
-"anything"
-    Returns anything as is.
+* anything
 
-"something", errorMsg=None, p=None
-    Takes anything but the empty string. errorMsg can be used to customize the
+  - Returns anything as is.
+
+* something, errorMsg=None, p=None
+
+  - Takes anything but the empty string. errorMsg can be used to customize the
     error message. p is any predicate function that can be used to test the
     validity of the input.
 
-"filename"
-    Used to get a filename argument.
+* filename
 
-"commandName"
-    Returns the canonical command name version of the given string (ie, the
+  - Used to get a filename argument.
+
+* commandName
+
+  - Returns the canonical command name version of the given string (ie, the
     string is lowercased and dashes and underscores are removed).
 
-"text"
-    Takes the rest of the arguments as one big string. Note that this differs
+* text
+
+  - Takes the rest of the arguments as one big string. Note that this differs
     from the "anything" context in that it clobbers the arg string when it's
     done.  Using any converters after this is most likely incorrect.
 
-"glob"
-    Gets a glob string. Basically, if there are no wildcards ('"*"', "?") in
-    the argument, returns *string*, making a glob string that matches anything
-    containing the given argument.
+* glob
 
-"somethingWithoutSpaces"
-    Same as something, only with the exception of disallowing spaces of course.
+  - Gets a glob string. Basically, if there are no wildcards (``*``, ``?``) in
+    the argument, returns ``*string*``, making a glob string that matches
+    anything containing the given argument.
 
-"capability"
-    Used to retrieve an argument that describes a capability.
+* somethingWithoutSpaces
 
-"channelDb"
-    Sets the channel appropriately in order to get to the databases for that
+  - Same as something, only with the exception of disallowing spaces of course.
+
+* capability
+
+  - Used to retrieve an argument that describes a capability.
+
+* channelDb
+
+  - Sets the channel appropriately in order to get to the databases for that
     channel (handles whether or not a given channel uses channel-specific
     databases and whatnot).
 
-"hostmask"
-    Returns the hostmask of any provided nick or hostmask argument.
+* hostmask
 
-"banmask"
-    Returns a generic banmask of the provided nick or hostmask argument.
+  - Returns the hostmask of any provided nick or hostmask argument.
 
-"user"
-    Requires that the caller be a registered user.
+* banmask
 
-"matches", regexp, errmsg
-    Searches the args with the given regexp and returns the matches. If no
+  - Returns a generic banmask of the provided nick or hostmask argument.
+
+* user
+
+  - Requires that the caller be a registered user.
+
+* matches, regexp, errmsg
+
+  - Searches the args with the given regexp and returns the matches. If no
     match is found, errmsg is given.
 
-"public"
-    Requires that the command be sent in a channel instead of a private
+* public
+
+  - Requires that the command be sent in a channel instead of a private
     message.
 
-"private"
-    Requires that the command be sent in a private message instead of a
+* private
+
+  - Requires that the command be sent in a private message instead of a
     channel.
 
-"otherUser"
-    Returns the user specified by the username or hostmask in the argument.
+* otherUser
 
-"regexpMatcher"
-    Gets a matching regexp argument (m// or //).
+  - Returns the user specified by the username or hostmask in the argument.
 
-"validChannel"
-    Gets a channel argument once it makes sure it's a valid channel.
+* regexpMatcher
 
-"regexpReplacer"
-    Gets a replacing regexp argument (s//).
+  - Gets a matching regexp argument (m// or //).
 
-"owner"
-    Requires that the command caller has the "owner" capability.
+* validChannel
 
-"admin"
-    Requires that the command caller has the "admin" capability.
+  - Gets a channel argument once it makes sure it's a valid channel.
 
-"checkCapability", capability
-    Checks to make sure that the caller has the specified capability.
+* regexpReplacer
+
+  - Gets a replacing regexp argument (s//).
+
+* owner
+
+  - Requires that the command caller has the "owner" capability.
+
+* admin
+
+  - Requires that the command caller has the "admin" capability.
+
+* checkCapability, capability
+
+  - Checks to make sure that the caller has the specified capability.
 
 "checkChannelCapability", capability
     Checks to make sure that the caller has the specified capability on the

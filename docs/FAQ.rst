@@ -1,3 +1,7 @@
+==========================
+Frequently Asked Questions
+==========================
+
 How do I make my Supybot connect to multiple servers?
 
   Just use the `connect` command in the `Network` plugin.

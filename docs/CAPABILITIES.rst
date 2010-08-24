@@ -1,3 +1,7 @@
+============
+Capabilities
+============
+
 Introduction
 ------------
 
