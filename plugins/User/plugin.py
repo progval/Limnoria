@@ -327,6 +327,8 @@ class User(callbacks.Plugin):
                 ircdb.users.setUser(user)
             except ValueError, e:
                 irc.error(str(e), Raise=True)
+            except ircdb.DuplicateHostmask:
+                irc.error('That hostmask is already registered.', Raise=True)
             irc.replySuccess()
         add = wrap(add, ['private', first('otherUser', 'user'),
                          optional('something'), additional('something', '')])
