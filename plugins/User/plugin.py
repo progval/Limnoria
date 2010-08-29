@@ -168,7 +168,7 @@ class User(callbacks.Plugin):
 
     class set(callbacks.Commands):
         def password(self, irc, msg, args, user, password, newpassword):
-            """<name> <old password> <new password>
+            """[<name>] <old password> <new password>
 
             Sets the new password for the user specified by <name> to <new
             password>.  Obviously this message must be sent to the bot
@@ -180,6 +180,10 @@ class User(callbacks.Plugin):
                 u = ircdb.users.getUser(msg.prefix)
             except KeyError:
                 u = None
+            if user is None:
+                if u is None:
+                    irc.errorNotRegistered(Raise=True)
+                user = u
             if user.checkPassword(password) or \
                (u and u._checkCapability('owner') and not u == user):
                 user.setPassword(newpassword)
@@ -187,8 +191,8 @@ class User(callbacks.Plugin):
                 irc.replySuccess()
             else:
                 irc.error(conf.supybot.replies.incorrectAuthentication())
-        password = wrap(password, ['private', 'otherUser', 'something',
-                                   'something'])
+        password = wrap(password, ['private', optional('otherUser'),
+                                   'something', 'something'])
 
         def secure(self, irc, msg, args, user, password, value):
             """<password> [<True|False>]
