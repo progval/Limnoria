@@ -150,8 +150,8 @@ class User(callbacks.Plugin):
 
         Changes your current user database name to the new name given.
         <password> is only necessary if the user isn't recognized by hostmask.
-        If you include the <password> parameter, this message must be sent
-        to the bot privately (not on a channel).
+        This message must be sent to the bot privately (not on a channel) since
+        it may contain a password.
         """
         try:
             id = ircdb.users.getUserId(newname)
