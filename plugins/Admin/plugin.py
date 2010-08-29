@@ -298,12 +298,10 @@ class Admin(callbacks.Plugin):
         def add(self, irc, msg, args, hostmask, expires):
             """<hostmask|nick> [<expires>]
 
-            Ignores <hostmask> or, if a nick is given, ignores whatever
-            hostmask that nick is currently using.  <expires> is a "seconds
-            from now" value that determines when the ignore will expire; if,
-            for instance, you wish for the ignore to expire in an hour, you
-            could give an <expires> of 3600.  If no <expires> is given, the
-            ignore will never automatically expire.
+            This will set a persistent ignore on <hostmask> or the hostmask
+            currently associated with <nick>. <expires> is an optional argument
+            specifying when (in "seconds from now") the ignore will expire; if
+            it isn't given, the ignore will never automatically expire.
             """
             ircdb.ignores.add(hostmask, expires)
             irc.replySuccess()
@@ -312,8 +310,8 @@ class Admin(callbacks.Plugin):
         def remove(self, irc, msg, args, hostmask):
             """<hostmask|nick>
 
-            Ignores <hostmask> or, if a nick is given, ignores whatever
-            hostmask that nick is currently using.
+            This will remove the persistent ignore on <hostmask> or the
+            hostmask currently associated with <nick>.
             """
             try:
                 ircdb.ignores.remove(hostmask)
@@ -325,7 +323,7 @@ class Admin(callbacks.Plugin):
         def list(self, irc, msg, args):
             """takes no arguments
 
-            Returns the hostmasks currently being globally ignored.
+            Lists the hostmasks that the bot is ignoring.
             """
             # XXX Add the expirations.
             if ircdb.ignores.hostmasks:

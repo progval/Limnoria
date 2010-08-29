@@ -150,8 +150,8 @@ class User(callbacks.Plugin):
 
         Changes your current user database name to the new name given.
         <password> is only necessary if the user isn't recognized by hostmask.
-        If you include the <password> parameter, this message must be sent
-        to the bot privately (not on a channel).
+        This message must be sent to the bot privately (not on a channel) since
+        it may contain a password.
         """
         try:
             id = ircdb.users.getUserId(newname)
@@ -168,7 +168,7 @@ class User(callbacks.Plugin):
 
     class set(callbacks.Commands):
         def password(self, irc, msg, args, user, password, newpassword):
-            """<name> <old password> <new password>
+            """[<name>] <old password> <new password>
 
             Sets the new password for the user specified by <name> to <new
             password>.  Obviously this message must be sent to the bot
@@ -180,6 +180,10 @@ class User(callbacks.Plugin):
                 u = ircdb.users.getUser(msg.prefix)
             except KeyError:
                 u = None
+            if user is None:
+                if u is None:
+                    irc.errorNotRegistered(Raise=True)
+                user = u
             if user.checkPassword(password) or \
                (u and u._checkCapability('owner') and not u == user):
                 user.setPassword(newpassword)
@@ -187,7 +191,8 @@ class User(callbacks.Plugin):
                 irc.replySuccess()
             else:
                 irc.error(conf.supybot.replies.incorrectAuthentication())
-        password = wrap(password, ['otherUser', 'something', 'something'])
+        password = wrap(password, ['private', optional('otherUser'),
+                                   'something', 'something'])
 
         def secure(self, irc, msg, args, user, password, value):
             """<password> [<True|False>]
@@ -322,6 +327,8 @@ class User(callbacks.Plugin):
                 ircdb.users.setUser(user)
             except ValueError, e:
                 irc.error(str(e), Raise=True)
+            except ircdb.DuplicateHostmask:
+                irc.error('That hostmask is already registered.', Raise=True)
             irc.replySuccess()
         add = wrap(add, ['private', first('otherUser', 'user'),
                          optional('something'), additional('something', '')])
