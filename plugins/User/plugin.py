@@ -187,7 +187,8 @@ class User(callbacks.Plugin):
                 irc.replySuccess()
             else:
                 irc.error(conf.supybot.replies.incorrectAuthentication())
-        password = wrap(password, ['otherUser', 'something', 'something'])
+        password = wrap(password, ['private', 'otherUser', 'something',
+                                   'something'])
 
         def secure(self, irc, msg, args, user, password, value):
             """<password> [<True|False>]
