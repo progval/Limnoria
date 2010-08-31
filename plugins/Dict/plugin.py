@@ -77,7 +77,8 @@ class Dict(callbacks.Plugin):
     def dict(self, irc, msg, args, words):
         """[<dictionary>] <word>
 
-        Looks up the definition of <word> on dict.org's dictd server.
+        Looks up the definition of <word> on the dictd server specified by
+        the supybot.plugins.Dict.server config variable.
         """
         try:
             server = conf.supybot.plugins.Dict.server()
