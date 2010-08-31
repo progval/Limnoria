@@ -278,7 +278,7 @@ class Filter(callbacks.Plugin):
         irc.reply(s)
     scramble = wrap(scramble, ['text'])
 
-    _code = {
+    _morseCode = {
         "A" : ".-",
         "B" : "-...",
         "C" : "-.-.",
@@ -326,7 +326,7 @@ class Filter(callbacks.Plugin):
         "@" : ".--.-.",
         "=" : "-...-"
     }
-    _revcode = dict([(y, x) for (x, y) in _code.items()])
+    _revMorseCode = dict([(y, x) for (x, y) in _morseCode.items()])
     _unmorsere = re.compile('([.-]+)')
     def unmorse(self, irc, msg, args, text):
         """<Morse code text>
@@ -336,7 +336,7 @@ class Filter(callbacks.Plugin):
         text = text.replace('_', '-')
         def morseToLetter(m):
             s = m.group(1)
-            return self._revcode.get(s, s)
+            return self._revMorseCode.get(s, s)
         text = self._unmorsere.sub(morseToLetter, text)
         text = text.replace('  ', '\x00')
         text = text.replace(' ', '')
@@ -351,10 +351,7 @@ class Filter(callbacks.Plugin):
         """
         L = []
         for c in text.upper():
-            if c in self._code:
-                L.append(self._code[c])
-            else:
-                L.append(c)
+            L.append(self._morseCode.get(c, c))
         irc.reply(' '.join(L))
     morse = wrap(morse, ['text'])
 
