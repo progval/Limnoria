@@ -29,14 +29,14 @@
 
 """
 Basic channel management commands.  Many of these commands require their caller
-to have the <channel>.op capability.  This plugin is loaded by default.
+to have the #channel,op capability.  This plugin is loaded by default.
 """
 
 import supybot
 import supybot.world as world
 
 # Use this for the version of this plugin.  You may wish to put a CVS keyword
-# in here if you\'re keeping the plugin in CVS or some similar system.
+# in here if you're keeping the plugin in CVS or some similar system.
 __version__ = "%%VERSION%%"
 
 __author__ = supybot.authors.jemfinch
