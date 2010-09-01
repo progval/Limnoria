@@ -28,18 +28,73 @@
 ###
 
 import time
+import os
+import shutil
+import tempfile
+import cPickle as pickle
 
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
+import supybot.world as world
+
+datadir = conf.supybot.directories.data()
+filename = conf.supybot.directories.data.dirize('Scheduler.pickle')
 
 class Scheduler(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Scheduler, self)
         self.__parent.__init__(irc)
         self.events = {}
+        self._restoreEvents(irc)
+        world.flushers.append(self._flush)
+
+    def _restoreEvents(self, irc):
+        try:
+            pkl = open(filename, 'rb')
+            try:
+                eventdict = pickle.load(pkl)
+            except Exception, e:
+                self.log.debug('Unable to load pickled data: %s', e)
+                return
+            finally:
+                pkl.close()
+        except IOError, e:
+            self.log.debug('Unable to open pickle file: %s', e)
+            return
+        try:
+            for name, event in eventdict.iteritems():
+                ircobj = callbacks.ReplyIrcProxy(irc, event['msg'])
+                if event['type'] == 'single': # non-repeating event
+                    self._add(ircobj, event['msg'],
+                              event['time'], event['command'])
+                elif event['type'] == 'repeat': # repeating event
+                    self._repeat(ircobj, event['msg'], name,
+                                 event['time'], event['command'])
+        except AssertionError, e:
+            if str(e) == 'An event with the same name has already been scheduled.':
+                pass # we must be reloading the plugin
+            else:
+                raise
+                                     
+    def _flush(self):
+        try:
+            pklfd, tempfn = tempfile.mkstemp(suffix='scheduler', dir=datadir)
+            pkl = os.fdopen(pklfd, 'wb')
+            try:
+                pickle.dump(self.events, pkl)
+            except Exception, e:
+                self.log.warning('Unable to store pickled data: %s', e)
+            pkl.close()
+            shutil.move(tempfn, filename)
+        except (IOError, shutil.Error), e:
+            self.log.warning('File error: %s', e)
+
+    def die(self):
+        world.flushers.remove(self._flush)
+        self.__parent.die()
 
     def _makeCommandFunction(self, irc, msg, command, remove=True):
         """Makes a function suitable for scheduling from command."""
@@ -52,6 +107,16 @@ class Scheduler(callbacks.Plugin):
             self.Proxy(irc.irc, msg, tokens)
         return f
 
+    def _add(self, irc, msg, t, command):
+        f = self._makeCommandFunction(irc, msg, command)
+        id = schedule.addEvent(f, t)
+        f.eventId = id
+        self.events[str(id)] = {'command':command,
+                                'msg':msg,
+                                'time':t,
+                                'type':'single'}
+        return id
+
     def add(self, irc, msg, args, seconds, command):
         """<seconds> <command>
 
@@ -61,10 +126,8 @@ class Scheduler(callbacks.Plugin):
         command was given in (with no prefixed nick, a consequence of using
         echo).  Do pay attention to the quotes in that example.
         """
-        f = self._makeCommandFunction(irc, msg, command)
-        id = schedule.addEvent(f, time.time() + seconds)
-        f.eventId = id
-        self.events[str(id)] = command
+        t = time.time() + seconds
+        id = self._add(irc, msg, t, command)
         irc.replySuccess(format('Event #%i added.', id))
     add = wrap(add, ['positiveInt', 'text'])
 
@@ -88,6 +151,15 @@ class Scheduler(callbacks.Plugin):
             irc.error('Invalid event id.')
     remove = wrap(remove, ['lowered'])
 
+    def _repeat(self, irc, msg, name, seconds, command):
+        f = self._makeCommandFunction(irc, msg, command, remove=False)
+        id = schedule.addPeriodicEvent(f, seconds, name)
+        assert id == name
+        self.events[name] = {'command':command,
+                             'msg':msg,
+                             'time':seconds,
+                             'type':'repeat'}
+
     def repeat(self, irc, msg, args, name, seconds, command):
         """<name> <seconds> <command>
 
@@ -100,10 +172,7 @@ class Scheduler(callbacks.Plugin):
         if name in self.events:
             irc.error('There is already an event with that name, please '
                       'choose another name.', Raise=True)
-        self.events[name] = command
-        f = self._makeCommandFunction(irc, msg, command, remove=False)
-        id = schedule.addPeriodicEvent(f, seconds, name)
-        assert id == name
+        self._repeat(irc, msg, name, seconds, command)
         # We don't reply because the command runs immediately.
         # But should we?  What if the command doesn't have visible output?
         # irc.replySuccess()
@@ -118,8 +187,11 @@ class Scheduler(callbacks.Plugin):
         if L:
             L.sort()
             for (i, (name, command)) in enumerate(L):
-                L[i] = format('%s: %q', name, command)
+                L[i] = format('%s: %q', name, command['command'])
             irc.reply(format('%L', L))
+            irc.reply(schedule.schedule.schedule)
+            irc.reply(schedule.schedule.events)
+            irc.reply(schedule.schedule.counter)
         else:
             irc.reply('There are currently no scheduled commands.')
     list = wrap(list)
