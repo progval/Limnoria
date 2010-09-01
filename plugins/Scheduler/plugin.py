@@ -202,9 +202,6 @@ class Scheduler(callbacks.Plugin):
             for (i, (name, command)) in enumerate(L):
                 L[i] = format('%s: %q', name, command['command'])
             irc.reply(format('%L', L))
-            irc.reply(schedule.schedule.schedule)
-            irc.reply(schedule.schedule.events)
-            irc.reply(schedule.schedule.counter)
         else:
             irc.reply(_('There are currently no scheduled commands.'))
     list = wrap(list)
