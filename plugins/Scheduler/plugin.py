@@ -64,20 +64,28 @@ class Scheduler(callbacks.Plugin):
         except IOError, e:
             self.log.debug('Unable to open pickle file: %s', e)
             return
-        try:
-            for name, event in eventdict.iteritems():
-                ircobj = callbacks.ReplyIrcProxy(irc, event['msg'])
+        for name, event in eventdict.iteritems():
+            ircobj = callbacks.ReplyIrcProxy(irc, event['msg'])
+            try:
                 if event['type'] == 'single': # non-repeating event
+                    n = None
+                    if schedule.schedule.counter > int(name):
+                        # counter not reset, we're probably reloading the plugin
+                        # though we'll never know for sure, because other
+                        # plugins can schedule stuff, too.
+                        n = int(name)
                     self._add(ircobj, event['msg'],
-                              event['time'], event['command'])
+                              event['time'], event['command'], n)
                 elif event['type'] == 'repeat': # repeating event
                     self._repeat(ircobj, event['msg'], name,
                                  event['time'], event['command'])
-        except AssertionError, e:
-            if str(e) == 'An event with the same name has already been scheduled.':
-                pass # we must be reloading the plugin
-            else:
-                raise
+            except AssertionError, e:
+                if str(e) == 'An event with the same name has already been scheduled.':
+                    # we must be reloading the plugin, event is still scheduled
+                    self.log.info('Event %s already exists, adding to dict.' % (name,))
+                    self.events[name] = event
+                else:
+                    raise
                                      
     def _flush(self):
         try:
@@ -93,6 +101,7 @@ class Scheduler(callbacks.Plugin):
             self.log.warning('File error: %s', e)
 
     def die(self):
+        self._flush()
         world.flushers.remove(self._flush)
         self.__parent.die()
 
@@ -107,9 +116,9 @@ class Scheduler(callbacks.Plugin):
             self.Proxy(irc.irc, msg, tokens)
         return f
 
-    def _add(self, irc, msg, t, command):
+    def _add(self, irc, msg, t, command, name=None):
         f = self._makeCommandFunction(irc, msg, command)
-        id = schedule.addEvent(f, t)
+        id = schedule.addEvent(f, t, name)
         f.eventId = id
         self.events[str(id)] = {'command':command,
                                 'msg':msg,
