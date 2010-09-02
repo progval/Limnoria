@@ -31,6 +31,7 @@
 import os
 import sys
 import time
+import re
 
 import supybot
 
@@ -207,12 +208,16 @@ class Misc(callbacks.Plugin):
         Returns the version of the current bot.
         """
         try:
-            newest = utils.web.getUrl('http://supybot.sf.net/version.txt')
-            newest ='The newest version available online is %s.'%newest.strip()
+            newest = utils.web.getUrl('http://gribble.git.sourceforge.net/git/'\
+                                      'gitweb.cgi?p=gribble/gribble;a=blob_plain;'\
+                                      'f=src/version.py;hb=HEAD')
+            m = re.search(r"^version = '([^']+)'$", newest, re.M)
+            newest = 'The newest version available in the gribble git '\
+                     'repository is %s.' % (m.group(1),)
         except utils.web.Error, e:
-            self.log.info('Couldn\'t get website version: %s', e)
+            self.log.info('Couldn\'t get newest version: %s', e)
             newest = 'I couldn\'t fetch the newest version ' \
-                     'from the Supybot website.'
+                     'from the gribble git repository website.'
         s = 'The current (running) version of this Supybot is %s.  %s' % \
             (conf.version, newest)
         irc.reply(s)
