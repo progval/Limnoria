@@ -78,7 +78,7 @@ class Scheduler(callbacks.Plugin):
                               event['time'], event['command'], n)
                 elif event['type'] == 'repeat': # repeating event
                     self._repeat(ircobj, event['msg'], name,
-                                 event['time'], event['command'])
+                                 event['time'], event['command'], False)
             except AssertionError, e:
                 if str(e) == 'An event with the same name has already been scheduled.':
                     # we must be reloading the plugin, event is still scheduled
@@ -160,9 +160,9 @@ class Scheduler(callbacks.Plugin):
             irc.error('Invalid event id.')
     remove = wrap(remove, ['lowered'])
 
-    def _repeat(self, irc, msg, name, seconds, command):
+    def _repeat(self, irc, msg, name, seconds, command, now=True):
         f = self._makeCommandFunction(irc, msg, command, remove=False)
-        id = schedule.addPeriodicEvent(f, seconds, name)
+        id = schedule.addPeriodicEvent(f, seconds, name, now)
         assert id == name
         self.events[name] = {'command':command,
                              'msg':msg,
