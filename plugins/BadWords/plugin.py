@@ -41,6 +41,9 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 class BadWords(callbacks.Privmsg):
+    """Maintains a list of words that the bot is not allowed to say.
+    Can also be used to kick people that say these words, if the bot
+    has op."""
     def __init__(self, irc):
         self.__parent = super(BadWords, self)
         self.__parent.__init__(irc)
@@ -66,7 +69,7 @@ class BadWords(callbacks.Privmsg):
     def inFilter(self, irc, msg):
         self.filtering = True
         # We need to check for bad words here rather than in doPrivmsg because
-        # messages don't get to doPrivmsg is the user is ignored.
+        # messages don't get to doPrivmsg if the user is ignored.
         if msg.command == 'PRIVMSG':
             self.updateRegexp()
             s = ircutils.stripFormatting(msg.args[1])
@@ -120,7 +123,7 @@ class BadWords(callbacks.Privmsg):
     def add(self, irc, msg, args, words):
         """<word> [<word> ...]
 
-        Adds all <word>s to the list of words the bot isn't to say.
+        Adds all <word>s to the list of words being censored.
         """
         set = self.words()
         set.update(words)
@@ -131,7 +134,7 @@ class BadWords(callbacks.Privmsg):
     def remove(self, irc, msg, args, words):
         """<word> [<word> ...]
 
-        Removes a <word>s from the list of words the bot isn't to say.
+        Removes <word>s from the list of words being censored.
         """
         set = self.words()
         for word in words:
