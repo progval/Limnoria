@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2005-2009, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
 
 import sys
 import types
+import fnmatch
 import UserDict
 import threading
 
@@ -65,7 +66,6 @@ def changeFunctionName(f, name, doc=None):
 class Object(object):
     def __ne__(self, other):
         return not self == other
-    
 
 class Synchronized(type):
     METHODS = '__synchronized__'
@@ -103,5 +103,15 @@ class Synchronized(type):
         newclass = super(Synchronized, cls).__new__(cls, name, bases, dict)
         return newclass
 
+# Translate glob to regular expression, trimming the "match EOL" portion of
+# the regular expression.
+if sys.version_info < (2, 6, 0):
+    # Pre-2.6 just uses the $ anchor
+    def glob2re(g):
+        return fnmatch.translate(g)[:-1]
+else:
+    # Post-2.6 uses \Z(?ms) per http://issues.python.org/6665
+    def glob2re(g):
+        return fnmatch.translate(g)[:-7]
 
 # vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:
