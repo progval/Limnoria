@@ -58,7 +58,11 @@ class Games(callbacks.Plugin):
         ten-sided dice.
         """
         (dice, sides) = utils.iter.imap(int, m.groups())
-        if sides < 3:
+        if dice > 1000:
+            irc.error('You can\'t roll more than 1000 dice.')
+        elif sides > 100:
+            irc.error('Dice can\'t have more than 100 sides.')
+        elif sides < 3:
             irc.error('Dice can\'t have fewer than 3 sides.')
         else:
             L = [0] * dice
