@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Daniel DiPaolo
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,7 +31,6 @@
 import os
 import re
 import time
-import fnmatch
 import operator
 
 import supybot.dbi as dbi
@@ -230,8 +230,8 @@ class Todo(callbacks.Plugin):
             if option == 'regexp':
                 criteria.append(arg.search)
         for glob in globs:
-            glob = fnmatch.translate(glob)
-            criteria.append(re.compile(glob[:-1]).search)
+            glob = utils.python.glob2re(glob)
+            criteria.append(re.compile(glob).search)
         try:
             tasks = self.db.select(user.id, criteria)
             L = [format('#%i: %s', t.id, self._shrink(t.task)) for t in tasks]
