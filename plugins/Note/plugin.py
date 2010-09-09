@@ -30,7 +30,6 @@
 
 import re
 import time
-import fnmatch
 import operator
 
 import supybot.dbi as dbi
@@ -98,15 +97,9 @@ class DbiNoteDB(dbi.DB):
         self.set(id, n)
 
     def getUnnotifiedIds(self, to):
-##         def p(note):
-##             return not note.notified and note.to == to
-##         return [note.id for note in self.select(p)]
         return self.unNotified.get(to, [])
 
     def getUnreadIds(self, to):
-##         def p(note):
-##             return not note.read and note.to == to
-##         return [note.id for note in self.select(p)]
         return self.unRead.get(to, [])
 
     def send(self, frm, to, public, text):
@@ -303,9 +296,8 @@ class Note(callbacks.Plugin):
             elif option == 'sent':
                 own = frm
         if glob:
-            glob = fnmatch.translate(glob)
-            # ignore the trailing $ fnmatch.translate adds to the regexp
-            criteria.append(re.compile(glob[:-1]).search)
+            glob = utils.python.glob2re(glob)
+            criteria.append(re.compile(glob).search)
         def match(note):
             for p in criteria:
                 if not p(note.text):

@@ -147,16 +147,11 @@ class News(callbacks.Plugin):
                 irc.reply(format('No news for %s.', channel))
         else:
             try:
-                if id < 1:
-                    raise ValueError
                 record = self.db.get(channel, id)
                 irc.reply(str(record))
             except dbi.NoRecordError, id:
                 irc.errorInvalid('news item id', id)
-            except ValueError:
-                irc.errorInvalid('news item id', id,
-                                 '<id> must be a positive integer.')
-    news = wrap(news, ['channeldb', additional('int')])
+    news = wrap(news, ['channeldb', additional('positiveInt')])
 
     def remove(self, irc, msg, args, channel, id):
         """[<channel>] <id>
@@ -165,16 +160,11 @@ class News(callbacks.Plugin):
         necessary if the message isn't sent in the channel itself.
         """
         try:
-            if id < 1:
-                raise ValueError
             self.db.remove(channel, id)
             irc.replySuccess()
         except dbi.NoRecordError:
             irc.errorInvalid('news item id', id)
-        except ValueError:
-            irc.errorInvalid('news item id', id,
-                             '<id> must be a positive integer.')
-    remove = wrap(remove, ['channeldb', 'int'])
+    remove = wrap(remove, ['channeldb', 'positiveInt'])
 
     def change(self, irc, msg, args, channel, id, replacer):
         """[<channel>] <id> <regexp>
@@ -185,16 +175,11 @@ class News(callbacks.Plugin):
         isn't sent on the channel itself.
         """
         try:
-            if id < 1:
-                raise ValueError
             self.db.change(channel, id, replacer)
             irc.replySuccess()
         except dbi.NoRecordError:
             irc.errorInvalid('news item id', id)
-        except ValueError:
-            irc.errorInvalid('news item id', id,
-                             '<id> must be a positive integer.')
-    change = wrap(change, ['channeldb', 'int', 'regexpReplacer'])
+    change = wrap(change, ['channeldb', 'positiveInt', 'regexpReplacer'])
 
     def old(self, irc, msg, args, channel, id):
         """[<channel>] [<id>]
@@ -205,15 +190,10 @@ class News(callbacks.Plugin):
         """
         if id:
             try:
-                if id < 1:
-                    raise ValueError
                 record = self.db.getOld(channel, id)
                 irc.reply(str(record))
             except dbi.NoRecordError, id:
                 irc.errorInvalid('news item id', id)
-            except ValueError:
-                irc.errorInvalid('news item id', id,
-                                 '<id> must be a positive integer.')
         else:
             try:
                 records = self.db.getOld(channel)
@@ -222,7 +202,7 @@ class News(callbacks.Plugin):
                 irc.reply(s)
             except dbi.NoRecordError:
                 irc.reply(format('No old news for %s.', channel))
-    old = wrap(old, ['channeldb', additional('int')])
+    old = wrap(old, ['channeldb', additional('positiveInt')])
 
 
 Class = News
