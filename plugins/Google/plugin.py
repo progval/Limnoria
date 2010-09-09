@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ except ImportError:
 class Google(callbacks.PluginRegexp):
     threaded = True
     callBefore = ['Web']
-    regexps = ['googleSnarfer', 'googleGroups']
+    regexps = ['googleSnarfer']
 
     _colorGoogles = {}
     def _getColorGoogle(self, m):
@@ -287,44 +287,6 @@ class Google(callbacks.PluginRegexp):
             url = data['responseData']['results'][0]['unescapedUrl']
             irc.reply(url.encode('utf-8'), prefixNick=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
-
-    _ggThread = re.compile(r'Subject: <b>([^<]+)</b>', re.I)
-    _ggGroup = re.compile(r'<TITLE>Google Groups :\s*([^<]+)</TITLE>', re.I)
-    _ggThreadm = re.compile(r'src="(/group[^"]+)">', re.I)
-    _ggSelm = re.compile(r'selm=[^&]+', re.I)
-    _threadmThread = re.compile(r'TITLE="([^"]+)">', re.I)
-    _threadmGroup = re.compile(r'class=groupname[^>]+>([^<]+)<', re.I)
-    def googleGroups(self, irc, msg, match):
-        r"http://groups.google.[\w.]+/\S+\?(\S+)"
-        if not self.registryValue('groupsSnarfer', msg.args[0]):
-            return
-        queries = cgi.parse_qsl(match.group(1))
-        queries = [q for q in queries if q[0] in ('threadm', 'selm')]
-        if not queries:
-            return
-        queries.append(('hl', 'en'))
-        url = 'http://groups.google.com/groups?' + urllib.urlencode(queries)
-        text = utils.web.getUrl(url)
-        mThread = None
-        mGroup = None
-        if 'threadm=' in url:
-            path = self._ggThreadm.search(text)
-            if path is not None:
-                url = 'http://groups-beta.google.com' + path.group(1)
-                text = utils.web.getUrl(url)
-                mThread = self._threadmThread.search(text)
-                mGroup = self._threadmGroup.search(text)
-        else:
-            mThread = self._ggThread.search(text)
-            mGroup = self._ggGroup.search(text)
-        if mThread and mGroup:
-            irc.reply(format('Google Groups: %s, %s',
-                             mGroup.group(1), mThread.group(1)),
-                      prefixNick=False)
-        else:
-            self.log.debug('Unable to snarf.  %s doesn\'t appear to be a '
-                           'proper Google Groups page.', match.group(1))
-    googleGroups = urlSnarfer(googleGroups)
 
     def _googleUrl(self, s):
         s = s.replace('+', '%2B')
