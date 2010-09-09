@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,13 +37,7 @@ def configure(advanced):
     output("""The Google plugin has the functionality to watch for URLs
               that match a specific pattern. (We call this a snarfer)
               When supybot sees such a URL, it will parse the web page
-              for information and reply with the results.
-
-              Google has two available snarfers: Google Groups link
-              snarfing and a google search snarfer.""")
-    if yn('Do you want the Google Groups link snarfer enabled by '
-        'default?'):
-        conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
+              for information and reply with the results.""")
     if yn('Do you want the Google search snarfer enabled by default?'):
         conf.supybot.plugins.Google.searchSnarfer.setValue(True)
 
@@ -105,10 +99,6 @@ conf.registerGlobalValue(Google, 'referer',
     the Referer field of the search requests.  If this value is empty, a
     Referer will be generated in the following format:
     http://$server/$botName"""))
-conf.registerChannelValue(Google, 'groupsSnarfer',
-    registry.Boolean(False, """Determines whether the groups snarfer is
-    enabled.  If so, URLs at groups.google.com will be snarfed and their
-    group/title messaged to the channel."""))
 conf.registerChannelValue(Google, 'searchSnarfer',
     registry.Boolean(False, """Determines whether the search snarfer is
     enabled.  If so, messages (even unaddressed ones) beginning with the word
