@@ -47,7 +47,7 @@ class LimiterTestCase(ChannelPluginTestCase):
             conf.supybot.plugins.Limiter.maximumExcess.setValue(7)
             self.irc.feedMsg(ircmsgs.part('#foo', prefix='bar!root@host'))
             m = self.irc.takeMsg()
-            self.assertEqual(m, ircmsgs.limit('#foo', 1-5))
+            self.assertEqual(m, ircmsgs.limit('#foo', 1+5))
         finally:
             conf.supybot.plugins.Limiter.minimumExcess.setValue(origMin)
             conf.supybot.plugins.Limiter.maximumExcess.setValue(origMax)
