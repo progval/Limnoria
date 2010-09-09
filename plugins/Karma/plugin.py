@@ -281,10 +281,11 @@ class Karma(callbacks.Plugin):
         """[<channel>] [<thing> ...]
 
         Returns the karma of <thing>.  If <thing> is not given, returns the top
-        three and bottom three karmas.  If one <thing> is given, returns the
-        details of its karma; if more than one <thing> is given, returns the
-        total karma of each of the the things. <channel> is only necessary if
-        the message isn't sent on the channel itself.
+        N karmas, where N is determined by the config variable
+        supybot.plugins.Karma.rankingDisplay.  If one <thing> is given, returns
+        the details of its karma; if more than one <thing> is given, returns
+        the total karma of each of the the things. <channel> is only necessary
+        if the message isn't sent on the channel itself.
         """
         if len(things) == 1:
             name = things[0]
