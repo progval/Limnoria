@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
+# Copyright (c) 2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -57,11 +58,7 @@ class Games(callbacks.Plugin):
         ten-sided dice.
         """
         (dice, sides) = utils.iter.imap(int, m.groups())
-        if dice > 6:
-            irc.error('You can\'t roll more than 6 dice.')
-        elif sides > 100:
-            irc.error('Dice can\'t have more than 100 sides.')
-        elif sides < 3:
+        if sides < 3:
             irc.error('Dice can\'t have fewer than 3 sides.')
         else:
             L = [0] * dice
