@@ -259,11 +259,11 @@ conf.registerGlobalValue(conf.supybot.log, 'timestampFormat',
     format."""))
 
 class BooleanRequiredFalseOnWindows(registry.Boolean):
+    """Value cannot be true on Windows"""
     def set(self, s):
         registry.Boolean.set(self, s)
         if self.value and os.name == 'nt':
-            raise registry.InvalidRegistryValue, \
-                  'Value cannot be true on Windows.'
+            self.error()
 
 conf.registerGlobalValue(conf.supybot.log, 'stdout',
     registry.Boolean(True, """Determines whether the bot will log to
