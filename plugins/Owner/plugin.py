@@ -315,7 +315,8 @@ class Owner(callbacks.Plugin):
             irc.errorInvalid('command', command)
         elif plugin:
             if not plugin.isCommand(command):
-                irc.errorInvalid('command in the %s plugin' % plugin, command)
+                irc.errorInvalid('command in the %s plugin' % plugin.name(),
+                                 command)
             registerDefaultPlugin(command, plugin.name())
             irc.replySuccess()
         else:
