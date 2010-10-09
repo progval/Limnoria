@@ -113,8 +113,14 @@ package_dir = {'supybot': 'src',
                'plugins/Time/local/dateutil',
               }
 
+package_data = {}
+
 for plugin in plugins:
     package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
+    locale_path = 'plugins/' + plugin + '/locale/'
+    locale_name = 'supybot.plugins.'+plugin
+    if os.path.exists(locale_path):
+        package_data.update({locale_name: ['locale/'+s for s in os.listdir(locale_path)]})
 
 version = '0.83.4.1+git'
 setup(
@@ -150,6 +156,8 @@ setup(
     packages=packages,
 
     package_dir=package_dir,
+
+    package_data=package_data,
 
     scripts=['scripts/supybot',
              'scripts/supybot-test',

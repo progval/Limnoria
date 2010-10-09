@@ -34,6 +34,7 @@ import types
 
 import supybot.log as log
 import supybot.conf as conf
+import supybot.i18n as i18n
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
@@ -43,6 +44,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+
+_ = i18n.PluginInternationalization('ChannelStats')
 
 class ChannelStat(irclib.IrcCommandDispatcher):
     _values = ['actions', 'chars', 'frowns', 'joins', 'kicks','modes',
@@ -239,12 +242,6 @@ class ChannelStats(callbacks.Plugin):
         self.db.channels[channel][id].kicked += 1
 
     def stats(self, irc, msg, args, channel, name):
-        """[<channel>] [<name>]
-
-        Returns the statistics for <name> on <channel>.  <channel> is only
-        necessary if the message isn't sent on the channel itself.  If <name>
-        isn't given, it defaults to the user sending the command.
-        """
         if name and ircutils.strEqual(name, irc.nick):
             id = 0
         elif not name:
@@ -252,7 +249,7 @@ class ChannelStats(callbacks.Plugin):
                 id = ircdb.users.getUserId(msg.prefix)
                 name = ircdb.users.getUser(id).name
             except KeyError:
-                irc.error('I couldn\'t find you in my user database.')
+                irc.error(_('I couldn\'t find you in my user database.'))
                 return
         elif not ircdb.users.hasUser(name):
             try:
@@ -265,53 +262,51 @@ class ChannelStats(callbacks.Plugin):
             id = ircdb.users.getUserId(name)
         try:
             stats = self.db.getUserStats(channel, id)
-            s = format('%s has sent %n; a total of %n, %n, '
-                       '%n, and %n; %s of those messages %s'
+            s = format(_('%s has sent %n; a total of %n, %n, '
+                       '%n, and %n; %s of those messages %s. '
                        '%s has joined %n, parted %n, quit %n, '
                        'kicked someone %n, been kicked %n, '
                        'changed the topic %n, and changed the '
-                       'mode %n.',
+                       'mode %n.'),
                        name, (stats.msgs, 'message'),
-                       (stats.chars, 'character'),
-                       (stats.words, 'word'),
-                       (stats.smileys, 'smiley'),
-                       (stats.frowns, 'frown'),
+                       (stats.chars, _('character')),
+                       (stats.words, _('word')),
+                       (stats.smileys, _('smiley')),
+                       (stats.frowns, _('frown')),
                        stats.actions,
-                       stats.actions == 1 and 'was an ACTION.  '
-                                           or 'were ACTIONs.  ',
+                       stats.actions == 1 and _('was an ACTION')
+                                           or _('were ACTIONs'),
                        name,
-                       (stats.joins, 'time'),
-                       (stats.parts, 'time'),
-                       (stats.quits, 'time'),
-                       (stats.kicks, 'time'),
-                       (stats.kicked, 'time'),
-                       (stats.topics, 'time'),
-                       (stats.modes, 'time'))
+                       (stats.joins, _('time')),
+                       (stats.parts, _('time')),
+                       (stats.quits, _('time')),
+                       (stats.kicks, _('time')),
+                       (stats.kicked, _('time')),
+                       (stats.topics, _('time')),
+                       (stats.modes, _('time')))
             irc.reply(s)
         except KeyError:
-            irc.error(format('I have no stats for that %s in %s.',
+            irc.error(format(_('I have no stats for that %s in %s.'),
                              name, channel))
+    stats.__doc__ = _("""[<channel>] [<name>]
+
+        Returns the statistics for <name> on <channel>.  <channel> is only
+        necessary if the message isn't sent on the channel itself.  If <name>
+        isn't given, it defaults to the user sending the command.
+        """)
     stats = wrap(stats, ['channeldb', additional('something')])
 
     _env = {'__builtins__': types.ModuleType('__builtins__')}
     _env.update(math.__dict__)
     def rank(self, irc, msg, args, channel, expr):
-        """[<channel>] <stat expression>
-
-        Returns the ranking of users according to the given stat expression.
-        Valid variables in the stat expression include 'msgs', 'chars',
-        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',
-        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical
-        expression involving those variables is permitted.
-        """
         # XXX I could do this the right way, and abstract out a safe eval,
         #     or I could just copy/paste from the Math plugin.
         if expr != expr.translate(utils.str.chars, '_[]'):
-            irc.error('There\'s really no reason why you should have '
+            irc.error(_('There\'s really no reason why you should have '
                       'underscores or brackets in your mathematical '
-                      'expression.  Please remove them.', Raise=True)
+                      'expression.  Please remove them.'), Raise=True)
         if 'lambda' in expr:
-            irc.error('You can\'t use lambda in this command.', Raise=True)
+            irc.error(_('You can\'t use lambda in this command.'), Raise=True)
         expr = expr.lower()
         users = []
         for ((c, id), stats) in self.db.items():
@@ -325,7 +320,7 @@ class ChannelStats(callbacks.Plugin):
                 except ZeroDivisionError:
                     v = float('inf')
                 except NameError, e:
-                    irc.errorInvalid('stat variable', str(e).split()[1])
+                    irc.errorInvalid(_('stat variable'), str(e).split()[1])
                 except Exception, e:
                     irc.error(utils.exnToString(e), Raise=True)
                 if id == 0:
@@ -337,40 +332,48 @@ class ChannelStats(callbacks.Plugin):
         s = utils.str.commaAndify(['#%s %s (%.3g)' % (i+1, u, v)
                                    for (i, (v, u)) in enumerate(users)])
         irc.reply(s)
+    rank.__doc__ = _("""[<channel>] <stat expression>
+
+        Returns the ranking of users according to the given stat expression.
+        Valid variables in the stat expression include 'msgs', 'chars',
+        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',
+        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical
+        expression involving those variables is permitted.
+        """)
     rank = wrap(rank, ['channeldb', 'text'])
 
     def channelstats(self, irc, msg, args, channel):
-        """[<channel>]
-
-        Returns the statistics for <channel>.  <channel> is only necessary if
-        the message isn't sent on the channel itself.
-        """
         try:
             stats = self.db.getChannelStats(channel)
             curUsers = len(irc.state.channels[channel].users)
-            s = format('On %s there %h been %i messages, containing %i '
+            s = format(_('On %s there %h been %i messages, containing %i '
                        'characters, %n, %n, and %n; '
                        '%i of those messages %s.  There have been '
                        '%n, %n, %n, %n, %n, and %n.  There %b currently %n '
-                       'and the channel has peaked at %n.',
+                       'and the channel has peaked at %n.'),
                        channel, stats.msgs, stats.msgs, stats.chars,
-                       (stats.words, 'word'),
-                       (stats.smileys, 'smiley'),
-                       (stats.frowns, 'frown'),
-                       stats.actions, stats.actions == 1 and 'was an ACTION'
-                                                          or 'were ACTIONs',
-                       (stats.joins, 'join'),
-                       (stats.parts, 'part'),
-                       (stats.quits, 'quit'),
-                       (stats.kicks, 'kick'),
-                       (stats.modes, 'mode', 'change'),
-                       (stats.topics, 'topic', 'change'),
+                       (stats.words, _('word')),
+                       (stats.smileys, _('smiley')),
+                       (stats.frowns, _('frown')),
+                       stats.actions, stats.actions == 1 and _('was an ACTION')
+                                                          or _('were ACTIONs'),
+                       (stats.joins, _('join')),
+                       (stats.parts, _('part')),
+                       (stats.quits, _('quit')),
+                       (stats.kicks, _('kick')),
+                       (stats.modes, _('mode'), _('change')),
+                       (stats.topics, _('topic'), _('change')),
                        curUsers,
-                       (curUsers, 'user'),
-                       (stats.users, 'user'))
+                       (curUsers, _('user')),
+                       (stats.users, _('user')))
             irc.reply(s)
         except KeyError:
-            irc.error(format('I\'ve never been on %s.', channel))
+            irc.error(format(_('I\'ve never been on %s.'), channel))
+    channelstats.__doc__ = _("""[<channel>]
+
+        Returns the statistics for <channel>.  <channel> is only necessary if
+        the message isn't sent on the channel itself.
+        """)
     channelstats = wrap(channelstats, ['channeldb'])
 
 

@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2010, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -362,7 +363,7 @@ def timestamp(t):
         t = time.time()
     return time.ctime(t)
 
-_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrstu%])')
+_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrstuv%])')
 def format(s, *args, **kwargs):
     """w00t.
 
@@ -379,6 +380,8 @@ def format(s, *args, **kwargs):
     n: nItems (takes a 2-tuple of (n, item) or a 3-tuple of (n, between, item))
     t: time, formatted (takes an int)
     u: url, wrapped in braces (this should be configurable at some point)
+    v: void : takes one or many arguments, but doesn't display it
+       (useful for translation)
     """
     args = list(args)
     args.reverse() # For more efficient popping.
@@ -429,6 +432,9 @@ def format(s, *args, **kwargs):
             return timestamp(args.pop())
         elif char == 'u':
             return '<%s>' % args.pop()
+        elif char == 'v':
+            args.pop()
+            return ''
         elif char == '%':
             return '%'
         else:
