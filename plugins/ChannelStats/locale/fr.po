@@ -1,12 +1,12 @@
-# French translations for supybot-i package
-# Traductions françaises du paquet supybot-i.
-# Copyright (C) 2010 THE supybot-i'S COPYRIGHT HOLDER
+# French translations for supybot-i18n package
+# Traductions françaises du paquet supybot-i18n.
+# Copyright (C) 2010 THE supybot-i18n'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the supybot-i package.
 # ProgVal <progval@gmail.com>, 2010.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: supybot-i 18n\n"
+"Project-Id-Version: supybot-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-06 16:16+0200\n"
 "PO-Revision-Date: 2010-10-06 16:46+0100\n"
