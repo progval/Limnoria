@@ -155,7 +155,5 @@ class PluginInternationalization:
 def internationalizeDocstring(obj):
     # FIXME: check if the plugin has an _ object
     internationalizedCommands.update({hash(obj): obj})
-    print "----doc : " + repr(obj.__doc__)
-    print "----strings : " + repr(sys.modules[obj.__module__]._.translations.keys())
     obj.__doc__=sys.modules[obj.__module__]._(obj.__doc__)
     return obj

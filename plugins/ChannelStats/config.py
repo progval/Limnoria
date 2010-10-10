@@ -31,6 +31,9 @@ import re
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+
+_ = PluginInternationalization('ChannelStats')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -54,16 +57,16 @@ class Smileys(registry.Value):
 
 ChannelStats = conf.registerPlugin('ChannelStats')
 conf.registerChannelValue(ChannelStats, 'selfStats',
-    registry.Boolean(True, """Determines whether the bot will keep channel
+    registry.Boolean(True, _("""Determines whether the bot will keep channel
     statistics on itself, possibly skewing the channel stats (especially in
-    cases where the bot is relaying between channels on a network)."""))
+    cases where the bot is relaying between channels on a network).""")))
 conf.registerChannelValue(ChannelStats, 'smileys',
-    Smileys(':) ;) ;] :-) :-D :D :P :p (= =)'.split(), """Determines what
+    Smileys(':) ;) ;] :-) :-D :D :P :p (= =)'.split(), _("""Determines what
     words (i.e., pieces of text with no spaces in them) are considered
-    'smileys' for the purposes of stats-keeping."""))
+    'smileys' for the purposes of stats-keeping.""")))
 conf.registerChannelValue(ChannelStats, 'frowns',
-    Smileys(':| :-/ :-\\ :\\ :/ :( :-( :\'('.split(), """Determines what words
+    Smileys(':| :-/ :-\\ :\\ :/ :( :-( :\'('.split(), _("""Determines what words
     (i.e., pieces of text with no spaces in them ) are considered 'frowns' for
-    the purposes of stats-keeping."""))
+    the purposes of stats-keeping.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
