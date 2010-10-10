@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2010, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -139,9 +139,6 @@ class Unix(callbacks.Plugin):
         if word and not word[0].isalpha():
             irc.error('<word> must begin with an alphabet character.')
             return
-        if ' ' in word:
-            irc.error('Spaces aren\'t allowed in the word.')
-            return
         try:
             inst = subprocess.Popen([spellCmd, '-a'], close_fds=True,
                                     stdout=subprocess.PIPE,
@@ -183,7 +180,7 @@ class Unix(callbacks.Plugin):
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(resp)
-    spell = thread(wrap(spell, ['something']))
+    spell = thread(wrap(spell, ['somethingWithoutSpaces']))
 
     def fortune(self, irc, msg, args):
         """takes no arguments
