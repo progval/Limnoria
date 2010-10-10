@@ -131,7 +131,6 @@ class PluginInternationalization:
 		self._translate(untranslated, translated)
     
     def _translate(self, untranslated, translated):
-	print repr({self._parse(untranslated): self._parse(translated)})
 	self.translations.update({self._parse(untranslated): 
 						    self._parse(translated)})
     
