@@ -253,6 +253,9 @@ class Group(object):
             fullname = join(names)
             node.setName(fullname)
         else:
+            # We do this in order to reload the help, if it changed.
+            if node._help != '' and node._help != self._children[name]._help:
+                self._children[name]._help = node._help
             # We do this so the return value from here is at least useful;
             # otherwise, we're just returning a useless, unattached node
             # that's simply a waste of space.
