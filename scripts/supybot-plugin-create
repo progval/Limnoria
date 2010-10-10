@@ -95,6 +95,9 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+
+_ = PluginInternationalization('%s')
 
 
 class %s(callbacks.Plugin):
@@ -114,6 +117,9 @@ configTemplate = '''
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+
+_ = PluginInternationalization('%s')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -127,7 +133,7 @@ def configure(advanced):
 %s = conf.registerPlugin(%r)
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(%s, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
@@ -266,9 +272,10 @@ def main():
         finally:
             fd.close()
 
-    writeFile('plugin.py', pluginTemplate % (copyright, name,
+    writeFile('plugin.py', pluginTemplate % (copyright, name, name,
                                              name, threaded, name))
-    writeFile('config.py', configTemplate % (copyright, name, name, name, name))
+    writeFile('config.py', configTemplate % (copyright, name, name, name, name,
+                                             name))
     writeFile('__init__.py', __init__Template % (copyright, name))
     writeFile('test.py', testTemplate % (copyright, name, name))
     writeFile('README.txt', readmeTemplate)
