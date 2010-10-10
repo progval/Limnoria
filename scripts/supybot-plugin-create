@@ -99,7 +99,7 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 
 _ = PluginInternationalization('%s')
 
-
+@internationalizeDocstring
 class %s(callbacks.Plugin):
     """Add the help for "@plugin help %s" here
     This should describe *how* to use this plugin."""
