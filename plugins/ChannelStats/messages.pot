@@ -1,107 +1,27 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR ORGANIZATION
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-09 17:55+0200\n"
+"POT-Creation-Date: 2010-10-10 09:35+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
 
-#: plugin.py:48
-msgid "ChannelStats"
-msgstr ""
-
-#: plugin.py:51
-msgid "actions"
-msgstr ""
-
-#: plugin.py:51
-msgid "chars"
-msgstr ""
-
-#: plugin.py:51 plugin.py:83
-msgid "frowns"
-msgstr ""
-
-#: plugin.py:51
-msgid "joins"
-msgstr ""
-
-#: plugin.py:51
-msgid "kicks"
-msgstr ""
-
-#: plugin.py:51
-msgid "modes"
-msgstr ""
-
-#: plugin.py:52
-msgid "msgs"
-msgstr ""
-
-#: plugin.py:52
-msgid "parts"
-msgstr ""
-
-#: plugin.py:52
-msgid "quits"
-msgstr ""
-
-#: plugin.py:52 plugin.py:84
-msgid "smileys"
-msgstr ""
-
-#: plugin.py:52
-msgid "topics"
-msgstr ""
-
-#: plugin.py:52
-msgid "words"
-msgstr ""
-
-#: plugin.py:52
-msgid "users"
-msgstr ""
-
-#: plugin.py:121
-msgid "kicked"
-msgstr ""
-
-#: plugin.py:139 plugin.py:147 plugin.py:148 plugin.py:149 plugin.py:160
-#: plugin.py:206 plugin.py:207 plugin.py:208 plugin.py:210 plugin.py:225
-#: plugin.py:226 plugin.py:227
-msgid "channelStats"
-msgstr ""
-
-#: plugin.py:165
-msgid "ChannelStats.db"
-msgstr ""
-
-#: plugin.py:195
-msgid "PRIVMSG"
-msgstr ""
-
-#: plugin.py:197
-msgid "selfStats"
-msgstr ""
 
 #: plugin.py:246
+#, docstring
 msgid ""
 "[<channel>] [<name>]\n"
 "\n"
 "        Returns the statistics for <name> on <channel>.  <channel> is only\n"
-"        necessary if the message isn't sent on the channel itself.  If "
-"<name>\n"
+"        necessary if the message isn't sent on the channel itself.  If <name>\n"
 "        isn't given, it defaults to the user sending the command.\n"
 "        "
 msgstr ""
@@ -111,37 +31,30 @@ msgid "I couldn't find you in my user database."
 msgstr ""
 
 #: plugin.py:272
-msgid ""
-"%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s "
-"has joined %n, parted %n, quit %n, kicked someone %n, been kicked %n, "
-"changed the topic %n, and changed the mode %n."
-msgstr ""
-
-#: plugin.py:278
-msgid "message"
+msgid "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s has joined %n, parted %n, quit %n, kicked someone %n, been kicked %n, changed the topic %n, and changed the mode %n."
 msgstr ""
 
 #: plugin.py:279
 msgid "character"
 msgstr ""
 
-#: plugin.py:280 plugin.py:365
+#: plugin.py:280 plugin.py:363
 msgid "word"
 msgstr ""
 
-#: plugin.py:281 plugin.py:366
+#: plugin.py:281 plugin.py:364
 msgid "smiley"
 msgstr ""
 
-#: plugin.py:282 plugin.py:367
+#: plugin.py:282 plugin.py:365
 msgid "frown"
 msgstr ""
 
-#: plugin.py:284 plugin.py:368
+#: plugin.py:284 plugin.py:366
 msgid "was an ACTION"
 msgstr ""
 
-#: plugin.py:285 plugin.py:369
+#: plugin.py:285 plugin.py:367
 msgid "were ACTIONs"
 msgstr ""
 
@@ -151,28 +64,15 @@ msgid "time"
 msgstr ""
 
 #: plugin.py:296
-#, python-format
 msgid "I have no stats for that %s in %s."
 msgstr ""
 
-#: plugin.py:298 plugin.py:346 plugin.py:382
-msgid "channeldb"
-msgstr ""
-
-#: plugin.py:298
-msgid "something"
-msgstr ""
-
-#: plugin.py:300
-msgid "__builtins__"
-msgstr ""
-
-#: plugin.py:305
+#: plugin.py:304
+#, docstring
 msgid ""
 "[<channel>] <stat expression>\n"
 "\n"
-"        Returns the ranking of users according to the given stat "
-"expression.\n"
+"        Returns the ranking of users according to the given stat expression.\n"
 "        Valid variables in the stat expression include 'msgs', 'chars',\n"
 "        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',\n"
 "        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical\n"
@@ -181,90 +81,64 @@ msgid ""
 msgstr ""
 
 #: plugin.py:315
-msgid "_[]"
-msgstr ""
-
-#: plugin.py:316
-msgid ""
-"There's really no reason why you should have underscores or brackets in your "
-"mathematical expression.  Please remove them."
+msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
 msgstr ""
 
 #: plugin.py:319
-msgid "lambda"
-msgstr ""
-
-#: plugin.py:320
 msgid "You can't use lambda in this command."
 msgstr ""
 
-#: plugin.py:332
-msgid "inf"
-msgstr ""
-
-#: plugin.py:334
+#: plugin.py:333
 msgid "stat variable"
 msgstr ""
 
-#: plugin.py:343
-#, python-format
-msgid "#%s %s (%.3g)"
-msgstr ""
-
-#: plugin.py:346
-msgid "text"
-msgstr ""
-
-#: plugin.py:351
+#: plugin.py:349
+#, docstring
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Returns the statistics for <channel>.  <channel> is only necessary "
-"if\n"
+"        Returns the statistics for <channel>.  <channel> is only necessary if\n"
 "        the message isn't sent on the channel itself.\n"
 "        "
 msgstr ""
 
-#: plugin.py:359
-msgid ""
-"On %s there %h been %i messages, containing %i characters, %n, %n, and %n; "
-"%i of those messages %s.  There have been %n, %n, %n, %n, %n, and %n.  There "
-"%b currently %n and the channel has peaked at %n."
+#: plugin.py:357
+msgid "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; %i of those messages %s.  There have been %n, %n, %n, %n, %n, and %n.  There %b currently %n and the channel has peaked at %n."
 msgstr ""
 
-#: plugin.py:370
+#: plugin.py:368
 msgid "join"
 msgstr ""
 
-#: plugin.py:371
+#: plugin.py:369
 msgid "part"
 msgstr ""
 
-#: plugin.py:372
+#: plugin.py:370
 msgid "quit"
 msgstr ""
 
-#: plugin.py:373
+#: plugin.py:371
 msgid "kick"
 msgstr ""
 
-#: plugin.py:374
+#: plugin.py:372
 msgid "mode"
 msgstr ""
 
-#: plugin.py:374 plugin.py:375
+#: plugin.py:372 plugin.py:373
 msgid "change"
 msgstr ""
 
-#: plugin.py:375
+#: plugin.py:373
 msgid "topic"
 msgstr ""
 
-#: plugin.py:377 plugin.py:378
+#: plugin.py:375 plugin.py:376
 msgid "user"
 msgstr ""
 
-#: plugin.py:381
-#, python-format
+#: plugin.py:379
 msgid "I've never been on %s."
 msgstr ""
+

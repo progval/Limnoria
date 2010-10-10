@@ -34,7 +34,7 @@ import types
 
 import supybot.log as log
 import supybot.conf as conf
-import supybot.i18n as i18n
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
@@ -45,7 +45,7 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-_ = i18n.PluginInternationalization('ChannelStats')
+_ = PluginInternationalization('ChannelStats')
 
 class ChannelStat(irclib.IrcCommandDispatcher):
     _values = ['actions', 'chars', 'frowns', 'joins', 'kicks','modes',
@@ -241,7 +241,14 @@ class ChannelStats(callbacks.Plugin):
             self.db[channel, id] = UserStat()
         self.db.channels[channel][id].kicked += 1
 
+    @internationalizeDocstring
     def stats(self, irc, msg, args, channel, name):
+        """[<channel>] [<name>]
+
+        Returns the statistics for <name> on <channel>.  <channel> is only
+        necessary if the message isn't sent on the channel itself.  If <name>
+        isn't given, it defaults to the user sending the command.
+        """
         if name and ircutils.strEqual(name, irc.nick):
             id = 0
         elif not name:
@@ -288,17 +295,20 @@ class ChannelStats(callbacks.Plugin):
         except KeyError:
             irc.error(format(_('I have no stats for that %s in %s.'),
                              name, channel))
-    stats.__doc__ = _("""[<channel>] [<name>]
-
-        Returns the statistics for <name> on <channel>.  <channel> is only
-        necessary if the message isn't sent on the channel itself.  If <name>
-        isn't given, it defaults to the user sending the command.
-        """)
     stats = wrap(stats, ['channeldb', additional('something')])
 
     _env = {'__builtins__': types.ModuleType('__builtins__')}
     _env.update(math.__dict__)
+    @internationalizeDocstring
     def rank(self, irc, msg, args, channel, expr):
+        """[<channel>] <stat expression>
+
+        Returns the ranking of users according to the given stat expression.
+        Valid variables in the stat expression include 'msgs', 'chars',
+        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',
+        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical
+        expression involving those variables is permitted.
+        """
         # XXX I could do this the right way, and abstract out a safe eval,
         #     or I could just copy/paste from the Math plugin.
         if expr != expr.translate(utils.str.chars, '_[]'):
@@ -332,17 +342,15 @@ class ChannelStats(callbacks.Plugin):
         s = utils.str.commaAndify(['#%s %s (%.3g)' % (i+1, u, v)
                                    for (i, (v, u)) in enumerate(users)])
         irc.reply(s)
-    rank.__doc__ = _("""[<channel>] <stat expression>
-
-        Returns the ranking of users according to the given stat expression.
-        Valid variables in the stat expression include 'msgs', 'chars',
-        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',
-        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical
-        expression involving those variables is permitted.
-        """)
     rank = wrap(rank, ['channeldb', 'text'])
 
+    @internationalizeDocstring
     def channelstats(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Returns the statistics for <channel>.  <channel> is only necessary if
+        the message isn't sent on the channel itself.
+        """
         try:
             stats = self.db.getChannelStats(channel)
             curUsers = len(irc.state.channels[channel].users)
@@ -369,11 +377,6 @@ class ChannelStats(callbacks.Plugin):
             irc.reply(s)
         except KeyError:
             irc.error(format(_('I\'ve never been on %s.'), channel))
-    channelstats.__doc__ = _("""[<channel>]
-
-        Returns the statistics for <channel>.  <channel> is only necessary if
-        the message isn't sent on the channel itself.
-        """)
     channelstats = wrap(channelstats, ['channeldb'])
 
 

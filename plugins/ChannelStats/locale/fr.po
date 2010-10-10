@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: supybot-i18n\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-06 16:16+0200\n"
-"PO-Revision-Date: 2010-10-06 16:46+0100\n"
-"Last-Translator: Valentin 'ProgVal' Lorentz <progval@gmail.com>\n"
+"POT-Creation-Date: 2010-10-10 09:35+CEST\n"
+"PO-Revision-Date: 2010-10-10 10:08+0100\n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -18,59 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: plugin.py:252
-msgid "I couldn't find you in my user database."
-msgstr "Je ne peux vous trouver dans ma base de données."
-
-#: plugin.py:265
-msgid "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s has joined %n, parted %n, quit %n, kicked someone %n, been kicked %n, changed the topic %n, and changed the mode %n."
-msgstr "%s a envoyé %n ; un total de %n, %n, %n, et %n ; %s de ces messages %s. %s est arrivé %nfois, est parti %nfois, a quitté %nfois, a kické %nfois, a été kické %nfois, a changé le topic %nfois, et a changé les modes %nfois."
-
-#: plugin.py:272
-msgid "character"
-msgstr "caractère"
-
-#: plugin.py:273
-#: plugin.py:355
-msgid "word"
-msgstr "mot"
-
-#: plugin.py:274
-#: plugin.py:356
-msgid "smiley"
-msgstr "smiley"
-
-#: plugin.py:275
-#: plugin.py:357
-msgid "frown"
-msgstr "sadley"
-
-#: plugin.py:277
-#: plugin.py:358
-msgid "was an ACTION"
-msgstr "était une action"
-
-#: plugin.py:278
-#: plugin.py:359
-msgid "were ACTIONs"
-msgstr "étaient des ACTIONs"
-
-#: plugin.py:280
-#: plugin.py:281
-#: plugin.py:282
-#: plugin.py:283
-#: plugin.py:284
-#: plugin.py:285
-#: plugin.py:286
-msgid "time"
-msgstr " fois"
-
-#: plugin.py:289
-#, python-format
-msgid "I have no stats for that %s in %s."
-msgstr "Je n'ai pas de statistiques pour %s sur %s."
-
-#: plugin.py:291
+#: plugin.py:246
 msgid ""
 "[<channel>] [<name>]\n"
 "\n"
@@ -79,23 +27,62 @@ msgid ""
 "        isn't given, it defaults to the user sending the command.\n"
 "        "
 msgstr ""
-"[canal>] [nom]\n"
+"[<canal>] [nom]\n"
 "\n"
 " Retourne les statistiques pour <nom> sur le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même. Si <nom> n'est pas donné, il correspond par défaut à l'utilisateur envoyant la commande"
 
-#: plugin.py:305
-msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
-msgstr "Il n'y a aucune raison pour que vous ayez des underscores ou des crochets dans vos expressions mathématiques. Veuillez les supprimer."
+#: plugin.py:259
+msgid "I couldn't find you in my user database."
+msgstr "Je ne peux vous trouver dans ma base de données."
 
-#: plugin.py:309
-msgid "You can't use lambda in this command."
-msgstr "Vous ne pouvez utiliser lambda dans cette commande."
+#: plugin.py:272
+msgid "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s has joined %n, parted %n, quit %n, kicked someone %n, been kicked %n, changed the topic %n, and changed the mode %n."
+msgstr "%s a envoyé %n ; un total de %n, %n, %n, et %n ; %s de ces messages %s. %s est arrivé %nfois, est parti %nfois, a quitté %nfois, a kické %nfois, a été kické %nfois, a changé le topic %nfois, et a changé les modes %nfois."
 
-#: plugin.py:323
-msgid "stat variable"
-msgstr "Variable statistique"
+#: plugin.py:279
+msgid "character"
+msgstr "caractère"
 
-#: plugin.py:335
+#: plugin.py:280
+#: plugin.py:363
+msgid "word"
+msgstr "mot"
+
+#: plugin.py:281
+#: plugin.py:364
+msgid "smiley"
+msgstr "smiley"
+
+#: plugin.py:282
+#: plugin.py:365
+msgid "frown"
+msgstr "sadley"
+
+#: plugin.py:284
+#: plugin.py:366
+msgid "was an ACTION"
+msgstr "était une action"
+
+#: plugin.py:285
+#: plugin.py:367
+msgid "were ACTIONs"
+msgstr "étaient des ACTIONs"
+
+#: plugin.py:287
+#: plugin.py:288
+#: plugin.py:289
+#: plugin.py:290
+#: plugin.py:291
+#: plugin.py:292
+#: plugin.py:293
+msgid "time"
+msgstr " fois"
+
+#: plugin.py:296
+msgid "I have no stats for that %s in %s."
+msgstr "Je n'ai pas de statistiques pour %s sur %s."
+
+#: plugin.py:304
 msgid ""
 "[<channel>] <stat expression>\n"
 "\n"
@@ -110,50 +97,19 @@ msgstr ""
 "\n"
 "Retourne le rang des utilisateurs en fonction de l'expression de statistiques données. Les variables valides dans l'expression de statistiques sont : 'msgs', 'chars', 'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits', 'kicks', 'kicked', 'topics', et 'modes'. Toute expression mathématiques simple utilisant ces variables est autorisée."
 
+#: plugin.py:315
+msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
+msgstr "Il n'y a aucune raison pour que vous ayez des underscores ou des crochets dans vos expressions mathématiques. Veuillez les supprimer."
+
+#: plugin.py:319
+msgid "You can't use lambda in this command."
+msgstr "Vous ne pouvez utiliser lambda dans cette commande."
+
+#: plugin.py:333
+msgid "stat variable"
+msgstr "Variable statistique"
+
 #: plugin.py:349
-msgid "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; %i of those messages %s.  There have been %n, %n, %n, %n, %n, and %n.  There %b currently %n and the channel has peaked at %n."
-msgstr "Sur %s il y a eu%v %i messages, contenant %i caractères, %n, %n, et %n ; %i de ces messages %s. Il y a eu %n, %n, %n, %n, %n, et %n. Il y a%v actuellement %n et le record du canal est de %n."
-
-#: plugin.py:360
-msgid "join"
-msgstr "arrivée"
-
-#: plugin.py:361
-msgid "part"
-msgstr "départ"
-
-#: plugin.py:362
-msgid "quit"
-msgstr "quit"
-
-#: plugin.py:363
-msgid "kick"
-msgstr "kick"
-
-#: plugin.py:364
-msgid "mode"
-msgstr "mode"
-
-#: plugin.py:364
-#: plugin.py:365
-msgid "change"
-msgstr "changement"
-
-#: plugin.py:365
-msgid "topic"
-msgstr "topic"
-
-#: plugin.py:367
-#: plugin.py:368
-msgid "user"
-msgstr "utilisateur"
-
-#: plugin.py:371
-#, python-format
-msgid "I've never been on %s."
-msgstr "Je n'ai jamais été sur %s."
-
-#: plugin.py:372
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -164,4 +120,46 @@ msgstr ""
 "[canal]\n"
 "\n"
 "Retourne les statistiques pour le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:357
+msgid "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; %i of those messages %s.  There have been %n, %n, %n, %n, %n, and %n.  There %b currently %n and the channel has peaked at %n."
+msgstr "Sur %s il y a eu%v %i messages, contenant %i caractères, %n, %n, et %n ; %i de ces messages %s. Il y a eu %n, %n, %n, %n, %n, et %n. Il y a%v actuellement %n et le record du canal est de %n."
+
+#: plugin.py:368
+msgid "join"
+msgstr "arrivée"
+
+#: plugin.py:369
+msgid "part"
+msgstr "départ"
+
+#: plugin.py:370
+msgid "quit"
+msgstr "quit"
+
+#: plugin.py:371
+msgid "kick"
+msgstr "kick"
+
+#: plugin.py:372
+msgid "mode"
+msgstr "mode"
+
+#: plugin.py:372
+#: plugin.py:373
+msgid "change"
+msgstr "changement"
+
+#: plugin.py:373
+msgid "topic"
+msgstr "topic"
+
+#: plugin.py:375
+#: plugin.py:376
+msgid "user"
+msgstr "utilisateur"
+
+#: plugin.py:379
+msgid "I've never been on %s."
+msgstr "Je n'ai jamais été sur %s."
 
