@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2010, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,6 +39,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Admin')
 
 class Admin(callbacks.Plugin):
     def __init__(self, irc):
@@ -46,6 +49,7 @@ class Admin(callbacks.Plugin):
         self.joins = {}
         self.pendingNickChanges = {}
 
+    @internationalizeDocstring
     def do437(self, irc, msg):
         """Nick/channel temporarily unavailable."""
         target = msg.args[0]
@@ -65,7 +69,7 @@ class Admin(callbacks.Plugin):
         try:
             channel = msg.args[1]
             (irc, msg) = self.joins.pop(channel)
-            irc.error('Cannot join %s, it\'s full.' % channel)
+            irc.error(_('Cannot join %s, it\'s full.') % channel)
         except KeyError:
             self.log.debug('Got 471 without Admin.join being called.')
 
@@ -73,7 +77,7 @@ class Admin(callbacks.Plugin):
         try:
             channel = msg.args[1]
             (irc, msg) = self.joins.pop(channel)
-            irc.error('Cannot join %s, I was not invited.' % channel)
+            irc.error(_('Cannot join %s, I was not invited.') % channel)
         except KeyError:
             self.log.debug('Got 473 without Admin.join being called.')
 
@@ -81,7 +85,7 @@ class Admin(callbacks.Plugin):
         try:
             channel = msg.args[1]
             (irc, msg) = self.joins.pop(channel)
-            irc.error('Cannot join %s, it\'s banned me.' % channel)
+            irc.error(_('Cannot join %s, it\'s banned me.') % channel)
         except KeyError:
             self.log.debug('Got 474 without Admin.join being called.')
 
@@ -89,7 +93,7 @@ class Admin(callbacks.Plugin):
         try:
             channel = msg.args[1]
             (irc, msg) = self.joins.pop(channel)
-            irc.error('Cannot join %s, my keyword was wrong.' % channel)
+            irc.error(_('Cannot join %s, my keyword was wrong.') % channel)
         except KeyError:
             self.log.debug('Got 475 without Admin.join being called.')
 
@@ -97,8 +101,8 @@ class Admin(callbacks.Plugin):
         try:
             channel = msg.args[1]
             (irc, msg) = self.joins.pop(channel)
-            irc.error('Cannot join %s, I\'m not identified with the NickServ.'
-                      % channel)
+            irc.error(_('Cannot join %s, I\'m not identified with the '
+                      'NickServ.') % channel)
         except KeyError:
             self.log.debug('Got 515 without Admin.join being called.')
 
@@ -125,6 +129,7 @@ class Admin(callbacks.Plugin):
                                  'the user lacked the "admin" capability.',
                                  channel, msg.prefix)
 
+    @internationalizeDocstring
     def join(self, irc, msg, args, channel, key):
         """<channel> [<key>]
 
@@ -139,13 +144,14 @@ class Admin(callbacks.Plugin):
             networkGroup.channels.key.get(channel).setValue(key)
         maxchannels = irc.state.supported.get('maxchannels', sys.maxint)
         if len(irc.state.channels) + 1 > maxchannels:
-            irc.error('I\'m already too close to maximum number of '
-                      'channels for this network.', Raise=True)
+            irc.error(_('I\'m already too close to maximum number of '
+                      'channels for this network.'), Raise=True)
         irc.queueMsg(networkGroup.channels.join(channel))
         irc.noReply()
         self.joins[channel] = (irc, msg)
     join = wrap(join, ['validChannel', additional('something')])
 
+    @internationalizeDocstring
     def channels(self, irc, msg, args):
         """takes no arguments
 
@@ -157,34 +163,34 @@ class Admin(callbacks.Plugin):
             utils.sortBy(ircutils.toLower, L)
             irc.reply(format('%L', L))
         else:
-            irc.reply('I\'m not currently in any channels.')
+            irc.reply(_('I\'m not currently in any channels.'))
     channels = wrap(channels, ['private'])
 
     def do484(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
-            irc.error('My connection is restricted, I can\'t change nicks.')
+            irc.error(_('My connection is restricted, I can\'t change nicks.'))
         else:
             self.log.debug('Got 484 without Admin.nick being called.')
 
     def do433(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
-            irc.error('Someone else is already using that nick.')
+            irc.error(_('Someone else is already using that nick.'))
         else:
             self.log.debug('Got 433 without Admin.nick being called.')
 
     def do435(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
-            irc.error('That nick is currently banned.')
+            irc.error(_('That nick is currently banned.'))
         else:
             self.log.debug('Got 435 without Admin.nick being called.')
 
     def do438(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
-            irc.error(format('I can\'t change nicks, the server said %q.',
+            irc.error(format(_('I can\'t change nicks, the server said %q.'),
                       msg.args[2]), private=True)
         else:
             self.log.debug('Got 438 without Admin.nick being called.')
@@ -196,6 +202,7 @@ class Admin(callbacks.Plugin):
             except KeyError:
                 self.log.debug('Got NICK without Admin.nick being called.')
 
+    @internationalizeDocstring
     def nick(self, irc, msg, args, nick):
         """[<nick>]
 
@@ -210,6 +217,7 @@ class Admin(callbacks.Plugin):
             irc.reply(irc.nick)
     nick = wrap(nick, [additional('nick')])
 
+    @internationalizeDocstring
     def part(self, irc, msg, args, channel, reason):
         """[<channel>] [<reason>]
 
@@ -229,7 +237,7 @@ class Admin(callbacks.Plugin):
         except KeyError:
             pass
         if channel not in irc.state.channels:
-            irc.error('I\'m not in %s.' % channel, Raise=True)
+            irc.error(_('I\'m not in %s.') % channel, Raise=True)
         irc.queueMsg(ircmsgs.part(channel, reason or msg.nick))
         if msg.nick in irc.state.channels[channel].users:
             irc.noReply()
@@ -239,6 +247,7 @@ class Admin(callbacks.Plugin):
 
     class capability(callbacks.Commands):
 
+        @internationalizeDocstring
         def add(self, irc, msg, args, user, capability):
             """<name|hostmask> <capability>
 
@@ -260,10 +269,10 @@ class Admin(callbacks.Plugin):
             # will depend on supybot.capabilities and its child default) but
             # generally means they can't mess with channel capabilities.
             if ircutils.strEqual(capability, 'owner'):
-                irc.error('The "owner" capability can\'t be added in the bot.'
-                          '  Use the supybot-adduser program (or edit the '
+                irc.error(_('The "owner" capability can\'t be added in the'
+                          'bot.  Use the supybot-adduser program (or edit the '
                           'users.conf file yourself) to add an owner '
-                          'capability.')
+                          'capability.'))
                 return
             if ircdb.isAntiCapability(capability) or \
                ircdb.checkCapability(msg.prefix, capability):
@@ -271,9 +280,10 @@ class Admin(callbacks.Plugin):
                 ircdb.users.setUser(user)
                 irc.replySuccess()
             else:
-                irc.error('You can\'t add capabilities you don\'t have.')
+                irc.error(_('You can\'t add capabilities you don\'t have.'))
         add = wrap(add, ['otherUser', 'lowered'])
 
+        @internationalizeDocstring
         def remove(self, irc, msg, args, user, capability):
             """<name|hostmask> <capability>
 
@@ -287,14 +297,15 @@ class Admin(callbacks.Plugin):
                     ircdb.users.setUser(user)
                     irc.replySuccess()
                 except KeyError:
-                    irc.error('That user doesn\'t have that capability.')
+                    irc.error(_('That user doesn\'t have that capability.'))
             else:
-                s = 'You can\'t remove capabilities you don\'t have.'
+                s = _('You can\'t remove capabilities you don\'t have.')
                 irc.error(s)
         remove = wrap(remove, ['otherUser','lowered'])
 
     class ignore(callbacks.Commands):
 
+        @internationalizeDocstring
         def add(self, irc, msg, args, hostmask, expires):
             """<hostmask|nick> [<expires>]
 
@@ -307,6 +318,7 @@ class Admin(callbacks.Plugin):
             irc.replySuccess()
         add = wrap(add, ['hostmask', additional('expiry', 0)])
 
+        @internationalizeDocstring
         def remove(self, irc, msg, args, hostmask):
             """<hostmask|nick>
 
@@ -317,9 +329,10 @@ class Admin(callbacks.Plugin):
                 ircdb.ignores.remove(hostmask)
                 irc.replySuccess()
             except KeyError:
-                irc.error('%s wasn\'t in the ignores database.' % hostmask)
+                irc.error(_('%s wasn\'t in the ignores database.') % hostmask)
         remove = wrap(remove, ['hostmask'])
 
+        @internationalizeDocstring
         def list(self, irc, msg, args):
             """takes no arguments
 
@@ -329,7 +342,7 @@ class Admin(callbacks.Plugin):
             if ircdb.ignores.hostmasks:
                 irc.reply(format('%L', (map(repr,ircdb.ignores.hostmasks))))
             else:
-                irc.reply('I\'m not currently globally ignoring anyone.')
+                irc.reply(_('I\'m not currently globally ignoring anyone.'))
         list = wrap(list)
 
 
