@@ -32,6 +32,8 @@
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Channel')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -43,8 +45,8 @@ def configure(advanced):
 
 Channel = conf.registerPlugin('Channel')
 conf.registerChannelValue(Channel, 'alwaysRejoin',
-    registry.Boolean(True, """Determines whether the bot will always try to
-    rejoin a channel whenever it's kicked from the channel."""))
+    registry.Boolean(True, _("""Determines whether the bot will always try to
+    rejoin a channel whenever it's kicked from the channel.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
