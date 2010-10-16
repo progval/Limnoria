@@ -44,7 +44,8 @@ class StatusTestCase(PluginTestCase):
         self.failIf('None' in m.args[1], 'None in cpu output: %r.' % m)
         for s in ['linux', 'freebsd', 'openbsd', 'netbsd', 'darwin']:
             if sys.platform.startswith(s):
-                self.failUnless('kB' in m.args[1],
+                self.failUnless('B' in m.args[1] or 'KB' in m.args[1] or
+                                'MB' in m.args[1],
                                 'No memory string on supported platform.')
         try:
             original = conf.supybot.plugins.Status.cpu.get('children')()
