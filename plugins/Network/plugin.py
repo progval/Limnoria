@@ -38,6 +38,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Network')
 
 class Network(callbacks.Plugin):
     _whois = {}
@@ -50,6 +52,7 @@ class Network(callbacks.Plugin):
             raise callbacks.Error, \
                   'I\'m not currently connected to %s.' % network
 
+    @internationalizeDocstring
     def connect(self, irc, msg, args, opts, network, server, password):
         """[--ssl] <network> [<host[:port]>] [<password>]
 
@@ -61,7 +64,7 @@ class Network(callbacks.Plugin):
         """
         try:
             otherIrc = self._getIrc(network)
-            irc.error('I\'m already connected to %s.' % network)
+            irc.error(_('I\'m already connected to %s.') % network)
             return # We've gotta return here.  This is ugly code, but I'm not
                    # quite sure what to do about it.
         except callbacks.Error:
@@ -81,19 +84,20 @@ class Network(callbacks.Plugin):
             try:
                 serverPort = conf.supybot.networks.get(network).servers()[0]
             except (registry.NonExistentRegistryEntry, IndexError):
-                irc.error('A server must be provided if the network is not '
-                          'already registered.')
+                irc.error(_('A server must be provided if the network is not '
+                          'already registered.'))
                 return
         Owner = irc.getCallback('Owner')
         newIrc = Owner._connect(network, serverPort=serverPort,
                                 password=password, ssl=ssl)
         conf.supybot.networks().add(network)
         assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
-        irc.replySuccess('Connection to %s initiated.' % network)
+        irc.replySuccess(_('Connection to %s initiated.') % network)
     connect = wrap(connect, ['owner', getopts({'ssl': ''}), 'something',
                              additional('something'),
                              additional('something', '')])
 
+    @internationalizeDocstring
     def disconnect(self, irc, msg, args, otherIrc, quitMsg):
         """[<network>] [<quit message>]
 
@@ -107,10 +111,11 @@ class Network(callbacks.Plugin):
         otherIrc.die()
         conf.supybot.networks().discard(otherIrc.network)
         if otherIrc != irc:
-            irc.replySuccess('Disconnection to %s initiated.' %
+            irc.replySuccess(_('Disconnection to %s initiated.') %
                              otherIrc.network)
     disconnect = wrap(disconnect, ['owner', 'networkIrc', additional('text')])
 
+    @internationalizeDocstring
     def reconnect(self, irc, msg, args, otherIrc, quitMsg):
         """[<network>] [<quit message>]
 
@@ -127,6 +132,7 @@ class Network(callbacks.Plugin):
             irc.replySuccess()
     reconnect = wrap(reconnect, ['owner', 'networkIrc', additional('text')])
 
+    @internationalizeDocstring
     def command(self, irc, msg, args, otherIrc, commandAndArgs):
         """<network> <command> [<arg> ...]
 
@@ -201,43 +207,43 @@ class Network(callbacks.Plugin):
                     voices.append(channel[1:])
             L = []
             if ops:
-                L.append(format('is an op on %L', ops))
+                L.append(format(_('is an op on %L'), ops))
             if halfops:
-                L.append(format('is a halfop on %L', halfops))
+                L.append(format(_('is a halfop on %L'), halfops))
             if voices:
-                L.append(format('is voiced on %L', voices))
+                L.append(format(_('is voiced on %L'), voices))
             if normal:
                 if L:
-                    L.append(format('is also on %L', normal))
+                    L.append(format(_('is also on %L'), normal))
                 else:
-                    L.append(format('is on %L', normal))
+                    L.append(format(_('is on %L'), normal))
         else:
-            L = ['isn\'t on any non-secret channels']
+            L = [_('isn\'t on any non-secret channels')]
         channels = format('%L', L)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
             signon = time.strftime(conf.supybot.reply.format.time(),
                                    time.localtime(float(d['317'].args[3])))
         else:
-            idle = '<unknown>'
-            signon = '<unknown>'
+            idle = _('<unknown>')
+            signon = _('<unknown>')
         if '312' in d:
             server = d['312'].args[2]
         else:
-            server = '<unknown>'
+            server = _('<unknown>')
         if '301' in d:
             away = '  %s is away: %s.' % (nick, d['301'].args[2])
         else:
             away = ''
         if '320' in d:
             if d['320'].args[2]:
-                identify = ' identified'
+                identify = _(' identified')
             else:
                 identify = ''
         else:
             identify = ''
-        s = '%s (%s) has been%s on server %s since %s (idle for %s) and ' \
-            '%s.%s' % (user, hostmask, identify, server, signon, idle,
+        s = _('%s (%s) has been%s on server %s since %s (idle for %s) and '
+            '%s.%s') % (user, hostmask, identify, server, signon, idle,
                        channels, away)
         replyIrc.reply(s)
         del self._whois[(irc, loweredNick)]
@@ -249,10 +255,11 @@ class Network(callbacks.Plugin):
             return
         (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
         del self._whois[(irc, loweredNick)]
-        s = 'There is no %s on %s.' % (nick, irc.network)
+        s = _('There is no %s on %s.') % (nick, irc.network)
         replyIrc.reply(s)
     do401 = do402
 
+    @internationalizeDocstring
     def whois(self, irc, msg, args, otherIrc, nick):
         """[<network>] <nick>
 
@@ -268,6 +275,7 @@ class Network(callbacks.Plugin):
         self._whois[(otherIrc, nick)] = (irc, msg, {})
     whois = wrap(whois, ['networkIrc', 'nick'])
 
+    @internationalizeDocstring
     def networks(self, irc, msg, args):
         """takes no arguments
 
@@ -282,8 +290,9 @@ class Network(callbacks.Plugin):
         now = time.time()
         if irc in self._latency:
             (replyIrc, when) = self._latency.pop(irc)
-            replyIrc.reply('%.2f seconds.' % (now-when))
+            replyIrc.reply(_('%.2f seconds.') % (now-when))
 
+    @internationalizeDocstring
     def latency(self, irc, msg, args, otherIrc):
         """[<network>]
 
@@ -291,11 +300,13 @@ class Network(callbacks.Plugin):
         if the message isn't sent on the network to which this command is to
         apply.
         """
-        otherIrc.queueMsg(ircmsgs.ping('Latency check (from %s).' % msg.nick))
+        otherIrc.queueMsg(ircmsgs.ping(_('Latency check (from %s).') %
+                                       msg.nick))
         self._latency[otherIrc] = (irc, time.time())
         irc.noReply()
     latency = wrap(latency, ['networkIrc'])
 
+    @internationalizeDocstring
     def driver(self, irc, msg, args, otherIrc):
         """[<network>]
 
