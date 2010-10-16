@@ -362,7 +362,7 @@ def timestamp(t):
         t = time.time()
     return time.ctime(t)
 
-_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrstu%])')
+_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrsStu%])')
 def format(s, *args, **kwargs):
     """w00t.
 
@@ -377,6 +377,7 @@ def format(s, *args, **kwargs):
     p: pluralize (takes a string)
     q: quoted (takes a string)
     n: nItems (takes a 2-tuple of (n, item) or a 3-tuple of (n, between, item))
+    S: returns a human-readable size (takes an int)
     t: time, formatted (takes an int)
     u: url, wrapped in braces (this should be configurable at some point)
     """
@@ -425,6 +426,15 @@ def format(s, *args, **kwargs):
                 return nItems(t[0], t[2], between=t[1])
             else:
                 raise ValueError, 'Invalid value for %%n in format: %s' % t
+        elif char == 'S':
+            t = args.pop()
+            if not isinstance(t, (int, long)):
+                raise ValueError, 'Invalid value for %%S in format: %s' % t
+            for suffix in ['B','KB','MB','GB','TB']:
+                if t < 1024:
+                    return "%i%s" % (t, suffix)
+                t /= 1024
+
         elif char == 't':
             return timestamp(args.pop())
         elif char == 'u':
