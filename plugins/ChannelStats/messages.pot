@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-10 15:07+CEST\n"
+"POT-Creation-Date: 2010-10-16 09:41+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,25 +15,36 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:57
+#: config.py:60
 msgid ""
 "Determines whether the bot will keep channel\n"
 "    statistics on itself, possibly skewing the channel stats (especially in\n"
 "    cases where the bot is relaying between channels on a network)."
 msgstr ""
 
-#: config.py:61
+#: config.py:64
 msgid ""
 "Determines what\n"
 "    words (i.e., pieces of text with no spaces in them) are considered\n"
 "    'smileys' for the purposes of stats-keeping."
 msgstr ""
 
-#: config.py:65
+#: config.py:68
 msgid ""
 "Determines what words\n"
 "    (i.e., pieces of text with no spaces in them ) are considered 'frowns' for\n"
 "    the purposes of stats-keeping."
+msgstr ""
+
+#: plugin.py:246
+#, docstring
+msgid ""
+"[<channel>] [<name>]\n"
+"\n"
+"        Returns the statistics for <name> on <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent on the channel itself.  If <name>\n"
+"        isn't given, it defaults to the user sending the command.\n"
+"        "
 msgstr ""
 
 #: plugin.py:259
@@ -77,6 +88,19 @@ msgstr ""
 msgid "I have no stats for that %s in %s."
 msgstr ""
 
+#: plugin.py:304
+#, docstring
+msgid ""
+"[<channel>] <stat expression>\n"
+"\n"
+"        Returns the ranking of users according to the given stat expression.\n"
+"        Valid variables in the stat expression include 'msgs', 'chars',\n"
+"        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',\n"
+"        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical\n"
+"        expression involving those variables is permitted.\n"
+"        "
+msgstr ""
+
 #: plugin.py:315
 msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
 msgstr ""
@@ -87,6 +111,16 @@ msgstr ""
 
 #: plugin.py:333
 msgid "stat variable"
+msgstr ""
+
+#: plugin.py:349
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the statistics for <channel>.  <channel> is only necessary if\n"
+"        the message isn't sent on the channel itself.\n"
+"        "
 msgstr ""
 
 #: plugin.py:357
