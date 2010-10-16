@@ -19,11 +19,11 @@ msgstr "Nick/canal temporairement indisponible"
 
 #: plugin.py:72
 msgid "Cannot join %s, it's full."
-msgstr "Ne peut joindre %s, il est plein"
+msgstr "Ne peut joindre %s, il est plein."
 
 #: plugin.py:80
 msgid "Cannot join %s, I was not invited."
-msgstr "Ne peut joindre %s, pas invité"
+msgstr "Ne peut joindre %s, pas invité."
 
 #: plugin.py:88
 msgid "Cannot join %s, it's banned me."
