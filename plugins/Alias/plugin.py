@@ -37,6 +37,8 @@ from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Alias')
 
 # Copied from the old privmsgs.py.
 def getChannel(msg, args=()):
@@ -159,8 +161,8 @@ def makeNewAlias(name, alias):
         self.Proxy(irc, msg, tokens)
     flexargs = ''
     if biggestDollar and (wildcard or biggestAt):
-        flexargs = ' at least'
-    doc =format('<an alias,%s %n>\n\nAlias for %q.',
+        flexargs = _(' at least')
+    doc =format(_('<an alias,%s %n>\n\nAlias for %q.'),
                 flexargs, (biggestDollar, 'argument'), alias)
     f = utils.python.changeFunctionName(f, name, doc)
     return f
@@ -213,6 +215,7 @@ class Alias(callbacks.Plugin):
         except AttributeError:
             return self.aliases[command[0]][2]
 
+    @internationalizeDocstring
     def lock(self, irc, msg, args, name):
         """<alias>
 
@@ -223,9 +226,10 @@ class Alias(callbacks.Plugin):
             conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(True)
             irc.replySuccess()
         else:
-            irc.error('There is no such alias.')
+            irc.error(_('There is no such alias.'))
     lock = wrap(lock, [('checkCapability', 'admin'), 'commandName'])
 
+    @internationalizeDocstring
     def unlock(self, irc, msg, args, name):
         """<alias>
 
@@ -236,7 +240,7 @@ class Alias(callbacks.Plugin):
             conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(False)
             irc.replySuccess()
         else:
-            irc.error('There is no such alias.')
+            irc.error(_('There is no such alias.'))
     unlock = wrap(unlock, [('checkCapability', 'admin'), 'commandName'])
 
     _invalidCharsRe = re.compile(r'[\[\]\s]')
@@ -247,7 +251,7 @@ class Alias(callbacks.Plugin):
             raise AliasError, 'Names cannot contain pipes.'
         realName = callbacks.canonicalName(name)
         if name != realName:
-            s = format('That name isn\'t valid.  Try %q instead.', realName)
+            s = format(_('That name isn\'t valid.  Try %q instead.'), realName)
             raise AliasError, s
         name = realName
         if self.isCommandMethod(name):
@@ -283,6 +287,7 @@ class Alias(callbacks.Plugin):
         else:
             raise AliasError, 'There is no such alias.'
 
+    @internationalizeDocstring
     def add(self, irc, msg, args, name, alias):
         """<name> <alias>
 
@@ -305,6 +310,7 @@ class Alias(callbacks.Plugin):
             irc.error(str(e))
     add = wrap(add, ['commandName', 'text'])
 
+    @internationalizeDocstring
     def remove(self, irc, msg, args, name):
         """<name>
 

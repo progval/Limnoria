@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Anonymous')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -44,20 +46,20 @@ Anonymous = conf.registerPlugin('Anonymous')
 # conf.registerGlobalValue(Anonymous, 'someConfigVariableName',
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
 conf.registerChannelValue(conf.supybot.plugins.Anonymous,
-    'requirePresenceInChannel', registry.Boolean(True, """Determines whether
+    'requirePresenceInChannel', registry.Boolean(True, _("""Determines whether
     the bot should require people trying to use this plugin to be in the
-    channel they wish to anonymously send to."""))
+    channel they wish to anonymously send to.""")))
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireRegistration',
-    registry.Boolean(True, """Determines whether the bot should require people
-    trying to use this plugin to be registered."""))
+    registry.Boolean(True, _("""Determines whether the bot should require
+    people trying to use this plugin to be registered.""")))
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireCapability',
-    registry.String('', """Determines what capability (if any) the bot should
-    require people trying to use this plugin to have."""))
+    registry.String('', _("""Determines what capability (if any) the bot should
+    require people trying to use this plugin to have.""")))
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'allowPrivateTarget',
-    registry.Boolean(False, """Determines whether the bot will require targets
-    of the "say" command to be public (i.e., channels).  If this is True, the
-    bot will allow people to use the "say" command to send private messages to
-    other users."""))
+    registry.Boolean(False, _("""Determines whether the bot will require 
+    targets of the "say" command to be public (i.e., channels).  If this is
+    True, the bot will allow people to use the "say" command to send private
+    messages to other users.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
