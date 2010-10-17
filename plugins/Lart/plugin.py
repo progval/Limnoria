@@ -32,6 +32,8 @@ import re
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Lart')
 
 class Lart(plugins.ChannelIdDatabasePlugin):
     _meRe = re.compile(r'\bme\b', re.I)
@@ -43,8 +45,9 @@ class Lart(plugins.ChannelIdDatabasePlugin):
 
     def addValidator(self, irc, text):
         if '$who' not in text:
-            irc.error('Larts must contain $who.', Raise=True)
+            irc.error(_('Larts must contain $who.'), Raise=True)
 
+    @internationalizeDocstring
     def lart(self, irc, msg, args, channel, id, text):
         """[<channel>] [<id>] <who|what> [for <reason>]
 
@@ -60,18 +63,18 @@ class Lart(plugins.ChannelIdDatabasePlugin):
             try:
                 lart = self.db.get(channel, id)
             except KeyError:
-                irc.error(format('There is no lart with id #%i.', id))
+                irc.error(format(_('There is no lart with id #%i.'), id))
                 return
         else:
             lart = self.db.random(channel)
             if not lart:
-                irc.error(format('There are no larts in my database '
-                                 'for %s.', channel))
+                irc.error(format(_('There are no larts in my database '
+                                 'for %s.'), channel))
                 return
         text = lart.text
         if ircutils.strEqual(target, irc.nick):
             target = msg.nick
-            reason = self._replaceFirstPerson('trying to dis me', irc.nick)
+            reason = self._replaceFirstPerson(_('trying to dis me'), irc.nick)
         else:
             target = self._replaceFirstPerson(target, msg.nick)
             reason = self._replaceFirstPerson(reason, msg.nick)
@@ -79,7 +82,7 @@ class Lart(plugins.ChannelIdDatabasePlugin):
             target = target.rstrip('.')
         text = text.replace('$who', target)
         if reason:
-            text += ' for ' + reason
+            text += _(' for ') + reason
         if self.registryValue('showIds', channel):
             text += format(' (#%i)', lart.id)
         irc.reply(text, action=True)
