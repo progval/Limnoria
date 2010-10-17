@@ -163,7 +163,7 @@ def makeNewAlias(name, alias):
     if biggestDollar and (wildcard or biggestAt):
         flexargs = _(' at least')
     doc =format(_('<an alias,%s %n>\n\nAlias for %q.'),
-                flexargs, (biggestDollar, 'argument'), alias)
+                flexargs, (biggestDollar, _('argument')), alias)
     f = utils.python.changeFunctionName(f, name, doc)
     return f
 
