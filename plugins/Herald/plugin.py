@@ -40,6 +40,8 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.utils.structures import TimeoutQueue
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Heral')
 
 filename = conf.supybot.directories.data.dirize('Herald.db')
 
@@ -136,6 +138,7 @@ class Herald(callbacks.Plugin):
                 raise KeyError
         return id
 
+    @internationalizeDocstring
     def default(self, irc, msg, args, channel, optlist, text):
         """[<channel>] [--remove|<msg>]
 
@@ -156,12 +159,13 @@ class Herald(callbacks.Plugin):
             irc.replySuccess()
         else:
             resp = self.registryValue('default', channel) or \
-                   'I do not have a default herald set for %s.' % channel
+                   _('I do not have a default herald set for %s.') % channel
             irc.reply(resp)
     default = wrap(default, ['channel',
                              getopts({'remove': ''}),
                              additional('text')])
 
+    @internationalizeDocstring
     def get(self, irc, msg, args, channel, user):
         """[<channel>] [<user|nick>]
 
@@ -174,7 +178,7 @@ class Herald(callbacks.Plugin):
             herald = self.db[channel, user.id]
             irc.reply(herald)
         except KeyError:
-            irc.error('I have no herald for %s.' % user.name)
+            irc.error(_('I have no herald for %s.') % user.name)
     get = wrap(get, ['channel', first('otherUser', 'user')])
 
     def _preCheck(self, irc, msg, user):
@@ -192,6 +196,7 @@ class Herald(callbacks.Plugin):
     # I chose not to make <user|nick> optional in this command because
     # if it's not a valid username (e.g., if the user tyops and misspells a
     # username), it may be nice not to clobber the user's herald.
+    @internationalizeDocstring
     def add(self, irc, msg, args, channel, user, herald):
         """[<channel>] <user|nick> <msg>
 
@@ -204,6 +209,7 @@ class Herald(callbacks.Plugin):
         irc.replySuccess()
     add = wrap(add, ['channel', 'otherUser', 'text'])
 
+    @internationalizeDocstring
     def remove(self, irc, msg, args, channel, user):
         """[<channel>] [<user|nick>]
 
@@ -218,9 +224,10 @@ class Herald(callbacks.Plugin):
             del self.db[channel, user.id]
             irc.replySuccess()
         except KeyError:
-            irc.error('I have no herald for that user.')
+            irc.error(_('I have no herald for that user.'))
     remove = wrap(remove, ['channel', first('otherUser', 'user')])
 
+    @internationalizeDocstring
     def change(self, irc, msg, args, channel, user, changer):
         """[<channel>] [<user|nick>] <regexp>
 

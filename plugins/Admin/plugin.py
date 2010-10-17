@@ -269,7 +269,7 @@ class Admin(callbacks.Plugin):
             # will depend on supybot.capabilities and its child default) but
             # generally means they can't mess with channel capabilities.
             if ircutils.strEqual(capability, 'owner'):
-                irc.error(_('The "owner" capability can\'t be added in the'
+                irc.error(_('The "owner" capability can\'t be added in the '
                           'bot.  Use the supybot-adduser program (or edit the '
                           'users.conf file yourself) to add an owner '
                           'capability.'))

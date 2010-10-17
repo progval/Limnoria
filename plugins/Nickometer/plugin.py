@@ -53,6 +53,8 @@ import string
 
 import supybot.callbacks as callbacks
 from supybot.commands import wrap, additional
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Nickometer')
 
 def slowExponent(x):
     return 1.3 * x * (1 - math.atan(x / 6.0) * 2 / math.pi)
@@ -77,6 +79,7 @@ class Nickometer(callbacks.Plugin):
         self.log.debug('%s lameness points awarded: %s', damage, reason)
         return damage
 
+    @internationalizeDocstring
     def nickometer(self, irc, msg, args, nick):
         """[<nick>]
 
@@ -220,7 +223,7 @@ class Nickometer(callbacks.Plugin):
         # if it's above 99.9%, show as many digits as is interesting
         score_string=re.sub('(99\\.9*\\d|\\.\\d).*','\\1',`percentage`)
 
-        irc.reply('The "lame nick-o-meter" reading for "%s" is %s%%.' %
+        irc.reply(_('The "lame nick-o-meter" reading for "%s" is %s%%.') %
                   (originalNick, score_string))
 
         self.log.debug('Calculated lameness score for %s as %s '

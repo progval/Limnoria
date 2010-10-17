@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Praise')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -42,10 +44,10 @@ def configure(advanced):
 Praise = conf.registerPlugin('Praise')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Praise, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 conf.registerChannelValue(Praise, 'showIds',
-    registry.Boolean(False, """Determines whether the bot will show the ids of
-    a praise when the praise is given."""))
+    registry.Boolean(False, _("""Determines whether the bot will show the ids of
+    a praise when the praise is given.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

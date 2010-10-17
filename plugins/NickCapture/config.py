@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('NickCapture')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -42,11 +44,11 @@ def configure(advanced):
 NickCapture = conf.registerPlugin('NickCapture')
 conf.registerPlugin('NickCapture')
 conf.registerGlobalValue(NickCapture, 'ison',
-    registry.Boolean(True, """Determines whether the bot will check
-    occasionally if its preferred nick is in use via the ISON command."""))
+    registry.Boolean(True, _("""Determines whether the bot will check
+    occasionally if its preferred nick is in use via the ISON command.""")))
 conf.registerGlobalValue(NickCapture.ison, 'period',
-    registry.PositiveInteger(600, """Determines how often (in seconds) the bot
-    will check whether its nick ISON."""))
+    registry.PositiveInteger(600, _("""Determines how often (in seconds) the bot
+    will check whether its nick ISON.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

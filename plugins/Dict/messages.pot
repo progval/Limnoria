@@ -1,0 +1,82 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2010-10-17 10:39+CEST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:38
+msgid "The default dictd server is dict.org."
+msgstr ""
+
+#: config.py:39
+msgid "Would you like to specify a different dictd server?"
+msgstr ""
+
+#: config.py:45
+msgid ""
+"Determines what server the bot will\n"
+"    retrieve definitions from."
+msgstr ""
+
+#: config.py:48
+msgid ""
+"Determines the default dictionary the bot will\n"
+"    ask for definitions in.  If this value is '*' (without the quotes) the bot\n"
+"    will use all dictionaries to define words."
+msgstr ""
+
+#: plugin.py:52
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the dictionaries valid for the dict command.\n"
+"        "
+msgstr ""
+
+#: plugin.py:68
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns a random valid dictionary.\n"
+"        "
+msgstr ""
+
+#: plugin.py:83
+#, docstring
+msgid ""
+"[<dictionary>] <word>\n"
+"\n"
+"        Looks up the definition of <word> on the dictd server specified by\n"
+"        the supybot.plugins.Dict.server config variable.\n"
+"        "
+msgstr ""
+
+#: plugin.py:106
+msgid "You must give a word to define."
+msgstr ""
+
+#: plugin.py:112
+msgid "No definition for %q could be found."
+msgstr ""
+
+#: plugin.py:115
+msgid "No definition for %q could be found in %s"
+msgstr ""
+
+#: plugin.py:127
+msgid "%L responded: %s"
+msgstr ""
+

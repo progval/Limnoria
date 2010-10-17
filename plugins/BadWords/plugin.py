@@ -39,6 +39,8 @@ import supybot.ircmsgs as ircmsgs
 from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('BadWords')
 
 class BadWords(callbacks.Privmsg):
     def __init__(self, irc):
@@ -103,6 +105,7 @@ class BadWords(callbacks.Privmsg):
             s = r'\b%s\b' % s
         self.regexp = re.compile(s, re.I)
 
+    @internationalizeDocstring
     def list(self, irc, msg, args):
         """takes no arguments
 
@@ -114,9 +117,10 @@ class BadWords(callbacks.Privmsg):
             utils.sortBy(str.lower, L)
             irc.reply(format('%L', L))
         else:
-            irc.reply('I\'m not currently censoring any bad words.')
+            irc.reply(_('I\'m not currently censoring any bad words.'))
     list = wrap(list, ['admin'])
 
+    @internationalizeDocstring
     def add(self, irc, msg, args, words):
         """<word> [<word> ...]
 
@@ -128,6 +132,7 @@ class BadWords(callbacks.Privmsg):
         irc.replySuccess()
     add = wrap(add, ['admin', many('something')])
 
+    @internationalizeDocstring
     def remove(self, irc, msg, args, words):
         """<word> [<word> ...]
 

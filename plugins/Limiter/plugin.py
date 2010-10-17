@@ -32,8 +32,10 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Limiter')
 
-
+@internationalizeDocstring
 class Limiter(callbacks.Plugin):
     """In order to use this plugin, its config values need to be properly
     setup.  supybot.plugins.Limiter.enable needs to be set to True and

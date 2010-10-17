@@ -39,11 +39,14 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Filter')
 
 class MyFilterProxy(object):
     def reply(self, s):
         self.s = s
 
+@internationalizeDocstring
 class Filter(callbacks.Plugin):
     """This plugin offers several commands which transform text in some way.
     It also provides the capability of using such commands to 'filter' the
@@ -77,6 +80,7 @@ class Filter(callbacks.Plugin):
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
                        'hebrew', 'undup', 'gnu', 'shrink', 'azn', 'uniud']
+    @internationalizeDocstring
     def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
 
@@ -91,7 +95,7 @@ class Filter(callbacks.Plugin):
                 self.outFilters.setdefault(channel, []).append(method)
                 irc.replySuccess()
             else:
-                irc.error('That\'s not a valid filter command.')
+                irc.error(_('That\'s not a valid filter command.'))
         else:
             self.outFilters[channel] = []
             irc.replySuccess()
@@ -99,6 +103,7 @@ class Filter(callbacks.Plugin):
                      [('checkChannelCapability', 'op'),
                       additional('commandName')])
 
+    @internationalizeDocstring
     def hebrew(self, irc, msg, args, text):
         """<text>
 
@@ -110,6 +115,7 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     hebrew = wrap(hebrew, ['text'])
 
+    @internationalizeDocstring
     def squish(self, irc, msg, args, text):
         """<text>
 
@@ -119,6 +125,7 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     squish = wrap(squish, ['text'])
 
+    @internationalizeDocstring
     def undup(self, irc, msg, args, text):
         """<text>
 
@@ -131,6 +138,7 @@ class Filter(callbacks.Plugin):
         irc.reply(''.join(L))
     undup = wrap(undup, ['text'])
 
+    @internationalizeDocstring
     def binary(self, irc, msg, args, text):
         """<text>
 
@@ -156,6 +164,7 @@ class Filter(callbacks.Plugin):
         irc.reply(''.join(L))
     binary = wrap(binary, ['text'])
 
+    @internationalizeDocstring
     def hexlify(self, irc, msg, args, text):
         """<text>
 
@@ -165,6 +174,7 @@ class Filter(callbacks.Plugin):
         irc.reply(text.encode('hex_codec'))
     hexlify = wrap(hexlify, ['text'])
 
+    @internationalizeDocstring
     def unhexlify(self, irc, msg, args, text):
         """<hexstring>
 
@@ -174,9 +184,10 @@ class Filter(callbacks.Plugin):
         try:
             irc.reply(text.decode('hex_codec'))
         except TypeError:
-            irc.error('Invalid input.')
+            irc.error(_('Invalid input.'))
     unhexlify = wrap(unhexlify, ['text'])
 
+    @internationalizeDocstring
     def rot13(self, irc, msg, args, text):
         """<text>
 
@@ -187,6 +198,7 @@ class Filter(callbacks.Plugin):
         irc.reply(text.encode('rot13'))
     rot13 = wrap(rot13, ['text'])
 
+    @internationalizeDocstring
     def lithp(self, irc, msg, args, text):
         """<text>
 
@@ -217,6 +229,7 @@ class Filter(callbacks.Plugin):
                 (re.compile(r'[aA][tT]'), '@'),
                 (re.compile(r'[sS]\b'), 'z'),
                 (re.compile(r'x'), '><'),]
+    @internationalizeDocstring
     def leet(self, irc, msg, args, text):
         """<text>
 
@@ -236,6 +249,7 @@ class Filter(callbacks.Plugin):
                           ('D', '|)'), ('B', '|3'), ('I', ']['), ('Vv', '\\/'),
                           ('wW', '\\/\\/'), ('d', 'c|'), ('b', '|>'),
                           ('c', '<'), ('h', '|n'),]
+    @internationalizeDocstring
     def supa1337(self, irc, msg, args, text):
         """<text>
 
@@ -251,6 +265,7 @@ class Filter(callbacks.Plugin):
 
     _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'
                              r'([a-zA-Z])(?:\b|(?![a-zA-Z]))')
+    @internationalizeDocstring
     def scramble(self, irc, msg, args, text):
         """<text>
 
@@ -315,6 +330,7 @@ class Filter(callbacks.Plugin):
     }
     _revMorseCode = dict([(y, x) for (x, y) in _morseCode.items()])
     _unmorsere = re.compile('([.-]+)')
+    @internationalizeDocstring
     def unmorse(self, irc, msg, args, text):
         """<Morse code text>
 
@@ -331,6 +347,7 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     unmorse = wrap(unmorse, ['text'])
 
+    @internationalizeDocstring
     def morse(self, irc, msg, args, text):
         """<text>
 
@@ -342,6 +359,7 @@ class Filter(callbacks.Plugin):
         irc.reply(' '.join(L))
     morse = wrap(morse, ['text'])
 
+    @internationalizeDocstring
     def reverse(self, irc, msg, args, text):
         """<text>
 
@@ -350,6 +368,7 @@ class Filter(callbacks.Plugin):
         irc.reply(text[::-1])
     reverse = wrap(reverse, ['text'])
 
+    @internationalizeDocstring
     def _color(self, c, fg=None):
         if c == ' ':
             return c
@@ -357,6 +376,7 @@ class Filter(callbacks.Plugin):
             fg = str(random.randint(2, 15)).zfill(2)
         return '\x03%s%s' % (fg, c)
 
+    @internationalizeDocstring
     def colorize(self, irc, msg, args, text):
         """<text>
 
@@ -366,6 +386,7 @@ class Filter(callbacks.Plugin):
         irc.reply('%s%s' % (''.join(L), '\x03'))
     colorize = wrap(colorize, ['text'])
 
+    @internationalizeDocstring
     def rainbow(self, irc, msg, args, text):
         """<text>
 
@@ -376,6 +397,7 @@ class Filter(callbacks.Plugin):
         irc.reply(''.join(L) + '\x03')
     rainbow = wrap(rainbow, ['text'])
 
+    @internationalizeDocstring
     def stripcolor(self, irc, msg, args, text):
         """<text>
 
@@ -384,6 +406,7 @@ class Filter(callbacks.Plugin):
         irc.reply(ircutils.stripColor(text))
     stripcolor = wrap(stripcolor, ['text'])
 
+    @internationalizeDocstring
     def aol(self, irc, msg, args, text):
         """<text>
 
@@ -410,6 +433,7 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     aol = wrap(aol, ['text'])
 
+    @internationalizeDocstring
     def jeffk(self, irc, msg, args, text):
         """<text>
 
@@ -507,52 +531,56 @@ class Filter(callbacks.Plugin):
     # Keeping these separate so people can just replace the alphabets for
     # whatever their language of choice
     _spellLetters = {
-        'a': 'ay', 'b': 'bee', 'c': 'see', 'd': 'dee', 'e': 'ee', 'f': 'eff',
-        'g': 'gee', 'h': 'aych', 'i': 'eye', 'j': 'jay', 'k': 'kay', 'l':
-        'ell', 'm': 'em', 'n': 'en', 'o': 'oh', 'p': 'pee', 'q': 'cue', 'r':
-        'arr', 's': 'ess', 't': 'tee', 'u': 'you', 'v': 'vee', 'w':
-        'double-you', 'x': 'ecks', 'y': 'why', 'z': 'zee'
+        'a': _('ay'), 'b': _('bee'), 'c': _('see'), 'd': _('dee'),
+        'e': _('ee'), 'f': _('eff'), 'g': _('gee'), 'h': _('aych'),
+        'i': _('eye'), 'j': _('jay'), 'k': _('kay'), 'l': _('ell'),
+        'm': _('em'), 'n': _('en'), 'o': _('oh'), 'p': _('pee'), 'q': _('cue'),
+        'r': _('arr'), 's': _('ess'), 't': _('tee'), 'u': _('you'),
+        'v': _('vee'), 'w': _('double-you'), 'x': _('ecks'), 'y': _('why'),
+        'z': _('zee')
     }
     for (k, v) in _spellLetters.items():
         _spellLetters[k.upper()] = v
     _spellPunctuation = {
-        '!': 'exclamation point',
-        '"': 'quote',
-        '#': 'pound',
-        '$': 'dollar sign',
-        '%': 'percent',
-        '&': 'ampersand',
-        '\'': 'single quote',
-        '(': 'left paren',
-        ')': 'right paren',
-        '*': 'asterisk',
-        '+': 'plus',
-        ',': 'comma',
-        '-': 'minus',
-        '.': 'period',
-        '/': 'slash',
-        ':': 'colon',
-        ';': 'semicolon',
-        '<': 'less than',
-        '=': 'equals',
-        '>': 'greater than',
-        '?': 'question mark',
-        '@': 'at',
-        '[': 'left bracket',
-        '\\': 'backslash',
-        ']': 'right bracket',
-        '^': 'caret',
-        '_': 'underscore',
-        '`': 'backtick',
-        '{': 'left brace',
-        '|': 'pipe',
-        '}': 'right brace',
-        '~': 'tilde'
+        '!': _('exclamation point'),
+        '"': _('quote'),
+        '#': _('pound'),
+        '$': _('dollar sign'),
+        '%': _('percent'),
+        '&': _('ampersand'),
+        '\'': _('single quote'),
+        '(': _('left paren'),
+        ')': _('right paren'),
+        '*': _('asterisk'),
+        '+': _('plus'),
+        ',': _('comma'),
+        '-': _('minus'),
+        '.': _('period'),
+        '/': _('slash'),
+        ':': _('colon'),
+        ';': _('semicolon'),
+        '<': _('less than'),
+        '=': _('equals'),
+        '>': _('greater than'),
+        '?': _('question mark'),
+        '@': _('at'),
+        '[': _('left bracket'),
+        '\\': _('backslash'),
+        ']': _('right bracket'),
+        '^': _('caret'),
+        '_': _('underscore'),
+        '`': _('backtick'),
+        '{': _('left brace'),
+        '|': _('pipe'),
+        '}': _('right brace'),
+        '~': _('tilde')
     }
     _spellNumbers = {
-        '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
-        '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+        '0': _('zero'), '1': _('one'), '2': _('two'), '3': _('three'), 
+        '4': _('four'), '5': _('five'), '6': _('six'), '7': _('seven'),
+        '8': _('eight'), '9': _('nine')
     }
+    @internationalizeDocstring
     def spellit(self, irc, msg, args, text):
         """<text>
 
@@ -582,6 +610,7 @@ class Filter(callbacks.Plugin):
         irc.reply(out.getvalue())
     spellit = wrap(spellit, ['text'])
 
+    @internationalizeDocstring
     def gnu(self, irc, msg, args, text):
         """<text>
 
@@ -590,6 +619,7 @@ class Filter(callbacks.Plugin):
         irc.reply(' '.join(['GNU/' + s for s in text.split()]))
     gnu = wrap(gnu, ['text'])
 
+    @internationalizeDocstring
     def shrink(self, irc, msg, args, text):
         """<text>
 
@@ -608,6 +638,7 @@ class Filter(callbacks.Plugin):
     shrink = wrap(shrink, ['text'])
 
     _azn_trans = string.maketrans('rlRL', 'lrLR')
+    @internationalizeDocstring
     def azn(self, irc, msg, args, text):
         """<text>
 
@@ -656,6 +687,7 @@ class Filter(callbacks.Plugin):
     '_': u'\u203e', 'o': u'o',
     }
 
+    @internationalizeDocstring
     def uniud(self, irc, msg, args, text):
         """<text>
 

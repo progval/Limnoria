@@ -38,8 +38,11 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Later')
 
 
+@internationalizeDocstring
 class Later(callbacks.Plugin):
     """Used to do things later; currently, it only allows the sending of
     nick-based notes.  Do note (haha!) that these notes are *not* private
@@ -81,7 +84,7 @@ class Later(callbacks.Plugin):
         try:
             return utils.timeElapsed(diff, seconds=False) + ' ago'
         except ValueError:
-            return 'just now'
+            return _('just now')
 
     def _addNote(self, nick, whence, text, at=None, maximum=None):
         if at is None:
@@ -100,6 +103,7 @@ class Later(callbacks.Plugin):
             self.wildcards.append(nick)
         self._flushNotes()
 
+    @internationalizeDocstring
     def tell(self, irc, msg, args, nick, text):
         """<nick> <text>
 
@@ -108,15 +112,16 @@ class Later(callbacks.Plugin):
         given the note.
         """
         if ircutils.strEqual(nick, irc.nick):
-            irc.error('I can\'t send notes to myself.')
+            irc.error(_('I can\'t send notes to myself.'))
             return
         try:
             self._addNote(nick, msg.nick, text)
             irc.replySuccess()
         except ValueError:
-            irc.error('That person\'s message queue is already full.')
+            irc.error(_('That person\'s message queue is already full.'))
     tell = wrap(tell, ['something', 'text'])
 
+    @internationalizeDocstring
     def notes(self, irc, msg, args, nick):
         """[<nick>]
 
@@ -129,17 +134,18 @@ class Later(callbacks.Plugin):
                          for (when, whence, note) in self._notes[nick]]
                 irc.reply(format('%L', notes))
             else:
-                irc.error('I have no notes for that nick.')
+                irc.error(_('I have no notes for that nick.'))
         else:
             nicks = self._notes.keys()
             if nicks:
                 utils.sortBy(ircutils.toLower, nicks)
-                irc.reply(format('I currently have notes waiting for %L.',
+                irc.reply(format(_('I currently have notes waiting for %L.'),
                                  nicks))
             else:
-                irc.error('I have no notes waiting to be delivered.')
+                irc.error(_('I have no notes waiting to be delivered.'))
     notes = wrap(notes, [additional('something')])
 
+    @internationalizeDocstring
     def remove(self, irc, msg, args, nick):
         """<nick>
 
@@ -150,7 +156,7 @@ class Later(callbacks.Plugin):
             self._flushNotes()
             irc.replySuccess()
         except KeyError:
-            irc.error('There were no notes for %r' % nick)
+            irc.error(_('There were no notes for %r') % nick)
     remove = wrap(remove, [('checkCapability', 'admin'), 'something'])
 
     def doPrivmsg(self, irc, msg):
@@ -174,7 +180,7 @@ class Later(callbacks.Plugin):
             self._flushNotes()
 
     def _formatNote(self, when, whence, note):
-        return 'Sent %s: <%s> %s' % (self._timestamp(when), whence, note)
+        return _('Sent %s: <%s> %s') % (self._timestamp(when), whence, note)
 
 
 

@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Misc')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -40,24 +42,24 @@ def configure(advanced):
 
 Misc = conf.registerPlugin('Misc')
 conf.registerGlobalValue(Misc, 'listPrivatePlugins',
-    registry.Boolean(True, """Determines whether the bot will list private
+    registry.Boolean(True, _("""Determines whether the bot will list private
     plugins with the list command if given the --private switch.  If this is
     disabled, non-owner users should be unable to see what private plugins
-    are loaded."""))
+    are loaded.""")))
 conf.registerGlobalValue(Misc, 'timestampFormat',
-    registry.String('[%H:%M:%S]', """Determines the format string for
+    registry.String('[%H:%M:%S]', _("""Determines the format string for
     timestamps in the Misc.last command.  Refer to the Python documentation
     for the time module to see what formats are accepted. If you set this
-    variable to the empty string, the timestamp will not be shown."""))
+    variable to the empty string, the timestamp will not be shown.""")))
 conf.registerGroup(Misc, 'last')
 conf.registerGroup(Misc.last, 'nested')
 conf.registerChannelValue(Misc.last.nested,
-    'includeTimestamp', registry.Boolean(False, """Determines whether or not
+    'includeTimestamp', registry.Boolean(False, _("""Determines whether or not
     the timestamp will be included in the output of last when it is part of a
-    nested command"""))
+    nested command""")))
 conf.registerChannelValue(Misc.last.nested,
-    'includeNick', registry.Boolean(False, """Determines whether or not the
+    'includeNick', registry.Boolean(False, _("""Determines whether or not the
     nick will be included in the output of last when it is part of a nested
-    command"""))
+    command""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
