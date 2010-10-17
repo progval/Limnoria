@@ -30,6 +30,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Nickometer')
 
 def configure(advanced):
     # This will be called by setup.py to configure this module.  Advanced is
@@ -42,7 +44,7 @@ def configure(advanced):
 Nickometer = conf.registerPlugin('Nickometer')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Nickometer, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
