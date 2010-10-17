@@ -36,6 +36,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Ctcp')
 
 class Ctcp(callbacks.PluginRegexp):
     public = False
@@ -99,7 +101,7 @@ class Ctcp(callbacks.PluginRegexp):
         "\x01FINGER\x01"
         self.log.info('Received CTCP FINGER from %s', msg.prefix)
         self._reply(irc, msg,
-                    'FINGER Supybot, the best Python IRC bot in existence!')
+                    _('FINGER Supybot, the best Python IRC bot in existence!'))
 
     def ctcpSource(self, irc, msg, match):
         "\x01SOURCE\x01"
@@ -116,6 +118,7 @@ class Ctcp(callbacks.PluginRegexp):
             if version == 'VERSION':
                 self.versions.setdefault(payload, []).append(msg.nick)
 
+    @internationalizeDocstring
     def version(self, irc, msg, args, channel, optlist):
         """[<channel>] [--nicks]
 

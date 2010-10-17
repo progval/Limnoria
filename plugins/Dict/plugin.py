@@ -35,6 +35,8 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Dict')
 
 try:
     dictclient = utils.python.universalImport('dictclient', 'local.dictclient')
@@ -45,6 +47,7 @@ except ImportError:
 
 class Dict(callbacks.Plugin):
     threaded = True
+    @internationalizeDocstring
     def dictionaries(self, irc, msg, args):
         """takes no arguments
 
@@ -60,6 +63,7 @@ class Dict(callbacks.Plugin):
             irc.error(utils.web.strError(e))
     dictionaries = wrap(dictionaries)
 
+    @internationalizeDocstring
     def random(self, irc, msg, args):
         """takes no arguments
 
@@ -74,6 +78,7 @@ class Dict(callbacks.Plugin):
             irc.error(utils.web.strError(e))
     random = wrap(random)
 
+    @internationalizeDocstring
     def dict(self, irc, msg, args, words):
         """[<dictionary>] <word>
 
@@ -98,16 +103,17 @@ class Dict(callbacks.Plugin):
                                   'dictionary: %s.', msg.args[0], default)
                 dictionary = '*'
         if not words:
-            irc.error('You must give a word to define.', Raise=True)
+            irc.error(_('You must give a word to define.'), Raise=True)
         word = ' '.join(words)
         definitions = conn.define(dictionary, word)
         dbs = set()
         if not definitions:
             if dictionary == '*':
-                irc.reply(format('No definition for %q could be found.', word))
+                irc.reply(format(_('No definition for %q could be found.'),
+                                 word))
             else:
-                irc.reply(format('No definition for %q could be found in %s',
-                                 word, ircutils.bold(dictionary)))
+                irc.reply(format(_('No definition for %q could be found in '
+                                   '%s'), word, ircutils.bold(dictionary)))
             return
         L = []
         for d in definitions:
@@ -118,7 +124,7 @@ class Dict(callbacks.Plugin):
             L.append('%s: %s' % (db, s))
         utils.sortBy(len, L)
         if dictionary == '*' and len(dbs) > 1:
-            s = format('%L responded: %s', list(dbs), '; '.join(L))
+            s = format(_('%L responded: %s'), list(dbs), '; '.join(L))
         else:
             s = '; '.join(L)
         irc.reply(s)
