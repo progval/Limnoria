@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('MoobotFactoids')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -41,12 +43,12 @@ def configure(advanced):
 
 MoobotFactoids = conf.registerPlugin('MoobotFactoids')
 conf.registerChannelValue(MoobotFactoids,
-    'showFactoidIfOnlyOneMatch', registry.Boolean(True, """Determines whether
+    'showFactoidIfOnlyOneMatch', registry.Boolean(True, _("""Determines whether
     or not the factoid value will be shown when a listkeys search returns only
-    one factoid key."""))
+    one factoid key.""")))
 conf.registerChannelValue(MoobotFactoids,
-    'mostCount', registry.Integer(10, """Determines how many items are shown
-    when the 'most' command is called."""))
+    'mostCount', registry.Integer(10, _("""Determines how many items are shown
+    when the 'most' command is called.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78
