@@ -1,0 +1,164 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2010-10-19 19:27+CEST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:50
+msgid ""
+"Determines whether the bot will bold the title of the feed when it\n"
+"    announces new news."
+msgstr ""
+
+#: config.py:53
+msgid ""
+"Determines what string is used\n"
+"    to separate headlines in new feeds."
+msgstr ""
+
+#: config.py:56
+msgid ""
+"Determines what prefix\n"
+"    is prepended (if any) to the new news item announcements made in the\n"
+"    channel."
+msgstr ""
+
+#: config.py:60
+msgid ""
+"Determines which RSS feeds\n"
+"    should be announced in the channel; valid input is a list of strings\n"
+"    (either registered RSS feeds or RSS feed URLs) separated by spaces."
+msgstr ""
+
+#: config.py:64
+msgid ""
+"Indicates how many seconds the bot will\n"
+"    wait between retrieving RSS feeds; requests made within this period will\n"
+"    return cached results."
+msgstr ""
+
+#: config.py:68
+msgid ""
+"Determines what feeds should be accessible as\n"
+"    commands."
+msgstr ""
+
+#: config.py:71
+msgid ""
+"Determines whether the bot will list the link\n"
+"    along with the title of the feed when the rss command is called.\n"
+"    supybot.plugins.RSS.announce.showLinks affects whether links will be\n"
+"    listed when a feed is automatically announced."
+msgstr ""
+
+#: config.py:78
+msgid ""
+"Determines whether the bot will list the link\n"
+"    along with the title of the feed when a feed is automatically\n"
+"    announced."
+msgstr ""
+
+#: plugin.py:63
+#, docstring
+msgid ""
+"This plugin is useful both for announcing updates to RSS feeds in a\n"
+"    channel, and for retrieving the headlines of RSS feeds via command.  Use\n"
+"    the \"add\" command to add feeds to this plugin, and use the \"announce\"\n"
+"    command to determine what feeds should be announced in a given channel."
+msgstr ""
+
+#: plugin.py:311
+#, docstring
+msgid ""
+"<name> <url>\n"
+"\n"
+"        Adds a command to this plugin that will look up the RSS feed at the\n"
+"        given URL.\n"
+"        "
+msgstr ""
+
+#: plugin.py:322
+#, docstring
+msgid ""
+"<name>\n"
+"\n"
+"        Removes the command for looking up RSS feeds at <name> from\n"
+"        this plugin.\n"
+"        "
+msgstr ""
+
+#: plugin.py:328
+msgid "That's not a valid RSS feed command name."
+msgstr ""
+
+#: plugin.py:346
+msgid "I am currently not announcing any feeds."
+msgstr ""
+
+#: plugin.py:351
+#, docstring
+msgid ""
+"[<channel>] <name|url> [<name|url> ...]\n"
+"\n"
+"            Adds the list of feeds to the current list of announced feeds in\n"
+"            <channel>.  Valid feeds include the names of registered feeds as\n"
+"            well as URLs for RSS feeds.  <channel> is only necessary if the\n"
+"            message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+
+#: plugin.py:369
+#, docstring
+msgid ""
+"[<channel>] <name|url> [<name|url> ...]\n"
+"\n"
+"            Removes the list of feeds from the current list of announced feeds\n"
+"            in <channel>.  Valid feeds include the names of registered feeds as\n"
+"            well as URLs for RSS feeds.  <channel> is only necessary if the\n"
+"            message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+
+#: plugin.py:387
+#, docstring
+msgid ""
+"<url> [<number of headlines>]\n"
+"\n"
+"        Gets the title components of the given RSS feed.\n"
+"        If <number of headlines> is given, return only that many headlines.\n"
+"        "
+msgstr ""
+
+#: plugin.py:400
+msgid "Couldn't get RSS feed."
+msgstr ""
+
+#: plugin.py:413
+#, docstring
+msgid ""
+"<url|feed>\n"
+"\n"
+"        Returns information from the given RSS feed, namely the title,\n"
+"        URL, description, and last update date, if available.\n"
+"        "
+msgstr ""
+
+#: plugin.py:426
+msgid "I couldn't retrieve that RSS feed."
+msgstr ""
+
+#: plugin.py:439
+msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
+msgstr ""
+
