@@ -35,7 +35,9 @@ __all__ = ['PluginInternationalization']
 
 import re
 import sys
-import supybot.conf as conf
+import time
+import threading
+# Don't import conf here ; because conf needs this module
 
 WAITING_FOR_MSGID = 1
 IN_MSGID = 2
@@ -45,9 +47,14 @@ IN_MSGSTR = 4
 MSGID = 'msgid "'
 MSGSTR = 'msgstr "'
 
-conf.registerGlobalValue(conf.supybot, 'language',
-    conf.registry.String('en', """Determines the bot's default language.
-    Valid values are things like en, fr, de, etc."""))
+def import_conf():
+    import supybot.conf as conf
+    globals().update({'conf': conf})
+    conf.registerGlobalValue(conf.supybot, 'language',
+	conf.registry.String('en', """Determines the bot's default language.
+	Valid values are things like en, fr, de, etc."""))
+    for key in i18nClasses:
+	i18nClasses[key].loadLocale()
 
 def get_plugin_dir(plugin_name):
     filename = sys.modules[plugin_name].__file__
@@ -72,13 +79,20 @@ def reloadLocals():
 class PluginInternationalization:
     """Internationalization managment for a plugin."""
     def __init__(self, name='supybot'):
+	print name
 	self.name = name
-	self.loadLocale()
+	self.currentLocaleName = None
 	i18nClasses.update({name: self})
+	if name != 'supybot' and not 'conf' in globals():
+	    # if conf is loadable but not loaded
+	    import_conf()
+	self.loadLocale()
     
     def loadLocale(self, localeName=None):
-	if localeName is None:
+	if localeName is None and 'conf' in globals():
 	    localeName = conf.supybot.language()
+	elif localeName is None:
+	    localeName = 'en'
 	self.currentLocaleName = localeName
 	directory = get_plugin_dir(self.name) + 'locale'
 	try:
@@ -138,6 +152,12 @@ class PluginInternationalization:
 	return str.replace(string, '\\n', '\n') # Replace \\n by \n
     
     def __call__(self, untranslated, *args):
+	if not 'conf' in globals():
+	    if len(args) == 0:
+		return untranslated
+	    else:
+		translation = self(untranslated)
+		return translation % args
 	if self.currentLocaleName != conf.supybot.language():
 	    # If the locale has been changed
 	    reloadLocals()
@@ -147,9 +167,11 @@ class PluginInternationalization:
 	    except KeyError:
 		return untranslated
 	else:
-	    translation = self(untranslated)
-	    return translation % args
-
+	    try:
+		return self.translations[untranslated] % args
+	    except KeyError:
+		return untranslated % args
+    
 
 def internationalizeDocstring(obj):
     # FIXME: check if the plugin has an _ object
