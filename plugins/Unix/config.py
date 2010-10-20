@@ -30,6 +30,8 @@
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Unix')
 
 import plugin
 
@@ -42,11 +44,11 @@ def configure(advanced):
     # registry as appropriate.
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Unix', True)
-    output("""The "progstats" command can reveal potentially sensitive
+    output(_("""The "progstats" command can reveal potentially sensitive
               information about your machine. Here's an example of its output:
 
-              %s\n""" % progstats())
-    if yn('Would you like to disable this command for non-owner users?',
+              %s\n""") % progstats())
+    if yn(_('Would you like to disable this command for non-owner users?'),
           default=True):
         conf.supybot.commands.disabled().add('Unix.progstats')
 
@@ -54,36 +56,36 @@ def configure(advanced):
 Unix = conf.registerPlugin('Unix')
 conf.registerGroup(Unix, 'fortune')
 conf.registerGlobalValue(Unix.fortune, 'command',
-    registry.String(utils.findBinaryInPath('fortune') or '', """Determines what
-    command will be called for the fortune command."""))
+    registry.String(utils.findBinaryInPath('fortune') or '', _("""Determines
+    what command will be called for the fortune command.""")))
 conf.registerGlobalValue(Unix.fortune, 'short',
-    registry.Boolean(True, """Determines whether only short fortunes will be
-    used if possible.  This sends the -s option to the fortune program."""))
+    registry.Boolean(True, _("""Determines whether only short fortunes will be
+    used if possible.  This sends the -s option to the fortune program.""")))
 conf.registerGlobalValue(Unix.fortune, 'equal',
-    registry.Boolean(True, """Determines whether fortune will give equal
+    registry.Boolean(True, _("""Determines whether fortune will give equal
     weight to the different fortune databases.  If false, then larger
     databases will be given more weight.  This sends the -e option to the
-    fortune program."""))
+    fortune program.""")))
 conf.registerGlobalValue(Unix.fortune, 'offensive',
-    registry.Boolean(False, """Determines whether fortune will retrieve
+    registry.Boolean(False, _("""Determines whether fortune will retrieve
     offensive fortunes along with the normal fortunes.  This sends the -a
-    option to the fortune program."""))
+    option to the fortune program.""")))
 conf.registerGlobalValue(Unix.fortune, 'files',
-    registry.SpaceSeparatedListOfStrings([], """Determines what specific file
+    registry.SpaceSeparatedListOfStrings([], _("""Determines what specific file
     (if any) will be used with the fortune command; if none is given, the
     system-wide default will be used.  Do note that this fortune file must be
-    placed with the rest of your system's fortune files."""))
+    placed with the rest of your system's fortune files.""")))
 
 conf.registerGroup(Unix, 'spell')
 conf.registerGlobalValue(Unix.spell, 'command',
     registry.String(utils.findBinaryInPath('aspell') or
-                    utils.findBinaryInPath('ispell') or '', """Determines what
-    command will be called for the spell command."""))
+                    utils.findBinaryInPath('ispell') or '', _("""Determines
+    what command will be called for the spell command.""")))
 
 conf.registerGroup(Unix, 'wtf')
 conf.registerGlobalValue(Unix.wtf, 'command',
-    registry.String(utils.findBinaryInPath('wtf') or '', """Determines what
-    command will be called for the wtf command."""))
+    registry.String(utils.findBinaryInPath('wtf') or '', _("""Determines what
+    command will be called for the wtf command.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

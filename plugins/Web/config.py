@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Web')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -45,17 +47,17 @@ def configure(advanced):
 
 Web = conf.registerPlugin('Web')
 conf.registerChannelValue(Web, 'titleSnarfer',
-    registry.Boolean(False, """Determines whether the bot will output the HTML
-    title of URLs it sees in the channel."""))
+    registry.Boolean(False, _("""Determines whether the bot will output the
+    HTML title of URLs it sees in the channel.""")))
 conf.registerChannelValue(Web, 'nonSnarfingRegexp',
-    registry.Regexp(None, """Determines what URLs are to be snarfed and stored
-    in the database in the channel; URLs matching the regexp given will not be
-    snarfed.  Give the empty string if you have no URLs that you'd like to
-    exclude from being snarfed."""))
+    registry.Regexp(None, _("""Determines what URLs are to be snarfed and
+    stored in the database in the channel; URLs matching the regexp given will
+    not be snarfed.  Give the empty string if you have no URLs that you'd like
+    to exclude from being snarfed.""")))
 
 conf.registerGroup(Web, 'fetch')
 conf.registerGlobalValue(Web.fetch, 'maximum',
-    registry.NonNegativeInteger(0, """Determines the maximum number of
-    bytes the bot will download via the 'fetch' command in this plugin."""))
+    registry.NonNegativeInteger(0, _("""Determines the maximum number of
+    bytes the bot will download via the 'fetch' command in this plugin.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

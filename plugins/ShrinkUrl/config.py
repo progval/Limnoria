@@ -30,13 +30,15 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('ShrinkUrl')
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('ShrinkUrl', True)
-    if yn("""This plugin offers a snarfer that will go retrieve a shorter
+    if yn(_("""This plugin offers a snarfer that will go retrieve a shorter
              version of long URLs that are sent to the channel.  Would you
-             like this snarfer to be enabled?""", default=False):
+             like this snarfer to be enabled?"""), default=False):
         conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
 
 class ShrinkService(registry.OnlySomeStrings):
@@ -66,34 +68,34 @@ class ShrinkCycle(registry.SpaceSeparatedListOfStrings):
 
 ShrinkUrl = conf.registerPlugin('ShrinkUrl')
 conf.registerChannelValue(ShrinkUrl, 'shrinkSnarfer',
-    registry.Boolean(False, """Determines whether the
+    registry.Boolean(False, _("""Determines whether the
     shrink snarfer is enabled.  This snarfer will watch for URLs in the
     channel, and if they're sufficiently long (as determined by
     supybot.plugins.ShrinkUrl.minimumLength) it will post a
     smaller URL from either ln-s.net or tinyurl.com, as denoted in
-    supybot.plugins.ShrinkUrl.default."""))
+    supybot.plugins.ShrinkUrl.default.""")))
 conf.registerChannelValue(ShrinkUrl.shrinkSnarfer, 'showDomain',
-    registry.Boolean(True, """Determines whether the snarfer will show the
-    domain of the URL being snarfed along with the shrunken URL."""))
+    registry.Boolean(True, _("""Determines whether the snarfer will show the
+    domain of the URL being snarfed along with the shrunken URL.""")))
 conf.registerChannelValue(ShrinkUrl, 'minimumLength',
-    registry.PositiveInteger(48, """The minimum length a URL must be before
-    the bot will shrink it."""))
+    registry.PositiveInteger(48, _("""The minimum length a URL must be before
+    the bot will shrink it.""")))
 conf.registerChannelValue(ShrinkUrl, 'nonSnarfingRegexp',
-    registry.Regexp(None, """Determines what URLs are to be snarfed; URLs
+    registry.Regexp(None, _("""Determines what URLs are to be snarfed; URLs
     matching the regexp given will not be snarfed.  Give the empty string if
-    you have no URLs that you'd like to exclude from being snarfed."""))
+    you have no URLs that you'd like to exclude from being snarfed.""")))
 conf.registerChannelValue(ShrinkUrl, 'outFilter',
-    registry.Boolean(False, """Determines whether the bot will shrink the URLs
-    of outgoing messages if those URLs are longer than
-    supybot.plugins.ShrinkUrl.minimumLength."""))
+    registry.Boolean(False, _("""Determines whether the bot will shrink the
+    URLs of outgoing messages if those URLs are longer than
+    supybot.plugins.ShrinkUrl.minimumLength.""")))
 conf.registerChannelValue(ShrinkUrl, 'default',
-    ShrinkService('ln', """Determines what website the bot will use when
-    shrinking a URL."""))
+    ShrinkService('ln', _("""Determines what website the bot will use when
+    shrinking a URL.""")))
 conf.registerGlobalValue(ShrinkUrl, 'bold',
-    registry.Boolean(True, """Determines whether this plugin will bold certain
-    portions of its replies."""))
+    registry.Boolean(True, _("""Determines whether this plugin will bold
+    certain portions of its replies.""")))
 conf.registerChannelValue(ShrinkUrl, 'serviceRotation',
-    ShrinkCycle([], """If set to a non-empty value, specifies the list of
-    services to rotate through for the shrinkSnarfer and outFilter."""))
+    ShrinkCycle([], _("""If set to a non-empty value, specifies the list of
+    services to rotate through for the shrinkSnarfer and outFilter.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

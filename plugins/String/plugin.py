@@ -36,9 +36,12 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('String')
 
 
 class String(callbacks.Plugin):
+    @internationalizeDocstring
     def ord(self, irc, msg, args, letter):
         """<letter>
 
@@ -47,6 +50,7 @@ class String(callbacks.Plugin):
         irc.reply(str(ord(letter)))
     ord = wrap(ord, ['letter'])
 
+    @internationalizeDocstring
     def chr(self, irc, msg, args, i):
         """<number>
 
@@ -55,9 +59,10 @@ class String(callbacks.Plugin):
         try:
             irc.reply(chr(i))
         except ValueError:
-            irc.error('That number doesn\'t map to an 8-bit character.')
+            irc.error(_('That number doesn\'t map to an 8-bit character.'))
     chr = wrap(chr, ['int'])
 
+    @internationalizeDocstring
     def encode(self, irc, msg, args, encoding, text):
         """<encoding> <text>
 
@@ -68,9 +73,10 @@ class String(callbacks.Plugin):
         try:
             irc.reply(text.encode(encoding).rstrip('\n'))
         except LookupError:
-            irc.errorInvalid('encoding', encoding)
+            irc.errorInvalid(_('encoding'), encoding)
     encode = wrap(encode, ['something', 'text'])
 
+    @internationalizeDocstring
     def decode(self, irc, msg, args, encoding, text):
         """<encoding> <text>
 
@@ -81,13 +87,14 @@ class String(callbacks.Plugin):
         try:
             irc.reply(text.decode(encoding).encode('utf-8'))
         except LookupError:
-            irc.errorInvalid('encoding', encoding)
+            irc.errorInvalid(_('encoding'), encoding)
         except binascii.Error:
-            irc.errorInvalid('base64 string',
-                             s='Base64 strings must be a multiple of 4 in '
-                               'length, padded with \'=\' if necessary.')
+            irc.errorInvalid(_('base64 string'),
+                             s=_('Base64 strings must be a multiple of 4 in '
+                               'length, padded with \'=\' if necessary.'))
     decode = wrap(decode, ['something', 'text'])
 
+    @internationalizeDocstring
     def levenshtein(self, irc, msg, args, s1, s2):
         """<string1> <string2>
 
@@ -96,12 +103,13 @@ class String(callbacks.Plugin):
         """
         max = self.registryValue('levenshtein.max')
         if len(s1) > max or len(s2) > max:
-            irc.error('Levenshtein distance is a complicated algorithm, try '
-                      'it with some smaller inputs.')
+            irc.error(_('Levenshtein distance is a complicated algorithm, try '
+                      'it with some smaller inputs.'))
         else:
             irc.reply(str(utils.str.distance(s1, s2)))
     levenshtein = wrap(levenshtein, ['something', 'text'])
 
+    @internationalizeDocstring
     def soundex(self, irc, msg, args, text, length):
         """<string> [<length>]
 
@@ -112,6 +120,7 @@ class String(callbacks.Plugin):
         irc.reply(utils.str.soundex(text, length))
     soundex = wrap(soundex, ['somethingWithoutSpaces', additional('int', 4)])
 
+    @internationalizeDocstring
     def len(self, irc, msg, args, text):
         """<text>
 
@@ -120,6 +129,7 @@ class String(callbacks.Plugin):
         irc.reply(str(len(text)))
     len = wrap(len, ['text'])
 
+    @internationalizeDocstring
     def re(self, irc, msg, args, ff, text):
         """<regexp> <text>
 
@@ -133,7 +143,7 @@ class String(callbacks.Plugin):
         else:
             f = lambda s: ff.search(s) and ff.search(s).group(0) or ''
         if f('') and len(f(' ')) > len(f(''))+1: # Matches the empty string.
-            s = 'You probably don\'t want to match the empty string.'
+            s = _('You probably don\'t want to match the empty string.')
             irc.error(s)
         else:
             irc.reply(f(text))
@@ -141,6 +151,7 @@ class String(callbacks.Plugin):
                    first('regexpMatcher', 'regexpReplacer'),
                    'text'])
 
+    @internationalizeDocstring
     def xor(self, irc, msg, args, password, text):
         """<password> <text>
 
@@ -153,6 +164,7 @@ class String(callbacks.Plugin):
         irc.reply(''.join(ret))
     xor = wrap(xor, ['something', 'text'])
 
+    @internationalizeDocstring
     def md5(self, irc, msg, args, text):
         """<text>
 
@@ -163,6 +175,7 @@ class String(callbacks.Plugin):
         irc.reply(utils.crypt.md5(text).hexdigest())
     md5 = wrap(md5, ['text'])
 
+    @internationalizeDocstring
     def sha(self, irc, msg, args, text):
         """<text>
 

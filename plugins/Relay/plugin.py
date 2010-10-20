@@ -39,6 +39,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.utils.structures import MultiSet, TimeoutQueue
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Relay')
 
 class Relay(callbacks.Plugin):
     noIgnore = True
@@ -92,6 +94,7 @@ class Relay(callbacks.Plugin):
                 irc.queueMsg(ircmsgs.who(channel))
                 irc.queueMsg(ircmsgs.names(channel))
 
+    @internationalizeDocstring
     def join(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -110,6 +113,7 @@ class Relay(callbacks.Plugin):
         irc.replySuccess()
     join = wrap(join, ['channel', 'admin'])
 
+    @internationalizeDocstring
     def part(self, irc, msg, args, channel):
         """<channel>
 
@@ -124,6 +128,7 @@ class Relay(callbacks.Plugin):
         irc.replySuccess()
     part = wrap(part, ['channel', 'admin'])
 
+    @internationalizeDocstring
     def nicks(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -215,43 +220,43 @@ class Relay(callbacks.Plugin):
                     normal.append(channel)
             L = []
             if ops:
-                L.append(format('is an op on %L', ops))
+                L.append(format(_('is an op on %L'), ops))
             if halfops:
-                L.append(format('is a halfop on %L', halfups))
+                L.append(format(_('is a halfop on %L'), halfups))
             if voices:
-                L.append(format('is voiced on %L', voices))
+                L.append(format(_('is voiced on %L'), voices))
             if normal:
                 if L:
-                    L.append(format('is also on %L', normal))
+                    L.append(format(_('is also on %L'), normal))
                 else:
-                    L.append(format('is on %L', normal))
+                    L.append(format(_('is on %L'), normal))
         else:
-            L = ['isn\'t on any non-secret channels']
+            L = [_('isn\'t on any non-secret channels')]
         channels = format('%L', L)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
             signon = time.strftime(conf.supybot.reply.format.time(),
                                    time.localtime(float(d['317'].args[3])))
         else:
-            idle = '<unknown>'
-            signon = '<unknown>'
+            idle = _('<unknown>')
+            signon = _('<unknown>')
         if '312' in d:
             server = d['312'].args[2]
         else:
-            server = '<unknown>'
+            server = _('<unknown>')
         if '301' in d:
-            away = format('  %s is away: %s.', nick, d['301'].args[2])
+            away = format(_('  %s is away: %s.'), nick, d['301'].args[2])
         else:
             away = ''
         if '320' in d:
             if d['320'].args[2]:
-                identify = ' identified'
+                identify = _(' identified')
             else:
                 identify = ''
         else:
             identify = ''
-        s = format('%s (%s) has been%s on server %s since %s (idle for %s) '
-                   'and %s.%s',
+        s = format(_('%s (%s) has been%s on server %s since %s (idle for %s) '
+                   'and %s.%s'),
                    user, hostmask, identify, server, signon, idle,
                    channels, away)
         replyIrc.reply(s)
@@ -265,7 +270,7 @@ class Relay(callbacks.Plugin):
             return
         (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
         del self._whois[(irc, loweredNick)]
-        s = format('There is no %s on %s.', nick, self._getIrcName(irc))
+        s = format(_('There is no %s on %s.'), nick, self._getIrcName(irc))
         replyIrc.reply(s)
 
     do401 = do402
@@ -334,7 +339,7 @@ class Relay(callbacks.Plugin):
                         self.log.info('Punishing %s in %s on %s for relaying.',
                                       who, channel, irc.network)
                         irc.sendMsg(ircmsgs.ban(channel, who))
-                        kmsg = 'You seem to be relaying, punk.'
+                        kmsg = _('You seem to be relaying, punk.')
                         irc.sendMsg(ircmsgs.kick(channel, msg.nick, kmsg))
                 else:
                     notPunishing(irc, 'not opped')
@@ -387,7 +392,7 @@ class Relay(callbacks.Plugin):
             hostmask = format(' (%s)', msg.prefix)
         else:
             hostmask = ''
-        s = format('%s%s has joined on %s', msg.nick, hostmask, network)
+        s = format(_('%s%s has joined on %s'), msg.nick, hostmask, network)
         m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
 
@@ -402,10 +407,10 @@ class Relay(callbacks.Plugin):
         else:
             hostmask = ''
         if len(msg.args) > 1:
-            s = format('%s%s has left on %s (%s)',
+            s = format(_('%s%s has left on %s (%s)'),
                        msg.nick, hostmask, network, msg.args[1])
         else:
-            s = format('%s%s has left on %s', msg.nick, hostmask, network)
+            s = format(_('%s%s has left on %s'), msg.nick, hostmask, network)
         m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
 
@@ -415,7 +420,7 @@ class Relay(callbacks.Plugin):
         if channel not in self.registryValue('channels'):
             return
         network = self._getIrcName(irc)
-        s = format('mode change by %s on %s: %s',
+        s = format(_('mode change by %s on %s: %s'),
                    msg.nick, network, ' '.join(msg.args[1:]))
         m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
@@ -427,10 +432,10 @@ class Relay(callbacks.Plugin):
             return
         network = self._getIrcName(irc)
         if len(msg.args) == 3:
-            s = format('%s was kicked by %s on %s (%s)',
+            s = format(_('%s was kicked by %s on %s (%s)'),
                        msg.args[1], msg.nick, network, msg.args[2])
         else:
-            s = format('%s was kicked by %s on %s',
+            s = format(_('%s was kicked by %s on %s'),
                        msg.args[1], msg.nick, network)
         m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
@@ -439,7 +444,7 @@ class Relay(callbacks.Plugin):
         irc = self._getRealIrc(irc)
         newNick = msg.args[0]
         network = self._getIrcName(irc)
-        s = format('nick change by %s to %s on %s', msg.nick,newNick,network)
+        s = format(_('nick change by %s to %s on %s'), msg.nick,newNick,network)
         for channel in self.registryValue('channels'):
             if channel in irc.state.channels:
                 if newNick in irc.state.channels[channel].users:
@@ -469,7 +474,7 @@ class Relay(callbacks.Plugin):
                                          'can\'t sync topics.',
                                          channel, otherIrc.network)
         else:
-            s = format('topic change by %s on %s: %s',
+            s = format(_('topic change by %s on %s: %s'),
                        msg.nick, network, newTopic)
             m = self._msgmaker(channel, s)
             self._sendToOthers(irc, m)
@@ -478,9 +483,9 @@ class Relay(callbacks.Plugin):
         irc = self._getRealIrc(irc)
         network = self._getIrcName(irc)
         if msg.args:
-            s = format('%s has quit %s (%s)', msg.nick, network, msg.args[0])
+            s = format(_('%s has quit %s (%s)'), msg.nick, network, msg.args[0])
         else:
-            s = format('%s has quit %s.', msg.nick, network)
+            s = format(_('%s has quit %s.'), msg.nick, network)
         for channel in self.registryValue('channels'):
             if channel in self.ircstates[irc].channels:
                 if msg.nick in self.ircstates[irc].channels[channel].users:
@@ -490,7 +495,7 @@ class Relay(callbacks.Plugin):
     def doError(self, irc, msg):
         irc = self._getRealIrc(irc)
         network = self._getIrcName(irc)
-        s = format('disconnected from %s: %s', network, msg.args[0])
+        s = format(_('disconnected from %s: %s'), network, msg.args[0])
         for channel in self.registryValue('channels'):
             m = self._msgmaker(channel, s)
             self._sendToOthers(irc, m)

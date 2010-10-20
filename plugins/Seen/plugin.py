@@ -42,6 +42,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Seen')
 
 class IrcStringAndIntDict(utils.InsensitivePreservingDict):
     def key(self, x):
@@ -198,21 +200,22 @@ class Seen(callbacks.Plugin):
             if len(results) == 1:
                 (nick, info) = results[0]
                 (when, said) = info
-                irc.reply(format('%s was last seen in %s %s ago: %s',
+                irc.reply(format(_('%s was last seen in %s %s ago: %s'),
                                  nick, channel,
                                  utils.timeElapsed(time.time()-when), said))
             elif len(results) > 1:
                 L = []
                 for (nick, info) in results:
                     (when, said) = info
-                    L.append(format('%s (%s ago)', nick,
+                    L.append(format(_('%s (%s ago)'), nick,
                                     utils.timeElapsed(time.time()-when)))
-                irc.reply(format('%s could be %L', name, (L, 'or')))
+                irc.reply(format(_('%s could be %L'), name, (L, _('or'))))
             else:
-                irc.reply(format('I haven\'t seen anyone matching %s.', name))
+                irc.reply(format(_('I haven\'t seen anyone matching %s.'), name))
         except KeyError:
-            irc.reply(format('I have not seen %s.', name))
+            irc.reply(format(_('I have not seen %s.'), name))
 
+    @internationalizeDocstring
     def seen(self, irc, msg, args, channel, name):
         """[<channel>] <nick>
 
@@ -223,6 +226,7 @@ class Seen(callbacks.Plugin):
         self._seen(irc, channel, name)
     seen = wrap(seen, ['channel', 'nick'])
 
+    @internationalizeDocstring
     def any(self, irc, msg, args, channel, optlist, name):
         """[<channel>] [--user <name>] [<nick>]
 
@@ -254,12 +258,13 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, '<last>')
-            irc.reply(format('Someone was last seen in %s %s ago: %s',
+            irc.reply(format(_('Someone was last seen in %s %s ago: %s'),
                              channel, utils.timeElapsed(time.time()-when),
                              said))
         except KeyError:
-            irc.reply('I have never seen anyone.')
+            irc.reply(_('I have never seen anyone.'))
 
+    @internationalizeDocstring
     def last(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -276,12 +281,13 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, user.id)
-            irc.reply(format('%s was last seen in %s %s ago: %s',
+            irc.reply(format(_('%s was last seen in %s %s ago: %s'),
                              user.name, channel,
                              utils.timeElapsed(time.time()-when), said))
         except KeyError:
-            irc.reply(format('I have not seen %s.', user.name))
+            irc.reply(format(_('I have not seen %s.'), user.name))
 
+    @internationalizeDocstring
     def user(self, irc, msg, args, channel, user):
         """[<channel>] <name>
 
@@ -294,6 +300,7 @@ class Seen(callbacks.Plugin):
         self._user(irc, channel, user)
     user = wrap(user, ['channel', 'otherUser'])
 
+    @internationalizeDocstring
     def since(self, irc, msg, args, channel,  nick):
         """[<channel>] <nick>
 
@@ -302,7 +309,8 @@ class Seen(callbacks.Plugin):
         if nick is None:
             nick = msg.nick
         if nick not in irc.state.channels[channel].users:
-            irc.error(format('You must be in %s to use this command.', channel))
+            irc.error(format(_('You must be in %s to use this command.'),
+                             channel))
             return
         end = None # By default, up until the most recent message.
         for (i, m) in utils.seq.renumerate(irc.state.history):
@@ -322,8 +330,8 @@ class Seen(callbacks.Plugin):
                  ircutils.strEqual(m.args[0], channel):
                 break
         else: # I never use this; it only kicks in when the for loop exited normally.
-            irc.error(format('I couldn\'t find in my history of %s messages '
-                             'where %r last left the %s',
+            irc.error(format(_('I couldn\'t find in my history of %s messages '
+                             'where %r last left the %s'),
                              len(irc.state.history), nick, channel))
             return
         msgs = [m for m in irc.state.history[i:end]
@@ -331,8 +339,8 @@ class Seen(callbacks.Plugin):
         if msgs:
             irc.reply(format('%L', map(ircmsgs.prettyPrint, msgs)))
         else:
-            irc.reply(format('Either %s didn\'t leave, '
-                             'or no messages were sent while %s was gone.', nick, nick))
+            irc.reply(format(_('Either %s didn\'t leave, '
+                             'or no messages were sent while %s was gone.'), nick, nick))
     since = wrap(since, ['channel', additional('nick')])
 
 Class = Seen
