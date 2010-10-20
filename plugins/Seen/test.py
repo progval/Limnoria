@@ -50,7 +50,7 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
 
     def testAny(self):
-        self.assertRegexp('seen any', 'test has joined')
+        self.assertRegexp('seen any', 'test <test!user@host.domain.tld> has joined')
         self.irc.feedMsg(ircmsgs.mode(self.channel, args=('+o', self.nick),
                                       prefix=self.prefix))
         self.assertRegexp('seen any %s' % self.nick,
