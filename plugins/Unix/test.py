@@ -37,7 +37,8 @@ if os.name == 'posix':
         if utils.findBinaryInPath('aspell') is not None or \
            utils.findBinaryInPath('ispell') is not None:
             def testSpell(self):
-                self.assertRegexp('spell Strike', 'correctly')
+                self.assertRegexp('spell Strike',
+                                  '(correctly|Possible spellings)')
                 # ispell won't find any results.  aspell will make some
                 # suggestions.
                 self.assertRegexp('spell z0opadfnaf83nflafl230kasdf023hflasdf',
