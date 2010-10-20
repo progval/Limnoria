@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Topic')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -45,32 +47,32 @@ class TopicFormat(registry.TemplatedString):
 
 Topic = conf.registerPlugin('Topic')
 conf.registerChannelValue(Topic, 'separator',
-    registry.StringSurroundedBySpaces(' || ', """Determines what separator is
-    used between individually added topics in the channel topic."""))
+    registry.StringSurroundedBySpaces(' || ', _("""Determines what separator is
+    used between individually added topics in the channel topic.""")))
 conf.registerChannelValue(Topic, 'format',
-    TopicFormat('$topic ($nick)', """Determines what format is used to add
+    TopicFormat('$topic ($nick)', _("""Determines what format is used to add
     topics in the topic.  All the standard substitutes apply, in addition to
-    "$topic" for the topic itself."""))
+    "$topic" for the topic itself.""")))
 conf.registerChannelValue(Topic, 'recognizeTopiclen',
-    registry.Boolean(True, """Determines whether the bot will recognize the
+    registry.Boolean(True, _("""Determines whether the bot will recognize the
     TOPICLEN value sent to it by the server and thus refuse to send TOPICs
     longer than the TOPICLEN.  These topics are likely to be truncated by the
-    server anyway, so this defaults to True."""))
+    server anyway, so this defaults to True.""")))
 conf.registerChannelValue(Topic, 'default',
-    registry.String('', """Determines what the default topic for the channel
-    is.  This is used by the default command to set this topic."""))
+    registry.String('', _("""Determines what the default topic for the channel
+    is.  This is used by the default command to set this topic.""")))
 conf.registerGroup(Topic, 'undo')
 conf.registerChannelValue(Topic.undo, 'max',
-    registry.NonNegativeInteger(10, """Determines the number of previous
-    topics to keep around in case the undo command is called."""))
+    registry.NonNegativeInteger(10, _("""Determines the number of previous
+    topics to keep around in case the undo command is called.""")))
 conf.registerChannelValue(Topic, 'requireManageCapability',
     registry.String('channel,op; channel,halfop', 
-    """Determines the 
+    _("""Determines the 
     capabilities required (if any) to make any topic changes,
     (everything except for read-only operations). Use 'channel,capab' for 
     channel-level capabilities.
     Note that absence of an explicit anticapability means user has 
-    capability."""))
+    capability.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

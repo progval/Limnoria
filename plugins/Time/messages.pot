@@ -1,0 +1,97 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2010-10-20 09:38+CEST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:45
+msgid ""
+"Determines the\n"
+"    format string for timestamps.  Refer to the Python documentation for the\n"
+"    time module to see what formats are accepted. If you set this variable to\n"
+"    the empty string, the timestamp will not be shown."
+msgstr ""
+
+#: plugin.py:60
+#, docstring
+msgid ""
+"[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
+"\n"
+"        Returns the number of seconds in the number of <years>, <weeks>,\n"
+"        <days>, <hours>, <minutes>, and <seconds> given.  An example usage is\n"
+"        \"seconds 2h 30m\", which would return 9000, which is '3600*2 + 30*60'.\n"
+"        Useful for scheduling events at a given number of seconds in the\n"
+"        future.\n"
+"        "
+msgstr ""
+
+#: plugin.py:95
+#, docstring
+msgid ""
+"<time string>\n"
+"\n"
+"        Returns the number of seconds since epoch <time string> is.\n"
+"        <time string> can be any number of natural formats; just try something\n"
+"        and see if it will work.\n"
+"        "
+msgstr ""
+
+#: plugin.py:106 plugin.py:122
+msgid "That's right now!"
+msgstr ""
+
+#: plugin.py:111
+#, docstring
+msgid ""
+"<time string>\n"
+"\n"
+"        Returns the number of seconds until <time string>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:127
+#, docstring
+msgid ""
+"[<seconds since epoch>]\n"
+"\n"
+"        Returns the ctime for <seconds since epoch>, or the current ctime if\n"
+"        no <seconds since epoch> is given.\n"
+"        "
+msgstr ""
+
+#: plugin.py:133
+msgid "number of seconds since epoch"
+msgstr ""
+
+#: plugin.py:138
+#, docstring
+msgid ""
+"[<format>] [<seconds since epoch>]\n"
+"\n"
+"        Returns the current time in <format> format, or, if <format> is not\n"
+"        given, uses the configurable format for the current channel.  If no\n"
+"        <seconds since epoch> time is given, the current time is used.\n"
+"        "
+msgstr ""
+
+#: plugin.py:155
+#, docstring
+msgid ""
+"<seconds>\n"
+"\n"
+"        Returns a pretty string that is the amount of time represented by\n"
+"        <seconds>.\n"
+"        "
+msgstr ""
+

@@ -38,6 +38,8 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Web')
 
 class Title(HTMLParser.HTMLParser):
     entitydefs = htmlentitydefs.entitydefs.copy()
@@ -107,6 +109,7 @@ class Web(callbacks.PluginRegexp):
     titleSnarfer = urlSnarfer(titleSnarfer)
     titleSnarfer.__doc__ = utils.web._httpUrlRe
 
+    @internationalizeDocstring
     def headers(self, irc, msg, args, url):
         """<url>
 
@@ -115,7 +118,7 @@ class Web(callbacks.PluginRegexp):
         """
         fd = utils.web.getUrlFd(url)
         try:
-            s = ', '.join([format('%s: %s', k, v)
+            s = ', '.join([format(_('%s: %s'), k, v)
                            for (k, v) in fd.headers.items()])
             irc.reply(s)
         finally:
@@ -123,6 +126,7 @@ class Web(callbacks.PluginRegexp):
     headers = wrap(headers, ['httpUrl'])
 
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
+    @internationalizeDocstring
     def doctype(self, irc, msg, args, url):
         """<url>
 
@@ -136,9 +140,10 @@ class Web(callbacks.PluginRegexp):
             s = utils.str.normalizeWhitespace(m.group(0))
             irc.reply(s)
         else:
-            irc.reply('That URL has no specified doctype.')
+            irc.reply(_('That URL has no specified doctype.'))
     doctype = wrap(doctype, ['httpUrl'])
 
+    @internationalizeDocstring
     def size(self, irc, msg, args, url):
         """<url>
 
@@ -149,20 +154,21 @@ class Web(callbacks.PluginRegexp):
         try:
             try:
                 size = fd.headers['Content-Length']
-                irc.reply(format('%u is %i bytes long.', url, size))
+                irc.reply(format(_('%u is %i bytes long.'), url, size))
             except KeyError:
                 size = conf.supybot.protocols.http.peekSize()
                 s = fd.read(size)
                 if len(s) != size:
-                    irc.reply(format('%u is %i bytes long.', url, len(s)))
+                    irc.reply(format(_('%u is %i bytes long.'), url, len(s)))
                 else:
-                    irc.reply(format('The server didn\'t tell me how long %u '
-                                     'is but it\'s longer than %i bytes.',
+                    irc.reply(format(_('The server didn\'t tell me how long %u '
+                                     'is but it\'s longer than %i bytes.'),
                                      url, size))
         finally:
             fd.close()
     size = wrap(size, ['httpUrl'])
 
+    @internationalizeDocstring
     def title(self, irc, msg, args, url):
         """<url>
 
@@ -179,14 +185,15 @@ class Web(callbacks.PluginRegexp):
         if parser.title:
             irc.reply(utils.web.htmlToText(parser.title.strip()))
         elif len(text) < size:
-            irc.reply('That URL appears to have no HTML title.')
+            irc.reply(_('That URL appears to have no HTML title.'))
         else:
-            irc.reply(format('That URL appears to have no HTML title '
-                             'within the first %i bytes.', size))
+            irc.reply(format(_('That URL appears to have no HTML title '
+                             'within the first %i bytes.'), size))
     title = wrap(title, ['httpUrl'])
 
     _netcraftre = re.compile(r'td align="left">\s+<a[^>]+>(.*?)<a href',
                              re.S | re.I)
+    @internationalizeDocstring
     def netcraft(self, irc, msg, args, hostname):
         """<hostname|ip>
 
@@ -202,11 +209,12 @@ class Web(callbacks.PluginRegexp):
             s = s.rstrip('-').strip()
             irc.reply(s) # Snip off "the site"
         elif 'We could not get any results' in html:
-            irc.reply('No results found for %s.' % hostname)
+            irc.reply(_('No results found for %s.') % hostname)
         else:
-            irc.error('The format of page the was odd.')
+            irc.error(_('The format of page the was odd.'))
     netcraft = wrap(netcraft, ['text'])
 
+    @internationalizeDocstring
     def urlquote(self, irc, msg, args, text):
         """<text>
 
@@ -215,6 +223,7 @@ class Web(callbacks.PluginRegexp):
         irc.reply(utils.web.urlquote(text))
     urlquote = wrap(urlquote, ['text'])
 
+    @internationalizeDocstring
     def urlunquote(self, irc, msg, args, text):
         """<text>
 
@@ -224,6 +233,7 @@ class Web(callbacks.PluginRegexp):
         irc.reply(s)
     urlunquote = wrap(urlunquote, ['text'])
 
+    @internationalizeDocstring
     def fetch(self, irc, msg, args, url):
         """<url>
 
@@ -233,8 +243,8 @@ class Web(callbacks.PluginRegexp):
         """
         max = self.registryValue('fetch.maximum')
         if not max:
-            irc.error('This command is disabled '
-                      '(supybot.plugins.Web.fetch.maximum is set to 0).',
+            irc.error(_('This command is disabled '
+                      '(supybot.plugins.Web.fetch.maximum is set to 0).'),
                       Raise=True)
         fd = utils.web.getUrlFd(url)
         irc.reply(fd.read(max))

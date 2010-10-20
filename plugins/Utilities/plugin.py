@@ -34,10 +34,13 @@ import random
 from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Utilities')
 
 class Utilities(callbacks.Plugin):
     # Yes, I really do mean "requires no arguments" below.  "takes no
     # arguments" would probably lead people to think it was a useless command.
+    @internationalizeDocstring
     def ignore(self, irc, msg, args):
         """requires no arguments
 
@@ -51,6 +54,7 @@ class Utilities(callbacks.Plugin):
             irc.reply('')
     # Do be careful not to wrap this unless you do any('something').
 
+    @internationalizeDocstring
     def success(self, irc, msg, args, text):
         """[<text>]
 
@@ -63,6 +67,7 @@ class Utilities(callbacks.Plugin):
         irc.replySuccess(text)
     success = wrap(success, [additional('text')])
 
+    @internationalizeDocstring
     def last(self, irc, msg, args):
         """<text> [<text> ...]
 
@@ -76,6 +81,7 @@ class Utilities(callbacks.Plugin):
         else:
             raise callbacks.ArgumentError
 
+    @internationalizeDocstring
     def echo(self, irc, msg, args, text):
         """<text>
 
@@ -88,6 +94,7 @@ class Utilities(callbacks.Plugin):
         irc.reply(text, prefixNick=False)
     echo = wrap(echo, ['text'])
 
+    @internationalizeDocstring
     def shuffle(self, irc, msg, args, things):
         """<arg> [<arg> ...]
 
@@ -97,6 +104,7 @@ class Utilities(callbacks.Plugin):
         irc.reply(' '.join(things))
     shuffle = wrap(shuffle, [many('anything')])
 
+    @internationalizeDocstring
     def apply(self, irc, msg, args, command, rest):
         """<command> <text>
 
