@@ -84,6 +84,7 @@ if clean:
             sys.exit(-1)
 
 packages = ['supybot',
+            'supybot.locale',
             'supybot.utils',
             'supybot.drivers',
             'supybot.plugins',] + \
@@ -102,6 +103,7 @@ package_dir = {'supybot': 'src',
                'supybot.utils': 'src/utils',
                'supybot.plugins': 'plugins',
                'supybot.drivers': 'src/drivers',
+               'supybot.locale': 'locale',
                'supybot.plugins.Google.local': 'plugins/Google/local',
                'supybot.plugins.Google.local.simplejson':
                'plugins/Google/local/simplejson',
@@ -113,7 +115,7 @@ package_dir = {'supybot': 'src',
                'plugins/Time/local/dateutil',
               }
 
-package_data = {}
+package_data = {'supybot.locale': [s for s in os.listdir('locale/')]}
 
 for plugin in plugins:
     package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin

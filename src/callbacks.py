@@ -53,6 +53,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 from supybot.utils.iter import any, all
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization()
 
 def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
@@ -179,7 +181,7 @@ def reply(msg, s, prefixNick=None, private=None,
     if error:
         notice =conf.get(conf.supybot.reply.error.withNotice, channel) or notice
         private=conf.get(conf.supybot.reply.error.inPrivate, channel) or private
-        s = 'Error: ' + s
+        s = _('Error: ') + s
     if private:
         prefixNick = False
         if to is None:
@@ -193,7 +195,7 @@ def reply(msg, s, prefixNick=None, private=None,
     # Ok, now let's make the payload:
     s = ircutils.safeArgument(s)
     if not s and not action:
-        s = 'Error: I tried to send you an empty message.'
+        s = _('Error: I tried to send you an empty message.')
     if prefixNick and ircutils.isChannel(target):
         # Let's may sure we don't do, "#channel: foo.".
         if not ircutils.isChannel(to):
@@ -283,11 +285,11 @@ class Tokenizer(object):
         while True:
             token = lexer.get_token()
             if not token:
-                raise SyntaxError, 'Missing "%s".  You may want to ' \
-                                   'quote your arguments with double ' \
-                                   'quotes in order to prevent extra ' \
-                                   'brackets from being evaluated ' \
-                                   'as nested commands.' % self.right
+                raise SyntaxError, _('Missing "%s".  You may want to '
+                                   'quote your arguments with double '
+                                   'quotes in order to prevent extra '
+                                   'brackets from being evaluated '
+                                   'as nested commands.') % self.right
             elif token == self.right:
                 return ret
             elif token == self.left:
@@ -313,26 +315,26 @@ class Tokenizer(object):
                 # for strings like 'foo | bar', where a pipe stands alone as a
                 # token, but shouldn't be treated specially.
                 if not args:
-                    raise SyntaxError, '"|" with nothing preceding.  I ' \
-                                       'obviously can\'t do a pipe with ' \
-                                       'nothing before the |.'
+                    raise SyntaxError, _('"|" with nothing preceding.  I '
+                                       'obviously can\'t do a pipe with '
+                                       'nothing before the |.')
                 ends.append(args)
                 args = []
             elif token == self.left:
                 args.append(self._insideBrackets(lexer))
             elif token == self.right:
-                raise SyntaxError, 'Spurious "%s".  You may want to ' \
-                                   'quote your arguments with double ' \
-                                   'quotes in order to prevent extra ' \
-                                   'brackets from being evaluated ' \
-                                   'as nested commands.' % self.right
+                raise SyntaxError, _('Spurious "%s".  You may want to '
+                                   'quote your arguments with double '
+                                   'quotes in order to prevent extra '
+                                   'brackets from being evaluated '
+                                   'as nested commands.') % self.right
             else:
                 args.append(self._handleToken(token))
         if ends:
             if not args:
-                raise SyntaxError, '"|" with nothing following.  I ' \
-                                   'obviously can\'t do a pipe with ' \
-                                   'nothing after the |.'
+                raise SyntaxError, _('"|" with nothing following.  I '
+                                   'obviously can\'t do a pipe with '
+                                   'nothing after the |.')
             args.append(ends.pop())
             while ends:
                 args[-1].append(ends.pop())
@@ -510,9 +512,9 @@ class RichReplyMethods(object):
                 given = _repr(given)
             else:
                 given = '"%s"' % given
-            v = '%s is not a valid %s.' % (given, what)
+            v = _('%s is not a valid %s.') % (given, what)
         else:
-            v = 'That\'s not a valid %s.' % what
+            v = _('That\'s not a valid %s.') % what
         if 'Raise' not in kwargs:
             kwargs['Raise'] = True
         return self._error(self.__makeReply(v, s), **kwargs)
@@ -590,8 +592,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         if maxNesting and self.nested > maxNesting:
             log.warning('%s attempted more than %s levels of nesting.',
                         self.msg.prefix, maxNesting)
-            return self.error('You\'ve attempted more nesting than is '
-                              'currently allowed on this bot.')
+            return self.error(_('You\'ve attempted more nesting than is '
+                              'currently allowed on this bot.'))
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.  There's a possibility a simple copy[:] would
         # work, but we're being careful.
@@ -769,10 +771,10 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         elif len(cbs) > 1:
             names = sorted([cb.name() for cb in cbs])
             command = formatCommand(command)
-            self.error(format('The command %q is available in the %L '
+            self.error(format(_('The command %q is available in the %L '
                               'plugins.  Please specify the plugin '
                               'whose command you wish to call by using '
-                              'its name as a command before %q.',
+                              'its name as a command before %q.'),
                               command, names, command))
         else:
             cb = cbs[0]
@@ -895,8 +897,11 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         return
                     response = msgs.pop()
                     if msgs:
-                        n = ircutils.bold('(%s)')
-                        n %= format('%n', (len(msgs), 'more', 'message'))
+                        if len(msgs) == 1:
+                            more = _('more message')
+                        else:
+                            more = _('more messages')
+                        n = ircutils.bold('(%i %s)' % (len(msgs), more))
                         response = '%s %s' % (response, n)
                     prefix = msg.prefix
                     if self.to and ircutils.isNick(self.to):
@@ -995,9 +1000,9 @@ class Disabled(registry.SpaceSeparatedListOf):
     List = CanonicalNameSet
 
 conf.registerGlobalValue(conf.supybot.commands, 'disabled',
-    Disabled([], """Determines what commands are currently disabled.  Such
+    Disabled([], _("""Determines what commands are currently disabled.  Such
     commands will not appear in command lists, etc.  They will appear not even
-    to exist."""))
+    to exist.""")))
 
 class DisabledCommands(object):
     def __init__(self):
@@ -1186,7 +1191,7 @@ class Commands(BasePlugin):
                            utils.exnToString(e))
             help = self.getCommandHelp(command)
             if help.endswith('command has no help.'):
-                irc.error('Invalid arguments for %s.' % method.__name__)
+                irc.error(_('Invalid arguments for %s.') % method.__name__)
             else:
                 irc.reply(help)
         except (SyntaxError, Error), e:
@@ -1212,7 +1217,8 @@ class Commands(BasePlugin):
         if hasattr(method, '__doc__'):
             return help(method, name=formatCommand(command))
         else:
-            return format('The %q command has no help.',formatCommand(command))
+            return format(_('The %q command has no help.'),
+                          formatCommand(command))
 
 class PluginMixin(BasePlugin, irclib.IrcCallback):
     public = True
