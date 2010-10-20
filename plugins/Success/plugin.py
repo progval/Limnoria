@@ -31,7 +31,10 @@ import supybot.conf as conf
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Success')
 
+@internationalizeDocstring
 class Success(plugins.ChannelIdDatabasePlugin):
     """This plugin was written initially to work with MoobotFactoids, the two
     of them to provide a similar-to-moobot-and-blootbot interface for factoids.

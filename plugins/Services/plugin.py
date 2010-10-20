@@ -40,7 +40,10 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Services')
 
+@internationalizeDocstring
 class Services(callbacks.Plugin):
     """This plugin handles dealing with Services on networks that provide them.
     Basically, you should use the "password" command to tell the bot a nick to
@@ -390,10 +393,11 @@ class Services(callbacks.Plugin):
                                  'supybot.plugins.Services.ChanServ before '
                                  'I can send commands to ChanServ.', command)
             else:
-                irc.error('You must set supybot.plugins.Services.ChanServ '
-                          'before I\'m able to send the %s command.' % command,
+                irc.error(_('You must set supybot.plugins.Services.ChanServ '
+                          'before I\'m able to send the %s command.') % command,
                           Raise=True)
 
+    @internationalizeDocstring
     def op(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -401,11 +405,12 @@ class Services(callbacks.Plugin):
         necessary if the message isn't sent in the channel itself.
         """
         if irc.nick in irc.state.channels[channel].ops:
-            irc.error(format('I\'m already opped in %s.', channel))
+            irc.error(format(_('I\'m already opped in %s.'), channel))
         else:
             self._chanservCommand(irc, channel, 'op')
     op = wrap(op, [('checkChannelCapability', 'op'), 'inChannel'])
 
+    @internationalizeDocstring
     def voice(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -413,7 +418,7 @@ class Services(callbacks.Plugin):
         necessary if the message isn't sent in the channel itself.
         """
         if irc.nick in irc.state.channels[channel].voices:
-            irc.error(format('I\'m already voiced in %s.', channel))
+            irc.error(format(_('I\'m already voiced in %s.'), channel))
         else:
             self._chanservCommand(irc, channel, 'voice')
     voice = wrap(voice, [('checkChannelCapability', 'op'), 'inChannel'])
@@ -428,6 +433,7 @@ class Services(callbacks.Plugin):
         self._chanservCommand(irc, channel, 'unban', log=True)
         # Success log in doChanservNotice.
 
+    @internationalizeDocstring
     def unban(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -448,6 +454,7 @@ class Services(callbacks.Plugin):
         self.log.info('%s is +i, attempting ChanServ invite %s.', channel, on)
         self._chanservCommand(irc, channel, 'invite', log=True)
 
+    @internationalizeDocstring
     def invite(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -468,6 +475,7 @@ class Services(callbacks.Plugin):
             self.log.info('Joining %s, invited by ChanServ %s.', channel, on)
             irc.queueMsg(networkGroup.channels.join(channel))
 
+    @internationalizeDocstring
     def identify(self, irc, msg, args):
         """takes no arguments
 
@@ -478,13 +486,14 @@ class Services(callbacks.Plugin):
                 self._doIdentify(irc, irc.nick)
                 irc.replySuccess()
             else:
-                irc.error('I don\'t have a configured password for '
-                          'my current nick.')
+                irc.error(_('I don\'t have a configured password for '
+                          'my current nick.'))
         else:
-            irc.error('You must set supybot.plugins.Services.NickServ before '
-                      'I\'m able to do identify.')
+            irc.error(_('You must set supybot.plugins.Services.NickServ before '
+                      'I\'m able to do identify.'))
     identify = wrap(identify, [('checkCapability', 'admin')])
 
+    @internationalizeDocstring
     def ghost(self, irc, msg, args, nick):
         """[<nick>]
 
@@ -495,15 +504,16 @@ class Services(callbacks.Plugin):
             if not nick:
                 nick = self._getNick()
             if ircutils.strEqual(nick, irc.nick):
-                irc.error('I cowardly refuse to ghost myself.')
+                irc.error(_('I cowardly refuse to ghost myself.'))
             else:
                 self._doGhost(irc, nick=nick)
                 irc.replySuccess()
         else:
-            irc.error('You must set supybot.plugins.Services.NickServ before '
-                      'I\'m able to ghost a nick.')
+            irc.error(_('You must set supybot.plugins.Services.NickServ before '
+                      'I\'m able to ghost a nick.'))
     ghost = wrap(ghost, [('checkCapability', 'admin'), additional('nick')])
 
+    @internationalizeDocstring
     def password(self, irc, msg, args, nick, password):
         """<nick> [<password>]
 
@@ -515,7 +525,7 @@ class Services(callbacks.Plugin):
                 self.registryValue('nicks').remove(nick)
                 irc.replySuccess()
             except KeyError:
-                irc.error('That nick was not configured with a password.')
+                irc.error(_('That nick was not configured with a password.'))
                 return
         else:
             self.registryValue('nicks').add(nick)
@@ -524,6 +534,7 @@ class Services(callbacks.Plugin):
     password = wrap(password, [('checkCapability', 'admin'),
                                 'private', 'nick', 'text'])
 
+    @internationalizeDocstring
     def nicks(self, irc, msg, args):
         """takes no arguments
 
@@ -535,7 +546,7 @@ class Services(callbacks.Plugin):
             utils.sortBy(ircutils.toLower, L)
             irc.reply(format('%L', L))
         else:
-            irc.reply('I\'m not currently configured for any nicks.')
+            irc.reply(_('I\'m not currently configured for any nicks.'))
     nicks = wrap(nicks, [('checkCapability', 'admin')])
 
 

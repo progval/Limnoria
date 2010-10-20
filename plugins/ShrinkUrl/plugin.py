@@ -37,6 +37,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('ShrinkUrl')
 
 class CdbShrunkenUrlDB(object):
     def __init__(self, filename):
@@ -162,6 +164,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             else:
                 raise ShrinkError, text
 
+    @internationalizeDocstring
     def ln(self, irc, msg, args, url):
         """<url>
 
@@ -186,6 +189,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             self.db.set('tiny', url, text)
             return text
 
+    @internationalizeDocstring
     def tiny(self, irc, msg, args, url):
         """<url>
 
@@ -213,6 +217,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             self.db.set('xrl', quotedurl, text)
             return text
 
+    @internationalizeDocstring
     def xrl(self, irc, msg, args, url):
         """<url>
 
@@ -238,6 +243,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             self.db.set('x0', url, text)
             return text
 
+    @internationalizeDocstring
     def x0(self, irc, msg, args, url):
         """<url>
 

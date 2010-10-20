@@ -1,0 +1,33 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2010-10-20 09:09+CEST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:49
+msgid ""
+"Determines whether the bot will prefix the nick\n"
+"    of the user giving an invalid command to the success response."
+msgstr ""
+
+#: plugin.py:39
+#, docstring
+msgid ""
+"This plugin was written initially to work with MoobotFactoids, the two\n"
+"    of them to provide a similar-to-moobot-and-blootbot interface for factoids.\n"
+"    Basically, it replaces the standard 'The operation succeeded.' messages\n"
+"    with messages kept in a database, able to give more personable\n"
+"    responses."
+msgstr ""
+

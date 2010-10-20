@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Success')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -42,10 +44,10 @@ def configure(advanced):
 Success = conf.registerPlugin('Success')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Success, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 conf.registerChannelValue(conf.supybot.plugins.Success, 'prefixNick',
-    registry.Boolean(True, """Determines whether the bot will prefix the nick
-    of the user giving an invalid command to the success response."""))
+    registry.Boolean(True, _("""Determines whether the bot will prefix the nick
+    of the user giving an invalid command to the success response.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78
