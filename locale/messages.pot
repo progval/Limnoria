@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-20 18:27+CEST\n"
+"POT-Creation-Date: 2010-10-20 18:33+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1007,5 +1007,25 @@ msgid ""
 "Determines whether the bot will automatically\n"
 "    flush all flushers *very* often.  Useful for debugging when you don't know\n"
 "    what's breaking or when, but think that it might be logged."
+msgstr ""
+
+#: src/questions.py:60
+msgid "Sorry, that response was not an option."
+msgstr ""
+
+#: src/questions.py:106
+msgid "Sorry, you must enter a value."
+msgstr ""
+
+#: src/questions.py:126
+msgid "Enter password: "
+msgstr ""
+
+#: src/questions.py:128
+msgid "Re-enter password: "
+msgstr ""
+
+#: src/questions.py:141
+msgid "Passwords don't match."
 msgstr ""
 
