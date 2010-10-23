@@ -79,7 +79,6 @@ def reloadLocals():
 class PluginInternationalization:
     """Internationalization managment for a plugin."""
     def __init__(self, name='supybot'):
-	print name
 	self.name = name
 	self.currentLocaleName = None
 	i18nClasses.update({name: self})
