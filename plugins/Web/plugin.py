@@ -154,15 +154,15 @@ class Web(callbacks.PluginRegexp):
         try:
             try:
                 size = fd.headers['Content-Length']
-                irc.reply(format(_('%u is %i bytes long.'), url, size))
+                irc.reply(format(_('%u is %S long.'), url, size))
             except KeyError:
                 size = conf.supybot.protocols.http.peekSize()
                 s = fd.read(size)
                 if len(s) != size:
-                    irc.reply(format(_('%u is %i bytes long.'), url, len(s)))
+                    irc.reply(format(_('%u is %S long.'), url, len(s)))
                 else:
                     irc.reply(format(_('The server didn\'t tell me how long %u '
-                                     'is but it\'s longer than %i bytes.'),
+                                     'is but it\'s longer than %S.'),
                                      url, size))
         finally:
             fd.close()
@@ -188,7 +188,7 @@ class Web(callbacks.PluginRegexp):
             irc.reply(_('That URL appears to have no HTML title.'))
         else:
             irc.reply(format(_('That URL appears to have no HTML title '
-                             'within the first %i bytes.'), size))
+                             'within the first %S.'), size))
     title = wrap(title, ['httpUrl'])
 
     _netcraftre = re.compile(r'td align="left">\s+<a[^>]+>(.*?)<a href',

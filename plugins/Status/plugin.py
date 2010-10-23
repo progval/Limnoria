@@ -109,11 +109,11 @@ class Status(callbacks.Plugin):
             timeElapsed = utils.timeElapsed(elapsed)
         except KeyError:
             timeElapsed = _('an indeterminate amount of time')
-        irc.reply(_('I have received %s messages for a total of %s bytes.  '
-                  'I have sent %s messages for a total of %s bytes.  '
-                  'I have been connected to %s for %s.') %
-                  (self.recvdMsgs, self.recvdBytes,
-                   self.sentMsgs, self.sentBytes, irc.server, timeElapsed))
+        irc.reply(format(_('I have received %s messages for a total of %S.  '
+                  'I have sent %s messages for a total of %S.  '
+                  'I have been connected to %s for %s.'),
+                  self.recvdMsgs, self.recvdBytes,
+                  self.sentMsgs, self.sentBytes, irc.server, timeElapsed))
     net = wrap(net)
 
     @internationalizeDocstring
@@ -160,10 +160,10 @@ class Status(callbacks.Plugin):
                         irc.error(_('Unable to run ps command.'), Raise=True)
                     (out, foo) = inst.communicate()
                     inst.wait()
-                    mem = out.splitlines()[1]
+                    mem = int(out.splitlines()[1])
                 elif sys.platform.startswith('netbsd'):
-                    mem = '%s kB' % os.stat('/proc/%s/mem' % pid)[7]
-                response += _('  I\'m taking up %s kB of memory.') % mem
+                    mem = int(os.stat('/proc/%s/mem' % pid)[7])
+                response += format(_('  I\'m taking up %S of memory.'), mem)
             except Exception:
                 self.log.exception('Uncaught exception in cpu.memory:')
         irc.reply(utils.str.normalizeWhitespace(response))
