@@ -37,7 +37,7 @@ class MegaHALTestCase(PluginTestCase):
         self.assertNotError('cleanup')
     
     def testAnswer(self):
-        self.assertNotError('foo')
+        self.assertNotRegexp('foo', '.*not a valid.*')
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

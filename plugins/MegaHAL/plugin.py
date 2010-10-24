@@ -29,12 +29,13 @@
 ###
 
 import re
+import os
 import sys
-import ctypes
 import random
-from cStringIO import StringIO
+import supybot.conf as conf
 import mh_python as megahal
 import supybot.utils as utils
+from cStringIO import StringIO
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -57,13 +58,23 @@ class MegaHAL(callbacks.Plugin):
     callBefore = ['Dunno']
     
     def __init__(self, irc):
+        # Call Supybot's scripts
         self.__parent = super(MegaHAL, self)
         self.__parent.__init__(irc)
-        # UTILISER UN CHANGEMENT DE RÉPERTOIRE DE TRAVAIL !
-        stdout = sys.stdout
-        sys.stdout = StringIO() # Don't display MegaHAL welcome message twice
+        
+        # Save state
+        saved = (sys.stdout, os.getcwd())
+        
+        # Create proxy for MegaHAL
+        os.chdir(conf.supybot.directories.data())
+        sys.stdout = StringIO()
+        
+        # Initialize MegaHAL
         megahal.initbrain()
-        sys.stdout = stdout
+        
+        # Restore state
+        sys.stdout, cwd = saved
+        os.chdir(cwd)
         
         random.seed()
     
