@@ -41,7 +41,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.utils.structures import TimeoutQueue
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
-_ = PluginInternationalization('Heral')
+_ = PluginInternationalization('Herald')
 
 filename = conf.supybot.directories.data.dirize('Herald.db')
 
