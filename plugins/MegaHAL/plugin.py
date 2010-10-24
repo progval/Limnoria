@@ -103,22 +103,13 @@ class MegaHAL(callbacks.Plugin):
 
     def doPrivmsg(self, irc, msg):
         message = msg.args[1]
-        probability = self.registryValue('answer.probability')
-        
-        answer = False
-        learn = False
         
         if message.startswith(irc.nick) or re.match('\W.*', message):
             # Managed by invalidCommand
             return
         
-        print repr(message)
-        if answer:
-            self._response(message,
-                           self.registryValue('answer.probability'),
-                           irc.reply)
-        elif learn:
-            megahal.learn(message)
+        probability = self.registryValue('answer.probability', msg.args[0])
+        self._response(message, probability, irc.reply)
     
     def invalidCommand(self, irc, msg, tokens):
         message = msg.args[1]
@@ -128,8 +119,10 @@ class MegaHAL(callbacks.Plugin):
             message = parsed.group('message')
             usedToStartWithNick = True
         if self.registryValue('answer.commands') or usedToStartWithNick:
+            print msg.args[0]
             self._response(message,
-                        self.registryValue('answer.probabilityWhenAdressed'),
+                        self.registryValue('answer.probabilityWhenAddressed',
+                                           msg.args[0]),
                         irc.reply)
         elif self.registryValue('learn.commands'):
             megahal.learn(message)
