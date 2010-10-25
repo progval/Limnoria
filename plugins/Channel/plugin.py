@@ -406,7 +406,7 @@ class Channel(callbacks.Plugin):
         nick = nick or msg.nick
         self._sendMsg(irc, ircmsgs.invite(nick, channel))
         self.invites[(irc.getRealIrc(), ircutils.toLower(nick))] = irc
-    invite = wrap(invite, ['op', (_('haveOp'), _('invite someone')),
+    invite = wrap(invite, ['op', ('haveOp', _('invite someone')),
                            additional('nick')])
 
     def do341(self, irc, msg):
