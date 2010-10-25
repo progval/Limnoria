@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-16 10:17+CEST\n"
+"POT-Creation-Date: 2010-10-25 13:10+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -303,10 +303,6 @@ msgid ""
 "        to join <channel>. <channel> is only necessary if the message isn't\n"
 "        sent in the channel itself.\n"
 "        "
-msgstr ""
-
-#: plugin.py:409
-msgid "haveOp"
 msgstr ""
 
 #: plugin.py:409
