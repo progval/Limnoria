@@ -104,7 +104,7 @@ class MegaHAL(callbacks.Plugin):
             response = megahal.doreply(msg)
             if self._translations.has_key(response):
                 response = self._translations[response]
-            reply(response)
+            reply(response, prefixNick=False)
         else:
             megahal.learn(msg)
 
