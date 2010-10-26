@@ -38,7 +38,6 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Internet')
 
-@internationalizeDocstring
 class Internet(callbacks.Plugin):
     """Add the help for "@help Internet" here."""
     threaded = True
@@ -161,7 +160,7 @@ class Internet(callbacks.Plugin):
             ret += '%02x' % i
         irc.reply(ret.upper())
     hexip = wrap(hexip, ['ip'])
-
+Internet = internationalizeDocstring(Internet)
 
 Class = Internet
 

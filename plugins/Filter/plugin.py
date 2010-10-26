@@ -46,7 +46,6 @@ class MyFilterProxy(object):
     def reply(self, s):
         self.s = s
 
-@internationalizeDocstring
 class Filter(callbacks.Plugin):
     """This plugin offers several commands which transform text in some way.
     It also provides the capability of using such commands to 'filter' the
@@ -713,6 +712,7 @@ class Filter(callbacks.Plugin):
         s = '%s \x02 \x02' % ''.join(map(lambda x: x.encode('utf-8'), turned))
         irc.reply(s)
     uniud = wrap(uniud, ['text'])
+Filter = internationalizeDocstring(Filter)
 
 Class = Filter
 
