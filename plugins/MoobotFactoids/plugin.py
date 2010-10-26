@@ -288,7 +288,6 @@ class SqliteMoobotDB(object):
 
 MoobotDB = plugins.DB('MoobotFactoids', {'sqlite': SqliteMoobotDB})
 
-@internationalizeDocstring
 class MoobotFactoids(callbacks.Plugin):
     """Add the help for "@help MoobotFactoids" here (assuming you don't implement a MoobotFactoids
     command).  This should describe *how* to use this plugin."""
@@ -714,7 +713,7 @@ class MoobotFactoids(callbacks.Plugin):
         (fact, key) = results
         irc.reply(format('Random factoid: %q is %q', key, fact))
     random = wrap(random, ['channeldb'])
-
+MoobotFactoids = internationalizeDocstring(MoobotFactoids)
 
 Class = MoobotFactoids
 

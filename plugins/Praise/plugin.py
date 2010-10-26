@@ -35,7 +35,6 @@ import supybot.ircutils as ircutils
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Praise')
 
-@internationalizeDocstring
 class Praise(plugins.ChannelIdDatabasePlugin):
     """Praise is a plugin for ... well, praising things.  Feel free to add
     your own flavor to it by customizing what praises it gives.  Use "praise
@@ -89,6 +88,7 @@ class Praise(plugins.ChannelIdDatabasePlugin):
             text += format(' (#%i)', praise.id)
         irc.reply(text, action=True)
     praise = wrap(praise, ['channeldb', optional('id'), 'text'])
+Praise = internationalizeDocstring(Praise)
 
 Class = Praise
 

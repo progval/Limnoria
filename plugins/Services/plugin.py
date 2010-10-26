@@ -43,7 +43,6 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Services')
 
-@internationalizeDocstring
 class Services(callbacks.Plugin):
     """This plugin handles dealing with Services on networks that provide them.
     Basically, you should use the "password" command to tell the bot a nick to
@@ -548,7 +547,7 @@ class Services(callbacks.Plugin):
         else:
             irc.reply(_('I\'m not currently configured for any nicks.'))
     nicks = wrap(nicks, [('checkCapability', 'admin')])
-
+Services = internationalizeDocstring(Services)
 
 Class = Services
 

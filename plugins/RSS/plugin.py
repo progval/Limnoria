@@ -58,7 +58,6 @@ def getFeedName(irc, msg, args, state):
     state.args.append(callbacks.canonicalName(args.pop(0)))
 addConverter('feedName', getFeedName)
 
-@internationalizeDocstring
 class RSS(callbacks.Plugin):
     """This plugin is useful both for announcing updates to RSS feeds in a
     channel, and for retrieving the headlines of RSS feeds via command.  Use
@@ -333,8 +332,8 @@ class RSS(callbacks.Plugin):
         irc.replySuccess()
     remove = wrap(remove, ['feedName'])
 
-    @internationalizeDocstring
     class announce(callbacks.Commands):
+        @internationalizeDocstring
         def list(self, irc, msg, args, channel):
             """[<channel>]
 
@@ -441,7 +440,7 @@ class RSS(callbacks.Plugin):
                           title, link, desc, when)
         irc.reply(utils.str.normalizeWhitespace(response))
     info = wrap(info, [first('url', 'feedName')])
-
+RSS = internationalizeDocstring(RSS)
 
 Class = RSS
 

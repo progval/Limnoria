@@ -34,7 +34,6 @@ import supybot.ircutils as ircutils
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Success')
 
-@internationalizeDocstring
 class Success(plugins.ChannelIdDatabasePlugin):
     """This plugin was written initially to work with MoobotFactoids, the two
     of them to provide a similar-to-moobot-and-blootbot interface for factoids.
@@ -76,7 +75,7 @@ class Success(plugins.ChannelIdDatabasePlugin):
         # so this seems like the only way to do it.
         self.target = msg.args[0]
         return msg
-
+Success = internationalizeDocstring(Success)
 
 Class = Success
 
