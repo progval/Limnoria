@@ -33,7 +33,6 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Reply')
 
 
-@internationalizeDocstring
 class Reply(callbacks.Plugin):
     """This plugins contains a few commands that construct various types of
     replies.  Some bot owners would be wise to not load this plugin because it
@@ -80,6 +79,7 @@ class Reply(callbacks.Plugin):
         """
         irc.reply(text, prefixNick=True)
     reply = wrap(reply, ['text'])
+Reply = internationalizeDocstring(Reply)
 
 Class = Reply
 

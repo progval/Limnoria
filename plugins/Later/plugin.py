@@ -42,7 +42,6 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Later')
 
 
-@internationalizeDocstring
 class Later(callbacks.Plugin):
     """Used to do things later; currently, it only allows the sending of
     nick-based notes.  Do note (haha!) that these notes are *not* private
@@ -181,7 +180,7 @@ class Later(callbacks.Plugin):
 
     def _formatNote(self, when, whence, note):
         return _('Sent %s: <%s> %s') % (self._timestamp(when), whence, note)
-
+Later = internationalizeDocstring(Later)
 
 
 Class = Later

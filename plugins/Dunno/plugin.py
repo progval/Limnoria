@@ -33,7 +33,6 @@ import supybot.ircutils as ircutils
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Dunno')
 
-@internationalizeDocstring
 class Dunno(plugins.ChannelIdDatabasePlugin):
     """This plugin was written initially to work with MoobotFactoids, the two
     of them to provide a similar-to-moobot-and-blootbot interface for factoids.
@@ -52,7 +51,7 @@ class Dunno(plugins.ChannelIdDatabasePlugin):
                 env = {'command': tokens[0]}
                 dunno = ircutils.standardSubstitute(irc, msg, dunno, env=env)
                 irc.reply(dunno, prefixNick=prefixNick)
-
+Dunno = internationalizeDocstring(Dunno)
 
 Class = Dunno
 

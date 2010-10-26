@@ -36,7 +36,6 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Anonymous')
 
-@internationalizeDocstring
 class Anonymous(callbacks.Plugin):
     """This plugin allows users to act through the bot anonymously.  The 'do'
     command has the bot perform an anonymous action in a given channel, and
@@ -102,6 +101,7 @@ class Anonymous(callbacks.Plugin):
         irc.queueMsg(ircmsgs.action(channel, text))
         irc.noReply()
     do = wrap(do, ['inChannel', 'text'])
+Anonymous = internationalizeDocstring(Anonymous)
 
 Class = Anonymous
 

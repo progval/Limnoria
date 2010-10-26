@@ -36,7 +36,6 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('NickCapture')
 
-@internationalizeDocstring
 class NickCapture(callbacks.Plugin):
     """This module constantly tries to take whatever nick is configured as
     supybot.nick.  Just make sure that's set appropriately, and thus plugin
@@ -92,7 +91,7 @@ class NickCapture(callbacks.Plugin):
             nick = self._getNick()
             if nick:
                 self._sendNick(irc, nick)
-
+NickCapture = internationalizeDocstring(NickCapture)
 
 Class = NickCapture
 

@@ -38,7 +38,6 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Plugin')
 
 
-@internationalizeDocstring
 class Plugin(callbacks.Plugin):
     """This plugin exists to help users manage their plugins.  Use 'plugin
     list' to list the loaded plugins; use 'plugin help' to get the description
@@ -233,6 +232,7 @@ class Plugin(callbacks.Plugin):
             nick = ircutils.toLower(nick)
             irc.reply(buildPersonString(module))
     contributors = wrap(contributors, ['plugin', additional('nick')])
+Plugin = internationalizeDocstring(Plugin)
 
 Class = Plugin
 
