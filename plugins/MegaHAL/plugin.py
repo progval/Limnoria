@@ -33,13 +33,20 @@ import os
 import sys
 import random
 import supybot.conf as conf
-import mh_python as megahal
 import supybot.utils as utils
 from cStringIO import StringIO
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+
+try:
+    import mh_python as megahal
+except ImportError:
+    raise callbacks.Error, 'You need to have MegaHAL installed to use this ' \
+                           'plugin.  Download it at ' \
+                           '<http://megahal.alioth.debian.org/>' \
+                           'or with <apt-get install megahal>'
 
 try:
     from supybot.i18n import PluginInternationalization
@@ -102,6 +109,8 @@ class MegaHAL(callbacks.Plugin):
             megahal.learn(msg)
 
     def doPrivmsg(self, irc, msg):
+        if not msg.args[0].startswith('#'): # It is a private message
+            return
         message = msg.args[1]
         
         if message.startswith(irc.nick) or re.match('\W.*', message):
@@ -110,8 +119,13 @@ class MegaHAL(callbacks.Plugin):
         
         probability = self.registryValue('answer.probability', msg.args[0])
         self._response(message, probability, irc.reply)
-    
+
     def invalidCommand(self, irc, msg, tokens):
+        if not msg.args[0].startswith('#'): # It is a private message
+            # Actually, we would like to answer, but :
+            # 1) It may be a mistyped identify command (or whatever)
+            # 2) MegaHAL can't reply without learning
+            return
         message = msg.args[1]
         usedToStartWithNick = False
         if message.startswith(message):
