@@ -333,8 +333,8 @@ class RSS(callbacks.Plugin):
         irc.replySuccess()
     remove = wrap(remove, ['feedName'])
 
-    @internationalizeDocstring
     class announce(callbacks.Commands):
+        @internationalizeDocstring
         def list(self, irc, msg, args, channel):
             """[<channel>]
 
@@ -441,7 +441,6 @@ class RSS(callbacks.Plugin):
                           title, link, desc, when)
         irc.reply(utils.str.normalizeWhitespace(response))
     info = wrap(info, [first('url', 'feedName')])
-
 
 Class = RSS
 
