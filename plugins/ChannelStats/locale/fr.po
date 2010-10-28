@@ -45,7 +45,7 @@ msgstr "Je ne peux vous trouver dans ma base de données."
 
 #: plugin.py:272
 msgid "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s has joined %n, parted %n, quit %n, kicked someone %n, been kicked %n, changed the topic %n, and changed the mode %n."
-msgstr "%s a envoyé %n ; un total de %n, %n, %n, et %n ; %s de ces messages %s. %s est arrivé %nfois, est parti %nfois, a quitté %nfois, a kické %nfois, a été kické %nfois, a changé le topic %nfois, et a changé les modes %nfois."
+msgstr "%s a envoyé %n ; un total de %n, %n, %n, et %n ; %s de ces messages %s. %s est arrivé %n fois, est parti %n fois, a quitté %n fois, a kické %n fois, a été kické %n fois, a changé le topic %n fois, et a changé les modes %n fois."
 
 #: plugin.py:279
 msgid "character"
@@ -84,7 +84,7 @@ msgstr "étaient des ACTIONs"
 #: plugin.py:292
 #: plugin.py:293
 msgid "time"
-msgstr " fois"
+msgstr "<empty>"
 
 #: plugin.py:296
 msgid "I have no stats for that %s in %s."

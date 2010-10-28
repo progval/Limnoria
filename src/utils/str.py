@@ -294,17 +294,28 @@ def depluralize(s):
 def nItems(n, item, between=None):
     """Works like this:
 
+    >>> nItems(4, '<empty>')
+    '4'
+
     >>> nItems(1, 'clock')
     '1 clock'
 
     >>> nItems(10, 'clock')
     '10 clocks'
 
+    >>> nItems(4, '<empty>', between='grandfather')
+    '4 grandfather'
+
     >>> nItems(10, 'clock', between='grandfather')
     '10 grandfather clocks'
     """
     assert isinstance(n, int) or isinstance(n, long), \
            'The order of the arguments to nItems changed again, sorry.'
+    if item == '<empty>':
+        if between is None:
+            return format('%s', n)
+        else:
+            return format('%s %s', n, item)
     if between is None:
         if n != 1:
             return format('%s %p', n, item)
