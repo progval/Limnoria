@@ -81,7 +81,7 @@ class Later(callbacks.Plugin):
         #format = conf.supybot.reply.format.time()
         diff = time.time() - when
         try:
-            return utils.timeElapsed(diff, seconds=False) + ' ago'
+            return utils.timeElapsed(diff, seconds=False) + _(' ago')
         except ValueError:
             return _('just now')
 

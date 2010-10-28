@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 15:21+CEST\n"
+"POT-Creation-Date: 2010-10-28 16:12+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgid ""
 "    the first place in which they're seen, or in private."
 msgstr ""
 
-#: plugin.py:47
+#: plugin.py:46
 #, docstring
 msgid ""
 "Used to do things later; currently, it only allows the sending of\n"
@@ -37,11 +37,15 @@ msgid ""
 "    Note plugin."
 msgstr ""
 
-#: plugin.py:87
+#: plugin.py:84
+msgid " ago"
+msgstr ""
+
+#: plugin.py:86
 msgid "just now"
 msgstr ""
 
-#: plugin.py:108
+#: plugin.py:107
 #, docstring
 msgid ""
 "<nick> <text>\n"
@@ -52,15 +56,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:115
+#: plugin.py:114
 msgid "I can't send notes to myself."
 msgstr ""
 
-#: plugin.py:121
+#: plugin.py:120
 msgid "That person's message queue is already full."
 msgstr ""
 
-#: plugin.py:126
+#: plugin.py:125
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -70,19 +74,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:137
+#: plugin.py:136
 msgid "I have no notes for that nick."
 msgstr ""
 
-#: plugin.py:142
+#: plugin.py:141
 msgid "I currently have notes waiting for %L."
 msgstr ""
 
-#: plugin.py:145
+#: plugin.py:144
 msgid "I have no notes waiting to be delivered."
 msgstr ""
 
-#: plugin.py:150
+#: plugin.py:149
 #, docstring
 msgid ""
 "<nick>\n"
@@ -91,11 +95,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:159
+#: plugin.py:158
 msgid "There were no notes for %r"
 msgstr ""
 
-#: plugin.py:183
+#: plugin.py:182
 msgid "Sent %s: <%s> %s"
 msgstr ""
 
