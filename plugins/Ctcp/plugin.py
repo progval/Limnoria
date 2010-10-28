@@ -100,8 +100,8 @@ class Ctcp(callbacks.PluginRegexp):
     def ctcpFinger(self, irc, msg, match):
         "\x01FINGER\x01"
         self.log.info('Received CTCP FINGER from %s', msg.prefix)
-        self._reply(irc, msg,
-                    _('FINGER Supybot, the best Python IRC bot in existence!'))
+        self._reply(irc, msg, 'FINGER ' + 
+                    _('Supybot, the best Python IRC bot in existence!'))
 
     def ctcpSource(self, irc, msg, match):
         "\x01SOURCE\x01"
