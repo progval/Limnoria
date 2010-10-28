@@ -93,9 +93,13 @@ class PluginInternationalization:
 	elif localeName is None:
 	    localeName = 'en'
 	self.currentLocaleName = localeName
-	directory = get_plugin_dir(self.name) + 'locale'
+	if self.name != 'supybot':
+	    directory = get_plugin_dir(self.name) + 'locale'
+	    filename = '%s/%s.po' % (directory, localeName)
+	else:
+	    filename = 'locale/%s.po' % localeName
 	try:
-	    translationFile = open('%s/%s.po' % (directory, localeName), 'ru')
+	    translationFile = open(filename, 'ru')
 	except IOError: # The translation is unavailable
 	    self.translations = {}
 	    return
@@ -170,7 +174,7 @@ class PluginInternationalization:
 		return self.translations[untranslated] % args
 	    except KeyError:
 		return untranslated % args
-    
+
 
 def internationalizeDocstring(obj):
     # FIXME: check if the plugin has an _ object
