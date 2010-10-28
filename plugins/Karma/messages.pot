@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 15:21+CEST\n"
+"POT-Creation-Date: 2010-10-28 15:19+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,23 +77,27 @@ msgstr ""
 msgid "Karma for %q has been increased %n and decreased %n for a total karma of %s."
 msgstr ""
 
-#: plugin.py:315
+#: plugin.py:302 plugin.py:303
+msgid "time"
+msgstr ""
+
+#: plugin.py:316
 msgid "I didn't know the karma for any of those things."
 msgstr ""
 
-#: plugin.py:325 plugin.py:354
+#: plugin.py:326 plugin.py:355
 msgid "I have no karma for this channel."
 msgstr ""
 
-#: plugin.py:330
+#: plugin.py:331
 msgid "  You (%s) are ranked %i out of %i."
 msgstr ""
 
-#: plugin.py:334
+#: plugin.py:335
 msgid "Highest karma: %L.  Lowest karma: %L.%s"
 msgstr ""
 
-#: plugin.py:342
+#: plugin.py:343
 #, docstring
 msgid ""
 "[<channel>] {increased,decreased,active}\n"
@@ -104,7 +108,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:360
+#: plugin.py:361
 #, docstring
 msgid ""
 "[<channel>] <name>\n"
@@ -113,7 +117,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:370
+#: plugin.py:371
 #, docstring
 msgid ""
 "[<channel>] <filename>\n"
@@ -124,7 +128,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:382
+#: plugin.py:383
 #, docstring
 msgid ""
 "[<channel>] <filename>\n"

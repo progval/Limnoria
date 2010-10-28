@@ -299,7 +299,8 @@ class Karma(callbacks.Plugin):
                 else:
                     s = format(_('Karma for %q has been increased %n and '
                                'decreased %n for a total karma of %s.'),
-                               name, (added, 'time'), (subtracted, 'time'),
+                               name, (added, _('time')),
+                               (subtracted, _('time')),
                                total)
                 irc.reply(s)
         elif len(things) > 1:
