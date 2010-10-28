@@ -67,6 +67,14 @@ def get_plugin_dir(plugin_name):
 	    return filename[0:-len(allowed_file)]
     return 
 
+def getLocalePath(name, localeName, extension):
+    if name != 'supybot':
+	directory = get_plugin_dir(name) + 'locale'
+    else:
+	import ansi # Any Supybot plugin could fit
+	directory = ansi.__file__[0:-len('ansi.pyc')] + 'locale'
+    return '%s/%s.%s' % (directory, localeName, extension)
+
 i18nClasses = {}
 internationalizedCommands = {}
 
@@ -93,13 +101,11 @@ class PluginInternationalization:
 	elif localeName is None:
 	    localeName = 'en'
 	self.currentLocaleName = localeName
-	if self.name != 'supybot':
-	    directory = get_plugin_dir(self.name) + 'locale'
-	    filename = '%s/%s.po' % (directory, localeName)
-	else:
-	    filename = 'locale/%s.po' % localeName
+
 	try:
-	    translationFile = open(filename, 'ru')
+	    translationFile = open(getLocalePath(self.name, localeName, 'po'),
+				   'ru') # ru is the mode, not the beginning
+				         # of 'russian' ;)
 	except IOError: # The translation is unavailable
 	    self.translations = {}
 	    return
@@ -174,6 +180,20 @@ class PluginInternationalization:
 		return self.translations[untranslated] % args
 	    except KeyError:
 		return untranslated % args
+
+    def _getL10nCode(self):
+	return getLocalePath('supybot', self.currentLocaleName, 'py')
+
+    def getPluralizers(self, current_pluralize, current_depluralize):
+	# This should be used only by src/utils/str.py
+	try:
+	    execfile(self._getL10nCode())
+	except IOError:
+	    pass # Handled by the else v-
+	if locals().has_key('pluralize') and locals().has_key('depluralize'):
+	    return (pluralize, depluralize)
+	else:
+	    return (current_pluralize, current_depluralize)
 
 
 def internationalizeDocstring(obj):

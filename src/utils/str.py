@@ -42,6 +42,9 @@ import textwrap
 from iter import all, any
 from structures import TwoWayDictionary
 
+from supybot.i18n import PluginInternationalization
+_ = PluginInternationalization()
+
 curry = new.instancemethod
 chars = string.maketrans('', '')
 
@@ -253,12 +256,12 @@ def matchCase(s1, s2):
                 L[i] = L[i].upper()
         return ''.join(L)
 
-consonants = 'bcdfghjklmnpqrstvwxz'
-_pluralizeRegex = re.compile('[%s]y$' % consonants)
 def pluralize(s):
     """Returns the plural of s.  Put any exceptions to the general English
     rule of appending 's' in the plurals dictionary.
     """
+    consonants = 'bcdfghjklmnpqrstvwxz'
+    _pluralizeRegex = re.compile('[%s]y$' % consonants)
     lowered = s.lower()
     # Exception dictionary
     if lowered in plurals:
@@ -275,9 +278,9 @@ def pluralize(s):
     else:
         return matchCase(s, s+'s')
 
-_depluralizeRegex = re.compile('[%s]ies' % consonants)
 def depluralize(s):
     """Returns the singular of s."""
+    _depluralizeRegex = re.compile('[%s]ies' % consonants)
     lowered = s.lower()
     if lowered in plurals:
         return matchCase(s, plurals[lowered])
@@ -290,6 +293,8 @@ def depluralize(s):
             return s[:-1] # Chop off 's'.
         else:
             return s # Don't know what to do.
+
+pluralize, depluralize = _.getPluralizers(pluralize, depluralize)
 
 def nItems(n, item, between=None):
     """Works like this:
