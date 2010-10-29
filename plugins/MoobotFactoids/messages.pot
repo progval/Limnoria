@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 16:36+CEST\n"
+"POT-Creation-Date: 2010-10-29 12:02+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,38 +28,38 @@ msgid ""
 "    when the 'most' command is called."
 msgstr ""
 
-#: plugin.py:293
+#: plugin.py:292
 #, docstring
 msgid ""
 "Add the help for \"@help MoobotFactoids\" here (assuming you don't implement a MoobotFactoids\n"
 "    command).  This should describe *how* to use this plugin."
 msgstr ""
 
-#: plugin.py:350
+#: plugin.py:349
 msgid "%s is %s"
 msgstr ""
 
-#: plugin.py:369
+#: plugin.py:368
 msgid "Factoid %q is locked."
 msgstr ""
 
-#: plugin.py:376
+#: plugin.py:375
 msgid "Factoid %q not found."
 msgstr ""
 
-#: plugin.py:386
+#: plugin.py:385
 msgid "Missing an 'is' or '_is_'."
 msgstr ""
 
-#: plugin.py:402
+#: plugin.py:401
 msgid "Factoid %q already exists."
 msgstr ""
 
-#: plugin.py:436
+#: plugin.py:435
 msgid "%s, or %s"
 msgstr ""
 
-#: plugin.py:457
+#: plugin.py:456
 #, docstring
 msgid ""
 "[<channel>] <factoid key>\n"
@@ -70,7 +70,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:470
+#: plugin.py:469
 #, docstring
 msgid ""
 "[<channel>] <factoid key>\n"
@@ -81,39 +81,39 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:481 plugin.py:521
+#: plugin.py:480 plugin.py:520
 msgid "No such factoid: %q"
 msgstr ""
 
-#: plugin.py:490
+#: plugin.py:489
 msgid "Created by %s on %s."
 msgstr ""
 
-#: plugin.py:496
+#: plugin.py:495
 msgid " Last modified by %s on %s."
 msgstr ""
 
-#: plugin.py:504
+#: plugin.py:503
 msgid " Last requested by %s on %s, requested %n."
 msgstr ""
 
-#: plugin.py:511
+#: plugin.py:510
 msgid " Locked by %s on %s."
 msgstr ""
 
-#: plugin.py:526
+#: plugin.py:525
 msgid "Factoid %q is already locked."
 msgstr ""
 
-#: plugin.py:529
+#: plugin.py:528
 msgid "Factoid %q is not locked."
 msgstr ""
 
-#: plugin.py:539
+#: plugin.py:538
 msgid "Cannot %s someone else's factoid unless you are an admin."
 msgstr ""
 
-#: plugin.py:551
+#: plugin.py:550
 #, docstring
 msgid ""
 "[<channel>] <factoid key>\n"
@@ -124,7 +124,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:562
+#: plugin.py:561
 #, docstring
 msgid ""
 "[<channel>] <factoid key>\n"
@@ -135,7 +135,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:573
+#: plugin.py:572
 #, docstring
 msgid ""
 "[<channel>] {popular|authored|recent}\n"
@@ -148,43 +148,51 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:598
+#: plugin.py:594
+msgid "author"
+msgstr ""
+
+#: plugin.py:596
+msgid "authors"
+msgstr ""
+
+#: plugin.py:597
 msgid "Most prolific %s: %L"
 msgstr ""
 
-#: plugin.py:600 plugin.py:612
+#: plugin.py:599 plugin.py:611
 msgid "There are no factoids in my database."
 msgstr ""
 
-#: plugin.py:607
+#: plugin.py:606
 msgid "latest factoid"
 msgstr ""
 
-#: plugin.py:609
+#: plugin.py:608
 msgid "latest factoids"
 msgstr ""
 
-#: plugin.py:610
+#: plugin.py:609
 msgid "%s: %L"
 msgstr ""
 
-#: plugin.py:619
+#: plugin.py:618
 msgid "requested factoid"
 msgstr ""
 
-#: plugin.py:621
+#: plugin.py:620
 msgid "requested factoids"
 msgstr ""
 
-#: plugin.py:622
+#: plugin.py:621
 msgid "Top %s: %L"
 msgstr ""
 
-#: plugin.py:624
+#: plugin.py:623
 msgid "No factoids have been requested from my database."
 msgstr ""
 
-#: plugin.py:628
+#: plugin.py:627
 #, docstring
 msgid ""
 "[<channel>] <author name>\n"
@@ -196,15 +204,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:641
+#: plugin.py:640
 msgid "No factoids by %q found."
 msgstr ""
 
-#: plugin.py:644
+#: plugin.py:643
 msgid "Author search for %q (%i found): %L"
 msgstr ""
 
-#: plugin.py:651
+#: plugin.py:650
 #, docstring
 msgid ""
 "[<channel>] <text>\n"
@@ -215,15 +223,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:659
+#: plugin.py:658
 msgid "No keys matching %q found."
 msgstr ""
 
-#: plugin.py:666
+#: plugin.py:665
 msgid "Key search for %q (%i found): %L"
 msgstr ""
 
-#: plugin.py:673
+#: plugin.py:672
 #, docstring
 msgid ""
 "[<channel>] <text>\n"
@@ -234,15 +242,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:681
+#: plugin.py:680
 msgid "No values matching %q found."
 msgstr ""
 
-#: plugin.py:684
+#: plugin.py:683
 msgid "Value search for %q (%i found): %L"
 msgstr ""
 
-#: plugin.py:691
+#: plugin.py:690
 #, docstring
 msgid ""
 "[<channel>] <factoid key>\n"
@@ -252,7 +260,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:704
+#: plugin.py:703
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -263,7 +271,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:712
+#: plugin.py:711
 msgid "No factoids in the database."
 msgstr ""
 

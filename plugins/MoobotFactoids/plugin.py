@@ -591,9 +591,9 @@ class MoobotFactoids(callbacks.Plugin):
         L = ['%s (%s)' % (plugins.getUserName(t[0]), int(t[1]))
              for t in results]
         if L:
-            author = 'author'
+            author = _('author')
             if len(L) != 1:
-                author = 'authors'
+                author = _('authors')
             irc.reply(format(_('Most prolific %s: %L'), author, L))
         else:
             irc.error(_('There are no factoids in my database.'))
