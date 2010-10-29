@@ -350,6 +350,8 @@ def ordinal(i):
         ord = 'rd'
     return '%s%s' % (i, ord)
 
+ordinal = _.getOrdinal(ordinal)
+
 def be(i):
     """Returns the form of the verb 'to be' based on the number i."""
     if i == 1:
@@ -363,6 +365,8 @@ def has(i):
         return 'has'
     else:
         return 'have'
+
+be, have = _.getVerbs(be, have)
 
 def toBool(s):
     s = s.strip().lower()

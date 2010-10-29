@@ -195,6 +195,27 @@ class PluginInternationalization:
 	else:
 	    return (current_pluralize, current_depluralize)
 
+    def getOrdinal(self, current_ordinal):
+        # This should be used only by src/utils/str.py
+        try:
+            execfile(self._getL10nCode())
+        except IOError:
+            pass # Handled by the else v-
+        if locals().has_key('ordinal'):
+            return ordinal
+        else:
+            return current_ordinal
+
+    def getBeAndHave(self, current_be, current_have):
+        # This should be used only by src/utils/str.py
+        try:
+            execfile(self._getL10nCode())
+        except IOError:
+            pass # Handled by the else v-
+        if locals().has_key('be') and locals().has_key('have'):
+            return (be, have)
+        else:
+            return (current_be, current_have)
 
 def internationalizeDocstring(obj):
     # FIXME: check if the plugin has an _ object
