@@ -184,17 +184,29 @@ class PluginInternationalization:
     def _getL10nCode(self):
 	return getLocalePath('supybot', self.currentLocaleName, 'py')
 
-    def getPluralizers(self, current_pluralize, current_depluralize):
+    def getPluralizers(self, pluralize, depluralize):
 	# This should be used only by src/utils/str.py
 	try:
 	    execfile(self._getL10nCode())
 	except IOError:
-	    pass # Handled by the else v-
-	if locals().has_key('pluralize') and locals().has_key('depluralize'):
-	    return (pluralize, depluralize)
-	else:
-	    return (current_pluralize, current_depluralize)
+	    pass
+        return (pluralize, depluralize)
 
+    def getOrdinal(self, ordinal):
+        # This should be used only by src/utils/str.py
+        try:
+            execfile(self._getL10nCode())
+        except IOError:
+            pass
+        return ordinal
+
+    def getBeAndHave(self, be, have):
+        # This should be used only by src/utils/str.py
+        try:
+            execfile(self._getL10nCode())
+        except IOError:
+            pass
+        return (be, have)
 
 def internationalizeDocstring(obj):
     # FIXME: check if the plugin has an _ object
