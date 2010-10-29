@@ -1,0 +1,181 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2010-10-17 18:36+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Français\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: ASCII\n"
+
+#: config.py:49
+msgid ""
+"Determines whether the bot will randomly grab\n"
+"    possibly-suitable quotes on occasion.  The suitability of a given message\n"
+"    is determined by ..."
+msgstr "Détermine si le bot récupèrera automatiquement des quotes éligible à une quote. L'éligibilté est déterminée par..."
+
+#: config.py:54
+msgid ""
+"Determines about how many seconds, on\n"
+"    average, should elapse between random grabs.  This is only an average\n"
+"    value; grabs can happen from any time after half this time until never,\n"
+"    although that's unlikely to occur."
+msgstr "Détermine le nombre de secondes, en moyenne, entre deux récupération de citations. Il s'agit seulement d'une moyenne, et les prises de citation peuvent être faites n'importe quand après la moitié de ce temps, voire jamais, même si c'est improbable."
+
+#: config.py:59
+msgid ""
+"Determines the minimum\n"
+"    number of words in a message for it to be considered for random\n"
+"    grabbing."
+msgstr "Détermine le nombre minimum de mots dans un message pour être éligible à la quotation aléatoire."
+
+#: config.py:63
+msgid ""
+"Determines the\n"
+"    minimum number of characters in a message for it to be considered for\n"
+"    random grabbing."
+msgstr "Détermine le nombre minimum de caractères dans un message pour être éligible à la quotation aléatoire."
+
+#: plugin.py:57
+msgid "%s (Said by: %s; grabbed by %s at %t)"
+msgstr "%s (Dit par %s ; récupéré par %s à %t)"
+
+#: plugin.py:210
+msgid "Add the help for \"@help QuoteGrabs\" here."
+msgstr ""
+
+#: plugin.py:249
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        Grabs a quote from <channel> by <nick> for the quotegrabs table.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<canal>] <nick>\n"
+"\n"
+"Récupère une quote du <canal> par le <nick> dans la table des citations. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:262
+msgid "You can't quote grab yourself."
+msgstr "Vous ne pouvez récupérer des citations de vous-même."
+
+#: plugin.py:269
+msgid "I couldn't find a proper message to grab."
+msgstr "Je ne peux trouver de message à quoter."
+
+#: plugin.py:274
+msgid ""
+"[<channel>] <number>\n"
+"\n"
+"        Removes the grab <number> (the last by default) on <channel>.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<canal>] <nombre>\n"
+"\n"
+"Supprime la quote désignée par le <nombre> (la dernière par défaut) sur le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:285
+msgid "Nothing to ungrab."
+msgstr "Rien à dé-quoter"
+
+#: plugin.py:287
+msgid "Invalid grab number."
+msgstr "Numéro de quote invalide."
+
+#: plugin.py:292
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        Returns <nick>'s latest quote grab in <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<canal>] <nick>\n"
+"\n"
+"Retourne le nick de la dernière personne citée sur le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:300
+msgid "I couldn't find a matching quotegrab for %s."
+msgstr "Je ne peux trouver de quote coresspondant à %s."
+
+#: plugin.py:306
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        Returns a list of shortened quotes that have been grabbed for <nick>\n"
+"        as well as the id of each quote.  These ids can be used to get the\n"
+"        full quote.  <channel> is only necessary if the message isn't sent in\n"
+"        the channel itself.\n"
+"        "
+msgstr ""
+"[<canal>] <nick>\n"
+"\n"
+"Retourne une liste de quotes raccourcies que ont été récupérées pour le <nick>, ainsi que l'id de chaque quote. Les ids peuvent être utilisés pour récupérer les quotes entières. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:323
+msgid "I couldn't find any quotegrabs for %s."
+msgstr "Je ne peux trouver de citation pour %s"
+
+#: plugin.py:329
+msgid ""
+"[<channel>] [<nick>]\n"
+"\n"
+"        Returns a randomly grabbed quote, optionally choosing only from those\n"
+"        quotes grabbed for <nick>.  <channel> is only necessary if the message\n"
+"        isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<canal>] [<nick>]\n"
+"\n"
+"Retourne une citation aléatoire, éventuellement parmis les citations récupérées de <nick>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:339
+msgid "Couldn't get a random quote for that nick."
+msgstr "Je ne peux récupérer une quote aléatoire pour ce nick."
+
+#: plugin.py:341
+msgid "Couldn't get a random quote.  Are there any grabbed quotes in the database?"
+msgstr "Je ne peux récupérer de quote aléatoire. Y a-t-il des quotes dans la base de données ?"
+
+#: plugin.py:347
+msgid ""
+"[<channel>] <id>\n"
+"\n"
+"        Return the quotegrab with the given <id>.  <channel> is only necessary\n"
+"        if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<canal>] <id>\n"
+"\n"
+"Retourne la quote d'<id> donné. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:355
+msgid "No quotegrab for id %s"
+msgstr "Pas de quote d'id %s"
+
+#: plugin.py:361
+msgid ""
+"[<channel>] <text>\n"
+"\n"
+"        Searches for <text> in a quote.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<canal>] <texte>\n"
+"\n"
+"Recherche le <texte> dans les citations. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:376
+msgid "No quotegrabs matching %s"
+msgstr "Aucune quote ne correspond à %s"
+

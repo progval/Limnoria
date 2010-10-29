@@ -1,0 +1,59 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2010-10-17 18:33+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Français\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: ASCII\n"
+
+#: config.py:49
+msgid ""
+"Determines whether the bot will show the ids of\n"
+"    a praise when the praise is given."
+msgstr "Détermine si le bot affichera les ids des louanges lorsqu'une louange est donnée."
+
+#: plugin.py:40
+msgid ""
+"Praise is a plugin for ... well, praising things.  Feel free to add\n"
+"    your own flavor to it by customizing what praises it gives.  Use \"praise\n"
+"    add <text>\" to add new ones, making sure to include \"$who\" in <text> where\n"
+"    you want to insert the thing being praised.\n"
+"    "
+msgstr "Praise est un plugin pour... mmh... louer des gens et des choses. Sentez-vous libre de personnaliser à votre goût pourquoi vous louez ceci. Utilisez \"praise add\" pour ajouter les vôtres, et assurez-vous d'ajouter \"$who\" dans le <texte> là où vous voulez insérer le nom de la chose à louer."
+
+#: plugin.py:54
+msgid "Praises must contain $who."
+msgstr "Les louanges doivent contenir $who"
+
+#: plugin.py:58
+msgid ""
+"[<channel>] [<id>] <who|what> [for <reason>]\n"
+"\n"
+"        Praises <who|what> (for <reason>, if given).  If <id> is given, uses\n"
+"        that specific praise.  <channel> is only necessary if the message isn't\n"
+"        sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<canal>] [<id>] <qui|quoi> [for <raison>]\n"
+"\n"
+"Loue <qui|quoi> (pour la <raison>, si elle est donnée). Si l'<id> est donné, utilise une louange spécifique.  <canal> n'est nécessaire que si le message n'est pas envoyé sur  le canal lui-même."
+
+#: plugin.py:74
+msgid "There is no praise with id #%i."
+msgstr "Il n'y a pas de louange d'id #%i"
+
+#: plugin.py:79
+msgid "There are no praises in my database for %s."
+msgstr "Il n'y a pas de louange dans ma base de données pour %s."
+
+#: plugin.py:87
+msgid " for "
+msgstr " pour "
+
