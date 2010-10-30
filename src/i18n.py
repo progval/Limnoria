@@ -31,7 +31,7 @@
 Supybot internationalisation and localisation managment.
 """
 
-__all__ = ['PluginInternationalization']
+__all__ = ['PluginInternationalization', 'internationalizeDocstring']
 
 import re
 import sys
@@ -77,14 +77,29 @@ def getLocalePath(name, localeName, extension):
 
 i18nClasses = {}
 internationalizedCommands = {}
+internationalizedFunctions = [] # No need to know there name
 
 def reloadLocals():
     for pluginName in i18nClasses:
 	i18nClasses[pluginName].loadLocale()
     for commandHash in internationalizedCommands:
 	internationalizeDocstring(internationalizedCommands[commandHash])
+    for function in internationalizedFunctions:
+	function.loadLocale()
+	
 
-class PluginInternationalization:
+i18nSupybot = None
+def PluginInternationalization(name='supybot'):
+    # This is a proxy, that prevent Supybot against having more than one
+    # internationalizer
+    global i18nSupybot
+    if name != 'supybot':
+	return _PluginInternationalization(name)
+    elif i18nSupybot == None:
+	i18nSupybot = _PluginInternationalization('supybot')
+    return i18nSupybot
+
+class _PluginInternationalization:
     """Internationalization managment for a plugin."""
     def __init__(self, name='supybot'):
 	self.name = name
@@ -96,19 +111,28 @@ class PluginInternationalization:
 	self.loadLocale()
     
     def loadLocale(self, localeName=None):
+	"""(Re)loads the locale used by this class."""
 	if localeName is None and 'conf' in globals():
 	    localeName = conf.supybot.language()
 	elif localeName is None:
 	    localeName = 'en'
 	self.currentLocaleName = localeName
+	
+	self._loadL10nCode()
 
 	try:
 	    translationFile = open(getLocalePath(self.name, localeName, 'po'),
 				   'ru') # ru is the mode, not the beginning
 				         # of 'russian' ;)
+	    self._parse(translationFile)
 	except IOError: # The translation is unavailable
 	    self.translations = {}
 	    return
+
+    def _parse(self, translationFile):
+	"""A .po files parser.
+
+	Give it a file object."""
 	step = WAITING_FOR_MSGID
 	self.translations = {}
 	for line in translationFile:
@@ -154,61 +178,92 @@ class PluginInternationalization:
 		self._translate(untranslated, translated)
     
     def _translate(self, untranslated, translated):
-	self.translations.update({self._parse(untranslated): 
-						    self._parse(translated)})
+	self.translations.update({self._unescape(untranslated):
+						   self._unescape(translated)})
     
-    def _parse(self, string):
-	return str.replace(string, '\\n', '\n') # Replace \\n by \n
+    def _unescape(self, string):
+	return str.replace(string, '\\n', '\n')
     
-    def __call__(self, untranslated, *args):
+    def __call__(self, untranslated):
 	if not 'conf' in globals():
-	    if len(args) == 0:
-		return untranslated
-	    else:
-		translation = self(untranslated)
-		return translation % args
+	    return untranslated
 	if self.currentLocaleName != conf.supybot.language():
 	    # If the locale has been changed
 	    reloadLocals()
-	if len(args) == 0:
-	    try:
-		return self.translations[untranslated]
-	    except KeyError:
-		return untranslated
-	else:
-	    try:
-		return self.translations[untranslated] % args
-	    except KeyError:
-		return untranslated % args
-
-    def _getL10nCode(self):
-	return getLocalePath('supybot', self.currentLocaleName, 'py')
-
-    def getPluralizers(self, pluralize, depluralize):
-	# This should be used only by src/utils/str.py
 	try:
-	    execfile(self._getL10nCode())
-	except IOError:
+	    return self.translations[untranslated]
+	except KeyError:
+	    return untranslated
+
+    def _loadL10nCode(self):
+	if self.name != 'supybot':
+	    return
+	try:
+	    execfile(self._getL10nCodePath())
+	except IOError: # File doesn't exist
 	    pass
-        return (pluralize, depluralize)
+	
+	functions = locals()
+	functions.pop('self')
+	self._l10nFunctions = functions
+	    # Remove old functions and come back to the native language
+    
+    def _getL10nCodePath(self):
+	"""Returns the path to the code localization file.
 
-    def getOrdinal(self, ordinal):
-        # This should be used only by src/utils/str.py
-        try:
-            execfile(self._getL10nCode())
-        except IOError:
-            pass
-        return ordinal
+	It contains functions that needs to by fully (code + strings)
+	localized"""
+	if self.name != 'supybot':
+	    return
+	return getLocalePath('supybot', self.currentLocaleName, 'py')
+    
+    def localizeFunction(self, name):
+	"""Returns the localized version of the function.
 
-    def getBeAndHas(self, be, has):
-        # This should be used only by src/utils/str.py
-        try:
-            execfile(self._getL10nCode())
-        except IOError:
-            pass
-        return (be, has)
+	Should be used only by the internationalizedFunction class"""
+	if self.name != 'supybot':
+	    return
+	if hasattr(self, '_l10nFunctions') and \
+	    self._l10nFunctions.has_key(name):
+	    return self._l10nFunctions[name]
+    
+    def internationalizeFunction(self, name):
+	"""Decorates functions and internationalize their code.
+
+	Only useful for Supybot core functions"""
+	if self.name != 'supybot':
+	    return
+	class FunctionInternationalizer:
+	    def __init__(self, parent, name):
+		self._parent = parent
+		self._name = name
+	    def __call__(self, obj):
+		obj = internationalizedFunction(self._parent, self._name, obj)
+		obj.loadLocale()
+		return obj
+	return FunctionInternationalizer(self, name)
+
+class internationalizedFunction:
+    """Proxy for functions that need to be fully localized.
+
+    The localization code is in locale/LOCALE.py"""
+    def __init__(self, internationalizer, name, function):
+	self._internationalizer = internationalizer
+	self._name = name
+	self.__call__ = function
+	self._origin = function
+	internationalizedFunctions.append(self)
+    def loadLocale(self):
+	self.__call__ = self._internationalizer.localizeFunction(self._name)
+	if self.__call__ == None:
+	    self.restore()
+    def restore(self):
+	self.__call__ = self._origin
 
 def internationalizeDocstring(obj):
+    """Decorates functions and internationalize their docstring.
+
+    Only useful for commands (commands' docstring is displayed on IRC)"""
     if sys.modules[obj.__module__].__dict__.has_key('_'):
 	internationalizedCommands.update({hash(obj): obj})
 	obj.__doc__=sys.modules[obj.__module__]._.__call__(obj.__doc__)
