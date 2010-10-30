@@ -67,7 +67,7 @@ msgstr ""
 
 #: plugin.py:95
 msgid "I have spawned %n; %n %b still currently active: %L."
-msgstr "J'ai lancé %n ; %n %b sont encore actuellement actifs : %L."
+msgstr "J'ai lancé %n ; %n %b encore actuellement en vie : %L."
 
 #: plugin.py:103
 msgid ""
@@ -105,7 +105,7 @@ msgstr "Mes enfants ont pris %.2f secondes du temps utilisateur et %.2f secondes
 
 #: plugin.py:138
 msgid "I have taken %.2f seconds of user time and %.2f seconds of system time, for a total of %.2f seconds of CPU time.  %s"
-msgstr "J'ai pris %.2f secondes du temps utilisateur et %.2f secondes du temps système, pour un total de %.2f secondes de temps CPU."
+msgstr "J'ai pris %.2f secondes du temps utilisateur et %.2f secondes du temps système, pour un total de %.2f secondes de temps CPU. %s"
 
 #: plugin.py:160
 msgid "Unable to run ps command."
