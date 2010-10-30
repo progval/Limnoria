@@ -227,9 +227,9 @@ msgid ""
 "        isn't sent in the channel itself.\n"
 "        "
 msgstr ""
-"[<canal>]\n"
+"[<canal>] <nombre>\n"
 "\n"
-"<nombre> Retourne le topic numéro <nombre> du canal. <nombre> est un index dans les  topics. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Retourne le topic numéro <nombre> du canal. <nombre> est un index dans les  topics. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:415
 msgid ""
