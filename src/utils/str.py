@@ -366,7 +366,7 @@ def has(i):
     else:
         return 'have'
 
-be, have = _.getVerbs(be, have)
+be, has = _.getBeAndHas(be, has)
 
 def toBool(s):
     s = s.strip().lower()
