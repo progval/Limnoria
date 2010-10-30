@@ -1,0 +1,142 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2010-10-17 15:35+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Français\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: ASCII\n"
+
+#: plugin.py:52
+msgid ""
+"<fromBase> [<toBase>] <number>\n"
+"\n"
+"        Converts <number> from base <fromBase> to base <toBase>.\n"
+"        If <toBase> is left out, it converts to decimal.\n"
+"        "
+msgstr ""
+"<base 1> [<base 2>] <nombre>\n"
+"\n"
+"Converti le nombre d'une base à l'autre. La seconde base est la décimale par défaut."
+
+#: plugin.py:63
+msgid "Invalid <number> for base %s: %s"
+msgstr "Nombre invalide pour la base %s : %s"
+
+#: plugin.py:69
+msgid "Convert a decimal number to another base; returns a string."
+msgstr "Converti un nombre décimal dans une autre base, retourne une chaîne."
+
+#: plugin.py:90
+msgid ""
+"Convert a number from any base, 2 through 36, to any other\n"
+"        base, 2 through 36. Returns a string."
+msgstr "Convertir un nombre de n'import quelle base, de 2 à 36, à n'importe quelle base, de 2 à 36."
+
+#: plugin.py:157
+msgid ""
+"<math expression>\n"
+"\n"
+"        Returns the value of the evaluated <math expression>.  The syntax is\n"
+"        Python syntax; the type of arithmetic is floating point.  Floating\n"
+"        point arithmetic is used in order to prevent a user from being able to\n"
+"        crash to the bot with something like '10**10**10**10'.  One consequence\n"
+"        is that large values such as '10**24' might not be exact.\n"
+"        "
+msgstr ""
+"<expression mathématique>\n"
+"\n"
+"Retourne la valeur de l'<expression mathématique> évaluée. La syntaxe est celle de Python ; le calcul est à virgule flottante. Les calculs à virgule flottante sont utilisés pour enmpêcher l'utilisateur de faire crasher le bot avec quelque chose du genre '10**10**10**10'. L'une des conséquences est que les grandes valeurs commandes '10**24' peuvent ne pas être exactes."
+
+#: plugin.py:166
+#: plugin.py:220
+msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
+msgstr "Il n'y a aucune réelle raison que vous mettiez des underscores ou des crochets dans vos expressions mathématiques. Merci de les retirer."
+
+#: plugin.py:172
+#: plugin.py:228
+msgid "You can't use lambda in this command."
+msgstr "Vous ne pouvez utiliser lambda dans cette commande."
+
+#: plugin.py:202
+#: plugin.py:236
+msgid "The answer exceeded %s or so."
+msgstr "La réponse dépacer %s."
+
+#: plugin.py:204
+#: plugin.py:238
+msgid "Something in there wasn't a valid number."
+msgstr "Quelque chose là-dedans n'est pas un nombre valide"
+
+#: plugin.py:206
+#: plugin.py:240
+msgid "%s is not a defined function."
+msgstr "%s n'est pas une fonction définie"
+
+#: plugin.py:213
+msgid ""
+"<math expression>\n"
+"\n"
+"        This is the same as the calc command except that it allows integer\n"
+"        math, and can thus cause the bot to suck up CPU.  Hence it requires\n"
+"        the 'trusted' capability to use.\n"
+"        "
+msgstr ""
+"<expression mathématique>\n"
+"\n"
+"Cette commande est la même que la commande 'calc', excepté qu'elle utilise des mathématiques entières, ce qui peut causer une surconsommation de CPU de la part du bot. C'est pourquoi elle requiert la capacité 'trusted'."
+
+#: plugin.py:250
+msgid ""
+"<rpn math expression>\n"
+"\n"
+"        Returns the value of an RPN expression.\n"
+"        "
+msgstr ""
+"<expression mathématique NPI>\n"
+"\n"
+"Retourne la valeur de l'expression mathématique NPI."
+
+#: plugin.py:275
+msgid "Not enough arguments for %s"
+msgstr "Pas assez d'arguments pour %s."
+
+#: plugin.py:288
+msgid "%q is not a defined function."
+msgstr "%q n'est pas une fonction définie."
+
+#: plugin.py:295
+msgid "Stack: [%s]"
+msgstr "Pile : [%s]"
+
+#: plugin.py:299
+msgid ""
+"[<number>] <unit> to <other unit>\n"
+"\n"
+"        Converts from <unit> to <other unit>. If number isn't given, it\n"
+"        defaults to 1. For unit information, see 'units' command.\n"
+"        "
+msgstr ""
+"[<nombre>] <unité> to <autre unité>\n"
+"\n"
+"Convertit de l'<unité> à l'<autre unité>. Si le nombre n'est pas donné, il vaut 1 par défaut. Pour plus d'informations sur les unités, utilisez la commande 'units'."
+
+#: plugin.py:314
+msgid ""
+" [<type>]\n"
+"\n"
+"        With no arguments, returns a list of measurement types, which can be\n"
+"        passed as arguments. When called with a type as an argument, returns\n"
+"        the units of that type.\n"
+"        "
+msgstr ""
+"[<type>]\n"
+"\n"
+"Sans argument, retourne la liste des types de mesures, qui peuvent être passés en argument. Lors de l'appel avec un argument, retourne les unités de chaque type."
+

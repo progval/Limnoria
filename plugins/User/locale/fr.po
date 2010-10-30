@@ -1,22 +1,19 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Supybot-fr\n"
 "POT-Creation-Date: 2010-10-30 11:23+CEST\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
-"Generated-By: pygettext.py 1.5\n"
-
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Français\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: ASCII\n"
 
 #: plugin.py:49
-#, docstring
 msgid ""
 "[--capability=<capability>] [<glob>]\n"
 "\n"
@@ -24,17 +21,19 @@ msgid ""
 "        not given, returns all registered usernames.\n"
 "        "
 msgstr ""
+"[--capacility=<permission>] [<glob>]\n"
+"\n"
+"Retourne les utilisateurs enregistrés correspondant au <glob>. Si <glob> n'est pas donné, retourne tous les noms d'utilisateur."
 
 #: plugin.py:80
 msgid "There are no matching registered users."
-msgstr ""
+msgstr "Il n'y a pas d'utilisateur enregistré correspondant."
 
 #: plugin.py:82
 msgid "There are no registered users."
-msgstr ""
+msgstr "Il n'y a pas d'utilisateur enregistré."
 
 #: plugin.py:88
-#, docstring
 msgid ""
 "<name> <password>\n"
 "\n"
@@ -47,25 +46,27 @@ msgid ""
 "        sent to the bot privately, not in a channel.\n"
 "        "
 msgstr ""
+"<nom> <mot de passe>\n"
+"\n"
+"Enregistre <nom> avec le mot de passe donné, et le masque d'hôte actuel de la personne s'inscrivant. Vous ne devez pas vous enregistrer deux fois ; si vous n'êtes pas reconnu(e) comme un utilisateur(trice) alors que vous êtes déjà enregistré(e), utilisez la commande 'hostmask add' pour ajouter un masque d'hôte à votre compte, ou utilisez la commande 'identify' pour vous identifier, juste le temps d'une session. Cette commande (et toutes les autres commandes qui nécessitent un mot de passe) doivent être envoyées en privé, et non sur un canal."
 
 #: plugin.py:101
 msgid "That name is already assigned to someone."
-msgstr ""
+msgstr "Ce nom est déjà utilisé par quelqu'un."
 
 #: plugin.py:106
 msgid "username"
-msgstr ""
+msgstr "nom d'utilisateur"
 
 #: plugin.py:107
 msgid "Hostmasks are not valid usernames."
-msgstr ""
+msgstr "Les masques d'hôte ne sont pas des noms d'utilisateur valides."
 
 #: plugin.py:114
 msgid "Your hostmask is already registered to %s"
-msgstr ""
+msgstr "Votre masque d'hôte est déjà enregistré à %s"
 
 #: plugin.py:130
-#, docstring
 msgid ""
 "<name> [<password>]\n"
 "\n"
@@ -73,13 +74,15 @@ msgid ""
 "        command is an owner user, the password is not necessary.\n"
 "        "
 msgstr ""
+"<nom> [<mot de passe>]\n"
+"\n"
+"Supprime <nom> de la base de données des utilisateurs. Si l'utilisateur appellant cette commande est le propriétaire, le mot de passe n'est pas requis."
 
 #: plugin.py:145
 msgid "This command has been disabled.  You'll have to ask the owner of this bot to unregister your user."
-msgstr ""
+msgstr "Cette commande a été désactivée. Vous devez contacter le propriétaire du bot pour vous désenregistrer."
 
 #: plugin.py:158
-#, docstring
 msgid ""
 "<name> <new name> [<password>]\n"
 "\n"
@@ -89,13 +92,15 @@ msgid ""
 "        it may contain a password.\n"
 "        "
 msgstr ""
+"<nom> <nouveau nom> [<mot de passe>]\n"
+"\n"
+"Change votre nom actuel dans la base de données des utilisateurs. <mot de passe> n'est requis que si vous n'êtes pas actuellement reconnu(e) par masque d'hôte. Si vous avez le paramètre <mot de passe> le message doit être envoyé en privé (et non sur un canal)."
 
 #: plugin.py:167
 msgid "%q is already registered."
-msgstr ""
+msgstr "%q est déjà enregistré."
 
 #: plugin.py:181
-#, docstring
 msgid ""
 "[<name>] <old password> <new password>\n"
 "\n"
@@ -106,9 +111,11 @@ msgid ""
 "            owner user), then <old password> needn't be correct.\n"
 "            "
 msgstr ""
+"<nom> <ancien mot de passe> <nouveau mot de passe>\n"
+"\n"
+"Définit le nouveau mot de passe pour l'utilisateur spécifié par <name>. Évidemment, ce message doit être envoyé au bot en privé (= pas sur un canal). Si l'utilisateur est le propriétaire (et si l'utilisateur dont on change le mot de passe n'est pas le même propriétaire), l'<ancien mot de passe> ne requiert pas d'être correct."
 
 #: plugin.py:209
-#, docstring
 msgid ""
 "<password> [<True|False>]\n"
 "\n"
@@ -120,13 +127,15 @@ msgid ""
 "            inverts the current value.\n"
 "            "
 msgstr ""
+"<mot de passe> [<on|off>]\n"
+"\n"
+"Défini le flag 'secure' sur l'utilisateur envoyant le message. Requiert que la personne soit reconnue par masque d'hôte, en plus du fait que le mot de passe doit être correct. Lorsque le flag 'secure' est défini, l'utilisateur *doit* être identifié avant d'être reconnu. Si l'argument on/off n'est pas donné, l'état courant est inversé."
 
 #: plugin.py:224
 msgid "Secure flag set to %s"
-msgstr ""
+msgstr "Flag secure déjà défini à %s"
 
 #: plugin.py:232
-#, docstring
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -134,17 +143,19 @@ msgid ""
 "        the user is registered.\n"
 "        "
 msgstr ""
+"<masque d'hôte|nick>\n"
+"\n"
+"Retourne le nom d'utilisateur de la personne spécifiée par <masque d'hôte> ou par <nick>, si cette personne est enregistrée."
 
 #: plugin.py:241
 msgid "I haven't seen %s."
-msgstr ""
+msgstr "Je n'ai pas vu %s."
 
 #: plugin.py:246
 msgid "I don't know who that is."
-msgstr ""
+msgstr "Je ne sais pas qui c'est."
 
 #: plugin.py:252
-#, docstring
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -152,9 +163,11 @@ msgid ""
 "            hostmask of the person giving the command.\n"
 "            "
 msgstr ""
+"[<nick>]\n"
+"\n"
+"Retourne le masque d'hôte de <nick>. Si <nick> n'est pas donné, retourne le masque d'hôte de la personne envoyant la commande."
 
 #: plugin.py:264
-#, docstring
 msgid ""
 "[<name>]\n"
 "\n"
@@ -163,17 +176,19 @@ msgid ""
 "            command.\n"
 "            "
 msgstr ""
+"[<nom>]\n"
+"\n"
+"Retourne les masques d'hôte de l'utilisateur spécifié par <nom> ; si <nom> n'est pas spécifié, retourne le masque d'hôte de la personne appelant la commande."
 
 #: plugin.py:276
 msgid "%s has no registered hostmasks."
-msgstr ""
+msgstr "%s n'a pas de masque d'hôte enregistré."
 
 #: plugin.py:283
 msgid "You may only retrieve your own (hostmasks."
-msgstr ""
+msgstr "Vous ne pouvez récupérer que vos propres masques d'hôte."
 
 #: plugin.py:299
-#, docstring
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
 "\n"
@@ -187,21 +202,24 @@ msgid ""
 "            contain a password.\n"
 "            "
 msgstr ""
+"[<nom>] [<masque d'hôte>] [<mot de passe>]\n"
+"\n"
+"Ajoute le <masque d'hôte> à l'utilisateur <nom>. Le <mot de passe> n'est requis que si l'utilisateur n'est pas reconnu par masque d'hôte. <mot de passe> peut également être omis si l'expéditeur est le propriétaire, et envoie la commande au nom de quelqu'un d'autre. Si le <masque d'hôte> n'est pas donné, ce sera le masque d'hôte de l'expéditeur. Si <nom> n'est pas donné, il s'agit par défaut de votre nom d'utilisateur. Ce message doit être envoyé au bot en privé (pas sur un canal) si il contient un mot de passe."
 
 #: plugin.py:313
 msgid "hostmask"
-msgstr ""
+msgstr "masque d'hôte"
 
 #: plugin.py:314
 msgid "Make sure your hostmask includes a nick, then an exclamation point (!), then a user, then an at symbol (@), then a host.  Feel free to use wildcards (* and ?, which work just like they do on the command line) in any of these parts."
-msgstr ""
+msgstr "Assurez-vous que votre masque d'hôte inclue un nick, un point d'exclamation, une ident, un arobase, puis un hôte. Sentez-vous libre d'utiliser des jokers (* et ?, qui fonctionnent comme dans la ligne de commande), dans n'importe lequel de ces termes."
 
-#: plugin.py:324 plugin.py:347
+#: plugin.py:324
+#: plugin.py:347
 msgid "That hostmask is already registered."
-msgstr ""
+msgstr "Ce masque d'hôte est déjà enregistré."
 
 #: plugin.py:355
-#, docstring
 msgid ""
 "<name> <hostmask> [<password>]\n"
 "\n"
@@ -213,17 +231,19 @@ msgid ""
 "            password.\n"
 "            "
 msgstr ""
+"<nom> <masque d'hôte> [<mot de passe>]\n"
+"\n"
+"Retire le <masque d'hôte> de la liste de ceux de l'utilisateur spécifié par <nom>. Si le masque d'hôte est 'all', alors tous les masques d'hôtes seront supprimés. Le <mot de passe> n'est requis que si vous n'êtes pas reconnu(e) par masque d'hôte. Ce message doit être envoyé en privé (=pas sur un canal) car il peut contenir un mot de passe."
 
 #: plugin.py:374
 msgid "All hostmasks removed."
-msgstr ""
+msgstr "Tous les masques d'hôte ont été supprimés."
 
 #: plugin.py:378
 msgid "There was no such hostmask."
-msgstr ""
+msgstr "Il n'y avait pas ce masque d'hôte."
 
 #: plugin.py:387
-#, docstring
 msgid ""
 "[<name>]\n"
 "\n"
@@ -232,9 +252,11 @@ msgid ""
 "        command.\n"
 "        "
 msgstr ""
+"[<nom>]\n"
+"\n"
+"Retourne la liste des capacités de l'utilisateur spécifié par <nom> ; si <nom> n'est pas spécifié, retourne les capacités de l'utilisateur appelant la commande."
 
 #: plugin.py:407
-#, docstring
 msgid ""
 "<name> <password>\n"
 "\n"
@@ -243,13 +265,15 @@ msgid ""
 "        not in a channel.\n"
 "        "
 msgstr ""
+"<nom> <mot de passe>\n"
+"\n"
+"Identifie l'utilisateur en tant que <nom>. Cette commande (et toutes cellent qui requierent un mot de passe) doivent être envoyées en privé au bot, et non sur un canal."
 
 #: plugin.py:419
 msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
-msgstr ""
+msgstr "Votre flag secure est True, et votre masque d'hôte ne correspond à aucune de vos masques d'hôte connus."
 
 #: plugin.py:429
-#, docstring
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -259,34 +283,41 @@ msgid ""
 "        recognize you.\n"
 "        "
 msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Vous dé-indentifie. Notez que cela ne marche pas forcément, par exemple si le bot vous reconnait grâce au masque d'hôte ; il continuera alors à vous reconnaître."
 
 #: plugin.py:438
 msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
-msgstr ""
+msgstr "Si vous êtes encore reconnu(e) après avoir envoyé cette commande, c\'est que vous êtes reconnu(e) par masque d\'hôte et non par mot de passe. Vous devez supprimer tout masque d\'hôte susceptible de vous reconnaitre, dans le but de ne pas être reconnu(e)."
 
 #: plugin.py:447
-#, docstring
 msgid ""
 "takes no arguments\n"
 "\n"
 "        Returns the name of the user calling the command.\n"
 "        "
 msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Retourne le nom de l'utilisateur appellant la commande."
 
 #: plugin.py:455
 msgid "I don't recognize you."
-msgstr ""
+msgstr "Je ne vous reconnais pas."
 
 #: plugin.py:460
-#, docstring
 msgid ""
 "takes no arguments\n"
 "\n"
 "        Returns some statistics on the user database.\n"
 "        "
 msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Retourne des statistiques sur la base de données."
 
 #: plugin.py:478
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
-msgstr ""
+msgstr "J'ai %s utilisateurs enregistrés, avec %s masques d'hôte enregistrés ; %n et %n."
 

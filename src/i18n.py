@@ -67,6 +67,14 @@ def get_plugin_dir(plugin_name):
 	    return filename[0:-len(allowed_file)]
     return 
 
+def getLocalePath(name, localeName, extension):
+    if name != 'supybot':
+	directory = get_plugin_dir(name) + 'locale'
+    else:
+	import ansi # Any Supybot plugin could fit
+	directory = ansi.__file__[0:-len('ansi.pyc')] + 'locale'
+    return '%s/%s.%s' % (directory, localeName, extension)
+
 i18nClasses = {}
 internationalizedCommands = {}
 
@@ -93,9 +101,11 @@ class PluginInternationalization:
 	elif localeName is None:
 	    localeName = 'en'
 	self.currentLocaleName = localeName
-	directory = get_plugin_dir(self.name) + 'locale'
+
 	try:
-	    translationFile = open('%s/%s.po' % (directory, localeName), 'ru')
+	    translationFile = open(getLocalePath(self.name, localeName, 'po'),
+				   'ru') # ru is the mode, not the beginning
+				         # of 'russian' ;)
 	except IOError: # The translation is unavailable
 	    self.translations = {}
 	    return
@@ -170,7 +180,33 @@ class PluginInternationalization:
 		return self.translations[untranslated] % args
 	    except KeyError:
 		return untranslated % args
-    
+
+    def _getL10nCode(self):
+	return getLocalePath('supybot', self.currentLocaleName, 'py')
+
+    def getPluralizers(self, pluralize, depluralize):
+	# This should be used only by src/utils/str.py
+	try:
+	    execfile(self._getL10nCode())
+	except IOError:
+	    pass
+        return (pluralize, depluralize)
+
+    def getOrdinal(self, ordinal):
+        # This should be used only by src/utils/str.py
+        try:
+            execfile(self._getL10nCode())
+        except IOError:
+            pass
+        return ordinal
+
+    def getBeAndHave(self, be, have):
+        # This should be used only by src/utils/str.py
+        try:
+            execfile(self._getL10nCode())
+        except IOError:
+            pass
+        return (be, have)
 
 def internationalizeDocstring(obj):
     # FIXME: check if the plugin has an _ object
