@@ -75,16 +75,29 @@ def getLocalePath(name, localeName, extension):
 	directory = ansi.__file__[0:-len('ansi.pyc')] + 'locale'
     return '%s/%s.%s' % (directory, localeName, extension)
 
+i18nSupybot = None
 i18nClasses = {}
 internationalizedCommands = {}
+internationalizedFunctions = []
 
 def reloadLocals():
     for pluginName in i18nClasses:
 	i18nClasses[pluginName].loadLocale()
     for commandHash in internationalizedCommands:
 	internationalizeDocstring(internationalizedCommands[commandHash])
+    for function in internationalizedFunctions:
+	function.loadLocale()
+	
 
-class PluginInternationalization:
+def PluginInternationalization(name='supybot'):
+    global i18nSupybot
+    if name != 'supybot':
+	return _PluginInternationalization(name)
+    elif i18nSupybot == None:
+	i18nSupybot = _PluginInternationalization('supybot')
+    return i18nSupybot
+
+class _PluginInternationalization:
     """Internationalization managment for a plugin."""
     def __init__(self, name='supybot'):
 	self.name = name
@@ -101,6 +114,8 @@ class PluginInternationalization:
 	elif localeName is None:
 	    localeName = 'en'
 	self.currentLocaleName = localeName
+	
+	self._loadL10nCode()
 
 	try:
 	    translationFile = open(getLocalePath(self.name, localeName, 'po'),
@@ -158,7 +173,7 @@ class PluginInternationalization:
 						    self._parse(translated)})
     
     def _parse(self, string):
-	return str.replace(string, '\\n', '\n') # Replace \\n by \n
+	return str.replace(string, '\\n', '\n')
     
     def __call__(self, untranslated, *args):
 	if not 'conf' in globals():
@@ -181,32 +196,55 @@ class PluginInternationalization:
 	    except KeyError:
 		return untranslated % args
 
-    def _getL10nCode(self):
-	return getLocalePath('supybot', self.currentLocaleName, 'py')
-
-    def getPluralizers(self, pluralize, depluralize):
-	# This should be used only by src/utils/str.py
+    def _loadL10nCode(self):
+	if self.name != 'supybot':
+	    return
 	try:
-	    execfile(self._getL10nCode())
-	except IOError:
+	    execfile(self._getL10nCodePath())
+	except IOError: # File doesn't exist
 	    pass
-        return (pluralize, depluralize)
+	
+	functions = locals()
+	functions.pop('self')
+	self._l10nFunctions = functions
+    
+    def _getL10nCodePath(self):
+	if self.name != 'supybot':
+	    return
+	return getLocalePath('supybot', self.currentLocaleName, 'py')
+    
+    def localizeFunction(self, name):
+	if self.name != 'supybot':
+	    return
+	if hasattr(self, '_l10nFunctions') and self._l10nFunctions.has_key(name):
+	    return self._l10nFunctions[name]
+    
+    def internationalizeFunction(self, name):
+	if self.name != 'supybot':
+	    return
+	class FunctionInternationalizer:
+	    def __init__(self, parent, name):
+		self._parent = parent
+		self._name = name
+	    def __call__(self, obj):
+		obj = internationalizedFunction(self._parent, self._name, obj)
+		obj.loadLocale()
+		return obj
+	return FunctionInternationalizer(self, name)
 
-    def getOrdinal(self, ordinal):
-        # This should be used only by src/utils/str.py
-        try:
-            execfile(self._getL10nCode())
-        except IOError:
-            pass
-        return ordinal
-
-    def getBeAndHas(self, be, has):
-        # This should be used only by src/utils/str.py
-        try:
-            execfile(self._getL10nCode())
-        except IOError:
-            pass
-        return (be, has)
+class internationalizedFunction:
+    def __init__(self, internationalizer, name, function):
+	self._internationalizer = internationalizer
+	self._name = name
+	self.__call__ = function
+	self._origin = function
+	internationalizedFunctions.append(self)
+    def loadLocale(self):
+	self.__call__ = self._internationalizer.localizeFunction(self._name)
+	if self.__call__ == None:
+	    self.restore()
+    def restore(self):
+	self.__call__ = self._origin
 
 def internationalizeDocstring(obj):
     if sys.modules[obj.__module__].__dict__.has_key('_'):
