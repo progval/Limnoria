@@ -1,0 +1,108 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2010-10-20 09:38+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Français\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: ASCII\n"
+
+#: config.py:45
+msgid ""
+"Determines the\n"
+"    format string for timestamps.  Refer to the Python documentation for the\n"
+"    time module to see what formats are accepted. If you set this variable to\n"
+"    the empty string, the timestamp will not be shown."
+msgstr "Détermine la chaîne de format pour les timestamps. Référez-vous à la documentation du module Python time pour voir quels formats sont acceptés. Si vous définissez cette variable à une chaîne vide, le timestamp ne sera pas affiché."
+
+#: plugin.py:60
+msgid ""
+"[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
+"\n"
+"        Returns the number of seconds in the number of <years>, <weeks>,\n"
+"        <days>, <hours>, <minutes>, and <seconds> given.  An example usage is\n"
+"        \"seconds 2h 30m\", which would return 9000, which is '3600*2 + 30*60'.\n"
+"        Useful for scheduling events at a given number of seconds in the\n"
+"        future.\n"
+"        "
+msgstr ""
+"[<années>y] [<semaines>w] [<jours>d] [<heures>h] [<minutes>m] [<secondes>s]\n"
+"\n"
+"Retourne le nombre de secondes de la date donnée. Un exemple d'utilisation est \"seconds 2h 30m\", ce qui retournera 9000. Utile pour planifier des évènement à un certain nombre de secondes dans le futur."
+
+#: plugin.py:95
+msgid ""
+"<time string>\n"
+"\n"
+"        Returns the number of seconds since epoch <time string> is.\n"
+"        <time string> can be any number of natural formats; just try something\n"
+"        and see if it will work.\n"
+"        "
+msgstr ""
+"<moment>\n"
+"\n"
+"Retourne le nombre de secondes depuis le <moment>. Le <moment> peut être n'importe lequel des formats naturels, essayez seulement, et voyez si ça marche."
+
+#: plugin.py:106
+#: plugin.py:122
+msgid "That's right now!"
+msgstr "C'est maintenant !"
+
+#: plugin.py:111
+msgid ""
+"<time string>\n"
+"\n"
+"        Returns the number of seconds until <time string>.\n"
+"        "
+msgstr ""
+"<moment>\n"
+"\n"
+"Retourne le nombre de secondes depuis le <moment>."
+
+#: plugin.py:127
+msgid ""
+"[<seconds since epoch>]\n"
+"\n"
+"        Returns the ctime for <seconds since epoch>, or the current ctime if\n"
+"        no <seconds since epoch> is given.\n"
+"        "
+msgstr ""
+"[<temps>]\n"
+"\n"
+"        Renvoie le ctime pour le moment il y a <temps> secondes, ou le ctime        courant, si aucun <temps> n'est donné."
+
+#: plugin.py:133
+msgid "number of seconds since epoch"
+msgstr "nombre de secondes depuis une époque"
+
+#: plugin.py:138
+msgid ""
+"[<format>] [<seconds since epoch>]\n"
+"\n"
+"        Returns the current time in <format> format, or, if <format> is not\n"
+"        given, uses the configurable format for the current channel.  If no\n"
+"        <seconds since epoch> time is given, the current time is used.\n"
+"        "
+msgstr ""
+"[<format>] [<temps>]\n"
+"\n"
+"Retourne le temps courant dans le <format>, ou, si le <format> n'est pas donné, utilise le format actuellement configuré pour le canal. Si le <temps> n'est pas donné, le temps actuel est utilisé."
+
+#: plugin.py:155
+msgid ""
+"<seconds>\n"
+"\n"
+"        Returns a pretty string that is the amount of time represented by\n"
+"        <seconds>.\n"
+"        "
+msgstr ""
+"<secondes>\n"
+"\n"
+"Retourne le nombre de <secondes>, joliement formatté."
+
