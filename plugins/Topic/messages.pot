@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-20 09:38+CEST\n"
+"POT-Creation-Date: 2010-10-30 12:23+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -253,7 +253,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:471 plugin.py:485
+#: plugin.py:471
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -265,6 +265,16 @@ msgstr ""
 
 #: plugin.py:481
 msgid "lock the topic"
+msgstr ""
+
+#: plugin.py:485
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Unlocks the topic (sets the mode +t) in <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
 msgstr ""
 
 #: plugin.py:495
