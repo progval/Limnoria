@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-20 09:38+CEST\n"
+"POT-Creation-Date: 2010-10-30 12:23+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -274,7 +274,6 @@ msgstr ""
 "Supprime le topic <nombre> des topics du <canal>. Les topics sont numérotés à partir de 1 ; vous pouvez également utiliser des indexs négatifs pour compter à partir de la fin. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:471
-#: plugin.py:485
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -290,6 +289,18 @@ msgstr ""
 msgid "lock the topic"
 msgstr "verrouiller le topic"
 
+#: plugin.py:485
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Unlocks the topic (sets the mode +t) in <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<canal>]\n"
+"\n"
+"Déverrouille le topic (défini le mode +t) sur le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
 #: plugin.py:495
 msgid "unlock the topic"
 msgstr "déverrouiller le topic"
@@ -304,7 +315,7 @@ msgid ""
 msgstr ""
 "[<canal>]\n"
 "\n"
-"Déverrouille le topic (Enlève le mode +t) sur le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Restaure le topic tel qu'il était la dernière fois que le bot l'a défini. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:510
 msgid "I haven't yet set the topic in %s."
@@ -321,7 +332,7 @@ msgid ""
 msgstr ""
 "[<canal>]\n"
 "\n"
-"Restaure le topic tel qu'il était la dernière fois que le bot l'a défini. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Restaure le topic à l'état dans lequel il était avant la dernière utilisation de la commande 'topic. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:532
 msgid "There are no more undos for %s."
@@ -337,7 +348,7 @@ msgid ""
 msgstr ""
 "[<canal>]\n"
 "\n"
-"Restaure le topic à l'état dans lequel il était avant la dernière utilisation de la commande 'topic. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Défait le dernier 'undo'. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:549
 msgid "There are no redos for %s."
@@ -354,7 +365,7 @@ msgid ""
 msgstr ""
 "[<canal>]\n"
 "\n"
-"Défait le dernier 'undo'. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"<nombre du premier topic> <nombre du deuxième topic> Inverse les deux topics donnés. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:565
 msgid "I refuse to swap the same topic with itself."
@@ -371,7 +382,7 @@ msgid ""
 msgstr ""
 "[<canal>]\n"
 "\n"
-"<nombre du premier topic> <nombre du deuxième topic> Inverse les deux topics donnés. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Définit le topic du <canal> pour correspondre à celui par défaut défini pour le <canal>. Le topic par défaut pour un canal peut être configuré via la variable supybot.plugins.Topic.default. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:588
 msgid "There is no default topic configured for %s."
@@ -385,7 +396,7 @@ msgid ""
 "        current topic appropriately.\n"
 "        "
 msgstr ""
-"[<canal>]\n"
+"[<canal>] <separateur>\n"
 "\n"
-"Définit le topic du <canal> pour correspondre à celui par défaut défini pour le <canal>. Le topic par défaut pour un canal peut être configuré via la variable supybot.plugins.Topic.default. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Définir le séparateur de topic du <canal> pour être <séparateur>. Convertit le topic actuel de manière appropriée. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
