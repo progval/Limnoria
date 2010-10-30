@@ -435,11 +435,11 @@ class User(callbacks.Plugin):
         """
         user.clearAuth()
         ircdb.users.setUser(user)
-        irc.replySuccess('If you remain recognized after giving this command, '
+        irc.replySuccess(_('If you remain recognized after giving this command, '
                          'you\'re being recognized by hostmask, rather than '
                          'by password.  You must remove whatever hostmask is '
                          'causing you to be recognized in order not to be '
-                         'recognized.')
+                         'recognized.'))
     unidentify = wrap(unidentify, ['user'])
 
     @internationalizeDocstring
