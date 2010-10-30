@@ -200,13 +200,13 @@ class PluginInternationalization:
             pass
         return ordinal
 
-    def getBeAndHave(self, be, have):
+    def getBeAndHas(self, be, has):
         # This should be used only by src/utils/str.py
         try:
             execfile(self._getL10nCode())
         except IOError:
             pass
-        return (be, have)
+        return (be, has)
 
 def internationalizeDocstring(obj):
     # FIXME: check if the plugin has an _ object
