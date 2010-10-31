@@ -57,7 +57,16 @@ def import_conf():
 	i18nClasses[key].loadLocale()
 
 def get_plugin_dir(plugin_name):
-    filename = sys.modules[plugin_name].__file__
+    filename = None
+    try:
+	filename = sys.modules[plugin_name].__file__
+    except KeyError: # This is odd
+	pass
+    if filename == None:
+	try:
+	    filename = sys.modules['supybot.plugins.' + plugin_name].__file__
+	except KeyError: # This is odder
+	    return
     if filename.endswith(".pyc"):
 	filename = filename[0:-1]
     
@@ -69,7 +78,10 @@ def get_plugin_dir(plugin_name):
 
 def getLocalePath(name, localeName, extension):
     if name != 'supybot':
-	directory = get_plugin_dir(name) + 'locale'
+	try:
+	    directory = get_plugin_dir(name) + 'locale'
+	except TypeError: # get_plugin_dir returned None
+	    return ''
     else:
 	import ansi # Any Supybot plugin could fit
 	directory = ansi.__file__[0:-len('ansi.pyc')] + 'locale'
@@ -90,14 +102,11 @@ def reloadLocals():
 
 i18nSupybot = None
 def PluginInternationalization(name='supybot'):
-    # This is a proxy, that prevent Supybot against having more than one
-    # internationalizer
-    global i18nSupybot
-    if name != 'supybot':
+    # This is a proxy that prevents having several objects for the same plugin
+    if i18nClasses.has_key(name):
+	return i18nClasses[name]
+    else:
 	return _PluginInternationalization(name)
-    elif i18nSupybot == None:
-	i18nSupybot = _PluginInternationalization('supybot')
-    return i18nSupybot
 
 class _PluginInternationalization:
     """Internationalization managment for a plugin."""
@@ -127,8 +136,6 @@ class _PluginInternationalization:
 	    self._parse(translationFile)
 	except IOError: # The translation is unavailable
 	    self.translations = {}
-	    return
-
     def _parse(self, translationFile):
 	"""A .po files parser.
 
@@ -268,4 +275,4 @@ def internationalizeDocstring(obj):
 	internationalizedCommands.update({hash(obj): obj})
 	obj.__doc__=sys.modules[obj.__module__]._.__call__(obj.__doc__)
 	# We use _.__call__() instead of _() because of a pygettext warning.
-    return obj
+	return obj
