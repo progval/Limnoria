@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Note')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
