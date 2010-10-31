@@ -611,9 +611,9 @@ registerChannelValue(supybot.commands.nested, 'pipeSyntax',
     example: 'bot: foo | bar'.""")))
 
 registerGroup(supybot.commands, 'defaultPlugins',
-    orderAlphabetically=True, help="""Determines what commands have default
+    orderAlphabetically=True, help=_("""Determines what commands have default
     plugins set, and which plugins are set to be the default for each of those
-    commands.""")
+    commands."""))
 registerGlobalValue(supybot.commands.defaultPlugins, 'importantPlugins',
     registry.SpaceSeparatedSetOfStrings(
         ['Admin', 'Channel', 'Config', 'Misc', 'Owner', 'Plugin', 'User'],
