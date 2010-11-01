@@ -59,11 +59,14 @@ def rsplit(s, sep=None, maxsplit=-1):
     else:
         return s.rsplit(sep, maxsplit)
 
-def normalizeWhitespace(s):
+def normalizeWhitespace(s, removeNewline=True):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
     beginning = s.startswith(' ')
     ending = s.endswith(' ')
-    s = ' '.join(s.split())
+    if removeNewline:
+        s = ' '.join(s.split())
+    else:
+        s = ' '.join(s.split(' '))
     if beginning:
         s = ' ' + s
     if ending:

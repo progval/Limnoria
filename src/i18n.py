@@ -185,16 +185,17 @@ class _PluginInternationalization:
     
     def _unescape(self, string):
 	import supybot.utils as utils
-	return utils.str.normalizeWhitespace(str.replace(string, '\\n', '\n'))
+	string = str.replace(string, '\\n', '\n') # gettext escapes the \n
+	string = utils.str.normalizeWhitespace(string, removeNewline=False)
+	return string
     
     def __call__(self, untranslated):
 	"""Main function.
 
 	his is the function which is called when a plugin runs _()"""
-	import supybot.utils as utils
 	if untranslated.__class__ == internationalizedString:
 	    return untranslated._original
-	untranslated = utils.str.normalizeWhitespace(untranslated)
+	untranslated = self._unescape(untranslated)
 	if not 'conf' in globals():
 	    return untranslated
 	if self.currentLocaleName != conf.supybot.language():
