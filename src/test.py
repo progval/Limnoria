@@ -360,7 +360,6 @@ class PluginTestCase(SupyTestCase):
             return
         for cb in self.irc.callbacks:
             name = cb.name()
-            print "   ---                " + name
             if ((name in self._noTestDoc) and \
                not name.lower() in self.__class__.__name__.lower()):
                 continue
