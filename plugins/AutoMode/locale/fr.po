@@ -23,7 +23,7 @@ msgstr "Détermine si ce plugin est activé."
 msgid ""
 "Determines whether this plugin will automode\n"
 "    owners."
-msgstr "Détermine si ce pluginmettra des modes automatiques sur les owners."
+msgstr "Détermine si ce plugin mettra des modes automatiques sur les owners."
 
 #: config.py:52
 msgid ""
