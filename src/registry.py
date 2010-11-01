@@ -35,6 +35,7 @@ import string
 import textwrap
 
 import supybot.utils as utils
+import supybot.i18n as i18n
 
 def error(s):
    """Replace me with something better from another module!"""
@@ -211,7 +212,7 @@ class Group(object):
             self.__nonExistentEntry(attr)
 
     def help(self):
-        return self._help
+        return i18n.PluginInternationalization().__call__(self._help)
 
     def get(self, attr):
         # Not getattr(self, attr) because some nodes might have groups that

@@ -61,7 +61,14 @@ def rsplit(s, sep=None, maxsplit=-1):
 
 def normalizeWhitespace(s):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
-    return ' '.join(s.split())
+    beginning = s.startswith(' ')
+    ending = s.endswith(' ')
+    s = ' '.join(s.split())
+    if beginning:
+        s = ' ' + s
+    if ending:
+        s = s + ' '
+    return s
 
 def distance(s, t):
     """Returns the levenshtein edit distance between two strings."""
