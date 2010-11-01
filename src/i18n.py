@@ -309,6 +309,8 @@ def internationalizeDocstring(obj):
     """Decorates functions and internationalize their docstring.
 
     Only useful for commands (commands' docstring is displayed on IRC)"""
+    if obj.__doc__ == None:
+	return obj
     if sys.modules[obj.__module__].__dict__.has_key('_'):
 	internationalizedCommands.update({hash(obj): obj})
 	try:
