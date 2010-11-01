@@ -311,6 +311,10 @@ def internationalizeDocstring(obj):
     Only useful for commands (commands' docstring is displayed on IRC)"""
     if sys.modules[obj.__module__].__dict__.has_key('_'):
 	internationalizedCommands.update({hash(obj): obj})
-	obj.__doc__=sys.modules[obj.__module__]._.__call__(obj.__doc__)
-	# We use _.__call__() instead of _() because of a pygettext warning.
+	try:
+	    obj.__doc__=sys.modules[obj.__module__]._.__call__(obj.__doc__)
+	    # We use _.__call__() instead of _() because of a pygettext warning.
+	except AttributeError:
+	    # attribute '__doc__' of 'type' objects is not writable
+	    pass
     return obj
