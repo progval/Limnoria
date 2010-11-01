@@ -60,13 +60,10 @@ def get_plugin_dir(plugin_name):
     filename = None
     try:
 	filename = sys.modules[plugin_name].__file__
-    except KeyError: # This is odd
+    except KeyError: # It sometimes happens with Owner
 	pass
     if filename == None:
-	try:
-	    filename = sys.modules['supybot.plugins.' + plugin_name].__file__
-	except KeyError: # This is odder
-	    return
+	filename = sys.modules['supybot.plugins.' + plugin_name].__file__
     if filename.endswith(".pyc"):
 	filename = filename[0:-1]
     
@@ -171,7 +168,7 @@ class _PluginInternationalization:
 		if len(data) == 0: # Multiline mode
 		    step = IN_MSGSTR
 		else:
-		    self._translate(untranslated, data)
+		    self._addToDatabase(untranslated, data)
 		    step = WAITING_FOR_MSGID
 		    
 		    
@@ -182,25 +179,47 @@ class _PluginInternationalization:
 		step = WAITING_FOR_MSGID
 		if translated == '':
 		    translated = untranslated
-		self._translate(untranslated, translated)
+		self._addToDatabase(untranslated, translated)
     
-    def _translate(self, untranslated, translated):
-	self.translations.update({self._unescape(untranslated):
-						   self._unescape(translated)})
+    def _addToDatabase(self, untranslated, translated):
+	untranslated = self._unescape(untranslated)
+	translated = self._unescape(translated)
+	self.translations.update({untranslated: translated})
     
     def _unescape(self, string):
-	return str.replace(string, '\\n', '\n')
+	import supybot.utils as utils
+	return utils.str.normalizeWhitespace(str.replace(string, '\\n', '\n'))
     
     def __call__(self, untranslated):
+	if untranslated.__class__ == internationalizedString:
+	    return untranslated._original
+	untranslated = __import__('supybot').utils.str.normalizeWhitespace(untranslated)
 	if not 'conf' in globals():
 	    return untranslated
 	if self.currentLocaleName != conf.supybot.language():
 	    # If the locale has been changed
 	    reloadLocals()
 	try:
-	    return self.translations[untranslated]
+	    string = self._translate(untranslated)
+	    return self._addTracker(string, untranslated)
 	except KeyError:
-	    return untranslated
+	    pass
+	return untranslated
+    
+    def _translate(self, string):
+	if string.__class__ == internationalizedString:
+	    return string._internationalizer(string.untranslated)
+	else:
+	    return self.translations[string]
+    
+    def _addTracker(self, string, untranslated):
+	if string.__class__ == internationalizedString:
+	    return string
+	else:
+	    string = internationalizedString(string)
+	    string._original = untranslated
+	    string._internationalizer = self
+	    return string
 
     def _loadL10nCode(self):
 	if self.name != 'supybot':
@@ -266,6 +285,13 @@ class internationalizedFunction:
 	    self.restore()
     def restore(self):
 	self.__call__ = self._origin
+
+class internationalizedString(str):
+    pass
+#    def __init__(self, *args, **kwargs):
+#	self.__parent.__init__(*args, **kwargs)
+#	self._original = str(self)
+#	self._internationalizer = None
 
 def internationalizeDocstring(obj):
     """Decorates functions and internationalize their docstring.
