@@ -56,7 +56,7 @@ def import_conf():
     for key in i18nClasses:
 	i18nClasses[key].loadLocale()
 
-def get_plugin_dir(plugin_name):
+def getPluginDir(plugin_name):
     filename = None
     try:
 	filename = sys.modules[plugin_name].__file__
@@ -75,7 +75,7 @@ def get_plugin_dir(plugin_name):
 
 def getLocalePath(name, localeName, extension):
     if name != 'supybot':
-	directory = get_plugin_dir(name) + 'locale'
+	directory = getPluginDir(name) + 'locale'
     else:
 	import ansi # Any Supybot plugin could fit
 	directory = ansi.__file__[0:-len('ansi.pyc')] + 'locale'
@@ -193,9 +193,13 @@ class _PluginInternationalization:
 	return utils.str.normalizeWhitespace(str.replace(string, '\\n', '\n'))
     
     def __call__(self, untranslated):
+	"""Main function.
+
+	his is the function which is called when a plugin runs _()"""
+	import supybot.utils as utils
 	if untranslated.__class__ == internationalizedString:
 	    return untranslated._original
-	untranslated = __import__('supybot').utils.str.normalizeWhitespace(untranslated)
+	untranslated = utils.str.normalizeWhitespace(untranslated)
 	if not 'conf' in globals():
 	    return untranslated
 	if self.currentLocaleName != conf.supybot.language():
@@ -209,12 +213,17 @@ class _PluginInternationalization:
 	return untranslated
     
     def _translate(self, string):
+	"""Translate the string.
+
+	C the string internationalizer if any; else, use the local database"""
 	if string.__class__ == internationalizedString:
 	    return string._internationalizer(string.untranslated)
 	else:
 	    return self.translations[string]
     
     def _addTracker(self, string, untranslated):
+	"""Add a kind of 'tracker' on the string, in order to keep the
+	untranslated string (used when changing the locale)"""
 	if string.__class__ == internationalizedString:
 	    return string
 	else:
@@ -224,6 +233,8 @@ class _PluginInternationalization:
 	    return string
 
     def _loadL10nCode(self):
+	"""Open the file containing the code specific to this locale, and
+	load its functions."""
 	if self.name != 'supybot':
 	    return
 	try:
@@ -289,11 +300,9 @@ class internationalizedFunction:
 	self.__call__ = self._origin
 
 class internationalizedString(str):
+    """Simple subclass to str, that allow to add attributes. Also used to
+    know if a string is already localized"""
     pass
-#    def __init__(self, *args, **kwargs):
-#	self.__parent.__init__(*args, **kwargs)
-#	self._original = str(self)
-#	self._internationalizer = None
 
 def internationalizeDocstring(obj):
     """Decorates functions and internationalize their docstring.
