@@ -65,7 +65,7 @@ conf.registerChannelValue(MessageParser, 'requireManageCapability',
     Note that absence of an explicit anticapability means user has 
     capability."""))
 conf.registerChannelValue(MessageParser, 'listSeparator',
-    registry.String(', ', """Determines the separator used between rexeps when
+    registry.String(', ', """Determines the separator used between regexps when
     shown by the list command."""))
     
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

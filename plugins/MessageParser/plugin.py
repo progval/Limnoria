@@ -204,7 +204,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
     add = wrap(add, ['channel', 'something', 'something'])
     
     def remove(self, irc, msg, args, channel, optlist, regexp):
-        """[<channel>] [--id] <regexp>]
+        """[<channel>] [--id] <regexp>
 
         Removes the trigger for <regexp> from the triggers database.  
         <channel> is only necessary if
