@@ -69,11 +69,11 @@ msgstr "plugin"
 
 #: plugin.py:92
 msgid "The %q command is available in the %L %s."
-msgstr "La commande %q est disponibles dans le(s) plugin %v."
+msgstr "La commande %q est disponibles dans le(s) plugin(s) %L %v."
 
 #: plugin.py:95
 msgid "There is no command %q."
-msgstr "Il n'y a pas de commande q."
+msgstr "Il n'y a pas de commande %q."
 
 #: plugin.py:100
 msgid ""
