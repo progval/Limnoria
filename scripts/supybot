@@ -61,6 +61,7 @@ import textwrap
 started = time.time()
 
 import supybot
+import supybot.i18n as i18n
 import supybot.utils as utils
 import supybot.registry as registry
 import supybot.questions as questions
@@ -178,6 +179,7 @@ if __name__ == '__main__':
         docs/GETTING_STARTED and follow the instructions."""))
     else:
         registryFilename = args.pop()
+        i18n.getLocaleFromRegistryFilename(registryFilename)
         try:
             # The registry *MUST* be opened before importing log or conf.
             registry.open(registryFilename)
@@ -210,6 +212,7 @@ if __name__ == '__main__':
         sys.exit(-1)
     import supybot.conf as conf
     import supybot.world as world
+    i18n.import_conf()
     world.starting = True
 
     def closeRegistry():
