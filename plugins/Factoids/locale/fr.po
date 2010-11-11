@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-17 10:59+CEST\n"
+"POT-Creation-Date: 2010-11-11 12:37+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -40,6 +40,10 @@ msgid ""
 "    commands by searching for a factoid; basically making the whatis\n"
 "    unnecessary when you want all factoids for a given key."
 msgstr "Détermine si le bot répondra aux commandes invalides lors de la recherche d'une factoid ; permet simplement de rendre la commande 'whatis' inutile lorsque vous voulez toutes les factoids d'un clef donnée."
+
+#: config.py:64
+msgid "$key could be $value."
+msgstr "$key semble être $value."
 
 #: config.py:64
 msgid ""

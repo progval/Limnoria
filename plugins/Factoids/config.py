@@ -61,7 +61,7 @@ conf.registerChannelValue(Factoids, 'replyWhenInvalidCommand',
     commands by searching for a factoid; basically making the whatis
     unnecessary when you want all factoids for a given key.""")))
 conf.registerChannelValue(Factoids, 'format',
-    FactoidFormat('$key could be $value.', _("""Determines the format of
+    FactoidFormat(_('$key could be $value.'), _("""Determines the format of
     the response given when a factoid's value is requested.  All the standard
     substitutes apply, in addition to "$key" for the factoid's key and "$value"
     for the factoid's value.""")))

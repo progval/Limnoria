@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 10:59+CEST\n"
+"POT-Creation-Date: 2010-11-11 12:37+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,6 +42,10 @@ msgid ""
 "Determines whether the bot will reply to invalid\n"
 "    commands by searching for a factoid; basically making the whatis\n"
 "    unnecessary when you want all factoids for a given key."
+msgstr ""
+
+#: config.py:64
+msgid "$key could be $value."
 msgstr ""
 
 #: config.py:64
