@@ -199,7 +199,7 @@ def getFloat(irc, msg, args, state, type=_('floating point number')):
 
 def getPositiveInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
-           p=lambda i: i>0, type=_('positive integer') *L)
+           p=lambda i: i>0, type=_('positive integer'), *L)
 
 def getNonNegativeInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
