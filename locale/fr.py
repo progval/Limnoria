@@ -40,7 +40,7 @@ def pluralize(s):
 	lowered in ['bijou', 'caillou', 'chou', 'genou', 'hibou', 'joujou',
 		    'pou']:
 	return s + 'x'
-    elif lowered.endwith('al') and \
+    elif lowered.endswith('al') and \
 	lowered not in ['bal', 'carnaval', 'chacal', 'festival', 'récital',
 		  'régal', 'cal', 'étal', 'aval', 'caracal', 'val', 'choral',
 		  'corral', 'galgal', 'gayal']:
@@ -53,7 +53,7 @@ def pluralize(s):
 	return s + 'x'
     elif lowered == 'pare-feu':
 	return s
-    elif lowered.endwith('eu') and \
+    elif lowered.endswith('eu') and \
 	lowered not in ['bleu', 'pneu', 'émeu', 'enfeu']:
 	# Note: when 'lieu' is a fish, it has a 's' ; else, it has a 'x'
 	return s + 'x'

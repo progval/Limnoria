@@ -360,7 +360,6 @@ class PluginTestCase(SupyTestCase):
             return
         for cb in self.irc.callbacks:
             name = cb.name()
-            print "   ---                " + name
             if ((name in self._noTestDoc) and \
                not name.lower() in self.__class__.__name__.lower()):
                 continue
@@ -372,12 +371,6 @@ class PluginTestCase(SupyTestCase):
                        attr == callbacks.canonicalName(attr):
                         self.failUnless(getattr(cb, attr, None).__doc__,
                                         '%s.%s has no help.' % (name, attr))
-    def testInternationalization(self):
-        name = self.__class__.__module__[0:-len('.test')]
-        if self.__class__.__module__.startswith('supybot'):
-            return
-        self.failIf(hasattr(sys.modules[name], '_') == False,
-                            '%s has no internationalizer.' % name)
         
 
 

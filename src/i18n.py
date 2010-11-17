@@ -37,6 +37,7 @@ import re
 import sys
 import time
 import threading
+conf = None
 # Don't import conf here ; because conf needs this module
 
 WAITING_FOR_MSGID = 1
@@ -47,16 +48,26 @@ IN_MSGSTR = 4
 MSGID = 'msgid "'
 MSGSTR = 'msgstr "'
 
+currentLocale = 'en'
+
+def getLocaleFromRegistryFilename(filename):
+    """Called by the 'supybot' script. Gets the locale name before conf is
+    loaded."""
+    global currentLocale
+    for line in open(filename, 'r'):
+	if line.startswith('supybot.language: '):
+	    currentLocale = line[len('supybot.language: '):]
+
 def import_conf():
-    import supybot.conf as conf
-    globals().update({'conf': conf})
+    """Imports the conf into this module"""
+    global conf
+    conf = __import__('supybot.conf').conf
     conf.registerGlobalValue(conf.supybot, 'language',
-	conf.registry.String('en', """Determines the bot's default language.
-	Valid values are things like en, fr, de, etc."""))
-    for key in i18nClasses:
-	i18nClasses[key].loadLocale()
+	conf.registry.String(currentLocale, """Determines the bot's default
+        language. Valid values are things like en, fr, de, etc."""))
 
 def getPluginDir(plugin_name):
+    """Gets the directory of the given plugin"""
     filename = None
     try:
 	filename = sys.modules[plugin_name].__file__
@@ -74,6 +85,8 @@ def getPluginDir(plugin_name):
     return 
 
 def getLocalePath(name, localeName, extension):
+    """Gets the path of the locale file of the given plugin ('supybot' stands
+    for the core)."""
     if name != 'supybot':
 	directory = getPluginDir(name) + 'locale'
     else:
@@ -85,7 +98,15 @@ i18nClasses = {}
 internationalizedCommands = {}
 internationalizedFunctions = [] # No need to know there name
 
-def reloadLocals():
+def reloadLocalesIfRequired():
+    global currentLocale
+    if conf is None:
+	return
+    if currentLocale != conf.supybot.language():
+	currentLocale = conf.supybot.language()
+	reloadLocales()
+
+def reloadLocales():
     for pluginName in i18nClasses:
 	i18nClasses[pluginName].loadLocale()
     for commandHash in internationalizedCommands:
@@ -108,17 +129,12 @@ class _PluginInternationalization:
 	self.name = name
 	self.currentLocaleName = None
 	i18nClasses.update({name: self})
-	if name != 'supybot' and not 'conf' in globals():
-	    # if conf is loadable but not loaded
-	    import_conf()
 	self.loadLocale()
     
     def loadLocale(self, localeName=None):
 	"""(Re)loads the locale used by this class."""
-	if localeName is None and 'conf' in globals():
-	    localeName = conf.supybot.language()
-	elif localeName is None:
-	    localeName = 'en'
+	if localeName is None:
+	    localeName = currentLocale
 	self.currentLocaleName = localeName
 	
 	self._loadL10nCode()
@@ -179,14 +195,16 @@ class _PluginInternationalization:
 		self._addToDatabase(untranslated, translated)
     
     def _addToDatabase(self, untranslated, translated):
-	untranslated = self._unescape(untranslated)
+	untranslated = self._unescape(untranslated, True)
 	translated = self._unescape(translated)
 	self.translations.update({untranslated: translated})
     
-    def _unescape(self, string):
+    def _unescape(self, string, removeNewline=False):
 	import supybot.utils as utils
 	string = str.replace(string, '\\n', '\n') # gettext escapes the \n
-	string = utils.str.normalizeWhitespace(string, removeNewline=False)
+	string = str.replace(string, '\\"', '"')
+	string = str.replace(string, "\'", "'")
+	string = utils.str.normalizeWhitespace(string, removeNewline)
 	return string
     
     def __call__(self, untranslated):
@@ -195,12 +213,8 @@ class _PluginInternationalization:
 	his is the function which is called when a plugin runs _()"""
 	if untranslated.__class__ == internationalizedString:
 	    return untranslated._original
-	untranslated = self._unescape(untranslated)
-	if not 'conf' in globals():
-	    return untranslated
-	if self.currentLocaleName != conf.supybot.language():
-	    # If the locale has been changed
-	    reloadLocals()
+	untranslated = self._unescape(untranslated, True)
+	reloadLocalesIfRequired()
 	try:
 	    string = self._translate(untranslated)
 	    return self._addTracker(string, untranslated)
@@ -304,8 +318,14 @@ def internationalizeDocstring(obj):
     """Decorates functions and internationalize their docstring.
 
     Only useful for commands (commands' docstring is displayed on IRC)"""
+    if obj.__doc__ == None:
+	return obj
     if sys.modules[obj.__module__].__dict__.has_key('_'):
 	internationalizedCommands.update({hash(obj): obj})
-	obj.__doc__=sys.modules[obj.__module__]._.__call__(obj.__doc__)
-	# We use _.__call__() instead of _() because of a pygettext warning.
-	return obj
+	try:
+	    obj.__doc__=sys.modules[obj.__module__]._.__call__(obj.__doc__)
+	    # We use _.__call__() instead of _() because of a pygettext warning.
+	except AttributeError:
+	    # attribute '__doc__' of 'type' objects is not writable
+	    pass
+    return obj
