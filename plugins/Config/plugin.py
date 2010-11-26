@@ -156,7 +156,7 @@ class Config(callbacks.Plugin):
         Searches for <word> in the current configuration variables.
         """
         L = []
-        for (name, _) in conf.supybot.getValues(getChildren=True):
+        for (name, x) in conf.supybot.getValues(getChildren=True):
             if word in name.lower():
                 possibleChannel = registry.split(name)[-1]
                 if not ircutils.isChannel(possibleChannel):
