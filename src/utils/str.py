@@ -61,6 +61,7 @@ def rsplit(s, sep=None, maxsplit=-1):
 
 def normalizeWhitespace(s, removeNewline=True):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
+    s = str(s)
     if removeNewline:
         s = str.replace(s, '\n', '')
     while '  ' in s:
