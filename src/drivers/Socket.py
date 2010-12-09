@@ -37,6 +37,10 @@ from __future__ import division
 import time
 import select
 import socket
+try:
+    import ssl
+except:
+    pass
 
 import supybot.log as log
 import supybot.conf as conf
@@ -61,10 +65,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.writeCheckTime = None
         self.nextReconnectTime = None
         self.resetDelay()
-        # Only connect to non-SSL servers
-        if self.networkGroup.get('ssl').value:
+        if self.networkGroup.get('ssl').value and not globals().has_key('ssl'):
             drivers.log.error('The Socket driver can not connect to SSL '
-                              'servers.  Try the Twisted driver instead.')
+                              'servers for your Python version.  Try the '
+                              'Twisted driver instead, or install a Python'
+                              'version that supports SSL (2.6 and greater).')
         else:
             self.connect()
 
@@ -139,6 +144,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
+        except ssl.SSLError as e:
+            if e.args[0] == 'The read operation timed out':
+                pass
+            else:
+                self._handleSocketError(e)
+                return
         except socket.error, e:
             self._handleSocketError(e)
             return
@@ -175,6 +186,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         try:
             self.conn.connect(server)
             self.conn.settimeout(conf.supybot.drivers.poll())
+            if getattr(conf.supybot.networks, self.irc.network).ssl():
+                assert globals().has_key('ssl')
+                self.conn = ssl.wrap_socket(self.conn)
             self.connected = True
             self.resetDelay()
         except socket.error, e:
