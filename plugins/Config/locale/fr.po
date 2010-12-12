@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-16 12:34+CEST\n"
+"POT-Creation-Date: 2010-12-12 15:02+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -12,6 +12,14 @@ msgstr ""
 "X-Poedit-Language: Français\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+
+#: plugin.py:103
+msgid "configuration variable"
+msgstr "variable de configuration"
+
+#: plugin.py:109
+msgid "settable configuration variable"
+msgstr "variable de configuration modifiable"
 
 #: plugin.py:136
 msgid ""
