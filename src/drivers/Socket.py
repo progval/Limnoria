@@ -39,8 +39,10 @@ import select
 import socket
 try:
     import ssl
+    SSLError = ssl.SSLError
 except:
-    pass
+    class SSLError(Exception):
+        pass
 
 import supybot.log as log
 import supybot.conf as conf
@@ -144,7 +146,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
-        except ssl.SSLError, e:
+        except SSLError, e:
             if e.args[0] == 'The read operation timed out':
                 pass
             else:
