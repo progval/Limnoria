@@ -144,7 +144,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
-        except ssl.SSLError as e:
+        except ssl.SSLError, e:
             if e.args[0] == 'The read operation timed out':
                 pass
             else:
