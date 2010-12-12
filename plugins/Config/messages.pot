@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-16 12:34+CEST\n"
+"POT-Creation-Date: 2010-12-12 15:02+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,6 +14,14 @@ msgstr ""
 "Content-Transfer-Encoding: ENCODING\n"
 "Generated-By: pygettext.py 1.5\n"
 
+
+#: plugin.py:103
+msgid "configuration variable"
+msgstr ""
+
+#: plugin.py:109
+msgid "settable configuration variable"
+msgstr ""
 
 #: plugin.py:136
 #, docstring

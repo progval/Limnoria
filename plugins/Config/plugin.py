@@ -100,13 +100,13 @@ def getConfigVar(irc, msg, args, state):
         state.args.append(group)
         del args[0]
     except registry.InvalidRegistryName, e:
-        state.errorInvalid('configuration variable', str(e))
+        state.errorInvalid(_('configuration variable'), str(e))
 addConverter('configVar', getConfigVar)
 
 def getSettableConfigVar(irc, msg, args, state):
     getConfigVar(irc, msg, args, state)
     if not hasattr(state.args[-1], 'set'):
-        state.errorInvalid('settable configuration variable',
+        state.errorInvalid(_('settable configuration variable'),
                            state.args[-1]._name)
 addConverter('settableConfigVar', getSettableConfigVar)
 
