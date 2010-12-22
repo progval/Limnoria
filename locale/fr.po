@@ -39,7 +39,7 @@ msgstr "\"|\" avec rien ne le suivant. Je ne peux évidtemment pas faire un pipe
 
 #: callbacks.py:515
 msgid "%s is not a valid %s."
-msgstr "%s n'est pas un %s valide."
+msgstr "%s n'est pas du type '%s'."
 
 #: callbacks.py:517
 msgid "That's not a valid %s."

@@ -47,6 +47,6 @@ class DynamicScope(object):
     def __setattr__(self, name, value):
         self._getLocals(name)[name] = value
 
-__builtins__['dynamic'] = DynamicScope()
+(__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['dynamic'] = DynamicScope()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
