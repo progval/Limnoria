@@ -213,10 +213,11 @@ class _PluginInternationalization:
         his is the function which is called when a plugin runs _()"""
         if untranslated.__class__ == internationalizedString:
             return untranslated._original
-        untranslated = self._unescape(untranslated, True)
+        escapedUntranslated = self._unescape(untranslated, True)
+        untranslated = self._unescape(untranslated, False)
         reloadLocalesIfRequired()
         try:
-            string = self._translate(untranslated)
+            string = self._translate(escapedUntranslated)
             return self._addTracker(string, untranslated)
         except KeyError:
             pass
