@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2010-10-17 13:16+CEST\n"
-"PO-Revision-Date: 2010-10-28 13:25+0100\n"
+"PO-Revision-Date: 2010-12-23 15:46+0100\n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -129,7 +129,7 @@ msgstr "[<canal>]\\Retourne le nombre de lignes consécutives que vous avez écr
 
 #: plugin.py:167
 msgid "Your current monologue is at least %n long."
-msgstr "Votre monologue actuel est au moins long de %n lignes."
+msgstr "Votre monologue actuel est au moins long de %n."
 
 #: plugin.py:168
 msgid "line"
