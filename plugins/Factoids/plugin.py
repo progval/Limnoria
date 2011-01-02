@@ -284,7 +284,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         if cursor.rowcount == 0:
             irc.error(_('There is no such factoid.'))
         elif cursor.rowcount == 1 or number is True:
-            (id, _) = cursor.fetchone()
+            (id, foo) = cursor.fetchone()
             cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
             cursor.execute("""DELETE FROM keys WHERE key LIKE %s""", key)
             db.commit()
@@ -293,7 +293,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             if number is not None:
                 results = cursor.fetchall()
                 try:
-                    (_, id) = results[number-1]
+                    (foo, id) = results[number-1]
                 except IndexError:
                     irc.error(_('Invalid factoid number.'))
                     return
