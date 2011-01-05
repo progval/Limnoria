@@ -82,7 +82,7 @@ msgid ""
 msgstr ""
 "<réseau> <commande> [<arg> ...]\n"
 "\n"
-"Envoie la <commande> au bot (avez des arguments) sur le <réseau>."
+"Envoie la <commande> au bot (avec les arguments) sur le <réseau>."
 
 #: plugin.py:210
 msgid "is an op on %L"
