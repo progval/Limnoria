@@ -101,7 +101,7 @@ msgid ""
 msgstr ""
 "[<canal>] <nom>\n"
 "\n"
-"Retourne la dernière fois que <nom> a été vu et la dernière fois que <nom> a été vu parler. Cela recherche <nom> dans la base de données des utilisateurs vus, ce qui signifit que si le nick n'était pas reconnu comme l'utilisateur <nom>, il n'est pas considéré comme vu. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Retourne la dernière fois que <nom> a été vu et la dernière fois que <nom> a été vu parler. Cela recherche <nom> dans la base de données des utilisateurs vus, ce qui signifie que si le nick n'était pas reconnu comme l'utilisateur <nom>, il n'est pas considéré comme vu. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:305
 msgid ""

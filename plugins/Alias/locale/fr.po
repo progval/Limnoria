@@ -84,7 +84,7 @@ msgid ""
 msgstr ""
 "<nom> <alias>\n"
 "\n"
-"Défini un alias <nom> qui exécute <alias>. L'<alias> peut être dans le standard \"commande argument [commandeimbriquee argument]\". Les arguments donnés à l'alias doivent être donnés dans l'ordre. Vous pouvez utiliser $1, $2, etc pour symboliser les arguments obligatoires qui seront donnés à l'alias, et @1, @2, etc pour symboliser ceux optionnels. $* signifit simplement *tous* les arguments restants, et ne peut être combiné avec des arguments optionnels."
+"Défini un alias <nom> qui exécute <alias>. L'<alias> peut être dans le standard \"commande argument [commandeimbriquee argument]\". Les arguments donnés à l'alias doivent être donnés dans l'ordre. Vous pouvez utiliser $1, $2, etc pour symboliser les arguments obligatoires qui seront donnés à l'alias, et @1, @2, etc pour symboliser ceux optionnels. $* signifie simplement *tous* les arguments restants, et ne peut être combiné avec des arguments optionnels."
 
 #: plugin.py:315
 msgid ""

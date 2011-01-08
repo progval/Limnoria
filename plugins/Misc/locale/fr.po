@@ -74,7 +74,7 @@ msgstr "Il n'y a pas de plugin privé."
 
 #: plugin.py:153
 msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
-msgstr "Ce plugin existe, mais n'a pas de commande. Cela signifit probablement qu'il a des variables de configuration qui peuvent être changés pour modifier son comportement. Essayez \"config list supybot.plugins.%s\" pour voir quelles variables de configuration il a."
+msgstr "Ce plugin existe, mais n'a pas de commande. Cela signifie probablement qu'il a des variables de configuration qui peuvent être changés pour modifier son comportement. Essayez \"config list supybot.plugins.%s\" pour voir quelles variables de configuration il a."
 
 #: plugin.py:164
 msgid ""
@@ -214,22 +214,18 @@ msgstr ""
 "Dit le <texte> au <nick>. Utile si vous utilisez des commandes imbriquées."
 
 #: plugin.py:396
-#, fuzzy
 msgid "Dude, just give the command.  No need for the tell."
 msgstr "Mec, contentes-toi de me donner la commande. Pas besoin d'utiliser 'tell'."
 
 #: plugin.py:401
-#, fuzzy
 msgid "You just told me, why should I tell myself?"
 msgstr "Vous venez de me le dire, pourquoi devrais-je me le dire moi-même ?"
 
 #: plugin.py:406
-#, fuzzy
 msgid "I haven't seen %s, I'll let you do the telling."
 msgstr "Je n'ai pas vu %s, je vous laisse lui dire."
 
 #: plugin.py:411
-#, fuzzy
 msgid "%s wants me to tell you: %s"
 msgstr "%s veut que je vous dise : %s"
 

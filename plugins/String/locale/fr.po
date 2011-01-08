@@ -23,7 +23,7 @@ msgid ""
 "    and more time.  Using nested commands, strings can get quite large, hence\n"
 "    this variable, to limit the size of arguments passed to the levenshtein\n"
 "    command."
-msgstr "Détermine la taille maximum d'une chaîne donnée à la commande 'levenshtein'. Cette commande utiliser un algorithme O(m*n), ce qui signifit que pour une chaîne de taille 256, il peut prendre 1,5 seconde à se finir ; pour les chaînes de taille 384, il peut en prendre 4, et ainsi de suite. En utilisant des commandes inmbriquées, les chaînes peuvent devenir très grandes, donc, utilisez cette variable pour limiter la taille des arguments passés à la commande 'levenshtein'."
+msgstr "Détermine la taille maximum d'une chaîne donnée à la commande 'levenshtein'. Cette commande utiliser un algorithme O(m*n), ce qui signifie que pour une chaîne de taille 256, il peut prendre 1,5 seconde à se finir ; pour les chaînes de taille 384, il peut en prendre 4, et ainsi de suite. En utilisant des commandes inmbriquées, les chaînes peuvent devenir très grandes, donc, utilisez cette variable pour limiter la taille des arguments passés à la commande 'levenshtein'."
 
 #: plugin.py:46
 msgid ""
