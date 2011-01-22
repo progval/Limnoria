@@ -29,6 +29,7 @@
 
 import time
 TIME = time # For later use.
+from datetime import datetime
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -159,6 +160,25 @@ class Time(callbacks.Plugin):
         """
         irc.reply(utils.timeElapsed(seconds))
     elapsed = wrap(elapsed, ['int'])
+
+    @internationalizeDocstring
+    def tztime(self, irc, msg, args, timezone):
+        """<region>/<city>
+
+        Takes a city and its region, and returns the locale time."""
+        try:
+            import pytz
+        except ImportError:
+            irc.error(_('Python-tz is required by the command, but is not '
+                        'installed on this computer.'))
+        if len(timezone.split('/')) != 2:
+            irc.error(_('A timezone must be in the format region/city.'))
+        try:
+            timezone = pytz.timezone(timezone)
+        except pytz.UnknownTimeZoneError:
+            irc.error(_('Unknown timezone'))
+        irc.reply(str(datetime.now(timezone)))
+    tztime = wrap(tztime, ['text'])
 
 
 Class = Time

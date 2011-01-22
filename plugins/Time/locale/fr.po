@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-20 09:38+CEST\n"
+"POT-Creation-Date: 2010-11-17 09:46+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -21,7 +21,7 @@ msgid ""
 "    the empty string, the timestamp will not be shown."
 msgstr "Détermine la chaîne de format pour les timestamps. Référez-vous à la documentation du module Python time pour voir quels formats sont acceptés. Si vous définissez cette variable à une chaîne vide, le timestamp ne sera pas affiché."
 
-#: plugin.py:60
+#: plugin.py:61
 msgid ""
 "[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
 "\n"
@@ -36,7 +36,7 @@ msgstr ""
 "\n"
 "Retourne le nombre de secondes de la date donnée. Un exemple d'utilisation est \"seconds 2h 30m\", ce qui retournera 9000. Utile pour planifier des évènement à un certain nombre de secondes dans le futur."
 
-#: plugin.py:95
+#: plugin.py:96
 msgid ""
 "<time string>\n"
 "\n"
@@ -49,12 +49,12 @@ msgstr ""
 "\n"
 "Retourne le nombre de secondes depuis le <moment>. Le <moment> peut être n'importe lequel des formats naturels, essayez seulement, et voyez si ça marche."
 
-#: plugin.py:106
-#: plugin.py:122
+#: plugin.py:107
+#: plugin.py:123
 msgid "That's right now!"
 msgstr "C'est maintenant !"
 
-#: plugin.py:111
+#: plugin.py:112
 msgid ""
 "<time string>\n"
 "\n"
@@ -65,7 +65,7 @@ msgstr ""
 "\n"
 "Retourne le nombre de secondes depuis le <moment>."
 
-#: plugin.py:127
+#: plugin.py:128
 msgid ""
 "[<seconds since epoch>]\n"
 "\n"
@@ -77,11 +77,11 @@ msgstr ""
 "\n"
 "        Renvoie le ctime pour le moment il y a <temps> secondes, ou le ctime        courant, si aucun <temps> n'est donné."
 
-#: plugin.py:133
+#: plugin.py:134
 msgid "number of seconds since epoch"
 msgstr "nombre de secondes depuis une époque"
 
-#: plugin.py:138
+#: plugin.py:139
 msgid ""
 "[<format>] [<seconds since epoch>]\n"
 "\n"
@@ -94,7 +94,7 @@ msgstr ""
 "\n"
 "Retourne le temps courant dans le <format>, ou, si le <format> n'est pas donné, utilise le format actuellement configuré pour le canal. Si le <temps> n'est pas donné, le temps actuel est utilisé."
 
-#: plugin.py:155
+#: plugin.py:156
 msgid ""
 "<seconds>\n"
 "\n"
@@ -105,4 +105,26 @@ msgstr ""
 "<secondes>\n"
 "\n"
 "Retourne le nombre de <secondes>, joliement formatté."
+
+#: plugin.py:166
+msgid ""
+"<region>/<city>\n"
+"\n"
+"        Takes a city and its region, and returns the locale time."
+msgstr ""
+"<zone>/<ville>\n"
+"\n"
+"Prend en argument une ville et sa zone, et retourne le temps local."
+
+#: plugin.py:172
+msgid "Python-tz is required by the command, but is not installed on this computer."
+msgstr "Python-tz est requis par la commande, mais n'est pas installé sur cet ordinateur."
+
+#: plugin.py:175
+msgid "A timezone must be in the format region/city."
+msgstr "Une timezone doit être dans le format zone/ville."
+
+#: plugin.py:179
+msgid "Unknown timezone"
+msgstr "Timezone inconnue"
 

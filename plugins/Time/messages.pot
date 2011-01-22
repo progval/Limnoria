@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-20 09:38+CEST\n"
+"POT-Creation-Date: 2010-11-17 09:46+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid ""
 "    the empty string, the timestamp will not be shown."
 msgstr ""
 
-#: plugin.py:60
+#: plugin.py:61
 #, docstring
 msgid ""
 "[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
@@ -36,7 +36,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:95
+#: plugin.py:96
 #, docstring
 msgid ""
 "<time string>\n"
@@ -47,11 +47,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:106 plugin.py:122
+#: plugin.py:107 plugin.py:123
 msgid "That's right now!"
 msgstr ""
 
-#: plugin.py:111
+#: plugin.py:112
 #, docstring
 msgid ""
 "<time string>\n"
@@ -60,7 +60,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:127
+#: plugin.py:128
 #, docstring
 msgid ""
 "[<seconds since epoch>]\n"
@@ -70,11 +70,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:133
+#: plugin.py:134
 msgid "number of seconds since epoch"
 msgstr ""
 
-#: plugin.py:138
+#: plugin.py:139
 #, docstring
 msgid ""
 "[<format>] [<seconds since epoch>]\n"
@@ -85,7 +85,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:155
+#: plugin.py:156
 #, docstring
 msgid ""
 "<seconds>\n"
@@ -93,5 +93,25 @@ msgid ""
 "        Returns a pretty string that is the amount of time represented by\n"
 "        <seconds>.\n"
 "        "
+msgstr ""
+
+#: plugin.py:166
+#, docstring
+msgid ""
+"<region>/<city>\n"
+"\n"
+"        Takes a city and its region, and returns the locale time."
+msgstr ""
+
+#: plugin.py:172
+msgid "Python-tz is required by the command, but is not installed on this computer."
+msgstr ""
+
+#: plugin.py:175
+msgid "A timezone must be in the format region/city."
+msgstr ""
+
+#: plugin.py:179
+msgid "Unknown timezone"
 msgstr ""
 

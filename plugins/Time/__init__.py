@@ -42,7 +42,9 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {}
+__contributors__ = {'tztime': supybot.Author('Valentin Lorentz', 'ProgVal',
+                                            'progval@gmail.com')}
+
 
 import config
 import plugin
