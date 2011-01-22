@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2010, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,6 +42,9 @@ import textwrap
 from iter import all, any
 from structures import TwoWayDictionary
 
+from supybot.i18n import PluginInternationalization
+internationalizeFunction=PluginInternationalization().internationalizeFunction
+
 curry = new.instancemethod
 chars = string.maketrans('', '')
 
@@ -55,9 +59,14 @@ def rsplit(s, sep=None, maxsplit=-1):
     else:
         return s.rsplit(sep, maxsplit)
 
-def normalizeWhitespace(s):
+def normalizeWhitespace(s, removeNewline=True):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
-    return ' '.join(s.split())
+    s = str(s)
+    if removeNewline:
+        s = str.replace(s, '\n', '')
+    while '  ' in s:
+        s = str.replace(s, '  ', ' ')
+    return s
 
 def distance(s, t):
     """Returns the levenshtein edit distance between two strings."""
@@ -252,12 +261,13 @@ def matchCase(s1, s2):
                 L[i] = L[i].upper()
         return ''.join(L)
 
-consonants = 'bcdfghjklmnpqrstvwxz'
-_pluralizeRegex = re.compile('[%s]y$' % consonants)
+@internationalizeFunction('pluralize')
 def pluralize(s):
     """Returns the plural of s.  Put any exceptions to the general English
     rule of appending 's' in the plurals dictionary.
     """
+    consonants = 'bcdfghjklmnpqrstvwxz'
+    _pluralizeRegex = re.compile('[%s]y$' % consonants)
     lowered = s.lower()
     # Exception dictionary
     if lowered in plurals:
@@ -274,9 +284,11 @@ def pluralize(s):
     else:
         return matchCase(s, s+'s')
 
-_depluralizeRegex = re.compile('[%s]ies' % consonants)
+@internationalizeFunction('depluralize')
 def depluralize(s):
     """Returns the singular of s."""
+    consonants = 'bcdfghjklmnpqrstvwxz'
+    _depluralizeRegex = re.compile('[%s]ies' % consonants)
     lowered = s.lower()
     if lowered in plurals:
         return matchCase(s, plurals[lowered])
@@ -293,17 +305,28 @@ def depluralize(s):
 def nItems(n, item, between=None):
     """Works like this:
 
+    >>> nItems(4, '<empty>')
+    '4'
+
     >>> nItems(1, 'clock')
     '1 clock'
 
     >>> nItems(10, 'clock')
     '10 clocks'
 
+    >>> nItems(4, '<empty>', between='grandfather')
+    '4 grandfather'
+
     >>> nItems(10, 'clock', between='grandfather')
     '10 grandfather clocks'
     """
     assert isinstance(n, int) or isinstance(n, long), \
            'The order of the arguments to nItems changed again, sorry.'
+    if item == '<empty>':
+        if between is None:
+            return format('%s', n)
+        else:
+            return format('%s %s', n, item)
     if between is None:
         if n != 1:
             return format('%s %p', n, item)
@@ -315,6 +338,7 @@ def nItems(n, item, between=None):
         else:
             return format('%s %s %s', n, between, item)
 
+@internationalizeFunction('ordinal')
 def ordinal(i):
     """Returns i + the ordinal indicator for the number.
 
@@ -333,6 +357,7 @@ def ordinal(i):
         ord = 'rd'
     return '%s%s' % (i, ord)
 
+@internationalizeFunction('be')
 def be(i):
     """Returns the form of the verb 'to be' based on the number i."""
     if i == 1:
@@ -340,6 +365,7 @@ def be(i):
     else:
         return 'are'
 
+@internationalizeFunction('has')
 def has(i):
     """Returns the form of the verb 'to have' based on the number i."""
     if i == 1:
@@ -362,7 +388,7 @@ def timestamp(t):
         t = time.time()
     return time.ctime(t)
 
-_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrstu%])')
+_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrsStuv%])')
 def format(s, *args, **kwargs):
     """w00t.
 
@@ -377,8 +403,11 @@ def format(s, *args, **kwargs):
     p: pluralize (takes a string)
     q: quoted (takes a string)
     n: nItems (takes a 2-tuple of (n, item) or a 3-tuple of (n, between, item))
+    S: returns a human-readable size (takes an int)
     t: time, formatted (takes an int)
     u: url, wrapped in braces (this should be configurable at some point)
+    v: void : takes one or many arguments, but doesn't display it
+       (useful for translation)
     """
     args = list(args)
     args.reverse() # For more efficient popping.
@@ -425,10 +454,22 @@ def format(s, *args, **kwargs):
                 return nItems(t[0], t[2], between=t[1])
             else:
                 raise ValueError, 'Invalid value for %%n in format: %s' % t
+        elif char == 'S':
+            t = args.pop()
+            if not isinstance(t, (int, long)):
+                raise ValueError, 'Invalid value for %%S in format: %s' % t
+            for suffix in ['B','KB','MB','GB','TB']:
+                if t < 1024:
+                    return "%i%s" % (t, suffix)
+                t /= 1024
+
         elif char == 't':
             return timestamp(args.pop())
         elif char == 'u':
             return '<%s>' % args.pop()
+        elif char == 'v':
+            args.pop()
+            return ''
         elif char == '%':
             return '%'
         else:
