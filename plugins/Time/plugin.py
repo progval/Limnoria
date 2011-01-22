@@ -29,11 +29,14 @@
 
 import time
 TIME = time # For later use.
+from datetime import datetime
 
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Time')
 
 parser = utils.python.universalImport('dateutil.parser', 'local.dateutil.parser')
 
@@ -53,6 +56,7 @@ def parse(s):
     return i
 
 class Time(callbacks.Plugin):
+    @internationalizeDocstring
     def seconds(self, irc, msg, args):
         """[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]
 
@@ -87,6 +91,7 @@ class Time(callbacks.Plugin):
                 seconds += i
         irc.reply(str(seconds))
 
+    @internationalizeDocstring
     def at(self, irc, msg, args, s):
         """<time string>
 
@@ -99,9 +104,10 @@ class Time(callbacks.Plugin):
         if new != now:
             irc.reply(str(new))
         else:
-            irc.error('That\'s right now!')
+            irc.error(_('That\'s right now!'))
     at = wrap(at, ['text'])
 
+    @internationalizeDocstring
     def until(self, irc, msg, args, s):
         """<time string>
 
@@ -114,9 +120,10 @@ class Time(callbacks.Plugin):
                 new += 86400
             irc.reply(str(new-now))
         else:
-            irc.error('That\'s right now!')
+            irc.error(_('That\'s right now!'))
     until = wrap(until, ['text'])
 
+    @internationalizeDocstring
     def ctime(self, irc, msg, args, seconds):
         """[<seconds since epoch>]
 
@@ -124,9 +131,10 @@ class Time(callbacks.Plugin):
         no <seconds since epoch> is given.
         """
         irc.reply(time.ctime(seconds))
-    ctime = wrap(ctime, [additional(('int', 'number of seconds since epoch'),
+    ctime = wrap(ctime,[additional(('int', _('number of seconds since epoch')),
                                     TIME.time)])
 
+    @internationalizeDocstring
     def time(self, irc, msg, args, channel, format, seconds):
         """[<format>] [<seconds since epoch>]
 
@@ -143,6 +151,7 @@ class Time(callbacks.Plugin):
     time = wrap(time, [optional('channel'), optional('nonInt'),
                        additional('float', TIME.time)])
 
+    @internationalizeDocstring
     def elapsed(self, irc, msg, args, seconds):
         """<seconds>
 
@@ -151,6 +160,25 @@ class Time(callbacks.Plugin):
         """
         irc.reply(utils.timeElapsed(seconds))
     elapsed = wrap(elapsed, ['int'])
+
+    @internationalizeDocstring
+    def tztime(self, irc, msg, args, timezone):
+        """<region>/<city>
+
+        Takes a city and its region, and returns the locale time."""
+        try:
+            import pytz
+        except ImportError:
+            irc.error(_('Python-tz is required by the command, but is not '
+                        'installed on this computer.'))
+        if len(timezone.split('/')) != 2:
+            irc.error(_('A timezone must be in the format region/city.'))
+        try:
+            timezone = pytz.timezone(timezone)
+        except pytz.UnknownTimeZoneError:
+            irc.error(_('Unknown timezone'))
+        irc.reply(str(datetime.now(timezone)))
+    tztime = wrap(tztime, ['text'])
 
 
 Class = Time

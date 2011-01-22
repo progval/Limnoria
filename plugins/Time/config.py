@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Time')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -40,10 +42,10 @@ def configure(advanced):
 
 Time = conf.registerPlugin('Time')
 conf.registerChannelValue(Time, 'format',
-    registry.String(str(conf.supybot.reply.format.time()), """Determines the
+    registry.String(str(conf.supybot.reply.format.time()), _("""Determines the
     format string for timestamps.  Refer to the Python documentation for the
     time module to see what formats are accepted. If you set this variable to
-    the empty string, the timestamp will not be shown."""))
+    the empty string, the timestamp will not be shown.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

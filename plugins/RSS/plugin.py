@@ -41,6 +41,8 @@ from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('RSS')
 
 try:
     feedparser = utils.python.universalImport('feedparser', 'local.feedparser')
@@ -262,8 +264,12 @@ class RSS(callbacks.Plugin):
     def _getConverter(self, feed):
         toText = utils.web.htmlToText
         if 'encoding' in feed:
-            return lambda s: toText(s).strip().encode(feed['encoding'],
-                                                      'replace')
+            def conv(s):
+                try:
+                    return toText(s).strip().encode(feed['encoding'],'replace')
+                except UnicodeEncodeError:
+                    return toText(s.encode('utf-8', 'ignore')).strip()
+            return conv
         else:
             return lambda s: toText(s).strip()
 
@@ -280,6 +286,7 @@ class RSS(callbacks.Plugin):
                     headlines.append((title, None))
         return headlines
 
+    @internationalizeDocstring
     def makeFeedCommand(self, name, url):
         docstring = format("""[<number of headlines>]
 
@@ -302,6 +309,7 @@ class RSS(callbacks.Plugin):
         self.feedNames[name] = (url, f)
         self._registerFeed(name, url)
 
+    @internationalizeDocstring
     def add(self, irc, msg, args, name, url):
         """<name> <url>
 
@@ -312,6 +320,7 @@ class RSS(callbacks.Plugin):
         irc.replySuccess()
     add = wrap(add, ['feedName', 'url'])
 
+    @internationalizeDocstring
     def remove(self, irc, msg, args, name):
         """<name>
 
@@ -319,7 +328,7 @@ class RSS(callbacks.Plugin):
         this plugin.
         """
         if name not in self.feedNames:
-            irc.error('That\'s not a valid RSS feed command name.')
+            irc.error(_('That\'s not a valid RSS feed command name.'))
             return
         del self.feedNames[name]
         conf.supybot.plugins.RSS.feeds().remove(name)
@@ -328,6 +337,7 @@ class RSS(callbacks.Plugin):
     remove = wrap(remove, ['feedName'])
 
     class announce(callbacks.Commands):
+        @internationalizeDocstring
         def list(self, irc, msg, args, channel):
             """[<channel>]
 
@@ -336,9 +346,10 @@ class RSS(callbacks.Plugin):
             """
             announce = conf.supybot.plugins.RSS.announce
             feeds = format('%L', list(announce.get(channel)()))
-            irc.reply(feeds or 'I am currently not announcing any feeds.')
+            irc.reply(feeds or _('I am currently not announcing any feeds.'))
         list = wrap(list, ['channel',])
 
+        @internationalizeDocstring
         def add(self, irc, msg, args, channel, feeds):
             """[<channel>] <name|url> [<name|url> ...]
 
@@ -356,6 +367,7 @@ class RSS(callbacks.Plugin):
         add = wrap(add, [('checkChannelCapability', 'op'),
                          many(first('url', 'feedName'))])
 
+        @internationalizeDocstring
         def remove(self, irc, msg, args, channel, feeds):
             """[<channel>] <name|url> [<name|url> ...]
 
@@ -373,6 +385,7 @@ class RSS(callbacks.Plugin):
         remove = wrap(remove, [('checkChannelCapability', 'op'),
                                many(first('url', 'feedName'))])
 
+    @internationalizeDocstring
     def rss(self, irc, msg, args, url, n):
         """<url> [<number of headlines>]
 
@@ -387,7 +400,7 @@ class RSS(callbacks.Plugin):
             channel = None
         headlines = self.getHeadlines(feed)
         if not headlines:
-            irc.error('Couldn\'t get RSS feed.')
+            irc.error(_('Couldn\'t get RSS feed.'))
             return
         headlines = self.buildHeadlines(headlines, channel, 'showLinks')
         if n:
@@ -398,6 +411,7 @@ class RSS(callbacks.Plugin):
         irc.replies(headlines, joiner=sep)
     rss = wrap(rss, ['url', additional('int')])
 
+    @internationalizeDocstring
     def info(self, irc, msg, args, url):
         """<url|feed>
 
@@ -412,7 +426,7 @@ class RSS(callbacks.Plugin):
         conv = self._getConverter(feed)
         info = feed.get('feed')
         if not info:
-            irc.error('I couldn\'t retrieve that RSS feed.')
+            irc.error(_('I couldn\'t retrieve that RSS feed.'))
             return
         # check the 'modified_parsed' key, if it's there, convert it here first
         if 'modified' in info:
@@ -425,12 +439,12 @@ class RSS(callbacks.Plugin):
         desc = conv(info.get('description', 'unavailable'))
         link = conv(info.get('link', 'unavailable'))
         # The rest of the entries are all available in the channel key
-        response = format('Title: %s;  URL: %u;  '
-                          'Description: %s;  Last updated: %s.',
+        response = format(_('Title: %s;  URL: %u;  '
+                          'Description: %s;  Last updated: %s.'),
                           title, link, desc, when)
         irc.reply(utils.str.normalizeWhitespace(response))
     info = wrap(info, [first('url', 'feedName')])
-
+RSS = internationalizeDocstring(RSS)
 
 Class = RSS
 

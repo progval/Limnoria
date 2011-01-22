@@ -29,6 +29,8 @@
 
 from supybot.commands import *
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Reply')
 
 
 class Reply(callbacks.Plugin):
@@ -36,6 +38,7 @@ class Reply(callbacks.Plugin):
     replies.  Some bot owners would be wise to not load this plugin because it
     can be easily abused.
     """
+    @internationalizeDocstring
     def private(self, irc, msg, args, text):
         """<text>
 
@@ -45,6 +48,7 @@ class Reply(callbacks.Plugin):
         irc.reply(text, private=True)
     private = wrap(private, ['text'])
 
+    @internationalizeDocstring
     def action(self, irc, msg, args, text):
         """<text>
 
@@ -57,6 +61,7 @@ class Reply(callbacks.Plugin):
             raise callbacks.ArgumentError
     action = wrap(action, ['text'])
 
+    @internationalizeDocstring
     def notice(self, irc, msg, args, text):
         """<text>
 
@@ -66,6 +71,7 @@ class Reply(callbacks.Plugin):
         irc.reply(text, notice=True)
     notice = wrap(notice, ['text'])
 
+    @internationalizeDocstring
     def reply(self, irc, msg, args, text):
         """<text>
 
@@ -73,6 +79,7 @@ class Reply(callbacks.Plugin):
         """
         irc.reply(text, prefixNick=True)
     reply = wrap(reply, ['text'])
+Reply = internationalizeDocstring(Reply)
 
 Class = Reply
 

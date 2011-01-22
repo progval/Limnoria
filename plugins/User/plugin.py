@@ -36,12 +36,15 @@ import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('User')
 
 class User(callbacks.Plugin):
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and irc.isChannel(msg.args[0]):
             raise callbacks.Error, conf.supybot.replies.requiresPrivacy()
 
+    @internationalizeDocstring
     def list(self, irc, msg, args, optlist, glob):
         """[--capability=<capability>] [<glob>]
 
@@ -74,12 +77,13 @@ class User(callbacks.Plugin):
             irc.reply(format('%L', users))
         else:
             if predicates:
-                irc.reply('There are no matching registered users.')
+                irc.reply(_('There are no matching registered users.'))
             else:
-                irc.reply('There are no registered users.')
+                irc.reply(_('There are no registered users.'))
     list = wrap(list, [getopts({'capability':'capability'}),
                        additional('glob')])
 
+    @internationalizeDocstring
     def register(self, irc, msg, args, name, password):
         """<name> <password>
 
@@ -94,18 +98,21 @@ class User(callbacks.Plugin):
         addHostmask = True
         try:
             ircdb.users.getUserId(name)
-            irc.error('That name is already assigned to someone.', Raise=True)
+            irc.error(_('That name is already assigned to someone.'),
+                      Raise=True)
         except KeyError:
             pass
         if ircutils.isUserHostmask(name):
-            irc.errorInvalid('username', name,
-                             'Hostmasks are not valid usernames.', Raise=True)
+            irc.errorInvalid(_('username'), name,
+                             _('Hostmasks are not valid usernames.'),
+                             Raise=True)
         try:
             u = ircdb.users.getUser(msg.prefix)
             if u._checkCapability('owner'):
                 addHostmask = False
             else:
-                irc.error('Your hostmask is already registered to %s' % u.name)
+                irc.error(_('Your hostmask is already registered to %s') % 
+                          u.name)
                 return
         except KeyError:
             pass
@@ -118,6 +125,7 @@ class User(callbacks.Plugin):
         irc.replySuccess()
     register = wrap(register, ['private', 'something', 'something'])
 
+    @internationalizeDocstring
     def unregister(self, irc, msg, args, user, password):
         """<name> [<password>]
 
@@ -134,9 +142,9 @@ class User(callbacks.Plugin):
             if not caller or not isOwner:
                 self.log.warning('%s tried to unregister user %s.',
                                  msg.prefix, user.name)
-                irc.error('This command has been disabled.  You\'ll have to '
-                          'ask the owner of this bot to unregister your user.',
-                          Raise=True)
+                irc.error(_('This command has been disabled.  You\'ll have to '
+                          'ask the owner of this bot to unregister your '
+                          'user.'), Raise=True)
         if isOwner or user.checkPassword(password):
             ircdb.users.delUser(user.id)
             irc.replySuccess()
@@ -145,6 +153,7 @@ class User(callbacks.Plugin):
     unregister = wrap(unregister, ['private', 'otherUser',
                                    additional('anything')])
 
+    @internationalizeDocstring
     def changename(self, irc, msg, args, user, newname, password):
         """<name> <new name> [<password>]
 
@@ -155,7 +164,7 @@ class User(callbacks.Plugin):
         """
         try:
             id = ircdb.users.getUserId(newname)
-            irc.error(format('%q is already registered.', newname))
+            irc.error(format(_('%q is already registered.'), newname))
             return
         except KeyError:
             pass
@@ -167,6 +176,7 @@ class User(callbacks.Plugin):
                                    additional('something', '')])
 
     class set(callbacks.Commands):
+        @internationalizeDocstring
         def password(self, irc, msg, args, user, password, newpassword):
             """[<name>] <old password> <new password>
 
@@ -194,6 +204,7 @@ class User(callbacks.Plugin):
         password = wrap(password, ['private', optional('otherUser'),
                                    'something', 'something'])
 
+        @internationalizeDocstring
         def secure(self, irc, msg, args, user, password, value):
             """<password> [<True|False>]
 
@@ -210,12 +221,13 @@ class User(callbacks.Plugin):
                user.checkHostmask(msg.prefix, useAuth=False):
                 user.secure = value
                 ircdb.users.setUser(user)
-                irc.reply('Secure flag set to %s' % value)
+                irc.reply(_('Secure flag set to %s') % value)
             else:
                 irc.error(conf.supybot.replies.incorrectAuthentication())
         secure = wrap(secure, ['private', 'user', 'something',
                                additional('boolean')])
 
+    @internationalizeDocstring
     def username(self, irc, msg, args, hostmask):
         """<hostmask|nick>
 
@@ -226,15 +238,16 @@ class User(callbacks.Plugin):
             try:
                 hostmask = irc.state.nickToHostmask(hostmask)
             except KeyError:
-                irc.error('I haven\'t seen %s.' % hostmask, Raise=True)
+                irc.error(_('I haven\'t seen %s.') % hostmask, Raise=True)
         try:
             user = ircdb.users.getUser(hostmask)
             irc.reply(user.name)
         except KeyError:
-            irc.error('I don\'t know who that is.')
+            irc.error(_('I don\'t know who that is.'))
     username = wrap(username, [first('nick', 'hostmask')])
 
     class hostmask(callbacks.Commands):
+        @internationalizeDocstring
         def hostmask(self, irc, msg, args, nick):
             """[<nick>]
 
@@ -246,6 +259,7 @@ class User(callbacks.Plugin):
             irc.reply(irc.state.nickToHostmask(nick))
         hostmask = wrap(hostmask, [additional('seenNick')])
 
+        @internationalizeDocstring
         def list(self, irc, msg, args, name):
             """[<name>]
 
@@ -259,14 +273,15 @@ class User(callbacks.Plugin):
                     hostmasks.sort()
                     return format('%L', hostmasks)
                 else:
-                    return format('%s has no registered hostmasks.', user.name)
+                    return format(_('%s has no registered hostmasks.'),
+                                  user.name)
             try:
                 user = ircdb.users.getUser(msg.prefix)
                 if name:
                     if name != user.name and \
                        not ircdb.checkCapability(msg.prefix, 'owner'):
-                        irc.error('You may only retrieve your own hostmasks.',
-                                  Raise=True)
+                        irc.error(_('You may only retrieve your own '
+                                  '(hostmasks.'), Raise=True)
                     else:
                         try:
                             user = ircdb.users.getUser(name)
@@ -279,6 +294,7 @@ class User(callbacks.Plugin):
                 irc.errorNotRegistered()
         list = wrap(list, ['private', additional('something')])
 
+        @internationalizeDocstring
         def add(self, irc, msg, args, user, hostmask, password):
             """[<name>] [<hostmask>] [<password>]
 
@@ -294,18 +310,18 @@ class User(callbacks.Plugin):
             if not hostmask:
                 hostmask = msg.prefix
             if not ircutils.isUserHostmask(hostmask):
-                irc.errorInvalid('hostmask', hostmask,
-                                 'Make sure your hostmask includes a nick, '
+                irc.errorInvalid(_('hostmask'), hostmask,
+                                 _('Make sure your hostmask includes a nick, '
                                  'then an exclamation point (!), then a user, '
                                  'then an at symbol (@), then a host.  Feel '
                                  'free to use wildcards (* and ?, which work '
                                  'just like they do on the command line) in '
-                                 'any of these parts.',
+                                 'any of these parts.'),
                                  Raise=True)
             try:
                 otherId = ircdb.users.getUserId(hostmask)
                 if otherId != user.id:
-                    irc.error('That hostmask is already registered.',
+                    irc.error(_('That hostmask is already registered.'),
                               Raise=True)
             except KeyError:
                 pass
@@ -328,11 +344,13 @@ class User(callbacks.Plugin):
             except ValueError, e:
                 irc.error(str(e), Raise=True)
             except ircdb.DuplicateHostmask:
-                irc.error('That hostmask is already registered.', Raise=True)
+                irc.error(_('That hostmask is already registered.'),
+                          Raise=True)
             irc.replySuccess()
         add = wrap(add, ['private', first('otherUser', 'user'),
                          optional('something'), additional('something', '')])
 
+        @internationalizeDocstring
         def remove(self, irc, msg, args, user, hostmask, password):
             """<name> <hostmask> [<password>]
 
@@ -353,17 +371,18 @@ class User(callbacks.Plugin):
                 s = ''
                 if hostmask == 'all':
                     user.hostmasks.clear()
-                    s = 'All hostmasks removed.'
+                    s = _('All hostmasks removed.')
                 else:
                     user.removeHostmask(hostmask)
             except KeyError:
-                irc.error('There was no such hostmask.')
+                irc.error(_('There was no such hostmask.'))
                 return
             ircdb.users.setUser(user)
             irc.replySuccess(s)
         remove = wrap(remove, ['private', 'otherUser', 'something',
                                additional('something', '')])
 
+    @internationalizeDocstring
     def capabilities(self, irc, msg, args, user):
         """[<name>]
 
@@ -383,6 +402,7 @@ class User(callbacks.Plugin):
                           Raise=True)
     capabilities = wrap(capabilities, [first('otherUser', 'user')])
 
+    @internationalizeDocstring
     def identify(self, irc, msg, args, user, password):
         """<name> <password>
 
@@ -396,14 +416,15 @@ class User(callbacks.Plugin):
                 ircdb.users.setUser(user, flush=False)
                 irc.replySuccess()
             except ValueError:
-                irc.error('Your secure flag is true and your hostmask '
-                          'doesn\'t match any of your known hostmasks.')
+                irc.error(_('Your secure flag is true and your hostmask '
+                          'doesn\'t match any of your known hostmasks.'))
         else:
             self.log.warning('Failed identification attempt by %s (password '
                              'did not match for %s).', msg.prefix, user.name)
             irc.error(conf.supybot.replies.incorrectAuthentication())
     identify = wrap(identify, ['private', 'otherUser', 'something'])
 
+    @internationalizeDocstring
     def unidentify(self, irc, msg, args, user):
         """takes no arguments
 
@@ -414,13 +435,14 @@ class User(callbacks.Plugin):
         """
         user.clearAuth()
         ircdb.users.setUser(user)
-        irc.replySuccess('If you remain recognized after giving this command, '
+        irc.replySuccess(_('If you remain recognized after giving this command, '
                          'you\'re being recognized by hostmask, rather than '
                          'by password.  You must remove whatever hostmask is '
                          'causing you to be recognized in order not to be '
-                         'recognized.')
+                         'recognized.'))
     unidentify = wrap(unidentify, ['user'])
 
+    @internationalizeDocstring
     def whoami(self, irc, msg, args):
         """takes no arguments
 
@@ -430,9 +452,10 @@ class User(callbacks.Plugin):
             user = ircdb.users.getUser(msg.prefix)
             irc.reply(user.name)
         except KeyError:
-            irc.reply('I don\'t recognize you.')
+            irc.reply(_('I don\'t recognize you.'))
     whoami = wrap(whoami)
 
+    @internationalizeDocstring
     def stats(self, irc, msg, args):
         """takes no arguments
 
@@ -452,9 +475,9 @@ class User(callbacks.Plugin):
                     admins += 1
             except KeyError:
                 pass
-        irc.reply(format('I have %s registered users '
+        irc.reply(format(_('I have %s registered users '
                          'with %s registered hostmasks; '
-                         '%n and %n.',
+                         '%n and %n.'),
                          users, hostmasks,
                          (owners, 'owner'), (admins, 'admin')))
     stats = wrap(stats)

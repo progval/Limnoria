@@ -34,7 +34,7 @@ import dynamicScope
 
 import supybot.utils as utils
 
-__builtins__['format'] = utils.str.format
+(__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['format'] = utils.str.format
 
 class Author(object):
     def __init__(self, name=None, nick=None, email=None, **kwargs):

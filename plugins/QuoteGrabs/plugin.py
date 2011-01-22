@@ -40,6 +40,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('QuoteGrabs')
 
 class QuoteGrabsRecord(dbi.Record):
     __fields__ = [
@@ -52,7 +54,7 @@ class QuoteGrabsRecord(dbi.Record):
 
     def __str__(self):
         grabber = plugins.getUserName(self.grabber)
-        return format('%s (Said by: %s; grabbed by %s at %t)',
+        return format(_('%s (Said by: %s; grabbed by %s at %t)'),
                       self.text, self.hostmask, grabber, self.at)
 
 class SqliteQuoteGrabsDB(object):
@@ -242,6 +244,7 @@ class QuoteGrabs(callbacks.Plugin):
         s = 'jots down a new quote for %s' % msg.nick
         irc.reply(s, action=True, prefixNick=False)
 
+    @internationalizeDocstring
     def grab(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
 
@@ -256,16 +259,17 @@ class QuoteGrabs(callbacks.Plugin):
         if chan is None:
             raise callbacks.ArgumentError
         if ircutils.nickEqual(nick, msg.nick):
-            irc.error('You can\'t quote grab yourself.', Raise=True)
+            irc.error(_('You can\'t quote grab yourself.'), Raise=True)
         for m in reversed(irc.state.history):
             if m.command == 'PRIVMSG' and ircutils.nickEqual(m.nick, nick) \
                     and ircutils.strEqual(m.args[0], chan):
                 self._grab(channel, irc, m, msg.prefix)
                 irc.replySuccess()
                 return
-        irc.error('I couldn\'t find a proper message to grab.')
+        irc.error(_('I couldn\'t find a proper message to grab.'))
     grab = wrap(grab, ['channeldb', 'nick'])
 
+    @internationalizeDocstring
     def ungrab(self, irc, msg, args, channel, grab):
         """[<channel>] <number>
 
@@ -278,11 +282,12 @@ class QuoteGrabs(callbacks.Plugin):
             irc.replySuccess()
         except dbi.NoRecordError:
             if grab is None:
-                irc.error('Nothing to ungrab.')
+                irc.error(_('Nothing to ungrab.'))
             else:
-                irc.error('Invalid grab number.')
+                irc.error(_('Invalid grab number.'))
     ungrab = wrap(ungrab, ['channeldb', optional('id')])
 
+    @internationalizeDocstring
     def quote(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
 
@@ -292,10 +297,11 @@ class QuoteGrabs(callbacks.Plugin):
         try:
             irc.reply(self.db.getQuote(channel, nick))
         except dbi.NoRecordError:
-            irc.error('I couldn\'t find a matching quotegrab for %s.' % nick,
-                      Raise=True)
+            irc.error(_('I couldn\'t find a matching quotegrab for %s.') %
+                      nick, Raise=True)
     quote = wrap(quote, ['channeldb', 'nick'])
 
+    @internationalizeDocstring
     def list(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
 
@@ -314,10 +320,11 @@ class QuoteGrabs(callbacks.Plugin):
                 L.append(item)
             irc.reply(utils.str.commaAndify(L))
         except dbi.NoRecordError:
-            irc.error('I couldn\'t find any quotegrabs for %s.' % nick,
+            irc.error(_('I couldn\'t find any quotegrabs for %s.') % nick,
                       Raise=True)
     list = wrap(list, ['channeldb', 'nick'])
 
+    @internationalizeDocstring
     def random(self, irc, msg, args, channel, nick):
         """[<channel>] [<nick>]
 
@@ -329,12 +336,13 @@ class QuoteGrabs(callbacks.Plugin):
             irc.reply(self.db.random(channel, nick))
         except dbi.NoRecordError:
             if nick:
-                irc.error('Couldn\'t get a random quote for that nick.')
+                irc.error(_('Couldn\'t get a random quote for that nick.'))
             else:
-                irc.error('Couldn\'t get a random quote.  Are there any '
-                          'grabbed quotes in the database?')
+                irc.error(_('Couldn\'t get a random quote.  Are there any '
+                          'grabbed quotes in the database?'))
     random = wrap(random, ['channeldb', additional('nick')])
 
+    @internationalizeDocstring
     def get(self, irc, msg, args, channel, id):
         """[<channel>] <id>
 
@@ -344,10 +352,11 @@ class QuoteGrabs(callbacks.Plugin):
         try:
             irc.reply(self.db.get(channel, id))
         except dbi.NoRecordError:
-            irc.error('No quotegrab for id %s' % utils.str.quoted(id),
+            irc.error(_('No quotegrab for id %s') % utils.str.quoted(id),
                       Raise=True)
     get = wrap(get, ['channeldb', 'id'])
 
+    @internationalizeDocstring
     def search(self, irc, msg, args, channel, text):
         """[<channel>] <text>
 
@@ -364,7 +373,7 @@ class QuoteGrabs(callbacks.Plugin):
                 L.append(item)
             irc.reply(utils.str.commaAndify(L))
         except dbi.NoRecordError:
-            irc.error('No quotegrabs matching %s' % utils.str.quoted(text),
+            irc.error(_('No quotegrabs matching %s') % utils.str.quoted(text),
                        Raise=True)
     search = wrap(search, ['channeldb', 'text'])
 

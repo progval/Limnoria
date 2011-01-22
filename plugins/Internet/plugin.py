@@ -35,11 +35,13 @@ import supybot.utils as utils
 from supybot.commands import *
 from supybot.utils.iter import any
 import supybot.callbacks as callbacks
-
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Internet')
 
 class Internet(callbacks.Plugin):
     """Add the help for "@help Internet" here."""
     threaded = True
+    @internationalizeDocstring
     def dns(self, irc, msg, args, host):
         """<host|ip>
 
@@ -48,18 +50,18 @@ class Internet(callbacks.Plugin):
         if utils.net.isIP(host):
             hostname = socket.getfqdn(host)
             if hostname == host:
-                irc.reply('Host not found.')
+                irc.reply(_('Host not found.'))
             else:
                 irc.reply(hostname)
         else:
             try:
                 ip = socket.gethostbyname(host)
                 if ip == '64.94.110.11': # Verisign sucks!
-                    irc.reply('Host not found.')
+                    irc.reply(_('Host not found.'))
                 else:
                     irc.reply(ip)
             except socket.error:
-                irc.reply('Host not found.')
+                irc.reply(_('Host not found.'))
     dns = wrap(dns, ['something'])
 
     _domain = ['Domain Name', 'Server Name', 'domain']
@@ -69,6 +71,7 @@ class Internet(callbacks.Plugin):
     _created = ['Created On', 'Domain Registration Date', 'Creation Date']
     _expires = ['Expiration Date', 'Domain Expiration Date']
     _status = ['Status', 'Domain Status', 'status']
+    @internationalizeDocstring
     def whois(self, irc, msg, args, domain):
         """<domain>
 
@@ -76,7 +79,7 @@ class Internet(callbacks.Plugin):
         """
         usertld = domain.split('.')[-1]
         if '.' not in domain:
-            irc.errorInvalid('domain')
+            irc.errorInvalid(_('domain'))
             return
         try:
             t = telnetlib.Telnet('%s.whois-servers.net' % usertld, 43)
@@ -105,13 +108,13 @@ class Internet(callbacks.Plugin):
                 registrar = ':'.join(line.split(':')[1:]).strip()
             elif not updated and any(line.startswith, self._updated):
                 s = ':'.join(line.split(':')[1:]).strip()
-                updated = 'updated %s' % s
+                updated = _('updated %s') % s
             elif not created and any(line.startswith, self._created):
                 s = ':'.join(line.split(':')[1:]).strip()
-                created = 'registered %s' % s
+                created = _('registered %s') % s
             elif not expires and any(line.startswith, self._expires):
                 s = ':'.join(line.split(':')[1:]).strip()
-                expires = 'expires %s' % s
+                expires = _('expires %s') % s
             elif not status and any(line.startswith, self._status):
                 status = ':'.join(line.split(':')[1:]).strip().lower()
         if not status:
@@ -131,19 +134,20 @@ class Internet(callbacks.Plugin):
             if not line:
                 continue
             if line.startswith('Email'):
-                url = ' <registered at %s>' % line.split('@')[-1]
+                url = _(' <registered at %s>') % line.split('@')[-1]
             elif line.startswith('Registrar Organization:'):
-                url = ' <registered by %s>' % line.split(':')[1].strip()
+                url = _(' <registered by %s>') % line.split(':')[1].strip()
             elif line == 'Not a valid ID pattern':
                 url = ''
         if server and status:
             info = filter(None, [status, created, updated, expires])
-            s = format('%s%s is %L.', server, url, info)
+            s = format(_('%s%s is %L.'), server, url, info)
             irc.reply(s)
         else:
-            irc.error('I couldn\'t find such a domain.')
+            irc.error(_('I couldn\'t find such a domain.'))
     whois = wrap(whois, ['lowered'])
 
+    @internationalizeDocstring
     def hexip(self, irc, msg, args, ip):
         """<ip>
 
@@ -156,7 +160,7 @@ class Internet(callbacks.Plugin):
             ret += '%02x' % i
         irc.reply(ret.upper())
     hexip = wrap(hexip, ['ip'])
-
+Internet = internationalizeDocstring(Internet)
 
 Class = Internet
 

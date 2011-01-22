@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('QuoteGrabs')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -42,24 +44,24 @@ def configure(advanced):
 QuoteGrabs = conf.registerPlugin('QuoteGrabs')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(QuoteGrabs, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs, 'randomGrabber',
-    registry.Boolean(False, """Determines whether the bot will randomly grab
+    registry.Boolean(False, _("""Determines whether the bot will randomly grab
     possibly-suitable quotes on occasion.  The suitability of a given message
-    is determined by ..."""))
+    is determined by ...""")))
 conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs.randomGrabber,
     'averageTimeBetweenGrabs',
-    registry.PositiveInteger(864000, """Determines about how many seconds, on
+    registry.PositiveInteger(864000, _("""Determines about how many seconds, on
     average, should elapse between random grabs.  This is only an average
     value; grabs can happen from any time after half this time until never,
-    although that's unlikely to occur."""))
+    although that's unlikely to occur.""")))
 conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs.randomGrabber,
-    'minimumWords', registry.PositiveInteger(3, """Determines the minimum
+    'minimumWords', registry.PositiveInteger(3, _("""Determines the minimum
     number of words in a message for it to be considered for random
-    grabbing."""))
+    grabbing.""")))
 conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs.randomGrabber,
-    'minimumCharacters', registry.PositiveInteger(8, """Determines the
+    'minimumCharacters', registry.PositiveInteger(8, _("""Determines the
     minimum number of characters in a message for it to be considered for
-    random grabbing."""))
+    random grabbing.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

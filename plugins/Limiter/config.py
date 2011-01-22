@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Limiter')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -41,17 +43,17 @@ def configure(advanced):
 
 Limiter = conf.registerPlugin('Limiter')
 conf.registerChannelValue(Limiter, 'enable',
-    registry.Boolean(False, """Determines whether the bot will maintain the
+    registry.Boolean(False, _("""Determines whether the bot will maintain the
     channel limit to be slightly above the current number of people in the
-    channel, in order to make clone/drone attacks harder."""))
+    channel, in order to make clone/drone attacks harder.""")))
 conf.registerChannelValue(Limiter, 'minimumExcess',
-    registry.PositiveInteger(5, """Determines the minimum number of free
+    registry.PositiveInteger(5, _("""Determines the minimum number of free
     spots that will be saved when limits are being enforced.  This should
-    always be smaller than supybot.plugins.Limiter.limit.maximumExcess."""))
+    always be smaller than supybot.plugins.Limiter.limit.maximumExcess.""")))
 conf.registerChannelValue(Limiter, 'maximumExcess',
-    registry.PositiveInteger(10, """Determines the maximum number of free spots
+    registry.PositiveInteger(10, _("""Determines the maximum number of free spots
     that will be saved when limits are being enforced.  This should always be
-    larger than supybot.plugins.Limiter.limit.minimumExcess."""))
+    larger than supybot.plugins.Limiter.limit.minimumExcess.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

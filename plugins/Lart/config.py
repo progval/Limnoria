@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Lart')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -42,10 +44,10 @@ def configure(advanced):
 Lart = conf.registerPlugin('Lart')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Lart, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 conf.registerChannelValue(Lart, 'showIds',
-    registry.Boolean(False, """Determines whether the bot will show the ids of
-    a lart when the lart is given."""))
+    registry.Boolean(False, _("""Determines whether the bot will show the ids
+    of a lart when the lart is given.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

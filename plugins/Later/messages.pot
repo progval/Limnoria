@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2010-10-28 16:15+CEST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:45
+msgid ""
+"Determines the maximum number of\n"
+"    messages to be queued for a user.  If this value is 0, there is no maximum.\n"
+"    "
+msgstr ""
+
+#: config.py:49
+msgid ""
+"Determines whether users will be notified in\n"
+"    the first place in which they're seen, or in private."
+msgstr ""
+
+#: plugin.py:46
+#, docstring
+msgid ""
+"Used to do things later; currently, it only allows the sending of\n"
+"    nick-based notes.  Do note (haha!) that these notes are *not* private\n"
+"    and don't even pretend to be; if you want such features, consider using the\n"
+"    Note plugin."
+msgstr ""
+
+#: plugin.py:84
+msgid "%s ago"
+msgstr ""
+
+#: plugin.py:86
+msgid "just now"
+msgstr ""
+
+#: plugin.py:107
+#, docstring
+msgid ""
+"<nick> <text>\n"
+"\n"
+"        Tells <nick> <text> the next time <nick> is in seen.  <nick> can\n"
+"        contain wildcard characters, and the first matching nick will be\n"
+"        given the note.\n"
+"        "
+msgstr ""
+
+#: plugin.py:114
+msgid "I can't send notes to myself."
+msgstr ""
+
+#: plugin.py:120
+msgid "That person's message queue is already full."
+msgstr ""
+
+#: plugin.py:125
+#, docstring
+msgid ""
+"[<nick>]\n"
+"\n"
+"        If <nick> is given, replies with what notes are waiting on <nick>,\n"
+"        otherwise, replies with the nicks that have notes waiting for them.\n"
+"        "
+msgstr ""
+
+#: plugin.py:136
+msgid "I have no notes for that nick."
+msgstr ""
+
+#: plugin.py:141
+msgid "I currently have notes waiting for %L."
+msgstr ""
+
+#: plugin.py:144
+msgid "I have no notes waiting to be delivered."
+msgstr ""
+
+#: plugin.py:149
+#, docstring
+msgid ""
+"<nick>\n"
+"\n"
+"        Removes the notes waiting on <nick>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:158
+msgid "There were no notes for %r"
+msgstr ""
+
+#: plugin.py:182
+msgid "Sent %s: <%s> %s"
+msgstr ""
+

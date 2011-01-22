@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Dunno')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -41,8 +43,8 @@ def configure(advanced):
 
 Dunno = conf.registerPlugin('Dunno')
 conf.registerChannelValue(Dunno, 'prefixNick',
-    registry.Boolean(True, """Determines whether the bot will prefix the nick
-    of the user giving an invalid command to the "dunno" response."""))
+    registry.Boolean(True, _("""Determines whether the bot will prefix the nick
+    of the user giving an invalid command to the "dunno" response.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

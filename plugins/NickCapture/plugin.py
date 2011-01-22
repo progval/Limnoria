@@ -33,6 +33,8 @@ import supybot.conf as conf
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('NickCapture')
 
 class NickCapture(callbacks.Plugin):
     """This module constantly tries to take whatever nick is configured as
@@ -89,7 +91,7 @@ class NickCapture(callbacks.Plugin):
             nick = self._getNick()
             if nick:
                 self._sendNick(irc, nick)
-
+NickCapture = internationalizeDocstring(NickCapture)
 
 Class = NickCapture
 

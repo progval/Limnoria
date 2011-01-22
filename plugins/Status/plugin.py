@@ -39,6 +39,8 @@ import supybot.utils as utils
 import supybot.world as world
 from supybot.commands import *
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Status')
 
 class Status(callbacks.Plugin):
     def __init__(self, irc):
@@ -64,6 +66,7 @@ class Status(callbacks.Plugin):
     def do001(self, irc, msg):
         self.connected[irc] = time.time()
 
+    @internationalizeDocstring
     def status(self, irc, msg, args):
         """takes no arguments
 
@@ -74,13 +77,14 @@ class Status(callbacks.Plugin):
             networks.setdefault(Irc.network, []).append(Irc.nick)
         networks = networks.items()
         networks.sort()
-        networks = [format('%s as %L', net, nicks) for (net,nicks) in networks]
-        L = [format('I am connected to %L.', networks)]
+        networks = [format(_('%s as %L'), net, nicks) for (net,nicks) in networks]
+        L = [format(_('I am connected to %L.'), networks)]
         if world.profiling:
-            L.append('I am currently in code profiling mode.')
+            L.append(_('I am currently in code profiling mode.'))
         irc.reply('  '.join(L))
     status = wrap(status)
 
+    @internationalizeDocstring
     def threads(self, irc, msg, args):
         """takes no arguments
 
@@ -88,12 +92,13 @@ class Status(callbacks.Plugin):
         """
         threads = [t.getName() for t in threading.enumerate()]
         threads.sort()
-        s = format('I have spawned %n; %n %b still currently active: %L.',
+        s = format(_('I have spawned %n; %n %b still currently active: %L.'),
                    (world.threadsSpawned, 'thread'),
                    (len(threads), 'thread'), len(threads), threads)
         irc.reply(s)
     threads = wrap(threads)
 
+    @internationalizeDocstring
     def net(self, irc, msg, args):
         """takes no arguments
 
@@ -103,14 +108,15 @@ class Status(callbacks.Plugin):
             elapsed = time.time() - self.connected[irc.getRealIrc()]
             timeElapsed = utils.timeElapsed(elapsed)
         except KeyError:
-            timeElapsed = 'an indeterminate amount of time'
-        irc.reply('I have received %s messages for a total of %s bytes.  '
-                  'I have sent %s messages for a total of %s bytes.  '
-                  'I have been connected to %s for %s.' %
-                  (self.recvdMsgs, self.recvdBytes,
-                   self.sentMsgs, self.sentBytes, irc.server, timeElapsed))
+            timeElapsed = _('an indeterminate amount of time')
+        irc.reply(format(_('I have received %s messages for a total of %S.  '
+                  'I have sent %s messages for a total of %S.  '
+                  'I have been connected to %s for %s.'),
+                  self.recvdMsgs, self.recvdBytes,
+                  self.sentMsgs, self.sentBytes, irc.server, timeElapsed))
     net = wrap(net)
 
+    @internationalizeDocstring
     def cpu(self, irc, msg, args):
         """takes no arguments
 
@@ -122,16 +128,16 @@ class Status(callbacks.Plugin):
         timeRunning = now - world.startedAt
         if self.registryValue('cpu.children', target) and \
            user+system < timeRunning+1: # Fudge for FPU inaccuracies.
-            children = 'My children have taken %.2f seconds of user time ' \
-                       'and %.2f seconds of system time ' \
-                       'for a total of %.2f seconds of CPU time.  ' % \
+            children = _('My children have taken %.2f seconds of user time '
+                       'and %.2f seconds of system time '
+                       'for a total of %.2f seconds of CPU time.  ') % \
                        (childUser, childSystem, childUser+childSystem)
         else:
             children = ''
         activeThreads = threading.activeCount()
-        response = 'I have taken %.2f seconds of user time and %.2f seconds ' \
-                   'of system time, for a total of %.2f seconds of CPU ' \
-                   'time.  %s' % (user, system, user + system, children)
+        response = _('I have taken %.2f seconds of user time and %.2f seconds '
+                   'of system time, for a total of %.2f seconds of CPU '
+                   'time.  %s') % (user, system, user + system, children)
         if self.registryValue('cpu.threads', target):
             response += format('I have spawned %n; I currently have %i still '
                                'running.',
@@ -151,18 +157,19 @@ class Status(callbacks.Plugin):
                                                 stdout=subprocess.PIPE,
                                                 stderr=subprocess.PIPE)
                     except OSError:
-                        irc.error('Unable to run ps command.', Raise=True)
-                    (out, _) = inst.communicate()
+                        irc.error(_('Unable to run ps command.'), Raise=True)
+                    (out, foo) = inst.communicate()
                     inst.wait()
-                    mem = out.splitlines()[1]
+                    mem = int(out.splitlines()[1])
                 elif sys.platform.startswith('netbsd'):
-                    mem = '%s kB' % os.stat('/proc/%s/mem' % pid)[7]
-                response += '  I\'m taking up %s kB of memory.' % mem
+                    mem = int(os.stat('/proc/%s/mem' % pid)[7])
+                response += format(_('  I\'m taking up %S of memory.'), mem)
             except Exception:
                 self.log.exception('Uncaught exception in cpu.memory:')
         irc.reply(utils.str.normalizeWhitespace(response))
     cpu = wrap(cpu)
 
+    @internationalizeDocstring
     def cmd(self, irc, msg, args):
         """takes no arguments
 
@@ -174,13 +181,14 @@ class Status(callbacks.Plugin):
             if isinstance(cb, callbacks.Plugin):
                 callbacksPlugin += 1
                 commands += len(cb.listCommands())
-        s = format('I offer a total of %n in %n.  I have processed %n.',
+        s = format(_('I offer a total of %n in %n.  I have processed %n.'),
                    (commands, 'command'),
                    (callbacksPlugin, 'command-based', 'plugin'),
                    (world.commandsProcessed, 'command'))
         irc.reply(s)
     cmd = wrap(cmd)
 
+    @internationalizeDocstring
     def commands(self, irc, msg, args):
         """takes no arguments
 
@@ -194,16 +202,18 @@ class Status(callbacks.Plugin):
         irc.reply(format('%L', sorted(commands)))
     commands = wrap(commands)
 
+    @internationalizeDocstring
     def uptime(self, irc, msg, args):
         """takes no arguments
 
         Returns the amount of time the bot has been running.
         """
-        response = 'I have been running for %s.' % \
+        response = _('I have been running for %s.') % \
                    utils.timeElapsed(time.time() - world.startedAt)
         irc.reply(response)
     uptime = wrap(uptime)
 
+    @internationalizeDocstring
     def server(self, irc, msg, args):
         """takes no arguments
 

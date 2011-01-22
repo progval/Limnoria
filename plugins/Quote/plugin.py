@@ -29,8 +29,11 @@
 
 from supybot.commands import *
 import supybot.plugins as plugins
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Quote')
 
 class Quote(plugins.ChannelIdDatabasePlugin):
+    @internationalizeDocstring
     def random(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -41,7 +44,7 @@ class Quote(plugins.ChannelIdDatabasePlugin):
         if quote:
             irc.reply(self.showRecord(quote))
         else:
-            irc.error('I have no quotes in my database for %s.' % channel)
+            irc.error(_('I have no quotes in my database for %s.') % channel)
     random = wrap(random, ['channeldb'])
 
 Class = Quote

@@ -44,6 +44,8 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Unix')
 
 def progstats():
     pw = pwd.getpwuid(os.getuid())
@@ -66,6 +68,7 @@ def pipeReadline(fd, timeout=2):
         raise TimeoutError
 
 class Unix(callbacks.Plugin):
+    @internationalizeDocstring
     def errno(self, irc, msg, args, s):
         """<error number or code>
 
@@ -79,13 +82,14 @@ class Unix(callbacks.Plugin):
             try:
                 i = getattr(errno, name)
             except AttributeError:
-                irc.reply('I can\'t find the errno number for that code.')
+                irc.reply(_('I can\'t find the errno number for that code.'))
                 return
         except KeyError:
-            name = '(unknown)'
-        irc.reply(format('%s (#%i): %s', name, i, os.strerror(i)))
+            name = _('(unknown)')
+        irc.reply(format(_('%s (#%i): %s'), name, i, os.strerror(i)))
     errno = wrap(errno, ['something'])
 
+    @internationalizeDocstring
     def progstats(self, irc, msg, args):
         """takes no arguments
 
@@ -93,6 +97,7 @@ class Unix(callbacks.Plugin):
         """
         irc.reply(progstats())
 
+    @internationalizeDocstring
     def pid(self, irc, msg, args):
         """takes no arguments
 
@@ -102,6 +107,7 @@ class Unix(callbacks.Plugin):
     pid = wrap(pid, [('checkCapability', 'owner')])
 
     _cryptre = re.compile(r'[./0-9A-Za-z]')
+    @internationalizeDocstring
     def crypt(self, irc, msg, args, password, salt):
         """<password> [<salt>]
 
@@ -120,6 +126,7 @@ class Unix(callbacks.Plugin):
         irc.reply(crypt.crypt(password, salt))
     crypt = wrap(crypt, ['something', additional('something')])
 
+    @internationalizeDocstring
     def spell(self, irc, msg, args, word):
         """<word>
 
@@ -130,12 +137,12 @@ class Unix(callbacks.Plugin):
         # We are only checking the first word
         spellCmd = self.registryValue('spell.command')
         if not spellCmd:
-           irc.error('The spell checking command is not configured.  If one '
+           irc.error(_('The spell checking command is not configured.  If one '
                      'is installed, reconfigure '
-                     'supybot.plugins.Unix.spell.command appropriately.',
+                     'supybot.plugins.Unix.spell.command appropriately.'),
                      Raise=True)
         if word and not word[0].isalpha():
-            irc.error('<word> must begin with an alphabet character.')
+            irc.error(_('<word> must begin with an alphabet character.'))
             return
         try:
             inst = subprocess.Popen([spellCmd, '-a'], close_fds=True,
@@ -157,7 +164,7 @@ class Unix(callbacks.Plugin):
         lines = filter(None, out.splitlines())
         lines.pop(0) # Banner
         if not lines:
-            irc.error('No results found.', Raise=True)
+            irc.error(_('No results found.'), Raise=True)
         line = lines.pop(0)
         line2 = ''
         if lines:
@@ -168,18 +175,20 @@ class Unix(callbacks.Plugin):
         if line[0] in '*+' and line2:
             line = line2
         if line[0] in '*+':
-            resp = format('%q may be spelled correctly.', word)
+            resp = format(_('%q may be spelled correctly.'), word)
         elif line[0] == '#':
-            resp = format('I could not find an alternate spelling for %q',word)
+            resp = format(_('I could not find an alternate spelling for %q'),
+                          word)
         elif line[0] == '&':
             matches = line.split(':')[1].strip()
-            resp = format('Possible spellings for %q: %L.',
+            resp = format(_('Possible spellings for %q: %L.'),
                           word, matches.split(', '))
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(resp)
     spell = wrap(spell, ['somethingWithoutSpaces'])
 
+    @internationalizeDocstring
     def fortune(self, irc, msg, args):
         """takes no arguments
 
@@ -201,8 +210,8 @@ class Unix(callbacks.Plugin):
                                         stderr=subprocess.PIPE,
                                         stdin=file(os.devnull))
             except OSError, e:
-                irc.error('It seems the configured fortune command was '
-                          'not available.', Raise=True)
+                irc.error(_('It seems the configured fortune command was '
+                          'not available.'), Raise=True)
             (out, err) = inst.communicate()
             inst.wait()
             lines = out.splitlines()
@@ -210,11 +219,12 @@ class Unix(callbacks.Plugin):
             lines = filter(None, lines)
             irc.replies(lines, joiner=' ')
         else:
-            irc.error('The fortune command is not configured. If fortune is '
+            irc.error(_('The fortune command is not configured. If fortune is '
                       'installed on this system, reconfigure the '
                       'supybot.plugins.Unix.fortune.command configuration '
-                      'variable appropriately.')
+                      'variable appropriately.'))
 
+    @internationalizeDocstring
     def wtf(self, irc, msg, args, _, something):
         """[is] <something>
 
@@ -231,8 +241,8 @@ class Unix(callbacks.Plugin):
                                         stderr=file(os.devnull),
                                         stdin=file(os.devnull))
             except OSError:
-                irc.error('It seems the configured wtf command was not '
-                          'available.', Raise=True)
+                irc.error(_('It seems the configured wtf command was not '
+                          'available.'), Raise=True)
             (out, _) = inst.communicate()
             inst.wait()
             if out:
@@ -240,10 +250,10 @@ class Unix(callbacks.Plugin):
                 response = utils.str.normalizeWhitespace(response)
                 irc.reply(response)
         else:
-            irc.error('The wtf command is not configured.  If it is installed '
+            irc.error(_('The wtf command is not configured.  If it is installed '
                       'on this system, reconfigure the '
                       'supybot.plugins.Unix.wtf.command configuration '
-                      'variable appropriately.')
+                      'variable appropriately.'))
     wtf = wrap(wtf, [optional(('literal', ['is'])), 'something'])
 
 Class = Unix

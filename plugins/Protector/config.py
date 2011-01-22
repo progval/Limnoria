@@ -30,6 +30,8 @@
 import supybot.conf as conf
 import supybot.ircutils as ircutils
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Protector')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -42,17 +44,17 @@ def configure(advanced):
 
 Protector = conf.registerPlugin('Protector')
 conf.registerChannelValue(Protector, 'enable',
-    registry.Boolean(True, """Determines whether this plugin is enabled in a
-    given channel."""))
+    registry.Boolean(True, _("""Determines whether this plugin is enabled in a
+    given channel.""")))
 
 class ImmuneNicks(conf.ValidNicks):
     List = ircutils.IrcSet
 
 conf.registerChannelValue(Protector, 'immune',
-    ImmuneNicks([], """Determines what nicks the bot will consider to
+    ImmuneNicks([], _("""Determines what nicks the bot will consider to
     be immune from enforcement.  These nicks will not even have their actions
     watched by this plugin.  In general, only the ChanServ for this network
-    will be in this list."""))
+    will be in this list.""")))
 
 
 

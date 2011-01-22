@@ -31,12 +31,15 @@ import time
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('BadWords')
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('BadWords', True)
-    if yn('Would you like to add some bad words?'):
-        words = anything('What words? (separate individual words by spaces)')
+    if yn(_('Would you like to add some bad words?')):
+        words = anything(_('What words? (separate individual words by '
+                         'spaces)'))
         conf.supybot.plugins.BadWords.words.set(words)
 
 class LastModifiedSetOfStrings(registry.SpaceSeparatedSetOfStrings):
@@ -47,14 +50,14 @@ class LastModifiedSetOfStrings(registry.SpaceSeparatedSetOfStrings):
 
 BadWords = conf.registerPlugin('BadWords')
 conf.registerGlobalValue(BadWords, 'words',
-    LastModifiedSetOfStrings([], """Determines what words are
-    considered to be 'bad' so the bot won't say them."""))
+    LastModifiedSetOfStrings([], _("""Determines what words are
+    considered to be 'bad' so the bot won't say them.""")))
 conf.registerGlobalValue(BadWords,'requireWordBoundaries',
-    registry.Boolean(False, """Determines whether the bot will require bad
+    registry.Boolean(False, _("""Determines whether the bot will require bad
     words to be independent words, or whether it will censor them within other
     words.  For instance, if 'darn' is a bad word, then if this is true, 'darn'
     will be censored, but 'darnit' will not.  You probably want this to be
-    false."""))
+    false.""")))
 
 class String256(registry.String):
     def __call__(self):
@@ -65,39 +68,39 @@ class String256(registry.String):
         return self.value
 
 conf.registerGlobalValue(BadWords, 'nastyChars',
-    String256('!@#&', """Determines what characters will replace bad words; a
+    String256('!@#&', _("""Determines what characters will replace bad words; a
     chunk of these characters matching the size of the replaced bad word will
-    be used to replace the bad words you've configured."""))
+    be used to replace the bad words you've configured.""")))
 
 class ReplacementMethods(registry.OnlySomeStrings):
     validStrings = ('simple', 'nastyCharacters')
 
 conf.registerGlobalValue(BadWords, 'replaceMethod',
-    ReplacementMethods('nastyCharacters', """Determines the manner in which
+    ReplacementMethods('nastyCharacters', _("""Determines the manner in which
     bad words will be replaced.  'nastyCharacters' (the default) will replace a
     bad word with the same number of 'nasty characters' (like those used in
     comic books; configurable by supybot.plugins.BadWords.nastyChars).
     'simple' will replace a bad word with a simple strings (regardless of the
     length of the bad word); this string is configurable via
-    supybot.plugins.BadWords.simpleReplacement."""))
+    supybot.plugins.BadWords.simpleReplacement.""")))
 conf.registerGlobalValue(BadWords,'simpleReplacement',
-    registry.String('[CENSORED]', """Determines what word will replace bad
-    words if the replacement method is 'simple'."""))
+    registry.String('[CENSORED]', _("""Determines what word will replace bad
+    words if the replacement method is 'simple'.""")))
 conf.registerGlobalValue(BadWords, 'stripFormatting',
-    registry.Boolean(True, """Determines whether the bot will strip
+    registry.Boolean(True, _("""Determines whether the bot will strip
     formatting characters from messages before it checks them for bad words.
     If this is False, it will be relatively trivial to circumvent this plugin's
     filtering.  If it's True, however, it will interact poorly with other
-    plugins that do coloring or bolding of text."""))
+    plugins that do coloring or bolding of text.""")))
 
 conf.registerChannelValue(BadWords, 'kick',
-    registry.Boolean(False, """Determines whether the bot will kick people with
-    a warning when they use bad words."""))
+    registry.Boolean(False, _("""Determines whether the bot will kick people with
+    a warning when they use bad words.""")))
 conf.registerChannelValue(BadWords.kick, 'message',
-    registry.NormalizedString("""You have been kicked for using a word
+    registry.NormalizedString(_("""You have been kicked for using a word
     prohibited in the presence of this bot.  Please use more appropriate
-    language in the future.""", """Determines the kick message used by the bot
-    when kicking users for saying bad words."""))
+    language in the future."""), _("""Determines the kick message used by the
+    bot when kicking users for saying bad words.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

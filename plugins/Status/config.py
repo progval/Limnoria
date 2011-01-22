@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Status')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -41,13 +43,13 @@ def configure(advanced):
 Status = conf.registerPlugin('Status')
 conf.registerGroup(Status, 'cpu')
 conf.registerChannelValue(Status.cpu, 'children',
-    registry.Boolean(True, """Determines whether the cpu command will list the
-    time taken by children as well as the bot's process."""))
+    registry.Boolean(True, _("""Determines whether the cpu command will list
+    the time taken by children as well as the bot's process.""")))
 conf.registerChannelValue(Status.cpu, 'threads',
-    registry.Boolean(False, """Determines whether the cpu command will provide
-    the number of threads spawned and active."""))
+    registry.Boolean(False, _("""Determines whether the cpu command will
+    provide the number of threads spawned and active.""")))
 conf.registerChannelValue(Status.cpu, 'memory',
-    registry.Boolean(True, """Determines whether the cpu command will report
-    the amount of memory being used by the bot."""))
+    registry.Boolean(True, _("""Determines whether the cpu command will report
+    the amount of memory being used by the bot.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

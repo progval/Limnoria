@@ -34,8 +34,11 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Format')
 
 class Format(callbacks.Plugin):
+    @internationalizeDocstring
     def bold(self, irc, msg, args, text):
         """<text>
 
@@ -44,6 +47,7 @@ class Format(callbacks.Plugin):
         irc.reply(ircutils.bold(text))
     bold = wrap(bold, ['text'])
 
+    @internationalizeDocstring
     def reverse(self, irc, msg, args, text):
         """<text>
 
@@ -52,6 +56,7 @@ class Format(callbacks.Plugin):
         irc.reply(ircutils.reverse(text))
     reverse = wrap(reverse, ['text'])
 
+    @internationalizeDocstring
     def underline(self, irc, msg, args, text):
         """<text>
 
@@ -60,6 +65,7 @@ class Format(callbacks.Plugin):
         irc.reply(ircutils.underline(text))
     underline = wrap(underline, ['text'])
 
+    @internationalizeDocstring
     def color(self, irc, msg, args, fg, bg, text):
         """<foreground> [<background>] <text>
 
@@ -69,6 +75,7 @@ class Format(callbacks.Plugin):
         irc.reply(ircutils.mircColor(text, fg=fg, bg=bg))
     color = wrap(color, ['color', optional('color'), 'text'])
 
+    @internationalizeDocstring
     def join(self, irc, msg, args, sep):
         """<separator> <string 1> [<string> ...]
 
@@ -77,6 +84,7 @@ class Format(callbacks.Plugin):
         irc.reply(sep.join(args))
     join = wrap(join, ['anything'], allowExtra=True)
 
+    @internationalizeDocstring
     def translate(self, irc, msg, args, bad, good, text):
         """<chars to translate> <chars to replace those with> <text>
 
@@ -85,11 +93,12 @@ class Format(callbacks.Plugin):
         length.
         """
         if len(bad) != len(good):
-            irc.error('<chars to translate> must be the same length as '
-                      '<chars to replace those with>.', Raise=True)
+            irc.error(_('<chars to translate> must be the same length as '
+                      '<chars to replace those with>.'), Raise=True)
         irc.reply(text.translate(string.maketrans(bad, good)))
     translate = wrap(translate, ['something', 'something', 'text'])
 
+    @internationalizeDocstring
     def upper(self, irc, msg, args, text):
         """<text>
 
@@ -98,6 +107,7 @@ class Format(callbacks.Plugin):
         irc.reply(text.upper())
     upper = wrap(upper, ['text'])
 
+    @internationalizeDocstring
     def lower(self, irc, msg, args, text):
         """<text>
 
@@ -106,6 +116,7 @@ class Format(callbacks.Plugin):
         irc.reply(text.lower())
     lower = wrap(lower, ['text'])
 
+    @internationalizeDocstring
     def capitalize(self, irc, msg, args, text):
         """<text>
 
@@ -114,6 +125,7 @@ class Format(callbacks.Plugin):
         irc.reply(text.capitalize())
     capitalize = wrap(capitalize, ['text'])
 
+    @internationalizeDocstring
     def title(self, irc, msg, args, text):
         """<text>
 
@@ -122,6 +134,7 @@ class Format(callbacks.Plugin):
         irc.reply(text.title())
     title = wrap(title, ['text'])
 
+    @internationalizeDocstring
     def repr(self, irc, msg, args, text):
         """<text>
 
@@ -130,6 +143,7 @@ class Format(callbacks.Plugin):
         irc.reply(utils.str.dqrepr(text))
     repr = wrap(repr, ['text'])
 
+    @internationalizeDocstring
     def concat(self, irc, msg, args, first, second):
         """<string 1> <string 2>
 
@@ -140,6 +154,7 @@ class Format(callbacks.Plugin):
         irc.reply(first+second)
     concat = wrap(concat, ['something', 'text'])
 
+    @internationalizeDocstring
     def cut(self, irc, msg, args, size, text):
         """<size> <text>
 
@@ -150,6 +165,7 @@ class Format(callbacks.Plugin):
         irc.reply(text[:size])
     cut = wrap(cut, ['int', 'text'])
 
+    @internationalizeDocstring
     def field(self, irc, msg, args, index, text):
         """<number> <text>
 
@@ -162,6 +178,7 @@ class Format(callbacks.Plugin):
             irc.errorInvalid('field')
     field = wrap(field, ['index', 'text'])
 
+    @internationalizeDocstring
     def format(self, irc, msg, args):
         """<format string> [<arg> ...]
 
@@ -177,7 +194,8 @@ class Format(callbacks.Plugin):
             irc.reply(s)
         except TypeError, e:
             self.log.debug(utils.exnToString(e))
-            irc.error('Not enough arguments for the format string.',Raise=True)
+            irc.error(_('Not enough arguments for the format string.'),
+                      Raise=True)
 
 
 Class = Format

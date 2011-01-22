@@ -196,7 +196,7 @@ def banmask(hostmask):
         L[-1] = '*'
         return '*!*@' + ':'.join(L)
     else:
-        if '.' in host:
+        if len(host.split('.')) > 2: # If it is a subdomain
             return '*!*@*%s' % host[host.find('.'):]
         else:
             return '*!*@'  + host

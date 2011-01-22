@@ -1,0 +1,86 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2010-10-17 10:39+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Français\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: ASCII\n"
+
+#: config.py:38
+msgid "The default dictd server is dict.org."
+msgstr "Le serveur dictd par défaut est dict.org"
+
+#: config.py:39
+msgid "Would you like to specify a different dictd server?"
+msgstr "Voulez-vous spécifier un serveur dictd différent ?"
+
+#: config.py:45
+msgid ""
+"Determines what server the bot will\n"
+"    retrieve definitions from."
+msgstr "Détermine de quel serveur le bot récupérera les définitions."
+
+#: config.py:48
+msgid ""
+"Determines the default dictionary the bot will\n"
+"    ask for definitions in.  If this value is '*' (without the quotes) the bot\n"
+"    will use all dictionaries to define words."
+msgstr "Détermine le dictionnaire par défaut dans lequel le bot cherchera les définitions. Si la valeur est '*' (sans les guillemets), le bot utilisera tous les dictionnaires pour définir le mot."
+
+#: plugin.py:52
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the dictionaries valid for the dict command.\n"
+"        "
+msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Retourne les dictionnaires valides pour la commande dict."
+
+#: plugin.py:68
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns a random valid dictionary.\n"
+"        "
+msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Retourne un dictionnaire valide aléatoire."
+
+#: plugin.py:83
+msgid ""
+"[<dictionary>] <word>\n"
+"\n"
+"        Looks up the definition of <word> on the dictd server specified by\n"
+"        the supybot.plugins.Dict.server config variable.\n"
+"        "
+msgstr ""
+"[<dictionnaire>] <mot>\n"
+"\n"
+"Recherche la définition du mot sur le serveur dictd spécifié par la variable de configuration supybot.plugins.Dict.server."
+
+#: plugin.py:106
+msgid "You must give a word to define."
+msgstr "Vous devez donner un mot à définir."
+
+#: plugin.py:112
+msgid "No definition for %q could be found."
+msgstr "La définition de %q ne peut être trouvée."
+
+#: plugin.py:115
+msgid "No definition for %q could be found in %s"
+msgstr "La définition de %q ne peut être trouvée dans %s."
+
+#: plugin.py:127
+msgid "%L responded: %s"
+msgstr "%L a répondu : %s"
+

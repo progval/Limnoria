@@ -30,15 +30,17 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Google')
 
 def configure(advanced):
     from supybot.questions import output, yn
     conf.registerPlugin('Google', True)
-    output("""The Google plugin has the functionality to watch for URLs
+    output(_("""The Google plugin has the functionality to watch for URLs
               that match a specific pattern. (We call this a snarfer)
               When supybot sees such a URL, it will parse the web page
-              for information and reply with the results.""")
-    if yn('Do you want the Google search snarfer enabled by default?'):
+              for information and reply with the results."""))
+    if yn(_('Do you want the Google search snarfer enabled by default?')):
         conf.supybot.plugins.Google.searchSnarfer.setValue(True)
 
 class Language(registry.OnlySomeStrings):
@@ -94,29 +96,29 @@ class SafeSearch(registry.OnlySomeStrings):
 
 Google = conf.registerPlugin('Google')
 conf.registerGlobalValue(Google, 'referer',
-    registry.String('', """Determines the URL that will be sent to Google for
+    registry.String('', _("""Determines the URL that will be sent to Google for
     the Referer field of the search requests.  If this value is empty, a
     Referer will be generated in the following format:
-    http://$server/$botName"""))
+    http://$server/$botName""")))
 conf.registerChannelValue(Google, 'searchSnarfer',
-    registry.Boolean(False, """Determines whether the search snarfer is
+    registry.Boolean(False, _("""Determines whether the search snarfer is
     enabled.  If so, messages (even unaddressed ones) beginning with the word
     'google' will result in the first URL Google returns being sent to the
-    channel."""))
+    channel.""")))
 conf.registerChannelValue(Google, 'colorfulFilter',
-    registry.Boolean(False, """Determines whether the word 'google' in the
-    bot's output will be made colorful (like Google's logo)."""))
+    registry.Boolean(False, _("""Determines whether the word 'google' in the
+    bot's output will be made colorful (like Google's logo).""")))
 conf.registerChannelValue(Google, 'bold',
-    registry.Boolean(True, """Determines whether results are bolded."""))
+    registry.Boolean(True, _("""Determines whether results are bolded.""")))
 conf.registerChannelValue(Google, 'maximumResults',
-    NumSearchResults(8, """Determines the maximum number of results returned
-    from the google command."""))
+    NumSearchResults(8, _("""Determines the maximum number of results returned
+    from the google command.""")))
 conf.registerChannelValue(Google, 'defaultLanguage',
-    Language('lang_en', """Determines what default language is used in
-    searches.  If left empty, no specific language will be requested."""))
+    Language('lang_'+ _('en'), _("""Determines what default language is used in
+    searches.  If left empty, no specific language will be requested.""")))
 conf.registerChannelValue(Google, 'searchFilter',
-    SafeSearch('moderate', """Determines what level of search filtering to use
+    SafeSearch('moderate', _("""Determines what level of search filtering to use
     by default.  'active' - most filtering, 'moderate' - default filtering,
-    'off' - no filtering"""))
+    'off' - no filtering""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

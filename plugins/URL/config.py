@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('URL')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -40,10 +42,10 @@ def configure(advanced):
 
 URL = conf.registerPlugin('URL')
 conf.registerChannelValue(URL, 'nonSnarfingRegexp',
-    registry.Regexp(None, """Determines what URLs are not to be snarfed and
+    registry.Regexp(None, _("""Determines what URLs are not to be snarfed and
     stored in the database for the channel; URLs matching the given regexp will
     not be snarfed.  Give the empty string if you have no URLs that you'd like
-    to exclude from being snarfed."""))
+    to exclude from being snarfed.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

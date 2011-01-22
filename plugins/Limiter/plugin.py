@@ -32,7 +32,8 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Limiter')
 
 class Limiter(callbacks.Plugin):
     """In order to use this plugin, its config values need to be properly
@@ -68,7 +69,7 @@ class Limiter(callbacks.Plugin):
     def doQuit(self, irc, msg):
         for channel in irc.state.channels:
             self._enforceLimit(irc, channel)
-
+Limiter = internationalizeDocstring(Limiter)
 
 Class = Limiter
 

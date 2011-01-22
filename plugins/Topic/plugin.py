@@ -43,6 +43,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Topic')
 
 
 def canChangeTopic(irc, msg, args, state):
@@ -50,18 +52,19 @@ def canChangeTopic(irc, msg, args, state):
     callConverter('channel', irc, msg, args, state)
     callConverter('inChannel', irc, msg, args, state)
     if state.channel not in irc.state.channels:
-        state.error(format('I\'m not currently in %s.', state.channel),
+        state.error(format(_('I\'m not currently in %s.'), state.channel),
                     Raise=True)
     c = irc.state.channels[state.channel]
     if irc.nick not in c.ops and 't' in c.modes:
-        state.error(format('I can\'t change the topic, I\'m not opped '
-                           'and %s is +t.', state.channel), Raise=True)
+        state.error(format(_('I can\'t change the topic, I\'m not opped '
+                           'and %s is +t.'), state.channel), Raise=True)
 
 def getTopic(irc, msg, args, state, format=True):
     separator = state.cb.registryValue('separator', state.channel)
     if separator in args[0]:
         state.errorInvalid('topic', args[0],
-                           format('The topic must not include %q.', separator))
+                           format(_('The topic must not include %q.'),
+                                  separator))
     topic = args.pop(0)
     if format:
         env = {'topic': topic}
@@ -71,7 +74,7 @@ def getTopic(irc, msg, args, state, format=True):
 
 def getTopicNumber(irc, msg, args, state):
     def error(s):
-        state.errorInvalid('topic number', s)
+        state.errorInvalid(_('topic number'), s)
     try:
         n = int(args[0])
         if not n:
@@ -84,7 +87,7 @@ def getTopicNumber(irc, msg, args, state):
     separator = state.cb.registryValue('separator', state.channel)
     topics = splitTopic(topic, separator)
     if not topics:
-        state.error(format('There are no topics in %s.', state.channel),
+        state.error(format(_('There are no topics in %s.'), state.channel),
                     Raise=True)
     try:
         topics[n]
@@ -192,9 +195,9 @@ class Topic(callbacks.Plugin):
                     newTopic = self._joinTopic(channel, topics)
             elif len(newTopic) > maxLen:
                 if self.registryValue('recognizeTopiclen', channel):
-                    irc.error(format('That topic is too long for this server '
-                                     '(maximum length: %i; this topic: %i).',
-                                     maxLen, len(newTopic)),
+                    irc.error(format(_('That topic is too long for this '
+                                     'server (maximum length: %i; this topic: '
+                                     '%i).'), maxLen, len(newTopic)),
                               Raise=True)
         except KeyError:
             pass
@@ -204,6 +207,7 @@ class Topic(callbacks.Plugin):
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
         irc.noReply()
 
+    @internationalizeDocstring
     def _checkManageCapabilities(self, irc, msg, channel):
         """Check if the user has any of the required capabilities to manage
         the channel topic.
@@ -255,6 +259,7 @@ class Topic(callbacks.Plugin):
             # us to undo the first topic change that takes place in a channel.
             self._addUndo(msg.args[1], [msg.args[2]])
 
+    @internationalizeDocstring
     def topic(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -265,6 +270,7 @@ class Topic(callbacks.Plugin):
         irc.reply(topic)
     topic = wrap(topic, ['inChannel'])
 
+    @internationalizeDocstring
     def add(self, irc, msg, args, channel, topic):
         """[<channel>] <topic>
 
@@ -279,6 +285,7 @@ class Topic(callbacks.Plugin):
         self._sendTopics(irc, channel, topics)
     add = wrap(add, ['canChangeTopic', rest('topic')])
 
+    @internationalizeDocstring
     def fit(self, irc, msg, args, channel, topic):
         """[<channel>] <topic>
 
@@ -295,6 +302,7 @@ class Topic(callbacks.Plugin):
         self._sendTopics(irc, channel, topics, fit=True)
     fit = wrap(fit, ['canChangeTopic', rest('topic')])
 
+    @internationalizeDocstring
     def replace(self, irc, msg, args, channel, i, topic):
         """[<channel>] <number> <topic>
 
@@ -308,6 +316,7 @@ class Topic(callbacks.Plugin):
         self._sendTopics(irc, channel, topics)
     replace = wrap(replace, ['canChangeTopic', 'topicNumber', rest('topic')])
 
+    @internationalizeDocstring
     def insert(self, irc, msg, args, channel, topic):
         """[<channel>] <topic>
 
@@ -323,6 +332,7 @@ class Topic(callbacks.Plugin):
         self._sendTopics(irc, channel, topics)
     insert = wrap(insert, ['canChangeTopic', rest('topic')])
 
+    @internationalizeDocstring
     def shuffle(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -334,7 +344,7 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if len(topics) == 0 or len(topics) == 1:
-            irc.error('I can\'t shuffle 1 or fewer topics.', Raise=True)
+            irc.error(_('I can\'t shuffle 1 or fewer topics.'), Raise=True)
         elif len(topics) == 2:
             topics.reverse()
         else:
@@ -344,6 +354,7 @@ class Topic(callbacks.Plugin):
         self._sendTopics(irc, channel, topics)
     shuffle = wrap(shuffle, ['canChangeTopic'])
 
+    @internationalizeDocstring
     def reorder(self, irc, msg, args, channel, numbers):
         """[<channel>] <number> [<number> ...]
 
@@ -358,16 +369,17 @@ class Topic(callbacks.Plugin):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         num = len(topics)
         if num == 0 or num == 1:
-            irc.error('I cannot reorder 1 or fewer topics.', Raise=True)
+            irc.error(_('I cannot reorder 1 or fewer topics.'), Raise=True)
         if len(numbers) != num:
-            irc.error('All topic numbers must be specified.', Raise=True)
+            irc.error(_('All topic numbers must be specified.'), Raise=True)
         if sorted(numbers) != range(num):
-            irc.error('Duplicate topic numbers cannot be specified.')
+            irc.error(_('Duplicate topic numbers cannot be specified.'))
             return
         newtopics = [topics[i] for i in numbers]
         self._sendTopics(irc, channel, newtopics)
     reorder = wrap(reorder, ['canChangeTopic', many('topicNumber')])
 
+    @internationalizeDocstring
     def list(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -378,11 +390,12 @@ class Topic(callbacks.Plugin):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         L = []
         for (i, t) in enumerate(topics):
-            L.append(format('%i: %s', i+1, utils.str.ellipsisify(t, 30)))
+            L.append(format(_('%i: %s'), i+1, utils.str.ellipsisify(t, 30)))
         s = utils.str.commaAndify(L)
         irc.reply(s)
     list = wrap(list, ['inChannel'])
 
+    @internationalizeDocstring
     def get(self, irc, msg, args, channel, number):
         """[<channel>] <number>
 
@@ -397,6 +410,7 @@ class Topic(callbacks.Plugin):
         irc.reply(topics[number])
     get = wrap(get, ['inChannel', 'topicNumber'])
 
+    @internationalizeDocstring
     def change(self, irc, msg, args, channel, number, replacer):
         """[<channel>] <number> <regexp>
 
@@ -414,6 +428,7 @@ class Topic(callbacks.Plugin):
         self._sendTopics(irc, channel, topics)
     change = wrap(change, ['canChangeTopic', 'topicNumber', 'regexpReplacer'])
 
+    @internationalizeDocstring
     def set(self, irc, msg, args, channel, number, topic):
         """[<channel>] [<number>] <topic>
 
@@ -434,6 +449,7 @@ class Topic(callbacks.Plugin):
                      optional('topicNumber'),
                      rest(('topic', False))])
 
+    @internationalizeDocstring
     def remove(self, irc, msg, args, channel, number):
         """[<channel>] <number>
 
@@ -450,6 +466,7 @@ class Topic(callbacks.Plugin):
         self._sendTopics(irc, channel, topics)
     remove = wrap(remove, ['canChangeTopic', 'topicNumber'])
 
+    @internationalizeDocstring
     def lock(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -461,12 +478,13 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         irc.queueMsg(ircmsgs.mode(channel, '+t'))
         irc.noReply()
-    lock = wrap(lock, ['channel', ('haveOp', 'lock the topic')])
+    lock = wrap(lock, ['channel', ('haveOp', _('lock the topic'))])
 
+    @internationalizeDocstring
     def unlock(self, irc, msg, args, channel):
         """[<channel>]
 
-        Locks the topic (sets the mode +t) in <channel>.  <channel> is only
+        Unlocks the topic (sets the mode +t) in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
         if not self._checkManageCapabilities(irc, msg, channel):
@@ -474,8 +492,9 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         irc.queueMsg(ircmsgs.mode(channel, '-t'))
         irc.noReply()
-    unlock = wrap(unlock, ['channel', ('haveOp', 'unlock the topic')])
+    unlock = wrap(unlock, ['channel', ('haveOp', _('unlock the topic'))])
 
+    @internationalizeDocstring
     def restore(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -488,11 +507,13 @@ class Topic(callbacks.Plugin):
         try:
             topics = self.lastTopics[channel]
         except KeyError:
-            irc.error(format('I haven\'t yet set the topic in %s.', channel))
+            irc.error(format(_('I haven\'t yet set the topic in %s.'),
+                             channel))
             return
         self._sendTopics(irc, channel, topics)
     restore = wrap(restore, ['canChangeTopic'])
 
+    @internationalizeDocstring
     def undo(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -508,9 +529,10 @@ class Topic(callbacks.Plugin):
         if topics is not None:
             self._sendTopics(irc, channel, topics, isDo=True)
         else:
-            irc.error(format('There are no more undos for %s.', channel))
+            irc.error(format(_('There are no more undos for %s.'), channel))
     undo = wrap(undo, ['canChangetopic'])
 
+    @internationalizeDocstring
     def redo(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -524,9 +546,10 @@ class Topic(callbacks.Plugin):
         if topics is not None:
             self._sendTopics(irc, channel, topics, isDo=True)
         else:
-            irc.error(format('There are no redos for %s.', channel))
+            irc.error(format(_('There are no redos for %s.'), channel))
     redo = wrap(redo, ['canChangeTopic'])
 
+    @internationalizeDocstring
     def swap(self, irc, msg, args, channel, first, second):
         """[<channel>] <first topic number> <second topic number>
 
@@ -539,7 +562,7 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if first == second:
-            irc.error('I refuse to swap the same topic with itself.')
+            irc.error(_('I refuse to swap the same topic with itself.'))
             return
         t = topics[first]
         topics[first] = topics[second]
@@ -547,6 +570,7 @@ class Topic(callbacks.Plugin):
         self._sendTopics(irc, channel, topics)
     swap = wrap(swap, ['canChangeTopic', 'topicNumber', 'topicNumber'])
 
+    @internationalizeDocstring
     def default(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -561,10 +585,11 @@ class Topic(callbacks.Plugin):
         if topic:
             self._sendTopics(irc, channel, [topic])
         else:
-            irc.error(format('There is no default topic configured for %s.',
+            irc.error(format(_('There is no default topic configured for %s.'),
                              channel))
     default = wrap(default, ['canChangeTopic'])
 
+    @internationalizeDocstring
     def separator(self, irc, msg, args, channel, separator):
         """[<channel>] <separator>
 

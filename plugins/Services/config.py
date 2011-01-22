@@ -31,11 +31,13 @@
 import supybot.conf as conf
 import supybot.ircutils as ircutils
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Services')
 
 def registerNick(nick, password=''):
     p = conf.supybot.plugins.Services.Nickserv.get('password')
-    h = 'Determines what password the bot will use with NickServ when ' \
-        'identifying as %s.' % nick
+    h = _('Determines what password the bot will use with NickServ when ' \
+        'identifying as %s.') % nick
     v = conf.registerGlobalValue(p, nick,
                                  registry.String(password, h, private=True))
     if password:
@@ -44,10 +46,10 @@ def registerNick(nick, password=''):
 def configure(advanced):
     from supybot.questions import expect, anything, something, yn, getpass
     conf.registerPlugin('Services', True)
-    nick = something('What is your registered nick?')
-    password = something('What is your password for that nick?')
-    chanserv = something('What is your ChanServ named?', default='ChanServ')
-    nickserv = something('What is your NickServ named?', default='NickServ')
+    nick = something(_('What is your registered nick?'))
+    password = something(_('What is your password for that nick?'))
+    chanserv = something(_('What is your ChanServ named?'), default='ChanServ')
+    nickserv = something(_('What is your NickServ named?'), default='NickServ')
     conf.supybot.plugins.Services.nicks.setValue([nick])
     conf.supybot.plugins.Services.NickServ.setValue(nickserv)
     registerNick(nick, password)
@@ -65,42 +67,42 @@ class ValidNickSet(conf.ValidNicks):
 
 Services = conf.registerPlugin('Services')
 conf.registerGlobalValue(Services, 'nicks',
-    ValidNickSet([], """Determines what nicks the bot will use with
-    services."""))
+    ValidNickSet([], _("""Determines what nicks the bot will use with
+    services.""")))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
     List = ircutils.IrcSet
 
 conf.registerGlobalValue(Services, 'disabledNetworks',
-    Networks(['QuakeNet'], """Determines what networks this plugin will be
-    disabled on."""))
+    Networks(_('QuakeNet').split(), _("""Determines what networks this plugin
+    will be disabled on.""")))
 
 conf.registerGlobalValue(Services, 'noJoinsUntilIdentified',
-    registry.Boolean(False, """Determines whether the bot will not join any
+    registry.Boolean(False, _("""Determines whether the bot will not join any
     channels until it is identified.  This may be useful, for instances, if
     you have a vhost that isn't set until you're identified, or if you're
-    joining +r channels that won't allow you to join unless you identify."""))
+    joining +r channels that won't allow you to join unless you identify.""")))
 conf.registerGlobalValue(Services, 'ghostDelay',
-    registry.PositiveInteger(60, """Determines how many seconds the bot will
-    wait between successive GHOST attempts."""))
+    registry.PositiveInteger(60, _("""Determines how many seconds the bot will
+    wait between successive GHOST attempts.""")))
 conf.registerGlobalValue(Services, 'NickServ',
-    ValidNickOrEmptyString('', """Determines what nick the 'NickServ' service
-    has."""))
+    ValidNickOrEmptyString('', _("""Determines what nick the 'NickServ' service
+    has.""")))
 conf.registerGroup(Services.NickServ, 'password')
 conf.registerGlobalValue(Services, 'ChanServ',
-    ValidNickOrEmptyString('', """Determines what nick the 'ChanServ' service
-    has."""))
+    ValidNickOrEmptyString('', _("""Determines what nick the 'ChanServ' service
+    has.""")))
 conf.registerChannelValue(Services.ChanServ, 'password',
-    registry.String('', """Determines what password the bot will use with
-    ChanServ.""", private=True))
+    registry.String('', _("""Determines what password the bot will use with
+    ChanServ."""), private=True))
 conf.registerChannelValue(Services.ChanServ, 'op',
-    registry.Boolean(False, """Determines whether the bot will request to get
-    opped by the ChanServ when it joins the channel."""))
+    registry.Boolean(False, _("""Determines whether the bot will request to get
+    opped by the ChanServ when it joins the channel.""")))
 conf.registerChannelValue(Services.ChanServ, 'halfop',
-    registry.Boolean(False, """Determines whether the bot will request to get
-    half-opped by the ChanServ when it joins the channel."""))
+    registry.Boolean(False, _("""Determines whether the bot will request to get
+    half-opped by the ChanServ when it joins the channel.""")))
 conf.registerChannelValue(Services.ChanServ, 'voice',
-    registry.Boolean(False, """Determines whether the bot will request to get
-    voiced by the ChanServ when it joins the channel."""))
+    registry.Boolean(False, _("""Determines whether the bot will request to get
+    voiced by the ChanServ when it joins the channel.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

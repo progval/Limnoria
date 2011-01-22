@@ -36,6 +36,8 @@ import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('URL')
 
 class UrlRecord(dbi.Record):
     __fields__ = [
@@ -82,6 +84,7 @@ class URL(callbacks.Plugin):
                 self.log.debug('Adding %u to db.', url)
                 self.db.add(channel, url, msg)
 
+    @internationalizeDocstring
     def stats(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -90,9 +93,10 @@ class URL(callbacks.Plugin):
         """
         self.db.vacuum(channel)
         count = self.db.size(channel)
-        irc.reply(format('I have %n in my database.', (count, 'URL')))
+        irc.reply(format(_('I have %n in my database.'), (count, 'URL')))
     stats = wrap(stats, ['channeldb'])
 
+    @internationalizeDocstring
     def last(self, irc, msg, args, channel, optlist):
         """[<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]
 
@@ -136,7 +140,7 @@ class URL(callbacks.Plugin):
             return True
         urls = [record.url for record in self.db.urls(channel, predicate)]
         if not urls:
-            irc.reply('No URLs matched that criteria.')
+            irc.reply(_('No URLs matched that criteria.'))
         else:
             if nolimit:
                 urls = [format('%u', url) for url in urls]

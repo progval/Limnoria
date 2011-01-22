@@ -37,6 +37,8 @@ from getpass import getpass as getPass
 
 import supybot.ansi as ansi
 import supybot.utils as utils
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization()
 
 useBold = False
 
@@ -55,7 +57,7 @@ def expect(prompt, possibilities, recursed=False, default=None,
     prompt = utils.str.normalizeWhitespace(prompt)
     originalPrompt = prompt
     if recursed:
-        output('Sorry, that response was not an option.')
+        output(_('Sorry, that response was not an option.'))
     if useBold:
         choices = '[%s%%s%s]' % (ansi.RESET, ansi.BOLD)
     else:
@@ -101,7 +103,7 @@ def something(prompt, default=None):
     """Allow anything *except* nothing from the user."""
     s = expect(prompt, [], default=default)
     while not s:
-        output('Sorry, you must enter a value.')
+        output(_('Sorry, you must enter a value.'))
         s = expect(prompt, [], default=default)
     return s
 
@@ -118,8 +120,12 @@ def yn(prompt, default=None):
     else:
         return False
 
-def getpass(prompt='Enter password: ', secondPrompt='Re-enter password: '):
+def getpass(prompt=None, secondPrompt=None):
     """Prompt the user for a password."""
+    if prompt is None:
+        prompt = _('Enter password: ')
+    if secondPrompt is None:
+        secondPrompt = _('Re-enter password: ')
     password = ''
     secondPassword = ' ' # Note that this should be different than password.
     assert prompt
@@ -132,7 +138,7 @@ def getpass(prompt='Enter password: ', secondPrompt='Re-enter password: '):
         password = getPass(prompt)
         secondPassword = getPass(secondPrompt)
         if password != secondPassword:
-            output('Passwords don\'t match.')
+            output(_('Passwords don\'t match.'))
         else:
             break
     return password

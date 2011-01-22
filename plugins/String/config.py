@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('String')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -42,13 +44,13 @@ def configure(advanced):
 String = conf.registerPlugin('String')
 conf.registerGroup(String, 'levenshtein')
 conf.registerGlobalValue(String.levenshtein, 'max',
-    registry.PositiveInteger(256, """Determines the maximum size of a string
+    registry.PositiveInteger(256, _("""Determines the maximum size of a string
     given to the levenshtein command.  The levenshtein command uses an O(m*n)
     algorithm, which means that with strings of length 256, it can take 1.5
     seconds to finish; with strings of length 384, though, it can take 4
     seconds to finish, and with strings of much larger lengths, it takes more
     and more time.  Using nested commands, strings can get quite large, hence
     this variable, to limit the size of arguments passed to the levenshtein
-    command."""))
+    command.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

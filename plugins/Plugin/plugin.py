@@ -34,6 +34,8 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Plugin')
 
 
 class Plugin(callbacks.Plugin):
@@ -41,6 +43,7 @@ class Plugin(callbacks.Plugin):
     list' to list the loaded plugins; use 'plugin help' to get the description
     of a plugin; use the 'plugin' command itself to determine what plugin a
     command exists in."""
+    @internationalizeDocstring
     def help(self, irc, msg, args, cb):
         """<plugin>
 
@@ -51,9 +54,10 @@ class Plugin(callbacks.Plugin):
         if doc:
             irc.reply(utils.str.normalizeWhitespace(doc))
         else:
-            irc.reply('That plugin is loaded, but has no plugin help.')
+            irc.reply(_('That plugin is loaded, but has no plugin help.'))
     help = wrap(help, ['plugin'])
 
+    @internationalizeDocstring
     def list(self, irc, msg, args):
         """takes no arguments
 
@@ -64,6 +68,7 @@ class Plugin(callbacks.Plugin):
         irc.reply(format('%L', L))
     list = wrap(list)
 
+    @internationalizeDocstring
     def plugin(self, irc, msg, args, command):
         """<command>
 
@@ -80,15 +85,16 @@ class Plugin(callbacks.Plugin):
                 irc.reply(format('%L', L))
             else:
                 if len(L) > 1:
-                    plugin = 'plugins'
+                    plugin = _('plugins')
                 else:
-                    plugin = 'plugin'
-                irc.reply(format('The %q command is available in the %L %s.',
-                                 command, L, plugin))
+                    plugin = _('plugin')
+                irc.reply(format(_('The %q command is available in the %L '
+                                 '%s.'), command, L, plugin))
         else:
-            irc.error(format('There is no command %q.', command))
+            irc.error(format(_('There is no command %q.'), command))
     plugin = wrap(plugin, [many('something')])
 
+    @internationalizeDocstring
     def author(self, irc, msg, args, cb):
         """<plugin>
 
@@ -96,15 +102,16 @@ class Plugin(callbacks.Plugin):
         if you have ideas, suggestions, or other comments about a given plugin.
         """
         if cb is None:
-            irc.error('That plugin does not seem to be loaded.')
+            irc.error(_('That plugin does not seem to be loaded.'))
             return
         module = cb.classModule
         if hasattr(module, '__author__') and module.__author__:
             irc.reply(str(module.__author__))
         else:
-            irc.reply('That plugin doesn\'t have an author that claims it.')
+            irc.reply(_('That plugin doesn\'t have an author that claims it.'))
     author = wrap(author, [('plugin')])
 
+    @internationalizeDocstring
     def contributors(self, irc, msg, args, cb, nick):
         """<plugin> [<nick>]
 
@@ -141,15 +148,15 @@ class Plugin(callbacks.Plugin):
             Build the list of author + contributors (if any) for the requested
             plugin.
             """
-            head = 'The %s plugin' % cb.name()
-            author = 'has not been claimed by an author'
-            conjunction = 'and'
-            contrib = 'has no contributors listed.'
+            head = _('The %s plugin') % cb.name()
+            author = _('has not been claimed by an author')
+            conjunction = _('and')
+            contrib = _('has no contributors listed.')
             hasAuthor = False
             hasContribs = False
             if hasattr(module, '__author__'):
                 if module.__author__ != supybot.authors.unknown:
-                    author = 'was written by %s' % \
+                    author = _('was written by %s') % \
                         utils.web.mungeEmail(str(module.__author__))
                     hasAuthor = True
             if hasattr(module, '__contributors__'):
@@ -160,14 +167,14 @@ class Plugin(callbacks.Plugin):
                     except ValueError:
                         pass
                 if contribs:
-                    contrib = format('%s %h contributed to it.',
+                    contrib = format(_('%s %h contributed to it.'),
                                      buildContributorsString(contribs),
                                      len(contribs))
                     hasContribs = True
                 elif hasAuthor:
-                    contrib = 'has no additional contributors listed.'
+                    contrib = _('has no additional contributors listed.')
             if hasContribs and not hasAuthor:
-                conjunction = 'but'
+                conjunction = _('but')
             return ' '.join([head, author, conjunction, contrib])
         def buildPersonString(module):
             """
@@ -184,39 +191,39 @@ class Plugin(callbacks.Plugin):
                     break
             authorInfo = authorInfo or getattr(supybot.authors, nick, None)
             if not authorInfo:
-                return 'The nick specified (%s) is not a registered ' \
-                       'contributor.' % nick
+                return _('The nick specified (%s) is not a registered '
+                       'contributor.') % nick
             fullName = utils.web.mungeEmail(str(authorInfo))
             contributions = []
             if hasattr(module, '__contributors__'):
                 if authorInfo not in module.__contributors__:
-                    return 'The %s plugin does not have \'%s\' listed as a ' \
-                           'contributor.' % (cb.name(), nick)
+                    return _('The %s plugin does not have \'%s\' listed as a '
+                           'contributor.') % (cb.name(), nick)
                 contributions = module.__contributors__[authorInfo]
             isAuthor = getattr(module, '__author__', False) == authorInfo
             (nonCommands, commands) = utils.iter.partition(lambda s: ' ' in s,
                                                            contributions)
             results = []
             if commands:
-                s = 'command'
+                s = _('command')
                 if len(commands) > 1:
                     s = utils.str.pluralize(s)
-                results.append(format('the %L %s', commands, s))
+                results.append(format(_('the %L %s'), commands, s))
             if nonCommands:
-                results.append(format('the %L', nonCommands))
+                results.append(format(_('the %L'), nonCommands))
             if results and isAuthor:
                 return format(
-                        '%s wrote the %s plugin and also contributed %L.',
+                        _('%s wrote the %s plugin and also contributed %L.'),
                         (fullName, cb.name(), results))
             elif results and not isAuthor:
-                return format('%s contributed %L to the %s plugin.',
+                return format(_('%s contributed %L to the %s plugin.'),
                               fullName, results, cb.name())
             elif isAuthor and not results:
-                return '%s wrote the %s plugin' % (fullName, cb.name())
+                return _('%s wrote the %s plugin') % (fullName, cb.name())
             # XXX Does this ever actually get reached?
             else:
-                return '%s has no listed contributions for the %s plugin.' % \
-                    (fullName, cb.name())
+                return _('%s has no listed contributions for the %s '
+                         'plugin.') % (fullName, cb.name())
         # First we need to check and see if the requested plugin is loaded
         module = cb.classModule
         if not nick:
@@ -225,6 +232,7 @@ class Plugin(callbacks.Plugin):
             nick = ircutils.toLower(nick)
             irc.reply(buildPersonString(module))
     contributors = wrap(contributors, ['plugin', additional('nick')])
+Plugin = internationalizeDocstring(Plugin)
 
 Class = Plugin
 

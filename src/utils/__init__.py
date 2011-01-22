@@ -54,14 +54,14 @@ def force(x):
         return x()
     else:
         return x
-__builtins__['force'] = force
+(__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['force'] = force
 
 if sys.version_info < (2, 4, 0):
     def reversed(L):
         """Iterates through a sequence in reverse."""
         for i in xrange(len(L) - 1, -1, -1):
             yield L[i]
-    __builtins__['reversed'] = reversed
+    (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['reversed'] = reversed
 
     def sorted(iterable, cmp=None, key=None, reversed=False):
         L = list(iterable)
@@ -74,7 +74,7 @@ if sys.version_info < (2, 4, 0):
             L.reverse()
         return L
 
-    __builtins__['sorted'] = sorted
+    (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['sorted'] = sorted
 
     import operator
     def itemgetter(i):
@@ -86,8 +86,8 @@ if sys.version_info < (2, 4, 0):
     operator.attrgetter = attrgetter
 
     import sets
-    __builtins__['set'] = sets.Set
-    __builtins__['frozenset'] = sets.ImmutableSet
+    (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['set'] = sets.Set
+    (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['frozenset'] = sets.ImmutableSet
 
     import socket
     # Some socket modules don't have sslerror, so we'll just make it an error.

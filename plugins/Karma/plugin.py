@@ -38,6 +38,8 @@ import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Karma')
 
 class SqliteKarmaDB(object):
     def __init__(self, filename):
@@ -238,7 +240,7 @@ class Karma(callbacks.Plugin):
             thing = thing[:-2]
             if ircutils.strEqual(thing, irc.msg.nick) and \
                not self.registryValue('allowSelfRating', channel):
-                irc.error('You\'re not allowed to adjust your own karma.')
+                irc.error(_('You\'re not allowed to adjust your own karma.'))
             elif thing:
                 self.db.increment(channel, self._normalizeThing(thing))
                 self._respond(irc, channel)
@@ -246,7 +248,7 @@ class Karma(callbacks.Plugin):
             thing = thing[:-2]
             if ircutils.strEqual(thing, irc.msg.nick) and \
                not self.registryValue('allowSelfRating', channel):
-                irc.error('You\'re not allowed to adjust your own karma.')
+                irc.error(_('You\'re not allowed to adjust your own karma.'))
             elif thing:
                 self.db.decrement(channel, self._normalizeThing(thing))
                 self._respond(irc, channel)
@@ -273,6 +275,7 @@ class Karma(callbacks.Plugin):
                 if thing[-2:] in ('++', '--'):
                     self._doKarma(irc, channel, thing)
 
+    @internationalizeDocstring
     def karma(self, irc, msg, args, channel, things):
         """[<channel>] [<thing> ...]
 
@@ -287,16 +290,17 @@ class Karma(callbacks.Plugin):
             name = things[0]
             t = self.db.get(channel, name)
             if t is None:
-                irc.reply(format('%s has neutral karma.', name))
+                irc.reply(format(_('%s has neutral karma.'), name))
             else:
                 (added, subtracted) = t
                 total = added - subtracted
                 if self.registryValue('simpleOutput', channel):
                     s = format('%s: %i', name, total)
                 else:
-                    s = format('Karma for %q has been increased %n and '
-                               'decreased %n for a total karma of %s.',
-                               name, (added, 'time'), (subtracted, 'time'),
+                    s = format(_('Karma for %q has been increased %n and '
+                               'decreased %n for a total karma of %s.'),
+                               name, (added, _('time')),
+                               (subtracted, _('time')),
                                total)
                 irc.reply(s)
         elif len(things) > 1:
@@ -309,7 +313,8 @@ class Karma(callbacks.Plugin):
                     s += neutral
                 irc.reply(s + '.')
             else:
-                irc.reply('I didn\'t know the karma for any of those things.')
+                irc.reply(_('I didn\'t know the karma for any of those '
+                            'things.'))
         else: # No name was given.  Return the top/bottom N karmas.
             limit = self.registryValue('rankingDisplay', channel)
             top = self.db.top(channel, limit)
@@ -318,21 +323,22 @@ class Karma(callbacks.Plugin):
             lowest = [format('%q (%s)', s, t)
                       for (s, t) in self.db.bottom(channel, limit)]
             if not (highest and lowest):
-                irc.error('I have no karma for this channel.')
+                irc.error(_('I have no karma for this channel.'))
                 return
             rank = self.db.rank(channel, msg.nick)
             if rank is not None:
                 total = self.db.size(channel)
-                rankS = format('  You (%s) are ranked %i out of %i.',
+                rankS = format(_('  You (%s) are ranked %i out of %i.'),
                                msg.nick, rank, total)
             else:
                 rankS = ''
-            s = format('Highest karma: %L.  Lowest karma: %L.%s',
+            s = format(_('Highest karma: %L.  Lowest karma: %L.%s'),
                        highest, lowest, rankS)
             irc.reply(s)
     karma = wrap(karma, ['channel', any('something')])
 
     _mostAbbrev = utils.abbrev(['increased', 'decreased', 'active'])
+    @internationalizeDocstring
     def most(self, irc, msg, args, channel, kind):
         """[<channel>] {increased,decreased,active}
 
@@ -346,10 +352,11 @@ class Karma(callbacks.Plugin):
             L = [format('%q: %i', name, i) for (name, i) in L]
             irc.reply(format('%L', L))
         else:
-            irc.error('I have no karma for this channel.')
+            irc.error(_('I have no karma for this channel.'))
     most = wrap(most, ['channel',
                        ('literal', ['increased', 'decreased', 'active'])])
 
+    @internationalizeDocstring
     def clear(self, irc, msg, args, channel, name):
         """[<channel>] <name>
 
@@ -359,6 +366,7 @@ class Karma(callbacks.Plugin):
         irc.replySuccess()
     clear = wrap(clear, [('checkChannelCapability', 'op'), 'text'])
 
+    @internationalizeDocstring
     def dump(self, irc, msg, args, channel, filename):
         """[<channel>] <filename>
 
@@ -370,6 +378,7 @@ class Karma(callbacks.Plugin):
         irc.replySuccess()
     dump = wrap(dump, [('checkCapability', 'owner'), 'channeldb', 'filename'])
 
+    @internationalizeDocstring
     def load(self, irc, msg, args, channel, filename):
         """[<channel>] <filename>
 

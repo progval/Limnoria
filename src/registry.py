@@ -35,6 +35,7 @@ import string
 import textwrap
 
 import supybot.utils as utils
+import supybot.i18n as i18n
 
 def error(s):
    """Replace me with something better from another module!"""
@@ -211,7 +212,7 @@ class Group(object):
             self.__nonExistentEntry(attr)
 
     def help(self):
-        return self._help
+        return i18n.PluginInternationalization().__call__(self._help)
 
     def get(self, attr):
         # Not getattr(self, attr) because some nodes might have groups that
@@ -253,6 +254,9 @@ class Group(object):
             fullname = join(names)
             node.setName(fullname)
         else:
+            # We do this in order to reload the help, if it changed.
+            if node._help != '' and node._help != self._children[name]._help:
+                self._children[name]._help = node._help
             # We do this so the return value from here is at least useful;
             # otherwise, we're just returning a useless, unattached node
             # that's simply a waste of space.

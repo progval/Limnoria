@@ -1,0 +1,31 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2010-10-17 18:28+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Français\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: ASCII\n"
+
+#: plugin.py:84
+msgid ""
+"[<nick>]\n"
+"\n"
+"        Tells you how lame said nick is.  If <nick> is not given, uses the\n"
+"        nick of the person giving the command.\n"
+"        "
+msgstr ""
+"[<nick>]\n"
+"\n"
+"Mesure la décrédibilité du nick. Si le nick n'est pas donné, utilise le nick de la personne donnant la commande."
+
+#: plugin.py:226
+msgid "The \"lame nick-o-meter\" reading for \"%s\" is %s%%."
+msgstr "Le \"décrédibilit-o-mètre\" pour \"%s\" donne %s%%."
+

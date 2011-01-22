@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Reply')
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -42,7 +44,7 @@ def configure(advanced):
 Reply = conf.registerPlugin('Reply')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Reply, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

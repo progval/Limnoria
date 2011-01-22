@@ -33,6 +33,8 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Anonymous')
 
 class Anonymous(callbacks.Plugin):
     """This plugin allows users to act through the bot anonymously.  The 'do'
@@ -73,6 +75,7 @@ class Anonymous(callbacks.Plugin):
                              action),
                       Raise=True)
 
+    @internationalizeDocstring
     def say(self, irc, msg, args, target, text):
         """<channel|nick> <text>
 
@@ -86,6 +89,7 @@ class Anonymous(callbacks.Plugin):
         irc.noReply()
     say = wrap(say, [first('nick', 'inChannel'), 'text'])
 
+    @internationalizeDocstring
     def do(self, irc, msg, args, channel, text):
         """<channel> <action>
 
@@ -97,6 +101,7 @@ class Anonymous(callbacks.Plugin):
         irc.queueMsg(ircmsgs.action(channel, text))
         irc.noReply()
     do = wrap(do, ['inChannel', 'text'])
+Anonymous = internationalizeDocstring(Anonymous)
 
 Class = Anonymous
 

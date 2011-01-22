@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2010-10-17 10:48+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Français\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: ASCII\n"
+
+#: config.py:46
+msgid ""
+"Determines whether the bot will prefix the nick\n"
+"    of the user giving an invalid command to the \"dunno\" response."
+msgstr "Détermine si le bot utilisera comme préfixe le nick de l'utilisateur donnant la commande invalide dans la réponse \"dunno\"."
+
+#: plugin.py:38
+msgid ""
+"This plugin was written initially to work with MoobotFactoids, the two\n"
+"    of them to provide a similar-to-moobot-and-blootbot interface for factoids.\n"
+"    Basically, it replaces the standard 'Error: <x> is not a valid command.'\n"
+"    messages with messages kept in a database, able to give more personable\n"
+"    responses."
+msgstr "Ce plugin était à l'origine écrit pour fonctionner avec MoobotFactoids, pour fournir une interface similaire aux factoids de moobot et blootbot. Remplace simplement les message 'Error: <x> is not a valid commande' par des messages configurés dans la base de données, ce qui vous permet de rendre les réponses plus personnalisables."
+

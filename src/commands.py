@@ -46,6 +46,8 @@ import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization()
 
 
 ###
@@ -166,7 +168,7 @@ def _int(s):
         else:
             raise
 
-def getInt(irc, msg, args, state, type='integer', p=None):
+def getInt(irc, msg, args, state, type=_('integer'), p=None):
     try:
         i = _int(args[0])
         if p is not None:
@@ -177,7 +179,7 @@ def getInt(irc, msg, args, state, type='integer', p=None):
     except ValueError:
         state.errorInvalid(type, args[0])
 
-def getNonInt(irc, msg, args, state, type='non-integer value'):
+def getNonInt(irc, msg, args, state, type=_('non-integer value')):
     try:
         i = _int(args[0])
         state.errorInvalid(type, args[0])
@@ -188,7 +190,7 @@ def getLong(irc, msg, args, state, type='long'):
     getInt(irc, msg, args, state, type)
     state.args[-1] = long(state.args[-1])
 
-def getFloat(irc, msg, args, state, type='floating point number'):
+def getFloat(irc, msg, args, state, type=_('floating point number')):
     try:
         state.args.append(float(args[0]))
         del args[0]
@@ -197,14 +199,14 @@ def getFloat(irc, msg, args, state, type='floating point number'):
 
 def getPositiveInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
-           p=lambda i: i>0, type='positive integer', *L)
+           p=lambda i: i>0, type=_('positive integer'), *L)
 
 def getNonNegativeInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
-            p=lambda i: i>=0, type='non-negative integer', *L)
+            p=lambda i: i>=0, type=_('non-negative integer'), *L)
 
 def getIndex(irc, msg, args, state):
-    getInt(irc, msg, args, state, type='index')
+    getInt(irc, msg, args, state, type=_('index'))
     if state.args[-1] > 0:
         state.args[-1] -= 1
 
@@ -229,14 +231,14 @@ def getExpiry(irc, msg, args, state):
         state.args.append(expires)
         del args[0]
     except ValueError:
-        state.errorInvalid('number of seconds', args[0])
+        state.errorInvalid(_('number of seconds'), args[0])
 
 def getBoolean(irc, msg, args, state):
     try:
         state.args.append(utils.str.toBool(args[0]))
         del args[0]
     except ValueError:
-        state.errorInvalid('boolean', args[0])
+        state.errorInvalid(_('boolean'), args[0])
 
 def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
     if args:
@@ -250,13 +252,13 @@ def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
     else:
         state.args.append(irc)
 
-def getHaveOp(irc, msg, args, state, action='do that'):
+def getHaveOp(irc, msg, args, state, action=_('do that')):
     if not state.channel:
         getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
-        state.error('I\'m not even in %s.' % state.channel, Raise=True)
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isOp(irc.nick):
-        state.error('I need to be opped to %s.' % action, Raise=True)
+        state.error(_('I need to be opped to %s.') % action, Raise=True)
 
 def validChannel(irc, msg, args, state):
     if irc.isChannel(args[0]):
@@ -273,7 +275,7 @@ def getHostmask(irc, msg, args, state):
             state.args.append(hostmask)
             del args[0]
         except KeyError:
-            state.errorInvalid('nick or hostmask', args[0])
+            state.errorInvalid(_('nick or hostmask'), args[0])
 
 def getBanmask(irc, msg, args, state):
     getHostmask(irc, msg, args, state)
@@ -325,10 +327,10 @@ def _getRe(f):
                 else:
                     state.args.append(s)
             else:
-                state.errorInvalid('regular expression', s)
+                state.errorInvalid(_('regular expression'), s)
         except IndexError:
             args[:] = original
-            state.errorInvalid('regular expression', s)
+            state.errorInvalid(_('regular expression'), s)
     return get
 
 getMatcher = _getRe(utils.str.perlReToPythonRe)
@@ -339,7 +341,7 @@ def getNick(irc, msg, args, state):
         if 'nicklen' in irc.state.supported:
             if len(args[0]) > irc.state.supported['nicklen']:
                 state.errorInvalid('nick', args[0],
-                                 'That nick is too long for this server.')
+                                 _('That nick is too long for this server.'))
         state.args.append(args.pop(0))
     else:
         state.errorInvalid('nick', args[0])
@@ -388,12 +390,12 @@ def inChannel(irc, msg, args, state):
     if not state.channel:
         getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
-        state.error('I\'m not in %s.' % state.channel, Raise=True)
+        state.error(_('I\'m not in %s.') % state.channel, Raise=True)
 
 def onlyInChannel(irc, msg, args, state):
     if not (irc.isChannel(msg.args[0]) and msg.args[0] in irc.state.channels):
-        state.error('This command may only be given in a channel that I am in.',
-                    Raise=True)
+        state.error(_('This command may only be given in a channel that I am '
+                    'in.'), Raise=True)
     else:
         state.channel = msg.args[0]
         state.args.append(state.channel)
@@ -405,18 +407,18 @@ def callerInGivenChannel(irc, msg, args, state):
             if msg.nick in irc.state.channels[channel].users:
                 state.args.append(args.pop(0))
             else:
-                state.error('You must be in %s.' % channel, Raise=True)
+                state.error(_('You must be in %s.') % channel, Raise=True)
         else:
-            state.error('I\'m not in %s.' % channel, Raise=True)
+            state.error(_('I\'m not in %s.') % channel, Raise=True)
     else:
-        state.errorInvalid('channel', args[0])
+        state.errorInvalid(_('channel'), args[0])
 
 def nickInChannel(irc, msg, args, state):
     originalArgs = state.args[:]
     inChannel(irc, msg, args, state)
     state.args = originalArgs
     if args[0] not in irc.state.channels[state.channel].users:
-        state.error('%s is not in %s.' % (args[0], state.channel), Raise=True)
+        state.error(_('%s is not in %s.') % (args[0], state.channel), Raise=True)
     state.args.append(args.pop(0))
 
 def getChannelOrNone(irc, msg, args, state):
@@ -450,7 +452,7 @@ def getSomething(irc, msg, args, state, errorMsg=None, p=None):
         p = lambda _: True
     if not args[0] or not p(args[0]):
         if errorMsg is None:
-            errorMsg = 'You must not give the empty string as an argument.'
+            errorMsg = _('You must not give the empty string as an argument.')
         state.error(errorMsg, Raise=True)
     else:
         state.args.append(args.pop(0))
@@ -467,7 +469,7 @@ def private(irc, msg, args, state):
 def public(irc, msg, args, state, errmsg=None):
     if not irc.isChannel(msg.args[0]):
         if errmsg is None:
-            errmsg = 'This message must be sent in a channel.'
+            errmsg = _('This message must be sent in a channel.')
         state.error(errmsg, Raise=True)
 
 def checkCapability(irc, msg, args, state, cap):
@@ -508,14 +510,14 @@ def getHttpUrl(irc, msg, args, state):
     elif utils.web.httpUrlRe.match('http://' + args[0]):
         state.args.append('http://' + args.pop(0))
     else:
-        state.errorInvalid('http url', args[0])
+        state.errorInvalid(_('http url'), args[0])
 
 def getNow(irc, msg, args, state):
     state.args.append(int(time.time()))
 
 def getCommandName(irc, msg, args, state):
     if ' ' in args[0]:
-        state.errorInvalid('command name', args[0])
+        state.errorInvalid(_('command name'), args[0])
     else:
         state.args.append(callbacks.canonicalName(args.pop(0)))
 
@@ -523,13 +525,13 @@ def getIp(irc, msg, args, state):
     if utils.net.isIP(args[0]):
         state.args.append(args.pop(0))
     else:
-        state.errorInvalid('ip', args[0])
+        state.errorInvalid(_('ip'), args[0])
 
 def getLetter(irc, msg, args, state):
     if len(args[0]) == 1:
         state.args.append(args.pop(0))
     else:
-        state.errorInvalid('letter', args[0])
+        state.errorInvalid(_('letter'), args[0])
 
 def getMatch(irc, msg, args, state, regexp, errmsg):
     m = regexp.search(args[0])
@@ -561,7 +563,7 @@ def getPlugin(irc, msg, args, state, require=True):
         state.args.append(cb)
         del args[0]
     elif require:
-        state.errorInvalid('plugin', args[0])
+        state.errorInvalid(_('plugin'), args[0])
     else:
         state.args.append(None)
 
@@ -569,7 +571,7 @@ def getIrcColor(irc, msg, args, state):
     if args[0] in ircutils.mircColors:
         state.args.append(ircutils.mircColors[args.pop(0)])
     else:
-        state.errorInvalid('irc color')
+        state.errorInvalid(_('irc color'))
 
 def getText(irc, msg, args, state):
     if args:

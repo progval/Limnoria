@@ -32,6 +32,8 @@ import re
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Praise')
 
 class Praise(plugins.ChannelIdDatabasePlugin):
     """Praise is a plugin for ... well, praising things.  Feel free to add
@@ -48,8 +50,9 @@ class Praise(plugins.ChannelIdDatabasePlugin):
 
     def addValidator(self, irc, text):
         if '$who' not in text:
-            irc.error('Praises must contain $who.', Raise=True)
+            irc.error(_('Praises must contain $who.'), Raise=True)
 
+    @internationalizeDocstring
     def praise(self, irc, msg, args, channel, id, text):
         """[<channel>] [<id>] <who|what> [for <reason>]
 
@@ -67,24 +70,25 @@ class Praise(plugins.ChannelIdDatabasePlugin):
             try:
                 praise = self.db.get(channel, id)
             except KeyError:
-                irc.error(format('There is no praise with id #%i.', id))
+                irc.error(format(_('There is no praise with id #%i.'), id))
                 return
         else:
             praise = self.db.random(channel)
             if not praise:
-                irc.error(format('There are no praises in my database ' \
-                                 'for %s.', channel))
+                irc.error(format(_('There are no praises in my database ' \
+                                 'for %s.'), channel))
                 return
         text = self._replaceFirstPerson(praise.text, msg.nick)
         reason = self._replaceFirstPerson(reason, msg.nick)
         target = self._replaceFirstPerson(target, msg.nick)
         text = text.replace('$who', target)
         if reason:
-            text += ' for ' + reason
+            text += _(' for ') + reason
         if self.registryValue('showIds', channel):
             text += format(' (#%i)', praise.id)
         irc.reply(text, action=True)
     praise = wrap(praise, ['channeldb', optional('id'), 'text'])
+Praise = internationalizeDocstring(Praise)
 
 Class = Praise
 

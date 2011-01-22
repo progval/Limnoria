@@ -30,14 +30,16 @@
 import supybot.conf as conf
 import supybot.ircutils as ircutils
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Relay')
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Relay', True)
-    if yn('Would you like to relay between any channels?'):
-        channels = anything('What channels?  Separated them by spaces.')
+    if yn(_('Would you like to relay between any channels?')):
+        channels = anything(_('What channels?  Separated them by spaces.'))
         conf.supybot.plugins.Relay.channels.set(channels)
-    if yn('Would you like to use color to distinguish between nicks?'):
+    if yn(_('Would you like to use color to distinguish between nicks?')):
         conf.supybot.plugins.Relay.color.setValue(True)
     output("""Right now there's no way to configure the actual connection to
     the server.  What you'll need to do when the bot finishes starting up is
@@ -54,36 +56,36 @@ class Networks(registry.SpaceSeparatedListOf):
 
 Relay = conf.registerPlugin('Relay')
 conf.registerChannelValue(Relay, 'color',
-    registry.Boolean(False, """Determines whether the bot will color relayed
-    PRIVMSGs so as to make the messages easier to read."""))
+    registry.Boolean(False, _("""Determines whether the bot will color relayed
+    PRIVMSGs so as to make the messages easier to read.""")))
 conf.registerChannelValue(Relay, 'topicSync',
-    registry.Boolean(True, """Determines whether the bot will synchronize
-    topics between networks in the channels it relays."""))
+    registry.Boolean(True, _("""Determines whether the bot will synchronize
+    topics between networks in the channels it relays.""")))
 conf.registerChannelValue(Relay, 'hostmasks',
-    registry.Boolean(False, """Determines whether the bot will relay the
+    registry.Boolean(False, _("""Determines whether the bot will relay the
     hostmask of the person joining or parting the channel when he or she joins
-    or parts."""))
+    or parts.""")))
 conf.registerChannelValue(Relay, 'includeNetwork',
-    registry.Boolean(True, """Determines whether the bot will include the
+    registry.Boolean(True, _("""Determines whether the bot will include the
     network in relayed PRIVMSGs; if you're only relaying between two networks,
-    it's somewhat redundant, and you may wish to save the space."""))
+    it's somewhat redundant, and you may wish to save the space.""")))
 conf.registerChannelValue(Relay, 'punishOtherRelayBots',
-    registry.Boolean(False, """Determines whether the bot will detect other
-    bots relaying and respond by kickbanning them."""))
+    registry.Boolean(False, _("""Determines whether the bot will detect other
+    bots relaying and respond by kickbanning them.""")))
 conf.registerGlobalValue(Relay, 'channels',
-    conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
-    will relay in."""))
+    conf.SpaceSeparatedSetOfChannels([], _("""Determines which channels the bot
+    will relay in.""")))
 conf.registerChannelValue(Relay.channels, 'joinOnAllNetworks',
-    registry.Boolean(True, """Determines whether the bot
+    registry.Boolean(True, _("""Determines whether the bot
     will always join the channel(s) it relays for on all networks the bot is
-    connected to."""))
+    connected to.""")))
 conf.registerChannelValue(Relay, 'ignores',
-    Ignores([], """Determines what hostmasks will not be relayed on a
-    channel."""))
+    Ignores([], _("""Determines what hostmasks will not be relayed on a
+    channel.""")))
 conf.registerChannelValue(Relay, 'noticeNonPrivmsgs',
-    registry.Boolean(False, """Determines whether the bot will used NOTICEs
+    registry.Boolean(False, _("""Determines whether the bot will used NOTICEs
     rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts,
-    nicks, quits, modes, etc.)"""))
+    nicks, quits, modes, etc.)""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

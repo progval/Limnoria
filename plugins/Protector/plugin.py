@@ -32,6 +32,8 @@ import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Protector')
 
 class Protector(callbacks.Plugin):
     def isImmune(self, irc, msg):

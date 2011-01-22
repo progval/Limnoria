@@ -29,6 +29,8 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Later')
 
 def configure(advanced):
     # This will be called by setup.py to configure this module.  Advanced is
@@ -40,10 +42,11 @@ def configure(advanced):
 
 Later = conf.registerPlugin('Later')
 conf.registerGlobalValue(Later, 'maximum',
-    registry.NonNegativeInteger(0, """Determines the maximum number of messages
-    to be queued for a user.  If this value is 0, there is no maximum."""))
+    registry.NonNegativeInteger(0, _("""Determines the maximum number of
+    messages to be queued for a user.  If this value is 0, there is no maximum.
+    """)))
 conf.registerGlobalValue(Later, 'private',
-    registry.Boolean(True, """Determines whether users will be notified in the
-    first place in which they're seen, or in private."""))
+    registry.Boolean(True, _("""Determines whether users will be notified in
+    the first place in which they're seen, or in private.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

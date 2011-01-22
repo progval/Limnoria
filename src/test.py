@@ -37,6 +37,7 @@ import unittest
 import threading
 
 import supybot.log as log
+import supybot.i18n as i18n
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
@@ -370,6 +371,7 @@ class PluginTestCase(SupyTestCase):
                        attr == callbacks.canonicalName(attr):
                         self.failUnless(getattr(cb, attr, None).__doc__,
                                         '%s.%s has no help.' % (name, attr))
+        
 
 
 class ChannelPluginTestCase(PluginTestCase):

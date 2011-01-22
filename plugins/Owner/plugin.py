@@ -42,6 +42,7 @@ else:
 
 import supybot.log as log
 import supybot.conf as conf
+import supybot.i18n as i18n
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
@@ -54,6 +55,8 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Owner')
 
 ###
 # supybot.commands.
@@ -597,6 +600,12 @@ class Owner(callbacks.Plugin):
         self.reload(irc, msg, [plugin.name()]) # This makes the replySuccess.
     unrename = wrap(unrename, ['plugin'])
 
+    def reloadlocale(self, irc, msg, args):
+        """takes no argument
+
+        Reloads the locale of the bot."""
+        i18n.reloadLocales()
+        irc.replySuccess()
 
 Class = Owner
 

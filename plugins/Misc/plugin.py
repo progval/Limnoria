@@ -42,8 +42,9 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-
 from supybot.utils.iter import ifilter
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Misc')
 
 class Misc(callbacks.Plugin):
     def __init__(self, irc):
@@ -76,8 +77,8 @@ class Misc(callbacks.Plugin):
                                  'permanently.')
             ircdb.ignores.add(banmask, time.time() + punishment)
             if conf.supybot.abuse.flood.command.invalid.notify():
-                irc.reply('You\'ve given me %s invalid commands within the last '
-                          'minute; I\'m now ignoring you for %s.' %
+                irc.reply(_('You\'ve given me %s invalid commands within the last '
+                          'minute; I\'m now ignoring you for %s.') %
                           (maximum,
                            utils.timeElapsed(punishment, seconds=False)))
             return
@@ -88,10 +89,10 @@ class Misc(callbacks.Plugin):
                 cb = irc.getCallback(tokens[0])
                 if cb:
                     plugin = cb.name()
-                    irc.error(format('The %q plugin is loaded, but there is '
+                    irc.error(format(_('The %q plugin is loaded, but there is '
                                      'no command named %q in it.  Try "list '
                                      '%s" to see the commands in the %q '
-                                     'plugin.', plugin, tokens[1],
+                                     'plugin.'), plugin, tokens[1],
                                      plugin, plugin))
                 else:
                     irc.errorInvalid('command', tokens[0], repr=False)
@@ -112,6 +113,7 @@ class Misc(callbacks.Plugin):
                 else:
                     pass # Let's just do nothing, I can't think of better.
 
+    @internationalizeDocstring
     def list(self, irc, msg, args, optlist, cb):
         """[--private] [<plugin>]
 
@@ -138,24 +140,25 @@ class Misc(callbacks.Plugin):
                 irc.reply(format('%L', names))
             else:
                 if private:
-                    irc.reply('There are no private plugins.')
+                    irc.reply(_('There are no private plugins.'))
                 else:
-                    irc.reply('There are no public plugins.')
+                    irc.reply(_('There are no public plugins.'))
         else:
             commands = cb.listCommands()
             if commands:
                 commands.sort()
                 irc.reply(format('%L', commands))
             else:
-                irc.reply(format('That plugin exists, but has no commands.  '
+                irc.reply(format(_('That plugin exists, but has no commands.  '
                                  'This probably means that it has some '
                                  'configuration variables that can be '
                                  'changed in order to modify its behavior.  '
                                  'Try "config list supybot.plugins.%s" to see '
-                                 'what configuration variables it has.',
+                                 'what configuration variables it has.'),
                                  cb.name()))
     list = wrap(list, [getopts({'private':''}), additional('plugin')])
 
+    @internationalizeDocstring
     def apropos(self, irc, msg, args, s):
         """<string>
 
@@ -176,9 +179,10 @@ class Misc(callbacks.Plugin):
             L.sort()
             irc.reply(format('%L', L))
         else:
-            irc.reply('No appropriate commands were found.')
+            irc.reply(_('No appropriate commands were found.'))
     apropos = wrap(apropos, ['lowered'])
 
+    @internationalizeDocstring
     def help(self, irc, msg, args, command):
         """[<plugin>] [<command>]
 
@@ -190,17 +194,18 @@ class Misc(callbacks.Plugin):
         if maxL == command:
             if len(cbs) > 1:
                 names = sorted([cb.name() for cb in cbs])
-                irc.error(format('That command exists in the %L plugins.  '
+                irc.error(format(_('That command exists in the %L plugins.  '
                                  'Please specify exactly which plugin command '
-                                 'you want help with.', names))
+                                 'you want help with.'), names))
             else:
                 assert cbs, 'Odd, maxL == command, but no cbs.'
-                irc.reply(cbs[0].getCommandHelp(command, False))
+                irc.reply(_.__call__(cbs[0].getCommandHelp(command, False)))
         else:
-            irc.error(format('There is no command %q.',
+            irc.error(format(_('There is no command %q.'),
                              callbacks.formatCommand(command)))
     help = wrap(help, [many('something')])
 
+    @internationalizeDocstring
     def version(self, irc, msg, args):
         """takes no arguments
 
@@ -208,24 +213,27 @@ class Misc(callbacks.Plugin):
         """
         try:
             newest = utils.web.getUrl('http://supybot.sf.net/version.txt')
-            newest ='The newest version available online is %s.'%newest.strip()
+            newest = _('The newest version available online is %s.') % \
+                       newest.strip()
         except utils.web.Error, e:
             self.log.info('Couldn\'t get website version: %s', e)
-            newest = 'I couldn\'t fetch the newest version ' \
-                     'from the Supybot website.'
-        s = 'The current (running) version of this Supybot is %s.  %s' % \
+            newest = _('I couldn\'t fetch the newest version '
+                     'from the Supybot website.')
+        s = _('The current (running) version of this Supybot is %s.  %s') % \
             (conf.version, newest)
         irc.reply(s)
     version = wrap(thread(version))
 
+    @internationalizeDocstring
     def source(self, irc, msg, args):
         """takes no arguments
 
         Returns a URL saying where to get Supybot.
         """
-        irc.reply('My source is at http://supybot.com/')
+        irc.reply(_('My source is at http://supybot.com/'))
     source = wrap(source)
 
+    @internationalizeDocstring
     def more(self, irc, msg, args, nick):
         """[<nick>]
 
@@ -241,23 +249,27 @@ class Misc(callbacks.Plugin):
                 if not private:
                     irc._mores[userHostmask] = L[:]
                 else:
-                    irc.error('%s has no public mores.' % nick)
+                    irc.error(_('%s has no public mores.') % nick)
                     return
             except KeyError:
-                irc.error('Sorry, I can\'t find any mores for %s' % nick)
+                irc.error(_('Sorry, I can\'t find any mores for %s') % nick)
                 return
         try:
             L = irc._mores[userHostmask]
             chunk = L.pop()
             if L:
-                chunk += format(' \x02(%n)\x0F', (len(L), 'more', 'message'))
+                if len(L) < 2:
+                    more = _('more message')
+                else:
+                    more = _('more messages')
+                chunk += format(' \x02(%s)\x0F', more)
             irc.reply(chunk, True)
         except KeyError:
-            irc.error('You haven\'t asked me a command; perhaps you want '
+            irc.error(_('You haven\'t asked me a command; perhaps you want '
                       'to see someone else\'s more.  To do so, call this '
-                      'command with that person\'s nick.')
+                      'command with that person\'s nick.'))
         except IndexError:
-            irc.error('That\'s all, there is no more.')
+            irc.error(_('That\'s all, there is no more.'))
     more = wrap(more, [additional('seenNick')])
 
     def _validLastMsg(self, msg):
@@ -265,6 +277,7 @@ class Misc(callbacks.Plugin):
                msg.command == 'PRIVMSG' and \
                ircutils.isChannel(msg.args[0])
 
+    @internationalizeDocstring
     def last(self, irc, msg, args, optlist):
         """[--{from,in,on,with,without,regexp} <value>] [--nolimit]
 
@@ -360,8 +373,8 @@ class Misc(callbacks.Plugin):
                                                   showNick=showNick))
                     return
         if not resp:
-            irc.error('I couldn\'t find a message matching that criteria in '
-                      'my history of %s messages.' % len(irc.state.history))
+            irc.error(_('I couldn\'t find a message matching that criteria in '
+                      'my history of %s messages.') % len(irc.state.history))
         else:
             irc.reply(format('%L', resp))
     last = wrap(last, [getopts({'nolimit': '',
@@ -373,6 +386,7 @@ class Misc(callbacks.Plugin):
                                 'regexp': 'regexpMatcher',})])
 
 
+    @internationalizeDocstring
     def tell(self, irc, msg, args, target, text):
         """<nick> <text>
 
@@ -382,30 +396,32 @@ class Misc(callbacks.Plugin):
         if target.lower() == 'me':
             target = msg.nick
         if ircutils.isChannel(target):
-            irc.error('Dude, just give the command.  No need for the tell.')
+            irc.error(_('Dude, just give the command.  No need for the tell.'))
             return
         if not ircutils.isNick(target):
             irc.errorInvalid('nick', target)
         if ircutils.nickEqual(target, irc.nick):
-            irc.error('You just told me, why should I tell myself?',Raise=True)
+            irc.error(_('You just told me, why should I tell myself?'),
+                      Raise=True)
         if target not in irc.state.nicksToHostmasks and \
              not ircdb.checkCapability(msg.prefix, 'owner'):
             # We'll let owners do this.
-            s = 'I haven\'t seen %s, I\'ll let you do the telling.' % target
+            s = _('I haven\'t seen %s, I\'ll let you do the telling.') % target
             irc.error(s, Raise=True)
         if irc.action:
             irc.action = False
             text = '* %s %s' % (irc.nick, text)
-        s = '%s wants me to tell you: %s' % (msg.nick, text)
+        s = _('%s wants me to tell you: %s') % (msg.nick, text)
         irc.reply(s, to=target, private=True)
     tell = wrap(tell, ['something', 'text'])
 
+    @internationalizeDocstring
     def ping(self, irc, msg, args):
         """takes no arguments
 
         Checks to see if the bot is alive.
         """
-        irc.reply('pong', prefixNick=False)
+        irc.reply(_('pong'), prefixNick=False)
 
 Class = Misc
 

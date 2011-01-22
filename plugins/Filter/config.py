@@ -29,22 +29,24 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Filter')
 
 Filter = conf.registerPlugin('Filter')
 conf.registerGroup(Filter, 'spellit')
 conf.registerGlobalValue(Filter.spellit,
-    'replaceLetters', registry.Boolean(True, """Determines whether or not to
-    replace letters in the output of spellit."""))
+    'replaceLetters', registry.Boolean(True, _("""Determines whether or not to
+    replace letters in the output of spellit.""")))
 conf.registerGlobalValue(Filter.spellit,
-    'replacePunctuation', registry.Boolean(True, """Determines whether or not
-    to replace punctuation in the output of spellit."""))
+    'replacePunctuation', registry.Boolean(True, _("""Determines whether or not
+    to replace punctuation in the output of spellit.""")))
 conf.registerGlobalValue(Filter.spellit,
-    'replaceNumbers', registry.Boolean(True, """Determines whether or not to
-    replace numbers in the output of spellit."""))
+    'replaceNumbers', registry.Boolean(True, _("""Determines whether or not to
+    replace numbers in the output of spellit.""")))
 conf.registerGroup(Filter, 'shrink')
 conf.registerChannelValue(Filter.shrink, 'minimum',
-    registry.PositiveInteger(4, """Determines the minimum number of a letters
-    in a word before it will be shrunken by the shrink command/filter."""))
+    registry.PositiveInteger(4, _("""Determines the minimum number of a letters
+    in a word before it will be shrunken by the shrink command/filter.""")))
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is

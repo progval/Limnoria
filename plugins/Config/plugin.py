@@ -41,6 +41,8 @@ from supybot.utils.iter import all
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Config')
 
 ###
 # Now, to setup the registry.
@@ -98,13 +100,13 @@ def getConfigVar(irc, msg, args, state):
         state.args.append(group)
         del args[0]
     except registry.InvalidRegistryName, e:
-        state.errorInvalid('configuration variable', str(e))
+        state.errorInvalid(_('configuration variable'), str(e))
 addConverter('configVar', getConfigVar)
 
 def getSettableConfigVar(irc, msg, args, state):
     getConfigVar(irc, msg, args, state)
     if not hasattr(state.args[-1], 'set'):
-        state.errorInvalid('settable configuration variable',
+        state.errorInvalid(_('settable configuration variable'),
                            state.args[-1]._name)
 addConverter('settableConfigVar', getSettableConfigVar)
 
@@ -129,6 +131,7 @@ class Config(callbacks.Plugin):
         utils.sortBy(str.lower, L)
         return L
 
+    @internationalizeDocstring
     def list(self, irc, msg, args, group):
         """<group>
 
@@ -142,16 +145,18 @@ class Config(callbacks.Plugin):
         if L:
             irc.reply(format('%L', L))
         else:
-            irc.error('There don\'t seem to be any values in %s.' % group._name)
+            irc.error(_('There don\'t seem to be any values in %s.') % 
+                      group._name)
     list = wrap(list, ['configVar'])
 
+    @internationalizeDocstring
     def search(self, irc, msg, args, word):
         """<word>
 
         Searches for <word> in the current configuration variables.
         """
         L = []
-        for (name, _) in conf.supybot.getValues(getChildren=True):
+        for (name, x) in conf.supybot.getValues(getChildren=True):
             if word in name.lower():
                 possibleChannel = registry.split(name)[-1]
                 if not ircutils.isChannel(possibleChannel):
@@ -159,14 +164,14 @@ class Config(callbacks.Plugin):
         if L:
             irc.reply(format('%L', L))
         else:
-            irc.reply('There were no matching configuration variables.')
+            irc.reply(_('There were no matching configuration variables.'))
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?
 
     def _getValue(self, irc, msg, group, addChannel=False):
         value = str(group) or ' '
         if addChannel and irc.isChannel(msg.args[0]) and not irc.nested:
             s = str(group.get(msg.args[0]))
-            value = 'Global: %s; %s: %s' % (value, msg.args[0], s)
+            value = _('Global: %s; %s: %s') % (value, msg.args[0], s)
         if hasattr(group, 'value'):
             if not group._private:
                 irc.reply(value)
@@ -177,9 +182,9 @@ class Config(callbacks.Plugin):
                 else:
                     irc.errorNoCapability(capability)
         else:
-            irc.error('That registry variable has no value.  Use the list '
+            irc.error(_('That registry variable has no value.  Use the list '
                       'command in this plugin to see what variables are '
-                      'available in this group.')
+                      'available in this group.'))
 
     def _setValue(self, irc, msg, group, value):
         capability = getCapability(group._name)
@@ -190,6 +195,7 @@ class Config(callbacks.Plugin):
         else:
             irc.errorNoCapability(capability)
 
+    @internationalizeDocstring
     def channel(self, irc, msg, args, channel, group, value):
         """[<channel>] <name> [<value>]
 
@@ -198,8 +204,8 @@ class Config(callbacks.Plugin):
         configuration value of <name>.  <channel> is only necessary if the
         message isn't sent in the channel itself."""
         if not group.channelValue:
-            irc.error('That configuration variable is not a channel-specific '
-                      'configuration variable.')
+            irc.error(_('That configuration variable is not a channel-specific '
+                      'configuration variable.'))
             return
         group = group.get(channel)
         if value is not None:
@@ -209,6 +215,7 @@ class Config(callbacks.Plugin):
     channel = wrap(channel, ['channel', 'settableConfigVar',
                              additional('text')])
 
+    @internationalizeDocstring
     def config(self, irc, msg, args, group, value):
         """<name> [<value>]
 
@@ -222,6 +229,7 @@ class Config(callbacks.Plugin):
             self._getValue(irc, msg, group, addChannel=group.channelValue)
     config = wrap(config, ['settableConfigVar', additional('text')])
 
+    @internationalizeDocstring
     def help(self, irc, msg, args, group):
         """<name>
 
@@ -231,16 +239,17 @@ class Config(callbacks.Plugin):
             s = group.help()
             if s:
                 if hasattr(group, 'value') and not group._private:
-                    s += '  (Current value: %s)' % group
+                    s += _('  (Current value: %s)') % group
                 irc.reply(s)
             else:
-                irc.reply('That configuration group exists, but seems to have '
-                          'no help.  Try "config list %s" to see if it has '
-                          'any children values.' % group._name)
+                irc.reply(_('That configuration group exists, but seems to '
+                          'have no help.  Try "config list %s" to see if it '
+                          'has any children values.') % group._name)
         else:
-            irc.error('%s has no help.' % group._name)
+            irc.error(_('%s has no help.') % group._name)
     help = wrap(help, ['configVar'])
 
+    @internationalizeDocstring
     def default(self, irc, msg, args, group):
         """<name>
 
@@ -250,6 +259,7 @@ class Config(callbacks.Plugin):
         irc.reply(str(v))
     default = wrap(default, ['settableConfigVar'])
 
+    @internationalizeDocstring
     def reload(self, irc, msg, args):
         """takes no arguments
 
@@ -260,6 +270,7 @@ class Config(callbacks.Plugin):
         irc.replySuccess()
     reload = wrap(reload, [('checkCapability', 'owner')])
 
+    @internationalizeDocstring
     def export(self, irc, msg, args, filename):
         """<filename>
 

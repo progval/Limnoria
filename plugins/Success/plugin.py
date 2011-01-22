@@ -31,6 +31,8 @@ import supybot.conf as conf
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Success')
 
 class Success(plugins.ChannelIdDatabasePlugin):
     """This plugin was written initially to work with MoobotFactoids, the two
@@ -73,7 +75,7 @@ class Success(plugins.ChannelIdDatabasePlugin):
         # so this seems like the only way to do it.
         self.target = msg.args[0]
         return msg
-
+Success = internationalizeDocstring(Success)
 
 Class = Success
 

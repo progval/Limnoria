@@ -29,22 +29,24 @@
 
 import supybot.conf as conf
 import supybot.registry as registry
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Dict')
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Dict', True)
-    output('The default dictd server is dict.org.')
-    if yn('Would you like to specify a different dictd server?'):
+    output(_('The default dictd server is dict.org.'))
+    if yn(_('Would you like to specify a different dictd server?')):
         server = something('What server?')
         conf.supybot.plugins.Dict.server.set(server)
 
 Dict = conf.registerPlugin('Dict')
 conf.registerGlobalValue(Dict, 'server',
-    registry.String('dict.org', """Determines what server the bot will
-    retrieve definitions from."""))
+    registry.String('dict.org', _("""Determines what server the bot will
+    retrieve definitions from.""")))
 conf.registerChannelValue(Dict, 'default',
-    registry.String('', """Determines the default dictionary the bot will
+    registry.String('', _("""Determines the default dictionary the bot will
     ask for definitions in.  If this value is '*' (without the quotes) the bot
-    will use all dictionaries to define words."""))
+    will use all dictionaries to define words.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

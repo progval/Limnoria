@@ -41,6 +41,8 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Google')
 
 simplejson = None
 
@@ -94,6 +96,7 @@ class Google(callbacks.PluginRegexp):
         return msg
 
     _gsearchUrl = 'http://ajax.googleapis.com/ajax/services/search/web'
+    @internationalizeDocstring
     def search(self, query, channel, options={}):
         """Perform a search using Google's AJAX API.
         search("search phrase", options={})
@@ -135,7 +138,7 @@ class Google(callbacks.PluginRegexp):
         json = simplejson.load(fd)
         fd.close()
         if json['responseStatus'] != 200:
-            raise callbacks.Error, 'We broke The Google!'
+            raise callbacks.Error, _('We broke The Google!')
         return json
 
     def formatData(self, data, bold=True, max=0):
@@ -155,10 +158,11 @@ class Google(callbacks.PluginRegexp):
             else:
                 results.append(url)
         if not results:
-            return format('No matches found.')
+            return format(_('No matches found.'))
         else:
             return format('; '.join(results))
 
+    @internationalizeDocstring
     def lucky(self, irc, msg, args, text):
         """<search>
 
@@ -169,9 +173,10 @@ class Google(callbacks.PluginRegexp):
             url = data['responseData']['results'][0]['unescapedUrl']
             irc.reply(url.encode('utf-8'))
         else:
-            irc.reply('Google found nothing.')
+            irc.reply(_('Google found nothing.'))
     lucky = wrap(lucky, ['text'])
 
+    @internationalizeDocstring
     def google(self, irc, msg, args, optlist, text):
         """<search> [--{filter,language} <value>]
 
@@ -184,7 +189,7 @@ class Google(callbacks.PluginRegexp):
             irc.errorInvalid('language')
         data = self.search(text, msg.args[0], dict(optlist))
         if data['responseStatus'] != 200:
-            irc.reply('We broke The Google!')
+            irc.reply(_('We broke The Google!'))
             return
         bold = self.registryValue('bold', msg.args[0])
         max = self.registryValue('maximumResults', msg.args[0])
@@ -194,6 +199,7 @@ class Google(callbacks.PluginRegexp):
                                     'filter':''}),
                            'text'])
 
+    @internationalizeDocstring
     def cache(self, irc, msg, args, url):
         """<url>
 
@@ -206,9 +212,10 @@ class Google(callbacks.PluginRegexp):
                 url = m['cacheUrl'].encode('utf-8')
                 irc.reply(url)
                 return
-        irc.error('Google seems to have no cache for that site.')
+        irc.error(_('Google seems to have no cache for that site.'))
     cache = wrap(cache, ['url'])
 
+    @internationalizeDocstring
     def fight(self, irc, msg, args):
         """<search string> <search string> [<search string> ...]
 
@@ -232,6 +239,7 @@ class Google(callbacks.PluginRegexp):
         irc.reply(s)
 
     _gtranslateUrl='http://ajax.googleapis.com/ajax/services/language/translate'
+    @internationalizeDocstring
     def translate(self, irc, msg, args, fromLang, toLang, text):
         """<from-language> [to] <to-language> <text>
 
@@ -252,8 +260,8 @@ class Google(callbacks.PluginRegexp):
             fromLang = lang.transLangs[fromLang.capitalize()]
         elif lang.normalize('lang_'+fromLang)[5:] \
                 not in lang.transLangs.values():
-            irc.errorInvalid('from language', fromLang,
-                             format('Valid languages are: %L',
+            irc.errorInvalid(_('from language'), fromLang,
+                             format(_('Valid languages are: %L'),
                                     lang.transLangs.keys()))
         else:
             fromLang = lang.normalize('lang_'+fromLang)[5:]
@@ -261,8 +269,8 @@ class Google(callbacks.PluginRegexp):
             toLang = lang.transLangs[toLang.capitalize()]
         elif lang.normalize('lang_'+toLang)[5:] \
                 not in lang.transLangs.values():
-            irc.errorInvalid('to language', toLang,
-                             format('Valid languages are: %L',
+            irc.errorInvalid(_('to language'), toLang,
+                             format(_('Valid languages are: %L'),
                                     lang.transLangs.keys()))
         else:
             toLang = lang.normalize('lang_'+toLang)[5:]
@@ -298,6 +306,7 @@ class Google(callbacks.PluginRegexp):
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
     _calcTimesRe = re.compile(r'&(?:times|#215);')
+    @internationalizeDocstring
     def calc(self, irc, msg, args, expr):
         """<expression>
 
@@ -313,10 +322,11 @@ class Google(callbacks.PluginRegexp):
             s = self._calcTimesRe.sub(r'*', s)
             irc.reply(s)
         else:
-            irc.reply('Google\'s calculator didn\'t come up with anything.')
+            irc.reply(_('Google\'s calculator didn\'t come up with anything.'))
     calc = wrap(calc, ['text'])
 
     _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
+    @internationalizeDocstring
     def phonebook(self, irc, msg, args, phonenumber):
         """<phone number>
 
@@ -332,7 +342,7 @@ class Google(callbacks.PluginRegexp):
             s = utils.web.htmlToText(s)
             irc.reply(s)
         else:
-            irc.reply('Google\'s phonebook didn\'t come up with anything.')
+            irc.reply(_('Google\'s phonebook didn\'t come up with anything.'))
     phonebook = wrap(phonebook, ['text'])
 
 

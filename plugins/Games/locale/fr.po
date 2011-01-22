@@ -1,0 +1,140 @@
+# French translations for PACKAGE package
+# Traductions françaises du paquet PACKAGE.
+# Copyright (C) 2010 ORGANIZATION
+# ProgVal <progval@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2010-10-17 13:16+CEST\n"
+"PO-Revision-Date: 2010-12-23 19:55+0100\n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Language-Team: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: plugin.py:46
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Flips a coin and returns the result.\n"
+"        "
+msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Lance une pièce et retourne le résultat."
+
+#: plugin.py:51
+msgid "heads"
+msgstr "face"
+
+#: plugin.py:53
+msgid "tails"
+msgstr "pile"
+
+#: plugin.py:58
+msgid ""
+"<dice>d<sides>\n"
+"\n"
+"        Rolls a die with <sides> number of sides <dice> times.\n"
+"        For example, 2d6 will roll 2 six-sided dice; 10d10 will roll 10\n"
+"        ten-sided dice.\n"
+"        "
+msgstr ""
+"<lancers>d<faces>\n"
+"\n"
+"Fait un certain nombre de <lancers> d'un dé d'un certain nombre de <faces>. Par exemple, 2d6 lancera deux dés à six faces, et 10d10 dix dés à dix faces."
+
+#: plugin.py:66
+msgid "You can't roll more than 1000 dice."
+msgstr "Vous ne pouvez lancer plus de 1000 dés."
+
+#: plugin.py:68
+msgid "Dice can't have more than 100 sides."
+msgstr "Vous ne pouvez pas avoir plus de 100 faces."
+
+#: plugin.py:70
+msgid "Dice can't have fewer than 3 sides."
+msgstr "Vous ne pouvez pas avoir moins de trois faces."
+
+#: plugin.py:78
+msgid "Dice must be of the form <dice>d<sides>"
+msgstr "Les dés doivent être de la forme <lancers>d<faces>"
+
+#: plugin.py:82
+msgid "It is possible.|Yes!|Of course.|Naturally.|Obviously.|It shall be.|The outlook is good.|It is so.|One would be wise to think so.|The answer is certainly yes."
+msgstr "C'est possible.|Oui !|Bien sûr.|Naturellement.|Évidemment.|Ce doit être ça.|Ce n'est pas impossible.|C'est le cas.|C'est ce que l'on peut penser.|La réponse est certainement oui."
+
+#: plugin.py:86
+msgid "In your dreams.|I doubt it very much.|No chance.|The outlook is poor.|Unlikely.|About as likely as pigs flying.|You're kidding, right?|NO!|NO.|No.|The answer is a resounding no."
+msgstr "Dans tes rêves.|J'en doute.|Impossible.|Ça m'étonnerait|Improbable.|Quand les poules auront des dents|La semaine des quatre jeudis.|Tu rigoles ?|NON !|NON.|Non.|La réponse semble être non."
+
+#: plugin.py:90
+msgid "Maybe...|No clue.|_I_ don't know.|The outlook is hazy, please ask again later.|What are you asking me for?|Come again?|You know the answer better than I.|The answer is def-- oooh! shiny thing!"
+msgstr "Peut-être...|Aucune idée|*Je* ne sais pas|Je n'en sais rien, veuillez réessayer.|Qu'est-ce que vous me demander ?|Revenez plus tard.|Vous connaissez la réponse mieux que moi.|La réponse est... oooh ! un truc qui brille !"
+
+#: plugin.py:107
+msgid ""
+"[<question>]\n"
+"\n"
+"        Ask a question and the answer shall be provided.\n"
+"        "
+msgstr ""
+"[<question>]\n"
+"\n"
+"Posez une question, et la réponse devrait vous être donnée."
+
+#: plugin.py:121
+msgid ""
+"[spin]\n"
+"\n"
+"        Fires the revolver.  If the bullet was in the chamber, you're dead.\n"
+"        Tell me to spin the chambers and I will.\n"
+"        "
+msgstr ""
+"[spin]\n"
+"\n"
+"Tire avec le revolver. Si la balle était dans la chambre, vous être mort. Dites-moi de recharger les chambres (en indiquant 'spin') et je le ferais."
+
+#: plugin.py:128
+msgid "*SPIN* Are you feeling lucky?"
+msgstr "*FAIT TOURNER LE BARILLET* Prêt à mettre votre chance à l'épreuve ?"
+
+#: plugin.py:137
+msgid "*BANG* Hey, who put a blank in here?!"
+msgstr "*BANG* Eh, qui a fait un trou ici ?"
+
+#: plugin.py:139
+msgid "reloads and spins the chambers."
+msgstr "recharge et fait tourner les chambres"
+
+#: plugin.py:141
+msgid "*click*"
+msgstr "*clic*"
+
+#: plugin.py:148
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the number of consecutive lines you've sent in <channel>\n"
+"        without being interrupted by someone else (i.e. how long your current\n"
+"        'monologue' is).  <channel> is only necessary if the message isn't sent\n"
+"        in the channel itself.\n"
+"        "
+msgstr ""
+"[<canal>]\n"
+"\n"
+"Retourne le nombre de lignes consécutives que vous avez écrites sur le <canal> sans être interrompu par qui que ce soit. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:167
+msgid "Your current monologue is at least %n long."
+msgstr "Votre monologue actuel est au moins long de %n."
+
+#: plugin.py:168
+msgid "line"
+msgstr "ligne"
+

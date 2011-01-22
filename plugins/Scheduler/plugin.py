@@ -34,6 +34,8 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
+from supybot.i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization('Scheduler')
 
 class Scheduler(callbacks.Plugin):
     def __init__(self, irc):
@@ -50,6 +52,7 @@ class Scheduler(callbacks.Plugin):
             self.Proxy(irc.irc, msg, tokens)
         return f
 
+    @internationalizeDocstring
     def add(self, irc, msg, args, seconds, command):
         """<seconds> <command>
 
@@ -63,9 +66,10 @@ class Scheduler(callbacks.Plugin):
         id = schedule.addEvent(f, time.time() + seconds)
         f.eventId = id
         self.events[str(id)] = command
-        irc.replySuccess(format('Event #%i added.', id))
+        irc.replySuccess(format(_('Event #%i added.'), id))
     add = wrap(add, ['positiveInt', 'text'])
 
+    @internationalizeDocstring
     def remove(self, irc, msg, args, id):
         """<id>
 
@@ -81,11 +85,12 @@ class Scheduler(callbacks.Plugin):
                 schedule.removeEvent(id)
                 irc.replySuccess()
             except KeyError:
-                irc.error('Invalid event id.')
+                irc.error(_('Invalid event id.'))
         else:
-            irc.error('Invalid event id.')
+            irc.error(_('Invalid event id.'))
     remove = wrap(remove, ['lowered'])
 
+    @internationalizeDocstring
     def repeat(self, irc, msg, args, name, seconds, command):
         """<name> <seconds> <command>
 
@@ -96,8 +101,8 @@ class Scheduler(callbacks.Plugin):
         """
         name = name.lower()
         if name in self.events:
-            irc.error('There is already an event with that name, please '
-                      'choose another name.', Raise=True)
+            irc.error(_('There is already an event with that name, please '
+                      'choose another name.'), Raise=True)
         self.events[name] = command
         f = self._makeCommandFunction(irc, msg, command, remove=False)
         id = schedule.addPeriodicEvent(f, seconds, name)
@@ -107,6 +112,7 @@ class Scheduler(callbacks.Plugin):
         # irc.replySuccess()
     repeat = wrap(repeat, ['nonInt', 'positiveInt', 'text'])
 
+    @internationalizeDocstring
     def list(self, irc, msg, args):
         """takes no arguments
 
@@ -119,7 +125,7 @@ class Scheduler(callbacks.Plugin):
                 L[i] = format('%s: %q', name, command)
             irc.reply(format('%L', L))
         else:
-            irc.reply('There are currently no scheduled commands.')
+            irc.reply(_('There are currently no scheduled commands.'))
     list = wrap(list)
 
 
