@@ -384,7 +384,7 @@ class Filter(callbacks.Plugin):
 
         Returns <text> colorized like a rainbow.
         """
-        colors = utils.iter.cycle([4, 7, 8, 3, 2, 12, 6])
+        colors = utils.iter.cycle(['04', '07', '08', '03', '02', '12', '06'])
         L = [self._color(c, fg=colors.next()) for c in text]
         irc.reply(''.join(L) + '\x03')
     rainbow = wrap(rainbow, ['text'])
