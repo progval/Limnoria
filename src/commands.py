@@ -314,7 +314,7 @@ def _getRe(f):
         s = args.pop(0)
         def isRe(s):
             try:
-                _ = f(s)
+                foo = f(s)
                 return True
             except ValueError:
                 return False
