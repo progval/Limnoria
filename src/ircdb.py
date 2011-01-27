@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2002-2009, Jeremiah Fincher
 # Copyright (c) 2009, James Vega
+# Copyright (c) 2011, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -152,7 +153,7 @@ class CapabilitySet(set):
         elif self.__parent.__contains__(_invert(capability)):
             return False
         else:
-            raise KeyError, capability
+            return False
 
     def __repr__(self):
         return '%s([%s])' % (self.__class__.__name__,
@@ -165,16 +166,16 @@ class UserCapabilitySet(CapabilitySet):
         self.__parent = super(UserCapabilitySet, self)
         self.__parent.__init__(*args, **kwargs)
 
-    def __contains__(self, capability):
+    def __contains__(self, capability, ignoreOwner=False):
         capability = ircutils.toLower(capability)
-        if capability == 'owner' or capability == antiOwner:
+        if not ignoreOwner and capability == 'owner' or capability == antiOwner:
             return True
-        elif self.__parent.__contains__('owner'):
+        elif not ignoreOwner and self.__parent.__contains__('owner'):
             return True
         else:
             return self.__parent.__contains__(capability)
 
-    def check(self, capability):
+    def check(self, capability, ignoreOwner=False):
         """Returns the appropriate boolean for whether a given capability is
         'allowed' given its (or its anticapability's) presence in the set.
         Differs from CapabilitySet in that it handles the 'owner' capability
@@ -186,7 +187,7 @@ class UserCapabilitySet(CapabilitySet):
                 return not isAntiCapability(capability)
             else:
                 return isAntiCapability(capability)
-        elif self.__parent.__contains__('owner'):
+        elif not ignoreOwner and self.__parent.__contains__('owner'):
             if isAntiCapability(capability):
                 return False
             else:
@@ -236,7 +237,7 @@ class IrcUser(object):
         """Takes from the user the given capability."""
         self.capabilities.remove(capability)
 
-    def _checkCapability(self, capability):
+    def _checkCapability(self, capability, ignoreOwner=False):
         """Checks the user for a given capability."""
         if self.ignore:
             if isAntiCapability(capability):
@@ -244,7 +245,7 @@ class IrcUser(object):
             else:
                 return False
         else:
-            return self.capabilities.check(capability)
+            return self.capabilities.check(capability, ignoreOwner)
 
     def setPassword(self, password, hashed=False):
         """Sets the user's password."""
@@ -1009,7 +1010,8 @@ def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
     else:
         return _x(capability, conf.supybot.capabilities.default())
 
-def checkCapability(hostmask, capability, users=users, channels=channels):
+def checkCapability(hostmask, capability, users=users, channels=channels,
+                    ignoreOwner=False):
     """Checks that the user specified by name/hostmask has the capability given.
     """
     if world.testing:
@@ -1028,7 +1030,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
         return _checkCapabilityForUnknownUser(capability, users=users,
                                               channels=channels)
     if capability in u.capabilities:
-        return u._checkCapability(capability)
+        return u._checkCapability(capability, ignoreOwner)
     else:
         if isChannelCapability(capability):
             (channel, capability) = fromChannelCapability(capability)

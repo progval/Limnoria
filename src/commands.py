@@ -477,6 +477,11 @@ def checkCapability(irc, msg, args, state, cap):
     if not ircdb.checkCapability(msg.prefix, cap):
         state.errorNoCapability(cap, Raise=True)
 
+def checkCapabilityButIgnoreOwner(irc, msg, args, state, cap):
+    cap = ircdb.canonicalCapability(cap)
+    if not ircdb.checkCapability(msg.prefix, cap, ignoreOwner=True):
+        state.errorNoCapability(cap, Raise=True)
+
 def owner(irc, msg, args, state):
     checkCapability(irc, msg, args, state, 'owner')
 
@@ -590,6 +595,7 @@ wrappers = ircutils.IrcDict({
     'channel': getChannel,
     'channelDb': getChannelDb,
     'checkCapability': checkCapability,
+    'checkCapabilityButIgnoreOwner': checkCapabilityButIgnoreOwner,
     'checkChannelCapability': checkChannelCapability,
     'color': getIrcColor,
     'commandName': getCommandName,
