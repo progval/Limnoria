@@ -42,7 +42,7 @@ _ = PluginInternationalization()
 ###
 # version: This should be pretty obvious.
 ###
-version = '0.83.4.1+git+fr1'
+version = '0.83.4.1+git+fr2'
 
 ###
 # *** The following variables are affected by command-line options.  They are
