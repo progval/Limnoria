@@ -104,5 +104,5 @@ msgstr "Il n'y a pas de note pour %r"
 
 #: plugin.py:182
 msgid "Sent %s: <%s> %s"
-msgstr "Envoyé le %s : <%s> %s"
+msgstr "Envoyé %s : <%s> %s"
 
