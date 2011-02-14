@@ -42,6 +42,62 @@ class Scheduler(callbacks.Plugin):
         self.__parent = super(Scheduler, self)
         self.__parent.__init__(irc)
         self.events = {}
+        self._restoreEvents(irc)
+        world.flushers.append(self._flush)
+
+    def _restoreEvents(self, irc):
+        try:
+            pkl = open(filename, 'rb')
+            try:
+                eventdict = pickle.load(pkl)
+            except Exception, e:
+                self.log.debug('Unable to load pickled data: %s', e)
+                return
+            finally:
+                pkl.close()
+        except IOError, e:
+            self.log.debug('Unable to open pickle file: %s', e)
+            return
+        for name, event in eventdict.iteritems():
+            ircobj = callbacks.ReplyIrcProxy(irc, event['msg'])
+            try:
+                if event['type'] == 'single': # non-repeating event
+                    n = None
+                    if schedule.schedule.counter > int(name):
+                        # counter not reset, we're probably reloading the plugin
+                        # though we'll never know for sure, because other
+                        # plugins can schedule stuff, too.
+                        n = int(name)
+                    self._add(ircobj, event['msg'],
+                              event['time'], event['command'], n)
+                elif event['type'] == 'repeat': # repeating event
+                    self._repeat(ircobj, event['msg'], name,
+                                 event['time'], event['command'], False)
+            except AssertionError, e:
+                if str(e) == 'An event with the same name has already been scheduled.':
+                    # we must be reloading the plugin, event is still scheduled
+                    self.log.info('Event %s already exists, adding to dict.' % (name,))
+                    self.events[name] = event
+                else:
+                    raise
+
+    def _flush(self):
+        try:
+            pklfd, tempfn = tempfile.mkstemp(suffix='scheduler', dir=datadir)
+            pkl = os.fdopen(pklfd, 'wb')
+            try:
+                pickle.dump(self.events, pkl)
+            except Exception, e:
+                self.log.warning('Unable to store pickled data: %s', e)
+            pkl.close()
+            shutil.move(tempfn, filename)
+        except (IOError, shutil.Error), e:
+            self.log.warning('File error: %s', e)
+
+    def die(self):
+        self._flush()
+        world.flushers.remove(self._flush)
+        self.__parent.die()
 
     def _makeCommandFunction(self, irc, msg, command, remove=True):
         """Makes a function suitable for scheduling from command."""
@@ -89,6 +145,15 @@ class Scheduler(callbacks.Plugin):
         else:
             irc.error(_('Invalid event id.'))
     remove = wrap(remove, ['lowered'])
+
+    def _repeat(self, irc, msg, name, seconds, command, now=True):
+        f = self._makeCommandFunction(irc, msg, command, remove=False)
+        id = schedule.addPeriodicEvent(f, seconds, name, now)
+        assert id == name
+        self.events[name] = {'command':command,
+                             'msg':msg,
+                             'time':seconds,
+                             'type':'repeat'}
 
     @internationalizeDocstring
     def repeat(self, irc, msg, args, name, seconds, command):

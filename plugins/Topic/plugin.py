@@ -403,9 +403,6 @@ class Topic(callbacks.Plugin):
         index into the topics.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
-        if not self._checkManageCapabilities(irc, msg, channel):
-            capabilities = self.registryValue('requireManageCapability')
-            irc.errorNoCapability(capabilities, Raise=True)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         irc.reply(topics[number])
     get = wrap(get, ['inChannel', 'topicNumber'])

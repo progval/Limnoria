@@ -287,6 +287,7 @@ def pluralize(s):
 @internationalizeFunction('depluralize')
 def depluralize(s):
     """Returns the singular of s."""
+    consonants = 'bcdfghjklmnpqrstvwxz'
     _depluralizeRegex = re.compile('[%s]ies' % consonants)
     lowered = s.lower()
     if lowered in plurals:

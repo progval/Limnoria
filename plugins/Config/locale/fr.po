@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 "<groupe>\n"
 "\n"
-"Retourne les variables de configuration qui sont dans le <groupe> de configuration. Si la variable a des sous-variables, elle sera précédée par le signe '@'. Si une variable est une 'ChannelValue', elle sera précédée par le signe '#'. Plus d'informations : http://supybot-fr.tk/Configuration"
+"Retourne les variables de configuration qui sont dans le <groupe> de configuration. Si la variable a des sous-variables, elle sera précédée par le signe '@'. Si une variable est une 'ChannelValue', elle sera précédée par le signe '#'. Plus d'informations : http://supybot.fr.cr/Configuration"
 
 #: plugin.py:148
 msgid "There don't seem to be any values in %s."

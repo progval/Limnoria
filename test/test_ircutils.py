@@ -233,6 +233,10 @@ class FunctionsTestCase(SupyTestCase):
                                                               msg.prefix),
                                 '%r didn\'t match %r' % (msg.prefix, banmask))
         self.assertEqual(ircutils.banmask('foobar!user@host'), '*!*@host')
+        self.assertEqual(ircutils.banmask('foobar!user@host.tld'),
+                         '*!*@host.tld')
+        self.assertEqual(ircutils.banmask('foobar!user@sub.host.tld'),
+                         '*!*@*.host.tld')
         self.assertEqual(ircutils.banmask('foo!bar@2001::'), '*!*@2001::*')
 
     def testSeparateModes(self):
