@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 14:50+CEST\n"
+"POT-Creation-Date: 2011-02-14 18:30+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,7 +95,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:141 plugin.py:192
+#: plugin.py:141 plugin.py:200
 msgid "We broke The Google!"
 msgstr ""
 
@@ -106,17 +106,18 @@ msgstr ""
 #: plugin.py:167
 #, docstring
 msgid ""
-"<search>\n"
+"[--snippet] <search>\n"
 "\n"
 "        Does a google search, but only returns the first result.\n"
+"        If option --snippet is given, returns also the page text snippet.\n"
 "        "
 msgstr ""
 
-#: plugin.py:176
+#: plugin.py:184
 msgid "Google found nothing."
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:189
 #, docstring
 msgid ""
 "<search> [--{filter,language} <value>]\n"
@@ -127,7 +128,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:204
+#: plugin.py:212
 #, docstring
 msgid ""
 "<url>\n"
@@ -136,11 +137,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:215
+#: plugin.py:223
 msgid "Google seems to have no cache for that site."
 msgstr ""
 
-#: plugin.py:220
+#: plugin.py:228
 #, docstring
 msgid ""
 "<search string> <search string> [<search string> ...]\n"
@@ -150,7 +151,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:244
+#: plugin.py:252
 #, docstring
 msgid ""
 "<from-language> [to] <to-language> <text>\n"
@@ -161,24 +162,24 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:263
+#: plugin.py:271
 msgid "from language"
 msgstr ""
 
-#: plugin.py:264 plugin.py:273
+#: plugin.py:272 plugin.py:281
 msgid "Valid languages are: %L"
 msgstr ""
 
-#: plugin.py:272
+#: plugin.py:280
 msgid "to language"
 msgstr ""
 
-#: plugin.py:289
+#: plugin.py:297
 #, docstring
 msgid "^google\\s+(.*)$"
 msgstr ""
 
-#: plugin.py:311
+#: plugin.py:320
 #, docstring
 msgid ""
 "<expression>\n"
@@ -187,11 +188,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:325
+#: plugin.py:337
 msgid "Google's calculator didn't come up with anything."
 msgstr ""
 
-#: plugin.py:331
+#: plugin.py:343
 #, docstring
 msgid ""
 "<phone number>\n"
@@ -200,7 +201,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:345
+#: plugin.py:357
 msgid "Google's phonebook didn't come up with anything."
 msgstr ""
 
