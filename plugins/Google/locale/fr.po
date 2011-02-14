@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-17 14:50+CEST\n"
+"POT-Creation-Date: 2011-02-14 18:30+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -101,7 +101,7 @@ msgstr ""
 "        "
 
 #: plugin.py:141
-#: plugin.py:192
+#: plugin.py:200
 msgid "We broke The Google!"
 msgstr "Google est toukassay !"
 
@@ -111,20 +111,21 @@ msgstr "Aucune correspondance."
 
 #: plugin.py:167
 msgid ""
-"<search>\n"
+"[--snippet] <search>\n"
 "\n"
 "        Does a google search, but only returns the first result.\n"
+"        If option --snippet is given, returns also the page text snippet.\n"
 "        "
 msgstr ""
-"<recherche>\n"
+"[--snippet] <recherche>\n"
 "\n"
-"Effectue une recherche google, mais ne retourne que le premier résultat."
+"Effectue une recherche google, mais ne retourne que le premier résultat. Si l'option --snippet est donnée, retournera également un fragment de la page."
 
-#: plugin.py:176
+#: plugin.py:184
 msgid "Google found nothing."
 msgstr "Google n'a rien trouvé."
 
-#: plugin.py:181
+#: plugin.py:189
 msgid ""
 "<search> [--{filter,language} <value>]\n"
 "\n"
@@ -137,7 +138,7 @@ msgstr ""
 "\n"
 "Rercherche la chaîne donnée sur Google. Autant de résultats que possible sont donnés. --language accepte une abbréviation de langue ; --filter accepte un niveau de filtrage ('active', 'moderate', 'off')."
 
-#: plugin.py:204
+#: plugin.py:212
 msgid ""
 "<url>\n"
 "\n"
@@ -148,11 +149,11 @@ msgstr ""
 "\n"
 "Retourne un lien vers la version en cache de l'<url>, si elle est disponible."
 
-#: plugin.py:215
+#: plugin.py:223
 msgid "Google seems to have no cache for that site."
 msgstr "Google semble ne pas avoir de cache pour ce site."
 
-#: plugin.py:220
+#: plugin.py:228
 msgid ""
 "<search string> <search string> [<search string> ...]\n"
 "\n"
@@ -164,7 +165,7 @@ msgstr ""
 "\n"
 "Retourne les résultats de chaque recherche, dans l'ordre, par ordre croissant du nombre de résultats."
 
-#: plugin.py:244
+#: plugin.py:252
 msgid ""
 "<from-language> [to] <to-language> <text>\n"
 "\n"
@@ -176,24 +177,24 @@ msgstr ""
 "<langue de départ> [to] <langue finale> <texte>\n"
 "\n"
 
-#: plugin.py:263
+#: plugin.py:271
 msgid "from language"
 msgstr "de la langue"
 
-#: plugin.py:264
-#: plugin.py:273
+#: plugin.py:272
+#: plugin.py:281
 msgid "Valid languages are: %L"
 msgstr "Les langues valides sont : %L"
 
-#: plugin.py:272
+#: plugin.py:280
 msgid "to language"
 msgstr "vers la langue"
 
-#: plugin.py:289
+#: plugin.py:297
 msgid "^google\\s+(.*)$"
 msgstr "^google\\s+(.*)$"
 
-#: plugin.py:311
+#: plugin.py:320
 msgid ""
 "<expression>\n"
 "\n"
@@ -204,11 +205,11 @@ msgstr ""
 "\n"
 "Utilise la calculatrice Google pour calculer la valeur de l'<expression>."
 
-#: plugin.py:325
+#: plugin.py:337
 msgid "Google's calculator didn't come up with anything."
 msgstr "La calculatrice Google ne donne aucun résultat."
 
-#: plugin.py:331
+#: plugin.py:343
 msgid ""
 "<phone number>\n"
 "\n"
@@ -219,7 +220,7 @@ msgstr ""
 "\n"
 "Recherche le <numéro de téléphone> sur Google."
 
-#: plugin.py:345
+#: plugin.py:357
 msgid "Google's phonebook didn't come up with anything."
 msgstr "L'annuaire téléphonique de Google ne donne aucun résultat."
 
