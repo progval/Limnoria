@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-26 18:57+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -13,7 +13,46 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
+#: plugin.py:77
+msgid "PING ?(.*)"
+msgstr ""
+
+#: plugin.py:86
+msgid "VERSION"
+msgstr ""
+
+#: plugin.py:91
+msgid "USERINFO"
+msgstr ""
+
+#: plugin.py:96
+msgid "TIME"
+msgstr ""
+
+#: plugin.py:101
+msgid "FINGER"
+msgstr ""
+
 #: plugin.py:104
 msgid "Supybot, the best Python IRC bot in existence!"
 msgstr "Supybot, le meilleur bot IRC en Python au monde !"
+
+#: plugin.py:107
+msgid "SOURCE"
+msgstr ""
+
+#: plugin.py:123
+msgid ""
+"[<channel>] [--nicks]\n"
+"\n"
+"        Sends a CTCP VERSION to <channel>, returning the various\n"
+"        version strings returned.  It waits for 10 seconds before returning\n"
+"        the versions received at that point.  If --nicks is given, nicks are\n"
+"        associated with the version strings; otherwise, only the version\n"
+"        strings are given.\n"
+"        "
+msgstr ""
+"[<canal>] [--nicks]\n"
+"\n"
+"Envoie un CTCP VERSION au canal, et renvoie les différentes réponses reçues. Il attend 10 secondes avant de renvoyer les réponses reçues jusqu'alors. Si --nicks est donné, les nicks sont associés à la chaîne de version ; sinon, seules les chaînes sont données."
 
