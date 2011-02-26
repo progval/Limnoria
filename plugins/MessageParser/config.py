@@ -31,41 +31,42 @@
 import supybot.conf as conf
 import supybot.registry as registry
 
-def configure(advanced):
-    # This will be called by supybot to configure this module.  advanced is
-    # a bool that specifies whether the user identified himself as an advanced
-    # user or not.  You should effect your configuration by manipulating the
-    # registry as appropriate.
-    from supybot.questions import expect, anything, something, yn
-    conf.registerPlugin('MessageParser', True)
+try:
+    from supybot.i18n import PluginInternationalization
+    from supybot.i18n import internationalizeDocstring
+    _ = PluginInternationalization('MessageParser')
+except:
+    # This are useless functions that's allow to run the plugin on a bot
+    # without the i18n plugin
+    _ = lambda x:x
+    internationalizeDocstring = lambda x:x
 
 MessageParser = conf.registerPlugin('MessageParser')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(MessageParser, 'someConfigVariableName',
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
 conf.registerChannelValue(MessageParser, 'enable',
-    registry.Boolean(True, """Determines whether the
+    registry.Boolean(True, _("""Determines whether the
     message parser is enabled.  If enabled, will trigger on regexps
-    added to the regexp db."""))
+    added to the regexp db.""")))
 conf.registerChannelValue(MessageParser, 'keepRankInfo',
-    registry.Boolean(True, """Determines whether we keep updating the usage
-    count for each regexp, for popularity ranking."""))
+    registry.Boolean(True, _("""Determines whether we keep updating the usage
+    count for each regexp, for popularity ranking.""")))
 conf.registerChannelValue(MessageParser, 'rankListLength',
-    registry.Integer(20, """Determines the number of regexps returned
-    by the triggerrank command."""))
+    registry.Integer(20, _("""Determines the number of regexps returned
+    by the triggerrank command.""")))
 conf.registerChannelValue(MessageParser, 'requireVacuumCapability',
-    registry.String('admin', """Determines the capability required (if any) to 
-    vacuum the database."""))
+    registry.String('admin', _("""Determines the capability required (if any) to
+    vacuum the database.""")))
 conf.registerChannelValue(MessageParser, 'requireManageCapability',
-    registry.String('admin; channel,op', 
-    """Determines the 
+    registry.String('admin; channel,op', _("""Determines the
     capabilities required (if any) to manage the regexp database,
-    including add, remove, lock, unlock. Use 'channel,capab' for 
+    including add, remove, lock, unlock. Use 'channel,capab' for
     channel-level capabilities.
-    Note that absence of an explicit anticapability means user has 
-    capability."""))
+    Note that absence of an explicit anticapability means user has
+    capability.""")))
 conf.registerChannelValue(MessageParser, 'listSeparator',
-    registry.String(', ', """Determines the separator used between rexeps when
-    shown by the list command."""))
-    
+    registry.String(', ', _("""Determines the separator used between rexeps when
+    shown by the list command.""")))
+
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
