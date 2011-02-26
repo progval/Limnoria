@@ -36,6 +36,16 @@ import supybot.callbacks as callbacks
 
 import re
 
+try:
+    from supybot.i18n import PluginInternationalization
+    from supybot.i18n import internationalizeDocstring
+    _ = PluginInternationalization('Conditional')
+except:
+    # This are useless functions that's allow to run the plugin on a bot
+    # without the i18n plugin
+    _ = lambda x:x
+    internationalizeDocstring = lambda x:x
+
 # builtin any is overwritten by callbacks... and python2.4 doesn't have it
 def _any(iterable):
     for element in iterable:
@@ -65,6 +75,7 @@ class Conditional(callbacks.Plugin):
         except Exception, e:
             log.exception('Uncaught exception in requested function:')
     
+    @internationalizeDocstring
     def cif(self, irc, msg, args, condition, ifcommand, elsecommand):
         """<condition> <ifcommand> <elsecommand>
         
@@ -81,6 +92,7 @@ class Conditional(callbacks.Plugin):
         irc.noReply()
     cif = wrap(cif, ['boolean', 'something', 'something'])
         
+    @internationalizeDocstring
     def cand(self, irc, msg, args, conds):
         """<cond1> [<cond2> ... <condN>]
         
@@ -92,6 +104,7 @@ class Conditional(callbacks.Plugin):
             irc.reply("false")
     cand = wrap(cand, [many('boolean'),])
     
+    @internationalizeDocstring
     def cor(self, irc, msg, args, conds):
         """<cond1> [<cond2> ... <condN>]
         
@@ -103,6 +116,7 @@ class Conditional(callbacks.Plugin):
             irc.reply("false")
     cor = wrap(cor, [many('boolean'),])
     
+    @internationalizeDocstring
     def cxor(self, irc, msg, args, conds):
         """<cond1> [<cond2> ... <condN>]
         
@@ -114,6 +128,7 @@ class Conditional(callbacks.Plugin):
             irc.reply("false")
     cxor = wrap(cxor, [many('boolean'),])
     
+    @internationalizeDocstring
     def ceq(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -126,6 +141,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     ceq = wrap(ceq, ['anything', 'anything'])
     
+    @internationalizeDocstring
     def ne(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -138,6 +154,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     ne = wrap(ne, ['anything', 'anything'])
     
+    @internationalizeDocstring
     def gt(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -150,6 +167,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     gt = wrap(gt, ['anything', 'anything'])
     
+    @internationalizeDocstring
     def ge(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -162,6 +180,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     ge = wrap(ge, ['anything', 'anything'])
     
+    @internationalizeDocstring
     def lt(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -174,6 +193,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     lt = wrap(lt, ['anything', 'anything'])
     
+    @internationalizeDocstring
     def le(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -186,6 +206,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     le = wrap(le, ['anything', 'anything'])
 
+    @internationalizeDocstring
     def match(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -198,6 +219,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     match = wrap(match, ['something', 'something'])
 
+    @internationalizeDocstring
     def nceq(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -210,6 +232,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     nceq = wrap(nceq, ['float', 'float'])
     
+    @internationalizeDocstring
     def nne(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -222,6 +245,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     nne = wrap(nne, ['float', 'float'])
     
+    @internationalizeDocstring
     def ngt(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -234,6 +258,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     ngt = wrap(ngt, ['float', 'float'])
     
+    @internationalizeDocstring
     def nge(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -246,6 +271,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     nge = wrap(nge, ['float', 'float'])
     
+    @internationalizeDocstring
     def nlt(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -258,6 +284,7 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     nlt = wrap(nlt, ['float', 'float'])
     
+    @internationalizeDocstring
     def nle(self, irc, msg, args, item1, item2):
         """<item1> <item2>
         
@@ -269,6 +296,7 @@ class Conditional(callbacks.Plugin):
         else:
             irc.reply('false')
     nle = wrap(nle, ['float', 'float'])
+Condition = internationalizeDocstring(Conditional)
 
 Class = Conditional
 
