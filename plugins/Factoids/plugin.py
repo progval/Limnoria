@@ -325,16 +325,13 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             self._replyFactoids(irc, msg, key, channel, factoids, number, raw=raw)
         else:
             self._replyApproximateFactoids(irc, msg, channel, key)
-<<<<<<< HEAD
     whatis = wrap(whatis, ['channel', many('something')])
 
-    @internationalizeDocstring
-=======
-    whatis = wrap(whatis, ['channel', 
+    whatis = wrap(whatis, ['channel',
                             getopts({'raw': '',}),
                             many('something')])
-    
->>>>>>> e4c51ef... Add --raw option to factoids.whatis, which disables variable substitution on the factoid.
+
+    @internationalizeDocstring
     def alias(self, irc, msg, args, channel, oldkey, newkey, number):
         """[<channel>] <oldkey> <newkey> [<number>]
 
@@ -618,7 +615,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                                      time.localtime(int(added_at)))
             L.append(format(_('#%i was added by %s at %s, and has been '
                             'recalled %n'),
-                            counter, added_by, added_at, (usage_count, 'time')))
+                            counter, added_by, added_at,
+                            (usage_count, _('time'))))
         factoids = '; '.join(L)
         s = format('Key %q is %s and has %n associated with it: %s',
                    key, locked and 'locked' or 'not locked',
