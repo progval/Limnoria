@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 18:33+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgid ""
 "    a praise when the praise is given."
 msgstr ""
 
-#: plugin.py:40
+#: plugin.py:39
 #, docstring
 msgid ""
 "Praise is a plugin for ... well, praising things.  Feel free to add\n"
@@ -31,11 +31,11 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:54
+#: plugin.py:53
 msgid "Praises must contain $who."
 msgstr ""
 
-#: plugin.py:58
+#: plugin.py:57
 #, docstring
 msgid ""
 "[<channel>] [<id>] <who|what> [for <reason>]\n"
@@ -46,15 +46,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:74
+#: plugin.py:73
 msgid "There is no praise with id #%i."
 msgstr ""
 
-#: plugin.py:79
+#: plugin.py:78
 msgid "There are no praises in my database for %s."
 msgstr ""
 
-#: plugin.py:87
+#: plugin.py:86
 msgid " for "
 msgstr ""
 

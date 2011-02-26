@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 12:46+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,9 +79,10 @@ msgstr ""
 #: plugin.py:103
 #, docstring
 msgid ""
-"<text>\n"
+"<substring to translate> <substring to replace it with> <text>\n"
 "\n"
-"        Returns <text> uppercased.\n"
+"        Replaces all non-overlapping occurrences of <substring to translate>\n"
+"        with <substring to replace it with> in <text>.\n"
 "        "
 msgstr ""
 
@@ -90,7 +91,7 @@ msgstr ""
 msgid ""
 "<text>\n"
 "\n"
-"        Returns <text> lowercased.\n"
+"        Returns <text> uppercased.\n"
 "        "
 msgstr ""
 
@@ -99,7 +100,7 @@ msgstr ""
 msgid ""
 "<text>\n"
 "\n"
-"        Returns <text> capitalized.\n"
+"        Returns <text> lowercased.\n"
 "        "
 msgstr ""
 
@@ -108,7 +109,7 @@ msgstr ""
 msgid ""
 "<text>\n"
 "\n"
-"        Returns <text> titlecased.\n"
+"        Returns <text> capitalized.\n"
 "        "
 msgstr ""
 
@@ -117,11 +118,20 @@ msgstr ""
 msgid ""
 "<text>\n"
 "\n"
-"        Returns the text surrounded by double quotes.\n"
+"        Returns <text> titlecased.\n"
 "        "
 msgstr ""
 
 #: plugin.py:148
+#, docstring
+msgid ""
+"<text>\n"
+"\n"
+"        Returns the text surrounded by double quotes.\n"
+"        "
+msgstr ""
+
+#: plugin.py:157
 #, docstring
 msgid ""
 "<string 1> <string 2>\n"
@@ -132,7 +142,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:159
+#: plugin.py:168
 #, docstring
 msgid ""
 "<size> <text>\n"
@@ -143,7 +153,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:170
+#: plugin.py:179
 #, docstring
 msgid ""
 "<number> <text>\n"
@@ -153,7 +163,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:183
+#: plugin.py:192
 #, docstring
 msgid ""
 "<format string> [<arg> ...]\n"
@@ -164,7 +174,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:197
+#: plugin.py:206
 msgid "Not enough arguments for the format string."
 msgstr ""
 

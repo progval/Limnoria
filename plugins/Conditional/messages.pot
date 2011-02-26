@@ -1,0 +1,199 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: plugin.py:54
+#, docstring
+msgid ""
+"Add the help for \"@plugin help Conditional\" here\n"
+"    This should describe *how* to use this plugin."
+msgstr ""
+
+#: plugin.py:61
+#, docstring
+msgid "Run a command from message, as if command was sent over IRC."
+msgstr ""
+
+#: plugin.py:69
+#, docstring
+msgid ""
+"<condition> <ifcommand> <elsecommand>\n"
+"        \n"
+"        Runs <ifcommand> if <condition> evaluates to true, runs <elsecommand>\n"
+"        if it evaluates to false.\n"
+"        \n"
+"        Use other logical operators defined in this plugin and command nesting\n"
+"        to your advantage here.\n"
+"        "
+msgstr ""
+
+#: plugin.py:85
+#, docstring
+msgid ""
+"<cond1> [<cond2> ... <condN>]\n"
+"        \n"
+"        Returns true if all conditions supplied evaluate to true.\n"
+"        "
+msgstr ""
+
+#: plugin.py:96
+#, docstring
+msgid ""
+"<cond1> [<cond2> ... <condN>]\n"
+"        \n"
+"        Returns true if any one of conditions supplied evaluates to true.\n"
+"        "
+msgstr ""
+
+#: plugin.py:107
+#, docstring
+msgid ""
+"<cond1> [<cond2> ... <condN>]\n"
+"        \n"
+"        Returns true if only one of conditions supplied evaluates to true.\n"
+"        "
+msgstr ""
+
+#: plugin.py:118
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a string comparison on <item1> and <item2>. \n"
+"        Returns true if they are equal.\n"
+"        "
+msgstr ""
+
+#: plugin.py:130
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a string comparison on <item1> and <item2>. \n"
+"        Returns true if they are not equal.\n"
+"        "
+msgstr ""
+
+#: plugin.py:142
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a string comparison on <item1> and <item2>. \n"
+"        Returns true if <item1> is greater than <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:154
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a string comparison on <item1> and <item2>. \n"
+"        Returns true if <item1> is greater than or equal to <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:166
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a string comparison on <item1> and <item2>. \n"
+"        Returns true if <item1> is less than <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:178
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a string comparison on <item1> and <item2>. \n"
+"        Returns true if <item1> is less than or equal to <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:190
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Determines if <item1> is a substring of <item2>. \n"
+"        Returns true if <item1> is contained in <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:202
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a numeric comparison on <item1> and <item2>. \n"
+"        Returns true if they are equal.\n"
+"        "
+msgstr ""
+
+#: plugin.py:214
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a numeric comparison on <item1> and <item2>. \n"
+"        Returns true if they are not equal.\n"
+"        "
+msgstr ""
+
+#: plugin.py:226
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a numeric comparison on <item1> and <item2>. \n"
+"        Returns true if they <item1> is greater than <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:238
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a numeric comparison on <item1> and <item2>. \n"
+"        Returns true if <item1> is greater than or equal to <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:250
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a numeric comparison on <item1> and <item2>. \n"
+"        Returns true if <item1> is less than <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:262
+#, docstring
+msgid ""
+"<item1> <item2>\n"
+"        \n"
+"        Does a numeric comparison on <item1> and <item2>. \n"
+"        Returns true if <item1> is less than or equal to <item2>.\n"
+"        "
+msgstr ""
+

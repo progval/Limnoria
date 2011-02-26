@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-28 16:15+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,19 @@ msgid ""
 "    the first place in which they're seen, or in private."
 msgstr ""
 
+#: config.py:52
+msgid ""
+"Determines whether users will be notified upon\n"
+"    joining any channel the bot is in, or only upon sending a message."
+msgstr ""
+
+#: config.py:55
+msgid ""
+"Determines the maximum number of\n"
+"    days that a message will remain queued for a user. After this time elapses,\n"
+"    the message will be deleted. If this value is 0, there is no maximum."
+msgstr ""
+
 #: plugin.py:46
 #, docstring
 msgid ""
@@ -45,7 +58,23 @@ msgstr ""
 msgid "just now"
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:106
+#, docstring
+msgid ""
+"Validate nick according to the IRC RFC 2812 spec.\n"
+"\n"
+"        Reference: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1\n"
+"\n"
+"        Some irc clients' tab-completion feature appends 'address' characters\n"
+"        to nick, such as ':' or ','. We try correcting for that by trimming\n"
+"        a char off the end.\n"
+"\n"
+"        If nick incorrigibly invalid, return False, otherwise,\n"
+"        return (possibly trimmed) nick.\n"
+"        "
+msgstr ""
+
+#: plugin.py:151
 #, docstring
 msgid ""
 "<nick> <text>\n"
@@ -56,15 +85,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:159
 msgid "I can't send notes to myself."
 msgstr ""
 
-#: plugin.py:120
+#: plugin.py:169
 msgid "That person's message queue is already full."
 msgstr ""
 
-#: plugin.py:125
+#: plugin.py:174
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -74,19 +103,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:136
+#: plugin.py:185
 msgid "I have no notes for that nick."
 msgstr ""
 
-#: plugin.py:141
+#: plugin.py:190
 msgid "I currently have notes waiting for %L."
 msgstr ""
 
-#: plugin.py:144
+#: plugin.py:193
 msgid "I have no notes waiting to be delivered."
 msgstr ""
 
-#: plugin.py:149
+#: plugin.py:198
 #, docstring
 msgid ""
 "<nick>\n"
@@ -95,11 +124,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:158
+#: plugin.py:207
 msgid "There were no notes for %r"
 msgstr ""
 
-#: plugin.py:182
+#: plugin.py:231
 msgid "Sent %s: <%s> %s"
 msgstr ""
 

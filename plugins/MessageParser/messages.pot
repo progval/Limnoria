@@ -1,0 +1,152 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: plugin.py:65
+#, docstring
+msgid ""
+"This plugin can set regexp triggers to activate the bot.\n"
+"    Use 'add' command to add regexp trigger, 'remove' to remove."
+msgstr ""
+
+#: plugin.py:73
+#, docstring
+msgid "Create the database and connect to it."
+msgstr ""
+
+#: plugin.py:96
+#, docstring
+msgid "Use this to get a database for a specific channel."
+msgstr ""
+
+#: plugin.py:119
+#, docstring
+msgid "Run a command from message, as if command was sent over IRC."
+msgstr ""
+
+#: plugin.py:127
+#, docstring
+msgid ""
+"Check if the user has any of the required capabilities to manage\n"
+"        the regexp database."
+msgstr ""
+
+#: plugin.py:168
+#, docstring
+msgid ""
+"[<channel>] <regexp> <action>\n"
+"\n"
+"        Associates <regexp> with <action>.  <channel> is only\n"
+"        necessary if the message isn't sent on the channel\n"
+"        itself.  Action is echoed upon regexp match, with variables $1, $2, \n"
+"        etc. being interpolated from the regexp match groups."
+msgstr ""
+
+#: plugin.py:207
+#, docstring
+msgid ""
+"[<channel>] [--id] <regexp>]\n"
+"\n"
+"        Removes the trigger for <regexp> from the triggers database.  \n"
+"        <channel> is only necessary if\n"
+"        the message isn't sent in the channel itself.\n"
+"        If option --id specified, will retrieve by regexp id, not content.\n"
+"        "
+msgstr ""
+
+#: plugin.py:244
+#, docstring
+msgid ""
+"[<channel>] <regexp>\n"
+"\n"
+"        Locks the <regexp> so that it cannot be\n"
+"        removed or overwritten to.  <channel> is only necessary if the message isn't\n"
+"        sent in the channel itself.\n"
+"        "
+msgstr ""
+
+#: plugin.py:266
+#, docstring
+msgid ""
+"[<channel>] <regexp>\n"
+"\n"
+"        Unlocks the entry associated with <regexp> so that it can be\n"
+"        removed or overwritten.  <channel> is only necessary if the message isn't\n"
+"        sent in the channel itself.\n"
+"        "
+msgstr ""
+
+#: plugin.py:288
+#, docstring
+msgid ""
+"[<channel>] [--id] <regexp>\n"
+"\n"
+"        Looks up the value of <regexp> in the triggers database.\n"
+"        <channel> is only necessary if the message isn't sent in the channel \n"
+"        itself.\n"
+"        If option --id specified, will retrieve by regexp id, not content.\n"
+"        "
+msgstr ""
+
+#: plugin.py:316
+#, docstring
+msgid ""
+"[<channel>] [--id] <regexp>\n"
+"\n"
+"        Display information about <regexp> in the triggers database.\n"
+"        <channel> is only necessary if the message isn't sent in the channel \n"
+"        itself.\n"
+"        If option --id specified, will retrieve by regexp id, not content.\n"
+"        "
+msgstr ""
+
+#: plugin.py:354
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Lists regexps present in the triggers database.\n"
+"        <channel> is only necessary if the message isn't sent in the channel \n"
+"        itself. Regexp ID listed in paretheses.\n"
+"        "
+msgstr ""
+
+#: plugin.py:376
+#, docstring
+msgid ""
+"[<channel>]\n"
+"        \n"
+"        Returns a list of top-ranked regexps, sorted by usage count \n"
+"        (rank). The number of regexps returned is set by the \n"
+"        rankListLength registry value. <channel> is only necessary if the \n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+
+#: plugin.py:399
+#, docstring
+msgid ""
+"[<channel>]\n"
+"        \n"
+"        Vacuums the database for <channel>.\n"
+"        See SQLite vacuum doc here: http://www.sqlite.org/lang_vacuum.html\n"
+"        <channel> is only necessary if the message isn't sent in \n"
+"        the channel itself.\n"
+"        First check if user has the required capability specified in plugin \n"
+"        config requireVacuumCapability.\n"
+"        "
+msgstr ""
+

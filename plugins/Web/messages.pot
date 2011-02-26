@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-20 09:39+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,11 +79,11 @@ msgid ""
 msgstr ""
 
 #: plugin.py:157 plugin.py:162
-msgid "%u is %i bytes long."
+msgid "%u is %S long."
 msgstr ""
 
 #: plugin.py:164
-msgid "The server didn't tell me how long %u is but it's longer than %i bytes."
+msgid "The server didn't tell me how long %u is but it's longer than %S."
 msgstr ""
 
 #: plugin.py:173
@@ -100,7 +100,7 @@ msgid "That URL appears to have no HTML title."
 msgstr ""
 
 #: plugin.py:190
-msgid "That URL appears to have no HTML title within the first %i bytes."
+msgid "That URL appears to have no HTML title within the first %S."
 msgstr ""
 
 #: plugin.py:198

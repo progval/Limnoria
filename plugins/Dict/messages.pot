@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 10:39+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgid ""
 "    will use all dictionaries to define words."
 msgstr ""
 
-#: plugin.py:52
+#: plugin.py:54
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -45,7 +45,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:68
+#: plugin.py:70
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -54,7 +54,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:83
+#: plugin.py:85
 #, docstring
 msgid ""
 "[<dictionary>] <word>\n"
@@ -64,19 +64,31 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:106
+#: plugin.py:108
 msgid "You must give a word to define."
 msgstr ""
 
-#: plugin.py:112
+#: plugin.py:114
 msgid "No definition for %q could be found."
 msgstr ""
 
-#: plugin.py:115
+#: plugin.py:117
 msgid "No definition for %q could be found in %s"
 msgstr ""
 
-#: plugin.py:127
+#: plugin.py:129
 msgid "%L responded: %s"
+msgstr ""
+
+#: plugin.py:136
+#, docstring
+msgid ""
+"<word> [<word> ...]\n"
+"        Gets a random synonym from the Moby Thesaurus (moby-thes) database.\n"
+"        \n"
+"        If given many words, gets a random synonym for each of them.\n"
+"        \n"
+"        Quote phrases to have them treated as one lookup word.\n"
+"        "
 msgstr ""
 

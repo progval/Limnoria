@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-20 08:55+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,7 +101,7 @@ msgid ""
 "    voiced by the ChanServ when it joins the channel."
 msgstr ""
 
-#: plugin.py:48
+#: plugin.py:47
 #, docstring
 msgid ""
 "This plugin handles dealing with Services on networks that provide them.\n"
@@ -114,11 +114,11 @@ msgid ""
 "    necessary if the bot is properly configured."
 msgstr ""
 
-#: plugin.py:396
+#: plugin.py:397
 msgid "You must set supybot.plugins.Services.ChanServ before I'm able to send the %s command."
 msgstr ""
 
-#: plugin.py:402
+#: plugin.py:403
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -128,11 +128,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:408
+#: plugin.py:409
 msgid "I'm already opped in %s."
 msgstr ""
 
-#: plugin.py:415
+#: plugin.py:416
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -142,11 +142,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:421
+#: plugin.py:422
 msgid "I'm already voiced in %s."
 msgstr ""
 
-#: plugin.py:438
+#: plugin.py:439
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -158,7 +158,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:459
+#: plugin.py:460
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -170,7 +170,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:480
+#: plugin.py:481
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -179,15 +179,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:489
+#: plugin.py:490
 msgid "I don't have a configured password for my current nick."
 msgstr ""
 
-#: plugin.py:492
+#: plugin.py:493
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to do identify."
 msgstr ""
 
-#: plugin.py:498
+#: plugin.py:499
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -197,15 +197,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:507
+#: plugin.py:508
 msgid "I cowardly refuse to ghost myself."
 msgstr ""
 
-#: plugin.py:512
+#: plugin.py:513
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to ghost a nick."
 msgstr ""
 
-#: plugin.py:518
+#: plugin.py:519
 #, docstring
 msgid ""
 "<nick> [<password>]\n"
@@ -215,11 +215,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:528
+#: plugin.py:529
 msgid "That nick was not configured with a password."
 msgstr ""
 
-#: plugin.py:539
+#: plugin.py:540
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -229,7 +229,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:549
+#: plugin.py:550
 msgid "I'm not currently configured for any nicks."
 msgstr ""
 

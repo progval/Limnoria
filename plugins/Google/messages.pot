@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-14 18:30+CET\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,12 +27,12 @@ msgstr ""
 msgid "Do you want the Google search snarfer enabled by default?"
 msgstr ""
 
-#: config.py:88
+#: config.py:89
 #, docstring
 msgid "Value must be 1 <= n <= 8"
 msgstr ""
 
-#: config.py:99
+#: config.py:100
 msgid ""
 "Determines the URL that will be sent to Google for\n"
 "    the Referer field of the search requests.  If this value is empty, a\n"
@@ -40,7 +40,7 @@ msgid ""
 "    http://$server/$botName"
 msgstr ""
 
-#: config.py:104
+#: config.py:105
 msgid ""
 "Determines whether the search snarfer is\n"
 "    enabled.  If so, messages (even unaddressed ones) beginning with the word\n"
@@ -48,33 +48,33 @@ msgid ""
 "    channel."
 msgstr ""
 
-#: config.py:109
+#: config.py:110
 msgid ""
 "Determines whether the word 'google' in the\n"
 "    bot's output will be made colorful (like Google's logo)."
 msgstr ""
 
-#: config.py:112
+#: config.py:113
 msgid "Determines whether results are bolded."
 msgstr ""
 
-#: config.py:114
+#: config.py:115
 msgid ""
 "Determines the maximum number of results returned\n"
 "    from the google command."
 msgstr ""
 
-#: config.py:117
+#: config.py:118
 msgid ""
 "Determines what default language is used in\n"
 "    searches.  If left empty, no specific language will be requested."
 msgstr ""
 
-#: config.py:117
+#: config.py:118
 msgid "en"
 msgstr ""
 
-#: config.py:120
+#: config.py:121
 msgid ""
 "Determines what level of search filtering to use\n"
 "    by default.  'active' - most filtering, 'moderate' - default filtering,\n"
@@ -174,12 +174,12 @@ msgstr ""
 msgid "to language"
 msgstr ""
 
-#: plugin.py:297
+#: plugin.py:314
 #, docstring
 msgid "^google\\s+(.*)$"
 msgstr ""
 
-#: plugin.py:320
+#: plugin.py:336
 #, docstring
 msgid ""
 "<expression>\n"
@@ -188,11 +188,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:337
+#: plugin.py:353
 msgid "Google's calculator didn't come up with anything."
 msgstr ""
 
-#: plugin.py:343
+#: plugin.py:359
 #, docstring
 msgid ""
 "<phone number>\n"
@@ -201,7 +201,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:357
+#: plugin.py:373
 msgid "Google's phonebook didn't come up with anything."
 msgstr ""
 

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-19 19:27+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,20 +17,20 @@ msgstr ""
 
 #: config.py:50
 msgid ""
-"Determines whether the bot will bold the title of the feed when it\n"
-"    announces new news."
+"Determines whether the bot will bold the title of the feed when\n"
+"    it announces new news."
 msgstr ""
 
 #: config.py:53
 msgid ""
-"Determines what string is used\n"
-"    to separate headlines in new feeds."
+"Determines what string is\n"
+"    used to separate headlines in new feeds."
 msgstr ""
 
 #: config.py:56
 msgid ""
-"Determines what prefix\n"
-"    is prepended (if any) to the new news item announcements made in the\n"
+"Determines what\n"
+"    prefix is prepended (if any) to the new news item announcements made in the\n"
 "    channel."
 msgstr ""
 
@@ -62,14 +62,14 @@ msgid ""
 "    listed when a feed is automatically announced."
 msgstr ""
 
-#: config.py:78
+#: config.py:84
 msgid ""
 "Determines whether the bot will list the link\n"
 "    along with the title of the feed when a feed is automatically\n"
 "    announced."
 msgstr ""
 
-#: plugin.py:63
+#: plugin.py:62
 #, docstring
 msgid ""
 "This plugin is useful both for announcing updates to RSS feeds in a\n"
@@ -78,7 +78,7 @@ msgid ""
 "    command to determine what feeds should be announced in a given channel."
 msgstr ""
 
-#: plugin.py:311
+#: plugin.py:316
 #, docstring
 msgid ""
 "<name> <url>\n"
@@ -88,7 +88,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:322
+#: plugin.py:327
 #, docstring
 msgid ""
 "<name>\n"
@@ -98,15 +98,25 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:328
+#: plugin.py:333
 msgid "That's not a valid RSS feed command name."
 msgstr ""
 
-#: plugin.py:346
-msgid "I am currently not announcing any feeds."
+#: plugin.py:344
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
+"            Returns the list of feeds announced in <channel>.  <channel> is\n"
+"            only necessary if the message isn't sent in the channel itself.\n"
+"            "
 msgstr ""
 
 #: plugin.py:351
+msgid "I am currently not announcing any feeds."
+msgstr ""
+
+#: plugin.py:356
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -118,7 +128,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:369
+#: plugin.py:374
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -130,7 +140,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:387
+#: plugin.py:392
 #, docstring
 msgid ""
 "<url> [<number of headlines>]\n"
@@ -140,11 +150,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:400
+#: plugin.py:405
 msgid "Couldn't get RSS feed."
 msgstr ""
 
-#: plugin.py:413
+#: plugin.py:420
 #, docstring
 msgid ""
 "<url|feed>\n"
@@ -154,11 +164,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:426
+#: plugin.py:433
 msgid "I couldn't retrieve that RSS feed."
 msgstr ""
 
-#: plugin.py:439
+#: plugin.py:446
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr ""
 
