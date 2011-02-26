@@ -255,19 +255,15 @@ class Unix(callbacks.Plugin):
             irc.error(_('The wtf command is not configured.  If it is installed '
                       'on this system, reconfigure the '
                       'supybot.plugins.Unix.wtf.command configuration '
-<<<<<<< HEAD
                       'variable appropriately.'))
-    wtf = wrap(wtf, [optional(('literal', ['is'])), 'something'])
-=======
-                      'variable appropriately.')
     wtf = thread(wrap(wtf, [optional(('literal', ['is'])), 'something']))
->>>>>>> edc4d86... Unix: various enhancements to the ping command:
 
+    @internationalizeDocstring
     def ping(self, irc, msg, args, optlist, host):
-        """[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip> 
-        Sends an ICMP echo request to the specified host. 
-        The arguments correspond with those listed in ping(8). --c is 
-        limited to 10 packets or less (default is 5). --i is limited to 5  
+        """[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>
+        Sends an ICMP echo request to the specified host.
+        The arguments correspond with those listed in ping(8). --c is
+        limited to 10 packets or less (default is 5). --i is limited to 5
         or less. --W is limited to 10 or less.
         """
         pingCmd = self.registryValue('ping.command')
@@ -279,11 +275,11 @@ class Unix(callbacks.Plugin):
         else:
             try: host = host.group(0)
             except AttributeError: pass
-            
+
             args = [pingCmd]
             for opt, val in optlist:
                 if opt == 'c' and val > 10: val = 10
-                if opt == 'i' and val >  5: val = 5                
+                if opt == 'i' and val >  5: val = 5
                 if opt == 'W' and val > 10: val = 10
                 args.append('-%s' % opt)
                 args.append(str(val))
@@ -292,7 +288,7 @@ class Unix(callbacks.Plugin):
                 args.append('5')
             args.append(host)
             try:
-                inst = subprocess.Popen(args, stdout=subprocess.PIPE, 
+                inst = subprocess.Popen(args, stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
                                               stdin=file(os.devnull))
             except OSError, e:
@@ -304,10 +300,10 @@ class Unix(callbacks.Plugin):
             else:
                 response = result[0].split("\n");
                 if response[1]:
-                    irc.reply(' '.join(response[1].split()[3:5]).split(':')[0] 
+                    irc.reply(' '.join(response[1].split()[3:5]).split(':')[0]
                               + ': ' + ' '.join(response[-3:]))
                 else:
-                    irc.reply(' '.join(response[0].split()[1:3]) 
+                    irc.reply(' '.join(response[0].split()[1:3])
                               + ': ' + ' '.join(response[-3:]))
 
     _hostExpr = re.compile(r'^[a-z0-9][a-z0-9\.-]*[a-z0-9]$', re.I)
