@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-28 16:15+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -26,6 +26,19 @@ msgid ""
 "    the first place in which they're seen, or in private."
 msgstr "Détermine si les utilisateurs seront notifiés au premier endroit où ils sont vus, ou en privé."
 
+#: config.py:52
+msgid ""
+"Determines whether users will be notified upon\n"
+"    joining any channel the bot is in, or only upon sending a message."
+msgstr "Détermine si les utilisateurs seront notifiés au premier endroit où ils sont vus, ou seulement lorsqu'ils envoient un message."
+
+#: config.py:55
+msgid ""
+"Determines the maximum number of\n"
+"    days that a message will remain queued for a user. After this time elapses,\n"
+"    the message will be deleted. If this value is 0, there is no maximum."
+msgstr "Détermine le nombre maximum de messages en attente d'un utilisateur. Après que ce temps se soit écoulé, le message sera supprimé. Si la valeur est 0, il n'y a pas de maximum."
+
 #: plugin.py:46
 msgid ""
 "Used to do things later; currently, it only allows the sending of\n"
@@ -42,7 +55,22 @@ msgstr "il y a %s"
 msgid "just now"
 msgstr "à l'instant"
 
-#: plugin.py:107
+#: plugin.py:106
+msgid ""
+"Validate nick according to the IRC RFC 2812 spec.\n"
+"\n"
+"        Reference: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1\n"
+"\n"
+"        Some irc clients' tab-completion feature appends 'address' characters\n"
+"        to nick, such as ':' or ','. We try correcting for that by trimming\n"
+"        a char off the end.\n"
+"\n"
+"        If nick incorrigibly invalid, return False, otherwise,\n"
+"        return (possibly trimmed) nick.\n"
+"        "
+msgstr ""
+
+#: plugin.py:151
 msgid ""
 "<nick> <text>\n"
 "\n"
@@ -55,15 +83,15 @@ msgstr ""
 "\n"
 "Dit le <texte> à <nick> la prochaine fois qu'il est vu. <nick> peut contenir des jokers, et le premier nick correspondant recevra la note."
 
-#: plugin.py:114
+#: plugin.py:159
 msgid "I can't send notes to myself."
 msgstr "Je ne peux m'envoyer de notes à moi-même."
 
-#: plugin.py:120
+#: plugin.py:169
 msgid "That person's message queue is already full."
 msgstr "La file d'attente des messages de cette personne est déjà pleine."
 
-#: plugin.py:125
+#: plugin.py:174
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -75,19 +103,19 @@ msgstr ""
 "\n"
 "Si le <nick> est donné, répond avec les notes en attente pour <nick> ; sinon, répond avec les nicks ayant des notes en attente."
 
-#: plugin.py:136
+#: plugin.py:185
 msgid "I have no notes for that nick."
 msgstr "Je n'ai pas de note pour ce nick."
 
-#: plugin.py:141
+#: plugin.py:190
 msgid "I currently have notes waiting for %L."
 msgstr "J'ai actuellement des notes en attente pour %L."
 
-#: plugin.py:144
+#: plugin.py:193
 msgid "I have no notes waiting to be delivered."
 msgstr "Je n'ai pas de note à délivrer."
 
-#: plugin.py:149
+#: plugin.py:198
 msgid ""
 "<nick>\n"
 "\n"
@@ -98,11 +126,11 @@ msgstr ""
 "\n"
 "Supprime les notes en attente pour <nick>."
 
-#: plugin.py:158
+#: plugin.py:207
 msgid "There were no notes for %r"
 msgstr "Il n'y a pas de note pour %r"
 
-#: plugin.py:182
+#: plugin.py:231
 msgid "Sent %s: <%s> %s"
 msgstr "Envoyé %s : <%s> %s"
 

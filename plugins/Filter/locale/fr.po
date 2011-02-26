@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-17 11:48+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -37,7 +37,7 @@ msgid ""
 "    in a word before it will be shrunken by the shrink command/filter."
 msgstr "Détermine le nombre minimum de lettre dans un mot pour qu'il soit coupé par la commande/le filtre shrink."
 
-#: plugin.py:51
+#: plugin.py:50
 msgid ""
 "This plugin offers several commands which transform text in some way.\n"
 "    It also provides the capability of using such commands to 'filter' the\n"
@@ -46,7 +46,7 @@ msgid ""
 "    Not very useful, but definitely quite fun :)"
 msgstr "Ce plugin offre quelques commandes qui peuvent être utilisées pour transformer du texte de différentes façons. Il fourni également la possiblité d'utiliser ces commandes pour 'filtrer' la sortie du bot ; par exemple, vous pouvez faire en sorte que tout ce que le bot dit le soit en l33tsp34k, en Morse, ou n'importe lequel des autres filtres.    Pas très utile, mais plutôt fun :)"
 
-#: plugin.py:85
+#: plugin.py:84
 msgid ""
 "[<channel>] [<command>]\n"
 "\n"
@@ -59,11 +59,11 @@ msgstr ""
 "\n"
 "Définit le filtre de sortie de ce plugin pour être <commande>. Si aucune commande n'est définie, supprime le filtre de sortie. <canal> n'est nécessaire que si la commande n'est pas envoyée sur le canal lui-même."
 
-#: plugin.py:98
+#: plugin.py:97
 msgid "That's not a valid filter command."
 msgstr "Ce n'est pas une commande de filtre valide"
 
-#: plugin.py:108
+#: plugin.py:107
 msgid ""
 "<text>\n"
 "\n"
@@ -76,7 +76,7 @@ msgstr ""
 "\n"
 "Retire toutes les voyelles du <texte> (si vous êtes curieux de pourquoi elle s'appelle 'hebrew', c'est parce que je (jemfinch) pense que que en Hébreux, il manque souvent les voyelles)."
 
-#: plugin.py:120
+#: plugin.py:119
 msgid ""
 "<text>\n"
 "\n"
@@ -87,7 +87,7 @@ msgstr ""
 "\n"
 "Supprime tous les espaces du <texte>."
 
-#: plugin.py:130
+#: plugin.py:129
 msgid ""
 "<text>\n"
 "\n"
@@ -98,7 +98,7 @@ msgstr ""
 "\n"
 "Renvoie le texte, avec toutes les lettres consécutives dupliquées supprimées."
 
-#: plugin.py:143
+#: plugin.py:142
 msgid ""
 "<text>\n"
 "\n"
@@ -109,7 +109,19 @@ msgstr ""
 "\n"
 "Retourne la représentation binaire du <texte>."
 
-#: plugin.py:169
+#: plugin.py:168
+msgid ""
+"<text>\n"
+"\n"
+"        Returns the character representation of binary <text>.\n"
+"        Assumes ASCII, 8 digits per character.\n"
+"        "
+msgstr ""
+"<texte>\n"
+"\n"
+"Retourne la représentation binaire du <texte>. Considère qu'il s'agit d'ASCII, 8 bits par caractère."
+
+#: plugin.py:179
 msgid ""
 "<text>\n"
 "\n"
@@ -121,7 +133,7 @@ msgstr ""
 "\n"
 "Retourne une chaîne héxadécimale à partir de la chaîne donnée ; une chaîne héxadécimale est une chaîne composée de la valeur héxadécimale de chaque caractère de la chaîne."
 
-#: plugin.py:179
+#: plugin.py:189
 msgid ""
 "<hexstring>\n"
 "\n"
@@ -133,11 +145,11 @@ msgstr ""
 "\n"
 "Retourne la chaîne correspondant à la <chaîne hexadécimale>. Bien sûr, <chaîne hexadécimale> ne doit contenir que des caractères hexadécimaux."
 
-#: plugin.py:187
+#: plugin.py:197
 msgid "Invalid input."
 msgstr "Entrée invalide."
 
-#: plugin.py:192
+#: plugin.py:202
 msgid ""
 "<text>\n"
 "\n"
@@ -150,7 +162,7 @@ msgstr ""
 "\n"
 "Déplace chaque caractère du <texte> de 13 places vers la droite de l'alphabet. Rot13 est courremment utilisé pour les textes qui doivent être cachés des yeux indiscrets, mais être facilement reversible."
 
-#: plugin.py:203
+#: plugin.py:213
 msgid ""
 "<text>\n"
 "\n"
@@ -161,7 +173,7 @@ msgstr ""
 "\n"
 "Retourne la version zézéyée du texte."
 
-#: plugin.py:234
+#: plugin.py:244
 msgid ""
 "<text>\n"
 "\n"
@@ -172,7 +184,7 @@ msgstr ""
 "\n"
 "Retourne la version l33t du <texte>."
 
-#: plugin.py:254
+#: plugin.py:264
 msgid ""
 "<text>\n"
 "\n"
@@ -183,7 +195,7 @@ msgstr ""
 "\n"
 "Répond avec une traduction k-rad du <texte>."
 
-#: plugin.py:270
+#: plugin.py:280
 msgid ""
 "<text>\n"
 "\n"
@@ -195,7 +207,7 @@ msgstr ""
 "\n"
 "Répond avec une chaîne où chaque mot est mélangé ; c'est à dire que chaque lettre interne (=toute lettre qui n'est pas la première ni la dernière) est mélangée avec les autres."
 
-#: plugin.py:335
+#: plugin.py:345
 msgid ""
 "<Morse code text>\n"
 "\n"
@@ -206,7 +218,7 @@ msgstr ""
 "\n"
 "Fait l'inverse de la commande morse."
 
-#: plugin.py:352
+#: plugin.py:362
 msgid ""
 "<text>\n"
 "\n"
@@ -217,7 +229,7 @@ msgstr ""
 "\n"
 "Donne le code Morse équivalent à la chaîne donnée."
 
-#: plugin.py:364
+#: plugin.py:374
 msgid ""
 "<text>\n"
 "\n"
@@ -228,7 +240,7 @@ msgstr ""
 "\n"
 "Inverse le <texte>."
 
-#: plugin.py:381
+#: plugin.py:391
 msgid ""
 "<text>\n"
 "\n"
@@ -239,7 +251,7 @@ msgstr ""
 "\n"
 "Retourne le <texte> avec chaque caractère coloré de façon aléatoire."
 
-#: plugin.py:391
+#: plugin.py:401
 msgid ""
 "<text>\n"
 "\n"
@@ -250,7 +262,7 @@ msgstr ""
 "\n"
 "Retourne le texte colorisé comme un arc-en-ciel."
 
-#: plugin.py:402
+#: plugin.py:412
 msgid ""
 "<text>\n"
 "\n"
@@ -261,7 +273,7 @@ msgstr ""
 "\n"
 "Retourne le texte en retirant tous les codes de couleur"
 
-#: plugin.py:411
+#: plugin.py:421
 msgid ""
 "<text>\n"
 "\n"
@@ -272,7 +284,7 @@ msgstr ""
 "\n"
 "Retourne le <texte> comme si un AOLuser l'avait dit."
 
-#: plugin.py:438
+#: plugin.py:448
 msgid ""
 "<text>\n"
 "\n"
@@ -283,279 +295,279 @@ msgstr ""
 "\n"
 "Retourne le <texte> comme si JeffK l'avait dit lui-même."
 
-#: plugin.py:534
+#: plugin.py:544
 msgid "ay"
 msgstr "ah"
 
-#: plugin.py:534
+#: plugin.py:544
 msgid "bee"
 msgstr "bé"
 
-#: plugin.py:534
+#: plugin.py:544
 msgid "dee"
 msgstr "dé"
 
-#: plugin.py:534
+#: plugin.py:544
 msgid "see"
 msgstr "cé"
 
-#: plugin.py:535
+#: plugin.py:545
 msgid "aych"
 msgstr "ache"
 
-#: plugin.py:535
+#: plugin.py:545
 msgid "ee"
 msgstr "euh"
 
-#: plugin.py:535
+#: plugin.py:545
 msgid "eff"
 msgstr "èf"
 
-#: plugin.py:535
+#: plugin.py:545
 msgid "gee"
 msgstr "gé"
 
-#: plugin.py:536
+#: plugin.py:546
 msgid "ell"
 msgstr "èl"
 
-#: plugin.py:536
+#: plugin.py:546
 msgid "eye"
 msgstr "ih"
 
-#: plugin.py:536
+#: plugin.py:546
 msgid "jay"
 msgstr "ji"
 
-#: plugin.py:536
+#: plugin.py:546
 msgid "kay"
 msgstr "ka"
 
-#: plugin.py:537
+#: plugin.py:547
 msgid "cue"
 msgstr "cu"
 
-#: plugin.py:537
+#: plugin.py:547
 msgid "em"
 msgstr "èm"
 
-#: plugin.py:537
+#: plugin.py:547
 msgid "en"
 msgstr "èn"
 
-#: plugin.py:537
+#: plugin.py:547
 msgid "oh"
 msgstr "oh"
 
-#: plugin.py:537
+#: plugin.py:547
 msgid "pee"
 msgstr "pé"
 
-#: plugin.py:538
+#: plugin.py:548
 msgid "arr"
 msgstr "ère"
 
-#: plugin.py:538
+#: plugin.py:548
 msgid "ess"
 msgstr "èce"
 
-#: plugin.py:538
+#: plugin.py:548
 msgid "tee"
 msgstr "té"
 
-#: plugin.py:538
+#: plugin.py:548
 msgid "you"
 msgstr "uh"
 
-#: plugin.py:539
+#: plugin.py:549
 msgid "double-you"
 msgstr "double-vé"
 
-#: plugin.py:539
+#: plugin.py:549
 msgid "ecks"
 msgstr "icks"
 
-#: plugin.py:539
+#: plugin.py:549
 msgid "vee"
 msgstr "vé"
 
-#: plugin.py:539
+#: plugin.py:549
 msgid "why"
 msgstr "i-grec"
 
-#: plugin.py:540
+#: plugin.py:550
 msgid "zee"
 msgstr "zèd"
 
-#: plugin.py:545
+#: plugin.py:555
 msgid "exclamation point"
 msgstr "point d'exclamation"
 
-#: plugin.py:546
+#: plugin.py:556
 msgid "quote"
 msgstr "guillemet double"
 
-#: plugin.py:547
+#: plugin.py:557
 msgid "pound"
 msgstr "livre"
 
-#: plugin.py:548
+#: plugin.py:558
 msgid "dollar sign"
 msgstr "signe du dollar"
 
-#: plugin.py:549
+#: plugin.py:559
 msgid "percent"
 msgstr "pourcent"
 
-#: plugin.py:550
+#: plugin.py:560
 msgid "ampersand"
 msgstr "espèrluette"
 
-#: plugin.py:551
+#: plugin.py:561
 msgid "single quote"
 msgstr "guillemet"
 
-#: plugin.py:552
+#: plugin.py:562
 msgid "left paren"
 msgstr "parenthèse ouvrante"
 
-#: plugin.py:553
+#: plugin.py:563
 msgid "right paren"
 msgstr "parenthèse fermante"
 
-#: plugin.py:554
+#: plugin.py:564
 msgid "asterisk"
 msgstr "asterisque"
 
-#: plugin.py:555
+#: plugin.py:565
 msgid "plus"
 msgstr "plus"
 
-#: plugin.py:556
+#: plugin.py:566
 msgid "comma"
 msgstr "virgule"
 
-#: plugin.py:557
+#: plugin.py:567
 msgid "minus"
 msgstr "moins"
 
-#: plugin.py:558
+#: plugin.py:568
 msgid "period"
 msgstr "point"
 
-#: plugin.py:559
+#: plugin.py:569
 msgid "slash"
 msgstr "slash"
 
-#: plugin.py:560
+#: plugin.py:570
 msgid "colon"
 msgstr "double-point"
 
-#: plugin.py:561
+#: plugin.py:571
 msgid "semicolon"
 msgstr "point-virgule"
 
-#: plugin.py:562
+#: plugin.py:572
 msgid "less than"
 msgstr "inférieur"
 
-#: plugin.py:563
+#: plugin.py:573
 msgid "equals"
 msgstr "moins que"
 
-#: plugin.py:564
+#: plugin.py:574
 msgid "greater than"
 msgstr "supérieur"
 
-#: plugin.py:565
+#: plugin.py:575
 msgid "question mark"
 msgstr "point d'exclamation"
 
-#: plugin.py:566
+#: plugin.py:576
 msgid "at"
 msgstr "arobase"
 
-#: plugin.py:567
+#: plugin.py:577
 msgid "left bracket"
 msgstr "crochet ouvrant"
 
-#: plugin.py:568
+#: plugin.py:578
 msgid "backslash"
 msgstr "anti-slash"
 
-#: plugin.py:569
+#: plugin.py:579
 msgid "right bracket"
 msgstr "crochet fermant"
 
-#: plugin.py:570
+#: plugin.py:580
 msgid "caret"
 msgstr "accent circonflexe"
 
-#: plugin.py:571
+#: plugin.py:581
 msgid "underscore"
 msgstr "underscore"
 
-#: plugin.py:572
+#: plugin.py:582
 msgid "backtick"
 msgstr "accent grave"
 
-#: plugin.py:573
+#: plugin.py:583
 msgid "left brace"
 msgstr "crochet ouvrant"
 
-#: plugin.py:574
+#: plugin.py:584
 msgid "pipe"
 msgstr "pipe"
 
-#: plugin.py:575
+#: plugin.py:585
 msgid "right brace"
 msgstr "crochet fermant"
 
-#: plugin.py:576
+#: plugin.py:586
 msgid "tilde"
 msgstr "tilde"
 
-#: plugin.py:579
+#: plugin.py:589
 msgid "one"
 msgstr "un"
 
-#: plugin.py:579
+#: plugin.py:589
 msgid "three"
 msgstr "trois"
 
-#: plugin.py:579
+#: plugin.py:589
 msgid "two"
 msgstr "deux"
 
-#: plugin.py:579
+#: plugin.py:589
 msgid "zero"
 msgstr "zéro"
 
-#: plugin.py:580
+#: plugin.py:590
 msgid "five"
 msgstr "cinq"
 
-#: plugin.py:580
+#: plugin.py:590
 msgid "four"
 msgstr "quatre"
 
-#: plugin.py:580
+#: plugin.py:590
 msgid "seven"
 msgstr "sept"
 
-#: plugin.py:580
+#: plugin.py:590
 msgid "six"
 msgstr "six"
 
-#: plugin.py:581
+#: plugin.py:591
 msgid "eight"
 msgstr "huit"
 
-#: plugin.py:581
+#: plugin.py:591
 msgid "nine"
 msgstr "neuf"
 
-#: plugin.py:585
+#: plugin.py:595
 msgid ""
 "<text>\n"
 "\n"
@@ -566,7 +578,7 @@ msgstr ""
 "\n"
 "Retourne le <texte>, épellé phonétiquement"
 
-#: plugin.py:615
+#: plugin.py:625
 msgid ""
 "<text>\n"
 "\n"
@@ -577,7 +589,7 @@ msgstr ""
 "\n"
 "Retourne le <texte> comme si GNU/RMS l'avait dite."
 
-#: plugin.py:624
+#: plugin.py:634
 msgid ""
 "<text>\n"
 "\n"
@@ -590,7 +602,7 @@ msgstr ""
 "\n"
 "Retourne le texte avec chaque mot plus long que supybot.plugins.Filter.shrink.minimum découpé (par exemple, \"internationalization\" devient i18n)"
 
-#: plugin.py:643
+#: plugin.py:653
 msgid ""
 "<text>\n"
 "\n"
@@ -601,7 +613,7 @@ msgstr ""
 "\n"
 "Retourne le <texte> avec les I transormés en r et les r transformés en I."
 
-#: plugin.py:692
+#: plugin.py:702
 msgid ""
 "<text>\n"
 "\n"

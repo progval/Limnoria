@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-17 12:46+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -88,6 +88,18 @@ msgstr "<caractères à remplacer> doit être de la même taille que <caractère
 
 #: plugin.py:103
 msgid ""
+"<substring to translate> <substring to replace it with> <text>\n"
+"\n"
+"        Replaces all non-overlapping occurrences of <substring to translate>\n"
+"        with <substring to replace it with> in <text>.\n"
+"        "
+msgstr ""
+"<sous-chaîne à remplacer> <sous-chaîne de remplacement> <texte>\n"
+"\n"
+"Replace toutes les occurences de <sous-chaîne à remplacer> (à condition qu'elles n'entrent pas en conflit) par les <sous-chaîne de remplacement> dans le <texte>."
+
+#: plugin.py:112
+msgid ""
 "<text>\n"
 "\n"
 "        Returns <text> uppercased.\n"
@@ -97,7 +109,7 @@ msgstr ""
 "\n"
 "Retourne le texte, en majuscules"
 
-#: plugin.py:112
+#: plugin.py:121
 msgid ""
 "<text>\n"
 "\n"
@@ -108,7 +120,7 @@ msgstr ""
 "\n"
 "Retourne le texte, en minuscules"
 
-#: plugin.py:121
+#: plugin.py:130
 msgid ""
 "<text>\n"
 "\n"
@@ -119,7 +131,7 @@ msgstr ""
 "\n"
 "Retourne le texte, capitalisé"
 
-#: plugin.py:130
+#: plugin.py:139
 msgid ""
 "<text>\n"
 "\n"
@@ -130,7 +142,7 @@ msgstr ""
 "\n"
 "Retourne le texte, mis en majuscules de titre."
 
-#: plugin.py:139
+#: plugin.py:148
 msgid ""
 "<text>\n"
 "\n"
@@ -141,7 +153,7 @@ msgstr ""
 "\n"
 "Retourne le texte, entouré de doubles guillemets."
 
-#: plugin.py:148
+#: plugin.py:157
 msgid ""
 "<string 1> <string 2>\n"
 "\n"
@@ -154,7 +166,7 @@ msgstr ""
 "\n"
 "Concatène les deux chaînes. Notez que ce n'est pas la même chose que de les joindre avec \"\", car, si <chaîne 2> contient des espaces, ils ne seront pas supprimés par la concaténation."
 
-#: plugin.py:159
+#: plugin.py:168
 msgid ""
 "<size> <text>\n"
 "\n"
@@ -167,7 +179,7 @@ msgstr ""
 "\n"
 "Coup le <texte> en morceaux de <taille>, en découpant les caractères dépassant la <taille>. Si la <taille> est un nombre négatif, il coupe en comptant à partir de la fin du texte."
 
-#: plugin.py:170
+#: plugin.py:179
 msgid ""
 "<number> <text>\n"
 "\n"
@@ -179,7 +191,7 @@ msgstr ""
 "\n"
 "Retourne le <nombre>-ième élément (séparé par des espaces) du <texte>. C'est à dire que si le texte est \"foo bar baz\" et que <nombre> est 2, \"bar\" sera retourné."
 
-#: plugin.py:183
+#: plugin.py:192
 msgid ""
 "<format string> [<arg> ...]\n"
 "\n"
@@ -191,7 +203,7 @@ msgstr ""
 "<chaîne de formattage> [<arg> ...]\n"
 "\n"
 
-#: plugin.py:197
+#: plugin.py:206
 msgid "Not enough arguments for the format string."
 msgstr "Pas assez d'arguments pour formatter la chaîne."
 

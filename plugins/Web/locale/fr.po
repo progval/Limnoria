@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-20 09:39+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -83,12 +83,12 @@ msgstr ""
 
 #: plugin.py:157
 #: plugin.py:162
-msgid "%u is %i bytes long."
-msgstr "%u est long de %i octets."
+msgid "%u is %S long."
+msgstr "%u est long de %S."
 
 #: plugin.py:164
-msgid "The server didn't tell me how long %u is but it's longer than %i bytes."
-msgstr "Le serveur ne m'a pas dit quelle est la longueur de %u, mais c'est sûr que c'est plus que %i octets."
+msgid "The server didn't tell me how long %u is but it's longer than %S."
+msgstr "Le serveur ne m'a pas dit quelle est la longueur de %u, mais c'est sûr que c'est plus que %S."
 
 #: plugin.py:173
 msgid ""
@@ -106,8 +106,8 @@ msgid "That URL appears to have no HTML title."
 msgstr "Cette URL semble ne pas avoir de titre HTML."
 
 #: plugin.py:190
-msgid "That URL appears to have no HTML title within the first %i bytes."
-msgstr "Ce URL semble ne pas avoir de titre HTML dans les %i premiers octets."
+msgid "That URL appears to have no HTML title within the first %S."
+msgstr "Ce URL semble ne pas avoir de titre HTML dans les %S au début du fichier."
 
 #: plugin.py:198
 msgid ""
