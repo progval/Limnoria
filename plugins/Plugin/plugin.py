@@ -130,7 +130,6 @@ class Plugin(callbacks.Plugin):
             irc.error(format('There is no command %q.', command))
     plugins = wrap(plugins, [many('something')])
 
->>>>>>> 3005752... fix docstring for Plugin.plugin command so it actually says what the command will do.
     def author(self, irc, msg, args, cb):
         """<plugin>
 
