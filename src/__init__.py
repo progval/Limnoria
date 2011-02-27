@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
