@@ -199,7 +199,7 @@ msgstr ""
 
 #: plugin.py:373
 msgid "I couldn't find a message matching that criteria in my history of %s messages."
-msgstr "Je ne peux trovuer de message correspondant à ce critère dans mon historique de %s messages."
+msgstr "Je ne peux trouver de message correspondant à ce critère dans mon historique de %s messages."
 
 #: plugin.py:388
 msgid ""
