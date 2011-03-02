@@ -1,0 +1,202 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot ChannelStats\n"
+"POT-Creation-Date: 2010-10-16 09:41+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Finnish\n"
+"X-Poedit-Country: FINLAND\n"
+
+#: config.py:60
+msgid ""
+"Determines whether the bot will keep channel\n"
+"    statistics on itself, possibly skewing the channel stats (especially in\n"
+"    cases where the bot is relaying between channels on a network)."
+msgstr ""
+"Määrittää pitääkö botti kanava\n"
+"tilastot itsellään, mahdollisesti vinouttaen kanava tilastot (etenkin\n"
+"tilanteissa, joissa botti on välittämässä kanavien välillä verkossa)."
+
+#: config.py:64
+msgid ""
+"Determines what\n"
+"    words (i.e., pieces of text with no spaces in them) are considered\n"
+"    'smileys' for the purposes of stats-keeping."
+msgstr ""
+"Määrittää mitkä\n"
+"sanat (esim. tekstin paloja ilman välilyöntiä niiden välissä ) lasketaan\n"
+"    'hymiöiksi' tilastojen pitämisen takia."
+
+#: config.py:68
+msgid ""
+"Determines what words\n"
+"    (i.e., pieces of text with no spaces in them ) are considered 'frowns' for\n"
+"    the purposes of stats-keeping."
+msgstr ""
+"Määrittää mitkä sanat\n"
+"    (esim. paloja tekstiä ilman välilyöntiä välissä ) lasketaan 'surioiksi'\n"
+"tilastojen pitämistä varten."
+
+#: plugin.py:246
+msgid ""
+"[<channel>] [<name>]\n"
+"\n"
+"        Returns the statistics for <name> on <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent on the channel itself.  If <name>\n"
+"        isn't given, it defaults to the user sending the command.\n"
+"        "
+msgstr ""
+"[<kanava>] [<nimi>]\n"
+"\n"
+" <nimi> <kanavalla>.  <kanava> on vaadittu\n"
+"jos viestiä ei lähetetä kanavalla itsessään.  Jos <nimi>\n"
+" ei ole annettu, se on oletuksena viestin lähettänyt henkilö.\n"
+"        "
+
+#: plugin.py:259
+msgid "I couldn't find you in my user database."
+msgstr "Minä en voi löytää sinua käyttäjä tietokannastani."
+
+#: plugin.py:272
+#, fuzzy
+msgid "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s has joined %n, parted %n, quit %n, kicked someone %n, been kicked %n, changed the topic %n, and changed the mode %n."
+msgstr "%s on lähettänyt %n; yhteensä %n, %n, %n, ja %n; %s noista viesteistä %s. %s on liittynyt %n, poistunut kanavalta %n, sulkenut %n, potkinut jonkun %n, ollut potkittu %n, vaihtanut aihetta %n, vaihtanut tilaa %n."
+
+#: plugin.py:279
+msgid "character"
+msgstr "merkki"
+
+#: plugin.py:280
+#: plugin.py:363
+msgid "word"
+msgstr "sana"
+
+#: plugin.py:281
+#: plugin.py:364
+msgid "smiley"
+msgstr "hymiö"
+
+#: plugin.py:282
+#: plugin.py:365
+msgid "frown"
+msgstr "surio"
+
+#: plugin.py:284
+#: plugin.py:366
+msgid "was an ACTION"
+msgstr "oli TOIMINTO"
+
+#: plugin.py:285
+#: plugin.py:367
+msgid "were ACTIONs"
+msgstr "olivat TOIMINTOja"
+
+#: plugin.py:287
+#: plugin.py:288
+#: plugin.py:289
+#: plugin.py:290
+#: plugin.py:291
+#: plugin.py:292
+#: plugin.py:293
+msgid "time"
+msgstr "aika"
+
+#: plugin.py:296
+msgid "I have no stats for that %s in %s."
+msgstr "Minulla ei ole tilastoja %s:stä %s:ään."
+
+#: plugin.py:304
+msgid ""
+"[<channel>] <stat expression>\n"
+"\n"
+"        Returns the ranking of users according to the given stat expression.\n"
+"        Valid variables in the stat expression include 'msgs', 'chars',\n"
+"        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',\n"
+"        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical\n"
+"        expression involving those variables is permitted.\n"
+"        "
+msgstr ""
+"[<kanava>] <tilasto lauseke>\n"
+"\n"
+"Palauttaa käyttäjien arvoasteikon perustuen annettuun tilasto lausekkeeseen.\n"
+"kelvolliset tilasto lausekkeet sisältävät 'msgs', 'chars',\n"
+"'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',\n"
+"'kicks', 'kicked', 'topics', and 'modes'. Mikä tahansa yksinkertainen matemaattinen\n"
+" lauseke sisältäen nämä arvot on sallittu.\n"
+"        "
+
+#: plugin.py:315
+msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
+msgstr "Ei ole mitään syytä miksi haluaisit alaviivoja tai sulkuja matemaattisessa lausekkeessa.  Ole hyvä ja poista ne."
+
+#: plugin.py:319
+#, fuzzy
+msgid "You can't use lambda in this command."
+msgstr "Et voi käyttää lambdaa tässä komennossa."
+
+#: plugin.py:333
+msgid "stat variable"
+msgstr "aloita muuttuja"
+
+#: plugin.py:349
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the statistics for <channel>.  <channel> is only necessary if\n"
+"        the message isn't sent on the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"Palauttaa tilastot <kanavalle>.  <Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
+"kanavalla itsessään.\n"
+"        "
+
+#: plugin.py:357
+#, fuzzy
+msgid "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; %i of those messages %s.  There have been %n, %n, %n, %n, %n, and %n.  There %b currently %n and the channel has peaked at %n."
+msgstr "%s:ssä %h on ollut %i viestiä, sisältäen %i merkkiä, %n, %n, ja %n; %i noista viesteistä %s.  On ollut %n, %n, %n, %n, %n, ja %n.   %b tällä hetkellä %n kanavalla on huipulla %n."
+
+#: plugin.py:368
+msgid "join"
+msgstr "liity"
+
+#: plugin.py:369
+msgid "part"
+msgstr "poistu"
+
+#: plugin.py:370
+msgid "quit"
+msgstr "poistu"
+
+#: plugin.py:371
+msgid "kick"
+msgstr "potki"
+
+#: plugin.py:372
+msgid "mode"
+msgstr "tila"
+
+#: plugin.py:372
+#: plugin.py:373
+msgid "change"
+msgstr "vaihdos"
+
+#: plugin.py:373
+msgid "topic"
+msgstr "aihe"
+
+#: plugin.py:375
+#: plugin.py:376
+msgid "user"
+msgstr "käyttäjä"
+
+#: plugin.py:379
+msgid "I've never been on %s."
+msgstr "En ole ikinä ollut %s:llä."
+
