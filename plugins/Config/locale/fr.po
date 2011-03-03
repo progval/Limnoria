@@ -152,5 +152,5 @@ msgid ""
 msgstr ""
 "<nom de fichier>\n"
 "\n"
-"Exporte les variables de configuration publiques dans le fichier<nom de fichier. Si vous voulez donner à quelqu'un votre fichierde configuration, mais que vous ne voulez pas que cette personnepuisse voir des choses comme les mot de passe, ... cette commandedébarrasse le fichier de configuration exporté des données qui nedoivent pas être publiques."
+"Exporte les variables de configuration publiques dans le fichier<nom de fichier. Si vous voulez donner à quelqu'un votre fichier de configuration, mais que vous ne voulez pas que cette personne puisse voir des choses comme les mots de passe, ... cette commande débarrasse le fichier de configuration exporté des données qui ne doivent pas être publiques."
 
