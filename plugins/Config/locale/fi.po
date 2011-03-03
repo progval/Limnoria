@@ -1,0 +1,176 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Finnish translation of Config plugin in Supybot\n"
+"POT-Creation-Date: 2010-12-12 15:02+CET\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Finnish\n"
+"X-Poedit-Country: FINLAND\n"
+
+#: plugin.py:103
+msgid "configuration variable"
+msgstr "asetusarvo"
+
+#: plugin.py:109
+msgid "settable configuration variable"
+msgstr "asetettava asetusarvo"
+
+#: plugin.py:136
+msgid ""
+"<group>\n"
+"\n"
+"        Returns the configuration variables available under the given\n"
+"        configuration <group>.  If a variable has values under it, it is\n"
+"        preceded by an '@' sign.  If a variable is a 'ChannelValue', that is,\n"
+"        it can be separately configured for each channel using the 'channel'\n"
+"        command in this plugin, it is preceded by an '#' sign.\n"
+"        "
+msgstr ""
+"<ryhmä>\n"
+"\n"
+"Palauttaa asetusarvot, jotka ovat annetun\n"
+"asetus <ryhmän> alla.  Jos arvolla on toisia arvoja allaan, se on\n"
+" merkitty '@' merkillä.  Jos arvo on 'ChannelValue', se voi olla,\n"
+"erikseen määritelty jokaiselle kanavalle käyttämällä 'channel'\n"
+"komentoa tässä lisäosassa, se on merkitty '#' merkillä.\n"
+"        "
+
+#: plugin.py:148
+msgid "There don't seem to be any values in %s."
+msgstr "%s:ssä ei näytä olevan yhtään asetusarvoja."
+
+#: plugin.py:154
+msgid ""
+"<word>\n"
+"\n"
+"        Searches for <word> in the current configuration variables.\n"
+"        "
+msgstr ""
+"<sana>\n"
+"\n"
+"Etsii <sanaa> nykyisistä asetus arvoista.\n"
+"        "
+
+#: plugin.py:167
+msgid "There were no matching configuration variables."
+msgstr "Täsmääviä asetusarvoja ei löytynyt."
+
+#: plugin.py:174
+msgid "Global: %s; %s: %s"
+msgstr "Globaali: %s; %s: %s"
+
+#: plugin.py:185
+msgid "That registry variable has no value.  Use the list command in this plugin to see what variables are available in this group."
+msgstr "Sillä rekisteriarvolla ei ole arvoa. Käytä list komentoa tässä lisäosassa nähdäksesi mitä arvoja on saatavilla tässä ryhmässä."
+
+#: plugin.py:200
+msgid ""
+"[<channel>] <name> [<value>]\n"
+"\n"
+"        If <value> is given, sets the channel configuration variable for <name>\n"
+"        to <value> for <channel>.  Otherwise, returns the current channel\n"
+"        configuration value of <name>.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself."
+msgstr ""
+"[<kanava>] <nimi> [<arvo>]\n"
+"\n"
+"Jos <arvo> on annettu, asettaa <nimen> kanavan asetusarvon\n"
+"<arvoksi>  <kanavalle>. Muutoin, palauttaa nykyisen \n"
+"<nimen> nykyisen kanava asetusarvon.  <Kanava> on vaadittu vain\n"
+"jos viestiä ei lähetetä kanavalla itsellään."
+
+#: plugin.py:207
+msgid "That configuration variable is not a channel-specific configuration variable."
+msgstr "Tällä asetusarvolla ei ole kanava kohtaista asetusarvoa."
+
+#: plugin.py:220
+msgid ""
+"<name> [<value>]\n"
+"\n"
+"        If <value> is given, sets the value of <name> to <value>.  Otherwise,\n"
+"        returns the current value of <name>.  You may omit the leading\n"
+"        \"supybot.\" in the name if you so choose.\n"
+"        "
+msgstr ""
+"<kanava> [<arvo>]\n"
+"\n"
+"Jos <arvo> on annettu, asettaa <nimen> arvon <arvoksi>.  Muutoin palauttaa,\n"
+"<nimen> nykyisen arvon.  Voit jättää pois seuraavan rivin pois \n"
+"        \"supybot.\" .\n"
+"        "
+
+#: plugin.py:234
+msgid ""
+"<name>\n"
+"\n"
+"        Returns the description of the configuration variable <name>.\n"
+"        "
+msgstr ""
+"<nimi>\n"
+"\n"
+" Palauttaa asetusarvon kuvauksen <nimi>.\n"
+"        "
+
+#: plugin.py:242
+msgid "  (Current value: %s)"
+msgstr "  (Nykyinen arvo: %s)"
+
+#: plugin.py:245
+msgid "That configuration group exists, but seems to have no help.  Try \"config list %s\" to see if it has any children values."
+msgstr "Tuo asetusryhmä on olemassa, mutta sillä ei näytä olevan ohjetta.  Käytä komentoa \"config list %s\" nähdäksesi onko sillä yhtään alempia arvoja."
+
+#: plugin.py:249
+msgid "%s has no help."
+msgstr "%s:llä ei ole ohjetta."
+
+#: plugin.py:254
+msgid ""
+"<name>\n"
+"\n"
+"        Returns the default value of the configuration variable <name>.\n"
+"        "
+msgstr ""
+"<name>\n"
+"\n"
+"Palauttaa asetusarvon oletusarvon <nimi>.\n"
+"        "
+
+#: plugin.py:264
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Reloads the various configuration files (user database, channel\n"
+"        database, registry, etc.).\n"
+"        "
+msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"Lataa uudelleen joitain asetustiedostoja(käyttäjä tietokanta, kanava\n"
+" tietokanta, rekisteri, jne.).\n"
+"        "
+
+#: plugin.py:275
+msgid ""
+"<filename>\n"
+"\n"
+"        Exports the public variables of your configuration to <filename>.\n"
+"        If you want to show someone your configuration file, but you don't\n"
+"        want that person to be able to see things like passwords, etc., this\n"
+"        command will export a \"sanitized\" configuration file suitable for\n"
+"        showing publicly.\n"
+"        "
+msgstr ""
+"<tiedostonimi>\n"
+"\n"
+"Vie julkiset asetusarvot asetustiedostostasi <tiedostonimeen>.\n"
+" Jos haluat näyttää jollekulle asetustiedostosi, mutta et\n"
+"halua tuon henkilön näkevän salasanojasi, jne., tämä\n"
+"komento vie \"järjellistetyn\" asetustiedoston, joka sopii\n"
+"julkisesti näyttämiseen.\n"
+"        "
+
