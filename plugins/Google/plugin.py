@@ -339,9 +339,7 @@ class Google(callbacks.PluginRegexp):
         """
         url = self._googleUrl(expr)
         html = utils.web.getUrl(url)
-        match = self._calcRe1.search(html)
-        if match is None:
-            match = self._calcRe2.search(html)
+        match = self._calcRe.search(html)
         if match is not None:
             s = match.group(1)
             s = self._calcSupRe.sub(r'^(\1)', s)
