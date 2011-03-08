@@ -432,7 +432,7 @@ class Owner(callbacks.Plugin):
                       'to force it to load.' % name.capitalize())
             return
         except ImportError, e:
-            if name in str(e):
+            if str(e).endswith(' ' + name):
                 irc.error('No plugin named %s exists.' % utils.str.dqrepr(name))
             else:
                 irc.error(str(e))
