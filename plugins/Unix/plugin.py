@@ -38,6 +38,7 @@ import random
 import select
 import struct
 import subprocess
+import shlex
 
 import supybot.utils as utils
 from supybot.commands import *
@@ -68,6 +69,7 @@ def pipeReadline(fd, timeout=2):
         raise TimeoutError
 
 class Unix(callbacks.Plugin):
+    threaded = True
     @internationalizeDocstring
     def errno(self, irc, msg, args, s):
         """<error number or code>
@@ -186,7 +188,7 @@ class Unix(callbacks.Plugin):
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(resp)
-    spell = wrap(spell, ['somethingWithoutSpaces'])
+    spell = thread(wrap(spell, ['something']))
 
     @internationalizeDocstring
     def fortune(self, irc, msg, args):
@@ -254,7 +256,86 @@ class Unix(callbacks.Plugin):
                       'on this system, reconfigure the '
                       'supybot.plugins.Unix.wtf.command configuration '
                       'variable appropriately.'))
-    wtf = wrap(wtf, [optional(('literal', ['is'])), 'something'])
+    wtf = thread(wrap(wtf, [optional(('literal', ['is'])), 'something']))
+
+    @internationalizeDocstring
+    def ping(self, irc, msg, args, optlist, host):
+        """[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>
+        Sends an ICMP echo request to the specified host.
+        The arguments correspond with those listed in ping(8). --c is
+        limited to 10 packets or less (default is 5). --i is limited to 5
+        or less. --W is limited to 10 or less.
+        """
+        pingCmd = self.registryValue('ping.command')
+        if not pingCmd:
+           irc.error('The ping command is not configured.  If one '
+                     'is installed, reconfigure '
+                     'supybot.plugins.Unix.ping.command appropriately.',
+                     Raise=True)
+        else:
+            try: host = host.group(0)
+            except AttributeError: pass
+
+            args = [pingCmd]
+            for opt, val in optlist:
+                if opt == 'c' and val > 10: val = 10
+                if opt == 'i' and val >  5: val = 5
+                if opt == 'W' and val > 10: val = 10
+                args.append('-%s' % opt)
+                args.append(str(val))
+            if '-c' not in args:
+                args.append('-c')
+                args.append('5')
+            args.append(host)
+            try:
+                inst = subprocess.Popen(args, stdout=subprocess.PIPE,
+                                              stderr=subprocess.PIPE,
+                                              stdin=file(os.devnull))
+            except OSError, e:
+                irc.error('It seems the configured ping command was '
+                          'not available (%s).' % e, Raise=True)
+            result = inst.communicate()
+            if result[1]: # stderr
+                irc.error(' '.join(result[1].split()))
+            else:
+                response = result[0].split("\n");
+                if response[1]:
+                    irc.reply(' '.join(response[1].split()[3:5]).split(':')[0]
+                              + ': ' + ' '.join(response[-3:]))
+                else:
+                    irc.reply(' '.join(response[0].split()[1:3])
+                              + ': ' + ' '.join(response[-3:]))
+
+    _hostExpr = re.compile(r'^[a-z0-9][a-z0-9\.-]*[a-z0-9]$', re.I)
+    ping = thread(wrap(ping, [getopts({'c':'positiveInt','i':'float',
+                                't':'positiveInt','W':'positiveInt'}), 
+                       first('ip', ('matches', _hostExpr, 'Invalid hostname'))]))
+
+    def call(self, irc, msg, args, text):
+        """<command to call with any arguments> 
+        Calls any command available on the system, and returns its output.
+        Requires owner capability.
+        Note that being restricted to owner, this command does not do any
+        sanity checking on input/output. So it is up to you to make sure
+        you don't run anything that will spamify your channel or that 
+        will bring your machine to its knees. 
+        """
+        args = shlex.split(text)
+        try:
+            inst = subprocess.Popen(args, stdout=subprocess.PIPE, 
+                                          stderr=subprocess.PIPE,
+                                          stdin=file(os.devnull))
+        except OSError, e:
+            irc.error('It seems the requested command was '
+                      'not available (%s).' % e, Raise=True)
+        result = inst.communicate()
+        if result[1]: # stderr
+            irc.error(' '.join(result[1].split()))
+        if result[0]: # stdout
+            response = result[0].split("\n");
+            response = [l for l in response if l]
+            irc.replies(response)
+    call = thread(wrap(call, ["owner", "text"]))
 
 Class = Unix
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

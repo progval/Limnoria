@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-17 15:35+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgid ""
 "    larger than supybot.plugins.Limiter.limit.minimumExcess."
 msgstr ""
 
-#: plugin.py:40
+#: plugin.py:39
 #, docstring
 msgid ""
 "In order to use this plugin, its config values need to be properly\n"

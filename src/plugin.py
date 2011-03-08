@@ -86,7 +86,10 @@ def loadPluginClass(irc, module, register=None):
                   'its __init__ method and needs to update its prototype ' \
                   'to be \'def __init__(self, irc):\' as well as passing ' \
                   'that irc object on to any calls to the plugin\'s ' \
-                  'parent\'s __init__.' % module.__name__
+                  'parent\'s __init__. Another possible cause: the code in ' \
+                  'your __init__ raised a TypeError when calling a function ' \
+                  'or creating an object, which doesn\'t take 2 arguments.' %\
+                  module.__name__
         else:
             raise
     except AttributeError, e:

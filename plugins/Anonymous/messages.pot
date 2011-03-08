@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-16 15:14+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgid ""
 "    messages to other users."
 msgstr ""
 
-#: plugin.py:41
+#: plugin.py:40
 #, docstring
 msgid ""
 "This plugin allows users to act through the bot anonymously.  The 'do'\n"
@@ -58,7 +58,7 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:81
+#: plugin.py:80
 #, docstring
 msgid ""
 "<channel|nick> <text>\n"
@@ -68,7 +68,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:95
+#: plugin.py:94
 #, docstring
 msgid ""
 "<channel> <action>\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-20 09:05+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -85,8 +85,8 @@ msgid "an indeterminate amount of time"
 msgstr "une durée indéterminée"
 
 #: plugin.py:112
-msgid "I have received %s messages for a total of %s bytes.  I have sent %s messages for a total of %s bytes.  I have been connected to %s for %s."
-msgstr "J'ai reçu %s message pour un total de %s octets. J'ai envoyé %s messages pour un total de %s octets. J'ai été connecté à %s pendant %s."
+msgid "I have received %s messages for a total of %S.  I have sent %s messages for a total of %S.  I have been connected to %s for %s."
+msgstr "J'ai reçu %s message pour un total de %S. J'ai envoyé %s messages pour un total de %S. J'ai été connecté à %s pendant %s."
 
 #: plugin.py:121
 msgid ""
@@ -112,8 +112,8 @@ msgid "Unable to run ps command."
 msgstr "Impossible de lancer la commande ps."
 
 #: plugin.py:166
-msgid "  I'm taking up %s kB of memory."
-msgstr " Je prend plus de %s kO de mémoire."
+msgid "  I'm taking up %S of memory."
+msgstr " Je prend plus de %S de mémoire."
 
 #: plugin.py:174
 msgid ""

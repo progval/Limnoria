@@ -28,8 +28,9 @@
 ###
 
 from supybot.test import *
+import time
 
-class LaterTestCase(PluginTestCase):
+class LaterTestCase(ChannelPluginTestCase):
     plugins = ('Later',)
     def testLaterWorksTwice(self):
         self.assertNotError('later tell foo bar')
@@ -43,6 +44,35 @@ class LaterTestCase(PluginTestCase):
         self.assertNotRegexp('later notes', 'bar.*foo')
         self.assertRegexp('later notes', 'foo')
 
+    def testNickValidation(self):
+        origconf = conf.supybot.protocols.irc.strictRfc()
+        conf.supybot.protocols.irc.strictRfc.setValue('True')
+        self.assertError('later tell 1foo bar')
+        self.assertError('later tell foo$moo zoob')
+        self.assertNotError('later tell foo: baz')
+        self.assertRegexp('later notes', 'foo\.')
+        conf.supybot.protocols.irc.strictRfc.setValue(origconf)
 
+    def testNoteExpiry(self):
+        cb = self.irc.getCallback('Later')
+        # add a note 40 days in the past
+        cb._addNote('foo', 'test', 'some stuff', at=(time.time() - 3456000))
+        self.assertRegexp('later notes', 'foo')
+        self.assertNotError('later tell moo stuff')
+        self.assertNotRegexp('later notes', 'foo')
+        self.assertRegexp('later notes', 'moo')
+
+    def testNoteSend(self):
+        self.assertNotError('later tell foo stuff')
+        self.assertNotError('later tell bar more stuff')
+        self.assertRegexp('later notes', 'bar.*foo')
+        testPrefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        m = self.getMsg(' ')
+        self.failUnless(str(m).startswith('PRIVMSG foo :Sent just now: <test> stuff'))
+        self.assertNotRegexp('later notes', 'foo')
+        self.assertRegexp('later notes', 'bar')
+        
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

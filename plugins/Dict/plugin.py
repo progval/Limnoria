@@ -38,6 +38,8 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Dict')
 
+import random
+
 try:
     dictclient = utils.python.universalImport('dictclient', 'local.dictclient')
 except ImportError:
@@ -130,6 +132,33 @@ class Dict(callbacks.Plugin):
         irc.reply(s)
     dict = wrap(dict, [many('something')])
 
+    def synonym(self, irc, msg, args, words):
+        """<word> [<word> ...]
+        Gets a random synonym from the Moby Thesaurus (moby-thes) database.
+        
+        If given many words, gets a random synonym for each of them.
+        
+        Quote phrases to have them treated as one lookup word.
+        """
+        try:
+            server = conf.supybot.plugins.Dict.server()
+            conn = dictclient.Connection(server)
+        except socket.error, e:
+            irc.error(utils.web.strError(e), Raise=True)
+        
+        dictionary = 'moby-thes'
+        response = []
+        for word in words:
+            definitions = conn.define(dictionary, word)
+            if not definitions:
+                asynonym = word
+            else:
+                defstr = definitions[0].getdefstr()
+                synlist = ' '.join(defstr.split('\n')).split(': ', 1)[1].split(',')
+                asynonym = random.choice(synlist).strip()
+            response.append(asynonym)
+        irc.reply(' '.join(response))
+    synonym = wrap(synonym, [many('something')])
 
 Class = Dict
 

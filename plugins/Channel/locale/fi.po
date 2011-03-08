@@ -1,0 +1,833 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot Channel\n"
+"POT-Creation-Date: 2010-10-25 13:10+CEST\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Finnish\n"
+"X-Poedit-Country: FINLAND\n"
+
+#: config.py:48
+msgid ""
+"Determines whether the bot will always try to\n"
+"    rejoin a channel whenever it's kicked from the channel."
+msgstr ""
+"Määrittää yrittääkö botti aina\n"
+"liittyä kanavalle uudelleen, kun se on potkittu kanavalta."
+
+#: plugin.py:69
+msgid ""
+"[<channel>] <mode> [<arg> ...]\n"
+"\n"
+"        Sets the mode in <channel> to <mode>, sending the arguments given.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <tila> [<parametri> ...]\n"
+"\n"
+"Asettaa  <kanavan> <tilan>, tilaksi lähettäen annetut parametrin.\n"
+"<kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalta\n"
+"jonka tilaa vaihdetaan.\n"
+"        "
+
+#: plugin.py:76
+msgid "change the mode"
+msgstr "vaihda tila"
+
+#: plugin.py:80
+msgid ""
+"[<channel>] [<limit>]\n"
+"\n"
+"        Sets the channel limit to <limit>.  If <limit> is 0, or isn't given,\n"
+"        removes the channel limit.  <channel> is only necessary if the message\n"
+"        isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<rajoitus>]\n"
+"\n"
+"Asettaa kanavan <rajoituksen>.  Jos <rajoitus> on 0, tai ei annettu,\n"
+"kanava rajoitus poistetaan.  <Kanava>on vaadittu cain jos\n"
+"viestiä ei lähetetä kanavalta itseltään.\n"
+"        "
+
+#: plugin.py:90
+msgid "change the limit"
+msgstr "Vaihda rajoitusta"
+
+#: plugin.py:95
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Sets +m on <channel>, making it so only ops and voiced users can\n"
+"        send messages to the channel.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"Asettaa tilan +m <kanavalla>, sallien vain operaattoireiden ja käyttäjien jolla on voice\n"
+"lähettää viestejä kanavalle.  <Kanava> on vaadittu vain jos\n"
+"viestiä ei lähetetä itse kanavalta.\n"
+"        "
+
+#: plugin.py:102
+msgid "moderate the channel"
+msgstr "valvo kanavaa"
+
+#: plugin.py:106
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Sets -m on <channel>, making it so everyone can\n"
+"        send messages to the channel.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"Asettaa -m tilan <kanavalla>, sallien jokaisen\n"
+"lähettää viestejä kanavalla.  <Kanava> on vaadittu vain jos\n"
+" viestiä ei lähetetä kanavalta itseltään.\n"
+"        "
+
+#: plugin.py:114
+msgid "unmoderate the channel"
+msgstr "lopeta kanavan valvominen"
+
+#: plugin.py:118
+msgid ""
+"[<channel>] [<key>]\n"
+"\n"
+"        Sets the keyword in <channel> to <key>.  If <key> is not given, removes\n"
+"        the keyword requirement to join <channel>.  <channel> is only necessary\n"
+"        if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<avain>]\n"
+"\n"
+"Asettaa <kanavan>avainsanan <avaimeksi>.  Jos <avainta> ei ole annettu, poistaa\n"
+"poistaa avainsana vaatimuksen <kanavalle> liittymisestä.  <Kanava> on vaadittu vain\n"
+"jos viestiä ei lähetetä kanavalta itsestään.\n"
+"        "
+
+#: plugin.py:130
+msgid "change the keyword"
+msgstr "vaihtaa avainsanan"
+
+#: plugin.py:135
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,op capability, this will give all the <nick>s\n"
+"        you provide ops.  If you don't provide any <nick>s, this will op you.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<nimimerkki> ...]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä antaa kaikille  <nimimerkeille>\n"
+"sinun tarjoamat opit.  Jos et anna yhtään <nimimerkkiä>, tämä oppaa sinut.\n"
+"<Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalta\n"
+"itsestään.\n"
+"        "
+
+#: plugin.py:147
+msgid "op someone"
+msgstr "oppaa joku"
+
+#: plugin.py:151
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,halfop capability, this will give all the\n"
+"        <nick>s you provide halfops.  If you don't provide any <nick>s, this\n"
+"        will give you halfops. <channel> is only necessary if the message isn't\n"
+"        sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanava>] [<nimimerkki> ...]\n"
+"\n"
+"Jos sinulla on #kanava,halfop valtuus, tämä antaa kaikille\n"
+"<nimimerkeille> halfopit.  Jos et anna yhtään <nimimerkkiä>, tämä\n"
+"antaa sinulle halfopit. <Kanava> on vaadittu vain jos viestiä ei\n"
+"lähetetä kanavalta itseltään.\n"
+"        "
+
+#: plugin.py:163
+msgid "halfop someone"
+msgstr "halfoppaa joku"
+
+#: plugin.py:168
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,voice capability, this will voice all the\n"
+"        <nick>s you provide.  If you don't provide any <nick>s, this will\n"
+"        voice you. <channel> is only necessary if the message isn't sent in the\n"
+"        channel itself.\n"
+"        "
+msgstr ""
+"[<Kanava>] [<nimimerkki> ...]\n"
+"\n"
+"Jos sinulla on #kanava,halfop valtuus, tämä antaa kaikille\n"
+"<nimimerkeille> halfopit.  Jos et anna yhtään <nimimerkkiä>, tämä\n"
+"antaa sinulle halfopit. <Kanava> on vaadittu vain jos viestiä ei\n"
+"lähetetä kanavalta itseltään.\n"
+"        "
+
+#: plugin.py:190
+msgid "voice someone"
+msgstr "anna jollekin voice"
+
+#: plugin.py:195
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,op capability, this will remove operator\n"
+"        privileges from all the nicks given.  If no nicks are given, removes\n"
+"        operator privileges from the person sending the message.\n"
+"        "
+msgstr ""
+"[<kanava>] [<nimimerkki> ...]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa operaattori\n"
+"kaikilta annetuilta nimimerkeiltä.  Jos nimimerkkejä ei ole annettu poistaa\n"
+"poistaa operaattorioikeudet henkilöltä, joka lähettää viestin.\n"
+"        "
+
+#: plugin.py:202
+msgid "I cowardly refuse to deop myself.  If you really want me deopped, tell me to op you and then deop me yourself."
+msgstr "Minä pelkurimaisesti kieltäydyn deoppaamasta itseäni. Jos todella tahdot minut deopatuksi, käske minun opata sinut ja sitten deoppaa minut itse."
+
+#: plugin.py:210
+msgid "deop someone"
+msgstr "deoppaa joku"
+
+#: plugin.py:215
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,op capability, this will remove half-operator\n"
+"        privileges from all the nicks given.  If no nicks are given, removes\n"
+"        half-operator privileges from the person sending the message.\n"
+"        "
+msgstr ""
+"[<kanava>] [<nimimerkki> ...]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa puoli-kanavaoperaattorin\n"
+"kaikilta annetuilta nimimerkeiltä.  Jos nimimerkkejä ei anneta\n"
+"viestin lähettäneeltä henkilöltä poistetaan puoli-kanavaoperaattorin oikeudet.\n"
+"        "
+
+#: plugin.py:222
+msgid "I cowardly refuse to dehalfop myself.  If you really want me dehalfopped, tell me to op you and then dehalfop me yourself."
+msgstr "Minä pelkurimaisesti kieltäydyn dehalfoppaamasta itseäni. Jos haluat minut depuoliopatuksi, käske minun opata sinut ja sitten dehalfoppaa minut itse."
+
+#: plugin.py:230
+msgid "dehalfop someone"
+msgstr "dehalfoppaa joku"
+
+#: plugin.py:235
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,op capability, this will remove voice from all\n"
+"        the nicks given.  If no nicks are given, removes voice from the person\n"
+"        sending the message.\n"
+"        "
+msgstr ""
+"[<kanava>] [<nimimerkki> ...]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa voicen kaikilta\n"
+"annetuilta nimimerkeiltä.  Jos nimimerkkejä ei ole annettu, poistaa voicen henkilöltä\n"
+"joka lähettää viestin.\n"
+"        "
+
+#: plugin.py:242
+msgid "I cowardly refuse to devoice myself.  If you really want me devoiced, tell me to op you and then devoice me yourself."
+msgstr "Minä pelkurimaisesti kieltäydyn poistamasta voicea itseltäni. Jos todella tahdot poistaa minulta voicen, käske minut oppaamaan sinut ja sitten poista ääni minulta itse."
+
+#: plugin.py:255
+msgid ""
+"[<channel>]\n"
+"\n"
+"        If you have the #channel,op capability, this will cause the bot to\n"
+"        \"cycle\", or PART and then JOIN the channel. <channel> is only necessary\n"
+"        if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+" Jos sinulla on #kanava,op valtuus, tämä aiheuttaa botin tekemään\n"
+"\"cyclen\", tai POISTUMAAN ja LIITTYMÄÄN kanavalle. <Kanava> on vaadittu vain\n"
+"jos viestiä ei lähetetä kanavalta itsestään.\n"
+"        "
+
+#: plugin.py:268
+msgid ""
+"[<channel>] <nick>[, <nick>, ...] [<reason>]\n"
+"\n"
+"        Kicks <nick>(s) from <channel> for <reason>.  If <reason> isn't given,\n"
+"        uses the nick of the person making the command as the reason.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <nimimerkki>[, <nimimerkki>, ...] [<syy>]\n"
+"\n"
+"Potkii <nimimerkit> <kanavalta> <syystä>.  Jos <syytä> ei ole annettu,\n"
+"käyttää komennon antajan nimimerkkiä syynä.\n"
+"<Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalta\n"
+"itsestään.\n"
+"        "
+
+#: plugin.py:276
+msgid "I cowardly refuse to kick myself."
+msgstr "Minä pelkurimaisesti kieltäydyn potkimasta itseäni."
+
+#: plugin.py:281
+msgid "The reason you gave is longer than the allowed length for a KICK reason on this server."
+msgstr "Syy, jonka annoit on pidempi kuin sallittu pituus POTKIMIS syyksi tällä palvelimella."
+
+#: plugin.py:286
+msgid "kick someone"
+msgstr "potki joku"
+
+#: plugin.py:292
+msgid ""
+"[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]\n"
+"\n"
+"        If you have the #channel,op capability, this will kickban <nick> for\n"
+"        as many seconds as you specify, or else (if you specify 0 seconds or\n"
+"        don't specify a number of seconds) it will ban the person indefinitely.\n"
+"        --exact bans only the exact hostmask; --nick bans just the nick;\n"
+"        --user bans just the user, and --host bans just the host.  You can\n"
+"        combine these options as you choose.  <reason> is a reason to give for\n"
+"        the kick.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [--{exact,nick,user,host}] <nimimerkki> [<sekuntit>] [<syy>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä kickbannaa <nimimerkin> \n"
+"niin moneksi sekuntiksi kuin määrität, tai muuten (jos määrität 0 sekuntia tai\n"
+"tai et määritä sekuntien lukumäärää) se bannaa henkilön ikuisesti.\n"
+"--exact bannaa vain hostmaskin; --nick bannaa vain nimimerkin;\n"
+"--user bannaa vain käyttäjän, ja --host bannaa vain isännän.  Voit\n"
+"yhdistää näitä vaihtoehtoja mielesi mukaan.  <Syy> on syy, jonka vuoksi annat\n"
+"potkun.\n"
+"<Kanava> on vaadittu vain jos viestiä ei lähetetä kanavassa\n"
+"itsestään.\n"
+"        "
+
+#: plugin.py:311
+msgid "I cowardly refuse to kickban myself."
+msgstr "Minä pelkurimaisesti kieltäydyn kickbannaamasta itseäni."
+
+#: plugin.py:318
+msgid "I haven't seen %s."
+msgstr "Minä en ole nähnyt %s:ää."
+
+#: plugin.py:326
+msgid "I cowardly refuse to ban myself."
+msgstr "Minä pelkurimaisesti kieltäydyn bannaamasta itseäni."
+
+#: plugin.py:352
+msgid "%s has %s too, you can't ban him/her/it."
+msgstr "%s:llä on %s myös, et voi bannata häntä/sitä."
+
+#: plugin.py:364
+msgid "kick or ban someone"
+msgstr "potki tai bannaa joku"
+
+#: plugin.py:371
+msgid ""
+"[<channel>] [<hostmask>]\n"
+"\n"
+"        Unbans <hostmask> on <channel>.  If <hostmask> is not given, unbans\n"
+"        any hostmask currently banned on <channel> that matches your current\n"
+"        hostmask.  Especially useful for unbanning yourself when you get\n"
+"        unexpectedly (or accidentally) banned from the channel.  <channel> is\n"
+"        only necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<hostmask>]\n"
+"\n"
+"Poistaa bannin <hostmaskilta> <kanavalla>.  Jos <hostmaskia> ei ole annettu, poistaa bannin\n"
+"kaikilta hostmaskeilta, jotka ovat bannattuja <kanavalla> ja täsmäävät sinun\n"
+"hostmaskiisi.  Etenkin hyödyllinen jos joudut \n"
+"odottomattomasti (tai vahingossa) bannatuksi kanavalta.  <Kanava> on\n"
+"vaadittu vain jos viestiä ei lähetetä kanavalta itseltään.\n"
+"        "
+
+#: plugin.py:388
+msgid "All bans on %s matching %s have been removed."
+msgstr "Kaikki bannit, jotka sopivat %s :ään %s:tä on poistettu."
+
+#: plugin.py:392
+msgid "No bans matching %s were found on %s."
+msgstr "Banneja, jotka täsmäävät %s:ään ei löydetty %s:tä."
+
+#: plugin.py:395
+msgid "unban someone"
+msgstr "poista jonkun banni"
+
+#: plugin.py:400
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        If you have the #channel,op capability, this will invite <nick>\n"
+"        to join <channel>. <channel> is only necessary if the message isn't\n"
+"        sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <nimimerkki>\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä kutsuu <nimimerkin>\n"
+"liittymään <kanavalle>. <Kanava> on vaadittu vain jos viestiö\n"
+"ei lähetetä kanavalla itsessään.\n"
+"        "
+
+#: plugin.py:409
+msgid "invite someone"
+msgstr "kutsu joku"
+
+#: plugin.py:428
+msgid "%s is already in %s."
+msgstr "%s on jo %s:ssä."
+
+#: plugin.py:435
+msgid "There is no %s on this network."
+msgstr "%s ei ole tässä verkossa."
+
+#: plugin.py:447
+msgid ""
+"[<channel>]\n"
+"\n"
+"            If you have the #channel,op capability, this will \"lobotomize\" the\n"
+"            bot, making it silent and unanswering to all requests made in the\n"
+"            channel. <channel> is only necessary if the message isn't sent in\n"
+"            the channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä \"lobotomoi\" \n"
+"botin tehden sen hiljaisesksi ja vastaamattomaksi kaikkiin pyyntöihin,\n"
+" jotka on tehty kanavalla. <Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
+" kanavalla itsessään.\n"
+"            "
+
+#: plugin.py:462
+msgid ""
+"[<channel>]\n"
+"\n"
+"            If you have the #channel,op capability, this will unlobotomize the\n"
+"            bot, making it respond to requests made in the channel again.\n"
+"            <channel> is only necessary if the message isn't sent in the channel\n"
+"            itself.\n"
+"            "
+msgstr ""
+"[<channel>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa lobotimian\n"
+"botista, saaden sen jälleen vastaamaan kaikkiin pyyntöihin kanavalla.\n"
+"<Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla itsessään.\n"
+"            "
+
+#: plugin.py:477
+msgid ""
+"takes no arguments\n"
+"\n"
+"            Returns the channels in which this bot is lobotomized.\n"
+"            "
+msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"Palauttaa kanavat, joilla botti on lobotomoitu.\n"
+"            "
+
+#: plugin.py:492
+msgid "I'm currently lobotomized in %L."
+msgstr "Minut on tällähetkellä lobotomoity %L:ssa."
+
+#: plugin.py:495
+msgid "I'm not currently lobotomized in any channels that you're in."
+msgstr "En tällä hetkellä ole lobotomoitu millään kanavalla, jolla sinä olet."
+
+#: plugin.py:502
+msgid ""
+"[<channel>] <nick|hostmask> [<expires>]\n"
+"\n"
+"            If you have the #channel,op capability, this will effect a\n"
+"            persistent ban from interacting with the bot on the given\n"
+"            <hostmask> (or the current hostmask associated with <nick>.  Other\n"
+"            plugins may enforce this ban by actually banning users with\n"
+"            matching hostmasks when they join.  <expires> is an optional\n"
+"            argument specifying when (in \"seconds from now\") the ban should\n"
+"            expire; if none is given, the ban will never automatically expire.\n"
+"            <channel> is only necessary if the message isn't sent in the\n"
+"            channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>] <nimimerkki|hostmask> [<expires>]\n"
+"\n"
+" Jos sinulla on #kanava,op valtuus, tämä aiheuttaa\n"
+"pysyvän bannin estääkseen bottia olemasta vuorovaikutuksessa annetun\n"
+"<hostmaskin> kanssa (tai <nimimerkin> nykyisen hostmaskin.  Toiset\n"
+"toiset lisäosat saattavat pakottaa tämän bannin bannaamalla käyttäjät\n"
+" täsmäävällä hostmaskilla kun he liittyvät kanavalle.  <Vanhentuu> on vaihtoehtoinen\n"
+"parametri , kun määritetään ( \"sekunteja alkaen nyt\") milloin banni\n"
+" vanhenee; jos mitään ei ole annettu, banni ei ikinä vanhene automaattisesti.\n"
+"<Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
+"kanavalla itsessään.\n"
+"            "
+
+#: plugin.py:522
+msgid ""
+"[<channel>] <hostmask>\n"
+"\n"
+"            If you have the #channel,op capability, this will remove the\n"
+"            persistent ban on <hostmask>.  <channel> is only necessary if the\n"
+"            message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanava>] <hostmask>\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa\n"
+"pysyvän bannin <hostmaskilta>.  <Kanava> on vaadittu vain jos\n"
+"viestiä ei lähetetä kanavalla itsellään.\n"
+"             "
+
+#: plugin.py:534
+msgid "There are no persistent bans for that hostmask."
+msgstr ""
+"Tuolla hostmaskilla ei ole pysyviä banneja.[<kanava>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä näyttää\n"
+"pysyvät bannit #kanavalla.\n"
+"            "
+
+#: plugin.py:539
+msgid ""
+"[<channel>]\n"
+"\n"
+"            If you have the #channel,op capability, this will show you the\n"
+"            current persistent bans on #channel.\n"
+"            "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä näyttää\n"
+"pysyvät bannit #kanavalla.\n"
+"            "
+
+#: plugin.py:549
+msgid "%q (expires %t)"
+msgstr "%q (venhentuu %t)"
+
+#: plugin.py:552
+msgid "%q (never expires)"
+msgstr "%q (ei ikinä vanhennu)"
+
+#: plugin.py:556
+msgid "There are no persistent bans on %s."
+msgstr "%s ei ole pysyviä banneja."
+
+#: plugin.py:563
+msgid ""
+"[<channel>] <nick|hostmask> [<expires>]\n"
+"\n"
+"            If you have the #channel,op capability, this will set a persistent\n"
+"            ignore on <hostmask> or the hostmask currently\n"
+"            associated with <nick>. <expires> is an optional argument\n"
+"            specifying when (in \"seconds from now\") the ignore will expire; if\n"
+"            it isn't given, the ignore will never automatically expire.\n"
+"            <channel> is only necessary if the message isn't sent in the\n"
+"            channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>] <nimimerkki|hostmask> [<vanhentuu>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä asettaa pysyvän\n"
+"ignoren <hostmaskiin> tai hostmaskiin\n"
+"joka on <nimimerkin> käytössä. <Vanhentuu> on vaihtoehtoinen parametri\n"
+"kun määritetään ( \"sekunteja alkaen nyt\")milloin ignore vanhentuu; jos\n"
+"sitä ei ole annettu, banni ei ikinä vanhene automaattisesti.\n"
+"<Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
+"kanavalla itsessään.\n"
+"            "
+
+#: plugin.py:581
+msgid ""
+"[<channel>] <hostmask>\n"
+"\n"
+"            If you have the #channel,op capability, this will remove the\n"
+"            persistent ignore on <hostmask> in the channel. <channel> is only\n"
+"            necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>] <hostmask>\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa\n"
+"pysyvän ignoren <hostmaskista> kanavalla. <Kanava> on vaadittu\n"
+"viestiä ei lähetetä kanavalla itsellään.\n"
+"            "
+
+#: plugin.py:593
+msgid "There are no ignores for that hostmask."
+msgstr "Tuolla hostmaskilla ei ole pysyviä ignoreja."
+
+#: plugin.py:598
+msgid ""
+"[<channel>]\n"
+"\n"
+"            Lists the hostmasks that the bot is ignoring on the given channel.\n"
+"            <channel> is only necessary if the message isn't sent in the\n"
+"            channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+" Luettelee hostmaskit, jotka ovat botin ignoressa annetulla kanavalla.\n"
+"<kanava> on vaadittu vain, jos viestiä ei lähetetä\n"
+"kanavalla itsellään.\n"
+"            "
+
+#: plugin.py:607
+msgid "I'm not currently ignoring any hostmasks in %q"
+msgstr "Minun ignoressani ei ole yhtään hostmaskia %q:ssa."
+
+#: plugin.py:618
+msgid ""
+"[<channel>] <nick|username> <capability> [<capability> ...]\n"
+"\n"
+"            If you have the #channel,op capability, this will give the user\n"
+"            <name> (or the user to whom <nick> maps)\n"
+"            the capability <capability> in the channel. <channel> is only\n"
+"            necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>] <nimimerkki|käyttäjänimi> <valtuuus> [<valtuus> ...]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä antaa käyttäjä\n"
+"<nimelle> (tai käyttäjälle, jonka <nimimerkki> määrittää)\n"
+" valtuuden <valtuus>kanavalla. <kanava> on\n"
+"vaadittu vain jos viestiä ei lähetetä kanavalla itsessään.\n"
+"            "
+
+#: plugin.py:634
+msgid ""
+"[<channel>] <name|hostmask> <capability> [<capability> ...]\n"
+"\n"
+"            If you have the #channel,op capability, this will take from the\n"
+"            user currently identified as <name> (or the user to whom <hostmask>\n"
+"            maps) the capability <capability> in the channel. <channel> is only\n"
+"            necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>] <nimi|hostmask> <valtuus> [<valtuus> ...]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä ottaa\n"
+"tällä hetkellä tunnistautuneelta käyttäjältä <nimi> (tai käyttäjältä, jonka <hostmask>\n"
+"täsmää) valtuuden <valtuus> kanavalla. <Kanava> on\n"
+" on vaadittu vain jos viestiä ei lähetetä kanavalla itsessään.\n"
+"            "
+
+#: plugin.py:653
+msgid "That user didn't have the %L %s."
+msgstr "Tuolla käyttäjällä ei ole %L:ää %s:ssä."
+
+#: plugin.py:662
+#, fuzzy
+msgid ""
+"[<channel>] {True|False}\n"
+"\n"
+"            If you have the #channel,op capability, this will set the default\n"
+"            response to non-power-related (that is, not {op, halfop, voice}\n"
+"            capabilities to be the value you give. <channel> is only necessary\n"
+"            if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>] {True|False}\n"
+"\n"
+" Jos sinulla on #kanava,op valtuus, tämä asettaa oletus\n"
+"ei voimaan-liittyviin (se on, ei {op, halfop, voice}\n"
+"valtuus arvo, jonka annat. <Kanava> on vaadittu vain\n"
+"jos viestiä ei lähetetä kanavalla itsellään.\n"
+"            "
+
+#: plugin.py:680
+msgid ""
+"[<channel>] <capability> [<capability> ...]\n"
+"\n"
+"            If you have the #channel,op capability, this will add the channel\n"
+"            capability <capability> for all users in the channel. <channel> is\n"
+"            only necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanava>] <valtuus> [<valtuus> ...]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä lisää\n"
+"valtuuden <valtuus> kaikille käyttäjille kanavalla. <Kanava> on\n"
+"vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"            "
+
+#: plugin.py:695
+msgid ""
+"[<channel>] <capability> [<capability> ...]\n"
+"\n"
+"            If you have the #channel,op capability, this will unset the channel\n"
+"            capability <capability> so each user's specific capability or the\n"
+"            channel default capability will take precedence. <channel> is only\n"
+"            necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>] <valtuus> [<valtuus> ...]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa kanava valtuus\n"
+"valtuuden <valtuus> joten jokaisen käyttäjäkohtainen valtuus tai\n"
+"kanavan oletus valtuus otetaan käyttöön. <Kanava> on vaadittu\n"
+"vain jos viestiä ei lähetetä kanavalla itsessään.\n"
+"            "
+
+#: plugin.py:711
+msgid "capability"
+msgstr "valtuusMinä en tiedä %L:stä %s:llä"
+
+#: plugin.py:714
+msgid "I do not know about the %L %s."
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"           Palauttaa <kanavalla> olevat valtuudet. <Kanava> on\n"
+"vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"            "
+
+#: plugin.py:721
+msgid ""
+"[<channel>]\n"
+"\n"
+"            Returns the capabilities present on the <channel>. <channel> is\n"
+"            only necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<kanava>] [<lisäosa>] [<komento>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa <komennon> käytöstä\n"
+"<kanavalla>.  Jos <lisäosa> on annrttu, <komento> poistetaan käytöstä\n"
+"vain siitä lisäosasta.  Jos vain <lisäosa> on annettu, kaikki komennot\n"
+"annetusta lisäosasta poistetaan käytöstä.  <Kanava> on vaadittu vain jos\n"
+"viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:733
+msgid ""
+"[<channel>] [<plugin>] [<command>]\n"
+"\n"
+"        If you have the #channel,op capability, this will disable the <command>\n"
+"        in <channel>.  If <plugin> is provided, <command> will be disabled only\n"
+"        for that plugin.  If only <plugin> is provided, all commands in the\n"
+"        given plugin will be disabled.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<lisäosa>] [<komento>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä poistaa <komennon> käytöstä\n"
+"<kanavalla>.  Jos <lisäosa> on annrttu, <komento> poistetaan käytöstä\n"
+"vain siitä lisäosasta.  Jos vain <lisäosa> on annettu, kaikki komennot\n"
+"annetusta lisäosasta poistetaan käytöstä.  <Kanava> on vaadittu vain jos\n"
+"viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:749
+#: plugin.py:788
+msgid "The %s plugin does not have a command called %s."
+msgstr "%s lisäosalla ei ole komentoa %s."
+
+#: plugin.py:756
+#: plugin.py:795
+msgid "No plugin or command named %s could be found."
+msgstr "Lisäosaa tai komentoa nimeltä %s ei löytynyt."
+
+#: plugin.py:772
+msgid ""
+"[<channel>] [<plugin>] [<command>]\n"
+"\n"
+"        If you have the #channel,op capability, this will enable the <command>\n"
+"        in <channel> if it has been disabled.  If <plugin> is provided,\n"
+"        <command> will be enabled only for that plugin.  If only <plugin> is\n"
+"        provided, all commands in the given plugin will be enabled.  <channel>\n"
+"        is only necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<lisäosa>] [<komento>]\n"
+"\n"
+"Jos sinulla on #kanava,op valtuus, tämä ottaa <komennon> käyttöön\n"
+" <kanavalla> jos se on ollut pois käytöstä.  Jos <lisäosa> on annettu,\n"
+" <komento> otetaan käyttöön vain siinä lisäosassa.  Jos vain <lisäosa> on\n"
+"annettu, kaikki komennot annetussa lisäosassa otetaan käyttööön.  <Kanava>\n"
+"on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:809
+msgid "%s was not disabled."
+msgstr "%s ei ollut pois käytöstä."
+
+#: plugin.py:818
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the nicks in <channel>.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"Palauttaa nimimerkit, jotka ovat <kanavalla>.  <Kanava> on vaadittu vain jos\n"
+"ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:829
+msgid "You don't have access to that information."
+msgstr "Sinulla ei ole pääsyoikeutta tuohon tietoon."
+
+#: plugin.py:837
+msgid ""
+"Internal message for notifying all the #channel,ops in a channel of\n"
+"        a given situation."
+msgstr ""
+"Sisäinen viesti huomattamaan kaikkia #kanava,oppeja kanavalla\n"
+" annetusta tilanteesta."
+
+#: plugin.py:840
+msgid "Alert to all %s ops: %s"
+msgstr "Hälytys kaikki %s operaattoreille: %s"
+
+#: plugin.py:842
+msgid " (from %s)"
+msgstr "(%s:tä)"
+
+#: plugin.py:850
+msgid ""
+"[<channel>] <text>\n"
+"\n"
+"        Sends <text> to all the users in <channel> who have the <channel>,op\n"
+"        capability.\n"
+"        "
+msgstr ""
+"[<kanava>] <teksti>\n"
+"\n"
+"Lähettää <tekstin> kaikille käyttäjille <kanavalla> joilla on <kanava>,op\n"
+"valtuus.\n"
+"        "
+

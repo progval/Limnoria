@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-19 19:27+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: plugin.py:38
+#: plugin.py:37
 msgid ""
 "This plugins contains a few commands that construct various types of\n"
 "    replies.  Some bot owners would be wise to not load this plugin because it\n"
@@ -21,7 +21,7 @@ msgid ""
 "    "
 msgstr "Ce plugin contient quelques commandes pour construire différents types de réponses. Certains propriétaires de bots pourraient ne pas vouloir le charger, car on peut facilement en abuser."
 
-#: plugin.py:44
+#: plugin.py:43
 msgid ""
 "<text>\n"
 "\n"
@@ -33,7 +33,7 @@ msgstr ""
 "\n"
 "Répond avec le <texte> en privé. Utile pour les commandes imbriquées."
 
-#: plugin.py:54
+#: plugin.py:53
 msgid ""
 "<text>\n"
 "\n"
@@ -45,7 +45,7 @@ msgstr ""
 "\n"
 "Répond avec le <texte> comme une action. Utile pour les commandes imbriquées."
 
-#: plugin.py:67
+#: plugin.py:66
 msgid ""
 "<text>\n"
 "\n"
@@ -57,7 +57,7 @@ msgstr ""
 "\n"
 "Répond avec le <texte> en notice. Utile pour les commandes imbriquées."
 
-#: plugin.py:77
+#: plugin.py:76
 msgid ""
 "<text>\n"
 "\n"
@@ -67,4 +67,16 @@ msgstr ""
 "<texte>\n"
 "\n"
 "Répond avec le <texte>. Équivalent à l'alias 'echo $nick: $i'."
+
+#: plugin.py:85
+msgid ""
+"<str> [<str> ...]\n"
+"\n"
+"        Replies with each of its arguments <str> in separate replies, depending\n"
+"        the configuration of supybot.reply.oneToOne.\n"
+"        "
+msgstr ""
+"<argument> [<argument> ...]\n"
+"\n"
+"Répond avec chacun des <argument>s dans des réponses séparées, en fonction de la configutation de supybot.reply.oneToOne."
 

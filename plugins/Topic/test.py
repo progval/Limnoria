@@ -70,7 +70,7 @@ class TopicTestCase(ChannelPluginTestCase):
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], self.channel)
         self.assertEqual(m.args[1], 'foo (test) || bar (test)')
-    
+
     def testManageCapabilities(self):
         try:
             self.irc.feedMsg(ircmsgs.mode(self.channel, args=('+o', self.nick),
@@ -81,7 +81,7 @@ class TopicTestCase(ChannelPluginTestCase):
             origuser = self.prefix
             self.prefix = 'stuff!stuff@stuff'
             self.assertNotError('register nottester stuff', private=True)
-            
+
             self.assertError('topic add foo')
             origconf = conf.supybot.plugins.Topic.requireManageCapability()
             conf.supybot.plugins.Topic.requireManageCapability.setValue('')
@@ -90,7 +90,7 @@ class TopicTestCase(ChannelPluginTestCase):
             world.testing = True
             self.prefix = origuser
             conf.supybot.plugins.Topic.requireManageCapability.setValue(origconf)
-    
+
     def testInsert(self):
         m = self.getMsg('topic add foo')
         self.assertEqual(m.args[1], 'foo (test)')

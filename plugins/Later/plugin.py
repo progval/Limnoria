@@ -30,6 +30,7 @@
 
 import csv
 import time
+import datetime
 
 import supybot.log as log
 import supybot.conf as conf
@@ -40,7 +41,6 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Later')
-
 
 class Later(callbacks.Plugin):
     """Used to do things later; currently, it only allows the sending of
@@ -102,6 +102,50 @@ class Later(callbacks.Plugin):
             self.wildcards.append(nick)
         self._flushNotes()
 
+    def _validateNick(self, irc, nick):
+        """Validate nick according to the IRC RFC 2812 spec.
+
+        Reference: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1
+
+        Some irc clients' tab-completion feature appends 'address' characters
+        to nick, such as ':' or ','. We try correcting for that by trimming
+        a char off the end.
+
+        If nick incorrigibly invalid, return False, otherwise,
+        return (possibly trimmed) nick.
+        """
+        if not irc.isNick(nick):
+            if not irc.isNick(nick[:-1]):
+                return False
+            else:
+                return nick[:-1]
+        return nick
+
+    def _deleteExpired(self):
+        expiry = self.registryValue('messageExpiry')
+        curtime = time.time()
+        nickremovals=[]
+        for (nick, notes) in self._notes.iteritems():
+            removals = []
+            for (notetime, whence, text) in notes:
+                td = datetime.timedelta(seconds=(curtime - notetime))
+                if td.days > expiry:
+                    removals.append((notetime, whence, text))
+            for note in removals:
+                notes.remove(note)
+            if len(notes) == 0:
+                nickremovals.append(nick)
+        for nick in nickremovals:
+            del self._notes[nick]
+        self._flushNotes()
+
+    ## Note: we call _deleteExpired from 'tell'. This means that it's possible
+    ## for expired notes to remain in the database for longer than the maximum,
+    ## if no tell's are called.
+    ## However, the whole point of this is to avoid crud accumulation in the
+    ## database, so it's fine that we only delete expired notes when we try
+    ## adding new ones.
+
     @internationalizeDocstring
     def tell(self, irc, msg, args, nick, text):
         """<nick> <text>
@@ -110,11 +154,16 @@ class Later(callbacks.Plugin):
         contain wildcard characters, and the first matching nick will be
         given the note.
         """
+        self._deleteExpired()
         if ircutils.strEqual(nick, irc.nick):
             irc.error(_('I can\'t send notes to myself.'))
             return
+        validnick = self._validateNick(irc, nick)
+        if validnick is False:
+            irc.error('That is an invalid IRC nick. Please check your input.')
+            return
         try:
-            self._addNote(nick, msg.nick, text)
+            self._addNote(validnick, msg.nick, text)
             irc.replySuccess()
         except ValueError:
             irc.error(_('That person\'s message queue is already full.'))
@@ -180,8 +229,11 @@ class Later(callbacks.Plugin):
 
     def _formatNote(self, when, whence, note):
         return _('Sent %s: <%s> %s') % (self._timestamp(when), whence, note)
-Later = internationalizeDocstring(Later)
 
+    def doJoin(self, irc, msg):
+        if self.registryValue('tellOnJoin'):
+            self.doPrivmsg(irc, msg)
+Later = internationalizeDocstring(Later)
 
 Class = Later
 

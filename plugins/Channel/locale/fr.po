@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-25 13:10+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -644,35 +644,36 @@ msgstr "%s n'était pas désactivé."
 
 #: plugin.py:818
 msgid ""
-"[<channel>]\n"
+"[<channel>] [--count]\n"
 "\n"
 "        Returns the nicks in <channel>.  <channel> is only necessary if the\n"
-"        message isn't sent in the channel itself.\n"
+"        message isn't sent in the channel itself. Returns only the number of\n"
+"        nicks if --count option is provided.\n"
 "        "
 msgstr ""
-"[<canal>]\n"
+"[<canal>] [--count]\n"
 "\n"
-"Retourne les nick sur le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Retourne les nick sur le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même. Ne retourne que le nombre de nicks si --count est donné."
 
-#: plugin.py:829
+#: plugin.py:830
 msgid "You don't have access to that information."
 msgstr "Vous n'avez pas accès à cette information"
 
-#: plugin.py:837
+#: plugin.py:843
 msgid ""
 "Internal message for notifying all the #channel,ops in a channel of\n"
 "        a given situation."
 msgstr "Message interne pour notifier tous les #canal,ops sur un canal d'une situation donnée."
 
-#: plugin.py:840
+#: plugin.py:846
 msgid "Alert to all %s ops: %s"
 msgstr "Alerte à tous les ops de %s : %s"
 
-#: plugin.py:842
+#: plugin.py:848
 msgid " (from %s)"
 msgstr "(de %s)"
 
-#: plugin.py:850
+#: plugin.py:856
 msgid ""
 "[<channel>] <text>\n"
 "\n"

@@ -72,7 +72,8 @@ class Language(registry.OnlySomeStrings):
                   'Tamil': 'ta', 'Tagalog': 'tl', 'Telugu': 'te',
                   'Thai': 'th', 'Tibetan': 'bo', 'Turkish': 'tr',
                   'Ukranian': 'uk', 'Urdu': 'ur', 'Uzbek': 'uz',
-                  'Uighur': 'ug', 'Vietnamese': 'vi'}
+                  'Uighur': 'ug', 'Vietnamese': 'vi',
+                  'Detect language': 'auto'}
     validStrings = ['lang_' + s for s in transLangs.values()]
     validStrings.append('')
     def normalize(self, s):

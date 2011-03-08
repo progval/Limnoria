@@ -282,6 +282,11 @@ class Google(callbacks.PluginRegexp):
                                     lang.transLangs.keys()))
         else:
             toLang = lang.normalize('lang_'+toLang)[5:]
+        if fromLang == 'auto':
+            fromLang = ''
+        if toLang == 'auto':
+            irc.error("Destination language cannot be 'auto'.")
+            return
         opts['langpair'] = '%s|%s' % (fromLang, toLang)
         fd = utils.web.getUrlFd('%s?%s' % (self._gtranslateUrl,
                                            urllib.urlencode(opts)),
@@ -289,8 +294,20 @@ class Google(callbacks.PluginRegexp):
         json = simplejson.load(fd)
         fd.close()
         if json['responseStatus'] != 200:
-            raise callbacks.Error, 'We broke The Google!'
-        irc.reply(json['responseData']['translatedText'].encode('utf-8'))
+            raise callbacks.Error, 'Google says: Response Status %s: %s.' % \
+                    (json['responseStatus'], json['responseDetails'],)
+        if fromLang != '':
+            irc.reply(json['responseData']['translatedText'].encode('utf-8'))
+        else:
+            detected_language = json['responseData']['detectedSourceLanguage'].encode('utf-8')
+            translation = json['responseData']['translatedText'].encode('utf-8')
+            try:
+                long_lang_name = [k for k,v in lang.transLangs.iteritems() if v == detected_language][0]
+            except IndexError: #just in case google adds langs we don't know about
+                long_lang_name = detected_language
+            responsestring = "(Detected source language: %s) %s" % \
+                (long_lang_name, translation)
+            irc.reply(responsestring)
     translate = wrap(translate, ['something', 'to', 'something', 'text'])
 
     def googleSnarfer(self, irc, msg, match):
@@ -310,8 +327,7 @@ class Google(callbacks.PluginRegexp):
         url = r'http://google.com/search?q=' + s
         return url
 
-    _calcRe1 = re.compile(r'<table.*class="?obcontainer"?[^>]*>(.*?)</table>', re.I)
-    _calcRe2 = re.compile(r'<h\d class="?r"?.*?<b>(.*?)</b>', re.I)
+    _calcRe = re.compile(r'<h\d class="?r"?.*?<b>(.*?)</b>', re.I)
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
     _calcTimesRe = re.compile(r'&(?:times|#215);')
@@ -323,9 +339,7 @@ class Google(callbacks.PluginRegexp):
         """
         url = self._googleUrl(expr)
         html = utils.web.getUrl(url)
-        match = self._calcRe1.search(html)
-        if match is None:
-            match = self._calcRe2.search(html)
+        match = self._calcRe.search(html)
         if match is not None:
             s = match.group(1)
             s = self._calcSupRe.sub(r'^(\1)', s)

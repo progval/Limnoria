@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-19 19:27+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:38
+#: plugin.py:37
 #, docstring
 msgid ""
 "This plugins contains a few commands that construct various types of\n"
@@ -24,7 +24,7 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:44
+#: plugin.py:43
 #, docstring
 msgid ""
 "<text>\n"
@@ -34,7 +34,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:54
+#: plugin.py:53
 #, docstring
 msgid ""
 "<text>\n"
@@ -44,7 +44,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:67
+#: plugin.py:66
 #, docstring
 msgid ""
 "<text>\n"
@@ -54,12 +54,22 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:77
+#: plugin.py:76
 #, docstring
 msgid ""
 "<text>\n"
 "\n"
 "        Replies with <text>.  Equivalent to the alias, 'echo $nick: $1'.\n"
+"        "
+msgstr ""
+
+#: plugin.py:85
+#, docstring
+msgid ""
+"<str> [<str> ...]\n"
+"\n"
+"        Replies with each of its arguments <str> in separate replies, depending\n"
+"        the configuration of supybot.reply.oneToOne.\n"
 "        "
 msgstr ""
 

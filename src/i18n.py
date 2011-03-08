@@ -74,7 +74,13 @@ def getPluginDir(plugin_name):
     except KeyError: # It sometimes happens with Owner
         pass
     if filename == None:
-        filename = sys.modules['supybot.plugins.' + plugin_name].__file__
+        try:
+            filename = sys.modules['supybot.plugins.' + plugin_name].__file__
+        except: # In the case where the plugin is not loaded by Supybot
+            try:
+                filename = sys.modules['plugin'].__file__
+            except:
+                filename = sys.modules['__main__'].__file__
     if filename.endswith(".pyc"):
         filename = filename[0:-1]
 

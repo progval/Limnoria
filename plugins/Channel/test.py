@@ -214,5 +214,9 @@ class ChannelTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.protocols.irc.banmask.setValue(orig)
 
+    def testNicks(self):
+        self.assertResponse('channel nicks', 'bar, foo, and test')
+        self.assertResponse('channel nicks --count', '3')
+        
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
