@@ -102,7 +102,7 @@ msgid ""
 msgstr ""
 "[<plugin>] [<commande>]\n"
 "\n"
-"Cette commande donne une description utilie de ce que fait la <commande>. <plugin> n'est nécessaire que si la commande est présente dans plus d'un plugin."
+"Cette commande donne une description utile de ce que fait la <commande>. <plugin> n'est nécessaire que si la commande est présente dans plus d'un plugin."
 
 #: plugin.py:198
 msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
