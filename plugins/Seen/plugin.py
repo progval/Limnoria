@@ -102,6 +102,7 @@ class Seen(callbacks.Plugin):
         self.lastmsg = {}
         self.ircstates = {}
         world.flushers.append(self.db.flush)
+        world.flushers.append(self.anydb.flush)
 
     def die(self):
         if self.db.flush in world.flushers:
