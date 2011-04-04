@@ -219,10 +219,10 @@ class Seen(callbacks.Plugin):
 
         Returns the last time <nick> was seen and what <nick> was last seen
         saying. <channel> is only necessary if the message isn't sent on the
-        channel itself.
+        channel itself. <nick> may contain * as a wildcard.
         """
         self._seen(irc, channel, name)
-    seen = wrap(seen, ['channel', 'nick'])
+    seen = wrap(seen, ['channel', 'something'])
 
     def any(self, irc, msg, args, channel, optlist, name):
         """[<channel>] [--user <name>] [<nick>]
