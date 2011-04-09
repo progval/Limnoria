@@ -325,8 +325,6 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             self._replyFactoids(irc, msg, key, channel, factoids, number, raw=raw)
         else:
             self._replyApproximateFactoids(irc, msg, channel, key)
-    whatis = wrap(whatis, ['channel', many('something')])
-
     whatis = wrap(whatis, ['channel',
                             getopts({'raw': '',}),
                             many('something')])
@@ -398,7 +396,6 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 irc.replySuccess()
             else:
                 irc.error(_('This key-factoid relationship already exists.'))
-
     alias = wrap(alias, ['channel', 'something', 'something', optional('int')])
 
     @internationalizeDocstring
