@@ -28,14 +28,50 @@
 
 ###
 
+import os
+import shutil
+
 from supybot.test import *
+
+pluginsPath = '%s/test-plugins' % os.getcwd()
 
 class PluginDownloaderTestCase(PluginTestCase):
     plugins = ('PluginDownloader',)
+    config = {'supybot.directories.plugins': [pluginsPath]}
+
+    def setUp(self):
+        PluginTestCase.setUp(self)
+        try:
+            shutil.rmtree(pluginsPath)
+        except:
+            pass
+        os.mkdir(pluginsPath)
+
+    def tearDown(self):
+        try:
+            shutil.rmtree(pluginsPath)
+        finally:
+            PluginTestCase.tearDown(self)
 
     def testRepolist(self):
         self.assertResponse('repolist', 'quantumlemur, ProgVal')
         self.assertRegexp('repolist ProgVal', '(.*, )?AttackProtector(, .*)?')
+
+    def testInstallProgVal(self):
+        self.assertError('plugindownloader install ProgVal Listener')
+        self.assertNotError('plugindownloader install ProgVal AttackProtector')
+        self.assertError('plugindownloader install ProgVal Listener')
+        assert os.path.isdir(pluginsPath + '/AttackProtector/')
+        assert os.path.isfile(pluginsPath + '/AttackProtector/plugin.py')
+        assert os.path.isfile(pluginsPath + '/AttackProtector/config.py')
+
+    def testInstallQuantumlemur(self):
+        self.assertError('plugindownloader install quantumlemur AttackProtector')
+        self.assertNotError('plugindownloader install quantumlemur Listener')
+        self.assertError('plugindownloader install quantumlemur AttackProtector')
+        assert os.path.isdir(pluginsPath + '/Listener/')
+        assert os.path.isfile(pluginsPath + '/Listener/plugin.py')
+        assert os.path.isfile(pluginsPath + '/Listener/config.py')
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
