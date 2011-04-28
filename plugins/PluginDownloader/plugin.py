@@ -35,7 +35,6 @@ import urllib2
 import tarfile
 from cStringIO import StringIO
 
-import git
 
 import supybot.log as log
 import supybot.conf as conf
