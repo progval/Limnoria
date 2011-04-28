@@ -79,7 +79,7 @@ class PluginDownloaderTestCase(PluginTestCase):
         self.assertNotError('plugindownloader install stepnem Freenode')
         self._testPluginInstalled('Freenode')
 
-    def testGsf(self):
+    def testInstallGsf(self):
         self.assertNotError('plugindownloader install gsf-snapshot Debian')
         self._testPluginInstalled('Debian')
         self.assertError('plugindownloader install gsf-snapshot Anagram')
@@ -94,5 +94,10 @@ class PluginDownloaderTestCase(PluginTestCase):
         self._testPluginInstalled('Acronym')
         self.assertError('plugindownloader install gsf Anagram')
         self.assertError('plugindownloader install gsf Debian')
+
+    def testInstallNanotubeBitcoin(self):
+        self.assertNotError('plugindownloader install nanotube-bitcoin GPG')
+        self._testPluginInstalled('GPG')
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -169,33 +169,38 @@ class GithubRepository(GitRepository):
 
 
 repositories = {
-               'ProgVal':      GithubRepository(
-                                               'ProgVal',
-                                               'Supybot-plugins'
-                                               ),
-               'quantumlemur': GithubRepository(
-                                               'quantumlemur',
-                                               'Supybot-plugins',
-                                               ),
-               'stepnem':      GithubRepository(
-                                               'stepnem',
-                                               'supybot-plugins',
-                                               ),
-               'gsf-snapshot': GithubRepository(
-                                               'gsf',
-                                               'supybot-plugins',
-                                               'Supybot-plugins-20060723',
-                                               ),
-               'gsf-edsu':     GithubRepository(
-                                               'gsf',
-                                               'supybot-plugins',
-                                               'edsu-plugins',
-                                               ),
-               'gsf':          GithubRepository(
-                                               'gsf',
-                                               'supybot-plugins',
-                                               'plugins',
-                                               ),
+               'ProgVal':          GithubRepository(
+                                                   'ProgVal',
+                                                   'Supybot-plugins'
+                                                   ),
+               'quantumlemur':     GithubRepository(
+                                                   'quantumlemur',
+                                                   'Supybot-plugins',
+                                                   ),
+               'stepnem':          GithubRepository(
+                                                   'stepnem',
+                                                   'supybot-plugins',
+                                                   ),
+               'gsf-snapshot':     GithubRepository(
+                                                   'gsf',
+                                                   'supybot-plugins',
+                                                   'Supybot-plugins-20060723',
+                                                   ),
+               'gsf-edsu':         GithubRepository(
+                                                   'gsf',
+                                                   'supybot-plugins',
+                                                   'edsu-plugins',
+                                                   ),
+               'gsf':              GithubRepository(
+                                                   'gsf',
+                                                   'supybot-plugins',
+                                                   'plugins',
+                                                   ),
+               'nanotube-bitcoin': GithubRepository(
+                                                   'nanotube',
+                                                   'supybot-bitcoin-'
+                                                             'marketmonitor',
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
@@ -237,6 +242,8 @@ class PluginDownloader(callbacks.Plugin):
                        'This repository does not exist or is not known by '
                        'this bot.'
                        ))
+        elif plugin not in repositories[repository].getPluginList():
+            irc.error(_('This plugin does not exist in this repository.'))
         else:
             try:
                 repositories[repository].install(plugin)
