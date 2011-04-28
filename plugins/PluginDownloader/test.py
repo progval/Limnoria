@@ -99,5 +99,14 @@ class PluginDownloaderTestCase(PluginTestCase):
         self.assertNotError('plugindownloader install nanotube-bitcoin GPG')
         self._testPluginInstalled('GPG')
 
+    def testInstallMtughanWeather(self):
+        self.assertNotError('plugindownloader install mtughan-weather '
+                            'WunderWeather')
+        self._testPluginInstalled('WunderWeather')
+
+    def testInstallSpiderDave(self):
+        self.assertNotError('plugindownloader install SpiderDave Pastebin')
+        self._testPluginInstalled('Pastebin')
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

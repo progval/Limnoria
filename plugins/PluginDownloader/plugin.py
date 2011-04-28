@@ -201,6 +201,15 @@ repositories = {
                                                    'supybot-bitcoin-'
                                                              'marketmonitor',
                                                    ),
+               'mtughan-weather':  GithubRepository(
+                                                   'mtughan',
+                                                   'Supybot-Weather',
+                                                   ),
+               'SpiderDave':       GithubRepository(
+                                                   'SpiderDave',
+                                                   'spidey-supybot-plugins',
+                                                   'Plugins',
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
