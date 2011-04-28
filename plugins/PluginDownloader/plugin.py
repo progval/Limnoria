@@ -66,7 +66,7 @@ class GithubRepository(GitRepository):
         if not path.endswith('/'):
             path += '/'
         self._path = path
-        
+
         self._downloadUrl = 'https://github.com/%s/%s/tarball/master' % \
                             (
                             self._username,
@@ -150,6 +150,7 @@ class GithubRepository(GitRepository):
                 if file.name.startswith(prefix + dirname):
                     extractedFile = archive.extractfile(file)
                     newFileName = os.path.join(*file.name.split('/')[1:])
+                    newFileName = newFileName[len(self._path)-1:]
                     newFileName = os.path.join(directory, newFileName)
                     if extractedFile is None:
                         os.mkdir(newFileName)
@@ -157,6 +158,8 @@ class GithubRepository(GitRepository):
                         open(newFileName, 'a').write(extractedFile.read())
         finally:
             archive.close()
+            fileObject2.close()
+            del archive, fileObject, fileObject2
 
     def _getWritableDirectoryFromList(self, directories):
         for directory in directories:
@@ -166,10 +169,32 @@ class GithubRepository(GitRepository):
 
 
 repositories = {
-               'ProgVal': GithubRepository('ProgVal', 'Supybot-plugins'),
+               'ProgVal':      GithubRepository(
+                                               'ProgVal',
+                                               'Supybot-plugins'
+                                               ),
                'quantumlemur': GithubRepository(
                                                'quantumlemur',
-                                               'Supybot-plugins'
+                                               'Supybot-plugins',
+                                               ),
+               'stepnem':      GithubRepository(
+                                               'stepnem',
+                                               'supybot-plugins',
+                                               ),
+               'gsf-snapshot': GithubRepository(
+                                               'gsf',
+                                               'supybot-plugins',
+                                               'Supybot-plugins-20060723',
+                                               ),
+               'gsf-edsu':     GithubRepository(
+                                               'gsf',
+                                               'supybot-plugins',
+                                               'edsu-plugins',
+                                               ),
+               'gsf':          GithubRepository(
+                                               'gsf',
+                                               'supybot-plugins',
+                                               'plugins',
                                                ),
                }
 

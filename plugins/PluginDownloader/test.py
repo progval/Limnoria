@@ -53,25 +53,46 @@ class PluginDownloaderTestCase(PluginTestCase):
         finally:
             PluginTestCase.tearDown(self)
 
+    def _testPluginInstalled(self, name):
+        assert os.path.isdir(pluginsPath + '/%s/' % name)
+        assert os.path.isfile(pluginsPath + '/%s/plugin.py' % name)
+        assert os.path.isfile(pluginsPath + '/%s/config.py' % name)
+
     def testRepolist(self):
-        self.assertResponse('repolist', 'quantumlemur, ProgVal')
+        self.assertRegexp('repolist', '(.*, )?ProgVal(, .*)?')
+        self.assertRegexp('repolist', '(.*, )?quantumlemur(, .*)?')
         self.assertRegexp('repolist ProgVal', '(.*, )?AttackProtector(, .*)?')
 
     def testInstallProgVal(self):
         self.assertError('plugindownloader install ProgVal Listener')
         self.assertNotError('plugindownloader install ProgVal AttackProtector')
         self.assertError('plugindownloader install ProgVal Listener')
-        assert os.path.isdir(pluginsPath + '/AttackProtector/')
-        assert os.path.isfile(pluginsPath + '/AttackProtector/plugin.py')
-        assert os.path.isfile(pluginsPath + '/AttackProtector/config.py')
+        self._testPluginInstalled('AttackProtector')
 
     def testInstallQuantumlemur(self):
         self.assertError('plugindownloader install quantumlemur AttackProtector')
         self.assertNotError('plugindownloader install quantumlemur Listener')
         self.assertError('plugindownloader install quantumlemur AttackProtector')
-        assert os.path.isdir(pluginsPath + '/Listener/')
-        assert os.path.isfile(pluginsPath + '/Listener/plugin.py')
-        assert os.path.isfile(pluginsPath + '/Listener/config.py')
+        self._testPluginInstalled('Listener')
 
+    def testInstallStepnem(self):
+        self.assertNotError('plugindownloader install stepnem Freenode')
+        self._testPluginInstalled('Freenode')
+
+    def testGsf(self):
+        self.assertNotError('plugindownloader install gsf-snapshot Debian')
+        self._testPluginInstalled('Debian')
+        self.assertError('plugindownloader install gsf-snapshot Anagram')
+        self.assertError('plugindownloader install gsf-snapshot Acronym')
+
+        self.assertNotError('plugindownloader install gsf-edsu Anagram')
+        self._testPluginInstalled('Anagram')
+        self.assertError('plugindownloader install gsf-edsu Debian')
+        self.assertError('plugindownloader install gsf-edsu Acronym')
+
+        self.assertNotError('plugindownloader install gsf Acronym')
+        self._testPluginInstalled('Acronym')
+        self.assertError('plugindownloader install gsf Anagram')
+        self.assertError('plugindownloader install gsf Debian')
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
