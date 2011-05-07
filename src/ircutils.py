@@ -436,7 +436,8 @@ def wrap(s, length):
 
 def isValidArgument(s):
     """Returns whether s is strictly a valid argument for an IRC message."""
-    return '\r' not in s and '\n' not in s and '\x00' not in s
+    return (not isinstance(s, str)) or ('\r' not in s and '\n' not in s and
+            '\x00' not in s)
 
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""

@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # Copyright (c) 2009, James Vega
+# Copyright (c) 2011, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,11 +33,13 @@ import supybot.log as log
 import supybot.conf as conf
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
+from supybot.minecraftformat import DataBuffer, IncompleteDataError
+import supybot.minecraftprotocol as minecraftprotocol
 
 from twisted.names import client
 from twisted.internet import reactor, error
 from twisted.protocols.basic import LineReceiver
-from twisted.internet.protocol import ReconnectingClientFactory
+from twisted.internet.protocol import ReconnectingClientFactory, Protocol
 
 
 # This hack prevents the standard Twisted resolver from starting any
@@ -108,18 +111,85 @@ class SupyIrcProtocol(LineReceiver):
         drivers.log.reconnect(self.irc.network)
         self.transport.loseConnection()
 
+class SupyMcProtocol(Protocol):
+    def __init__(self):
+        self.buffer = ''
+        self.mostRecentCall = reactor.callLater(0.1, self.checkIrcForMsgs)
+
+    def dataReceived(self, data):
+        # From https://github.com/espes/esbot/blob/master/MCProtocol.py
+        self.buffer += data
+
+        parseBuffer = DataBuffer(self.buffer)
+        while parseBuffer.lenLeft() > 0:
+            positionBeforeRead = parseBuffer.tell()
+            packetType = ord(parseBuffer.read(1))
+
+            try:
+                packetClass = minecraftprotocol.idToPacket[packetType]
+            except KeyError:
+                log.error('Got unknown packet id %i' % packetType)
+                self.transport.loseConnection()
+                return
+
+            try:
+                packet = packetClass(parseBuffer)
+            except IncompleteDataError:
+                parseBuffer.seek(positionBeforeRead)
+                break
+            self.buffer = parseBuffer.peek()
+
+            msg = ircmsgs.IrcMsg(s='', command='MINECRAFT',
+                    args=(self.irc.nick, packet))
+            self.irc.feedMsg(msg)
+
+    def checkIrcForMsgs(self):
+        if self.connected:
+            msg = self.irc.takeMsg()
+            while msg:
+                if msg.command == 'MINECRAFT':
+                    msg = msg.args[0]
+                else:
+                    msg = minecraftprotocol.ircToMinecraft(msg)
+                assert msg is not None
+                self.transport.write(str(msg))
+                msg = self.irc.takeMsg()
+        self.mostRecentCall = reactor.callLater(0.1, self.checkIrcForMsgs)
+
+    def connectionLost(self, r):
+        self.mostRecentCall.cancel()
+        if r.check(error.ConnectionDone):
+            drivers.log.disconnect(self.factory.currentServer)
+        else:
+            drivers.log.disconnect(self.factory.currentServer, errorMsg(r))
+        if self.irc.zombie:
+            self.factory.stopTrying()
+            while self.irc.takeMsg():
+                continue
+        else:
+            self.irc.reset()
+
+    def connectionMade(self):
+        self.factory.resetDelay()
+        self.irc.driver = self
+
+    def die(self):
+        drivers.log.die(self.irc)
+        self.factory.stopTrying()
+        self.transport.loseConnection()
+
 def errorMsg(reason):
     return reason.getErrorMessage()
 
 class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
     maxDelay = property(lambda self: conf.supybot.drivers.maxReconnectWait())
-    protocol = SupyIrcProtocol
     def __init__(self, irc):
         self.irc = irc
         drivers.ServersMixin.__init__(self, irc)
         (server, port) = self._getNextServer()
         vhost = conf.supybot.protocols.irc.vhost()
-        if self.networkGroup.get('ssl').value:
+        if self.networkGroup.get('ssl').value and \
+                self.protocol is SupyIrcProtocol:
             self.connectSSL(server, port, vhost)
         else:
             self.connectTCP(server, port, vhost)
@@ -154,7 +224,18 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         protocol.irc = self.irc
         return protocol
 
-Driver = SupyReconnectingFactory
+class SupyIrcReconnectingFactory(SupyReconnectingFactory):
+    protocol = SupyIrcProtocol
+
+class SupyMcReconnectingFactory(SupyReconnectingFactory):
+    protocol = SupyMcProtocol
+
+class Driver:
+    def __init__(self, irc):
+        if getattr(conf.supybot.networks, irc.network).minecraft():
+            self = SupyMcReconnectingFactory(irc)
+        else:
+            self = SupyIrcReconnectingFactory(irc)
 
 try:
     ignore(poller)

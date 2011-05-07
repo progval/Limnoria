@@ -258,7 +258,7 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
         else:
             return ircmsgs.join(channel)
 
-def registerNetwork(name, password='', ssl=False):
+def registerNetwork(name, password='', ssl=False, minecraft=False):
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,
         _("""Determines what password will be used on %s.  Yes, we know that
@@ -277,6 +277,9 @@ def registerNetwork(name, password='', ssl=False):
     registerChannelValue(network.channels, 'key', registry.String('',
         _("""Determines what key (if any) will be used to join the
         channel.""")))
+    registerGlobalValue(network, 'minecraft', registry.Boolean(minecraft,
+        _("""Determines whether the bot will connect with the minecraft
+        protocol instead of the irc protocol to %s.""") % name))
     return network
 
 # Let's fill our networks.
