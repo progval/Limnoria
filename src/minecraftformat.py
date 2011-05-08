@@ -92,6 +92,9 @@ class Format(object):
                 data += arg.encode("utf_8")
             elif char in ("b", "B") and isinstance(arg, str) and len(arg) == 1:                 # Byte as string
                 data += arg
+            elif char == "M": # hack
+                # TODO : implement this
+                pass
             else:
                 data += struct.pack("!"+char, arg)
 
@@ -249,4 +252,8 @@ class EntityMetadataFormat(Format):
             x, = readStruct("!b", dataBuffer)
             if x == 127: break
             yield tuple(self.formatMap[(x & 0xE0) >> 5].decode(dataBuffer))
+
+    def encode(self, args):
+        # TODO: implement this
+        return '\x7F'
 
