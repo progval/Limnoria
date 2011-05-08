@@ -103,16 +103,21 @@ class MinecraftPacket(Format):
                 self.__dict__.update({name: value})
 
     def _createFromRaw(self, raw):
-        parts = list(self.decode(raw))
+        parts = list(self.decode(raw)) # self.decode is a generator.
+
+        # Note that self._format may be longer than parts, in case of optional
+        # fields. Fortunatly, zip() drops the extra items in self._format.
         for name, type, defaultValue, part in [(x[0], x[1], x[2], y) \
                 for x,y in zip(self._format, parts)]:
-            # self.decode is a generator.
             self.__dict__.update({name: part})
 
     def __str__(self):
         args = []
-        for name, type, defaultValue in self._format:
-            args.append(self.__dict__[name])
+        try:
+            for name, type, defaultValue in self._format:
+                args.append(self.__dict__[name])
+        except KeyError: # This is the case of packets with optionnal fields
+            pass
         return chr(self.id) + self.encode(*args)
 
     def __repr__(self):
