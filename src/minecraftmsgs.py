@@ -157,7 +157,8 @@ class PlayerDigging(Packet):
 
 class PlayerBlockPlacement(Packet):
     id = 0x0F
-    encode = lambda x: ''
+    def encode(*args, **kwargs):
+        return ''
     decode = mcformat.BlockPlaceFormat.decode
     _format = [
             ('x', 'i', None),
@@ -399,7 +400,7 @@ class MapChunk(Packet):
     id = 0x33
     def encode(*args, **kwargs):
         return ''
-    self.decode = mcformat.ChunkFormat.decode
+    decode = mcformat.ChunkFormat.decode
     _format = []
 
 
