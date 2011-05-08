@@ -307,7 +307,7 @@ class Unknown1(Packet): # Unknown
 class EntityVelocity(Packet): # Not sure
     id = 0x1C
     _format = [
-            ('entityId', None),
+            ('entityId', 'i', None),
             ('x', 'h', None),
             ('y', 'h', None),
             ('z', 'h', None),
