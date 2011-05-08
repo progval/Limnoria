@@ -101,12 +101,13 @@ class Format(object):
         return data
 
 class MultiBlockChangeFormat(Format):
-    def __init__(self):
-        pass
+    def encode(*args, **kwargs):
+        return ''
 
     def decode(self, dataBuffer):
         x, z, size = readStruct("!iih", dataBuffer)
-        yield x, z
+        yield x
+        yield z
 
         coords = readStruct("!%dh" % size, dataBuffer)
         types = readStruct("!%db" % size, dataBuffer)
@@ -117,31 +118,32 @@ class MultiBlockChangeFormat(Format):
             bz = (coord >> 8) & 0b1111
             by = coord & 0xFF
 
-            yield ((bx, by, bz), type, metadata)
+            yield (bx, by, bz, type, metadata)
 
 
 class WindowItemsFormat(Format):
-    def __init__(self):
-        pass
+    def encode(*args, **kwargs):
+        return ''
+
     def decode(self, dataBuffer):
         type, count = readStruct("!bh", dataBuffer)
 
         yield type
-        #yield count
+        yield count
 
-        items = {}
+        items = []
         for i in xrange(count):
             itemId, = readStruct("!h", dataBuffer)
             if itemId == -1: continue
 
             count, health = readStruct("!bh", dataBuffer)
-            items[i] = (itemId, count, health)
+            items.append((itemId, count, health))
         yield items
 
 
 class SetSlotFormat(Format):
-    def __init__(self):
-        pass
+    def encode(*args, **kwargs):
+        return ''
 
     def decode(self, dataBuffer):
         type, slot, itemId = readStruct("!bhh", dataBuffer)
@@ -156,8 +158,8 @@ class SetSlotFormat(Format):
             yield None
 
 class WindowClickFormat(Format):
-    def __init__(self):
-        pass
+    def decode(*args, **kwargs):
+        return ''
 
     def encode(
               self,
@@ -191,17 +193,22 @@ class WindowClickFormat(Format):
                               )
 
 class ExplosionFormat(Format):
-    def __init__(self):
-        pass
+    def encode(*args, **kwargs):
+        return ''
 
     def decode(self, dataBuffer):
         x, y, z, unk1, count = readStruct("!dddfi", dataBuffer)
+        yield x
+        yield y
+        yield z
+        yield unk1
+        yield count
+        records = []
         for i in xrange(count):
-            dx, dy, dz = readStruct("!bbb", dataBuffer)
+            records.append(readStruct("!bbb", dataBuffer))
+        yield records
 
 class BlockPlaceFormat(Format):
-    def __init__(self):
-        pass
     def encode(self, x, y, z, direction, item):
         if item is None:
             return struct.pack("!ibibh", x, y, z, direction, -1)
@@ -210,12 +217,19 @@ class BlockPlaceFormat(Format):
             return struct.pack("!ibibhbh", x, y, z, direction, itemId, count, uses)
     def decode(self, dataBuffer):
         x, y, z, face, itemId = readStruct("!ibibh", dataBuffer)
+        yield x
+        yield y
+        yield z
+        yield face
+        yield itemId
         if itemId >= 0:
             count, health = readStruct("!bb", dataBuffer)
+            yield count
+            yield health
 
 class ChunkFormat(Format):
-    def __init__(self):
-        pass
+    def encode(*args, **kwargs):
+        return ''
 
     def decode(self, dataBuffer):
         x, y, z, sx, sy, sz, chunkSize = readStruct("!ihibbbi", dataBuffer)
@@ -224,8 +238,12 @@ class ChunkFormat(Format):
         sy += 1
         sz += 1
 
-        yield (x, y, z)
-        yield (sx, sy, sz)
+        yield x
+        yield y
+        yield z
+        yield sx
+        yield sy
+        yield sz
 
         yield zlib.decompress(dataBuffer.read(chunkSize))
 
@@ -253,7 +271,7 @@ class EntityMetadataFormat(Format):
             if x == 127: break
             yield tuple(self.formatMap[(x & 0xE0) >> 5].decode(dataBuffer))
 
-    def encode(self, args):
-        # TODO: implement this
-        return '\x7F'
+    def encode(*args, **kwargs):
+        return ''
+
 

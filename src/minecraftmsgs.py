@@ -155,11 +155,8 @@ class PlayerDigging(Packet):
             ('face', 'b', None),
             ]
 
-class PlayerBlockPlacement(Packet):
+class PlayerBlockPlacement(mcformat.BlockPlaceFormat, Packet):
     id = 0x0F
-    def encode(*args, **kwargs):
-        return ''
-    decode = mcformat.BlockPlaceFormat.decode
     _format = [
             ('x', 'i', None),
             ('y', 'b', None),
@@ -396,12 +393,168 @@ class PreChunck(Packet):
             ('mode', 'b', None),
             ]
 
-class MapChunk(Packet):
+class MapChunk(mcformat.ChunkFormat, Packet):
     id = 0x33
-    def encode(*args, **kwargs):
-        return ''
-    decode = mcformat.ChunkFormat.decode
-    _format = []
+    _format = [
+            ('x', 'i', None),
+            ('y', 'h', None),
+            ('z', 'i', None),
+            ('sizeX', 'b', None),
+            ('sizeY', 'b', None),
+            ('sizez', 'b', None),
+            # ('compressedSize', 'i', None), # Useless and not returned by
+            # ChunkFormat.decode
+            ('compressedData', 'X', None), # Handled specifically
+            ]
+
+class MultiBlockChange(mcformat.MultiBlockChangeFormat, Packet):
+    id = 0x34
+    _format = [
+            ('x', 'i', None),
+            ('z', 'i', None),
+            ('arraySize', 'h', None),
+            ('coordonateArray', 'X', None), # Handled specifically
+            ('typeArray', 'X', None), # Handled specifically
+            ('dataArray', 'X', None), # Handled specifically
+            ]
+
+class BlockChange(Packet):
+    id = 0x35
+    _format = [
+            ('x', 'i', None),
+            ('y', 'b', None),
+            ('z', 'i', None),
+            ('type', 'b', None),
+            ('metadata', 'b', 0),
+            ]
+
+class PlayNoteBlock(Packet):
+    HARP = 0
+    DOUBLE_BASS = 1
+    SNARE_DRUM = 2
+    CLICKS_STICKS = 3
+    BASS_DRUM = 4
+    id = 0x36
+    _format = [
+            ('x', 'i', None),
+            ('y', 'h', None),
+            ('z', 'i', None),
+            ('type', 'b', None),
+            ('pitch', 'b', None),
+            ]
+
+class Explosion(mcformat.ExplosionFormat, Packet):
+    id = 0x3C
+    _format = [
+            ('x', 'd', None),
+            ('y', 'd', None),
+            ('z', 'd', None),
+            ('radius', 'f', None), # Not sure
+            ('recordCount', 'i', None),
+            ('records', 'X', None),
+            ]
+
+class InvalidState(Packet):
+    id = 0x46
+    INVALID_BED = 0
+    BEGIN_RAINING = 1
+    END_RAINING = 2
+    _format = [
+            ('reason', 'b', INVALID_BED),
+            ]
+
+class Weather(Packet): # Not sure
+    id = 0x47
+    _format = [
+            ('entityId', 'i', None),
+            ('raining', 'b', None), # Not sure
+            ('x', 'i', None),
+            ('y', 'i', None),
+            ('z', 'i', None),
+            ]
+
+class OpenWindow(Packet):
+    id = 0x64
+    _format = [
+            ('id', 'b', None),
+            ('type', 'b', None),
+            ('title', '8', None),
+            ('numberOfSlots', 'b'),
+            ]
+
+class CloseWindow(Packet):
+    id = 0x65
+    _format = [
+            ('id', 'b', None),
+            ]
+
+class WindowClick(mcformat.WindowClickFormat, Packet):
+    id = 0x66
+    _format = [
+            ('id', 'b', None),
+            ('slot', 'h', None),
+            ('rightClick', 'b', False),
+            ('actionNumber', 'h', None),
+            ('shift', 'b', False),
+            ('itemId', 'h', -1),
+            ('itemCount', 'b', 1),
+            ('itemUses', 'h', 0),
+            ]
+
+class SetSlot(mcformat.SetSlotFormat, Packet):
+    id = 0x67
+
+    _format = [
+            ('id', 'b', None),
+            ('slot', 'h', None),
+            ('itemId', 's', None),
+            ('itemCount', 'b', None),
+            ('itemUses', 'h', None),
+            ]
+
+class WindowItems(mcformat.WindowItemsFormat, Packet):
+    id = 0x68
+    _format = [
+            ('id', 'b', None),
+            ('count', 'short', None),
+            ('payload', 'X', None),
+            ]
+
+class UpdateProgressBar(Packet):
+    id = 0x69
+    _format = [
+            ('id', 'b', None),
+            ('progressBar', 'h', None),
+            ('value', 'h', None),
+            ]
+
+class Transation(Packet):
+    id = 0x6A
+    _format = [
+            ('id', 'b', None),
+            ('actionNumber', 'h', None),
+            ('accepted', 'b', None),
+            ]
+
+class UpdateSign(Packet):
+    id = 0x82
+    _format = [
+            ('x', 'i', None),
+            ('y', 'h', None),
+            ('z', 'i', None),
+            ('text1', 'S', ''),
+            ('text2', 'S', ''),
+            ('text3', 'S', ''),
+            ('text4', 'S', ''),
+            ]
+
+class IncrementStatistic(Packet):
+    id = 0xC8
+    # TODO: add constants
+    _format = [
+            ('id', 'i', None),
+            ('amount', 'b', None)
+            ]
 
 
 class Disconnect(Packet):
