@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
+
 import supybot.log as log
 import supybot.conf as conf
 import supybot.drivers as drivers
@@ -168,6 +170,16 @@ class SupyMcProtocol(Protocol):
 
         self._ping_loop = LoopingCall(self.update_ping)
 
+    def checkIrcForMsgs(self):
+        if self.connected:
+            msg = self.irc.takeMsg()
+            while msg:
+                if msg.command == 'PRIVMSG':
+                    msg = make_packet("chat", message=msg.args[1])
+                    self.transport.write(msg)
+                msg = self.irc.takeMsg()
+        self.mostRecentCall = reactor.callLater(0.1, self.checkIrcForMsgs)
+
     # Low-level packet handlers
     # Try not to hook these if possible, since they offer no convenient
     # abstractions or protections.
@@ -176,10 +188,11 @@ class SupyMcProtocol(Protocol):
         """
         Hook for ping packets.
         """
+        packet = make_packet("ping")
+        self.transport.write(packet)
 
     def connectionMade(self):
-        packet = make_packet("login", protocol=11, username='test', seed=0,
-            dimension=0)
+        packet = make_packet("handshake", username='foo')
         self.transport.write(packet)
 
     def login(self, container):
@@ -192,24 +205,34 @@ class SupyMcProtocol(Protocol):
         callback.
         """
 
-        if container.protocol < self.SUPPORTED_PROTOCOL:
-            # Kick old clients.
-            self.error("This server doesn't support your ancient client.")
-        elif container.protocol > self.SUPPORTED_PROTOCOL:
-            # Kick new clients.
-            self.error("This server doesn't support your newfangled client.")
-        else:
-            reactor.callLater(0, self.authenticated)
+        container.entityId = container.protocol
+        del container.protocol
+        self.mostRecentCall = reactor.callLater(0.1, self.checkIrcForMsgs)
+        packet = make_packet("chat", message="/login foobar")
+        self.transport.write(packet)
+        self._ping_loop.start(5)
 
     def handshake(self, container):
         """
         Hook for handshake packets.
         """
+        packet = make_packet("login", protocol=11, username='ProgValbot', seed=0,
+            dimension=0)
+        self.transport.write(packet)
 
+    _chat = re.compile(r'<(?P<nick>[^>]+)> (?P<message>.*)')
     def chat(self, container):
         """
         Hook for chat packets.
         """
+        match = self._chat.match(container.message)
+        if match is None:
+            return
+        else:
+            msg = ircmsgs.privmsg('#minecraft',
+                    match.group('message').encode('ascii', 'replace'),
+                    prefix='%s!minecraft@minecraft' % str(match.group('nick')))
+            self.irc.feedMsg(msg)
 
     def use(self, container):
         """
@@ -337,7 +360,7 @@ class SupyMcProtocol(Protocol):
         go here than to have zombie protocols.
         """
 
-        log.msg("Client is quitting: %s" % container.message)
+        log.info("Disconnected from server: %s" % container.message)
         self.transport.loseConnection()
 
     # Twisted-level data handlers and methods
@@ -353,32 +376,11 @@ class SupyMcProtocol(Protocol):
             if header in self.handlers:
                 log.debug('Packet: %i' % header)
                 self.handlers[header](payload)
-            else:
-                log.error("Didn't handle parseable packet %d!" % header)
-                log.error(repr(payload)[0:500]) # Truncate chunk packets
 
     def connectionLost(self, reason):
         if self._ping_loop.running:
             self._ping_loop.stop()
 
-    # State-change callbacks
-    # Feel free to override these, but call them at some point.
-
-    def challenged(self):
-        """
-        Called when the client has started authentication with the server.
-        """
-
-        self.state = STATE_CHALLENGED
-
-    def authenticated(self):
-        """
-        Called when the client has successfully authenticated with the server.
-        """
-
-        self.state = STATE_AUTHENTICATED
-
-        self._ping_loop.start(5)
 
     # Event callbacks
     # These are meant to be overriden.
@@ -407,7 +409,6 @@ class SupyMcProtocol(Protocol):
         """
         Send a keepalive to the client.
         """
-
         packet = make_packet("ping")
         self.transport.write(packet)
 
