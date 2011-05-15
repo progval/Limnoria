@@ -177,6 +177,9 @@ class SupyMcProtocol(Protocol):
                 if msg.command == 'PRIVMSG':
                     msg = make_packet("chat", message=msg.args[1])
                     self.transport.write(msg)
+                elif msg.command == 'PASSWORD':
+                    msg = make_packet("chat", message='/login %s'% msg.args[0])
+                    self.transport.write(msg)
                 msg = self.irc.takeMsg()
         self.mostRecentCall = reactor.callLater(0.1, self.checkIrcForMsgs)
 
@@ -190,6 +193,7 @@ class SupyMcProtocol(Protocol):
         """
         packet = make_packet("ping")
         self.transport.write(packet)
+        self.irc.feedMsg(ircmsgs.ping(container))
 
     def connectionMade(self):
         packet = make_packet("handshake", username='foo')
@@ -208,9 +212,8 @@ class SupyMcProtocol(Protocol):
         container.entityId = container.protocol
         del container.protocol
         self.mostRecentCall = reactor.callLater(0.1, self.checkIrcForMsgs)
-        packet = make_packet("chat", message="/login foobar")
-        self.transport.write(packet)
         self._ping_loop.start(5)
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='LOGIN', args=('#mc', container,)))
 
     def handshake(self, container):
         """
@@ -219,6 +222,7 @@ class SupyMcProtocol(Protocol):
         packet = make_packet("login", protocol=11, username='ProgValbot', seed=0,
             dimension=0)
         self.transport.write(packet)
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='HANDSHAKE', args=('#mc', container,)))
 
     _chat = re.compile(r'<(?P<nick>[^>]+)> (?P<message>.*)')
     def chat(self, container):
@@ -229,9 +233,9 @@ class SupyMcProtocol(Protocol):
         if match is None:
             return
         else:
-            msg = ircmsgs.privmsg('#minecraft',
+            msg = ircmsgs.privmsg('#mc',
                     match.group('message').encode('ascii', 'replace'),
-                    prefix='%s!minecraft@minecraft' % str(match.group('nick')))
+                    prefix='%s!mc@mc' % str(match.group('nick')))
             self.irc.feedMsg(msg)
 
     def use(self, container):
