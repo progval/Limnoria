@@ -175,9 +175,25 @@ class SupyMcProtocol(Protocol):
             msg = self.irc.takeMsg()
             while msg:
                 if msg.command == 'PRIVMSG':
-                    msg = make_packet("chat", message=msg.args[1])
-                    self.transport.write(msg)
-                elif msg.command == 'PASSWORD':
+                    string = msg.args[1]
+                    if len(string) <= 100:
+                        strings = [string]
+                    else:
+                        strings = []
+                        words = string.split(' ')
+                        string = ''
+                        # FIXME: handle words larger than 100 chars.
+                        for word in words:
+                            if len(string + ' ' + word) < 100:
+                                string += ' ' + word
+                            else:
+                                strings.append(string)
+                                string = word
+                        strings.append(string)
+                    for string in strings:
+                        msg = make_packet("chat", message=string)
+                        self.transport.write(msg)
+                elif msg.command == 'PASS':
                     msg = make_packet("chat", message='/login %s'% msg.args[0])
                     self.transport.write(msg)
                 msg = self.irc.takeMsg()
@@ -233,8 +249,10 @@ class SupyMcProtocol(Protocol):
         if match is None:
             return
         else:
-            msg = ircmsgs.privmsg('#mc',
-                    match.group('message').encode('ascii', 'replace'),
+            message = match.group('message').encode('ascii', 'replace')
+            if message == '':
+                return
+            msg = ircmsgs.privmsg('#mc', message,
                     prefix='%s!mc@mc' % str(match.group('nick')))
             self.irc.feedMsg(msg)
 
@@ -364,8 +382,8 @@ class SupyMcProtocol(Protocol):
         go here than to have zombie protocols.
         """
 
-        log.info("Disconnected from server: %s" % container.message)
         self.transport.loseConnection()
+        self.connectionLost("Disconnected from server.")
 
     # Twisted-level data handlers and methods
     # Please don't override these needlessly, as they are pretty solid and
@@ -384,6 +402,18 @@ class SupyMcProtocol(Protocol):
     def connectionLost(self, reason):
         if self._ping_loop.running:
             self._ping_loop.stop()
+        if hasattr(self, 'mostRecentCall'):
+            self.mostRecentCall.cancel()
+        if reason.check(error.ConnectionDone):
+            drivers.log.disconnect(self.factory.currentServer)
+        else:
+            drivers.log.disconnect(self.factory.currentServer, errorMsg(reason))
+        if self.irc.zombie:
+            self.factory.stopTrying()
+            while self.irc.takeMsg():
+                continue
+        else:
+            self.irc.reset()
 
 
     # Event callbacks
