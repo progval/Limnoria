@@ -360,7 +360,7 @@ msgid ""
 "    the necessary capability.  You may wish to make this True if you don't want\n"
 "    users to understand the underlying security system preventing them from\n"
 "    running certain commands."
-msgstr "Détermine si le bot enverra un message d'erreur    aux utilisateurs qui tentent d'appeler une commande pour laquelle ils    n'ont pas de permission suffisante.    Vous pouvez le mettre à True si vous ne voulez pas que les utilisateurs    comprennent le système sous-jacent de permissions pour lancer    certaines commandes."
+msgstr "Détermine si le bot enverra un message d'erreur    aux utilisateurs qui tentent d'appeler une commande pour laquelle ils    n'ont pas de capacité suffisante.    Vous pouvez le mettre à True si vous ne voulez pas que les utilisateurs    comprennent le système sous-jacent de capacités pour lancer    certaines commandes."
 
 #: conf.py:383
 msgid ""
@@ -421,7 +421,7 @@ msgid ""
 "    channel when it's invited.  If this value is False, the bot will only join\n"
 "    a channel if the user inviting it has the 'admin' capability (or if it's\n"
 "    explicitly told to join the channel using the Admin.join command)"
-msgstr "Détermine si le bot joindra toujours les    canaux sur lesquels il est invité. Si cette valeur est à False, le bot    ne joindra un canal que si l'utilisateur l'invitant a la permission    'admin' (ou si il lui a directement envoyé la commande Admin join)"
+msgstr "Détermine si le bot joindra toujours les    canaux sur lesquels il est invité. Si cette valeur est à False, le bot    ne joindra un canal que si l'utilisateur l'invitant a la capacité    'admin' (ou si il lui a directement envoyé la commande Admin join)"
 
 #: conf.py:429
 msgid ""
@@ -543,7 +543,7 @@ msgid ""
 "    think that you should have this capability, be sure that you are identified\n"
 "    before trying again.  The 'whoami' command can tell you if you're\n"
 "    identified."
-msgstr "Vous n'avez pas la permission %s.    Si vous pensez que vous l'avez, assurez-vous d'être identifié(e) et    réessayez. La commande 'whoami' vous dit si vous êtes identifié(e)."
+msgstr "Vous n'avez pas la capacité %s.    Si vous pensez que vous l'avez, assurez-vous d'être identifié(e) et    réessayez. La commande 'whoami' vous dit si vous êtes identifié(e)."
 
 #: conf.py:513
 msgid ""
@@ -562,7 +562,7 @@ msgid ""
 "    supybot.capabilities.default is set to False, meaning that no commands are\n"
 "    allowed unless explicitly in your capabilities.  Either way, you can't do\n"
 "    what you want to do."
-msgstr "Il vous manque une permission.    Ceci peut être dû au fait que vous possédez actuellement une    anti-permission quant à la commande que vous tentez d'utiliser, ou    que le canal fourni cette anti-capacité par défaut, ou parce que    les permissions globales incluent cette anti-capacité. Cela peut    également être du au fait que supybot.capabilities.default est    défini à False, ce qui signifit qu'une commande n'est autorisée par    défaut (elles doivent être autorisées une par une par un administrateur).    En clair, vous ne pouvez pas le faire."
+msgstr "Il vous manque une capacité.    Ceci peut être dû au fait que vous possédez actuellement une    anti-capacité quant à la commande que vous tentez d'utiliser, ou    que le canal fourni cette anti-capacité par défaut, ou parce que    les capacités globales incluent cette anti-capacité. Cela peut    également être du au fait que supybot.capabilities.default est    défini à False, ce qui signifit qu'une commande n'est autorisée par    défaut (elles doivent être autorisées une par une par un administrateur).    En clair, vous ne pouvez pas le faire."
 
 #: conf.py:526
 msgid ""
@@ -570,7 +570,7 @@ msgid ""
 "    someone that they aren't cool enough to use the command they tried to use,\n"
 "    and the author of the code calling errorNoCapability didn't provide an\n"
 "    explicit capability for whatever reason."
-msgstr "Détermine le message d'erreur générique qui est donné par le bot    pour dire à quelqu'un qu'il n'a pas les permissions requises pour    utiliser une commande qu'il essaye d'utiliser, si l'auteur du code    appelant errorNoCapability ne fourni pas d'information explicite    sur la raison de ce refus."
+msgstr "Détermine le message d'erreur générique qui est donné par le bot    pour dire à quelqu'un qu'il n'a pas les capacités requises pour    utiliser une commande qu'il essaye d'utiliser, si l'auteur du code    appelant errorNoCapability ne fourni pas d'information explicite    sur la raison de ce refus."
 
 #: conf.py:532
 msgid ""

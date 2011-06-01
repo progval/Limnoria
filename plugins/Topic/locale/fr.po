@@ -59,7 +59,7 @@ msgid ""
 "    channel-level capabilities.\n"
 "    Note that absence of an explicit anticapability means user has\n"
 "    capability."
-msgstr "Détermine les permissions requises (s'il y en a) pour changer le topic (c'est à dire tout ce qui n'est pas une opération en lecture seule). Utilisez #canal,capacité pour les capacités de canaux. Notez qu'en l'absence d'une anticapacité explicite, l'utilisateur a cette capacité."
+msgstr "Détermine les capacités requises (s'il y en a) pour changer le topic (c'est à dire tout ce qui n'est pas une opération en lecture seule). Utilisez #canal,capacité pour les capacités de canaux. Notez qu'en l'absence d'une anticapacité explicite, l'utilisateur a cette capacité."
 
 #: plugin.py:57
 msgid "I'm not currently in %s."

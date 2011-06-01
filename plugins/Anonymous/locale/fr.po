@@ -30,7 +30,7 @@ msgstr "Détermine si le bot requiérera que les personnes utilisant ce plugin s
 msgid ""
 "Determines what capability (if any) the bot should\n"
 "    require people trying to use this plugin to have."
-msgstr "Détermine quelle permission (s'il y en a une) le bot requiéra que les gens utilisant ce plugin aient."
+msgstr "Détermine quelle capacité (s'il y en a une) le bot requiéra que les gens utilisant ce plugin aient."
 
 #: config.py:59
 msgid ""

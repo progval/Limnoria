@@ -149,9 +149,9 @@ msgid ""
 "        supybot.capabilities stores these).\n"
 "        "
 msgstr ""
-"{add|remove} <permission>\n"
+"{add|remove} <capacité>\n"
 "\n"
-"Ajoute ou supprime (en fonction du premier argument) la <permission> à la liste des permissions par défaut données aux utilisateurs (stockée dans la variable de configuration supybot.capabilities)."
+"Ajoute ou supprime (en fonction du premier argument) la <capacité> à la liste des capacités par défaut données aux utilisateurs (stockée dans la variable de configuration supybot.capabilities)."
 
 #: plugin.py:525
 msgid ""
@@ -166,7 +166,7 @@ msgid ""
 msgstr ""
 "[<plugin>] <commande>\n"
 "\n"
-"Désactive la <commande> pour tous les utilisateurs (y compris le propriétaire. Si le <plugin> est donné, ne désactive la <commande> que pour le <plugin>. Si vous voulez désactiver la commande pour tous les utilisateurs sauf vous-même, définissez la permission par défaut -plugin.command ou -command."
+"Désactive la <commande> pour tous les utilisateurs (y compris le propriétaire. Si le <plugin> est donné, ne désactive la <commande> que pour le <plugin>. Si vous voulez désactiver la commande pour tous les utilisateurs sauf vous-même, définissez la capacité par défaut -plugin.command ou -command."
 
 #: plugin.py:552
 msgid ""
