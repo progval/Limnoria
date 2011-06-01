@@ -146,9 +146,12 @@ class _PluginInternationalization:
         self._loadL10nCode()
 
         try:
-            translationFile = open(getLocalePath(self.name, localeName, 'po'),
-                                   'ru') # ru is the mode, not the beginning
-                                         # of 'russian' ;)
+            try:
+                translationFile = open(getLocalePath(self.name,
+                                                     localeName, 'po'), 'ru')
+            except ValueError: # We are using Windows
+                translationFile = open(getLocalePath(self.name,
+                                                     localeName, 'po'), 'r')
             self._parse(translationFile)
         except IOError: # The translation is unavailable
             self.translations = {}

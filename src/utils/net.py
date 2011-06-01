@@ -34,9 +34,50 @@ Simple utility modules.
 import re
 import socket
 
-emailRe = re.compile(r"^(\w&.+-]+!)*[\w&.+-]+@"
-                     r"(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)[a-z]{2,6}|"
-                     r"([0-9]{1,3}\.){3}[0-9]{1,3})$", re.I)
+class EmailRe:
+    """Fake class used for backward compatibility."""
+
+    rfc822_specials = '()<>@,;:\\"[]'
+    def match(self, addr):
+        # From http://www.secureprogramming.com/?action=view&feature=recipes&recipeid=1
+
+        # First we validate the name portion (name@domain)
+        c = 0
+        while c < len(addr):
+            if addr[c] == '"' and (not c or addr[c - 1] == '.' or addr[c - 1] == '"'):
+                c = c + 1
+                while c < len(addr):
+                    if addr[c] == '"': break
+                    if addr[c] == '\\' and addr[c + 1] == ' ':
+                        c = c + 2
+                        continue
+                    if ord(addr[c]) < 32 or ord(addr[c]) >= 127: return 0
+                    c = c + 1
+                else: return 0
+                if addr[c] == '@': break
+                if addr[c] != '.': return 0
+                c = c + 1
+                continue
+            if addr[c] == '@': break
+            if ord(addr[c]) <= 32 or ord(addr[c]) >= 127: return 0
+            if addr[c] in self.rfc822_specials: return 0
+            c = c + 1
+        if not c or addr[c - 1] == '.': return 0
+
+        # Next we validate the domain portion (name@domain)
+        domain = c = c + 1
+        if domain >= len(addr): return 0
+        count = 0
+        while c < len(addr):
+            if addr[c] == '.':
+                if c == domain or addr[c - 1] == '.': return 0
+                count = count + 1
+            if ord(addr[c]) <= 32 or ord(addr[c]) >= 127: return 0
+            if addr[c] in self.rfc822_specials: return 0
+            c = c + 1
+
+        return count >= 1
+emailRe = EmailRe()
 
 def getSocket(host):
     """Returns a socket of the correct AF_INET type (v4 or v6) in order to
