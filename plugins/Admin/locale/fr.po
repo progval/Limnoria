@@ -133,7 +133,7 @@ msgstr "La capabilité \"owner\" ne peut être ajoutée via le bot. Utilisez le 
 
 #: plugin.py:283
 msgid "You can't add capabilities you don't have."
-msgstr "Vous ne pouvez ajouter des permissions que vous n'avez pas."
+msgstr "Vous ne pouvez ajouter des capacités que vous n'avez pas."
 
 #: plugin.py:288
 msgid ""
@@ -149,11 +149,11 @@ msgstr ""
 
 #: plugin.py:300
 msgid "That user doesn't have that capability."
-msgstr "Cet utilisateur n'a pas cette permission."
+msgstr "Cet utilisateur n'a pas cette capacité."
 
 #: plugin.py:302
 msgid "You can't remove capabilities you don't have."
-msgstr "Vous ne pouvez retirer des permissions que vous n'avez pas."
+msgstr "Vous ne pouvez retirer des capacités que vous n'avez pas."
 
 #: plugin.py:310
 msgid ""

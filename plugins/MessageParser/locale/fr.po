@@ -46,7 +46,7 @@ msgid ""
 "    channel-level capabilities.\n"
 "    Note that absence of an explicit anticapability means user has\n"
 "    capability."
-msgstr "Détermine les capacités requises (s'il y en a) pour gérer la base de données d'expressions régulières, ce qui inclue l'ajout, la suppression, le verrouillage, et le déverrouillage. Utilisez 'canal,capa' pour des permissions par canal. Notez que l'absence de toute anti-capacité explicite signifit que l'utilisateur peut le faire."
+msgstr "Détermine les capacités requises (s'il y en a) pour gérer la base de données d'expressions régulières, ce qui inclue l'ajout, la suppression, le verrouillage, et le déverrouillage. Utilisez 'canal,capa' pour des capacités par canal. Notez que l'absence de toute anti-capacité explicite signifit que l'utilisateur peut le faire."
 
 #: config.py:69
 msgid ""
@@ -237,5 +237,5 @@ msgid ""
 msgstr ""
 "[<canal>]\n"
 "\n"
-"Fait un vacuum de la base de données pour le <canal>.Lisez la documentation de SQLite sur cette fonctionnalité : http://www.sqlite.org/lang_vacuum.htmlVérifie d'abord si l'utilisateur a bien la permission spécifiée dans la variable de configuration supybot.plugins.requireVacuumCapability<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Fait un vacuum de la base de données pour le <canal>.Lisez la documentation de SQLite sur cette fonctionnalité : http://www.sqlite.org/lang_vacuum.htmlVérifie d'abord si l'utilisateur a bien la capacité spécifiée dans la variable de configuration supybot.plugins.requireVacuumCapability<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 

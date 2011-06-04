@@ -24,7 +24,7 @@ msgstr "Détermine si les messages seront envoyés sur le canal lorsqu'un utilis
 msgid ""
 "Determines what capability (if any) is required to\n"
 "    add/change/remove the herald of another user."
-msgstr "Détermine quelle permission (s'il en est une) est requise pour ajouter/changer/supprimer le message d'annonce d'un autre utilisateur."
+msgstr "Détermine quelle capacité (s'il en est une) est requise pour ajouter/changer/supprimer le message d'annonce d'un autre utilisateur."
 
 #: config.py:53
 msgid ""
