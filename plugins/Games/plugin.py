@@ -57,7 +57,7 @@ class Games(callbacks.Plugin):
     def dice(self, irc, msg, args, m):
         """<dice>d<sides>
 
-        Rolls a dice with <sides> number of sides <dice> times.
+        Rolls a die with <sides> number of sides <dice> times.
         For example, 2d6 will roll 2 six-sided dice; 10d10 will roll 10
         ten-sided dice.
         """
