@@ -606,7 +606,10 @@ class Irc(IrcCommandDispatcher):
         world.ircs.append(self)
         self.network = network
         self.callbacks = callbacks
-        self.state = IrcState()
+        if conf.supybot.networks.get(self.network).minecraft():
+            self.state = mclib.McState()
+        else:
+            self.state = IrcState()
         self.queue = IrcMsgQueue()
         self.fastqueue = smallqueue()
         self.driver = None # The driver should set this later.
