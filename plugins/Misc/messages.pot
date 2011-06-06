@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-06-06 19:05+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,15 +45,15 @@ msgid ""
 "    command"
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:81
 msgid "You've given me %s invalid commands within the last minute; I'm now ignoring you for %s."
 msgstr ""
 
-#: plugin.py:92
+#: plugin.py:93
 msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"list %s\" to see the commands in the %q plugin."
 msgstr ""
 
-#: plugin.py:118
+#: plugin.py:119
 #, docstring
 msgid ""
 "[--private] [<plugin>]\n"
@@ -64,19 +64,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:143
+#: plugin.py:144
 msgid "There are no private plugins."
 msgstr ""
 
-#: plugin.py:145
+#: plugin.py:146
 msgid "There are no public plugins."
 msgstr ""
 
-#: plugin.py:152
+#: plugin.py:153
 msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
 msgstr ""
 
-#: plugin.py:163
+#: plugin.py:164
 #, docstring
 msgid ""
 "<string>\n"
@@ -86,11 +86,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:182
+#: plugin.py:183
 msgid "No appropriate commands were found."
 msgstr ""
 
-#: plugin.py:187
+#: plugin.py:188
 #, docstring
 msgid ""
 "[<plugin>] [<command>]\n"
@@ -100,15 +100,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:197
+#: plugin.py:198
 msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
 msgstr ""
 
-#: plugin.py:204
+#: plugin.py:205
 msgid "There is no command %q."
 msgstr ""
 
-#: plugin.py:210
+#: plugin.py:211
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -117,19 +117,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:216
-msgid "The newest version available online is %s."
+#: plugin.py:225
+msgid "The newest versions available online are %s."
 msgstr ""
 
-#: plugin.py:220
-msgid "I couldn't fetch the newest version from the Supybot website."
+#: plugin.py:226
+msgid "%s (in %s)"
 msgstr ""
 
-#: plugin.py:222
+#: plugin.py:230
+msgid "I couldn't fetch the newest version from the Limnoria repository."
+msgstr ""
+
+#: plugin.py:232
 msgid "The current (running) version of this Supybot is %s.  %s"
 msgstr ""
 
-#: plugin.py:229
+#: plugin.py:239
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -138,11 +142,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:233
+#: plugin.py:243
 msgid "My source is at http://supybot.com/"
 msgstr ""
 
-#: plugin.py:238
+#: plugin.py:248
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -154,31 +158,31 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:252
+#: plugin.py:262
 msgid "%s has no public mores."
 msgstr ""
 
-#: plugin.py:255
+#: plugin.py:265
 msgid "Sorry, I can't find any mores for %s"
 msgstr ""
 
-#: plugin.py:262
+#: plugin.py:272
 msgid "more message"
 msgstr ""
 
-#: plugin.py:264
+#: plugin.py:274
 msgid "more messages"
 msgstr ""
 
-#: plugin.py:268
+#: plugin.py:278
 msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
 msgstr ""
 
-#: plugin.py:272
+#: plugin.py:282
 msgid "That's all, there is no more."
 msgstr ""
 
-#: plugin.py:282
+#: plugin.py:292
 #, docstring
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
@@ -193,11 +197,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:376
+#: plugin.py:386
 msgid "I couldn't find a message matching that criteria in my history of %s messages."
 msgstr ""
 
-#: plugin.py:391
+#: plugin.py:401
 #, docstring
 msgid ""
 "<nick> <text>\n"
@@ -207,23 +211,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:399
+#: plugin.py:409
 msgid "Dude, just give the command.  No need for the tell."
 msgstr ""
 
-#: plugin.py:404
+#: plugin.py:414
 msgid "You just told me, why should I tell myself?"
 msgstr ""
 
-#: plugin.py:409
+#: plugin.py:419
 msgid "I haven't seen %s, I'll let you do the telling."
 msgstr ""
 
-#: plugin.py:414
+#: plugin.py:424
 msgid "%s wants me to tell you: %s"
 msgstr ""
 
-#: plugin.py:420
+#: plugin.py:430
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -232,7 +236,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:424
+#: plugin.py:434
 msgid "pong"
 msgstr ""
 

@@ -223,7 +223,7 @@ class Misc(callbacks.Plugin):
                     continue
                 versions[branch] = match.group(1)
             newest = _('The newest versions available online are %s.') % \
-                    ', '.join(['%s (in %s)' % (y,x)
+                    ', '.join([_('%s (in %s)') % (y,x)
                                for x,y in versions.items()])
         except utils.web.Error, e:
             self.log.info('Couldn\'t get website version: %s', e)

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-17 15:35+CEST\n"
+"POT-Creation-Date: 2011-06-06 19:05+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -123,19 +123,23 @@ msgstr ""
 "\n"
 "Retourne la version actuelle du bot"
 
-#: plugin.py:217
-msgid "The newest version available online is %s."
-msgstr "La dernière version disponible en ligne est %s."
+#: plugin.py:225
+msgid "The newest versions available online are %s."
+msgstr "Les dernières versions disponibles en ligne sont %s."
 
-#: plugin.py:221
-msgid "I couldn't fetch the newest version from the Supybot website."
-msgstr "Je ne peux récupérer la dernière version sur le site de Supybot."
+#: plugin.py:226
+msgid "%s (in %s)"
+msgstr "%s (dans %s)"
 
-#: plugin.py:223
+#: plugin.py:230
+msgid "I couldn't fetch the newest version from the Limnoria repository."
+msgstr "Je ne peux récupérer la dernière version sur le dépôt de Limnoria."
+
+#: plugin.py:232
 msgid "The current (running) version of this Supybot is %s.  %s"
 msgstr "La version de ce Supybot est %s. %s"
 
-#: plugin.py:230
+#: plugin.py:239
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -146,11 +150,11 @@ msgstr ""
 "\n"
 "Retourne une URL disant où trouver Supybot."
 
-#: plugin.py:234
+#: plugin.py:243
 msgid "My source is at http://supybot.com/"
 msgstr "Ma source est disponible sur http://supybot.com/"
 
-#: plugin.py:239
+#: plugin.py:248
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -164,23 +168,31 @@ msgstr ""
 "\n"
 "Si la dernière commande était tronquée par les limitations de taille des messages sur IRC, retourne le morceau suivant résultant de la dernière commande. Si le <nick> est donné, continue la dernière commande du <nick> plutôt que de la personne envoyant ce message."
 
-#: plugin.py:253
+#: plugin.py:262
 msgid "%s has no public mores."
 msgstr "%s n'a pas de 'more' public."
 
-#: plugin.py:256
+#: plugin.py:265
 msgid "Sorry, I can't find any mores for %s"
 msgstr "Désolé, je ne peux trouver de 'more' pour %s"
 
-#: plugin.py:265
+#: plugin.py:272
+msgid "more message"
+msgstr "autre message"
+
+#: plugin.py:274
+msgid "more messages"
+msgstr "autres messages"
+
+#: plugin.py:278
 msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
 msgstr "Vous ne m'avez donné aucune commande. Peut-être que vous voulez voir celle de quelqu'un d'autre. Pour cela, appelez cette commande en ajoutant le nick de cette personne."
 
-#: plugin.py:269
+#: plugin.py:282
 msgid "That's all, there is no more."
 msgstr "C'est tout, il n'y a plus de 'more'"
 
-#: plugin.py:279
+#: plugin.py:292
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
 "\n"
@@ -197,11 +209,11 @@ msgstr ""
 "\n"
 "Retourne le dernier message correspondant aux critères donnés. --from requiert le nick de la personne qui a envoyé le message ; --in requiert le canal sur lequel a été envoyé le message ; --with requiert une chaîne qui doit être dans le message --regexp requiert une expression régulière à laquelle le message doit correspondre ; --nolimit retourne tous les messages qui peuvent être trouvés. Par défaut, recherche dans les logs du canal sur lequel est envoyée cette commande."
 
-#: plugin.py:373
+#: plugin.py:386
 msgid "I couldn't find a message matching that criteria in my history of %s messages."
 msgstr "Je ne peux trouver de message correspondant à ce critère dans mon historique de %s messages."
 
-#: plugin.py:388
+#: plugin.py:401
 msgid ""
 "<nick> <text>\n"
 "\n"
@@ -213,23 +225,23 @@ msgstr ""
 "\n"
 "Dit le <texte> au <nick>. Utile si vous utilisez des commandes imbriquées."
 
-#: plugin.py:396
+#: plugin.py:409
 msgid "Dude, just give the command.  No need for the tell."
 msgstr "Mec, contentes-toi de me donner la commande. Pas besoin d'utiliser 'tell'."
 
-#: plugin.py:401
+#: plugin.py:414
 msgid "You just told me, why should I tell myself?"
 msgstr "Vous venez de me le dire, pourquoi devrais-je me le dire moi-même ?"
 
-#: plugin.py:406
+#: plugin.py:419
 msgid "I haven't seen %s, I'll let you do the telling."
 msgstr "Je n'ai pas vu %s, je vous laisse lui dire."
 
-#: plugin.py:411
+#: plugin.py:424
 msgid "%s wants me to tell you: %s"
 msgstr "%s veut que je vous dise : %s"
 
-#: plugin.py:417
+#: plugin.py:430
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -240,7 +252,7 @@ msgstr ""
 "\n"
 "Vérifie si le bot est encore en vie."
 
-#: plugin.py:421
+#: plugin.py:434
 msgid "pong"
 msgstr "pong"
 
