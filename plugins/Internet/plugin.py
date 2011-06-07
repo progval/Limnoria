@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
-# Copyright (c) 2010, James Vega
+# Copyright (c) 2010-2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ class Internet(callbacks.Plugin):
                 irc.reply(hostname)
         else:
             try:
-                ip = socket.gethostbyname(host)
+                ip = socket.getaddrinfo(host, None)[0][4][0]
                 if ip == '64.94.110.11': # Verisign sucks!
                     irc.reply('Host not found.')
                 else:
