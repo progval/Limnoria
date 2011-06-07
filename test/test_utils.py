@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009,2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -501,11 +501,9 @@ class NetTest(SupyTestCase):
         isIP = utils.net.isIP
         self.failIf(isIP('a.b.c'))
         self.failIf(isIP('256.0.0.0'))
-        self.failUnless(isIP('127.1'))
         self.failUnless(isIP('0.0.0.0'))
         self.failUnless(isIP('100.100.100.100'))
-        # This test is too flaky to bother with.
-        # self.failUnless(utils.isIP('255.255.255.255'))
+        self.failUnless(isIP('255.255.255.255'))
 
     def testIsIPV6(self):
         f = utils.net.isIPV6
