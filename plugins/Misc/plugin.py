@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
 import os
 import sys
 import time
@@ -212,13 +213,22 @@ class Misc(callbacks.Plugin):
         Returns the version of the current bot.
         """
         try:
-            newest = utils.web.getUrl('http://supybot.sf.net/version.txt')
-            newest = _('The newest version available online is %s.') % \
-                       newest.strip()
+            newestUrl = 'https://github.com/ProgVal/Limnoria/raw/%s/' + \
+                        'src/version.py'
+            versions = {}
+            for branch in ('master', 'testing'):
+                file = utils.web.getUrl(newestUrl % branch)
+                match = re.search(r"^version = '([^']+)'$", file, re.M)
+                if match is None:
+                    continue
+                versions[branch] = match.group(1)
+            newest = _('The newest versions available online are %s.') % \
+                    ', '.join([_('%s (in %s)') % (y,x)
+                               for x,y in versions.items()])
         except utils.web.Error, e:
             self.log.info('Couldn\'t get website version: %s', e)
             newest = _('I couldn\'t fetch the newest version '
-                     'from the Supybot website.')
+                     'from the Limnoria repository.')
         s = _('The current (running) version of this Supybot is %s.  %s') % \
             (conf.version, newest)
         irc.reply(s)
