@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -190,7 +191,7 @@ def banmask(hostmask):
     """
     assert isUserHostmask(hostmask)
     host = hostFromHostmask(hostmask)
-    if utils.net.isIP(host):
+    if utils.net.isIPV4(host):
         L = host.split('.')
         L[-1] = '*'
         return '*!*@' + '.'.join(L)
@@ -461,8 +462,8 @@ def replyTo(msg):
         return msg.nick
 
 def dccIP(ip):
-    """Returns in IP in the proper for DCC."""
-    assert utils.net.isIP(ip), \
+    """Returns an IP in the proper for DCC."""
+    assert utils.net.isIPV4(ip), \
            'argument must be a string ip in xxx.yyy.zzz.www format.'
     i = 0
     x = 256**3
