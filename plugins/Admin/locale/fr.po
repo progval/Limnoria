@@ -129,7 +129,7 @@ msgstr ""
 
 #: plugin.py:272
 msgid "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser program (or edit the users.conf file yourself) to add an owner capability."
-msgstr "La capabilité \"owner\" ne peut être ajoutée via le bot. Utilisez le programme supybot-adduser (ou éditez le fichier users.conf vous-même) pour ajouter la capacité owner."
+msgstr "La capacité \"owner\" ne peut être ajoutée via le bot. Utilisez le programme supybot-adduser (ou éditez le fichier users.conf vous-même) pour ajouter la capacité owner."
 
 #: plugin.py:283
 msgid "You can't add capabilities you don't have."
