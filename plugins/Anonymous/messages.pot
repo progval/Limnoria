@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-06-09 18:26+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,22 @@ msgid ""
 "    that the user be registered by setting\n"
 "    supybot.plugins.Anonymous.requireRegistration.\n"
 "    "
+msgstr ""
+
+#: plugin.py:64
+msgid "You must be in %s to %q in there."
+msgstr ""
+
+#: plugin.py:68
+msgid "I'm lobotomized in %s."
+msgstr ""
+
+#: plugin.py:71
+msgid "That channel has set its capabilities so as to disallow the use of this plugin."
+msgstr ""
+
+#: plugin.py:74
+msgid "%q cannot be used to send private messages."
 msgstr ""
 
 #: plugin.py:80
