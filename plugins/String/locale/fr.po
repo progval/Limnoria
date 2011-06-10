@@ -100,7 +100,7 @@ msgid ""
 msgstr ""
 "<chaîne 1> <chaîne 2>\n"
 "\n"
-"Retourne la distance leveshtein (aussi connue sous le nom de \"distance d'édition) entre les deux chaînes."
+"Retourne la distance levenhtein (aussi connue sous le nom de \"distance d'édition) entre les deux chaînes."
 
 #: plugin.py:106
 msgid "Levenshtein distance is a complicated algorithm, try it with some smaller inputs."
