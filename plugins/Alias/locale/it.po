@@ -1,0 +1,116 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-06-07 08:23+0200\n"
+"Last-Translator: skizzhg <skizzhg@gmx.com>\n"
+"Language-Team: Italian <skizzhg@gmx.com>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+#: plugin.py:45
+#, docstring
+msgid ""
+"Returns the channel the msg came over or the channel given in args.\n"
+"\n"
+"    If the channel was given in args, args is modified (the channel is\n"
+"    removed).\n"
+"    "
+msgstr ""
+"Restituisce il canale da dove proviene il messaggio o il canale fornito come argomento.\n"
+"\n"
+"    Se il canale è stato dato come argomento, quest'ultimo viene modificato (il canale\n"
+"    viene rimosso).\n"
+"    "
+
+#: plugin.py:164
+msgid " at least"
+msgstr " almeno"
+
+#: plugin.py:165
+msgid ""
+"<an alias,%s %n>\n"
+"\n"
+"Alias for %q."
+msgstr ""
+"<un alias,%s %n>\n"
+"\n"
+"Alias per %q."
+
+#: plugin.py:166
+msgid "argument"
+msgstr "argomento"
+
+#: plugin.py:220
+#, docstring
+msgid ""
+"<alias>\n"
+"\n"
+"        Locks an alias so that no one else can change it.\n"
+"        "
+msgstr ""
+"<alias>\n"
+"\n"
+"        Blocca un alias affinché nessun altro possa modificarlo.\n"
+"        "
+
+#: plugin.py:229 plugin.py:243
+msgid "There is no such alias."
+msgstr "Non c'è nessun alias."
+
+#: plugin.py:234
+#, docstring
+msgid ""
+"<alias>\n"
+"\n"
+"        Unlocks an alias so that people can define new aliases over it.\n"
+"        "
+msgstr ""
+"<alias>\n"
+"\n"
+"        Sblocca un alias affinché chiunque possa ridefinirne di nuovi.\n"
+"        "
+
+#: plugin.py:254
+msgid "That name isn't valid.  Try %q instead."
+msgstr "Nome non valido. Provare %q invece."
+
+#: plugin.py:292
+#, docstring
+msgid ""
+"<name> <alias>\n"
+"\n"
+"        Defines an alias <name> that executes <alias>.  The <alias>\n"
+"        should be in the standard \"command argument [nestedcommand argument]\"\n"
+"        arguments to the alias; they'll be filled with the first, second, etc.\n"
+"        arguments.  $1, $2, etc. can be used for required arguments.  @1, @2,\n"
+"        etc. can be used for optional arguments.  $* simply means \"all\n"
+"        remaining arguments,\" and cannot be combined with optional arguments.\n"
+"        "
+msgstr ""
+"<nome> <alias>\n"
+"\n"
+"        Definisce un alias <nome> che esegue <alias>. <alias> deve essere\n"
+"        nello standard \"comando argomento [comandonidificato argomento]\";\n"
+"        gli argomenti dati devono essere riportati in sequenza.\n"
+"        Per gli argomenti richiesti è possibile utilizzare $1, $2, ecc., mentre \n"
+"        @1, @2, ecc. per argomenti opzionali. $* significa semplicemente \"tutti\n"
+"        gli argomenti rimanenti\" e non possono essere combinati con quelli opzionali.\n"
+"        "
+
+#: plugin.py:315
+#, docstring
+msgid ""
+"<name>\n"
+"\n"
+"        Removes the given alias, if unlocked.\n"
+"        "
+msgstr ""
+"<nome>\n"
+"\n"
+"        Rimuove l'alias fornito, se sbloccato.\n"
+"        "
+
