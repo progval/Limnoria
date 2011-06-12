@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-16 18:48+CEST\n"
+"POT-Creation-Date: 2011-06-12 12:45+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -27,8 +27,8 @@ msgstr "Détermine si ce plugin mettra des modes automatiques sur les owners."
 
 #: config.py:52
 msgid ""
-"Determines whether the bot will \"fall through\n"
-"    to halfop/voicing when auto-opping is turned off but\n"
+"Determines whether the bot will \"fall\n"
+"    through\" to halfop/voicing when auto-opping is turned off but\n"
 "    auto-halfopping/voicing are turned on."
 msgstr "Détermine si le bot ne halfopera/voicera pas lorsque l'auto-op est désactivé, même si l'auto-halfopvoice est activé."
 
