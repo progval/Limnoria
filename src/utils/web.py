@@ -96,7 +96,7 @@ defaultHeaders = {
 # application-specific function.  Feel free to use a callable here.
 proxy = None
 
-def getUrlFd(url, headers=None, data=None):
+def getUrlFd(url, headers=None, data=None, timeout=None):
     """getUrlFd(url, headers=None, data=None)
 
     Opens the given url and returns a file object.  Headers and data are
@@ -114,7 +114,7 @@ def getUrlFd(url, headers=None, data=None):
         httpProxy = force(proxy)
         if httpProxy:
             request.set_proxy(httpProxy, 'http')
-        fd = urllib2.urlopen(request)
+        fd = urllib2.urlopen(request, timeout=timeout)
         return fd
     except socket.timeout, e:
         raise Error, TIMED_OUT
