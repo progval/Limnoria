@@ -236,7 +236,10 @@ class Web(callbacks.PluginRegexp):
             irc.error('This command is disabled '
                       '(supybot.plugins.Web.fetch.maximum is set to 0).',
                       Raise=True)
-        fd = utils.web.getUrlFd(url)
+        timeout = self.registryValue('fetch.timeout')
+        if timeout == 0:
+            timeout = None
+        fd = utils.web.getUrlFd(url, timeout=timeout)
         irc.reply(fd.read(max))
     fetch = wrap(fetch, ['url'])
 
