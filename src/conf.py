@@ -201,7 +201,7 @@ registerGlobalValue(supybot.nick, 'alternates',
    appropriately until an unused nick is found.""")))
 
 registerGlobalValue(supybot, 'ident',
-    ValidNick('supybot', _("""Determines the bot's ident string, if the server
+    ValidNick('limnoria', _("""Determines the bot's ident string, if the server
     doesn't provide one by default.""")))
 
 class VersionIfEmpty(registry.String):
