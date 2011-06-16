@@ -64,7 +64,7 @@ msgid ""
 "        to protect the secrecy of secret channels.\n"
 "        "
 msgstr ""
-"Non necessita argomenti\n"
+"non necessita argomenti\n"
 "\n"
 "        Restituisce i canali dove è presente il bot. Per preservare la segretezza\n"
 "        dei canali privati, deve essere richiesto in privato.\n"
@@ -145,7 +145,7 @@ msgstr ""
 
 #: plugin.py:272
 msgid "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser program (or edit the users.conf file yourself) to add an owner capability."
-msgstr "La capacità \"owner\" non puà essere aggiunta al bot. Utilizzare il programma supybot-adduser (o modificare il file users.conf) per aggiungerla."
+msgstr "La capacità \"owner\" non può essere aggiunta al bot. Utilizzare il programma supybot-adduser (o modificare il file users.conf) per aggiungerla."
 
 #: plugin.py:283
 msgid "You can't add capabilities you don't have."
