@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-08 10:59+0200\n"
+"PO-Revision-Date: 2011-06-17 20:36+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,11 +16,11 @@ msgstr ""
 
 #: config.py:38
 msgid "The default dictd server is dict.org."
-msgstr "Oletus dictd palvelin on dict.org."
+msgstr "Oletus dictd-palvelin on dict.org."
 
 #: config.py:39
 msgid "Would you like to specify a different dictd server?"
-msgstr "Tahtoisitko määrittää eri dictd palvelimen?"
+msgstr "Tahtoisitko määrittää eri dictd-palvelimen?"
 
 #: config.py:45
 msgid ""
@@ -41,7 +41,6 @@ msgstr ""
 "käyttää kaikkia sanakirjoja määrittääkseen sanat."
 
 #: plugin.py:54
-#, fuzzy
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -50,7 +49,7 @@ msgid ""
 msgstr ""
 "Ei ota parametrejä\n"
 "\n"
-"        Palauttaa sanakirjojen kelvollisen dict komennolle.\n"
+"        Palauttaa sanakirjat, jotka kelpaavat dict komennolle.\n"
 "        "
 
 #: plugin.py:70
@@ -75,7 +74,7 @@ msgid ""
 msgstr ""
 "[<sanakirja>] <sana>\n"
 "\n"
-"        Etsii <sanan> määritystä dictd palvelimelta, joka on määritetty\n"
+"        Etsii <sanan> määritystä dictd-palvelimelta, joka on määritetty\n"
 "        supybot.plugins.Dict.server asetus arvossa.\n"
 "        "
 
