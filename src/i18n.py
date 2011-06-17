@@ -88,7 +88,7 @@ def getPluginDir(plugin_name):
     for allowed_file in allowed_files:
         if filename.endswith(allowed_file):
             return filename[0:-len(allowed_file)]
-    return
+    raise Exception('Plugin %s not found by i18n.' % plugin_name)
 
 def getLocalePath(name, localeName, extension):
     """Gets the path of the locale file of the given plugin ('supybot' stands
