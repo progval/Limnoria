@@ -101,8 +101,7 @@ msgid ""
 msgstr ""
 "[<nick>]\n"
 "\n"
-"        Cambia il nicke del bot in <nick>. Se non ne viene fornito uno, restituisce\n"
-"        quello attuale.\n"
+"        Cambia il nick del bot in <nick>. Se non ne viene fornito uno, riporta quello attuale.\n"
 "        "
 
 #: plugin.py:222

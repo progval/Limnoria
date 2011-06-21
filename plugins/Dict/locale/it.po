@@ -45,7 +45,7 @@ msgid ""
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Restituisce i dizionari validi per il comando dict.\n"
+"        Riporta i dizionari validi per il comando dict.\n"
 "        "
 
 #: plugin.py:70
@@ -58,7 +58,7 @@ msgid ""
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Restituisce un dizionario casuale valido.\n"
+"        Riporta un dizionario casuale.\n"
 "        "
 
 #: plugin.py:85

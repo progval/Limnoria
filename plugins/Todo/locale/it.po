@@ -1,0 +1,153 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot-fr\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-06-19 13:29+0200\n"
+"Last-Translator: skizzhg <skizzhg@gmx.com>\n"
+"Language-Team: Italian <skizzhg@gmx.com>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: plugin.py:135
+#, docstring
+msgid ""
+"[<username> [<task id>]|<task id>]\n"
+"\n"
+"        Retrieves a task for the given task id.  If no task id is given, it\n"
+"        will return a list of task ids that that user has added to their todo\n"
+"        list.\n"
+"        "
+msgstr ""
+"[<utente> [<id compito>]|<id compito>]\n"
+"\n"
+"        Recupera il compito corrispondente a <id compito> fornito. Se non è\n"
+"        specificato alcun id, riporta un elenco degli id che quell'utente\n"
+"        ha aggiunto alla sua lista delle cose da fare.\n"
+"        "
+
+#: plugin.py:150
+msgid "#%i: %s"
+msgstr "#%i: %s"
+
+#: plugin.py:155
+msgid "%s for %s: %L"
+msgstr "%s per %s: %L"
+
+#: plugin.py:159
+msgid "That user has no tasks in their todo list."
+msgstr "Questo utente non ha compiti nella sua lista delle cose da fare."
+
+#: plugin.py:161
+msgid "You have no tasks in your todo list."
+msgstr "Non hai compiti nella tua lista delle cose da fare."
+
+#: plugin.py:168
+msgid "Active"
+msgstr "Attivo"
+
+#: plugin.py:170
+msgid "Inactive"
+msgstr "Inattivo"
+
+#: plugin.py:172
+msgid ", priority: %i"
+msgstr ", priorità: %i"
+
+#: plugin.py:175
+msgid "%s todo for %s: %s (Added at %s)"
+msgstr "%s compito per %s: %s (Aggiunto il %s)"
+
+#: plugin.py:179 plugin.py:260 plugin.py:274
+msgid "task id"
+msgstr "id compito"
+
+#: plugin.py:184
+#, docstring
+msgid ""
+"[--priority=<num>] <text>\n"
+"\n"
+"        Adds <text> as a task in your own personal todo list.  The optional\n"
+"        priority argument allows you to set a task as a high or low priority.\n"
+"        Any integer is valid.\n"
+"        "
+msgstr ""
+"[--priority=<numero>] <testo>\n"
+"\n"
+"        Aggiunge <testo> come compito nella lista personale di cose da fare.\n"
+"        L'argomento opzionale \"priority\" permette di definire un'alta o bassa priorità.\n"
+"        Ogni numero intero è valido.\n"
+"        "
+
+#: plugin.py:195
+msgid "(Todo #%i added)"
+msgstr "(Compito #%i aggiunto)"
+
+#: plugin.py:201
+#, docstring
+msgid ""
+"<task id> [<task id> ...]\n"
+"\n"
+"        Removes <task id> from your personal todo list.\n"
+"        "
+msgstr ""
+"<id compito> [<id compito> ...]\n"
+"\n"
+"        Rimuove <id compito> dalla lista personale delle cose da fare.\n"
+"        "
+
+#: plugin.py:212
+msgid "Task %i could not be removed either because that id doesn't exist or it has been removed already."
+msgstr "Il compito %i non può essere rimosso in quanto l'id non esiste o è già stato rimosso."
+
+#: plugin.py:216
+msgid "No tasks were removed because the following tasks could not be removed: %L."
+msgstr "Non è stato rimosso nessun compito perché i seguenti non possono essere rimossi: %L."
+
+#: plugin.py:226
+#, docstring
+msgid ""
+"[--{regexp} <value>] [<glob> <glob> ...]\n"
+"\n"
+"        Searches your todos for tasks matching <glob>.  If --regexp is given,\n"
+"        its associated value is taken as a regexp and matched against the\n"
+"        tasks.\n"
+"        "
+msgstr ""
+"[--{regexp} <valore>] [<globale> <globale> ...]\n"
+"\n"
+"        Cerca i compiti che corrispondono a <globale> nella lista di cose da fare.\n"
+"        Se --regexp è fornita, il suo valore associato è usato come regexp e confrontato con i compiti.\n"
+"        "
+
+#: plugin.py:246
+msgid "No tasks matched that query."
+msgstr "Nessun compito corrisponde alla richiesta."
+
+#: plugin.py:252
+#, docstring
+msgid ""
+"<id> <priority>\n"
+"\n"
+"        Sets the priority of the todo with the given id to the specified value.\n"
+"        "
+msgstr ""
+"<id> <priorità>\n"
+"\n"
+"        Imposta la priorità del compito con l'id fornito al valore specificato.\n"
+"        "
+
+#: plugin.py:266
+#, docstring
+msgid ""
+"<task id> <regexp>\n"
+"\n"
+"        Modify the task with the given id using the supplied regexp.\n"
+"        "
+msgstr ""
+"<id compito> <regexp>\n"
+"\n"
+"        Modifica il compito con il dato id utilizzando una regexp.\n"
+"        "
+
