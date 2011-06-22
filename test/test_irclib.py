@@ -475,7 +475,7 @@ class IrcCallbackTestCase(SupyTestCase):
             conf.supybot.nick.setValue(nick)
             user = 'user any user'
             conf.supybot.user.setValue(user)
-            expected = [ircmsgs.nick(nick), ircmsgs.user('supybot', user)]
+            expected = [ircmsgs.nick(nick), ircmsgs.user('limnoria', user)]
             irc = irclib.Irc('test')
             msgs = [irc.takeMsg()]
             while msgs[-1] != None:
