@@ -252,7 +252,7 @@ class Owner(callbacks.Plugin):
             self.commands.enqueue(msg)
             if conf.supybot.abuse.flood.command() \
                and self.commands.len(msg) > maximum \
-               and not ircdb.checkCapability(msg.prefix, 'owner'):
+               and not ircdb.checkCapability(msg.prefix, 'trusted'):
                 punishment = conf.supybot.abuse.flood.command.punishment()
                 banmask = ircutils.banmask(msg.prefix)
                 self.log.info('Ignoring %s for %s seconds due to an apparent '
