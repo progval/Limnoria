@@ -423,6 +423,10 @@ class RichReplyMethods(object):
 
     def replyError(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.error)
+        if 'msg' in kwargs:
+            msg = kwargs['msg']
+            if ircdb.checkCapability(msg.prefix, 'owner'):
+                v = self._getConfig(conf.supybot.replies.errorOwner)
         s = self.__makeReply(v, s)
         return self.reply(s, **kwargs)
 
@@ -1205,7 +1209,7 @@ class Commands(BasePlugin):
             if conf.supybot.reply.error.detailed():
                 irc.error(utils.exnToString(e))
             else:
-                irc.replyError()
+                irc.replyError(msg=msg)
 
     def getCommandHelp(self, command, simpleSyntax=None):
         method = self.getCommandMethod(command)

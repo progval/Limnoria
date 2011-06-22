@@ -484,6 +484,11 @@ registerChannelValue(supybot.replies, 'error',
     Determines what error message the bot gives when it wants to be
     ambiguous.""")))
 
+registerChannelValue(supybot.replies, 'errorOwner',
+    registry.NormalizedString(_("""An error has occurred and has been logged.
+    Check the logs for more informations."""), _("""Determines what error
+    message the bot gives to the owner when it wants to be ambiguous.""")))
+
 registerChannelValue(supybot.replies, 'incorrectAuthentication',
     registry.NormalizedString(_("""Your hostmask doesn't match or your password
     is wrong."""), _("""Determines what message the bot replies with when
