@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-06-23 15:37+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: plugin.py:42
+msgid "Add the help for \"@help Internet\" here."
+msgstr "Lisää ohje \"@help Internet:ille\" tähän."
+
+#: plugin.py:46
+msgid ""
+"<host|ip>\n"
+"\n"
+"        Returns the ip of <host> or the reverse DNS hostname of <ip>.\n"
+"        "
+msgstr ""
+"<isäntä|ip>\n"
+"\n"
+"        Palauttaa <isännän> ip:een tai <ip:een> käänteisen isäntänimen.\n"
+"        "
+
+#: plugin.py:53
+#: plugin.py:60
+#: plugin.py:64
+msgid "Host not found."
+msgstr "Isäntää ei löytynyt."
+
+#: plugin.py:76
+msgid ""
+"<domain>\n"
+"\n"
+"        Returns WHOIS information on the registration of <domain>.\n"
+"        "
+msgstr ""
+"<verkkotunnus>\n"
+"\n"
+"        Palauttaa WHOIS tiedot <verkkotunnusten> rekisteröimisestä.\n"
+"        "
+
+#: plugin.py:82
+msgid "domain"
+msgstr "verkkotunnus"
+
+#: plugin.py:111
+msgid "updated %s"
+msgstr "päivitetty %s"
+
+#: plugin.py:114
+msgid "registered %s"
+msgstr "rekisteröity %s"
+
+#: plugin.py:117
+msgid "expires %s"
+msgstr "vanhenee %s"
+
+#: plugin.py:137
+msgid " <registered at %s>"
+msgstr " <rekisteröity aikaan %s>"
+
+#: plugin.py:139
+msgid " <registered by %s>"
+msgstr " <rekisteröinyt %s>"
+
+#: plugin.py:144
+msgid "%s%s is %L."
+msgstr "%s%s on %L."
+
+#: plugin.py:147
+msgid "I couldn't find such a domain."
+msgstr "En voi löytää sellaista verkkotunnusta."
+
+#: plugin.py:152
+msgid ""
+"<ip>\n"
+"\n"
+"        Returns the hexadecimal IP for that IP.\n"
+"        "
+msgstr ""
+"<ip>\n"
+"\n"
+"        Palauttaa IP:een heksadesimaalisen IP:een IP:lle.\n"
+"        "
+
