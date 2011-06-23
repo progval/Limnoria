@@ -52,11 +52,13 @@ import socket
 import logging
 import optparse
 
+import supybot.i18n as i18n
 import supybot.ansi as ansi
 import supybot.utils as utils
-import supybot.plugin as plugin
 import supybot.ircutils as ircutils
 import supybot.registry as registry
+# supybot.plugin, supybot.log, and supybot.conf will be imported later,
+# because we need to set a language before loading the conf
 
 import supybot.questions as questions
 from supybot.questions import output, yn, anything, something, expect, getpass
@@ -150,12 +152,11 @@ def getDirectoryName(default, basedir=os.curdir, prompt=True):
                 prompt = True
     return (dir, os.path.dirname(orig_dir))
 
+
 def main():
-    import supybot.log as log
-    import supybot.conf as conf
-    log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
+    import supybot.version as version
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
-                                   version='Supybot %s' % conf.version)
+                                   version='Supybot %s' % version.version)
     parser.add_option('', '--allow-root', action='store_true',
                       dest='allowRoot',
                       help='Determines whether the wizard will be allowed to '
@@ -204,6 +205,32 @@ def main():
     users.  Others might not make sense unless you've used Supybot for some
     time.""")
     advanced = yn('Are you an advanced Supybot user?', default=False)
+
+    # Language?
+    output("""This version of Supybot (known as Limnoria) includes another
+    language. This can be changed at any time. You need to answer with a short
+    id for the language, such as 'en', 'fr', 'it' (without the quotes). If
+    you want to use English, just press enter.""")
+    language = something('What language do you want to use?', default='en')
+
+    class Empty:
+        """This is a hack to allow the i18n to get the current language, before
+        loading the conf module, before the conf module needs i18n to set the
+        default strings."""
+        def __call__(self):
+            return self.value
+    fakeConf = Empty()
+    fakeConf.supybot = Empty()
+    fakeConf.supybot.language = Empty()
+    fakeConf.supybot.language.value = language
+    i18n.conf = fakeConf
+    i18n.currentLocale = language
+    i18n.reloadLocales()
+    import supybot.log as log
+    log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
+    import supybot.conf as conf
+    i18n.import_conf() # It imports the real conf module
+    import supybot.plugin as plugin
 
     ### Directories.
     # We set these variables in cache because otherwise conf and log will
