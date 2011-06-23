@@ -142,6 +142,9 @@ class Todo(callbacks.Plugin):
             u = ircdb.users.getUser(msg.prefix)
         except KeyError:
             u = None
+        if u != user and not self.registryValue('allowThirdpartyReader'):
+            irc.error(_('You are not allowed to see other users todo-list.'))
+            return
         # List the active tasks for the given user
         if not taskid:
             try:
