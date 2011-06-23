@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-06-23 11:33+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 #: plugin.py:135
 #, docstring
 msgid ""
-"[<username> [<task id>]|<task id>]\n"
+"[<username>] [<task id>]\n"
 "\n"
 "        Retrieves a task for the given task id.  If no task id is given, it\n"
 "        will return a list of task ids that that user has added to their todo\n"

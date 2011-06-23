@@ -132,7 +132,7 @@ class Todo(callbacks.Plugin):
 
     @internationalizeDocstring
     def todo(self, irc, msg, args, user, taskid):
-        """[<username> [<task id>]|<task id>]
+        """[<username>] [<task id>]
 
         Retrieves a task for the given task id.  If no task id is given, it
         will return a list of task ids that that user has added to their todo
