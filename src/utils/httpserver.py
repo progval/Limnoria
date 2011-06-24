@@ -103,6 +103,8 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 class SupyHTTPServerCallback:
+    """This is a base class that should be overriden by any plugin that want
+    to have a Web interface."""
     name = "Unnamed plugin"
     defaultResponse = """
     This is a default response of the Supybot HTTP server. If you see this
@@ -121,6 +123,7 @@ class SupyHTTPServerCallback:
         pass
 
 class Supy404(SupyHTTPServerCallback):
+    """A 404 Not Found error."""
     name = "Error 404"
     response = """
     I am a pretty clever IRC bot, but I suck at serving Web pages, particulary
@@ -135,6 +138,7 @@ class Supy404(SupyHTTPServerCallback):
         self.wfile.write(self.response)
 
 class SupyIndex(SupyHTTPServerCallback):
+    """Displays the index of available plugins."""
     name = "index"
     defaultResponse = "Request not handled."""
     template = """
