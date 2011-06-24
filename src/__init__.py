@@ -34,7 +34,7 @@ import dynamicScope
 
 try:
     import supybot.utils as utils
-except ImportError: # We are running setup.py
+except ImportError: # We are running setup.py for the first time
     import src
     sys.modules['supybot'] = src
     import src.utils as utils
