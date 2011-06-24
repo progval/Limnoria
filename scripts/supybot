@@ -330,11 +330,11 @@ if __name__ == '__main__':
     import supybot.callbacks as callbacks
     import supybot.plugins.Owner as Owner
 
-    owner = Owner.Class()
-
     # These may take some resources, and it does not need to be run while boot, so
-    # we import it as late as possible.
+    # we import it as late as possible (but before plugins are loaded).
     import supybot.utils.httpserver as httpserver
+
+    owner = Owner.Class()
 
     if options.profile:
         import profile

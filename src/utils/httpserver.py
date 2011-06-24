@@ -70,12 +70,12 @@ class SupyHTTPServer(HTTPServer):
     callbacks = {}
     running = False
     def hook(self, subdir, callback):
-        if subdir in callbacks:
+        if subdir in self.callbacks:
             raise KeyError('This subdir is already hooked.')
         else:
-            callbacks[subdir] = callback
+            self.callbacks[subdir] = callback
     def unhook(self, subdir):
-        callback = callbacks.pop(subdir) # May raise a KeyError. We don't care.
+        callback = self.callbacks.pop(subdir) # May raise a KeyError. We don't care.
         callback.doUnhook(self)
         return callback
 
@@ -86,7 +86,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         else:
             subdir = self.path.split('/')[1]
             try:
-                callback = self.server.callbacks[subdir]()
+                callback = self.server.callbacks[subdir]
             except KeyError:
                 callback = Supy404()
 
@@ -147,17 +147,18 @@ class SupyIndex(SupyHTTPServerCallback):
       <title>Supybot Web server index</title>
      </head>
      <body>
-      Here is a list of the plugins that have a Web interface:
+      <p>Here is a list of the plugins that have a Web interface:</p>
       %s
      </body>
     </html>"""
     def doGet(self, handler, path):
         plugins = [x for x in handler.server.callbacks.items()]
         if plugins == []:
-            response = 'No plugins available.'
+            plugins = 'No plugins available.'
         else:
-            response = '<ul><li>%s</li></ul>' % '</li><li>'.join(
-                    ['<a href="/%s">%s</a>' % x in plugins])
+            plugins = '<ul><li>%s</li></ul>' % '</li><li>'.join(
+                    ['<a href="/%s">%s</a>' % (x,y.name) for x,y in plugins])
+        response = self.template % plugins
         handler.send_response(200)
         self.send_header('Content_type', 'text/html')
         self.send_header('Content-Length', len(response))
