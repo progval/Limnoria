@@ -121,6 +121,7 @@ def main():
                 print 'raise an exception, but freaking-a, it was a string'
                 print 'exception.  People who raise string exceptions should'
                 print 'die a slow, painful death.'
+    httpserver.stopServer()
     now = time.time()
     seconds = now - world.startedAt
     log.info('Total uptime: %s.', utils.gen.timeElapsed(seconds))
@@ -328,6 +329,10 @@ if __name__ == '__main__':
     import supybot.drivers as drivers
     import supybot.callbacks as callbacks
     import supybot.plugins.Owner as Owner
+
+    # These may take some resources, and it does not need to be run while boot, so
+    # we import it as late as possible (but before plugins are loaded).
+    import supybot.utils.httpserver as httpserver
 
     owner = Owner.Class()
 

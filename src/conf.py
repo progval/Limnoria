@@ -1042,13 +1042,10 @@ utils.web.proxy = supybot.protocols.http.proxy
 
 
 ###
-# Especially boring stuff.
+# HTTP server
 ###
-registerGlobalValue(supybot, 'defaultIgnore',
-    registry.Boolean(False, _("""Determines whether the bot will ignore
-    unregistered users by default.  Of course, that'll make it particularly
-    hard for those users to register or identify with the bot, but that's your
-    problem to solve.""")))
+registerGroup(supybot, 'servers')
+registerGroup(supybot.servers, 'http')
 
 class IP(registry.String):
     """Value must be a valid IP."""
@@ -1057,6 +1054,27 @@ class IP(registry.String):
             self.error()
         else:
             registry.String.setValue(self, v)
+
+registerGlobalValue(supybot.servers.http, 'host',
+    IP('0.0.0.0', _("Determines what host the HTTP server will bind.")))
+registerGlobalValue(supybot.servers.http, 'port',
+    registry.Integer(8080, _("""Determines what port the HTTP server will
+    bind.""")))
+registerGlobalValue(supybot.servers.http, 'keepAlive',
+    registry.Boolean(True, _("""Defines whether the server will stay alive if
+    no plugin is using it. This also means that the server will start even
+    if it is not used.""")))
+
+
+###
+# Especially boring stuff.
+###
+registerGlobalValue(supybot, 'defaultIgnore',
+    registry.Boolean(False, _("""Determines whether the bot will ignore
+    unregistered users by default.  Of course, that'll make it particularly
+    hard for those users to register or identify with the bot, but that's your
+    problem to solve.""")))
+
 
 registerGlobalValue(supybot, 'externalIP',
    IP('', _("""A string that is the external IP of the bot.  If this is the
