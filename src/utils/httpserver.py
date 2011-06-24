@@ -95,7 +95,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
                 'wfile'):
             setattr(callback, name, getattr(self, name))
         # We call doGet, because this is more supybotic than do_GET.
-        callback.doGet(self, '/'.join(self.path[2:]))
+        callback.doGet(self, '/' + '/'.join(self.path.split('/')[2:]))
 
     def log_message(self, format, *args):
         log.info('HTTP request: %s - %s' %
