@@ -180,9 +180,10 @@ def stopServer():
     """Stops the HTTP server. Should be run only from this module or from
     when the bot is dying (ie. from supybot.world)"""
     global httpServer
-    log.info('Stopping HTTP server.')
-    httpServer.shutdown()
-    httpServer = None
+    if httpServer is not None:
+        log.info('Stopping HTTP server.')
+        httpServer.shutdown()
+        httpServer = None
 
 if configGroup.keepAlive():
     startServer()
