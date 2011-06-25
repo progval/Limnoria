@@ -103,7 +103,6 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
                 *args, **kwargs)
 
     def do_GET(self):
-        print 'GET !'
         self.do_X('doGet')
 
     def do_POST(self):
