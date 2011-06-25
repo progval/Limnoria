@@ -40,6 +40,8 @@ from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 import supybot.log as log
 import supybot.conf as conf
 import supybot.world as world
+from supybot.i18n import PluginInternationalization
+_ = PluginInternationalization()
 
 configGroup = conf.supybot.servers.http
 
@@ -126,10 +128,10 @@ class SupyHTTPServerCallback:
     """This is a base class that should be overriden by any plugin that want
     to have a Web interface."""
     name = "Unnamed plugin"
-    defaultResponse = """
+    defaultResponse = _("""
     This is a default response of the Supybot HTTP server. If you see this
     message, it probably means you are developping a plugin, and you have
-    neither overriden this message or defined an handler for this query."""
+    neither overriden this message or defined an handler for this query.""")
 
     def doGet(self, handler, path):
         handler.send_response(400)
@@ -147,11 +149,11 @@ class SupyHTTPServerCallback:
 class Supy404(SupyHTTPServerCallback):
     """A 404 Not Found error."""
     name = "Error 404"
-    response = """
+    response = _("""
     I am a pretty clever IRC bot, but I suck at serving Web pages, particulary
     if I don't know what to serve.
     What I'm saying is you just triggered a 404 Not Found, and I am not
-    trained to help you in such a case."""
+    trained to help you in such a case.""")
     def doGet(self, handler, path):
         handler.send_response(404)
         self.send_header('Content_type', 'text/plain')
@@ -164,21 +166,23 @@ class Supy404(SupyHTTPServerCallback):
 class SupyIndex(SupyHTTPServerCallback):
     """Displays the index of available plugins."""
     name = "index"
-    defaultResponse = "Request not handled."""
+    defaultResponse = _("Request not handled.")
     template = """
     <html>
      <head>
-      <title>Supybot Web server index</title>
+      <title>""" + _('Supybot Web server index') + """</title>
      </head>
      <body>
-      <p>Here is a list of the plugins that have a Web interface:</p>
+      <p>""" + _('Here is a list of the plugins that have a Web interface:') +\
+      """
+      </p>
       %s
      </body>
     </html>"""
     def doGet(self, handler, path):
         plugins = [x for x in handler.server.callbacks.items()]
         if plugins == []:
-            plugins = 'No plugins available.'
+            plugins = _('No plugins available.')
         else:
             plugins = '<ul><li>%s</li></ul>' % '</li><li>'.join(
                     ['<a href="/%s">%s</a>' % (x,y.name) for x,y in plugins])
