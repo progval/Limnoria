@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-25 13:05+0200\n"
+"PO-Revision-Date: 2011-06-25 15:51+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -108,7 +108,7 @@ msgid ""
 msgstr ""
 "<nimimerkki> <teksti>\n"
 "\n"
-"        Kertoo <nimimerkille> <tekstin> seuraavalla kerralla, kun <nimimerkki> on nähty seuraavan kerran.  <Nimimerkki> voi\n"
+"        Kertoo <nimimerkille> <tekstin> seuraavalla kerralla, kun <nimimerkki> nähdään seuraavan kerran.  <Nimimerkki> voi\n"
 "        sisältää jokerimerkkejä ja ensimmäiselle täsmäävälle nimimerkille\n"
 "        annetaan muistiinpano.\n"
 "        "
