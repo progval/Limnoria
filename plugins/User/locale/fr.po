@@ -185,7 +185,7 @@ msgid "%s has no registered hostmasks."
 msgstr "%s n'a pas de masque d'hôte enregistré."
 
 #: plugin.py:283
-msgid "You may only retrieve your own (hostmasks."
+msgid "You may only retrieve your own hostmasks."
 msgstr "Vous ne pouvez récupérer que vos propres masques d'hôte."
 
 #: plugin.py:299

@@ -281,7 +281,7 @@ class User(callbacks.Plugin):
                     if name != user.name and \
                        not ircdb.checkCapability(msg.prefix, 'owner'):
                         irc.error(_('You may only retrieve your own '
-                                  '(hostmasks.'), Raise=True)
+                                  'hostmasks.'), Raise=True)
                     else:
                         try:
                             user = ircdb.users.getUser(name)
