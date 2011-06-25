@@ -31,6 +31,7 @@
 An embedded and centralized HTTP server for Supybot's plugins.
 """
 
+import cgi
 from threading import Event, Thread
 from cStringIO import StringIO
 from SocketServer import ThreadingMixIn
@@ -80,7 +81,7 @@ class SupyHTTPServer(HTTPServer):
         return callback
 
 class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
+    def do_X(self, callbackMethod, *args, **kwargs):
         if self.path == '/':
             callback = SupyIndex()
         else:
@@ -92,10 +93,29 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
 
         # Some shortcuts
         for name in ('send_response', 'send_header', 'end_headers', 'rfile',
-                'wfile'):
+                'wfile', 'headers'):
             setattr(callback, name, getattr(self, name))
-        # We call doGet, because this is more supybotic than do_GET.
-        callback.doGet(self, '/' + '/'.join(self.path.split('/')[2:]))
+        # We call doX, because this is more supybotic than do_X.
+        getattr(callback, callbackMethod)(self,
+                '/' + '/'.join(self.path.split('/')[2:]),
+                *args, **kwargs)
+
+    def do_GET(self):
+        print 'GET !'
+        self.do_X('doGet')
+
+    def do_POST(self):
+        form = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,
+            environ={'REQUEST_METHOD':'POST',
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+                     })
+        self.do_X('doPost', form=form)
+
+    def do_HEAD(self):
+        self.do_X('doHead')
+
 
     def log_message(self, format, *args):
         log.info('HTTP request: %s - %s' %
@@ -118,6 +138,8 @@ class SupyHTTPServerCallback:
         self.end_headers()
         self.wfile.write(self.defaultResponse)
 
+    doPost = doHead = doGet
+
     def doUnhook(self, handler):
         """Method called when unhooking this callback."""
         pass
@@ -136,6 +158,8 @@ class Supy404(SupyHTTPServerCallback):
         self.send_header('Content-Length', len(self.response))
         self.end_headers()
         self.wfile.write(self.response)
+
+    doPost = doHead = doGet
 
 class SupyIndex(SupyHTTPServerCallback):
     """Displays the index of available plugins."""
