@@ -39,7 +39,7 @@ class Limiter(callbacks.Plugin):
     """In order to use this plugin, its config values need to be properly
     setup.  supybot.plugins.Limiter.enable needs to be set to True and
     supybot.plugins.Limiter.{maximumExcess,minimumExcess} should be set to
-    values appropriate to your channel (if the defaults aren't satisfactory.
+    values appropriate to your channel (if the defaults aren't satisfactory).
     Once these are set, and someone enters/leaves the channel, Supybot will
     start setting the proper +l modes.
     """
