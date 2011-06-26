@@ -51,7 +51,7 @@ class Anonymous(callbacks.Plugin):
     def _preCheck(self, irc, msg, target, action):
         if self.registryValue('requireRegistration'):
             try:
-                _ = ircdb.users.getUser(msg.prefix)
+                foo = ircdb.users.getUser(msg.prefix)
             except KeyError:
                 irc.errorNotRegistered(Raise=True)
         capability = self.registryValue('requireCapability')
