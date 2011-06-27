@@ -407,7 +407,7 @@ def main():
                          default=nick)
         conf.supybot.user.set(user)
     # conf.supybot.ident (if advanced)
-    defaultIdent = 'supybot'
+    defaultIdent = 'limnoria'
     if advanced:
         output("""IRC servers also allow you to set your ident, which they
         might need if they can't find your identd server.  What would you like
