@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-06-12 12:45+CEST\n"
+"POT-Creation-Date: 2011-06-27 12:02+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -22,8 +22,8 @@ msgstr "Détermine si ce plugin est activé."
 #: config.py:49
 msgid ""
 "Determines whether this plugin will automode\n"
-"    owners."
-msgstr "Détermine si ce plugin mettra des modes automatiques sur les owners."
+"    owners even if they don't have op/halfop/voice/whatever capability."
+msgstr "Détermine si ce plugin mettra des modes automatiques sur les owners, même si ils n'ont pas la capacité op/halfop/voice/..."
 
 #: config.py:52
 msgid ""

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-06-12 12:45+CEST\n"
+"POT-Creation-Date: 2011-06-27 12:02+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,7 @@ msgstr ""
 #: config.py:49
 msgid ""
 "Determines whether this plugin will automode\n"
-"    owners."
+"    owners even if they don't have op/halfop/voice/whatever capability."
 msgstr ""
 
 #: config.py:52
