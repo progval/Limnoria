@@ -129,7 +129,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                         doc=method._fake__doc__ % (s, s),
                         name=callbacks.formatCommand(command))
         return super(Factoids, self).getCommandHelp(command, simpleSyntax)
-    
+
     def _getKeyAndFactId(self, channel, key, factoid):
         db = self.getDb(channel)
         cursor = db.cursor()

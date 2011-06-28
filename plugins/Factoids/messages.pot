@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:58+CET\n"
+"POT-Creation-Date: 2011-06-28 19:40+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,11 +87,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:257 plugin.py:391
+#: plugin.py:257 plugin.py:386
 msgid "That's not a valid number for that key."
 msgstr ""
 
-#: plugin.py:279 plugin.py:377 plugin.py:604
+#: plugin.py:279 plugin.py:372 plugin.py:598
 msgid "No factoid matches that key."
 msgstr ""
 
@@ -108,11 +108,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:321 plugin.py:529
+#: plugin.py:321 plugin.py:523
 msgid "key id"
 msgstr ""
 
-#: plugin.py:339
+#: plugin.py:334
 #, docstring
 msgid ""
 "[<channel>] <oldkey> <newkey> [<number>]\n"
@@ -126,15 +126,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:386 plugin.py:403
+#: plugin.py:381 plugin.py:398
 msgid "This key-factoid relationship already exists."
 msgstr ""
 
-#: plugin.py:394
+#: plugin.py:389
 msgid "This key has more than one factoid associated with it, but you have not provided a number."
 msgstr ""
 
-#: plugin.py:409
+#: plugin.py:403
 #, docstring
 msgid ""
 "[<channel>] [--plain] [--alpha] [<number>]\n"
@@ -154,7 +154,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:454
+#: plugin.py:448
 #, docstring
 msgid ""
 "[<channel>] <key>\n"
@@ -165,7 +165,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:472
+#: plugin.py:466
 #, docstring
 msgid ""
 "[<channel>] <key>\n"
@@ -176,7 +176,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:511
+#: plugin.py:505
 #, docstring
 msgid ""
 "[<channel>] <key> [<number>|*]\n"
@@ -194,19 +194,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:543
+#: plugin.py:537
 msgid "There is no such factoid."
 msgstr ""
 
-#: plugin.py:553
+#: plugin.py:547
 msgid "Invalid factoid number."
 msgstr ""
 
-#: plugin.py:558
+#: plugin.py:552
 msgid "%s factoids have that key.  Please specify which one to remove, or use * to designate all of them."
 msgstr ""
 
-#: plugin.py:566
+#: plugin.py:560
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -216,11 +216,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:588
+#: plugin.py:582
 msgid "I couldn't find a factoid."
 msgstr ""
 
-#: plugin.py:593
+#: plugin.py:587
 #, docstring
 msgid ""
 "[<channel>] <key>\n"
@@ -231,15 +231,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:619
+#: plugin.py:613
 msgid "#%i was added by %s at %s, and has been recalled %n"
 msgstr ""
 
-#: plugin.py:622
+#: plugin.py:616
 msgid "time"
 msgstr ""
 
-#: plugin.py:632
+#: plugin.py:626
 #, docstring
 msgid ""
 "[<channel>] <key> <number> <regexp>\n"
@@ -249,11 +249,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:646
+#: plugin.py:640
 msgid "I couldn't find any key %q"
 msgstr ""
 
-#: plugin.py:661
+#: plugin.py:655
 #, docstring
 msgid ""
 "[<channel>] [--values] [--{regexp} <value>] [<glob> ...]\n"
@@ -264,11 +264,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:698 plugin.py:707
+#: plugin.py:692 plugin.py:701
 msgid "No keys matched that query."
 msgstr ""
 
-#: plugin.py:703 plugin.py:712
+#: plugin.py:697 plugin.py:706
 msgid "More than 100 keys matched that query; please narrow your query."
 msgstr ""
 
