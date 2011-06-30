@@ -149,7 +149,7 @@ class Herald(callbacks.Plugin):
         """
         if optlist and text:
             raise callbacks.ArgumentError
-        for (option, _) in optlist:
+        for (option, foo) in optlist:
             if option == 'remove':
                 self.setRegistryValue('default', '', channel)
                 irc.replySuccess()
