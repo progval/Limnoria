@@ -384,7 +384,7 @@ class Relay(callbacks.Plugin):
             return
         network = self._getIrcName(irc)
         if self.registryValue('hostmasks', channel):
-            hostmask = format(' (%s)', msg.prefix)
+            hostmask = format(' (%s)', msg.prefix.split('!')[1])
         else:
             hostmask = ''
         s = format('%s%s has joined on %s', msg.nick, hostmask, network)
@@ -398,7 +398,7 @@ class Relay(callbacks.Plugin):
             return
         network = self._getIrcName(irc)
         if self.registryValue('hostmasks', channel):
-            hostmask = format(' (%s)', msg.prefix)
+            hostmask = format(' (%s)', msg.prefix.split('!')[1])
         else:
             hostmask = ''
         if len(msg.args) > 1:
