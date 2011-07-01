@@ -634,9 +634,9 @@ wrappers = ircutils.IrcDict({
     'float': getFloat,
     'glob': getGlob,
     'halfop': getHalfop,
-    'haveHalfop': getHaveHalfop
+    'haveHalfop': getHaveHalfop,
     'haveOp': getHaveOp,
-    'haveVoice': getHaveVoice
+    'haveVoice': getHaveVoice,
     'hostmask': getHostmask,
     'httpUrl': getHttpUrl,
     'id': getId,
