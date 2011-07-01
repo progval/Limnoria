@@ -332,7 +332,7 @@ if __name__ == '__main__':
 
     # These may take some resources, and it does not need to be run while boot, so
     # we import it as late as possible (but before plugins are loaded).
-    import supybot.utils.httpserver as httpserver
+    import supybot.httpserver as httpserver
 
     owner = Owner.Class()
 
