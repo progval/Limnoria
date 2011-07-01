@@ -53,7 +53,7 @@ if world.testing:
             self.RequestHandlerClass = handler
             self.socket = StringIO()
             self._notServing = Event()
-            self._notServer.set()
+            self._notServing.set()
 
         def fileno(self):
             return hash(self)
