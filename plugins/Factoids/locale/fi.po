@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-02-26 09:58+CET\n"
-"PO-Revision-Date: 2011-06-11 20:00+0200\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-07-01 08:05+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -14,366 +14,135 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: config.py:45
+#: plugin.py:46
 msgid ""
-"Value must include $value, otherwise the factoid's value would be left\n"
-"    out."
-msgstr ""
-"Arvon täytyy sisältää $arvo, muutoin factoidin arvo jätettäisiin\n"
-"    ulos."
-
-#: config.py:51
-msgid ""
-"Determines what separator must be used in the\n"
-"    learn command.  Defaults to 'as' -- learn <key> as <value>.  Users might\n"
-"    feel more comfortable with 'is' or something else, so it's\n"
-"    configurable."
-msgstr ""
-"Määrittää mitä erottajaa learn komennossa täytyy käyttää.\n"
-"Oletuksena 'as' -- learn <avain> as <arvona>.  Käyttäjistä\n"
-"'is' tai jokin'is' muu voi tuntua mukavammalta, joten se on\n"
-"määritettävissä."
-
-#: config.py:56
-msgid ""
-"Determines whether the bot will reply with the\n"
-"    single matching factoid if only one factoid matches when using the search\n"
-"    command."
-msgstr ""
-"Määrittää vastaako botti yhdellä täsmäävällä factoidilla\n"
-"jos vain yksi factoidi täsmää .\n"
-"hakukomentoa käytettäessä."
-
-#: config.py:60
-msgid ""
-"Determines whether the bot will reply to invalid\n"
-"    commands by searching for a factoid; basically making the whatis\n"
-"    unnecessary when you want all factoids for a given key."
-msgstr ""
-"Määrittää vastaako botti virheellisiin komentoihin etsimällä factoidia\n"
-"tehden 'whatis': in tarpeettomaksi\n"
-" kun tahdot etsiä kaikkia factoideja annetulla avaimella."
-
-#: config.py:64
-msgid ""
-"If you try to look up a nonexistent factoid,\n"
-"    this setting make the bot try to find some possible matching keys through\n"
-"    several approximate matching algorithms and return a list of matching keys,\n"
-"    before giving up."
-msgstr ""
-"Jos yrität etsiä olematonta factoidia,\n"
-"asetus saa botin yrittämään etsiä mahdollisesti täsmääviä avaimia läpi\n"
-"    muutaman tarkasti täsmäävän algoritmin kanssa ja palauttaa listan täsmääviä avaimia,\n"
-"    ennen luovuttamista."
-
-#: config.py:69
-msgid "$key could be $value."
-msgstr "$key voisi olla $value."
-
-#: config.py:69
-msgid ""
-"Determines the format of\n"
-"    the response given when a factoid's value is requested.  All the standard\n"
-"    substitutes apply, in addition to \"$key\" for the factoid's key and \"$value\"\n"
-"    for the factoid's value."
-msgstr ""
-"Määrittää vastaus formaatin\n"
-"    jossa vastaus annetaan, kun factoidin arvoa pyydetään. Kaikki perus \n"
-"    korvaukset ovat voimassa, \"$key\" lisäksi factoidin avaimelle ja \"$value\"\n"
-"    factoidin arvolle."
-
-#: plugin.py:179
-msgid ""
-"[<channel>] <key> %s <value>\n"
+"takes no arguments\n"
 "\n"
-"                         Associates <key> with <value>.  <channel> is only\n"
-"                         necessary if the message isn't sent on the channel\n"
-"                         itself.  The word '%s' is necessary to separate the\n"
-"                         key from the value.  It can be changed to another word\n"
-"                         via the learnSeparator registry value.\n"
-"                         "
-msgstr ""
-"[<kanava>] <avain> %s <arvo>\n"
-"\n"
-"                         Liittää <avaimen> <arvoon>.  <Kanava> on vaadittu\n"
-"                         vain jos viestiä ei lähetetä kanavalla itsellään.\n"
-"                         Sana '%s'on vaadittu erottamaan\n"
-"                         avain arvosta.  Se voidaan vaihtaa eri sanaksi\n"
-"                         learnSeparator rekisteri arvolla.\n"
-"                         "
-
-#: plugin.py:199
-msgid ""
-"Try to typo-match input to possible factoids.\n"
-"        \n"
-"        Assume first letter is correct, to reduce processing time.        \n"
-"        First, try a simple wildcard search.\n"
-"        If that fails, use the Damerau-Levenshtein edit-distance metric.\n"
+"        Flips a coin and returns the result.\n"
 "        "
 msgstr ""
-"Yritä typo-sovittaa mahdillisten factoidien syöttämistä.\n"
-"        \n"
-"        Oletetaan ensin että ensinmäinen kirjain on oikein, vähentääksemme käsittely aikaa.        \n"
-"        Ensin, yritä yksinkertaista villikorttihakua.\n"
-"        If that fails, use the Damerau-Levenshteinin editointi-etäisyys metriisi.\n"
+"ei ota parametrejä\n"
+"\n"
+"        Heittää rahan ja palauttaa tuloksen.\n"
 "        "
 
-#: plugin.py:257
-#: plugin.py:391
-msgid "That's not a valid number for that key."
-msgstr "Se ei ole kelvollinen factoidi numero tuolle avaimelle."
+#: plugin.py:51
+msgid "heads"
+msgstr "kruuna"
 
-#: plugin.py:279
-#: plugin.py:377
-#: plugin.py:604
-msgid "No factoid matches that key."
-msgstr "Ei factoidi osumia tuolle avaimelle."
+#: plugin.py:53
+msgid "tails"
+msgstr "klaava"
 
-#: plugin.py:304
+#: plugin.py:58
 msgid ""
-"[<channel>] [--raw] <key> [<number>]\n"
+"<dice>d<sides>\n"
 "\n"
-"        Looks up the value of <key> in the factoid database.  If given a\n"
-"        number, will return only that exact factoid. If '--raw' option is\n"
-"        given, no variable substitution will take place on the factoid.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
-"        itself.\n"
+"        Rolls a die with <sides> number of sides <dice> times.\n"
+"        For example, 2d6 will roll 2 six-sided dice; 10d10 will roll 10\n"
+"        ten-sided dice.\n"
 "        "
 msgstr ""
-"[<kanava>] [--raw] <avain> [<numero>]\n"
+"<noppa>d<sivut>\n"
 "\n"
-"        Etsii <avaimen> arvoa factoidi tietokannasta.  Jos numero on annettu,\n"
-"         Palauttaa vain sen tietyn factoidin. Jos '--raw' asetus\n"
-"        on annettu, muuttujan korvaaminen ei tapahdu factoidissa.\n"
-"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
-"        itsellään.\n"
+"        Heittää noppaa <sivuilla> sivujen lukumäärä <noppa> kertaa.\n"
+"        Esimerkiksi, 2d6 heittää 2 kuusisivuista noppaa; 10d10 heittää 10\n"
+"        kymmenen-sivuista noppaa.\n"
 "        "
 
-#: plugin.py:321
-#: plugin.py:529
-msgid "key id"
-msgstr "avain id"
+#: plugin.py:66
+msgid "You can't roll more than 1000 dice."
+msgstr "Et voi heittää useampaa kuin tuhatta noppaa."
 
-#: plugin.py:339
+#: plugin.py:68
+msgid "Dice can't have more than 100 sides."
+msgstr "Nopalla ei voi olla useampaa kuin sataa sivua."
+
+#: plugin.py:70
+msgid "Dice can't have fewer than 3 sides."
+msgstr "Nopalla ei voi olla vähempää kuin kolmea sivua."
+
+#: plugin.py:78
+msgid "Dice must be of the form <dice>d<sides>"
+msgstr "Nopan täytyy olla muodossa <noppa>d<sivuja>."
+
+#: plugin.py:82
+msgid "It is possible.|Yes!|Of course.|Naturally.|Obviously.|It shall be.|The outlook is good.|It is so.|One would be wise to think so.|The answer is certainly yes."
+msgstr "Se on mahdollista.|Kyllä!|Tietysti.|Luonnollisesti.|Ilmeisesti.|Olkoon niin.|Hyvät näkymät.|Se on niin.|Erään olisi viisasta ajatella niin.|Vastaus on varmasti kyllä."
+
+#: plugin.py:86
+msgid "In your dreams.|I doubt it very much.|No chance.|The outlook is poor.|Unlikely.|About as likely as pigs flying.|You're kidding, right?|NO!|NO.|No.|The answer is a resounding no."
+msgstr "Unissasi.|Minä epäilen sitä kovasti.|Ei mahdollista.|Näkymät ovat huonot.|Epätodennäköisesti.|Yhtä toden näköisesti siat lentävät.|Kai sinä pilailet?|EI!|EI.|Ei.|Vastaus on raikuva ei."
+
+#: plugin.py:90
+msgid "Maybe...|No clue.|_I_ don't know.|The outlook is hazy, please ask again later.|What are you asking me for?|Come again?|You know the answer better than I.|The answer is def-- oooh! shiny thing!"
+msgstr "Ehkäpä...|Ei tietoa.|_Minä_ en tiedä.|Näkymä on sotkuinen, ole hyvä ja kysy myöhemmin uudelleen.|Miksi kysyt minulta?|Tule uudelleen?|Sinä tiedät vastauksen paremmin kuin minä.|Vastaus on var-- oooh! kiiltävä esine!"
+
+#: plugin.py:107
 msgid ""
-"[<channel>] <oldkey> <newkey> [<number>]\n"
+"[<question>]\n"
 "\n"
-"        Adds a new key <newkey> for factoid associated with <oldkey>.\n"
-"        <number> is only necessary if there's more than one factoid associated\n"
-"        with <oldkey>.\n"
-"\n"
-"        The same action can be accomplished by using the 'learn' function with\n"
-"        a new key but an existing (verbatim) factoid content.\n"
+"        Ask a question and the answer shall be provided.\n"
 "        "
 msgstr ""
-"[<kanava>] <vanha-avain> <uusiavain> [<numero>]\n"
+"[<kysymys>]\n"
 "\n"
-"       Lisää uuden avaimen <uusiavain> factoidille, joka on liitetty <vanhaan avaimeen>.\n"
-"        <Numero> on vaadittu vain jos\n"
-"        <vanhan avaimeen> on liitetty useampia kuin yksi avain.\n"
-"\n"
-"        Sama toiminto voidaan suorittaa käyttämällä 'learn' funktioa uudella\n"
-"        uudella  avaimella, mutta olemassao olevalla (sanatarkalla) factoidin sisällöllä.\n"
+"        Kysy kysymys ja vastaus annetaan.\n"
 "        "
 
-#: plugin.py:386
-#: plugin.py:403
-msgid "This key-factoid relationship already exists."
-msgstr "Tämä avain-factoidi suhde on jo olemassa."
-
-#: plugin.py:394
-msgid "This key has more than one factoid associated with it, but you have not provided a number."
-msgstr "Tähän avaaimeen on liitetty yksi tai useampia factoideja, mutta et ole antanut numeroa."
-
-#: plugin.py:409
+#: plugin.py:121
 msgid ""
-"[<channel>] [--plain] [--alpha] [<number>]\n"
+"[spin]\n"
 "\n"
-"        Returns a list of top-ranked factoid keys, sorted by usage count\n"
-"        (rank). If <number> is not provided, the default number of factoid keys\n"
-"        returned is set by the rankListLength registry value.\n"
-"\n"
-"        If --plain option is given, rank numbers and usage counts are not\n"
-"        included in output.\n"
-"\n"
-"        If --alpha option is given in addition to --plain, keys are sorted\n"
-"        alphabetically, instead of by rank.\n"
-"\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
-"        itself.\n"
+"        Fires the revolver.  If the bullet was in the chamber, you're dead.\n"
+"        Tell me to spin the chambers and I will.\n"
 "        "
 msgstr ""
-"[<kanava>] [--plain] [--alpha] [<numero>]\n"
+"[spin]\n"
 "\n"
-"        Palauttaa listan huippu-arvostetuista factoidi avaimista lajiteltu käyttömäärän \n"
-"        (rankingin) mukaan. Jos <numero> ei ole annettu, palautetaan oletusmäärä factoidi avaimia\n"
-"        rankListLength registry value mukaan.\n"
-"\n"
-"        Jos --plain asetus on annettu, ranking numerot ja käyttömäärät eivät ole\n"
-"        mukana ulostulossa..\n"
-"\n"
-"        Jos --alpha asetus on annettu - -plainin lisäksi järjestetään\n"
-"        aakkosjärjestyksessä rankingin sijaan.\n"
-"\n"
-"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla \n"
-"        itsellään.\n"
+"        Ampuu revolverillä.  Jos luoti oli kammiossa, olet kuollut.\n"
+"        Käske minun pyöräyttää kammiota ja minä teen sen.\n"
 "        "
 
-#: plugin.py:454
-msgid ""
-"[<channel>] <key>\n"
-"\n"
-"        Locks the factoid(s) associated with <key> so that they cannot be\n"
-"        removed or added to.  <channel> is only necessary if the message isn't\n"
-"        sent in the channel itself.\n"
-"        "
-msgstr ""
-"[<kanava>] <avain>\n"
-"\n"
-"        Lukitsee Factoidi(t)  <avaimeen> jotta niitä ei voida muuttaa,\n"
-"        poistaa tai lisätä.  <Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
-"        kanavalta itsestään.\n"
-"        "
+#: plugin.py:128
+msgid "*SPIN* Are you feeling lucky?"
+msgstr "*Pyörähdys* Tuntuuko sinusta onnekkaalta?"
 
-#: plugin.py:472
-msgid ""
-"[<channel>] <key>\n"
-"\n"
-"        Unlocks the factoid(s) associated with <key> so that they can be\n"
-"        removed or added to.  <channel> is only necessary if the message isn't\n"
-"        sent in the channel itself.\n"
-"        "
-msgstr ""
-"[<Kanava>] <avain>\n"
-"\n"
-"        Avaa factoidi(t), jotka on liitetty <avaimeen> jotta niitä voidaan\n"
-"        poistaa tai lisätä.  <Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
-"        kanavalta itseltään. \n"
+#: plugin.py:137
+msgid "*BANG* Hey, who put a blank in here?!"
+msgstr "*PANG* Hei, kuka laittoi tuon laudan tuohon?!"
 
-#: plugin.py:511
-msgid ""
-"[<channel>] <key> [<number>|*]\n"
-"\n"
-"        Removes a key-fact relationship for key <key> from the factoids\n"
-"        database.  If there is more than one such relationship for this key,\n"
-"        a number is necessary to determine which one should be removed.\n"
-"        A * can be used to remove all relationships for <key>.\n"
-"\n"
-"        If as a result, the key (factoid) remains without any relationships to\n"
-"        a factoid (key), it shall be removed from the database.\n"
-"\n"
-"        <channel> is only necessary if\n"
-"        the message isn't sent in the channel itself.\n"
-"        "
-msgstr ""
-"[<Kanava>] <avain> [<numero>|*]\n"
-"\n"
-"        Poistaa avain-factoidi suhteen <avaimelta> factoidi tietokannasta.\n"
-"         Jos avaimelle on useampi kuin yksi tälläinen sude,\n"
-"        numeroa vaaditaan määrittämään mikä poistetaan.\n"
-"        * voi poistaa kaikki suhteet<avaimelta>.\n"
-"\n"
-"        Jos tuloksena avain, (factoidi) jää ilman suhdetta\n"
-"        factoidi (avain), it poistetaan tietokannasta.\n"
-"\n"
-"        <Kanava> on vaadittu vain jos\n"
-"        viestiä ei lähetetä kanavalla itsellään.\n"
-"        "
+#: plugin.py:139
+msgid "reloads and spins the chambers."
+msgstr "latautuu ja pyöräyttää kammioita."
 
-#: plugin.py:543
-msgid "There is no such factoid."
-msgstr "Sellaista factoidia ei ole."
+#: plugin.py:141
+msgid "*click*"
+msgstr "*klick*"
 
-#: plugin.py:553
-msgid "Invalid factoid number."
-msgstr "Viallinen factoidi numero."
-
-#: plugin.py:558
-msgid "%s factoids have that key.  Please specify which one to remove, or use * to designate all of them."
-msgstr "%s factoilla on tuo avain. Määritä mikä poistetaan, tai käytä * epänimittääksesi ne kaikki."
-
-#: plugin.py:566
+#: plugin.py:148
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Returns a random factoid from the database for <channel>.  <channel>\n"
-"        is only necessary if the message isn't sent in the channel itself.\n"
+"        Returns the number of consecutive lines you've sent in <channel>\n"
+"        without being interrupted by someone else (i.e. how long your current\n"
+"        'monologue' is).  <channel> is only necessary if the message isn't sent\n"
+"        in the channel itself.\n"
 "        "
 msgstr ""
-"[<kanava>]\n"
+"[<Kanava>]\n"
 "\n"
-"        Palauttaa satunnaisen factoidin tietokannasta <kanavalle>.  <Kanava>\n"
-"        on vaadittu vain, jos viestiä ei lähetetä kanavalla itsellään..\n"
+"        Palauttaa jatkuvan määrän rivejä, jotka olet lähettänyt <kanavalla>\n"
+"        tulematta kenenkään muun keskeyttämäksi (esim. kuinka pitkä nykyinen\n"
+"        'monologisi' on).  <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
 "        "
 
-#: plugin.py:588
-msgid "I couldn't find a factoid."
-msgstr "En kyennyt löytämään factoidia."
+#: plugin.py:167
+msgid "Your current monologue is at least %n long."
+msgstr "Sinun nykyinen monologisi on ainakin %n pitkä."
 
-#: plugin.py:593
-msgid ""
-"[<channel>] <key>\n"
-"\n"
-"        Gives information about the factoid(s) associated with <key>.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
-"        itself.\n"
-"        "
-msgstr ""
-"[<Kanava>] <avain>\n"
-"\n"
-"        Antaa tietoja factoidi(eistä), jotka on liitetty <avaimella>.\n"
-"        <kanava> on vaadittu vain, jos viesti lähetetään kanavlta itseltään.\n"
-"               "
-
-#: plugin.py:619
-msgid "#%i was added by %s at %s, and has been recalled %n"
-msgstr "#%i lisättiin  %s  %s, ja on uudelleenkutsuttu %n"
-
-#: plugin.py:622
-msgid "time"
-msgstr "aika"
-
-#: plugin.py:632
-msgid ""
-"[<channel>] <key> <number> <regexp>\n"
-"\n"
-"        Changes the factoid #<number> associated with <key> according to\n"
-"        <regexp>.\n"
-"        "
-msgstr ""
-"[<kanava>] <avain> <numero> <säännöllinen lauseke>\n"
-"\n"
-"        Vaihtaa factoidin #<numero>, joka on liitetty <avaimen> kanssa\n"
-"        <säännöllisen lausekkeen> mukaan..\n"
-"        "
-
-#: plugin.py:646
-msgid "I couldn't find any key %q"
-msgstr "En kyennyt löytämään yhtää avain %q:ta."
-
-#: plugin.py:661
-msgid ""
-"[<channel>] [--values] [--{regexp} <value>] [<glob> ...]\n"
-"\n"
-"        Searches the keyspace for keys matching <glob>.  If --regexp is given,\n"
-"        it associated value is taken as a regexp and matched against the keys.\n"
-"        If --values is given, search the value space instead of the keyspace.\n"
-"        "
-msgstr ""
-"[<kanava>] [--values] [--{regexp} <arvo>] [<globaali> ...]\n"
-"\n"
-"        Etsii avainavaruudesta avaimia jotka täsmäävät <globaliin>.  Jos --regexp on annettu,\n"
-"        se liitetään arvoon, jonka on ottanut säännöllinen lauseke  ja sovitetu avaimia vastaan.\n"
-"        Jos --values on annettu, hakee arvoavaruudesta avainavaruuden sijasta..\n"
-"        "
-
-#: plugin.py:698
-#: plugin.py:707
-msgid "No keys matched that query."
-msgstr "Mikään avain ei täsmännyt tuhon hakuun."
-
-#: plugin.py:703
-#: plugin.py:712
-msgid "More than 100 keys matched that query; please narrow your query."
-msgstr "Enemmän kuin 100 täsmäävää avainta löydettiin tuolla hakusanalla; oe hyvä ja rajoita hakua.."
+#: plugin.py:168
+msgid "line"
+msgstr "rivi"
 
