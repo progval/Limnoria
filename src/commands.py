@@ -252,6 +252,22 @@ def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
     else:
         state.args.append(irc)
 
+def getHaveVoice(irc, msg, args, state, action=_('do that')):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
+    if not irc.state.channels[state.channel].isVoice(irc.nick):
+        state.error(_('I need to be voiced to %s.') % action, Raise=True)
+
+def getHaveHalfop(irc, msg, args, state, action=_('do that')):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
+    if not irc.state.channels[state.channel].isHalfop(irc.nick):
+        state.error(_('I need to be halfopped to %s.') % action, Raise=True)
+
 def getHaveOp(irc, msg, args, state, action=_('do that')):
     if not state.channel:
         getChannel(irc, msg, args, state)
@@ -259,6 +275,17 @@ def getHaveOp(irc, msg, args, state, action=_('do that')):
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isOp(irc.nick):
         state.error(_('I need to be opped to %s.') % action, Raise=True)
+
+def getIsGranted(irc, msg, args, state, action=_('do that')):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
+    if not irc.state.channels[state.channel].isOp(irc.nick) and \
+            not irc.state.channels[state.channel].isHalfop(irc.nick):
+        # isOp includes owners and protected users
+        state.error(_('I  need to be at least halfopped to %s.') % action,
+                Raise=True)
 
 def validChannel(irc, msg, args, state):
     if irc.isChannel(args[0]):
@@ -591,6 +618,8 @@ wrappers = ircutils.IrcDict({
     'banmask': getBanmask,
     'boolean': getBoolean,
     'callerInGivenChannel': callerInGivenChannel,
+    'isGranted': getIsGranted, # I know this name sucks, but I can't find
+                               # something better
     'capability': getSomethingNoSpaces,
     'channel': getChannel,
     'channelDb': getChannelDb,
@@ -605,7 +634,9 @@ wrappers = ircutils.IrcDict({
     'float': getFloat,
     'glob': getGlob,
     'halfop': getHalfop,
+    'haveHalfop': getHaveHalfop,
     'haveOp': getHaveOp,
+    'haveVoice': getHaveVoice,
     'hostmask': getHostmask,
     'httpUrl': getHttpUrl,
     'id': getId,

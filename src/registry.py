@@ -308,6 +308,7 @@ class Value(Group):
         self._default = default
         self._showDefault = showDefault
         self._help = utils.str.normalizeWhitespace(help.strip())
+        self._callbacks = []
         if setDefault:
             self.setValue(default)
 
@@ -345,6 +346,19 @@ class Value(Group):
             for (name, v) in self._children.items():
                 if v.__class__ is self.X:
                     self.unregister(name)
+        # We call the callback once everything is clean
+        for callback, args, kwargs in self._callbacks:
+            callback(*args, **kwargs)
+
+    def addCallback(self, callback, *args, **kwargs):
+        """Add a callback to the list. A callback is a function that will be
+        called when the value is changed. You can give this function as many
+        extra arguments as you wish, they will be passed to the callback."""
+        self._callbacks.append((callback, args, kwargs))
+
+    def removeCallback(self, callback):
+        """Remove all occurences of this callbacks from the callback list."""
+        self._callbacks = [x for x in self._callbacks if x[0] is not callback]
 
     def __str__(self):
         return repr(self())

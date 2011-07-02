@@ -53,7 +53,7 @@ if world.testing:
             self.RequestHandlerClass = handler
             self.socket = StringIO()
             self._notServing = Event()
-            self._notServer.set()
+            self._notServing.set()
 
         def fileno(self):
             return hash(self)
@@ -132,7 +132,7 @@ class SupyHTTPServerCallback:
     message, it probably means you are developping a plugin, and you have
     neither overriden this message or defined an handler for this query.""")
 
-    def doGet(self, handler, path):
+    def doGet(self, handler, path, *args, **kwargs):
         handler.send_response(400)
         self.send_header('Content_type', 'text/plain')
         self.send_header('Content-Length', len(self.defaultResponse))
@@ -153,7 +153,7 @@ class Supy404(SupyHTTPServerCallback):
     if I don't know what to serve.
     What I'm saying is you just triggered a 404 Not Found, and I am not
     trained to help you in such a case.""")
-    def doGet(self, handler, path):
+    def doGet(self, handler, path, *args, **kwargs):
         handler.send_response(404)
         self.send_header('Content_type', 'text/plain')
         self.send_header('Content-Length', len(self.response))
