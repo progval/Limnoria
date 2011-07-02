@@ -109,11 +109,11 @@ class SqliteMoobotDB(object):
         filename = plugins.makeChannelFilename(self.filename, channel)
         
         if os.path.exists(filename):
-            db = sqlite3.connect(filename)
+            db = sqlite3.connect(filename, check_same_thread=False)
             db.text_factory = str
             self.dbs[channel] = db
             return db
-        db = sqlite3.connect(filename)
+        db = sqlite3.connect(filename, check_same_thread=False)
         db.text_factory = str
         self.dbs[channel] = db
         cursor = db.cursor()
