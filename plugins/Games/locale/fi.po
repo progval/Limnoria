@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-01 08:05+0200\n"
+"PO-Revision-Date: 2011-07-03 12:24+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -114,7 +114,7 @@ msgstr "*PANG* Hei, kuka laittoi tuon laudan tuohon?!"
 
 #: plugin.py:139
 msgid "reloads and spins the chambers."
-msgstr "latautuu ja pyöräyttää kammioita."
+msgstr "lataaa ja pyöräyttää kammioita."
 
 #: plugin.py:141
 msgid "*click*"
