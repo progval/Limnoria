@@ -36,6 +36,8 @@ from threading import Event, Thread
 from cStringIO import StringIO
 from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+# For testing purposes
+from SocketServer import StreamRequestHandler
 
 import supybot.log as log
 import supybot.conf as conf
@@ -45,29 +47,10 @@ _ = PluginInternationalization()
 
 configGroup = conf.supybot.servers.http
 
-if world.testing:
-    class TestHTTPServer(HTTPServer):
-        """A fake HTTP server for testing purpose."""
-        def __init__(self, address, handler):
-            self.server_address = address
-            self.RequestHandlerClass = handler
-            self.socket = StringIO()
-            self._notServing = Event()
-            self._notServing.set()
+class RequestNotHandled(Exception):
+    pass
 
-        def fileno(self):
-            return hash(self)
-
-        def serve_forever(self, poll_interval=None):
-            self._notServing.clear()
-            self._notServing.wait()
-
-        def shutdown(self):
-            self._notServing.set()
-
-    HTTPServer = TestHTTPServer
-
-class SupyHTTPServer(HTTPServer):
+class RealSupyHTTPServer(HTTPServer):
     # TODO: make this configurable
     timeout = 0.5
     callbacks = {}
@@ -81,6 +64,19 @@ class SupyHTTPServer(HTTPServer):
         callback = self.callbacks.pop(subdir) # May raise a KeyError. We don't care.
         callback.doUnhook(self)
         return callback
+
+class TestSupyHTTPServer(RealSupyHTTPServer):
+    def __init__(self, *args, **kwargs):
+        pass
+    def serve_forever(self, *args, **kwargs):
+        pass
+    def shutdown(self, *args, **kwargs):
+        pass
+
+if world.testing:
+    SupyHTTPServer = TestSupyHTTPServer
+else:
+    SupyHTTPServer = RealSupyHTTPServer
 
 class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_X(self, callbackMethod, *args, **kwargs):
@@ -106,6 +102,8 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         self.do_X('doGet')
 
     def do_POST(self):
+        if 'Content-Type' not in self.headers:
+            self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
         form = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
@@ -121,7 +119,6 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         log.info('HTTP request: %s - %s' %
                 (self.address_string(), format % args))
-
 
 class SupyHTTPServerCallback:
     """This is a base class that should be overriden by any plugin that want
