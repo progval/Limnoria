@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin automaticly logs the channels where the bot is.
