@@ -250,7 +250,7 @@ class Conditional(callbacks.Plugin):
         """<item1> <item2>
 
         Does a numeric comparison on <item1> and <item2>.
-        Returns true if they <item1> is greater than <item2>.
+        Returns true if <item1> is greater than <item2>.
         """
         if item1 > item2:
             irc.reply('true')
