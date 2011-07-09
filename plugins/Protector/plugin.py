@@ -143,8 +143,14 @@ class Protector(callbacks.Plugin):
             if self.isProtected(irc, channel, hostmask):
                 self.log.info('%s was kicked from %s and is protected; '
                               'inviting back.', hostmask, channel)
-                irc.queueMsg(ircmsgs.invite(nick, channel))
+                hostmask = '%s!%s' % (nick, irc.state.nickToHostmask(nick))
                 protected.append(nick)
+                bans = []
+                for banmask in irc.state.channels[channel].bans:
+                    if ircutils.hostmaskPatternEqual(banmask, hostmask):
+                        bans.append(banmask)
+                irc.queueMsg(ircmsgs.unbans(channel, bans))
+                irc.queueMsg(ircmsgs.invite(nick, channel))
         if not self.isOp(irc, channel, msg.prefix):
             self.demote(irc, channel, msg.nick)
 
