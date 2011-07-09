@@ -68,7 +68,7 @@ class Protector(callbacks.Plugin):
             return True
         return False
 
-    def demote(self, channel, nick):
+    def demote(self, irc, channel, nick):
         irc.queueMsg(ircmsgs.deop(channel, nick))
 
     def __call__(self, irc, msg):
@@ -146,7 +146,7 @@ class Protector(callbacks.Plugin):
                 irc.queueMsg(ircmsgs.invite(nick, channel))
                 protected.append(nick)
         if not self.isOp(irc, channel, msg.prefix):
-            self.demote(channel, msg.nick)
+            self.demote(irc, channel, msg.nick)
 
 
 Class = Protector
