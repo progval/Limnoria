@@ -240,7 +240,7 @@ class Misc(callbacks.Plugin):
 
         Returns a URL saying where to get Supybot.
         """
-        irc.reply(_('My source is at http://supybot.com/'))
+        irc.reply(_('My source is at https://github.com/ProgVal/Limnoria'))
     source = wrap(source)
 
     @internationalizeDocstring
