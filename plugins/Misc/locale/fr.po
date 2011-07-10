@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-06-06 19:05+CEST\n"
+"POT-Creation-Date: 2011-07-10 18:59+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -151,8 +151,8 @@ msgstr ""
 "Retourne une URL disant où trouver Supybot."
 
 #: plugin.py:243
-msgid "My source is at http://supybot.com/"
-msgstr "Ma source est disponible sur http://supybot.com/"
+msgid "My source is at https://github.com/ProgVal/Limnoria"
+msgstr "Ma source est disponible sur https://github.com/ProgVal/Limnoria"
 
 #: plugin.py:248
 msgid ""
