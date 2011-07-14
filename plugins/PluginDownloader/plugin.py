@@ -151,6 +151,9 @@ class GithubRepository(GitRepository):
                     newFileName = os.path.join(*file.name.split('/')[1:])
                     newFileName = newFileName[len(self._path)-1:]
                     newFileName = os.path.join(directory, newFileName)
+                    if os.path.exists(newFileName):
+                        assert os.path.isdir(newFileName)
+                        shutils.rmtree(newFileName)
                     if extractedFile is None:
                         os.mkdir(newFileName)
                     else:
