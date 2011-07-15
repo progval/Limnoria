@@ -410,7 +410,7 @@ class Channel(callbacks.Plugin):
                            additional('nick')])
 
     def do341(self, irc, msg):
-        (_, nick, channel) = msg.args
+        (foo, nick, channel) = msg.args
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
         if replyIrc is not None:
@@ -421,7 +421,7 @@ class Channel(callbacks.Plugin):
             self.log.info('Inviting %s to %s.', nick, channel)
 
     def do443(self, irc, msg):
-        (_, nick, channel, _) = msg.args
+        (foo, nick, channel, foo) = msg.args
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
         if replyIrc is not None:
