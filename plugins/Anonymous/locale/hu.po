@@ -1,0 +1,91 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2011-06-09 18:26+CEST\n"
+"PO-Revision-Date: 2011-07-15 10:52+0100\n"
+"Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:49
+msgid ""
+"Meghatározza, hogy\n"
+"    a bot kényszerítse-e az embereket, hogy a bővítményt abban a\n"
+"    csatornában használják ahova névtelenül szeretnének írni."
+msgstr ""
+
+#: config.py:53
+msgid ""
+"Meghatározza, hogy a bot kényszerítse-e az embereket\n"
+"    akik használni szeretnék a bővítményt, hogy regisztráljanak."
+msgstr ""
+
+#: config.py:56
+msgid ""
+"Meghatározza, hogy milyen képesség (ha van ilyen) legyen szükséges\n"
+"    a bővítmény használatához."
+msgstr ""
+
+#: config.py:59
+msgid ""
+"Meghatározza, hogy a bot kötelezővé tegye-e, hogy \n"
+"    a \"say\" parancs célja publikus legyen (pl., csatornák).  Ha ez\n"
+"    True, a bot megengedi, hogy az emberek \"say\" parancssal\n"
+"    privát üzenetet küldejenek másoknak."
+msgstr ""
+
+#: plugin.py:40
+msgid ""
+"Ez a bővítmény megengedi az embereknek, hogy névtelenül küldjenek üzeneteket.  A 'do'\n"
+"    parancs hatására a bot egy névtelen tevékenységet hajt végre a csatornában, és\n"
+"    a 'say' parancs megengedi másoknak, hogy beszéljenek a bottal.  Mivel\n"
+"    ezzel nagyon könnyen vissza lehet élni, érdemes beállítani a\n"
+"    supybot.plugins.Anonymous.requireCapability-t, hogy csak az adott képességgel\n"
+"    rendelkező felhasználók használhatják a bővítményt. Extra biztonságért megkövetelheted,\n"
+"    hogy a felhasználó benne legyen abban a csatornában, ahová névtelenül szeretne írni a\n"
+"    supybot.plugins.Anonymous.requirePresenceInChannel változóval, vagy megkövetelheted,\n"
+"    hogy a felhasználó regisztrálva legyen a\n"
+"    supybot.plugins.Anonymous.requireRegistration beállításával.\n"
+"    "
+msgstr ""
+
+#: plugin.py:64
+msgid "A(z) %s csatornában kell lenned, hogy a %q parancsot használd ott."
+msgstr ""
+
+#: plugin.py:68
+msgid "Némítva vagyok a(z) %s csatornában."
+msgstr ""
+
+#: plugin.py:71
+msgid "A csatorna képességei miatt itt nem használhatod ezt a bővítményt."
+msgstr ""
+
+#: plugin.py:74
+msgid "A %q parancs nem használható privát üzenetek küldésére."
+msgstr ""
+
+#: plugin.py:80
+msgid ""
+"<csatorna|név> <szöveg>\n"
+"\n"
+"        Elküldi <szöveg>-et <csatorna|név>-nek.  Csak akkor küldhet <név>-nek ha a\n"
+"        supybot.plugins.Anonymous.allowPrivateTarget True.\n"
+"        "
+msgstr ""
+
+#: plugin.py:94
+msgid ""
+"<csatorna> <tevékenység>\n"
+"\n"
+"        Végrehajtja <tevékenyég>-et <csatorna>-ban.\n"
+"        "
+msgstr ""
+
