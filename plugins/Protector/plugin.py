@@ -98,7 +98,7 @@ class Protector(callbacks.Plugin):
         channel = msg.args[0]
         chanOp = ircdb.makeChannelCapability(channel, 'op')
         chanVoice = ircdb.makeChannelCapability(channel, 'voice')
-        chanhalfop = ircdb.makeChannelCapability(channel, 'halfop')
+        chanHalfOp = ircdb.makeChannelCapability(channel, 'halfop')
         if not ircdb.checkCapability(msg.prefix, chanOp):
             irc.sendMsg(ircmsgs.deop(channel, msg.nick))
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
