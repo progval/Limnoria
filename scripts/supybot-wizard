@@ -504,7 +504,9 @@ def main():
         output(format("""The available plugins are: %L.""", plugins))
         output("""What plugins would you like to add?  If you've changed your
         mind and would rather not add plugins in bulk like this, just press
-        enter and we'll move on to the individual plugin configuration.""")
+        enter and we'll move on to the individual plugin configuration.
+        We suggest you to add Alias, Ctcp, Later, Network, Plugin, String,
+        and Utilities""")
         massPlugins = anything('Separate plugin names by spaces or commas:')
         for name in re.split(r',?\s+', massPlugins):
             module = loadPlugin(name)
