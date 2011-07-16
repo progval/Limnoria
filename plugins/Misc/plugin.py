@@ -238,7 +238,7 @@ class Misc(callbacks.Plugin):
     def source(self, irc, msg, args):
         """takes no arguments
 
-        Returns a URL saying where to get Supybot.
+        Returns a URL saying where to get Limnoria.
         """
         irc.reply(_('My source is at https://github.com/ProgVal/Limnoria'))
     source = wrap(source)
