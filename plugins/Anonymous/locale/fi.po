@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot Anonymous\n"
-"POT-Creation-Date: 2010-10-16 15:14+CEST\n"
+"POT-Creation-Date: 2011-06-09 18:26+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
@@ -50,7 +50,7 @@ msgstr ""
 " True, botti sallii ihmisten käyttää \"say\" komentoa lähettääkseen yksityisviestejä \n"
 " toisille käyttäjille."
 
-#: plugin.py:41
+#: plugin.py:40
 msgid ""
 "This plugin allows users to act through the bot anonymously.  The 'do'\n"
 "    command has the bot perform an anonymous action in a given channel, and\n"
@@ -73,7 +73,23 @@ msgstr ""
 "että tuo käyttäjä on rekisteröitynyt asetuksella\n"
 "supybot.plugins.Anonymous.requireRegistration"
 
-#: plugin.py:81
+#: plugin.py:64
+msgid "You must be in %s to %q in there."
+msgstr "Sinun täytyy olla kanavalla %s %q sinne."
+
+#: plugin.py:68
+msgid "I'm lobotomized in %s."
+msgstr "Minut on lobotomoitu kanavalla %s."
+
+#: plugin.py:71
+msgid "That channel has set its capabilities so as to disallow the use of this plugin."
+msgstr "Tuo kanava on asettanut valtuudet kieltämään tämän Pluginin käytön."
+
+#: plugin.py:74
+msgid "%q cannot be used to send private messages."
+msgstr "%q:ta ei voi käyttää yksityisviestien lähettämiseen."
+
+#: plugin.py:80
 msgid ""
 "<channel|nick> <text>\n"
 "\n"
@@ -87,7 +103,7 @@ msgstr ""
 "supybot.plugins.Anonymous.allowPrivateTarget on True.\n"
 "        "
 
-#: plugin.py:95
+#: plugin.py:94
 msgid ""
 "<channel> <action>\n"
 "\n"
