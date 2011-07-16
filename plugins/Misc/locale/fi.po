@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-07-10 18:59+CEST\n"
-"PO-Revision-Date: 2011-07-15 17:18+0200\n"
+"PO-Revision-Date: 2011-07-16 21:11+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -207,7 +207,7 @@ msgstr "Anteeksi, en voi löytää jatkoa %s:lle."
 
 #: plugin.py:272
 msgid "more message"
-msgstr "viesti lisöö"
+msgstr "viesti lisää"
 
 #: plugin.py:274
 msgid "more messages"
