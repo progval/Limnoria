@@ -44,6 +44,14 @@ class LaterTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('later notes', 'bar.*foo')
         self.assertRegexp('later notes', 'foo')
 
+    def testLaterUndo(self):
+        self.assertNotError('later tell foo 1')
+        self.assertNotError('later tell bar 1')
+        self.assertRegexp('later notes', 'bar.*foo')
+        self.assertNotError('later undo foo')
+        self.assertNotRegexp('later notes', 'bar.*foo')
+        self.assertRegexp('later notes', 'bar')
+
     def testNickValidation(self):
         origconf = conf.supybot.protocols.irc.strictRfc()
         conf.supybot.protocols.irc.strictRfc.setValue('True')

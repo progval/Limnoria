@@ -207,6 +207,27 @@ class Later(callbacks.Plugin):
             irc.error(_('There were no notes for %r') % nick)
     remove = wrap(remove, [('checkCapability', 'admin'), 'something'])
 
+    @internationalizeDocstring
+    def undo(self, irc, msg, args, nick):
+        """<nick>
+
+        Removes the latest note you sent to <nick>.
+        """
+        if nick not in self._notes:
+            irc.error(_('There are no note waiting for %s.') % nick)
+            return
+        self._notes[nick].reverse()
+        for note in self._notes[nick]:
+            if note[1] == msg.nick:
+                self._notes[nick].remove(note)
+                if len(self._notes[nick]) == 0:
+                    del self._notes[nick]
+                self._flushNotes()
+                irc.replySuccess()
+                return
+        irc.error(_('There are no note from you waiting for %s.') % nick)
+    undo = wrap(undo, ['something'])
+
     def doPrivmsg(self, irc, msg):
         if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
             return
