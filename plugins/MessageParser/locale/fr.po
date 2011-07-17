@@ -50,7 +50,7 @@ msgstr "Détermine les capacités requises (s'il y en a) pour gérer la base de 
 
 #: config.py:77
 msgid ""
-"Determines the separator used between rexeps when\n"
+"Determines the separator used between regexps when\n"
 "    shown by the list command."
 msgstr "Détermine le séparateur utilisé entre les expressions régulières affichées par la commande list."
 
