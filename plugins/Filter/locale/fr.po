@@ -611,7 +611,7 @@ msgid ""
 msgstr ""
 "<texte>\n"
 "\n"
-"Retourne le <texte> avec les I transormés en r et les r transformés en I."
+"Retourne le <texte> avec les l transormés en r et les r transformés en l."
 
 #: plugin.py:702
 msgid ""
