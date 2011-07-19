@@ -119,7 +119,7 @@ msgid ""
 msgstr ""
 "<texte>\n"
 "\n"
-"Retourne la représentation binaire du <texte>. Considère qu'il s'agit d'ASCII, 8 bits par caractère."
+"Retourne le caractère représentant du <texte>. Considère qu'il s'agit d'ASCII, 8 bits par caractère."
 
 #: plugin.py:179
 msgid ""
