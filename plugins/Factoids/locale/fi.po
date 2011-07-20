@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-06-28 19:40+CEST\n"
-"PO-Revision-Date: 2011-07-17 14:25+0200\n"
+"PO-Revision-Date: 2011-07-20 16:19+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -60,18 +60,26 @@ msgid ""
 "    several approximate matching algorithms and return a list of matching keys,\n"
 "    before giving up."
 msgstr ""
+"Jos sinä yrität etsiä olematonta factoidia,\n"
+"    tämä asetus saa botin yrittämään löytää mahdollisesti täsmääviä avaimia\n"
+"    muutaman tarkan täsmäusalgoritmin läpi ja palauttaa listan täsmäävistä avaimista ennen,\n"
+"    kuin luovuttaa."
 
 #: config.py:69
 msgid "$key could be $value."
-msgstr ""
+msgstr "$key voisi olla $value."
 
 #: config.py:69
+#, fuzzy
 msgid ""
 "Determines the format of\n"
 "    the response given when a factoid's value is requested.  All the standard\n"
 "    substitutes apply, in addition to \"$key\" for the factoid's key and \"$value\"\n"
 "    for the factoid's value."
 msgstr ""
+"Määrittää missä muodossa factoidin arvo annetaan, kun\n"
+"    factoidin arvoa pyydetään.  Kaikki perus-\n"
+"    korvikkeet ovat voimassa, \"$key\"men lisäksi factoidin arvolle ja \"$value\"\llen    factoidin arvolle."
 
 #: plugin.py:179
 msgid ""
@@ -84,6 +92,14 @@ msgid ""
 "                         via the learnSeparator registry value.\n"
 "                         "
 msgstr ""
+"[<kanava>] <avain> %s <arvo>\n"
+"\n"
+"                         Liittää <avaimen> <arvoon>.  <Kanava> on vaadittu vain, jos\n"
+"                         viestiä ei lähetetä kanavalla itsellään.\n"
+"                         Sana '%s' on vaadittu erottamaan avain arvosta.\n"
+"                         Se voidaan vaihtaa toiseksi sanaksi\n"
+"                         learnSeparator rekisteriarvolla.\n"
+"                         "
 
 #: plugin.py:199
 msgid ""
@@ -94,17 +110,23 @@ msgid ""
 "        If that fails, use the Damerau-Levenshtein edit-distance metric.\n"
 "        "
 msgstr ""
+"Yritä typo-täsmätä mahdollisia factoideja.\n"
+"        \n"
+"        Oleta, että ensinmäinen kirjain on oikein, vähentääksesi suoritusaikaa.        \n"
+"        Ensiksi, yritä yksinkertaista jokerimerkki hakua.\n"
+"        Jos se epäonnistuu, käytä Damerau-Levenshtein muokkaus-etäisyys metriä.\n"
+"        "
 
 #: plugin.py:257
 #: plugin.py:386
 msgid "That's not a valid number for that key."
-msgstr ""
+msgstr "Tuo ei ole kelvollinen numero tuolle avaimelle."
 
 #: plugin.py:279
 #: plugin.py:372
 #: plugin.py:598
 msgid "No factoid matches that key."
-msgstr ""
+msgstr "Mikään factoidi ei täsmää tuota avainta."
 
 #: plugin.py:304
 msgid ""
@@ -117,11 +139,19 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<kanava>] [--raw] <avain> [<numero>]\n"
+"\n"
+"        Etsii <avaimen> arvoa factoidi tietokannasta.  Jos numero on annettu,\n"
+"        palauttaa vain juuri sen factoidin. Jos '--raw' asetus on\n"
+"        annettu, muuttujan korvike ei vaikuta factoidissa.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:321
 #: plugin.py:523
 msgid "key id"
-msgstr ""
+msgstr "avaimen id"
 
 #: plugin.py:334
 msgid ""
@@ -135,15 +165,24 @@ msgid ""
 "        a new key but an existing (verbatim) factoid content.\n"
 "        "
 msgstr ""
+"[<kanava>] <vanha avain> <uusi avain> [<numero>]\n"
+"\n"
+"        Lisää uudenavaimen <uusi avain> factoidiin, joka on liitetty <vanhalla avaimella>.\n"
+"        <numero> on vaadittu vain, jos vain yksi factoid on liitetty\n"
+"        <vanhaan avaimeen>.\n"
+"\n"
+"        Sama toiminto voidaan suorittaa 'learn' toiminnolla, mutta\n"
+"        uusi avain tulee olemassa olevan (verbatim) factoidin sisällön kautta.\n"
+"        "
 
 #: plugin.py:381
 #: plugin.py:398
 msgid "This key-factoid relationship already exists."
-msgstr ""
+msgstr "Tämä avain-factoidi suhde on jo olemassa."
 
 #: plugin.py:389
 msgid "This key has more than one factoid associated with it, but you have not provided a number."
-msgstr ""
+msgstr "Tähän avaimeen on liitetty useampi, kuin yksi factoidi, mutta sinä et antanut numeroa."
 
 #: plugin.py:403
 msgid ""
