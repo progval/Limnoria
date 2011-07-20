@@ -67,7 +67,7 @@ msgstr ""
 
 #: config.py:77
 msgid ""
-"Determines the separator used between rexeps when\n"
+"Determines the separator used between regexps when\n"
 "    shown by the list command."
 msgstr ""
 "Määrittää erottajan, jota käytetään list komennon näyttämien\n"
