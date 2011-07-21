@@ -503,7 +503,7 @@ class Channel(callbacks.Plugin):
 
             If you have the #channel,op capability, this will effect a
             persistent ban from interacting with the bot on the given
-            <hostmask> (or the current hostmask associated with <nick>.  Other
+            <hostmask> (or the current hostmask associated with <nick>).  Other
             plugins may enforce this ban by actually banning users with
             matching hostmasks when they join.  <expires> is an optional
             argument specifying when (in "seconds from now") the ban should
@@ -662,7 +662,7 @@ class Channel(callbacks.Plugin):
             """[<channel>] {True|False}
 
             If you have the #channel,op capability, this will set the default
-            response to non-power-related (that is, not {op, halfop, voice}
+            response to non-power-related (that is, not {op, halfop, voice})
             capabilities to be the value you give. <channel> is only necessary
             if the message isn't sent in the channel itself.
             """
