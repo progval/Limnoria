@@ -238,7 +238,7 @@ msgstr ""
 
 #: plugin.py:508
 msgid "I cowardly refuse to ghost myself."
-msgstr "Codardamente, mi rifiuto di terminare una connessione \"fantasma\" (ghost)."
+msgstr "Codardamente mi rifiuto di terminare una connessione \"fantasma\" (ghost)."
 
 #: plugin.py:513
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to ghost a nick."
