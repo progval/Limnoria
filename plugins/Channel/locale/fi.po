@@ -811,11 +811,11 @@ msgstr ""
 
 #: plugin.py:846
 msgid "Alert to all %s ops: %s"
-msgstr "Hälytys kaikki %s operaattoreille: %s"
+msgstr "Hälytys kaikille kanavan %s operaattoreille: %s"
 
 #: plugin.py:848
 msgid " (from %s)"
-msgstr "(%s:tä)"
+msgstr "(%s:ltä)"
 
 #: plugin.py:856
 msgid ""
