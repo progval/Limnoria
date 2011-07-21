@@ -1,0 +1,97 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Limnoria Anonymous\n"
+"POT-Creation-Date: 2011-06-09 18:26+CEST\n"
+"PO-Revision-Date: 2011-07-21 17:32+0100\n"
+"Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:49
+msgid ""
+"Determines whether\n"
+"    the bot should require people trying to use this plugin to be in the\n"
+"    channel they wish to anonymously send to."
+msgstr "Meghatározza, hogy a bot megkövetelje-e, hogy a bővítményt használni kívánó emberek abban a csatornában legyenek, ahová névtelenül szeretnének küldeni."
+
+#: config.py:53
+msgid ""
+"Determines whether the bot should require\n"
+"    people trying to use this plugin to be registered."
+msgstr "Meghatározza, hogy a bot megkövetelje-e, hogy a bővítményt használni kívánó emberek regisztrálva legyenek."
+
+#: config.py:56
+msgid ""
+"Determines what capability (if any) the bot should\n"
+"    require people trying to use this plugin to have."
+msgstr "Meghatározza, hogy milyen képesség (ha van ilyen) legyen szükséges a bővítmény használatához."
+
+#: config.py:59
+msgid ""
+"Determines whether the bot will require \n"
+"    targets of the \"say\" command to be public (i.e., channels).  If this is\n"
+"    True, the bot will allow people to use the \"say\" command to send private\n"
+"    messages to other users."
+msgstr "Meghatározza, hogy a bot megkövetelje-e, hogy a \"say\" parancs célja publikus legyen (pl., csatornák). Ha ez True, a bot megengedi az embereknek, hogy a \"say\" paranccsal privát üzenetet küldjenek másoknak."
+
+#: plugin.py:40
+msgid ""
+"This plugin allows users to act through the bot anonymously.  The 'do'\n"
+"    command has the bot perform an anonymous action in a given channel, and\n"
+"    the 'say' command allows other people to speak through the bot.  Since\n"
+"    this can be fairly well abused, you might want to set\n"
+"    supybot.plugins.Anonymous.requireCapability so only users with that\n"
+"    capability can use this plugin.  For extra security, you can require that\n"
+"    the user be *in* the channel they are trying to address anonymously with\n"
+"    supybot.plugins.Anonymous.requirePresenceInChannel, or you can require\n"
+"    that the user be registered by setting\n"
+"    supybot.plugins.Anonymous.requireRegistration.\n"
+"    "
+msgstr "Ez a bővítmény megengedi a felhasználóknak, hogy névtelenül cselekedjenek a boton keresztül. A 'do' parancs hatására a bot végrehajt egy névtelen tevékenységet egy megadott csatornában, és a 'say' parancs megengedi másoknak, hogy a boton keresztül beszéljenek. Mivel ezzel elég könnyen vissza lehet élni, érdemes beállítani a supybot.plugins.Anonymous.requireCapability-t, hogy csak az adott képességgel rendelkező felhasználók használhassák ezt a bővítményt. Extra biztonságért a supybot.plugins.Anonymous.requirePresenceInChannel-lel megkövetelheted, hogy a felhasználó abban a csatornában legyen, amelyet névtelenül szeretnének megcímezni, vagy a supybot.plugins.Anonymous.requireRegistration-nel megkövetelheted, hogy a felhasználó regisztálva legyen."
+
+#: plugin.py:64
+msgid "You must be in %s to %q in there."
+msgstr "%s-ban kell lenned, hogy a %q parancsot használd ott."
+
+#: plugin.py:68
+msgid "I'm lobotomized in %s."
+msgstr "Némítva vagyok %s-ban."
+
+#: plugin.py:71
+msgid "That channel has set its capabilities so as to disallow the use of this plugin."
+msgstr "A megadott csatornában nem használhatod a bővítményt a csatorna képességei miatt."
+
+#: plugin.py:74
+msgid "%q cannot be used to send private messages."
+msgstr "A %q parancs nem használható privát üzenetek küldésére."
+
+#: plugin.py:80
+msgid ""
+"<channel|nick> <text>\n"
+"\n"
+"        Sends <text> to <channel|nick>.  Can only send to <nick> if\n"
+"        supybot.plugins.Anonymous.allowPrivateTarget is True.\n"
+"        "
+msgstr ""
+"<csatorna|név> <szöveg>\n"
+"\n"
+"Elküldi <szöveg>-et <csatorna|név>-nek. Csak akkor küldhet <név>-nek, ha a supybot.plugins.Anonymous.allowPrivateTarget True."
+
+#: plugin.py:94
+msgid ""
+"<channel> <action>\n"
+"\n"
+"        Performs <action> in <channel>.\n"
+"        "
+msgstr ""
+"<csatorna> <tevékenység>\n"
+"\n"
+"Végrehajtja <tevékenység>-et <csatorna>-ban."
+
