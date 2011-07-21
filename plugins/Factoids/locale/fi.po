@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-06-28 19:40+CEST\n"
-"PO-Revision-Date: 2011-07-21 12:42+0200\n"
+"PO-Revision-Date: 2011-07-21 19:18+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -243,6 +243,12 @@ msgid ""
 "        sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <avain>\n"
+"\n"
+"        Avaa factoid(it), jotka on liitetty <avaimeen>, jotta niitä voidaan\n"
+"        lisätä tai poistaa.  <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:505
 msgid ""
@@ -260,18 +266,31 @@ msgid ""
 "        the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <avain> [<numero>|*]\n"
+"\n"
+"        Poistaa avain-factoidi suhteen <avaimelle> factoidi\n"
+"        tietokannasta.  jos avaimelle on useampi kuin yksi suhde,\n"
+"        numero on vaadittu määrittämään mikä pitäisi poistaa/\n"
+"        *:teä voi käyttää poistamaan kaikki suhteet <avaimelle>.\n"
+"\n"
+"        Jos tuloksena, avain (factoidi) jää ilman\n"
+"        factoidia (avain), se poistetaan tietokannasta.\n"
+"\n"
+"        <Kanava> on vaadittu vain, jos viestiä\n"
+"        ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:537
 msgid "There is no such factoid."
-msgstr ""
+msgstr "Tuollaista factoidia ei ole-"
 
 #: plugin.py:547
 msgid "Invalid factoid number."
-msgstr ""
+msgstr "Epäkelvollinen factoidin numero."
 
 #: plugin.py:552
 msgid "%s factoids have that key.  Please specify which one to remove, or use * to designate all of them."
-msgstr ""
+msgstr "%s factoidilla on tuo avain.  Ole hyvä ja määritä mikä poistetaan, tai käytä * poistaaksesi ne kaikki."
 
 #: plugin.py:560
 msgid ""
@@ -281,10 +300,15 @@ msgid ""
 "        is only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<Kanava>]\n"
+"\n"
+"        Palauttaa satunnaisen factoidin <kanavan> tietokannasta.  <Kanava>\n"
+"        on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:582
 msgid "I couldn't find a factoid."
-msgstr ""
+msgstr "En voinut löytää factoidia."
 
 #: plugin.py:587
 msgid ""
@@ -295,14 +319,20 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <avain>\n"
+"\n"
+"        Antaa tiedot factod(eista), jotka on liitetty <avaimella>.\n"
+"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:613
 msgid "#%i was added by %s at %s, and has been recalled %n"
-msgstr ""
+msgstr "#%i:inlisäsi %s %s, aja on kutsuttu %n"
 
 #: plugin.py:616
 msgid "time"
-msgstr ""
+msgstr "aika"
 
 #: plugin.py:626
 msgid ""
@@ -312,10 +342,15 @@ msgid ""
 "        <regexp>.\n"
 "        "
 msgstr ""
+"[<kanava>] <avain> <numero> <säännöllinen lauseke>\n"
+"\n"
+"        Vaihtaa factoidin #<numeroa>, joka on liitetty <avaimeen> \n"
+"        <säännöllisen lausekkeen> mukaan.\n"
+"        "
 
 #: plugin.py:640
 msgid "I couldn't find any key %q"
-msgstr ""
+msgstr "En voinut löytää yhtään avainta %q"
 
 #: plugin.py:655
 msgid ""
@@ -326,14 +361,20 @@ msgid ""
 "        If --values is given, search the value space instead of the keyspace.\n"
 "        "
 msgstr ""
+"[<kanava>] [--values] [--{regexp} <arvo>] [<glob> ...]\n"
+"\n"
+"        Etsii avainavaruudesta avaimia, jotka täsmäävät <glob>.  Jos --regexp on annettu,\n"
+"        liittää arvon, joka on otettu säännöllisestä lausekkeesta ja täsmätty avaimia vastaan.\n"
+"        Jos --values on annettu, etsii arvoavaruudesta avainavaruuden sijaan.\n"
+"        "
 
 #: plugin.py:692
 #: plugin.py:701
 msgid "No keys matched that query."
-msgstr ""
+msgstr "Yksikään avain ei täsmännyt hakuun."
 
 #: plugin.py:697
 #: plugin.py:706
 msgid "More than 100 keys matched that query; please narrow your query."
-msgstr ""
+msgstr "Yli 100 avainta täsmäsi tuohon hakuun; ole hyvä ja kavenna hakuasi."
 
