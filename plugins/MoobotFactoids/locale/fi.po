@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-22 21:17+0200\n"
+"PO-Revision-Date: 2011-07-23 00:40+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,42 +20,49 @@ msgid ""
 "    or not the factoid value will be shown when a listkeys search returns only\n"
 "    one factoid key."
 msgstr ""
+"Määrittää näytetöönkö\n"
+"    vaiko eikö factoidin arvo kun \"listkeys\" haku\n"
+"    palauttaa vain yhden factoidin avaimen."
 
 #: config.py:50
 msgid ""
 "Determines how many items are shown\n"
 "    when the 'most' command is called."
 msgstr ""
+"Määrittää montako asiaa näytetään\n"
+"    kun 'most' komentoa kutsutaan."
 
 #: plugin.py:289
 msgid ""
 "Add the help for \"@help MoobotFactoids\" here (assuming you don't implement a MoobotFactoids\n"
 "    command).  This should describe *how* to use this plugin."
 msgstr ""
+"Lisää ohje \"@help MoobotFactoids\":lle tähän (olettaen ettet luo MoobotFactoids\n"
+"    komentoa).  Tämän pitäisi kertoa *kuinka* tätä laajennusta käytetään."
 
 #: plugin.py:346
 msgid "%s is %s"
-msgstr ""
+msgstr "%s on %s"
 
 #: plugin.py:365
 msgid "Factoid %q is locked."
-msgstr ""
+msgstr "Factoidi %q on lukittu."
 
 #: plugin.py:372
 msgid "Factoid %q not found."
-msgstr ""
+msgstr "Factoidia %q ei löytynyt."
 
 #: plugin.py:382
 msgid "Missing an 'is' or '_is_'."
-msgstr ""
+msgstr "Puuttuva 'is' tai '_is_'."
 
 #: plugin.py:398
 msgid "Factoid %q already exists."
-msgstr ""
+msgstr "Factoidi %q on jo olemassa."
 
 #: plugin.py:432
 msgid "%s, or %s"
-msgstr ""
+msgstr "%s, tai %s"
 
 #: plugin.py:453
 msgid ""
@@ -66,6 +73,12 @@ msgid ""
 "        is only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <factoidi avain>\n"
+"\n"
+"        Palauttaa kirjaimellisen factoidin annetulle factoidi avaimelle.  Factoidin jäsentämistä\n"
+"        ei tehdä, koska se on normaalilla palautuksella.  <Kanava> on vaadittu vain, jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:466
 msgid ""
@@ -76,39 +89,45 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <factoidi avain>\n"
+"\n"
+"        Palauttaa muutamia tiedonmurusia factoidista annetulle avaimelle.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:477
 #: plugin.py:517
 msgid "No such factoid: %q"
-msgstr ""
+msgstr "Ei sellaista factoidia: %q"
 
 #: plugin.py:486
 msgid "Created by %s on %s."
-msgstr ""
+msgstr "%s:än luoma kanavalla %s."
 
 #: plugin.py:492
 msgid " Last modified by %s on %s."
-msgstr ""
+msgstr "Viimeeksi %s:än muokkaama kanavalla %s."
 
 #: plugin.py:500
 msgid " Last requested by %s on %s, requested %n."
-msgstr ""
+msgstr "Viimeeksi pyytänyt %s kanavalla %s, pyytänyt %n."
 
 #: plugin.py:507
 msgid " Locked by %s on %s."
-msgstr ""
+msgstr "%s:än lukitsema %s:llä."
 
 #: plugin.py:522
 msgid "Factoid %q is already locked."
-msgstr ""
+msgstr "Factoidi %q on jo lukittu."
 
 #: plugin.py:525
 msgid "Factoid %q is not locked."
-msgstr ""
+msgstr "Factoidi %q is not locked."
 
 #: plugin.py:535
 msgid "Cannot %s someone else's factoid unless you are an admin."
-msgstr ""
+msgstr "Ei voi %s jonkun muun factoidia paitsi, jos olet admin."
 
 #: plugin.py:547
 msgid ""
@@ -119,6 +138,12 @@ msgid ""
 "        only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <factoidi avain>\n"
+"\n"
+"        Lukitsee factoidin annetulla factoidi avaimella.  Vaatii käyttäjän olevan rekisteröitynyt\n"
+"        ja että hän on alunperin luonut sen.  <Kanava> on\n"
+"        vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:558
 msgid ""
