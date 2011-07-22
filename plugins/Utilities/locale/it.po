@@ -23,7 +23,7 @@ msgstr ""
 "non necessita argomenti\n"
 "\n"
 "        Non fa niente. Utile per eseguire comandi in sequenza quando non ci si\n"
-"        cura del valore di non errore restituito.\n"
+"        cura del valore dello stato di uscita restituito.\n"
 "        "
 
 #: plugin.py:59
