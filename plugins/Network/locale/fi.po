@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-23 15:53+0200\n"
+"PO-Revision-Date: 2011-07-23 17:08+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -25,18 +25,26 @@ msgid ""
 "        provided, an SSL connection will be attempted.\n"
 "        "
 msgstr ""
+"[--ssl] <verkko> [<isäntä[:portti]>] [<salasana>]\n"
+"\n"
+"        Yhdistää toiseen verkkoon (joka näytetään nimellä, joka on annettu\n"
+"        <verkossa>) <isäntä:portti>.  Jos portti ei ole annettu, se\n"
+"        on oletuksena 6667, oletusportti IRC:lle.  Jos salasana on\n"
+"        annettu, se lähetetään palvelimelle PASS komennossa.  Jos --ssl on\n"
+"        annettu, SSL yhteys muodostetaan.\n"
+"        "
 
 #: plugin.py:67
 msgid "I'm already connected to %s."
-msgstr ""
+msgstr "Olen jo verkkoon %s."
 
 #: plugin.py:87
 msgid "A server must be provided if the network is not already registered."
-msgstr ""
+msgstr "Palvelin täytyy antaa, mikäli verkko ei ole jo rekisteröity."
 
 #: plugin.py:95
 msgid "Connection to %s initiated."
-msgstr ""
+msgstr "Yhdistäminen verkkoon %s aloitettu."
 
 #: plugin.py:102
 msgid ""
@@ -48,10 +56,17 @@ msgid ""
 "        from the network the command is sent on.\n"
 "        "
 msgstr ""
+"[<verkko>] [<lopetus viesti>]\n"
+"\n"
+"        Katkaisee yhteyden verkkoon, jonka määrittää <verkko>.\n"
+"        Jos <lopetus viesti> on annettu, poistuu verkosta annetulla lopetus\n"
+"        viestillä.  <Verkko> on vaadittu vain jos verkko on eri, kuin se, verkko josta\n"
+"        viesti on lähetetty.\n"
+"        "
 
 #: plugin.py:114
 msgid "Disconnection to %s initiated."
-msgstr ""
+msgstr "Yhteyden katkaisu verkosta %s aloitettu."
 
 #: plugin.py:120
 msgid ""
@@ -64,6 +79,14 @@ msgid ""
 "        command.\n"
 "        "
 msgstr ""
+"[<verkko>] [<lopetus viesti>]\n"
+"\n"
+"        Katkaisee yhteyden ja yhdistää uudelleen <verkkoon>.  Jos verkkoa ei ole annettu,\n"
+"        katkaisee yhteyden ja yhdistää uudelleen verkkoon, jossa komento annettiin.\n"
+"        Jos lopetus viestiä ei annettu, käyttää määritettyä lopetus viestiä\n"
+"        (supybot.plugins.Owner.quitMsg) tai henkilön joka antoi komennon\n"
+"        nimimerkkiä.\n"
+"        "
 
 #: plugin.py:137
 msgid ""
@@ -72,48 +95,52 @@ msgid ""
 "        Gives the bot <command> (with its associated <arg>s) on <network>.\n"
 "        "
 msgstr ""
+"<verkko> <komento> [<parametrit> ...]\n"
+"\n"
+"        Antaa botille <komennon> (siihen liitetyillä <parametreillä>) <verkossa>.\n"
+"        "
 
 #: plugin.py:210
 msgid "is an op on %L"
-msgstr ""
+msgstr "on kanavaoperaattori %L:llä"
 
 #: plugin.py:212
 msgid "is a halfop on %L"
-msgstr ""
+msgstr "on puolioperaattori %L:llä."
 
 #: plugin.py:214
 msgid "is voiced on %L"
-msgstr ""
+msgstr "on ääni %L:llä"
 
 #: plugin.py:217
 msgid "is also on %L"
-msgstr ""
+msgstr "on myös %L:llä"
 
 #: plugin.py:219
 msgid "is on %L"
-msgstr ""
+msgstr "on %L:llä."
 
 #: plugin.py:221
 msgid "isn't on any non-secret channels"
-msgstr ""
+msgstr "Ei ole yhdelläkään ei-salaisella kanavalla."
 
 #: plugin.py:228
 #: plugin.py:229
 #: plugin.py:233
 msgid "<unknown>"
-msgstr ""
+msgstr "<tuntematon>"
 
 #: plugin.py:240
 msgid " identified"
-msgstr ""
+msgstr "tunnistautunut"
 
 #: plugin.py:245
 msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
-msgstr ""
+msgstr "%s (%s) on ollut %s palvelimella %s %s lähtien (idlannut %s) ja %s.%s"
 
 #: plugin.py:258
 msgid "There is no %s on %s."
-msgstr ""
+msgstr "%s:ää ei ole verkossa %s."
 
 #: plugin.py:264
 msgid ""
@@ -124,6 +151,12 @@ msgid ""
 "        is sent on.\n"
 "        "
 msgstr ""
+"[<verkko>] <nimimerkki>\n"
+"\n"
+"        Palauttaa WHOIS vastauksen, jonka <verkko> antaa <nimimerkille>.  <Verkko> on\n"
+"        vaadittu vain jos verkko on eri kuin se verkko, josta komento\n"
+"        lähetettiin.\n"
+"        "
 
 #: plugin.py:280
 msgid ""
@@ -132,10 +165,14 @@ msgid ""
 "        Returns the networks to which the bot is currently connected.\n"
 "        "
 msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"        Palauttaa verkot, joihin botti on tällä hetkellä muodostanut yhteyden.\n"
+"        "
 
 #: plugin.py:293
 msgid "%.2f seconds."
-msgstr ""
+msgstr "%.2f sekuntia."
 
 #: plugin.py:297
 msgid ""
@@ -146,10 +183,16 @@ msgid ""
 "        apply.\n"
 "        "
 msgstr ""
+"[<verkko>]\n"
+"\n"
+"        Palauttaa nykyisen viiveen <verkolle>.  <Verkko> on vaadittu vain jos\n"
+"        viestiä ei lähetetä verkossa, jolle tämä komento on tarkoitettu\n"
+"        vaikuttamaan.\n"
+"        "
 
 #: plugin.py:303
 msgid "Latency check (from %s)."
-msgstr ""
+msgstr "Viiveen tarkistus (%s:ltä)."
 
 #: plugin.py:311
 msgid ""
@@ -160,4 +203,10 @@ msgid ""
 "        command is to apply.\n"
 "        "
 msgstr ""
+"[<verkko>]\n"
+"\n"
+"        Palauttaa nykyisen verkkoajurin, joka on käytössä <verkossa>.  <Verkko> on vaadittu\n"
+"        vain jos komentoa ei lähetetä verkossa, johon tämän komennon on tarkoitus\n"
+"        vaikuttaa.\n"
+"        "
 
