@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-23 00:40+0200\n"
+"PO-Revision-Date: 2011-07-23 12:13+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -154,6 +154,12 @@ msgid ""
 "        necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <factoidi avain>\n"
+"\n"
+"        Avaa factoidin annetulla factoidi avaimella.  Vaatii, että käyttäjä\n"
+"        on rekisteröitynyt ja lukinnut factoidin.  <Kanava> on vaadittu\n"
+"        vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:569
 msgid ""
@@ -166,51 +172,59 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<kanava>] {popular|authored|recent}\n"
+"\n"
+"        Luettelee {suosituimmat (\"popular\")|kirjoitetuimmat (\"authored\")|viimeisimmät (\"recent\")} factoidit.  \"popular\" luettelee\n"
+"        useimmiten pyydetyt factoidit.  \"authored\" luettelee kirjoittajat, joilla on eniten\n"
+"        factoideja.  \"recent\" luettelee uusimmat kirjoitetut factoidit.\n"
+"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:591
 msgid "author"
-msgstr ""
+msgstr "kirjoittaja"
 
 #: plugin.py:593
 msgid "authors"
-msgstr ""
+msgstr "kirjoittaja"
 
 #: plugin.py:594
 msgid "Most prolific %s: %L"
-msgstr ""
+msgstr "Tuottoisimmat %s: %L"
 
 #: plugin.py:596
 #: plugin.py:608
 msgid "There are no factoids in my database."
-msgstr ""
+msgstr "Tietokannassani ei ole factoideja."
 
 #: plugin.py:603
 msgid "latest factoid"
-msgstr ""
+msgstr "Viimeisin factoidi"
 
 #: plugin.py:605
 msgid "latest factoids"
-msgstr ""
+msgstr "viimeisimmät factoidit"
 
 #: plugin.py:606
 msgid "%s: %L"
-msgstr ""
+msgstr "%s: %L"
 
 #: plugin.py:615
 msgid "requested factoid"
-msgstr ""
+msgstr "pyydetty factoidi"
 
 #: plugin.py:617
 msgid "requested factoids"
-msgstr ""
+msgstr "pyydetyt factoidit"
 
 #: plugin.py:618
 msgid "Top %s: %L"
-msgstr ""
+msgstr "Huippu %s: %L"
 
 #: plugin.py:620
 msgid "No factoids have been requested from my database."
-msgstr ""
+msgstr "Factoideja ei ole pyydetty tietokannastani."
 
 #: plugin.py:624
 msgid ""
@@ -222,14 +236,21 @@ msgid ""
 "        necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <kirjoittajan nimi>\n"
+"\n"
+"        Luettelee kaikki annetun kirjailijan kirjoittamat factoidit.  Huomaa, että\n"
+"        jos kirjoittajalla on kokonaisluku nimi, sinun täytyy käyttää kirjoittajan id:tä käyttääksesi\n"
+"        tätä toimintoa (joten älä käytä kokonaisluku käyttäjätunnuksia!).  <Kanava> on vaadittu vain jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:637
 msgid "No factoids by %q found."
-msgstr ""
+msgstr "%q:n kirjoittamia factoideja ei löytynyt."
 
 #: plugin.py:640
 msgid "Author search for %q (%i found): %L"
-msgstr ""
+msgstr "Kirjoittaja haku %q:lle (%i löytynyt): %L"
 
 #: plugin.py:647
 msgid ""
@@ -240,14 +261,20 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <teksti>\n"
+"\n"
+"        Luettelee kaikki factoidit, joiden avain sisältää annetun tekstin.\n"
+"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:655
 msgid "No keys matching %q found."
-msgstr ""
+msgstr "Avaimia, jotka täsmäävät %q:un ei löytynyt."
 
 #: plugin.py:662
 msgid "Key search for %q (%i found): %L"
-msgstr ""
+msgstr "Avain haku %q:lle (%i löytynyt): %L"
 
 #: plugin.py:669
 msgid ""
@@ -258,14 +285,20 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <teksti>\n"
+"\n"
+"        Luettelee factoidien avaimet, joiden arvo sisältää annetun tekstin.\n"
+"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:677
 msgid "No values matching %q found."
-msgstr ""
+msgstr "%q:un täsmääviä avaimia ei löytynyt."
 
 #: plugin.py:680
 msgid "Value search for %q (%i found): %L"
-msgstr ""
+msgstr "Arvo haku %q:lle (%i löytynyt): %L"
 
 #: plugin.py:687
 msgid ""
@@ -275,6 +308,11 @@ msgid ""
 "        if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <factoidi avain>\n"
+"\n"
+"        Poistaa factoidin annetulla avaimella.  <Kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:700
 msgid ""
@@ -285,8 +323,14 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<kanava>]\n"
+"\n"
+"        Näyttää satunnaisen factoidin (avaimensa kanssa) tietokannasta.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:708
 msgid "No factoids in the database."
-msgstr ""
+msgstr "Tietokannassa ei ole factoideja."
 
