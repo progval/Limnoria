@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-23 12:13+0200\n"
+"PO-Revision-Date: 2011-07-23 13:53+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -103,15 +103,15 @@ msgstr "Ei sellaista factoidia: %q"
 
 #: plugin.py:486
 msgid "Created by %s on %s."
-msgstr "%s:än luoma kanavalla %s."
+msgstr "luonut %s kello %s."
 
 #: plugin.py:492
 msgid " Last modified by %s on %s."
-msgstr "Viimeeksi %s:än muokkaama kanavalla %s."
+msgstr "Viimeeksi muokattu %s kello  %s."
 
 #: plugin.py:500
 msgid " Last requested by %s on %s, requested %n."
-msgstr "Viimeeksi pyytänyt %s kanavalla %s, pyytänyt %n."
+msgstr "Viimeeksi pyytänyt %s kello %s, pyytänyt %n."
 
 #: plugin.py:507
 msgid " Locked by %s on %s."
@@ -127,7 +127,7 @@ msgstr "Factoidi %q is not locked."
 
 #: plugin.py:535
 msgid "Cannot %s someone else's factoid unless you are an admin."
-msgstr "Ei voi %s jonkun muun factoidia paitsi, jos olet admin."
+msgstr "Et voi %s jonkun muun factoidia paitsi, jos olet admin."
 
 #: plugin.py:547
 msgid ""
@@ -187,7 +187,7 @@ msgstr "kirjoittaja"
 
 #: plugin.py:593
 msgid "authors"
-msgstr "kirjoittaja"
+msgstr "kirjoittajat"
 
 #: plugin.py:594
 msgid "Most prolific %s: %L"
@@ -200,7 +200,7 @@ msgstr "Tietokannassani ei ole factoideja."
 
 #: plugin.py:603
 msgid "latest factoid"
-msgstr "Viimeisin factoidi"
+msgstr "viimeisin factoidi"
 
 #: plugin.py:605
 msgid "latest factoids"
@@ -220,7 +220,7 @@ msgstr "pyydetyt factoidit"
 
 #: plugin.py:618
 msgid "Top %s: %L"
-msgstr "Huippu %s: %L"
+msgstr "Top %s: %L"
 
 #: plugin.py:620
 msgid "No factoids have been requested from my database."
