@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-23 17:28+0200\n"
+"PO-Revision-Date: 2011-07-23 18:00+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,11 +16,11 @@ msgstr ""
 
 #: plugin.py:57
 msgid "%s (Subject: %q, added by %s on %s)"
-msgstr ""
+msgstr "%s (Aihe: %q, lisännyt %s kanavalla %s)"
 
 #: plugin.py:61
 msgid "%s (Subject: %q, added by %s on %s, expires at %s)"
-msgstr ""
+msgstr "%s (Aihe: %q, lisännyt %s kanavalla %s, vanhenee %s)"
 
 #: plugin.py:120
 msgid ""
@@ -32,10 +32,17 @@ msgid ""
 "        channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <vanhenee> <aihe>: <teksti>\n"
+"\n"
+"        Lisää annetun uutisaiheen, <tekstin> kanavalle annetulla <aiheella>.\n"
+"        Jos <vanhenee> ei ole 0, se <vanhenee> sekunteja tästä\n"
+"        lähtien.  <Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:132
 msgid "(News item #%i added)"
-msgstr ""
+msgstr "(Uutisaihe #%i lisätty)"
 
 #: plugin.py:137
 msgid ""
@@ -47,21 +54,28 @@ msgid ""
 "        the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] [<id>]\n"
+"\n"
+"        Näyttää <kanavan> uutisaiheet muodossa '(#id) otsikko'.\n"
+"        Jos <id> on annettu, vain se uutisaihe haetaan; muutoin hakee kaikki\n"
+"        uutisaiheet.  <Kanava> on vaadittu vain, jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:148
 msgid "News for %s: %s"
-msgstr ""
+msgstr "Uutisia %s::lle %s"
 
 #: plugin.py:151
 msgid "No news for %s."
-msgstr ""
+msgstr "Ei uutisia %s:lle."
 
 #: plugin.py:157
 #: plugin.py:171
 #: plugin.py:187
 #: plugin.py:203
 msgid "news item id"
-msgstr ""
+msgstr "uutisaihe id"
 
 #: plugin.py:162
 msgid ""
@@ -71,6 +85,11 @@ msgid ""
 "        necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <id>\n"
+"\n"
+"        Poistaa uutisaiheen <id:llä> <kanavalta>.  <Kanava> on vaadittu\n"
+"        vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:176
 msgid ""
@@ -82,6 +101,13 @@ msgid ""
 "        isn't sent on the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <id> <säännöllinen lauseke>\n"
+"\n"
+"        Vaihtaa uutisaiheen <id:llä> <kanavalta> \n"
+"        <säännöllisen lausekkeen> mukaan.  <Säännöllisen lausekkeen> pitäisi olla muotoa \n"
+"        s/teksti/korvaus/liput.  <Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:192
 msgid ""
@@ -92,12 +118,18 @@ msgid ""
 "        only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] [<id>]\n"
+"\n"
+"        Palauttaa vanhan uutisaiheen <Kanavalle> <id:llä>.  Jos numeroa ei ole\n"
+"        annettu, palauttaa kaikki uutisaiheet käänteisessä järjestyksessä.  <Kanava> on\n"
+"        vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:208
 msgid "Old news for %s: %s"
-msgstr ""
+msgstr "Vanhoja uutisia %s:lle %s"
 
 #: plugin.py:211
 msgid "No old news for %s."
-msgstr ""
+msgstr "Ei vanhoja uutisia %s:lle."
 
