@@ -1,6 +1,8 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# WARNING: Translations of Owner plugin will not work, because it's loaded directly by supybot
+# and translations are more like a hack to it.
 #
 msgid ""
 msgstr ""
