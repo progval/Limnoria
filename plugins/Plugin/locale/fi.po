@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-24 12:23+0200\n"
+"PO-Revision-Date: 2011-07-24 17:49+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -193,7 +193,7 @@ msgstr ""
 
 #: plugin.py:187
 msgid "The %s plugin"
-msgstr "%s lisäosa"
+msgstr "%s lisäosassa"
 
 #: plugin.py:188
 msgid "has not been claimed by an author"
