@@ -1,7 +1,6 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
