@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-23 23:00+0200\n"
+"PO-Revision-Date: 2011-07-24 12:23+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -149,14 +149,23 @@ msgid ""
 "            in the format 'First Last (nick)'.\n"
 "            "
 msgstr ""
+"\n"
+"            Ota kirjoittajan objekti, ja palauta vain nimi ja nimimerkki arvot\n"
+"            muodossa'Etu- Sukunimi (nimimerkki)'.\n"
+"            "
 
 #: plugin.py:166
+#, fuzzy
 msgid ""
 "\n"
 "            Take a list of long names and turn it into :\n"
 "            shortname[, shortname and shortname].\n"
 "            "
 msgstr ""
+"\n"
+"            Ottaa listan pitkistä nimistä ja muuttaa sen :\n"
+"            lyhyeksi nimeksi[, lyhyt nimi ja lyhyt nimi].\n"
+"           "
 
 #: plugin.py:173
 msgid ""
@@ -165,6 +174,10 @@ msgid ""
 "            associated with each.\n"
 "            "
 msgstr ""
+"\n"
+"            Lajittelee listan 'pitkistä nimistä' perustuen osallistumisen määrän\n"
+"            liitettynä toisiinsa.\n"
+"            "
 
 #: plugin.py:183
 msgid ""
@@ -173,38 +186,42 @@ msgid ""
 "            plugin.\n"
 "            "
 msgstr ""
+"\n"
+"            Rakentaa listan tekijöistä + osallistujista (jos yhtään) pyydetylle\n"
+"            lisäosalle.\n"
+"            "
 
 #: plugin.py:187
 msgid "The %s plugin"
-msgstr ""
+msgstr "%s lisäosa"
 
 #: plugin.py:188
 msgid "has not been claimed by an author"
-msgstr ""
+msgstr "ei ole kirjoittajan omakseen väittämä"
 
 #: plugin.py:189
 msgid "and"
-msgstr ""
+msgstr "ja"
 
 #: plugin.py:190
 msgid "has no contributors listed."
-msgstr ""
+msgstr "ei ole lueteltuja osallistumisia."
 
 #: plugin.py:195
 msgid "was written by %s"
-msgstr ""
+msgstr "kirjoittanut %s"
 
 #: plugin.py:206
 msgid "%s %h contributed to it."
-msgstr ""
+msgstr "%s %h osallistuivat siihen."
 
 #: plugin.py:211
 msgid "has no additional contributors listed."
-msgstr ""
+msgstr "ei ole vaihtoehtoisia osallistujia lueteltuna."
 
 #: plugin.py:213
 msgid "but"
-msgstr ""
+msgstr "mutta"
 
 #: plugin.py:216
 msgid ""
@@ -213,40 +230,45 @@ msgid ""
 "            for the requested plugin\n"
 "            "
 msgstr ""
+"\n"
+"            Rakentaa listan osallistumisista (jos yhtään) pyydetylle henkilölle\n"
+"            pyydetystä lisäosasta.\n"
+"            "
 
 #: plugin.py:230
 msgid "The nick specified (%s) is not a registered contributor."
-msgstr ""
+msgstr "Määritetty nimimerkki (%s) ei ole rekisteröitynyt osallistuja."
 
 #: plugin.py:236
 msgid "The %s plugin does not have '%s' listed as a contributor."
-msgstr ""
+msgstr "Lisäosalla %s ei ole '%s':ää lueteltuna osallistujaksi."
 
 #: plugin.py:244
 msgid "command"
-msgstr ""
+msgstr "komento"
 
 #: plugin.py:247
 msgid "the %L %s"
-msgstr ""
+msgstr "%L %s"
 
 #: plugin.py:249
 msgid "the %L"
-msgstr ""
+msgstr "%L"
 
 #: plugin.py:252
 msgid "%s wrote the %s plugin and also contributed %L."
-msgstr ""
+msgstr "%s kirjoitti lisäosan %s  ja osallistui myös %L:ään."
 
 #: plugin.py:255
+#, fuzzy
 msgid "%s contributed %L to the %s plugin."
-msgstr ""
+msgstr "%s osallistui %L:stä %s lisäosaan."
 
 #: plugin.py:258
 msgid "%s wrote the %s plugin"
-msgstr ""
+msgstr "%s kirjoitti lisäosan %s"
 
 #: plugin.py:261
 msgid "%s has no listed contributions for the %s plugin."
-msgstr ""
+msgstr "%s:llä ei ole lueteltuja osallistujia lisäosaan %s."
 
