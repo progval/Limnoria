@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-07-24 15:36+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:49
+msgid ""
+"Determines whether the bot will show the ids of\n"
+"    a praise when the praise is given."
+msgstr ""
+"Määrittää näyttääkö botti ylistysten id:t, kun\n"
+"    ylistys annetaan."
+
+#: plugin.py:39
+msgid ""
+"Praise is a plugin for ... well, praising things.  Feel free to add\n"
+"    your own flavor to it by customizing what praises it gives.  Use \"praise\n"
+"    add <text>\" to add new ones, making sure to include \"$who\" in <text> where\n"
+"    you want to insert the thing being praised.\n"
+"    "
+msgstr ""
+"Praise on lisäosa ... no, ylistämään asioita.  Lisää vapaasti\n"
+"    omaa suosiotasi muokkaamalla mitä ylistyksiä se antaa.  Käytä komentoa \"praise\n"
+"    add <teksti>\" lisätäksesi uusia  ylistyksiä, varmistaen, että sisällytät \"$who\"n <tekstissä> mihin\n"
+"    haluat laittaa ylistettävän asian.\n"
+"    "
+
+#: plugin.py:53
+msgid "Praises must contain $who."
+msgstr "Ylistyksien täytyy sisältää $who."
+
+#: plugin.py:57
+msgid ""
+"[<channel>] [<id>] <who|what> [for <reason>]\n"
+"\n"
+"        Praises <who|what> (for <reason>, if given).  If <id> is given, uses\n"
+"        that specific praise.  <channel> is only necessary if the message isn't\n"
+"        sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<id>] <kuka|mikä> [for <syystä>]\n"
+"\n"
+"        Ylistää <ketä|mitä> (<syystä>, jos annettu).  Jos <id> on annettu, käyttää\n"
+"        juuri sitä tiettyä ylistystä.  <Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:73
+msgid "There is no praise with id #%i."
+msgstr "Ylistystä id:llä #%i ei löydy."
+
+#: plugin.py:78
+msgid "There are no praises in my database for %s."
+msgstr "Minun tietokannassani ei ole ylistyksiä %s:lle."
+
+#: plugin.py:86
+msgid " for "
+msgstr "varten"
+

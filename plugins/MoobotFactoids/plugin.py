@@ -283,7 +283,7 @@ class SqliteMoobotDB(object):
         results = cursor.fetchall()
         return results
 
-MoobotDB = plugins.DB('MoobotFactoids', {'sqlite': SqliteMoobotDB})
+MoobotDB = plugins.DB('MoobotFactoids', {'sqlite3': SqliteMoobotDB})
 
 class MoobotFactoids(callbacks.Plugin):
     """Add the help for "@help MoobotFactoids" here (assuming you don't implement a MoobotFactoids
