@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-27 17:49+0200\n"
+"PO-Revision-Date: 2011-07-29 19:38+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -136,10 +136,17 @@ msgid ""
 "        the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <nimimerkki>\n"
+"\n"
+"        Palauttaa listan lyhennetyistä lainauksista, jotka on kaapattu <nimimerkitä>,\n"
+"        kuten myös jokaisen lainauksen id:een.  Näitä id:eitä voidaan käyttää\n"
+"        koko lainauksen saamiseen.  <Kanava> on vaadittu vain, jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:339
 msgid "I couldn't find any quotegrabs for %s."
-msgstr ""
+msgstr "En voinut löytää yhtään kaapattuja lainauksia %s:ltä."
 
 #: plugin.py:345
 msgid ""
@@ -150,14 +157,20 @@ msgid ""
 "        isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] [<nimimerkki>]\n"
+"\n"
+"        Palauttaa satunnaisen lainatun kaappauksen, vaihtoehtoisesti valiten vain\n"
+"        lainauksista, jotka on kaapattu <nimimerkiltä>.  <Kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:355
 msgid "Couldn't get a random quote for that nick."
-msgstr ""
+msgstr "Satunnaista lainausta tuolta nimimerkiltä ei voitu noutaa."
 
 #: plugin.py:357
 msgid "Couldn't get a random quote.  Are there any grabbed quotes in the database?"
-msgstr ""
+msgstr "Satunnaista lainausta ei voitu noutaa.  Onko tietokannassa yhtään kaapattuja lainauksia?"
 
 #: plugin.py:363
 msgid ""
@@ -167,10 +180,15 @@ msgid ""
 "        if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <id>\n"
+"\n"
+"        Palauttaa kaapatun lainauksen annetulla <id:llä>.  <Kanava> on vaadittu vain\n"
+"        jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:371
 msgid "No quotegrab for id %s"
-msgstr ""
+msgstr "Ei kaapattuja lainauksia %s:lle."
 
 #: plugin.py:377
 msgid ""
@@ -180,8 +198,13 @@ msgid ""
 "        message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>] <teksti>\n"
+"\n"
+"        Etsii <tekstiä> lainauksesta.  <Kanava> on vaadittu vain, jos viestiä\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:392
 msgid "No quotegrabs matching %s"
-msgstr ""
+msgstr "Ei %s:ään täsmääviä lainauksia"
 
