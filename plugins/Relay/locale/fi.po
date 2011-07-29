@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-29 19:47+0200\n"
+"PO-Revision-Date: 2011-07-29 19:56+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,23 +20,27 @@ msgstr "Haluasitko botin välittävän joidenkin kanavien välillä?"
 
 #: config.py:40
 msgid "What channels?  Separated them by spaces."
-msgstr ""
+msgstr "Minkä kanavien?  Erota ne välilyönnillä."
 
 #: config.py:42
 msgid "Would you like to use color to distinguish between nicks?"
-msgstr ""
+msgstr "Haluaisitko botin käyttävän värejä erottamaan nimimerkit toisistaan?"
 
 #: config.py:59
 msgid ""
 "Determines whether the bot will color relayed\n"
 "    PRIVMSGs so as to make the messages easier to read."
 msgstr ""
+"Määrittää värjääkö botti välitetyt\n"
+"    PRIVMSG:eet, jotta viestit olisivat helpommin luettavia."
 
 #: config.py:62
 msgid ""
 "Determines whether the bot will synchronize\n"
 "    topics between networks in the channels it relays."
 msgstr ""
+"Määrittää synkronoiko botti\n"
+"    aiheet kanavilla, joita se välittää kaikkiin verkkoihin."
 
 #: config.py:65
 msgid ""
@@ -44,6 +48,8 @@ msgid ""
 "    hostmask of the person joining or parting the channel when he or she joins\n"
 "    or parts."
 msgstr ""
+"Määrittää välittääkö botti\n"
+"    liittyvän tai poistuvan henkilön hostmaskin, kun hän liittyy tai poistuu.\n"
 
 #: config.py:69
 msgid ""
@@ -51,6 +57,9 @@ msgid ""
 "    network in relayed PRIVMSGs; if you're only relaying between two networks,\n"
 "    it's somewhat redundant, and you may wish to save the space."
 msgstr ""
+"Määrittää sisällyttääkö botti\n"
+"    verkon välitetyissä PRIVMSG:issä; jos välität vain kahta verkkoa,\n"
+"    se on aika tarpeeton, ja saatat tahtoa säästää tilaa."
 
 #: config.py:73
 msgid ""
