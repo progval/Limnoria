@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-30 16:46+0200\n"
+"PO-Revision-Date: 2011-07-30 17:05+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -152,98 +152,104 @@ msgid ""
 "        isn't sent on the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>]\n"
+"\n"
+"        Palauttaa kanavalla olevien ihmisten nimimerkit niissä verkoissa,\n"
+"        joihin botti on yhdistänyt.  <Kanava> on vaadittu vain. jos viestiä\n"
+"        ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:223
 msgid "is an op on %L"
-msgstr ""
+msgstr "on operaattori kanavalla %L"
 
 #: plugin.py:225
 msgid "is a halfop on %L"
-msgstr ""
+msgstr "on puolioperaattori kanavalla %L"
 
 #: plugin.py:227
 msgid "is voiced on %L"
-msgstr ""
+msgstr "omaa äänen kanavalla %L"
 
 #: plugin.py:230
 msgid "is also on %L"
-msgstr ""
+msgstr "on myös kanavilla %L"
 
 #: plugin.py:232
 msgid "is on %L"
-msgstr ""
+msgstr "on myös kanavalla %L"
 
 #: plugin.py:234
 msgid "isn't on any non-secret channels"
-msgstr ""
+msgstr "ei ole yhdelläkään ei salaisella kanavalla"
 
 #: plugin.py:241
 #: plugin.py:242
 #: plugin.py:246
 msgid "<unknown>"
-msgstr ""
+msgstr "<tuntematon>"
 
 #: plugin.py:248
 msgid "  %s is away: %s."
-msgstr ""
+msgstr "  %s on poissa: %s."
 
 #: plugin.py:253
 msgid " identified"
-msgstr ""
+msgstr "tunnistautunut"
 
 #: plugin.py:258
 msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
-msgstr ""
+msgstr "%s (%s) on ollut %s palvelimella %s %s lähtien (idlannut %s) ja %s.%s"
 
 #: plugin.py:273
 msgid "There is no %s on %s."
-msgstr ""
+msgstr "verkossa %s ei ole %s:ää."
 
 #: plugin.py:342
 msgid "You seem to be relaying, punk."
-msgstr ""
+msgstr "Sinä näytät välittävän, punkki."
 
 #: plugin.py:395
 msgid "%s%s has joined on %s"
-msgstr ""
+msgstr "%s%s on liittynyt verkossa %s"
 
 #: plugin.py:410
 msgid "%s%s has left on %s (%s)"
-msgstr ""
+msgstr "%s%s on lähtenyt verkossa %s (%s)"
 
 #: plugin.py:413
 msgid "%s%s has left on %s"
-msgstr ""
+msgstr "%s%s on lähtenyt verkossa %s"
 
 #: plugin.py:423
 msgid "mode change by %s on %s: %s"
-msgstr ""
+msgstr "tilan muutos %s verkossa %s: %s"
 
 #: plugin.py:435
 msgid "%s was kicked by %s on %s (%s)"
-msgstr ""
+msgstr "%s potkittiin, potkija %s verkossa %s (%s)"
 
 #: plugin.py:438
 msgid "%s was kicked by %s on %s"
-msgstr ""
+msgstr "%s potkittiin, potkija %s verkossa %s"
 
 #: plugin.py:447
 msgid "nick change by %s to %s on %s"
-msgstr ""
+msgstr "nimimerkin vaihto %s %s:ksi verkossa %s"
 
 #: plugin.py:477
 msgid "topic change by %s on %s: %s"
-msgstr ""
+msgstr "aiheen vaihto, vaihtanut %s %s: %s:ksi."
 
 #: plugin.py:486
 msgid "%s has quit %s (%s)"
-msgstr ""
+msgstr "%s on lopettanut %s verkossa (%s)"
 
 #: plugin.py:488
 msgid "%s has quit %s."
-msgstr ""
+msgstr "%on lopettanut %s."
 
 #: plugin.py:498
 msgid "disconnected from %s: %s"
-msgstr ""
+msgstr "yhteys katkaistu verkosta %s: %s"
 
