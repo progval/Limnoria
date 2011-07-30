@@ -1,0 +1,210 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-07-29 19:38+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:49
+msgid ""
+"Determines whether the bot will randomly grab\n"
+"    possibly-suitable quotes on occasion.  The suitability of a given message\n"
+"    is determined by ..."
+msgstr ""
+"Määrittää kaappaako botti automaattisesti mahdollisesti sopivia lainauksia silloin tällöin.\n"
+"    Viestin sopivuuden määrittää ...\n"
+
+#: config.py:54
+msgid ""
+"Determines about how many seconds, on\n"
+"    average, should elapse between random grabs.  This is only an average\n"
+"    value; grabs can happen from any time after half this time until never,\n"
+"    although that's unlikely to occur."
+msgstr ""
+"Määrittää kuinka monta sekuntia keskiarvona,\n"
+"    pitäisi kulua kaappausten välissä.  Tämä on vain keskiarvo;\n"
+"    kaappaukset voivat tapahtua milloin tahansa, kun puolet tästä ajasta on kulunut ikuisuuteen asti, mutta\n"
+"    sitä tuskin tapahtuu."
+
+#: config.py:59
+msgid ""
+"Determines the minimum\n"
+"    number of words in a message for it to be considered for random\n"
+"    grabbing."
+msgstr ""
+"Määrittää minimimäärän sanoja\n"
+"    viestissä, joka sen täytyy ylittää tullakseen harkituksi satunnaiseen lainauksen ottoon.\n"
+
+#: config.py:63
+msgid ""
+"Determines the\n"
+"    minimum number of characters in a message for it to be considered for\n"
+"    random grabbing."
+msgstr ""
+"Määrittää\n"
+"    minimimäärän merkkejä ennen kuin sitä harkitaan sopivaksi\n"
+"    satunnaiselle kaappaamiselle."
+
+#: plugin.py:66
+msgid "%s (Said by: %s; grabbed by %s at %t)"
+msgstr "%s (Sanonut: %s; kaapannut %s kello %t)"
+
+#: plugin.py:226
+msgid "Add the help for \"@help QuoteGrabs\" here."
+msgstr "Lisää ohje \"@help QuoteGrabs\"ille tähän."
+
+#: plugin.py:265
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        Grabs a quote from <channel> by <nick> for the quotegrabs table.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <nimimerkki>\n"
+"\n"
+"        Kaappaa lainauksen, jonka <nimimerkki> on sanonut <kanavalla> lainaus kaappaus tietokantaan.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:278
+msgid "You can't quote grab yourself."
+msgstr "Et voi kaapata lainausta itseltäsi."
+
+#: plugin.py:285
+msgid "I couldn't find a proper message to grab."
+msgstr "En voinut löytää kelvollista viestiä kaapattavaksi."
+
+#: plugin.py:290
+msgid ""
+"[<channel>] <number>\n"
+"\n"
+"        Removes the grab <number> (the last by default) on <channel>.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <numero>\n"
+"\n"
+"        Poistaa kaappauksen <numero> (oletuksena viimeinen) <kanavalta>.\n"
+"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:301
+msgid "Nothing to ungrab."
+msgstr "Ei mitään kaappausta poistettavaksi."
+
+#: plugin.py:303
+msgid "Invalid grab number."
+msgstr "Epäkelvollinen kaappauksen numero."
+
+#: plugin.py:308
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        Returns <nick>'s latest quote grab in <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <nimimerkki>\n"
+"\n"
+"        Palauttaa <nimimerkin> viimeisimmän lainauksen kaappauksen <kanavalla>.  <Kanava> on\n"
+"        vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:316
+msgid "I couldn't find a matching quotegrab for %s."
+msgstr "En voinut löytää täsmäävää lainaus kaappausta %s:lle."
+
+#: plugin.py:322
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        Returns a list of shortened quotes that have been grabbed for <nick>\n"
+"        as well as the id of each quote.  These ids can be used to get the\n"
+"        full quote.  <channel> is only necessary if the message isn't sent in\n"
+"        the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <nimimerkki>\n"
+"\n"
+"        Palauttaa listan lyhennetyistä lainauksista, jotka on kaapattu <nimimerkitä>,\n"
+"        kuten myös jokaisen lainauksen id:een.  Näitä id:eitä voidaan käyttää\n"
+"        koko lainauksen saamiseen.  <Kanava> on vaadittu vain, jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:339
+msgid "I couldn't find any quotegrabs for %s."
+msgstr "En voinut löytää yhtään kaapattuja lainauksia %s:ltä."
+
+#: plugin.py:345
+msgid ""
+"[<channel>] [<nick>]\n"
+"\n"
+"        Returns a randomly grabbed quote, optionally choosing only from those\n"
+"        quotes grabbed for <nick>.  <channel> is only necessary if the message\n"
+"        isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<nimimerkki>]\n"
+"\n"
+"        Palauttaa satunnaisen lainatun kaappauksen, vaihtoehtoisesti valiten vain\n"
+"        lainauksista, jotka on kaapattu <nimimerkiltä>.  <Kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:355
+msgid "Couldn't get a random quote for that nick."
+msgstr "Satunnaista lainausta tuolta nimimerkiltä ei voitu noutaa."
+
+#: plugin.py:357
+msgid "Couldn't get a random quote.  Are there any grabbed quotes in the database?"
+msgstr "Satunnaista lainausta ei voitu noutaa.  Onko tietokannassa yhtään kaapattuja lainauksia?"
+
+#: plugin.py:363
+msgid ""
+"[<channel>] <id>\n"
+"\n"
+"        Return the quotegrab with the given <id>.  <channel> is only necessary\n"
+"        if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <id>\n"
+"\n"
+"        Palauttaa kaapatun lainauksen annetulla <id:llä>.  <Kanava> on vaadittu vain\n"
+"        jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:371
+msgid "No quotegrab for id %s"
+msgstr "Ei kaapattuja lainauksia %s:lle."
+
+#: plugin.py:377
+msgid ""
+"[<channel>] <text>\n"
+"\n"
+"        Searches for <text> in a quote.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <teksti>\n"
+"\n"
+"        Etsii <tekstiä> lainauksesta.  <Kanava> on vaadittu vain, jos viestiä\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:392
+msgid "No quotegrabs matching %s"
+msgstr "Ei %s:ään täsmääviä lainauksia"
+

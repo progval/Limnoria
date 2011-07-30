@@ -1,0 +1,255 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-07-30 17:05+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:39
+msgid "Would you like to relay between any channels?"
+msgstr "Haluasitko botin välittävän joidenkin kanavien välillä?"
+
+#: config.py:40
+msgid "What channels?  Separated them by spaces."
+msgstr "Minkä kanavien?  Erota ne välilyönnillä."
+
+#: config.py:42
+msgid "Would you like to use color to distinguish between nicks?"
+msgstr "Haluaisitko botin käyttävän värejä erottamaan nimimerkit toisistaan?"
+
+#: config.py:59
+msgid ""
+"Determines whether the bot will color relayed\n"
+"    PRIVMSGs so as to make the messages easier to read."
+msgstr ""
+"Määrittää värjääkö botti välitetyt\n"
+"    PRIVMSG:eet, jotta viestit olisivat helpommin luettavia."
+
+#: config.py:62
+msgid ""
+"Determines whether the bot will synchronize\n"
+"    topics between networks in the channels it relays."
+msgstr ""
+"Määrittää synkronoiko botti\n"
+"    aiheet kanavilla, joita se välittää kaikkiin verkkoihin."
+
+#: config.py:65
+msgid ""
+"Determines whether the bot will relay the\n"
+"    hostmask of the person joining or parting the channel when he or she joins\n"
+"    or parts."
+msgstr ""
+"Määrittää välittääkö botti\n"
+"    liittyvän tai poistuvan henkilön hostmaskin, kun hän liittyy tai poistuu.\n"
+
+#: config.py:69
+msgid ""
+"Determines whether the bot will include the\n"
+"    network in relayed PRIVMSGs; if you're only relaying between two networks,\n"
+"    it's somewhat redundant, and you may wish to save the space."
+msgstr ""
+"Määrittää sisällyttääkö botti\n"
+"    verkon välitetyissä PRIVMSG:issä; jos välität vain kahta verkkoa,\n"
+"    se on aika tarpeeton, ja saatat tahtoa säästää tilaa."
+
+#: config.py:73
+msgid ""
+"Determines whether the bot will detect other\n"
+"    bots relaying and respond by kickbanning them."
+msgstr ""
+"Määrittää havaitseeko botti toiset\n"
+"    välittävät botit ja vastaa potkimalla ne ja antamalla niille porttikiellon."
+
+#: config.py:76
+msgid ""
+"Determines which channels the bot\n"
+"    will relay in."
+msgstr ""
+"Määrittää mitä kanavia botti\n"
+"    välittää."
+
+#: config.py:79
+msgid ""
+"Determines whether the bot\n"
+"    will always join the channel(s) it relays for on all networks the bot is\n"
+"    connected to."
+msgstr ""
+"Määrittää liittyykö botti aina\n"
+"    kanavalle( tai kanaville), joita se välittää, kaikissa verkoissa, joihin\n"
+"    botti on yhdistänyt."
+
+#: config.py:83
+msgid ""
+"Determines what hostmasks will not be relayed on a\n"
+"    channel."
+msgstr ""
+"Määrittää mitä hostmaskeja ei välitetä\n"
+"    kanavalla."
+
+#: config.py:86
+msgid ""
+"Determines whether the bot will used NOTICEs\n"
+"    rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts,\n"
+"    nicks, quits, modes, etc.)"
+msgstr ""
+"Määrittää käyttääkö botti huomautuksia (NOTICE)\n"
+"    mielummin kuin PRIVMSG:ssiä muissa kuin PRIVMSG välitysviesteissä (esim. liittymiset, poistumiset\n"
+"    nimimerkit, lopetukset, tilat, jne.)"
+
+#: plugin.py:99
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Starts relaying between the channel <channel> on all networks.  If on a\n"
+"        network the bot isn't in <channel>, he'll join.  This commands is\n"
+"        required even if the bot is in the channel on both networks; he won't\n"
+"        relay between those channels unless he's told to join both\n"
+"        channels.  If <channel> is not given, starts relaying on the channel\n"
+"        the message was sent in.\n"
+"        "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"        Alkaa välittämään <kanavaa> kaikissa verkoissa.  Jos botti ei ole\n"
+"        <kanavalla> jossain verkossa, se liittyy.  Tämä komento on vaadittu, jopa jos\n"
+"        botti on kanavalla molemmissa verkoissa; se ei välitä\n"
+"        noiden kanavien välillä, ennen kuin se on käsketty liittymään molemmille\n"
+"        kanaville.  Jos <kanava> ei ole annettu, botti alkaa välittämään kanavaa, jolla\n"
+"        viesti lähetettiin.\n"
+"        "
+
+#: plugin.py:118
+msgid ""
+"<channel>\n"
+"\n"
+"        Ceases relaying between the channel <channel> on all networks.  The bot\n"
+"        will part from the channel on all networks in which it is on the\n"
+"        channel.\n"
+"        "
+msgstr ""
+"<kanava>\n"
+"\n"
+"        Pysäyttää <kanavan> välittämisen kaikissa verkoissa.  Botti\n"
+"        poistuu kanavalta kaikissa verkoissa, joilla se on\n"
+"        kanavalla.\n"
+"        "
+
+#: plugin.py:133
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the nicks of the people in the channel on the various networks\n"
+"        the bot is connected to.  <channel> is only necessary if the message\n"
+"        isn't sent on the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"        Palauttaa kanavalla olevien ihmisten nimimerkit niissä verkoissa,\n"
+"        joihin botti on yhdistänyt.  <Kanava> on vaadittu vain. jos viestiä\n"
+"        ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:223
+msgid "is an op on %L"
+msgstr "on operaattori kanavalla %L"
+
+#: plugin.py:225
+msgid "is a halfop on %L"
+msgstr "on puolioperaattori kanavalla %L"
+
+#: plugin.py:227
+msgid "is voiced on %L"
+msgstr "omaa äänen kanavalla %L"
+
+#: plugin.py:230
+msgid "is also on %L"
+msgstr "on myös kanavilla %L"
+
+#: plugin.py:232
+msgid "is on %L"
+msgstr "on myös kanavalla %L"
+
+#: plugin.py:234
+msgid "isn't on any non-secret channels"
+msgstr "ei ole yhdelläkään ei salaisella kanavalla"
+
+#: plugin.py:241
+#: plugin.py:242
+#: plugin.py:246
+msgid "<unknown>"
+msgstr "<tuntematon>"
+
+#: plugin.py:248
+msgid "  %s is away: %s."
+msgstr "  %s on poissa: %s."
+
+#: plugin.py:253
+msgid " identified"
+msgstr "tunnistautunut"
+
+#: plugin.py:258
+msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
+msgstr "%s (%s) on ollut %s palvelimella %s %s lähtien (idlannut %s) ja %s.%s"
+
+#: plugin.py:273
+msgid "There is no %s on %s."
+msgstr "verkossa %s ei ole %s:ää."
+
+#: plugin.py:342
+msgid "You seem to be relaying, punk."
+msgstr "Sinä näytät välittävän, punkki."
+
+#: plugin.py:395
+msgid "%s%s has joined on %s"
+msgstr "%s%s on liittynyt verkossa %s"
+
+#: plugin.py:410
+msgid "%s%s has left on %s (%s)"
+msgstr "%s%s on lähtenyt verkossa %s (%s)"
+
+#: plugin.py:413
+msgid "%s%s has left on %s"
+msgstr "%s%s on lähtenyt verkossa %s"
+
+#: plugin.py:423
+msgid "mode change by %s on %s: %s"
+msgstr "tilan muutos %s verkossa %s: %s"
+
+#: plugin.py:435
+msgid "%s was kicked by %s on %s (%s)"
+msgstr "%s potkittiin, potkija %s verkossa %s (%s)"
+
+#: plugin.py:438
+msgid "%s was kicked by %s on %s"
+msgstr "%s potkittiin, potkija %s verkossa %s"
+
+#: plugin.py:447
+msgid "nick change by %s to %s on %s"
+msgstr "nimimerkin vaihto %s %s:ksi verkossa %s"
+
+#: plugin.py:477
+msgid "topic change by %s on %s: %s"
+msgstr "aiheen vaihto, vaihtanut %s %s: %s:ksi."
+
+#: plugin.py:486
+msgid "%s has quit %s (%s)"
+msgstr "%s on lopettanut %s verkossa (%s)"
+
+#: plugin.py:488
+msgid "%s has quit %s."
+msgstr "%on lopettanut %s."
+
+#: plugin.py:498
+msgid "disconnected from %s: %s"
+msgstr "yhteys katkaistu verkosta %s: %s"
+

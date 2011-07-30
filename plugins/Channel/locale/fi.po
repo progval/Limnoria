@@ -815,7 +815,7 @@ msgstr "Hälytys kaikille kanavan %s operaattoreille: %s"
 
 #: plugin.py:848
 msgid " (from %s)"
-msgstr "(%s:ltä)"
+msgstr "(lähettänyt %s)"
 
 #: plugin.py:856
 msgid ""
