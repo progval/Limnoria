@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-29 19:56+0200\n"
+"PO-Revision-Date: 2011-07-30 12:53+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -66,12 +66,16 @@ msgid ""
 "Determines whether the bot will detect other\n"
 "    bots relaying and respond by kickbanning them."
 msgstr ""
+"Määrittää havaitseeko botti toiset\n"
+"    välittävät botit ja vastaa potkimalla ne ja antamalla niille porttikiellon."
 
 #: config.py:76
 msgid ""
 "Determines which channels the bot\n"
 "    will relay in."
 msgstr ""
+"Määrittää mitä kanavia botti\n"
+"    välittää."
 
 #: config.py:79
 msgid ""
@@ -79,12 +83,17 @@ msgid ""
 "    will always join the channel(s) it relays for on all networks the bot is\n"
 "    connected to."
 msgstr ""
+"Määrittää liittyykö botti aina\n"
+"    kanavalle( tai kanaville), joita se välittää, kaikissa verkoissa, joihin\n"
+"    botti on yhdistänyt."
 
 #: config.py:83
 msgid ""
 "Determines what hostmasks will not be relayed on a\n"
 "    channel."
 msgstr ""
+"Määrittää mitä hostmaskeja ei välitetä\n"
+"    kanavalla."
 
 #: config.py:86
 msgid ""
@@ -92,6 +101,9 @@ msgid ""
 "    rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts,\n"
 "    nicks, quits, modes, etc.)"
 msgstr ""
+"Määrittää käyttääkö botti huomautuksia (NOTICE)\n"
+"    mielummin kuin PRIVMSG:ssiä muissa kuin PRIVMSG välitysviesteissä (esim. liittymiset, poistumiset\n"
+"    nimimerkit, lopetukset, tilat, jne.)"
 
 #: plugin.py:99
 msgid ""
