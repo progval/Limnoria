@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria Misc\n"
 "POT-Creation-Date: 2011-07-10 18:59+CEST\n"
-"PO-Revision-Date: 2011-07-30 23:29+CEST\n"
+"PO-Revision-Date: 2011-07-30 23:41+CEST\n"
 "Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -219,10 +219,12 @@ msgid ""
 "        given in is searched.\n"
 "        "
 msgstr ""
+"[--{from,in,on,with,without,regexp} <érték>] [--nolimit]\n"
+"Kiírja a legutolsó üzenetet, amire illeszkedik a megadott kritérium. --from kér egy nevet, akitől az üzenet jött; --in kér egy csatornát, ahová az üzenet lett küldve; --on kér egy hálózatpt, amelyen az üzenet lett küldve; --with kér egy karakterlánc aminek az üzenetben kellett lennie; --regexp kér egy szabályos kifejezést, amelyre az üzenetnek illeszkednie kell; --nolimit kiírja az összes talált üzenetet. Alapértelmezésben abban a csatornában keres, ahol ez a parancs végre lett hajtva."
 
 #: plugin.py:386
 msgid "I couldn't find a message matching that criteria in my history of %s messages."
-msgstr ""
+msgstr "Nem találtam a kritériumra illeszkedő üzenetet a(z) %s üzenetes előzményeimben."
 
 #: plugin.py:401
 #, docstring
@@ -233,22 +235,24 @@ msgid ""
 "        benefit here.\n"
 "        "
 msgstr ""
+"<név> <szöveg>"
+"Megmondja <név>-nek szöveget. Itt az előnyödre használhatod a beágyazott parancsokat."
 
 #: plugin.py:409
 msgid "Dude, just give the command.  No need for the tell."
-msgstr ""
+msgstr "Haver, csak add meg a parancsot. Nem kell mondani."
 
 #: plugin.py:414
 msgid "You just told me, why should I tell myself?"
-msgstr ""
+msgstr "Most mondtad el nekem, miért mondjam el magamnak?"
 
 #: plugin.py:419
 msgid "I haven't seen %s, I'll let you do the telling."
-msgstr ""
+msgstr "Nem láttam %s-t, rád hagyom a mondást."
 
 #: plugin.py:424
 msgid "%s wants me to tell you: %s"
-msgstr ""
+msgstr "%s szeretné, hogy megmondjam neked: %s"
 
 #: plugin.py:430
 #, docstring
@@ -258,8 +262,10 @@ msgid ""
 "        Checks to see if the bot is alive.\n"
 "        "
 msgstr ""
+"paraméter nélküli\n"
+"\n"
+"Ellenőrzi, hogy a bot él-e."
 
 #: plugin.py:434
 msgid "pong"
-msgstr ""
-
+msgstr "pong"
