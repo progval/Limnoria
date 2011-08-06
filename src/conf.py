@@ -102,7 +102,7 @@ def registerChannelValue(group, name, value):
 def registerPlugin(name, currentValue=None, public=True):
     group = registerGlobalValue(supybot.plugins, name,
         registry.Boolean(False, _("""Determines whether this plugin is loaded
-         bydefault."""), showDefault=False))
+         by default."""), showDefault=False))
     supybot.plugins().add(name)
     registerGlobalValue(group, 'public',
         registry.Boolean(public, _("""Determines whether this plugin is
@@ -492,7 +492,7 @@ registerChannelValue(supybot.replies, 'errorOwner',
 registerChannelValue(supybot.replies, 'incorrectAuthentication',
     registry.NormalizedString(_("""Your hostmask doesn't match or your password
     is wrong."""), _("""Determines what message the bot replies with when
-     someonetries to use a command that requires being identified or having a
+     someone tries to use a command that requires being identified or having a
     password and neither credential is correct.""")))
 
 # XXX: This should eventually check that there's one and only one %s here.
@@ -542,7 +542,7 @@ registerChannelValue(supybot.replies, 'requiresPrivacy',
 registerChannelValue(supybot.replies, 'possibleBug',
     registry.NormalizedString(_("""This may be a bug.  If you think it is,
     please file a bug report at
-    <http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>."""),
+    <https://github.com/ProgVal/Limnoria/issues>."""),
     _("""Determines what message the bot sends when it thinks you've
     encountered a bug that the developers don't know about.""")))
 ###
@@ -663,7 +663,7 @@ registerGlobalValue(supybot.abuse.flood.command.invalid, 'punishment',
     registry.PositiveInteger(600, _("""Determines how many seconds the bot
     will ignore users who flood it with invalid commands.  Typically, this
     value is higher than supybot.abuse.flood.command.punishment, since it's far
-    less likely (and far more annoying) for users to flood witih invalid
+    less likely (and far more annoying) for users to flood with invalid
     commands than for them to flood with valid commands.""")))
 registerGlobalValue(supybot.abuse.flood.command.invalid, 'notify',
     registry.Boolean(True, _("""Determines whether the bot will notify people
@@ -1015,7 +1015,7 @@ registerGlobalValue(supybot.protocols.irc.ping, 'interval',
 registerGroup(supybot.protocols.irc, 'queuing')
 registerGlobalValue(supybot.protocols.irc.queuing, 'duplicates',
     registry.Boolean(False, _("""Determines whether the bot will refuse
-    duplicate messages to be queued for delivery to the server.  This is a
+    duplicated messages to be queued for delivery to the server.  This is a
     safety mechanism put in place to prevent plugins from sending the same
     message multiple times; most of the time it doesn't matter, unless you're
     doing certain kinds of plugin hacking.""")))
