@@ -189,7 +189,7 @@ msgid ""
 "\n"
 "        Lists regexps present in the triggers database.\n"
 "        <channel> is only necessary if the message isn't sent in the channel\n"
-"        itself. Regexp ID listed in paretheses.\n"
+"        itself. Regexp ID listed in parentheses.\n"
 "        "
 msgstr ""
 
