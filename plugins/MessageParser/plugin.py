@@ -372,7 +372,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
 
         Lists regexps present in the triggers database.
         <channel> is only necessary if the message isn't sent in the channel
-        itself. Regexp ID listed in paretheses.
+        itself. Regexp ID listed in parentheses.
         """
         db = self.getDb(channel)
         cursor = db.cursor()
