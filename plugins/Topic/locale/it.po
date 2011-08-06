@@ -66,9 +66,8 @@ msgid ""
 "    capability."
 msgstr ""
 "Determina le capacità richieste (eventuali) per le modifiche al topic (qualsiasi\n"
-"    operazione tranne la lettura). Utilizzare \"canale,capacità\" per le capacità\n"
-"    del singolo canale. Si noti che l'assenza di un'esplicita anti-capacità\n"
-"    significa che l'utente può usare i comandi."
+"    operazione tranne la lettura). Utilizzare \"canale,capacità\" per le capacità del singolo\n"
+"    canale. L'assenza di un'esplicita anti-capacità significa che l'utente può usare i comandi."
 
 #: plugin.py:57
 msgid "I'm not currently in %s."

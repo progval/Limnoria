@@ -109,16 +109,16 @@ msgid ""
 "        if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
-"[<canale>] [<chiave>]\n"
+"[<canale>] [<password>]\n"
 "\n"
-"        Imposta <chiave> in <canale>. Se <chiave> non viene specificata, rimuove\n"
+"        Imposta <password> in <canale>. Se <password> non viene specificata, rimuove\n"
 "        quella richiesta per entrare. <canale> è necessario solo se il messaggio\n"
 "        non viene inviato nel canale stesso.\n"
 "        "
 
 #: plugin.py:130
 msgid "change the keyword"
-msgstr "cambiare la chiave"
+msgstr "cambiare la password"
 
 #: plugin.py:135
 #, docstring

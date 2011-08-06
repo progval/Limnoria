@@ -85,7 +85,7 @@ msgid ""
 msgstr ""
 "[<domanda>]\n"
 "\n"
-"        Porre una domanda e si otterrà una risposta.\n"
+"        Poni una domanda e otterrai una risposta.\n"
 "        "
 
 #: plugin.py:121

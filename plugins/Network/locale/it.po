@@ -132,7 +132,7 @@ msgstr " identificato"
 
 #: plugin.py:245
 msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
-msgstr "%s (%s) era%s sul server %s dalle %s (inattivo da %s) e %s.%s"
+msgstr "%s (%s) è%s sul server %s dalle %s (inattivo da %s) ed %s.%s"
 
 #: plugin.py:258
 msgid "There is no %s on %s."

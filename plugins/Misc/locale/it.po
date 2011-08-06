@@ -83,10 +83,7 @@ msgstr "Non ci sono plugin pubblici."
 
 #: plugin.py:153
 msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
-msgstr ""
-"Il plugin esiste ma non ha comandi. Ciò probabilmente significa che ha delle variabili\n"
-"        di configurazione modificabili che cambiano il suo comportamento. Prova\n"
-"        \"config list supybot.plugins.%s\" per vedere quali variabili sono disponibili."
+msgstr "Il plugin esiste ma non ha comandi. Ciò probabilmente significa che ha delle variabili di configurazione modificabili che cambiano il suo comportamento. Prova \"config list supybot.plugins.%s\" per vedere quali variabili sono disponibili."
 
 #: plugin.py:164
 #, docstring
@@ -124,7 +121,7 @@ msgstr ""
 
 #: plugin.py:198
 msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
-msgstr "Questo comando esiste nei plugin %L. Si prega di specificare per quale si vuole aiuto."
+msgstr "Questo comando esiste nei plugin %L. Specifica per quale vuoi aiuto."
 
 #: plugin.py:205
 msgid "There is no command %q."

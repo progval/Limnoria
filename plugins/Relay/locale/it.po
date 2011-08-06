@@ -27,7 +27,7 @@ msgstr "Vuoi usare colori per distinguere i nick?"
 msgid ""
 "Determines whether the bot will color relayed\n"
 "    PRIVMSGs so as to make the messages easier to read."
-msgstr "Determina se il bot colorerà i PRIVMSG inoltrati per rendere più semplice la lettura."
+msgstr "Determina se il bot colorerà i PRIVMSG inoltrati per renderne più semplice la lettura."
 
 #: config.py:62
 msgid ""

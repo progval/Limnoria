@@ -45,10 +45,10 @@ msgid ""
 "        when attempting to join the channel.\n"
 "        "
 msgstr ""
-"<canale> [<chiave>]\n"
+"<canale> [<password>]\n"
 "\n"
-"        Dice al bot di entrare nel canale specificato. Se <chiave> è fornita, viene usata\n"
-"        quando si tenta di entrare nel canale.\n"
+"        Dice al bot di entrare nel canale specificato. Se <password> è fornita,\n"
+"        viene usata quando si tenta di entrare nel canale.\n"
 "        "
 
 #: plugin.py:147
@@ -101,7 +101,8 @@ msgid ""
 msgstr ""
 "[<nick>]\n"
 "\n"
-"        Cambia il nick del bot in <nick>. Se non ne viene fornito uno, riporta quello attuale.\n"
+"        Cambia il nicke del bot in <nick>. Se non ne viene fornito uno, restituisce\n"
+"        quello attuale.\n"
 "        "
 
 #: plugin.py:222

@@ -99,7 +99,7 @@ msgstr ""
 "non necessita argomenti\n"
 "\n"
 "        Esegue tutti i periodici \"flusher\" in world.flushers. Ciò include\n"
-"        il savataggio su disco di tutti i log e tutte le modifiche di configurazione.\n"
+"        il salvataggio su disco di tutti i log e tutte le modifiche di configurazione.\n"
 "        "
 
 #: plugin.py:376

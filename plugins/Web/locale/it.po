@@ -70,12 +70,12 @@ msgid ""
 msgstr ""
 "<url>\n"
 "\n"
-"        Restituisce la stringa DOCTYPE di <url>. Naturalmente sono validi solo ULR HTTP.\n"
+"        Restituisce la stringa DOCTYPE di <url>. Naturalmente sono validi solo URL HTTP.\n"
 "        "
 
 #: plugin.py:143
 msgid "That URL has no specified doctype."
-msgstr "Questo URL non doctype specificato."
+msgstr "Questo URL non ha un doctype specificato."
 
 #: plugin.py:148
 #, docstring

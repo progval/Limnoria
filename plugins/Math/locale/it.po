@@ -65,7 +65,7 @@ msgstr ""
 
 #: plugin.py:166 plugin.py:220
 msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
-msgstr "Non v'è alcuna ragione di usare underscore o parentesi nelle espressioni matematiche; si prega di rimuoverli."
+msgstr "Non v'è alcuna ragione di usare underscore o parentesi nelle espressioni matematiche; ti invito a rimuoverli."
 
 #: plugin.py:172 plugin.py:228
 msgid "You can't use lambda in this command."
