@@ -126,7 +126,7 @@ class SupyHTTPServerCallback:
     name = "Unnamed plugin"
     defaultResponse = _("""
     This is a default response of the Supybot HTTP server. If you see this
-    message, it probably means you are developping a plugin, and you have
+    message, it probably means you are developing a plugin, and you have
     neither overriden this message or defined an handler for this query.""")
 
     def doGet(self, handler, path, *args, **kwargs):
