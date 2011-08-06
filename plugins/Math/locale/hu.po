@@ -1,0 +1,147 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Limnoria Math\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-08-02 21:06+0200\n"
+"Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: plugin.py:52
+#, docstring
+msgid ""
+"<fromBase> [<toBase>] <number>\n"
+"\n"
+"        Converts <number> from base <fromBase> to base <toBase>.\n"
+"        If <toBase> is left out, it converts to decimal.\n"
+"        "
+msgstr ""
+"<alapról> [<alapra>] <szám>\n"
+"\n"
+"Konvertálja <szám>-ot <alapról> alapról <alapra> alapra. Ha <alapra> nincs megadva, decimálisra konvertál."
+
+#: plugin.py:63
+msgid "Invalid <number> for base %s: %s"
+msgstr "Érvénytelen <szám> %s alaphoz: %s"
+
+#: plugin.py:69
+#, docstring
+msgid "Convert a decimal number to another base; returns a string."
+msgstr "Konvertál egy decimális számot egy másik alapra; kiír egy karakterláncot."
+
+#: plugin.py:90
+#, docstring
+msgid ""
+"Convert a number from any base, 2 through 36, to any other\n"
+"        base, 2 through 36. Returns a string."
+msgstr ""
+"Konvertál egy számot bármilyen alapról 2 és 36 között bármilyen másik bázisra 2 és 36 között. Kiír egy karakterláncot."
+
+#: plugin.py:157
+#, docstring
+msgid ""
+"<math expression>\n"
+"\n"
+"        Returns the value of the evaluated <math expression>.  The syntax is\n"
+"        Python syntax; the type of arithmetic is floating point.  Floating\n"
+"        point arithmetic is used in order to prevent a user from being able to\n"
+"        crash to the bot with something like '10**10**10**10'.  One consequence\n"
+"        is that large values such as '10**24' might not be exact.\n"
+"        "
+msgstr ""
+"<matematikai kifejezés>\n"
+"\n"
+"Kiírja a kiértékelt <matematikai kifejezés> értékét. A szintaxis Python szintaxis; a számtan típusa lebegőpontos. Lebegőpontos számtan használt azért, hogy megakadályozzuk a felhasználókat, hogy képesek legyenek előidézni a bot összeomlással valami olyannal, mint '10**10**10**10'. Egy következmény, hogy nagy értékek, mint a '10**24' lehet, hogy nem lesznek pontosak."
+
+#: plugin.py:166 plugin.py:220
+msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
+msgstr "Tényleg nincs semmi ok, hogy miért legyenek aláhúzások vagy zárójelek a matamatikai kifejezésedben. Kérlek távolítsd el őket."
+
+#: plugin.py:172 plugin.py:228
+msgid "You can't use lambda in this command."
+msgstr "Nem használhatsz lambdát ebben a parancsban."
+
+#: plugin.py:202 plugin.py:236
+msgid "The answer exceeded %s or so."
+msgstr "A válasz meghaladta %s-t."
+
+#: plugin.py:204 plugin.py:238
+msgid "Something in there wasn't a valid number."
+msgstr "Valami itt nem egy érvényes szám."
+
+#: plugin.py:206 plugin.py:240
+msgid "%s is not a defined function."
+msgstr "%s nincs meghatározva függvényként."
+
+#: plugin.py:213
+#, docstring
+msgid ""
+"<math expression>\n"
+"\n"
+"        This is the same as the calc command except that it allows integer\n"
+"        math, and can thus cause the bot to suck up CPU.  Hence it requires\n"
+"        the 'trusted' capability to use.\n"
+"        "
+msgstr ""
+"<matematikai kifejezés>\n"
+"\n"
+"Ez ugyanaz, mint a calc parancs, kivéve, hogy engedélyez egész számos matematikát, és előidézheti, hogy a bot felszívjon sok CPU-t. Ezért a 'trusted' képesség szükséges a használatához."
+
+#: plugin.py:250
+#, docstring
+msgid ""
+"<rpn math expression>\n"
+"\n"
+"        Returns the value of an RPN expression.\n"
+"        "
+msgstr ""
+"<rpn matematikai kifejezés>\n"
+"\n"
+"Kiírja egy RPN kifejezés értékét."
+
+#: plugin.py:275
+msgid "Not enough arguments for %s"
+msgstr "Nincs elég paraméter %s-hoz."
+
+#: plugin.py:288
+msgid "%q is not a defined function."
+msgstr "%q nincs meghatározva függvényként."
+
+#: plugin.py:295
+msgid "Stack: [%s]"
+msgstr "Verem: [%s]"
+
+#: plugin.py:299
+#, docstring
+msgid ""
+"[<number>] <unit> to <other unit>\n"
+"\n"
+"        Converts from <unit> to <other unit>. If number isn't given, it\n"
+"        defaults to 1. For unit information, see 'units' command.\n"
+"        "
+msgstr ""
+"[<szám>] <mértékegység> to <másik mértékegység>\n"
+"\n"
+"<mértékegység>-ről <másik mértékegyég>-re konvertál. Ha a szám nem megadott, alapértelmezett értéke 1. Mértékegység információért lásd az 'units' parancsot."
+
+#: plugin.py:314
+#, docstring
+msgid ""
+" [<type>]\n"
+"\n"
+"        With no arguments, returns a list of measurement types, which can be\n"
+"        passed as arguments. When called with a type as an argument, returns\n"
+"        the units of that type.\n"
+"        "
+msgstr ""
+"[<típus>]\n"
+"\n"
+"Paraméterek nélkül kiírja a mértékegységek listáját, amelyek megadhatók paraméterenként. Amikor egy típussal van meghívva paraméterként, kiírja a típus mértékegységeit."

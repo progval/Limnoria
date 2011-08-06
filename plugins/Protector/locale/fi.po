@@ -1,0 +1,35 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-07-24 15:44+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:47
+msgid ""
+"Determines whether this plugin is enabled in a\n"
+"    given channel."
+msgstr ""
+"Määrittää onko tämä lisäosa käytössä\n"
+"    annetulla kanavalla."
+
+#: config.py:54
+msgid ""
+"Determines what nicks the bot will consider to\n"
+"    be immune from enforcement.  These nicks will not even have their actions\n"
+"    watched by this plugin.  In general, only the ChanServ for this network\n"
+"    will be in this list."
+msgstr ""
+"Määrittää nimimerkit, jotka botti ajattelee\n"
+"    immuuneiksi tästä pakotuksesta. Näiden nimimerkkien toiminnot jäävät\n"
+"    tämän lisäosan valvonnan ulkopuolisiksi.  Yleisesti, vain tämän verkon ChanServ tulee olemaan\n"
+"    tässä listassa."
+
