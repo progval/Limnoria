@@ -395,7 +395,7 @@ class User(callbacks.Plugin):
         except KeyError:
             irc.errorNotRegistered()
         else:
-            if u == user or u._checkCapability('owner'):
+            if u == user or u._checkCapability('admin'):
                 irc.reply('[%s]' % '; '.join(user.capabilities), private=True)
             else:
                 irc.error(conf.supybot.replies.incorrectAuthentication(),
