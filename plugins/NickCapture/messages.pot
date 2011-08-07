@@ -30,7 +30,7 @@ msgstr ""
 #: plugin.py:40
 #, docstring
 msgid ""
-"This module constantly tries to take whatever nick is configured as\n"
+"This plugin constantly tries to take whatever nick is configured as\n"
 "    supybot.nick.  Just make sure that's set appropriately, and thus plugin\n"
 "    will do the rest."
 msgstr ""
