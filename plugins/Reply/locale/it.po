@@ -14,7 +14,7 @@ msgstr ""
 #: plugin.py:37
 #, docstring
 msgid ""
-"This plugins contains a few commands that construct various types of\n"
+"This plugin contains a few commands that construct various types of\n"
 "    replies.  Some bot owners would be wise to not load this plugin because it\n"
 "    can be easily abused.\n"
 "    "

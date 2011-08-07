@@ -34,7 +34,7 @@ _ = PluginInternationalization('Reply')
 
 
 class Reply(callbacks.Plugin):
-    """This plugins contains a few commands that construct various types of
+    """This plugin contains a few commands that construct various types of
     replies.  Some bot owners would be wise to not load this plugin because it
     can be easily abused.
     """
