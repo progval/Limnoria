@@ -278,7 +278,7 @@ msgid ""
 "    time formats."
 msgstr ""
 "Determina come formattare i timestamp affinché possano essere comprensibli.\n"
-"    Per sapere quali sono i formati validi fare riferimento alla documentazione\n"
+"    Per sapere quali sono i formati validi fai riferimento alla documentazione\n"
 "    di Python per il modulo time."
 
 #: ../src/conf.py:312
