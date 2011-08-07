@@ -39,7 +39,7 @@ msgstr ""
 "\n"
 "        Esegue <comando_if> se <la condizione> analizzata è vera, esegue <comando_else> se falsa.\n"
 "\n"
-"        Utilizzare gli altri operatori logici presenti in questo plugin e i comandi nidificati a proprio vantaggio.\n"
+"        Utilizza gli altri operatori logici presenti in questo plugin e i comandi nidificati a tuo vantaggio.\n"
 "        "
 
 #: plugin.py:97

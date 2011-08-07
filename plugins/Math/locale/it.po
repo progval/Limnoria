@@ -21,8 +21,8 @@ msgid ""
 msgstr ""
 "<daBase> [<aBase>] <numero>\n"
 "\n"
-"        Converte un numero da una base ad un'altra.\n"
-"        Se <aBase> non è specificato, converte in decimale.\n"
+"        Converte un numero da una base a un'altra.\n"
+"        Se <aBase> non è specificata, converte in decimale.\n"
 "        "
 
 #: plugin.py:63
@@ -77,7 +77,7 @@ msgstr "La risposta ha superato %s."
 
 #: plugin.py:204 plugin.py:238
 msgid "Something in there wasn't a valid number."
-msgstr "Qualcosa non equivaleva ad un numero valido."
+msgstr "Qualcosa non equivaleva a un numero valido."
 
 #: plugin.py:206 plugin.py:240
 msgid "%s is not a defined function."
@@ -137,7 +137,7 @@ msgstr ""
 "[<numero>] <unità> ad <altra unità>\n"
 "\n"
 "        Converte da <unità> ad <altra unità>. Se <numero> non è specificato,\n"
-"        usa 1 come predefinito. Per informazioni sulle unità, utilizzare il comando \"units\".\n"
+"        usa 1 come predefinito. Per informazioni sulle unità, utilizza il comando \"units\".\n"
 "        "
 
 #: plugin.py:314

@@ -61,7 +61,7 @@ msgid ""
 msgstr ""
 "<primo piano> [<sfondo>] <testo>\n"
 "\n"
-"        Restituisce <testo> con colore <primo piano> e colore di fondo <sfondo> (se specificato)\n"
+"        Restituisce <testo> con colore di <primo piano> e colore di <sfondo> (se specificato)\n"
 "        "
 
 #: plugin.py:80
@@ -95,7 +95,7 @@ msgstr ""
 
 #: plugin.py:96
 msgid "<chars to translate> must be the same length as <chars to replace those with>."
-msgstr "<caratteri da sostituire> devono essere della stessa lunghezza di <caratteri di sostituzione>."
+msgstr "<caratteri da sostituire> deve essere della stessa lunghezza di <caratteri di sostituzione>."
 
 #: plugin.py:103
 #, docstring
@@ -189,8 +189,8 @@ msgid ""
 msgstr ""
 "<stringa 1> <stringa 2>\n"
 "\n"
-"        Concatena due stringhe. Notare che non è come unire con \"\", dal momento\n"
-"        che se <stringa 2> contiene spazi, questi non verranno rimossi da concat.\n"
+"        Concatena due stringhe. Nota che non è come unire con \"\", dal momento\n"
+"        che se <stringa 2> contiene spazi questi non verranno rimossi da concat.\n"
 "        "
 
 #: plugin.py:168
@@ -238,7 +238,7 @@ msgstr ""
 "<formato stringa> [<argomento> ...]\n"
 "\n"
 "        Espande un formato di stringa in stile Python utilizzando gli argomenti\n"
-"        restanti. Assicurarsi di usare sempre %s, non %d o %f o altro, in quanto\n"
+"        restanti. Assicurati di usare sempre %s, non %d o %f o altro, in quanto\n"
 "        tutti gli argomenti sono stringhe.\n"
 "        "
 

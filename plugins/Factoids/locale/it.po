@@ -271,7 +271,7 @@ msgstr "Numero di factoid non valido."
 
 #: plugin.py:552
 msgid "%s factoids have that key.  Please specify which one to remove, or use * to designate all of them."
-msgstr "%s factoid hanno questa chiave; specificare quale si desidera rimuovere o utilizzare * per definirli tutti."
+msgstr "%s factoid hanno questa chiave; specifica quale desideri rimuovere o utilizza * per definirli tutti."
 
 #: plugin.py:560
 #, docstring
@@ -357,5 +357,5 @@ msgstr "Nessuna chiave corrisponde a questa richiesta."
 
 #: plugin.py:697 plugin.py:706
 msgid "More than 100 keys matched that query; please narrow your query."
-msgstr "A questa richiesta corrispondono più di 100 chiavi, restringere la ricerca."
+msgstr "A questa richiesta corrispondono più di 100 chiavi, restringi la ricerca."
 

@@ -26,8 +26,8 @@ msgstr ""
 "    Quest'ultimo utilizza un algoritmo O(m*n), significa che con stringhe di lunghezza\n"
 "    256, può impiegare 1.5 secondi a terminare; con stringhe lunghe 384, sebbene,\n"
 "    impiega 4 secondi e con stringhe più lunghe impiega molto più tempo. Utilizzando\n"
-"    comandi nidificati, le stringhe possono essere abbastanza grosse, perciò questa\n"
-"    variabile, limitare la dimensione degli argomenti passati al comando \"levenshtein\"."
+"    comandi nidificati le stringhe possono essere abbastanza grosse; questa variabile\n"
+"    esiste per limitare la dimensione degli argomenti passati al comando \"levenshtein\"."
 
 #: plugin.py:46
 #, docstring
@@ -138,7 +138,7 @@ msgstr ""
 "\n"
 "        Restituisce l'hash Soundex alla lunghezza specificata. In modo predefinito\n"
 "        è impostata a 4, giacché è la lunghezza standard per questo tipo di hash.\n"
-"        Per lunghezze illimitate usare 0.\n"
+"        Per lunghezze illimitate usa 0.\n"
 "        "
 
 #: plugin.py:125
@@ -174,7 +174,7 @@ msgstr ""
 
 #: plugin.py:146
 msgid "You probably don't want to match the empty string."
-msgstr "È probabile non si voglia confrontare una stringa vuota."
+msgstr "È probabile che tu non voglia confrontare una stringa vuota."
 
 #: plugin.py:156
 #, docstring
@@ -188,7 +188,7 @@ msgid ""
 msgstr ""
 "<password> <testo>\n"
 "\n"
-"        Restituisce <testo> cifrato con XOR con <password>. Vedere\n"
+"        Restituisce <testo> cifrato con XOR con <password>. Vedi\n"
 "        http://www.yoe.org/developer/xor.html per informazioni sulla cifratura XOR.\n"
 "        "
 
@@ -204,7 +204,7 @@ msgid ""
 msgstr ""
 "<testo>\n"
 "\n"
-"        Restituisce l'hash md5 di una data stringa. Vedere\n"
+"        Restituisce l'hash md5 di una data stringa. Vedi\n"
 "        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html per ulteriori informazioni su md5.\n"
 "        "
 
@@ -220,7 +220,7 @@ msgid ""
 msgstr ""
 "<testo>\n"
 "\n"
-"        Restituisce l'hash SHA di una data stringa. Vedere\n"
+"        Restituisce l'hash SHA di una data stringa. Vedi\n"
 "        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ per ulteriori informazioni su SHA.\n"
 "        "
 

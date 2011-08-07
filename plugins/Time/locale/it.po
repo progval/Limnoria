@@ -18,7 +18,7 @@ msgid ""
 "    the empty string, the timestamp will not be shown."
 msgstr ""
 "Determina il formato per i timestamp. Per sapere quali sono i formati validi\n"
-"    fare riferimento alla documentazione di Python per il modulo time. Se si assegna\n"
+"    fai riferimento alla documentazione di Python per il modulo time. Se si assegna\n"
 "    una stringa vuota a questa variabile, il timestamp non verrà mostrato."
 
 #: plugin.py:61
@@ -86,7 +86,7 @@ msgid ""
 msgstr ""
 "[<secondi dall'epoca>]\n"
 "\n"
-"        Riporta il ctime per <secondi dall'epoca> o, se non vengono specificati,\n"
+"        Riporta il ctime per <secondi dall'epoca> o, se non specificati,\n"
 "        l'attuale ctime (epoca equivale all'Unix time).\n"
 "        "
 

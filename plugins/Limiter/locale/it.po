@@ -17,7 +17,7 @@ msgid ""
 "    channel limit to be slightly above the current number of people in the\n"
 "    channel, in order to make clone/drone attacks harder."
 msgstr ""
-"Determina se il bot manterrà il limite del canale leggermente al di sopra\n"
+"Determina se il bot manterrà il limite del canale appena al di sopra\n"
 "    del numero di persone attualmente presenti, in modo da rendere più\n"
 "    difficili gli attacchi di cloni o droni."
 

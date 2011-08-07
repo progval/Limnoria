@@ -51,7 +51,7 @@ msgid ""
 "    capability."
 msgstr ""
 "Determina la capacità richiesta (eventuale) per gestire il database delle\n"
-"    regexp che include aggiunta, rimozione, blocco e sblocco. Utilizzare\n"
+"    regexp che include aggiunta, rimozione, blocco e sblocco. Utilizza\n"
 "    \"canale,capacità\" per le capacità del singolo canale. L'assenza di\n"
 "    un'esplicita anti-capacità significa che l'utente può usare i comandi."
 
@@ -69,7 +69,7 @@ msgid ""
 "    Use 'add' command to add regexp trigger, 'remove' to remove."
 msgstr ""
 "Questo plugin può definire dei trigger basati su regexp per attivare il bot.\n"
-"    Utilizzare il comando \"add\" per aggiungerne e \"remove\" per rimuoverle."
+"    Utilizza il comando \"add\" per aggiungerne e \"remove\" per rimuoverle."
 
 #: plugin.py:83
 #, docstring
@@ -79,7 +79,7 @@ msgstr "Crea il database e ci si connette."
 #: plugin.py:106
 #, docstring
 msgid "Use this to get a database for a specific channel."
-msgstr "Utilizzarlo per ottenere un database per un canale specifico."
+msgstr "Utilizzalo per ottenere un database per un canale specifico."
 
 #: plugin.py:129
 #, docstring
@@ -278,8 +278,8 @@ msgid ""
 msgstr ""
 "[<canale>]\n"
 "\n"
-"        Svuota il database di <canale>. Consultare la documentazione di SQLite relativa\n"
-"        all'indirizzo http://www.sqlite.org/lang_vacuum.html Controllare prima se l'utente\n"
+"        Svuota il database di <canale>. Consulta la documentazione di SQLite relativa\n"
+"        all'indirizzo http://www.sqlite.org/lang_vacuum.html e controlla prima se l'utente\n"
 "        ha la capacità richiesta specificata nella variabile requireVacuumCapability.\n"
 "        <canale> è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
 "        "

@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "<testo>\n"
 "\n"
-"        Risponde con <testo> in privato. Utilizzare i comandi nidificati a proprio vantaggio."
+"        Risponde con <testo> in privato. Utilizza i comandi nidificati a tuo vantaggio."
 "        "
 
 #: plugin.py:53
@@ -49,7 +49,7 @@ msgid ""
 msgstr ""
 "<testo>\n"
 "\n"
-"        Risponde con <testo> come azione. Utilizzare i comandi nidificati a proprio vantaggio.\n"
+"        Risponde con <testo> come azione. Utilizza i comandi nidificati a tuo vantaggio.\n"
 "        "
 
 #: plugin.py:66
@@ -63,8 +63,8 @@ msgid ""
 msgstr ""
 "<testo>\n"
 "\n"
-"        Risponde con <testo> in un notice. Utilizzare i comandi nidificati a proprio vantaggio.\n"
-"        Se si desidera un notice privato, nidificare il comando private.\n"
+"        Risponde con <testo> in un notice. Utilizza i comandi nidificati a tuo vantaggio.\n"
+"        Se desideri un notice privato, nidifica il comando \"private\".\n"
 "        "
 
 #: plugin.py:76

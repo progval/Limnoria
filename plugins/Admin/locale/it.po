@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-06 21:08+0200\n"
+"PO-Revision-Date: 2011-07-31 10:07+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -66,8 +66,8 @@ msgid ""
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Restituisce i canali dove è presente il bot. Per preservare la segretezza\n"
-"        dei canali privati, deve essere richiesto in privato.\n"
+"        Restituisce i canali dove è presente il bot. Deve essere richiesto in\n"
+"        privato per preservare la segretezza dei canali privati.\n"
 "        "
 
 #: plugin.py:166
@@ -80,7 +80,7 @@ msgstr "La mia connessione è limitata, non posso cambiare nick."
 
 #: plugin.py:179
 msgid "Someone else is already using that nick."
-msgstr "Qualcun altro sta utilizzando quel nick."
+msgstr "Qualcun altro sta utilizzando questo nick."
 
 #: plugin.py:186
 msgid "That nick is currently banned."
@@ -101,7 +101,7 @@ msgid ""
 msgstr ""
 "[<nick>]\n"
 "\n"
-"        Cambia il nicke del bot in <nick>. Se non ne viene fornito uno, restituisce\n"
+"        Cambia il nick del bot in <nick>. Se non ne viene fornito uno, restituisce\n"
 "        quello attuale.\n"
 "        "
 
@@ -118,10 +118,9 @@ msgid ""
 msgstr ""
 "[<canale>] [<motivo>]\n"
 "\n"
-"        Fornisce al bot l'elenco dei canali da cui uscire.  <canale> è\n"
-"        necessario solo se si vuole far uscire il bot da un canale diverso da\n"
-"        quello attuale. Se <motivo> viene specificato, verrà usato come messaggio\n"
-"        di uscita.\n"
+"        Fornisce al bot l'elenco dei canali da cui uscire. <canale> è necessario\n"
+"        solo se si vuole far uscire il bot da un canale diverso da quello attuale.\n"
+"        Se <motivo> viene specificato, verrà usato come messaggio di uscita.\n"
 "        "
 
 #: plugin.py:240
@@ -134,13 +133,13 @@ msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
 "            Gives the user specified by <name> (or the user to whom <hostmask>\n"
-"            currently maps) the specified capability <capability>\n"
+"            currently maps) the specified capability <capability>.\n"
 "            "
 msgstr ""
 "<nome|hostmask> <capacità>\n"
 "\n"
-"            Dà all'utente specificato da <nome> (o quello a cui corrisponde <hostmask>\n"
-"            attualmente) la capacità <capacità> specificata\n"
+"            Dà all'utente specificato da <nome> (o quello a cui corrisponde\n"
+"            <hostmask> attualmente) la <capacità> specificata.\n"
 "            "
 
 #: plugin.py:272
@@ -149,7 +148,7 @@ msgstr "La capacità \"owner\" non può essere aggiunta al bot. Utilizzare il pr
 
 #: plugin.py:283
 msgid "You can't add capabilities you don't have."
-msgstr "Non è possibile aggiungere capacità che non si hanno."
+msgstr "Non puoi aggiungere capacità che non hai."
 
 #: plugin.py:288
 #, docstring
@@ -162,17 +161,17 @@ msgid ""
 msgstr ""
 "<nome|hostmask> <capacità>\n"
 "\n"
-"            Rimuove l'utente specificato da <nome> (o quello a cui corrisponde <hostmask>\n"
-"            attualmente) la capacità <capacità> specificata\n"
+"            Rimuove l'utente specificato da <nome> (o quello a cui corrisponde\n"
+"            <hostmask> attualmente) la <capacità> specificata\n"
 "            "
 
 #: plugin.py:300
 msgid "That user doesn't have that capability."
-msgstr "Questo utente non ha questa capacità."
+msgstr "Questo utente non ha tale capacità."
 
 #: plugin.py:302
 msgid "You can't remove capabilities you don't have."
-msgstr "Non è possibile rimuovere capacità che non si hanno."
+msgstr "Non puoi rimuovere capacità che non hai."
 
 #: plugin.py:310
 #, docstring
@@ -187,10 +186,10 @@ msgid ""
 msgstr ""
 "<hostmask|nick> [<scadenza>]\n"
 "\n"
-"            Imposta un ignore permanente su <hostmask> o l'hostmask\n"
-"            attualmente associata a <nick>. <scadenza> è un argomento opzionale\n"
-"            per specificare quando (in \"secondi a partire da subito\") scadrà l'ignore;\n"
-"            se non fornito, questo non scadrà mai.\n"
+"            Imposta un ignore permanente su <hostmask> o l'hostmask attualmente\n"
+"            associata a <nick>. <scadenza> è un argomento opzionale per specificare\n"
+"            quando (in \"secondi a partire da subito\") scadrà l'ignore; se non fornito,\n"
+"            questo non scadrà mai.\n"
 "            "
 
 #: plugin.py:323
@@ -204,8 +203,7 @@ msgid ""
 msgstr ""
 "<hostmask|nick>\n"
 "\n"
-"            Rimuove l'ignore persistente su <hostmask> o l'attuale\n"
-"            hostmask associata a <nick>.\n"
+"            Rimuove l'ignore persistente su <hostmask> o l'attuale hostmask associata a <nick>.\n"
 "            "
 
 #: plugin.py:332
@@ -227,5 +225,5 @@ msgstr ""
 
 #: plugin.py:345
 msgid "I'm not currently globally ignoring anyone."
-msgstr "Al momento, a livello globale, non sto ignorando nessuno."
+msgstr "Al momento non sto ignorando nessuno."
 

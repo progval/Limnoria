@@ -30,7 +30,7 @@ msgid ""
 "    variable to the empty string, the timestamp will not be shown."
 msgstr ""
 "Determina il formato per i timestamp del comando Misc.last. Per sapere quali sono\n"
-"    i formati validi fare riferimento alla documentazione di Python per il modulo time.\n"
+"    i formati validi fai riferimento alla documentazione di Python per il modulo time.\n"
 "    Se si assegna una stringa vuota a questa variabile, il timestamp non verrà mostrato."
 
 #: config.py:57
@@ -55,7 +55,7 @@ msgstr "Mi hai fornito %s comandi non validi entro l'ultimo minuto; ti ignoro pe
 
 #: plugin.py:93
 msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"list %s\" to see the commands in the %q plugin."
-msgstr "Il plugin %q è caricato ma in esso non c'è nessun comando chiamato %q. Prova \"list %s\" per vedere i comandi disponibili nel plugin %q."
+msgstr "Il plugin %q è caricato ma non ha nessun comando chiamato %q. Prova \"list %s\" per vedere i comandi disponibili nel plugin %q."
 
 #: plugin.py:119
 #, docstring
@@ -83,7 +83,7 @@ msgstr "Non ci sono plugin pubblici."
 
 #: plugin.py:153
 msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
-msgstr "Il plugin esiste ma non ha comandi. Ciò probabilmente significa che ha delle variabili di configurazione modificabili che cambiano il suo comportamento. Prova \"config list supybot.plugins.%s\" per vedere quali variabili sono disponibili."
+msgstr "Il plugin esiste ma non ha comandi. Probabilmente significa che ha delle variabili di configurazione modificabili che cambiano il suo comportamento. Prova \"config list supybot.plugins.%s\" per vedere quali sono disponibili."
 
 #: plugin.py:164
 #, docstring
@@ -255,7 +255,7 @@ msgid ""
 msgstr ""
 "<nick> <testo>\n"
 "\n"
-"        Dice <testo> a <nick>. Utilizzare i comandi nidificati a proprio vantaggio.\n"
+"        Dice <testo> a <nick>. Utilizza i comandi nidificati a tuo vantaggio.\n"
 "        "
 
 #: plugin.py:409
@@ -264,7 +264,7 @@ msgstr "Dammi il comando, non c'è bisogno di usare \"tell\"."
 
 #: plugin.py:414
 msgid "You just told me, why should I tell myself?"
-msgstr "Me l'hai appena detto, perché dovrei dirlo a me stesso?"
+msgstr "Me l'hai appena detto, perché dovrei ripetermelo?"
 
 #: plugin.py:419
 msgid "I haven't seen %s, I'll let you do the telling."

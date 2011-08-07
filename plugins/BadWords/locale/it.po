@@ -84,8 +84,8 @@ msgid ""
 "    plugins that do coloring or bolding of text."
 msgstr ""
 "Determina se il bot rimuoverà i caratteri di formattazione prima di controllare\n"
-"    che contengano parole volgari. Se impostato a False, sarà relativamente facile\n"
-"    aggirare i filtri di questo plugin. Tuttavia, se impostato a True, non interagirà\n"
+"    che contengano parole volgari. Se impostato a False sarà relativamente facile\n"
+"    aggirare i filtri di questo plugin; tuttavia se impostato a True non interagirà\n"
 "    con altri plugin che colorano o rendono il testo grassetto."
 
 #: config.py:99

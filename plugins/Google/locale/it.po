@@ -188,7 +188,7 @@ msgid ""
 msgstr ""
 "<stringa di ricerca> <stringa di ricerca> [<stringa di ricerca> ...]\n"
 "\n"
-"        Restituisce i risultati di ogni ricerca in ordine, dal più grande al più piccolo.\n"
+"        Restituisce i risultati di ogni ricerca in ordine decrescente in base al numero di risultati.\n"
 "        "
 
 #: plugin.py:252

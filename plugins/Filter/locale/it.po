@@ -245,8 +245,8 @@ msgid ""
 msgstr ""
 "<testo>\n"
 "\n"
-"        Risponde con una stringa dove ogni parola è mescolata; ovvero ogni\n"
-"        lettera interna (tutte le lettere tranne la prima e l'ultima) sono mischiate.\n"
+"        Risponde con una stringa dove ogni parola è mescolata; ovvero ogni lettera\n"
+"        interna (tutte le lettere tranne la prima e l'ultima) è mischiata con le altre.\n"
 "        "
 
 #: plugin.py:345

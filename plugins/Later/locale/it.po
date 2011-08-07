@@ -55,7 +55,7 @@ msgid ""
 msgstr ""
 "Utilizzato per fare cose in seguito; attualmente permette solo l'invio di note basate\n"
 "    sul nick. Nota (haha!) che queste note *non* sono private e non sono state progettate\n"
-"    per esserlo; se si vuole questa caratteristica, considerare l'utilizzo del plugin Note."
+"    per esserlo; se vuoi questa caratteristica considera l'utilizzo del plugin Note."
 
 #: plugin.py:84
 msgid "%s ago"
@@ -113,7 +113,7 @@ msgstr "Non posso inviare note a me stesso."
 
 #: plugin.py:169
 msgid "That person's message queue is already full."
-msgstr "La coda dei messaggi di quell'utente è già piena."
+msgstr "La coda dei messaggi di questo utente è già piena."
 
 #: plugin.py:174
 #, docstring
@@ -132,7 +132,7 @@ msgstr ""
 
 #: plugin.py:185
 msgid "I have no notes for that nick."
-msgstr "Non ho note per quel nick."
+msgstr "Non ho note per questo nick."
 
 #: plugin.py:190
 msgid "I currently have notes waiting for %L."

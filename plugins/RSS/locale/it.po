@@ -86,7 +86,7 @@ msgid ""
 "    command to determine what feeds should be announced in a given channel."
 msgstr ""
 "Questo plugin è utile sia per annunciare feed RSS in un canale, sia per recuperare\n"
-"    i titoli dei feed tramite un comando. Utilizzare il comando \"add\" per aggiungere\n"
+"    i titoli dei feed tramite un comando. Utilizza il comando \"add\" per aggiungere\n"
 "    feed e \"announce\" per determinare quali feed devono essere annunciati in un dato canale."
 
 #: plugin.py:316

@@ -67,8 +67,7 @@ msgstr "Globale: %s; %s: %s"
 
 #: plugin.py:185
 msgid "That registry variable has no value.  Use the list command in this plugin to see what variables are available in this group."
-msgstr "Questa variabile di registro non ha alcun valore. Utilizzare il comando \"list\"\n"
-"       in questo plugin per vedere quali variabili sono disponibili per questo gruppo."
+msgstr "Questa variabile di registro non ha un valore. Utilizzare il comando \"list\" in questo plugin per vedere quali variabili sono disponibili per questo gruppo."
 
 #: plugin.py:200
 #, docstring
@@ -126,8 +125,7 @@ msgstr "  (Valore attuale: %s)"
 
 #: plugin.py:245
 msgid "That configuration group exists, but seems to have no help.  Try \"config list %s\" to see if it has any children values."
-msgstr "Questo gruppo di configurazione esiste ma sembra non avere un help.\n"
-"       Provare \"config list %s\" per vedere se ha dei sottovalori."
+msgstr "Questo gruppo di configurazione esiste ma sembra non avere un help. Prova \"config list %s\" per vedere se ha dei sottovalori."
 
 #: plugin.py:249
 msgid "%s has no help."
@@ -174,9 +172,9 @@ msgid ""
 msgstr ""
 "<nomefile>\n"
 "\n"
-"        Esporta le variabili di configurazione in <nomefile>. Se si vuole\n"
-"        mostrare a qualcuno il proprio file di configurazione evitando di\n"
-"        rivelare dati sensibili come le password, questo comando creerà un\n"
-"        file \"pulito\" adatto ad essere mostrato pubblicamente.\n"
+"        Esporta le variabili di configurazione in <nomefile>. Se vuoi\n"
+"        mostrare a qualcuno il tuo file di configurazione evitando di\n"
+"        rivelare dati sensibili come le password, questo comando creerà\n"
+"        un file \"pulito\" adatto ad essere mostrato pubblicamente.\n"
 "        "
 

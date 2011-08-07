@@ -76,7 +76,7 @@ msgstr ""
 
 #: plugin.py:254
 msgid "That name isn't valid.  Try %q instead."
-msgstr "Nome non valido. Provare %q invece."
+msgstr "Nome non valido. Prova %q invece."
 
 #: plugin.py:292
 #, docstring
@@ -93,12 +93,12 @@ msgid ""
 msgstr ""
 "<nome> <alias>\n"
 "\n"
-"        Definisce un alias <nome> che esegue <alias>. <alias> deve essere\n"
-"        nello standard \"comando argomento [comandonidificato argomento]\";\n"
-"        gli argomenti dati devono essere riportati in sequenza.\n"
-"        Per gli argomenti richiesti è possibile utilizzare $1, $2, ecc., mentre \n"
-"        @1, @2, ecc. per argomenti opzionali. $* significa semplicemente \"tutti\n"
-"        gli argomenti rimanenti\" e non possono essere combinati con quelli opzionali.\n"
+"        Definisce un <nome> che esegue <alias>. <alias> deve essere nello\n"
+"        standard \"comando argomento [comando_nidificato argomento]\"; gli\n"
+"        argomenti dati devono essere riportati in sequenza. Per gli argomenti\n"
+"        richiesti è possibile utilizzare $1, $2, ecc., mentre @1, @2, ecc. per\n"
+"        quelli opzionali. $* significa semplicemente \"tutti gli argomenti\n"
+"        rimanenti\" e non può essere combinato con quelli opzionali.\n"
 "        "
 
 #: plugin.py:315
@@ -111,6 +111,6 @@ msgid ""
 msgstr ""
 "<nome>\n"
 "\n"
-"        Rimuove l'alias fornito, se sbloccato.\n"
+"        Rimuove l'alias specificato, se questo non è bloccato.\n"
 "        "
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-12 17:05+0200\n"
+"PO-Revision-Date: 2011-06-12 15:03+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -10,22 +10,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: plugin.py:84
+#: config.py:47
+msgid ""
+"Determines whether the bot will check\n"
+"    occasionally if its preferred nick is in use via the ISON command."
+msgstr ""
+"Determina se di tanto in tanto il bot controllerà tramite\n"
+"    il comando ISON se il suo nick sia in uso."
+
+#: config.py:50
+msgid ""
+"Determines how often (in seconds) the bot\n"
+"    will check whether its nick ISON."
+msgstr ""
+"Determina quanto spesso (in secondi) il bot controllerà il suo nick con ISON.\n"
+
+#: plugin.py:40
 #, docstring
 msgid ""
-"[<nick>]\n"
-"\n"
-"        Tells you how lame said nick is.  If <nick> is not given, uses the\n"
-"        nick of the person giving the command.\n"
-"        "
+"This module constantly tries to take whatever nick is configured as\n"
+"    supybot.nick.  Just make sure that's set appropriately, and thus plugin\n"
+"    will do the rest."
 msgstr ""
-"[<nick>]\n"
-"\n"
-"        Misura quanto sia lamer un nick. Se <nick> non è fornito, utilizza\n"
-"        quello della persona che ha dato il comando.\n"
-"        "
+"Questo modulo cerca costantemente di ottenere qualsiasi nick sia impostato\n"
+"    come supybot.nick. Assicurati che questa sia configurata correttamente\n"
+"    e il plugin farà il resto."
 
-#: plugin.py:226
-msgid "The \"lame nick-o-meter\" reading for \"%s\" is %s%%."
-msgstr "Il \"nick-o-meter lamer\" per \"%s\" è %s%%."
+#: plugin.py:89
+#, docstring
+msgid "This is returned by the ISON command."
+msgstr "Questo è restituito dal comando ISON."
 
