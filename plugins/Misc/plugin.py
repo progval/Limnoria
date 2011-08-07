@@ -406,6 +406,7 @@ class Misc(callbacks.Plugin):
             irc.action = False
             text = '* %s %s' % (irc.nick, text)
         s = '%s wants me to tell you: %s' % (msg.nick, text)
+        irc.replySuccess()
         irc.reply(s, to=target, private=True)
     tell = wrap(tell, ['something', 'text'])
 
