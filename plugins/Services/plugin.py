@@ -321,7 +321,10 @@ class Services(callbacks.Plugin):
                 for netname, m in tmp_wj:
                     if netname == irc.network:
                         irc.sendMsg(m)
-                        self.waitingJoins.remove((netname, m,))
+                        try:
+                            self.waitingJoins.remove((netname, m,))
+                        except ValueError:
+                            pass # weird stuff happen sometimes
         elif 'not yet authenticated' in s:
             # zirc.org has this, it requires an auth code.
             email = s.split()[-1]
