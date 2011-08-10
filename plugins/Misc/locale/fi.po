@@ -1,12 +1,12 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
+# Misc plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
 # Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-07-10 18:59+CEST\n"
-"PO-Revision-Date: 2011-07-16 21:11+0200\n"
+"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
+"PO-Revision-Date: 2011-08-10 15:00+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -167,12 +167,12 @@ msgstr "Nykyinen (päällä) oleva versio tästä Supybotista on %s.  %s"
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns a URL saying where to get Supybot.\n"
+"        Returns a URL saying where to get Limnoria.\n"
 "        "
 msgstr ""
 "ei ota parametrejä\n"
 "\n"
-"        Palauttaa URL kertoen mistä Supybotin saa.\n"
+"        Palauttaa URL:n, joka kertoo mistä Limnorian saa.\n"
 "        "
 
 #: plugin.py:243
@@ -279,7 +279,7 @@ msgstr "En ole nähnyt %s:ää, annan sinun hoitaa kertomisen."
 msgid "%s wants me to tell you: %s"
 msgstr "%s haluaa minun kertovan sinulle: %s"
 
-#: plugin.py:430
+#: plugin.py:431
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -291,7 +291,7 @@ msgstr ""
 "        Tarkistaa onko botti elossa.\n"
 "        "
 
-#: plugin.py:434
+#: plugin.py:435
 msgid "pong"
 msgstr "pong"
 
