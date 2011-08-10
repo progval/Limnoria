@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -100,7 +100,8 @@ msgstr ""
 "Retourne quelques statistiques intéressantes reliées au CPU."
 
 #: plugin.py:131
-msgid "My children have taken %.2f seconds of user time and %.2f seconds of system time for a total of %.2f seconds of CPU time.  "
+#, fuzzy
+msgid "My children have taken %.2f seconds of user time and %.2f seconds of system time for a total of %.2f seconds of CPU time."
 msgstr "Mes enfants ont pris %.2f secondes du temps utilisateur et %.2f secondes du temps système, pour un total de %.2f secondes de temps CPU."
 
 #: plugin.py:138
@@ -166,4 +167,3 @@ msgstr ""
 "ne prend pas d'argument\n"
 "\n"
 "Retourne le(s) serveur(s) sur le(s)quel(s) le bot est."
-

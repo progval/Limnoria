@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -143,10 +143,11 @@ msgstr ""
 "Retourne le texte, mis en majuscules de titre."
 
 #: plugin.py:148
+#, fuzzy
 msgid ""
 "<text>\n"
 "\n"
-"        Returns the text surrounded by double quotes.\n"
+"        Returns <text> surrounded by double quotes.\n"
 "        "
 msgstr ""
 "<texte>\n"
@@ -206,4 +207,3 @@ msgstr ""
 #: plugin.py:206
 msgid "Not enough arguments for the format string."
 msgstr "Pas assez d'arguments pour formatter la chaîne."
-

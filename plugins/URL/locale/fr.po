@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-20 09:38+CEST\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -38,14 +38,15 @@ msgid "I have %n in my database."
 msgstr "J'ai %n dans ma base de données."
 
 #: plugin.py:101
+#, fuzzy
 msgid ""
 "[<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]\n"
 "\n"
 "        Gives the last URL matching the given criteria.  --from is from whom\n"
 "        the URL came; --proto is the protocol the URL used; --with is something\n"
 "        inside the URL; --without is something that should not be in the URL;\n"
-"        --near is something in the same message as the URL; If --nolimit is\n"
-"        given, returns all the URLs that are found. to just the URL.\n"
+"        --near is something in the same message as the URL.  If --nolimit is\n"
+"        given, returns all the URLs that are found to just the URL.\n"
 "        <channel> is only necessary if the message isn't sent in the channel\n"
 "        itself.\n"
 "        "
@@ -57,4 +58,3 @@ msgstr ""
 #: plugin.py:143
 msgid "No URLs matched that criteria."
 msgstr "Aucune URL ne correspond à ces critères."
-

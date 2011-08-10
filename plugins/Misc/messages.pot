@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-07-10 18:59+CEST\n"
+"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,7 +138,7 @@ msgstr ""
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns a URL saying where to get Supybot.\n"
+"        Returns a URL saying where to get Limnoria.\n"
 "        "
 msgstr ""
 
@@ -227,7 +227,7 @@ msgstr ""
 msgid "%s wants me to tell you: %s"
 msgstr ""
 
-#: plugin.py:430
+#: plugin.py:431
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -236,7 +236,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:434
+#: plugin.py:435
 msgid "pong"
 msgstr ""
 

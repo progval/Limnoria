@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -130,7 +130,26 @@ msgstr ""
 msgid "There were no notes for %r"
 msgstr "Il n'y a pas de note pour %r"
 
-#: plugin.py:231
+#: plugin.py:212
+msgid ""
+"<nick>\n"
+"\n"
+"        Removes the latest note you sent to <nick>.\n"
+"        "
+msgstr ""
+"<nick>\n"
+"\n"
+"Supprime la dernière note que vous avez envoyée à <nick>."
+
+#: plugin.py:217
+msgid "There are no note waiting for %s."
+msgstr "Il n'y a pas de note en attente de %r"
+
+#: plugin.py:228
+msgid "There are no note from you waiting for %s."
+msgstr "Il n'y a pas de note de vous en attente pour %s."
+
+#: plugin.py:252
 msgid "Sent %s: <%s> %s"
 msgstr "Envoyé %s : <%s> %s"
 
