@@ -52,7 +52,7 @@ class Reply(callbacks.Plugin):
     def action(self, irc, msg, args, text):
         """<text>
 
-        Replies with <text> as an action.  use nested commands to your benefit
+        Replies with <text> as an action.  Use nested commands to your benefit
         here.
         """
         if text:

@@ -378,7 +378,7 @@ class Owner(callbacks.Plugin):
         Runs the standard upkeep stuff (flushes and gc.collects()).  If given
         a level, runs that level of upkeep (currently, the only supported
         level is "high", which causes the bot to flush a lot of caches as well
-        as do normal upkeep stuff.
+        as do normal upkeep stuff).
         """
         L = []
         if level == 'high':
