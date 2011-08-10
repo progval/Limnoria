@@ -86,7 +86,7 @@ conf.registerGlobalValue(ChannelLogger.directories, 'timestamp',
     if using directories.""")))
 conf.registerGlobalValue(ChannelLogger.directories.timestamp, 'format',
     registry.String('%B', _("""Determines what timestamp format will be used in
-    the directory stucture for channel logs if
+    the directory structure for channel logs if
     supybot.plugins.ChannelLogger.directories.timestamp is True.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -53,7 +53,7 @@ conf.registerChannelValue(conf.supybot.plugins.Karma, 'rankingDisplay',
     are shown when karma is called with no arguments.""")))
 conf.registerChannelValue(conf.supybot.plugins.Karma, 'mostDisplay',
     registry.Integer(25, _("""Determines how many karma things are shown when
-    the most command is called.'""")))
+    the most command is called.""")))
 conf.registerChannelValue(conf.supybot.plugins.Karma, 'allowSelfRating',
     registry.Boolean(False, _("""Determines whether users can adjust the karma
     of their nick.""")))

@@ -130,7 +130,7 @@ class Status(callbacks.Plugin):
            user+system < timeRunning+1: # Fudge for FPU inaccuracies.
             children = _('My children have taken %.2f seconds of user time '
                        'and %.2f seconds of system time '
-                       'for a total of %.2f seconds of CPU time.  ') % \
+                       'for a total of %.2f seconds of CPU time.') % \
                        (childUser, childSystem, childUser+childSystem)
         else:
             children = ''
