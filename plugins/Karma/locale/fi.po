@@ -1,14 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
+# Karma plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
 # Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-24 18:54+0200\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"PO-Revision-Date: 2011-08-10 14:22+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -41,10 +42,10 @@ msgstr ""
 #: config.py:55
 msgid ""
 "Determines how many karma things are shown when\n"
-"    the most command is called.'"
+"    the most command is called."
 msgstr ""
 "Määrittää kuinka monta karma asiaa näytetään, kun\n"
-"    kun most komento on pyydetty.'"
+"    kun \"most\" komento on pyydetty.'"
 
 #: config.py:58
 msgid ""
