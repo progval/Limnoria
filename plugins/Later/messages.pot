@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,7 +128,24 @@ msgstr ""
 msgid "There were no notes for %r"
 msgstr ""
 
-#: plugin.py:231
+#: plugin.py:212
+#, docstring
+msgid ""
+"<nick>\n"
+"\n"
+"        Removes the latest note you sent to <nick>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:217
+msgid "There are no note waiting for %s."
+msgstr ""
+
+#: plugin.py:228
+msgid "There are no note from you waiting for %s."
+msgstr ""
+
+#: plugin.py:252
 msgid "Sent %s: <%s> %s"
 msgstr ""
 

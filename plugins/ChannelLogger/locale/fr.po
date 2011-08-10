@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-17 10:02+CEST\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -89,7 +89,7 @@ msgstr "Détermine si le bot utilisera un timestamp (déterminé par supybot.plu
 #: config.py:88
 msgid ""
 "Determines what timestamp format will be used in\n"
-"    the directory stucture for channel logs if\n"
+"    the directory structure for channel logs if\n"
 "    supybot.plugins.ChannelLogger.directories.timestamp is True."
 msgstr "Détermine quel format de timestamp sera utilisé dans la structure de répertoires pour les logs de canaux si supybot.plugins.ChannelLogger.directories.timestamp est True."
 

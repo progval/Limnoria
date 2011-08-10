@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-31 10:39+0200\n"
+"PO-Revision-Date: 2011-08-10 00:13+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -71,6 +71,22 @@ msgstr ""
 "    che l'utente intenzionato a parlare anonimamente sia in canale; o anche, tramite\n"
 "    supybot.plugins.Anonymous.requireRegistration, che l'utente sia registrato."
 "    "
+
+#: plugin.py:64
+msgid "You must be in %s to %q in there."
+msgstr "Devi essere in %s per %q."
+
+#: plugin.py:68
+msgid "I'm lobotomized in %s."
+msgstr "In %s sono lobotomizzato."
+
+#: plugin.py:71
+msgid "That channel has set its capabilities so as to disallow the use of this plugin."
+msgstr "Questo canale ha le capacità impostate in modo da impedire l'utilizzo di questo plugin."
+
+#: plugin.py:74
+msgid "%q cannot be used to send private messages."
+msgstr "%q non può essere usato per inviare messaggi privati."
 
 #: plugin.py:80
 #, docstring
