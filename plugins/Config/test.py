@@ -34,7 +34,7 @@ import supybot.conf as conf
 
 class ConfigTestCase(ChannelPluginTestCase):
     # We add utilities so there's something in supybot.plugins.
-    plugins = ('Config', 'Utilities', 'AutoMode')
+    plugins = ('Config', 'Utilities')
     def testGet(self):
         self.assertNotRegexp('config get supybot.reply', r'registry\.Group')
         self.assertResponse('config supybot.protocols.irc.throttleTime', '0.0')
@@ -49,9 +49,6 @@ class ConfigTestCase(ChannelPluginTestCase):
     def testHelp(self):
         self.assertError('config help alsdkfj')
         self.assertError('config help supybot.alsdkfj')
-        self.assertNotRegexp('config list supybot', '.*alsdkfj.*')
-        self.assertError('config help supybot.plugins.AutoMode.ban.alsdkfj')
-        self.assertNotRegexp('config list supybot.plugins.AutoMode.ban', '.*alsdkfj.*')
         self.assertNotError('config help supybot') # We tell the user to list.
         self.assertNotError('config help supybot.plugins')
         self.assertNotError('config help supybot.replies.success')
