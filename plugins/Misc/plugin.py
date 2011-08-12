@@ -43,6 +43,8 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot import commands
+
 from supybot.utils.iter import ifilter
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
@@ -335,14 +337,27 @@ class Misc(callbacks.Plugin):
                 predicates.setdefault('without', []).append(f)
             elif option == 'regexp':
                 def f(m, arg=arg):
-                    startedOn = time.time()
+                    def f1(s, arg):
+                        """Since we can't enqueue match objects into the multiprocessing queue,
+                        we'll just wrap the function to return bools."""
+                        if arg.search(s) is not None:
+                            return True
+                        else:
+                            return False
                     if ircmsgs.isAction(m):
-                        return_ = arg.search(ircmsgs.unAction(m))
+                        m1 = ircmsgs.unAction(m)
+                        #return arg.search(ircmsgs.unAction(m))
                     else:
-                        return_ = arg.search(m.args[1])
-                    if startedOn + 0.0001 < time.time():
-                        raise RegexpTimeout()
-                    return return_
+                        m1 = m.args[1]
+                        #return arg.search(m.args[1])
+                    try:
+                        # use a subprocess here, since specially crafted regexps can
+                        # take exponential time and hang up the bot.
+                        # timeout of 0.1 should be more than enough for any normal regexp.
+                        v = commands.process(f1, m1, arg, timeout=0.1, pn=self.name(), cn='last')
+                        return v
+                    except commands.ProcessTimeoutError:
+                        return False
                 predicates.setdefault('regexp', []).append(f)
             elif option == 'nolimit':
                 nolimit = True
