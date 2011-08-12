@@ -146,10 +146,14 @@ class String(callbacks.Plugin):
             s = _('You probably don\'t want to match the empty string.')
             irc.error(s)
         else:
-            irc.reply(f(text))
-    re = wrap(re, [('checkCapability', 'trusted'),
-                   first('regexpMatcher', 'regexpReplacer'),
-                   'text'])
+            t = self.registryValue('re.timeout')
+            try:
+                v = commands.process(f, text, timeout=t, pn=self.name(), cn='re')
+                irc.reply(v)
+            except commands.ProcessTimeoutError, e:
+                irc.error("ProcessTimeoutError: %s" % (e,))
+    re = thread(wrap(re, [first('regexpMatcher', 'regexpReplacer'),
+                   'text']))
 
     @internationalizeDocstring
     def xor(self, irc, msg, args, password, text):
