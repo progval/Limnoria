@@ -166,7 +166,7 @@ class MiscTestCase(ChannelPluginTestCase):
                                 (self.nick, self.nick.upper()))
             conf.supybot.plugins.Misc.timestampFormat.setValue('foo')
             self.assertSnarfNoResponse('foo bar baz', 1)
-            self.assertResponse('last', 'foo <%s> foo bar baz' % self.nick)
+            self.assertResponse('last', '<%s> foo bar baz' % self.nick)
         finally:
             conf.supybot.plugins.Misc.timestampFormat.setValue(orig)
 
