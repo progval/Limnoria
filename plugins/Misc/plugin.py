@@ -47,6 +47,9 @@ from supybot.utils.iter import ifilter
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
 
+class RegexpTimeout(Exception):
+    pass
+
 class Misc(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Misc, self)
@@ -332,10 +335,14 @@ class Misc(callbacks.Plugin):
                 predicates.setdefault('without', []).append(f)
             elif option == 'regexp':
                 def f(m, arg=arg):
+                    startedOn = time.time()
                     if ircmsgs.isAction(m):
-                        return arg.search(ircmsgs.unAction(m))
+                        return_ = arg.search(ircmsgs.unAction(m))
                     else:
-                        return arg.search(m.args[1])
+                        return_ = arg.search(m.args[1])
+                    if startedOn + 0.0001 < time.time():
+                        raise RegexpTimeout()
+                    return return_
                 predicates.setdefault('regexp', []).append(f)
             elif option == 'nolimit':
                 nolimit = True
@@ -370,8 +377,12 @@ class Misc(callbacks.Plugin):
             showNick = True
         for m in iterable:
             for predicate in predicates:
-                if not predicate(m):
-                    break
+                try:
+                    if not predicate(m):
+                        break
+                except RegexpTimeout:
+                    irc.error(_('The regular expression timed out.'))
+                    return
             else:
                 if nolimit:
                     resp.append(ircmsgs.prettyPrint(m,
