@@ -1,3 +1,3 @@
 """stick the various versioning attributes in here, so we only have to change
 them once."""
-version = '0.83.4.1+limnoria (2011-08-12T18:51:40+0200)'
+version = '0.83.4.1+limnoria (2011-08-13T01:53:58+0200)'
