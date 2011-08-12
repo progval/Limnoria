@@ -69,6 +69,10 @@ def thread(f):
             f(self, irc, msg, args, *L, **kwargs)
     return utils.python.changeFunctionName(newf, f.func_name, f.__doc__)
 
+class ProcessTimeoutError(Exception):
+    """Gets raised when a process is killed due to timeout."""
+    pass
+
 def process(f, *args, **kwargs):
     """Runs a function <f> in a subprocess.
     
@@ -93,7 +97,7 @@ def process(f, *args, **kwargs):
     p.join(timeout)
     if p.is_alive():
         p.terminate()
-        return "%s aborted due to timeout." % (p.name,)
+        raise ProcessTimeoutError, "%s aborted due to timeout." % (p.name,)
     try:
         v = q.get(block=False)
     except Queue.Empty:
