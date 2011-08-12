@@ -1,7 +1,11 @@
+# ChannelLogger plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot Channellogger\n"
-"POT-Creation-Date: 2010-10-17 10:02+CEST\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
@@ -117,10 +121,10 @@ msgstr ""
 #: config.py:88
 msgid ""
 "Determines what timestamp format will be used in\n"
-"    the directory stucture for channel logs if\n"
+"    the directory structure for channel logs if\n"
 "    supybot.plugins.ChannelLogger.directories.timestamp is True."
 msgstr ""
-"Määrittää mitä aikaleima muotoa käytetään\n"
+"Määrittää mitä aikaleimamuotoa käytetään\n"
 " hakemistorakenteessa kanavalokeille jos\n"
 "    supybot.plugins.ChannelLogger.directories.timestamp on True."
 

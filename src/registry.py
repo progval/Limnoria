@@ -206,7 +206,7 @@ class Group(object):
     def __getattr__(self, attr):
         if attr in self._children:
             return self._children[attr]
-        elif self._supplyDefault and attr.startswith('#'):
+        elif self._supplyDefault:
             return self.__makeChild(attr, str(self))
         else:
             self.__nonExistentEntry(attr)
