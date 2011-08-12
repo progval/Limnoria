@@ -42,6 +42,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot import commands
 
 class NoteRecord(dbi.Record):
     __fields__ = [
@@ -292,7 +293,8 @@ class Note(callbacks.Plugin):
         own = to
         for (option, arg) in optlist:
             if option == 'regexp':
-                criteria.append(arg.search)
+                criteria.append(lambda x: commands.regexp_wrapper(x, reobj=arg, 
+                        timeout=0.1, plugin_name = self.name(), fcn_name='search'))
             elif option == 'sent':
                 own = frm
         if glob:
