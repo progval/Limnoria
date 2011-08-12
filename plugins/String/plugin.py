@@ -139,8 +139,11 @@ class String(callbacks.Plugin):
             irc.error(s)
         else:
             t = self.registryValue('re.timeout')
-            v = commands.process(f, text, timeout=t, pn=self.name(), cn='re')
-            irc.reply(v)
+            try:
+                v = commands.process(f, text, timeout=t, pn=self.name(), cn='re')
+                irc.reply(v)
+            except commands.ProcessTimeoutError, e:
+                irc.error("ProcessTimeoutError: %s" % (e,))
     re = thread(wrap(re, [first('regexpMatcher', 'regexpReplacer'),
                    'text']))
 
