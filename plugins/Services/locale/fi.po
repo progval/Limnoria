@@ -1,12 +1,12 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
+# Services plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
 # Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-08-13 20:32+0200\n"
+"PO-Revision-Date: 2011-08-13 23:02+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -133,6 +133,14 @@ msgid ""
 "    network.  Other commands such as identify, op, etc. should not be\n"
 "    necessary if the bot is properly configured."
 msgstr ""
+"Tämä lisäosa hoitaa palvelut verkoissa, jotka tarjoavat niitä.\n"
+"    Perusteellisesti, sinun pitäisi käyttää komentoa \"password\" kertoaksesi botille\n"
+"    millä salasanalla ja tunnuksella se tunnistautuu.  Voit käyttää\n"
+"    salasanakomentoa monta kertaa, mikäli botillasi on monta rekisteröityä\n"
+"    nimimerkkiä.  Varmista myös, että asetusarvot täsmäävät\n"
+"    NickServin ja ChanServin nimimerkkeihin verkossasi.\n"
+"    Muiden komentojen, kuten identify, op, jne. ei\n"
+"    pitäisi olla vaadittuja, jos botti on määritetty hyvin."
 
 #: plugin.py:397
 msgid "You must set supybot.plugins.Services.ChanServ before I'm able to send the %s command."
@@ -184,6 +192,12 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<kanava>]\n"
+"\n"
+"        Yrittää poistaa porttikiellon <kanavalta> käyttämällä ChanServiä.  <Kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään, mutta luultavast jos tarvitset tätä komentoa, et ole kanavallai\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:460
 msgid ""
@@ -195,6 +209,13 @@ msgid ""
 "        itself.\n"
 "        "
 msgstr ""
+"[<channel>]\n"
+"\n"
+"        Yrittää saada ChanServiltä kutsun <kanavalle>.  <Kanava> on vaadittu vain,\n"
+"        jos viestiä ei lähetetä kanavalla itsellään, mutta luultavasti\n"
+"        jos tarvitset tätä komentoa, et lähetä sitä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:481
 msgid ""
