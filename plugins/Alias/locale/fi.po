@@ -1,3 +1,7 @@
+# Alias plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot Alias plugin\n"
@@ -22,8 +26,8 @@ msgid ""
 msgstr ""
 "Palauttaa kanavan, jolta viesti tuli tai kanavan, joka on annettu parametreissä.\n"
 "\n"
-"Jos kanava annetaan parametreissä, parametriä muokataan (kanava\n"
-"poistetaan).\n"
+"     Jos kanava annetaan parametreissä, parametriä muokataan (kanava\n"
+"      poistetaan).\n"
 "    "
 
 #: plugin.py:164
@@ -53,7 +57,7 @@ msgid ""
 msgstr ""
 "<alias>\n"
 "\n"
-"Lukitsee aliaksen, niin ettei kukaan muu voi muuttaa sitä.\n"
+"     Lukitsee aliaksen, niin ettei kukaan muu voi muuttaa sitä.\n"
 "        "
 
 #: plugin.py:229
@@ -70,12 +74,12 @@ msgid ""
 msgstr ""
 "<alias>\n"
 "\n"
-"Poistaa lukituksen aliaksesta, jotta ihmiset vouvat määrittää uusia aliaksia sen päälle.\n"
+"     Poistaa lukituksen aliaksesta, jotta ihmiset vouvat määrittää uusia aliaksia sen päälle.\n"
 "        "
 
 #: plugin.py:254
 msgid "That name isn't valid.  Try %q instead."
-msgstr "Nimi ei ole kelvollinen. Yritä sen sijaa %q:ta."
+msgstr "Tuo nimi ei ole kelvollinen. Yritä sen sijaan %q:ta."
 
 #: plugin.py:292
 msgid ""
@@ -91,12 +95,12 @@ msgid ""
 msgstr ""
 "<nimi> <alias>\n"
 "\n"
-"Määrittää aliaksen <nimi>, joka suorittaa <aliaksen>.  <Alias>\n"
-"Aliaksen pitäisi olla tavallisia  \"komento parametri [sisäkkäiset parametrit]\"\n"
-"parametrejä aliakselle; ne täytetään ensinmäinen, toinen, jne.\n"
-"Parametrit.  $1, $2, jne. voidaan käyttää vaadittuina parametreinä.  @1, @2,\n"
-"jne. voidaan käyttää vaihtoehtoisina parametreinä.  $* tarkoittaa yksinkertaisesti \"kaikki\n"
-"jäljellä olevat parametrit,\" ja johon ei voida yhdistää vaihtoehtoisia parametrejä.\n"
+"     Määrittää aliaksen <nimi>, joka suorittaa <aliaksen>.  <Aliaksen>\n"
+"     pitäisi olla tavallinen  \"komento parametri [sisäkkäinen komento parametrit]\"\n"
+"     parametrejä aliakselle; ne täytetään ensinmäinen, toinen, jne.\n"
+"     Parametrit.  $1, $2, jne. ovat vaadittuja parametrejä.  @1, @2,\n"
+"     jne. ovat vapaaehtoisia parametrejä.  $* tarkoittaa yksinkertaisesti \"kaikki\n"
+"     jäljellä olevat parametrit,\" ja johon ei voida yhdistää vaihtoehtoisia parametrejä.\n"
 "        "
 
 #: plugin.py:315
@@ -108,6 +112,6 @@ msgid ""
 msgstr ""
 "<nimi>\n"
 "\n"
-"Poistaa annetun aliaksen jos se ei ole lukittu.\n"
+"     Poistaa annetun aliaksen jos se ei ole lukittu.\n"
 "        "
 
