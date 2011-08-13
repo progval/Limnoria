@@ -69,6 +69,61 @@ def thread(f):
             f(self, irc, msg, args, *L, **kwargs)
     return utils.python.changeFunctionName(newf, f.func_name, f.__doc__)
 
+class ProcessTimeoutError(Exception):
+    """Gets raised when a process is killed due to timeout."""
+    pass
+
+def process(f, *args, **kwargs):
+    """Runs a function <f> in a subprocess.
+    
+    Several extra keyword arguments can be supplied. 
+    <pn>, the pluginname, and <cn>, the command name, are strings used to
+    create the process name, for identification purposes.
+    <timeout>, if supplied, limits the length of execution of target 
+    function to <timeout> seconds."""
+    timeout = kwargs.pop('timeout', None)
+    
+    q = multiprocessing.Queue()
+    def newf(f, q, *args, **kwargs):
+        try:
+            r = f(*args, **kwargs)
+            q.put(r)
+        except Exception as e:
+            q.put(e)
+    targetArgs = (f, q,) + args
+    p = callbacks.CommandProcess(target=newf,
+                                args=targetArgs, kwargs=kwargs)
+    p.start()
+    p.join(timeout)
+    if p.is_alive():
+        p.terminate()
+        raise ProcessTimeoutError, "%s aborted due to timeout." % (p.name,)
+    try:
+        v = q.get(block=False)
+    except Queue.Empty:
+        v = "Nothing returned."
+    if isinstance(v, Exception):
+        v = "Error: " + str(v)
+    return v
+
+def regexp_wrapper(s, reobj, timeout, plugin_name, fcn_name):
+    '''A convenient wrapper to stuff regexp search queries through a subprocess.
+    
+    This is used because specially-crafted regexps can use exponential time
+    and hang the bot.'''
+    def re_bool(s, reobj):
+        """Since we can't enqueue match objects into the multiprocessing queue,
+        we'll just wrap the function to return bools."""
+        if reobj.search(s) is not None:
+            return True
+        else:
+            return False
+    try:
+        v = process(re_bool, s, reobj, timeout=timeout, pn=plugin_name, cn=fcn_name)
+        return v
+    except ProcessTimeoutError:
+        return False
+
 class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):
         assert 'url' in kwargs

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-08-10 02:11+0200\n"
+"PO-Revision-Date: 2011-08-10 14:39+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -161,12 +161,12 @@ msgstr "La versione di questo Supybot è %s.  %s"
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns a URL saying where to get Supybot.\n"
+"        Returns a URL saying where to get Limnoria.\n"
 "        "
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Riporta un URL che dice dove ottenere Supybot.\n"
+"        Riporta un URL che dice dove ottenere Limnoria.\n"
 "        "
 
 #: plugin.py:243
@@ -274,7 +274,7 @@ msgstr "Non ho mai visto %s, lascio a te l'invio del messaggio."
 msgid "%s wants me to tell you: %s"
 msgstr "%s vuole che ti dica: %s"
 
-#: plugin.py:430
+#: plugin.py:431
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -287,7 +287,7 @@ msgstr ""
 "        Controlla che il bot sia ancora vivo.\n"
 "        "
 
-#: plugin.py:434
+#: plugin.py:435
 msgid "pong"
 msgstr "pong"
 

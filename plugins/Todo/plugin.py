@@ -41,6 +41,7 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot import commands
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Todo')
 
@@ -237,6 +238,8 @@ class Todo(callbacks.Plugin):
         criteria = []
         for (option, arg) in optlist:
             if option == 'regexp':
+                criteria.append(lambda x: commands.regexp_wrapper(x, reobj=arg, 
+                        timeout=0.1, plugin_name = self.name(), fcn_name='search'))
                 criteria.append(arg.search)
         for glob in globs:
             glob = utils.python.glob2re(glob)
