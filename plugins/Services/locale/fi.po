@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-08-09 16:35+0200\n"
+"PO-Revision-Date: 2011-08-13 19:56+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,35 +20,39 @@ msgstr "Määrittää mitä salasanaa botti käyttää, kun tunnistautuu %s:ksi 
 
 #: config.py:49
 msgid "What is your registered nick?"
-msgstr ""
+msgstr "Mikä on rekisteröity nimimerkkisi?"
 
 #: config.py:50
 msgid "What is your password for that nick?"
-msgstr ""
+msgstr "Mikä on salasanasi tuolle nimimerkille?"
 
 #: config.py:51
 msgid "What is your ChanServ named?"
-msgstr ""
+msgstr "Minkä niminen ChanServisi on?"
 
 #: config.py:52
 msgid "What is your NickServ named?"
-msgstr ""
+msgstr "Minkä niminen NickServisi on?"
 
 #: config.py:70
 msgid ""
 "Determines what nicks the bot will use with\n"
 "    services."
 msgstr ""
+"Määrittää mitä nimimerkkiä botti käyttää\n"
+"    palvelujen kanssa."
 
 #: config.py:77
 msgid ""
 "Determines what networks this plugin\n"
 "    will be disabled on."
 msgstr ""
+"Määrittää missä verkoissa tämä\n"
+"    lisäosa on poistettu käytöstä."
 
 #: config.py:77
 msgid "QuakeNet"
-msgstr ""
+msgstr "QuakeNet"
 
 #: config.py:81
 msgid ""
@@ -57,48 +61,66 @@ msgid ""
 "    you have a vhost that isn't set until you're identified, or if you're\n"
 "    joining +r channels that won't allow you to join unless you identify."
 msgstr ""
+"Määrittää liittyykö botti millekään kanavalle ennen\n"
+"    kuin se on tunnistautunut.  Tämä voi olla hyödyllinen, esimerkiksi, jos\n"
+"    sinulla on vhost, jota ei aseteta ennen kuin tunnistaudut, tai jos olet\n"
+"    liittymässä +r kanaville, jotka eivät salli sinun liittyvän, paitsi jos olet tunnistautunut."
 
 #: config.py:86
 msgid ""
 "Determines how many seconds the bot will\n"
 "    wait between successive GHOST attempts."
 msgstr ""
+"Määrittää monta sekuntia botti odottaa\n"
+"    GHOSTaus yritysten välillä."
 
 #: config.py:89
 msgid ""
 "Determines what nick the 'NickServ' service\n"
 "    has."
 msgstr ""
+"Määrittää mikä nimimerkki 'NickServ' palvelulla\n"
+"    on."
 
 #: config.py:93
 msgid ""
 "Determines what nick the 'ChanServ' service\n"
 "    has."
 msgstr ""
+"Määrittää mikä nimimerkki 'ChanServ' palvelulla\n"
+"    on."
 
 #: config.py:96
 msgid ""
 "Determines what password the bot will use with\n"
 "    ChanServ."
 msgstr ""
+"Määrittää mitä salasanaa botti käyttää\n"
+"    ChanServin kanssa."
 
 #: config.py:99
 msgid ""
 "Determines whether the bot will request to get\n"
 "    opped by the ChanServ when it joins the channel."
 msgstr ""
+"Määrittää pyytääkö botti ChanServin oppaamaksi\n"
+"    tulemista, kun se liittyy kanavalle."
 
 #: config.py:102
 msgid ""
 "Determines whether the bot will request to get\n"
 "    half-opped by the ChanServ when it joins the channel."
 msgstr ""
+"Määrittää pyytääkö botti tulla ChanServin puolioppaamaksi, kun\n"
+"    se liittyy kanavalle."
 
 #: config.py:105
 msgid ""
 "Determines whether the bot will request to get\n"
 "    voiced by the ChanServ when it joins the channel."
 msgstr ""
+"Määrittää pyytääkö botti ChanServiltä äänen, kun\n"
+"    se liittyy kanavalle."
 
 #: plugin.py:47
 msgid ""
@@ -114,7 +136,7 @@ msgstr ""
 
 #: plugin.py:397
 msgid "You must set supybot.plugins.Services.ChanServ before I'm able to send the %s command."
-msgstr ""
+msgstr "Sinun täytyy asettaa supybot.plugins.Services.ChanServ ennen kuin pystyn lähettämään komennon %s."
 
 #: plugin.py:403
 msgid ""
@@ -124,6 +146,11 @@ msgid ""
 "        necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>]\n"
+"\n"
+"        Yrittää päästä ChanServin oppaamaksi <kanavalla>.  <Kanava> on vaadittu vain,\n"
+"        jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:409
 msgid "I'm already opped in %s."
