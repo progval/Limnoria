@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-08-13 19:56+0200\n"
+"PO-Revision-Date: 2011-08-13 20:32+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -154,7 +154,7 @@ msgstr ""
 
 #: plugin.py:409
 msgid "I'm already opped in %s."
-msgstr ""
+msgstr "Minut on jo opattu kanavalla %s."
 
 #: plugin.py:416
 msgid ""
@@ -164,10 +164,15 @@ msgid ""
 "        necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
+"[<kanava>]\n"
+"\n"
+"        Yrittää saada ChanServiltä äänen <kanavalla>.  <Kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:422
 msgid "I'm already voiced in %s."
-msgstr ""
+msgstr "Minulla on jo ääni kanavalla %s."
 
 #: plugin.py:439
 msgid ""
@@ -198,14 +203,18 @@ msgid ""
 "        Identifies with NickServ using the current nick.\n"
 "        "
 msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"        Tunnistautuu NickServille käyttämällä nykyistä nimimerkkiä.\n"
+"        "
 
 #: plugin.py:490
 msgid "I don't have a configured password for my current nick."
-msgstr ""
+msgstr "Minulla ei ole määritettyä salasanaa nimimerkilleni."
 
 #: plugin.py:493
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to do identify."
-msgstr ""
+msgstr "Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn tunnistautumaan."
 
 #: plugin.py:499
 msgid ""
@@ -215,14 +224,19 @@ msgid ""
 "        ghosts the bot's configured nick and takes it.\n"
 "        "
 msgstr ""
+"[<nimimerkki>]\n"
+"\n"
+"        Ghostaa botin annetun nimimerkin ja ottaa sen.  Jos nimimerkkiä ei ole annettu,\n"
+"        ghostaa botin määritetyn nimimerkin ja ottaa sen.\n"
+"        "
 
 #: plugin.py:508
 msgid "I cowardly refuse to ghost myself."
-msgstr ""
+msgstr "Minä pelkurimaisesti kieltäydyn ghostaamasta itseäni."
 
 #: plugin.py:513
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to ghost a nick."
-msgstr ""
+msgstr "Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn ghostaamaan nimimerkin."
 
 #: plugin.py:519
 msgid ""
@@ -232,10 +246,15 @@ msgid ""
 "        not given, removes <nick> from the configured nicks.\n"
 "        "
 msgstr ""
+"<nimimerkki> [<salasana>]\n"
+"\n"
+"        Asettaa NickServin salasanan <nimimerkille> <salasanaksi>.  Jos <salasana> ei\n"
+"        ole annettu, poistaa <nimimerkin> määritetyistä nimimerkeistä.\n"
+"        "
 
 #: plugin.py:529
 msgid "That nick was not configured with a password."
-msgstr ""
+msgstr "Tuota nimimerkkiä ei ole määritetty salasanan kanssa."
 
 #: plugin.py:540
 msgid ""
@@ -245,8 +264,13 @@ msgid ""
 "        with.\n"
 "        "
 msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"        Palauttaa nimimerkin, jolla tämä lisäosa on määritetty tunnistautumaan ja\n"
+"        ghostaamaan.\n"
+"        "
 
 #: plugin.py:550
 msgid "I'm not currently configured for any nicks."
-msgstr ""
+msgstr "Minulle ei ole tällä hetkellä määritetty yhtään nimimerkkiä."
 
