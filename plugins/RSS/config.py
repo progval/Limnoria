@@ -76,6 +76,14 @@ conf.registerGlobalValue(RSS, 'defaultNumberOfHeadlines',
 conf.registerChannelValue(RSS, 'initialAnnounceHeadlines',
     registry.PositiveInteger(5, """Indicates how many headlines an rss feed 
     will output when it is first added to announce for a channel."""))
+conf.registerChannelValue(RSS, 'keywordWhitelist',
+    registry.SpaceSeparatedSetOfStrings([], """Space separated list of 
+    strings, lets you filter headlines to those containing one or more items
+    in this whitelist."""))
+conf.registerChannelValue(RSS, 'keywordBlacklist',
+    registry.SpaceSeparatedSetOfStrings([], """Space separated list of 
+    strings, lets you filter headlines to those not containing any items
+    in this blacklist."""))
 
 
 conf.registerGroup(RSS, 'announce')
