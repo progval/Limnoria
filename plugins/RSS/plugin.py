@@ -184,9 +184,29 @@ class RSS(callbacks.Plugin):
                     newheadlines[i] = None
             newheadlines = filter(None, newheadlines) # Removes Nones.
             if newheadlines:
+                def filter_whitelist(headline):
+                    v = False
+                    for kw in whitelist:
+                        if kw in headline[0] or kw in headline[1]:
+                            v = True
+                            break
+                    return v
+                def filter_blacklist(headline):
+                    v = True
+                    for kw in blacklist:
+                        if kw in headline[0] or kw in headline[1]:
+                            v = False
+                            break
+                    return v
                 for channel in channels:
                     if len(oldheadlines) == 0:
-                        newheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
+                        channelnewheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
+                    whitelist = self.registryValue('keywordWhitelist', channel)
+                    blacklist = self.registryValue('keywordBlacklist', channel)
+                    if len(whitelist) != 0:
+                        channelnewheadlines = filter(filter_whitelist, channelnewheadlines)
+                    if len(blacklist) != 0:
+                        channelnewheadlines = filter(filter_blacklist, channelnewheadlines)
                     bold = self.registryValue('bold', channel)
                     sep = self.registryValue('headlineSeparator', channel)
                     prefix = self.registryValue('announcementPrefix', channel)
@@ -194,7 +214,7 @@ class RSS(callbacks.Plugin):
                     if bold:
                         pre = ircutils.bold(pre)
                         sep = ircutils.bold(sep)
-                    headlines = self.buildHeadlines(newheadlines, channel)
+                    headlines = self.buildHeadlines(channelnewheadlines, channel)
                     irc.replies(headlines, prefixer=pre, joiner=sep,
                                 to=channel, prefixNick=False, private=True)
         finally:
