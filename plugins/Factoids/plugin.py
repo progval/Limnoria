@@ -345,11 +345,11 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 # check if we already have the requested relation
                 cursor.execute("""SELECT id FROM relations WHERE
                             key_id=? and fact_id=?""", 
-                            (arelation[1], arelation[2]))
+                            (newkey_info[0][0], arelation[2]))
                 existentrelation = cursor.fetchall()
                 if len(existentrelation) != 0:
                     newkey_info = False
-            if len(newkey_info) == 0:
+            elif len(newkey_info) == 0:
                 cursor.execute("""INSERT INTO keys VALUES (NULL, ?)""", 
                             (newkey,))
                 db.commit()

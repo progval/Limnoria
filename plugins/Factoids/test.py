@@ -191,6 +191,10 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertError('alias foo gnoop')
         self.assertNotError('alias foo gnoop 2')
         self.assertRegexp('whatis gnoop', 'snorp')
+        self.assertNotError('learn floop as meep')
+        self.assertNotError('learn bar as baz')
+        self.assertNotError('alias floop bar')
+        self.assertRegexp('whatis bar', 'meep.*baz')
     
     def testRank(self):
         self.assertNotError('learn foo as bar')
