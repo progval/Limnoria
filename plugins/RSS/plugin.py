@@ -199,6 +199,8 @@ class RSS(callbacks.Plugin):
                 for channel in channels:
                     if len(oldheadlines) == 0:
                         channelnewheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
+                    else:
+                        channelnewheadlines = newheadlines[:]
                     whitelist = self.registryValue('keywordWhitelist', channel)
                     blacklist = self.registryValue('keywordBlacklist', channel)
                     if len(whitelist) != 0:
