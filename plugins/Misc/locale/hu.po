@@ -5,15 +5,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria Misc\n"
-"POT-Creation-Date: 2011-07-10 18:59+CEST\n"
-"PO-Revision-Date: 2011-07-30 23:41+CEST\n"
+"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
+"PO-Revision-Date: 2011-08-10 15:41+0100\n"
 "Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-
 
 #: config.py:45
 msgid ""
@@ -21,9 +21,7 @@ msgid ""
 "    plugins with the list command if given the --private switch.  If this is\n"
 "    disabled, non-owner users should be unable to see what private plugins\n"
 "    are loaded."
-msgstr ""
-"Meghatározza, hogy a bot listázza-e a privát bővítményeket a list paranccsal, ha a --private kapcsoló meg van adva. Ha ez le van tiltva, a tulajdonoson kívül más felhasználók nem láthatják, hogy milyen privát bővítmények vannak betöltve."
-
+msgstr "Meghatározza, hogy a bot listázza-e a privát bővítményeket a list paranccsal, ha a --private kapcsoló meg van adva. Ha ez le van tiltva, a tulajdonoson kívül más felhasználók nem láthatják, hogy milyen privát bővítmények vannak betöltve."
 
 #: config.py:50
 msgid ""
@@ -31,24 +29,21 @@ msgid ""
 "    timestamps in the Misc.last command.  Refer to the Python documentation\n"
 "    for the time module to see what formats are accepted. If you set this\n"
 "    variable to the empty string, the timestamp will not be shown."
-msgstr ""
-"Meghatározza az időbélyegek formátumát a Misc.last parancsban. Hivatkozz a Python dokumentációra a time modulhoz, hogy lásd, milyen formátumok fogadhatók el. Ha üres karakterláncra állítód ezt a változót, az időbélyegző nem lesz megjelenítve."
+msgstr "Meghatározza az időbélyegek formátumát a Misc.last parancsban. Hivatkozz a Python dokumentációra a time modulhoz, hogy lásd, milyen formátumok fogadhatók el. Ha üres karakterláncra állítód ezt a változót, az időbélyegző nem lesz megjelenítve."
 
 #: config.py:57
 msgid ""
 "Determines whether or not\n"
 "    the timestamp will be included in the output of last when it is part of a\n"
 "    nested command"
-msgstr ""
-"Meghatározza, hogy a last kimenete tartalmazza-e az időbélyegzőt, ha az egy beágyazott parancs része."
+msgstr "Meghatározza, hogy a last kimenete tartalmazza-e az időbélyegzőt, ha az egy beágyazott parancs része."
 
 #: config.py:61
 msgid ""
 "Determines whether or not the\n"
 "    nick will be included in the output of last when it is part of a nested\n"
 "    command"
-msgstr ""
-"Meghatározza, hogy a last kimenete tartalmazza-e a nevet, ha az egy beágyazott parancs része."
+msgstr "Meghatározza, hogy a last kimenete tartalmazza-e a nevet, ha az egy beágyazott parancs része."
 
 #: plugin.py:81
 msgid "You've given me %s invalid commands within the last minute; I'm now ignoring you for %s."
@@ -59,7 +54,6 @@ msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"l
 msgstr "A %q bővítmény be van töltve, de nincs benne parancs %q névvel. Próbáld meg a \"list %s\"-t, hogy lásd a parancsokat a %q bővítményben."
 
 #: plugin.py:119
-#, docstring
 msgid ""
 "[--private] [<plugin>]\n"
 "\n"
@@ -85,7 +79,6 @@ msgid "That plugin exists, but has no commands.  This probably means that it has
 msgstr "Ez a bővítmény létezik, de nincsenek parancsai. Ez valószínűleg azt jelenti, hogy van néhány konfigurációs változója, ami megváltoztatható, hogy módosítsd a viselkedését. Próbáld meg a \"config list supybot.plugins.%s\"-t, hogy lásd, milyen konfigurációs változói vannak."
 
 #: plugin.py:164
-#, docstring
 msgid ""
 "<string>\n"
 "\n"
@@ -102,7 +95,6 @@ msgid "No appropriate commands were found."
 msgstr "Nem található megfelelő parancs."
 
 #: plugin.py:188
-#, docstring
 msgid ""
 "[<plugin>] [<command>]\n"
 "\n"
@@ -123,7 +115,6 @@ msgid "There is no command %q."
 msgstr "Nincs %q parancs."
 
 #: plugin.py:211
-#, docstring
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -151,23 +142,20 @@ msgid "The current (running) version of this Supybot is %s.  %s"
 msgstr "Az aktuális (futó) verziója ennek a Supybot-nak %s. %s"
 
 #: plugin.py:239
-#, docstring
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns a URL saying where to get Supybot.\n"
+"        Returns a URL saying where to get Limnoria.\n"
 "        "
 msgstr ""
-"paraméter nélküli"
-"\n"
-"Kiír egy linket, ami megmondja, honnan lehet a Supybot-ot megszerezni."
+"paraméter nélküli\n"
+"Kiír egy linket, ami megmondja, honnan lehet a Limnoria-t megszerezni."
 
 #: plugin.py:243
 msgid "My source is at https://github.com/ProgVal/Limnoria"
 msgstr "A forrásom https://github.com/ProgVal/Limnoria -ban van."
 
 #: plugin.py:248
-#, docstring
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -206,7 +194,6 @@ msgid "That's all, there is no more."
 msgstr "Ez minden, nincs több."
 
 #: plugin.py:292
-#, docstring
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
 "\n"
@@ -227,16 +214,13 @@ msgid "I couldn't find a message matching that criteria in my history of %s mess
 msgstr "Nem találtam a kritériumra illeszkedő üzenetet a(z) %s üzenetes előzményeimben."
 
 #: plugin.py:401
-#, docstring
 msgid ""
 "<nick> <text>\n"
 "\n"
 "        Tells the <nick> whatever <text> is.  Use nested commands to your\n"
 "        benefit here.\n"
 "        "
-msgstr ""
-"<név> <szöveg>"
-"Megmondja <név>-nek szöveget. Itt az előnyödre használhatod a beágyazott parancsokat."
+msgstr "<név> <szöveg>Megmondja <név>-nek szöveget. Itt az előnyödre használhatod a beágyazott parancsokat."
 
 #: plugin.py:409
 msgid "Dude, just give the command.  No need for the tell."
@@ -254,8 +238,7 @@ msgstr "Nem láttam %s-t, rád hagyom a mondást."
 msgid "%s wants me to tell you: %s"
 msgstr "%s szeretné, hogy megmondjam neked: %s"
 
-#: plugin.py:430
-#, docstring
+#: plugin.py:431
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -266,6 +249,7 @@ msgstr ""
 "\n"
 "Ellenőrzi, hogy a bot él-e."
 
-#: plugin.py:434
+#: plugin.py:435
 msgid "pong"
 msgstr "pong"
+
