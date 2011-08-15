@@ -207,6 +207,8 @@ class RSS(callbacks.Plugin):
                         channelnewheadlines = filter(filter_whitelist, channelnewheadlines)
                     if len(blacklist) != 0:
                         channelnewheadlines = filter(filter_blacklist, channelnewheadlines)
+                    if len(channelnewheadlines) == 0:
+                        return
                     bold = self.registryValue('bold', channel)
                     sep = self.registryValue('headlineSeparator', channel)
                     prefix = self.registryValue('announcementPrefix', channel)
