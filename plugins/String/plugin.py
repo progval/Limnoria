@@ -33,12 +33,14 @@ import binascii
 
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.commands as commands
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('String')
 
+import multiprocessing
 
 class String(callbacks.Plugin):
     @internationalizeDocstring

@@ -37,6 +37,8 @@ import types
 import getopt
 import inspect
 import threading
+import multiprocessing #python2.6 or later!
+import Queue
 
 import supybot.log as log
 import supybot.conf as conf
