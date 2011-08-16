@@ -828,6 +828,7 @@ class Channel(callbacks.Plugin):
             (ircutils.isChannel(msg.args[0]) or \
              msg.nick not in irc.state.channels[channel].users):
             irc.error(_('You don\'t have access to that information.'))
+            return
         L = list(irc.state.channels[channel].users)
         keys = [option for (option, arg) in optlist]
         if 'count' not in keys:
