@@ -294,7 +294,7 @@ msgstr "Minä pelkurimaisesti kieltäydyn potkimasta itseäni."
 
 #: plugin.py:281
 msgid "The reason you gave is longer than the allowed length for a KICK reason on this server."
-msgstr "Syy, jonka annoit on pidempi kuin sallittu pituus POTKIMIS syyksi tällä palvelimella."
+msgstr "Syy, jonka annoit on pidempi kuin sallittu pituus POTKIMIS-syyksi tällä palvelimella."
 
 #: plugin.py:286
 msgid "kick someone"
@@ -317,36 +317,36 @@ msgid ""
 msgstr ""
 "[<kanava>] [--{exact,nick,user,host}] <nimimerkki> [<sekuntit>] [<syy>]\n"
 "\n"
-"Jos sinulla on #kanava,op valtuus, tämä kickbannaa <nimimerkin> \n"
-"niin moneksi sekuntiksi kuin määrität, tai muuten (jos määrität 0 sekuntia tai\n"
-"tai et määritä sekuntien lukumäärää) se bannaa henkilön ikuisesti.\n"
-"--exact bannaa vain hostmaskin; --nick bannaa vain nimimerkin;\n"
-"--user bannaa vain käyttäjän, ja --host bannaa vain isännän.  Voit\n"
-"yhdistää näitä vaihtoehtoja mielesi mukaan.  <Syy> on syy, jonka vuoksi annat\n"
-"potkun.\n"
-"<Kanava> on vaadittu vain jos viestiä ei lähetetä kanavassa\n"
-"itsestään.\n"
+"        Jos sinulla on #kanava,op valtuus, tämä potkii ja antaa porttikiellon <nimimerkille> \n"
+"        niin moneksi sekuntiksi kuin määrität, tai muuten (jos määrität 0 sekuntia tai\n"
+"        et määritä sekuntien lukumäärää) se antaa henkilölle ikuisen porttikiellon.\n"
+"        --exact antaa porttikiellon vain hostmaskille; --nick antaa porttikiellon vain nimimerkille;\n"
+"        --user antaa porttikiellon vain käyttäjälle, ja --host antaa porttikiellon vain isännälle.  Voit\n"
+"        yhdistää näitä vaihtoehtoja mielesi mukaan.  <Syy> on syy, jonka vuoksi annat\n"
+"        potkun.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
 "        "
 
 #: plugin.py:311
 msgid "I cowardly refuse to kickban myself."
-msgstr "Minä pelkurimaisesti kieltäydyn kickbannaamasta itseäni."
+msgstr "Minä pelkurimaisesti kieltäydyn potkimasta itseäni ja antamasta itselleni porttikieltoa."
 
 #: plugin.py:318
 msgid "I haven't seen %s."
-msgstr "Minä en ole nähnyt %s:ää."
+msgstr "Minä en ole käyttäjää %s."
 
 #: plugin.py:326
 msgid "I cowardly refuse to ban myself."
-msgstr "Minä pelkurimaisesti kieltäydyn bannaamasta itseäni."
+msgstr "Minä pelkurimaisesti kieltäydyn antamasta itselleni porttikieltoa."
 
 #: plugin.py:352
 msgid "%s has %s too, you can't ban him/her/it."
-msgstr "%s:llä on %s myös, et voi bannata häntä/sitä."
+msgstr "Käyttäjälltä %s on myös valtuus %s, et voi antaa hänelle/sille porttikieltoa."
 
 #: plugin.py:364
 msgid "kick or ban someone"
-msgstr "potki tai bannaa joku"
+msgstr "potki tai anna jollekulle porttikielto"
 
 #: plugin.py:371
 msgid ""
