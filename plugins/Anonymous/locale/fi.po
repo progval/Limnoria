@@ -1,3 +1,7 @@
+# Anonymous plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot Anonymous\n"
@@ -18,8 +22,8 @@ msgid ""
 "    the bot should require people trying to use this plugin to be in the\n"
 "    channel they wish to anonymously send to."
 msgstr ""
-"Määrittelee täytyisikö \n"
-"botin vaatia ihmisiä, jotka yrittävät käyttää tätä lisäosaa olla\n"
+"Määrittää vaatiiko \n"
+"botti ihmisten, jotka yrittävät käyttää tätä lisäosaa, olemaan\n"
 "kanavalla, jonne he tahtovat lähettää viestin tuntemattomasti."
 
 #: config.py:53
@@ -27,16 +31,16 @@ msgid ""
 "Determines whether the bot should require\n"
 "    people trying to use this plugin to be registered."
 msgstr ""
-"Määrittelee täytyisikö botin vaatia\n"
-"ihmisiä, jotka yrittävät käyttää tätä lisäosaa olla rekisteröityneitä."
+"Määrittää vaatiiko botti\n"
+"ihmisiä, jotka yrittävät käyttää tätä lisäosaa, olemaan rekisteröityneitä."
 
 #: config.py:56
 msgid ""
 "Determines what capability (if any) the bot should\n"
 "    require people trying to use this plugin to have."
 msgstr ""
-"Määrittää mitä valtuutta (jos mitään) botin täytyisi\n"
-"vaatia ihmisiltä, jotka yrittävät käyttää tätä lisäosaa."
+"Määrittää minkä valtuuden (jos minkään) botti vaatii\n"
+"    ihmisiltä, jotka yrittävät käyttää tätä lisäosaa."
 
 #: config.py:59
 msgid ""
@@ -45,8 +49,8 @@ msgid ""
 "    True, the bot will allow people to use the \"say\" command to send private\n"
 "    messages to other users."
 msgstr ""
-"Määrittelee täytyykö botin vaatia \n"
-"\"say\" komennon olevan julkisia (esim., kanavia). Jos tämä on\n"
+"Määrittää vaatiiko botti \n"
+"\"say\" komennon kohteiden olevan julkisia (esim., kanavia). Jos tämä on\n"
 " True, botti sallii ihmisten käyttää \"say\" komentoa lähettääkseen yksityisviestejä \n"
 " toisille käyttäjille."
 
@@ -65,13 +69,13 @@ msgid ""
 "    "
 msgstr ""
 "Tämä lisäosa sallii käyttäjien toimia botin kautta tuntemattomasti.\n"
-"Komento 'do' sallii botin tehdä Anonymous toiminnon annetulla kanavalla ja\n"
-"'say' komento sallii toisten ihmisten puhua botin läpi. Koska\n"
-"tätä voidaan väärinkäyttää helposti voit tahtoa asettaa \n"
-"supybot.plugins.Anonymous.requireCapability niin, että vain käyttäjät tuolla\n"
-"valtuudella. Lisäturvallisuuden vuoksi voit vaatia, että käyttäjän täytyy *olla* kanavalla joita he yrittävät puhutella tuntemattomasti asetuksella supybot.plugins.Anonymous.requirePresenceInChannel, tai sinä voit vaatia,\n"
-"että tuo käyttäjä on rekisteröitynyt asetuksella\n"
-"supybot.plugins.Anonymous.requireRegistration"
+"    Komento 'do' sallii botin tehdä tuntemattoman toiminnon annetulla kanavalla ja\n"
+"    komento 'say' sallii toisten ihmisten puhua botin läpi. Koska\n"
+"    tätä voidaan väärinkäyttää helposti voit tahtoa asettaa asetuksen\n"
+"    supybot.plugins.Anonymous.requireCapability niin, että vain käyttäjät tuolla\n"
+"    valtuudella voivat käyttää tätä lisäosaa. Lisäturvallisuuden vuoksi voit vaatia, että käyttäjien täytyy *olla* kanavilla joita he yrittävät puhutella tuntemattomasti asetuksella supybot.plugins.Anonymous.requirePresenceInChannel, tai sinä voit vaatia,\n"
+"    että tuo käyttäjä on rekisteröitynyt asetuksella\n"
+"    supybot.plugins.Anonymous.requireRegistration"
 
 #: plugin.py:64
 msgid "You must be in %s to %q in there."
@@ -99,8 +103,8 @@ msgid ""
 msgstr ""
 "<kanava|nimimerkki> <teksti>\n"
 "\n"
-"Lähettää <tekstin> <kanavalle|nimimerkille>.  <Nimimerkille> voi lähettää vain jos\n"
-"supybot.plugins.Anonymous.allowPrivateTarget on True.\n"
+"       Lähettää <tekstin> <kanavalle|nimimerkille>.  <Nimimerkille> voi lähettää vain jos\n"
+"       supybot.plugins.Anonymous.allowPrivateTarget on True.\n"
 "        "
 
 #: plugin.py:94
