@@ -37,7 +37,7 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('NickCapture')
 
 class NickCapture(callbacks.Plugin):
-    """This module constantly tries to take whatever nick is configured as
+    """This plugin constantly tries to take whatever nick is configured as
     supybot.nick.  Just make sure that's set appropriately, and thus plugin
     will do the rest."""
     public = False

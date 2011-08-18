@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin keeps stats of the channel and returns them with the command ChannelStats.

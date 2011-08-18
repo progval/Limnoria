@@ -30,6 +30,7 @@
 
 import re
 import time
+import copy
 
 import config
 
@@ -78,7 +79,7 @@ class Services(callbacks.Plugin):
                 if self.registryValue('noJoinsUntilIdentified'):
                     self.log.info('Holding JOIN to %s until identified.',
                                   msg.args[0])
-                    self.waitingJoins.append(msg)
+                    self.waitingJoins.append((irc.network, msg,))
                     return None
         return msg
 
@@ -316,9 +317,14 @@ class Services(callbacks.Plugin):
             for channel in self.channels:
                 irc.queueMsg(networkGroup.channels.join(channel))
             if self.waitingJoins:
-                for m in self.waitingJoins:
-                    irc.sendMsg(m)
-                self.waitingJoins = []
+                tmp_wj = copy.deepcopy(self.waitingJoins) # can't iterate over list if we're modifying it
+                for netname, m in tmp_wj:
+                    if netname == irc.network:
+                        irc.sendMsg(m)
+                        try:
+                            self.waitingJoins.remove((netname, m,))
+                        except ValueError:
+                            pass # weird stuff happen sometimes
         elif 'not yet authenticated' in s:
             # zirc.org has this, it requires an auth code.
             email = s.split()[-1]

@@ -241,7 +241,9 @@ class Topic(callbacks.Plugin):
     def do315(self, irc, msg):
         # Try to restore the topic when not set yet.
         channel = msg.args[1]
-        c = irc.state.channels[channel]
+        c = irc.state.channels.get(channel)
+        if c is None:
+            return
         if irc.nick not in c.ops and 't' in c.modes:
             self.log.debug('Not trying to restore topic in %s. I\'m not opped '
                                'and %s is +t.', channel, channel)
@@ -479,13 +481,13 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         irc.queueMsg(ircmsgs.mode(channel, '+t'))
         irc.noReply()
-    lock = wrap(lock, ['channel', ('haveOp', _('lock the topic'))])
+    lock = wrap(lock, ['channel', ('isGranted', _('lock the topic'))])
 
     @internationalizeDocstring
     def unlock(self, irc, msg, args, channel):
         """[<channel>]
 
-        Unlocks the topic (sets the mode +t) in <channel>.  <channel> is only
+        Unlocks the topic (sets the mode -t) in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
         if not self._checkManageCapabilities(irc, msg, channel):
@@ -493,7 +495,7 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         irc.queueMsg(ircmsgs.mode(channel, '-t'))
         irc.noReply()
-    unlock = wrap(unlock, ['channel', ('haveOp', _('unlock the topic'))])
+    unlock = wrap(unlock, ['channel', ('isGranted', _('unlock the topic'))])
 
     @internationalizeDocstring
     def restore(self, irc, msg, args, channel):

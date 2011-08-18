@@ -50,6 +50,9 @@ MSGSTR = 'msgstr "'
 
 currentLocale = 'en'
 
+class PluginNotFound(Exception):
+    pass
+
 def getLocaleFromRegistryFilename(filename):
     """Called by the 'supybot' script. Gets the locale name before conf is
     loaded."""
@@ -88,7 +91,7 @@ def getPluginDir(plugin_name):
     for allowed_file in allowed_files:
         if filename.endswith(allowed_file):
             return filename[0:-len(allowed_file)]
-    return
+    raise PluginNotFound()
 
 def getLocalePath(name, localeName, extension):
     """Gets the path of the locale file of the given plugin ('supybot' stands
@@ -153,7 +156,7 @@ class _PluginInternationalization:
                 translationFile = open(getLocalePath(self.name,
                                                      localeName, 'po'), 'r')
             self._parse(translationFile)
-        except IOError: # The translation is unavailable
+        except IOError, PluginNotFound: # The translation is unavailable
             self.translations = {}
     def _parse(self, translationFile):
         """A .po files parser.

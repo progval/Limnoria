@@ -21,7 +21,7 @@ msgid ""
 "        not given, returns all registered usernames.\n"
 "        "
 msgstr ""
-"[--capacility=<permission>] [<glob>]\n"
+"[--capacility=<capacité>] [<glob>]\n"
 "\n"
 "Retourne les utilisateurs enregistrés correspondant au <glob>. Si <glob> n'est pas donné, retourne tous les noms d'utilisateur."
 
@@ -185,7 +185,7 @@ msgid "%s has no registered hostmasks."
 msgstr "%s n'a pas de masque d'hôte enregistré."
 
 #: plugin.py:283
-msgid "You may only retrieve your own (hostmasks."
+msgid "You may only retrieve your own hostmasks."
 msgstr "Vous ne pouvez récupérer que vos propres masques d'hôte."
 
 #: plugin.py:299

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-16 15:14+CEST\n"
+"POT-Creation-Date: 2011-06-09 18:26+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -30,7 +30,7 @@ msgstr "Détermine si le bot requiérera que les personnes utilisant ce plugin s
 msgid ""
 "Determines what capability (if any) the bot should\n"
 "    require people trying to use this plugin to have."
-msgstr "Détermine quelle permission (s'il y en a une) le bot requiéra que les gens utilisant ce plugin aient."
+msgstr "Détermine quelle capacité (s'il y en a une) le bot requiéra que les gens utilisant ce plugin aient."
 
 #: config.py:59
 msgid ""
@@ -40,7 +40,7 @@ msgid ""
 "    messages to other users."
 msgstr "Détermine si le bot requiérera que les cibles de la commande \"say\" soient publiques (c'est à dire des canaux). Si c'est True, le bot autorisera les personnes à utiliser la commande \"say\" pour envoyer des messages à d'autres utilisateurs en privé."
 
-#: plugin.py:41
+#: plugin.py:40
 msgid ""
 "This plugin allows users to act through the bot anonymously.  The 'do'\n"
 "    command has the bot perform an anonymous action in a given channel, and\n"
@@ -55,7 +55,23 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:81
+#: plugin.py:64
+msgid "You must be in %s to %q in there."
+msgstr "Vous devez être sur %s pour y utiliser %q."
+
+#: plugin.py:68
+msgid "I'm lobotomized in %s."
+msgstr "Je suis lobotomisé sur %s."
+
+#: plugin.py:71
+msgid "That channel has set its capabilities so as to disallow the use of this plugin."
+msgstr "Ce canal a définit ses capacités de façon à désactiver l'utilisation de ce plugin."
+
+#: plugin.py:74
+msgid "%q cannot be used to send private messages."
+msgstr "%q ne peut pas être utilisé pour envoyer des messages privés."
+
+#: plugin.py:80
 msgid ""
 "<channel|nick> <text>\n"
 "\n"
@@ -67,7 +83,7 @@ msgstr ""
 "\n"
 "Envoie le <texte> au <canal|nick>. Vous ne pouvez envoyer à <nick> que si /cs register ##fschfsch supybot.plugins.Anonymous.allowPrivateTarget vaut True."
 
-#: plugin.py:95
+#: plugin.py:94
 msgid ""
 "<channel> <action>\n"
 "\n"

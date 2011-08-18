@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
 import os
 import sys
 import time
@@ -42,9 +43,14 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot import commands
+
 from supybot.utils.iter import ifilter
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
+
+class RegexpTimeout(Exception):
+    pass
 
 class Misc(callbacks.Plugin):
     def __init__(self, irc):
@@ -212,13 +218,22 @@ class Misc(callbacks.Plugin):
         Returns the version of the current bot.
         """
         try:
-            newest = utils.web.getUrl('http://supybot.sf.net/version.txt')
-            newest = _('The newest version available online is %s.') % \
-                       newest.strip()
+            newestUrl = 'https://github.com/ProgVal/Limnoria/raw/%s/' + \
+                        'src/version.py'
+            versions = {}
+            for branch in ('master', 'testing'):
+                file = utils.web.getUrl(newestUrl % branch)
+                match = re.search(r"^version = '([^']+)'$", file, re.M)
+                if match is None:
+                    continue
+                versions[branch] = match.group(1)
+            newest = _('The newest versions available online are %s.') % \
+                    ', '.join([_('%s (in %s)') % (y,x)
+                               for x,y in versions.items()])
         except utils.web.Error, e:
             self.log.info('Couldn\'t get website version: %s', e)
             newest = _('I couldn\'t fetch the newest version '
-                     'from the Supybot website.')
+                     'from the Limnoria repository.')
         s = _('The current (running) version of this Supybot is %s.  %s') % \
             (conf.version, newest)
         irc.reply(s)
@@ -228,9 +243,9 @@ class Misc(callbacks.Plugin):
     def source(self, irc, msg, args):
         """takes no arguments
 
-        Returns a URL saying where to get Supybot.
+        Returns a URL saying where to get Limnoria.
         """
-        irc.reply(_('My source is at http://supybot.com/'))
+        irc.reply(_('My source is at https://github.com/ProgVal/Limnoria'))
     source = wrap(source)
 
     @internationalizeDocstring
@@ -322,10 +337,27 @@ class Misc(callbacks.Plugin):
                 predicates.setdefault('without', []).append(f)
             elif option == 'regexp':
                 def f(m, arg=arg):
+                    def f1(s, arg):
+                        """Since we can't enqueue match objects into the multiprocessing queue,
+                        we'll just wrap the function to return bools."""
+                        if arg.search(s) is not None:
+                            return True
+                        else:
+                            return False
                     if ircmsgs.isAction(m):
-                        return arg.search(ircmsgs.unAction(m))
+                        m1 = ircmsgs.unAction(m)
+                        #return arg.search(ircmsgs.unAction(m))
                     else:
-                        return arg.search(m.args[1])
+                        m1 = m.args[1]
+                        #return arg.search(m.args[1])
+                    try:
+                        # use a subprocess here, since specially crafted regexps can
+                        # take exponential time and hang up the bot.
+                        # timeout of 0.1 should be more than enough for any normal regexp.
+                        v = commands.process(f1, m1, arg, timeout=0.1, pn=self.name(), cn='last')
+                        return v
+                    except commands.ProcessTimeoutError:
+                        return False
                 predicates.setdefault('regexp', []).append(f)
             elif option == 'nolimit':
                 nolimit = True
@@ -360,8 +392,12 @@ class Misc(callbacks.Plugin):
             showNick = True
         for m in iterable:
             for predicate in predicates:
-                if not predicate(m):
-                    break
+                try:
+                    if not predicate(m):
+                        break
+                except RegexpTimeout:
+                    irc.error(_('The regular expression timed out.'))
+                    return
             else:
                 if nolimit:
                     resp.append(ircmsgs.prettyPrint(m,
@@ -413,6 +449,7 @@ class Misc(callbacks.Plugin):
             text = '* %s %s' % (irc.nick, text)
         s = _('%s wants me to tell you: %s') % (msg.nick, text)
         irc.reply(s, to=target, private=True)
+        irc.replySuccess()
     tell = wrap(tell, ['something', 'text'])
 
     @internationalizeDocstring

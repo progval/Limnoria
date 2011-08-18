@@ -252,7 +252,7 @@ class Owner(callbacks.Plugin):
             self.commands.enqueue(msg)
             if conf.supybot.abuse.flood.command() \
                and self.commands.len(msg) > maximum \
-               and not ircdb.checkCapability(msg.prefix, 'owner'):
+               and not ircdb.checkCapability(msg.prefix, 'trusted'):
                 punishment = conf.supybot.abuse.flood.command.punishment()
                 banmask = ircutils.banmask(msg.prefix)
                 self.log.info('Ignoring %s for %s seconds due to an apparent '
@@ -378,7 +378,7 @@ class Owner(callbacks.Plugin):
         Runs the standard upkeep stuff (flushes and gc.collects()).  If given
         a level, runs that level of upkeep (currently, the only supported
         level is "high", which causes the bot to flush a lot of caches as well
-        as do normal upkeep stuff.
+        as do normal upkeep stuff).
         """
         L = []
         if level == 'high':
@@ -540,11 +540,11 @@ class Owner(callbacks.Plugin):
             if plugin.isCommand(command):
                 pluginCommand = '%s.%s' % (plugin.name(), command)
                 conf.supybot.commands.disabled().add(pluginCommand)
+                plugin._disabled.add(command)
             else:
                 irc.error('%s is not a command in the %s plugin.' %
                           (command, plugin.name()))
                 return
-            self._disabled.add(pluginCommand, plugin.name())
         else:
             conf.supybot.commands.disabled().add(command)
             self._disabled.add(command)
@@ -560,8 +560,8 @@ class Owner(callbacks.Plugin):
         """
         try:
             if plugin:
+                plugin._disabled.remove(command, plugin.name())
                 command = '%s.%s' % (plugin.name(), command)
-                self._disabled.remove(command, plugin.name())
             else:
                 self._disabled.remove(command)
             conf.supybot.commands.disabled().remove(command)

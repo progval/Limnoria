@@ -1,0 +1,186 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-06-27 12:56+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:46
+msgid ""
+"Determines whether messages will be sent to the\n"
+"    channel when a recognized user joins; basically enables or disables the\n"
+"    plugin."
+msgstr ""
+"Määrittää lähetetäänkö viestejä kanavalle, kun\n"
+"    tunnistettu käyttäjä liittyy; perusteellisesti ottaa tai poistaa käytöstä\n"
+"    tämän lisäosan."
+
+#: config.py:50
+msgid ""
+"Determines what capability (if any) is required to\n"
+"    add/change/remove the herald of another user."
+msgstr ""
+"Määrittää mikä valtuus (jos mikään) on vaadittu\n"
+"    toisen käyttäjän airueen lisäämisessä/muuttamisessa/poistamisessa."
+
+#: config.py:53
+msgid ""
+"Determines the minimum number of seconds\n"
+"    between heralds."
+msgstr ""
+"Määrittää minimi määrän sekunteja\n"
+"    airueiden välillä."
+
+#: config.py:56
+msgid ""
+"Determines the minimum number of seconds\n"
+"    after parting that the bot will not herald the person when he or she\n"
+"    rejoins."
+msgstr ""
+"Määrittää minimi määrän sekunteja, jolloin\n"
+"    henkilön poistumisen jälkeen botti ei toimi airueena, kun hän\n"
+"    palaa."
+
+#: config.py:60
+msgid ""
+"Determines the minimum number of seconds\n"
+"    after a netsplit that the bot will not herald the users that split."
+msgstr ""
+"Määritt'' minimi määrän sekunteja netsplitin jälkeen\n"
+"    jolloin botti ei toimi airueena käyttäjille, jotka splittaantuivat."
+
+#: config.py:63
+msgid ""
+"Sets the default herald to use.  If a user has a\n"
+"    personal herald specified, that will be used instead.  If set to the empty\n"
+"    string, the default herald will be disabled."
+msgstr ""
+"Asettaa oletusairueen käytettäväksi. Jos käyttäjällä on oma\n"
+"   henkilökohtainen airue määritettynä, sitä käytetään sen sijaan.  Jos asetettu tyhjäksi\n"
+"    merkkiketjuksi, oletus airue poistetaan käytöstä."
+
+#: config.py:67
+msgid ""
+"Determines whether the default herald will be\n"
+"    sent as a NOTICE instead of a PRIVMSG."
+msgstr ""
+"Määrittää lähetetäänkö oletus airue NOTICEna\n"
+"    PRIVMSG:gen sijaan."
+
+#: config.py:70
+msgid ""
+"Determines whether the default herald will be\n"
+"    sent publicly."
+msgstr ""
+"Määrittää lähetetäänkö oletus airut \n"
+"    julkisesti."
+
+#: plugin.py:143
+msgid ""
+"[<channel>] [--remove|<msg>]\n"
+"\n"
+"        If <msg> is given, sets the default herald to <msg>.  A <msg> of \"\"\n"
+"        will remove the default herald.  If <msg> is not given, returns the\n"
+"        current default herald.  <channel> is only necessary if the message\n"
+"        isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [--remove|<viesti>]\n"
+"\n"
+"        Jos <viesti> on annettu, asettaa oletusairueen  <viestiksi>.  <Viesti>\"\"\n"
+"        poistaa oletus airueen.  Jos <viesti> ei anneta, palauttaa\n"
+"        nykyisen oletusairueen.  <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään\n"
+
+#: plugin.py:162
+msgid "I do not have a default herald set for %s."
+msgstr "Minulla ei ole oletus airuetta asetettuna %s:lle."
+
+#: plugin.py:170
+msgid ""
+"[<channel>] [<user|nick>]\n"
+"\n"
+"        Returns the current herald message for <user> (or the user\n"
+"        <nick|hostmask> is currently identified or recognized as).  If <user>\n"
+"        is not given, defaults to the user giving the command.  <channel>\n"
+"        is only necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<käyttäjä|nimimerkki>]\n"
+"\n"
+"        Palauttaa nykyisen airue viestin <käyttäjlle> (tai käyttäjälle\n"
+"        <nimimerkissä|hostmaskissa> on tunnistetty).  Jos <käyttäjää>\n"
+"        ei ole annettu, se on oletuksenena komennon antanut henkilö.  <Kanava>\n"
+"        on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:181
+msgid "I have no herald for %s."
+msgstr "Minulla ei ole airuetta %s:lle."
+
+#: plugin.py:201
+msgid ""
+"[<channel>] <user|nick> <msg>\n"
+"\n"
+"        Sets the herald message for <user> (or the user <nick|hostmask> is\n"
+"        currently identified or recognized as) to <msg>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] <käyttäjä|nimimerkki> <viesti>\n"
+"\n"
+"        Asettaa <käyttäjän> airueen (tai käyttäjän, johon <nimimerkki|hostmask> \n"
+"        tällä hetkellä on tunnistautunut, tai tunnistettu) <viestiksi>.  <Kanava> on\n"
+"        vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:214
+msgid ""
+"[<channel>] [<user|nick>]\n"
+"\n"
+"        Removes the herald message set for <user>, or the user\n"
+"        <nick|hostmask> is currently identified or recognized as.  If <user>\n"
+"        is not given, defaults to the user giving the command.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<käyttäjä|nimimerkki>]\n"
+"\n"
+"        Poistaa airue viestin, joka on asetettu <käyttäjälle>, tai\n"
+"        <nimimerkille|hostmaskille> joka on tällä hetkellä tunnistettu tai tunnistautunut.  Jos <käyttäjää>\n"
+"        ei ole annettu, se on oletuksena komennon antanut käyttäjä.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
+
+#: plugin.py:227
+msgid "I have no herald for that user."
+msgstr "Minulla ei ole airuetta tuolle käyttäjälle."
+
+#: plugin.py:232
+msgid ""
+"[<channel>] [<user|nick>] <regexp>\n"
+"\n"
+"        Changes the herald message for <user>, or the user <nick|hostmask> is\n"
+"        currently identified or recognized as, according to <regexp>.  If\n"
+"        <user> is not given, defaults to the calling user. <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [<käyttäjä|nimimerkki>] <säännöllinen lauseke>\n"
+"\n"
+"        Vaihtaa <käyttäjän> airueen, tai käyttäjän <nick|hostmask> joka\n"
+"        on tunnistautunut tai tunnistettu,  <säännöllisen lausekkeen mukaan>.  Jos\n"
+"        <käyttäjää> ei ole annettu, se on oletuksena komennon antanut käyttäjä. <kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+

@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Limnoria Reply\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"PO-Revision-Date: 2011-08-15 14:49+0200\n"
+"Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: plugin.py:37
+msgid ""
+"This plugin contains a few commands that construct various types of\n"
+"    replies.  Some bot owners would be wise to not load this plugin because it\n"
+"    can be easily abused.\n"
+"    "
+msgstr "Ez a bővítmény néhány parancsot tartalmaz, amelyek különféle típusú válaszokat gyárt. Néhány bot tulajdonos bölcs lenne nem betölteni ezt a bővítményt, mert könnyen vissza lehet élni vele."
+
+#: plugin.py:43
+msgid ""
+"<text>\n"
+"\n"
+"        Replies with <text> in private.  Use nested commands to your benefit\n"
+"        here.\n"
+"        "
+msgstr ""
+"<szöveg>\n"
+"\n"
+"Privát üzenetben válaszol <szöveg>-gel. Itt az előnyödre használhatpd a beágyazott parancsokat."
+
+#: plugin.py:53
+msgid ""
+"<text>\n"
+"\n"
+"        Replies with <text> as an action.  Use nested commands to your benefit\n"
+"        here.\n"
+"        "
+msgstr "Ez a bővítmény néhány parancsot tartalmaz, amelyek különféle típusú válaszokat gyárt. Néhány bot tulajdonos bölcs lenne nem betölteni ezt a bővítményt, mert könnyen vissza lehet élni vele."
+
+#: plugin.py:66
+msgid ""
+"<text>\n"
+"\n"
+"        Replies with <text> in a notice.  Use nested commands to your benefit\n"
+"        here.  If you want a private notice, nest the private command.\n"
+"        "
+msgstr ""
+"<szöveg>\n"
+"\n"
+"Egy közleményben válaszol <szöveg>-gel. Itt az előnyödre használhatod a beágyazott parancsokat. Ha egy privát közleményt szeretnál, ágyazd be a private parancsot."
+
+#: plugin.py:76
+msgid ""
+"<text>\n"
+"\n"
+"        Replies with <text>.  Equivalent to the alias, 'echo $nick: $1'.\n"
+"        "
+msgstr ""
+"<szöveg>\n"
+"\n"
+"Válaszol <szöveg>-gel. Ugyanaz, mint az álnév, 'echo $nick: $1'."
+
+#: plugin.py:85
+msgid ""
+"<str> [<str> ...]\n"
+"\n"
+"        Replies with each of its arguments <str> in separate replies, depending\n"
+"        the configuration of supybot.reply.oneToOne.\n"
+"        "
+msgstr ""
+"<karakterlánc> [<karakterlánc> ...]\n"
+"\n"
+"Az összes <karakterlánc> paraméterével külön üzenetben válaszol, a supybot.reply.oneToOne konfigurációjától függően."
+

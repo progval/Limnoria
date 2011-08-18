@@ -1,0 +1,47 @@
+# NickCapture plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-08-10 15:06+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:47
+msgid ""
+"Determines whether the bot will check\n"
+"    occasionally if its preferred nick is in use via the ISON command."
+msgstr ""
+"Määrittää yrittääkö botti tarkistaa\n"
+"    silloin tällöin onko sen haluama nimimerkki käytössä ISON komennolla."
+
+#: config.py:50
+msgid ""
+"Determines how often (in seconds) the bot\n"
+"    will check whether its nick ISON."
+msgstr ""
+"Määrittää kuinka usein (sekunteina) botti\n"
+"    tarkistaa nimimerkkinsä ISON komennolla."
+
+#: plugin.py:40
+msgid ""
+"This plugin constantly tries to take whatever nick is configured as\n"
+"    supybot.nick.  Just make sure that's set appropriately, and thus plugin\n"
+"    will do the rest."
+msgstr ""
+"Tämä lisäosa yrittää jatkuvasti ottaa sen nimimerkin, joka on määritetty\n"
+"    asetusarvossa supybot.nick.  Tee vain varmaksi, että se on määritetty kunnolla\n"
+"    ja tämä lisäosa hoitaa loput."
+
+#: plugin.py:89
+msgid "This is returned by the ISON command."
+msgstr "Tämä on ISON komennon palauttama."
+

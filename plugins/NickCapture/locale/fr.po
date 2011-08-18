@@ -27,10 +27,10 @@ msgstr "Détermine tous les combien de temps (en secondes) le bot vérifiera son
 
 #: plugin.py:41
 msgid ""
-"This module constantly tries to take whatever nick is configured as\n"
+"This plugin constantly tries to take whatever nick is configured as\n"
 "    supybot.nick.  Just make sure that's set appropriately, and thus plugin\n"
 "    will do the rest."
-msgstr "Ce module essaye constament de récupérer le nick configuré dans supybot.nick. Assurez-vous de le configurer correctement, et ce plugin fera le reste."
+msgstr "Ce plugin essaye constament de récupérer le nick configuré dans supybot.nick. Assurez-vous de le configurer correctement, et ce plugin fera le reste."
 
 #: plugin.py:90
 msgid "This is returned by the ISON command."

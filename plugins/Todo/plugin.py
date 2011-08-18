@@ -41,6 +41,7 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot import commands
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Todo')
 
@@ -132,7 +133,7 @@ class Todo(callbacks.Plugin):
 
     @internationalizeDocstring
     def todo(self, irc, msg, args, user, taskid):
-        """[<username> [<task id>]|<task id>]
+        """[<username>] [<task id>]
 
         Retrieves a task for the given task id.  If no task id is given, it
         will return a list of task ids that that user has added to their todo
@@ -142,6 +143,9 @@ class Todo(callbacks.Plugin):
             u = ircdb.users.getUser(msg.prefix)
         except KeyError:
             u = None
+        if u != user and not self.registryValue('allowThirdpartyReader'):
+            irc.error(_('You are not allowed to see other users todo-list.'))
+            return
         # List the active tasks for the given user
         if not taskid:
             try:
@@ -234,6 +238,8 @@ class Todo(callbacks.Plugin):
         criteria = []
         for (option, arg) in optlist:
             if option == 'regexp':
+                criteria.append(lambda x: commands.regexp_wrapper(x, reobj=arg, 
+                        timeout=0.1, plugin_name = self.name(), fcn_name='search'))
                 criteria.append(arg.search)
         for glob in globs:
             glob = utils.python.glob2re(glob)

@@ -129,7 +129,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                         doc=method._fake__doc__ % (s, s),
                         name=callbacks.formatCommand(command))
         return super(Factoids, self).getCommandHelp(command, simpleSyntax)
-    
+
     def _getKeyAndFactId(self, channel, key, factoid):
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -655,7 +655,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         """[<channel>] [--values] [--{regexp} <value>] [<glob> ...]
 
         Searches the keyspace for keys matching <glob>.  If --regexp is given,
-        it associated value is taken as a regexp and matched against the keys.
+        its associated value is taken as a regexp and matched against the keys.
         If --values is given, search the value space instead of the keyspace.
         """
         if not optlist and not globs:

@@ -134,10 +134,11 @@ class Dict(callbacks.Plugin):
 
     def synonym(self, irc, msg, args, words):
         """<word> [<word> ...]
+
         Gets a random synonym from the Moby Thesaurus (moby-thes) database.
-        
+
         If given many words, gets a random synonym for each of them.
-        
+
         Quote phrases to have them treated as one lookup word.
         """
         try:
@@ -145,7 +146,7 @@ class Dict(callbacks.Plugin):
             conn = dictclient.Connection(server)
         except socket.error, e:
             irc.error(utils.web.strError(e), Raise=True)
-        
+
         dictionary = 'moby-thes'
         response = []
         for word in words:

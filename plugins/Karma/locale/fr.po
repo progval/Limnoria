@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-28 15:19+CEST\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -32,9 +32,10 @@ msgid ""
 msgstr "Détermine combien de plus haut/bas karmas sont affichés lorsque karma est appelé sans argument."
 
 #: config.py:55
+#, fuzzy
 msgid ""
 "Determines how many karma things are shown when\n"
-"    the most command is called.'"
+"    the most command is called."
 msgstr "Détermine combien de karmas sont affichés lorsque la commande most est appelée."
 
 #: config.py:58
@@ -49,12 +50,11 @@ msgid ""
 "    increase/decrease karma without being addressed."
 msgstr "Détermine si le bot augmentera/diminuera le karma sans que l'on s'adresse à lui."
 
-#: plugin.py:243
-#: plugin.py:251
+#: plugin.py:247 plugin.py:255
 msgid "You're not allowed to adjust your own karma."
 msgstr "Vous n'êtes pas autorisé à modifier votre propre karma."
 
-#: plugin.py:280
+#: plugin.py:284
 msgid ""
 "[<channel>] [<thing> ...]\n"
 "\n"
@@ -62,7 +62,7 @@ msgid ""
 "        N karmas, where N is determined by the config variable\n"
 "        supybot.plugins.Karma.rankingDisplay.  If one <thing> is given, returns\n"
 "        the details of its karma; if more than one <thing> is given, returns\n"
-"        the total karma of each of the the things. <channel> is only necessary\n"
+"        the total karma of each of the things. <channel> is only necessary\n"
 "        if the message isn't sent on the channel itself.\n"
 "        "
 msgstr ""
@@ -70,37 +70,35 @@ msgstr ""
 "\n"
 "Retourne le karma de l'<objet>. Si l'<objet> n'est pas donné, retourne les trois premiers et derniers karmas. Si une <chose> est donnée, retourne les détails de son karma ; si plus d'une <chose> est donnée, retourne le karma total de chacune de ces choses. Le <canal> n'est nécessaire que si la commande n'est pas envoyée sur le canal lui-même."
 
-#: plugin.py:293
+#: plugin.py:297
 msgid "%s has neutral karma."
 msgstr "%s a un karma neutre."
 
-#: plugin.py:300
+#: plugin.py:304
 msgid "Karma for %q has been increased %n and decreased %n for a total karma of %s."
 msgstr "Le karma de %q a été augmenté %n fois et diminué %n fois, pour un karma total de %s."
 
-#: plugin.py:302
-#: plugin.py:303
+#: plugin.py:306 plugin.py:307
 msgid "time"
 msgstr "<empty>"
 
-#: plugin.py:316
+#: plugin.py:320
 msgid "I didn't know the karma for any of those things."
 msgstr "Je ne connais le karma d'aucune de ces choses."
 
-#: plugin.py:326
-#: plugin.py:355
+#: plugin.py:330 plugin.py:359
 msgid "I have no karma for this channel."
 msgstr "Je n'ai pas de karma pour ce canal."
 
-#: plugin.py:331
+#: plugin.py:335
 msgid "  You (%s) are ranked %i out of %i."
 msgstr " Vous (%s) êtes #%i sur %i"
 
-#: plugin.py:335
+#: plugin.py:339
 msgid "Highest karma: %L.  Lowest karma: %L.%s"
 msgstr "Plus haut karma : %L. Plus bas karma : %L.%s"
 
-#: plugin.py:343
+#: plugin.py:347
 msgid ""
 "[<channel>] {increased,decreased,active}\n"
 "\n"
@@ -113,7 +111,7 @@ msgstr ""
 "\n"
 "Retourne le plus augmenté (increased), le plus descendu (decreased), ou le plus actif (la somme des montées et descentes) des karmas. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:361
+#: plugin.py:365
 msgid ""
 "[<channel>] <name>\n"
 "\n"
@@ -124,7 +122,7 @@ msgstr ""
 "\n"
 "Redéfinit le karma de <nom> à 0."
 
-#: plugin.py:371
+#: plugin.py:375
 msgid ""
 "[<channel>] <filename>\n"
 "\n"
@@ -137,7 +135,7 @@ msgstr ""
 "\n"
 "Exporte la base de données des Karma du <canal> dans le <nom de fichier> dans le répertoire de données du bot. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:383
+#: plugin.py:387
 msgid ""
 "[<channel>] <filename>\n"
 "\n"
@@ -149,4 +147,3 @@ msgstr ""
 "[<canal>] <nom de fichier>\n"
 "\n"
 "Charge la base de données des Karma du <canal> du <nom de fichier> dans le répertoire de données du bot. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
-

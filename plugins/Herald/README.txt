@@ -1,1 +1,2 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin allows you to set welcoming messages (heralds) to people who are regognized by the bot
+when they join the channel.

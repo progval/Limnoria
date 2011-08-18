@@ -1,0 +1,116 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-06-28 19:40+CEST\n"
+"PO-Revision-Date: 2011-06-29 09:47+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:38
+msgid "The default dictd server is dict.org."
+msgstr "Oletus dictd-palvelin on dict.org."
+
+#: config.py:39
+msgid "Would you like to specify a different dictd server?"
+msgstr "Tahtoisitko määrittää eri dictd-palvelimen?"
+
+#: config.py:45
+msgid ""
+"Determines what server the bot will\n"
+"    retrieve definitions from."
+msgstr ""
+"Määrittää miltä palvelimelta botti\n"
+"hakee määritykset."
+
+#: config.py:48
+msgid ""
+"Determines the default dictionary the bot will\n"
+"    ask for definitions in.  If this value is '*' (without the quotes) the bot\n"
+"    will use all dictionaries to define words."
+msgstr ""
+"Määrittää oletus sanakirjan, josta botti \n"
+"pyytää määrityksiä.  Jos arvo on '*' (ilman lainausmerkkejä) botti\n"
+"käyttää kaikkia sanakirjoja määrittääkseen sanat."
+
+#: plugin.py:54
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the dictionaries valid for the dict command.\n"
+"        "
+msgstr ""
+"Ei ota parametrejä\n"
+"\n"
+"        Palauttaa sanakirjat, jotka kelpaavat dict komennolle.\n"
+"        "
+
+#: plugin.py:70
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns a random valid dictionary.\n"
+"        "
+msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"        Palauttaa satunnaisen kelvollisen sanakirjan.\n"
+"        "
+
+#: plugin.py:85
+msgid ""
+"[<dictionary>] <word>\n"
+"\n"
+"        Looks up the definition of <word> on the dictd server specified by\n"
+"        the supybot.plugins.Dict.server config variable.\n"
+"        "
+msgstr ""
+"[<sanakirja>] <sana>\n"
+"\n"
+"        Etsii <sanan> määritystä dictd-palvelimelta, joka on määritetty\n"
+"        supybot.plugins.Dict.server asetus arvossa.\n"
+"        "
+
+#: plugin.py:108
+msgid "You must give a word to define."
+msgstr "Sinun täytyy antaa sana määritettäväksi."
+
+#: plugin.py:114
+msgid "No definition for %q could be found."
+msgstr "Määritystä %q:lle ei löydetty."
+
+#: plugin.py:117
+msgid "No definition for %q could be found in %s"
+msgstr "Määritystä %q:lle ei löydetty %s:stä."
+
+#: plugin.py:129
+msgid "%L responded: %s"
+msgstr "%L vastasi: %s"
+
+#: plugin.py:136
+msgid ""
+"<word> [<word> ...]\n"
+"\n"
+"        Gets a random synonym from the Moby Thesaurus (moby-thes) database.\n"
+"\n"
+"        If given many words, gets a random synonym for each of them.\n"
+"\n"
+"        Quote phrases to have them treated as one lookup word.\n"
+"        "
+msgstr ""
+"<sana> [<sana> ...]\n"
+"        Hakee satunnaisen synonyymin Moby Thesaurus (moby-thes) tietokannasta.\n"
+"        \n"
+"        Jos monia sanoja on annettu, hakee satunnaisen synonyymin niille kaikille.\n"
+"        \n"
+"        Laita lausekkeita lainausmerkkeihin saadaksesi ne kohdelluiksi yhtenä hakusanalla.\n"
+"        "
+

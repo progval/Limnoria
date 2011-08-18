@@ -1,0 +1,274 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-07-24 17:55+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: plugin.py:42
+msgid ""
+"This plugin exists to help users manage their plugins.  Use 'plugin\n"
+"    list' to list the loaded plugins; use 'plugin help' to get the description\n"
+"    of a plugin; use the 'plugin' command itself to determine what plugin a\n"
+"    command exists in."
+msgstr ""
+"Tämä lisäosa on olemassa auttaakseen ihmisiä hallitsemaan lisäosiaan.  Käytä komentoa 'plugin\n"
+"    list' nähdäksesi listan ladatuista lisäosista; käytä 'plugin help' komentoa saadaksesi kuvauksen\n"
+"    lisäosasta; käytä 'plugin' komentoa itseään määrittääksesi mitkä komennot lisäosassa\n"
+"    on olemassa."
+
+#: plugin.py:48
+msgid ""
+"<plugin>\n"
+"\n"
+"        Returns a useful description of how to use <plugin>, if the plugin has\n"
+"        one.\n"
+"        "
+msgstr ""
+"<lisäosa>\n"
+"\n"
+"        Palauttaa hyödyllistä tietoa, kuinka <lisäosaa> käytetään, jos lisäosalla on\n"
+"        sellainen.\n"
+"        "
+
+#: plugin.py:57
+msgid "That plugin is loaded, but has no plugin help."
+msgstr "Tuo lisäosa on ladattu, mutta sillä ei ole \"plugin help\" ohjetta."
+
+#: plugin.py:62
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns a list of the currently loaded plugins.\n"
+"        "
+msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"        Palauttaa listan tällä hetkellä ladatuista lisäosista.\n"
+"        "
+
+#: plugin.py:73
+msgid ""
+"<command>\n"
+"\n"
+"        Returns the name of the plugin that would be used to call <command>.\n"
+"        \n"
+"        If it is not uniquely determined, returns list of all plugins that\n"
+"        contain <command>.\n"
+"        "
+msgstr ""
+"<komento>\n"
+"\n"
+"        Palauttaa lisäosan nimen, jota voisi käyttää kutsumaan <komentoa>.\n"
+"        \n"
+"        Jos se ei ole ainutlaatuisesti määritetty, palauttaa listan kaikista lisäosista, jotka\n"
+"        sisältävät <komennon>.\n"
+"        "
+
+#: plugin.py:91
+msgid "plugins"
+msgstr "lisäosissa"
+
+#: plugin.py:93
+msgid "plugin"
+msgstr "lisäosassa"
+
+#: plugin.py:94
+msgid "The %q command is available in the %L %s."
+msgstr "Komento %q on saatavilla %L %s."
+
+#: plugin.py:97
+msgid "There is no command %q."
+msgstr "%q komentoa %q ei ole."
+
+#: plugin.py:113
+msgid ""
+"<command>\n"
+"\n"
+"        Returns the names of all plugins that contain <command>.\n"
+"        "
+msgstr ""
+"<komento>\n"
+"\n"
+"        Palauttaa kaikkien lisäosien nimet, jotka sisältävät <komennon>.\n"
+"        "
+
+#: plugin.py:135
+msgid ""
+"<plugin>\n"
+"\n"
+"        Returns the author of <plugin>.  This is the person you should talk to\n"
+"        if you have ideas, suggestions, or other comments about a given plugin.\n"
+"        "
+msgstr ""
+"<lisäosa>\n"
+"\n"
+"        Palauttaa <lisäosan> kirjoittajan.  Tämä on henkilö, jolle sinun pitäisi puhua\n"
+"        jos sinulla on ideaoita, ehdotuksia, tai muita kommentteja annetusta lisäosasta.\n"
+"        "
+
+#: plugin.py:141
+msgid "That plugin does not seem to be loaded."
+msgstr "Tuo lisäosa ei vaikuta olevan ladattu."
+
+#: plugin.py:147
+msgid "That plugin doesn't have an author that claims it."
+msgstr "Tuolla lisäosalla ei ole tekijää, joka ilmoittaa sen omakseen."
+
+#: plugin.py:152
+msgid ""
+"<plugin> [<nick>]\n"
+"\n"
+"        Replies with a list of people who made contributions to a given plugin.\n"
+"        If <nick> is specified, that person's specific contributions will\n"
+"        be listed.  Note: The <nick> is the part inside of the parentheses\n"
+"        in the people listing.\n"
+"        "
+msgstr ""
+"<lisäosa> [<nimimerkki>]\n"
+"\n"
+"        Vastaa listalla ihmisistä, jotka ovat osallistuneet annetun lisäosan kehittämiseen.\n"
+"        Jos <nimimerkki> on annettu, juuri tuon henkilön osallistuminen\n"
+"        luetellaan.  Huomaa: <nimimerkki> on se sulkeissa oleva osa\n"
+"        henkilöluetteloinnissa..\n"
+"        "
+
+#: plugin.py:160
+msgid ""
+"\n"
+"            Take an Authors object, and return only the name and nick values\n"
+"            in the format 'First Last (nick)'.\n"
+"            "
+msgstr ""
+"\n"
+"            Ota kirjoittajan objekti, ja palauta vain nimi ja nimimerkki arvot\n"
+"            muodossa 'Etu- Sukunimi (nimimerkki)'.\n"
+"            "
+
+#: plugin.py:166
+#, fuzzy
+msgid ""
+"\n"
+"            Take a list of long names and turn it into :\n"
+"            shortname[, shortname and shortname].\n"
+"            "
+msgstr ""
+"\n"
+"            Ottaa listan pitkistä nimistä ja muuttaa sen :\n"
+"            lyhyeksi nimeksi[, lyhyt nimi ja lyhyt nimi].\n"
+"           "
+
+#: plugin.py:173
+msgid ""
+"\n"
+"            Sort the list of 'long names' based on the number of contributions\n"
+"            associated with each.\n"
+"            "
+msgstr ""
+"\n"
+"            Lajittelee listan 'pitkistä nimistä' perustuen osallistumisen määrän\n"
+"            liitettynä toisiinsa.\n"
+"            "
+
+#: plugin.py:183
+msgid ""
+"\n"
+"            Build the list of author + contributors (if any) for the requested\n"
+"            plugin.\n"
+"            "
+msgstr ""
+"\n"
+"            Rakentaa listan tekijöistä + osallistujista (jos yhtään) pyydetylle\n"
+"            lisäosalle.\n"
+"            "
+
+#: plugin.py:187
+msgid "The %s plugin"
+msgstr "%s lisäosa"
+
+#: plugin.py:188
+msgid "has not been claimed by an author"
+msgstr "ei ole kirjoittajan omakseen väittämä"
+
+#: plugin.py:189
+msgid "and"
+msgstr "ja"
+
+#: plugin.py:190
+msgid "has no contributors listed."
+msgstr "ei ole lueteltuja osallistumisia."
+
+#: plugin.py:195
+msgid "was written by %s"
+msgstr "kirjoittanut %s"
+
+#: plugin.py:206
+msgid "%s %h contributed to it."
+msgstr "%s %h osallistuivat siihen."
+
+#: plugin.py:211
+msgid "has no additional contributors listed."
+msgstr "ei ole vaihtoehtoisia osallistujia lueteltuna."
+
+#: plugin.py:213
+msgid "but"
+msgstr "mutta"
+
+#: plugin.py:216
+msgid ""
+"\n"
+"            Build the list of contributions (if any) for the requested person\n"
+"            for the requested plugin\n"
+"            "
+msgstr ""
+"\n"
+"            Rakentaa listan osallistumisista (jos yhtään) pyydetylle henkilölle\n"
+"            pyydetystä lisäosasta.\n"
+"            "
+
+#: plugin.py:230
+msgid "The nick specified (%s) is not a registered contributor."
+msgstr "Määritetty nimimerkki (%s) ei ole rekisteröitynyt osallistuja."
+
+#: plugin.py:236
+msgid "The %s plugin does not have '%s' listed as a contributor."
+msgstr "Lisäosalla %s ei ole '%s':ää lueteltuna osallistujaksi."
+
+#: plugin.py:244
+msgid "command"
+msgstr "komento"
+
+#: plugin.py:247
+msgid "the %L %s"
+msgstr "%L %s"
+
+#: plugin.py:249
+msgid "the %L"
+msgstr "%L"
+
+#: plugin.py:252
+msgid "%s wrote the %s plugin and also contributed %L."
+msgstr "%s kirjoitti lisäosan %s  ja osallistui myös %L:ään."
+
+#: plugin.py:255
+#, fuzzy
+msgid "%s contributed %L to the %s plugin."
+msgstr "%s osallistui %L:stä %s lisäosaan."
+
+#: plugin.py:258
+msgid "%s wrote the %s plugin"
+msgstr "%s kirjoitti lisäosan %s"
+
+#: plugin.py:261
+msgid "%s has no listed contributions for the %s plugin."
+msgstr "%s:llä ei ole lueteltuja osallistujia lisäosaan %s."
+

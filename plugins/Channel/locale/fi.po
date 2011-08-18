@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot Channel\n"
-"POT-Creation-Date: 2010-10-25 13:10+CEST\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
@@ -469,7 +469,7 @@ msgid ""
 "\n"
 "            If you have the #channel,op capability, this will effect a\n"
 "            persistent ban from interacting with the bot on the given\n"
-"            <hostmask> (or the current hostmask associated with <nick>.  Other\n"
+"            <hostmask> (or the current hostmask associated with <nick>).  Other\n"
 "            plugins may enforce this ban by actually banning users with\n"
 "            matching hostmasks when they join.  <expires> is an optional\n"
 "            argument specifying when (in \"seconds from now\") the ban should\n"
@@ -647,12 +647,11 @@ msgid "That user didn't have the %L %s."
 msgstr "Tuolla käyttäjällä ei ole %L:ää %s:ssä."
 
 #: plugin.py:662
-#, fuzzy
 msgid ""
 "[<channel>] {True|False}\n"
 "\n"
 "            If you have the #channel,op capability, this will set the default\n"
-"            response to non-power-related (that is, not {op, halfop, voice}\n"
+"            response to non-power-related (that is, not {op, halfop, voice})\n"
 "            capabilities to be the value you give. <channel> is only necessary\n"
 "            if the message isn't sent in the channel itself.\n"
 "            "
@@ -660,7 +659,7 @@ msgstr ""
 "[<kanava>] {True|False}\n"
 "\n"
 " Jos sinulla on #kanava,op valtuus, tämä asettaa oletus\n"
-"ei voimaan-liittyviin (se on, ei {op, halfop, voice}\n"
+"ei voimaan-liittyviin (se on muu kuin {op, halfop, voice}\n"
 "valtuus arvo, jonka annat. <Kanava> on vaadittu vain\n"
 "jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
@@ -785,10 +784,11 @@ msgstr "%s ei ollut pois käytöstä."
 
 #: plugin.py:818
 msgid ""
-"[<channel>]\n"
+"[<channel>] [--count]\n"
 "\n"
 "        Returns the nicks in <channel>.  <channel> is only necessary if the\n"
-"        message isn't sent in the channel itself.\n"
+"        message isn't sent in the channel itself. Returns only the number of\n"
+"        nicks if --count option is provided.\n"
 "        "
 msgstr ""
 "[<kanava>]\n"
@@ -797,11 +797,11 @@ msgstr ""
 "ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:829
+#: plugin.py:830
 msgid "You don't have access to that information."
 msgstr "Sinulla ei ole pääsyoikeutta tuohon tietoon."
 
-#: plugin.py:837
+#: plugin.py:843
 msgid ""
 "Internal message for notifying all the #channel,ops in a channel of\n"
 "        a given situation."
@@ -809,15 +809,15 @@ msgstr ""
 "Sisäinen viesti huomattamaan kaikkia #kanava,oppeja kanavalla\n"
 " annetusta tilanteesta."
 
-#: plugin.py:840
+#: plugin.py:846
 msgid "Alert to all %s ops: %s"
-msgstr "Hälytys kaikki %s operaattoreille: %s"
+msgstr "Hälytys kaikille kanavan %s operaattoreille: %s"
 
-#: plugin.py:842
+#: plugin.py:848
 msgid " (from %s)"
-msgstr "(%s:tä)"
+msgstr "(lähettänyt %s)"
 
-#: plugin.py:850
+#: plugin.py:856
 msgid ""
 "[<channel>] <text>\n"
 "\n"

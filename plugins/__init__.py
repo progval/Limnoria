@@ -50,6 +50,7 @@ import supybot.world as world
 from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot import commands
 
 ## i think we don't need any of this with sqlite3
 #try:
@@ -431,7 +432,9 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             if opt == 'by':
                 predicates.append(lambda r, arg=arg: r.by == arg.id)
             elif opt == 'regexp':
-                predicates.append(lambda r, arg=arg: arg.search(r.text))
+                predicates.append(lambda x: commands.regexp_wrapper(x.text, reobj=arg, 
+                        timeout=0.1, plugin_name = self.name(), fcn_name='search'))
+                #predicates.append(lambda r, arg=arg: arg.search(r.text))
         if glob:
             def globP(r, glob=glob.lower()):
                 return fnmatch.fnmatch(r.text.lower(), glob)

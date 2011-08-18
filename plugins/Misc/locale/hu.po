@@ -1,0 +1,255 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Limnoria Misc\n"
+"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
+"PO-Revision-Date: 2011-08-10 15:41+0100\n"
+"Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:45
+msgid ""
+"Determines whether the bot will list private\n"
+"    plugins with the list command if given the --private switch.  If this is\n"
+"    disabled, non-owner users should be unable to see what private plugins\n"
+"    are loaded."
+msgstr "Meghatározza, hogy a bot listázza-e a privát bővítményeket a list paranccsal, ha a --private kapcsoló meg van adva. Ha ez le van tiltva, a tulajdonoson kívül más felhasználók nem láthatják, hogy milyen privát bővítmények vannak betöltve."
+
+#: config.py:50
+msgid ""
+"Determines the format string for\n"
+"    timestamps in the Misc.last command.  Refer to the Python documentation\n"
+"    for the time module to see what formats are accepted. If you set this\n"
+"    variable to the empty string, the timestamp will not be shown."
+msgstr "Meghatározza az időbélyegek formátumát a Misc.last parancsban. Hivatkozz a Python dokumentációra a time modulhoz, hogy lásd, milyen formátumok fogadhatók el. Ha üres karakterláncra állítód ezt a változót, az időbélyegző nem lesz megjelenítve."
+
+#: config.py:57
+msgid ""
+"Determines whether or not\n"
+"    the timestamp will be included in the output of last when it is part of a\n"
+"    nested command"
+msgstr "Meghatározza, hogy a last kimenete tartalmazza-e az időbélyegzőt, ha az egy beágyazott parancs része."
+
+#: config.py:61
+msgid ""
+"Determines whether or not the\n"
+"    nick will be included in the output of last when it is part of a nested\n"
+"    command"
+msgstr "Meghatározza, hogy a last kimenete tartalmazza-e a nevet, ha az egy beágyazott parancs része."
+
+#: plugin.py:81
+msgid "You've given me %s invalid commands within the last minute; I'm now ignoring you for %s."
+msgstr "%s érvénytelen parancsot adtál nekem az utolsó percben; most mellőzlek %s-ig."
+
+#: plugin.py:93
+msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"list %s\" to see the commands in the %q plugin."
+msgstr "A %q bővítmény be van töltve, de nincs benne parancs %q névvel. Próbáld meg a \"list %s\"-t, hogy lásd a parancsokat a %q bővítményben."
+
+#: plugin.py:119
+msgid ""
+"[--private] [<plugin>]\n"
+"\n"
+"        Lists the commands available in the given plugin.  If no plugin is\n"
+"        given, lists the public plugins available.  If --private is given,\n"
+"        lists the private plugins.\n"
+"        "
+msgstr ""
+"[--private] [<bővítmény>]\n"
+"\n"
+"Kiírja az elérhető parancsokat a megadott bővítményben. Ha nincs megadva bővítmény, kiírja az elérhető publikus bővítményeket. Ha --private meg van adva, kiírja a privát bővítményeket."
+
+#: plugin.py:144
+msgid "There are no private plugins."
+msgstr "Nincsenek privát bővítmények."
+
+#: plugin.py:146
+msgid "There are no public plugins."
+msgstr "Nincsenek publikus bővítmények."
+
+#: plugin.py:153
+msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
+msgstr "Ez a bővítmény létezik, de nincsenek parancsai. Ez valószínűleg azt jelenti, hogy van néhány konfigurációs változója, ami megváltoztatható, hogy módosítsd a viselkedését. Próbáld meg a \"config list supybot.plugins.%s\"-t, hogy lásd, milyen konfigurációs változói vannak."
+
+#: plugin.py:164
+msgid ""
+"<string>\n"
+"\n"
+"        Searches for <string> in the commands currently offered by the bot,\n"
+"        returning a list of the commands containing that string.\n"
+"        "
+msgstr ""
+"<karakterlánc>\n"
+"\n"
+"<karakterlánc>-ra keres a parancsokban, amelyeket a bot kínál, és kiírja a parancsokat, amelyek tartalmazzák a karakterláncot."
+
+#: plugin.py:183
+msgid "No appropriate commands were found."
+msgstr "Nem található megfelelő parancs."
+
+#: plugin.py:188
+msgid ""
+"[<plugin>] [<command>]\n"
+"\n"
+"        This command gives a useful description of what <command> does.\n"
+"        <plugin> is only necessary if the command is in more than one plugin.\n"
+"        "
+msgstr ""
+"[<bővítmény>] [<parancs>]\n"
+"\n"
+"Ez a parancs egy hasznos leírást ad arról, hogy mit csinál <parancs>. <bővítmény> csak akkor szükséges, ha a parancs egynél több bővítményben van."
+
+#: plugin.py:198
+msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
+msgstr "Ez a parancs a(z) %L bővítményekben létezik. Kérlek pontosan határozd meg, hogy melyik bővítmény parancsának akarod látni a segítségét."
+
+#: plugin.py:205
+msgid "There is no command %q."
+msgstr "Nincs %q parancs."
+
+#: plugin.py:211
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the version of the current bot.\n"
+"        "
+msgstr ""
+"paraméter nélküli\n"
+"\n"
+"Kiírja a bot verzióját."
+
+#: plugin.py:225
+msgid "The newest versions available online are %s."
+msgstr "A legújabb elérhető verziók az interneten: %s."
+
+#: plugin.py:226
+msgid "%s (in %s)"
+msgstr "%s (%s-ban)"
+
+#: plugin.py:230
+msgid "I couldn't fetch the newest version from the Limnoria repository."
+msgstr "Nem tudtam lekérdezni a legújabb verziót a Limnoria gyűjteményből."
+
+#: plugin.py:232
+msgid "The current (running) version of this Supybot is %s.  %s"
+msgstr "Az aktuális (futó) verziója ennek a Supybot-nak %s. %s"
+
+#: plugin.py:239
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns a URL saying where to get Limnoria.\n"
+"        "
+msgstr ""
+"paraméter nélküli\n"
+"Kiír egy linket, ami megmondja, honnan lehet a Limnoria-t megszerezni."
+
+#: plugin.py:243
+msgid "My source is at https://github.com/ProgVal/Limnoria"
+msgstr "A forrásom https://github.com/ProgVal/Limnoria -ban van."
+
+#: plugin.py:248
+msgid ""
+"[<nick>]\n"
+"\n"
+"        If the last command was truncated due to IRC message length\n"
+"        limitations, returns the next chunk of the result of the last command.\n"
+"        If <nick> is given, it takes the continuation of the last command from\n"
+"        <nick> instead of the person sending this message.\n"
+"        "
+msgstr ""
+"[<név>]\n"
+"\n"
+"Ha a legutóbbi parancs le volt rövidítve az IRC üzenethosszúság-korlátai miatt, kiírja a következő részét az utolsó parancs eredményének. Ha <név> meg van adva, <név> utolsó parancsának a folytatását írja ki."
+
+#: plugin.py:262
+msgid "%s has no public mores."
+msgstr "%s-nek nincsenek publikus folytatásai."
+
+#: plugin.py:265
+msgid "Sorry, I can't find any mores for %s"
+msgstr "Sajnálom, nem találok folytatásokat %s-hoz."
+
+#: plugin.py:272
+msgid "more message"
+msgstr "eggyel több üzenet"
+
+#: plugin.py:274
+msgid "more messages"
+msgstr "több üzenet"
+
+#: plugin.py:278
+msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
+msgstr "Nem adtál nekem parancsot; talán valaki más folyatását szeretnéd látni. Ha ezt szeretnéd tenni, hívd meg ezt a parancsot az adott ember nevével."
+
+#: plugin.py:282
+msgid "That's all, there is no more."
+msgstr "Ez minden, nincs több."
+
+#: plugin.py:292
+msgid ""
+"[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
+"\n"
+"        Returns the last message matching the given criteria.  --from requires\n"
+"        a nick from whom the message came; --in requires a channel the message\n"
+"        was sent to; --on requires a network the message was sent on; --with\n"
+"        requires some string that had to be in the message; --regexp requires\n"
+"        a regular expression the message must match; --nolimit returns all\n"
+"        the messages that can be found.  By default, the channel this command is\n"
+"        given in is searched.\n"
+"        "
+msgstr ""
+"[--{from,in,on,with,without,regexp} <érték>] [--nolimit]\n"
+"Kiírja a legutolsó üzenetet, amire illeszkedik a megadott kritérium. --from kér egy nevet, akitől az üzenet jött; --in kér egy csatornát, ahová az üzenet lett küldve; --on kér egy hálózatpt, amelyen az üzenet lett küldve; --with kér egy karakterlánc aminek az üzenetben kellett lennie; --regexp kér egy szabályos kifejezést, amelyre az üzenetnek illeszkednie kell; --nolimit kiírja az összes talált üzenetet. Alapértelmezésben abban a csatornában keres, ahol ez a parancs végre lett hajtva."
+
+#: plugin.py:386
+msgid "I couldn't find a message matching that criteria in my history of %s messages."
+msgstr "Nem találtam a kritériumra illeszkedő üzenetet a(z) %s üzenetes előzményeimben."
+
+#: plugin.py:401
+msgid ""
+"<nick> <text>\n"
+"\n"
+"        Tells the <nick> whatever <text> is.  Use nested commands to your\n"
+"        benefit here.\n"
+"        "
+msgstr "<név> <szöveg>Megmondja <név>-nek szöveget. Itt az előnyödre használhatod a beágyazott parancsokat."
+
+#: plugin.py:409
+msgid "Dude, just give the command.  No need for the tell."
+msgstr "Haver, csak add meg a parancsot. Nem kell mondani."
+
+#: plugin.py:414
+msgid "You just told me, why should I tell myself?"
+msgstr "Most mondtad el nekem, miért mondjam el magamnak?"
+
+#: plugin.py:419
+msgid "I haven't seen %s, I'll let you do the telling."
+msgstr "Nem láttam %s-t, rád hagyom a mondást."
+
+#: plugin.py:424
+msgid "%s wants me to tell you: %s"
+msgstr "%s szeretné, hogy megmondjam neked: %s"
+
+#: plugin.py:431
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Checks to see if the bot is alive.\n"
+"        "
+msgstr ""
+"paraméter nélküli\n"
+"\n"
+"Ellenőrzi, hogy a bot él-e."
+
+#: plugin.py:435
+msgid "pong"
+msgstr "pong"
+

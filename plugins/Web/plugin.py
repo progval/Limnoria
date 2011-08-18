@@ -154,7 +154,7 @@ class Web(callbacks.PluginRegexp):
         try:
             try:
                 size = fd.headers['Content-Length']
-                irc.reply(format(_('%u is %S long.'), url, size))
+                irc.reply(format(_('%u is %S long.'), url, int(size)))
             except KeyError:
                 size = conf.supybot.protocols.http.peekSize()
                 s = fd.read(size)

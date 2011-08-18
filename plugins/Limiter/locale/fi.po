@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-06-26 20:28+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:46
+msgid ""
+"Determines whether the bot will maintain the\n"
+"    channel limit to be slightly above the current number of people in the\n"
+"    channel, in order to make clone/drone attacks harder."
+msgstr ""
+"Määrittää ylläpitääkö botti kanava rajoitusta\n"
+"    huomattavasti korkeammalla kuin nykyinen ihmisten määrä kanavalla\n"
+"    tehdäkseen klooni/botti hyökkäykset vaikeammiksi."
+
+#: config.py:50
+msgid ""
+"Determines the minimum number of free\n"
+"    spots that will be saved when limits are being enforced.  This should\n"
+"    always be smaller than supybot.plugins.Limiter.limit.maximumExcess."
+msgstr ""
+"Määrittää minimimäärän vapaita paikkoja, jotka\n"
+"    säästetään, kun rajajoja pakotetaan.  Tämän pitäisi aina olla pienempi kuin\n"
+"    supybot.plugins.Limiter.limit.maximumExcess."
+
+#: config.py:54
+msgid ""
+"Determines the maximum number of free spots\n"
+"    that will be saved when limits are being enforced.  This should always be\n"
+"    larger than supybot.plugins.Limiter.limit.minimumExcess."
+msgstr ""
+"Määrittää maksimi määrän vapaita paikkoja, jotka säästetään\n"
+"    kun rajoja pakotetaan.  Tämän pitäisi aina olla suurempi kuin\n"
+"    supybot.plugins.Limiter.limit.minimumExcess."
+
+#: plugin.py:39
+msgid ""
+"In order to use this plugin, its config values need to be properly\n"
+"    setup.  supybot.plugins.Limiter.enable needs to be set to True and\n"
+"    supybot.plugins.Limiter.{maximumExcess,minimumExcess} should be set to\n"
+"    values appropriate to your channel (if the defaults aren't satisfactory).\n"
+"    Once these are set, and someone enters/leaves the channel, Supybot will\n"
+"    start setting the proper +l modes.\n"
+"    "
+msgstr ""
+"Käyttääkseen tätä lisäosaa, sen asetusarvot täytyy asettaa\n"
+"    kunnolla.  supybot.plugins.Limiter.enable täytyy asettaa todeksi (\"True\") ja\n"
+"    supybot.plugins.Limiter.{maximumExcess,minimumExcess} \n"
+"    arvot kanavallesi sopiviksi (jos oletukset eivät kelpaa).\n"
+"    Kun nämä on asetettu, ja joku tulee/lähtee kanavalta, Supybotti alkaa\n"
+"    asettamaan oikeita +l tiloja.\n"
+"    "
+

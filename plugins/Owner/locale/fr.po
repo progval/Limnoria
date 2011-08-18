@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-29 14:47+CEST\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: plugin.py:270
+#: plugin.py:273
 msgid ""
 "<text>\n"
 "\n"
@@ -25,7 +25,7 @@ msgstr ""
 "\n"
 "Log le <texte> aux logs globaux de Supybot avec une priorité critique. Utile pour marquer les fichiers de logs pour des recherches ultérieures."
 
-#: plugin.py:280
+#: plugin.py:283
 msgid ""
 "<text>\n"
 "\n"
@@ -37,7 +37,7 @@ msgstr ""
 "\n"
 "Envoie le <texte> à tous les canaux sur lesquels le bot est sans être lobotomisé."
 
-#: plugin.py:295
+#: plugin.py:298
 msgid ""
 "[--remove] <command> [<plugin>]\n"
 "\n"
@@ -51,7 +51,7 @@ msgstr ""
 "\n"
 "Défini le <plugin> par défaut de la <commande>. Si --remove est donné, le commande par défaut actuelle est supprimée. Si aucun plugin n'est donné, retourne le plugin par défaut actuel. Voyez supybot.commands.defaultPlugins.importantPlugins pour plus d'informations."
 
-#: plugin.py:333
+#: plugin.py:336
 msgid ""
 "<string to be sent to the server>\n"
 "\n"
@@ -62,7 +62,7 @@ msgstr ""
 "\n"
 "Envoie la chaîne directement au serveur."
 
-#: plugin.py:347
+#: plugin.py:350
 msgid ""
 "[<text>]\n"
 "\n"
@@ -75,7 +75,7 @@ msgstr ""
 "\n"
 "Fait quitter le bot avec le message de quit <texte>. Si le <texte> n'est pas donné, le message de quit par défaut (supybot.plugins.Owner.quitMsg) est utilisé. Si quitMsg est vide, votre nick sera utilisé."
 
-#: plugin.py:363
+#: plugin.py:366
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -87,21 +87,21 @@ msgstr ""
 "\n"
 "Lance tous les 'flushers' périodiques dans world.flushers. Ceci inclue l'écriture des logs et de la configuration sur le disque."
 
-#: plugin.py:373
+#: plugin.py:376
 msgid ""
 "[<level>]\n"
 "\n"
 "        Runs the standard upkeep stuff (flushes and gc.collects()).  If given\n"
 "        a level, runs that level of upkeep (currently, the only supported\n"
 "        level is \"high\", which causes the bot to flush a lot of caches as well\n"
-"        as do normal upkeep stuff.\n"
+"        as do normal upkeep stuff).\n"
 "        "
 msgstr ""
 "[<niveau>]\n"
 "\n"
-"Renvoie le 'upkeep' standard (flushes et gc.collect()). Si un niveau est donné, lance le niveau d'upkeep (actuellement, le seul niveau supporté est \"high\", ce qui fait que le bot vide beaucoup plus de cache que ce qu'il fait normalement)."
+"Lance le 'upkeep' standard (flushes et gc.collect()). Si un niveau est donné, lance le niveau d'upkeep (actuellement, le seul niveau supporté est \"high\", ce qui fait que le bot vide beaucoup plus de cache que ce qu'il fait normalement)."
 
-#: plugin.py:412
+#: plugin.py:415
 msgid ""
 "[--deprecated] <plugin>\n"
 "\n"
@@ -115,7 +115,7 @@ msgstr ""
 "\n"
 "Charge le <plugin> de n'importe lequel des répertoires dans conf.supybot.directories.plugins, ce qui inclue généralement le répertoire principal de l'installation, et 'plugins' dans le répertoire courrant. Utilisez --deprected si nécessaire pour charger des plugins dépréciés."
 
-#: plugin.py:447
+#: plugin.py:450
 msgid ""
 "<plugin>\n"
 "\n"
@@ -127,7 +127,7 @@ msgstr ""
 "\n"
 "Décharger et recharge immédiatement le <plugin> ; utilisez la commande 'list' pour lister les plugins actuellement chargés."
 
-#: plugin.py:476
+#: plugin.py:479
 msgid ""
 "<plugin>\n"
 "\n"
@@ -140,7 +140,7 @@ msgstr ""
 "\n"
 "Décharger le <plugin> ; utilisez la commande 'list' pour lister les plugins actuellement chargés. Évidemment, le plugin Owner ne peut être déchargé."
 
-#: plugin.py:500
+#: plugin.py:503
 msgid ""
 "{add|remove} <capability>\n"
 "\n"
@@ -149,11 +149,11 @@ msgid ""
 "        supybot.capabilities stores these).\n"
 "        "
 msgstr ""
-"{add|remove} <permission>\n"
+"{add|remove} <capacité>\n"
 "\n"
-"Ajoute ou supprime (en fonction du premier argument) la <permission> à la liste des permissions par défaut données aux utilisateurs (stockée dans la variable de configuration supybot.capabilities)."
+"Ajoute ou supprime (en fonction du premier argument) la <capacité> à la liste des capacités par défaut données aux utilisateurs (stockée dans la variable de configuration supybot.capabilities)."
 
-#: plugin.py:525
+#: plugin.py:528
 msgid ""
 "[<plugin>] <command>\n"
 "\n"
@@ -166,9 +166,9 @@ msgid ""
 msgstr ""
 "[<plugin>] <commande>\n"
 "\n"
-"Désactive la <commande> pour tous les utilisateurs (y compris le propriétaire. Si le <plugin> est donné, ne désactive la <commande> que pour le <plugin>. Si vous voulez désactiver la commande pour tous les utilisateurs sauf vous-même, définissez la permission par défaut -plugin.command ou -command."
+"Désactive la <commande> pour tous les utilisateurs (y compris le propriétaire. Si le <plugin> est donné, ne désactive la <commande> que pour le <plugin>. Si vous voulez désactiver la commande pour tous les utilisateurs sauf vous-même, définissez la capacité par défaut -plugin.command ou -command."
 
-#: plugin.py:552
+#: plugin.py:555
 msgid ""
 "[<plugin>] <command>\n"
 "\n"
@@ -181,7 +181,7 @@ msgstr ""
 "\n"
 "Active la <commande> pour tous les utilisateurs. Si le <plugin> est donné, ne réactive la <commande> que pour le <plugin>. Cette commande est l'inverse de disable."
 
-#: plugin.py:571
+#: plugin.py:574
 msgid ""
 "<plugin> <command> <new name>\n"
 "\n"
@@ -192,7 +192,7 @@ msgstr ""
 "\n"
 "Renomme la <commande> du <plugin> par un <nouveau nom>."
 
-#: plugin.py:588
+#: plugin.py:591
 msgid ""
 "<plugin>\n"
 "\n"
@@ -203,4 +203,14 @@ msgstr ""
 "<plugin>\n"
 "\n"
 "Supprime tous les renommages du <plugin>. Ce plugin sera rechargé après que cette commande ait été lancée."
+
+#: plugin.py:604
+msgid ""
+"takes no argument\n"
+"\n"
+"        Reloads the locale of the bot."
+msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Recharge la locale du bot."
 

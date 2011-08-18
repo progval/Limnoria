@@ -1,0 +1,166 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-06-27 14:08+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: plugin.py:52
+#, fuzzy
+msgid ""
+"<fromBase> [<toBase>] <number>\n"
+"\n"
+"        Converts <number> from base <fromBase> to base <toBase>.\n"
+"        If <toBase> is left out, it converts to decimal.\n"
+"        "
+msgstr ""
+"<fromBase> [<tobase>] <numero>\n"
+"\n"
+"        Muuntaa <numeron> from base <fromBase> to base <toBase>.\n"
+"        Jos <toBase> jätetään pois, se muuntaa desimaaliksi..\n"
+"        "
+
+#: plugin.py:63
+#, fuzzy
+msgid "Invalid <number> for base %s: %s"
+msgstr "Viallinen <numero> baselle %s: %s"
+
+#: plugin.py:69
+#, fuzzy
+msgid "Convert a decimal number to another base; returns a string."
+msgstr "Muuunna desimaaliluku; toiseksi baseksi; palauttaa merkkijonon ."
+
+#: plugin.py:90
+msgid ""
+"Convert a number from any base, 2 through 36, to any other\n"
+"        base, 2 through 36. Returns a string."
+msgstr ""
+"Muunna basesta mikä tahansa numero, 2:sta 36:teen, millä tahansa muulla\n"
+"       basella , 2:sta 36:teen. Palauttaa merkkiketjun."
+
+#: plugin.py:157
+#, fuzzy
+msgid ""
+"<math expression>\n"
+"\n"
+"        Returns the value of the evaluated <math expression>.  The syntax is\n"
+"        Python syntax; the type of arithmetic is floating point.  Floating\n"
+"        point arithmetic is used in order to prevent a user from being able to\n"
+"        crash to the bot with something like '10**10**10**10'.  One consequence\n"
+"        is that large values such as '10**24' might not be exact.\n"
+"        "
+msgstr ""
+"<matemaattinen lauseke>\n"
+"\n"
+"        Palauttaa kehittyneen <matemaattisen lausekkeen> arvon.  Syntaksi\n"
+"        on Pythonin syntaksi; aritmeettisen leijumispisteen tyyppi. Leijuvan pisteen\n"
+"        aritmeettiä käytetään estämään käyttäjää kaatamasta bottia, jollakin\n"
+"        kuin '10**10**10**10'.  Yksi sattuma on suurilla arvoilla, kuin\n"
+"        '10**24' ei ehkä ole tarkka.\n"
+"        "
+
+#: plugin.py:166
+#: plugin.py:220
+msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
+msgstr "Ei todella ole mitään syytä miksi sinulla pitäisi olla alaviivoja tai sulkuja matemaattisessa lausekkeessasi.  Ole hyvä ja poista ne."
+
+#: plugin.py:172
+#: plugin.py:228
+msgid "You can't use lambda in this command."
+msgstr "Et voi käyttää Lambdaa tässä komennossa."
+
+#: plugin.py:202
+#: plugin.py:236
+msgid "The answer exceeded %s or so."
+msgstr "Vastaus ylittää %s:än tai niin."
+
+#: plugin.py:204
+#: plugin.py:238
+msgid "Something in there wasn't a valid number."
+msgstr "Jokin siinä ei ole kelvollinen numero."
+
+#: plugin.py:206
+#: plugin.py:240
+msgid "%s is not a defined function."
+msgstr "%s ei ole määritetty funktio."
+
+#: plugin.py:213
+msgid ""
+"<math expression>\n"
+"\n"
+"        This is the same as the calc command except that it allows integer\n"
+"        math, and can thus cause the bot to suck up CPU.  Hence it requires\n"
+"        the 'trusted' capability to use.\n"
+"        "
+msgstr ""
+"<matemaattinen lauseke>\n"
+"\n"
+"        Tämä on sama kuin calc komento, paitsi tämä sallii loputtoman\n"
+"        matematiikan ja näin aiheuttaa botin imevän kaiken prosessorin suorituskyvyn.  Tästä johtuen se vaatii\n"
+"        'trusted' valtuuden.\n"
+"        "
+
+#: plugin.py:250
+#, fuzzy
+msgid ""
+"<rpn math expression>\n"
+"\n"
+"        Returns the value of an RPN expression.\n"
+"        "
+msgstr ""
+"<rpn matemaattinen lauseke>\n"
+"\n"
+"        Palauttaa RPN lausekkeen arvon.\n"
+"        "
+
+#: plugin.py:275
+msgid "Not enough arguments for %s"
+msgstr "Ei tarpeeksi parametrejä %s:lle."
+
+#: plugin.py:288
+msgid "%q is not a defined function."
+msgstr "%q ei ole määritetty funktio."
+
+#: plugin.py:295
+msgid "Stack: [%s]"
+msgstr "Pino: [%s]"
+
+#: plugin.py:299
+msgid ""
+"[<number>] <unit> to <other unit>\n"
+"\n"
+"        Converts from <unit> to <other unit>. If number isn't given, it\n"
+"        defaults to 1. For unit information, see 'units' command.\n"
+"        "
+msgstr ""
+"[<numero>] <yksikkö> to <toiseksi yksiköksi>\n"
+"\n"
+"        Muuntaa <yksiköstä> to <toiseen yksikköön>. Jos numeroa ei ole annettu, se\n"
+"        on oletuksena 1. Yksikkö tiedoille, katso 'units' komento.\n"
+"        "
+
+#: plugin.py:314
+msgid ""
+" [<type>]\n"
+"\n"
+"        With no arguments, returns a list of measurement types, which can be\n"
+"        passed as arguments. When called with a type as an argument, returns\n"
+"        the units of that type.\n"
+"        "
+msgstr ""
+" [<tyyppi>]\n"
+"\n"
+"        Ilman parametrejä, palauttaa listan arviointi tyyppejä, joita voidaan\n"
+"        käyttää parametreinä. Kun kutsuttu tyyppinä parametrissä, palaittaa\n"
+"        sen tyyppiset yksiköt.\n"
+"        "
+

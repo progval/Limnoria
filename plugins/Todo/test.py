@@ -30,7 +30,7 @@
 from supybot.test import *
 
 class TodoTestCase(PluginTestCase):
-    plugins = ('Todo', 'User')
+    plugins = ('Todo', 'User', 'Config')
     _user1 = 'foo!bar@baz'
     _user2 = 'bar!foo@baz'
     def setUp(self):
@@ -66,6 +66,17 @@ class TodoTestCase(PluginTestCase):
         self.assertNotError('todo setpriority 1 100')
         self.assertNotError('todo setpriority 2 10')
         self.assertRegexp('todo', '#2: moo and #1: wash my car')
+        # Check permissions
+        self.prefix = self._user2
+        self.assertError('todo tester')
+        self.assertNotRegexp('todo tester', 'task id')
+        self.prefix = self._user1
+        self.assertNotError('todo tester')
+        self.assertNotError('config plugins.Todo.allowThirdpartyReader True')
+        self.prefix = self._user2
+        self.assertNotError('todo tester')
+        self.prefix = self._user1
+        self.assertNotError('todo tester')
 
     def testAddtodo(self):
         self.assertNotError('todo add code a new plugin')

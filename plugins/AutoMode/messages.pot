@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-06-27 12:02+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,13 +24,13 @@ msgstr ""
 #: config.py:49
 msgid ""
 "Determines whether this plugin will automode\n"
-"    owners."
+"    owners even if they don't have op/halfop/voice/whatever capability."
 msgstr ""
 
 #: config.py:52
 msgid ""
-"Determines whether the bot will \"fall through\n"
-"    to halfop/voicing when auto-opping is turned off but\n"
+"Determines whether the bot will \"fall\n"
+"    through\" to halfop/voicing when auto-opping is turned off but\n"
 "    auto-halfopping/voicing are turned on."
 msgstr ""
 

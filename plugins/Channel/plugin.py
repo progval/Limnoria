@@ -73,7 +73,7 @@ class Channel(callbacks.Plugin):
         itself.
         """
         self._sendMsg(irc, ircmsgs.mode(channel, modes))
-    mode = wrap(mode, ['op', ('haveOp', _('change the mode')), many('something')])
+    mode = wrap(mode, ['op', ('isGranted', _('change the mode')), many('something')])
 
     @internationalizeDocstring
     def limit(self, irc, msg, args, channel, limit):
@@ -99,7 +99,7 @@ class Channel(callbacks.Plugin):
         message isn't sent in the channel itself.
         """
         self._sendMsg(irc, ircmsgs.mode(channel, ['+m']))
-    moderate = wrap(moderate, ['op', ('haveOp', _('moderate the channel'))])
+    moderate = wrap(moderate, ['op', ('isGranted', _('moderate the channel'))])
 
     @internationalizeDocstring
     def unmoderate(self, irc, msg, args, channel):
@@ -110,7 +110,7 @@ class Channel(callbacks.Plugin):
         message isn't sent in the channel itself.
         """
         self._sendMsg(irc, ircmsgs.mode(channel, ['-m']))
-    unmoderate = wrap(unmoderate, ['op', ('haveOp',
+    unmoderate = wrap(unmoderate, ['op', ('isGranted',
                                    _('unmoderate the channel'))])
 
     @internationalizeDocstring
@@ -127,7 +127,7 @@ class Channel(callbacks.Plugin):
             self._sendMsg(irc, ircmsgs.mode(channel, ['+k', key]))
         else:
             self._sendMsg(irc, ircmsgs.mode(channel, ['-k']))
-    key = wrap(key, ['op', ('haveOp', _('change the keyword')),
+    key = wrap(key, ['op', ('isGranted', _('change the keyword')),
                      additional('somethingWithoutSpaces', '')])
 
     @internationalizeDocstring
@@ -187,7 +187,7 @@ class Channel(callbacks.Plugin):
             self._sendMsgs(irc, nicks, f)
         else:
             irc.errorNoCapability(capability)
-    voice = wrap(voice, ['channel', ('haveOp', _('voice someone')),
+    voice = wrap(voice, ['channel', ('isGranted', _('voice someone')),
                          any('nickInChannel')])
 
     @internationalizeDocstring
@@ -247,7 +247,7 @@ class Channel(callbacks.Plugin):
         def f(L):
             return ircmsgs.devoices(channel, L)
         self._sendMsgs(irc, nicks, f)
-    devoice = wrap(devoice, ['voice', ('haveOp', 'devoice someone'),
+    devoice = wrap(devoice, ['voice', ('isGranted', 'devoice someone'),
                              any('nickInChannel')])
 
     @internationalizeDocstring
@@ -283,7 +283,7 @@ class Channel(callbacks.Plugin):
                       Raise=True)
         for nick in nicks:
             self._sendMsg(irc, ircmsgs.kick(channel, nick, reason))
-    kick = wrap(kick, ['op', ('haveOp', _('kick someone')),
+    kick = wrap(kick, ['op', ('isGranted', _('kick someone')),
                        commalist('nickInChannel'), additional('text')])
 
     @internationalizeDocstring
@@ -361,7 +361,7 @@ class Channel(callbacks.Plugin):
     kban = wrap(kban,
                 ['op',
                  getopts({'exact':'', 'nick':'', 'user':'', 'host':''}),
-                 ('haveOp', _('kick or ban someone')),
+                 ('isGranted', _('kick or ban someone')),
                  'nickInChannel',
                  optional('expiry', 0),
                  additional('text')])
@@ -392,7 +392,7 @@ class Channel(callbacks.Plugin):
                 irc.error(_('No bans matching %s were found on %s.') %
                           (msg.prefix, channel))
     unban = wrap(unban, ['op',
-                         ('haveOp', _('unban someone')),
+                         ('isGranted', _('unban someone')),
                          additional('hostmask')])
 
     @internationalizeDocstring
@@ -406,11 +406,11 @@ class Channel(callbacks.Plugin):
         nick = nick or msg.nick
         self._sendMsg(irc, ircmsgs.invite(nick, channel))
         self.invites[(irc.getRealIrc(), ircutils.toLower(nick))] = irc
-    invite = wrap(invite, ['op', ('haveOp', _('invite someone')),
+    invite = wrap(invite, ['op', ('isGranted', _('invite someone')),
                            additional('nick')])
 
     def do341(self, irc, msg):
-        (_, nick, channel) = msg.args
+        (foo, nick, channel) = msg.args
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
         if replyIrc is not None:
@@ -421,7 +421,7 @@ class Channel(callbacks.Plugin):
             self.log.info('Inviting %s to %s.', nick, channel)
 
     def do443(self, irc, msg):
-        (_, nick, channel, _) = msg.args
+        (foo, nick, channel, foo) = msg.args
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
         if replyIrc is not None:
@@ -438,7 +438,7 @@ class Channel(callbacks.Plugin):
         nick = msg.args[1]
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
-        if replyirc is not None:
+        if replyIrc is not None:
             replyIrc.error(format('There is no %s on this server.', nick))
 
     class lobotomy(callbacks.Commands):
@@ -503,7 +503,7 @@ class Channel(callbacks.Plugin):
 
             If you have the #channel,op capability, this will effect a
             persistent ban from interacting with the bot on the given
-            <hostmask> (or the current hostmask associated with <nick>.  Other
+            <hostmask> (or the current hostmask associated with <nick>).  Other
             plugins may enforce this ban by actually banning users with
             matching hostmasks when they join.  <expires> is an optional
             argument specifying when (in "seconds from now") the ban should
@@ -662,7 +662,7 @@ class Channel(callbacks.Plugin):
             """[<channel>] {True|False}
 
             If you have the #channel,op capability, this will set the default
-            response to non-power-related (that is, not {op, halfop, voice}
+            response to non-power-related (that is, not {op, halfop, voice})
             capabilities to be the value you give. <channel> is only necessary
             if the message isn't sent in the channel itself.
             """
@@ -828,6 +828,7 @@ class Channel(callbacks.Plugin):
             (ircutils.isChannel(msg.args[0]) or \
              msg.nick not in irc.state.channels[channel].users):
             irc.error(_('You don\'t have access to that information.'))
+            return
         L = list(irc.state.channels[channel].users)
         keys = [option for (option, arg) in optlist]
         if 'count' not in keys:

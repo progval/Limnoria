@@ -116,7 +116,7 @@ msgid ""
 msgstr ""
 "[<canal>] [<nick> ...]\n"
 "\n"
-"Si vous avez la permission #canal,op, ceci vous permet de oper tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous opera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Si vous avez la capacité #canal,op, ceci vous permet de oper tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous opera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:147
 msgid "op someone"
@@ -134,7 +134,7 @@ msgid ""
 msgstr ""
 "[<canal>] [<nick> ...]\n"
 "\n"
-"Si vous avez la permission #canal,halfop, ceci vous permet de halfoper tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous halfopera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Si vous avez la capacité #canal,halfop, ceci vous permet de halfoper tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous halfopera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:163
 msgid "halfop someone"
@@ -152,7 +152,7 @@ msgid ""
 msgstr ""
 "[<canal>] [<nick> ...]\n"
 "\n"
-"Si vous avez la permission #canal,voice, ceci vous permet de voicer tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous voicera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Si vous avez la capacité #canal,voice, ceci vous permet de voicer tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous voicera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:190
 msgid "voice someone"
@@ -169,7 +169,7 @@ msgid ""
 msgstr ""
 "[<canal>] [<nick> ...]\n"
 "\n"
-"Si vous avez la permission #canal,op, ceci vous permet de déoper tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous déopera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Si vous avez la capacité #canal,op, ceci vous permet de déoper tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous déopera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:202
 msgid "I cowardly refuse to deop myself.  If you really want me deopped, tell me to op you and then deop me yourself."
@@ -190,7 +190,7 @@ msgid ""
 msgstr ""
 "[<canal>] [<nick> ...]\n"
 "\n"
-"Si vous avez la permission #canal,op, ceci vous permet de déhalfoper tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous déhalfopera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Si vous avez la capacité #canal,op, ceci vous permet de déhalfoper tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous déhalfopera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:222
 msgid "I cowardly refuse to dehalfop myself.  If you really want me dehalfopped, tell me to op you and then dehalfop me yourself."
@@ -211,7 +211,7 @@ msgid ""
 msgstr ""
 "[<canal>] [<nick> ...]\n"
 "\n"
-"Si vous avez la permission #canal,op, ceci vous permet de dévoicer tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous dévoicera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Si vous avez la capacité #canal,op, ceci vous permet de dévoicer tous les <nick>s. Si vous ne fournissez aucun <nick>, ceci vous dévoicera. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:242
 msgid "I cowardly refuse to devoice myself.  If you really want me devoiced, tell me to op you and then devoice me yourself."
@@ -400,7 +400,7 @@ msgid ""
 "\n"
 "            If you have the #channel,op capability, this will effect a\n"
 "            persistent ban from interacting with the bot on the given\n"
-"            <hostmask> (or the current hostmask associated with <nick>.  Other\n"
+"            <hostmask> (or the current hostmask associated with <nick>).  Other\n"
 "            plugins may enforce this ban by actually banning users with\n"
 "            matching hostmasks when they join.  <expires> is an optional\n"
 "            argument specifying when (in \"seconds from now\") the ban should\n"
@@ -531,7 +531,7 @@ msgid ""
 msgstr ""
 "[<canal>] <nom|masque d'hôte> <capacité> [<capacité> ...]\n"
 "\n"
-" Vous permet de prendre la <capacité> de l'utilisateur <nom> (ou celui à qui appartient le <masque d'hôte>, à condition que vous ayez la permission #canal,op. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+" Vous permet de prendre la <capacité> de l'utilisateur <nom> (ou celui à qui appartient le <masque d'hôte>, à condition que vous ayez la capacité #canal,op. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:653
 msgid "That user didn't have the %L %s."
@@ -542,7 +542,7 @@ msgid ""
 "[<channel>] {True|False}\n"
 "\n"
 "            If you have the #channel,op capability, this will set the default\n"
-"            response to non-power-related (that is, not {op, halfop, voice}\n"
+"            response to non-power-related (that is, not {op, halfop, voice})\n"
 "            capabilities to be the value you give. <channel> is only necessary\n"
 "            if the message isn't sent in the channel itself.\n"
 "            "
@@ -580,7 +580,7 @@ msgstr ""
 
 #: plugin.py:711
 msgid "capability"
-msgstr "permission"
+msgstr "capacité"
 
 #: plugin.py:714
 msgid "I do not know about the %L %s."
@@ -611,7 +611,7 @@ msgid ""
 msgstr ""
 "[<canal>] [<plugin>] [<commande>]\n"
 "\n"
-" Si vous avez la permission #canal,op, ceci désactive la <commande> sur le <canal>. Si le <plugin> est fourni, toutes les commandes de ce plugin seront désactivées. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+" Si vous avez la capacité #canal,op, ceci désactive la <commande> sur le <canal>. Si le <plugin> est fourni, toutes les commandes de ce plugin seront désactivées. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:749
 #: plugin.py:788
@@ -636,7 +636,7 @@ msgid ""
 msgstr ""
 "[<canal>] [<plugin>] [<commande>]\n"
 "\n"
-"Si vous avez la permission #canal,op, ceci activera la <commande>        sur le <canal>, si elle a auparavant été désactivée. Si le <plugin>        seule la commande de ce plugin sera activée. <canal> n'est nécessaire         n'est pas envoyé sur le canal lui-même."
+"Si vous avez la capacité #canal,op, ceci activera la <commande>        sur le <canal>, si elle a auparavant été désactivée. Si le <plugin>        seule la commande de ce plugin sera activée. <canal> n'est nécessaire         n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:809
 msgid "%s was not disabled."

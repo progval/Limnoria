@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -15,7 +15,7 @@ msgstr ""
 
 #: plugin.py:37
 msgid ""
-"This plugins contains a few commands that construct various types of\n"
+"This plugin contains a few commands that construct various types of\n"
 "    replies.  Some bot owners would be wise to not load this plugin because it\n"
 "    can be easily abused.\n"
 "    "
@@ -34,10 +34,11 @@ msgstr ""
 "Répond avec le <texte> en privé. Utile pour les commandes imbriquées."
 
 #: plugin.py:53
+#, fuzzy
 msgid ""
 "<text>\n"
 "\n"
-"        Replies with <text> as an action.  use nested commands to your benefit\n"
+"        Replies with <text> as an action.  Use nested commands to your benefit\n"
 "        here.\n"
 "        "
 msgstr ""
@@ -79,4 +80,3 @@ msgstr ""
 "<argument> [<argument> ...]\n"
 "\n"
 "Répond avec chacun des <argument>s dans des réponses séparées, en fonction de la configutation de supybot.reply.oneToOne."
-

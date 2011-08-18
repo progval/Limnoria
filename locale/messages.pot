@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-10-31 13:42+CET\n"
+"POT-Creation-Date: 2011-06-25 14:17+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,198 +15,198 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: ./callbacks.py:184
+#: ../src/callbacks.py:184
 msgid "Error: "
 msgstr ""
 
-#: ./callbacks.py:198
+#: ../src/callbacks.py:198
 msgid "Error: I tried to send you an empty message."
 msgstr ""
 
-#: ./callbacks.py:288
+#: ../src/callbacks.py:288
 msgid "Missing \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
 msgstr ""
 
-#: ./callbacks.py:318
+#: ../src/callbacks.py:318
 msgid "\"|\" with nothing preceding.  I obviously can't do a pipe with nothing before the |."
 msgstr ""
 
-#: ./callbacks.py:326
+#: ../src/callbacks.py:326
 msgid "Spurious \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
 msgstr ""
 
-#: ./callbacks.py:335
+#: ../src/callbacks.py:335
 msgid "\"|\" with nothing following.  I obviously can't do a pipe with nothing after the |."
 msgstr ""
 
-#: ./callbacks.py:515
+#: ../src/callbacks.py:519
 msgid "%s is not a valid %s."
 msgstr ""
 
-#: ./callbacks.py:517
+#: ../src/callbacks.py:521
 msgid "That's not a valid %s."
 msgstr ""
 
-#: ./callbacks.py:595
+#: ../src/callbacks.py:599
 msgid "You've attempted more nesting than is currently allowed on this bot."
 msgstr ""
 
-#: ./callbacks.py:774
+#: ../src/callbacks.py:778
 msgid "The command %q is available in the %L plugins.  Please specify the plugin whose command you wish to call by using its name as a command before %q."
 msgstr ""
 
-#: ./callbacks.py:859 ./callbacks.py:872
+#: ../src/callbacks.py:863 ../src/callbacks.py:876
 msgid "(XX more messages)"
 msgstr ""
 
-#: ./callbacks.py:904
+#: ../src/callbacks.py:908
 msgid "more message"
 msgstr ""
 
-#: ./callbacks.py:906
+#: ../src/callbacks.py:910
 msgid "more messages"
 msgstr ""
 
-#: ./callbacks.py:1006
+#: ../src/callbacks.py:1010
 msgid ""
 "Determines what commands are currently disabled.  Such\n"
 "    commands will not appear in command lists, etc.  They will appear not even\n"
 "    to exist."
 msgstr ""
 
-#: ./callbacks.py:1197
+#: ../src/callbacks.py:1201
 msgid "Invalid arguments for %s."
 msgstr ""
 
-#: ./callbacks.py:1223
+#: ../src/callbacks.py:1227
 msgid "The %q command has no help."
 msgstr ""
 
-#: ./commands.py:171
+#: ../src/commands.py:171
 msgid "integer"
 msgstr ""
 
-#: ./commands.py:182
+#: ../src/commands.py:182
 msgid "non-integer value"
 msgstr ""
 
-#: ./commands.py:193
+#: ../src/commands.py:193
 msgid "floating point number"
 msgstr ""
 
-#: ./commands.py:202
+#: ../src/commands.py:202
 msgid "positive integer"
 msgstr ""
 
-#: ./commands.py:206
+#: ../src/commands.py:206
 msgid "non-negative integer"
 msgstr ""
 
-#: ./commands.py:209
+#: ../src/commands.py:209
 msgid "index"
 msgstr ""
 
-#: ./commands.py:234
+#: ../src/commands.py:234
 msgid "number of seconds"
 msgstr ""
 
-#: ./commands.py:241
+#: ../src/commands.py:241
 msgid "boolean"
 msgstr ""
 
-#: ./commands.py:255
+#: ../src/commands.py:255
 msgid "do that"
 msgstr ""
 
-#: ./commands.py:259
+#: ../src/commands.py:259
 msgid "I'm not even in %s."
 msgstr ""
 
-#: ./commands.py:261
+#: ../src/commands.py:261
 msgid "I need to be opped to %s."
 msgstr ""
 
-#: ./commands.py:278
+#: ../src/commands.py:278
 msgid "nick or hostmask"
 msgstr ""
 
-#: ./commands.py:330 ./commands.py:333
+#: ../src/commands.py:330 ../src/commands.py:333
 msgid "regular expression"
 msgstr ""
 
-#: ./commands.py:344
+#: ../src/commands.py:344
 msgid "That nick is too long for this server."
 msgstr ""
 
-#: ./commands.py:393 ./commands.py:412
+#: ../src/commands.py:393 ../src/commands.py:412
 msgid "I'm not in %s."
 msgstr ""
 
-#: ./commands.py:397
+#: ../src/commands.py:397
 msgid "This command may only be given in a channel that I am in."
 msgstr ""
 
-#: ./commands.py:410
+#: ../src/commands.py:410
 msgid "You must be in %s."
 msgstr ""
 
-#: ./commands.py:414
+#: ../src/commands.py:414
 msgid "channel"
 msgstr ""
 
-#: ./commands.py:421
+#: ../src/commands.py:421
 msgid "%s is not in %s."
 msgstr ""
 
-#: ./commands.py:455
+#: ../src/commands.py:455
 msgid "You must not give the empty string as an argument."
 msgstr ""
 
-#: ./commands.py:472
+#: ../src/commands.py:472
 msgid "This message must be sent in a channel."
 msgstr ""
 
-#: ./commands.py:513
+#: ../src/commands.py:518
 msgid "http url"
 msgstr ""
 
-#: ./commands.py:520
+#: ../src/commands.py:525
 msgid "command name"
 msgstr ""
 
-#: ./commands.py:528
+#: ../src/commands.py:533
 msgid "ip"
 msgstr ""
 
-#: ./commands.py:534
+#: ../src/commands.py:539
 msgid "letter"
 msgstr ""
 
-#: ./commands.py:566
+#: ../src/commands.py:571
 msgid "plugin"
 msgstr ""
 
-#: ./commands.py:574
+#: ../src/commands.py:579
 msgid "irc color"
 msgstr ""
 
-#: ./conf.py:104
+#: ../src/conf.py:104
 msgid ""
 "Determines whether this plugin is loaded\n"
 "         bydefault."
 msgstr ""
 
-#: ./conf.py:108
+#: ../src/conf.py:108
 msgid ""
 "Determines whether this plugin is\n"
 "        publicly visible."
 msgstr ""
 
-#: ./conf.py:194
+#: ../src/conf.py:194
 msgid "Determines the bot's default nick."
 msgstr ""
 
-#: ./conf.py:197
+#: ../src/conf.py:197
 msgid ""
 "Determines what alternative\n"
 "   nicks will be used if the primary nick (supybot.nick) isn't available.  A\n"
@@ -215,54 +215,54 @@ msgid ""
 "   appropriately until an unused nick is found."
 msgstr ""
 
-#: ./conf.py:204
+#: ../src/conf.py:204
 msgid ""
 "Determines the bot's ident string, if the server\n"
 "    doesn't provide one by default."
 msgstr ""
 
-#: ./conf.py:215
+#: ../src/conf.py:215
 msgid ""
 "Determines the user the bot sends to the server.\n"
 "    A standard user using the current version of the bot will be generated if\n"
 "    this is left empty."
 msgstr ""
 
-#: ./conf.py:223
+#: ../src/conf.py:223
 msgid "Determines what networks the bot will connect to."
 msgstr ""
 
-#: ./conf.py:264
+#: ../src/conf.py:264
 msgid ""
 "Determines what password will be used on %s.  Yes, we know that\n"
 "        technically passwords are server-specific and not network-specific,\n"
 "        but this is the best we can do right now."
 msgstr ""
 
-#: ./conf.py:268
+#: ../src/conf.py:268
 msgid ""
 "Determines what servers the bot will connect to for %s.  Each will\n"
 "        be tried in order, wrapping back to the first when the cycle is\n"
 "        completed."
 msgstr ""
 
-#: ./conf.py:272
+#: ../src/conf.py:272
 msgid "Determines what channels the bot will join only on %s."
 msgstr ""
 
-#: ./conf.py:275
+#: ../src/conf.py:275
 msgid ""
 "Determines whether the bot will attempt to connect with SSL\n"
 "        sockets to %s."
 msgstr ""
 
-#: ./conf.py:278
+#: ../src/conf.py:278
 msgid ""
 "Determines what key (if any) will be used to join the\n"
 "        channel."
 msgstr ""
 
-#: ./conf.py:298
+#: ../src/conf.py:298
 msgid ""
 "Determines how timestamps\n"
 "    printed for human reading should be formatted. Refer to the Python\n"
@@ -270,40 +270,40 @@ msgid ""
 "    time formats."
 msgstr ""
 
-#: ./conf.py:312
+#: ../src/conf.py:312
 msgid ""
 "Determines whether elapsed times will be given\n"
 "    as \"1 day, 2 hours, 3 minutes, and 15 seconds\" or as \"1d 2h 3m 15s\"."
 msgstr ""
 
-#: ./conf.py:322
+#: ../src/conf.py:322
 msgid ""
 "Determines the absolute maximum length of\n"
 "    the bot's reply -- no reply will be passed through the bot with a length\n"
 "    greater than this."
 msgstr ""
 
-#: ./conf.py:327
+#: ../src/conf.py:327
 msgid ""
 "Determines whether the bot will break up long\n"
 "    messages into chunks and allow users to use  the 'more' command to get the\n"
 "    remaining chunks."
 msgstr ""
 
-#: ./conf.py:332
+#: ../src/conf.py:332
 msgid ""
 "Determines what the maximum number of\n"
 "    chunks (for use with the 'more' command) will be."
 msgstr ""
 
-#: ./conf.py:336
+#: ../src/conf.py:336
 msgid ""
 "Determines how long individual chunks\n"
 "    will be.  If set to 0, uses our super-tweaked,\n"
 "    get-the-most-out-of-an-individual-message default."
 msgstr ""
 
-#: ./conf.py:341
+#: ../src/conf.py:341
 msgid ""
 "Determines how many mores will be sent\n"
 "    instantly (i.e., without the use of the more command, immediately when\n"
@@ -311,7 +311,7 @@ msgid ""
 "    required for all but the first chunk."
 msgstr ""
 
-#: ./conf.py:347
+#: ../src/conf.py:347
 msgid ""
 "Determines whether the bot will send\n"
 "    multi-message replies in a single message or in multiple messages.  For\n"
@@ -319,7 +319,7 @@ msgid ""
 "    everything in a single message, using mores if necessary."
 msgstr ""
 
-#: ./conf.py:353
+#: ../src/conf.py:353
 msgid ""
 "Determines whether the bot will reply with an\n"
 "    error message when it is addressed but not given a valid command.  If this\n"
@@ -327,14 +327,14 @@ msgid ""
 "    override the normal behavior."
 msgstr ""
 
-#: ./conf.py:360
+#: ../src/conf.py:360
 msgid ""
 "Determines whether error messages that result\n"
 "    from bugs in the bot will show a detailed error message (the uncaught\n"
 "    exception) or a generic error message."
 msgstr ""
 
-#: ./conf.py:364
+#: ../src/conf.py:364
 msgid ""
 "Determines whether the bot will send error\n"
 "    messages to users in private.  You might want to do this in order to keep\n"
@@ -342,7 +342,7 @@ msgid ""
 "    supybot.reply.error.withNotice."
 msgstr ""
 
-#: ./conf.py:369
+#: ../src/conf.py:369
 msgid ""
 "Determines whether the bot will send error\n"
 "    messages to users via NOTICE instead of PRIVMSG.  You might want to do this\n"
@@ -352,7 +352,7 @@ msgid ""
 "    in most IRC clients."
 msgstr ""
 
-#: ./conf.py:376
+#: ../src/conf.py:376
 msgid ""
 "Determines whether the bot will send an error\n"
 "    message to users who attempt to call a command for which they do not have\n"
@@ -361,21 +361,21 @@ msgid ""
 "    running certain commands."
 msgstr ""
 
-#: ./conf.py:383
+#: ../src/conf.py:383
 msgid ""
 "Determines whether the bot will reply\n"
 "     privatelywhen replying in a channel, rather than replying to the whole\n"
 "     channel."
 msgstr ""
 
-#: ./conf.py:388
+#: ../src/conf.py:388
 msgid ""
 "Determines whether the bot will reply with a\n"
 "    notice when replying in a channel, rather than replying with a privmsg as\n"
 "    normal."
 msgstr ""
 
-#: ./conf.py:394
+#: ../src/conf.py:394
 msgid ""
 "Determines whether the bot will reply with a\n"
 "    notice when it is sending a private message, in order not to open a /query\n"
@@ -383,13 +383,13 @@ msgid ""
 "    configuration variable reply.withNoticeWhenPrivate."
 msgstr ""
 
-#: ./conf.py:400
+#: ../src/conf.py:400
 msgid ""
 "Determines whether the bot will always prefix\n"
 "     theuser's nick to its reply to that user's command."
 msgstr ""
 
-#: ./conf.py:404
+#: ../src/conf.py:404
 msgid ""
 "Determines whether the bot should attempt to\n"
 "    reply to all messages even if they don't address it (either via its nick\n"
@@ -397,7 +397,7 @@ msgid ""
 "    to set supybot.reply.whenNotCommand to False."
 msgstr ""
 
-#: ./conf.py:410
+#: ../src/conf.py:410
 msgid ""
 "Determines whether the bot will allow you to\n"
 "    send channel-related commands outside of that channel.  Sometimes people\n"
@@ -406,7 +406,7 @@ msgid ""
 "    itself."
 msgstr ""
 
-#: ./conf.py:417
+#: ../src/conf.py:417
 msgid ""
 "Determines whether the bot will unidentify\n"
 "    someone when that person changes his or her nick.  Setting this to True\n"
@@ -414,7 +414,7 @@ msgid ""
 "    little greater security."
 msgstr ""
 
-#: ./conf.py:423
+#: ../src/conf.py:423
 msgid ""
 "Determines whether the bot will always join a\n"
 "    channel when it's invited.  If this value is False, the bot will only join\n"
@@ -422,7 +422,7 @@ msgid ""
 "    explicitly told to join the channel using the Admin.join command)"
 msgstr ""
 
-#: ./conf.py:429
+#: ../src/conf.py:429
 msgid ""
 "Supybot normally replies with the full help\n"
 "    whenever a user misuses a command.  If this value is set to True, the bot\n"
@@ -430,7 +430,7 @@ msgid ""
 "    help) rather than the full help."
 msgstr ""
 
-#: ./conf.py:443
+#: ../src/conf.py:443
 msgid ""
 "Determines what prefix characters the bot will\n"
 "    reply to.  A prefix character is a single character that the bot will use\n"
@@ -441,7 +441,7 @@ msgid ""
 "    assume it is being addressed."
 msgstr ""
 
-#: ./conf.py:452
+#: ../src/conf.py:452
 msgid ""
 "Determines what strings the\n"
 "    bot will reply to when they are at the beginning of the message.  Whereas\n"
@@ -451,77 +451,89 @@ msgid ""
 "    prefixed by either @@ or ??."
 msgstr ""
 
-#: ./conf.py:459
+#: ../src/conf.py:459
 msgid ""
 "Determines whether the bot will reply when\n"
 "    people address it by its nick, rather than with a prefix character."
 msgstr ""
 
-#: ./conf.py:462
+#: ../src/conf.py:462
 msgid ""
 "Determines whether the bot will reply when\n"
 "    people address it by its nick at the end of the message, rather than at\n"
 "    the beginning."
 msgstr ""
 
-#: ./conf.py:466
+#: ../src/conf.py:466
 msgid ""
 "Determines what extra nicks\n"
 "    the bot will always respond to when addressed by, even if its current nick\n"
 "    is something else."
 msgstr ""
 
-#: ./conf.py:476
+#: ../src/conf.py:476
 msgid "The operation succeeded."
 msgstr ""
 
-#: ./conf.py:477
+#: ../src/conf.py:477
 msgid ""
 "Determines what message the bot replies with when a command succeeded.\n"
 "    If this configuration variable is empty, no success message will be\n"
 "    sent."
 msgstr ""
 
-#: ./conf.py:482
+#: ../src/conf.py:482
 msgid ""
 "An error has occurred and has been logged.\n"
 "    Please contact this bot's administrator for more information."
 msgstr ""
 
-#: ./conf.py:483
+#: ../src/conf.py:483
 msgid ""
 "\n"
 "    Determines what error message the bot gives when it wants to be\n"
 "    ambiguous."
 msgstr ""
 
-#: ./conf.py:488
+#: ../src/conf.py:488
+msgid ""
+"An error has occurred and has been logged.\n"
+"    Check the logs for more informations."
+msgstr ""
+
+#: ../src/conf.py:489
+msgid ""
+"Determines what error\n"
+"    message the bot gives to the owner when it wants to be ambiguous."
+msgstr ""
+
+#: ../src/conf.py:493
 msgid ""
 "Your hostmask doesn't match or your password\n"
 "    is wrong."
 msgstr ""
 
-#: ./conf.py:489
+#: ../src/conf.py:494
 msgid ""
 "Determines what message the bot replies with when\n"
 "     someonetries to use a command that requires being identified or having a\n"
 "    password and neither credential is correct."
 msgstr ""
 
-#: ./conf.py:495
+#: ../src/conf.py:500
 msgid ""
 "I can't find %s in my user\n"
 "    database.  If you didn't give a user name, then I might not know what your\n"
 "    user is, and you'll need to identify before this command might work."
 msgstr ""
 
-#: ./conf.py:498
+#: ../src/conf.py:503
 msgid ""
 "Determines what error message the bot replies with when someone tries\n"
 "    to accessing some information on a user the bot doesn't know about."
 msgstr ""
 
-#: ./conf.py:502
+#: ../src/conf.py:507
 msgid ""
 "You must be registered to use this command.\n"
 "    If you are already registered, you must either identify (using the identify\n"
@@ -529,14 +541,14 @@ msgid ""
 "    \"hostmask add\" command)."
 msgstr ""
 
-#: ./conf.py:505
+#: ../src/conf.py:510
 msgid ""
 "Determines what error message the bot\n"
 "    replies with when someone tries to do something that requires them to be\n"
 "    registered but they're not currently recognized."
 msgstr ""
 
-#: ./conf.py:510
+#: ../src/conf.py:515
 msgid ""
 "You don't have the %s capability.  If you\n"
 "    think that you should have this capability, be sure that you are identified\n"
@@ -544,14 +556,14 @@ msgid ""
 "    identified."
 msgstr ""
 
-#: ./conf.py:513
+#: ../src/conf.py:518
 msgid ""
 "Determines what error message is given when the bot\n"
 "    is telling someone they aren't cool enough to use the command they tried to\n"
 "    use."
 msgstr ""
 
-#: ./conf.py:518
+#: ../src/conf.py:523
 msgid ""
 "You're missing some capability you need.\n"
 "    This could be because you actually possess the anti-capability for the\n"
@@ -563,7 +575,7 @@ msgid ""
 "    what you want to do."
 msgstr ""
 
-#: ./conf.py:526
+#: ../src/conf.py:531
 msgid ""
 "Determines what generic error message is given when the bot is telling\n"
 "    someone that they aren't cool enough to use the command they tried to use,\n"
@@ -571,40 +583,40 @@ msgid ""
 "    explicit capability for whatever reason."
 msgstr ""
 
-#: ./conf.py:532
+#: ../src/conf.py:537
 msgid ""
 "That operation cannot be done in a\n"
 "    channel."
 msgstr ""
 
-#: ./conf.py:533
+#: ../src/conf.py:538
 msgid ""
 "Determines what error messages the bot sends to people\n"
 "    who try to do things in a channel that really should be done in\n"
 "    private."
 msgstr ""
 
-#: ./conf.py:538
+#: ../src/conf.py:543
 msgid ""
 "This may be a bug.  If you think it is,\n"
 "    please file a bug report at\n"
 "    <http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>."
 msgstr ""
 
-#: ./conf.py:541
+#: ../src/conf.py:546
 msgid ""
 "Determines what message the bot sends when it thinks you've\n"
 "    encountered a bug that the developers don't know about."
 msgstr ""
 
-#: ./conf.py:548
+#: ../src/conf.py:553
 msgid ""
 "A floating point number of seconds to throttle\n"
 "    snarfed URLs, in order to prevent loops between two bots snarfing the same\n"
 "    URLs and having the snarfed URL in the output of the snarf message."
 msgstr ""
 
-#: ./conf.py:553
+#: ../src/conf.py:558
 msgid ""
 "Determines the number of seconds\n"
 "    between running the upkeep function that flushes (commits) open databases,\n"
@@ -612,7 +624,7 @@ msgid ""
 "     level."
 msgstr ""
 
-#: ./conf.py:559
+#: ../src/conf.py:564
 msgid ""
 "Determines whether the bot will periodically\n"
 "    flush data and configuration files to disk.  Generally, the only time\n"
@@ -623,27 +635,27 @@ msgid ""
 "    permanent, you must edit the registry yourself."
 msgstr ""
 
-#: ./conf.py:584
+#: ../src/conf.py:589
 msgid ""
 "Determines what characters are valid for quoting\n"
 "    arguments to commands in order to prevent them from being tokenized.\n"
 "    "
 msgstr ""
 
-#: ./conf.py:591
+#: ../src/conf.py:596
 msgid ""
 "Determines whether the bot will allow nested\n"
 "    commands, which rule.  You definitely should keep this on."
 msgstr ""
 
-#: ./conf.py:594
+#: ../src/conf.py:599
 msgid ""
 "Determines what the maximum number of\n"
 "    nested commands will be; users will receive an error if they attempt\n"
 "    commands more nested than this."
 msgstr ""
 
-#: ./conf.py:602
+#: ../src/conf.py:607
 msgid ""
 "Supybot allows you to specify what brackets are\n"
 "    used for your nested commands.  Valid sets of brackets include [], <>, and\n"
@@ -653,21 +665,21 @@ msgid ""
 "    not be allowed in this channel."
 msgstr ""
 
-#: ./conf.py:609
+#: ../src/conf.py:614
 msgid ""
 "Supybot allows nested commands. Enabling this\n"
 "    option will allow nested commands with a syntax similar to UNIX pipes, for\n"
 "    example: 'bot: foo | bar'."
 msgstr ""
 
-#: ./conf.py:614
+#: ../src/conf.py:619
 msgid ""
 "Determines what commands have default\n"
 "    plugins set, and which plugins are set to be the default for each of those\n"
 "    commands."
 msgstr ""
 
-#: ./conf.py:620
+#: ../src/conf.py:625
 msgid ""
 "Determines what plugins automatically get precedence over all\n"
 "        other plugins when selecting a default plugin for a command.  By\n"
@@ -677,13 +689,13 @@ msgid ""
 "        case-sensitive."
 msgstr ""
 
-#: ./conf.py:635
+#: ../src/conf.py:640
 msgid ""
 "Determines whether the bot will defend itself\n"
 "    against command-flooding."
 msgstr ""
 
-#: ./conf.py:638
+#: ../src/conf.py:643
 msgid ""
 "Determines how many commands users are\n"
 "    allowed per minute.  If a user sends more than this many commands in any\n"
@@ -691,19 +703,19 @@ msgid ""
 "    supybot.abuse.flood.command.punishment seconds."
 msgstr ""
 
-#: ./conf.py:643
+#: ../src/conf.py:648
 msgid ""
 "Determines how many seconds the bot\n"
 "    will ignore users who flood it with commands."
 msgstr ""
 
-#: ./conf.py:647
+#: ../src/conf.py:652
 msgid ""
 "Determines whether the bot will defend itself\n"
 "    against invalid command-flooding."
 msgstr ""
 
-#: ./conf.py:650
+#: ../src/conf.py:655
 msgid ""
 "Determines how many invalid commands users\n"
 "    are allowed per minute.  If a user sends more than this many invalid\n"
@@ -714,7 +726,7 @@ msgid ""
 "    commands than for them to flood with valid commands."
 msgstr ""
 
-#: ./conf.py:658
+#: ../src/conf.py:663
 msgid ""
 "Determines how many seconds the bot\n"
 "    will ignore users who flood it with invalid commands.  Typically, this\n"
@@ -723,19 +735,19 @@ msgid ""
 "    commands than for them to flood with valid commands."
 msgstr ""
 
-#: ./conf.py:664
+#: ../src/conf.py:669
 msgid ""
 "Determines whether the bot will notify people\n"
 "    that they're being ignored for invalid command flooding."
 msgstr ""
 
-#: ./conf.py:673
+#: ../src/conf.py:678
 msgid ""
 "Determines the default length of time a\n"
 "    driver should block waiting for input."
 msgstr ""
 
-#: ./conf.py:680
+#: ../src/conf.py:685
 msgid ""
 "Determines what driver module the bot\n"
 "    will use.  Socket, a simple driver based on timeout sockets, is used by\n"
@@ -743,36 +755,36 @@ msgid ""
 "    and if you've got Twisted installed, is probably your best bet."
 msgstr ""
 
-#: ./conf.py:686
+#: ../src/conf.py:691
 msgid ""
 "Determines the maximum time the bot will\n"
 "    wait before attempting to reconnect to an IRC server.  The bot may, of\n"
 "    course, reconnect earlier if possible."
 msgstr ""
 
-#: ./conf.py:735
+#: ../src/conf.py:740
 msgid ""
 "Determines what directory configuration data is\n"
 "    put into."
 msgstr ""
 
-#: ./conf.py:738
+#: ../src/conf.py:743
 msgid "Determines what directory data is put into."
 msgstr ""
 
-#: ./conf.py:740
+#: ../src/conf.py:745
 msgid ""
 "Determines what directory backup data is put\n"
 "    into."
 msgstr ""
 
-#: ./conf.py:743
+#: ../src/conf.py:748
 msgid ""
 "Determines what directory temporary files\n"
 "    are put into."
 msgstr ""
 
-#: ./conf.py:750
+#: ../src/conf.py:755
 msgid ""
 "Determines what directories\n"
 "    the bot will look for plugins in.  Accepts a comma-separated list of\n"
@@ -782,13 +794,13 @@ msgid ""
 "    [config supybot.directories.plugins], newPluginDirectory'."
 msgstr ""
 
-#: ./conf.py:758
+#: ../src/conf.py:763
 msgid ""
 "Determines what plugins will\n"
 "    be loaded."
 msgstr ""
 
-#: ./conf.py:761
+#: ../src/conf.py:766
 msgid ""
 "Determines whether the bot will always load\n"
 "    important plugins (Admin, Channel, Config, Misc, Owner, and User)\n"
@@ -798,28 +810,28 @@ msgid ""
 "    enough to change the value of this variable appropriately :)"
 msgstr ""
 
-#: ./conf.py:784
+#: ../src/conf.py:793
 msgid ""
 "Determines what databases are available for use. If this\n"
 "    value is not configured (that is, if its value is empty) then sane defaults\n"
 "    will be provided."
 msgstr ""
 
-#: ./conf.py:790
+#: ../src/conf.py:799
 msgid ""
 "Determines what filename will be used\n"
 "    for the users database.  This file will go into the directory specified by\n"
 "    the supybot.directories.conf variable."
 msgstr ""
 
-#: ./conf.py:794
+#: ../src/conf.py:803
 msgid ""
 "Determines how long it takes identification to\n"
 "    time out.  If the value is less than or equal to zero, identification never\n"
 "    times out."
 msgstr ""
 
-#: ./conf.py:798
+#: ../src/conf.py:807
 msgid ""
 "Determines whether the bot will allow users to\n"
 "    unregister their users.  This can wreak havoc with already-existing\n"
@@ -829,21 +841,21 @@ msgid ""
 "    "
 msgstr ""
 
-#: ./conf.py:807
+#: ../src/conf.py:816
 msgid ""
 "Determines what filename will be used\n"
 "    for the ignores database.  This file will go into the directory specified\n"
 "    by the supybot.directories.conf variable."
 msgstr ""
 
-#: ./conf.py:813
+#: ../src/conf.py:822
 msgid ""
 "Determines what filename will be used\n"
 "    for the channels database.  This file will go into the directory specified\n"
 "    by the supybot.directories.conf variable."
 msgstr ""
 
-#: ./conf.py:843
+#: ../src/conf.py:852
 msgid ""
 "Determines whether database-based plugins that\n"
 "    can be channel-specific will be so.  This can be overridden by individual\n"
@@ -854,7 +866,7 @@ msgid ""
 "    to share a certain channel's databases globally."
 msgstr ""
 
-#: ./conf.py:851
+#: ../src/conf.py:860
 msgid ""
 "Determines what channel global\n"
 "    (non-channel-specific) databases will be considered a part of.  This is\n"
@@ -866,7 +878,7 @@ msgid ""
 "    for your channel."
 msgstr ""
 
-#: ./conf.py:860
+#: ../src/conf.py:869
 msgid ""
 "Determines whether another channel's global\n"
 "    (non-channel-specific) databases will be allowed to link to this channel's\n"
@@ -875,13 +887,13 @@ msgid ""
 "    "
 msgstr ""
 
-#: ./conf.py:877
+#: ../src/conf.py:886
 msgid ""
 "Determines\n"
 "    whether CDB databases will be allowed as a database implementation."
 msgstr ""
 
-#: ./conf.py:880
+#: ../src/conf.py:889
 msgid ""
 "Determines how often CDB databases will have\n"
 "    their modifications flushed to disk.  When the number of modified records\n"
@@ -889,13 +901,13 @@ msgid ""
 "    will be entirely flushed to disk."
 msgstr ""
 
-#: ./conf.py:965
+#: ../src/conf.py:974
 msgid ""
 "Determines what will be used as the\n"
 "    default banmask style."
 msgstr ""
 
-#: ./conf.py:969
+#: ../src/conf.py:978
 msgid ""
 "Determines whether the bot will strictly follow\n"
 "    the RFC; currently this only affects what strings are considered to be\n"
@@ -904,7 +916,7 @@ msgid ""
 "    False."
 msgstr ""
 
-#: ./conf.py:976
+#: ../src/conf.py:985
 msgid ""
 "Determines what user modes the bot will request\n"
 "    from the server when it first connects.  Many people might choose +i; some\n"
@@ -912,27 +924,27 @@ msgid ""
 "    that you should be given a fake host."
 msgstr ""
 
-#: ./conf.py:982
+#: ../src/conf.py:991
 msgid ""
 "Determines what vhost the bot will bind to before\n"
 "    connecting to the IRC server."
 msgstr ""
 
-#: ./conf.py:986
+#: ../src/conf.py:995
 msgid ""
 "Determines how many old messages the bot will\n"
 "    keep around in its history.  Changing this variable will not take effect\n"
 "    until the bot is restarted."
 msgstr ""
 
-#: ./conf.py:991
+#: ../src/conf.py:1000
 msgid ""
 "A floating point number of seconds to throttle\n"
 "    queued messages -- that is, messages will not be sent faster than once per\n"
 "    throttleTime seconds."
 msgstr ""
 
-#: ./conf.py:996
+#: ../src/conf.py:1005
 msgid ""
 "Determines whether the bot will send PINGs to\n"
 "    the server it's connected to in order to keep the connection alive and\n"
@@ -941,13 +953,13 @@ msgid ""
 "    some strange server issues."
 msgstr ""
 
-#: ./conf.py:1003
+#: ../src/conf.py:1012
 msgid ""
 "Determines the number of seconds between sending\n"
 "    pings to the server, if pings are being sent to the server."
 msgstr ""
 
-#: ./conf.py:1008
+#: ../src/conf.py:1017
 msgid ""
 "Determines whether the bot will refuse\n"
 "    duplicate messages to be queued for delivery to the server.  This is a\n"
@@ -956,13 +968,13 @@ msgid ""
 "    doing certain kinds of plugin hacking."
 msgstr ""
 
-#: ./conf.py:1016
+#: ../src/conf.py:1025
 msgid ""
 "Determines how many seconds must elapse between\n"
 "    JOINs sent to the server."
 msgstr ""
 
-#: ./conf.py:1024
+#: ../src/conf.py:1033
 msgid ""
 "Determines how many bytes the bot will\n"
 "    'peek' at when looking through a URL for a doctype or title or something\n"
@@ -970,13 +982,30 @@ msgid ""
 "    found what it was looking for."
 msgstr ""
 
-#: ./conf.py:1030
+#: ../src/conf.py:1039
 msgid ""
 "Determines what proxy all HTTP requests should go\n"
 "    through.  The value should be of the form 'host:port'."
 msgstr ""
 
-#: ./conf.py:1039
+#: ../src/conf.py:1059
+msgid "Determines what host the HTTP server will bind."
+msgstr ""
+
+#: ../src/conf.py:1061
+msgid ""
+"Determines what port the HTTP server will\n"
+"    bind."
+msgstr ""
+
+#: ../src/conf.py:1064
+msgid ""
+"Defines whether the server will stay alive if\n"
+"    no plugin is using it. This also means that the server will start even\n"
+"    if it is not used."
+msgstr ""
+
+#: ../src/conf.py:1073
 msgid ""
 "Determines whether the bot will ignore\n"
 "    unregistered users by default.  Of course, that'll make it particularly\n"
@@ -984,14 +1013,14 @@ msgid ""
 "    problem to solve."
 msgstr ""
 
-#: ./conf.py:1053
+#: ../src/conf.py:1080
 msgid ""
 "A string that is the external IP of the bot.  If this is the\n"
 "   empty string, the bot will attempt to find out its IP dynamically (though\n"
 "   sometimes that doesn't work, hence this variable)."
 msgstr ""
 
-#: ./conf.py:1067
+#: ../src/conf.py:1094
 msgid ""
 "Determines what the default timeout for socket\n"
 "    objects will be.  This means that *all* sockets will timeout when this many\n"
@@ -999,7 +1028,7 @@ msgid ""
 "    that uses the sockets)."
 msgstr ""
 
-#: ./conf.py:1073
+#: ../src/conf.py:1100
 msgid ""
 "Determines what file the bot should write its PID\n"
 "    (Process ID) to, so you can kill it more easily.  If it's left unset (as is\n"
@@ -1007,36 +1036,69 @@ msgid ""
 "    changes to this variable to take effect."
 msgstr ""
 
-#: ./conf.py:1083
+#: ../src/conf.py:1110
 msgid ""
 "Determines whether the bot will automatically\n"
 "    thread all commands."
 msgstr ""
 
-#: ./conf.py:1086
+#: ../src/conf.py:1113
 msgid ""
 "Determines whether the bot will automatically\n"
 "    flush all flushers *very* often.  Useful for debugging when you don't know\n"
 "    what's breaking or when, but think that it might be logged."
 msgstr ""
 
-#: ./questions.py:60
+#: ../src/questions.py:60
 msgid "Sorry, that response was not an option."
 msgstr ""
 
-#: ./questions.py:106
+#: ../src/questions.py:106
 msgid "Sorry, you must enter a value."
 msgstr ""
 
-#: ./questions.py:126
+#: ../src/questions.py:126
 msgid "Enter password: "
 msgstr ""
 
-#: ./questions.py:128
+#: ../src/questions.py:128
 msgid "Re-enter password: "
 msgstr ""
 
-#: ./questions.py:141
+#: ../src/questions.py:141
 msgid "Passwords don't match."
+msgstr ""
+
+#: ../src/utils/httpserver.py:129
+msgid ""
+"\n"
+"    This is a default response of the Supybot HTTP server. If you see this\n"
+"    message, it probably means you are developping a plugin, and you have\n"
+"    neither overriden this message or defined an handler for this query."
+msgstr ""
+
+#: ../src/utils/httpserver.py:150
+msgid ""
+"\n"
+"    I am a pretty clever IRC bot, but I suck at serving Web pages, particulary\n"
+"    if I don't know what to serve.\n"
+"    What I'm saying is you just triggered a 404 Not Found, and I am not\n"
+"    trained to help you in such a case."
+msgstr ""
+
+#: ../src/utils/httpserver.py:167
+msgid "Request not handled."
+msgstr ""
+
+#: ../src/utils/httpserver.py:171
+msgid "Supybot Web server index"
+msgstr ""
+
+#: ../src/utils/httpserver.py:174
+msgid "Here is a list of the plugins that have a Web interface:"
+msgstr ""
+
+#: ../src/utils/httpserver.py:183
+msgid "No plugins available."
 msgstr ""
 

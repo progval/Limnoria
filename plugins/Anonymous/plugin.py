@@ -51,7 +51,7 @@ class Anonymous(callbacks.Plugin):
     def _preCheck(self, irc, msg, target, action):
         if self.registryValue('requireRegistration'):
             try:
-                _ = ircdb.users.getUser(msg.prefix)
+                foo = ircdb.users.getUser(msg.prefix)
             except KeyError:
                 irc.errorNotRegistered(Raise=True)
         capability = self.registryValue('requireCapability')
@@ -61,17 +61,17 @@ class Anonymous(callbacks.Plugin):
         if irc.isChannel(target):
             if self.registryValue('requirePresenceInChannel', target) and \
                msg.nick not in irc.state.channels[target].users:
-                irc.error(format('You must be in %s to %q in there.',
+                irc.error(format(_('You must be in %s to %q in there.'),
                                  target, action), Raise=True)
             c = ircdb.channels.getChannel(target)
             if c.lobotomized:
-                irc.error(format('I\'m lobotomized in %s.', target),
+                irc.error(format(_('I\'m lobotomized in %s.'), target),
                           Raise=True)
             if not c._checkCapability(self.name()):
-                irc.error('That channel has set its capabilities so as to '
-                          'disallow the use of this plugin.', Raise=True)
+                irc.error(_('That channel has set its capabilities so as to '
+                          'disallow the use of this plugin.'), Raise=True)
         elif action == 'say' and not self.registryValue('allowPrivateTarget'):
-            irc.error(format('%q cannot be used to send private messages.',
+            irc.error(format(_('%q cannot be used to send private messages.'),
                              action),
                       Raise=True)
 

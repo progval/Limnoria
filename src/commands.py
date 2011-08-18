@@ -37,6 +37,8 @@ import types
 import getopt
 import inspect
 import threading
+import multiprocessing #python2.6 or later!
+import Queue
 
 import supybot.log as log
 import supybot.conf as conf
@@ -68,6 +70,61 @@ def thread(f):
         else:
             f(self, irc, msg, args, *L, **kwargs)
     return utils.python.changeFunctionName(newf, f.func_name, f.__doc__)
+
+class ProcessTimeoutError(Exception):
+    """Gets raised when a process is killed due to timeout."""
+    pass
+
+def process(f, *args, **kwargs):
+    """Runs a function <f> in a subprocess.
+    
+    Several extra keyword arguments can be supplied. 
+    <pn>, the pluginname, and <cn>, the command name, are strings used to
+    create the process name, for identification purposes.
+    <timeout>, if supplied, limits the length of execution of target 
+    function to <timeout> seconds."""
+    timeout = kwargs.pop('timeout', None)
+    
+    q = multiprocessing.Queue()
+    def newf(f, q, *args, **kwargs):
+        try:
+            r = f(*args, **kwargs)
+            q.put(r)
+        except Exception as e:
+            q.put(e)
+    targetArgs = (f, q,) + args
+    p = callbacks.CommandProcess(target=newf,
+                                args=targetArgs, kwargs=kwargs)
+    p.start()
+    p.join(timeout)
+    if p.is_alive():
+        p.terminate()
+        raise ProcessTimeoutError, "%s aborted due to timeout." % (p.name,)
+    try:
+        v = q.get(block=False)
+    except Queue.Empty:
+        v = "Nothing returned."
+    if isinstance(v, Exception):
+        v = "Error: " + str(v)
+    return v
+
+def regexp_wrapper(s, reobj, timeout, plugin_name, fcn_name):
+    '''A convenient wrapper to stuff regexp search queries through a subprocess.
+    
+    This is used because specially-crafted regexps can use exponential time
+    and hang the bot.'''
+    def re_bool(s, reobj):
+        """Since we can't enqueue match objects into the multiprocessing queue,
+        we'll just wrap the function to return bools."""
+        if reobj.search(s) is not None:
+            return True
+        else:
+            return False
+    try:
+        v = process(re_bool, s, reobj, timeout=timeout, pn=plugin_name, cn=fcn_name)
+        return v
+    except ProcessTimeoutError:
+        return False
 
 class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):
@@ -252,6 +309,22 @@ def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
     else:
         state.args.append(irc)
 
+def getHaveVoice(irc, msg, args, state, action=_('do that')):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
+    if not irc.state.channels[state.channel].isVoice(irc.nick):
+        state.error(_('I need to be voiced to %s.') % action, Raise=True)
+
+def getHaveHalfop(irc, msg, args, state, action=_('do that')):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
+    if not irc.state.channels[state.channel].isHalfop(irc.nick):
+        state.error(_('I need to be halfopped to %s.') % action, Raise=True)
+
 def getHaveOp(irc, msg, args, state, action=_('do that')):
     if not state.channel:
         getChannel(irc, msg, args, state)
@@ -259,6 +332,17 @@ def getHaveOp(irc, msg, args, state, action=_('do that')):
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isOp(irc.nick):
         state.error(_('I need to be opped to %s.') % action, Raise=True)
+
+def getIsGranted(irc, msg, args, state, action=_('do that')):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
+    if not irc.state.channels[state.channel].isOp(irc.nick) and \
+            not irc.state.channels[state.channel].isHalfop(irc.nick):
+        # isOp includes owners and protected users
+        state.error(_('I  need to be at least halfopped to %s.') % action,
+                Raise=True)
 
 def validChannel(irc, msg, args, state):
     if irc.isChannel(args[0]):
@@ -591,6 +675,8 @@ wrappers = ircutils.IrcDict({
     'banmask': getBanmask,
     'boolean': getBoolean,
     'callerInGivenChannel': callerInGivenChannel,
+    'isGranted': getIsGranted, # I know this name sucks, but I can't find
+                               # something better
     'capability': getSomethingNoSpaces,
     'channel': getChannel,
     'channelDb': getChannelDb,
@@ -605,7 +691,9 @@ wrappers = ircutils.IrcDict({
     'float': getFloat,
     'glob': getGlob,
     'halfop': getHalfop,
+    'haveHalfop': getHaveHalfop,
     'haveOp': getHaveOp,
+    'haveVoice': getHaveVoice,
     'hostmask': getHostmask,
     'httpUrl': getHttpUrl,
     'id': getId,

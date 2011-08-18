@@ -30,6 +30,7 @@
 
 import time
 
+import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
@@ -51,7 +52,8 @@ class AutoMode(callbacks.Plugin):
         fallthrough = self.registryValue('fallthrough', channel)
         def do(type):
             cap = ircdb.makeChannelCapability(channel, type)
-            if ircdb.checkCapability(msg.prefix, cap, ignoreOwner=True):
+            if ircdb.checkCapability(msg.prefix, cap,
+                    ignoreOwner=not self.registryValue('owner')):
                 if self.registryValue(type, channel):
                     self.log.info('Sending auto-%s of %s in %s.',
                                   type, msg.prefix, channel)

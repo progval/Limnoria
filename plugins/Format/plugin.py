@@ -147,7 +147,7 @@ class Format(callbacks.Plugin):
     def repr(self, irc, msg, args, text):
         """<text>
 
-        Returns the text surrounded by double quotes.
+        Returns <text> surrounded by double quotes.
         """
         irc.reply(utils.str.dqrepr(text))
     repr = wrap(repr, ['text'])

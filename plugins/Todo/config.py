@@ -46,5 +46,8 @@ Todo = conf.registerPlugin('Todo')
 # conf.registerGlobalValue(Todo, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 
+conf.registerGlobalValue(Todo, 'allowThirdpartyReader',
+    registry.Boolean(False, _("""Determines whether users can read the
+    todo-list of another user.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

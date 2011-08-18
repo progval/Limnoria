@@ -182,7 +182,7 @@ class IrcMsg(object):
             return self._hash
         self._hash = hash(self.command) ^ \
                      hash(self.prefix) ^ \
-                     hash(self.args)
+                     hash(repr(self.args))
         return self._hash
 
     def __repr__(self):
@@ -522,7 +522,8 @@ def unbans(channel, hostmasks, prefix='', msg=None):
     if msg and not prefix:
         prefix = msg.prefix
     return IrcMsg(prefix=prefix, command='MODE', msg=msg,
-                  args=(channel, '-' + ('b'*len(hostmasks)), hostmasks))
+                  args=(channel, '-' + ('b'*len(hostmasks)),
+                                        ' '.join(hostmasks)))
 
 def kick(channel, nick, s='', prefix='', msg=None):
     """Returns a KICK to kick nick from channel with the message msg."""

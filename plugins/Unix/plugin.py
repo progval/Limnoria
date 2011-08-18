@@ -113,7 +113,7 @@ class Unix(callbacks.Plugin):
     def crypt(self, irc, msg, args, password, salt):
         """<password> [<salt>]
 
-        Returns the resulting of doing a crypt() on <password>  If <salt> is
+        Returns the resulting of doing a crypt() on <password>.  If <salt> is
         not given, uses a random salt.  If running on a glibc2 system,
         prepending '$1$' to your salt will cause crypt to return an MD5sum
         based crypt rather than the standard DES based crypt.
