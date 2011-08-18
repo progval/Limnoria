@@ -1,3 +1,7 @@
+# AutoMode plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot AutoMode\n"
@@ -35,8 +39,8 @@ msgid ""
 "    auto-halfopping/voicing are turned on."
 msgstr ""
 "Määrittää  \"siirtyykö\" botti\n"
-"halfoppaamiseen/voicen antamiseen kun automaatti-oppaaminen on on/off asennossa  mutta\n"
-"automaattinen-halfoppaaminen/voicen antaminen ovat käytössä."
+"    halfoppaamiseen/voicen antamiseen kun automaatti-oppaaminen on poistettu käytöstä, mutta\n"
+"    automaattinen-halfoppaaminen/voicen antaminen on käytössä."
 
 #: config.py:56
 msgid ""
@@ -45,7 +49,7 @@ msgid ""
 "    "
 msgstr ""
 "Määrittää oppaako botti\n"
-"ihmiset <kanava>,op valtuudella automaattisesti, kun he liittyvät kanavalle.\n"
+"    ihmiset #<kanava>,op valtuudella automaattisesti, kun he liittyvät kanavalle.\n"
 "    "
 
 #: config.py:60
@@ -54,9 +58,9 @@ msgid ""
 "    halfop people with the <channel>,halfop capability when they join the\n"
 "    channel."
 msgstr ""
-"Miirittää halfoppaako botti automaattisesti, kun\n"
-"ihmiset <kanava>,halfop valtuudella, kun he liittyvät \n"
-"kanavalle."
+"Määrittää halfoppaako botti automaattisesti, kun\n"
+"   ihmiset #<kanava>,halfop valtuudella, kun he liittyvät \n"
+"   kanavalle."
 
 #: config.py:64
 msgid ""
@@ -64,17 +68,17 @@ msgid ""
 "    voice people with the <channel>,voice capability when they join the\n"
 "    channel."
 msgstr ""
-"Määrittää antaako botti automaattisesti voicen\n"
-" ihmisille, joilla on <kanava>,voice valtuus kun he liittyvät\n"
-"kanavalle."
+"Määrittää antaako botti automaattisesti äänen\n"
+"    ihmisille, joilla on #<kanava>,voice valtuus kun he liittyvät\n"
+"    kanavalle."
 
 #: config.py:68
 msgid ""
 "Determines whether the bot will automatically\n"
 "    ban people who join the channel and are on the banlist."
 msgstr ""
-"Määrittää bannaako botti ihmiset,\n"
-"jotka liittyvät kanavalle ja ovat banni listalla."
+"Määrittää antaako botti porttikiellon ihmisille,\n"
+"    jotka liittyvät kanavalle ja ovat porttikieltolistalla."
 
 #: config.py:71
 msgid ""
@@ -82,5 +86,5 @@ msgid ""
 "    will automatically ban a person when banning."
 msgstr ""
 "Määrittää kuinka moneksi sekuntiksi botti\n"
-"bannaa henkilön, kun ollaan bannaamassa."
+"antaa porttikiellon henkilöle, kun ollaan antamassa porttikieltoja."
 

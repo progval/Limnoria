@@ -1,3 +1,7 @@
+# BadWords plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot BadWords\n"
@@ -18,7 +22,7 @@ msgstr "Haluaisitko lisätä joitakin pahoja sanoja?"
 
 #: config.py:41
 msgid "What words? (separate individual words by spaces)"
-msgstr "Mitkä sanoja? (Eristä erilliset sanat käyttämällä välilyöntiä."
+msgstr "Mitkä sanat? (Rajoita erilliset sanat käyttämällä välilyöntiä)."
 
 #: config.py:53
 msgid ""
@@ -26,7 +30,7 @@ msgid ""
 "    considered to be 'bad' so the bot won't say them."
 msgstr ""
 "Määrittää mitkä sanat ovat\n"
-"'pahoja', jottei botti sano niitä."
+"    'pahoja', jottei botti sano niitä."
 
 #: config.py:56
 msgid ""
@@ -39,12 +43,12 @@ msgid ""
 "    plugin."
 msgstr ""
 "Määrittää vaatiiko botti pahojen sanojen\n"
-"olevan toisistaan riippumattomia sanoja, vai sensuroiko se ne toisten sanojen\n"
-"sisältä.  Esimerkiksi,jos 'pah' on paha sana, ja jos tämä on asetettu true asentoon, 'pah'\n"
-"sensuroidaan, mutta 'pahus' ei sensuroida.  Sinä luultavasti tahdot pitää tämän\n"
-"false asennossa. Tämän asetuksen muuttamisen jälkeen, BadWords regexp täytyy\n"
-"luoda uudelleen lisäämällä/poistamalla sana listalta, tai uudelleenlataamalla \n"
-"lisäosa."
+"    olevan toisistaan riippumattomia sanoja, vai sensuroiko se ne toisten sanojen\n"
+"    sisältä.  Esimerkiksi, jos 'pah' on paha sana, ja jos tämä on asetus on true, 'pah'\n"
+"    sensuroidaan, mutta 'pahus' ei sensuroida.  Sinä luultavasti tahdot pitää tämän\n"
+"    false:na. Tämän asetuksen muuttamisen jälkeen, BadWords säännöllinen lauseke täytyy\n"
+"    luoda uudelleen lisäämällä/poistamalla sana listalta, tai lataamalla lisäosa  \n"
+"    uudelleen."
 
 #: config.py:73
 msgid ""
@@ -53,8 +57,8 @@ msgid ""
 "    be used to replace the bad words you've configured."
 msgstr ""
 "Määrittä mitkä merkit korvaavat pahat sanat; \n"
-"osa näistä merkeistä, jotka sopivat pahasanan kokoon\n"
-"käytetään määrittämiesi pahojen sanojen korvaamisessa."
+"    osia näistä merkeistä, jotka sopivat pahan sanan kokoon,\n"
+"    käytetään määrittämiesi pahojen sanojen korvaamisessa."
 
 #: config.py:81
 msgid ""
@@ -67,12 +71,12 @@ msgid ""
 "    supybot.plugins.BadWords.simpleReplacement."
 msgstr ""
 "Määrittää millä tavalla\n"
-"pahat sanat korvataan.  'nastyCharacters' (oletus) korvaa\n"
-"pahan sanan samalla määrällä 'häijyjä merkkejä' (kuten ne jotka ovat\n"
-"sarjakuvissa; muokattavissa supybot.plugins.BadWords.nastyChars asetuksella).\n"
-"'simple' korvaa pahan sanan yksinkertaisella merkkijonolla (riippumatta\n"
-"pahan sanan koosta); tämä merkkijono on muokattavissa\n"
-"asetuksella supybot.plugins.BadWords.simpleReplacement."
+"    pahat sanat korvataan.  'nastyCharacters' (oletus) korvaa\n"
+"    pahan sanan samalla määrällä 'häijyjä merkkejä' (kuten ne jotka ovat\n"
+"    sarjakuvissa; muokattavissa supybot.plugins.BadWords.nastyChars asetuksella).\n"
+"    'simple' korvaa pahan sanan yksinkertaisella merkkiketjulla (riippumatta\n"
+"    pahan sanan koosta); tämä merkkiketju on muokattavissa\n"
+"    asetuksella supybot.plugins.BadWords.simpleReplacement."
 
 #: config.py:89
 msgid ""
@@ -80,7 +84,7 @@ msgid ""
 "    words if the replacement method is 'simple'."
 msgstr ""
 "Määrittää mikä sana korvaa pahat\n"
-"sanat jos korvausmenetelmä on 'simple'."
+"   sanat jos korvausmenetelmä on 'simple'."
 
 #: config.py:92
 msgid ""
@@ -91,10 +95,10 @@ msgid ""
 "    plugins that do coloring or bolding of text."
 msgstr ""
 "Määrittää riisuuko botti\n"
-" muotoilun merkeistä ennen kuin se tarkistaa ne pahojen sanojen varalta.\n"
-" Jos tämä on 'False', on hyvin pinnallista kiertää tämän lisäosan\n"
-" suodatusta. Jos se kuitenkin on 'True', se on huonosti vuorovaikutuksessa\n"
-"tekstin värittämistä tai korostamista tekevien lisäosien kanssa."
+"    muotoilun merkeistä ennen kuin se tarkistaa ne pahojen sanojen varalta.\n"
+"    Jos tämä on 'False', on hyvin pinnallista kiertää tämän lisäosan\n"
+"    suodatusta. Jos se kuitenkin on 'True', se on huonosti vuorovaikutuksessa\n"
+"    tekstin värittämistä tai korostamista tekevien lisäosien kanssa."
 
 #: config.py:99
 msgid ""
@@ -102,7 +106,7 @@ msgid ""
 "    a warning when they use bad words."
 msgstr ""
 "Määrittää potkiiko botti ihmiset\n"
-"varoituksella jos he käyttävät pahoja sanoja."
+"    varoituksella jos he käyttävät pahoja sanoja."
 
 #: config.py:102
 msgid ""
@@ -110,9 +114,9 @@ msgid ""
 "    prohibited in the presence of this bot.  Please use more appropriate\n"
 "    language in the future."
 msgstr ""
-"Sinut on potkittu kielletyn sanan\n"
-"käytöstä tämän botin läsnäollessa.  Ole hyvä ja käytä asianmukaisempaa\n"
-" kieltä tulevaisuudessa."
+"    Sinut on potkittu kielletyn sanan\n"
+"    käytöstä tämän botin läsnäollessa.  Ole hyvä ja käytä asianmukaisempaa\n"
+"    kieltä tulevaisuudessa."
 
 #: config.py:104
 msgid ""
@@ -120,7 +124,7 @@ msgid ""
 "    bot when kicking users for saying bad words."
 msgstr ""
 "Määrittää potkimisviestin, jota\n"
-"botti käyttää, kun potkii käyttäjiä pahojen sanojen käyttämistä."
+"    botti käyttää, kun potkii käyttäjiä pahojen sanojen käyttämistä."
 
 #: plugin.py:46
 msgid ""
@@ -129,8 +133,8 @@ msgid ""
 "    has op."
 msgstr ""
 "Säilyttää listaa sanoista, joita botin ei ole sallittua sanoa.\n"
-"Voidaan myös käyttää potkimaan ihmisiä, jotka sanovat näitä sanoja, jos botilla\n"
-"on kanavaoperaattori."
+"    Voidaan myös käyttää potkimaan ihmisiä, jotka sanovat näitä sanoja, jos botilla\n"
+"    on opit."
 
 #: plugin.py:113
 msgid ""
@@ -141,12 +145,12 @@ msgid ""
 msgstr ""
 "ei ota parametrejä\n"
 "\n"
-"Palauttaa listan sanoista, joita sensuroidaan.\n"
+"        Palauttaa listan sanoista, joita sensuroidaan.\n"
 "        "
 
 #: plugin.py:123
 msgid "I'm not currently censoring any bad words."
-msgstr "Tällä hetkellä ei sensuroida yhtään pahoja sanoja."
+msgstr "En ole sensuroimassa yhtään pahaa sanaa juuri nyt."
 
 #: plugin.py:128
 msgid ""
@@ -157,7 +161,7 @@ msgid ""
 msgstr ""
 "<sana> [<sana> ...]\n"
 "\n"
-"Lisää kaikki <sana>(t) sensuroidaan.\n"
+"    Lisää kaikki <sana>(t) sensuroitaviin sanoihin.\n"
 "        "
 
 #: plugin.py:140
@@ -169,7 +173,7 @@ msgid ""
 msgstr ""
 "<sana> [<sana> ...]\n"
 "\n"
-"Poistaa <sanat>(t) sensuroitujen sanojen listalta.\n"
+"        Poistaa <sana>(t) sensuroitujen sanojen listalta.\n"
 "        "
 
 #~ msgid ""

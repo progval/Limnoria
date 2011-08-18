@@ -18,7 +18,7 @@ msgid ""
 "    rejoin a channel whenever it's kicked from the channel."
 msgstr ""
 "Määrittää yrittääkö botti aina\n"
-"liittyä kanavalle uudelleen, kun se on potkittu kanavalta."
+"    liittyä kanavalle uudelleen, kun se on potkittu kanavalta."
 
 #: plugin.py:69
 msgid ""
@@ -31,9 +31,9 @@ msgid ""
 msgstr ""
 "[<kanava>] <tila> [<parametri> ...]\n"
 "\n"
-"Asettaa  <kanavan> <tilan>, tilaksi lähettäen annetut parametrin.\n"
-"<kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalta\n"
-"jonka tilaa vaihdetaan.\n"
+"Asettaa  <kanavan> tilaksi <tilan>, lähettäen annetut parametrit.\n"
+"    <kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalta\n"
+"    jonka tilaa ollaan muuttamassa.\n"
 "        "
 
 #: plugin.py:76
@@ -52,7 +52,7 @@ msgstr ""
 "[<kanava>] [<rajoitus>]\n"
 "\n"
 "Asettaa kanavan <rajoituksen>.  Jos <rajoitus> on 0, tai ei annettu,\n"
-"kanava rajoitus poistetaan.  <Kanava>on vaadittu cain jos\n"
+"kanavan rajoitus poistetaan.  <Kanava> on vaadittu vain jos\n"
 "viestiä ei lähetetä kanavalta itseltään.\n"
 "        "
 
@@ -71,9 +71,9 @@ msgid ""
 msgstr ""
 "[<kanava>]\n"
 "\n"
-"Asettaa tilan +m <kanavalla>, sallien vain operaattoireiden ja käyttäjien jolla on voice\n"
-"lähettää viestejä kanavalle.  <Kanava> on vaadittu vain jos\n"
-"viestiä ei lähetetä itse kanavalta.\n"
+"Asettaa tilan +m <kanavalla>, sallien vain operaattoreiden ja käyttäjien jolla on ääni\n"
+"    lähettää viestejä kanavalle.  <Kanava> on vaadittu vain jos\n"
+"    viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
 #: plugin.py:102
@@ -91,9 +91,9 @@ msgid ""
 msgstr ""
 "[<kanava>]\n"
 "\n"
-"Asettaa -m tilan <kanavalla>, sallien jokaisen\n"
-"lähettää viestejä kanavalla.  <Kanava> on vaadittu vain jos\n"
-" viestiä ei lähetetä kanavalta itseltään.\n"
+"Asettaa tilan -m <kanavalla>, sallien jokaisen\n"
+"        lähettää viestejä kanavalla.  <Kanava> on vaadittu vain jos\n"
+"        viestiä ei lähetetä kanavalta itseltään.\n"
 "        "
 
 #: plugin.py:114
@@ -111,9 +111,9 @@ msgid ""
 msgstr ""
 "[<kanava>] [<avain>]\n"
 "\n"
-"Asettaa <kanavan>avainsanan <avaimeksi>.  Jos <avainta> ei ole annettu, poistaa\n"
-"poistaa avainsana vaatimuksen <kanavalle> liittymisestä.  <Kanava> on vaadittu vain\n"
-"jos viestiä ei lähetetä kanavalta itsestään.\n"
+"        Asettaa <kanavan> avainsanan <avaimeksi>.  Jos <avainta> ei ole annettu, poistaa\n"
+"        avainsana vaatimuksen <kanavalle> liittymisestä.  <Kanava> on vaadittu vain\n"
+"        jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
 #: plugin.py:130
@@ -132,10 +132,10 @@ msgid ""
 msgstr ""
 "[<kanava>] [<nimimerkki> ...]\n"
 "\n"
-"Jos sinulla on #kanava,op valtuus, tämä antaa kaikille  <nimimerkeille>\n"
-"sinun tarjoamat opit.  Jos et anna yhtään <nimimerkkiä>, tämä oppaa sinut.\n"
-"<Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalta\n"
-"itsestään.\n"
+"        Jos sinulla on #kanava,op valtuus, tämä antaa kaikille  <nimimerkeille>\n"
+"        sinun tarjoamat opit.  Jos et anna yhtään <nimimerkkiä>, tämä oppaa sinut.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalta\n"
+"        itsellään.\n"
 "        "
 
 #: plugin.py:147
@@ -176,15 +176,15 @@ msgid ""
 msgstr ""
 "[<Kanava>] [<nimimerkki> ...]\n"
 "\n"
-"Jos sinulla on #kanava,halfop valtuus, tämä antaa kaikille\n"
-"<nimimerkeille> halfopit.  Jos et anna yhtään <nimimerkkiä>, tämä\n"
-"antaa sinulle halfopit. <Kanava> on vaadittu vain jos viestiä ei\n"
-"lähetetä kanavalta itseltään.\n"
+"        Jos sinulla on #kanava,voice valtuus, tämä antaa kaikille\n"
+"        <nimimerkeille> äänen.  Jos et anna yhtään <nimimerkkiä>, tämä\n"
+"        antaa sinulle äänen. <Kanava> on vaadittu vain jos viestiä ei\n"
+"        lähetetä kanavalla itsellään.\n"
 "        "
 
 #: plugin.py:190
 msgid "voice someone"
-msgstr "anna jollekin voice"
+msgstr "anna jollekulle ääni"
 
 #: plugin.py:195
 msgid ""
@@ -197,14 +197,14 @@ msgid ""
 msgstr ""
 "[<kanava>] [<nimimerkki> ...]\n"
 "\n"
-"Jos sinulla on #kanava,op valtuus, tämä poistaa operaattori\n"
-"kaikilta annetuilta nimimerkeiltä.  Jos nimimerkkejä ei ole annettu poistaa\n"
-"poistaa operaattorioikeudet henkilöltä, joka lähettää viestin.\n"
+"        Jos sinulla on #kanava,op valtuus, tämä poistaa opit\n"
+"        kaikilta annetuilta nimimerkeiltä.  Jos nimimerkkejä ei ole annettu, poistaa\n"
+"        opit henkilöltä joka lähettää viestin.\n"
 "        "
 
 #: plugin.py:202
 msgid "I cowardly refuse to deop myself.  If you really want me deopped, tell me to op you and then deop me yourself."
-msgstr "Minä pelkurimaisesti kieltäydyn deoppaamasta itseäni. Jos todella tahdot minut deopatuksi, käske minun opata sinut ja sitten deoppaa minut itse."
+msgstr "Minä pelkurimaisesti kieltäydyn poistamasta oppeja itseltäni. Jos todella tahdot poistaa minulta opit, käske minun opata sinut ja sitten poista opit minut itse."
 
 #: plugin.py:210
 msgid "deop someone"
@@ -221,18 +221,18 @@ msgid ""
 msgstr ""
 "[<kanava>] [<nimimerkki> ...]\n"
 "\n"
-"Jos sinulla on #kanava,op valtuus, tämä poistaa puoli-kanavaoperaattorin\n"
-"kaikilta annetuilta nimimerkeiltä.  Jos nimimerkkejä ei anneta\n"
-"viestin lähettäneeltä henkilöltä poistetaan puoli-kanavaoperaattorin oikeudet.\n"
+"        Jos sinulla on #kanava,op valtuus, tämä poistaa half-op:n\n"
+"        kaikilta annetuilta nimimerkeiltä.  Jos nimimerkkejä ei anneta,\n"
+"        viestin lähettäneeltä henkilöltä poistetaan puoli-kanavaoperaattorin oikeudet.\n"
 "        "
 
 #: plugin.py:222
 msgid "I cowardly refuse to dehalfop myself.  If you really want me dehalfopped, tell me to op you and then dehalfop me yourself."
-msgstr "Minä pelkurimaisesti kieltäydyn dehalfoppaamasta itseäni. Jos haluat minut depuoliopatuksi, käske minun opata sinut ja sitten dehalfoppaa minut itse."
+msgstr "Minä pelkurimaisesti kieltäydyn poistamaan half-oppeja itseltäni. Jos haluat minut half-opatuksi, käske minun opata sinut ja sitten poista half-op minut itse."
 
 #: plugin.py:230
 msgid "dehalfop someone"
-msgstr "dehalfoppaa joku"
+msgstr "poista joltakulta half-op"
 
 #: plugin.py:235
 msgid ""
@@ -245,14 +245,14 @@ msgid ""
 msgstr ""
 "[<kanava>] [<nimimerkki> ...]\n"
 "\n"
-"Jos sinulla on #kanava,op valtuus, tämä poistaa voicen kaikilta\n"
-"annetuilta nimimerkeiltä.  Jos nimimerkkejä ei ole annettu, poistaa voicen henkilöltä\n"
-"joka lähettää viestin.\n"
+"        Jos sinulla on #kanava,op valtuus, tämä poistaa äänen kaikilta\n"
+"        annetuilta nimimerkeiltä.  Jos nimimerkkejä ei ole annettu, poistaa äänen henkilöltä,\n"
+"        joka lähettää viestin.\n"
 "        "
 
 #: plugin.py:242
 msgid "I cowardly refuse to devoice myself.  If you really want me devoiced, tell me to op you and then devoice me yourself."
-msgstr "Minä pelkurimaisesti kieltäydyn poistamasta voicea itseltäni. Jos todella tahdot poistaa minulta voicen, käske minut oppaamaan sinut ja sitten poista ääni minulta itse."
+msgstr "Minä pelkurimaisesti kieltäydyn poistamasta ääntä itseltäni. Jos todella tahdot poistaa minulta äänen, käske minut oppaamaan sinut ja sitten poista ääni minulta itse."
 
 #: plugin.py:255
 msgid ""
@@ -265,9 +265,9 @@ msgid ""
 msgstr ""
 "[<kanava>]\n"
 "\n"
-" Jos sinulla on #kanava,op valtuus, tämä aiheuttaa botin tekemään\n"
-"\"cyclen\", tai POISTUMAAN ja LIITTYMÄÄN kanavalle. <Kanava> on vaadittu vain\n"
-"jos viestiä ei lähetetä kanavalta itsestään.\n"
+"       Jos sinulla on #kanava,op valtuus, tämä aiheuttaa botin tekemään\n"
+"       \"cyclen\", tai POISTUMAAN ja LIITTYMÄÄN kanavalle. <Kanava> on vaadittu vain\n"
+"       jos viestiä ei lähetetä kanavalta itsestään.\n"
 "        "
 
 #: plugin.py:268
@@ -282,10 +282,10 @@ msgid ""
 msgstr ""
 "[<kanava>] <nimimerkki>[, <nimimerkki>, ...] [<syy>]\n"
 "\n"
-"Potkii <nimimerkit> <kanavalta> <syystä>.  Jos <syytä> ei ole annettu,\n"
-"käyttää komennon antajan nimimerkkiä syynä.\n"
-"<Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalta\n"
-"itsestään.\n"
+"        Potkii <nimimerkit> <kanavalta> <syyllä>.  Jos <syytä> ei ole annettu,\n"
+"        käyttää komennon antajan nimimerkkiä syynä.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalta\n"
+"        itseltään.\n"
 "        "
 
 #: plugin.py:276
@@ -294,7 +294,7 @@ msgstr "Minä pelkurimaisesti kieltäydyn potkimasta itseäni."
 
 #: plugin.py:281
 msgid "The reason you gave is longer than the allowed length for a KICK reason on this server."
-msgstr "Syy, jonka annoit on pidempi kuin sallittu pituus POTKIMIS syyksi tällä palvelimella."
+msgstr "Syy, jonka annoit on pidempi kuin sallittu pituus POTKIMIS-syyksi tällä palvelimella."
 
 #: plugin.py:286
 msgid "kick someone"
@@ -317,36 +317,36 @@ msgid ""
 msgstr ""
 "[<kanava>] [--{exact,nick,user,host}] <nimimerkki> [<sekuntit>] [<syy>]\n"
 "\n"
-"Jos sinulla on #kanava,op valtuus, tämä kickbannaa <nimimerkin> \n"
-"niin moneksi sekuntiksi kuin määrität, tai muuten (jos määrität 0 sekuntia tai\n"
-"tai et määritä sekuntien lukumäärää) se bannaa henkilön ikuisesti.\n"
-"--exact bannaa vain hostmaskin; --nick bannaa vain nimimerkin;\n"
-"--user bannaa vain käyttäjän, ja --host bannaa vain isännän.  Voit\n"
-"yhdistää näitä vaihtoehtoja mielesi mukaan.  <Syy> on syy, jonka vuoksi annat\n"
-"potkun.\n"
-"<Kanava> on vaadittu vain jos viestiä ei lähetetä kanavassa\n"
-"itsestään.\n"
+"        Jos sinulla on #kanava,op valtuus, tämä potkii ja antaa porttikiellon <nimimerkille> \n"
+"        niin moneksi sekuntiksi kuin määrität, tai muuten (jos määrität 0 sekuntia tai\n"
+"        et määritä sekuntien lukumäärää) se antaa henkilölle ikuisen porttikiellon.\n"
+"        --exact antaa porttikiellon vain hostmaskille; --nick antaa porttikiellon vain nimimerkille;\n"
+"        --user antaa porttikiellon vain käyttäjälle, ja --host antaa porttikiellon vain isännälle.  Voit\n"
+"        yhdistää näitä vaihtoehtoja mielesi mukaan.  <Syy> on syy, jonka vuoksi annat\n"
+"        potkun.\n"
+"        <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
 "        "
 
 #: plugin.py:311
 msgid "I cowardly refuse to kickban myself."
-msgstr "Minä pelkurimaisesti kieltäydyn kickbannaamasta itseäni."
+msgstr "Minä pelkurimaisesti kieltäydyn potkimasta itseäni ja antamasta itselleni porttikieltoa."
 
 #: plugin.py:318
 msgid "I haven't seen %s."
-msgstr "Minä en ole nähnyt %s:ää."
+msgstr "Minä en ole käyttäjää %s."
 
 #: plugin.py:326
 msgid "I cowardly refuse to ban myself."
-msgstr "Minä pelkurimaisesti kieltäydyn bannaamasta itseäni."
+msgstr "Minä pelkurimaisesti kieltäydyn antamasta itselleni porttikieltoa."
 
 #: plugin.py:352
 msgid "%s has %s too, you can't ban him/her/it."
-msgstr "%s:llä on %s myös, et voi bannata häntä/sitä."
+msgstr "Käyttäjälltä %s on myös valtuus %s, et voi antaa hänelle/sille porttikieltoa."
 
 #: plugin.py:364
 msgid "kick or ban someone"
-msgstr "potki tai bannaa joku"
+msgstr "potki tai anna jollekulle porttikielto"
 
 #: plugin.py:371
 msgid ""
