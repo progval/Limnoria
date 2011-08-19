@@ -6,89 +6,78 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria RSS\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-30 23:47+CEST\n"
+"PO-Revision-Date: 2011-08-19 16:17+0200\n"
 "Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-
 #: config.py:50
 msgid ""
 "Determines whether the bot will bold the title of the feed when\n"
 "    it announces new news."
-msgstr ""
-"Meghatározza, hogy a bot félkövér betűvel írja-e ki a hírcsatorna címét, amikor bejelenti az új híreket."
+msgstr "Meghatározza, hogy a bot félkövér betűvel írja-e ki a hírcsatorna címét, amikor bejelenti az új híreket."
 
 #: config.py:53
 msgid ""
 "Determines what string is\n"
 "    used to separate headlines in new feeds."
-msgstr ""
-"Meghatározza, hogy milyen karakterlánc használt a főcímek elválasztására az új hírcsatornákban."
+msgstr "Meghatározza, hogy milyen karakterlánc használt a főcímek elválasztására az új hírcsatornákban."
 
 #: config.py:56
 msgid ""
 "Determines what\n"
 "    prefix is prepended (if any) to the new news item announcements made in the\n"
 "    channel."
-msgstr ""
-"Meghatározza, hogy milyen előtag (ha van ilyen) legyen a csatornában bejelentett új hírek előtt."
+msgstr "Meghatározza, hogy milyen előtag (ha van ilyen) legyen a csatornában bejelentett új hírek előtt."
 
 #: config.py:60
 msgid ""
 "Determines which RSS feeds\n"
 "    should be announced in the channel; valid input is a list of strings\n"
 "    (either registered RSS feeds or RSS feed URLs) separated by spaces."
-msgstr ""
-"Meghatározza, hogy melyik RSS hírcsatornák legyenek bejelentve a csatornában; az érvényes bemenet: karakterláncok (regisztrált RSS hírcsatornák vagy RSS hírcsatorna hivatkozások) szóközzel elválasztott listája."
+msgstr "Meghatározza, hogy melyik RSS hírcsatornák legyenek bejelentve a csatornában; az érvényes bemenet: karakterláncok (regisztrált RSS hírcsatornák vagy RSS hírcsatorna hivatkozások) szóközzel elválasztott listája."
 
 #: config.py:64
 msgid ""
 "Indicates how many seconds the bot will\n"
 "    wait between retrieving RSS feeds; requests made within this period will\n"
 "    return cached results."
-msgstr ""
-"Azt jelzi, hány másodpercet vár a bot az RSS hírcsatornák letöltése között; az ebben az időszakban végrehajtott kérések gyorsítótárazott eredményeket adnak vissza."
+msgstr "Azt jelzi, hány másodpercet vár a bot az RSS hírcsatornák letöltése között; az ebben az időszakban végrehajtott kérések gyorsítótárazott eredményeket adnak vissza."
 
 #: config.py:68
 msgid ""
 "Determines what feeds should be accessible as\n"
 "    commands."
-msgstr ""
-"Meghatározza, hogy melyik hírcsatornák legyenek elérhetők parancsokként."
+msgstr "Meghatározza, hogy melyik hírcsatornák legyenek elérhetők parancsokként."
 
 #: config.py:71
 msgid ""
-"Determines whether the bot will list the hivatkozás\n"
+"Determines whether the bot will list the link\n"
 "    along with the title of the feed when the rss command is called.\n"
-"    supybot.plugins.RSS.announce.showhivatkozáss affects whether links will be\n"
+"    supybot.plugins.RSS.announce.showLinks affects whether links will be\n"
 "    listed when a feed is automatically announced."
-msgstr ""
-"Meghatározza, hogy a bot kiírja-e a hírcsatorna hivatkozását a címmel együtt az rss command meghívásakor. A supybot.plugins.RSS.announce.showLinks befolyásolja, hogy a linkek ki legyenek-e írva, amikor egy hírcsatorna automatikusan be van jelentve."
+msgstr "Meghatározza, hogy a bot kiírja-e a hírcsatorna hivatkozását a címmel együtt az rss command meghívásakor. A supybot.plugins.RSS.announce.showLinks befolyásolja, hogy a linkek ki legyenek-e írva, amikor egy hírcsatorna automatikusan be van jelentve."
 
 #: config.py:84
 msgid ""
-"Determines whether the bot will list the hivatkozás\n"
+"Determines whether the bot will list the link\n"
 "    along with the title of the feed when a feed is automatically\n"
 "    announced."
-msgstr ""
-"Meghatározza, hogy a bot kiírja-e a hírcsatorna hivatkozását a címmel együtt amikor egy hírcsatorna automatikusan be van jelentve."
+msgstr "Meghatározza, hogy a bot kiírja-e a hírcsatorna hivatkozását a címmel együtt amikor egy hírcsatorna automatikusan be van jelentve."
 
 #: plugin.py:62
-#, docstring
 msgid ""
 "This plugin is useful both for announcing updates to RSS feeds in a\n"
 "    channel, and for retrieving the headlines of RSS feeds via command.  Use\n"
 "    the \"add\" command to add feeds to this plugin, and use the \"announce\"\n"
 "    command to determine what feeds should be announced in a given channel."
-msgstr ""
-"Ez a bővítmény hasznos mind az RSS hírcsatornák frissítéseinek bejelentésére egy csatornában, és az RSS hírcsatornák főhivatkozásainek letöltésére egy parancssal. Használd az \"add\" parancsot hírcsatornák hozzáadásához, és használd az \"announce\" parancsot, hogy meghatározd, milyen hírcsatornák legyenek bejelentve a megadott csatornában."
+msgstr "Ez a bővítmény hasznos mind az RSS hírcsatornák frissítéseinek bejelentésére egy csatornában, és az RSS hírcsatornák főhivatkozásainek letöltésére egy parancssal. Használd az \"add\" parancsot hírcsatornák hozzáadásához, és használd az \"announce\" parancsot, hogy meghatározd, milyen hírcsatornák legyenek bejelentve a megadott csatornában."
 
 #: plugin.py:316
-#, docstring
 msgid ""
 "<name> <url>\n"
 "\n"
@@ -101,7 +90,6 @@ msgstr ""
 "Hozzáad egy parancsot ehhez a bővítményhez, amely le fogja kérdezni az RSS hírcsatornát a megadott hivatkozáson."
 
 #: plugin.py:327
-#, docstring
 msgid ""
 "<name>\n"
 "\n"
@@ -118,7 +106,6 @@ msgid "That's not a valid RSS feed command name."
 msgstr "Ez nem egy érvényes RSS hírcsatorna parancsnév."
 
 #: plugin.py:344
-#, docstring
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -135,7 +122,6 @@ msgid "I am currently not announcing any feeds."
 msgstr "Jelenleg nem jelentek be semmilyen hírcsatornát."
 
 #: plugin.py:356
-#, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -150,7 +136,6 @@ msgstr ""
 "Hozzáadja a hírcsatornák listáját a bejelentett hírcsatornák listájához <csatorna>-ban. Érvényes hírcsatornák közé tartoznak a regisztrált hírcsatornák nevei és az RSS hírcsatornák hivatkozásai. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
 
 #: plugin.py:374
-#, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -165,7 +150,6 @@ msgstr ""
 "Eltávolítja a hírcsatornák listáját a jelenleg bejelentett hírcsatornák listájából <csatorna>-ban. Érvényes hírcsatornák közé tartoznak a regisztrált hírcsatornák nevei és az RSS hírcsatornák hivatkozásai. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
 
 #: plugin.py:392
-#, docstring
 msgid ""
 "<url> [<number of headlines>]\n"
 "\n"
@@ -182,7 +166,6 @@ msgid "Couldn't get RSS feed."
 msgstr "Nem sikerült elérni az RSS hírcsatornát."
 
 #: plugin.py:420
-#, docstring
 msgid ""
 "<url|feed>\n"
 "\n"

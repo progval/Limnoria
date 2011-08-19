@@ -5,15 +5,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria ChannelLogger\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-08-02 21:20+0200\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"PO-Revision-Date: 2011-08-19 16:21+0200\n"
 "Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-
 
 #: config.py:46
 msgid "Determines whether logging is enabled."
@@ -24,8 +24,7 @@ msgid ""
 "Determines whether channel logfiles will be\n"
 "    flushed anytime they're written to, rather than being buffered by the\n"
 "    operating system."
-msgstr ""
-"Meghatározza, hogy a csatorna naplófájlok mentve legyenek-e, amikor írva vannak, ahelyett, hogy az operációs rendszer pufferelje őket."
+msgstr "Meghatározza, hogy a csatorna naplófájlok mentve legyenek-e, amikor írva vannak, ahelyett, hogy az operációs rendszer pufferelje őket."
 
 #: config.py:52
 msgid ""
@@ -92,7 +91,7 @@ msgstr "Meghatározza, hogy a bot használjon-e egy időbályegzőt (a supybot.p
 #: config.py:88
 msgid ""
 "Determines what timestamp format will be used in\n"
-"    the directory stucture for channel logs if\n"
+"    the directory structure for channel logs if\n"
 "    supybot.plugins.ChannelLogger.directories.timestamp is True."
 msgstr "Meghatározza, milyen időbélyegző formátum lesz használva a könyvtárstruktúrában a csatorna naplófájlokhoz, ha a supybot.plugins.ChannelLogger.directories.timestamp True."
 
