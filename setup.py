@@ -169,7 +169,15 @@ setup(
              'scripts/supybot-adduser',
              'scripts/supybot-plugin-doc',
              'scripts/supybot-plugin-create',
-             ]
+             ],
+    data_files=[('share/man/man1', ['docs/man/supybot.1']),
+                ('share/man/man1', ['docs/man/supybot-test.1']),
+                ('share/man/man1', ['docs/man/supybot-botchk.1']),
+                ('share/man/man1', ['docs/man/supybot-wizard.1']),
+                ('share/man/man1', ['docs/man/supybot-adduser.1']),
+                ('share/man/man1', ['docs/man/supybot-plugin-doc.1']),
+                ('share/man/man1', ['docs/man/supybot-plugin-create.1']),
+        ]
     )
 
 
