@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -60,6 +61,8 @@ network = True
 # This is the global list of suites that are to be run.
 suites = []
 
+timeout = 10
+
 originalCallbacksGetHelp = callbacks.getHelp
 lastGetHelp = 'x' * 1000
 def cachingGetHelp(method, name=None, doc=None):
@@ -116,12 +119,12 @@ class PluginTestCase(SupyTestCase):
     """Subclass this to write a test case for a plugin.  See
     plugins/Plugin/test.py for an example.
     """
-    timeout = 10
     plugins = None
     cleanConfDir = True
     cleanDataDir = True
     config = {}
     def __init__(self, methodName='runTest'):
+        self.timeout = timeout
         originalRunTest = getattr(self, methodName)
         def runTest(self):
             run = True

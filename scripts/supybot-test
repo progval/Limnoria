@@ -2,6 +2,7 @@
 
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -122,9 +123,10 @@ if __name__ == '__main__':
     parser.add_option('-c', '--clean', action='store_true', default=False,
                       dest='clean', help='Cleans the various data/conf/logs'
                       'directories before running tests.')
-    parser.add_option('-t', '--timeout', action='store', type='int',
+    parser.add_option('-t', '--timeout', action='store', type='float',
                       dest='timeout',
-                      help='Sets the timeout for tests to return responses.')
+                      help='Sets the timeout, in seconds, for tests to return '
+                      'responses.')
     parser.add_option('-v', '--verbose', action='store_true', default=False,
                       help='Sets the verbose flag, logging extra information '
                            'about each test that runs.')
