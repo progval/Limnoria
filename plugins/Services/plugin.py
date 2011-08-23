@@ -247,7 +247,7 @@ class Services(callbacks.Plugin):
             # You have been unbanned from (oftc)
             irc.sendMsg(networkGroup.channels.join(channel))
         elif 'isn\'t registered' in s:
-            self.log.warning('Received "%s isn\'t registered" from ChanServ %',
+            self.log.warning('Received "%s isn\'t registered" from ChanServ %s',
                              channel, on)
         elif 'this channel has been registered' in s:
             self.log.debug('Got "Registered channel" from ChanServ %s.', on)

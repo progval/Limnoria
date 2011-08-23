@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
-# Copyright (c) 2010, James Vega
+# Copyright (c) 2010-2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ class Internet(callbacks.Plugin):
                 irc.reply(hostname)
         else:
             try:
-                ip = socket.gethostbyname(host)
+                ip = socket.getaddrinfo(host, None)[0][4][0]
                 if ip == '64.94.110.11': # Verisign sucks!
                     irc.reply(_('Host not found.'))
                 else:
@@ -153,12 +153,22 @@ class Internet(callbacks.Plugin):
 
         Returns the hexadecimal IP for that IP.
         """
-        quads = ip.split('.')
         ret = ""
-        for quad in quads:
-            i = int(quad)
-            ret += '%02x' % i
-        irc.reply(ret.upper())
+        if utils.net.isIPV4(ip):
+            quads = ip.split('.')
+            for quad in quads:
+                i = int(quad)
+                ret += '%02X' % i
+        else:
+            octets = ip.split(':')
+            for octet in octets:
+                if octet:
+                    i = int(octet, 16)
+                    ret += '%04X' % i
+                else:
+                    missing = (8 - len(octets)) * 4
+                    ret += '0' * missing
+        irc.reply(ret)
     hexip = wrap(hexip, ['ip'])
 Internet = internationalizeDocstring(Internet)
 
