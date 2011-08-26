@@ -198,15 +198,19 @@ class RSS(callbacks.Plugin):
                             v = False
                             break
                     return v
-                for channel in channels:
+                fnor channel in channels:
                     if len(oldheadlines) == 0:
                         channelnewheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
+                    else:
+                        channelnewheadlines = newheadlines[:]
                     whitelist = self.registryValue('keywordWhitelist', channel)
                     blacklist = self.registryValue('keywordBlacklist', channel)
                     if len(whitelist) != 0:
                         channelnewheadlines = filter(filter_whitelist, channelnewheadlines)
                     if len(blacklist) != 0:
                         channelnewheadlines = filter(filter_blacklist, channelnewheadlines)
+                    if len(channelnewheadlines) == 0:
+                        return
                     bold = self.registryValue('bold', channel)
                     sep = self.registryValue('headlineSeparator', channel)
                     prefix = self.registryValue('announcementPrefix', channel)
