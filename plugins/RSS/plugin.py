@@ -198,7 +198,7 @@ class RSS(callbacks.Plugin):
                             v = False
                             break
                     return v
-                fnor channel in channels:
+                for channel in channels:
                     if len(oldheadlines) == 0:
                         channelnewheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
                     else:
