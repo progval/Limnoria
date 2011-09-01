@@ -114,6 +114,12 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertRegexp('list', name)
         self.assertNotRegexp('list --private', name)
 
+    def testListUnloaded(self):
+        unloadedPlugin = 'Alias'
+        loadedPlugin = 'Anonymous'
+        self.assertRegexp('list --unloaded', 'Alias')
+        self.assertNotRegexp('list --unloaded', 'Anonymous')
+
     def testListDoesNotIncludeNonCanonicalName(self):
         self.assertNotRegexp('list Owner', '_exec')
 

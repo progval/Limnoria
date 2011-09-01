@@ -30,6 +30,7 @@
 
 import re
 import os
+import imp
 import sys
 import time
 
@@ -48,6 +49,23 @@ from supybot import commands
 from supybot.utils.iter import ifilter
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
+
+def get_suffix(file):
+    for suffix in imp.get_suffixes():
+        if file[-len(suffix[0]):] == suffix[0]:
+            return suffix
+    return None
+
+def getPluginsInDirectory(directory):
+    # get modules in a given directory
+    plugins = []
+    for filename in os.listdir(directory):
+        pluginPath = os.path.join(directory, filename)
+        if os.path.isdir(pluginPath):
+            if all(os.path.isfile(os.path.join(pluginPath, x))
+                    for x in ['__init__.py', 'config.py', 'plugin.py']):
+                plugins.append(filename)
+    return plugins
 
 class RegexpTimeout(Exception):
     pass
@@ -121,34 +139,57 @@ class Misc(callbacks.Plugin):
 
     @internationalizeDocstring
     def list(self, irc, msg, args, optlist, cb):
-        """[--private] [<plugin>]
+        """[--private] [--unloaded] [<plugin>]
 
         Lists the commands available in the given plugin.  If no plugin is
         given, lists the public plugins available.  If --private is given,
-        lists the private plugins.
+        lists the private plugins. If --unloaded is given, it will list
+        available plugins that are not loaded.
         """
         private = False
+        unloaded = False
         for (option, argument) in optlist:
             if option == 'private':
                 private = True
                 if not self.registryValue('listPrivatePlugins') and \
                    not ircdb.checkCapability(msg.prefix, 'owner'):
                     irc.errorNoCapability('owner')
+            elif option == 'unloaded':
+                unloaded = True
+                if not self.registryValue('listUnloadedPlugins') and \
+                   not ircdb.checkCapability(msg.prefix, 'owner'):
+                    irc.errorNoCapability('owner')
+        if unloaded and private:
+            irc.error(_('--private and --unloaded are uncompatible options.'))
+            return
         if not cb:
-            def isPublic(cb):
-                name = cb.name()
-                return conf.supybot.plugins.get(name).public()
-            names = [cb.name() for cb in irc.callbacks
-                     if (private and not isPublic(cb)) or
-                        (not private and isPublic(cb))]
-            names.sort()
-            if names:
-                irc.reply(format('%L', names))
+            if unloaded:
+                installedPluginsDirectory = os.path.join(
+                        os.path.dirname(__file__), '..')
+                plugins = getPluginsInDirectory(installedPluginsDirectory)
+                for directory in conf.supybot.directories.plugins()[:]:
+                    plugins.extend(getPluginsInDirectory(directory))
+                # Remove loaded plugins:
+                loadedPlugins = [x.name() for x in irc.callbacks]
+                plugins = [x for x in plugins if x not in loadedPlugins]
+
+                plugins.sort()
+                irc.reply(format('%L', plugins))
             else:
-                if private:
-                    irc.reply(_('There are no private plugins.'))
+                def isPublic(cb):
+                    name = cb.name()
+                    return conf.supybot.plugins.get(name).public()
+                names = [cb.name() for cb in irc.callbacks
+                         if (private and not isPublic(cb)) or
+                            (not private and isPublic(cb))]
+                names.sort()
+                if names:
+                    irc.reply(format('%L', names))
                 else:
-                    irc.reply(_('There are no public plugins.'))
+                    if private:
+                        irc.reply(_('There are no private plugins.'))
+                    else:
+                        irc.reply(_('There are no public plugins.'))
         else:
             commands = cb.listCommands()
             if commands:
@@ -162,7 +203,8 @@ class Misc(callbacks.Plugin):
                                  'Try "config list supybot.plugins.%s" to see '
                                  'what configuration variables it has.'),
                                  cb.name()))
-    list = wrap(list, [getopts({'private':''}), additional('plugin')])
+    list = wrap(list, [getopts({'private':'', 'unloaded':''}),
+                       additional('plugin')])
 
     @internationalizeDocstring
     def apropos(self, irc, msg, args, s):

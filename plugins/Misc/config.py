@@ -46,6 +46,11 @@ conf.registerGlobalValue(Misc, 'listPrivatePlugins',
     plugins with the list command if given the --private switch.  If this is
     disabled, non-owner users should be unable to see what private plugins
     are loaded.""")))
+conf.registerGlobalValue(Misc, 'listUnloadedPlugins',
+    registry.Boolean(True, _("""Determines whether the bot will list unloaded
+    plugins with the list command if given the --unloaded switch.  If this is
+    disabled, non-owner users should be unable to see what unloaded plugins
+    are available.""")))
 conf.registerGlobalValue(Misc, 'timestampFormat',
     registry.String('[%H:%M:%S]', _("""Determines the format string for
     timestamps in the Misc.last command.  Refer to the Python documentation
