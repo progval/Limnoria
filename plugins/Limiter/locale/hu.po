@@ -1,0 +1,49 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Limnoria Limiter\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-09-01 18:12+0200\n"
+"Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:46
+msgid ""
+"Determines whether the bot will maintain the\n"
+"    channel limit to be slightly above the current number of people in the\n"
+"    channel, in order to make clone/drone attacks harder."
+msgstr "Meghatározza, hogy a bot tartsa-e a csatorna korlátját kicsivel a jelenlegi emberek számával a csatornában, hogy a klóntámadásokat nehezebbé tegye."
+
+#: config.py:50
+msgid ""
+"Determines the minimum number of free\n"
+"    spots that will be saved when limits are being enforced.  This should\n"
+"    always be smaller than supybot.plugins.Limiter.limit.maximumExcess."
+msgstr "Meghatározza a szabad helyek minimum számát, amelyek meg lesznek mentve amikor a korlátok kényszerítve vannak. Ennek mindig kisebbnek kell lennie a supybot.plugins.Limiter.limit.maximumExcess-nél."
+
+#: config.py:54
+msgid ""
+"Determines the maximum number of free spots\n"
+"    that will be saved when limits are being enforced.  This should always be\n"
+"    larger than supybot.plugins.Limiter.limit.minimumExcess."
+msgstr "Meghatározza a szabad helyek maximum számát, amelyek meg lesznek mentve amikor a korlátok kényszerítve vannak. Ennek mindig nagyobbnak kell lennie a supybot.plugins.Limiter.limit.minimumExcess-nél."
+
+#: plugin.py:39
+#, docstring
+msgid ""
+"In order to use this plugin, its config values need to be properly\n"
+"    setup.  supybot.plugins.Limiter.enable needs to be set to True and\n"
+"    supybot.plugins.Limiter.{maximumExcess,minimumExcess} should be set to\n"
+"    values appropriate to your channel (if the defaults aren't satisfactory).\n"
+"    Once these are set, and someone enters/leaves the channel, Supybot will\n"
+"    start setting the proper +l modes.\n"
+"    "
+msgstr "A bővítmény használatához a konfigurációs értékeinek rendesen be kell lenniük állítva. A supybot.plugins.Limiter.enable True-ra kell, hogy legyen állítva, és a supybot.plugins.Limiter.{maximumExcess,minimumExcess}-nek a csatornának megfelelő értékekre kell lenniük állítva (ha az alapértelmezés nem kielégítő). Ahogy ezek be vannak állítva, és valaki be-/kilép a csatornáról/-ba, a Supybot elkezdi beállítani a megfelelő +l módokat."
