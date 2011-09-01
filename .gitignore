@@ -10,3 +10,4 @@ docs/plugins
 *.swo
 *~
 *.mo
+push.sh
