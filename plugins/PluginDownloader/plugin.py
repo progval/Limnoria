@@ -30,6 +30,7 @@
 
 import os
 import json
+import shutil
 import urllib
 import urllib2
 import tarfile
@@ -153,7 +154,7 @@ class GithubRepository(GitRepository):
                     newFileName = os.path.join(directory, newFileName)
                     if os.path.exists(newFileName):
                         assert os.path.isdir(newFileName)
-                        shutils.rmtree(newFileName)
+                        shutil.rmtree(newFileName)
                     if extractedFile is None:
                         os.mkdir(newFileName)
                     else:
@@ -260,6 +261,7 @@ class PluginDownloader(callbacks.Plugin):
                 repositories[repository].install(plugin)
                 irc.replySuccess()
             except Exception as e:
+                raise e
                 #FIXME: more detailed error message
                 log.error(str(e))
                 irc.error('The plugin could not be installed.')
