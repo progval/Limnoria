@@ -112,7 +112,7 @@ msgstr ""
 "\n"
 "        Riporta la classifica degli utenti in base all'espresisone fornita.\n"
 "        Le variabili valide sono: \"msgs\", \"chars\", \"words\", \"smileys\",\n"
-"        \"frowns\", \"actions\", \"joins\", \"parts\", \"quits\", \kicks\",\n"
+"        \"frowns\", \"actions\", \"joins\", \"parts\", \"quits\", \"kicks\",\n"
 "        \"kicked\", \"topics\" e \"modes\". È permessa qualsiasi espressione\n"
 "        matematica che utilizzi queste variabili.\n"
 "        "
@@ -146,7 +146,7 @@ msgstr ""
 
 #: plugin.py:357
 msgid "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; %i of those messages %s.  There have been %n, %n, %n, %n, %n, and %n.  There %b currently %n and the channel has peaked at %n."
-msgstr "In %s ci sono stati %i messaggi, contenenti %i caratteri, %n, %n, e %n; %i di questi messaggi %s. Ci sono stati %n, %n, %n, %n, %n, e %n. Attualmente ci %b %n e il canale ha raggiunto il picco di %n."
+msgstr "In %s ci sono%v stati %i messaggi, contenenti %i caratteri, %n, %n, e %n; %i di questi messaggi %s. Ci sono stati %n, %n, %n, %n, %n, e %n. Attualmente ci sono%v %n e il canale ha raggiunto il picco di %n."
 
 #: plugin.py:368
 msgid "join"
