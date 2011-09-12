@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin allows the bot to interact with ChanServ and NickServ to regain access to channels and it's nick.
