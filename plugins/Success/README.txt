@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin allows you to add your own success message to replace the default 'The operation succeeded.' message.
