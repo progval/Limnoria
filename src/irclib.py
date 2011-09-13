@@ -31,6 +31,7 @@ import re
 import copy
 import time
 import random
+import base64
 
 import supybot.log as log
 import supybot.conf as conf
@@ -862,6 +863,8 @@ class Irc(IrcCommandDispatcher):
         self.ident = conf.supybot.ident()
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         self.password = conf.supybot.networks.get(self.network).password()
+        self.sasl_username = conf.supybot.networks.get(self.network).sasl.username()
+        self.sasl_password = conf.supybot.networks.get(self.network).sasl.password()
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         # The rest.
         self.lastTake = 0
@@ -875,6 +878,18 @@ class Irc(IrcCommandDispatcher):
             self.driver.die()
             self._reallyDie()
         else:
+            if self.sasl_password:
+                if not self.sasl_username:
+                    log.error('SASL username is not set, unable to identify.')
+                else:
+                    auth_string = base64.b64encode('%s\x00%s\x00%s' % (self.sasl_username,
+                        self.sasl_username, self.sasl_password))
+                    log.debug('Sending CAP REQ command, requesting capability \'sasl\'.')
+                    self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('REQ', 'sasl')))
+                    log.debug('Sending AUTHENTICATE command, using mechanism PLAIN.')
+                    self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=('PLAIN',)))
+                    log.info('Sending AUTHENTICATE command, not logging the password.')
+                    self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=(auth_string,)))
             if self.password:
                 log.info('Sending PASS command, not logging the password.')
                 self.queueMsg(ircmsgs.password(self.password))
@@ -883,6 +898,17 @@ class Irc(IrcCommandDispatcher):
             log.debug('Queuing USER command, ident is %s, user is %s.',
                      self.ident, self.user)
             self.queueMsg(ircmsgs.user(self.ident, self.user))
+
+    def do903(self, msg):
+        log.info('SASL authentication successful')
+        log.debug('Sending CAP END command.')
+        self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('END',)))
+
+    def do904(self, msg):
+        log.warning('SASL authentication failed')
+        log.debug('Aborting authentication.')
+        log.debug('Sending CAP END command.')
+        self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('END',)))
 
     def _getNextNick(self):
         if self.alternateNicks:
