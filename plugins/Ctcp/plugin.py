@@ -107,7 +107,7 @@ class Ctcp(callbacks.PluginRegexp):
         "\x01SOURCE\x01"
         self.log.info('Received CTCP SOURCE from %s', msg.prefix)
         self._reply(irc, msg,
-                    'SOURCE http://www.sourceforge.net/projects/supybot/')
+                    'SOURCE https://github.com/ProgVal/Limnoria')
 
     def doNotice(self, irc, msg):
         if ircmsgs.isCtcp(msg):

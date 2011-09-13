@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+Will tell you how lame a nick is by the command '@nickometer [nick]'.
