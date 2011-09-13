@@ -900,12 +900,12 @@ class Irc(IrcCommandDispatcher):
             self.queueMsg(ircmsgs.user(self.ident, self.user))
 
     def do903(self, msg):
-        log.info('SASL authentication successful')
+        log.info('%s: SASL authentication successful' % self.network)
         log.debug('Sending CAP END command.')
         self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('END',)))
 
     def do904(self, msg):
-        log.warning('SASL authentication failed')
+        log.warning('%s: SASL authentication failed' % self.network)
         log.debug('Aborting authentication.')
         log.debug('Sending CAP END command.')
         self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('END',)))
