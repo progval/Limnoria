@@ -258,7 +258,7 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
         else:
             return ircmsgs.join(channel)
 
-def registerNetwork(name, username='', password='', ssl=False):
+def registerNetwork(name, password='', ssl=False, sasl_username = ''):
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,
         _("""Determines what password will be used on %s.  Yes, we know that
@@ -278,7 +278,7 @@ def registerNetwork(name, username='', password='', ssl=False):
         _("""Determines what key (if any) will be used to join the
         channel.""")))
     sasl = registerGroup(network, 'sasl')
-    registerGlobalValue(sasl, 'username', registry.String(username,
+    registerGlobalValue(sasl, 'username', registry.String(sasl_username,
         _("""Determines what SASL username will be used on %s. This should
         be the bot's account name. Due to the way SASL works, you can't use
         any grouped nick.""") % name, private=False))
