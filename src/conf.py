@@ -258,7 +258,7 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
         else:
             return ircmsgs.join(channel)
 
-def registerNetwork(name, password='', ssl=False, sasl_username = ''):
+def registerNetwork(name, password='', ssl=False, sasl_username=''):
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,
         _("""Determines what password will be used on %s.  Yes, we know that
