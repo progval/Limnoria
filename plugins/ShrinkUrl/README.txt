@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin features commands to shorten URLs through different services, like tinyurl.
