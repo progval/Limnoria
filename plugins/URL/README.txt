@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin records how many URLs have been mentioned in the channel and what the last URL was.
