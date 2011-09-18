@@ -490,8 +490,8 @@ class Misc(callbacks.Plugin):
             irc.action = False
             text = '* %s %s' % (irc.nick, text)
         s = _('%s wants me to tell you: %s') % (msg.nick, text)
-        irc.reply(s, to=target, private=True)
         irc.replySuccess()
+        irc.reply(s, to=target, private=True)
     tell = wrap(tell, ['something', 'text'])
 
     @internationalizeDocstring
