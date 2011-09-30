@@ -10,3 +10,5 @@ docs/plugins
 *.swo
 *~
 *.mo
+push.sh
+merge.sh
