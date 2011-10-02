@@ -130,8 +130,8 @@ class SupyHTTPServerCallback:
     neither overriden this message or defined an handler for this query.""")
 
     def doGet(self, handler, path, *args, **kwargs):
-        handler.send_response(400)
-        self.send_header('Content_type', 'text/plain')
+        handler.send_response(404)
+        self.send_header('Content_type', 'text/plain; charset=utf-8')
         self.send_header('Content-Length', len(self.defaultResponse))
         self.end_headers()
         self.wfile.write(self.defaultResponse)
@@ -152,7 +152,7 @@ class Supy404(SupyHTTPServerCallback):
     trained to help you in such a case.""")
     def doGet(self, handler, path, *args, **kwargs):
         handler.send_response(404)
-        self.send_header('Content_type', 'text/plain')
+        self.send_header('Content_type', 'text/plain; charset=utf-8')
         self.send_header('Content-Length', len(self.response))
         self.end_headers()
         self.wfile.write(self.response)
@@ -181,7 +181,7 @@ class SupyIndex(SupyHTTPServerCallback):
             plugins = _('No plugins available.')
         else:
             plugins = '<ul><li>%s</li></ul>' % '</li><li>'.join(
-                    ['<a href="/%s">%s</a>' % (x,y.name) for x,y in plugins])
+                    ['<a href="/%s/">%s</a>' % (x,y.name) for x,y in plugins])
         response = self.template % plugins
         handler.send_response(200)
         self.send_header('Content_type', 'text/html')
