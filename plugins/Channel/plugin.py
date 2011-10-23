@@ -418,7 +418,7 @@ class Channel(callbacks.Plugin):
         nick = msg.args[1]
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
-        if replyirc is not None:
+        if replyIrc is not None:
             replyIrc.error(format('There is no %s on this server.', nick))
 
     class lobotomy(callbacks.Commands):
