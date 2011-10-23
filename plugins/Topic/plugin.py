@@ -468,7 +468,7 @@ class Topic(callbacks.Plugin):
     def unlock(self, irc, msg, args, channel):
         """[<channel>]
 
-        Locks the topic (sets the mode +t) in <channel>.  <channel> is only
+        Unlocks the topic (sets the mode -t) in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
         if not self._checkManageCapabilities(irc, msg, channel):
