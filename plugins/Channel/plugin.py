@@ -788,7 +788,8 @@ class Channel(callbacks.Plugin):
             msg.args[0] != channel and \
             (ircutils.isChannel(msg.args[0]) or \
              msg.nick not in irc.state.channels[channel].users):
-            irc.error('You don\'t have access to that information.')
+            irc.error('You don\'t have access to that information.',
+                      Raise=True)
         L = list(irc.state.channels[channel].users)
         utils.sortBy(str.lower, L)
         irc.reply(utils.str.commaAndify(L))
