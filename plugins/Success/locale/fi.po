@@ -1,0 +1,35 @@
+# Success plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-10-25 15:18+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:49
+msgid ""
+"Determines whether the bot will prefix the nick\n"
+"    of the user giving an invalid command to the success response."
+msgstr "Määrittää lisääkö botti käyttäjän nimimerkin lähettämänsä viestin alkuun, jos\n"
+"    käyttäjä antaa viallisen komennon onnistumisvastaukselle."
+
+#: plugin.py:38
+msgid ""
+"This plugin was written initially to work with MoobotFactoids, the two\n"
+"    of them to provide a similar-to-moobot-and-blootbot interface for factoids.\n"
+"    Basically, it replaces the standard 'The operation succeeded.' messages\n"
+"    with messages kept in a database, able to give more personable\n"
+"    responses."
+msgstr "Tämä lisäosa kirjoitettiin alunperin toimimaan MoobotFactoids lisäosan kanssa, molemmat kaksi\n"
+"    tarjoaisivat samankaltainen-kuin-moobot-ja-blootbot käyttöliittymän factoideille.\n"
+"    Perusteellisesti, se korvaa perus 'Tehtävä suoritettu.' viestit\n"
+"    vastauksilla tietokannoista, antaen mahdollisuuden luoda persoonallisempia\n"
+"    vastauksia."
