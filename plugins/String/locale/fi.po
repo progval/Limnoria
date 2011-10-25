@@ -1,0 +1,212 @@
+# String plugin in Limnoria
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-10-18 17:56+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:47
+msgid ""
+"Determines the maximum size of a string\n"
+"    given to the levenshtein command.  The levenshtein command uses an O(m*n)\n"
+"    algorithm, which means that with strings of length 256, it can take 1.5\n"
+"    seconds to finish; with strings of length 384, though, it can take 4\n"
+"    seconds to finish, and with strings of much larger lengths, it takes more\n"
+"    and more time.  Using nested commands, strings can get quite large, hence\n"
+"    this variable, to limit the size of arguments passed to the levenshtein\n"
+"    command."
+msgstr "Määrittää levenshtein komentoon annettavan merkkiketjun maksimimäärän.\n"
+"    Levenshtein komento käyttää O(m*n) algoritmiä, mikä tarkoittaa, että\n"
+"    merkkiketju, jonka koko on 256 voi viedä 1.5\n"
+"    sekuntia valmistumiseen; 384:n merkit piduudella se voi viedä 4\n"
+"    sekuntia valmistumiseen, ja suuremmilla merkkiketjuilla, se vie\n"
+"    enemmän ja enemmän aikaa.  Käyttäen sisäkkäisia komentoja, merkkiketjut voivat tulla hyvin pitkiksi ja tästä johtuen\n"
+"    tämä asetusarvo on olemassa, rajoittaakseen levenshtein komentoon annettujen parametrien määrää.\n"
+
+#: plugin.py:46
+msgid ""
+"<letter>\n"
+"\n"
+"        Returns the 8-bit value of <letter>.\n"
+"        "
+msgstr "<kirjain>\n"
+"\n"
+"        Palauttaa <kirjaimen> 8-bittisen arvon.\n"
+"        "
+
+#: plugin.py:55
+msgid ""
+"<number>\n"
+"\n"
+"        Returns the character associated with the 8-bit value <number>\n"
+"        "
+msgstr "<numero>\n"
+"\n"
+"        Palauttaa merkin, joka on yhdistetty 8-bittisen <numeron> arvon.\n"
+"        "
+
+#: plugin.py:62
+msgid "That number doesn't map to an 8-bit character."
+msgstr "Tuo numero ei kartoitu 8-bittiseen merkkiin."
+
+#: plugin.py:67
+msgid ""
+"<encoding> <text>\n"
+"\n"
+"        Returns an encoded form of the given text; the valid encodings are\n"
+"        available in the documentation of the Python codecs module:\n"
+"        <http://docs.python.org/library/codecs.html#standard-encodings>.\n"
+"        "
+msgstr "<salaus> <teksti>\n"
+"\n"
+"        Palauttaa salatun version annetusta tekstistä; kelvolliset salaukset\n"
+"        ovat saatavilla Python codecs moduulin dokumentaatiossa:\n"
+"        <http://docs.python.org/library/codecs.html#standard-encodings>.\n"
+"        "
+
+#: plugin.py:76
+#: plugin.py:90
+msgid "encoding"
+msgstr "salaus"
+
+#: plugin.py:81
+msgid ""
+"<encoding> <text>\n"
+"\n"
+"        Returns an un-encoded form of the given text; the valid encodings are\n"
+"        available in the documentation of the Python codecs module:\n"
+"        <http://docs.python.org/library/codecs.html#standard-encodings>.\n"
+"        "
+msgstr "<salaus> <teksti>\n"
+"\n"
+"        Palauttaa salaamattoman version annetusta tekstistä; kelvolliset salaukset\n"
+"        ovat saatavilla Python codecs moduulin dokumentaatiossa:\n"
+"        <http://docs.python.org/library/codecs.html#standard-encodings>.\n"
+"        "
+
+#: plugin.py:92
+msgid "base64 string"
+msgstr "base64 merkkiketju"
+
+#: plugin.py:93
+msgid "Base64 strings must be a multiple of 4 in length, padded with '=' if necessary."
+msgstr "Base64 merkkiketjujen täytyy olla kerrollisia 4:llä, pehmustettuna '='-merkillä jos vaadittu."
+
+#: plugin.py:99
+msgid ""
+"<string1> <string2>\n"
+"\n"
+"        Returns the levenshtein distance (also known as the \"edit distance\"\n"
+"        between <string1> and <string2>)\n"
+"        "
+msgstr "<mekkiketju1> <merkkiketju2>\n"
+"\n"
+"        Palauttaa levenshtein etäisyyden (tunnetaan myös nimellä \"muokkaus etäisyys\"\n"
+"        <merkkiketju1:den> ja <merkkiketju2:den> välillä.)\n"
+"        "
+
+#: plugin.py:106
+msgid "Levenshtein distance is a complicated algorithm, try it with some smaller inputs."
+msgstr "Levenshtein etäisyys on monimutkainen algoritmi, kokeile sitä pienemmillä sisäänmenoilla."
+
+#: plugin.py:114
+msgid ""
+"<string> [<length>]\n"
+"\n"
+"        Returns the Soundex hash to a given length.  The length defaults to\n"
+"        4, since that's the standard length for a soundex hash.  For unlimited\n"
+"        length, use 0.\n"
+"        "
+msgstr "<merkkiketju> [<pituus>]\n"
+"\n"
+"        Palauttaa Soundex hashin annetulle pituudelle.  Pituus on oletuksena 4, koska se on\n"
+"        peruspituus.  Jos haluat loputtoman pituuden,\n"
+"        käytä 0:aa.\n"
+"        "
+
+#: plugin.py:125
+msgid ""
+"<text>\n"
+"\n"
+"        Returns the length of <text>.\n"
+"        "
+msgstr "<teksti>\n"
+"\n"
+"        Palauttaa <tekstin> pituuden.\n"
+"        "
+
+#: plugin.py:134
+msgid ""
+"<regexp> <text>\n"
+"\n"
+"        If <regexp> is of the form m/regexp/flags, returns the portion of\n"
+"        <text> that matches the regexp.  If <regexp> is of the form\n"
+"        s/regexp/replacement/flags, returns the result of applying such a\n"
+"        regexp to <text>.\n"
+"        "
+msgstr "<säännöllinen lauseke> <teksti>\n"
+"\n"
+"        Jos <säännöllinen lauseke> on yksi muodosta m/säännöllinen lauseke/liput, palauta\n"
+"        <tekstin> osa, joka täsmää säännölliseen lausekkeeseen.  Jos <säännöllinen lauseke> on muotoa\n"
+"        s/säännöllinen lauseke/korvaus/liput, palauttaa sellaisen säännöllisen lausekkeen käytön\n"
+"        <tekstiin>.\n"
+"        "
+
+#: plugin.py:146
+msgid "You probably don't want to match the empty string."
+msgstr "Et luultavasti halua täsmätä tyhjään merkkiketjuun."
+
+#: plugin.py:156
+msgid ""
+"<password> <text>\n"
+"\n"
+"        Returns <text> XOR-encrypted with <password>.  See\n"
+"        http://www.yoe.org/developer/xor.html for information about XOR\n"
+"        encryption.\n"
+"        "
+msgstr "<salasana> <teksti>\n"
+"\n"
+"        Palauttaa <tekstin> XOR-salattuna <salasanalla>.  Katso\n"
+"        http://www.yoe.org/developer/xor.html saadaksesi lisätietoja XOR\n"
+"        salauksesta.\n"
+"        "
+
+#: plugin.py:169
+msgid ""
+"<text>\n"
+"\n"
+"        Returns the md5 hash of a given string.  Read\n"
+"        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more information\n"
+"        about md5.\n"
+"        "
+msgstr "<teksti>\n"
+"\n"
+"        Palauttaa md5 hashin annetusta merkkiketjusta.  Lue\n"
+"        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html saadaksesi lisätietoja\n"
+"        md5:stä.\n"
+"        "
+
+#: plugin.py:180
+msgid ""
+"<text>\n"
+"\n"
+"        Returns the SHA hash of a given string.  Read\n"
+"        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information\n"
+"        about SHA.\n"
+"        "
+msgstr "<teksti>\n"
+"\n"
+"        Palauttaa SHA hashin annetulle merkkiketjulle.  Lue\n"
+"        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ saadaksesi\n"
+"        lisätietoa SHA:sta.\n"
+"        "
+
