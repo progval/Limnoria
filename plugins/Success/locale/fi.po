@@ -1,6 +1,6 @@
 # Success plugin in Limnoria.
 # Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.maimio@hotmail.com>, 2011.
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
 #
 msgid ""
 msgstr ""
