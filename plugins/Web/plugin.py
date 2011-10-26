@@ -104,7 +104,7 @@ class Web(callbacks.PluginRegexp):
             if parser.title:
                 domain = utils.web.getDomain(url)
                 title = utils.web.htmlToText(parser.title.strip())
-                s = format('Title: %s (at %s)', title, domain)
+                s = format(_('Title: %s (at %s)'), title, domain)
                 irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
     titleSnarfer.__doc__ = utils.web._httpUrlRe
