@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-10-26 11:23+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,6 +38,10 @@ msgstr ""
 #: plugin.py:71
 #, docstring
 msgid "Add the help for \"@help Web\" here."
+msgstr ""
+
+#: plugin.py:107
+msgid "Title: %s (at %s)"
 msgstr ""
 
 #: plugin.py:114
