@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-26 22:11+0200\n"
+"PO-Revision-Date: 2011-10-26 12:25+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -40,6 +40,10 @@ msgstr ""
 #, docstring
 msgid "Add the help for \"@help Web\" here."
 msgstr ""
+
+#: plugin.py:107
+msgid "Title: %s (at %s)"
+msgstr "Titolo: %s (su %s)"
 
 #: plugin.py:114
 #, docstring
@@ -118,7 +122,7 @@ msgstr "Questo URL sembra non avere un titolo HTML."
 
 #: plugin.py:190
 msgid "That URL appears to have no HTML title within the first %S."
-msgstr "Questo URL sembra non avere un titolo HTML entro i primi %S."
+msgstr "Sembra che questo URL non abbia un titolo HTML entro i primi %S."
 
 #: plugin.py:198
 #, docstring
