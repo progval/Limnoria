@@ -83,8 +83,12 @@ class Services(callbacks.Plugin):
                     return None
         return msg
 
-    def _getNick(self):
-        return conf.supybot.nick()
+    def _getNick(self, network):
+        network_nick = conf.supybot.networks.get(network).nick()
+        if network_nick == '':
+            return conf.supybot.nick()
+        else:
+            return network_nick
 
     def _getNickServPassword(self, nick):
         # This should later be nick-specific.
@@ -100,7 +104,7 @@ class Services(callbacks.Plugin):
         if self.disabled(irc):
             return
         if nick is None:
-            nick = self._getNick()
+            nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         nickserv = self.registryValue('NickServ')
@@ -122,7 +126,7 @@ class Services(callbacks.Plugin):
         if self.disabled(irc):
             return
         if nick is None:
-            nick = self._getNick()
+            nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         nickserv = self.registryValue('NickServ')
@@ -150,7 +154,7 @@ class Services(callbacks.Plugin):
         self.__parent.__call__(irc, msg)
         if self.disabled(irc):
             return
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         nickserv = self.registryValue('NickServ')
@@ -172,7 +176,7 @@ class Services(callbacks.Plugin):
     def do376(self, irc, msg):
         if self.disabled(irc):
             return
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         nickserv = self.registryValue('NickServ')
@@ -196,7 +200,7 @@ class Services(callbacks.Plugin):
     def do433(self, irc, msg):
         if self.disabled(irc):
             return
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         if nick and irc.afterConnect:
@@ -210,7 +214,7 @@ class Services(callbacks.Plugin):
         self.channels.append(msg.args[1])
 
     def doNick(self, irc, msg):
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if ircutils.strEqual(msg.args[0], irc.nick) and \
            ircutils.strEqual(irc.nick, nick):
             self._doIdentify(irc)
@@ -218,7 +222,7 @@ class Services(callbacks.Plugin):
             irc.sendMsg(ircmsgs.nick(nick))
 
     def _ghosted(self, s):
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         lowered = s.lower()
         return bool('killed' in lowered and (nick in s or 'ghost' in lowered))
 
@@ -267,7 +271,7 @@ class Services(callbacks.Plugin):
     def doNickservNotice(self, irc, msg):
         if self.disabled(irc):
             return
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         s = ircutils.stripFormatting(msg.args[1].lower())
         on = 'on %s' % irc.network
         networkGroup = conf.supybot.networks.get(irc.network)
@@ -509,7 +513,7 @@ class Services(callbacks.Plugin):
         """
         if self.registryValue('NickServ'):
             if not nick:
-                nick = self._getNick()
+                nick = self._getNick(irc.network)
             if ircutils.strEqual(nick, irc.nick):
                 irc.error(_('I cowardly refuse to ghost myself.'))
             else:
