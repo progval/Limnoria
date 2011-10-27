@@ -57,9 +57,11 @@ class RealSupyHTTPServer(HTTPServer):
     running = False
     def hook(self, subdir, callback):
         if subdir in self.callbacks:
-            raise KeyError('This subdir is already hooked.')
-        else:
-            self.callbacks[subdir] = callback
+            log.warning(('The HTTP subdirectory `%s` was already hooked but '
+                    'has been claimed by another plugin (or maybe you '
+                    'reloaded the plugin and it didn\'t properly unhook. '
+                    'Forced unhook.') % subdir)
+        self.callbacks[subdir] = callback
     def unhook(self, subdir):
         callback = self.callbacks.pop(subdir) # May raise a KeyError. We don't care.
         callback.doUnhook(self)
