@@ -46,12 +46,16 @@ class NickCapture(callbacks.Plugin):
         self.__parent.__init__(irc)
         self.lastIson = 0
         
-    def _getNick(self):
-        return conf.supybot.nick()
+    def _getNick(self, network):
+        network_nick = conf.supybot.networks.get(network).nick()
+        if network_nick == '':
+            return conf.supybot.nick()
+        else:
+            return network_nick
 
     def __call__(self, irc, msg):
         if irc.afterConnect:
-            nick = self._getNick()
+            nick = self._getNick(irc.network)
             if nick and not ircutils.strEqual(nick, irc.nick):
                 # We used to check this, but nicksToHostmasks is never cleared
                 # except on reconnects, which can cause trouble.
@@ -76,19 +80,19 @@ class NickCapture(callbacks.Plugin):
         irc.sendMsg(ircmsgs.nick(nick))
         
     def doQuit(self, irc, msg):
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if ircutils.strEqual(msg.nick, nick):
             self._sendNick(irc, nick)
             
     def doNick(self, irc, msg):
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if ircutils.strEqual(msg.nick, nick):
             self._sendNick(irc, nick)
 
     def do303(self, irc, msg):
         """This is returned by the ISON command."""
         if not msg.args[1]:
-            nick = self._getNick()
+            nick = self._getNick(irc.network)
             if nick:
                 self._sendNick(irc, nick)
 NickCapture = internationalizeDocstring(NickCapture)

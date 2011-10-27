@@ -139,6 +139,14 @@ class ValidNick(registry.String):
         else:
             registry.String.setValue(self, v)
 
+class ValidNickOrEmpty(ValidNick):
+    """Value must be a valid IRC nick or empty."""
+    def setValue(self, v):
+        if v != '' and not ircutils.isNick(v):
+            self.error()
+        else:
+            registry.String.setValue(self, v)
+
 class ValidNicks(registry.SpaceSeparatedListOf):
     Value = ValidNick
 
@@ -277,6 +285,9 @@ def registerNetwork(name, password='', ssl=False, sasl_username=''):
     registerChannelValue(network.channels, 'key', registry.String('',
         _("""Determines what key (if any) will be used to join the
         channel.""")))
+    registerGlobalValue(network, 'nick', ValidNickOrEmpty('', _("""Determines
+        what nick the bot will use on this network. If empty, defaults to
+        supybot.nick.""")))
     sasl = registerGroup(network, 'sasl')
     registerGlobalValue(sasl, 'username', registry.String(sasl_username,
         _("""Determines what SASL username will be used on %s. This should
