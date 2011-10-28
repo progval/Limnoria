@@ -40,24 +40,24 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Karma', True)
 
-conf.registerPlugin('Karma')
+Karma = conf.registerPlugin('Karma')
 
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'simpleOutput',
+conf.registerChannelValue(Karma, 'simpleOutput',
     registry.Boolean(False, _("""Determines whether the bot will output shorter
     versions of the karma output when requesting a single thing's karma.""")))
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'response',
+conf.registerChannelValue(Karma, 'response',
     registry.Boolean(False, _("""Determines whether the bot will reply with a
     success message when something's karma is increased or decreased.""")))
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'rankingDisplay',
+conf.registerChannelValue(Karma, 'rankingDisplay',
     registry.Integer(3, _("""Determines how many highest/lowest karma things
     are shown when karma is called with no arguments.""")))
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'mostDisplay',
+conf.registerChannelValue(Karma, 'mostDisplay',
     registry.Integer(25, _("""Determines how many karma things are shown when
     the most command is called.""")))
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'allowSelfRating',
+conf.registerChannelValue(Karma, 'allowSelfRating',
     registry.Boolean(False, _("""Determines whether users can adjust the karma
     of their nick.""")))
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'allowUnaddressedKarma',
+conf.registerChannelValue(Karma, 'allowUnaddressedKarma',
     registry.Boolean(False, _("""Determines whether the bot will
     increase/decrease karma without being addressed.""")))
 
