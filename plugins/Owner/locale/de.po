@@ -1,12 +1,8 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
 "POT-Creation-Date: 2011-08-10 11:27+CEST\n"
-"PO-Revision-Date: 2011-10-27 12:33+0100\n"
+"PO-Revision-Date: 2011-10-28 18:20+0100\n"
 "Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -145,6 +141,9 @@ msgid ""
 "        disable the command in all plugins).\n"
 "        "
 msgstr ""
+"[<Plugin>] <Befehl>\n"
+"\n"
+"Deaktiviert den Befehl <Befehl> für alle Nutzer (auch den Besitzer). Falls <Plugin angegen wird nur der <Befehl> von <Plugin> deaktiviert. Dieser Befehl ist das gegenteil von disable.Falls du den Befehl nur für die meisten Nutzer deaktiveren willst setze eine standard Fähigkeit -plugin.befehl oder -befehl (falls du den Befehl von allen Plugins deaktivieren willst)."
 
 #: plugin.py:555
 msgid ""
@@ -155,6 +154,9 @@ msgid ""
 "        the inverse of disable.\n"
 "        "
 msgstr ""
+"[<Plugin>] <Befehl>\n"
+"\n"
+"Aktiviert den Befehl <Befehl> für alle Nutzer. Falls <Plugin angegen wird nur der <Befehl> von <Plugin> aktiviert. Dieser Befehl ist das gegenteil von disable."
 
 #: plugin.py:574
 msgid ""
