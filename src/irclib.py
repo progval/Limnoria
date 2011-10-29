@@ -400,6 +400,15 @@ class IrcState(IrcCommandDispatcher):
         """Returns the hostmask for a given nick."""
         return self.nicksToHostmasks[nick]
 
+    def do004(self, irc, msg):
+        """Handles parsing the 004 reply
+
+        Supported user and channel modes are cached"""
+        # msg.args = [nick, server, ircd-version, umodes, modes,
+        #             modes that require arguments? (non-standard)]
+        self.supported['umodes'] = msg.args[3]
+        self.supported['chanmodes'] = msg.args[4]
+
     _005converters = utils.InsensitivePreservingDict({
         'modes': int,
         'keylen': int,
@@ -919,9 +928,14 @@ class Irc(IrcCommandDispatcher):
         # Let's reset nicks in case we had to use a weird one.
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         umodes = conf.supybot.protocols.irc.umodes()
+        supported = self.supported.get('umodes')
         if umodes:
-            if umodes[0] not in '+-':
-                umodes = '+' + umodes
+            addSub = '+'
+            if umodes[0] in '+-':
+                (addSub, umodes) = (umodes[0], umodes[1:])
+            if supported:
+                umodes = filter(lamda m: m in supported, umodes)
+            umodes = ''.join(addSub, umodes)
             log.info('Sending user modes to %s: %s', self.network, umodes)
             self.sendMsg(ircmsgs.mode(self.nick, umodes))
     do377 = do422 = do376
