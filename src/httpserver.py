@@ -84,6 +84,8 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_X(self, callbackMethod, *args, **kwargs):
         if self.path == '/':
             callback = SupyIndex()
+        elif self.path == '/robots.txt':
+            callback = RobotsTxt()
         else:
             subdir = self.path.split('/')[1]
             try:
@@ -185,6 +187,18 @@ class SupyIndex(SupyHTTPServerCallback):
             plugins = '<ul><li>%s</li></ul>' % '</li><li>'.join(
                     ['<a href="/%s/">%s</a>' % (x,y.name) for x,y in plugins])
         response = self.template % plugins
+        handler.send_response(200)
+        self.send_header('Content_type', 'text/html')
+        self.send_header('Content-Length', len(response))
+        self.end_headers()
+        self.wfile.write(response)
+
+class RobotsTxt(SupyHTTPServerCallback):
+    """Serves the robot.txt file to robots."""
+    name = 'robotstxt'
+    defaultResponse = _('Request not handled')
+    def doGet(self, handler, path):
+        response = conf.supybot.servers.http.robots().replace('\\n', '\n')
         handler.send_response(200)
         self.send_header('Content_type', 'text/html')
         self.send_header('Content-Length', len(response))
