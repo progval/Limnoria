@@ -53,7 +53,7 @@ conf.registerChannelValue(RSS, 'headlineSeparator',
     registry.StringSurroundedBySpaces(' || ', _("""Determines what string is
     used to separate headlines in new feeds.""")))
 conf.registerChannelValue(RSS, 'announcementPrefix',
-    registry.StringWithSpaceOnRight('New news from ', _("""Determines what
+    registry.StringWithSpaceOnRight(_('New news from '), _("""Determines what
     prefix is prepended (if any) to the new news item announcements made in the
     channel.""")))
 conf.registerChannelValue(RSS, 'announce',
