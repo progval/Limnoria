@@ -1,13 +1,9 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
 "POT-Creation-Date: 2011-06-25 14:17+CEST\n"
-"PO-Revision-Date: 2011-10-25 18:57+0100\n"
-"Last-Translator: sdf <asdasd>\n"
+"PO-Revision-Date: 2011-10-28 18:53+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -43,11 +39,11 @@ msgstr ""
 
 #: ../src/callbacks.py:519
 msgid "%s is not a valid %s."
-msgstr "%s ist kein zulässiger %s"
+msgstr "%s nicht zulässig als %s"
 
 #: ../src/callbacks.py:521
 msgid "That's not a valid %s."
-msgstr "Ist kein zulässiger %s"
+msgstr "%s nicht zulässig"
 
 #: ../src/callbacks.py:599
 msgid "You've attempted more nesting than is currently allowed on this bot."
@@ -107,7 +103,7 @@ msgstr "positive Ganzzahl"
 
 #: ../src/commands.py:206
 msgid "non-negative integer"
-msgstr ""
+msgstr "nicht negative Ganzzahl"
 
 #: ../src/commands.py:209
 msgid "index"
@@ -237,14 +233,14 @@ msgstr ""
 msgid ""
 "Determines the bot's ident string, if the server\n"
 "    doesn't provide one by default."
-msgstr ""
+msgstr "Legt die Ident Zeichenkette des Bots fest, falls der Server keine vergibt."
 
 #: ../src/conf.py:215
 msgid ""
 "Determines the user the bot sends to the server.\n"
 "    A standard user using the current version of the bot will be generated if\n"
 "    this is left empty."
-msgstr ""
+msgstr "Legt den User fest den der Bot an den Server sendet. Er wird die momentane Version des Bots als User benutzen, falls diese Variable leer bleibt."
 
 #: ../src/conf.py:223
 msgid "Determines what networks the bot will connect to."
@@ -255,14 +251,14 @@ msgid ""
 "Determines what password will be used on %s.  Yes, we know that\n"
 "        technically passwords are server-specific and not network-specific,\n"
 "        but this is the best we can do right now."
-msgstr ""
+msgstr "Legt fest welches Passwort für %s genutzt wird. Ja wir wissen das Passwörter nicht Netzwerk spezifisch sondern Server spezifisch sind , aber das ist das beste was wir momentan anbieten können."
 
 #: ../src/conf.py:268
 msgid ""
 "Determines what servers the bot will connect to for %s.  Each will\n"
 "        be tried in order, wrapping back to the first when the cycle is\n"
 "        completed."
-msgstr ""
+msgstr "Legt fest zu welchem Server der Bot für %s verbindet. Jeder Server wird in der Reihenfolge probiert, falls der letzte Server erreicht ist, wird wieder beim Ersten angefangen."
 
 #: ../src/conf.py:272
 msgid "Determines what channels the bot will join only on %s."
@@ -279,7 +275,7 @@ msgstr "Legt fest ob der Bot versuchen soll per SSL Sockets zu %s zu verbinden."
 msgid ""
 "Determines what key (if any) will be used to join the\n"
 "        channel."
-msgstr ""
+msgstr "Legt den Schlüssel fest, den der Bot benutzt um einen Kanal zu betreten (falls vorhanden)."
 
 #: ../src/conf.py:298
 msgid ""
@@ -293,7 +289,7 @@ msgstr ""
 msgid ""
 "Determines whether elapsed times will be given\n"
 "    as \"1 day, 2 hours, 3 minutes, and 15 seconds\" or as \"1d 2h 3m 15s\"."
-msgstr ""
+msgstr "Legt fest wie die vergangene Zeit angeben wird, als \"1 Tag, 2 Stunden, 3 Minuten und 15 Sekunden\" oder als \"1d 2h 3m 15s\""
 
 #: ../src/conf.py:322
 msgid ""
@@ -313,7 +309,7 @@ msgstr ""
 msgid ""
 "Determines what the maximum number of\n"
 "    chunks (for use with the 'more' command) will be."
-msgstr ""
+msgstr "Legt die maximal Anzahl an Teilen fest (für die Nutzung mit dem 'more' Befehl)"
 
 #: ../src/conf.py:336
 msgid ""
@@ -499,7 +495,7 @@ msgid ""
 "Determines what message the bot replies with when a command succeeded.\n"
 "    If this configuration variable is empty, no success message will be\n"
 "    sent."
-msgstr ""
+msgstr "Legt fest mit welcher Nachricht der Bot antwortet, wenn ein Befehl erfolgreich war. Falls diese Konfigurationsvariable leer ist wird keine Erfolgsmeldung gesendet."
 
 #: ../src/conf.py:482
 msgid ""
@@ -550,7 +546,7 @@ msgid ""
 "I can't find %s in my user\n"
 "    database.  If you didn't give a user name, then I might not know what your\n"
 "    user is, and you'll need to identify before this command might work."
-msgstr ""
+msgstr "Ich konnte %s nicht in meiner Benutzerdatenbank finden. Falls du keinen Benutzernamen angegeben hast, weiß ich vielleicht nicht wer du bist unnd du mich dich identifizieren bevor dieser Befehl funktioniert."
 
 #: ../src/conf.py:503
 msgid ""
@@ -564,7 +560,7 @@ msgid ""
 "    If you are already registered, you must either identify (using the identify\n"
 "    command) or add a hostmask matching your current hostmask (using the\n"
 "    \"hostmask add\" command)."
-msgstr ""
+msgstr "Du musst registiert sein um diesen Befehl benutzen zu können. Wenn du bereits registriert bist musst du dich identifizieren (durch den identify Befehl) oder eine Hostmaske hinzufügen die zu deiner momentanen Hostmaske passt (durch den \"hostmask add\" Befehl)."
 
 #: ../src/conf.py:510
 msgid ""
@@ -579,7 +575,7 @@ msgid ""
 "    think that you should have this capability, be sure that you are identified\n"
 "    before trying again.  The 'whoami' command can tell you if you're\n"
 "    identified."
-msgstr ""
+msgstr "Du hast die %s Fähigkeit nicht. Falls du denkst du solltest diese haben, sei dir sicher das du identifiziert bist, bevor du es erneurt versuchst. Der Befehl 'whoami' kann dir sagen ob du identifiziert bist."
 
 #: ../src/conf.py:518
 msgid ""
@@ -627,7 +623,7 @@ msgid ""
 "This may be a bug.  If you think it is,\n"
 "    please file a bug report at\n"
 "    <http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>."
-msgstr ""
+msgstr "Das könnte ein Programmierfehler sein. Falls du das denkst, melden diesen Fehler bitte bei <http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>."
 
 #: ../src/conf.py:546
 msgid ""
@@ -931,7 +927,7 @@ msgstr ""
 msgid ""
 "Determines what will be used as the\n"
 "    default banmask style."
-msgstr ""
+msgstr "Legt fest was als Standard Banmaskenstil verwendet wird."
 
 #: ../src/conf.py:978
 msgid ""
@@ -998,7 +994,7 @@ msgstr ""
 msgid ""
 "Determines how many seconds must elapse between\n"
 "    JOINs sent to the server."
-msgstr ""
+msgstr "Legt fest wieviel Zeit, zwischen den JOINs die an den Server gesendet werden, vergehen muss."
 
 #: ../src/conf.py:1033
 msgid ""
