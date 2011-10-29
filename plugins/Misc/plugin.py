@@ -60,31 +60,33 @@ class Misc(callbacks.Plugin):
         assert not msg.repliedTo, 'repliedTo msg in Misc.invalidCommand.'
         assert self is irc.callbacks[-1], 'Misc isn\'t last callback.'
         self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)
-        # First, we check for invalidCommand floods.  This is rightfully done
-        # here since this will be the last invalidCommand called, and thus it
-        # will only be called if this is *truly* an invalid command.
-        maximum = conf.supybot.abuse.flood.command.invalid.maximum()
-        self.invalidCommands.enqueue(msg)
-        if self.invalidCommands.len(msg) > maximum and \
-           conf.supybot.abuse.flood.command.invalid() and \
-           not ircdb.checkCapability(msg.prefix, 'owner'):
-            punishment = conf.supybot.abuse.flood.command.invalid.punishment()
-            banmask = '*!%s@%s' % (msg.user, msg.host)
-            self.log.info('Ignoring %s for %s seconds due to an apparent '
-                          'invalid command flood.', banmask, punishment)
-            if tokens and tokens[0] == 'Error:':
-                self.log.warning('Apparent error loop with another Supybot '
-                                 'observed.  Consider ignoring this bot '
-                                 'permanently.')
-            ircdb.ignores.add(banmask, time.time() + punishment)
-            if conf.supybot.abuse.flood.command.invalid.notify():
+        channel = msg.args[0]
+        # Only bother with the invaildCommand flood handling if it's actually
+        # enabled
+        if conf.supybot.abuse.flood.command.invalid():
+            # First, we check for invalidCommand floods.  This is rightfully done
+            # here since this will be the last invalidCommand called, and thus it
+            # will only be called if this is *truly* an invalid command.
+            maximum = conf.supybot.abuse.flood.command.invalid.maximum()
+            banmasker = conf.supybot.protocols.irc.banmask.makeBanmask
+            self.invalidCommands.enqueue(msg)
+            if self.invalidCommands.len(msg) > maximum and \
+               not ircdb.checkCapability(msg.prefix, 'owner'):
+                penalty = conf.supybot.abuse.flood.command.invalid.punishment()
+                banmask = banmasker(msg.prefix)
+                self.log.info('Ignoring %s for %s seconds due to an apparent '
+                              'invalid command flood.', banmask, penalty)
+                if tokens and tokens[0] == 'Error:':
+                    self.log.warning('Apparent error loop with another Supybot '
+                                     'observed.  Consider ignoring this bot '
+                                     'permanently.')
+                ircdb.ignores.add(banmask, time.time() + penalty)
                 irc.reply('You\'ve given me %s invalid commands within the last '
                           'minute; I\'m now ignoring you for %s.' %
                           (maximum,
-                           utils.timeElapsed(punishment, seconds=False)))
-            return
+                           utils.timeElapsed(penalty, seconds=False)))
+                return
         # Now, for normal handling.
-        channel = msg.args[0]
         if conf.get(conf.supybot.reply.whenNotCommand, channel):
             if len(tokens) >= 2:
                 cb = irc.getCallback(tokens[0])
