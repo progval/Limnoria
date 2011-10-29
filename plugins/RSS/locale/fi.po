@@ -43,7 +43,7 @@ msgstr ""
 
 #: config.py:56
 msgid "New news from "
-msgstr "Uusia uutisia kohteesta"
+msgstr "Uusia uutisia kohteesta "
 
 #: config.py:60
 msgid ""
