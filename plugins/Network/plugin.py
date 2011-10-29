@@ -200,11 +200,11 @@ class Network(callbacks.Plugin):
                 if not modes:
                     normal.append(channel)
                 elif utils.iter.any(lambda c: c in modes,('@', '&', '~', '!')):
-                    ops.append(channel[1:])
+                    ops.append(channel)
                 elif utils.iter.any(lambda c: c in modes, ('%',)):
-                    halfops.append(channel[1:])
+                    halfops.append(channel)
                 elif utils.iter.any(lambda c: c in modes, ('+',)):
-                    voices.append(channel[1:])
+                    voices.append(channel)
             L = []
             if ops:
                 L.append(format(_('is an op on %L'), ops))
