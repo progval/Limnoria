@@ -22,14 +22,17 @@ msgstr "Arvon täytyy sisältää $topic, muutoin itse aihe jätettäisiin pois.
 msgid ""
 "Determines what separator is\n"
 "    used between individually added topics in the channel topic."
-msgstr ""
+msgstr "Määrittää mitä eroittajaa käytetään\n"
+"    erikseen lisättyjen aiheiden välissä."
 
 #: config.py:53
 msgid ""
 "Determines what format is used to add\n"
 "    topics in the topic.  All the standard substitutes apply, in addition to\n"
 "    \"$topic\" for the topic itself."
-msgstr ""
+msgstr "Määrittää mitä muotoa käytetään\n"
+"    aiheissa kanavan aiheessa.  Kaikki perusmuunnokset ovat voimassa, \n"
+"    \"$topic\":in lisäksi aiheelle itselleenkin."
 
 #: config.py:57
 msgid ""
@@ -37,7 +40,10 @@ msgid ""
 "    TOPICLEN value sent to it by the server and thus refuse to send TOPICs\n"
 "    longer than the TOPICLEN.  These topics are likely to be truncated by the\n"
 "    server anyway, so this defaults to True."
-msgstr ""
+msgstr "Määrittää tunnistaako botti TOPICLEN arvon, jonka palvelin on lähettänyt\n"
+"    sille ja näin kieltäytyy asettamasta aiheita, jotka ovat suurempia kuin TOPICLEN\n"
+"    Nämä aiheet tulisivat luultavasti muutenkin palvelimen lyhentämäksi, joten\n"
+"    tämä on oletuksena True."
 
 #: config.py:62
 msgid ""
