@@ -316,7 +316,8 @@ class Channel(callbacks.Plugin):
             bannedHostmask = irc.state.nickToHostmask(bannedNick)
         except KeyError:
             irc.error(format(_('I haven\'t seen %s.'), bannedNick), Raise=True)
-        capability = ircdb.makeChannelCapability(channel, 'op')
+        opcapability = ircdb.makeChannelCapability(channel, 'op')
+        ownercapability = ircdb.makeCapability(channel, 'owner')
         banmaskstyle = conf.supybot.protocols.irc.banmask
         banmask = banmaskstyle.makeBanmask(bannedHostmask, [o[0] for o in optlist])
         # Check (again) that they're not trying to make us kickban ourself.
@@ -345,18 +346,19 @@ class Channel(callbacks.Plugin):
                 schedule.addEvent(f, expiry)
         if bannedNick == msg.nick:
             doBan()
-        elif ircdb.checkCapability(msg.prefix, capability):
-            if ircdb.checkCapability(bannedHostmask, capability):
+        elif ircdb.checkCapability(msg.prefix, opcapability):
+            if ircdb.checkCapability(bannedHostmask, opcapability) and \
+                    not ircdb.checkCapability(msg.prefix, ownercapability):
                 self.log.warning('%s tried to ban %q, but both have %s',
-                                 msg.prefix, bannedHostmask, capability)
+                                 msg.prefix, bannedHostmask, opcapability)
                 irc.error(format(_('%s has %s too, you can\'t ban '
-                                 'him/her/it.'), bannedNick, capability))
+                                 'him/her/it.'), bannedNick, opcapability))
             else:
                 doBan()
         else:
             self.log.warning('%q attempted kban without %s',
-                             msg.prefix, capability)
-            irc.errorNoCapability(capability)
+                             msg.prefix, opcapability)
+            irc.errorNoCapability(opcapability)
             exact,nick,user,host
     kban = wrap(kban,
                 ['op',
