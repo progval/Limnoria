@@ -1,1 +1,1 @@
-This plugin features commands to shorten URLs through different services.
+This plugin features commands to shorten URLs through different services, like tinyurl.
