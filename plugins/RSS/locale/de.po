@@ -1,10 +1,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-10-29 00:22+0100\n"
-"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"POT-Creation-Date: 2011-10-29 16:08+CEST\n"
+"PO-Revision-Date: 2011-10-29 17:09+0100\n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,6 +29,10 @@ msgid ""
 "    prefix is prepended (if any) to the new news item announcements made in the\n"
 "    channel."
 msgstr "Legt fest welcher Prefix (falls überhaupt) den News vorangestellt wird, wenn neue Verkündungen in einem Kanal gemacht werden."
+
+#: config.py:56
+msgid "New news from "
+msgstr "Neuigkeiten von "
 
 #: config.py:60
 msgid ""
@@ -57,7 +62,7 @@ msgid ""
 "    listed when a feed is automatically announced."
 msgstr "Legt fest ob der Bot den Link zusammen mit dem Titel des Feeds aufgelistet wird, wenn der RSS Befehl aufgerufen wird. supybot.plugins.RSS.announce.showLinks ist zuständig dafür falls der Feed automatisch verkündet wird."
 
-#: config.py:84
+#: config.py:92
 msgid ""
 "Determines whether the bot will list the link\n"
 "    along with the title of the feed when a feed is automatically\n"
@@ -72,7 +77,7 @@ msgid ""
 "    command to determine what feeds should be announced in a given channel."
 msgstr "Dieses plugin wird verwendet um Updates eines RSS Feed in einem Kanal zu verkünden und um die Kopfzeilen des RSS Feeds über einen Befehl zu empfangen. Benutze \"add\" um Feeds zu diesem Plugin hinzuzufügen und benutze \"announce\" um festzulegen ob der Feed im gegeben Kanal verkündet werden soll."
 
-#: plugin.py:316
+#: plugin.py:340
 msgid ""
 "<name> <url>\n"
 "\n"
@@ -84,7 +89,7 @@ msgstr ""
 "\n"
 "Fügt einen Befehl zu diesem Plugin hinzu, der den RSS Feed von angegebener URL abruft."
 
-#: plugin.py:327
+#: plugin.py:351
 msgid ""
 "<name>\n"
 "\n"
@@ -96,11 +101,11 @@ msgstr ""
 "\n"
 "Entfernt den Befehl um RSS Feeds von <Name> abzurufen aus diesem Plugin"
 
-#: plugin.py:333
+#: plugin.py:357
 msgid "That's not a valid RSS feed command name."
 msgstr "Das ist kein gültiger RSS Feed Befehl."
 
-#: plugin.py:344
+#: plugin.py:368
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -112,11 +117,11 @@ msgstr ""
 "\n"
 "Gibt eine Liste der Feeds, die in einem <Kanal> verkündet werden, zurück. <Kanal> ist nur nötig falls der Befehl nicht direkt im Kanal abgegeben wird."
 
-#: plugin.py:351
+#: plugin.py:375
 msgid "I am currently not announcing any feeds."
 msgstr "Momentan kündige ich keine Feeds an."
 
-#: plugin.py:356
+#: plugin.py:380
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -130,7 +135,7 @@ msgstr ""
 "\n"
 "Fügt die Liste der Feeds zur momentanen Liste der verkündeten Feeds eines <Kanal> hinzu. Zulässige Feeds umfassen die Namen von registrierten Feed als auch URLs für RSS Feeds. <Kanal> ist nur nötig falls die Nachricht nicht im Kanal gesendet wird."
 
-#: plugin.py:374
+#: plugin.py:398
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -144,7 +149,7 @@ msgstr ""
 "\n"
 "Entfernt die Liste der Feeds von der momentanen Liste der verkündeten Feeds eines <Kanal>. Zulässige Feeds umfassen die Namen von registrierten Feed als auch URLs für RSS Feeds. <Kanal> ist nur nötig falls die Nachricht nicht im Kanal gesendet wird."
 
-#: plugin.py:392
+#: plugin.py:416
 msgid ""
 "<url> [<number of headlines>]\n"
 "\n"
@@ -156,11 +161,11 @@ msgstr ""
 "\n"
 "Empfängt die Titel des angegeben RSS Feeds. Falls <Anzahl der Kopfzeilen> angegeben wurde, werden nur soviele Kopfzeilen ausgegeben."
 
-#: plugin.py:405
+#: plugin.py:429
 msgid "Couldn't get RSS feed."
 msgstr "Konnte den RSS Feed nicht bekommen."
 
-#: plugin.py:420
+#: plugin.py:444
 msgid ""
 "<url|feed>\n"
 "\n"
@@ -172,11 +177,11 @@ msgstr ""
 "\n"
 "Gibt Informationen zum angegeben RSS Feed aus. Den Titel, URL, Beschreibung und das Datum des letzten Updates, wenn verfügbar."
 
-#: plugin.py:433
+#: plugin.py:457
 msgid "I couldn't retrieve that RSS feed."
 msgstr "Ich konnte den RSS Feed nicht empfangen."
 
-#: plugin.py:446
+#: plugin.py:470
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr "Titel: %s; URL: %u; Beschreibung: %s; Zuletzt aktualisiert: %s."
 

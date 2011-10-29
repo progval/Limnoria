@@ -34,7 +34,7 @@ msgstr "Détermine quel préfixe (s'il y en a un) est utilisé pour annoncer les
 
 #: config.py:56
 msgid "New news from "
-msgstr "Nouvelle(s) news de"
+msgstr "Nouvelle(s) news de "
 
 #: config.py:60
 msgid ""
