@@ -1080,9 +1080,13 @@ registerGlobalValue(supybot.servers.http, 'port',
     registry.Integer(8080, _("""Determines what port the HTTP server will
     bind.""")))
 registerGlobalValue(supybot.servers.http, 'keepAlive',
-    registry.Boolean(False, _("""Defines whether the server will stay alive if
-    no plugin is using it. This also means that the server will start even
-    if it is not used.""")))
+    registry.Boolean(False, _("""Determiness whether the server will stay
+    alive if no plugin is using it. This also means that the server will
+    start even if it is not used.""")))
+registerGlobalValue(supybot.servers.http, 'robots',
+    registry.String('', _("""Determines the content of the robots.txt file,
+    served on the server to search engine. All \\n will be converted to line
+    breaks.""")))
 
 
 ###
