@@ -400,6 +400,15 @@ class IrcState(IrcCommandDispatcher):
         """Returns the hostmask for a given nick."""
         return self.nicksToHostmasks[nick]
 
+    def do004(self, irc, msg):
+        """Handles parsing the 004 reply
+
+        Supported user and channel modes are cached"""
+        # msg.args = [nick, server, ircd-version, umodes, modes,
+        #             modes that require arguments? (non-standard)]
+        self.supported['umodes'] = msg.args[3]
+        self.supported['chanmodes'] = msg.args[4]
+
     _005converters = utils.InsensitivePreservingDict({
         'modes': int,
         'keylen': int,
