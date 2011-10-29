@@ -49,13 +49,15 @@ msgstr "Määrittää tunnistaako botti TOPICLEN arvon, jonka palvelin on lähet
 msgid ""
 "Determines what the default topic for the channel\n"
 "    is.  This is used by the default command to set this topic."
-msgstr ""
+msgstr "Määrittää mikä on oletus aihe kanavalle.\n"
+"    is.  Komento "default" käyttää tätä asettaakseen aiheen."
 
 #: config.py:66
 msgid ""
 "Determines the number of previous\n"
 "    topics to keep around in case the undo command is called."
-msgstr ""
+msgstr "Määrittää säilyttävien edellisten aiheiden määrän siltä varalta, että\n"
+"    "undo" komentoa käytetään."
 
 #: config.py:69
 msgid ""
@@ -65,7 +67,12 @@ msgid ""
 "    channel-level capabilities.\n"
 "    Note that absence of an explicit anticapability means user has\n"
 "    capability."
-msgstr ""
+msgstr "Määrittää valtuudet, (jos mitkään) jotka vaaditaan\n"
+"    aiheen muutosten tekemiseen,\n"
+"    (kaikki muut, paitsi vain-luku komennot). Käytä valtuutta 'channel,capab' \n"
+"    kanava tason valtuuksille.\n"
+"    Huomaa, että antivaltuuden puute tarkoittaa, että käyttäjällä on tämä\n"
+"    valtuus."
 
 #: plugin.py:57
 msgid "I'm not currently in %s."
