@@ -1085,8 +1085,7 @@ registerGlobalValue(supybot.servers.http, 'keepAlive',
     start even if it is not used.""")))
 registerGlobalValue(supybot.servers.http, 'robots',
     registry.String('', _("""Determines the content of the robots.txt file,
-    served on the server to search engine. All \\n will be converted to line
-    breaks.""")))
+    served on the server to search engine.""")))
 
 
 ###
