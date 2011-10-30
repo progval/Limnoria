@@ -859,9 +859,6 @@ class Irc(IrcCommandDispatcher):
     def _setNonResettingVariables(self):
         # Configuration stuff.
         self.nick = conf.supybot.nick()
-        network_nick = conf.supybot.networks.get(self.network).nick()
-        if network_nick != '':
-            self.nick = network_nick
         self.user = conf.supybot.user()
         self.ident = conf.supybot.ident()
         self.alternateNicks = conf.supybot.nick.alternates()[:]
@@ -917,17 +914,10 @@ class Irc(IrcCommandDispatcher):
         if self.alternateNicks:
             nick = self.alternateNicks.pop(0)
             if '%s' in nick:
-                network_nick = conf.supybot.networks.get(self.network).nick()
-                if network_nick == '':
-                    nick %= conf.supybot.nick()
-                else:
-                    nick %= network_nick
+                nick %= conf.supybot.nick()
             return nick
         else:
             nick = conf.supybot.nick()
-            network_nick = conf.supybot.networks.get(self.network).nick()
-            if network_nick != '':
-                nick = network_nick
             ret = nick
             L = list(nick)
             while len(L) <= 3:

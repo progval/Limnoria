@@ -5,11 +5,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-10-29 16:08+CEST\n"
-"PO-Revision-Date: 2011-10-29 17:10+0100\n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-08-07 20:15+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -40,10 +39,6 @@ msgstr ""
 "Määrittää mikä\n"
 "    etuliite (jos mikään) lisätään kuulutuksiin, jotka on tehty\n"
 "    kanavalla."
-
-#: config.py:56
-msgid "New news from "
-msgstr "Uusia uutisia kohteesta "
 
 #: config.py:60
 msgid ""
@@ -85,7 +80,7 @@ msgstr ""
 "    supybot.plugins.RSS.announce.showLinks vaikuttaa luetellaanko\n"
 "    linkit, kun syöte on kuulutettu automaattisesti."
 
-#: config.py:92
+#: config.py:84
 msgid ""
 "Determines whether the bot will list the link\n"
 "    along with the title of the feed when a feed is automatically\n"
@@ -107,7 +102,7 @@ msgstr ""
 "    \"add\" komentoa lisätäksesi syötteitä tähän lisäosaan ja \"announce\"\n"
 "    komentoa määrittämään mitkä syötteet pitäisi kuuluttaa annetulla kanavalla."
 
-#: plugin.py:340
+#: plugin.py:316
 msgid ""
 "<name> <url>\n"
 "\n"
@@ -121,7 +116,7 @@ msgstr ""
 "        URL osoitteesta..\n"
 "        "
 
-#: plugin.py:351
+#: plugin.py:327
 msgid ""
 "<name>\n"
 "\n"
@@ -135,11 +130,11 @@ msgstr ""
 "        lisäosasta.\n"
 "        "
 
-#: plugin.py:357
+#: plugin.py:333
 msgid "That's not a valid RSS feed command name."
 msgstr "Tuo ei ole kelvollinen RSS sylte komento nimi."
 
-#: plugin.py:368
+#: plugin.py:344
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -153,11 +148,11 @@ msgstr ""
 "            vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:375
+#: plugin.py:351
 msgid "I am currently not announcing any feeds."
 msgstr "Minä en tällä hetkellä kuuluta yhtään syötettä."
 
-#: plugin.py:380
+#: plugin.py:356
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -175,7 +170,7 @@ msgstr ""
 "            viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:398
+#: plugin.py:374
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -193,7 +188,7 @@ msgstr ""
 "            ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:416
+#: plugin.py:392
 msgid ""
 "<url> [<number of headlines>]\n"
 "\n"
@@ -207,11 +202,11 @@ msgstr ""
 "        Jos <otsikoiden lukumäärä> on annettu, palauttaa vain niin monta otsikkoa.\n"
 "        "
 
-#: plugin.py:429
+#: plugin.py:405
 msgid "Couldn't get RSS feed."
 msgstr "RSS syötettä ei pystytty hakemaan."
 
-#: plugin.py:444
+#: plugin.py:420
 msgid ""
 "<url|feed>\n"
 "\n"
@@ -225,11 +220,11 @@ msgstr ""
 "        URL, kuvauksen, ja viimeisen päivityksen, jos saatavilla.\n"
 "        "
 
-#: plugin.py:457
+#: plugin.py:433
 msgid "I couldn't retrieve that RSS feed."
 msgstr "En voinut noutaa tuota RSS syötettä."
 
-#: plugin.py:470
+#: plugin.py:446
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr "Otsikko: %s;  URL: %u;  Kuvaus: %s;  Viimeeksi päivitetty: %s."
 

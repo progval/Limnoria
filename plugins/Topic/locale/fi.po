@@ -22,14 +22,17 @@ msgstr "Arvon täytyy sisältää $topic, muutoin itse aihe jätettäisiin pois.
 msgid ""
 "Determines what separator is\n"
 "    used between individually added topics in the channel topic."
-msgstr ""
+msgstr "Määrittää mitä eroittajaa käytetään\n"
+"    erikseen lisättyjen aiheiden välissä."
 
 #: config.py:53
 msgid ""
 "Determines what format is used to add\n"
 "    topics in the topic.  All the standard substitutes apply, in addition to\n"
 "    \"$topic\" for the topic itself."
-msgstr ""
+msgstr "Määrittää mitä muotoa käytetään\n"
+"    aiheissa kanavan aiheessa.  Kaikki perusmuunnokset ovat voimassa, \n"
+"    \"$topic\":in lisäksi aiheelle itselleenkin."
 
 #: config.py:57
 msgid ""
@@ -37,19 +40,24 @@ msgid ""
 "    TOPICLEN value sent to it by the server and thus refuse to send TOPICs\n"
 "    longer than the TOPICLEN.  These topics are likely to be truncated by the\n"
 "    server anyway, so this defaults to True."
-msgstr ""
+msgstr "Määrittää tunnistaako botti TOPICLEN arvon, jonka palvelin on lähettänyt\n"
+"    sille ja näin kieltäytyy asettamasta aiheita, jotka ovat suurempia kuin TOPICLEN\n"
+"    Nämä aiheet tulisivat luultavasti muutenkin palvelimen lyhentämäksi, joten\n"
+"    tämä on oletuksena True."
 
 #: config.py:62
 msgid ""
 "Determines what the default topic for the channel\n"
 "    is.  This is used by the default command to set this topic."
-msgstr ""
+msgstr "Määrittää mikä on oletus aihe kanavalle.\n"
+"    is.  Komento "default" käyttää tätä asettaakseen aiheen."
 
 #: config.py:66
 msgid ""
 "Determines the number of previous\n"
 "    topics to keep around in case the undo command is called."
-msgstr ""
+msgstr "Määrittää säilyttävien edellisten aiheiden määrän siltä varalta, että\n"
+"    "undo" komentoa käytetään."
 
 #: config.py:69
 msgid ""
@@ -59,7 +67,12 @@ msgid ""
 "    channel-level capabilities.\n"
 "    Note that absence of an explicit anticapability means user has\n"
 "    capability."
-msgstr ""
+msgstr "Määrittää valtuudet, (jos mitkään) jotka vaaditaan\n"
+"    aiheen muutosten tekemiseen,\n"
+"    (kaikki muut, paitsi vain-luku komennot). Käytä valtuutta 'channel,capab' \n"
+"    kanava tason valtuuksille.\n"
+"    Huomaa, että antivaltuuden puute tarkoittaa, että käyttäjällä on tämä\n"
+"    valtuus."
 
 #: plugin.py:57
 msgid "I'm not currently in %s."
