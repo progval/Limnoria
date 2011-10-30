@@ -346,6 +346,16 @@ class Admin(callbacks.Plugin):
         list = wrap(list)
 
 
+    def clearq(self, irc, msg, args):
+        """takes no arguments
+
+        Clears the current send queue for this network.
+        """
+        irc.queue.reset()
+        irc.replySuccess()
+
+
+
 Class = Admin
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
