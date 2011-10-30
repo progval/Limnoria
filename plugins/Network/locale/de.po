@@ -1,0 +1,180 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-10-29 20:20+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: plugin.py:57
+msgid ""
+"[--ssl] <network> [<host[:port]>] [<password>]\n"
+"\n"
+"        Connects to another network (which will be represented by the name\n"
+"        provided in <network>) at <host:port>.  If port is not provided, it\n"
+"        defaults to 6667, the default port for IRC.  If password is\n"
+"        provided, it will be sent to the server in a PASS command.  If --ssl is\n"
+"        provided, an SSL connection will be attempted.\n"
+"        "
+msgstr ""
+"[--ssl] <Netzwerk> [<Host[:Port]>] [<Passwort>]\n"
+"\n"
+"Verbindet zu einem anderen Netzwerk, welches durch den Namen in <Netzwerk> auf <Host:Port> festgelegt wird. Falls Port nicht angegeben wird, wird standardgemäß 6667 verwendet, der Standardport für IRC. Falls Passwort angegeben wird, wird es an den Server per PASS Befehl gesendet. Falls --ssl angegeben wird, wird versucht eine SSL Verbindung aufzubauen."
+
+#: plugin.py:67
+msgid "I'm already connected to %s."
+msgstr "Ich bin schon verbunden mit %s."
+
+#: plugin.py:87
+msgid "A server must be provided if the network is not already registered."
+msgstr "Es muss ein Server angegeben werden, falls das netwerk noch net registriert ist."
+
+#: plugin.py:95
+msgid "Connection to %s initiated."
+msgstr "Verbindung zu %s wurde eingeleitet."
+
+#: plugin.py:102
+msgid ""
+"[<network>] [<quit message>]\n"
+"\n"
+"        Disconnects from the network represented by the network <network>.\n"
+"        If <quit message> is given, quits the network with the given quit\n"
+"        message.  <network> is only necessary if the network is different\n"
+"        from the network the command is sent on.\n"
+"        "
+msgstr "[<netzwerk>] [<Beenden Nachricht>]"
+
+#: plugin.py:114
+msgid "Disconnection to %s initiated."
+msgstr "Verbindungstrennung zu %s wurde eingeleitet."
+
+#: plugin.py:120
+msgid ""
+"[<network>] [<quit message>]\n"
+"\n"
+"        Disconnects and then reconnects to <network>.  If no network is given,\n"
+"        disconnects and then reconnects to the network the command was given\n"
+"        on.  If no quit message is given, uses the configured one\n"
+"        (supybot.plugins.Owner.quitMsg) or the nick of the person giving the\n"
+"        command.\n"
+"        "
+msgstr ""
+"[<Netzwerk>] [<Beendennachricht>]\n"
+"\n"
+"Trennt die Verbindung von <Netzwerk> und baut diese neu auf, falls kein Netzwerk angegeben wird, wird die Verbindung des Netzwerks getrennt und wieder aufgebaut, auf dem der Befehl gegeben wurde. Falls keine Beendennachricht angegeben wird, wird die konfigurierte (supybot.plugins.Owner.quitMsg) oder der Nick des Nutzer, der den Befehl gegeben hat, benutzt."
+
+#: plugin.py:137
+msgid ""
+"<network> <command> [<arg> ...]\n"
+"\n"
+"        Gives the bot <command> (with its associated <arg>s) on <network>.\n"
+"        "
+msgstr ""
+"<Netzwerk> <Befehl> [<Argument> ...]\n"
+"\n"
+"Gibt dem Bot den <Befehl> (mit den zugehörigen <Argument>en) auf dem <Netzwerk>."
+
+#: plugin.py:210
+msgid "is an op on %L"
+msgstr "ist ein Operator in %L"
+
+#: plugin.py:212
+msgid "is a halfop on %L"
+msgstr "ist ein Halboperator in %L"
+
+#: plugin.py:214
+msgid "is voiced on %L"
+msgstr "hat Sprechrechte in %L"
+
+#: plugin.py:217
+msgid "is also on %L"
+msgstr "ist auch in %L"
+
+#: plugin.py:219
+msgid "is on %L"
+msgstr "ist in %l"
+
+#: plugin.py:221
+msgid "isn't on any non-secret channels"
+msgstr "ist nicht in irgendwelchen Kanälen die nicht als geheim eingestuft sind."
+
+#: plugin.py:228
+#: plugin.py:229
+#: plugin.py:233
+msgid "<unknown>"
+msgstr "<unbekannt>"
+
+#: plugin.py:240
+msgid " identified"
+msgstr " identifiziert"
+
+#: plugin.py:245
+msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
+msgstr "%s (%s) ist%s auf dem Server % seit %s (im Leerlauf für %s) und %s.%s"
+
+#: plugin.py:258
+msgid "There is no %s on %s."
+msgstr "Kein %s auf %s."
+
+#: plugin.py:264
+msgid ""
+"[<network>] <nick>\n"
+"\n"
+"        Returns the WHOIS response <network> gives for <nick>.  <network> is\n"
+"        only necessary if the network is different than the network the command\n"
+"        is sent on.\n"
+"        "
+msgstr ""
+"[<Netzwerk>] <Nick>\n"
+"\n"
+"Gibt die WHOIS Antwort aus, die das <Netzwerk> für <Nick> gibt. <Netzwerk> wird nur benötigt wenn der Befehl nicht im Netzwerk gesendet wird auf dem der Befehl ausgeführt werden soll."
+
+#: plugin.py:280
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the networks to which the bot is currently connected.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt an zu welchen Netzwerken der Bot momentan verbunden ist."
+
+#: plugin.py:293
+msgid "%.2f seconds."
+msgstr "%.2f Sekunden."
+
+#: plugin.py:297
+msgid ""
+"[<network>]\n"
+"\n"
+"        Returns the current latency to <network>.  <network> is only necessary\n"
+"        if the message isn't sent on the network to which this command is to\n"
+"        apply.\n"
+"        "
+msgstr ""
+"[<Netzwerk>]\n"
+"\n"
+"Gibt die momenten Latenz zu <Netzwerk> an. <Netzwerk> wird nur benötigt wenn der Befehl nicht im Netzwerk gesendet wird auf dem der Befehl ausgeführt werden soll."
+
+#: plugin.py:303
+msgid "Latency check (from %s)."
+msgstr "Latenzprüfung (von %s)."
+
+#: plugin.py:311
+msgid ""
+"[<network>]\n"
+"\n"
+"        Returns the current network driver for <network>.  <network> is only\n"
+"        necessary if the message isn't sent on the network to which this\n"
+"        command is to apply.\n"
+"        "
+msgstr ""
+"[<Netzwerk>]\n"
+"\n"
+"Gibt den momentanen Netzwerktreiber für <Netzwerk> an.  <Netzwerk> wird nur benötigt wenn der Befehl nicht im Netzwerk gesendet wird auf dem der Befehl ausgeführt werden soll."
+
