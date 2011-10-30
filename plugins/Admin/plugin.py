@@ -346,6 +346,7 @@ class Admin(callbacks.Plugin):
         list = wrap(list)
 
 
+    @internationalizeDocstring
     def clearq(self, irc, msg, args):
         """takes no arguments
 
