@@ -22,14 +22,17 @@ msgstr "Arvon täytyy sisältää $topic, muutoin itse aihe jätettäisiin pois.
 msgid ""
 "Determines what separator is\n"
 "    used between individually added topics in the channel topic."
-msgstr ""
+msgstr "Määrittää mitä eroittajaa käytetään\n"
+"    erikseen lisättyjen aiheiden välissä kanavan aiheessa."
 
 #: config.py:53
 msgid ""
 "Determines what format is used to add\n"
 "    topics in the topic.  All the standard substitutes apply, in addition to\n"
 "    \"$topic\" for the topic itself."
-msgstr ""
+msgstr "Määrittää mitä muotoa käytetään lisäämään\n"
+"    aiheita kanavan aiheessa.  Kaikki perus muunnokset ovat voimassa, \n"
+"    \"$topic\":n lisäksi aiheelle itselleen."
 
 #: config.py:57
 msgid ""
@@ -37,19 +40,24 @@ msgid ""
 "    TOPICLEN value sent to it by the server and thus refuse to send TOPICs\n"
 "    longer than the TOPICLEN.  These topics are likely to be truncated by the\n"
 "    server anyway, so this defaults to True."
-msgstr ""
+msgstr "Määrittää tunnistaako botti\n"
+"    TOPICLEN arvon, jonka palvelin on lähettänyt sille ja näin kieltäytyy asettamasta pidempiä aiheita, \n"
+"    kuin TOPICLEN.  Nämä aiheet tulisivat muutenkin palvelimen lyhentämiksi, joten\n"
+"    tämä on oletuksena True."
 
 #: config.py:62
 msgid ""
 "Determines what the default topic for the channel\n"
 "    is.  This is used by the default command to set this topic."
-msgstr ""
+msgstr "Määrittää mikä on oletus aihe kanavalle. \n"
+"   'Default' komento käyttää tätä."
 
 #: config.py:66
 msgid ""
 "Determines the number of previous\n"
 "    topics to keep around in case the undo command is called."
-msgstr ""
+msgstr "Määrittää edellisten aiheiden määrän, jotka säilytetään siltä varalta, että\n"
+"    'undo' komentoa käytetään."
 
 #: config.py:69
 msgid ""
@@ -59,31 +67,36 @@ msgid ""
 "    channel-level capabilities.\n"
 "    Note that absence of an explicit anticapability means user has\n"
 "    capability."
-msgstr ""
+msgstr "Määrittää\n"
+"    valtuudet, jotka (jos mitkään) vaaditaan aiheen vaihtamiseen,\n"
+"    (kaikki, paitsi vain-luku komennot). Käytä valtuutta 'channel,capab' \n"
+"    kanava-tason valtuuksia varten.\n"
+"    Huomaa, että anti-valtuuden poissaolo tarkoittaa, että käyttäjällä on\n"
+"    valtuus."
 
 #: plugin.py:57
 msgid "I'm not currently in %s."
-msgstr ""
+msgstr "En tällä hetkellä ole kanavalla %s."
 
 #: plugin.py:61
 msgid "I can't change the topic, I'm not opped and %s is +t."
-msgstr ""
+msgstr "En voi vaihtaa aihetta, koska en ole kanavaoperaattori ja kanavalla %s on tila +t."
 
 #: plugin.py:68
 msgid "The topic must not include %q."
-msgstr ""
+msgstr "%q ei saa olla aiheessa."
 
 #: plugin.py:79
 msgid "topic number"
-msgstr ""
+msgstr "aiheen numero"
 
 #: plugin.py:92
 msgid "There are no topics in %s."
-msgstr ""
+msgstr "Kanavalla %s ei ole aiheita."
 
 #: plugin.py:200
 msgid "That topic is too long for this server (maximum length: %i; this topic: %i)."
-msgstr ""
+msgstr "Tuo aihe on liian pitkä tälle palvelimelle (maksimi pituus: %i; tämä aihe: %i)."
 
 #: plugin.py:213
 msgid ""
@@ -96,7 +109,14 @@ msgid ""
 "        Also allow if the user is a chanop. Since he can change the topic\n"
 "        manually anyway.\n"
 "        "
-msgstr ""
+msgstr "Tarkista onko käyttäjällä valtuudet, jotka on vaadittu\n"
+"        kanavan aiheen hallintaan.\n"
+"\n"
+"        Lista vaadituista valtuuksista on kanava-asetusarvossa requireManageCapability\n"
+"\n"
+"        Salli myös jos käyttäjä on kanavaoperaattori, koska hän voisi vaihtaa aiheen\n"
+"        muutenkin manuaalisesti.\n"
+"        "
 
 #: plugin.py:265
 msgid ""
@@ -105,7 +125,11 @@ msgid ""
 "        Returns the topic for <channel>.  <channel> is only necessary if the\n"
 "        message isn't sent in the channel itself.\n"
 "        "
-msgstr ""
+msgstr "[<kanava>]\n"
+"\n"
+"        Palauttaa <kanavan> aiheen.  <Kanava> on vaadittu vain, jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:276
 msgid ""
@@ -114,7 +138,11 @@ msgid ""
 "        Adds <topic> to the topics for <channel>.  <channel> is only necessary\n"
 "        if the message isn't sent in the channel itself.\n"
 "        "
-msgstr ""
+msgstr "[<kanava>] <aihe>\n"
+"\n"
+"        Lisää <aiheen> <kanavan> aiheisiin.  <Kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:291
 msgid ""
@@ -125,7 +153,13 @@ msgid ""
 "        <channel> is only necessary if the message isn't sent in the channel\n"
 "        itself.\n"
 "        "
-msgstr ""
+msgstr "[<kanava>] <aihe>\n"
+"\n"
+"        Lisää <aiheen> <kanavan> aiheisiin.  Jos aihe on liian pitkä\n"
+"        palvelimelle, aihetta kutistetaan kunnes sille on tarpeeksi tilaa.\n"
+"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:308
 msgid ""
