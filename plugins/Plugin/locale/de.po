@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-10-27 00:44+0100\n"
+"PO-Revision-Date: 2011-11-01 20:55+0100\n"
 "Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -58,7 +58,7 @@ msgid ""
 msgstr ""
 "<Befehl>\n"
 "\n"
-"Gibt den Namen des Plugins aus das benutzt wird um <Befehl> aufzurufen. Wenn es nicht einzigartig ist, wird eine Liste aller Plugins ausgegen die über den <Befehl> besitzen."
+"Gibt den Namen des Plugins aus das benutzt wird um <Befehl> aufzurufen. Wenn dieser nicht einzigartig ist, wird eine Liste aller Plugins ausgegeben die über den <Befehl> verfügen."
 
 #: plugin.py:91
 msgid "plugins"
@@ -70,7 +70,7 @@ msgstr "Plugin"
 
 #: plugin.py:94
 msgid "The %q command is available in the %L %s."
-msgstr "Der %q Befehl ist verfügbar im %L %s."
+msgstr "Der %q Befehl ist im %L %s verfügbar."
 
 #: plugin.py:97
 msgid "There is no command %q."
