@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
 "POT-Creation-Date: 2011-08-10 11:28+CEST\n"
-"PO-Revision-Date: 2011-10-27 12:29+0100\n"
+"PO-Revision-Date: 2011-11-04 10:44+0100\n"
 "Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
 "Language: de\n"
@@ -204,6 +204,9 @@ msgid ""
 "        given in is searched.\n"
 "        "
 msgstr ""
+"[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
+"\n"
+"Gibt die letzte Nachricht aus, die auf die gegeben Kriterien passt. --from benötigt den Nick von dem die Nachricht kam; --in benötigt den Kanal in den die Nachricht gesendet wurde; --on benötigt das Netzwerk in dem die Nachricht gesendet wurde; --with benötigt eine Zeichenkette die in der Nachricht vorkommt; --regexp benötigt einen regulären Ausdruck auf der auf die Nachricht zutrifft; --nolimit zeigt alle Nachrichten die gefunden wurden. Voreinstellung: Der Kanal in dem der Befehl gegeben wird, wird durchsucht."
 
 #: plugin.py:386
 msgid "I couldn't find a message matching that criteria in my history of %s messages."
@@ -222,7 +225,6 @@ msgstr ""
 "Sagt <nick> den Inhalt von <text>. Benutze verschachtelte Befehle um nutzen daraus zu ziehen."
 
 #: plugin.py:409
-#, fuzzy
 msgid "Dude, just give the command.  No need for the tell."
 msgstr "Junge, gib mir einfach den Befehl."
 
