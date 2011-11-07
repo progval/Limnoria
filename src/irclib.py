@@ -929,13 +929,13 @@ class Irc(IrcCommandDispatcher):
         # Let's reset nicks in case we had to use a weird one.
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         umodes = conf.supybot.protocols.irc.umodes()
-        supported = self.supported.get('umodes')
+        supported = self.state.supported.get('umodes')
         if umodes:
             addSub = '+'
             if umodes[0] in '+-':
                 (addSub, umodes) = (umodes[0], umodes[1:])
             if supported:
-                umodes = [m for m in umodes if m in supported]
+                umodes = ''.join([m for m in umodes if m in supported])
             umodes = ''.join(addSub, umodes)
             log.info('Sending user modes to %s: %s', self.network, umodes)
             self.sendMsg(ircmsgs.mode(self.nick, umodes))
