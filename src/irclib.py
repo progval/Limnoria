@@ -934,7 +934,7 @@ class Irc(IrcCommandDispatcher):
             if umodes[0] in '+-':
                 (addSub, umodes) = (umodes[0], umodes[1:])
             if supported:
-                umodes = filter(lamda m: m in supported, umodes)
+                umodes = [m for m in umodes if m in supported]
             umodes = ''.join(addSub, umodes)
             log.info('Sending user modes to %s: %s', self.network, umodes)
             self.sendMsg(ircmsgs.mode(self.nick, umodes))
