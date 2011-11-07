@@ -1,1 +1,2 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin allows you to scheduler commands to execute at a later time.
+For example, 'scheduler add [seconds 30m] "echo [cpu]"' will schedule the command "cpu" to be sent to the channel in 30 minutes.

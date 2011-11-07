@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin allows you to see when and what someone last said and what you missed since you parted the channel.

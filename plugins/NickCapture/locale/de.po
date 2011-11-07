@@ -1,0 +1,37 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-10-31 13:02+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+
+#: config.py:47
+msgid ""
+"Determines whether the bot will check\n"
+"    occasionally if its preferred nick is in use via the ISON command."
+msgstr "Legt fest ob der Bot bei Bedarf, mit dem ISON Befehl, checken soll ob sein geschwünschter Nick in benutzung ist."
+
+#: config.py:50
+msgid ""
+"Determines how often (in seconds) the bot\n"
+"    will check whether its nick ISON."
+msgstr "Legt fest wie oft (in Sekunden) der Bot checkt ob der Nick verfügbar ist."
+
+#: plugin.py:40
+msgid ""
+"This plugin constantly tries to take whatever nick is configured as\n"
+"    supybot.nick.  Just make sure that's set appropriately, and thus plugin\n"
+"    will do the rest."
+msgstr "Dieses Plugin versucht dauernd den Nick der in supybot.nick konfiguriert ist zu bekommen. Stelle nur sicher das dieser richtig gesetzt wurde und das Plugin macht den Rest."
+
+#: plugin.py:89
+msgid "This is returned by the ISON command."
+msgstr "Dies wird vom ISON Befehl zurückgegeben."
+
