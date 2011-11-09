@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-10-30 19:20+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,5 +183,14 @@ msgstr ""
 
 #: plugin.py:345
 msgid "I'm not currently globally ignoring anyone."
+msgstr ""
+
+#: plugin.py:351
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Clears the current send queue for this network.\n"
+"        "
 msgstr ""
 

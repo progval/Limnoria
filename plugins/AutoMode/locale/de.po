@@ -1,0 +1,67 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-06-27 12:02+CEST\n"
+"PO-Revision-Date: 2011-10-30 21:26+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+
+#: config.py:46
+msgid ""
+"Determines whether this plugin is enabled.\n"
+"    "
+msgstr "Legt fest ob das Plugin aktiv ist."
+
+#: config.py:49
+msgid ""
+"Determines whether this plugin will automode\n"
+"    owners even if they don't have op/halfop/voice/whatever capability."
+msgstr "Legt fest ob das Plugin Besitzern automatisch den Modus zuweist, obwohl sie nicht die op/halfop/voice/wasauchimmer Fähigkeit besitzen."
+
+#: config.py:52
+#, fuzzy
+msgid ""
+"Determines whether the bot will \"fall\n"
+"    through\" to halfop/voicing when auto-opping is turned off but\n"
+"    auto-halfopping/voicing are turned on."
+msgstr "Legt fest ob der Bot \"zurückfällt\" auf Halboperator/Sprechrechte wenn automatischer Operator abgeschaltet ist, aber automatische Halboperator/Sprecherechte angeschaltet sind."
+
+#: config.py:56
+msgid ""
+"Determines whether the bot will automatically\n"
+"    op people with the <channel>,op capability when they join the channel.\n"
+"    "
+msgstr "Legt fest ob der Bot Personen, mit der <Kanal>,op Fähigkeit, automatisch Operatorrechte zuweisen soll, wenn sie den Kanal betreten."
+
+#: config.py:60
+msgid ""
+"Determines whether the bot will automatically\n"
+"    halfop people with the <channel>,halfop capability when they join the\n"
+"    channel."
+msgstr "Legt fest ob der Bot Personen, mit der <Kanal>,halfop Fähigkeit, automatisch Halboperatorrechte zuweisen soll, wenn sie den Kanal betreten."
+
+#: config.py:64
+msgid ""
+"Determines whether the bot will automatically\n"
+"    voice people with the <channel>,voice capability when they join the\n"
+"    channel."
+msgstr "Legt fest ob der Bot Personen, mit der <Kanal>,voice Fähigkeit, automatisch Sprechrechte zuweisen soll, wenn sie den Kanal betreten."
+
+#: config.py:68
+msgid ""
+"Determines whether the bot will automatically\n"
+"    ban people who join the channel and are on the banlist."
+msgstr "Legt fest ob der Bot automatisch Personen bannen soll die auf der Banliste stehen."
+
+#: config.py:71
+msgid ""
+"Determines how many seconds the bot\n"
+"    will automatically ban a person when banning."
+msgstr "Legt fest wieviele Sekunden der Bot Personen automatisch bannt."
+
