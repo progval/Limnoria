@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-10-26 21:23+EEST\n"
+"PO-Revision-Date: 2011-11-09 13:57+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: plugin.py:232
+#: plugin.py:243
+msgid ", "
+msgstr ", "
+
+#: plugin.py:234
+#: plugin.py:253
+msgid "This repository does not exist or is not known by this bot."
+msgstr "Diese Quelle existiert nicht, oder sie ist dem Bot nicht bekannt."
+
+#: plugin.py:241
+msgid "No plugin found in this repository."
+msgstr "Kein Plugin in dieser Quelle gefunden."
+
+#: plugin.py:258
+msgid "This plugin does not exist in this repository."
+msgstr "Das Plugin ist in dieser Quelle nicht vorhanden."
+
