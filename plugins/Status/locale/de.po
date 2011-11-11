@@ -1,0 +1,168 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"PO-Revision-Date: 2011-11-10 22:22+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+
+#: config.py:46
+msgid ""
+"Determines whether the cpu command will list\n"
+"    the time taken by children as well as the bot's process."
+msgstr "legt fest ob der cpu Befehl die Zeit die die Kindprozesse verbrauchten, als auch die Zeit des Botprozesses."
+
+#: config.py:49
+msgid ""
+"Determines whether the cpu command will\n"
+"    provide the number of threads spawned and active."
+msgstr "Legt fest ob der cpu Befehl die Anzahl der gestarteten Threads und der Aktiven anzeigen soll."
+
+#: config.py:52
+msgid ""
+"Determines whether the cpu command will report\n"
+"    the amount of memory being used by the bot."
+msgstr "Legt fest ob der cpu Befehl den gebrauchten Speicher des Bots ausgeben soll."
+
+#: plugin.py:71
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the status of the bot.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt den Status des Bots aus."
+
+#: plugin.py:80
+msgid "%s as %L"
+msgstr "%s als %L"
+
+#: plugin.py:81
+msgid "I am connected to %L."
+msgstr "Ich bin verbunden zu %L."
+
+#: plugin.py:83
+msgid "I am currently in code profiling mode."
+msgstr "Momentan bin ich im quelltextanalyse Modus."
+
+#: plugin.py:89
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the current threads that are active.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt aus wieviele Threads momentan aktiv sind."
+
+#: plugin.py:95
+msgid "I have spawned %n; %n %b still currently active: %L."
+msgstr "Ich habe %n erzeugt. %n %b sind jetzt noch Aktiv: %L."
+
+#: plugin.py:103
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns some interesting network-related statistics.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt einige interessante Netzwerk bezogene Statistiken aus."
+
+#: plugin.py:111
+msgid "an indeterminate amount of time"
+msgstr "eine unbestimmte Zeit"
+
+#: plugin.py:112
+msgid "I have received %s messages for a total of %S.  I have sent %s messages for a total of %S.  I have been connected to %s for %s."
+msgstr "Ich habe %s Nachrichten empfangen, im totalen %S. Ich habe %s Nachrichten gesendet, im totalen %S. Ich bin mit %s verbunden, seit %s."
+
+#: plugin.py:121
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns some interesting CPU-related statistics on the bot.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt einige interessante CPU bezogene Statistiken des Bots aus."
+
+#: plugin.py:131
+msgid "My children have taken %.2f seconds of user time and %.2f seconds of system time for a total of %.2f seconds of CPU time."
+msgstr "Meine Kindsprozesse haben %.2f Sekunden an Nutzerzeit und %.2f Systemzeit gebraucht, im totalen %.2f Sekunden der CPU Zeit."
+
+#: plugin.py:138
+msgid "I have taken %.2f seconds of user time and %.2f seconds of system time, for a total of %.2f seconds of CPU time.  %s"
+msgstr "Ich habe %.2f Sekunden an benutzer Zeit und %.2f Sekunden an Systemzeit benötigt, in allen %.2f CPU Zeit. %s"
+
+#: plugin.py:160
+msgid "Unable to run ps command."
+msgstr "Ich kann den Befehl ps nicht ausführen."
+
+#: plugin.py:166
+msgid "  I'm taking up %S of memory."
+msgstr "  Ich verbrauche %S Speicher."
+
+#: plugin.py:174
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns some interesting command-related statistics.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt einige interessante befehlbezogene Statistiken aus."
+
+#: plugin.py:184
+msgid "I offer a total of %n in %n.  I have processed %n."
+msgstr "Ich biete %n in %n an. Ich habe %n bearbeitet."
+
+#: plugin.py:193
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns a list of the commands offered by the bot.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt eine Liste der Befehle zurück, die der Bot anbietet."
+
+#: plugin.py:207
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the amount of time the bot has been running.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt aus wie lange der Bot schon läuft."
+
+#: plugin.py:211
+msgid "I have been running for %s."
+msgstr "Ich laufe seit %s."
+
+#: plugin.py:218
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the server the bot is on.\n"
+"        "
+msgstr ""
+"hat keine Arguments\n"
+"\n"
+"Gibt den Server aus mit dem der Bot verbunden ist."
+
