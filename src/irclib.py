@@ -965,7 +965,7 @@ class Irc(IrcCommandDispatcher):
         # Let's reset nicks in case we had to use a weird one.
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         umodes = conf.supybot.protocols.irc.umodes()
-        supported = self.supported.get('umodes')
+        supported = self.state.supported.get('umodes')
         if umodes:
             addSub = '+'
             if umodes[0] in '+-':
