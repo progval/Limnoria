@@ -1,0 +1,149 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
+"PO-Revision-Date: 2011-11-05 17:29+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"Language: de\n"
+
+#: config.py:50
+msgid ""
+"Determines whether users can read the\n"
+"    todo-list of another user."
+msgstr "Legt fest ob Benutzer die Aufgabenlisten anderes Benutzer lesen können."
+
+#: plugin.py:135
+msgid ""
+"[<username>] [<task id>]\n"
+"\n"
+"        Retrieves a task for the given task id.  If no task id is given, it\n"
+"        will return a list of task ids that that user has added to their todo\n"
+"        list.\n"
+"        "
+msgstr ""
+"[<Benutzername>] [<Aufgaben ID>]\n"
+"\n"
+"Empfängt die Aufgabe für die gegebene Aufgaben ID. Falls keine Aufgaben ID angegeben wird, wird eine Liste der Aufgaben IDs ausgegeben, die der Benutzer zu seiner Aufgabenliste hinzugefügt hat."
+
+#: plugin.py:146
+msgid "You are not allowed to see other users todo-list."
+msgstr "Du bist nicht berechtigt, Aufgabenlisten anderer Benutzer zu sehen."
+
+#: plugin.py:153
+msgid "#%i: %s"
+msgstr "#%i: %s"
+
+#: plugin.py:158
+msgid "%s for %s: %L"
+msgstr "%s für %s: %L"
+
+#: plugin.py:162
+msgid "That user has no tasks in their todo list."
+msgstr "Der Benutzer hat keine Aufgaben in seiner Aufgabenliste."
+
+#: plugin.py:164
+msgid "You have no tasks in your todo list."
+msgstr "Du hast keine Aufgaben in deiner Aufgabenliste."
+
+#: plugin.py:171
+msgid "Active"
+msgstr "Aktiv"
+
+#: plugin.py:173
+msgid "Inactive"
+msgstr "Inaktiv"
+
+#: plugin.py:175
+msgid ", priority: %i"
+msgstr ", Priorität: %i"
+
+#: plugin.py:178
+msgid "%s todo for %s: %s (Added at %s)"
+msgstr "%s Aufgabe für %s: %s (hinzugefügt am %s)"
+
+#: plugin.py:182
+#: plugin.py:263
+#: plugin.py:277
+msgid "task id"
+msgstr "Aufgaben ID"
+
+#: plugin.py:187
+msgid ""
+"[--priority=<num>] <text>\n"
+"\n"
+"        Adds <text> as a task in your own personal todo list.  The optional\n"
+"        priority argument allows you to set a task as a high or low priority.\n"
+"        Any integer is valid.\n"
+"        "
+msgstr ""
+"[--priority=<Nummer>] <Text>\n"
+"\n"
+"Fügt <Text> als Aufgabe deiner persönlinen Aufgabenliste hinzu. Das optionale Prioritätsargument, erlaubt dir deiner Aufgabe eine hohe oder niedrige Priorität zuzuweisen. Jede Ganzzahl ist zulässig."
+
+#: plugin.py:198
+msgid "(Todo #%i added)"
+msgstr "(Aufgabe #%i hinzugefügt)"
+
+#: plugin.py:204
+msgid ""
+"<task id> [<task id> ...]\n"
+"\n"
+"        Removes <task id> from your personal todo list.\n"
+"        "
+msgstr ""
+"<Aufgaben ID> [<Aufgaben ID> ...]\n"
+"\n"
+"Entfernt <Aufgaben ID> von deiner persönlichen Aufgabenliste."
+
+#: plugin.py:215
+msgid "Task %i could not be removed either because that id doesn't exist or it has been removed already."
+msgstr "Aufgabe %i konnte nicht entfernt werden, da entweder die ID nicht existiert oder sie bereits entfernt wurde."
+
+#: plugin.py:219
+msgid "No tasks were removed because the following tasks could not be removed: %L."
+msgstr "Es wurden keine Aufgaben entfernt, da die folgenen Aufgaben nicht entfernt werden konnten: %L."
+
+#: plugin.py:229
+msgid ""
+"[--{regexp} <value>] [<glob> <glob> ...]\n"
+"\n"
+"        Searches your todos for tasks matching <glob>.  If --regexp is given,\n"
+"        its associated value is taken as a regexp and matched against the\n"
+"        tasks.\n"
+"        "
+msgstr ""
+"[--{regexp} <Wert>] [<glob> <glob> ...]\n"
+"\n"
+"Sucht in deinen Aufgaben nach Aufgaben die auf <glob> passen. Falls --regexp angegeben wird, wird der damit verknüpfte Wert dazu benutzt um nach Aufgaben zu suchen."
+
+#: plugin.py:249
+msgid "No tasks matched that query."
+msgstr "Keine Aufgaben die auf die Anfrage passen."
+
+#: plugin.py:255
+msgid ""
+"<id> <priority>\n"
+"\n"
+"        Sets the priority of the todo with the given id to the specified value.\n"
+"        "
+msgstr ""
+"<ID> <Priorität>\n"
+"\n"
+"Setzte die Priorität der Aufgabe, der ID, auf den angegeben Wert."
+
+#: plugin.py:269
+msgid ""
+"<task id> <regexp>\n"
+"\n"
+"        Modify the task with the given id using the supplied regexp.\n"
+"        "
+msgstr ""
+"<Aufgaben ID> <reg. Ausdruck>\n"
+"\n"
+"Modifiziert die Aufgaben, der gegeben ID, durch den angegebenen regulären Ausdruck."
+
