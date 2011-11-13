@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-11-04 18:39+0100\n"
+"PO-Revision-Date: 2011-11-10 19:12+0100\n"
 "Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -316,5 +316,5 @@ msgstr ""
 
 #: plugin.py:478
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
-msgstr "Ich habe %s registierte Benutzer mit % registierten Hostmasken; %n und %n."
+msgstr "Ich habe %s registierte Benutzer mit %s registrierten Hostmasken; %n und %n."
 
