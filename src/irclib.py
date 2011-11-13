@@ -935,7 +935,7 @@ class Irc(IrcCommandDispatcher):
                 (addSub, umodes) = (umodes[0], umodes[1:])
             if supported:
                 umodes = ''.join([m for m in umodes if m in supported])
-            umodes = ''.join(addSub, umodes)
+            umodes = ''.join([addSub, umodes])
             log.info('Sending user modes to %s: %s', self.network, umodes)
             self.sendMsg(ircmsgs.mode(self.nick, umodes))
     do377 = do422 = do376
