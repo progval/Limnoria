@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009,2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -187,7 +187,7 @@ def banmask(hostmask):
     """
     assert isUserHostmask(hostmask)
     host = hostFromHostmask(hostmask)
-    if utils.net.isIP(host):
+    if utils.net.isIPV4(host):
         L = host.split('.')
         L[-1] = '*'
         return '*!*@' + '.'.join(L)
@@ -196,7 +196,7 @@ def banmask(hostmask):
         L[-1] = '*'
         return '*!*@' + ':'.join(L)
     else:
-        if '.' in host:
+        if len(host.split('.')) > 2: # If it is a subdomain
             return '*!*@*%s' % host[host.find('.'):]
         else:
             return '*!*@'  + host
@@ -459,8 +459,8 @@ def replyTo(msg):
 
 def dccIP(ip):
     """Converts an IP string to the DCC integer form."""
-    assert utils.net.isIP(ip), \
-           'argument must be a string ip in xxx.xxx.xxx.xxx format.'
+    assert utils.net.isIPV4(ip), \
+           'argument must be a string ip in xxx.yyy.zzz.www format.'
     i = 0
     x = 256**3
     for quad in ip.split('.'):

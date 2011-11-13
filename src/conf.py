@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2009,2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1034,7 +1034,7 @@ registerGlobalValue(supybot, 'defaultIgnore',
 class IP(registry.String):
     """Value must be a valid IP."""
     def setValue(self, v):
-        if v and not (utils.net.isIP(v) or utils.net.isIPV6(v)):
+        if v and not utils.net.isIP(v):
             self.error()
         else:
             registry.String.setValue(self, v)
