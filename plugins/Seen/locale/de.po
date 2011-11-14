@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
 "POT-Creation-Date: 2011-08-10 11:28+CEST\n"
-"PO-Revision-Date: 2011-11-11 02:35+0100\n"
+"PO-Revision-Date: 2011-11-13 18:07+0100\n"
 "Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -14,7 +14,7 @@ msgstr ""
 #: plugin.py:204
 #: plugin.py:285
 msgid "%s was last seen in %s %s ago: %s"
-msgstr "%s wurde zuletzt in %s %s gesehen, vor: %s"
+msgstr "%s wurde zuletzt in %s vor %s gesehen: %s"
 
 #: plugin.py:211
 msgid "%s (%s ago)"
