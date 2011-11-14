@@ -341,11 +341,15 @@ msgid ""
 "        Unlocks the topic (sets the mode -t) in <channel>.  <channel> is only\n"
 "        necessary if the message isn't sent in the channel itself.\n"
 "        "
-msgstr ""
+msgstr "[<channel>]\n"
+"\n"
+"        Avaa aiheen (asettaa tilan -t) <kanavalla>.  <Kanava> on vaadittu vain, \n"
+"        jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:496
 msgid "unlock the topic"
-msgstr ""
+msgstr "avaa aiheen"
 
 #: plugin.py:500
 msgid ""
@@ -354,11 +358,15 @@ msgid ""
 "        Restores the topic to the last topic set by the bot.  <channel> is only\n"
 "        necessary if the message isn't sent in the channel itself.\n"
 "        "
-msgstr ""
+msgstr "[<kanava>]\n"
+"\n"
+"        Palauttaa aiheen viimeiseksi aiheeksi, jonka botti on asettanut.  <Kanava> on vaadittu\n"
+"        vain, jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:511
 msgid "I haven't yet set the topic in %s."
-msgstr ""
+msgstr "En ole vielä asettanut aihetta kanavalla %s."
 
 #: plugin.py:519
 msgid ""
@@ -368,11 +376,16 @@ msgid ""
 "        set it.  <channel> is only necessary if the message isn't sent in the\n"
 "        channel itself.\n"
 "        "
-msgstr ""
+msgstr "[<kanava>]\n"
+"\n"
+"        Palauttaa aiheen yhdeksi edellisistä aiheista, jotka \"last\" komento on asettanut \n"
+"        siksi.  <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
 
 #: plugin.py:533
 msgid "There are no more undos for %s."
-msgstr ""
+msgstr "Kanavalle %s ei ole enempää kumouksia."
 
 #: plugin.py:538
 msgid ""
@@ -381,25 +394,29 @@ msgid ""
 "        Undoes the last undo.  <channel> is only necessary if the message isn't\n"
 "        sent in the channel itself.\n"
 "        "
-msgstr ""
+msgstr "[<kanava>]\n"
+"\n"
+"        Kumoaa viimeisen kumouksen.  <Kanava> on vaadittu vain jos viestiä ei lähetetä\n"
+"        kanavalla itsellään.\n"
+"        "
 
 #: plugin.py:550
 msgid "There are no redos for %s."
-msgstr ""
+msgstr "Kanavalle %s ei ole enempää kumouksia."
 
 #: plugin.py:555
 msgid ""
-"[<channel>] <first topic number> <second topic number>\n"
+"[<kanava>] <ensinmäinen aiheen numero> <toinen aiheen numero>\n"
 "\n"
-"        Swaps the order of the first topic number and the second topic number.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
-"        itself.\n"
+"        Vaihtaa ensinmäisen ja toisen aiheen numeron paikkoja.\n"
+"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
 "        "
 msgstr ""
 
 #: plugin.py:566
 msgid "I refuse to swap the same topic with itself."
-msgstr ""
+msgstr "Kieltäydyn vaihtamasta aiheen paikkaa sen itsensä kanssa."
 
 #: plugin.py:576
 msgid ""
@@ -409,11 +426,15 @@ msgid ""
 "        default topic for a channel may be configured via the configuration\n"
 "        variable supybot.plugins.Topic.default.\n"
 "        "
-msgstr ""
+msgstr "[<kanava>]\n"
+"\n"
+"        Asettaa <kanavan> aiheen <channel>.  Oletusaihe\n"
+"        kanavalle voidaan määrittää asetusarvolla \n"
+"        supybot.plugins.Topic.default.\n"
 
 #: plugin.py:589
 msgid "There is no default topic configured for %s."
-msgstr ""
+msgstr "Kanavalle %s ei ole määritetty oletusaihetta."
 
 #: plugin.py:595
 msgid ""
@@ -422,5 +443,9 @@ msgid ""
 "        Sets the topic separator for <channel> to <separator>  Converts the\n"
 "        current topic appropriately.\n"
 "        "
-msgstr ""
+msgstr "[<kanava>] <eroittaja>\n"
+"\n"
+"        Asettaa <kanavan> eroittajan <eroittajaksi>, muuntaa\n"
+"        nykyisen aiheen kunnollisesti.\n"
+"        "
 
