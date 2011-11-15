@@ -221,7 +221,7 @@ class Services(callbacks.Plugin):
         elif ircutils.strEqual(msg.nick, nick):
             irc.sendMsg(ircmsgs.nick(nick))
 
-    def _ghosted(self, s):
+    def _ghosted(self, irc, s):
         nick = self._getNick(irc.network)
         lowered = s.lower()
         return bool('killed' in lowered and (nick in s or 'ghost' in lowered))
@@ -281,7 +281,7 @@ class Services(callbacks.Plugin):
             self.log.warning(log)
             self.sentGhost = time.time()
             self._setNickServPassword(nick, '')
-        elif self._ghosted(s):
+        elif self._ghosted(irc, s):
             self.log.info('Received "GHOST succeeded" from NickServ %s.', on)
             self.sentGhost = None
             self.identified = False
