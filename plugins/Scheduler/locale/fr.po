@@ -34,7 +34,7 @@ msgstr ""
 
 #: plugin.py:69
 msgid "Event #%i added."
-msgstr "Évènement #%i ajotué."
+msgstr "Évènement #%i ajouté."
 
 #: plugin.py:74
 msgid ""
