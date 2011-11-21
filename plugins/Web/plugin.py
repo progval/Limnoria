@@ -90,10 +90,6 @@ class Web(callbacks.PluginRegexp):
             try:
                 size = conf.supybot.protocols.http.peekSize()
                 text = utils.web.getUrl(url, size=size)
-                try:
-                    text = text.decode('utf8')
-                except UnicodeDecodeError:
-                    text = text.decode('latin1')
             except utils.web.Error, e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 return
@@ -174,10 +170,6 @@ class Web(callbacks.PluginRegexp):
         """
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size)
-        try:
-            text = text.decode('utf8')
-        except UnicodeDecodeError:
-            text = text.decode('latin1')
         parser = Title()
         try:
             parser.feed(text)
