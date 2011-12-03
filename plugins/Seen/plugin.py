@@ -307,8 +307,8 @@ class Seen(callbacks.Plugin):
         if nick is None:
             nick = msg.nick
         if nick not in irc.state.channels[channel].users:
-            irc.error(format(_('You must be in %s to use this command.'),
-                             channel))
+            irc.error(format(_('%s must be in %s to use this command.'),
+                ('You' if nick == msg.nick else nick), channel))
             return
         end = None # By default, up until the most recent message.
         for (i, m) in utils.seq.renumerate(irc.state.history):
