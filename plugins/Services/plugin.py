@@ -30,7 +30,6 @@
 
 import re
 import time
-import copy
 
 import config
 
