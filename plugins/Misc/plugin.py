@@ -471,6 +471,8 @@ class Misc(callbacks.Plugin):
         Tells the <nick> whatever <text> is.  Use nested commands to your
         benefit here.
         """
+        if irc.nested:
+            irc.error('This command cannot be nested.', Raise=True)
         if target.lower() == 'me':
             target = msg.nick
         if ircutils.isChannel(target):
