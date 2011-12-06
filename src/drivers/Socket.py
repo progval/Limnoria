@@ -153,11 +153,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
-<<<<<<< HEAD
-        except SSLError, e:
-=======
         except ssl.SSLError, e:
->>>>>>> supybot/maint/0.83.4
             if e.args[0] == 'The read operation timed out':
                 pass
             else:
