@@ -778,6 +778,7 @@ class Irc(IrcCommandDispatcher):
         """Called by the IrcDriver; feeds a message received."""
         msg.tag('receivedBy', self)
         msg.tag('receivedOn', self.network)
+        msg.tag('receivedAt', time.time())
         if msg.args and self.isChannel(msg.args[0]):
             channel = msg.args[0]
         else:

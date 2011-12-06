@@ -210,11 +210,9 @@ def newDriver(irc, moduleName=None):
     return driver
 
 def parseMsg(s):
-    start = time.time()
     s = s.strip()
     if s:
         msg = ircmsgs.IrcMsg(s)
-        msg.tag('receivedAt', start)
         return msg
     else:
         return None
