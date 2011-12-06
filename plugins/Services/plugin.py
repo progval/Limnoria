@@ -321,22 +321,10 @@ class Services(callbacks.Plugin):
                 self.checkPrivileges(irc, channel)
             for channel in self.channels:
                 irc.queueMsg(networkGroup.channels.join(channel))
-<<<<<<< HEAD
-            if self.waitingJoins:
-                tmp_wj = copy.deepcopy(self.waitingJoins) # can't iterate over list if we're modifying it
-                for netname, m in tmp_wj:
-                    if netname == irc.network:
-                        irc.sendMsg(m)
-                        try:
-                            self.waitingJoins.remove((netname, m,))
-                        except ValueError:
-                            pass # weird stuff happen sometimes
-=======
             waitingJoins = self.waitingJoins.pop(irc.network, None)
             if waitingJoins:
                 for m in waitingJoins:
                     irc.sendMsg(m)
->>>>>>> supybot/maint/0.83.4
         elif 'not yet authenticated' in s:
             # zirc.org has this, it requires an auth code.
             email = s.split()[-1]
