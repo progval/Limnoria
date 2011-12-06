@@ -52,6 +52,13 @@ import supybot.drivers as drivers
 import supybot.schedule as schedule
 from supybot.utils.iter import imap
 
+try:
+    import ssl
+except ImportError:
+    drivers.log.debug('ssl module is not available, '
+                      'cannot connect to SSL servers.')
+    ssl = None
+
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
         self.irc = irc
@@ -146,7 +153,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
+<<<<<<< HEAD
         except SSLError, e:
+=======
+        except ssl.SSLError, e:
+>>>>>>> supybot/maint/0.83.4
             if e.args[0] == 'The read operation timed out':
                 pass
             else:
@@ -176,6 +187,14 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         drivers.log.connect(self.currentServer)
         try:
             self.conn = utils.net.getSocket(server[0])
+            if self.networkGroup.get('ssl').value:
+                if ssl:
+                    self.plainconn = self.conn
+                    self.conn = ssl.wrap_socket(self.conn)
+                else:
+                    drivers.log.error('ssl module not available, '
+                              'cannot connect to SSL servers.')
+                    return
             vhost = conf.supybot.protocols.irc.vhost()
             self.conn.bind((vhost, 0))
         except socket.error, e:

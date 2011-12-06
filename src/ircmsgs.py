@@ -728,7 +728,10 @@ def whois(nick, mask='', prefix='', msg=None):
         assert isNick(nick), repr(nick)
     if msg and not prefix:
         prefix = msg.prefix
-    return IrcMsg(prefix=prefix, command='WHOIS', args=(nick, mask), msg=msg)
+    args = (nick,)
+    if mask:
+        args = (nick, mask)
+    return IrcMsg(prefix=prefix, command='WHOIS', args=args, msg=msg)
 
 def names(channel=None, prefix='', msg=None):
     if conf.supybot.protocols.irc.strictRfc():

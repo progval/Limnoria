@@ -114,10 +114,7 @@ def isIPV4(s):
     0
     """
     try:
-        try:
-            return bool(socket.inet_pton(socket.AF_INET, s))
-        except AttributeError: # Running Windows.
-            return bool(socket.inet_aton(s))
+        return bool(socket.inet_aton(s))
     except socket.error:
         return False
 

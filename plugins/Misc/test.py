@@ -148,6 +148,9 @@ class MiscTestCase(ChannelPluginTestCase):
         m = self.getMsg('tell me you love me')
         self.failUnless(m.args[0] == self.nick)
 
+    def testNoNestedTell(self):
+        self.assertRegexp('echo [tell %s foo]' % self.nick, 'nested')
+
     def testTellDoesNotPropogateAction(self):
         m = self.getMsg('tell foo [action bar]')
         self.failIf(ircmsgs.isAction(m))
