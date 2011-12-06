@@ -30,7 +30,6 @@
 
 import re
 import time
-import copy
 
 import config
 
@@ -62,7 +61,7 @@ class Services(callbacks.Plugin):
         self.channels = []
         self.sentGhost = None
         self.identified = False
-        self.waitingJoins = []
+        self.waitingJoins = {}
 
     def disabled(self, irc):
         disabled = self.registryValue('disabledNetworks')
@@ -77,7 +76,8 @@ class Services(callbacks.Plugin):
                 if self.registryValue('noJoinsUntilIdentified'):
                     self.log.info('Holding JOIN to %s until identified.',
                                   msg.args[0])
-                    self.waitingJoins.append((irc.network, msg,))
+                    self.waitingJoins.setdefault(irc.network, [])
+                    self.waitingJoins[irc.network].append(msg)
                     return None
         return msg
 
@@ -314,15 +314,10 @@ class Services(callbacks.Plugin):
                 self.checkPrivileges(irc, channel)
             for channel in self.channels:
                 irc.queueMsg(networkGroup.channels.join(channel))
-            if self.waitingJoins:
-                tmp_wj = copy.deepcopy(self.waitingJoins) # can't iterate over list if we're modifying it
-                for netname, m in tmp_wj:
-                    if netname == irc.network:
-                        irc.sendMsg(m)
-                        try:
-                            self.waitingJoins.remove((netname, m,))
-                        except ValueError:
-                            pass # weird stuff happen sometimes
+            waitingJoins = self.waitingJoins.pop(irc.network, None)
+            if waitingJoins:
+                for m in waitingJoins:
+                    irc.sendMsg(m)
         elif 'not yet authenticated' in s:
             # zirc.org has this, it requires an auth code.
             email = s.split()[-1]
