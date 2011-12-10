@@ -306,6 +306,9 @@ class Seen(callbacks.Plugin):
         """
         if nick is None:
             nick = msg.nick
+        if channel not in irc.state.channels:
+            irc.error(_('I am not in %s.') % channel)
+            return
         if nick not in irc.state.channels[channel].users:
             irc.error(format(_('%s must be in %s to use this command.'),
                 ('You' if nick == msg.nick else nick), channel))
