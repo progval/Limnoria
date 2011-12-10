@@ -946,30 +946,46 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
 
     Checks if the user is ignored by the recipient of the message.
     """
-    try:
-        id = users.getUserId(hostmask)
-        user = users.getUser(id)
-        if user._checkCapability('owner'):
-            # Owners shouldn't ever be ignored.
-            return False
-        elif user.ignore:
-            log.debug('Ignoring %s due to his IrcUser ignore flag.', hostmask)
-            return True
-    except KeyError:
-        # If there's no user...
-        if conf.supybot.defaultIgnore():
-            log.debug('Ignoring %s due to conf.supybot.defaultIgnore',
-                     hostmask)
-            return True
     if ignores.checkIgnored(hostmask):
         log.debug('Ignoring %s due to ignore database.', hostmask)
         return True
-    if ircutils.isChannel(recipient):
-        channel = channels.getChannel(recipient)
-        if channel.checkIgnored(hostmask):
-            log.debug('Ignoring %s due to the channel ignores.', hostmask)
-            return True
-    return False
+    try:
+        id = users.getUserId(hostmask)
+        user = users.getUser(id)
+    except KeyError:
+        # If there's no user...
+        if ircutils.isChannel(recipient):
+            channel = channels.getChannel(recipient)
+            if channel.checkIgnored(hostmask):
+                log.debug('Ignoring %s due to the channel ignores.', hostmask)
+                return True
+            else:
+                return False
+        else:
+            if conf.supybot.defaultIgnore():
+                log.debug('Ignoring %s due to conf.supybot.defaultIgnore',
+                         hostmask)
+                return True
+            else:
+                return False
+    if user._checkCapability('owner'):
+        # Owners shouldn't ever be ignored.
+        return False
+    elif user.ignore:
+        log.debug('Ignoring %s due to his IrcUser ignore flag.', hostmask)
+        return True
+    elif recipient:
+        if ircutils.isChannel(recipient):
+            channel = channels.getChannel(recipient)
+            if channel.checkIgnored(hostmask):
+                log.debug('Ignoring %s due to the channel ignores.', hostmask)
+                return True
+            else:
+                return False
+        else:
+            return False
+    else:
+        return False
 
 def _x(capability, ret):
     if isAntiCapability(capability):
