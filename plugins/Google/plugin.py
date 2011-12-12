@@ -333,12 +333,12 @@ class Google(callbacks.PluginRegexp):
         url = r'http://www.google.com/ig/calculator?hl=en&q=' + s
         return url
 
-    @internationalizeDocstring
     _calcRe1 = re.compile(r'<table.*class="?obcontainer"?[^>]*>(.*?)</table>', re.I)
     _calcRe2 = re.compile(r'<h\d class="?r"?[^>]*>(?:<b>)?(.*?)(?:</b>)?</h\d>', re.I | re.S)
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
     _calcTimesRe = re.compile(r'&(?:times|#215);')
+    @internationalizeDocstring
     def calc(self, irc, msg, args, expr):
         """<expression>
 
