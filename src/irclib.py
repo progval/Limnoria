@@ -406,10 +406,10 @@ class IrcState(IrcCommandDispatcher):
         """Handles parsing the 004 reply
 
         Supported user and channel modes are cached"""
-        # msg.args = [nick, server, ircd-version, umodes, modes,
+        # msg.args = [server, ircd-version, umodes, modes,
         #             modes that require arguments? (non-standard)]
-        self.supported['umodes'] = msg.args[3]
-        self.supported['chanmodes'] = msg.args[4]
+        self.supported['umodes'] = msg.args[2]
+        self.supported['chanmodes'] = msg.args[3]
 
     _005converters = utils.InsensitivePreservingDict({
         'modes': int,
@@ -972,7 +972,7 @@ class Irc(IrcCommandDispatcher):
             if umodes[0] in '+-':
                 (addSub, umodes) = (umodes[0], umodes[1:])
             if supported:
-                umodes = filter(lambda m: m in supported, umodes)
+                umodes = ''.join([m for m in umodes if m in supported])
             umodes = ''.join([addSub, umodes])
             log.info('Sending user modes to %s: %s', self.network, umodes)
             self.sendMsg(ircmsgs.mode(self.nick, umodes))

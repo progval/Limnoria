@@ -290,6 +290,13 @@ class IrcStateTestCase(SupyTestCase):
         state.addMsg(self.irc, ircmsgs.IrcMsg(':irc.inet.tele.dk 005 adkwbot WALLCHOPS KNOCK EXCEPTS INVEX MODES=4 MAXCHANNELS=20 MAXBANS=beI:100 MAXTARGETS=4 NICKLEN=9 TOPICLEN=120 KICKLEN=90 :are supported by this server'))
         self.assertEqual(state.supported['maxbans'], 100)
 
+    def testSupportedUmodes(self):
+        state = irclib.IrcState()
+        state.addMsg(self.irc, ircmsgs.IrcMsg(':charm.oftc.net 004 charm.oftc.net hybrid-7.2.2+oftc1.6.8 CDGPRSabcdfgiklnorsuwxyz biklmnopstveI bkloveI'))
+        self.assertEqual(state.supported['umodes'], 'CDGPRSabcdfgiklnorsuwxyz')
+        self.assertEqual(state.supported['chanmodes'],
+                         'biklmnopstveI')
+
     def testEmptyTopic(self):
         state = irclib.IrcState()
         state.addMsg(self.irc, ircmsgs.topic('#foo'))
