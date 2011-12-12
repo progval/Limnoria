@@ -316,33 +316,24 @@ class Google(callbacks.PluginRegexp):
     def _googleUrl(self, s):
         s = s.replace('+', '%2B')
         s = s.replace(' ', '+')
-        url = r'http://google.com/search?q=' + s
+        url = r'http://www.google.com/ig/calculator?hl=en&q=' + s
         return url
 
-    _calcRe1 = re.compile(r'<table.*class="?obcontainer"?[^>]*>(.*?)</table>', re.I)
-    _calcRe2 = re.compile(r'<h\d class="?r"?.*?<b>(.*?)</b>', re.I)
-    _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
-    _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
-    _calcTimesRe = re.compile(r'&(?:times|#215);')
     def calc(self, irc, msg, args, expr):
         """<expression>
 
         Uses Google's calculator to calculate the value of <expression>.
         """
         url = self._googleUrl(expr)
-        html = utils.web.getUrl(url)
-        match = self._calcRe1.search(html)
-        if match is None:
-            match = self._calcRe2.search(html)
-        if match is not None:
-            s = match.group(1)
-            s = self._calcSupRe.sub(r'^(\1)', s)
-            s = self._calcFontRe.sub(r',', s)
-            s = self._calcTimesRe.sub(r'*', s)
-            s = utils.web.htmlToText(s)
-            irc.reply(s)
+        js = utils.web.getUrl(url)
+        # fix bad google json
+        js = js.replace('lhs:','"lhs":').replace('rhs:','"rhs":').replace('error:','"error":').replace('icc:','"icc":')
+        js = simplejson.loads(js)
+        
+        if js['error'] == '':
+            irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
         else:
-            irc.reply('Google\'s calculator didn\'t come up with anything.')
+            irc.reply('Google says: Error: %s.' % (js['error'],))
     calc = wrap(calc, ['text'])
 
     _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
