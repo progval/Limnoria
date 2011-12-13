@@ -327,7 +327,14 @@ class Google(callbacks.PluginRegexp):
         url = r'http://google.com/search?q=' + s
         return url
 
-    _calcRe = re.compile(r'<h\d class="?r"?[^>]*>(?:<b>)?(.*?)(?:</b>)?</h\d>', re.I | re.S)
+    def _googleUrlIG(self, s):
+        s = s.replace('+', '%2B')
+        s = s.replace(' ', '+')
+        url = r'http://www.google.com/ig/calculator?hl=en&q=' + s
+        return url
+
+    _calcRe1 = re.compile(r'<table.*class="?obcontainer"?[^>]*>(.*?)</table>', re.I)
+    _calcRe2 = re.compile(r'<h\d class="?r"?[^>]*>(?:<b>)?(.*?)(?:</b>)?</h\d>', re.I | re.S)
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
     _calcTimesRe = re.compile(r'&(?:times|#215);')
@@ -337,9 +344,21 @@ class Google(callbacks.PluginRegexp):
 
         Uses Google's calculator to calculate the value of <expression>.
         """
+        urlig = self._googleUrlIG(expr)
+        js = utils.web.getUrl(urlig)
+        # fix bad google json
+        js = js.replace('lhs:','"lhs":').replace('rhs:','"rhs":').replace('error:','"error":').replace('icc:','"icc":')
+        js = simplejson.loads(js)
+
+        if js['error'] == '':
+            irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
+            return
+        
         url = self._googleUrl(expr)
         html = utils.web.getUrl(url)
-        match = self._calcRe.search(html)
+        match = self._calcRe1.search(html)
+        if match is None:
+            match = self._calcRe2.search(html)
         if match is not None:
             s = match.group(1)
             s = self._calcSupRe.sub(r'^(\1)', s)
@@ -348,7 +367,8 @@ class Google(callbacks.PluginRegexp):
             s = utils.web.htmlToText(s)
             irc.reply(s)
         else:
-            irc.reply(_('Google\'s calculator didn\'t come up with anything.'))
+            irc.reply(_('Google says: Error: %s.') % (js['error'],))
+            irc.reply('Google\'s calculator didn\'t come up with anything.')
     calc = wrap(calc, ['text'])
 
     _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
