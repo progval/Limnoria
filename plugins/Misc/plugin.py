@@ -494,8 +494,7 @@ class Misc(callbacks.Plugin):
     def tell(self, irc, msg, args, target, text):
         """<nick> <text>
 
-        Tells the <nick> whatever <text> is.  Use nested commands to your
-        benefit here.
+        Tells the <nick> whatever <text> is. This command can't be nested.
         """
         if irc.nested:
             irc.error('This command cannot be nested.', Raise=True)
