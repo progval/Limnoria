@@ -291,10 +291,12 @@ class RSS(callbacks.Plugin):
         toText = utils.web.htmlToText
         if 'encoding' in feed:
             def conv(s):
-                try:
-                    return toText(s).strip().encode(feed['encoding'],'replace')
-                except UnicodeEncodeError:
-                    return toText(s.encode('utf-8', 'ignore')).strip()
+                # encode() first so there implicit encoding doesn't happen in
+                # other functions when unicode and bytestring objects are used
+                # together
+                s = s.encode(feed['encoding'], 'replace')
+                s = toText(s).strip()
+                return s
             return conv
         else:
             return lambda s: toText(s).strip()
