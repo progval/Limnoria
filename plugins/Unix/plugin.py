@@ -204,7 +204,7 @@ class Unix(callbacks.Plugin):
                 args.append('-s')
             if self.registryValue('fortune.equal'):
                 args.append('-e')
-            if self.registryValue('fortune.offensive'):
+            if self.registryValue('fortune.offensive', channel):
                 args.append('-a')
             args.extend(self.registryValue('fortune.files'))
             try:

@@ -66,7 +66,7 @@ conf.registerGlobalValue(Unix.fortune, 'equal',
     weight to the different fortune databases.  If false, then larger
     databases will be given more weight.  This sends the -e option to the
     fortune program.""")))
-conf.registerGlobalValue(Unix.fortune, 'offensive',
+conf.registerChannelValue(Unix.fortune, 'offensive',
     registry.Boolean(False, _("""Determines whether fortune will retrieve
     offensive fortunes along with the normal fortunes.  This sends the -a
     option to the fortune program.""")))
