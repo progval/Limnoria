@@ -103,10 +103,9 @@ msgstr "<virhenumero tai koodi>\n"
 msgid "I can't find the errno number for that code."
 msgstr "En voi löytää virhenumeroa tuolle koodille."
 
-# QWERTY THIS MIGHT NEED TO BE CHECKED AGAIN!
 #: plugin.py:90
 msgid "(unknown)"
-msgstr "(unknown)"
+msgstr "(tuntematon)"
 
 #: plugin.py:91
 msgid "%s (#%i): %s"
@@ -143,7 +142,13 @@ msgid ""
 "        prepending '$1$' to your salt will cause crypt to return an MD5sum\n"
 "        based crypt rather than the standard DES based crypt.\n"
 "        "
-msgstr ""
+msgstr "<salasana> [<suola>]\n"
+"\n"
+"        Palauttaa crypt():in tuloksen <salasanaan>.  Jos <suola> ei ole\n"
+"        annettu, satunnaista suolaa käytetään.  Jos suoritetaan glibc2 järjestelmällä,\n"
+"       '$1$' lisääminen kryptaukseesi aiheuttaa MD5 summaan perustuvan kryptauksen, mielummin kuin\n"
+"        normaalin DES pohjaisen kryptin.\n"
+"        "
 
 #: plugin.py:133
 msgid ""
@@ -153,31 +158,37 @@ msgid ""
 "        shown are sorted from best to worst in terms of being a likely match\n"
 "        for the spelling of <word>.\n"
 "        "
-msgstr ""
+msgstr "<sana>\n"
+"\n"
+"        Palauttaa <sanan> lähetyksen aspell/ispell ohjelmaan.  Palautuvat tulokset\n"
+"        näytetään järjestyksessä parhaasta huonompaan sillä perusteella, kuinka todennäköisesti ne ovat oikein kirjoitettuja\n"
+"        <sanoja>.\n"
+"        "
+
 
 #: plugin.py:142
 msgid "The spell checking command is not configured.  If one is installed, reconfigure supybot.plugins.Unix.spell.command appropriately."
-msgstr ""
+msgstr "Oikeinkirjoituksen tarkistusohjelma ei ole säädetty.  Jos sellainen on asennttu, säädä supybot.plugins.Unix.spell.command sopivaksi."
 
 #: plugin.py:147
 msgid "<word> must begin with an alphabet character."
-msgstr ""
+msgstr "<Sanan> täytyy alkaa aakkosellisella merkillä."
 
 #: plugin.py:169
 msgid "No results found."
-msgstr ""
+msgstr "Tuloksia ei löytynyt."
 
 #: plugin.py:180
 msgid "%q may be spelled correctly."
-msgstr ""
+msgstr "%q saattaa olla kirjoitettu oikein."
 
 #: plugin.py:182
 msgid "I could not find an alternate spelling for %q"
-msgstr ""
+msgstr "En löytänyt vaihtoehtoista kirjoitustapaa sanalle %q"
 
 #: plugin.py:186
 msgid "Possible spellings for %q: %L."
-msgstr ""
+msgstr "Mahdolliset kirjoitustavat sanalle %q ovat: %L."
 
 #: plugin.py:195
 msgid ""
@@ -185,15 +196,18 @@ msgid ""
 "\n"
 "        Returns a fortune from the *nix fortune program.\n"
 "        "
-msgstr ""
+msgstr "ei ota parametrejä\n"
+"\n"
+"        Palauttaa ennustuksen *nix ennustusohjelmalta.\n"
+"        "
 
 #: plugin.py:215
 msgid "It seems the configured fortune command was not available."
-msgstr ""
+msgstr "Näyttää siltä, että määritetty ennustusohjelma ei ollut saatavilla."
 
 #: plugin.py:224
 msgid "The fortune command is not configured. If fortune is installed on this system, reconfigure the supybot.plugins.Unix.fortune.command configuration variable appropriately."
-msgstr ""
+msgstr "Ennustuskomento ei ole määritetty. Jos fortune on asennettu tähän järjestelmään, määritä uudelleen asetusarvo supybot.plugins.Unix.fortune.command oikein."
 
 #: plugin.py:231
 msgid ""
@@ -203,15 +217,20 @@ msgid ""
 "        appeared in NetBSD 1.5.  In most *nices, it's available in some sort\n"
 "        of 'bsdgames' package.\n"
 "        "
-msgstr ""
+msgstr "[is] <jokin>\n"
+"\n"
+"        Palauttaa mikä ihme <jokin> on.  'wtf' on *nix komento, joka ilmestyi ensin\n"
+"        NetBSD 1.5 käyttöjärjestelmässä.  Suurimmassa osassa *nixeistä, se on saatavilla jonkinlaisessa\n"
+"        'bsdgames' paketissa.\n"
+"        "
 
 #: plugin.py:246
 msgid "It seems the configured wtf command was not available."
-msgstr ""
+msgstr "Vaikuttaa siltä, ettei määritetty wtf komento ollut saatavilla."
 
 #: plugin.py:255
 msgid "The wtf command is not configured.  If it is installed on this system, reconfigure the supybot.plugins.Unix.wtf.command configuration variable appropriately."
-msgstr ""
+msgstr "Wtf komento ei ole määritetty.  Jos se on asennettu tähän järjestelmään, määritä supybot.plugins.Unix.wtf.command asetusarvo oikein."
 
 #: plugin.py:263
 msgid ""
@@ -221,7 +240,12 @@ msgid ""
 "        limited to 10 packets or less (default is 5). --i is limited to 5\n"
 "        or less. --W is limited to 10 or less.\n"
 "        "
-msgstr ""
+msgstr "[--c <määrä>] [--i <kesto>] [--t <ttl>] [--W <aikakatkaisu>] <isäntä tai ip>\n"
+"        Lähettää ICMP kaiutuspyynnön määritettyyn isäntään.\n"
+"        Parametrin täsmäävät niihin, jotka on määritetty ohjekirjasivulla ping(8). --c on\n"
+"        rajoitettu kymmeneen tai vähempään (oletus on 5). --i on rajoitettu viiteen\n"
+"        tai vähempään. --W on rajoitettu kymmeneen tai vähempään.\n"
+"        "
 
 #: plugin.py:315
 msgid ""
@@ -233,5 +257,11 @@ msgid ""
 "        you don't run anything that will spamify your channel or that \n"
 "        will bring your machine to its knees. \n"
 "        "
-msgstr ""
-
+msgstr "<komento kutsuttavaksi millä tahansa parametreillä> \n"
+"        Kutsuu minkä tahansa komennon, joka on saatavilla järjestelmässä, ja palauttaa sen ulostulon.\n"
+"        Vaatii owner valtuuden.\n"
+"        Huomaa, että, koska tämä komento on rajoitettu omistajalle, se ei tee\n"
+"        minkäänlaista järjellisyystarkistusta sisäänmenoon/ulostuloon. Joten riippuu sinusta, että teet varmaksi, ettet suorita mitään, mikä sotkee kanavaasi, tai joka\n"
+"        laittaa koneesi\n"
+"        polvilleen. \n"
+"        "
