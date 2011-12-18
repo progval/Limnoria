@@ -196,14 +196,15 @@ class Unix(callbacks.Plugin):
 
         Returns a fortune from the *nix fortune program.
         """
+        channel = msg.args[0]
         fortuneCmd = self.registryValue('fortune.command')
         if fortuneCmd:
             args = [fortuneCmd]
-            if self.registryValue('fortune.short'):
+            if self.registryValue('fortune.short', channel):
                 args.append('-s')
             if self.registryValue('fortune.equal'):
                 args.append('-e')
-            if self.registryValue('fortune.offensive'):
+            if self.registryValue('fortune.offensive', channel):
                 args.append('-a')
             args.extend(self.registryValue('fortune.files'))
             try:
