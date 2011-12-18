@@ -58,7 +58,7 @@ conf.registerGroup(Unix, 'fortune')
 conf.registerGlobalValue(Unix.fortune, 'command',
     registry.String(utils.findBinaryInPath('fortune') or '', _("""Determines
     what command will be called for the fortune command.""")))
-conf.registerGlobalValue(Unix.fortune, 'short',
+conf.registerChannelValue(Unix.fortune, 'short',
     registry.Boolean(True, _("""Determines whether only short fortunes will be
     used if possible.  This sends the -s option to the fortune program.""")))
 conf.registerGlobalValue(Unix.fortune, 'equal',
