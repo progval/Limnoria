@@ -1,0 +1,71 @@
+# URL plugin in Limnoria.
+# Copyright (C) 2011 Limnoria
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"PO-Revision-Date: 2011-12-20 16:33+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:45
+msgid ""
+"Determines what URLs are not to be snarfed and\n"
+"    stored in the database for the channel; URLs matching the given regexp will\n"
+"    not be snarfed.  Give the empty string if you have no URLs that you'd like\n"
+"    to exclude from being snarfed."
+msgstr "Määrittää, mitkä URL-osoitteet eivät tule kaapatuiksi eivätkä\n"
+"    tallennetuiksi tietokantaan; URL-osoitteet, jotka täsmäävät annettuun säännölliseen lausekkeeseen eivät tule\n"
+"    kaapatuiksi. Anna tyhjä säännöllinen lauseke, mikäli haluat ettei yhtään URL-osoitetta \n"
+"    jätetä kaappaamatta."
+
+#: plugin.py:89
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the number of URLs in the URL database.  <channel> is only\n"
+"        required if the message isn't sent in the channel itself.\n"
+"        "
+msgstr "[<kanava>]\n"
+"\n"
+"        Palauttaa tietokannassa olevien URL-osoitteiden määrän.  <Kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "
+
+#: plugin.py:96
+msgid "I have %n in my database."
+msgstr "Minulla on %n tietokannassani."
+
+#: plugin.py:101
+msgid ""
+"[<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]\n"
+"\n"
+"        Gives the last URL matching the given criteria.  --from is from whom\n"
+"        the URL came; --proto is the protocol the URL used; --with is something\n"
+"        inside the URL; --without is something that should not be in the URL;\n"
+"        --near is something in the same message as the URL.  If --nolimit is\n"
+"        given, returns all the URLs that are found to just the URL.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr "[<kanava>] [--{from,with,without,near,proto} <arvo>] [--nolimit]\n"
+"\n"
+"        Antaa viimeisen URL-osoitteen, joka täsmää annettuihin kriteereihin.  --from on keneltä\n"
+"        URL-osoite tuli; --proto on protokolla, jota URL-osoite käytti; --with on jokin\n"
+"        URL-osoitteen sisällä; --without on jotakin, jonka ei pitäisi olla URL-osoitteessa;\n"
+"        --near on jotakin samassa viestissä, kuin URL-osoite.  Jos --nolimit on\n"
+"        annettu, palauttaa kaikki täsmäävät URL-osoitteet, jotka löydetään.\n"
+"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
+"        itsellään.\n"
+"        "
+
+#: plugin.py:143
+msgid "No URLs matched that criteria."
+msgstr "Yksikään URL-osoite ei täsmännyt noihin kriteereihin."
+
