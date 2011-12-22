@@ -187,7 +187,7 @@ class Unix(callbacks.Plugin):
             resp = format(_('Possible spellings for %q: %L.'),
                           word, matches.split(', '))
         else:
-            resp = 'Something unexpected was seen in the [ai]spell output.'
+            resp = _('Something unexpected was seen in the [ai]spell output.')
         irc.reply(resp)
     spell = thread(wrap(spell, ['something']))
 
