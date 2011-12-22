@@ -1,12 +1,12 @@
 # Limnoria User plugin
-# Copyright (C) YEAR ORGANIZATION
+# Copyright (C) 2011 Limnoria
 # nyuszika7h <litemininyuszika@gmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria User\n"
 "POT-Creation-Date: 2011-12-21 18:24+EET\n"
-"PO-Revision-Date: 2011-12-21 20:38+0100\n"
+"PO-Revision-Date: 2011-12-22 15:17+0100\n"
 "Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
