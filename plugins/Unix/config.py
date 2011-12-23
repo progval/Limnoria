@@ -81,6 +81,9 @@ conf.registerGlobalValue(Unix.spell, 'command',
     registry.String(utils.findBinaryInPath('aspell') or
                     utils.findBinaryInPath('ispell') or '', _("""Determines
     what command will be called for the spell command.""")))
+conf.registerGlobalValue(Unix.spell, 'language',
+    registry.String('en', _("""Determines what aspell dictionary will be used
+    for spell checking.""")))
 
 conf.registerGroup(Unix, 'wtf')
 conf.registerGlobalValue(Unix.wtf, 'command',

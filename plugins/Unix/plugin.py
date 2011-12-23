@@ -143,11 +143,12 @@ class Unix(callbacks.Plugin):
                      'is installed, reconfigure '
                      'supybot.plugins.Unix.spell.command appropriately.'),
                      Raise=True)
+        spellLang = self.registryValue('spell.language') or 'en'
         if word and not word[0].isalpha():
             irc.error(_('<word> must begin with an alphabet character.'))
             return
         try:
-            inst = subprocess.Popen([spellCmd, '-a'], close_fds=True,
+            inst = subprocess.Popen([spellCmd, '-l', spellLang, '-a'], close_fds=True,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE,
                                     stdin=subprocess.PIPE)
@@ -186,7 +187,7 @@ class Unix(callbacks.Plugin):
             resp = format(_('Possible spellings for %q: %L.'),
                           word, matches.split(', '))
         else:
-            resp = 'Something unexpected was seen in the [ai]spell output.'
+            resp = _('Something unexpected was seen in the [ai]spell output.')
         irc.reply(resp)
     spell = thread(wrap(spell, ['something']))
 
