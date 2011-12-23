@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria Alias\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-10-25 14:42+0200\n"
+"PO-Revision-Date: 2011-12-23 10:30+0100\n"
 "Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -37,9 +37,10 @@ msgid ""
 "<an alias,%s %n>\n"
 "\n"
 "Alias for %q."
+msgstr ""
 "<egy álnév,%s %n\n"
 "\n"
-msgstr "Álnév %q-ra."
+"Álnév %q-ra."
 
 #: plugin.py:166
 msgid "argument"
@@ -75,7 +76,7 @@ msgstr ""
 
 #: plugin.py:254
 msgid "That name isn't valid.  Try %q instead."
-msgstr "Ez a név érvénytelen. Próbáld meg %q-t inkább."
+msgstr "Az a név nem érvényes. Próbáld meg %q-t inkább."
 
 #: plugin.py:292
 #, docstring
