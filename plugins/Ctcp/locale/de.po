@@ -11,32 +11,32 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 #: plugin.py:77
-msgid "PING ?(.*)"
-msgstr "PING ?(.*)"
+msgid "\001PING ?(.*)\001"
+msgstr "\001PING ?(.*)\001"
 
 #: plugin.py:86
-msgid "VERSION"
-msgstr "VERSION"
+msgid "\001VERSION\001"
+msgstr "\001VERSION\001"
 
 #: plugin.py:91
-msgid "USERINFO"
-msgstr "USERINFO"
+msgid "\001USERINFO\001"
+msgstr "\001USERINFO\001"
 
 #: plugin.py:96
-msgid "TIME"
-msgstr "TIME"
+msgid "\001TIME\001"
+msgstr "\001TIME\001"
 
 #: plugin.py:101
-msgid "FINGER"
-msgstr "FINGER"
+msgid "\001FINGER\001"
+msgstr "\001FINGER\001"
 
 #: plugin.py:104
 msgid "Supybot, the best Python IRC bot in existence!"
 msgstr "Supybot ist der beste Python IRC Bot den es gibt!"
 
 #: plugin.py:107
-msgid "SOURCE"
-msgstr "SOURCE"
+msgid "\001SOURCE\001"
+msgstr "\001SOURCE\001"
 
 #: plugin.py:123
 msgid ""
