@@ -1,0 +1,105 @@
+# Limnoria User plugin
+# Copyright (C) 2011 Limnoria
+# nyuszika7h <litemininyuszika@gmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Limnoria User\n"
+"POT-Creation-Date: 2011-12-21 18:24+EET\n"
+"PO-Revision-Date: 2011-12-22 15:17+0100\n"
+"Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: plugin.py:80
+msgid "There are no matching registered users."
+msgstr "Nincsenek egyező regisztrált felhasználók."
+
+#: plugin.py:82
+msgid "There are no registered users."
+msgstr "Nincsenek regisztrált felhasználók."
+
+#: plugin.py:101
+msgid "That name is already assigned to someone."
+msgstr "Az a név már hozzá van rendelve valakihez."
+
+#: plugin.py:106
+msgid "username"
+msgstr "felhasználónév"
+
+#: plugin.py:107
+msgid "Hostmasks are not valid usernames."
+msgstr "A hosztmaszkok nem érvényes felhasználónevek."
+
+#: plugin.py:114
+msgid "Your hostmask is already registered to %s"
+msgstr "A hosztmaszkod már regisztrálva van %s-hoz."
+
+#: plugin.py:145
+msgid "This command has been disabled.  You'll have to ask the owner of this bot to unregister your user."
+msgstr "Ez a parancs le lett tiltva. Meg kell kérned a bot tulajdonosát, hogy törölje a regisztrációdat."
+
+#: plugin.py:167
+msgid "%q is already registered."
+msgstr "%q már regisztrálva van."
+
+#: plugin.py:224
+msgid "Secure flag set to %s"
+msgstr "A secure jelző be lett állítva %s-ra"
+
+#: plugin.py:241
+msgid "I haven't seen %s."
+msgstr "Nem láttam %s-t."
+
+#: plugin.py:246
+msgid "I don't know who that is."
+msgstr "Nem tudom, ki az."
+
+#: plugin.py:276
+msgid "%s has no registered hostmasks."
+msgstr "%s-nak nincsenek regisztrált hosztmaszkjai."
+
+#: plugin.py:283
+msgid "You may only retrieve your own hostmasks."
+msgstr "Csak a saját hosztmaszkjaidat szerezheted meg."
+
+#: plugin.py:313
+msgid "hostmask"
+msgstr "hosztmaszk"
+
+#: plugin.py:314
+msgid "Make sure your hostmask includes a nick, then an exclamation point (!), then a user, then an at symbol (@), then a host.  Feel free to use wildcards (* and ?, which work just like they do on the command line) in any of these parts."
+msgstr "Győződj meg róla, hogy a hosztmaszkod tartalmaz egy nevet, aztán egy felkiáltójelet (!), aztán egy felhasználót, aztán egy kukac jelet (@), aztán egy hosztot. Nyugodtan használj helyettesítő karaktereket (* és ?, amelyek úgy működnek, mint a parancssorban) ezeknek a részeknek bármelyikében."
+
+#: plugin.py:324 plugin.py:347
+msgid "That hostmask is already registered."
+msgstr "Ez a hosztmaszk már regisztrálva van."
+
+#: plugin.py:374
+msgid "All hostmasks removed."
+msgstr "Minden hosztmaszk eltávolítva."
+
+#: plugin.py:378
+msgid "There was no such hostmask."
+msgstr "Nem volt ilyen hosztmaszk."
+
+#: plugin.py:419
+msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
+msgstr "A secure jelződ igaz és a hosztmaszkod nem egyezik egy ismert hosztmaszkoddal sem."
+
+#: plugin.py:438
+msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
+msgstr "Ha felismerve maradsz e parancs kiadása után, hosztmaszk alapján vagy felismerve, jelszó helyett. El kell távolítanod akármilyen hosztmaszkot, amely a fekusmerésedet okozza, hogy ne legyél felismerve."
+
+#: plugin.py:455
+msgid "I don't recognize you."
+msgstr "Nem ismerlek fel."
+
+#: plugin.py:478
+msgid "I have %s registered users with %s registered hostmasks; %n and %n."
+msgstr "%s regisztrált felhasználóm van %s regisztrált hosztmaszkkal; %n és %n."
+
