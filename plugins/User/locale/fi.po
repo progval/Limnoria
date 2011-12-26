@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-12-23 13:11+CET\n"
-"PO-Revision-Date: 2011-12-23 16:16+0200\n"
+"PO-Revision-Date: 2011-12-26 13:21+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -118,7 +118,6 @@ msgid "%q is already registered."
 msgstr "%q on jo rekisteröitynyt."
 
 #: plugin.py:181
-#, fuzzy
 msgid ""
 "[<name>] <old password> <new password>\n"
 "\n"
@@ -173,6 +172,11 @@ msgid ""
 "        the user is registered.\n"
 "        "
 msgstr ""
+"<hostmask|nimimerkki>\n"
+"\n"
+"        Palauttaa käyttäjätunnuksen, jonka määrittää <hostmask> tai <nimimerkki>, mikäli\n"
+"        käyttäjä on rekisteröitynyt.\n"
+"        "
 
 #: plugin.py:241
 msgid "I haven't seen %s."
