@@ -205,11 +205,19 @@ class ChannelTestCase(ChannelPluginTestCase):
 
     def testIgnore(self):
         orig = conf.supybot.protocols.irc.banmask()
+        def ignore(given, expect=None):
+            if expect is None:
+                expect = given
+            self.assertNotError('channel ignore add %s' % given)
+            self.assertResponse('channel ignore list', "'%s'" % expect)
+            self.assertNotError('channel ignore remove %s' % expect)
+            self.assertRegexp('channel ignore list', 'not currently')
         try:
+            ignore('foo!bar@baz', '*!bar@baz')
+            ignore('foo!*@*')
             conf.supybot.protocols.irc.banmask.setValue(['exact'])
-            self.assertNotError('channel ignore add foo!bar@baz')
-            self.assertResponse('channel ignore list', "'foo!bar@baz'")
-            self.assertNotError('channel ignore remove foo!bar@baz')
+            ignore('foo!bar@baz')
+            ignore('foo!*@*')
             self.assertError('ban add not!a.hostmask')
         finally:
             conf.supybot.protocols.irc.banmask.setValue(orig)
