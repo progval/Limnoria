@@ -988,6 +988,9 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
                 bhost = host
             elif option == 'exact':
                 return hostmask
+        if (bnick, buser, bhost) == ('*', '*', '*') and \
+                ircutils.isUserHostmask(hostmask):
+            return hostmask
         return ircutils.joinHostmask(bnick, buser, bhost)
 
 registerChannelValue(supybot.protocols.irc, 'banmask',
