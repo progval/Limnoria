@@ -764,7 +764,7 @@ class Irc(IrcCommandDispatcher):
             # On second thought, we need this for testing.
             if world.testing:
                 self.state.addMsg(self, msg)
-            log.debug('Outgoing message: %s', str(msg).rstrip('\r\n'))
+            log.debug('Outgoing message (%s): %s', self.network, str(msg).rstrip('\r\n'))
             return msg
         elif self.zombie:
             # We kill the driver here so it doesn't continue to try to
