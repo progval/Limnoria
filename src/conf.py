@@ -439,7 +439,7 @@ registerGlobalValue(supybot, 'followIdentificationThroughNickChanges',
     will cause the bot to track such changes.  It defaults to False for a
     little greater security.""")))
 
-registerGlobalValue(supybot, 'alwaysJoinOnInvite',
+registerChannelValue(supybot, 'alwaysJoinOnInvite',
     registry.Boolean(False, _("""Determines whether the bot will always join a
     channel when it's invited.  If this value is False, the bot will only join
     a channel if the user inviting it has the 'admin' capability (or if it's
