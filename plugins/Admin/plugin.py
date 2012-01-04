@@ -117,7 +117,7 @@ class Admin(callbacks.Plugin):
     def doInvite(self, irc, msg):
         channel = msg.args[1]
         if channel not in irc.state.channels:
-            if conf.supybot.alwaysJoinOnInvite.get(channel) or \
+            if conf.supybot.alwaysJoinOnInvite.get(channel)() or \
                ircdb.checkCapability(msg.prefix, 'admin'):
                 self.log.info('Invited to %s by %s.', channel, msg.prefix)
                 networkGroup = conf.supybot.networks.get(irc.network)
