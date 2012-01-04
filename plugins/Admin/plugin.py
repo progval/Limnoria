@@ -97,6 +97,15 @@ class Admin(callbacks.Plugin):
         except KeyError:
             self.log.debug('Got 475 without Admin.join being called.')
 
+    def do477(self, irc, msg):
+        try:
+            channel = msg.args[1]
+            (irc,msg) = self.joins.pop(channel)
+            irc.error(_('Cannot join %s, I\'m not identified with '
+                      'NickServ.') % channel)
+        except KeyError:
+            self.log.debug('Got 477 without Admin.join being called.')
+
     def do515(self, irc, msg):
         try:
             channel = msg.args[1]
