@@ -33,7 +33,7 @@ msgid "Cannot join %s, my keyword was wrong."
 msgstr "Non posso entrare in %s, la password era sbagliata."
 
 #: plugin.py:104
-msgid "Cannot join %s, I'm not identified with the NickServ."
+msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr "Non posso entrare in %s, non sono identificato con NickServ."
 
 #: plugin.py:134
