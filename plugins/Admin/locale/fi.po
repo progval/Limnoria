@@ -185,10 +185,10 @@ msgid ""
 msgstr ""
 "<hostmask|nimimerkki> [<vanhentuu>]\n"
 "\n"
-"     Tämä asettaa pysyvän ignoren <hostmaskiin> tai hostmaskiin,\n"
+"     Tämä asettaa pysyvän huomiotta jättämisen <hostmaskiin> tai hostmaskiin,\n"
 "     joka on tällä hetkellä yhdistetty <nimimerkkiin>. <Vanhentuminen> on vaihtoehtoinen paremetri,\n"
-"     joka määrittää (\"sekuntieissa\") joiden jälkeen ignore poistetaan; jos\n"
-"    sitä ei ole annettu, ignore ei vanhene koskaan automaattisesti.\n"
+"     joka määrittää (\"sekuntit\") joiden jälkeen huomiotta jättäminen poistetaan; jos\n"
+"    sitä ei ole annettu, huomiotta jättäminen ei vanhene ikinä automaattisesti.\n"
 "            "
 
 #: plugin.py:323
@@ -201,13 +201,13 @@ msgid ""
 msgstr ""
 "<hostmask|nimimerkki>\n"
 "\n"
-"     Tämä poistaa pysyvän ignoren <hostmaskista> tai\n"
+"     Tämä poistaa pysyvän huomiotta jättämisen  <hostmaskista> tai\n"
 "     hostmaskista joka on tällä hetkellä yhdistetty <nimimerkkiin>.\n"
 "            "
 
 #: plugin.py:332
 msgid "%s wasn't in the ignores database."
-msgstr "%s ei ollut ignore tietokannassa."
+msgstr "%s ei ollut huomiotta jätettävien tietokannassa."
 
 #: plugin.py:337
 msgid ""
@@ -218,12 +218,12 @@ msgid ""
 msgstr ""
 "Ei ota parametrejä\n"
 "\n"
-"     Luetteloi hostmaskit jotka ovat botin ignoressa.\n"
+"     Luetteloi hostmaskit jotka ovat botin huomiotta jättämis listalla.\n"
 "            "
 
 #: plugin.py:345
 msgid "I'm not currently globally ignoring anyone."
-msgstr "Minä en tällä hetkellä pidä ketään globaalissa ignoressa."
+msgstr "En tällä hetkellä jätä ketään huomioitta globaalisti."
 
 #: plugin.py:351
 msgid ""
