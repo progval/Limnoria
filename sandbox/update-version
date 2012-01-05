@@ -5,3 +5,4 @@ perl -pi -e  "s/^version\s*=\s*['\"]([\S]+)[ '\"].*/version = '\1 ($( date -Isec
 unset TZ # Return to the system timezone.
 exec $SHELL # Execute the current shell to return to user timezone if specified in config of shell.
 git add src/version.py
+# vim: set ft=sh: syntax: 
