@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+export TZ="/usr/share/zoneinfo/UTC" # Use UTC with version timestamps.
 echo "Updating version..."
 perl -pi -e  "s/^version\s*=\s*['\"]([\S]+)[ '\"].*/version = '\1 ($( date -Iseconds ))'/" src/version.py
+unset TZ # Return to the system timezone.
+exec $SHELL # Execute the current shell to return to use timezone if specified in config of shell.
 git add src/version.py
