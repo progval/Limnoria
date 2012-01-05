@@ -38,7 +38,7 @@ msgid "Cannot join %s, my keyword was wrong."
 msgstr "En voi liittyä kanavalle %s, minun avainsana oli väärä."
 
 #: plugin.py:104
-msgid "Cannot join %s, I'm not identified with the NickServ."
+msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr "En voi liittyä kanavalle %s, koska en ole tunnistautunut NickServille."
 
 #: plugin.py:134
