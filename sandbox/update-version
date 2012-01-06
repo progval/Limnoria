@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo "Updating version..."
-perl -pi -e  "s/^version\s*=\s*['\"]([\S]+)[ '\"].*/version = '\1 ($( TZ="/usr/share/zoneinfo/UTC" date -Iseconds ))'/" src/version.py
+echo -n "Updating version... "
+perl -pi -e  "s/^version\s*=\s*['\"]([\S]+)[ '\"].*/version = '\1 ($( date -u -Iseconds ))'/" src/version.py
 git add src/version.py
-# vim: set ft=sh: syntax: 
+# vim: set ft=sh:
