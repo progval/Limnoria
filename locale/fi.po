@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-06-25 14:17+CEST\n"
-"PO-Revision-Date: 2011-12-23 13:24+0200\n"
+"PO-Revision-Date: 2012-01-06 14:54+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -40,15 +40,15 @@ msgstr ""
 
 #: ../src/callbacks.py:519
 msgid "%s is not a valid %s."
-msgstr ""
+msgstr "%s ei ole kelvollinen %s."
 
 #: ../src/callbacks.py:521
 msgid "That's not a valid %s."
-msgstr ""
+msgstr "Tuo ei ole kelvollinen %s."
 
 #: ../src/callbacks.py:599
 msgid "You've attempted more nesting than is currently allowed on this bot."
-msgstr ""
+msgstr "Yritit enempiä sisäkkäisiä komentoja, kuin on tällä hetkellä sallittu tässä botissa."
 
 #: ../src/callbacks.py:778
 msgid "The command %q is available in the %L plugins.  Please specify the plugin whose command you wish to call by using its name as a command before %q."
@@ -57,15 +57,15 @@ msgstr ""
 #: ../src/callbacks.py:863
 #: ../src/callbacks.py:876
 msgid "(XX more messages)"
-msgstr ""
+msgstr "(XX viestiä jatkoa)"
 
 #: ../src/callbacks.py:908
 msgid "more message"
-msgstr ""
+msgstr "viesti jatkoa"
 
 #: ../src/callbacks.py:910
 msgid "more messages"
-msgstr ""
+msgstr "viestejä jatkoa"
 
 #: ../src/callbacks.py:1010
 msgid ""
@@ -76,11 +76,11 @@ msgstr ""
 
 #: ../src/callbacks.py:1201
 msgid "Invalid arguments for %s."
-msgstr ""
+msgstr "Virheelliset parametrit kohteelle %s."
 
 #: ../src/callbacks.py:1227
 msgid "The %q command has no help."
-msgstr ""
+msgstr "Komennolla %q ei ole ohjetta."
 
 #: ../src/commands.py:171
 msgid "integer"
@@ -116,11 +116,11 @@ msgstr ""
 
 #: ../src/commands.py:255
 msgid "do that"
-msgstr ""
+msgstr "tee se"
 
 #: ../src/commands.py:259
 msgid "I'm not even in %s."
-msgstr ""
+msgstr "En edes ole kanavalla %s."
 
 #: ../src/commands.py:261
 msgid "I need to be opped to %s."
@@ -128,21 +128,21 @@ msgstr ""
 
 #: ../src/commands.py:278
 msgid "nick or hostmask"
-msgstr ""
+msgstr "nimimerkki tai hostmask"
 
 #: ../src/commands.py:330
 #: ../src/commands.py:333
 msgid "regular expression"
-msgstr ""
+msgstr "säännöllinen lauseke"
 
 #: ../src/commands.py:344
 msgid "That nick is too long for this server."
-msgstr ""
+msgstr "Tuo nimimerkki on liian pitkä tälle palvelimelle."
 
 #: ../src/commands.py:393
 #: ../src/commands.py:412
 msgid "I'm not in %s."
-msgstr ""
+msgstr "En ole kanavalla %s."
 
 #: ../src/commands.py:397
 msgid "This command may only be given in a channel that I am in."
