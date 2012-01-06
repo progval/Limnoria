@@ -32,11 +32,11 @@ msgstr "\"|\" ennen mitään.  En ilmiselvästi voi putkittaa tyhjyyttä ilman m
 
 #: ../src/callbacks.py:326
 msgid "Spurious \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
-msgstr ""
+msgstr "Pettävää \"%s\". Voit tahtoa laittaa parametrisi kaksiin lainausmerkkeihin estääksesiylimääräisiä hakasulkuja tulemasta tulkituiksi sisäkkäisiksi komennoiksi."
 
 #: ../src/callbacks.py:335
 msgid "\"|\" with nothing following.  I obviously can't do a pipe with nothing after the |."
-msgstr ""
+msgstr "\"|\" ilman mitään sen perässä. En ilmeisesti voi putkittaa tyhjyyttä |:n jälkeen."
 
 #: ../src/callbacks.py:519
 msgid "%s is not a valid %s."
@@ -52,7 +52,7 @@ msgstr "Yritit enempiä sisäkkäisiä komentoja, kuin on tällä hetkellä sall
 
 #: ../src/callbacks.py:778
 msgid "The command %q is available in the %L plugins.  Please specify the plugin whose command you wish to call by using its name as a command before %q."
-msgstr ""
+msgstr "Komento %q on saatavilla %L lisäosissa. Ole hyvä ja määritä minkä lisäosan komentoa tahdot kutsua laittamalla sen nimi komentoon ennen %q:ta."
 
 #: ../src/callbacks.py:863
 #: ../src/callbacks.py:876
@@ -73,6 +73,9 @@ msgid ""
 "    commands will not appear in command lists, etc.  They will appear not even\n"
 "    to exist."
 msgstr ""
+"Määrittää mitkä komennon ovat tällä hetkellä pois käytöstä.  Sellaiset\n"
+"     komennot eivät ilmesty komento listoissa, jne.  Ne eivät näytä edes\n"
+"    olevan olemassa."
 
 #: ../src/callbacks.py:1201
 msgid "Invalid arguments for %s."
@@ -84,35 +87,35 @@ msgstr "Komennolla %q ei ole ohjetta."
 
 #: ../src/commands.py:171
 msgid "integer"
-msgstr ""
+msgstr "kokonaisluku"
 
 #: ../src/commands.py:182
 msgid "non-integer value"
-msgstr ""
+msgstr "ei-kokonaisluku arvo"
 
 #: ../src/commands.py:193
 msgid "floating point number"
-msgstr ""
+msgstr "liukuluku numero"
 
 #: ../src/commands.py:202
 msgid "positive integer"
-msgstr ""
+msgstr "positiivinen kokonaisluku"
 
 #: ../src/commands.py:206
 msgid "non-negative integer"
-msgstr ""
+msgstr "ei-negatiivinen kokonaisluku"
 
 #: ../src/commands.py:209
 msgid "index"
-msgstr ""
+msgstr "indeksi"
 
 #: ../src/commands.py:234
 msgid "number of seconds"
-msgstr ""
+msgstr "määrä sekunteja"
 
 #: ../src/commands.py:241
 msgid "boolean"
-msgstr ""
+msgstr "boolean"
 
 #: ../src/commands.py:255
 msgid "do that"
@@ -124,7 +127,7 @@ msgstr "En edes ole kanavalla %s."
 
 #: ../src/commands.py:261
 msgid "I need to be opped to %s."
-msgstr ""
+msgstr "Minun täytyy olla opattuna, jotta voin %s."
 
 #: ../src/commands.py:278
 msgid "nick or hostmask"
@@ -146,67 +149,71 @@ msgstr "En ole kanavalla %s."
 
 #: ../src/commands.py:397
 msgid "This command may only be given in a channel that I am in."
-msgstr ""
+msgstr "Tämä komento voidaan antaa vain kanavalla, jolla minä olen."
 
 #: ../src/commands.py:410
 msgid "You must be in %s."
-msgstr ""
+msgstr "Sinun täytyy olla kanavalla %s."
 
 #: ../src/commands.py:414
 msgid "channel"
-msgstr ""
+msgstr "kanava"
 
 #: ../src/commands.py:421
 msgid "%s is not in %s."
-msgstr ""
+msgstr "%s ei ole kanavalla %s."
 
 #: ../src/commands.py:455
 msgid "You must not give the empty string as an argument."
-msgstr ""
+msgstr "Et voi antaa tyhjää merkkiketjua parametriksi."
 
 #: ../src/commands.py:472
 msgid "This message must be sent in a channel."
-msgstr ""
+msgstr "Tämä viesti täytyy lähettää kanavalla."
 
 #: ../src/commands.py:518
 msgid "http url"
-msgstr ""
+msgstr "http URL-osoite"
 
 #: ../src/commands.py:525
 msgid "command name"
-msgstr ""
+msgstr "komennon nimi"
 
 #: ../src/commands.py:533
 msgid "ip"
-msgstr ""
+msgstr "IP"
 
 #: ../src/commands.py:539
 msgid "letter"
-msgstr ""
+msgstr "kirjain"
 
 #: ../src/commands.py:571
 msgid "plugin"
-msgstr ""
+msgstr "lisä-osa"
 
 #: ../src/commands.py:579
 msgid "irc color"
-msgstr ""
+msgstr "irc väri"
 
 #: ../src/conf.py:104
 msgid ""
 "Determines whether this plugin is loaded\n"
 "         bydefault."
 msgstr ""
+"Määrittää onko tämä lisä-osa ladattuna \n"
+"         oletuksena."
 
 #: ../src/conf.py:108
 msgid ""
 "Determines whether this plugin is\n"
 "        publicly visible."
 msgstr ""
+"Määrittää onko tämä lisäosa\n"
+"        julkisesti näkyvillä."
 
 #: ../src/conf.py:194
 msgid "Determines the bot's default nick."
-msgstr ""
+msgstr "Määrittää botin oletus nimimerkin."
 
 #: ../src/conf.py:197
 msgid ""
@@ -216,12 +223,19 @@ msgid ""
 "   alternates are given, or if all are used, the supybot.nick will be perturbed\n"
 "   appropriately until an unused nick is found."
 msgstr ""
+"Määrittää mitä vaihtoehtoisia nimimerkkejä käytetään, jos\n"
+"   ensisijainen nimimerkki (supybot.nick) ei ole saatavilla. \n"
+"   %s tässä nimimerkissä korvataa asetusarvolla supybot.nick, kun sitä käytetään. Jos\n"
+"   vaihtoehtoja ei anneta, tai jos kaikki ovat käytössä, supybot.nick tehdään levottomaksi, \n"
+"   kunnes käyttämätön nimimerkki löydetään."
 
 #: ../src/conf.py:204
 msgid ""
 "Determines the bot's ident string, if the server\n"
 "    doesn't provide one by default."
 msgstr ""
+"Määrittää botin ident merkkiketjun, mikäli käyttäjä\n"
+"    ei tarjoa yhtä oletuksena."
 
 #: ../src/conf.py:215
 msgid ""
@@ -229,10 +243,13 @@ msgid ""
 "    A standard user using the current version of the bot will be generated if\n"
 "    this is left empty."
 msgstr ""
+"Määrittää minkä user:in (oikean nimen) botti lähettää palvelimelle.\n"
+"    Perus user-merkkiketju luodaan botin nykyisestä versiosta, mikäli\n"
+"    tämä on jätetty tyhjäksi."
 
 #: ../src/conf.py:223
 msgid "Determines what networks the bot will connect to."
-msgstr ""
+msgstr "Määrittää mihin verkkoihin botti muodostaa yhdeyden."
 
 #: ../src/conf.py:264
 msgid ""
@@ -240,6 +257,9 @@ msgid ""
 "        technically passwords are server-specific and not network-specific,\n"
 "        but this is the best we can do right now."
 msgstr ""
+"Määrittää mitä salasanaa käytetään verkossa %s.  Kyllä, me tiedämme, että \n"
+"        tietyille palvelimille, eivätkä tietyille verkoille, mutta\n"
+"        tämä on paras johon pystymme juuri nyt."
 
 #: ../src/conf.py:268
 msgid ""
@@ -247,22 +267,29 @@ msgid ""
 "        be tried in order, wrapping back to the first when the cycle is\n"
 "        completed."
 msgstr ""
+"Määrittää mille palvelimille botti muodostaa yhteyden yhdistääkseen verkkoon %s.  Jokaista \n"
+"        yritetään järjestyksessä, palaten takaisin ensinmäiseen, kun kierros on\n"
+"        suoritettu."
 
 #: ../src/conf.py:272
 msgid "Determines what channels the bot will join only on %s."
-msgstr ""
+msgstr "Määrittää mille kanaville botti liittyy vain verkossa %s."
 
 #: ../src/conf.py:275
 msgid ""
 "Determines whether the bot will attempt to connect with SSL\n"
 "        sockets to %s."
 msgstr ""
+"Määrittää yrittääkö botti yhdistää SSL\n"
+"        solmuilla verkkoon %s."
 
 #: ../src/conf.py:278
 msgid ""
 "Determines what key (if any) will be used to join the\n"
 "        channel."
 msgstr ""
+"Määrittää mitä salasanaa (jos mitään) käytetään kanavalle\n"
+"        liittymisessä."
 
 #: ../src/conf.py:298
 msgid ""
@@ -277,6 +304,8 @@ msgid ""
 "Determines whether elapsed times will be given\n"
 "    as \"1 day, 2 hours, 3 minutes, and 15 seconds\" or as \"1d 2h 3m 15s\"."
 msgstr ""
+"Määrittää näytetäänkö kulunut aika muodossa\n"
+"    \"1 päivä, 2 tuntia, 3 minuuttia, ja 15 sekuntia\" vai \"1d 2h 3m 15s\"."
 
 #: ../src/conf.py:322
 msgid ""
@@ -293,10 +322,13 @@ msgid ""
 msgstr ""
 
 #: ../src/conf.py:332
+#, fuzzy
 msgid ""
 "Determines what the maximum number of\n"
 "    chunks (for use with the 'more' command) will be."
 msgstr ""
+"Määrittää maksimimäärän\n"
+"    chunks (for use with the 'more' command) will be."
 
 #: ../src/conf.py:336
 msgid ""
