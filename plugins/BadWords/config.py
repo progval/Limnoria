@@ -52,7 +52,7 @@ BadWords = conf.registerPlugin('BadWords')
 conf.registerGlobalValue(BadWords, 'words',
     LastModifiedSetOfStrings([], _("""Determines what words are
     considered to be 'bad' so the bot won't say them.""")))
-conf.registerGlobalValue(BadWords,'requireWordBoundaries',
+conf.registerChannelValue(BadWords,'requireWordBoundaries',
     registry.Boolean(False, _("""Determines whether the bot will require bad
     words to be independent words, or whether it will censor them within other
     words.  For instance, if 'darn' is a bad word, then if this is true, 'darn'
