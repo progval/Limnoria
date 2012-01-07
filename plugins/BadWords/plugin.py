@@ -104,7 +104,7 @@ class BadWords(callbacks.Privmsg):
 
     def makeRegexp(self, iterable):
         s = '(%s)' % '|'.join(map(re.escape, iterable))
-        if self.registryValue('requireWordBoundaries'):
+        if self.registryValue('requireWordBoundaries', channel):
             s = r'\b%s\b' % s
         self.regexp = re.compile(s, re.I)
 
