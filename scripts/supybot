@@ -303,7 +303,7 @@ if __name__ == '__main__':
                     log.error('Could not remove pid file: %s', e)
             atexit.register(removePidFile)
         except EnvironmentError, e:
-            log.fatal('Error opening/writing pid file %s: %s', pidFile, e)
+            log.critical('Error opening/writing pid file %s: %s', pidFile, e)
             sys.exit(-1)
 
     conf.allowDefaultOwner = options.allowDefaultOwner
