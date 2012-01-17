@@ -97,11 +97,20 @@ class Admin(callbacks.Plugin):
         except KeyError:
             self.log.debug('Got 475 without Admin.join being called.')
 
+    def do477(self, irc, msg):
+        try:
+            channel = msg.args[1]
+            (irc,msg) = self.joins.pop(channel)
+            irc.error(_('Cannot join %s, I\'m not identified with '
+                      'NickServ.') % channel)
+        except KeyError:
+            self.log.debug('Got 477 without Admin.join being called.')
+
     def do515(self, irc, msg):
         try:
             channel = msg.args[1]
             (irc, msg) = self.joins.pop(channel)
-            irc.error(_('Cannot join %s, I\'m not identified with the '
+            irc.error(_('Cannot join %s, I\'m not identified with '
                       'NickServ.') % channel)
         except KeyError:
             self.log.debug('Got 515 without Admin.join being called.')
@@ -117,7 +126,7 @@ class Admin(callbacks.Plugin):
     def doInvite(self, irc, msg):
         channel = msg.args[1]
         if channel not in irc.state.channels:
-            if conf.supybot.alwaysJoinOnInvite() or \
+            if conf.supybot.alwaysJoinOnInvite.get(channel)() or \
                ircdb.checkCapability(msg.prefix, 'admin'):
                 self.log.info('Invited to %s by %s.', channel, msg.prefix)
                 networkGroup = conf.supybot.networks.get(irc.network)
