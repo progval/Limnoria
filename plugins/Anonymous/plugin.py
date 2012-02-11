@@ -49,12 +49,12 @@ class Anonymous(callbacks.Plugin):
     supybot.plugins.Anonymous.requireRegistration.
     """
     def _preCheck(self, irc, msg, target, action):
-        if self.registryValue('requireRegistration'):
+        if self.registryValue('requireRegistration', target):
             try:
                 foo = ircdb.users.getUser(msg.prefix)
             except KeyError:
                 irc.errorNotRegistered(Raise=True)
-        capability = self.registryValue('requireCapability')
+        capability = self.registryValue('requireCapability', target)
         if capability:
             if not ircdb.checkCapability(msg.prefix, capability):
                 irc.errorNoCapability(capability, Raise=True)
