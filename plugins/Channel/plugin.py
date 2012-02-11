@@ -540,7 +540,7 @@ class Channel(callbacks.Plugin):
             """[<channel>]
 
             If you have the #channel,op capability, this will show you the
-            current persistent bans on #channel.
+            current persistent bans on the <channel>.
             """
             c = ircdb.channels.getChannel(channel)
             if c.bans:
