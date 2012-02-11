@@ -163,7 +163,8 @@ class Status(callbacks.Plugin):
                     mem = int(out.splitlines()[1])
                 elif sys.platform.startswith('netbsd'):
                     mem = int(os.stat('/proc/%s/mem' % pid)[7])
-                response += format(_('  I\'m taking up %S of memory.'), mem)
+                response += format(_('  I\'m taking up %S of memory.'),
+                        mem*1024)
             except Exception:
                 self.log.exception('Uncaught exception in cpu.memory:')
         irc.reply(utils.str.normalizeWhitespace(response))

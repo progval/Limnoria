@@ -90,7 +90,7 @@ class Ctcp(callbacks.PluginRegexp):
     def ctcpUserinfo(self, irc, msg, match):
         "\x01USERINFO\x01"
         self.log.info('Received CTCP USERINFO from %s', msg.prefix)
-        self._reply(irc, msg, 'USERINFO')
+        self._reply(irc, msg, 'USERINFO %s' % self.registryValue('userinfo'))
 
     def ctcpTime(self, irc, msg, match):
         "\x01TIME\x01"

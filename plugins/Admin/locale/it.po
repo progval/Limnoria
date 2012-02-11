@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-11-07 17:21+0100\n"
+"PO-Revision-Date: 2011-10-28 19:47+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -33,7 +33,7 @@ msgid "Cannot join %s, my keyword was wrong."
 msgstr "Non posso entrare in %s, la password era sbagliata."
 
 #: plugin.py:104
-msgid "Cannot join %s, I'm not identified with NickServ."
+msgid "Cannot join %s, I'm not identified with the NickServ."
 msgstr "Non posso entrare in %s, non sono identificato con NickServ."
 
 #: plugin.py:134
