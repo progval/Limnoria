@@ -504,6 +504,28 @@ class Misc(callbacks.Plugin):
         """
         irc.reply(_('pong'), prefixNick=False)
 
+    @internationalizeDocstring
+    def completenick(self, irc, msg, args, channel, beginning, optlist):
+        """[<channel>] <beginning> [--match-case]
+
+        Returns the nick of someone on the channel whose nick begins with the
+        given <beginning>.
+        <channel> defaults to the current channel."""
+        if ('match-case', True) in optlist:
+            def match(nick):
+                return nick.startswith(beginning)
+        else:
+            beginning = beginning.lower()
+            def match(nick):
+                return nick.lower().startswith(beginning)
+        for nick in irc.state.channels[channel].users:
+            if match(nick):
+                irc.reply(nick)
+                return
+        irc.error(_('No such nick.'))
+    completenick = wrap(completenick, ['channel', 'something',
+                                       getopts({'match-case':''})])
+
 Class = Misc
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
