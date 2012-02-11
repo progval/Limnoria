@@ -12,3 +12,4 @@ docs/plugins
 *.mo
 push.sh
 merge.sh
+*.pot
