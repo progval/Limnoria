@@ -222,6 +222,15 @@ class Status(callbacks.Plugin):
         irc.reply(irc.server)
     server = wrap(server)
 
+    @internationalizeDocstring
+    def network(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the network the bot is on.
+        """
+        irc.reply(irc.network)
+    network = wrap(network)
+
 
 Class = Status
 
