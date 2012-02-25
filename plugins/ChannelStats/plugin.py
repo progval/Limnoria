@@ -249,6 +249,9 @@ class ChannelStats(callbacks.Plugin):
         necessary if the message isn't sent on the channel itself.  If <name>
         isn't given, it defaults to the user sending the command.
         """
+        if msg.nick not in irc.state.channels[channel].users:
+            irc.error(format('You must be in %s to use this command.', channel))
+            return
         if name and ircutils.strEqual(name, irc.nick):
             id = 0
         elif not name:
@@ -310,6 +313,9 @@ class ChannelStats(callbacks.Plugin):
         'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical
         expression involving those variables is permitted.
         """
+        if msg.nick not in irc.state.channels[channel].users:
+            irc.error(format('You must be in %s to use this command.', channel))
+            return
         # XXX I could do this the right way, and abstract out a safe eval,
         #     or I could just copy/paste from the Math plugin.
         if self._calc_match_forbidden_chars.match(expr):
@@ -352,6 +358,9 @@ class ChannelStats(callbacks.Plugin):
         Returns the statistics for <channel>.  <channel> is only necessary if
         the message isn't sent on the channel itself.
         """
+        if msg.nick not in irc.state.channels[channel].users:
+            irc.error(format('You must be in %s to use this command.', channel))
+            return
         try:
             stats = self.db.getChannelStats(channel)
             curUsers = len(irc.state.channels[channel].users)
