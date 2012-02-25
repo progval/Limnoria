@@ -218,6 +218,9 @@ class Seen(callbacks.Plugin):
         saying. <channel> is only necessary if the message isn't sent on the
         channel itself. <nick> may contain * as a wildcard.
         """
+        if msg.nick not in irc.state.channels[channel].users:
+            irc.error(format('You must be in %s to use this command.', channel))
+            return
         self._seen(irc, channel, name)
     seen = wrap(seen, ['channel', 'something'])
 
@@ -231,6 +234,9 @@ class Seen(callbacks.Plugin):
         and returns the last time user was active in <channel>.  <channel> is
         only necessary if the message isn't sent on the channel itself.
         """
+        if msg.nick not in irc.state.channels[channel].users:
+            irc.error(format('You must be in %s to use this command.', channel))
+            return
         if name and optlist:
             raise callbacks.ArgumentError
         elif name:
@@ -264,6 +270,9 @@ class Seen(callbacks.Plugin):
         Returns the last thing said in <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
+        if msg.nick not in irc.state.channels[channel].users:
+            irc.error(format('You must be in %s to use this command.', channel))
+            return
         self._last(irc, channel)
     last = wrap(last, ['channel'])
 
@@ -289,6 +298,9 @@ class Seen(callbacks.Plugin):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        if msg.nick not in irc.state.channels[channel].users:
+            irc.error(format('You must be in %s to use this command.', channel))
+            return
         self._user(irc, channel, user)
     user = wrap(user, ['channel', 'otherUser'])
 
@@ -297,11 +309,11 @@ class Seen(callbacks.Plugin):
 
         Returns the messages since <nick> last left the channel.
         """
-        if nick is None:
-            nick = msg.nick
-        if nick not in irc.state.channels[channel].users:
+        if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
+        if nick is None:
+            nick = msg.nick
         end = None # By default, up until the most recent message.
         for (i, m) in utils.seq.renumerate(irc.state.history):
             if end is None and m.command == 'JOIN' and \
