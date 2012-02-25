@@ -164,8 +164,12 @@ class Misc(callbacks.Plugin):
             return
         if not cb:
             if unloaded:
+                # We were using the path of Misc + .. to detect the install
+                # directory. However, it fails if Misc is not in the
+                # installation directory for some reason, so we use a
+                # supybot module.
                 installedPluginsDirectory = os.path.join(
-                        os.path.dirname(__file__), '..')
+                        os.path.dirname(conf.__file__), 'plugins')
                 plugins = getPluginsInDirectory(installedPluginsDirectory)
                 for directory in conf.supybot.directories.plugins()[:]:
                     plugins.extend(getPluginsInDirectory(directory))

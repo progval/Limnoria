@@ -49,7 +49,7 @@ class Success(plugins.ChannelIdDatabasePlugin):
         self.originalClass = conf.supybot.replies.success.__class__
         class MySuccessClass(self.originalClass):
             def __call__(self):
-                ret = pluginSelf.db.random(pluginSelf.target)
+                ret = pluginSelf.db.random(pluginSelf.target or 'private_query')
                 if ret is None:
                     try:
                         self.__class__ = pluginSelf.originalClass
