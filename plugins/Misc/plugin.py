@@ -515,6 +515,8 @@ class Misc(callbacks.Plugin):
         Returns the nick of someone on the channel whose nick begins with the
         given <beginning>.
         <channel> defaults to the current channel."""
+        if channel not in irc.state.channels:
+            irc.error(_('I\'m not even in %s.') % channel, Raise=True)
         if ('match-case', True) in optlist:
             def match(nick):
                 return nick.startswith(beginning)
