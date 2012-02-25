@@ -164,8 +164,12 @@ class Misc(callbacks.Plugin):
             return
         if not cb:
             if unloaded:
+                # We were using the path of Misc + .. to detect the install
+                # directory. However, it fails if Misc is not in the
+                # installation directory for some reason, so we use a
+                # supybot module.
                 installedPluginsDirectory = os.path.join(
-                        os.path.dirname(__file__), '..')
+                        os.path.dirname(conf.__file__), 'plugins')
                 plugins = getPluginsInDirectory(installedPluginsDirectory)
                 for directory in conf.supybot.directories.plugins()[:]:
                     plugins.extend(getPluginsInDirectory(directory))
@@ -503,6 +507,28 @@ class Misc(callbacks.Plugin):
         Checks to see if the bot is alive.
         """
         irc.reply(_('pong'), prefixNick=False)
+
+    @internationalizeDocstring
+    def completenick(self, irc, msg, args, channel, beginning, optlist):
+        """[<channel>] <beginning> [--match-case]
+
+        Returns the nick of someone on the channel whose nick begins with the
+        given <beginning>.
+        <channel> defaults to the current channel."""
+        if ('match-case', True) in optlist:
+            def match(nick):
+                return nick.startswith(beginning)
+        else:
+            beginning = beginning.lower()
+            def match(nick):
+                return nick.lower().startswith(beginning)
+        for nick in irc.state.channels[channel].users:
+            if match(nick):
+                irc.reply(nick)
+                return
+        irc.error(_('No such nick.'))
+    completenick = wrap(completenick, ['channel', 'something',
+                                       getopts({'match-case':''})])
 
 Class = Misc
 

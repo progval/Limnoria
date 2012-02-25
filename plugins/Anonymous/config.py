@@ -49,10 +49,10 @@ conf.registerChannelValue(conf.supybot.plugins.Anonymous,
     'requirePresenceInChannel', registry.Boolean(True, _("""Determines whether
     the bot should require people trying to use this plugin to be in the
     channel they wish to anonymously send to.""")))
-conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireRegistration',
+conf.registerChannelValue(conf.supybot.plugins.Anonymous, 'requireRegistration',
     registry.Boolean(True, _("""Determines whether the bot should require
     people trying to use this plugin to be registered.""")))
-conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireCapability',
+conf.registerChannelValue(conf.supybot.plugins.Anonymous, 'requireCapability',
     registry.String('', _("""Determines what capability (if any) the bot should
     require people trying to use this plugin to have.""")))
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'allowPrivateTarget',

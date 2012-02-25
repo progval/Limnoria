@@ -540,7 +540,7 @@ class Channel(callbacks.Plugin):
             """[<channel>]
 
             If you have the #channel,op capability, this will show you the
-            current persistent bans on #channel.
+            current persistent bans on the <channel>.
             """
             c = ircdb.channels.getChannel(channel)
             if c.bans:
@@ -618,8 +618,8 @@ class Channel(callbacks.Plugin):
         def add(self, irc, msg, args, channel, user, capabilities):
             """[<channel>] <nick|username> <capability> [<capability> ...]
 
-            If you have the #channel,op capability, this will give the user
-            <name> (or the user to whom <nick> maps)
+            If you have the #channel,op capability, this will give the
+            <username> (or the user to whom <nick> maps)
             the capability <capability> in the channel. <channel> is only
             necessary if the message isn't sent in the channel itself.
             """

@@ -289,9 +289,9 @@ class Alias(callbacks.Plugin):
 
     @internationalizeDocstring
     def add(self, irc, msg, args, name, alias):
-        """<name> <alias>
+        """<name> <command>
 
-        Defines an alias <name> that executes <alias>.  The <alias>
+        Defines an alias <name> that executes <command>.  The <command>
         should be in the standard "command argument [nestedcommand argument]"
         arguments to the alias; they'll be filled with the first, second, etc.
         arguments.  $1, $2, etc. can be used for required arguments.  @1, @2,

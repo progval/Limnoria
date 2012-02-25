@@ -50,10 +50,9 @@ conf.registerChannelValue(Web, 'titleSnarfer',
     registry.Boolean(False, _("""Determines whether the bot will output the
     HTML title of URLs it sees in the channel.""")))
 conf.registerChannelValue(Web, 'nonSnarfingRegexp',
-    registry.Regexp(None, _("""Determines what URLs are to be snarfed and
-    stored in the database in the channel; URLs matching the regexp given will
-    not be snarfed.  Give the empty string if you have no URLs that you'd like
-    to exclude from being snarfed.""")))
+    registry.Regexp(None, _("""Determines what URLs matching the given regexp
+    will not be snarfed.  Give the empty string if you have no URLs that you'd
+    like to exclude from being snarfed.""")))
 
 conf.registerGroup(Web, 'fetch')
 conf.registerGlobalValue(Web.fetch, 'maximum',
