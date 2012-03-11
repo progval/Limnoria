@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,31 +15,31 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:204 plugin.py:285
+#: plugin.py:201 plugin.py:282
 msgid "%s was last seen in %s %s ago: %s"
 msgstr ""
 
-#: plugin.py:211
+#: plugin.py:208
 msgid "%s (%s ago)"
 msgstr ""
 
-#: plugin.py:213
+#: plugin.py:210
 msgid "%s could be %L"
 msgstr ""
 
-#: plugin.py:213
+#: plugin.py:210
 msgid "or"
 msgstr ""
 
-#: plugin.py:215
+#: plugin.py:212
 msgid "I haven't seen anyone matching %s."
 msgstr ""
 
-#: plugin.py:217 plugin.py:289
+#: plugin.py:214 plugin.py:286
 msgid "I have not seen %s."
 msgstr ""
 
-#: plugin.py:221
+#: plugin.py:218
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -50,7 +50,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:232
+#: plugin.py:229
 #, docstring
 msgid ""
 "[<channel>] [--user <name>] [<nick>]\n"
@@ -64,15 +64,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:262
+#: plugin.py:259
 msgid "Someone was last seen in %s %s ago: %s"
 msgstr ""
 
-#: plugin.py:266
+#: plugin.py:263
 msgid "I have never seen anyone."
 msgstr ""
 
-#: plugin.py:270
+#: plugin.py:267
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -82,7 +82,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:293
+#: plugin.py:290
 #, docstring
 msgid ""
 "[<channel>] <name>\n"
@@ -95,7 +95,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:306
+#: plugin.py:303
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -104,8 +104,12 @@ msgid ""
 "        "
 msgstr ""
 
+#: plugin.py:310
+msgid "I am not in %s."
+msgstr ""
+
 #: plugin.py:313
-msgid "You must be in %s to use this command."
+msgid "%s must be in %s to use this command."
 msgstr ""
 
 #: plugin.py:334

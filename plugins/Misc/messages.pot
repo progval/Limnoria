@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,58 +25,71 @@ msgstr ""
 
 #: config.py:50
 msgid ""
+"Determines whether the bot will list unloaded\n"
+"    plugins with the list command if given the --unloaded switch.  If this is\n"
+"    disabled, non-owner users should be unable to see what unloaded plugins\n"
+"    are available."
+msgstr ""
+
+#: config.py:55
+msgid ""
 "Determines the format string for\n"
 "    timestamps in the Misc.last command.  Refer to the Python documentation\n"
 "    for the time module to see what formats are accepted. If you set this\n"
 "    variable to the empty string, the timestamp will not be shown."
 msgstr ""
 
-#: config.py:57
+#: config.py:62
 msgid ""
 "Determines whether or not\n"
 "    the timestamp will be included in the output of last when it is part of a\n"
 "    nested command"
 msgstr ""
 
-#: config.py:61
+#: config.py:66
 msgid ""
 "Determines whether or not the\n"
 "    nick will be included in the output of last when it is part of a nested\n"
 "    command"
 msgstr ""
 
-#: plugin.py:81
+#: plugin.py:104
 msgid "You've given me %s invalid commands within the last minute; I'm now ignoring you for %s."
 msgstr ""
 
-#: plugin.py:93
+#: plugin.py:116
 msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"list %s\" to see the commands in the %q plugin."
 msgstr ""
 
-#: plugin.py:119
+#: plugin.py:142
 #, docstring
 msgid ""
-"[--private] [<plugin>]\n"
+"[--private] [--unloaded] [<plugin>]\n"
 "\n"
 "        Lists the commands available in the given plugin.  If no plugin is\n"
 "        given, lists the public plugins available.  If --private is given,\n"
-"        lists the private plugins.\n"
+"        lists the private plugins. If --unloaded is given, it will list\n"
+"        available plugins that are not loaded.\n"
 "        "
 msgstr ""
 
-#: plugin.py:144
+#: plugin.py:163
+msgid "--private and --unloaded are uncompatible options."
+msgstr ""
+
+#: plugin.py:194
 msgid "There are no private plugins."
 msgstr ""
 
-#: plugin.py:146
+#: plugin.py:196
 msgid "There are no public plugins."
 msgstr ""
 
-#: plugin.py:153
+#: plugin.py:203
 msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
 msgstr ""
 
-#: plugin.py:164
+#: plugin.py:215
 #, docstring
 msgid ""
 "<string>\n"
@@ -86,11 +99,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:183
+#: plugin.py:234
 msgid "No appropriate commands were found."
 msgstr ""
 
-#: plugin.py:188
+#: plugin.py:239
 #, docstring
 msgid ""
 "[<plugin>] [<command>]\n"
@@ -100,15 +113,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:198
+#: plugin.py:249
 msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
 msgstr ""
 
-#: plugin.py:205
+#: plugin.py:256
 msgid "There is no command %q."
 msgstr ""
 
-#: plugin.py:211
+#: plugin.py:262
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -117,23 +130,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:225
+#: plugin.py:276
 msgid "The newest versions available online are %s."
 msgstr ""
 
-#: plugin.py:226
+#: plugin.py:277
 msgid "%s (in %s)"
 msgstr ""
 
-#: plugin.py:230
+#: plugin.py:281
 msgid "I couldn't fetch the newest version from the Limnoria repository."
 msgstr ""
 
-#: plugin.py:232
+#: plugin.py:283
 msgid "The current (running) version of this Supybot is %s.  %s"
 msgstr ""
 
-#: plugin.py:239
+#: plugin.py:290
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -142,11 +155,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:243
+#: plugin.py:294
 msgid "My source is at https://github.com/ProgVal/Limnoria"
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:299
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -158,31 +171,31 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:262
+#: plugin.py:313
 msgid "%s has no public mores."
 msgstr ""
 
-#: plugin.py:265
+#: plugin.py:316
 msgid "Sorry, I can't find any mores for %s"
 msgstr ""
 
-#: plugin.py:272
+#: plugin.py:323
 msgid "more message"
 msgstr ""
 
-#: plugin.py:274
+#: plugin.py:325
 msgid "more messages"
 msgstr ""
 
-#: plugin.py:278
+#: plugin.py:329
 msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
 msgstr ""
 
-#: plugin.py:282
+#: plugin.py:333
 msgid "That's all, there is no more."
 msgstr ""
 
-#: plugin.py:292
+#: plugin.py:343
 #, docstring
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
@@ -197,11 +210,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:386
+#: plugin.py:445
+msgid "The regular expression timed out."
+msgstr ""
+
+#: plugin.py:458
 msgid "I couldn't find a message matching that criteria in my history of %s messages."
 msgstr ""
 
-#: plugin.py:401
+#: plugin.py:473
 #, docstring
 msgid ""
 "<nick> <text>\n"
@@ -211,23 +228,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:409
+#: plugin.py:483
 msgid "Dude, just give the command.  No need for the tell."
 msgstr ""
 
-#: plugin.py:414
+#: plugin.py:488
 msgid "You just told me, why should I tell myself?"
 msgstr ""
 
-#: plugin.py:419
+#: plugin.py:493
 msgid "I haven't seen %s, I'll let you do the telling."
 msgstr ""
 
-#: plugin.py:424
+#: plugin.py:498
 msgid "%s wants me to tell you: %s"
 msgstr ""
 
-#: plugin.py:431
+#: plugin.py:505
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -236,7 +253,25 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:435
+#: plugin.py:509
 msgid "pong"
+msgstr ""
+
+#: plugin.py:513
+#, docstring
+msgid ""
+"[<channel>] <beginning> [--match-case]\n"
+"\n"
+"        Returns the nick of someone on the channel whose nick begins with the\n"
+"        given <beginning>.\n"
+"        <channel> defaults to the current channel."
+msgstr ""
+
+#: plugin.py:519
+msgid "I'm not even in %s."
+msgstr ""
+
+#: plugin.py:531
+msgid "No such nick."
 msgstr ""
 

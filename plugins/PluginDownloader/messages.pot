@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-10-26 21:23+EEST\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,6 +14,23 @@ msgstr ""
 "Content-Transfer-Encoding: ENCODING\n"
 "Generated-By: pygettext.py 1.5\n"
 
+
+#: plugin.py:219
+#, docstring
+msgid ""
+"Add the help for \"@plugin help PluginDownloader\" here\n"
+"    This should describe *how* to use this plugin."
+msgstr ""
+
+#: plugin.py:224
+#, docstring
+msgid ""
+"[<repository>]\n"
+"\n"
+"        Displays the list of plugins in the <repository>.\n"
+"        If <repository> is not given, returns a list of available\n"
+"        repositories."
+msgstr ""
 
 #: plugin.py:232 plugin.py:243
 msgid ", "
@@ -25,6 +42,14 @@ msgstr ""
 
 #: plugin.py:241
 msgid "No plugin found in this repository."
+msgstr ""
+
+#: plugin.py:248
+#, docstring
+msgid ""
+"<repository> <plugin>\n"
+"\n"
+"        Downloads and installs the <plugin> from the <repository>."
 msgstr ""
 
 #: plugin.py:258

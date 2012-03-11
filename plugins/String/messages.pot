@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgid ""
 "    command."
 msgstr ""
 
-#: plugin.py:46
+#: plugin.py:48
 #, docstring
 msgid ""
 "<letter>\n"
@@ -36,7 +36,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:55
+#: plugin.py:57
 #, docstring
 msgid ""
 "<number>\n"
@@ -45,11 +45,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:62
+#: plugin.py:64
 msgid "That number doesn't map to an 8-bit character."
 msgstr ""
 
-#: plugin.py:67
+#: plugin.py:69
 #, docstring
 msgid ""
 "<encoding> <text>\n"
@@ -60,11 +60,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:76 plugin.py:90
+#: plugin.py:78 plugin.py:92
 msgid "encoding"
 msgstr ""
 
-#: plugin.py:81
+#: plugin.py:83
 #, docstring
 msgid ""
 "<encoding> <text>\n"
@@ -75,15 +75,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:92
+#: plugin.py:94
 msgid "base64 string"
 msgstr ""
 
-#: plugin.py:93
+#: plugin.py:95
 msgid "Base64 strings must be a multiple of 4 in length, padded with '=' if necessary."
 msgstr ""
 
-#: plugin.py:99
+#: plugin.py:101
 #, docstring
 msgid ""
 "<string1> <string2>\n"
@@ -93,11 +93,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:106
+#: plugin.py:108
 msgid "Levenshtein distance is a complicated algorithm, try it with some smaller inputs."
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:116
 #, docstring
 msgid ""
 "<string> [<length>]\n"
@@ -108,7 +108,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:125
+#: plugin.py:127
 #, docstring
 msgid ""
 "<text>\n"
@@ -117,7 +117,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:134
+#: plugin.py:136
 #, docstring
 msgid ""
 "<regexp> <text>\n"
@@ -129,11 +129,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:146
+#: plugin.py:148
 msgid "You probably don't want to match the empty string."
 msgstr ""
 
-#: plugin.py:156
+#: plugin.py:162
 #, docstring
 msgid ""
 "<password> <text>\n"
@@ -144,7 +144,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:169
+#: plugin.py:175
 #, docstring
 msgid ""
 "<text>\n"
@@ -155,7 +155,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:180
+#: plugin.py:186
 #, docstring
 msgid ""
 "<text>\n"
