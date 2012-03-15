@@ -5,10 +5,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-20 22:53+0200\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"PO-Revision-Date: 2012-03-15 08:54+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -228,7 +229,7 @@ msgstr "kielelle"
 msgid "^google\\s+(.*)$"
 msgstr "^google\\s+(.*)$"
 
-#: plugin.py:336
+#: plugin.py:343
 msgid ""
 "<expression>\n"
 "\n"
@@ -240,11 +241,11 @@ msgstr ""
 "        Käyttää Googlen laskinta laskeakseen <lausekkeen> arvon.\n"
 "        "
 
-#: plugin.py:353
-msgid "Google's calculator didn't come up with anything."
-msgstr "Googlen laskin ei keksinyt mitään."
+#: plugin.py:370
+msgid "Google says: Error: %s."
+msgstr "Google sanoo: Virhe: %s."
 
-#: plugin.py:359
+#: plugin.py:377
 msgid ""
 "<phone number>\n"
 "\n"
@@ -256,7 +257,9 @@ msgstr ""
 "        Etsii <puhelinnumeroa> Googlesta.\n"
 "        "
 
-#: plugin.py:373
+#: plugin.py:391
 msgid "Google's phonebook didn't come up with anything."
 msgstr "Googlen puhelinluettelo ei keksinyt mitään."
 
+#~ msgid "Google's calculator didn't come up with anything."
+#~ msgstr "Googlen laskin ei keksinyt mitään."
