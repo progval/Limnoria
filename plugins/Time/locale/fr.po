@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-11-17 09:46+CET\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -120,11 +120,9 @@ msgstr ""
 msgid "Python-tz is required by the command, but is not installed on this computer."
 msgstr "Python-tz est requis par la commande, mais n'est pas installé sur cet ordinateur."
 
-#: plugin.py:175
-msgid "A timezone must be in the format region/city."
-msgstr "Une timezone doit être dans le format zone/ville."
-
-#: plugin.py:179
+#: plugin.py:177
 msgid "Unknown timezone"
 msgstr "Timezone inconnue"
 
+#~ msgid "A timezone must be in the format region/city."
+#~ msgstr "Une timezone doit être dans le format zone/ville."

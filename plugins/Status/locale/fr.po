@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -100,7 +100,6 @@ msgstr ""
 "Retourne quelques statistiques intéressantes reliées au CPU."
 
 #: plugin.py:131
-#, fuzzy
 msgid "My children have taken %.2f seconds of user time and %.2f seconds of system time for a total of %.2f seconds of CPU time."
 msgstr "Mes enfants ont pris %.2f secondes du temps utilisateur et %.2f secondes du temps système, pour un total de %.2f secondes de temps CPU."
 
@@ -116,7 +115,7 @@ msgstr "Impossible de lancer la commande ps."
 msgid "  I'm taking up %S of memory."
 msgstr " Je prend plus de %S de mémoire."
 
-#: plugin.py:174
+#: plugin.py:175
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -127,11 +126,11 @@ msgstr ""
 "\n"
 "Retourne quelques statistiques intéressantes liées aux commandes."
 
-#: plugin.py:184
+#: plugin.py:185
 msgid "I offer a total of %n in %n.  I have processed %n."
 msgstr "J'offre un total de %n dans %n plugins. J'ai géré %n."
 
-#: plugin.py:193
+#: plugin.py:194
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -142,7 +141,7 @@ msgstr ""
 "\n"
 "Retourne une liste des commandes offertes par le bot."
 
-#: plugin.py:207
+#: plugin.py:208
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -153,11 +152,11 @@ msgstr ""
 "\n"
 "Retourne la durée durant laquelle le bot est lancée."
 
-#: plugin.py:211
+#: plugin.py:212
 msgid "I have been running for %s."
 msgstr "Je suis lancé depuis %s."
 
-#: plugin.py:218
+#: plugin.py:219
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -167,3 +166,15 @@ msgstr ""
 "ne prend pas d'argument\n"
 "\n"
 "Retourne le(s) serveur(s) sur le(s)quel(s) le bot est."
+
+#: plugin.py:228
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the network the bot is on.\n"
+"        "
+msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Retourne le(s) serveur(s) sur le(s)quel(s) le bot est."
+

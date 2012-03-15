@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-02-14 18:30+CET\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -25,11 +25,11 @@ msgstr "Le plugin Google sert à lire des URLs qui correspondent à un masque sp
 msgid "Do you want the Google search snarfer enabled by default?"
 msgstr "Voulez-vous activer le snarfer de recherche Google par défaut ?"
 
-#: config.py:88
+#: config.py:89
 msgid "Value must be 1 <= n <= 8"
 msgstr "La valeur doit être comprise entre 1 et 8 (inclus)"
 
-#: config.py:99
+#: config.py:100
 msgid ""
 "Determines the URL that will be sent to Google for\n"
 "    the Referer field of the search requests.  If this value is empty, a\n"
@@ -37,7 +37,7 @@ msgid ""
 "    http://$server/$botName"
 msgstr "Détermine l'URL qui sera envoyée à Google comme Referer pour les recerches. Si la valeur est vide, un Refere sera automatiquement généré dans le format : http://$server/$botNamr"
 
-#: config.py:104
+#: config.py:105
 msgid ""
 "Determines whether the search snarfer is\n"
 "    enabled.  If so, messages (even unaddressed ones) beginning with the word\n"
@@ -45,33 +45,33 @@ msgid ""
 "    channel."
 msgstr "Détermine si le snarger de recherche est activé. Si c'est le cas, les messages (même non adressés) commençant par 'google' seront répondus par la première URL que Google donne pour cette recherche."
 
-#: config.py:109
+#: config.py:110
 msgid ""
 "Determines whether the word 'google' in the\n"
 "    bot's output will be made colorful (like Google's logo)."
 msgstr "Détermine si le mot 'google' dans la sortie du bot sera coloré (comme le logo de Google)"
 
-#: config.py:112
+#: config.py:113
 msgid "Determines whether results are bolded."
 msgstr "Détermine si les résultats sont mis en gras."
 
-#: config.py:114
+#: config.py:115
 msgid ""
 "Determines the maximum number of results returned\n"
 "    from the google command."
 msgstr "Détermine le nombre maximum de résultats retournés par la commande google."
 
-#: config.py:117
+#: config.py:118
 msgid ""
 "Determines what default language is used in\n"
 "    searches.  If left empty, no specific language will be requested."
 msgstr "Détermine quand langue par défaut est utilisée dans les recherches. Si laissé vide, aucune langue spécifique ne sera demandée."
 
-#: config.py:117
+#: config.py:118
 msgid "en"
 msgstr "fr"
 
-#: config.py:120
+#: config.py:121
 msgid ""
 "Determines what level of search filtering to use\n"
 "    by default.  'active' - most filtering, 'moderate' - default filtering,\n"
@@ -190,11 +190,11 @@ msgstr "Les langues valides sont : %L"
 msgid "to language"
 msgstr "vers la langue"
 
-#: plugin.py:297
+#: plugin.py:314
 msgid "^google\\s+(.*)$"
 msgstr "^google\\s+(.*)$"
 
-#: plugin.py:320
+#: plugin.py:343
 msgid ""
 "<expression>\n"
 "\n"
@@ -205,11 +205,11 @@ msgstr ""
 "\n"
 "Utilise la calculatrice Google pour calculer la valeur de l'<expression>."
 
-#: plugin.py:337
-msgid "Google's calculator didn't come up with anything."
-msgstr "La calculatrice Google ne donne aucun résultat."
+#: plugin.py:370
+msgid "Google says: Error: %s."
+msgstr "Google dit : Erreur : %s."
 
-#: plugin.py:343
+#: plugin.py:377
 msgid ""
 "<phone number>\n"
 "\n"
@@ -220,7 +220,9 @@ msgstr ""
 "\n"
 "Recherche le <numéro de téléphone> sur Google."
 
-#: plugin.py:357
+#: plugin.py:391
 msgid "Google's phonebook didn't come up with anything."
 msgstr "L'annuaire téléphonique de Google ne donne aucun résultat."
 
+#~ msgid "Google's calculator didn't come up with anything."
+#~ msgstr "La calculatrice Google ne donne aucun résultat."
