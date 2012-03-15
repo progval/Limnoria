@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
-"PO-Revision-Date: 2011-08-10 13:04+0200\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"PO-Revision-Date: 2012-03-15 08:21+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -15,33 +15,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: plugin.py:204
-#: plugin.py:285
+#: plugin.py:201
+#: plugin.py:282
 msgid "%s was last seen in %s %s ago: %s"
 msgstr "%s nähtiin viimeeksi kanavalla %s %s sitten: %s"
 
-#: plugin.py:211
+#: plugin.py:208
 msgid "%s (%s ago)"
 msgstr "%s (%s sitten)"
 
-#: plugin.py:213
+#: plugin.py:210
 msgid "%s could be %L"
 msgstr "%s voisi olla %L"
 
-#: plugin.py:213
+#: plugin.py:210
 msgid "or"
 msgstr "tai"
 
-#: plugin.py:215
+#: plugin.py:212
 msgid "I haven't seen anyone matching %s."
 msgstr "En ole nähnyt kenenkään täsmäävän %s."
 
-#: plugin.py:217
-#: plugin.py:289
+#: plugin.py:214
+#: plugin.py:286
 msgid "I have not seen %s."
 msgstr "En ole nähnyt %s:ää."
 
-#: plugin.py:221
+#: plugin.py:218
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
@@ -57,7 +57,7 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:232
+#: plugin.py:229
 msgid ""
 "[<channel>] [--user <name>] [<nick>]\n"
 "\n"
@@ -79,15 +79,15 @@ msgstr ""
 "        on vaadittu vain, jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:262
+#: plugin.py:259
 msgid "Someone was last seen in %s %s ago: %s"
 msgstr "Joky nähtiin viimeeksi kanavalla %s %s sitten: %s"
 
-#: plugin.py:266
+#: plugin.py:263
 msgid "I have never seen anyone."
 msgstr "Minä en ole nähnyt ketään."
 
-#: plugin.py:270
+#: plugin.py:267
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -101,7 +101,7 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:293
+#: plugin.py:290
 msgid ""
 "[<channel>] <name>\n"
 "\n"
@@ -121,7 +121,7 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:306
+#: plugin.py:303
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
@@ -133,9 +133,13 @@ msgstr ""
 "        Palauttaa sen jälkeiset viestit, kun <nimimerkki> viimeksi poistui kanavalta.\n"
 "        "
 
+#: plugin.py:310
+msgid "I am not in %s."
+msgstr "En ole nähnyt %s:ää."
+
 #: plugin.py:313
-msgid "You must be in %s to use this command."
-msgstr "Sinun täytyy olla %s käyttääksesi tätä komentoa."
+msgid "%s must be in %s to use this command."
+msgstr "Käyttäjän %s täytyy olla kanavalla %s käyttääkseen tätä komentoa."
 
 #: plugin.py:334
 msgid "I couldn't find in my history of %s messages where %r last left the %s"
