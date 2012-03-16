@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2011-06-25 14:17+CEST\n"
-"PO-Revision-Date: 2012-01-06 19:02+0200\n"
+"PO-Revision-Date: 2012-03-16 08:51+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -298,6 +298,10 @@ msgid ""
 "    documentation for the time module to see valid formatting characters for\n"
 "    time formats."
 msgstr ""
+"Määrittää, kuinka aikaleimat, jotka on tarkoitettu ihmisten luettaviksi\n"
+"    pitäisi muotoilla. Katso Pythonin dokumentaatiota\n"
+"    aika moduulille nähdäksesi kelvolliset muotoilumerkit \n"
+"    ajan muodoille."""
 
 #: ../src/conf.py:312
 msgid ""
@@ -313,6 +317,9 @@ msgid ""
 "    the bot's reply -- no reply will be passed through the bot with a length\n"
 "    greater than this."
 msgstr ""
+"Määrittää botin vastauksen lopullisen enimmäis pituuden\n"
+"    -- yksikään vastaus, joka on suurempi, kuin tämä\n"
+"    ei mene botin läpi."
 
 #: ../src/conf.py:327
 msgid ""
@@ -320,15 +327,17 @@ msgid ""
 "    messages into chunks and allow users to use  the 'more' command to get the\n"
 "    remaining chunks."
 msgstr ""
+"Määrittää hajottaako botti pitkät viestit\n"
+"    paloihin ja sallii käyttäjien käyttää 'more' komentoa\n"
+"    saadakseen jäljelläolevat palat."
 
 #: ../src/conf.py:332
-#, fuzzy
 msgid ""
 "Determines what the maximum number of\n"
 "    chunks (for use with the 'more' command) will be."
 msgstr ""
 "Määrittää maksimimäärän\n"
-"    chunks (for use with the 'more' command) will be."
+"    paloja (käytettäväksi 'more' komennon) kanssa."
 
 #: ../src/conf.py:336
 msgid ""
@@ -336,6 +345,9 @@ msgid ""
 "    will be.  If set to 0, uses our super-tweaked,\n"
 "    get-the-most-out-of-an-individual-message default."
 msgstr ""
+"Määrittää, kuinka pitkiä yksittäiset palat tulevat\n"
+"    olemaan.  Jos tämä on asetettu arvoon 0, tämä käyttää meidän\n"
+"    super-muokattua-saa-suurin-osa-ulos-yksittäisestä-viestistä oletusta."
 
 #: ../src/conf.py:341
 msgid ""
@@ -507,7 +519,7 @@ msgstr ""
 
 #: ../src/conf.py:476
 msgid "The operation succeeded."
-msgstr ""
+msgstr "Tehtävä suoritettu onnistuneesti."
 
 #: ../src/conf.py:477
 msgid ""
@@ -1007,6 +1019,8 @@ msgid ""
 "Determines how many seconds must elapse between\n"
 "    JOINs sent to the server."
 msgstr ""
+"Määrittää, kuinka monta sekuntia täytyy kulua palvelimelle lähetettyjen \n"
+"    JOINien välissä."
 
 #: ../src/conf.py:1033
 msgid ""
@@ -1021,16 +1035,20 @@ msgid ""
 "Determines what proxy all HTTP requests should go\n"
 "    through.  The value should be of the form 'host:port'."
 msgstr ""
+"Määrittää minkä välityspalvelimen läpi kaikkien HTTP pyyntöjen pitäisi mennä. \n"
+"   Arvon pitäisi olla muodossa 'isäntä:portti'."
 
 #: ../src/conf.py:1059
 msgid "Determines what host the HTTP server will bind."
-msgstr ""
+msgstr "Määrittää mihin isäntään HTTP palvelin sitoutuu.."
 
 #: ../src/conf.py:1061
 msgid ""
 "Determines what port the HTTP server will\n"
 "    bind."
 msgstr ""
+"Määrittää mihin porttiin HTTP palvelin \n"
+"    sitoutuu."
 
 #: ../src/conf.py:1064
 msgid ""
@@ -1038,6 +1056,9 @@ msgid ""
 "    no plugin is using it. This also means that the server will start even\n"
 "    if it is not used."
 msgstr ""
+"Määrittää pysyykö palvelin elossa, vaikka yksikään \n"
+"    lisäosa ei käytä sitä. Tämä tarkoittaa, että palvelin käynnistyy myös, mikäli sitä \n"
+"    ei käytetä."
 
 #: ../src/conf.py:1073
 msgid ""
@@ -1053,6 +1074,9 @@ msgid ""
 "   empty string, the bot will attempt to find out its IP dynamically (though\n"
 "   sometimes that doesn't work, hence this variable)."
 msgstr ""
+"Merkkiketju, joka on botin ulkoinen IP osoite.  Jos tämä on\n"
+"   tyhjä merkkiketju, botti yrittää löytää IP osoiteensa dynaamisesti (vaikko\n"
+"    joskus se ei toimi, siksi tämä asetusarvo)."
 
 #: ../src/conf.py:1094
 msgid ""
@@ -1069,12 +1093,18 @@ msgid ""
 "    the default) then no PID file will be written.  A restart is required for\n"
 "    changes to this variable to take effect."
 msgstr ""
+"Määrittää mihin tiedostoon botin pitäisi kirjoittaa PIDinsä \n"
+"    (Prosessi ID:n), jotta voit tappaa sen helpommin.  Jos jätetty tyhjäksi (kuten se on \n"
+"    oletuksena) niin silloin PID tiedostoa ei kirjoiteta. Uudelleen käynnistys on vaadittu\n"
+"    tämän asetusarvon muutosten vaikutuksen aikaansaamiseksi."
 
 #: ../src/conf.py:1110
 msgid ""
 "Determines whether the bot will automatically\n"
 "    thread all commands."
 msgstr ""
+"Määrittää ketjuttaako botti kaikki\n"
+"    komennot."
 
 #: ../src/conf.py:1113
 msgid ""
@@ -1082,26 +1112,29 @@ msgid ""
 "    flush all flushers *very* often.  Useful for debugging when you don't know\n"
 "    what's breaking or when, but think that it might be logged."
 msgstr ""
+"Määrittää kuinka usein botti tallentaa automaattisesti\n"
+"    kaikki puskurit *erittäin* usein.  Hyödyllinen bugien korjaamiseen, kun et tiedä\n"
+"    mikä hajoaa ja milloin, mutta uskot, että se saattaa tallentua lokiin."
 
 #: ../src/questions.py:60
 msgid "Sorry, that response was not an option."
-msgstr ""
+msgstr "Anteeksi, mutta tuo vastaus ei ollut vaihtoehto."
 
 #: ../src/questions.py:106
 msgid "Sorry, you must enter a value."
-msgstr ""
+msgstr "Anteeksi, mutta sinun täytyy antaa arvo."
 
 #: ../src/questions.py:126
 msgid "Enter password: "
-msgstr ""
+msgstr "Anna salasana: "
 
 #: ../src/questions.py:128
 msgid "Re-enter password: "
-msgstr ""
+msgstr "Anna salasana uudelleen: "
 
 #: ../src/questions.py:141
 msgid "Passwords don't match."
-msgstr ""
+msgstr "Salasanat eivät täsmää."
 
 #: ../src/utils/httpserver.py:129
 msgid ""
@@ -1110,6 +1143,10 @@ msgid ""
 "    message, it probably means you are developping a plugin, and you have\n"
 "    neither overriden this message or defined an handler for this query."
 msgstr ""
+"\n"
+"    Tämä on Supybot HTTP-palvelimen oletus vastaus. Jos näet tämän viestin, se luultavasti tarkoittaa, että\n"
+"    sinä kehität lisäosaa, etkä ole\n"
+"    ohittanut tätä viestiä tai määrittänyt käsittelijää tälle pyynnölle."
 
 #: ../src/utils/httpserver.py:150
 msgid ""
@@ -1119,20 +1156,25 @@ msgid ""
 "    What I'm saying is you just triggered a 404 Not Found, and I am not\n"
 "    trained to help you in such a case."
 msgstr ""
+"\n"
+"    Olen aika älykäs IRC botti, mutta olen huono verkkosivujen tarjoamisessa, erityisesti, jos en\n"
+"    tiedä mitä minun pitäisi tarjota.\n"
+"    Mitä minä olen kertomassa on vain, että laukaisit 404 sivua ei löydy virheen, ja minua ei ole koulutettu\n"
+"    auttamaan sinua sellaisessa tapauksessa."
 
 #: ../src/utils/httpserver.py:167
 msgid "Request not handled."
-msgstr ""
+msgstr "Pyyntöä ei hyväksytty."
 
 #: ../src/utils/httpserver.py:171
 msgid "Supybot Web server index"
-msgstr ""
+msgstr "Supybot verkkopalvelin indeksi."
 
 #: ../src/utils/httpserver.py:174
 msgid "Here is a list of the plugins that have a Web interface:"
-msgstr ""
+msgstr "Tässä on lista lisäosista, joilla on verkko käyttöliittymä:"
 
 #: ../src/utils/httpserver.py:183
 msgid "No plugins available."
-msgstr ""
+msgstr "Ei lisäosia saatavilla."
 
