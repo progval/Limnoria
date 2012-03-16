@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
+"Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-17 00:07+0200\n"
+"PO-Revision-Date: 2012-03-15 20:55+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -225,7 +225,7 @@ msgstr "a lingua"
 msgid "^google\\s+(.*)$"
 msgstr "^google\\s+(.*)$"
 
-#: plugin.py:336
+#: plugin.py:343
 #, docstring
 msgid ""
 "<expression>\n"
@@ -238,11 +238,11 @@ msgstr ""
 "        Utilizza la calcolatrice di Google per calcolare il valore di <espressione>.\n"
 "        "
 
-#: plugin.py:353
-msgid "Google's calculator didn't come up with anything."
-msgstr "La calcolatrice di Google non ha fornito alcun risultato."
+#: plugin.py:370
+msgid "Google says: Error: %s."
+msgstr "Google dice: errore: %s."
 
-#: plugin.py:359
+#: plugin.py:377
 #, docstring
 msgid ""
 "<phone number>\n"
@@ -255,7 +255,7 @@ msgstr ""
 "        Cerca <numero telefonico> su Google.\n"
 "        "
 
-#: plugin.py:373
+#: plugin.py:391
 msgid "Google's phonebook didn't come up with anything."
 msgstr "La rubrica di Google non ha fornito alcun risultato."
 

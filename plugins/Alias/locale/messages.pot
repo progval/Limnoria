@@ -1,14 +1,18 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-07 08:23+0200\n"
-"Last-Translator: skizzhg <skizzhg@gmx.com>\n"
-"Language-Team: Italian <skizzhg@gmx.com>\n"
-"Language: it\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2012-02-15 23:03+CET\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
 
 
 #: plugin.py:45
@@ -20,15 +24,10 @@ msgid ""
 "    removed).\n"
 "    "
 msgstr ""
-"Restituisce il canale da dove proviene il messaggio o il canale fornito come argomento.\n"
-"\n"
-"    Se il canale è stato dato come argomento, quest'ultimo viene modificato (il canale\n"
-"    viene rimosso).\n"
-"    "
 
 #: plugin.py:164
 msgid " at least"
-msgstr " almeno"
+msgstr ""
 
 #: plugin.py:165
 msgid ""
@@ -36,13 +35,10 @@ msgid ""
 "\n"
 "Alias for %q."
 msgstr ""
-"<un alias,%s %n>\n"
-"\n"
-"Alias per %q."
 
 #: plugin.py:166
 msgid "argument"
-msgstr "argomento"
+msgstr ""
 
 #: plugin.py:220
 #, docstring
@@ -52,14 +48,10 @@ msgid ""
 "        Locks an alias so that no one else can change it.\n"
 "        "
 msgstr ""
-"<alias>\n"
-"\n"
-"        Blocca un alias affinché nessun altro possa modificarlo.\n"
-"        "
 
 #: plugin.py:229 plugin.py:243
 msgid "There is no such alias."
-msgstr "Non c'è nessun alias."
+msgstr ""
 
 #: plugin.py:234
 #, docstring
@@ -69,14 +61,10 @@ msgid ""
 "        Unlocks an alias so that people can define new aliases over it.\n"
 "        "
 msgstr ""
-"<alias>\n"
-"\n"
-"        Sblocca un alias affinché chiunque possa ridefinirne di nuovi.\n"
-"        "
 
 #: plugin.py:254
 msgid "That name isn't valid.  Try %q instead."
-msgstr "Nome non valido. Prova %q invece."
+msgstr ""
 
 #: plugin.py:292
 #, docstring
@@ -91,15 +79,6 @@ msgid ""
 "        remaining arguments,\" and cannot be combined with optional arguments.\n"
 "        "
 msgstr ""
-"<nome> <comando>\n"
-"\n"
-"        Definisce un <nome> che esegue <comando>. <comando> deve essere nello\n"
-"        standard \"comando argomento [comando_nidificato argomento]\"; gli\n"
-"        argomenti dati devono essere riportati in sequenza. Per gli argomenti\n"
-"        richiesti è possibile utilizzare $1, $2, ecc., mentre @1, @2, ecc. per\n"
-"        quelli opzionali. $* significa semplicemente \"tutti gli argomenti\n"
-"        rimanenti\" e non può essere combinato con quelli opzionali.\n"
-"        "
 
 #: plugin.py:315
 #, docstring
@@ -109,8 +88,4 @@ msgid ""
 "        Removes the given alias, if unlocked.\n"
 "        "
 msgstr ""
-"<nome>\n"
-"\n"
-"        Rimuove l'alias specificato, se questo non è bloccato.\n"
-"        "
 
