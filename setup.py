@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
@@ -32,8 +32,8 @@
 
 import sys
 
-if sys.version_info < (2, 4, 0):
-    sys.stderr.write("Supybot requires Python 2.4 or newer.\n")
+if sys.version_info < (2, 7, 0):
+    sys.stderr.write("Supybot requires Python 2.7 or newer.\n")
     sys.exit(-1)
 
 import textwrap
