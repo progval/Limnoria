@@ -46,12 +46,7 @@ registry file for your bot.
   --user' to install into your home directory.  You'll now have
   a $HOME/.local/bin directory containing Supybot programs ('supybot',
   'supybot-wizard', etc.) and a $HOME/.local/lib directory containing the
-  Supybot libraries.  It is also recommended that you setup a proper
-  PYTHONPATH environment variable in your shell's init file.
-
-      bash -- 'export PYTHONPATH=$HOME/.local/lib/python2.x/site-packages'
-
-      (t)csh -- 'setenv PYTHONPATH $HOME/.local/lib/python2.x/site-packages'
+  Supybot libraries.
 
 Windows
 
