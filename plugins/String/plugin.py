@@ -87,7 +87,12 @@ class String(callbacks.Plugin):
         <http://docs.python.org/library/codecs.html#standard-encodings>.
         """
         try:
-            irc.reply(text.decode(encoding))
+            s = text.decode(encoding)
+            # Not all encodings decode to a unicode object.  Only encode those
+            # that do.
+            if isinstance(s, unicode):
+                s = s.encode('utf-8')
+            irc.reply(s)
         except LookupError:
             irc.errorInvalid(_('encoding'), encoding)
         except binascii.Error:
