@@ -754,6 +754,16 @@ def mode(channel, args=(), prefix='', msg=None):
         args = tuple(map(str, args))
     return IrcMsg(prefix=prefix, command='MODE', args=(channel,)+args, msg=msg)
 
+def modes(channel, args=(), prefix='', msg=None):
+    """Returns a MODE to quiet each of nicks on channel."""
+    if conf.supybot.protocols.irc.strictRfc():
+        assert isChannel(channel), repr(channel)
+    modes = args
+    if msg and not prefix:
+        prefix = msg.prefix
+    return IrcMsg(prefix=prefix, command='MODE',
+                  args=[channel] + ircutils.joinModes(modes), msg=msg)
+
 def limit(channel, limit, prefix='', msg=None):
     return mode(channel, ['+l', limit], prefix=prefix, msg=msg)
 
