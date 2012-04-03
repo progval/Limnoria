@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2011, James Vega
+# Copyright (c) 2009,2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -458,7 +458,7 @@ def replyTo(msg):
         return msg.nick
 
 def dccIP(ip):
-    """Returns an IP in the proper for DCC."""
+    """Converts an IP string to the DCC integer form."""
     assert utils.net.isIPV4(ip), \
            'argument must be a string ip in xxx.yyy.zzz.www format.'
     i = 0
