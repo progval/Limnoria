@@ -519,11 +519,13 @@ def unbans(channel, hostmasks, prefix='', msg=None):
     if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert all(isUserHostmask, hostmasks), hostmasks
+    modes = [('-b', s) for s in hostmasks]
     if msg and not prefix:
         prefix = msg.prefix
-    return IrcMsg(prefix=prefix, command='MODE', msg=msg,
-                  args=(channel, '-' + ('b'*len(hostmasks)),
-                                        ' '.join(hostmasks)))
+    return IrcMsg(prefix=prefix, command='MODE',
+                  args=[channel] + ircutils.joinModes(modes), msg=msg)
+     if msg and not prefix:
+         prefix = msg.prefix
 
 def kick(channel, nick, s='', prefix='', msg=None):
     """Returns a KICK to kick nick from channel with the message msg."""
