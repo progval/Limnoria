@@ -56,10 +56,7 @@ class Internet(callbacks.Plugin):
         else:
             try:
                 ip = socket.getaddrinfo(host, None)[0][4][0]
-                if ip == '64.94.110.11': # Verisign sucks!
-                    irc.reply(_('Host not found.'))
-                else:
-                    irc.reply(ip)
+                irc.reply(ip)
             except socket.error:
                 irc.reply(_('Host not found.'))
     dns = wrap(dns, ['something'])
