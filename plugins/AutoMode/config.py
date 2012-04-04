@@ -71,6 +71,9 @@ conf.registerChannelValue(AutoMode.ban, 'period',
     registry.PositiveInteger(86400, _("""Determines how many seconds the bot
     will automatically ban a person when banning.""")))
 
+conf.registerChannelValue(AutoMode, 'delay',
+    registry.Integer(0, _("""Determines how many seconds the bot will wait
+    before applying a mode. Has no effect on bans.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
