@@ -524,8 +524,6 @@ def unbans(channel, hostmasks, prefix='', msg=None):
         prefix = msg.prefix
     return IrcMsg(prefix=prefix, command='MODE',
                   args=[channel] + ircutils.joinModes(modes), msg=msg)
-     if msg and not prefix:
-         prefix = msg.prefix
 
 def kick(channel, nick, s='', prefix='', msg=None):
     """Returns a KICK to kick nick from channel with the message msg."""
