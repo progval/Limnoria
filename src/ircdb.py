@@ -281,9 +281,9 @@ class IrcUser(object):
     def addHostmask(self, hostmask):
         """Adds a hostmask to the user's hostmasks."""
         assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
-        if len(unWildcardHostmask(hostmask)) < 8:
+        if len(unWildcardHostmask(hostmask)) < 3:
             raise ValueError, \
-                  'Hostmask must contain at least 8 non-wildcard characters.'
+                  'Hostmask must contain at least 3 non-wildcard characters.'
         self.hostmasks.add(hostmask)
 
     def removeHostmask(self, hostmask):
