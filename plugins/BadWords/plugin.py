@@ -78,7 +78,8 @@ class BadWords(callbacks.Privmsg):
             s = ircutils.stripFormatting(msg.args[1])
             if ircutils.isChannel(channel) and self.registryValue('kick', channel):
                 if self.regexp.search(s):
-                    if irc.nick in irc.state.channels[channel].ops:
+                    if irc.nick in irc.state.channels[channel].ops or \
+                            irc.nick in irc.state.channels[channel].halfops:
                         message = self.registryValue('kick.message', channel)
                         irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
                     else:
