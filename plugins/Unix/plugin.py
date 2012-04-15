@@ -313,6 +313,62 @@ class Unix(callbacks.Plugin):
                                 't':'positiveInt','W':'positiveInt'}), 
                        first('ip', ('matches', _hostExpr, 'Invalid hostname'))]))
 
+    def sysuptime(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the uptime from the system the bot is runnning on.
+        """
+        uptimeCmd = self.registryValue('sysuptime.command')
+        if uptimeCmd:
+            args = [uptimeCmd]
+            try:
+                inst = subprocess.Popen(args, close_fds=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        stdin=file(os.devnull))
+            except OSError, e:
+                irc.error('It seems the configured uptime command was '
+                          'not available.', Raise=True)
+            (out, err) = inst.communicate()
+            inst.wait()
+            lines = out.splitlines()
+            lines = map(str.rstrip, lines)
+            lines = filter(None, lines)
+            irc.replies(lines, joiner=' ')
+        else:
+            irc.error('The uptime command is not configured. If uptime is '
+                      'installed on this system, reconfigure the '
+                      'supybot.plugins.Unix.sysuptime.command configuration '
+                      'variable appropriately.')
+
+    def sysuname(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the uname -a from the system the bot is runnning on.
+        """
+        unameCmd = self.registryValue('sysuname.command')
+        if unameCmd:
+            args = [unameCmd, '-a']
+            try:
+                inst = subprocess.Popen(args, close_fds=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        stdin=file(os.devnull))
+            except OSError, e:
+                irc.error('It seems the configured uptime command was '
+                          'not available.', Raise=True)
+            (out, err) = inst.communicate()
+            inst.wait()
+            lines = out.splitlines()
+            lines = map(str.rstrip, lines)
+            lines = filter(None, lines)
+            irc.replies(lines, joiner=' ')
+        else:
+            irc.error('The uname command is not configured. If uname is '
+                      'installed on this system, reconfigure the '
+                      'supybot.plugins.Unix.sysuname.command configuration '
+                      'variable appropriately.')
+
     def call(self, irc, msg, args, text):
         """<command to call with any arguments> 
         Calls any command available on the system, and returns its output.

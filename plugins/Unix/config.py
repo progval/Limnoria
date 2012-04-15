@@ -95,4 +95,14 @@ conf.registerGlobalValue(Unix.ping, 'command',
     registry.String(utils.findBinaryInPath('ping') or '', """Determines what 
     command will be called for the ping command."""))
 
+conf.registerGroup(Unix, 'sysuptime')
+conf.registerGlobalValue(Unix.sysuptime, 'command',
+    registry.String(utils.findBinaryInPath('uptime') or '', """Determines what
+    command will be called for the uptime command."""))
+
+conf.registerGroup(Unix, 'sysuname')
+conf.registerGlobalValue(Unix.sysuname, 'command',
+    registry.String(utils.findBinaryInPath('uname') or '', """Determines what
+    command will be called for the uname command."""))
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
