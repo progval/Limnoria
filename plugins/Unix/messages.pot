@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-12-22 22:28+CET\n"
+"POT-Creation-Date: 2012-04-15 18:47+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,6 +218,24 @@ msgid ""
 msgstr ""
 
 #: plugin.py:317
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uptime from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+
+#: plugin.py:345
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uname -a from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+
+#: plugin.py:373
 #, docstring
 msgid ""
 "<command to call with any arguments> \n"
