@@ -242,11 +242,21 @@ class Channel(callbacks.Plugin):
             irc.error(_('I cowardly refuse to devoice myself.  If you really '
                       'want me devoiced, tell me to op you and then devoice '
                       'me yourself.'), Raise=True)
-        if not nicks:
+        if nicks:
+            if len(nicks) == 1 and msg.nick in nicks:
+                capability = 'voice'
+            else:
+                capability = 'op'
+        else:
             nicks = [msg.nick]
-        def f(L):
-            return ircmsgs.devoices(channel, L)
-        self._sendMsgs(irc, nicks, f)
+            capability = 'voice'
+        capability = ircdb.makeChannelCapability(channel, capability)
+        if ircdb.checkCapability(msg.prefix, capability):
+            def f(L):
+                return ircmsgs.devoices(channel, L)
+            self._sendMsgs(irc, nicks, f)
+        else:
+            irc.errorNoCapability(capability)
     devoice = wrap(devoice, ['voice', ('isGranted', 'devoice someone'),
                              any('nickInChannel')])
 
