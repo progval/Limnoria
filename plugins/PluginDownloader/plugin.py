@@ -213,6 +213,32 @@ repositories = {
                                                    'spidey-supybot-plugins',
                                                    'Plugins',
                                                    ),
+               'Antibody':         GithubRepository(
+                                                   'Antibody',
+                                                   'supybot-plugins',
+                                                   ),
+               'doorbot':          GithubRepository(
+                                                   'hacklab',
+                                                   'doorbot',
+                                                   ),
+               'boombot':          GithubRepository(
+                                                   'nod',
+                                                   'boombot',
+                                                   'plugins',
+                                                   ),
+               'mailed-notifier':  GithubRepository(
+                                                   'tbielawa',
+                                                   'supybot-mailed-notifier',
+                                                   ),
+               'pingdom':          GithubRepository(
+                                                   'rynop',
+                                                   'supyPingdom',
+                                                   'plugins',
+                                                   ),
+               'scrum':            GithubRepository(
+                                                   'amscanne',
+                                                   'supybot-scrum',
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
