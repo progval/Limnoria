@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-16 18:10+EEST\n"
+"POT-Creation-Date: 2012-04-17 12:51+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -807,7 +807,7 @@ msgstr ""
 #: src/conf.py:765
 msgid ""
 "Determines what directory backup data is put\n"
-"    into. Set it to /dev/null (it is a special value,\n"
+"    into. Set it to /dev/null to disable backup (it is a special value,\n"
 "    so it also works on Windows and systems without /dev/null)."
 msgstr ""
 
