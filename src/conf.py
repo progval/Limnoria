@@ -763,7 +763,7 @@ registerGlobalValue(supybot.directories, 'data',
     Directory('data', _("""Determines what directory data is put into.""")))
 registerGlobalValue(supybot.directories, 'backup',
     Directory('backup', _("""Determines what directory backup data is put
-    into. Set it to /dev/null (it is a special value,
+    into. Set it to /dev/null to disable backup (it is a special value,
     so it also works on Windows and systems without /dev/null).""")))
 registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', _("""Determines what directory temporary files
