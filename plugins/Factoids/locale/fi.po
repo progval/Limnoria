@@ -79,7 +79,7 @@ msgid ""
 msgstr ""
 "Määrittää missä muodossa factoidin arvo annetaan, kun\n"
 "    factoidin arvoa pyydetään.  Kaikki perus-\n"
-"    korvikkeet ovat voimassa, \"$key\"men lisäksi factoidin arvolle ja \"$value\"\llen    factoidin arvolle."
+"    korvikkeet ovat voimassa, \"$key\"men lisäksi factoidin arvolle ja \"$value\"llen    factoidin arvolle."
 
 #: plugin.py:179
 msgid ""
