@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-06-27 12:02+CEST\n"
+"POT-Creation-Date: 2012-04-19 21:37+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,5 +65,11 @@ msgstr ""
 msgid ""
 "Determines how many seconds the bot\n"
 "    will automatically ban a person when banning."
+msgstr ""
+
+#: config.py:75
+msgid ""
+"Determines how many seconds the bot will wait\n"
+"    before applying a mode. Has no effect on bans."
 msgstr ""
 
