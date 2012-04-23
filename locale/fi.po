@@ -167,7 +167,7 @@ msgid "I need to be opped to %s."
 msgstr "Minun täytyy olla opattuna, jotta voin %s."
 
 #: src/commands.py:344
-msgid "I  need to be at least halfopped to %s."
+msgid "I need to be at least halfopped to %s."
 msgstr ""
 "Minulla täytyy olla vähintään puolioperaattorin oikeudet voidakseni tehdä %s"
 
@@ -1612,7 +1612,7 @@ msgstr ""
 
 #: src/conf.py:1088
 msgid ""
-"Determiness whether the server will stay\n"
+"Determines whether the server will stay\n"
 "    alive if no plugin is using it. This also means that the server will\n"
 "    start even if it is not used."
 msgstr ""
