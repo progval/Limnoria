@@ -266,6 +266,32 @@ msgstr ""
 #: plugin.py:317
 #, docstring
 msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uptime from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+"non necessita argomenti\n"
+"\n"
+"        Riporta l'uptime del sistema su cui è in esecuzione il bot.\n"
+"        "
+
+#: plugin.py:345
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uname -a from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+"non necessita argomenti\n"
+"\n"
+"        Riporta il risultato di 'uname -a' dal sistema su cui è in esecuzione il bot.\n"
+"        "
+
+#: plugin.py:373
+#, docstring
+msgid ""
 "<command to call with any arguments> \n"
 "        Calls any command available on the system, and returns its output.\n"
 "        Requires owner capability.\n"
