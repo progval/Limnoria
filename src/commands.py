@@ -341,7 +341,7 @@ def getIsGranted(irc, msg, args, state, action=_('do that')):
     if not irc.state.channels[state.channel].isOp(irc.nick) and \
             not irc.state.channels[state.channel].isHalfop(irc.nick):
         # isOp includes owners and protected users
-        state.error(_('I  need to be at least halfopped to %s.') % action,
+        state.error(_('I need to be at least halfopped to %s.') % action,
                 Raise=True)
 
 def validChannel(irc, msg, args, state):

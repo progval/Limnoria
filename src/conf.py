@@ -443,7 +443,7 @@ registerChannelValue(supybot, 'alwaysJoinOnInvite',
     registry.Boolean(False, _("""Determines whether the bot will always join a
     channel when it's invited.  If this value is False, the bot will only join
     a channel if the user inviting it has the 'admin' capability (or if it's
-    explicitly told to join the channel using the Admin.join command)""")))
+    explicitly told to join the channel using the Admin.join command).""")))
 
 registerChannelValue(supybot.reply, 'showSimpleSyntax',
     registry.Boolean(False, _("""Supybot normally replies with the full help
@@ -1085,7 +1085,7 @@ registerGlobalValue(supybot.servers.http, 'port',
     registry.Integer(8080, _("""Determines what port the HTTP server will
     bind.""")))
 registerGlobalValue(supybot.servers.http, 'keepAlive',
-    registry.Boolean(False, _("""Determiness whether the server will stay
+    registry.Boolean(False, _("""Determines whether the server will stay
     alive if no plugin is using it. This also means that the server will
     start even if it is not used.""")))
 registerGlobalValue(supybot.servers.http, 'robots',
