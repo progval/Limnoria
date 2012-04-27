@@ -1,43 +1,43 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
-"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
-"PO-Revision-Date: 2011-11-13 18:07+0100\n"
-"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"PO-Revision-Date: 2012-04-27 15:33+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"Language: de\n"
 
-#: plugin.py:204
-#: plugin.py:285
+#: plugin.py:201
+#: plugin.py:282
 msgid "%s was last seen in %s %s ago: %s"
 msgstr "%s wurde zuletzt in %s vor %s gesehen: %s"
 
-#: plugin.py:211
+#: plugin.py:208
 msgid "%s (%s ago)"
 msgstr "%s (vor %s)"
 
-#: plugin.py:213
+#: plugin.py:210
 msgid "%s could be %L"
 msgstr "%s könnte %L sein"
 
-#: plugin.py:213
+#: plugin.py:210
 msgid "or"
 msgstr "oder"
 
-#: plugin.py:215
+#: plugin.py:212
 msgid "I haven't seen anyone matching %s."
 msgstr "Ich habe niemanden gesehen der auf %s passt."
 
-#: plugin.py:217
-#: plugin.py:289
+#: plugin.py:214
+#: plugin.py:286
 msgid "I have not seen %s."
 msgstr "Ich habe %s nicht gesehn."
 
-#: plugin.py:221
+#: plugin.py:218
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
@@ -50,7 +50,7 @@ msgstr ""
 "\n"
 "Gibt an wann <Nick> zum letzten Mal gesehen wurde und was dieser zuletzt sagte. <Kanal> ist nur nötig, falls die Nachricht nicht im Kanal selbst gesendet wurde. <Nick> kann * als Platzhalter beinhalten."
 
-#: plugin.py:232
+#: plugin.py:229
 msgid ""
 "[<channel>] [--user <name>] [<nick>]\n"
 "\n"
@@ -66,15 +66,15 @@ msgstr ""
 "\n"
 "Gibt zurück wann <Nick> zuletzt gesehen wurde und was dieser Tat. Dies beinhaltet jede Art von Aktivität, anstatt nur PRIVMSGs. Falls <Nick> nicht angegen wurde, wird die letzte gesehene Aktivität im <Kanal> ausgegeben. Falls --user angegeben wird, wird in der Benutzerdatenbank nachgeschaut und die Zeit ausgegeben als der Benutzer zuletzte Aktiv war im <Kanal>. <Kanal> ist nur nötig, falls die Nachricht nicht im Kanal selbst gesendet wurde."
 
-#: plugin.py:262
+#: plugin.py:259
 msgid "Someone was last seen in %s %s ago: %s"
 msgstr "Jemand wurde zuletzt in %s gesehen, vor %s: %s"
 
-#: plugin.py:266
+#: plugin.py:263
 msgid "I have never seen anyone."
 msgstr "Ich habe noch niemals jemanden gesehen."
 
-#: plugin.py:270
+#: plugin.py:267
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -86,7 +86,7 @@ msgstr ""
 "\n"
 "Gibt das zuletzt gesagte im <Kanal> aus. <Kanal> ist nur nötig, falls die Nachricht nicht im Kanal selbst gesendet wurde."
 
-#: plugin.py:293
+#: plugin.py:290
 msgid ""
 "[<channel>] <name>\n"
 "\n"
@@ -101,7 +101,7 @@ msgstr ""
 "\n"
 "Gibt an wann <Name> zum letzten mal gesehen wurde und was <Name> zuletzt sagte. Der <Name> wird in der Gesehen-Datenbank nachgeschaut, dies bedeutet, dass es jeder Nick sein kann der vom Benutzer <Name> gesehen wurde. <Kanal> ist nur nötig, falls die Nachricht nicht im Kanal selbst gesendet wurde."
 
-#: plugin.py:306
+#: plugin.py:303
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
@@ -112,8 +112,14 @@ msgstr ""
 "\n"
 "Gibt die Nachrichten zurück, die seit dem verlassen von <Nick> im Kanal gesendet wurden."
 
+#: plugin.py:310
+#, fuzzy
+msgid "I am not in %s."
+msgstr "Ich habe %s nicht gesehn."
+
 #: plugin.py:313
-msgid "You must be in %s to use this command."
+#, fuzzy
+msgid "%s must be in %s to use this command."
 msgstr "Du musst in %s sein, um diesen Befehl zu benutzen."
 
 #: plugin.py:334

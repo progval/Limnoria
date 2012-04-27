@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
-"POT-Creation-Date: 2011-10-26 11:23+CEST\n"
-"PO-Revision-Date: 2011-10-26 12:09+0100\n"
-"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"POT-Creation-Date: 2012-02-15 23:19+CET\n"
+"PO-Revision-Date: 2012-04-27 15:47+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -23,14 +23,14 @@ msgid ""
 msgstr "Legt fest ob der Bot den HTML Titel, von URLs die er im Channel sieht, ausgibt."
 
 #: config.py:53
+#, fuzzy
 msgid ""
-"Determines what URLs are to be snarfed and\n"
-"    stored in the database in the channel; URLs matching the regexp given will\n"
-"    not be snarfed.  Give the empty string if you have no URLs that you'd like\n"
-"    to exclude from being snarfed."
+"Determines what URLs matching the given regexp\n"
+"    will not be snarfed.  Give the empty string if you have no URLs that you'd\n"
+"    like to exclude from being snarfed."
 msgstr "Legt fest welche URLs im Kanal gefangen werden und in der Datenbank gespeichert werden; URLs die auf den regulären Ausdruck zutreffen werden nicht gefangen. Gebe eine leere Zeichenkette an, falls du keine URLs hast die for dem gefangen werden ausgeschlossen werden."
 
-#: config.py:60
+#: config.py:59
 msgid ""
 "Determines the maximum number of\n"
 "    bytes the bot will download via the 'fetch' command in this plugin."
