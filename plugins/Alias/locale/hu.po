@@ -1,22 +1,23 @@
 # Limnoria Alias plugin.
 # Copyright (C) 2011 Limnoria
 # nyuszika7h <litemininyuszika@gmail.com>, 2011.
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria Alias\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-12-23 10:30+0100\n"
-"Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"PO-Revision-Date: 2012-04-27 15:12+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: Finnish <>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: plugin.py:45
-#, docstring
 msgid ""
 "Returns the channel the msg came over or the channel given in args.\n"
 "\n"
@@ -26,7 +27,7 @@ msgid ""
 msgstr ""
 "Kiírja a csatorna nevét, ahonnan az üzenet jött, vagy a paraméterként megadott csatornát.\n"
 "\n"
-"Ha a csatorna meg volt adva paraméterként, a paraméterek módosulnak (a csatorna eltávolításra kerül)."
+"Ha a csatorna meg volt adva paraméterként, a paraméterek módosulnak (a csatorna eltávolításra kerül).\n"
 
 #: plugin.py:164
 msgid " at least"
@@ -47,7 +48,6 @@ msgid "argument"
 msgstr "paraméter"
 
 #: plugin.py:220
-#, docstring
 msgid ""
 "<alias>\n"
 "\n"
@@ -56,14 +56,14 @@ msgid ""
 msgstr ""
 "<álnév>\n"
 "\n"
-"Lezár egy álnevet, hogy senki más ne változtathassa meg."
+"Lezár egy álnevet, hogy senki más ne változtathassa meg.\n"
 
-#: plugin.py:229 plugin.py:243
+#: plugin.py:229
+#: plugin.py:243
 msgid "There is no such alias."
 msgstr "Nincs ilyen álnév."
 
 #: plugin.py:234
-#, docstring
 msgid ""
 "<alias>\n"
 "\n"
@@ -79,9 +79,8 @@ msgid "That name isn't valid.  Try %q instead."
 msgstr "Az a név nem érvényes. Próbáld meg %q-t inkább."
 
 #: plugin.py:292
-#, docstring
 msgid ""
-"<name> <alias>\n"
+"<name> <command>\n"
 "\n"
 "        Defines an alias <name> that executes <command>.  The <command>\n"
 "        should be in the standard \"command argument [nestedcommand argument]\"\n"
@@ -93,10 +92,9 @@ msgid ""
 msgstr ""
 "<név> <álnév>\n"
 "\n"
-"Meghatároz egy <név> nevű álnevet, amely futtatja <álnév> parancsot. Az <álnév>-nek a szabványos \"parancs paraméter [beágyazottparancs paraméter]\" álnév paraméterei formában kell lennie; ezek ki lesznek töltve az első, második stb. paraméterekkel. $1, $2 stb. használható kötelező paraméterekhez. @1, @2 stb. használható választható paraméterekhez. $* azt jelenti, \"az összes hátralévő paraméter,\" és nem kombinálható választható paraméterekkel."
+"Meghatároz egy <név> nevű álnevet, amely futtatja <álnév> parancsot. Az <álnév>-nek a szabványos \"parancs paraméter [beágyazottparancs paraméter]\" álnév paraméterei formában kell lennie; ezek ki lesznek töltve az első, második stb. paraméterekkel. $1, $2 stb. használható kötelező paraméterekhez. @1, @2 stb. használható választható paraméterekhez. $* azt jelenti, \"az összes hátralévő paraméter,\" és nem kombinálható választható paraméterekkel.\n"
 
 #: plugin.py:315
-#, docstring
 msgid ""
 "<name>\n"
 "\n"
@@ -106,3 +104,4 @@ msgstr ""
 "<név>\n"
 "\n"
 "Eltávolítja a megadott álnevet, ha nincs lezárva.\n"
+
