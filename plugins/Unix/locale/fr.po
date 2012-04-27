@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-12-22 22:28+CET\n"
+"POT-Creation-Date: 2012-04-15 18:47+EEST\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -231,6 +231,30 @@ msgstr ""
 "Envoie une requête ICMP echo à l'<hôte> spécifié. Les arguments correspondent à ceux listés dans ping(8).--c est limité à 10 paquets (5 par défaut).--i est limité à 5 (5 par défaut).--W est limité à 10."
 
 #: plugin.py:317
+#, fuzzy
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uptime from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Retourne le pid du processus de Supybot."
+
+#: plugin.py:345
+#, fuzzy
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uname -a from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Retourne le pid du processus de Supybot."
+
+#: plugin.py:373
 msgid ""
 "<command to call with any arguments> \n"
 "        Calls any command available on the system, and returns its output.\n"
