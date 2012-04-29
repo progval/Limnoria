@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2012-04-29 19:20+EEST\n"
-"PO-Revision-Date: 2012-04-29 20:32+0300\n"
+"PO-Revision-Date: 2012-04-29 20:42+0300\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: \n"
@@ -44,12 +44,12 @@ msgid ""
 "        If <repository> is not given, returns a list of available\n"
 "        repositories."
 msgstr ""
-"[<pakettivarasto>]\n"
+"[<ohjelmistolähde>]\n"
 "\n"
-"        Näyttää listan lisäosista, jotka löytyvät <pakettivarastosta>.\n"
-"        Jos <pakettivarasto> ei ole annettu, palauttaa listan kaikista "
-"saataville olevista \n"
-"        pakettivarastoista."
+" Näyttää listan lisäosista, jotka löytyvät <ohjelmistolähteestä>. Jos\n"
+" <ohjelmistolähdettä> ei ole annettu, palauttaa listan kaikista saataville "
+"olevista\n"
+" ohjelmistolähteistä."
 
 #: plugin.py:261 plugin.py:272
 msgid ", "
@@ -57,11 +57,12 @@ msgstr ", "
 
 #: plugin.py:263 plugin.py:282
 msgid "This repository does not exist or is not known by this bot."
-msgstr "Tämä pakettivarasto ei ole olemassakaan tai tämä botti ei tiedä siitä."
+msgstr ""
+"Tämä ohjelmistolähde ei ole olemassakaan tai tämä botti ei tiedä siitä."
 
 #: plugin.py:270
 msgid "No plugin found in this repository."
-msgstr "Lisäosaa ei löytynyt tästä pakettivarastosta."
+msgstr "Lisäosaa ei löytynyt tästä ohjelmistolähteestä."
 
 #: plugin.py:277
 msgid ""
@@ -69,13 +70,13 @@ msgid ""
 "\n"
 "        Downloads and installs the <plugin> from the <repository>."
 msgstr ""
-"<pakettivarasto> <lisäosa>\n"
+"<ohjelmistolähde> <lisäosa>\n"
 "\n"
-"        Lataa ja asentaa <lisäosan> <pakettivarastosta>."
+"  Lataa ja asentaa <lisäosan> <ohjelmistolähteestä>."
 
 #: plugin.py:287
 msgid "This plugin does not exist in this repository."
-msgstr "Tämä lisäosa ei ole tässä pakettivarastossa."
+msgstr "Tämä lisäosa ei ole tässä ohjelmistolähteessä."
 
 #~ msgid ""
 #~ "Add the help for \"@plugin help PluginDownloader\" here\n"
