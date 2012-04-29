@@ -242,7 +242,7 @@ repositories = {
                }
 
 class PluginDownloader(callbacks.Plugin):
-    """This plugin allows you to easily install plugins from other
+    """This plugin allows you to easily install unofficial plugins from
     multiple repositories. Use the "repolist" command to see list of
     available repositories and "repolist <repository>" to list plugins, 
     which are available in that repository. When you want to install plugin,
