@@ -242,8 +242,11 @@ repositories = {
                }
 
 class PluginDownloader(callbacks.Plugin):
-    """Add the help for "@plugin help PluginDownloader" here
-    This should describe *how* to use this plugin."""
+    """This plugin allows you to install unofficial plugins from
+    multiple repositories easily. Use the "repolist" command to see list of
+    available repositories and "repolist <repository>" to list plugins, 
+    which are available in that repository. When you want to install plugin,
+    just run command "install <repository> <plugin>"."""
 
     @internationalizeDocstring
     def repolist(self, irc, msg, args, repository):
