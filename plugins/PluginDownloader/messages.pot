@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-29 19:08+EEST\n"
+"POT-Creation-Date: 2012-04-29 19:12+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid ""
 "    multiple repositories. Use the \"repolist\" command to see list of\n"
 "    available repositories and \"repolist <repository>\" to list plugins, \n"
 "    which are available in that repository. When you want to install plugin,\n"
-"    use command \"repolist install <repository> <plugin>\"."
+"    use command \"install <repository> <plugin>\"."
 msgstr ""
 
 #: plugin.py:253

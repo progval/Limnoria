@@ -246,7 +246,7 @@ class PluginDownloader(callbacks.Plugin):
     multiple repositories. Use the "repolist" command to see list of
     available repositories and "repolist <repository>" to list plugins, 
     which are available in that repository. When you want to install plugin,
-    use command "repolist install <repository> <plugin>"."""
+    use command "install <repository> <plugin>"."""
 
     @internationalizeDocstring
     def repolist(self, irc, msg, args, repository):
