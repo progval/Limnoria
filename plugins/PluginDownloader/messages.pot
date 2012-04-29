@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2012-04-29 19:20+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,14 +15,17 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:219
+#: plugin.py:245
 #, docstring
 msgid ""
-"Add the help for \"@plugin help PluginDownloader\" here\n"
-"    This should describe *how* to use this plugin."
+"This plugin allows you to install unofficial plugins from\n"
+"    multiple repositories easily. Use the \"repolist\" command to see list of\n"
+"    available repositories and \"repolist <repository>\" to list plugins, \n"
+"    which are available in that repository. When you want to install plugin,\n"
+"    just run command \"install <repository> <plugin>\"."
 msgstr ""
 
-#: plugin.py:224
+#: plugin.py:253
 #, docstring
 msgid ""
 "[<repository>]\n"
@@ -32,19 +35,19 @@ msgid ""
 "        repositories."
 msgstr ""
 
-#: plugin.py:232 plugin.py:243
+#: plugin.py:261 plugin.py:272
 msgid ", "
 msgstr ""
 
-#: plugin.py:234 plugin.py:253
+#: plugin.py:263 plugin.py:282
 msgid "This repository does not exist or is not known by this bot."
 msgstr ""
 
-#: plugin.py:241
+#: plugin.py:270
 msgid "No plugin found in this repository."
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:277
 #, docstring
 msgid ""
 "<repository> <plugin>\n"
@@ -52,7 +55,7 @@ msgid ""
 "        Downloads and installs the <plugin> from the <repository>."
 msgstr ""
 
-#: plugin.py:258
+#: plugin.py:287
 msgid "This plugin does not exist in this repository."
 msgstr ""
 
