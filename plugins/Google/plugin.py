@@ -347,11 +347,17 @@ class Google(callbacks.PluginRegexp):
         urlig = self._googleUrlIG(expr)
         js = utils.web.getUrl(urlig)
         # fix bad google json
-        js = js.replace('lhs:','"lhs":').replace('rhs:','"rhs":').replace('error:','"error":').replace('icc:','"icc":')
+        js = js \
+                .replace('lhs:','"lhs":') \
+                .replace('rhs:','"rhs":') \
+                .replace('error:','"error":') \
+                .replace('icc:','"icc":') \
+                .replace('\\', '\\\\')
         js = simplejson.loads(js)
 
         if js['error'] == '':
-            irc.reply("%s = %s" % (js['lhs'].encode('utf8'), js['rhs'].encode('utf8'),))
+            irc.reply("%s = %s" % (js['lhs'].encode('utf8').decode('string_escape'),
+                js['rhs'].encode('utf8').decode('string_escape'),))
             return
         
         url = self._googleUrl(expr)
