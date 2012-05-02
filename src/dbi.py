@@ -114,7 +114,7 @@ class DirMapping(MappingInterface):
     def _makeFilename(self, id):
         return os.path.join(self.dirname, str(id))
 
-    def get(id):
+    def get(self, id):
         try:
             fd = file(self._makeFilename(id))
             return fd.read()
@@ -123,7 +123,7 @@ class DirMapping(MappingInterface):
             exn.realException = e
             raise exn
 
-    def set(id, s):
+    def set(self, id, s):
         fd = file(self._makeFilename(id), 'w')
         fd.write(s)
         fd.close()
