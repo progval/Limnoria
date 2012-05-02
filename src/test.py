@@ -503,18 +503,18 @@ def open_http(url, data=None):
         # check whether the proxy contains authorization information
         proxy_passwd, host = urllib.splituser(host)
         # now we proceed with the url we want to obtain
-        urltype, rest = splittype(selector)
+        urltype, rest = urllib.splittype(selector)
         url = rest
         user_passwd = None
         if urltype.lower() != 'http':
             realhost = None
         else:
-            realhost, rest = splithost(rest)
+            realhost, rest = urllib.splithost(rest)
             if realhost:
                 user_passwd, realhost = urllib.splituser(realhost)
             if user_passwd:
                 selector = "%s://%s%s" % (urltype, realhost, rest)
-            if proxy_bypass(realhost):
+            if urllib.proxy_bypass(realhost):
                 host = realhost
 
         #print "proxy via http:", host, selector
