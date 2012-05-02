@@ -588,7 +588,7 @@ class HTTPPluginTestCase(PluginTestCase):
         response = self.request(uri, read=False, **kwargs)
         self.assertEqual(response, expectedResponse)
 
-    def assertNotHTTPResponse(self, irc, expectedResponse, **kwargs):
+    def assertNotHTTPResponse(self, uri, expectedResponse, **kwargs):
         response = self.request(uri, read=False, **kwargs)
         self.assertNotEqual(response, expectedResponse)
 
