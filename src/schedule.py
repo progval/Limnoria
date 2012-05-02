@@ -89,7 +89,7 @@ class Schedule(drivers.IrcDriver):
     def removeEvent(self, name):
         """Removes the event with the given name from the schedule."""
         f = self.events.pop(name)
-        self.schedule = [x for x in self.schedule if n != name]
+        self.schedule = [x for x in self.schedule if f != name]
         # We must heapify here because the heap property may not be preserved
         # by the above list comprehension.  We could, conceivably, just mark
         # the elements of the heap as removed and ignore them when we heappop,
