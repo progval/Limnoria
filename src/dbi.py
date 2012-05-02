@@ -31,6 +31,7 @@
 Module for some slight database-independence for simple databases.
 """
 
+import os
 import csv
 import math
 
