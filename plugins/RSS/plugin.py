@@ -236,7 +236,7 @@ class RSS(callbacks.Plugin):
                     # These seem mostly harmless.  We'll need reports of a
                     # kind that isn't.
                     self.log.debug('Allowing bozo_exception %r through.', e)
-                if results.get('feed', {}):
+                if results.get('feed', {}) and self.getHeadlines(results):
                     self.cachedFeeds[url] = results
                     self.lastRequest[url] = time.time()
                 else:
