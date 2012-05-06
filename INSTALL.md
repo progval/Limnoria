@@ -1,9 +1,11 @@
 Common
+======
 
   First things first: Supybot *requires* at least Python 2.6.  There
 ain't no getting around it.  You can get it from http://www.python.org/.
 
-  Recommended Software
+Recommended Software
+====================
 
     PySQLite -- Version 2.x
 
@@ -19,6 +21,7 @@ methods, so find the section for your operating system and continue
 from there.
 
 UNIX/Linux/BSD
+==============
 
   If you're installing Python using your distributor's packages, you may
 need a python-dev package installed, too.  If you don't have a
@@ -39,9 +42,10 @@ the script to run an actual bot; the latter, 'supybot-wizard', is an
 in-depth wizard that provides a nice user interface for creating a
 registry file for your bot.
 
-  Local Install
+Local Install
+-------------
 
-    You can install Supybot in a local directory by using the '--user'
+  You can install Supybot in a local directory by using the '--user'
   option when running 'setup.py'.  E.g., 'python setup.py install
   --user' to install into your home directory.  You'll now have
   a $HOME/.local/bin directory containing Supybot programs ('supybot',
@@ -49,6 +53,7 @@ registry file for your bot.
   Supybot libraries.
 
 Windows
+=======
 
   **Note**: If you are using an IPV6 connection, you will not be able
 to run Supybot under Windows (unless Python has fixed things).  Current
