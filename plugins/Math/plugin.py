@@ -103,6 +103,7 @@ class Math(callbacks.Plugin):
     _mathEnv['abs'] = abs
     _mathEnv['max'] = max
     _mathEnv['min'] = min
+    _mathEnv.pop('factorial')
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d)])-)?'
                          r'(?:0x[A-Fa-f\d]+|'
                          r'0[0-7]+|'
