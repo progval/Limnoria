@@ -97,13 +97,13 @@ class Web(callbacks.PluginRegexp):
                 return
             parser = Title()
             try:
-                parser.feed(text.decode('utf-8'))
+                parser.feed(text)
             except HTMLParser.HTMLParseError:
                 self.log.debug('Encountered a problem parsing %u.  Title may '
                                'already be set, though', url)
             if parser.title:
                 domain = utils.web.getDomain(url)
-                title = utils.web.htmlToText(parser.title.strip().encode('utf-8'))
+                title = utils.web.htmlToText(parser.title.strip())
                 s = format(_('Title: %s (at %s)'), title, domain)
                 irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
@@ -178,12 +178,12 @@ class Web(callbacks.PluginRegexp):
         text = utils.web.getUrl(url, size=size)
         parser = Title()
         try:
-            parser.feed(text.decode('utf-8'))
+            parser.feed(text)
         except HTMLParser.HTMLParseError:
             self.log.debug('Encountered a problem parsing %u.  Title may '
                            'already be set, though', url)
         if parser.title:
-            irc.reply(utils.web.htmlToText(parser.title.strip().encode('utf-8')))
+            irc.reply(utils.web.htmlToText(parser.title.strip()))
         elif len(text) < size:
             irc.reply(_('That URL appears to have no HTML title.'))
         else:
