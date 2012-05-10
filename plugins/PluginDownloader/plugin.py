@@ -130,19 +130,24 @@ class GithubRepository(GitRepository):
                 # Remember we pop(0)ed the path
         return None
 
+    def _download(self, plugin):
+        try:
+            fileObject = urllib2.urlopen(self._downloadUrl)
+            fileObject2 = StringIO()
+            fileObject2.write(fileObject.read())
+            fileObject.close()
+            fileObject2.seek(0)
+            return tarfile.open(fileobj=fileObject2, mode='r:gz')
+        finally:
+            del fileObject
     def install(self, plugin):
+        archive = self._download(plugin)
+        prefix = archive.getnames()[0]
+        dirname = ''.join((self._path, plugin))
         directories = conf.supybot.directories.plugins()
         directory = self._getWritableDirectoryFromList(directories)
         assert directory is not None
-        dirname = ''.join((self._path, plugin))
 
-        fileObject = urllib2.urlopen(self._downloadUrl)
-        fileObject2 = StringIO()
-        fileObject2.write(fileObject.read())
-        fileObject.close()
-        fileObject2.seek(0)
-        archive = tarfile.open(fileobj=fileObject2, mode='r:gz')
-        prefix = archive.getnames()[0]
         try:
             assert archive.getmember(prefix + dirname).isdir()
 
@@ -161,8 +166,18 @@ class GithubRepository(GitRepository):
                         open(newFileName, 'a').write(extractedFile.read())
         finally:
             archive.close()
-            fileObject2.close()
-            del archive, fileObject, fileObject2
+            del archive
+
+    def getInfo(self, plugin):
+        archive = self._download(plugin)
+        prefix = archive.getnames()[0]
+        dirname = ''.join((self._path, plugin))
+        print repr(prefix + dirname + '/README.txt')
+        for file in archive.getmembers():
+            print repr(file)
+            if file.name == prefix + dirname + '/README.txt':
+                extractedFile = archive.extractfile(file)
+                return extractedFile.read()
 
     def _getWritableDirectoryFromList(self, directories):
         for directory in directories:
@@ -242,8 +257,11 @@ repositories = {
                }
 
 class PluginDownloader(callbacks.Plugin):
-    """Add the help for "@plugin help PluginDownloader" here
-    This should describe *how* to use this plugin."""
+    """This plugin allows you to install unofficial plugins from
+    multiple repositories easily. Use the "repolist" command to see list of
+    available repositories and "repolist <repository>" to list plugins, 
+    which are available in that repository. When you want to install plugin,
+    just run command "install <repository> <plugin>"."""
 
     @internationalizeDocstring
     def repolist(self, irc, msg, args, repository):
@@ -293,6 +311,33 @@ class PluginDownloader(callbacks.Plugin):
                 irc.error('The plugin could not be installed.')
 
     install = wrap(install, ['owner', 'something', 'something'])
+
+    @internationalizeDocstring
+    def info(self, irc, msg, args, repository, plugin):
+        """<repository> <plugin>
+
+        Displays informations on the <plugin> in the <repository>."""
+        global repositories
+        if repository not in repositories:
+            irc.error(_(
+                       'This repository does not exist or is not known by '
+                       'this bot.'
+                       ))
+        elif plugin not in repositories[repository].getPluginList():
+            irc.error(_('This plugin does not exist in this repository.'))
+        else:
+            info = repositories[repository].getInfo(plugin)
+            if info is None:
+                irc.error(_('No README found for this plugin'))
+            else:
+                if info.startswith('Insert a description of your plugin here'):
+                    irc.error(_('This plugin has no description.'))
+                else:
+                    info = info.split('\n\n')[0]
+                    for line in info.split('\n'):
+                        if line != '':
+                            irc.reply(line)
+    info = wrap(info, ['something', optional('something')])
 
 
 PluginDownloader = internationalizeDocstring(PluginDownloader)

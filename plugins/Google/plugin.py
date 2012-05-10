@@ -246,70 +246,6 @@ class Google(callbacks.PluginRegexp):
         s = ', '.join([format('%s: %i', bold(s), i) for (i, s) in results])
         irc.reply(s)
 
-    _gtranslateUrl='http://ajax.googleapis.com/ajax/services/language/translate'
-    @internationalizeDocstring
-    def translate(self, irc, msg, args, fromLang, toLang, text):
-        """<from-language> [to] <to-language> <text>
-
-        Returns <text> translated from <from-language> into <to-language>.
-        Beware that translating to or from languages that use multi-byte
-        characters may result in some very odd results.
-        """
-        channel = msg.args[0]
-        ref = self.registryValue('referer')
-        if not ref:
-            ref = 'http://%s/%s' % (dynamic.irc.server,
-                                    dynamic.irc.nick)
-        headers = utils.web.defaultHeaders
-        headers['Referer'] = ref
-        opts = {'q': text, 'v': '1.0'}
-        lang = conf.supybot.plugins.Google.defaultLanguage
-        if fromLang.capitalize() in lang.transLangs:
-            fromLang = lang.transLangs[fromLang.capitalize()]
-        elif lang.normalize('lang_'+fromLang)[5:] \
-                not in lang.transLangs.values():
-            irc.errorInvalid(_('from language'), fromLang,
-                             format(_('Valid languages are: %L'),
-                                    lang.transLangs.keys()))
-        else:
-            fromLang = lang.normalize('lang_'+fromLang)[5:]
-        if toLang.capitalize() in lang.transLangs:
-            toLang = lang.transLangs[toLang.capitalize()]
-        elif lang.normalize('lang_'+toLang)[5:] \
-                not in lang.transLangs.values():
-            irc.errorInvalid(_('to language'), toLang,
-                             format(_('Valid languages are: %L'),
-                                    lang.transLangs.keys()))
-        else:
-            toLang = lang.normalize('lang_'+toLang)[5:]
-        if fromLang == 'auto':
-            fromLang = ''
-        if toLang == 'auto':
-            irc.error("Destination language cannot be 'auto'.")
-            return
-        opts['langpair'] = '%s|%s' % (fromLang, toLang)
-        fd = utils.web.getUrlFd('%s?%s' % (self._gtranslateUrl,
-                                           urllib.urlencode(opts)),
-                                headers)
-        json = simplejson.load(fd)
-        fd.close()
-        if json['responseStatus'] != 200:
-            raise callbacks.Error, 'Google says: Response Status %s: %s.' % \
-                    (json['responseStatus'], json['responseDetails'],)
-        if fromLang != '':
-            irc.reply(json['responseData']['translatedText'].encode('utf-8'))
-        else:
-            detected_language = json['responseData']['detectedSourceLanguage'].encode('utf-8')
-            translation = json['responseData']['translatedText'].encode('utf-8')
-            try:
-                long_lang_name = [k for k,v in lang.transLangs.iteritems() if v == detected_language][0]
-            except IndexError: #just in case google adds langs we don't know about
-                long_lang_name = detected_language
-            responsestring = "(Detected source language: %s) %s" % \
-                (long_lang_name, translation)
-            irc.reply(responsestring)
-    translate = wrap(translate, ['something', 'to', 'something', 'text'])
-
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
         if not self.registryValue('searchSnarfer', msg.args[0]):
@@ -347,7 +283,12 @@ class Google(callbacks.PluginRegexp):
         urlig = self._googleUrlIG(expr)
         js = utils.web.getUrl(urlig)
         # fix bad google json
-        js = js.replace('lhs:','"lhs":').replace('rhs:','"rhs":').replace('error:','"error":').replace('icc:','"icc":')
+        js = js \
+                .replace('lhs:','"lhs":') \
+                .replace('rhs:','"rhs":') \
+                .replace('error:','"error":') \
+                .replace('icc:','"icc":') \
+                .replace('\\', '\\\\')
         js = simplejson.loads(js)
 
         if js['error'] == '':

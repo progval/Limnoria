@@ -241,7 +241,7 @@ def main():
         threaded = yn('Does your plugin need to be threaded?')
 
         realName = something(textwrap.dedent("""
-        What is your real name, so I can fill in the copyright and license
+        What is your real name, so I can fill in the copyright and license  
         appropriately?
         """).strip())
 
