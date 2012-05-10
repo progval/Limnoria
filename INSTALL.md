@@ -8,6 +8,7 @@ isn't any way to get around it.  You can get it from [Python homepage].
 # Recommended Software
 
 [PySQLite] -- Version 2.x
+
 [Twisted] -- Version 1.2.0 or greater
 
 [PySQLite]:https://code.google.com/p/pysqlite/
