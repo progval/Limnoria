@@ -79,6 +79,18 @@ Run and add the following command to your shellrc, which is usually ~/.bashrc or
 PATH=$HOME/.local:$PATH
 ```
 
+# Upgrading
+
+To upgrade, return to the cloned Limnoria repository and run:
+
+```
+git pull
+```
+
+and then install Limnoria normally. "python setup.py install" doesn't affect config files of the bot any way.
+
+If you don't have the cloned Limnoria repository, clone it again using the installation instructions.
+
 # Windows
 
 **Note**: If you are using an IPV6 connection, you will not be able
