@@ -351,7 +351,11 @@ class Google(callbacks.PluginRegexp):
         js = simplejson.loads(js)
 
         if js['error'] == '':
-            irc.reply("%s = %s" % (js['lhs'].encode('utf8'), js['rhs'].encode('utf8'),))
+            s = js['rhs'].encode('utf8').decode('string_escape')
+            s = self._calcSupRe.sub(r'^(\1)', s)
+            s = self._calcFontRe.sub(r',', s)
+            s = self._calcTimesRe.sub(r'*', s)
+            irc.reply("%s = %s" % (js['lhs'].encode('utf8').decode('string_escape'), s))
             return
         
         url = self._googleUrl(expr)
