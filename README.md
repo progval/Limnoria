@@ -1,33 +1,40 @@
-EVERYONE:
----------
+# EVERYONE:
 
-Read LICENSE.  It's a 3-clause BSD license, but you should read it
+Read [LICENSE].  It's a 3-clause BSD license, but you should read it
 anyway.
 
-USERS:
-------
+[LICENSE]:https://github.com/ProgVal/Limnoria/blob/master/LICENSE.md
 
-If you're upgrading, read RELNOTES.  There is also much documentation
-at http://supybot.com/ for your perusal.  Please read it; we took the
+# USERS:
+
+There is much documentation
+at [supybot.fr.cr] and at [Gribble wiki] for your perusal.  Please read it; we took the
 time to write it, you should take the time to read it.
 
-If you have any trouble, feel free to swing by #supybot on
-irc.freenode.net or irc.oftc.net (we have a Supybot there relaying,
+[supybot.fr.cr]:http://supybot.fr.cr/doc
+[Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
+
+If you have any trouble, feel free to swing by #supybot and #limnoria on
+irc.freenode.net or #supybot at irc.oftc.net (we have a Limnoria there relaying,
 so either network works) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
 understand or think you know of a better way to do something,
-*please* post it on Sourceforge.net so we can improve the bot!
+*please* post it on [issue tracker] so we can improve the bot!
 
-WINDOWS USERS:
---------------
+[issue tracker]:https://github.com/ProgVal/Limnoria/issues
+
+# WINDOWS USERS:
 
 The wizards (supybot-wizard, supybot-newplugin, and
 supybot-adduser) are all installed to your Python directory's
 \Scripts.  What that *probably* means is that you'll run them like
-this: C:\Python2x\python C:\Python2x\Scripts\supybot-wizard
+this: 
 
-DEVELOPERS:
------------
+```
+C:\Python2x\python C:\Python2x\Scripts\supybot-wizard
+```
+
+# DEVELOPERS:
 
 We likewise have tons of developer documentation at
-http://supybot.com/ for your learning adventures.  Have fun :)
+[supybot.fr.cr] for your learning adventures.  Have fun :)
