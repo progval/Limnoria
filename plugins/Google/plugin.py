@@ -291,11 +291,6 @@ class Google(callbacks.PluginRegexp):
                 .replace('\\', '\\\\')
         js = simplejson.loads(js)
 
-        if js['error'] == '':
-            irc.reply("%s = %s" % (js['lhs'].encode('utf8').decode('string_escape'),
-                js['rhs'].encode('utf8').decode('string_escape'),))
-            return
-        
         url = self._googleUrl(expr)
         html = utils.web.getUrl(url)
         match = self._calcRe1.search(html)
