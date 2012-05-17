@@ -263,6 +263,8 @@ class PluginDownloader(callbacks.Plugin):
     which are available in that repository. When you want to install plugin,
     just run command "install <repository> <plugin>"."""
 
+    threaded = True
+
     @internationalizeDocstring
     def repolist(self, irc, msg, args, repository):
         """[<repository>]
