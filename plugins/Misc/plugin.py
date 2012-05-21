@@ -302,7 +302,7 @@ class Misc(callbacks.Plugin):
                 version = ''.join(version.rsplit(':', 1))
                 # Replace the last '-' by '+':
                 version = '+'.join(version.rsplit('-', 1))
-                versions[branch] = version
+                versions[branch] = version.encode('utf-8')
             newest = _('The newest versions available online are %s.') % \
                     ', '.join([_('%s (in %s)') % (y,x)
                                for x,y in versions.items()])
