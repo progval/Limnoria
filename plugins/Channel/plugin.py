@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2012, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -153,14 +153,7 @@ class Channel(callbacks.Plugin):
     halfop = wrap(halfop, ['halfop', ('haveOp', 'halfop someone'),
                            any('nickInChannel')])
 
-    def voice(self, irc, msg, args, channel, nicks):
-        """[<channel>] [<nick> ...]
-
-        If you have the #channel,voice capability, this will voice all the
-        <nick>s you provide.  If you don't provide any <nick>s, this will
-        voice you. <channel> is only necessary if the message isn't sent in the
-        channel itself.
-        """
+    def _voice(self, irc, msg, args, channel, nicks, fn):
         if nicks:
             if len(nicks) == 1 and msg.nick in nicks:
                 capability = 'voice'
@@ -172,10 +165,20 @@ class Channel(callbacks.Plugin):
         capability = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, capability):
             def f(L):
-                return ircmsgs.voices(channel, L)
+                return fn(channel, L)
             self._sendMsgs(irc, nicks, f)
         else:
             irc.errorNoCapability(capability)
+
+    def voice(self, irc, msg, args, channel, nicks):
+        """[<channel>] [<nick> ...]
+
+        If you have the #channel,voice capability, this will voice all the
+        <nick>s you provide.  If you don't provide any <nick>s, this will
+        voice you. <channel> is only necessary if the message isn't sent in the
+        channel itself.
+        """
+        self._voice(irc, msg, args, channel, nicks, ircmsgs.voices)
     voice = wrap(voice, ['channel', ('haveOp', 'voice someone'),
                          any('nickInChannel')])
 
@@ -228,12 +231,8 @@ class Channel(callbacks.Plugin):
             irc.error('I cowardly refuse to devoice myself.  If you really '
                       'want me devoiced, tell me to op you and then devoice '
                       'me yourself.', Raise=True)
-        if not nicks:
-            nicks = [msg.nick]
-        def f(L):
-            return ircmsgs.devoices(channel, L)
-        self._sendMsgs(irc, nicks, f)
-    devoice = wrap(devoice, ['voice', ('haveOp', 'devoice someone'),
+        self._voice(irc, msg, args, channel, nicks, ircmsgs.devoices)
+    devoice = wrap(devoice, ['channel', ('haveOp', 'devoice someone'),
                              any('nickInChannel')])
 
     def cycle(self, irc, msg, args, channel):
