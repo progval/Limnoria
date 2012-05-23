@@ -102,7 +102,10 @@ class Math(callbacks.Plugin):
             return cmath.sqrt(x)
         else:
             return math.sqrt(x)
+    def _cbrt(x):
+        return math.pow(x, 1.0/3)
     _mathEnv['sqrt'] = _sqrt
+    _mathEnv['cbrt'] = _cbrt
     _mathEnv['abs'] = abs
     _mathEnv['max'] = max
     _mathEnv['min'] = min
