@@ -478,6 +478,7 @@ class RichReplyMethods(object):
             else:
                 log.debug('Not sending capability error, '
                           'supybot.reply.error.noCapability is False.')
+                raise Error, 'error'
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)

@@ -232,7 +232,7 @@ class Group(object):
                     parts = split(rest)
                     if len(parts) == 1 and parts[0] == name:
                         try:
-                            self.__makeChild(group, v)
+                            self.__makeChild(self, v)
                         except InvalidRegistryValue:
                             # It's probably supposed to be registered later.
                             pass

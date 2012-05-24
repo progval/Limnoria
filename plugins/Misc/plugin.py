@@ -32,6 +32,7 @@ import re
 import os
 import imp
 import sys
+import json
 import time
 
 import supybot
@@ -291,15 +292,17 @@ class Misc(callbacks.Plugin):
         Returns the version of the current bot.
         """
         try:
-            newestUrl = 'https://github.com/ProgVal/Limnoria/raw/%s/' + \
-                        'src/version.py'
+            newestUrl = 'https://api.github.com/repos/ProgVal/Limnoria/' + \
+                    'commits/%s'
             versions = {}
             for branch in ('master', 'testing'):
-                file = utils.web.getUrl(newestUrl % branch)
-                match = re.search(r"^version = '([^']+)'$", file, re.M)
-                if match is None:
-                    continue
-                versions[branch] = match.group(1)
+                data = json.load(utils.web.getUrlFd(newestUrl % branch))
+                version = data['commit']['committer']['date']
+                # Strip the last ':':
+                version = ''.join(version.rsplit(':', 1))
+                # Replace the last '-' by '+':
+                version = '+'.join(version.rsplit('-', 1))
+                versions[branch] = version.encode('utf-8')
             newest = _('The newest versions available online are %s.') % \
                     ', '.join([_('%s (in %s)') % (y,x)
                                for x,y in versions.items()])
