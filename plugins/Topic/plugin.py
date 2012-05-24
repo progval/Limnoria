@@ -574,6 +574,24 @@ class Topic(callbacks.Plugin):
     swap = wrap(swap, ['canChangeTopic', 'topicNumber', 'topicNumber'])
 
     @internationalizeDocstring
+    def save(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Saves the topic in <channel> to be restored with @topic default
+        later. <channel> is only necessary if the message isn't sent in
+        the channel itself.
+        """
+        if not self._checkManageCapabilities(irc, msg, channel):
+            capabilities = self.registryValue('requireManageCapability')
+            irc.errorNoCapability(capabilities, Raise=True)
+        topic = irc.state.getTopic(channel)
+        if topic:
+            self.setRegistryValue('default', value=topic, channel=channel)
+        else:
+            self.setRegistryValue('default', value='', channel=channel)
+    save = wrap(save, ['canChangeTopic'])
+
+    @internationalizeDocstring
     def default(self, irc, msg, args, channel):
         """[<channel>]
 
