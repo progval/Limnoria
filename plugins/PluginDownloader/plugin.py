@@ -172,9 +172,7 @@ class GithubRepository(GitRepository):
         archive = self._download(plugin)
         prefix = archive.getnames()[0]
         dirname = ''.join((self._path, plugin))
-        print repr(prefix + dirname + '/README.txt')
         for file in archive.getmembers():
-            print repr(file)
             if file.name == prefix + dirname + '/README.txt':
                 extractedFile = archive.extractfile(file)
                 return extractedFile.read()
@@ -262,6 +260,8 @@ class PluginDownloader(callbacks.Plugin):
     available repositories and "repolist <repository>" to list plugins, 
     which are available in that repository. When you want to install plugin,
     just run command "install <repository> <plugin>"."""
+
+    threaded = True
 
     @internationalizeDocstring
     def repolist(self, irc, msg, args, repository):
