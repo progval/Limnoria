@@ -3,7 +3,7 @@
 Read [LICENSE].  It's a 3-clause BSD license, but you should read it
 anyway.
 
-[LICENSE]:https://github.com/ProgVal/Limnoria/blob/master/LICENSE.md
+[LICENSE]:LICENSE.md
 
 # USERS:
 
@@ -14,8 +14,8 @@ time to write it, you should take the time to read it.
 [supybot.fr.cr]:http://supybot.fr.cr/doc
 [Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
 
-If you have any trouble, feel free to swing by #supybot and #limnoria on
-irc.freenode.net or #supybot at irc.oftc.net (we have a Limnoria there relaying,
+If you have any trouble, feel free to swing by [#supybot and #limnoria](irc://irc.freenode.net/#supybot,#limnoria) on
+[irc.freenode.net](irc://irc.freenode.net) or [#supybot](irc://irc.oftc.net/#supybot) at [irc.oftc.net](irc://irc.oftc.net) (we have a Limnoria there relaying,
 so either network works) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
 understand or think you know of a better way to do something,
