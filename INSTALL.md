@@ -15,7 +15,7 @@ isn't any way to get around it.  You can get it from [Python homepage].
 [Twisted]:http://twistedmatrix.com/trac/
 
 For more information and help on how to use Supybot, checkout
-the documents under [docs/] (especially [GETTING_STARTED] and
+the documents under [docs/] ( especially [GETTING_STARTED] and
 [CONFIGURATION] ).
 
 [docs/]:docs/index.rst
