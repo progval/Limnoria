@@ -15,8 +15,12 @@ isn't any way to get around it.  You can get it from [Python homepage].
 [Twisted]:http://twistedmatrix.com/trac/
 
 For more information and help on how to use Supybot, checkout
-the documents under docs/ (especially GETTING_STARTED and
-CONFIGURATION).
+the documents under [docs/], especially [GETTING_STARTED] and
+[CONFIGURATION] .
+
+[docs/]:docs/index.rst
+[GETTING_STARTED]:docs/GETTING_STARTED
+[CONFIGURATION]:docs/CONFIGURATION
 
 So what do you do?  That depends on which operating system you're
 running.  We've split this document up to address the different
