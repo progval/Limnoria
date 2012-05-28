@@ -300,11 +300,27 @@ class RSS(callbacks.Plugin):
             return conv
         else:
             return lambda s: toText(s).strip()
+    def _sortFeedItems(self, items):
+        """Return feed items, sorted according to sortFeedItems."""
+        order = self.registryValue('sortFeedItems')
+        if order not in ['oldestFirst', 'newestFirst']:
+            return items
+        if order == 'oldestFirst':
+            reverse = False
+        if order == 'newestFirst':
+            reverse = True
+        try:
+            sitems = sorted(items, key=lambda i: i['updated'], reverse=reverse)
+        except KeyError:
+            # feedparser normalizes required timestamp fields in ATOM and RSS
+            # to the "updated" field. Feeds missing it are unsortable by date.
+            return items
+        return sitems
 
     def getHeadlines(self, feed):
         headlines = []
         conv = self._getConverter(feed)
-        for d in feed['items']:
+        for d in self._sortFeedItems(feed['items']):
             if 'title' in d:
                 title = conv(d['title'])
                 link = d.get('link')

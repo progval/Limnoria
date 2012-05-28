@@ -45,6 +45,10 @@ def configure(advanced):
 class FeedNames(registry.SpaceSeparatedListOfStrings):
     List = callbacks.CanonicalNameSet
 
+class FeedItemSortOrder(registry.OnlySomeStrings):
+    """Valid values include 'asInFeed', 'oldestFirst', 'newestFirst'."""
+    validStrings = ('asInFeed', 'oldestFirst', 'newestFirst')
+
 RSS = conf.registerPlugin('RSS')
 conf.registerChannelValue(RSS, 'bold', registry.Boolean(
     True, _("""Determines whether the bot will bold the title of the feed when
@@ -64,6 +68,10 @@ conf.registerGlobalValue(RSS, 'waitPeriod',
     registry.PositiveInteger(1800, _("""Indicates how many seconds the bot will
     wait between retrieving RSS feeds; requests made within this period will
     return cached results.""")))
+conf.registerGlobalValue(RSS, 'sortFeedItems',
+    FeedItemSortOrder('asInFeed', _("""Determines whether feed items should be
+    sorted by their update timestamp or kept in the same order as they appear
+    in a feed.""")))
 conf.registerGlobalValue(RSS, 'feeds',
     FeedNames([], _("""Determines what feeds should be accessible as
     commands.""")))
