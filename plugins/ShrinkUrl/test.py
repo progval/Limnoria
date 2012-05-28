@@ -43,6 +43,8 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
                     (udUrl, r'http://ln-s.net/2\$K')],
              'xrl': [(sfUrl, r'http://xrl.us/bfq8ik'),
                      (udUrl, r'http://xrl.us/bfnyji')],
+             'goo': [(sfUrl, r'http://goo.gl/3c59N'),
+                     (udUrl, r'http://goo.gl/ocTga')],
              'x0': [(sfUrl, r'http://x0.no/0l2j'),
                     (udUrl, r'http://x0.no/0l2k')]
             }
@@ -96,6 +98,9 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
 
         def testXrlsnarf(self):
             self._snarf('xrl')
+
+        def testGoosnarf(self):
+            self._snarf('goo')
 
         def testX0snarf(self):
             self._snarf('x0')

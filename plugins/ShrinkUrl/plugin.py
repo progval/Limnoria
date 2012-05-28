@@ -29,6 +29,7 @@
 ###
 
 import re
+import json
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -226,6 +227,37 @@ class ShrinkUrl(callbacks.PluginRegexp):
         except ShrinkError, e:
             irc.error(str(e))
     xrl = thread(wrap(xrl, ['url']))
+
+    _gooApi = 'https://www.googleapis.com/urlshortener/v1/url'
+    def _getGooUrl(self, url):
+        url = utils.web.urlquote(url)
+        try:
+            return self.db.get('goo', url)
+        except KeyError:
+            headers = utils.web.defaultHeaders.copy()
+            headers['content-type'] = 'application/json'
+            data = json.dumps({'longUrl': url})
+            text = utils.web.getUrl(self._gooApi, data=data, headers=headers)
+            googl = json.loads(text)['id']
+            if googl:
+                self.db.set('goo', url, googl)
+                return googl
+            else:
+                raise ShrinkError, text
+
+    def goo(self, irc, msg, args, url):
+        """<url>
+
+        Returns an goo.gl version of <url>.
+        """
+        try:
+            goourl = self._getGooUrl(url)
+            m = irc.reply(goourl)
+            if m is not None:
+                m.tag('shrunken')
+        except ShrinkError, e:
+            irc.error(str(e))
+    goo = thread(wrap(goo, ['url']))
 
     _x0Api = 'http://api.x0.no/?%s'
     def _getX0Url(self, url):
