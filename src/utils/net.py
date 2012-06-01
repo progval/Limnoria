@@ -73,7 +73,7 @@ def isIPV4(s):
     0
     """
     try:
-        return bool(socket.inet_aton(s))
+        return bool(socket.inet_aton(str(s)))
     except socket.error:
         return False
 
