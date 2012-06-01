@@ -49,7 +49,7 @@ class Success(plugins.ChannelIdDatabasePlugin):
         self.originalClass = conf.supybot.replies.success.__class__
         class MySuccessClass(self.originalClass):
             def __call__(self):
-                ret = pluginSelf.db.random(pluginSelf.target or 'private_query')
+                ret = pluginSelf.db.random(dynamic.msg.args[0])
                 if ret is None:
                     try:
                         self.__class__ = pluginSelf.originalClass
@@ -70,14 +70,8 @@ class Success(plugins.ChannelIdDatabasePlugin):
         self.__parent.die()
         conf.supybot.replies.success.__class__ = self.originalClass
 
-    def inFilter(self, irc, msg):
-        # We need the target, but we need it before Owner.doPrivmsg is called,
-        # so this seems like the only way to do it.
-        self.target = msg.args[0]
-        return msg
 Success = internationalizeDocstring(Success)
 
 Class = Success
-
 
 # vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:

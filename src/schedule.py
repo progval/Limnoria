@@ -131,11 +131,8 @@ class Schedule(drivers.IrcDriver):
             except Exception, e:
                 log.exception('Uncaught exception in scheduled function:')
 
-if 'ignore' in globals():
-    globals()['ignore'](schedule)
-else:
-    schedule = Schedule()
 
+schedule = Schedule()
 addEvent = schedule.addEvent
 removeEvent = schedule.removeEvent
 rescheduleEvent = schedule.rescheduleEvent
