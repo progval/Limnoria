@@ -589,6 +589,7 @@ class Topic(callbacks.Plugin):
             self.setRegistryValue('default', value=topic, channel=channel)
         else:
             self.setRegistryValue('default', value='', channel=channel)
+        irc.replySuccess()
     save = wrap(save, ['canChangeTopic'])
 
     @internationalizeDocstring
