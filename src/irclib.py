@@ -241,7 +241,7 @@ class ChannelState(utils.python.Object):
         self.users = ircutils.IrcSet()
         self.voices = ircutils.IrcSet()
         self.halfops = ircutils.IrcSet()
-        self.modes = ircutils.IrcDict()
+        self.modes = {}
 
     def isOp(self, nick):
         return nick in self.ops
