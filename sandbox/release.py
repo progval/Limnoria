@@ -5,6 +5,8 @@ import re
 import sys
 import shutil
 
+from optparse import OptionParser
+
 def firstLines(filename, n):
     fd = file(filename)
     lines = []
@@ -27,13 +29,6 @@ def system(sh, errmsg=None):
     if ret:
         error(errmsg + '  (error code: %s)' % ret)
 
-def usage():
-    error('Usage: %s [-s|-n] <sf username> <version>\nSpecify -s to pass it on '
-          'to the relevant git commands.\nSpecify -n to perform a dry-run '
-          'release.  No commits or tags are pushed and no files are uploaded.'
-          '\nMust be called from a git checkout.'
-          % sys.argv[0])
-
 def checkGitRepo():
     system('test "$(git rev-parse --is-inside-work-tree)" = "true"',
            'Must be run from a git checkout.')
@@ -46,28 +41,28 @@ def checkGitRepo():
            'Your tree is unclean. Can\'t run from here.')
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3 or len(sys.argv) > 5:
-        usage()
+    usage = 'usage: %prog [options] <username> <version>'
+    parser = OptionParser(usage=usage)
+    parser.set_defaults(sign=False, verbose=False)
+    parser.add_option('-s', '--sign', action='store_true', dest='sign',
+                      help='Pass on -s to relevant git commands')
+    parser.add_option('-n', '--dry-run', action='store_true', dest='dry_run',
+                      help='Build the release, but do not push to the git '
+                           'remote or upload the release archives.')
+    (options, args) = parser.parse_args()
+
+    if len(args) != 2:
+        parser.error('Both username and version must be specified')
+
+    (u, v) = args
+    if not re.match(r'^\d+\.\d+\.\d+(\.\d+)?\w*$', v):
+        parser.error('Invalid version string: '
+                     'must be of the form MAJOR.MINOR.PATCHLEVEL')
 
     checkGitRepo()
 
-    sign = ''
-    dryrun = False
-    while len(sys.argv) > 3:
-        if sys.argv[1] == '-s':
-            sign = '-s'
-            sys.argv.pop(1)
-        elif sys.argv[1] == '-n':
-            dryrun = True
-            sys.argv.pop(1)
-        else:
-            usage()
-
-    print 'Check version string for validity.'
-    (u, v) = sys.argv[1:]
-    if not re.match(r'^\d+\.\d+\.\d+(\.\d+)?\w*$', v):
-        error('Invalid version string: '
-              'must be of the form MAJOR.MINOR.PATCHLEVEL.')
+    sign = options.sign
+    dryrun = options.dry_run
 
     if os.path.exists('supybot'):
         error('I need to make the directory "supybot" but it already exists.'
