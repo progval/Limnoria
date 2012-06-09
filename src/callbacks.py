@@ -251,6 +251,10 @@ class ArgumentError(Error):
     """The bot replies with a help message when this is raised."""
     pass
 
+class SilentError(Error):
+    """An error that we should not notify the user."""
+    pass
+
 class Tokenizer(object):
     # This will be used as a global environment to evaluate strings in.
     # Evaluation is, of course, necessary in order to allow escaped
@@ -478,7 +482,7 @@ class RichReplyMethods(object):
             else:
                 log.debug('Not sending capability error, '
                           'supybot.reply.error.noCapability is False.')
-                raise Error, 'error'
+                raise SilentError
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)
@@ -1217,6 +1221,8 @@ class Commands(BasePlugin):
                 self.callCommand(command, irc, msg, *args, **kwargs)
             finally:
                 self.callingCommand = None
+        except SilentError:
+            pass
         except (getopt.GetoptError, ArgumentError), e:
             self.log.debug('Got %s, giving argument error.',
                            utils.exnToString(e))
