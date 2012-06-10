@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-15 19:49+0200\n"
+"PO-Revision-Date: 2012-06-09 09:03+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -20,11 +20,15 @@ msgstr ""
 "Questo plugin offre un cattura URL che riporterà una versione accorciata\n"
 "             di quelli lunghi inviati al canale. Lo si vuole abilitare?\n"
 
-
-#: config.py:45 config.py:49
+#: config.py:45
 #, docstring
-msgid "Valid values include 'ln', 'tiny', 'xrl', and 'x0'."
-msgstr "I valori validi comprendono \"ln\", \"tiny\", \"xrl\" e \"x0\"."
+msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
+msgstr "I valori validi comprendono \"ln\", \"tiny\", \"xrl\", \"goo\" e \"x0\"."
+
+#: config.py:49
+#, docstring
+msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
+msgstr "I valori validi comprendono \"ln\", \"tiny\", \"xrl\" \"goo\" e \"x0\"."
 
 #: config.py:71
 msgid ""
@@ -95,7 +99,7 @@ msgstr ""
 "Se impostato ad un valore non vuoto, specifica l'elenco dei servizi a cui\n"
 "    rivolgersi per le variabili shrinkSnarfer e outFilter."
 
-#: plugin.py:169
+#: plugin.py:171
 #, docstring
 msgid ""
 "<url>\n"
@@ -108,7 +112,7 @@ msgstr ""
 "        Restituisce una versione di ln-s.net di <url>.\n"
 "        "
 
-#: plugin.py:194
+#: plugin.py:196
 #, docstring
 msgid ""
 "<url>\n"
@@ -121,7 +125,7 @@ msgstr ""
 "        Restituisce una versione di TinyURL.com di <url>\n"
 "        "
 
-#: plugin.py:222
+#: plugin.py:224
 #, docstring
 msgid ""
 "<url>\n"
@@ -134,7 +138,20 @@ msgstr ""
 "        Restituisce una versione di xrl.us di <url>.\n"
 "        "
 
-#: plugin.py:248
+#: plugin.py:255
+#, docstring
+msgid ""
+"<url>\n"
+"\n"
+"        Returns an goo.gl version of <url>.\n"
+"        "
+msgstr ""
+"<url>\n"
+"\n"
+"        Restituisce una versione di goo.gl di <url>.\n"
+"        "
+
+#: plugin.py:281
 #, docstring
 msgid ""
 "<url>\n"
