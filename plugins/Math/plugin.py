@@ -104,13 +104,20 @@ class Math(callbacks.Plugin):
             return math.sqrt(x)
     def _cbrt(x):
         return math.pow(x, 1.0/3)
+    def fibonacci(x):
+        if x in [0, 1]:
+            return x
+        else:
+            return x-1 + x-2
+
     _mathEnv['sqrt'] = _sqrt
     _mathEnv['cbrt'] = _cbrt
     _mathEnv['abs'] = abs
     _mathEnv['max'] = max
     _mathEnv['min'] = min
+    _mathEnv['fibonacci'] = fibonacci
     _mathSafeEnv = dict([(x,y) for x,y in _mathEnv.items()
-        if x not in ['factorial']])
+        if x not in ['factorial', 'fibonacci']])
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d)])-)?'
                          r'(?:0x[A-Fa-f\d]+|'
                          r'0[0-7]+|'
