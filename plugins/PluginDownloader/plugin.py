@@ -74,61 +74,30 @@ class GithubRepository(GitRepository):
                             )
 
 
-    _apiUrl = 'http://github.com/api/v2/json'
+    _apiUrl = 'https://api.github.com'
     def _query(self, type_, uri_end, args={}):
         args = dict([(x,y) for x,y in args.items() if y is not None])
         url = '%s/%s/%s?%s' % (self._apiUrl, type_, uri_end,
                                urllib.urlencode(args))
+        print repr(url)
         return json.load(utils.web.getUrlFd(url))
 
     def getPluginList(self):
-        latestCommit = self._query(
+        plugins = self._query(
                                   'repos',
-                                  'show/%s/%s/branches' % (
+                                  '%s/%s/contents' % (
                                                           self._username,
                                                           self._reponame,
                                                           )
-                                  )['branches']['master']
-        path = [x for x in self._path.split('/') if x != '']
-        treeHash = self._navigate(latestCommit, path)
-        if treeHash is None:
+                                  )
+        if plugins is None:
             log.error((
                       'Cannot get plugins list from repository %s/%s '
                       'at Github'
                       ) % (self._username, self._reponame))
             return []
-        nodes = self._query(
-                           'tree',
-                           'show/%s/%s/%s' % (
-                                             self._username,
-                                             self._reponame,
-                                             treeHash,
-                                             )
-                           )['tree']
-        plugins = [x['name'] for x in nodes if x['type'] == 'tree']
+        plugins = [x['name'] for x in plugins if x['type'] == 'dir']
         return plugins
-
-    def _navigate(self, treeHash, path):
-        if path == []:
-            return treeHash
-        tree = self._query(
-                          'tree',
-                          'show/%s/%s/%s' % (
-                                            self._username,
-                                            self._reponame,
-                                            treeHash,
-                                            )
-                          )['tree']
-        nodeName = path.pop(0)
-        for node in tree:
-            if node['name'] != nodeName:
-                continue
-            if node['type'] != 'tree':
-                return None
-            else:
-                return self._navigate(node['sha'], path)
-                # Remember we pop(0)ed the path
-        return None
 
     def _download(self, plugin):
         try:
