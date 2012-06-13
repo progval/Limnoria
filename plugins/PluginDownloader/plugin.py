@@ -79,7 +79,6 @@ class GithubRepository(GitRepository):
         args = dict([(x,y) for x,y in args.items() if y is not None])
         url = '%s/%s/%s?%s' % (self._apiUrl, type_, uri_end,
                                urllib.urlencode(args))
-        print repr(url)
         return json.load(utils.web.getUrlFd(url))
 
     def getPluginList(self):
