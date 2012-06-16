@@ -64,6 +64,7 @@ def normalizeWhitespace(s, removeNewline=True):
     s = str(s)
     if removeNewline:
         s = str.replace(s, '\n', '')
+    s = str.replace(s, '\t', ' ')
     while '  ' in s:
         s = str.replace(s, '  ', ' ')
     return s

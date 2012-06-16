@@ -280,7 +280,13 @@ def mircColor(s, fg=None, bg=None):
     if fg is None and bg is None:
         return s
     elif bg is None:
-        fg = mircColors[str(fg)]
+        if str(fg) in mircColors:
+            fg = mircColors[str(fg)]
+        elif len(str(fg)) > 1:
+            fg = mircColors[str(fg)[:-1]]
+        else:
+            # Should not happen
+            pass
         return '\x03%s%s\x03' % (fg.zfill(2), s)
     elif fg is None:
         bg = mircColors[str(bg)]
