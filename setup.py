@@ -123,7 +123,7 @@ setup(
     name='supybot',
     version=version,
     author='Jeremy Fincher',
-    url='http://supybot.com/',
+    url='http://sourceforge.net/projects/supybot/',
     author_email='jemfinch@supybot.com',
     download_url='http://www.sf.net/project/showfiles.php?group_id=58965',
     description='A flexible and extensible Python IRC bot and framework.',
