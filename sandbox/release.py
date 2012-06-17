@@ -43,12 +43,14 @@ def checkGitRepo():
 if __name__ == '__main__':
     usage = 'usage: %prog [options] <username> <version>'
     parser = OptionParser(usage=usage)
-    parser.set_defaults(sign=False, verbose=False)
+    parser.set_defaults(sign=False, verbose=False, branch='master')
     parser.add_option('-s', '--sign', action='store_true', dest='sign',
                       help='Pass on -s to relevant git commands')
     parser.add_option('-n', '--dry-run', action='store_true', dest='dry_run',
                       help='Build the release, but do not push to the git '
                            'remote or upload the release archives.')
+    parser.add_option('-b', '--branch', metavar='BRANCH', dest='branch',
+                      help='Branch to use for the release. Default: %default')
     (options, args) = parser.parse_args()
 
     if len(args) != 2:
@@ -63,14 +65,15 @@ if __name__ == '__main__':
 
     sign = options.sign
     dryrun = options.dry_run
+    branch = options.branch
 
     if os.path.exists('supybot'):
         error('I need to make the directory "supybot" but it already exists.'
               '  Change to an appropriate directory or remove the supybot '
               'directory to continue.')
     print 'Checking out fresh tree from git.'
-    system('git clone git+ssh://%s@supybot.git.sourceforge.net/gitroot/supybot'
-           % u)
+    system('git clone -b %s git+ssh://%s@supybot.git.sourceforge.net/gitroot/supybot'
+           % (branch, u))
     os.chdir('supybot')
 
     print 'Checking RELNOTES version line.'
@@ -105,7 +108,7 @@ if __name__ == '__main__':
 
     if not dryrun:
         print 'Pushing commits and tag.'
-        system('git push origin master')
+        system('git push origin %s' % branch)
         system('git push --tags')
 
     print 'Creating tarball (gzip).'
