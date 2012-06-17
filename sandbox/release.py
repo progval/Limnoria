@@ -80,8 +80,8 @@ if __name__ == '__main__':
               '  Change to an appropriate directory or remove the supybot '
               'directory to continue.')
     print 'Checking out fresh tree from git.'
-    system(['git', 'clone', '-b', branch,
-            'git+ssh://%s@supybot.git.sourceforge.net/gitroot/supybot' % u])
+    repo = 'git+ssh://%s@supybot.git.sourceforge.net/gitroot/supybot/supybot' % u
+    system(['git', 'clone', '-b', branch, repo])
     os.chdir('supybot')
 
     print 'Checking RELNOTES version line.'
