@@ -1,0 +1,155 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-10-27 00:20+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language: de\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Poedit-Language: German\n"
+
+#: plugin.py:103
+msgid "configuration variable"
+msgstr "Konfigurationsvariable"
+
+#: plugin.py:109
+msgid "settable configuration variable"
+msgstr "setzbare Konfigurationsvariable"
+
+#: plugin.py:136
+msgid ""
+"<group>\n"
+"\n"
+"        Returns the configuration variables available under the given\n"
+"        configuration <group>.  If a variable has values under it, it is\n"
+"        preceded by an '@' sign.  If a variable is a 'ChannelValue', that is,\n"
+"        it can be separately configured for each channel using the 'channel'\n"
+"        command in this plugin, it is preceded by an '#' sign.\n"
+"        "
+msgstr ""
+"<Gruppe>\n"
+"\n"
+"Gibt die Konfigurationsvariablen aus die unter der gegeben Konfiguraions <Gruppe> verfügbar sind. Falls eine Variable mehrere Werte unter ihr wird '@' Zeichen vorangestellt. Falls eine Variable ein 'Kanalwert' wird ein '#' Zeichen vorangestellt, es ist dann möglich diese Variable für jeden Kanal, mit dem 'channel' Befehl, separat zu setzen."
+
+#: plugin.py:148
+msgid "There don't seem to be any values in %s."
+msgstr "Es scheint so als würde es keine Werte in %s geben."
+
+#: plugin.py:154
+msgid ""
+"<word>\n"
+"\n"
+"        Searches for <word> in the current configuration variables.\n"
+"        "
+msgstr ""
+"<Wort>\n"
+"\n"
+"Sucht nach <Wort> in den momentanen Konfigurationsvariablen."
+
+#: plugin.py:167
+msgid "There were no matching configuration variables."
+msgstr "Keine passende Konfigurationsvariable gefunden."
+
+#: plugin.py:174
+msgid "Global: %s; %s: %s"
+msgstr "Global: %s; %s: %s"
+
+#: plugin.py:185
+msgid "That registry variable has no value.  Use the list command in this plugin to see what variables are available in this group."
+msgstr "Diese Registierungsvariable hat keinen Wert. Benutze den list Befehl um zu sehen welche Variablen in dieser Gruppe verfügbar sind."
+
+#: plugin.py:200
+msgid ""
+"[<channel>] <name> [<value>]\n"
+"\n"
+"        If <value> is given, sets the channel configuration variable for <name>\n"
+"        to <value> for <channel>.  Otherwise, returns the current channel\n"
+"        configuration value of <name>.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself."
+msgstr ""
+"[<Kanal>] <name> [<Wert>]\n"
+"\n"
+"Falls <Wert> angegeben ist wird die Kanal Konfigurationsvariable für <Name> auf <Wert> gesetzt für <Kanal>. Andererseits wird der momentane Wert der Kanal Konfigurationsvariable <name> ausgegben. <Kanal> wird nur benötigt wenn die Nachricht nicht im Kanal selbst gesendet wird."
+
+#: plugin.py:207
+msgid "That configuration variable is not a channel-specific configuration variable."
+msgstr "Diese Konfigurationsvariable ist keine kanalspezifische Konfigurationsvariable."
+
+#: plugin.py:220
+msgid ""
+"<name> [<value>]\n"
+"\n"
+"        If <value> is given, sets the value of <name> to <value>.  Otherwise,\n"
+"        returns the current value of <name>.  You may omit the leading\n"
+"        \"supybot.\" in the name if you so choose.\n"
+"        "
+msgstr ""
+"<Name> [<Wert>]\n"
+"\n"
+"Falls <Wert> angegeben wird, wird der Wert von <Name> auf <Wert> gesetzt. Wenn nicht, wird der momentane Wert von <Name> ausgegben> Du kannst möglicherweise das vornstehende \"supybot.\" im Namen weglassen, falls du das möchtest."
+
+#: plugin.py:234
+msgid ""
+"<name>\n"
+"\n"
+"        Returns the description of the configuration variable <name>.\n"
+"        "
+msgstr ""
+"<name>\n"
+"\n"
+"Gibt die Beschreibung der Konfigurationsvariable <name> aus."
+
+#: plugin.py:242
+msgid "  (Current value: %s)"
+msgstr "  (Momentaner Wert: %s)"
+
+#: plugin.py:245
+msgid "That configuration group exists, but seems to have no help.  Try \"config list %s\" to see if it has any children values."
+msgstr "Diese Konfigurationsgruppe extistiert, es scheint aber so als wäre keine Hilfe verfügbar. Probiere \"config list\" um zu sehen ob es Werte darunter gibt."
+
+#: plugin.py:249
+msgid "%s has no help."
+msgstr "%s hat keine Hilfe."
+
+#: plugin.py:254
+msgid ""
+"<name>\n"
+"\n"
+"        Returns the default value of the configuration variable <name>.\n"
+"        "
+msgstr ""
+"<name>\n"
+"\n"
+"Gibt den Standartwert der Konfigurationsvariable <name> aus."
+
+#: plugin.py:264
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Reloads the various configuration files (user database, channel\n"
+"        database, registry, etc.).\n"
+"        "
+msgstr ""
+"hat kein Argument\n"
+"\n"
+"Läd verschiedene Konfigurationsdateien neu (Benuter Datenbank, Kanal Datenbank, Registrierung, etc)."
+
+#: plugin.py:275
+msgid ""
+"<filename>\n"
+"\n"
+"        Exports the public variables of your configuration to <filename>.\n"
+"        If you want to show someone your configuration file, but you don't\n"
+"        want that person to be able to see things like passwords, etc., this\n"
+"        command will export a \"sanitized\" configuration file suitable for\n"
+"        showing publicly.\n"
+"        "
+msgstr ""
+"<Dateiname>\n"
+"\n"
+"Exportier die öffentlichen Variablen deiner Konfiguration nach <Dateiname>. Falls du deine Konfiguration jemandem zeigen möchtest, er aber keine Dinge wie Passwörter, etc. sehen soll, wird dieser Befehl eine \"bereinigte\" Konfiguration exportieren die für die Öffentlichkeit geeignet ist."
+

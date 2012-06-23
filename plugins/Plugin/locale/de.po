@@ -1,0 +1,241 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-11-01 20:55+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: plugin.py:42
+msgid ""
+"This plugin exists to help users manage their plugins.  Use 'plugin\n"
+"    list' to list the loaded plugins; use 'plugin help' to get the description\n"
+"    of a plugin; use the 'plugin' command itself to determine what plugin a\n"
+"    command exists in."
+msgstr "Dieses Plugin gibt es um Nutzern zu helfen ihre Plugins zu verwalten. Benutze 'plugin list' um alle geladenen Plugins aufzulisten; benutze 'plugin help' um eine Beschreibung des Plugins zu bekommen; benutze 'plugin' selbst um herauszufinden in welchem Plugin ein Befehl existiert."
+
+#: plugin.py:48
+msgid ""
+"<plugin>\n"
+"\n"
+"        Returns a useful description of how to use <plugin>, if the plugin has\n"
+"        one.\n"
+"        "
+msgstr ""
+"<plugin>\n"
+"\n"
+"Gibt eine nützliche Beschreibung aus wie man das <plugin> benutzt, falls das Plugin eine hat"
+
+#: plugin.py:57
+msgid "That plugin is loaded, but has no plugin help."
+msgstr "Das Plugin ist geladen, hat aber keine Hilfe."
+
+#: plugin.py:62
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns a list of the currently loaded plugins.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt eine liste aller geladenen Plugins aus."
+
+#: plugin.py:73
+msgid ""
+"<command>\n"
+"\n"
+"        Returns the name of the plugin that would be used to call <command>.\n"
+"        \n"
+"        If it is not uniquely determined, returns list of all plugins that\n"
+"        contain <command>.\n"
+"        "
+msgstr ""
+"<Befehl>\n"
+"\n"
+"Gibt den Namen des Plugins aus das benutzt wird um <Befehl> aufzurufen. Wenn dieser nicht einzigartig ist, wird eine Liste aller Plugins ausgegeben die über den <Befehl> verfügen."
+
+#: plugin.py:91
+msgid "plugins"
+msgstr "Plugins"
+
+#: plugin.py:93
+msgid "plugin"
+msgstr "Plugin"
+
+#: plugin.py:94
+msgid "The %q command is available in the %L %s."
+msgstr "Der %q Befehl ist im %L %s verfügbar."
+
+#: plugin.py:97
+msgid "There is no command %q."
+msgstr "Es gibt keinen Befehl %q."
+
+#: plugin.py:113
+msgid ""
+"<command>\n"
+"\n"
+"        Returns the names of all plugins that contain <command>.\n"
+"        "
+msgstr ""
+"<Befehl>\n"
+"\n"
+"Gibt die Namen aller Plugins aus die <Befehl> beinhalten."
+
+#: plugin.py:135
+msgid ""
+"<plugin>\n"
+"\n"
+"        Returns the author of <plugin>.  This is the person you should talk to\n"
+"        if you have ideas, suggestions, or other comments about a given plugin.\n"
+"        "
+msgstr ""
+"<Plugin>\n"
+"\n"
+"Gibt den Autor von <Plugin> aus. Das ist die Person mit der du kontakt aufnehmen sollte falls du Ideen, Vorschläge oder andere Kommentare für das Plugin hast."
+
+#: plugin.py:141
+msgid "That plugin does not seem to be loaded."
+msgstr "Das Plugin ist wohl nicht geladen."
+
+#: plugin.py:147
+msgid "That plugin doesn't have an author that claims it."
+msgstr "Kein Autor hat das Plugin beansprucht."
+
+#: plugin.py:152
+msgid ""
+"<plugin> [<nick>]\n"
+"\n"
+"        Replies with a list of people who made contributions to a given plugin.\n"
+"        If <nick> is specified, that person's specific contributions will\n"
+"        be listed.  Note: The <nick> is the part inside of the parentheses\n"
+"        in the people listing.\n"
+"        "
+msgstr ""
+"<plugin> [<nick>]\n"
+"\n"
+"Antwortet mit einer Liste von Personen die zum angegeben Plugin beigetragen haben.Falls <Nick> angegeben wird, werden die personenspezifischen Beitröge gelistet. Notiz: Der <Nick> ist der eingeklammerte Bereich in der Personenliste."
+
+#: plugin.py:160
+msgid ""
+"\n"
+"            Take an Authors object, and return only the name and nick values\n"
+"            in the format 'First Last (nick)'.\n"
+"            "
+msgstr ""
+"\n"
+" Nimmt ein Autoren Objekt und gibt nur die Namens und Nick Werte im format 'Vorname Nachname (Nick)' aus."
+
+#: plugin.py:166
+msgid ""
+"\n"
+"            Take a list of long names and turn it into :\n"
+"            shortname[, shortname and shortname].\n"
+"            "
+msgstr ""
+"\n"
+"Nimmt eine Liste von langen Namen und macht daraus: Kurzname[, Kurzname und Kurzname]."
+
+#: plugin.py:173
+msgid ""
+"\n"
+"            Sort the list of 'long names' based on the number of contributions\n"
+"            associated with each.\n"
+"            "
+msgstr ""
+"\n"
+"Sortiert die Liste von 'langen Namen' nach der Nummer der Beiträge, mit denen sie in Verbindung gebracht werden."
+
+#: plugin.py:183
+msgid ""
+"\n"
+"            Build the list of author + contributors (if any) for the requested\n"
+"            plugin.\n"
+"            "
+msgstr ""
+"\n"
+"Erstellt eine Liste der Autoren + Mitwirkenden (falls es welche gibt) des abgefragten Plugins."
+
+#: plugin.py:187
+msgid "The %s plugin"
+msgstr "Das %s Plugin"
+
+#: plugin.py:188
+msgid "has not been claimed by an author"
+msgstr "wurde von keinem Autor beansprucht."
+
+#: plugin.py:189
+msgid "and"
+msgstr "und"
+
+#: plugin.py:190
+msgid "has no contributors listed."
+msgstr "hat keine Mitwirkenden gelistet."
+
+#: plugin.py:195
+msgid "was written by %s"
+msgstr "wurde geschrieben von %s"
+
+#: plugin.py:206
+msgid "%s %h contributed to it."
+msgstr "%s %h hat dazu beigesteuert."
+
+#: plugin.py:211
+msgid "has no additional contributors listed."
+msgstr "hat keine zusätzliche Mitwirkende."
+
+#: plugin.py:213
+msgid "but"
+msgstr "aber"
+
+#: plugin.py:216
+msgid ""
+"\n"
+"            Build the list of contributions (if any) for the requested person\n"
+"            for the requested plugin\n"
+"            "
+msgstr ""
+"\n"
+"Erstelle eine Liste von Beiträgen (falls es welche gibt) die von der erfragten Person für das erfragte Plugin gemacht wurden."
+
+#: plugin.py:230
+msgid "The nick specified (%s) is not a registered contributor."
+msgstr "Der gegebene Nick (%s) hat keinen registrierten Mitwirkenden."
+
+#: plugin.py:236
+msgid "The %s plugin does not have '%s' listed as a contributor."
+msgstr "Das Plugin %s hat keinen '%s' als Mitwirkenden aufgeführt."
+
+#: plugin.py:244
+msgid "command"
+msgstr "Befehl"
+
+#: plugin.py:247
+msgid "the %L %s"
+msgstr "das %L %s"
+
+#: plugin.py:249
+msgid "the %L"
+msgstr "das %L"
+
+#: plugin.py:252
+msgid "%s wrote the %s plugin and also contributed %L."
+msgstr "%s hat das Plugin %s geschrieben und auch %L beigesteuert."
+
+#: plugin.py:255
+msgid "%s contributed %L to the %s plugin."
+msgstr "%s hat %L zum %s Plugin beigesteuert."
+
+#: plugin.py:258
+msgid "%s wrote the %s plugin"
+msgstr "%s hat das %s Plugin geschrieben"
+
+#: plugin.py:261
+msgid "%s has no listed contributions for the %s plugin."
+msgstr "%s hat keine gelisteten Beiträge für das %s Plugin."
+

@@ -213,7 +213,7 @@ msgstr ""
 "<numero> <teksti>\n"
 "\n"
 "        Palauttaa <number>:nen välilyönnillä erotetut osan <tekstiät>.  Esim. jos teksti\n"
-"        on \"foo bar baz\" ja <numero> on 2, palauttaa \"bar\ :in.\".\n"
+"        on \"foo bar baz\" ja <numero> on 2, palauttaa \"bar\" :in.\".\n"
 "        "
 
 #: plugin.py:192

@@ -163,7 +163,8 @@ class Status(callbacks.Plugin):
                     mem = int(out.splitlines()[1])
                 elif sys.platform.startswith('netbsd'):
                     mem = int(os.stat('/proc/%s/mem' % pid)[7])
-                response += format(_('  I\'m taking up %S of memory.'), mem)
+                response += format(_('  I\'m taking up %S of memory.'),
+                        mem*1024)
             except Exception:
                 self.log.exception('Uncaught exception in cpu.memory:')
         irc.reply(utils.str.normalizeWhitespace(response))
@@ -221,6 +222,15 @@ class Status(callbacks.Plugin):
         """
         irc.reply(irc.server)
     server = wrap(server)
+
+    @internationalizeDocstring
+    def network(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the network the bot is on.
+        """
+        irc.reply(irc.network)
+    network = wrap(network)
 
 
 Class = Status

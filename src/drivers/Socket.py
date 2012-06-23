@@ -41,6 +41,8 @@ try:
     import ssl
     SSLError = ssl.SSLError
 except:
+    drivers.log.debug('ssl module is not available, '
+                      'cannot connect to SSL servers.')
     class SSLError(Exception):
         pass
 

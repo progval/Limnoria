@@ -5,12 +5,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Finnish translation of Admin plugin in Supybot\n"
-"POT-Creation-Date: 2010-10-16 10:43+CEST\n"
-"PO-Revision-Date: 2011-08-13 23:31+0200\n"
+"POT-Creation-Date: 2011-10-30 19:20+CET\n"
+"PO-Revision-Date: 2011-10-31 16:25+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "X-Poedit-Language: Finnish\n"
@@ -37,7 +38,7 @@ msgid "Cannot join %s, my keyword was wrong."
 msgstr "En voi liittyä kanavalle %s, minun avainsana oli väärä."
 
 #: plugin.py:104
-msgid "Cannot join %s, I'm not identified with the NickServ."
+msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr "En voi liittyä kanavalle %s, koska en ole tunnistautunut NickServille."
 
 #: plugin.py:134
@@ -184,10 +185,10 @@ msgid ""
 msgstr ""
 "<hostmask|nimimerkki> [<vanhentuu>]\n"
 "\n"
-"     Tämä asettaa pysyvän ignoren <hostmaskiin> tai hostmaskiin,\n"
+"     Tämä asettaa pysyvän huomiotta jättämisen <hostmaskiin> tai hostmaskiin,\n"
 "     joka on tällä hetkellä yhdistetty <nimimerkkiin>. <Vanhentuminen> on vaihtoehtoinen paremetri,\n"
-"     joka määrittää (\"sekuntieissa\") joiden jälkeen ignore poistetaan; jos\n"
-"    sitä ei ole annettu, ignore ei vanhene koskaan automaattisesti.\n"
+"     joka määrittää (\"sekuntit\") joiden jälkeen huomiotta jättäminen poistetaan; jos\n"
+"    sitä ei ole annettu, huomiotta jättäminen ei vanhene ikinä automaattisesti.\n"
 "            "
 
 #: plugin.py:323
@@ -200,13 +201,13 @@ msgid ""
 msgstr ""
 "<hostmask|nimimerkki>\n"
 "\n"
-"     Tämä poistaa pysyvän ignoren <hostmaskista> tai\n"
+"     Tämä poistaa pysyvän huomiotta jättämisen  <hostmaskista> tai\n"
 "     hostmaskista joka on tällä hetkellä yhdistetty <nimimerkkiin>.\n"
 "            "
 
 #: plugin.py:332
 msgid "%s wasn't in the ignores database."
-msgstr "%s ei ollut ignore tietokannassa."
+msgstr "%s ei ollut huomiotta jätettävien tietokannassa."
 
 #: plugin.py:337
 msgid ""
@@ -217,10 +218,22 @@ msgid ""
 msgstr ""
 "Ei ota parametrejä\n"
 "\n"
-"     Luetteloi hostmaskit jotka ovat botin ignoressa.\n"
+"     Luetteloi hostmaskit jotka ovat botin huomiotta jättämis listalla.\n"
 "            "
 
 #: plugin.py:345
 msgid "I'm not currently globally ignoring anyone."
-msgstr "Minä en tällä hetkellä pidä ketään globaalissa ignoressa."
+msgstr "En tällä hetkellä jätä ketään huomioitta globaalisti."
+
+#: plugin.py:351
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Clears the current send queue for this network.\n"
+"        "
+msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"        Tyhjentää nykyisen lähetysjonon tälle verkolle.\n"
+"        "
 

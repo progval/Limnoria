@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-16 10:43+CEST\n"
+"POT-Creation-Date: 2011-10-30 19:20+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: ProgVal <progval@gmail.com>\n"
@@ -34,7 +34,7 @@ msgid "Cannot join %s, my keyword was wrong."
 msgstr "Ne peut joindre %s, mon mot de passe est mauvais."
 
 #: plugin.py:104
-msgid "Cannot join %s, I'm not identified with the NickServ."
+msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr "Ne peut joindre %s, je ne suis pas identifié auprès de NickServ."
 
 #: plugin.py:134
@@ -199,4 +199,15 @@ msgstr ""
 #: plugin.py:345
 msgid "I'm not currently globally ignoring anyone."
 msgstr "Je n'ignore actuellement personne globalement."
+
+#: plugin.py:351
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Clears the current send queue for this network.\n"
+"        "
+msgstr ""
+"Ne prend pas d'argument\n"
+"\n"
+"Vide la queue en attente pour ce réseau."
 

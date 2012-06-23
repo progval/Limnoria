@@ -171,6 +171,7 @@ class Time(callbacks.Plugin):
         except ImportError:
             irc.error(_('Python-tz is required by the command, but is not '
                         'installed on this computer.'))
+            return
         try:
             timezone = pytz.timezone(timezone)
         except pytz.UnknownTimeZoneError:

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-30 11:23+CEST\n"
+"POT-Creation-Date: 2011-12-23 13:11+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -122,7 +122,7 @@ msgid ""
 "            Sets the secure flag on the user of the person sending the message.\n"
 "            Requires that the person's hostmask be in the list of hostmasks for\n"
 "            that user in addition to the password being correct.  When the\n"
-"            secure flag is set, the user *must* identify before he can be\n"
+"            secure flag is set, the user *must* identify before he or she can be\n"
 "            recognized.  If a specific True/False value is not given, it\n"
 "            inverts the current value.\n"
 "            "
@@ -289,7 +289,7 @@ msgstr ""
 
 #: plugin.py:438
 msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
-msgstr "Si vous êtes encore reconnu(e) après avoir envoyé cette commande, c\'est que vous êtes reconnu(e) par masque d\'hôte et non par mot de passe. Vous devez supprimer tout masque d\'hôte susceptible de vous reconnaitre, dans le but de ne pas être reconnu(e)."
+msgstr "Si vous êtes encore reconnu(e) après avoir envoyé cette commande, c'est que vous êtes reconnu(e) par masque d'hôte et non par mot de passe. Vous devez supprimer tout masque d'hôte susceptible de vous reconnaitre, dans le but de ne pas être reconnu(e)."
 
 #: plugin.py:447
 msgid ""

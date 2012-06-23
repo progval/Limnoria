@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2012-06-09 09:00+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,9 +22,14 @@ msgid ""
 "             like this snarfer to be enabled?"
 msgstr ""
 
-#: config.py:45 config.py:49
+#: config.py:45
 #, docstring
-msgid "Valid values include 'ln', 'tiny', 'xrl', and 'x0'."
+msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
+msgstr ""
+
+#: config.py:49
+#, docstring
+msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
 msgstr ""
 
 #: config.py:71
@@ -81,7 +86,7 @@ msgid ""
 "    services to rotate through for the shrinkSnarfer and outFilter."
 msgstr ""
 
-#: plugin.py:169
+#: plugin.py:171
 #, docstring
 msgid ""
 "<url>\n"
@@ -90,7 +95,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:194
+#: plugin.py:196
 #, docstring
 msgid ""
 "<url>\n"
@@ -99,7 +104,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:222
+#: plugin.py:224
 #, docstring
 msgid ""
 "<url>\n"
@@ -108,7 +113,16 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:255
+#, docstring
+msgid ""
+"<url>\n"
+"\n"
+"        Returns an goo.gl version of <url>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:281
 #, docstring
 msgid ""
 "<url>\n"

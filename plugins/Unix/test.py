@@ -92,4 +92,10 @@ if os.name == 'posix':
             self.assertNotError('unix call /bin/ping -c 1 localhost')
             self.assertRegexp('unix call /bin/ping -c 1 localhost', 'ping statistics')
             self.assertError('unix call /usr/bin/nosuchcommandaoeuaoeu')
+
+        def testUptime(self):
+            self.assertNotError('unix sysuptime')
+
+        def testUname(self):
+            self.assertNotError('unix sysuname')
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

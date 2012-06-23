@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
+"Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-08-09 23:57+0200\n"
+"PO-Revision-Date: 2012-03-15 20:25+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -32,11 +32,11 @@ msgstr "Non posso entrare in %s, sono stato bannato."
 msgid "Cannot join %s, my keyword was wrong."
 msgstr "Non posso entrare in %s, la password era sbagliata."
 
-#: plugin.py:104
-msgid "Cannot join %s, I'm not identified with the NickServ."
+#: plugin.py:104 plugin.py:113
+msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr "Non posso entrare in %s, non sono identificato con NickServ."
 
-#: plugin.py:134
+#: plugin.py:143
 #, docstring
 msgid ""
 "<channel> [<key>]\n"
@@ -51,11 +51,11 @@ msgstr ""
 "        viene usata quando si tenta di entrare nel canale.\n"
 "        "
 
-#: plugin.py:147
+#: plugin.py:156
 msgid "I'm already too close to maximum number of channels for this network."
 msgstr "Sono già troppo vicino al numero massimo di canali per questa rete."
 
-#: plugin.py:156
+#: plugin.py:165
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -70,27 +70,27 @@ msgstr ""
 "        privato per preservare la segretezza dei canali privati.\n"
 "        "
 
-#: plugin.py:166
+#: plugin.py:175
 msgid "I'm not currently in any channels."
 msgstr "Al momento non sono in nessun canale."
 
-#: plugin.py:172
+#: plugin.py:181
 msgid "My connection is restricted, I can't change nicks."
 msgstr "La mia connessione è limitata, non posso cambiare nick."
 
-#: plugin.py:179
+#: plugin.py:188
 msgid "Someone else is already using that nick."
 msgstr "Qualcun altro sta utilizzando questo nick."
 
-#: plugin.py:186
+#: plugin.py:195
 msgid "That nick is currently banned."
 msgstr "Il nick è attualmente bannato."
 
-#: plugin.py:193
+#: plugin.py:202
 msgid "I can't change nicks, the server said %q."
 msgstr "Non posso cambiare nick, il server ha detto %q."
 
-#: plugin.py:207
+#: plugin.py:216
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -105,7 +105,7 @@ msgstr ""
 "        quello attuale.\n"
 "        "
 
-#: plugin.py:222
+#: plugin.py:231
 #, docstring
 msgid ""
 "[<channel>] [<reason>]\n"
@@ -123,11 +123,11 @@ msgstr ""
 "        Se <motivo> viene specificato, verrà usato come messaggio di uscita.\n"
 "        "
 
-#: plugin.py:240
+#: plugin.py:249
 msgid "I'm not in %s."
 msgstr "Non sono in %s."
 
-#: plugin.py:252
+#: plugin.py:261
 #, docstring
 msgid ""
 "<name|hostmask> <capability>\n"
@@ -142,15 +142,15 @@ msgstr ""
 "            <hostmask> attualmente) la <capacità> specificata.\n"
 "            "
 
-#: plugin.py:272
+#: plugin.py:281
 msgid "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser program (or edit the users.conf file yourself) to add an owner capability."
 msgstr "La capacità \"owner\" non può essere aggiunta al bot. Utilizzare il programma supybot-adduser (o modificare il file users.conf) per aggiungerla."
 
-#: plugin.py:283
+#: plugin.py:292
 msgid "You can't add capabilities you don't have."
 msgstr "Non puoi aggiungere capacità che non hai."
 
-#: plugin.py:288
+#: plugin.py:297
 #, docstring
 msgid ""
 "<name|hostmask> <capability>\n"
@@ -165,15 +165,15 @@ msgstr ""
 "            <hostmask> attualmente) la <capacità> specificata\n"
 "            "
 
-#: plugin.py:300
+#: plugin.py:309
 msgid "That user doesn't have that capability."
 msgstr "Questo utente non ha tale capacità."
 
-#: plugin.py:302
+#: plugin.py:311
 msgid "You can't remove capabilities you don't have."
 msgstr "Non puoi rimuovere capacità che non hai."
 
-#: plugin.py:310
+#: plugin.py:319
 #, docstring
 msgid ""
 "<hostmask|nick> [<expires>]\n"
@@ -192,7 +192,7 @@ msgstr ""
 "            questo non scadrà mai.\n"
 "            "
 
-#: plugin.py:323
+#: plugin.py:332
 #, docstring
 msgid ""
 "<hostmask|nick>\n"
@@ -206,11 +206,11 @@ msgstr ""
 "            Rimuove l'ignore persistente su <hostmask> o l'attuale hostmask associata a <nick>.\n"
 "            "
 
-#: plugin.py:332
+#: plugin.py:341
 msgid "%s wasn't in the ignores database."
 msgstr "%s non è nel mio database degli ignorati."
 
-#: plugin.py:337
+#: plugin.py:346
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -223,7 +223,20 @@ msgstr ""
 "            Elenca le hostmask che il bot sta ignorando.\n"
 "            "
 
-#: plugin.py:345
+#: plugin.py:354
 msgid "I'm not currently globally ignoring anyone."
 msgstr "Al momento non sto ignorando nessuno."
+
+#: plugin.py:360
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Clears the current send queue for this network.\n"
+"        "
+msgstr ""
+"non necessita argomenti\n"
+"\n"
+"        Pulisce l'attuale coda dei messaggi da inviare (interrompe il flood) per questa rete.\n"
+"        "
 

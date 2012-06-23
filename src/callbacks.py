@@ -251,6 +251,10 @@ class ArgumentError(Error):
     """The bot replies with a help message when this is raised."""
     pass
 
+class SilentError(Error):
+    """An error that we should not notify the user."""
+    pass
+
 class Tokenizer(object):
     # This will be used as a global environment to evaluate strings in.
     # Evaluation is, of course, necessary in order to allow escaped
@@ -478,6 +482,7 @@ class RichReplyMethods(object):
             else:
                 log.debug('Not sending capability error, '
                           'supybot.reply.error.noCapability is False.')
+                raise SilentError
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)
@@ -830,7 +835,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         # action=True implies noLengthCheck=True and prefixNick=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         target = self.private and self.to or self.msg.args[0]
-        s = str(s) # Allow non-string esses.
+        if not isinstance(s, basestring): # avoid trying to str() unicode
+            s = str(s) # Allow non-string esses.
         if self.finalEvaled:
             try:
                 if isinstance(self.irc, self.__class__):
@@ -993,11 +999,11 @@ class CommandProcess(world.SupyProcess):
     to run in processes.
     """
     def __init__(self, target=None, args=(), kwargs={}):
-        self.command = args[0]
-        self.cb = target.im_self
+        pn = kwargs.pop('pn', 'Unknown')
+        cn = kwargs.pop('cn', 'unknown')
         procName = 'Process #%s (for %s.%s)' % (world.processesSpawned,
-                                                 self.cb.name(),
-                                                 self.command)
+                                                 pn,
+                                                 cn)
         log.debug('Spawning process %s (args: %r)', procName, args)
         self.__parent = super(CommandProcess, self)
         self.__parent.__init__(target=target, name=procName,
@@ -1196,7 +1202,12 @@ class Commands(BasePlugin):
         method(irc, msg, *args, **kwargs)
 
     def _callCommand(self, command, irc, msg, *args, **kwargs):
-        self.log.info('%s called by %q.', formatCommand(command), msg.prefix)
+        if irc.nick == msg.args[0]:
+            self.log.info('%s called in private by %q.', formatCommand(command),
+                    msg.prefix)
+        else:
+            self.log.info('%s called on %s by %q.', formatCommand(command),
+                    msg.args[0], msg.prefix)
         # XXX I'm being extra-special-careful here, but we need to refactor
         #     this.
         try:
@@ -1210,6 +1221,8 @@ class Commands(BasePlugin):
                 self.callCommand(command, irc, msg, *args, **kwargs)
             finally:
                 self.callingCommand = None
+        except SilentError:
+            pass
         except (getopt.GetoptError, ArgumentError), e:
             self.log.debug('Got %s, giving argument error.',
                            utils.exnToString(e))

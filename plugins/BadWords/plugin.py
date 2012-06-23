@@ -73,12 +73,13 @@ class BadWords(callbacks.Privmsg):
         # We need to check for bad words here rather than in doPrivmsg because
         # messages don't get to doPrivmsg if the user is ignored.
         if msg.command == 'PRIVMSG':
-            self.updateRegexp()
-            s = ircutils.stripFormatting(msg.args[1])
             channel = msg.args[0]
+            self.updateRegexp(channel)
+            s = ircutils.stripFormatting(msg.args[1])
             if ircutils.isChannel(channel) and self.registryValue('kick', channel):
                 if self.regexp.search(s):
-                    if irc.nick in irc.state.channels[channel].ops:
+                    if irc.nick in irc.state.channels[channel].ops or \
+                            irc.nick in irc.state.channels[channel].halfops:
                         message = self.registryValue('kick.message', channel)
                         irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
                     else:
@@ -86,14 +87,15 @@ class BadWords(callbacks.Privmsg):
                                          msg.nick, channel)
         return msg
 
-    def updateRegexp(self):
+    def updateRegexp(self, channel):
         if self.lastModified < self.words.lastModified:
-            self.makeRegexp(self.words())
+            self.makeRegexp(self.words(), channel)
             self.lastModified = time.time()
 
     def outFilter(self, irc, msg):
         if self.filtering and msg.command == 'PRIVMSG' and self.words():
-            self.updateRegexp()
+            channel = msg.args[0]
+            self.updateRegexp(channel)
             s = msg.args[1]
             if self.registryValue('stripFormatting'):
                 s = ircutils.stripFormatting(s)
@@ -102,9 +104,9 @@ class BadWords(callbacks.Privmsg):
                 msg = ircmsgs.privmsg(msg.args[0], t, msg=msg)
         return msg
 
-    def makeRegexp(self, iterable):
+    def makeRegexp(self, iterable, channel):
         s = '(%s)' % '|'.join(map(re.escape, iterable))
-        if self.registryValue('requireWordBoundaries'):
+        if self.registryValue('requireWordBoundaries', channel):
             s = r'\b%s\b' % s
         self.regexp = re.compile(s, re.I)
 

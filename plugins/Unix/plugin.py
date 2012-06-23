@@ -143,11 +143,12 @@ class Unix(callbacks.Plugin):
                      'is installed, reconfigure '
                      'supybot.plugins.Unix.spell.command appropriately.'),
                      Raise=True)
+        spellLang = self.registryValue('spell.language') or 'en'
         if word and not word[0].isalpha():
             irc.error(_('<word> must begin with an alphabet character.'))
             return
         try:
-            inst = subprocess.Popen([spellCmd, '-a'], close_fds=True,
+            inst = subprocess.Popen([spellCmd, '-l', spellLang, '-a'], close_fds=True,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE,
                                     stdin=subprocess.PIPE)
@@ -186,7 +187,7 @@ class Unix(callbacks.Plugin):
             resp = format(_('Possible spellings for %q: %L.'),
                           word, matches.split(', '))
         else:
-            resp = 'Something unexpected was seen in the [ai]spell output.'
+            resp = _('Something unexpected was seen in the [ai]spell output.')
         irc.reply(resp)
     spell = thread(wrap(spell, ['something']))
 
@@ -196,14 +197,15 @@ class Unix(callbacks.Plugin):
 
         Returns a fortune from the *nix fortune program.
         """
+        channel = msg.args[0]
         fortuneCmd = self.registryValue('fortune.command')
         if fortuneCmd:
             args = [fortuneCmd]
-            if self.registryValue('fortune.short'):
+            if self.registryValue('fortune.short', channel):
                 args.append('-s')
             if self.registryValue('fortune.equal'):
                 args.append('-e')
-            if self.registryValue('fortune.offensive'):
+            if self.registryValue('fortune.offensive', channel):
                 args.append('-a')
             args.extend(self.registryValue('fortune.files'))
             try:
@@ -310,6 +312,62 @@ class Unix(callbacks.Plugin):
     ping = thread(wrap(ping, [getopts({'c':'positiveInt','i':'float',
                                 't':'positiveInt','W':'positiveInt'}), 
                        first('ip', ('matches', _hostExpr, 'Invalid hostname'))]))
+
+    def sysuptime(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the uptime from the system the bot is runnning on.
+        """
+        uptimeCmd = self.registryValue('sysuptime.command')
+        if uptimeCmd:
+            args = [uptimeCmd]
+            try:
+                inst = subprocess.Popen(args, close_fds=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        stdin=file(os.devnull))
+            except OSError, e:
+                irc.error('It seems the configured uptime command was '
+                          'not available.', Raise=True)
+            (out, err) = inst.communicate()
+            inst.wait()
+            lines = out.splitlines()
+            lines = map(str.rstrip, lines)
+            lines = filter(None, lines)
+            irc.replies(lines, joiner=' ')
+        else:
+            irc.error('The uptime command is not configured. If uptime is '
+                      'installed on this system, reconfigure the '
+                      'supybot.plugins.Unix.sysuptime.command configuration '
+                      'variable appropriately.')
+
+    def sysuname(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the uname -a from the system the bot is runnning on.
+        """
+        unameCmd = self.registryValue('sysuname.command')
+        if unameCmd:
+            args = [unameCmd, '-a']
+            try:
+                inst = subprocess.Popen(args, close_fds=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        stdin=file(os.devnull))
+            except OSError, e:
+                irc.error('It seems the configured uptime command was '
+                          'not available.', Raise=True)
+            (out, err) = inst.communicate()
+            inst.wait()
+            lines = out.splitlines()
+            lines = map(str.rstrip, lines)
+            lines = filter(None, lines)
+            irc.replies(lines, joiner=' ')
+        else:
+            irc.error('The uname command is not configured. If uname is '
+                      'installed on this system, reconfigure the '
+                      'supybot.plugins.Unix.sysuname.command configuration '
+                      'variable appropriately.')
 
     def call(self, irc, msg, args, text):
         """<command to call with any arguments> 

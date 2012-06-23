@@ -1,0 +1,293 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"PO-Revision-Date: 2012-04-27 15:40+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Poedit-Language: de\n"
+
+#: config.py:45
+msgid ""
+"Determines whether the bot will list private\n"
+"    plugins with the list command if given the --private switch.  If this is\n"
+"    disabled, non-owner users should be unable to see what private plugins\n"
+"    are loaded."
+msgstr "Legt fest ob der Bot private Plugins mit dem list Befehl auflisten soll, wenn man den --private Schalter angibt. Falls das deaktiviert ist, ist es nicht Inhabern unmöglich zu sehen ob private Plugins geladen sind."
+
+#: config.py:50
+#, fuzzy
+msgid ""
+"Determines whether the bot will list unloaded\n"
+"    plugins with the list command if given the --unloaded switch.  If this is\n"
+"    disabled, non-owner users should be unable to see what unloaded plugins\n"
+"    are available."
+msgstr "Legt fest ob der Bot private Plugins mit dem list Befehl auflisten soll, wenn man den --private Schalter angibt. Falls das deaktiviert ist, ist es nicht Inhabern unmöglich zu sehen ob private Plugins geladen sind."
+
+#: config.py:55
+msgid ""
+"Determines the format string for\n"
+"    timestamps in the Misc.last command.  Refer to the Python documentation\n"
+"    for the time module to see what formats are accepted. If you set this\n"
+"    variable to the empty string, the timestamp will not be shown."
+msgstr "Legt das Format der Zeichenkette für Zeitstempel im Misc.last Befehl fest. Schau in die Python Dokumentation für das time Modul um zu sehen welche Formate unterstützt sind. Falls du diese Variable auf eine leere Zeichenkette setzt wird kein Zeitstempel angezeigt."
+
+#: config.py:62
+msgid ""
+"Determines whether or not\n"
+"    the timestamp will be included in the output of last when it is part of a\n"
+"    nested command"
+msgstr "Legt fest ob der Zeitstempel mit in der Ausgabe stehen soll, wenn der letzte Befehl teil eines verschachtelten Befehls war."
+
+#: config.py:66
+msgid ""
+"Determines whether or not the\n"
+"    nick will be included in the output of last when it is part of a nested\n"
+"    command"
+msgstr "Legt fest ob der Nick mit in der Ausgabe stehen soll, wenn der letzte Befehl teil eines verschachtelten Befehls war."
+
+#: plugin.py:104
+msgid "You've given me %s invalid commands within the last minute; I'm now ignoring you for %s."
+msgstr "Du hast mir %s nicht zulässige Befehle innerhalb der letzten Minute gegeben. Ich werde dich für %s ignorieren."
+
+#: plugin.py:116
+msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"list %s\" to see the commands in the %q plugin."
+msgstr "Das %q Plugin ist geladen, aber es besitzt keinen Befehl mit dem Namen %q. Versuche \"list %s\" um die Befehle des %q Plugins zu sehen."
+
+#: plugin.py:142
+#, fuzzy
+msgid ""
+"[--private] [--unloaded] [<plugin>]\n"
+"\n"
+"        Lists the commands available in the given plugin.  If no plugin is\n"
+"        given, lists the public plugins available.  If --private is given,\n"
+"        lists the private plugins. If --unloaded is given, it will list\n"
+"        available plugins that are not loaded.\n"
+"        "
+msgstr ""
+"[--private] [<Plugin>]\n"
+"\n"
+"Listet die Befehl auf die das gegebene Plugin anbietet. Falls kein Plugin angegeben wird, werden alle verfügbaren öffentliche Befehle aufgelistet. Falls --private angegeben wird, werden alle privaten Plugins aufgelistet."
+
+#: plugin.py:163
+msgid "--private and --unloaded are uncompatible options."
+msgstr ""
+
+#: plugin.py:194
+msgid "There are no private plugins."
+msgstr "Es gibt keine privaten Plugins."
+
+#: plugin.py:196
+msgid "There are no public plugins."
+msgstr "Es gibt keine öffentlichen Plugins."
+
+#: plugin.py:203
+msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
+msgstr "Dieses Plugin existiert, hat aber keine Befehle. Das heißt womöglich das es einige Konfigurationsvariablen hat, die verändert werden können um das Verhalten zu beeinflussen. Probiere \"config list supybot.plugins.%s\" um zu sehen welche Konfigurationsvariablen es hat."
+
+#: plugin.py:215
+msgid ""
+"<string>\n"
+"\n"
+"        Searches for <string> in the commands currently offered by the bot,\n"
+"        returning a list of the commands containing that string.\n"
+"        "
+msgstr ""
+"<Zeichenkette>\n"
+"\n"
+"Sucht nach <Zeichenkette> in den Befehlen die der Bot momentan anbietet, gibt eine Liste der Befehle zurück in denen die Zeichenkette vorkommt."
+
+#: plugin.py:234
+msgid "No appropriate commands were found."
+msgstr "Kein passender Befehl gefunden."
+
+#: plugin.py:239
+msgid ""
+"[<plugin>] [<command>]\n"
+"\n"
+"        This command gives a useful description of what <command> does.\n"
+"        <plugin> is only necessary if the command is in more than one plugin.\n"
+"        "
+msgstr ""
+"[<Plugin>] [<Befehl>]\n"
+"\n"
+"Gibt eine nützliche Beschreibung was der <Befehl> tut. <Plugin> wird nur benötigt, falls es den Befehl in mehr wie einem Plugin gibt."
+
+#: plugin.py:249
+msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
+msgstr "Den Befehl gibt es in diesen %L Plugins. Bitte gibt genau an mit welchen Plugin Befehl du Hilfe benötigst."
+
+#: plugin.py:256
+msgid "There is no command %q."
+msgstr "Es gibt keinen Befehl %q."
+
+#: plugin.py:262
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the version of the current bot.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt die momentane Bot Version aus."
+
+#: plugin.py:276
+msgid "The newest versions available online are %s."
+msgstr "Die neuste online Version ist %s."
+
+#: plugin.py:277
+msgid "%s (in %s)"
+msgstr "%s (in %s)"
+
+#: plugin.py:281
+msgid "I couldn't fetch the newest version from the Limnoria repository."
+msgstr "Ich konnte mir die neuste Version nicht aus dem Limnoria Verzeichnis holen."
+
+#: plugin.py:283
+msgid "The current (running) version of this Supybot is %s.  %s"
+msgstr "Die momentane (laufende) Version von Supybot ist %s. %s"
+
+#: plugin.py:290
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns a URL saying where to get Limnoria.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt eine URL zurück die dir sagt wo man Limnoria bekommt."
+
+#: plugin.py:294
+msgid "My source is at https://github.com/ProgVal/Limnoria"
+msgstr "Mein Quellcode ist auf https://github.com/ProgVal/Limnoria"
+
+#: plugin.py:299
+msgid ""
+"[<nick>]\n"
+"\n"
+"        If the last command was truncated due to IRC message length\n"
+"        limitations, returns the next chunk of the result of the last command.\n"
+"        If <nick> is given, it takes the continuation of the last command from\n"
+"        <nick> instead of the person sending this message.\n"
+"        "
+msgstr ""
+"[<nick>]\n"
+"\n"
+"Falls die Ausgabe des letzten Befehls abgeschnitten wurde, wegen der IRC Nachrichtenlänge beschränkung, wird der nexte Teil der Ausgabe des letzten Befehls ausgegben. Falls <nick> angegeben wird, wird die AUsgabe des letzten Befehls von <nick> weitergeführt, anstatt der Person die den Befehl sendete."
+
+#: plugin.py:313
+msgid "%s has no public mores."
+msgstr "%s hat keine öffentlichen Nachrichten mehr."
+
+#: plugin.py:316
+msgid "Sorry, I can't find any mores for %s"
+msgstr "Sorry, Ich kann nicht mehr für %s finden"
+
+#: plugin.py:323
+msgid "more message"
+msgstr "mehr Nachricht"
+
+#: plugin.py:325
+msgid "more messages"
+msgstr "mehr Nachrichten"
+
+#: plugin.py:329
+msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
+msgstr "Du hast mir keinen Befehl geben; eventuell willst du mehr Nachrichten einer anderen Person sehen. Um das zu ereichen, rufe diesen Befehl auf mit dem Nicknamen der Person auf."
+
+#: plugin.py:333
+msgid "That's all, there is no more."
+msgstr "Das ist alles, mehr ist nicht da."
+
+#: plugin.py:343
+msgid ""
+"[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
+"\n"
+"        Returns the last message matching the given criteria.  --from requires\n"
+"        a nick from whom the message came; --in requires a channel the message\n"
+"        was sent to; --on requires a network the message was sent on; --with\n"
+"        requires some string that had to be in the message; --regexp requires\n"
+"        a regular expression the message must match; --nolimit returns all\n"
+"        the messages that can be found.  By default, the channel this command is\n"
+"        given in is searched.\n"
+"        "
+msgstr ""
+"[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
+"\n"
+"Gibt die letzte Nachricht aus, die auf die gegeben Kriterien passt. --from benötigt den Nick von dem die Nachricht kam; --in benötigt den Kanal in den die Nachricht gesendet wurde; --on benötigt das Netzwerk in dem die Nachricht gesendet wurde; --with benötigt eine Zeichenkette die in der Nachricht vorkommt; --regexp benötigt einen regulären Ausdruck auf der auf die Nachricht zutrifft; --nolimit zeigt alle Nachrichten die gefunden wurden. Voreinstellung: Der Kanal in dem der Befehl gegeben wird, wird durchsucht."
+
+#: plugin.py:445
+msgid "The regular expression timed out."
+msgstr ""
+
+#: plugin.py:458
+msgid "I couldn't find a message matching that criteria in my history of %s messages."
+msgstr "I konnte keine Nachricht in meiner Geschichte von %s Nachrichten finden die auf die Kriterien passt."
+
+#: plugin.py:473
+msgid ""
+"<nick> <text>\n"
+"\n"
+"        Tells the <nick> whatever <text> is.  Use nested commands to your\n"
+"        benefit here.\n"
+"        "
+msgstr ""
+"<nick> <text>\n"
+"\n"
+"Sagt <nick> den Inhalt von <text>. Benutze verschachtelte Befehle um nutzen daraus zu ziehen."
+
+#: plugin.py:483
+msgid "Dude, just give the command.  No need for the tell."
+msgstr "Junge, gib mir einfach den Befehl."
+
+#: plugin.py:488
+msgid "You just told me, why should I tell myself?"
+msgstr "Das hast du mir gerade gesagt, wieso sollte ich es mir selbst sagen?"
+
+#: plugin.py:493
+msgid "I haven't seen %s, I'll let you do the telling."
+msgstr "Ich habe %s nicht gesehen, sag es ihm selbst."
+
+#: plugin.py:498
+msgid "%s wants me to tell you: %s"
+msgstr "%s will dir folgendes sagen: %s"
+
+#: plugin.py:505
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Checks to see if the bot is alive.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Überprüft ob der Bot noch am Leben ist."
+
+#: plugin.py:509
+msgid "pong"
+msgstr "Pong"
+
+#: plugin.py:513
+msgid ""
+"[<channel>] <beginning> [--match-case]\n"
+"\n"
+"        Returns the nick of someone on the channel whose nick begins with the\n"
+"        given <beginning>.\n"
+"        <channel> defaults to the current channel."
+msgstr ""
+
+#: plugin.py:519
+msgid "I'm not even in %s."
+msgstr ""
+
+#: plugin.py:531
+msgid "No such nick."
+msgstr ""
+

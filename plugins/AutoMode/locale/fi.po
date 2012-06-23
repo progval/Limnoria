@@ -1,36 +1,36 @@
 # AutoMode plugin in Limnoria.
 # Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot AutoMode\n"
-"POT-Creation-Date: 2011-06-27 12:02+CEST\n"
-"PO-Revision-Date: \n"
+"POT-Creation-Date: 2012-04-19 21:37+CEST\n"
+"PO-Revision-Date: 2012-04-20 11:34+0300\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
-"Language-Team: \n"
+"Language-Team: Finnish <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Finnish\n"
 "X-Poedit-Country: FINLAND\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: config.py:46
 msgid ""
 "Determines whether this plugin is enabled.\n"
 "    "
-msgstr ""
-"Määrittää onko tämä lisäosa käytössä.\n"
-"    "
+msgstr "Määrittää onko tämä lisäosa käytössä."
 
 #: config.py:49
 msgid ""
 "Determines whether this plugin will automode\n"
 "    owners even if they don't have op/halfop/voice/whatever capability."
 msgstr ""
-"Määrittää vaihtaako botti omistajien tilaa automaattisesti, vaikka heillä ei olisi\n"
-"    op/halfop/voice/ihansama valtuutta."
+"Määrittää vaihtaako botti omistajien tilaa automaattisesti, vaikka heillä ei "
+"olisi\n"
+" op/halfop/voice/ihansama valtuutta."
 
 #: config.py:52
 msgid ""
@@ -38,9 +38,10 @@ msgid ""
 "    through\" to halfop/voicing when auto-opping is turned off but\n"
 "    auto-halfopping/voicing are turned on."
 msgstr ""
-"Määrittää  \"siirtyykö\" botti\n"
-"    halfoppaamiseen/voicen antamiseen kun automaatti-oppaaminen on poistettu käytöstä, mutta\n"
-"    automaattinen-halfoppaaminen/voicen antaminen on käytössä."
+"Määrittää  \"alentuuko\" botti halfoppaamiseen/voicen antamiseen kun "
+"automaattinen\n"
+" oprtaattori aseman antaminen on poistettu käytöstä, mutta automaattinen\n"
+" puolioperaattori aseman/äänen antaminen on käytössä."
 
 #: config.py:56
 msgid ""
@@ -49,8 +50,8 @@ msgid ""
 "    "
 msgstr ""
 "Määrittää oppaako botti\n"
-"    ihmiset #<kanava>,op valtuudella automaattisesti, kun he liittyvät kanavalle.\n"
-"    "
+" ihmiset, joilla on #<kanava>,op valtuus automaattisesti, kun he liittyvät "
+"kanavalle."
 
 #: config.py:60
 msgid ""
@@ -58,9 +59,8 @@ msgid ""
 "    halfop people with the <channel>,halfop capability when they join the\n"
 "    channel."
 msgstr ""
-"Määrittää halfoppaako botti automaattisesti, kun\n"
-"   ihmiset #<kanava>,halfop valtuudella, kun he liittyvät \n"
-"   kanavalle."
+"Määrittää antaako botti puolioperaattorin aseman automaattisesti, kun "
+"ihmiset, joilla on #<kanava>,halfop valtuus liittyvät kanavalle."
 
 #: config.py:64
 msgid ""
@@ -68,9 +68,9 @@ msgid ""
 "    voice people with the <channel>,voice capability when they join the\n"
 "    channel."
 msgstr ""
-"Määrittää antaako botti automaattisesti äänen\n"
-"    ihmisille, joilla on #<kanava>,voice valtuus kun he liittyvät\n"
-"    kanavalle."
+"Määrittää antaako botti automaattisesti äänen ihmisille, joilla on #<kanava>,"
+"voice\n"
+" valtuus heidän liittyessään kanavalle."
 
 #: config.py:68
 msgid ""
@@ -78,13 +78,22 @@ msgid ""
 "    ban people who join the channel and are on the banlist."
 msgstr ""
 "Määrittää antaako botti porttikiellon ihmisille,\n"
-"    jotka liittyvät kanavalle ja ovat porttikieltolistalla."
+" jotka liittyvät kanavalle ja ovat porttikieltolistalla."
 
 #: config.py:71
 msgid ""
 "Determines how many seconds the bot\n"
 "    will automatically ban a person when banning."
 msgstr ""
-"Määrittää kuinka moneksi sekuntiksi botti\n"
-"antaa porttikiellon henkilöle, kun ollaan antamassa porttikieltoja."
+"Määrittää kuinka moneksi sekuntiksi botti antaa porttikiellon henkilöle, "
+"antaessaan\n"
+" porttikieltoa automaattisesti."
 
+#: config.py:75
+msgid ""
+"Determines how many seconds the bot will wait\n"
+"    before applying a mode. Has no effect on bans."
+msgstr ""
+"Määrittää kuinka monta sekuntia botti odottaa ennen, kuin asettaa tilan. "
+"Tällä ei ole\n"
+" vaikutusta porttikieltoihin."

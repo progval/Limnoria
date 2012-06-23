@@ -341,7 +341,7 @@ def getIsGranted(irc, msg, args, state, action=_('do that')):
     if not irc.state.channels[state.channel].isOp(irc.nick) and \
             not irc.state.channels[state.channel].isHalfop(irc.nick):
         # isOp includes owners and protected users
-        state.error(_('I  need to be at least halfopped to %s.') % action,
+        state.error(_('I need to be at least halfopped to %s.') % action,
                 Raise=True)
 
 def validChannel(irc, msg, args, state):
@@ -421,7 +421,7 @@ getMatcher = _getRe(utils.str.perlReToPythonRe)
 getReplacer = _getRe(utils.str.perlReToReplacer)
 
 def getNick(irc, msg, args, state):
-    if ircutils.isNick(args[0]):
+    if ircutils.isNick(args[0], conf.supybot.protocols.irc.strictRfc()):
         if 'nicklen' in irc.state.supported:
             if len(args[0]) > irc.state.supported['nicklen']:
                 state.errorInvalid('nick', args[0],

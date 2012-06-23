@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
+"Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-06-21 00:17+0200\n"
+"PO-Revision-Date: 2011-11-20 21:27+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -109,7 +109,7 @@ msgstr "*GIRA* Pronto a mettere alla prova la fortuna?"
 
 #: plugin.py:137
 msgid "*BANG* Hey, who put a blank in here?!"
-msgstr "*BANG* Hey, chi ha fatto un buco qui?!"
+msgstr "*BANG* Hei, chi ha messo una cartuccia a salve qui?!"
 
 #: plugin.py:139
 msgid "reloads and spins the chambers."

@@ -30,7 +30,6 @@
 
 import re
 import time
-import copy
 
 import config
 
@@ -64,7 +63,7 @@ class Services(callbacks.Plugin):
         self.channels = []
         self.sentGhost = None
         self.identified = False
-        self.waitingJoins = []
+        self.waitingJoins = {}
 
     def disabled(self, irc):
         disabled = self.registryValue('disabledNetworks')
@@ -79,12 +78,17 @@ class Services(callbacks.Plugin):
                 if self.registryValue('noJoinsUntilIdentified'):
                     self.log.info('Holding JOIN to %s until identified.',
                                   msg.args[0])
-                    self.waitingJoins.append((irc.network, msg,))
+                    self.waitingJoins.setdefault(irc.network, [])
+                    self.waitingJoins[irc.network].append(msg)
                     return None
         return msg
 
-    def _getNick(self):
-        return conf.supybot.nick()
+    def _getNick(self, network):
+        network_nick = conf.supybot.networks.get(network).nick()
+        if network_nick == '':
+            return conf.supybot.nick()
+        else:
+            return network_nick
 
     def _getNickServPassword(self, nick):
         # This should later be nick-specific.
@@ -100,7 +104,7 @@ class Services(callbacks.Plugin):
         if self.disabled(irc):
             return
         if nick is None:
-            nick = self._getNick()
+            nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         nickserv = self.registryValue('NickServ')
@@ -122,7 +126,7 @@ class Services(callbacks.Plugin):
         if self.disabled(irc):
             return
         if nick is None:
-            nick = self._getNick()
+            nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         nickserv = self.registryValue('NickServ')
@@ -150,7 +154,7 @@ class Services(callbacks.Plugin):
         self.__parent.__call__(irc, msg)
         if self.disabled(irc):
             return
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         nickserv = self.registryValue('NickServ')
@@ -172,7 +176,7 @@ class Services(callbacks.Plugin):
     def do376(self, irc, msg):
         if self.disabled(irc):
             return
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         nickserv = self.registryValue('NickServ')
@@ -196,7 +200,7 @@ class Services(callbacks.Plugin):
     def do433(self, irc, msg):
         if self.disabled(irc):
             return
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks'):
             return
         if nick and irc.afterConnect:
@@ -210,15 +214,15 @@ class Services(callbacks.Plugin):
         self.channels.append(msg.args[1])
 
     def doNick(self, irc, msg):
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         if ircutils.strEqual(msg.args[0], irc.nick) and \
            ircutils.strEqual(irc.nick, nick):
             self._doIdentify(irc)
         elif ircutils.strEqual(msg.nick, nick):
             irc.sendMsg(ircmsgs.nick(nick))
 
-    def _ghosted(self, s):
-        nick = self._getNick()
+    def _ghosted(self, irc, s):
+        nick = self._getNick(irc.network)
         lowered = s.lower()
         return bool('killed' in lowered and (nick in s or 'ghost' in lowered))
 
@@ -247,7 +251,7 @@ class Services(callbacks.Plugin):
             # You have been unbanned from (oftc)
             irc.sendMsg(networkGroup.channels.join(channel))
         elif 'isn\'t registered' in s:
-            self.log.warning('Received "%s isn\'t registered" from ChanServ %',
+            self.log.warning('Received "%s isn\'t registered" from ChanServ %s',
                              channel, on)
         elif 'this channel has been registered' in s:
             self.log.debug('Got "Registered channel" from ChanServ %s.', on)
@@ -267,7 +271,7 @@ class Services(callbacks.Plugin):
     def doNickservNotice(self, irc, msg):
         if self.disabled(irc):
             return
-        nick = self._getNick()
+        nick = self._getNick(irc.network)
         s = ircutils.stripFormatting(msg.args[1].lower())
         on = 'on %s' % irc.network
         networkGroup = conf.supybot.networks.get(irc.network)
@@ -277,7 +281,7 @@ class Services(callbacks.Plugin):
             self.log.warning(log)
             self.sentGhost = time.time()
             self._setNickServPassword(nick, '')
-        elif self._ghosted(s):
+        elif self._ghosted(irc, s):
             self.log.info('Received "GHOST succeeded" from NickServ %s.', on)
             self.sentGhost = None
             self.identified = False
@@ -316,15 +320,10 @@ class Services(callbacks.Plugin):
                 self.checkPrivileges(irc, channel)
             for channel in self.channels:
                 irc.queueMsg(networkGroup.channels.join(channel))
-            if self.waitingJoins:
-                tmp_wj = copy.deepcopy(self.waitingJoins) # can't iterate over list if we're modifying it
-                for netname, m in tmp_wj:
-                    if netname == irc.network:
-                        irc.sendMsg(m)
-                        try:
-                            self.waitingJoins.remove((netname, m,))
-                        except ValueError:
-                            pass # weird stuff happen sometimes
+            waitingJoins = self.waitingJoins.pop(irc.network, None)
+            if waitingJoins:
+                for m in waitingJoins:
+                    irc.sendMsg(m)
         elif 'not yet authenticated' in s:
             # zirc.org has this, it requires an auth code.
             email = s.split()[-1]
@@ -509,7 +508,7 @@ class Services(callbacks.Plugin):
         """
         if self.registryValue('NickServ'):
             if not nick:
-                nick = self._getNick()
+                nick = self._getNick(irc.network)
             if ircutils.strEqual(nick, irc.nick):
                 irc.error(_('I cowardly refuse to ghost myself.'))
             else:

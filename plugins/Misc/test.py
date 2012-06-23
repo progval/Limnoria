@@ -114,6 +114,12 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertRegexp('list', name)
         self.assertNotRegexp('list --private', name)
 
+    def testListUnloaded(self):
+        unloadedPlugin = 'Alias'
+        loadedPlugin = 'Anonymous'
+        self.assertRegexp('list --unloaded', 'Alias')
+        self.assertNotRegexp('list --unloaded', 'Anonymous')
+
     def testListDoesNotIncludeNonCanonicalName(self):
         self.assertNotRegexp('list Owner', '_exec')
 
@@ -141,6 +147,9 @@ class MiscTestCase(ChannelPluginTestCase):
         self.failUnless('No need for' in m.args[1])
         m = self.getMsg('tell me you love me')
         self.failUnless(m.args[0] == self.nick)
+
+    def testNoNestedTell(self):
+        self.assertRegexp('echo [tell %s foo]' % self.nick, 'nested')
 
     def testTellDoesNotPropogateAction(self):
         m = self.getMsg('tell foo [action bar]')

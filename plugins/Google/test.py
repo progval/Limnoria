@@ -58,11 +58,6 @@ class GoogleTestCase(ChannelPluginTestCase):
             self.assertRegexp('fight supybot moobot', r'.*supybot.*: \d+')
             self.assertNotError('fight ... !')
 
-        def testTranslate(self):
-            self.assertRegexp('translate en es hello world', 'mundo')
-            self.assertRegexp('translate auto en ciao', 'Italian.*hello')
-            self.assertError('translate en to auto stuff')
-
         def testCalcDoesNotHaveExtraSpaces(self):
             self.assertNotRegexp('google calc 1000^2', r'\s+,\s+')
 

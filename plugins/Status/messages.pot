@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -109,7 +109,7 @@ msgstr ""
 msgid "  I'm taking up %S of memory."
 msgstr ""
 
-#: plugin.py:174
+#: plugin.py:175
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -118,11 +118,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:184
+#: plugin.py:185
 msgid "I offer a total of %n in %n.  I have processed %n."
 msgstr ""
 
-#: plugin.py:193
+#: plugin.py:194
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -131,7 +131,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:207
+#: plugin.py:208
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -140,16 +140,25 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:211
+#: plugin.py:212
 msgid "I have been running for %s."
 msgstr ""
 
-#: plugin.py:218
+#: plugin.py:219
 #, docstring
 msgid ""
 "takes no arguments\n"
 "\n"
 "        Returns the server the bot is on.\n"
+"        "
+msgstr ""
+
+#: plugin.py:228
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the network the bot is on.\n"
 "        "
 msgstr ""
 

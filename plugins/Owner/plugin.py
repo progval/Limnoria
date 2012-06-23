@@ -479,7 +479,7 @@ class Owner(callbacks.Plugin):
         """<plugin>
 
         Unloads the callback by name; use the 'list' command to see a list
-        of the currently loaded callbacks.  Obviously, the Owner plugin can't
+        of the currently loaded plugins.  Obviously, the Owner plugin can't
         be unloaded.
         """
         if ircutils.strEqual(name, self.name()):

@@ -30,7 +30,9 @@
 
 import re
 import os
+import imp
 import sys
+import json
 import time
 
 import supybot
@@ -48,6 +50,23 @@ from supybot import commands
 from supybot.utils.iter import ifilter
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
+
+def get_suffix(file):
+    for suffix in imp.get_suffixes():
+        if file[-len(suffix[0]):] == suffix[0]:
+            return suffix
+    return None
+
+def getPluginsInDirectory(directory):
+    # get modules in a given directory
+    plugins = []
+    for filename in os.listdir(directory):
+        pluginPath = os.path.join(directory, filename)
+        if os.path.isdir(pluginPath):
+            if all(os.path.isfile(os.path.join(pluginPath, x))
+                    for x in ['__init__.py', 'config.py', 'plugin.py']):
+                plugins.append(filename)
+    return plugins
 
 class RegexpTimeout(Exception):
     pass
@@ -90,6 +109,33 @@ class Misc(callbacks.Plugin):
             return
         # Now, for normal handling.
         channel = msg.args[0]
+        # Only bother with the invaildCommand flood handling if it's actually
+        # enabled
+        if conf.supybot.abuse.flood.command.invalid():
+            # First, we check for invalidCommand floods.  This is rightfully done
+            # here since this will be the last invalidCommand called, and thus it
+            # will only be called if this is *truly* an invalid command.
+            maximum = conf.supybot.abuse.flood.command.invalid.maximum()
+            banmasker = conf.supybot.protocols.irc.banmask.makeBanmask
+            self.invalidCommands.enqueue(msg)
+            if self.invalidCommands.len(msg) > maximum and \
+               not ircdb.checkCapability(msg.prefix, 'owner'):
+                penalty = conf.supybot.abuse.flood.command.invalid.punishment()
+                banmask = banmasker(msg.prefix)
+                self.log.info('Ignoring %s for %s seconds due to an apparent '
+                              'invalid command flood.', banmask, penalty)
+                if tokens and tokens[0] == 'Error:':
+                    self.log.warning('Apparent error loop with another Supybot '
+                                     'observed.  Consider ignoring this bot '
+                                     'permanently.')
+                ircdb.ignores.add(banmask, time.time() + penalty)
+                if conf.supybot.abuse.flood.command.invalid.notify():
+                    irc.reply('You\'ve given me %s invalid commands within '
+                              'the last minute; I\'m now ignoring you for %s.' %
+                              (maximum,
+                               utils.timeElapsed(penalty, seconds=False)))
+                return
+        # Now, for normal handling.
         if conf.get(conf.supybot.reply.whenNotCommand, channel):
             if len(tokens) >= 2:
                 cb = irc.getCallback(tokens[0])
@@ -121,34 +167,61 @@ class Misc(callbacks.Plugin):
 
     @internationalizeDocstring
     def list(self, irc, msg, args, optlist, cb):
-        """[--private] [<plugin>]
+        """[--private] [--unloaded] [<plugin>]
 
         Lists the commands available in the given plugin.  If no plugin is
         given, lists the public plugins available.  If --private is given,
-        lists the private plugins.
+        lists the private plugins. If --unloaded is given, it will list
+        available plugins that are not loaded.
         """
         private = False
+        unloaded = False
         for (option, argument) in optlist:
             if option == 'private':
                 private = True
                 if not self.registryValue('listPrivatePlugins') and \
                    not ircdb.checkCapability(msg.prefix, 'owner'):
                     irc.errorNoCapability('owner')
+            elif option == 'unloaded':
+                unloaded = True
+                if not self.registryValue('listUnloadedPlugins') and \
+                   not ircdb.checkCapability(msg.prefix, 'owner'):
+                    irc.errorNoCapability('owner')
+        if unloaded and private:
+            irc.error(_('--private and --unloaded are uncompatible options.'))
+            return
         if not cb:
-            def isPublic(cb):
-                name = cb.name()
-                return conf.supybot.plugins.get(name).public()
-            names = [cb.name() for cb in irc.callbacks
-                     if (private and not isPublic(cb)) or
-                        (not private and isPublic(cb))]
-            names.sort()
-            if names:
-                irc.reply(format('%L', names))
+            if unloaded:
+                # We were using the path of Misc + .. to detect the install
+                # directory. However, it fails if Misc is not in the
+                # installation directory for some reason, so we use a
+                # supybot module.
+                installedPluginsDirectory = os.path.join(
+                        os.path.dirname(conf.__file__), 'plugins')
+                plugins = getPluginsInDirectory(installedPluginsDirectory)
+                for directory in conf.supybot.directories.plugins()[:]:
+                    plugins.extend(getPluginsInDirectory(directory))
+                # Remove loaded plugins:
+                loadedPlugins = [x.name() for x in irc.callbacks]
+                plugins = [x for x in plugins if x not in loadedPlugins]
+
+                plugins.sort()
+                irc.reply(format('%L', plugins))
             else:
-                if private:
-                    irc.reply(_('There are no private plugins.'))
+                def isPublic(cb):
+                    name = cb.name()
+                    return conf.supybot.plugins.get(name).public()
+                names = [cb.name() for cb in irc.callbacks
+                         if (private and not isPublic(cb)) or
+                            (not private and isPublic(cb))]
+                names.sort()
+                if names:
+                    irc.reply(format('%L', names))
                 else:
-                    irc.reply(_('There are no public plugins.'))
+                    if private:
+                        irc.reply(_('There are no private plugins.'))
+                    else:
+                        irc.reply(_('There are no public plugins.'))
         else:
             commands = cb.listCommands()
             if commands:
@@ -162,7 +235,8 @@ class Misc(callbacks.Plugin):
                                  'Try "config list supybot.plugins.%s" to see '
                                  'what configuration variables it has.'),
                                  cb.name()))
-    list = wrap(list, [getopts({'private':''}), additional('plugin')])
+    list = wrap(list, [getopts({'private':'', 'unloaded':''}),
+                       additional('plugin')])
 
     @internationalizeDocstring
     def apropos(self, irc, msg, args, s):
@@ -218,15 +292,17 @@ class Misc(callbacks.Plugin):
         Returns the version of the current bot.
         """
         try:
-            newestUrl = 'https://github.com/ProgVal/Limnoria/raw/%s/' + \
-                        'src/version.py'
+            newestUrl = 'https://api.github.com/repos/ProgVal/Limnoria/' + \
+                    'commits/%s'
             versions = {}
             for branch in ('master', 'testing'):
-                file = utils.web.getUrl(newestUrl % branch)
-                match = re.search(r"^version = '([^']+)'$", file, re.M)
-                if match is None:
-                    continue
-                versions[branch] = match.group(1)
+                data = json.load(utils.web.getUrlFd(newestUrl % branch))
+                version = data['commit']['committer']['date']
+                # Strip the last ':':
+                version = ''.join(version.rsplit(':', 1))
+                # Replace the last '-' by '+':
+                version = '+'.join(version.rsplit('-', 1))
+                versions[branch] = version.encode('utf-8')
             newest = _('The newest versions available online are %s.') % \
                     ', '.join([_('%s (in %s)') % (y,x)
                                for x,y in versions.items()])
@@ -429,6 +505,8 @@ class Misc(callbacks.Plugin):
         Tells the <nick> whatever <text> is.  Use nested commands to your
         benefit here.
         """
+        if irc.nested:
+            irc.error('This command cannot be nested.', Raise=True)
         if target.lower() == 'me':
             target = msg.nick
         if ircutils.isChannel(target):
@@ -448,8 +526,8 @@ class Misc(callbacks.Plugin):
             irc.action = False
             text = '* %s %s' % (irc.nick, text)
         s = _('%s wants me to tell you: %s') % (msg.nick, text)
-        irc.reply(s, to=target, private=True)
         irc.replySuccess()
+        irc.reply(s, to=target, private=True)
     tell = wrap(tell, ['something', 'text'])
 
     @internationalizeDocstring
@@ -459,6 +537,30 @@ class Misc(callbacks.Plugin):
         Checks to see if the bot is alive.
         """
         irc.reply(_('pong'), prefixNick=False)
+
+    @internationalizeDocstring
+    def completenick(self, irc, msg, args, channel, beginning, optlist):
+        """[<channel>] <beginning> [--match-case]
+
+        Returns the nick of someone on the channel whose nick begins with the
+        given <beginning>.
+        <channel> defaults to the current channel."""
+        if channel not in irc.state.channels:
+            irc.error(_('I\'m not even in %s.') % channel, Raise=True)
+        if ('match-case', True) in optlist:
+            def match(nick):
+                return nick.startswith(beginning)
+        else:
+            beginning = beginning.lower()
+            def match(nick):
+                return nick.lower().startswith(beginning)
+        for nick in irc.state.channels[channel].users:
+            if match(nick):
+                irc.reply(nick)
+                return
+        irc.error(_('No such nick.'))
+    completenick = wrap(completenick, ['channel', 'something',
+                                       getopts({'match-case':''})])
 
 Class = Misc
 

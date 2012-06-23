@@ -1,0 +1,687 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: sdf\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"PO-Revision-Date: 2012-04-27 15:33+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:48
+msgid ""
+"Determines whether the bot will always try to\n"
+"    rejoin a channel whenever it's kicked from the channel."
+msgstr "Legt fest ob der Bot immer probieren soll den Kanal wieder zu betreten, falls er gekickt wurde."
+
+#: plugin.py:69
+msgid ""
+"[<channel>] <mode> [<arg> ...]\n"
+"\n"
+"        Sets the mode in <channel> to <mode>, sending the arguments given.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] <Modus> [<Argument> ...]\n"
+"\n"
+"Setzt den Modus für <Kanal> auf <Modus>, mit den angegeben Argumenten. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:76
+msgid "change the mode"
+msgstr "ändert den Modus"
+
+#: plugin.py:80
+msgid ""
+"[<channel>] [<limit>]\n"
+"\n"
+"        Sets the channel limit to <limit>.  If <limit> is 0, or isn't given,\n"
+"        removes the channel limit.  <channel> is only necessary if the message\n"
+"        isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Limit>]\n"
+"\n"
+"Setzt das Kanal Limit auf <Limit>. Falls <Limit> 0 ist, oder nicht angegeben wird, wird das Kanal Limit entfernt. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:90
+msgid "change the limit"
+msgstr "ändert das Limit"
+
+#: plugin.py:95
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Sets +m on <channel>, making it so only ops and voiced users can\n"
+"        send messages to the channel.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Setzt +m auf <Kanal>, sodass nur Ops und Voice Benutzer Nachrichten an den Kanal senden können. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:102
+msgid "moderate the channel"
+msgstr "moderiert den Kanel"
+
+#: plugin.py:106
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Sets -m on <channel>, making it so everyone can\n"
+"        send messages to the channel.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Setzt -m auf <Kanal>, sodass jeder Nachrichten an den Kanal senden kann. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:114
+msgid "unmoderate the channel"
+msgstr "Kanal nicht mehr moderieren"
+
+#: plugin.py:118
+msgid ""
+"[<channel>] [<key>]\n"
+"\n"
+"        Sets the keyword in <channel> to <key>.  If <key> is not given, removes\n"
+"        the keyword requirement to join <channel>.  <channel> is only necessary\n"
+"        if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Schlüssel>]\n"
+"\n"
+"Setzt das Schlüsselwort für <Kanal> auf <Schlüssel>. Fall <Schlüssel> nicht angegeben wird, wird die Schlüsselwort entfernt, und jeder kann dem <Kanal> beitreten. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:130
+msgid "change the keyword"
+msgstr "ändert das Schlüsselwort"
+
+#: plugin.py:135
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,op capability, this will give all the <nick>s\n"
+"        you provide ops.  If you don't provide any <nick>s, this will op you.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Nick> ...]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird dies allen <Nick>s die du angibst Op geben. Falls du keine <Nick>s angibst, wird dir Op gegeben. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:147
+msgid "op someone"
+msgstr "jemandem Operatorrechte geben."
+
+#: plugin.py:151
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,halfop capability, this will give all the\n"
+"        <nick>s you provide halfops.  If you don't provide any <nick>s, this\n"
+"        will give you halfops. <channel> is only necessary if the message isn't\n"
+"        sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Nick> ...]\n"
+"\n"
+"Falls du die #channel,halfop Fähigkeit hast, wird allen angegeben <Nick>s halb-Op gegeben. Falls du keine <Nick>s angibst wird dir halb-Op gegeben. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:163
+msgid "halfop someone"
+msgstr "jemandem Halfop geben"
+
+#: plugin.py:168
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,voice capability, this will voice all the\n"
+"        <nick>s you provide.  If you don't provide any <nick>s, this will\n"
+"        voice you. <channel> is only necessary if the message isn't sent in the\n"
+"        channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Nick> ...]\n"
+"\n"
+"Falls du die #channel,voice Fähigkeit hast, wird allen angegeben <Nick>s Voice gegeben. Falls du keine <Nick>s angibst wird dir Voice gegeben. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:190
+msgid "voice someone"
+msgstr "Sprechrecht geben"
+
+#: plugin.py:195
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,op capability, this will remove operator\n"
+"        privileges from all the nicks given.  If no nicks are given, removes\n"
+"        operator privileges from the person sending the message.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Nick> ...]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird allen angegeben Nicks Op entzogen. Falls keine Nicks angegeben sind, wird Op der Person entzogen die den Befehl gab."
+
+#: plugin.py:202
+msgid "I cowardly refuse to deop myself.  If you really want me deopped, tell me to op you and then deop me yourself."
+msgstr "Ich verweigere es mir selbst Op zu entziehen. Falls du mir wirklich op entziehen willst, befehle mir dir Op zu geben und tu es selbst."
+
+#: plugin.py:210
+msgid "deop someone"
+msgstr "Operator entziehen"
+
+#: plugin.py:215
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,op capability, this will remove half-operator\n"
+"        privileges from all the nicks given.  If no nicks are given, removes\n"
+"        half-operator privileges from the person sending the message.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Nick> ...]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird allen angegeben Nicks halb-Op entzogen. Falls keine Nicks angegeben sind, wird halb-Op der Person entzogen die den Befehl gab."
+
+#: plugin.py:222
+msgid "I cowardly refuse to dehalfop myself.  If you really want me dehalfopped, tell me to op you and then dehalfop me yourself."
+msgstr "Ich verweigere mich mir halb-Op zu entziehen. Falls du mir halb-Op entziehen willst, befehle mir dir Op zu geben und tu es selbst."
+
+#: plugin.py:230
+msgid "dehalfop someone"
+msgstr "entzieht jemanden halb-Op"
+
+#: plugin.py:235
+msgid ""
+"[<channel>] [<nick> ...]\n"
+"\n"
+"        If you have the #channel,op capability, this will remove voice from all\n"
+"        the nicks given.  If no nicks are given, removes voice from the person\n"
+"        sending the message.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Nick> ...]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird allen angegeben Nicks Voice entzogen. Falls keine Nicks angegeben sind, wird Voice der Person entzogen die den Befehl gab."
+
+#: plugin.py:242
+msgid "I cowardly refuse to devoice myself.  If you really want me devoiced, tell me to op you and then devoice me yourself."
+msgstr "Ich bin zu Feige um mir Voice zu entziehen. Falls du mir wirklich Voice entziehen willst, befehle mir dir Op zu geben und entziehe mir Voice selbst."
+
+#: plugin.py:255
+msgid ""
+"[<channel>]\n"
+"\n"
+"        If you have the #channel,op capability, this will cause the bot to\n"
+"        \"cycle\", or PART and then JOIN the channel. <channel> is only necessary\n"
+"        if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird der Bot den Kanal verlassen und danach wieder betreten. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:268
+msgid ""
+"[<channel>] <nick>[, <nick>, ...] [<reason>]\n"
+"\n"
+"        Kicks <nick>(s) from <channel> for <reason>.  If <reason> isn't given,\n"
+"        uses the nick of the person making the command as the reason.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] <Nick>[, <Nick>, ...]\n"
+"\n"
+"Kickt die <Nick>s aus dem <Kanal> mit der <Begründung>. Falls keine <Begründung> angegeben wurde, wird der Nick der Person die den Befehl gesendet hat, als Begründung genommen. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:276
+msgid "I cowardly refuse to kick myself."
+msgstr "Ich bin zu feige um mich selbst zu kicken."
+
+#: plugin.py:281
+msgid "The reason you gave is longer than the allowed length for a KICK reason on this server."
+msgstr "Der Grund den du mir gegeben hast war länger als die erlaubte für KICK Gründe auf diesem Server."
+
+#: plugin.py:286
+msgid "kick someone"
+msgstr "jemanden kicken"
+
+#: plugin.py:292
+msgid ""
+"[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]\n"
+"\n"
+"        If you have the #channel,op capability, this will kickban <nick> for\n"
+"        as many seconds as you specify, or else (if you specify 0 seconds or\n"
+"        don't specify a number of seconds) it will ban the person indefinitely.\n"
+"        --exact bans only the exact hostmask; --nick bans just the nick;\n"
+"        --user bans just the user, and --host bans just the host.  You can\n"
+"        combine these options as you choose.  <reason> is a reason to give for\n"
+"        the kick.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [--{exact,nick,user,host}] <Nick> [<Sekunden>] [<Begründung>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird den <Nick> kickbannen, solange wie in Sekunden angegeben, oder andernfalls (falls 0 Sekunden oder gar keine Sekunden angeben werden) wird die Person für immer gebannt. --exact bannt nur die exakte Hostmaske; --nick bannt nur den Nick; --user bannt nur den Benuter und --host bannt nur diese Hostmaske. Du kannst die Optionen miteinander kombinieren wie du willst. <Begründung> ist die Begründung für den Kick. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:311
+msgid "I cowardly refuse to kickban myself."
+msgstr "Ich bin zu feige um mich selbst zu kicken und zu bannen."
+
+#: plugin.py:318
+msgid "I haven't seen %s."
+msgstr "Ich habe % nicht gesehen."
+
+#: plugin.py:326
+msgid "I cowardly refuse to ban myself."
+msgstr "Ich bin zu feige um mich selbst zu bannen."
+
+#: plugin.py:353
+msgid "%s has %s too, you can't ban him/her/it."
+msgstr "%s hat auch %s, du kannst ihn/sie/es nicht bannen."
+
+#: plugin.py:365
+msgid "kick or ban someone"
+msgstr "jemanden kicken oder bannen"
+
+#: plugin.py:372
+msgid ""
+"[<channel>] [<hostmask>]\n"
+"\n"
+"        Unbans <hostmask> on <channel>.  If <hostmask> is not given, unbans\n"
+"        any hostmask currently banned on <channel> that matches your current\n"
+"        hostmask.  Especially useful for unbanning yourself when you get\n"
+"        unexpectedly (or accidentally) banned from the channel.  <channel> is\n"
+"        only necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Hostmaske>]\n"
+"\n"
+"Entbannt <Hostmaske> im <Kanal>. Falls die <Hostmaske> nicht angegeben wird, werden alle Bans entfernt, die momenaten im <Kanal> gebannt sind und auf deine momentane Hostmaske zutreffen. Besonders nützlich um dich selsbt zu entbannen, falls du versehentlich im Kanal gebannt wurdest. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:389
+msgid "All bans on %s matching %s have been removed."
+msgstr "Alle Bans von %s die auf %s zutreffen wurden entfernt."
+
+#: plugin.py:393
+msgid "No bans matching %s were found on %s."
+msgstr "Keine passenden Bans %s wurden in %s gefunden."
+
+#: plugin.py:396
+msgid "unban someone"
+msgstr "jemanden entbannen"
+
+#: plugin.py:401
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        If you have the #channel,op capability, this will invite <nick>\n"
+"        to join <channel>. <channel> is only necessary if the message isn't\n"
+"        sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] <Nick>\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird <Nick> dazu eingeladen den <Kanal> zu betreten. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:410
+msgid "invite someone"
+msgstr "jemanden einladen"
+
+#: plugin.py:429
+msgid "%s is already in %s."
+msgstr "%s ist schon in %s."
+
+#: plugin.py:436
+msgid "There is no %s on this network."
+msgstr "%s nicht auf diesem Netzwerk."
+
+#: plugin.py:448
+msgid ""
+"[<channel>]\n"
+"\n"
+"            If you have the #channel,op capability, this will \"lobotomize\" the\n"
+"            bot, making it silent and unanswering to all requests made in the\n"
+"            channel. <channel> is only necessary if the message isn't sent in\n"
+"            the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit besitzt, wird dies den Bot \"hirnamputieren\", er wird still und wird nicht auf Anfragen reagieren, die im Kanal getätigt werden. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:463
+msgid ""
+"[<channel>]\n"
+"\n"
+"            If you have the #channel,op capability, this will unlobotomize the\n"
+"            bot, making it respond to requests made in the channel again.\n"
+"            <channel> is only necessary if the message isn't sent in the channel\n"
+"            itself.\n"
+"            "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird dem Bot sein Hirn zurückgegeben, ab diesem Zeitpunkt antwortet er wieder auf Anfragen aus dem Kanal. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:478
+msgid ""
+"takes no arguments\n"
+"\n"
+"            Returns the channels in which this bot is lobotomized.\n"
+"            "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt die Kanäle aus in denen der Bot hirnamputiert ist."
+
+#: plugin.py:493
+msgid "I'm currently lobotomized in %L."
+msgstr "Ich bin momentan hirnamputiert in %L."
+
+#: plugin.py:496
+msgid "I'm not currently lobotomized in any channels that you're in."
+msgstr "Momentan bin ich nicht hirnamputiert in allen Kanälen in denen du bist."
+
+#: plugin.py:503
+msgid ""
+"[<channel>] <nick|hostmask> [<expires>]\n"
+"\n"
+"            If you have the #channel,op capability, this will effect a\n"
+"            persistent ban from interacting with the bot on the given\n"
+"            <hostmask> (or the current hostmask associated with <nick>).  Other\n"
+"            plugins may enforce this ban by actually banning users with\n"
+"            matching hostmasks when they join.  <expires> is an optional\n"
+"            argument specifying when (in \"seconds from now\") the ban should\n"
+"            expire; if none is given, the ban will never automatically expire.\n"
+"            <channel> is only necessary if the message isn't sent in the\n"
+"            channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] <Nick|Hostmaske> [<Ablauf>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird einem beständigen Ban mit der <Hostmaske> (oder dem Benutzer der mit <Nick> verbunden wird) verboten mit dem Bot zu interagieren. Andere Plugins setzen es womöglich durch das der Ban Benutzer beim betreten eines Kanals wirklich bannt. <Ablauf> ist optional, und legt fest wann (in Sekunden von jetzt an) der Ban abläuft, falls nicht angegeben wird der Ban niemals automatisch ablaufen. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:523
+msgid ""
+"[<channel>] <hostmask>\n"
+"\n"
+"            If you have the #channel,op capability, this will remove the\n"
+"            persistent ban on <hostmask>.  <channel> is only necessary if the\n"
+"            message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] <Hostmaske>\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird der beständige Ban auf <Hostmaske> aufgehoben. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:535
+msgid "There are no persistent bans for that hostmask."
+msgstr "Es gibt keine beständigen Bans für diese Hostmaske."
+
+#: plugin.py:540
+#, fuzzy
+msgid ""
+"[<channel>]\n"
+"\n"
+"            If you have the #channel,op capability, this will show you the\n"
+"            current persistent bans on the <channel>.\n"
+"            "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, werden die momentan beständigen Bans im <Kanal> angezeigt."
+
+#: plugin.py:550
+msgid "%q (expires %t)"
+msgstr "%q (läuft ab:%t)"
+
+#: plugin.py:553
+msgid "%q (never expires)"
+msgstr "%q(läuft niemals ab)"
+
+#: plugin.py:557
+msgid "There are no persistent bans on %s."
+msgstr "Es gibt keine beständigen Bans für %s."
+
+#: plugin.py:564
+msgid ""
+"[<channel>] <nick|hostmask> [<expires>]\n"
+"\n"
+"            If you have the #channel,op capability, this will set a persistent\n"
+"            ignore on <hostmask> or the hostmask currently\n"
+"            associated with <nick>. <expires> is an optional argument\n"
+"            specifying when (in \"seconds from now\") the ignore will expire; if\n"
+"            it isn't given, the ignore will never automatically expire.\n"
+"            <channel> is only necessary if the message isn't sent in the\n"
+"            channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] <Nick|Hostmaske> [<Ablauf>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird eine beständige Ignorierung auf <Hostmaske> gesetzt oder auf die Hostmaske die momentan mit <Nick> verbunden wird. <Ablauf> ist optional und gibt an wann (in Sekunden von jetzt an) die Ignorierung abläuft, falls dies nicht angegeben wird, wird die Ignorierung niemals automatisch ablaufen. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:582
+msgid ""
+"[<channel>] <hostmask>\n"
+"\n"
+"            If you have the #channel,op capability, this will remove the\n"
+"            persistent ignore on <hostmask> in the channel. <channel> is only\n"
+"            necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] <Hostmaske>\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird dies den dauerhaften Ignore von <Hostmaske> im Kanal entfernen. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:594
+msgid "There are no ignores for that hostmask."
+msgstr "Es gibt keine Ignorierungen für diese Hostmaske."
+
+#: plugin.py:599
+msgid ""
+"[<channel>]\n"
+"\n"
+"            Lists the hostmasks that the bot is ignoring on the given channel.\n"
+"            <channel> is only necessary if the message isn't sent in the\n"
+"            channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Listet die Hostmasken auf, die der Bot im gegeben Kanal ignoriert. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:608
+msgid "I'm not currently ignoring any hostmasks in %q"
+msgstr "Momentan ignoriere ich keine Hostmasken in %s."
+
+#: plugin.py:619
+#, fuzzy
+msgid ""
+"[<channel>] <nick|username> <capability> [<capability> ...]\n"
+"\n"
+"            If you have the #channel,op capability, this will give the\n"
+"            <username> (or the user to whom <nick> maps)\n"
+"            the capability <capability> in the channel. <channel> is only\n"
+"            necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] <Nick|Benutzername> <Fähigkeit> [<Fähigkeit> ...]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird die Kanalfähigkeit <Fähigkeit> dem Benutzer <Name> (oder dem Benutzer auf den <Nick> passt) gegeben. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:635
+msgid ""
+"[<channel>] <name|hostmask> <capability> [<capability> ...]\n"
+"\n"
+"            If you have the #channel,op capability, this will take from the\n"
+"            user currently identified as <name> (or the user to whom <hostmask>\n"
+"            maps) the capability <capability> in the channel. <channel> is only\n"
+"            necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] <Name|Hostmaske> <Fähigkeit> [<Fähigkeit> ...]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird die die Fähigkeit <Fähigkeit> im Kanal vom Benutzer entfernt, der momentan als <Name> angemeldet ist (oder auf des Benutzers auf den die <Hostmaske> zutrifft). <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:654
+msgid "That user didn't have the %L %s."
+msgstr "Der Nutzer hatte nicht %L %s."
+
+#: plugin.py:663
+msgid ""
+"[<channel>] {True|False}\n"
+"\n"
+"            If you have the #channel,op capability, this will set the default\n"
+"            response to non-power-related (that is, not {op, halfop, voice})\n"
+"            capabilities to be the value you give. <channel> is only necessary\n"
+"            if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] {True|False}\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird dies die Standard Antwort auf nicht-macht-bezogene (also nicht {Op, halb-Op, Voice}) Fähigkeiten auf die angegeben Antwort setzen. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:681
+msgid ""
+"[<channel>] <capability> [<capability> ...]\n"
+"\n"
+"            If you have the #channel,op capability, this will add the channel\n"
+"            capability <capability> for all users in the channel. <channel> is\n"
+"            only necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] <Fähigkeit> [<Fähigkeit> ...]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird  die Kanalfähigkeit <Fähigkeit> für alle Benutzer hinzugefügt. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:696
+msgid ""
+"[<channel>] <capability> [<capability> ...]\n"
+"\n"
+"            If you have the #channel,op capability, this will unset the channel\n"
+"            capability <capability> so each user's specific capability or the\n"
+"            channel default capability will take precedence. <channel> is only\n"
+"            necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>] <Fähigkeit> [<Fähigkeit> ...]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird die Kanalfähigkeit <Fähigkeit> entfernt, sodass die Benutzerfähigkeiten oder Kanal Standardfähigkeiten vorrang haben. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:712
+msgid "capability"
+msgstr "Fähigkeit"
+
+#: plugin.py:715
+msgid "I do not know about the %L %s."
+msgstr "Ich weiß nichts von %L %s."
+
+#: plugin.py:722
+msgid ""
+"[<channel>]\n"
+"\n"
+"            Returns the capabilities present on the <channel>. <channel> is\n"
+"            only necessary if the message isn't sent in the channel itself.\n"
+"            "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Gibt die Fähigkeiten zurück, die es im <Kanal> gibt. <Kanal> ist nur notwendig, falls die Nachricht nicht im Kanal selbt gegeben wurde."
+
+#: plugin.py:734
+msgid ""
+"[<channel>] [<plugin>] [<command>]\n"
+"\n"
+"        If you have the #channel,op capability, this will disable the <command>\n"
+"        in <channel>.  If <plugin> is provided, <command> will be disabled only\n"
+"        for that plugin.  If only <plugin> is provided, all commands in the\n"
+"        given plugin will be disabled.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Plugin>] [<Befehl>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird dies den <Befehl> im <Kanal> deaktivieren, falls er deaktiviert wurde. Falls <Plugin> angegeben wurde, wird <Befehl> nur für dieses <Plugin> deaktiviert. Falls nur <Plugin> angegeben wurde, werden alle Befehle des Plugins deaktiviert. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:750
+#: plugin.py:789
+msgid "The %s plugin does not have a command called %s."
+msgstr "%s Plugin hat keinen Befehl %s."
+
+#: plugin.py:757
+#: plugin.py:796
+msgid "No plugin or command named %s could be found."
+msgstr "Kein Plugin oder Befehl mit dem Namen %s konnte gefunden werden."
+
+#: plugin.py:773
+msgid ""
+"[<channel>] [<plugin>] [<command>]\n"
+"\n"
+"        If you have the #channel,op capability, this will enable the <command>\n"
+"        in <channel> if it has been disabled.  If <plugin> is provided,\n"
+"        <command> will be enabled only for that plugin.  If only <plugin> is\n"
+"        provided, all commands in the given plugin will be enabled.  <channel>\n"
+"        is only necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>] [<Plugin>] [<Befehl>]\n"
+"\n"
+"Falls du die #channel,op Fähigkeit hast, wird dies den <Befehl> im <Kanal> aktivieren, falls er deaktiviert wurde. Falls <Plugin> angegeben wurde, wird <Befehl> nur für dieses <Plugin> aktiviert. Falls nur <Plugin> angegeben wurde, werden alle Befehle des Plugins aktiviert. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:810
+msgid "%s was not disabled."
+msgstr "%s wurde nicht abgeschaltet."
+
+#: plugin.py:819
+msgid ""
+"[<channel>] [--count]\n"
+"\n"
+"        Returns the nicks in <channel>.  <channel> is only necessary if the\n"
+"        message isn't sent in the channel itself. Returns only the number of\n"
+"        nicks if --count option is provided.\n"
+"        "
+msgstr ""
+"[<Kanal>] [--count]\n"
+"\n"
+"Gibt die Nicks in <Kanal> zurück. <Kanal> ist nur notwendig, wenn die Nachricht nicht im Kanal selbst gesendet wurde. Gibt nur die Anzahl der Nicks an, falls die --count Option angegeben wurde."
+
+#: plugin.py:831
+msgid "You don't have access to that information."
+msgstr "Ich habe keinen Zugriff auf diese Informationen."
+
+#: plugin.py:845
+msgid ""
+"Internal message for notifying all the #channel,ops in a channel of\n"
+"        a given situation."
+msgstr "Interne Nachricht die alle #channel,ops eines Kanals über eine Situation informiert."
+
+#: plugin.py:848
+msgid "Alert to all %s ops: %s"
+msgstr "Alarm an alle %s Operatoren: %s"
+
+#: plugin.py:850
+msgid " (from %s)"
+msgstr "(von %s)"
+
+#: plugin.py:858
+msgid ""
+"[<channel>] <text>\n"
+"\n"
+"        Sends <text> to all the users in <channel> who have the <channel>,op\n"
+"        capability.\n"
+"        "
+msgstr ""
+"[<Kanal>] <Text>\n"
+"\n"
+"Sendet <Text an alle Nutzer im <Kanal>, die die <Kanal>,op Fähigkeit haben."
+

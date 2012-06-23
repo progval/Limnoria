@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2009,2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -139,6 +139,14 @@ class ValidNick(registry.String):
         else:
             registry.String.setValue(self, v)
 
+class ValidNickOrEmpty(ValidNick):
+    """Value must be a valid IRC nick or empty."""
+    def setValue(self, v):
+        if v != '' and not ircutils.isNick(v):
+            self.error()
+        else:
+            registry.String.setValue(self, v)
+
 class ValidNicks(registry.SpaceSeparatedListOf):
     Value = ValidNick
 
@@ -258,7 +266,8 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
         else:
             return ircmsgs.join(channel)
 
-def registerNetwork(name, password='', ssl=False):
+def registerNetwork(name, password='', ssl=False, sasl_username='',
+        sasl_password=''):
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,
         _("""Determines what password will be used on %s.  Yes, we know that
@@ -277,6 +286,17 @@ def registerNetwork(name, password='', ssl=False):
     registerChannelValue(network.channels, 'key', registry.String('',
         _("""Determines what key (if any) will be used to join the
         channel.""")))
+    registerGlobalValue(network, 'nick', ValidNickOrEmpty('', _("""Determines
+        what nick the bot will use on this network. If empty, defaults to
+        supybot.nick.""")))
+    sasl = registerGroup(network, 'sasl')
+    registerGlobalValue(sasl, 'username', registry.String(sasl_username,
+        _("""Determines what SASL username will be used on %s. This should
+        be the bot's account name. Due to the way SASL works, you can't use
+        any grouped nick.""") % name, private=False))
+    registerGlobalValue(sasl, 'password', registry.String(sasl_password,
+        _("""Determines what SASL password will be used on %s.""") \
+        % name, private=True))
     return network
 
 # Let's fill our networks.
@@ -419,11 +439,11 @@ registerGlobalValue(supybot, 'followIdentificationThroughNickChanges',
     will cause the bot to track such changes.  It defaults to False for a
     little greater security.""")))
 
-registerGlobalValue(supybot, 'alwaysJoinOnInvite',
+registerChannelValue(supybot, 'alwaysJoinOnInvite',
     registry.Boolean(False, _("""Determines whether the bot will always join a
     channel when it's invited.  If this value is False, the bot will only join
     a channel if the user inviting it has the 'admin' capability (or if it's
-    explicitly told to join the channel using the Admin.join command)""")))
+    explicitly told to join the channel using the Admin.join command).""")))
 
 registerChannelValue(supybot.reply, 'showSimpleSyntax',
     registry.Boolean(False, _("""Supybot normally replies with the full help
@@ -743,7 +763,8 @@ registerGlobalValue(supybot.directories, 'data',
     Directory('data', _("""Determines what directory data is put into.""")))
 registerGlobalValue(supybot.directories, 'backup',
     Directory('backup', _("""Determines what directory backup data is put
-    into.""")))
+    into. Set it to /dev/null to disable backup (it is a special value,
+    so it also works on Windows and systems without /dev/null).""")))
 registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', _("""Determines what directory temporary files
     are put into.""")))
@@ -968,6 +989,9 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
                 bhost = host
             elif option == 'exact':
                 return hostmask
+        if (bnick, buser, bhost) == ('*', '*', '*') and \
+                ircutils.isUserHostmask(hostmask):
+            return hostmask
         return ircutils.joinHostmask(bnick, buser, bhost)
 
 registerChannelValue(supybot.protocols.irc, 'banmask',
@@ -1050,7 +1074,7 @@ registerGroup(supybot.servers, 'http')
 class IP(registry.String):
     """Value must be a valid IP."""
     def setValue(self, v):
-        if v and not (utils.net.isIP(v) or utils.net.isIPV6(v)):
+        if v and not utils.net.isIP(v):
             self.error()
         else:
             registry.String.setValue(self, v)
@@ -1061,9 +1085,12 @@ registerGlobalValue(supybot.servers.http, 'port',
     registry.Integer(8080, _("""Determines what port the HTTP server will
     bind.""")))
 registerGlobalValue(supybot.servers.http, 'keepAlive',
-    registry.Boolean(False, _("""Defines whether the server will stay alive if
-    no plugin is using it. This also means that the server will start even
-    if it is not used.""")))
+    registry.Boolean(False, _("""Determines whether the server will stay
+    alive if no plugin is using it. This also means that the server will
+    start even if it is not used.""")))
+registerGlobalValue(supybot.servers.http, 'robots',
+    registry.String('', _("""Determines the content of the robots.txt file,
+    served on the server to search engine.""")))
 
 
 ###

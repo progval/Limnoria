@@ -201,12 +201,16 @@ class RSS(callbacks.Plugin):
                 for channel in channels:
                     if len(oldheadlines) == 0:
                         channelnewheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
+                    else:
+                        channelnewheadlines = newheadlines[:]
                     whitelist = self.registryValue('keywordWhitelist', channel)
                     blacklist = self.registryValue('keywordBlacklist', channel)
                     if len(whitelist) != 0:
                         channelnewheadlines = filter(filter_whitelist, channelnewheadlines)
                     if len(blacklist) != 0:
                         channelnewheadlines = filter(filter_blacklist, channelnewheadlines)
+                    if len(channelnewheadlines) == 0:
+                        return
                     bold = self.registryValue('bold', channel)
                     sep = self.registryValue('headlineSeparator', channel)
                     prefix = self.registryValue('announcementPrefix', channel)
@@ -287,18 +291,36 @@ class RSS(callbacks.Plugin):
         toText = utils.web.htmlToText
         if 'encoding' in feed:
             def conv(s):
-                try:
-                    return toText(s).strip().encode(feed['encoding'],'replace')
-                except UnicodeEncodeError:
-                    return toText(s.encode('utf-8', 'ignore')).strip()
+                # encode() first so there implicit encoding doesn't happen in
+                # other functions when unicode and bytestring objects are used
+                # together
+                s = s.encode(feed['encoding'], 'replace')
+                s = toText(s).strip()
+                return s
             return conv
         else:
             return lambda s: toText(s).strip()
+    def _sortFeedItems(self, items):
+        """Return feed items, sorted according to sortFeedItems."""
+        order = self.registryValue('sortFeedItems')
+        if order not in ['oldestFirst', 'newestFirst']:
+            return items
+        if order == 'oldestFirst':
+            reverse = False
+        if order == 'newestFirst':
+            reverse = True
+        try:
+            sitems = sorted(items, key=lambda i: i['updated'], reverse=reverse)
+        except KeyError:
+            # feedparser normalizes required timestamp fields in ATOM and RSS
+            # to the "updated" field. Feeds missing it are unsortable by date.
+            return items
+        return sitems
 
     def getHeadlines(self, feed):
         headlines = []
         conv = self._getConverter(feed)
-        for d in feed['items']:
+        for d in self._sortFeedItems(feed['items']):
             if 'title' in d:
                 title = conv(d['title'])
                 link = d.get('link')

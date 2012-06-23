@@ -13,3 +13,6 @@ docs/plugins
 debian/limnoria*
 debian/python-module-stampdir/
 dist/
+push.sh
+merge.sh
+src/version.py

@@ -213,7 +213,8 @@ class _PluginInternationalization:
 
     def _unescape(self, string, removeNewline=False):
         import supybot.utils as utils
-        string = str.replace(string, '\\n', '\n') # gettext escapes the \n
+        string = str.replace(string, '\\n\\n', '\n\n')
+        string = str.replace(string, '\\n', ' ')
         string = str.replace(string, '\\"', '"')
         string = str.replace(string, "\'", "'")
         string = utils.str.normalizeWhitespace(string, removeNewline)

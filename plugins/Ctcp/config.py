@@ -50,6 +50,9 @@ conf.registerGlobalValue(Ctcp, 'versionWait',
     wait after getting a version command (not a CTCP VERSION, but an actual
     call of the command in this plugin named "version") before replying with
     the results it has collected."""))
+conf.registerGlobalValue(Ctcp, 'userinfo',
+    registry.String('', """Determines what will be sent when a
+    USERINFO query is received."""))
 
 ###
 # supybot.abuse configuration variables.

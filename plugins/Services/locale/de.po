@@ -1,0 +1,249 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-11-13 18:58+0100\n"
+"Last-Translator: Florian Besser <fbesser@gmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: config.py:39
+msgid "Determines what password the bot will use with NickServ when identifying as %s."
+msgstr "Legt fest welches Passwort der Bot verwenden wird um sich als %s bei NickServ zu identifizieren."
+
+#: config.py:49
+msgid "What is your registered nick?"
+msgstr "Wie ist der registrierte Nick?"
+
+#: config.py:50
+msgid "What is your password for that nick?"
+msgstr "Was ist dein Passwort für den Nick?"
+
+#: config.py:51
+msgid "What is your ChanServ named?"
+msgstr "Wie heißt der ChanServ?"
+
+#: config.py:52
+msgid "What is your NickServ named?"
+msgstr "Wie heißt der NickServ?"
+
+#: config.py:70
+msgid ""
+"Determines what nicks the bot will use with\n"
+"    services."
+msgstr "Legt fest der was für einen Nick der Bot mit den Services nutzt."
+
+#: config.py:77
+msgid ""
+"Determines what networks this plugin\n"
+"    will be disabled on."
+msgstr "Legt fest auf welchen Netzwerken dieses Plugin deaktiviert sein soll."
+
+#: config.py:77
+msgid "QuakeNet"
+msgstr "QuakeNet"
+
+#: config.py:81
+msgid ""
+"Determines whether the bot will not join any\n"
+"    channels until it is identified.  This may be useful, for instances, if\n"
+"    you have a vhost that isn't set until you're identified, or if you're\n"
+"    joining +r channels that won't allow you to join unless you identify."
+msgstr "Legt fest ob der Bot Kanäle betreten soll, solange er noch nicht identifiziert ist. Das könnte nützlich sein falls du einen vHost hast der erst nach dem Identifizeren gesetzt wird, oder du +R Kanaäle betreten willt, die es nicht erlauben sie zu betreten solange du nicht identifiziert bist."
+
+#: config.py:86
+msgid ""
+"Determines how many seconds the bot will\n"
+"    wait between successive GHOST attempts."
+msgstr "legt fest wie viele Sekunden der Bot zwischen GHOST versuchen wartet."
+
+#: config.py:89
+msgid ""
+"Determines what nick the 'NickServ' service\n"
+"    has."
+msgstr "Legt fest welchen Nick der 'NickServ' Service hat."
+
+#: config.py:93
+msgid ""
+"Determines what nick the 'ChanServ' service\n"
+"    has."
+msgstr "Legt fest welchen Nick der 'ChanServ' Service hat."
+
+#: config.py:96
+msgid ""
+"Determines what password the bot will use with\n"
+"    ChanServ."
+msgstr "Legt fest welches Passwort der Bot für den ChanServ nutzt."
+
+#: config.py:99
+msgid ""
+"Determines whether the bot will request to get\n"
+"    opped by the ChanServ when it joins the channel."
+msgstr "Legt fest ob der Bot Op von ChanServ erfragen soll, sobald er einen Kanal betritt."
+
+#: config.py:102
+msgid ""
+"Determines whether the bot will request to get\n"
+"    half-opped by the ChanServ when it joins the channel."
+msgstr "Legt fest ob der Bot halb-Op von ChanServ erfragen soll, sobald er einen Kanal betritt."
+
+#: config.py:105
+msgid ""
+"Determines whether the bot will request to get\n"
+"    voiced by the ChanServ when it joins the channel."
+msgstr "Legt fest ob der Bot Voice von ChanServ erfragen soll, sobald er einen Kanal betritt."
+
+#: plugin.py:47
+msgid ""
+"This plugin handles dealing with Services on networks that provide them.\n"
+"    Basically, you should use the \"password\" command to tell the bot a nick to\n"
+"    identify with and what password to use to identify with that nick.  You can\n"
+"    use the password command multiple times if your bot has multiple nicks\n"
+"    registered.  Also, be sure to configure the NickServ and ChanServ\n"
+"    configuration variables to match the NickServ and ChanServ nicks on your\n"
+"    network.  Other commands such as identify, op, etc. should not be\n"
+"    necessary if the bot is properly configured."
+msgstr "Die Plugin kümmert sich um die Services, die das Netzwerk anbietet. Du solltest den \"password\" Befehl nutzen um den Bot zu sagen mit welchem Nick er sich identifizieren soll und welches Passwort er verwenden soll um sich zu identifizieren.  Du kanns den Passwort Befehl mehrere Male benutzen, falls dein Bot mehrere Nicks registriert hat. Stelle außerdem sicher,dass die NickServ und ChanServ Variablen auf die NickServ und ChanServ Nicks im Netzwerk zutreffen. Andere Befehle, wie identify, op etc., sollten nicht nötig sein falls der Bot richtig konfiguriert ist."
+
+#: plugin.py:397
+msgid "You must set supybot.plugins.Services.ChanServ before I'm able to send the %s command."
+msgstr "Du musst supybot.plugins.Services.ChanServ setzen, damit es mir möglich ist den %s Befehl auszuführen."
+
+#: plugin.py:403
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Attempts to get opped by ChanServ in <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Versucht Op durch ChanServ im <Kanal> zu bekommen. <Kanal> ist nur notwendig, falls die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:409
+msgid "I'm already opped in %s."
+msgstr "Ich habe schon Op in %s."
+
+#: plugin.py:416
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Attempts to get voiced by ChanServ in <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Versucht Voice durch ChanServ im <Kanal> zu bekommen. <Kanal> ist nur notwendig, falls die Nachricht nicht im Kanal selbst gesendet wurde."
+
+#: plugin.py:422
+msgid "I'm already voiced in %s."
+msgstr "Ich habe schon Voice in %s."
+
+#: plugin.py:439
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Attempts to get unbanned by ChanServ in <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself, but chances\n"
+"        are, if you need this command, you're not sending it in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Versucht Op durch ChanServ im <Kanal> zu bekommen. <Kanal> ist nur notwendig, falls die Nachricht nicht im Kanal selbst gesendet wurde, wahrscheinlich wird der Befehl sowieso nicht im Kanal selbst gesendet, wenn du den Befehl braucht."
+
+#: plugin.py:460
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Attempts to get invited by ChanServ to <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent in the channel itself, but chances\n"
+"        are, if you need this command, you're not sending it in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<Kanal>]\n"
+"\n"
+"Versucht Op durch ChanServ im <Kanal> zu bekommen. <Kanal> ist nur notwendig, falls die Nachricht nicht im Kanal selbst gesendet wurde, wahrscheinlich wird der Befehl sowieso nicht im Kanal selbst gesendet, wenn du den Befehl braucht."
+
+#: plugin.py:481
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Identifies with NickServ using the current nick.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Identifiziert mit dem NickServ mit dem momentanen Nick."
+
+#: plugin.py:490
+msgid "I don't have a configured password for my current nick."
+msgstr "Du hast kein Passwort für meinen momentanen Nick konfiguriert."
+
+#: plugin.py:493
+msgid "You must set supybot.plugins.Services.NickServ before I'm able to do identify."
+msgstr "Du musst supybot.plugins.Services.NickServ setzen, damit es mich möglich ist mich zu identifizieren."
+
+#: plugin.py:499
+msgid ""
+"[<nick>]\n"
+"\n"
+"        Ghosts the bot's given nick and takes it.  If no nick is given,\n"
+"        ghosts the bot's configured nick and takes it.\n"
+"        "
+msgstr ""
+"[<Nick>]\n"
+"\n"
+"'Ghost' den Bot Nick und nimmt ihn sich. Falls kein Nick angegeben wirde, wird 'ghost' für den konfigurierten Nick gesendet."
+
+#: plugin.py:508
+msgid "I cowardly refuse to ghost myself."
+msgstr "Ich verweigere es auf mich selbst 'ghost' anzuwenden."
+
+#: plugin.py:513
+msgid "You must set supybot.plugins.Services.NickServ before I'm able to ghost a nick."
+msgstr "Du musst supybot.plugins.Services.NickServ setzen, erst dann ist es mir möglich 'ghost' auf einen Nick anzuwenden."
+
+#: plugin.py:519
+msgid ""
+"<nick> [<password>]\n"
+"\n"
+"        Sets the NickServ password for <nick> to <password>.  If <password> is\n"
+"        not given, removes <nick> from the configured nicks.\n"
+"        "
+msgstr ""
+"<Nick> [<Passwort>]\\n"
+"\n"
+"Setzt das NickServ Passwort für <Nick> auf <Password>. Falls <Passwort> nicht angegeben wurde, wird der <Nick> aus der Liste der konfigurierten Nicks entfernt."
+
+#: plugin.py:529
+msgid "That nick was not configured with a password."
+msgstr "Für diesen Nick wurde kein Passwort konfiguriert."
+
+#: plugin.py:540
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the nicks that this plugin is configured to identify and ghost\n"
+"        with.\n"
+"        "
+msgstr ""
+"hat keine Argumente \n"
+"\n"
+"Gibt die Nicks aus, für die dieses Plugin konfiguriert wurde um sich zu identifizieren und 'ghost' zu benutzen."
+
+#: plugin.py:550
+msgid "I'm not currently configured for any nicks."
+msgstr "Ich habe zur Zeit keine Nicks konfiguriert."
+

@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2010, James Vega
+# Copyright (c) 2010-2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ class SeenDB(plugins.ChannelUserDB):
 
     def seenWildcard(self, channel, nick):
         nicks = ircutils.IrcSet()
-        nickRe = re.compile('.*'.join(nick.split('*')), re.I)
+        nickRe = re.compile('^%s$' % '.*'.join(nick.split('*')), re.I)
         for (searchChan, searchNick) in self.keys():
             #print 'chan: %s ... nick: %s' % (searchChan, searchNick)
             if isinstance(searchNick, int):
@@ -77,11 +77,8 @@ class SeenDB(plugins.ChannelUserDB):
                 # are keyed by nick-string
                 continue
             if ircutils.strEqual(searchChan, channel):
-                try:
-                    s = nickRe.match(searchNick).group()
-                except AttributeError:
-                    continue
-                nicks.add(s)
+                if nickRe.search(searchNick) is not None:
+                    nicks.add(searchNick)
         L = [[nick, self.seen(channel, nick)] for nick in nicks]
         def negativeTime(x):
             return -x[1][0]
@@ -309,9 +306,12 @@ class Seen(callbacks.Plugin):
         """
         if nick is None:
             nick = msg.nick
+        if channel not in irc.state.channels:
+            irc.error(_('I am not in %s.') % channel)
+            return
         if nick not in irc.state.channels[channel].users:
-            irc.error(format(_('You must be in %s to use this command.'),
-                             channel))
+            irc.error(format(_('%s must be in %s to use this command.'),
+                ('You' if nick == msg.nick else nick), channel))
             return
         end = None # By default, up until the most recent message.
         for (i, m) in utils.seq.renumerate(irc.state.history):

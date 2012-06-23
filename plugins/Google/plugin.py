@@ -246,70 +246,6 @@ class Google(callbacks.PluginRegexp):
         s = ', '.join([format('%s: %i', bold(s), i) for (i, s) in results])
         irc.reply(s)
 
-    _gtranslateUrl='http://ajax.googleapis.com/ajax/services/language/translate'
-    @internationalizeDocstring
-    def translate(self, irc, msg, args, fromLang, toLang, text):
-        """<from-language> [to] <to-language> <text>
-
-        Returns <text> translated from <from-language> into <to-language>.
-        Beware that translating to or from languages that use multi-byte
-        characters may result in some very odd results.
-        """
-        channel = msg.args[0]
-        ref = self.registryValue('referer')
-        if not ref:
-            ref = 'http://%s/%s' % (dynamic.irc.server,
-                                    dynamic.irc.nick)
-        headers = utils.web.defaultHeaders
-        headers['Referer'] = ref
-        opts = {'q': text, 'v': '1.0'}
-        lang = conf.supybot.plugins.Google.defaultLanguage
-        if fromLang.capitalize() in lang.transLangs:
-            fromLang = lang.transLangs[fromLang.capitalize()]
-        elif lang.normalize('lang_'+fromLang)[5:] \
-                not in lang.transLangs.values():
-            irc.errorInvalid(_('from language'), fromLang,
-                             format(_('Valid languages are: %L'),
-                                    lang.transLangs.keys()))
-        else:
-            fromLang = lang.normalize('lang_'+fromLang)[5:]
-        if toLang.capitalize() in lang.transLangs:
-            toLang = lang.transLangs[toLang.capitalize()]
-        elif lang.normalize('lang_'+toLang)[5:] \
-                not in lang.transLangs.values():
-            irc.errorInvalid(_('to language'), toLang,
-                             format(_('Valid languages are: %L'),
-                                    lang.transLangs.keys()))
-        else:
-            toLang = lang.normalize('lang_'+toLang)[5:]
-        if fromLang == 'auto':
-            fromLang = ''
-        if toLang == 'auto':
-            irc.error("Destination language cannot be 'auto'.")
-            return
-        opts['langpair'] = '%s|%s' % (fromLang, toLang)
-        fd = utils.web.getUrlFd('%s?%s' % (self._gtranslateUrl,
-                                           urllib.urlencode(opts)),
-                                headers)
-        json = simplejson.load(fd)
-        fd.close()
-        if json['responseStatus'] != 200:
-            raise callbacks.Error, 'Google says: Response Status %s: %s.' % \
-                    (json['responseStatus'], json['responseDetails'],)
-        if fromLang != '':
-            irc.reply(json['responseData']['translatedText'].encode('utf-8'))
-        else:
-            detected_language = json['responseData']['detectedSourceLanguage'].encode('utf-8')
-            translation = json['responseData']['translatedText'].encode('utf-8')
-            try:
-                long_lang_name = [k for k,v in lang.transLangs.iteritems() if v == detected_language][0]
-            except IndexError: #just in case google adds langs we don't know about
-                long_lang_name = detected_language
-            responsestring = "(Detected source language: %s) %s" % \
-                (long_lang_name, translation)
-            irc.reply(responsestring)
-    translate = wrap(translate, ['something', 'to', 'something', 'text'])
-
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
         if not self.registryValue('searchSnarfer', msg.args[0]):
@@ -327,7 +263,14 @@ class Google(callbacks.PluginRegexp):
         url = r'http://google.com/search?q=' + s
         return url
 
-    _calcRe = re.compile(r'<h\d class="?r"?.*?<b>(.*?)</b>', re.I)
+    def _googleUrlIG(self, s):
+        s = s.replace('+', '%2B')
+        s = s.replace(' ', '+')
+        url = r'http://www.google.com/ig/calculator?hl=en&q=' + s
+        return url
+
+    _calcRe1 = re.compile(r'<table.*class="?obcontainer"?[^>]*>(.*?)</table>', re.I)
+    _calcRe2 = re.compile(r'<h\d class="?r"?[^>]*>(?:<b>)?(.*?)(?:</b>)?</h\d>', re.I | re.S)
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
     _calcTimesRe = re.compile(r'&(?:times|#215);')
@@ -337,9 +280,22 @@ class Google(callbacks.PluginRegexp):
 
         Uses Google's calculator to calculate the value of <expression>.
         """
+        urlig = self._googleUrlIG(expr)
+        js = utils.web.getUrl(urlig)
+        # fix bad google json
+        js = js \
+                .replace('lhs:','"lhs":') \
+                .replace('rhs:','"rhs":') \
+                .replace('error:','"error":') \
+                .replace('icc:','"icc":') \
+                .replace('\\', '\\\\')
+        js = simplejson.loads(js)
+
         url = self._googleUrl(expr)
         html = utils.web.getUrl(url)
-        match = self._calcRe.search(html)
+        match = self._calcRe1.search(html)
+        if match is None:
+            match = self._calcRe2.search(html)
         if match is not None:
             s = match.group(1)
             s = self._calcSupRe.sub(r'^(\1)', s)
@@ -348,7 +304,8 @@ class Google(callbacks.PluginRegexp):
             s = utils.web.htmlToText(s)
             irc.reply(s)
         else:
-            irc.reply(_('Google\'s calculator didn\'t come up with anything.'))
+            irc.reply(_('Google says: Error: %s.') % (js['error'],))
+            irc.reply('Google\'s calculator didn\'t come up with anything.')
     calc = wrap(calc, ['text'])
 
     _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')

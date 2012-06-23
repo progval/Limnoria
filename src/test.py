@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -60,6 +61,8 @@ network = True
 # This is the global list of suites that are to be run.
 suites = []
 
+timeout = 10
+
 originalCallbacksGetHelp = callbacks.getHelp
 lastGetHelp = 'x' * 1000
 def cachingGetHelp(method, name=None, doc=None):
@@ -116,12 +119,12 @@ class PluginTestCase(SupyTestCase):
     """Subclass this to write a test case for a plugin.  See
     plugins/Plugin/test.py for an example.
     """
-    timeout = 10
     plugins = None
     cleanConfDir = True
     cleanDataDir = True
     config = {}
     def __init__(self, methodName='runTest'):
+        self.timeout = timeout
         originalRunTest = getattr(self, methodName)
         def runTest(self):
             run = True
@@ -500,18 +503,18 @@ def open_http(url, data=None):
         # check whether the proxy contains authorization information
         proxy_passwd, host = urllib.splituser(host)
         # now we proceed with the url we want to obtain
-        urltype, rest = splittype(selector)
+        urltype, rest = urllib.splittype(selector)
         url = rest
         user_passwd = None
         if urltype.lower() != 'http':
             realhost = None
         else:
-            realhost, rest = splithost(rest)
+            realhost, rest = urllib.splithost(rest)
             if realhost:
                 user_passwd, realhost = urllib.splituser(realhost)
             if user_passwd:
                 selector = "%s://%s%s" % (urltype, realhost, rest)
-            if proxy_bypass(realhost):
+            if urllib.proxy_bypass(realhost):
                 host = realhost
 
         #print "proxy via http:", host, selector
@@ -585,7 +588,7 @@ class HTTPPluginTestCase(PluginTestCase):
         response = self.request(uri, read=False, **kwargs)
         self.assertEqual(response, expectedResponse)
 
-    def assertNotHTTPResponse(self, irc, expectedResponse, **kwargs):
+    def assertNotHTTPResponse(self, uri, expectedResponse, **kwargs):
         response = self.request(uri, read=False, **kwargs)
         self.assertNotEqual(response, expectedResponse)
 

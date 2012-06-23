@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,7 +179,7 @@ msgstr ""
 msgid "^google\\s+(.*)$"
 msgstr ""
 
-#: plugin.py:336
+#: plugin.py:343
 #, docstring
 msgid ""
 "<expression>\n"
@@ -188,11 +188,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:353
-msgid "Google's calculator didn't come up with anything."
+#: plugin.py:370
+msgid "Google says: Error: %s."
 msgstr ""
 
-#: plugin.py:359
+#: plugin.py:377
 #, docstring
 msgid ""
 "<phone number>\n"
@@ -201,7 +201,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:373
+#: plugin.py:391
 msgid "Google's phonebook didn't come up with anything."
 msgstr ""
 

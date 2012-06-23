@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009,2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -187,7 +187,7 @@ def banmask(hostmask):
     """
     assert isUserHostmask(hostmask)
     host = hostFromHostmask(hostmask)
-    if utils.net.isIP(host):
+    if utils.net.isIPV4(host):
         L = host.split('.')
         L[-1] = '*'
         return '*!*@' + '.'.join(L)
@@ -280,7 +280,13 @@ def mircColor(s, fg=None, bg=None):
     if fg is None and bg is None:
         return s
     elif bg is None:
-        fg = mircColors[str(fg)]
+        if str(fg) in mircColors:
+            fg = mircColors[str(fg)]
+        elif len(str(fg)) > 1:
+            fg = mircColors[str(fg)[:-1]]
+        else:
+            # Should not happen
+            pass
         return '\x03%s%s\x03' % (fg.zfill(2), s)
     elif fg is None:
         bg = mircColors[str(bg)]
@@ -459,8 +465,8 @@ def replyTo(msg):
 
 def dccIP(ip):
     """Converts an IP string to the DCC integer form."""
-    assert utils.net.isIP(ip), \
-           'argument must be a string ip in xxx.xxx.xxx.xxx format.'
+    assert utils.net.isIPV4(ip), \
+           'argument must be a string ip in xxx.yyy.zzz.www format.'
     i = 0
     x = 256**3
     for quad in ip.split('.'):

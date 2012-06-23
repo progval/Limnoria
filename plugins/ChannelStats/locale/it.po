@@ -1,0 +1,186 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"PO-Revision-Date: 2011-07-05 13:41+0200\n"
+"Last-Translator: skizzhg <skizzhg@gmx.com>\n"
+"Language-Team: Italian <skizzhg@gmx.com>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+#: config.py:60
+msgid ""
+"Determines whether the bot will keep channel\n"
+"    statistics on itself, possibly skewing the channel stats (especially in\n"
+"    cases where the bot is relaying between channels on a network)."
+msgstr ""
+"Determina se il bot terrà statistiche del canale, probabilmente alterandole\n"
+"    (in particolare in caso faccia l'inoltro dei messaggi attraverso i canali).\n"
+
+#: config.py:64
+msgid ""
+"Determines what\n"
+"    words (i.e., pieces of text with no spaces in them) are considered\n"
+"    'smileys' for the purposes of stats-keeping."
+msgstr ""
+"Determina quali parole (ovvero parti di testo senza spazi) sono considerate\n"
+"    faccine sorridenti per le statistiche."
+
+#: config.py:68
+msgid ""
+"Determines what words\n"
+"    (i.e., pieces of text with no spaces in them ) are considered 'frowns' for\n"
+"    the purposes of stats-keeping."
+msgstr ""
+"Determina quali parole (ovvero parti di testo senza spazi) sono considerate\n"
+"    faccine tristi per le statistiche."
+
+#: plugin.py:246
+#, docstring
+msgid ""
+"[<channel>] [<name>]\n"
+"\n"
+"        Returns the statistics for <name> on <channel>.  <channel> is only\n"
+"        necessary if the message isn't sent on the channel itself.  If <name>\n"
+"        isn't given, it defaults to the user sending the command.\n"
+"        "
+msgstr ""
+"[<canale>] [<nome>]\n"
+"\n"
+"        Riporta le statistiche per <nome> su <canale>. <canale> è necessario\n"
+"        solo se il messaggio non viene inviato nel canale stesso. Se <nome>\n"
+"        non è specificato, passa all'utente che ha dato il comando.\n"
+"        "
+
+#: plugin.py:259
+msgid "I couldn't find you in my user database."
+msgstr "Non ti trovo nel mio database utenti."
+
+#: plugin.py:272
+msgid "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s has joined %n, parted %n, quit %n, kicked someone %n, been kicked %n, changed the topic %n, and changed the mode %n."
+msgstr "%s ha inviato %n; un totale di %n, %n, %n, e %n; %s di quei messaggi %s. %s è entrato %n volte, è uscito %n volte, si è disconnesso %n volte, ha espulso qualcuno %n volte, è stato espulso %n volte, ha modificato il topic %n volte ed ha cambiato il mode %n volte."
+
+#: plugin.py:279
+msgid "character"
+msgstr "carattere"
+
+#: plugin.py:280 plugin.py:363
+msgid "word"
+msgstr "parola"
+
+#: plugin.py:281 plugin.py:364
+msgid "smiley"
+msgstr "faccina sorridente"
+
+#: plugin.py:282 plugin.py:365
+msgid "frown"
+msgstr "faccina triste"
+
+#: plugin.py:284 plugin.py:366
+msgid "was an ACTION"
+msgstr "è stata un'azione (ACTION)"
+
+#: plugin.py:285 plugin.py:367
+msgid "were ACTIONs"
+msgstr "sono state azioni (ACTION)"
+
+#: plugin.py:287 plugin.py:288 plugin.py:289 plugin.py:290 plugin.py:291
+#: plugin.py:292 plugin.py:293
+msgid "time"
+msgstr "volta"
+
+#: plugin.py:296
+msgid "I have no stats for that %s in %s."
+msgstr "Non ho statistiche per %s in %s."
+
+#: plugin.py:304
+#, docstring
+msgid ""
+"[<channel>] <stat expression>\n"
+"\n"
+"        Returns the ranking of users according to the given stat expression.\n"
+"        Valid variables in the stat expression include 'msgs', 'chars',\n"
+"        'words', 'smileys', 'frowns', 'actions', 'joins', 'parts', 'quits',\n"
+"        'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical\n"
+"        expression involving those variables is permitted.\n"
+"        "
+msgstr ""
+"[<canale>] <espressione statistica>\n"
+"\n"
+"        Riporta la classifica degli utenti in base all'espresisone fornita.\n"
+"        Le variabili valide sono: \"msgs\", \"chars\", \"words\", \"smileys\",\n"
+"        \"frowns\", \"actions\", \"joins\", \"parts\", \"quits\", \"kicks\",\n"
+"        \"kicked\", \"topics\" e \"modes\". È permessa qualsiasi espressione\n"
+"        matematica che utilizzi queste variabili.\n"
+"        "
+
+#: plugin.py:315
+msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
+msgstr "Non v'è alcuna ragione di usare underscore o parentesi nelle espressioni matematiche; ti invito a rimuoverli."
+
+#: plugin.py:319
+msgid "You can't use lambda in this command."
+msgstr "Non è possibile usare lambda in questo comando."
+
+#: plugin.py:333
+msgid "stat variable"
+msgstr "variabile di statistica"
+
+#: plugin.py:349
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the statistics for <channel>.  <channel> is only necessary if\n"
+"        the message isn't sent on the channel itself.\n"
+"        "
+msgstr ""
+"[<canale>]\n"
+"\n"
+"        Riporta le statistiche di <canale>. <canale> è necessario\n"
+"        solo se il messaggio non viene inviato nel canale stesso.\n"
+"        "
+
+#: plugin.py:357
+msgid "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; %i of those messages %s.  There have been %n, %n, %n, %n, %n, and %n.  There %b currently %n and the channel has peaked at %n."
+msgstr "In %s ci sono%v stati %i messaggi, contenenti %i caratteri, %n, %n, e %n; %i di questi messaggi %s. Ci sono stati %n, %n, %n, %n, %n, e %n. Attualmente ci sono%v %n e il canale ha raggiunto il picco di %n."
+
+#: plugin.py:368
+msgid "join"
+msgstr "join"
+
+#: plugin.py:369
+msgid "part"
+msgstr "part"
+
+#: plugin.py:370
+msgid "quit"
+msgstr "quit"
+
+#: plugin.py:371
+msgid "kick"
+msgstr "kick"
+
+#: plugin.py:372
+msgid "mode"
+msgstr "mode"
+
+#: plugin.py:372 plugin.py:373
+msgid "change"
+msgstr "modifiche"
+
+#: plugin.py:373
+msgid "topic"
+msgstr "topic"
+
+#: plugin.py:375 plugin.py:376
+msgid "user"
+msgstr "utente"
+
+#: plugin.py:379
+msgid "I've never been on %s."
+msgstr "Non sono mai stato su %s."
+

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2011-10-26 11:23+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -21,11 +21,10 @@ msgstr "Détermine si le bot affichera le titre HTML des URLs qu'il voit sur le 
 
 #: config.py:53
 msgid ""
-"Determines what URLs are to be snarfed and\n"
-"    stored in the database in the channel; URLs matching the regexp given will\n"
-"    not be snarfed.  Give the empty string if you have no URLs that you'd like\n"
-"    to exclude from being snarfed."
-msgstr "Détermine quelles URLs seront écoutées et stockées dans la base de données sur ce canal ; les URLs correspondant à l'expression régulière ne seront pas écoutées. Donnez une chaîne vide si vous ne voulez ignorer aucune URL."
+"Determines what URLs matching the given regexp\n"
+"    will not be snarfed.  Give the empty string if you have no URLs that you'd\n"
+"    like to exclude from being snarfed."
+msgstr "Détermine quelles URLs ne seront pas écoutées. Donnez une chaîne vide si vous ne voulez ignorer aucune URL."
 
 #: config.py:60
 msgid ""
@@ -36,6 +35,10 @@ msgstr "Détermine le nombre maximum d'octet que le bot téléchargera via la co
 #: plugin.py:71
 msgid "Add the help for \"@help Web\" here."
 msgstr ""
+
+#: plugin.py:107
+msgid "Title: %s (at %s)"
+msgstr "Titre : %s (de %s)"
 
 #: plugin.py:114
 msgid ""

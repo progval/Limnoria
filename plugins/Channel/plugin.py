@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009-2012, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -163,15 +163,7 @@ class Channel(callbacks.Plugin):
     halfop = wrap(halfop, ['halfop', ('haveOp', _('halfop someone')),
                            any('nickInChannel')])
 
-    @internationalizeDocstring
-    def voice(self, irc, msg, args, channel, nicks):
-        """[<channel>] [<nick> ...]
-
-        If you have the #channel,voice capability, this will voice all the
-        <nick>s you provide.  If you don't provide any <nick>s, this will
-        voice you. <channel> is only necessary if the message isn't sent in the
-        channel itself.
-        """
+    def _voice(self, irc, msg, args, channel, nicks, fn):
         if nicks:
             if len(nicks) == 1 and msg.nick in nicks:
                 capability = 'voice'
@@ -183,10 +175,20 @@ class Channel(callbacks.Plugin):
         capability = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, capability):
             def f(L):
-                return ircmsgs.voices(channel, L)
+                return fn(channel, L)
             self._sendMsgs(irc, nicks, f)
         else:
             irc.errorNoCapability(capability)
+
+    def voice(self, irc, msg, args, channel, nicks):
+        """[<channel>] [<nick> ...]
+
+        If you have the #channel,voice capability, this will voice all the
+        <nick>s you provide.  If you don't provide any <nick>s, this will
+        voice you. <channel> is only necessary if the message isn't sent in the
+        channel itself.
+        """
+        self._voice(irc, msg, args, channel, nicks, ircmsgs.voices)
     voice = wrap(voice, ['channel', ('isGranted', _('voice someone')),
                          any('nickInChannel')])
 
@@ -242,12 +244,8 @@ class Channel(callbacks.Plugin):
             irc.error(_('I cowardly refuse to devoice myself.  If you really '
                       'want me devoiced, tell me to op you and then devoice '
                       'me yourself.'), Raise=True)
-        if not nicks:
-            nicks = [msg.nick]
-        def f(L):
-            return ircmsgs.devoices(channel, L)
-        self._sendMsgs(irc, nicks, f)
-    devoice = wrap(devoice, ['voice', ('isGranted', 'devoice someone'),
+        self._voice(irc, msg, args, channel, nicks, ircmsgs.devoices)
+    devoice = wrap(devoice, ['channel', ('haveOp', 'devoice someone'),
                              any('nickInChannel')])
 
     @internationalizeDocstring
@@ -346,7 +344,8 @@ class Channel(callbacks.Plugin):
         if bannedNick == msg.nick:
             doBan()
         elif ircdb.checkCapability(msg.prefix, capability):
-            if ircdb.checkCapability(bannedHostmask, capability):
+            if ircdb.checkCapability(bannedHostmask, capability) and \
+                    not ircdb.checkCapability(msg.prefix, 'owner'):
                 self.log.warning('%s tried to ban %q, but both have %s',
                                  msg.prefix, bannedHostmask, capability)
                 irc.error(format(_('%s has %s too, you can\'t ban '
@@ -539,7 +538,7 @@ class Channel(callbacks.Plugin):
             """[<channel>]
 
             If you have the #channel,op capability, this will show you the
-            current persistent bans on #channel.
+            current persistent bans on the <channel>.
             """
             c = ircdb.channels.getChannel(channel)
             if c.bans:
@@ -617,8 +616,8 @@ class Channel(callbacks.Plugin):
         def add(self, irc, msg, args, channel, user, capabilities):
             """[<channel>] <nick|username> <capability> [<capability> ...]
 
-            If you have the #channel,op capability, this will give the user
-            <name> (or the user to whom <nick> maps)
+            If you have the #channel,op capability, this will give the
+            <username> (or the user to whom <nick> maps)
             the capability <capability> in the channel. <channel> is only
             necessary if the message isn't sent in the channel itself.
             """
@@ -827,8 +826,8 @@ class Channel(callbacks.Plugin):
             msg.args[0] != channel and \
             (ircutils.isChannel(msg.args[0]) or \
              msg.nick not in irc.state.channels[channel].users):
-            irc.error(_('You don\'t have access to that information.'))
-            return
+            irc.error(_('You don\'t have access to that information.'),
+                    Raise=True)
         L = list(irc.state.channels[channel].users)
         keys = [option for (option, arg) in optlist]
         if 'count' not in keys:

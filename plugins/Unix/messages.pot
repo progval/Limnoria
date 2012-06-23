@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"POT-Creation-Date: 2012-04-15 18:47+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,13 @@ msgid ""
 "    what command will be called for the spell command."
 msgstr ""
 
-#: config.py:87
+#: config.py:85
+msgid ""
+"Determines what aspell dictionary will be used\n"
+"    for spell checking."
+msgstr ""
+
+#: config.py:90
 msgid ""
 "Determines what\n"
 "    command will be called for the wtf command."
@@ -140,27 +146,31 @@ msgstr ""
 msgid "The spell checking command is not configured.  If one is installed, reconfigure supybot.plugins.Unix.spell.command appropriately."
 msgstr ""
 
-#: plugin.py:147
+#: plugin.py:148
 msgid "<word> must begin with an alphabet character."
 msgstr ""
 
-#: plugin.py:169
+#: plugin.py:170
 msgid "No results found."
 msgstr ""
 
-#: plugin.py:180
+#: plugin.py:181
 msgid "%q may be spelled correctly."
 msgstr ""
 
-#: plugin.py:182
+#: plugin.py:183
 msgid "I could not find an alternate spelling for %q"
 msgstr ""
 
-#: plugin.py:186
+#: plugin.py:187
 msgid "Possible spellings for %q: %L."
 msgstr ""
 
-#: plugin.py:195
+#: plugin.py:190
+msgid "Something unexpected was seen in the [ai]spell output."
+msgstr ""
+
+#: plugin.py:196
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -169,15 +179,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:215
+#: plugin.py:217
 msgid "It seems the configured fortune command was not available."
 msgstr ""
 
-#: plugin.py:224
+#: plugin.py:226
 msgid "The fortune command is not configured. If fortune is installed on this system, reconfigure the supybot.plugins.Unix.fortune.command configuration variable appropriately."
 msgstr ""
 
-#: plugin.py:231
+#: plugin.py:233
 #, docstring
 msgid ""
 "[is] <something>\n"
@@ -188,15 +198,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:246
+#: plugin.py:248
 msgid "It seems the configured wtf command was not available."
 msgstr ""
 
-#: plugin.py:255
+#: plugin.py:257
 msgid "The wtf command is not configured.  If it is installed on this system, reconfigure the supybot.plugins.Unix.wtf.command configuration variable appropriately."
 msgstr ""
 
-#: plugin.py:263
+#: plugin.py:265
 #, docstring
 msgid ""
 "[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>\n"
@@ -207,7 +217,25 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:315
+#: plugin.py:317
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uptime from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+
+#: plugin.py:345
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uname -a from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+
+#: plugin.py:373
 #, docstring
 msgid ""
 "<command to call with any arguments> \n"

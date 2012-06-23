@@ -58,7 +58,7 @@ conf.registerGroup(Unix, 'fortune')
 conf.registerGlobalValue(Unix.fortune, 'command',
     registry.String(utils.findBinaryInPath('fortune') or '', _("""Determines
     what command will be called for the fortune command.""")))
-conf.registerGlobalValue(Unix.fortune, 'short',
+conf.registerChannelValue(Unix.fortune, 'short',
     registry.Boolean(True, _("""Determines whether only short fortunes will be
     used if possible.  This sends the -s option to the fortune program.""")))
 conf.registerGlobalValue(Unix.fortune, 'equal',
@@ -66,7 +66,7 @@ conf.registerGlobalValue(Unix.fortune, 'equal',
     weight to the different fortune databases.  If false, then larger
     databases will be given more weight.  This sends the -e option to the
     fortune program.""")))
-conf.registerGlobalValue(Unix.fortune, 'offensive',
+conf.registerChannelValue(Unix.fortune, 'offensive',
     registry.Boolean(False, _("""Determines whether fortune will retrieve
     offensive fortunes along with the normal fortunes.  This sends the -a
     option to the fortune program.""")))
@@ -81,6 +81,9 @@ conf.registerGlobalValue(Unix.spell, 'command',
     registry.String(utils.findBinaryInPath('aspell') or
                     utils.findBinaryInPath('ispell') or '', _("""Determines
     what command will be called for the spell command.""")))
+conf.registerGlobalValue(Unix.spell, 'language',
+    registry.String('en', _("""Determines what aspell dictionary will be used
+    for spell checking.""")))
 
 conf.registerGroup(Unix, 'wtf')
 conf.registerGlobalValue(Unix.wtf, 'command',
@@ -91,5 +94,15 @@ conf.registerGroup(Unix, 'ping')
 conf.registerGlobalValue(Unix.ping, 'command', 
     registry.String(utils.findBinaryInPath('ping') or '', """Determines what 
     command will be called for the ping command."""))
+
+conf.registerGroup(Unix, 'sysuptime')
+conf.registerGlobalValue(Unix.sysuptime, 'command',
+    registry.String(utils.findBinaryInPath('uptime') or '', """Determines what
+    command will be called for the uptime command."""))
+
+conf.registerGroup(Unix, 'sysuname')
+conf.registerGlobalValue(Unix.sysuname, 'command',
+    registry.String(utils.findBinaryInPath('uname') or '', """Determines what
+    command will be called for the uname command."""))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

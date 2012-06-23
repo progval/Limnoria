@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2011, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -85,7 +86,7 @@ def getSocket(host):
     """
     addrinfo = socket.getaddrinfo(host, None)
     host = addrinfo[0][4][0]
-    if isIP(host):
+    if isIPV4(host):
         return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     elif isIPV6(host):
         return socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
@@ -93,12 +94,23 @@ def getSocket(host):
         raise socket.error, 'Something wonky happened.'
 
 def isIP(s):
-    """Returns whether or not a given string is an IPV4 address.
+    """Returns whether or not a given string is an IP address.
 
     >>> isIP('255.255.255.255')
     1
 
-    >>> isIP('abc.abc.abc.abc')
+    >>> isIP('::1')
+    0
+    """
+    return isIPV4(s) or isIPV6(s)
+
+def isIPV4(s):
+    """Returns whether or not a given string is an IPV4 address.
+
+    >>> isIPV4('255.255.255.255')
+    1
+
+    >>> isIPV4('abc.abc.abc.abc')
     0
     """
     try:

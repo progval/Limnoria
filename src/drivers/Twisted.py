@@ -155,9 +155,6 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         return protocol
 
 Driver = SupyReconnectingFactory
+poller = TwistedRunnerDriver()
 
-try:
-    ignore(poller)
-except NameError:
-    poller = TwistedRunnerDriver()
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

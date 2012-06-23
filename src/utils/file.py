@@ -171,7 +171,8 @@ class AtomicFile(file):
             if newSize or self.allowEmptyOverwrite or not originalExists:
                 if originalExists:
                     oldSize = os.path.getsize(self.filename)
-                    if self.makeBackupIfSmaller and newSize < oldSize:
+                    if self.makeBackupIfSmaller and newSize < oldSize and \
+                            self.backupDir != '/dev/null':
                         now = int(time.time())
                         backupFilename = '%s.backup.%s' % (self.filename, now)
                         if self.backupDir is not None:

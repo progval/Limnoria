@@ -1,0 +1,322 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Supybot\n"
+"POT-Creation-Date: 2011-12-23 13:11+CET\n"
+"PO-Revision-Date: 2012-04-27 15:48+0200\n"
+"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Language-Team: German <fbesser@gmail.com>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: plugin.py:49
+msgid ""
+"[--capability=<capability>] [<glob>]\n"
+"\n"
+"        Returns the valid registered usernames matching <glob>.  If <glob> is\n"
+"        not given, returns all registered usernames.\n"
+"        "
+msgstr ""
+"[--capability=<Fähigkeit>] [<glob>]\n"
+"\n"
+"Gibt die zulässigen registrierten Nutzernamen aus, die auf <glob> zutreffen. Fall <glob> nicht angegeben wird, werden alle registrierten Benutzernamen ausgegeben."
+
+#: plugin.py:80
+msgid "There are no matching registered users."
+msgstr "Kein passender registrierter Benutzer gefunden."
+
+#: plugin.py:82
+msgid "There are no registered users."
+msgstr "Es gibt keine registrierten Benutzer."
+
+#: plugin.py:88
+msgid ""
+"<name> <password>\n"
+"\n"
+"        Registers <name> with the given password <password> and the current\n"
+"        hostmask of the person registering.  You shouldn't register twice; if\n"
+"        you're not recognized as a user but you've already registered, use the\n"
+"        hostmask add command to add another hostmask to your already-registered\n"
+"        user, or use the identify command to identify just for a session.\n"
+"        This command (and all other commands that include a password) must be\n"
+"        sent to the bot privately, not in a channel.\n"
+"        "
+msgstr ""
+"<Name> <Passwort>\n"
+"\n"
+"Registiert <Name> mit dem angegeben Passwort <Passwort> und der momentanen Hostmaske der registierenden Person. Du solltest dich nicht doppelt registrieren; falls der Bot dich nicht als Benutzer anerkennt, obwohl du bereits registriert bist, benutze den Befehl \"hostmask add\" um eine andere Hostmaske zu deinem existierendem Benutzer hinzuzufügen, oder benutze den Befehl \"identify\" um dich nur für diese Sitzung zu identifizieren. Dieser Befehl (und alle anderen Befehle, die ein Passwort beinhalten) müssen dem Bot privat gesendet werden, nicht in einem Kanal."
+
+#: plugin.py:101
+msgid "That name is already assigned to someone."
+msgstr "Dieser Name ist schon an jemanden anders vergeben."
+
+#: plugin.py:106
+msgid "username"
+msgstr "Benutzername"
+
+#: plugin.py:107
+msgid "Hostmasks are not valid usernames."
+msgstr "Hostmasken sind keine gültigen Benutzernamen."
+
+#: plugin.py:114
+msgid "Your hostmask is already registered to %s"
+msgstr "Deine Hostmaske ist schon registiert für %s."
+
+#: plugin.py:130
+msgid ""
+"<name> [<password>]\n"
+"\n"
+"        Unregisters <name> from the user database.  If the user giving this\n"
+"        command is an owner user, the password is not necessary.\n"
+"        "
+msgstr ""
+"<Name> [<Passwort>]\n"
+"\n"
+"Entfernt die Registierung von <Name> aus der Benutzerdatenbank. Falls der Benutzer, der diesen Befehl aufruft ein Besitzer ist, wird kein Passwort benötigt."
+
+#: plugin.py:145
+msgid "This command has been disabled.  You'll have to ask the owner of this bot to unregister your user."
+msgstr "Dieser Befehl wurde abgeschaltet. Du musst den Besiter des Bots fragen um dich vom Bot zu entfernen."
+
+#: plugin.py:158
+msgid ""
+"<name> <new name> [<password>]\n"
+"\n"
+"        Changes your current user database name to the new name given.\n"
+"        <password> is only necessary if the user isn't recognized by hostmask.\n"
+"        This message must be sent to the bot privately (not on a channel) since\n"
+"        it may contain a password.\n"
+"        "
+msgstr ""
+"<Name> <Neuer Name> [<Passwort>]\n"
+"\n"
+"Ändert deinen momentanen Namen in der Benutzerdatenbank in den neuen Namen. <Passwort> ist nur nötig, falls der Benutzer anhand der Hostmaske erkannt wird. Diese Nachricht muss dem Bot privat übermittelt werden (nicht in einem Kanal), da sie möglicherweise ein Passwort enthält."
+
+#: plugin.py:167
+msgid "%q is already registered."
+msgstr "%q ist schon registriert."
+
+#: plugin.py:181
+msgid ""
+"[<name>] <old password> <new password>\n"
+"\n"
+"            Sets the new password for the user specified by <name> to <new\n"
+"            password>.  Obviously this message must be sent to the bot\n"
+"            privately (not in a channel). If the requesting user is an owner\n"
+"            user (and the user whose password is being changed isn't that same\n"
+"            owner user), then <old password> needn't be correct.\n"
+"            "
+msgstr ""
+"[<Name>] <altes Passwort> <neues Passwort>\n"
+"\n"
+"Setzt das Passwort für den Benutzer <Name> auf <neues Passwort>. Es ist ja wohl klar, dass das dem Bot privat gesendet werden muss (nicht in einem Kanal). Fall der anfordernde Benutzer ein Besitzer ist (und der Benutzer, dessen Passwort geändert wird nicht der gleiche Besitzer ist), muss <altes Passwort> nicht korrekt sein."
+
+#: plugin.py:209
+#, fuzzy
+msgid ""
+"<password> [<True|False>]\n"
+"\n"
+"            Sets the secure flag on the user of the person sending the message.\n"
+"            Requires that the person's hostmask be in the list of hostmasks for\n"
+"            that user in addition to the password being correct.  When the\n"
+"            secure flag is set, the user *must* identify before he or she can be\n"
+"            recognized.  If a specific True/False value is not given, it\n"
+"            inverts the current value.\n"
+"            "
+msgstr ""
+"<Passwort> [<True|False>]\n"
+"\n"
+"Setzt die Sicherheitsflagge für die Person, die diese Nachricht sendet. Setzt vorraus das die Hostmaske der person in der Liste von Hostmask für diesen Benutzer ist und außerdem muss das Passwort richtig sein. Wenn die Sicherheitsflagge gesetzt ist, *muss* der Benutzer sich identifizieren bevor er erkannt wird. Falls kein True/False Wert angegeben wird, wird der momentane Wert invertiert."
+
+#: plugin.py:224
+msgid "Secure flag set to %s"
+msgstr "Sicherheits Flagge ist gesetzt auf %s"
+
+#: plugin.py:232
+msgid ""
+"<hostmask|nick>\n"
+"\n"
+"        Returns the username of the user specified by <hostmask> or <nick> if\n"
+"        the user is registered.\n"
+"        "
+msgstr ""
+"<Hostmask|Nick>\n"
+"\n"
+"Gibt den Benutzernamen des Benutzers aus, der durch <Hostmaske> oder <Nick> angegeben wird. Falls der Benutzer registrier ist."
+
+#: plugin.py:241
+msgid "I haven't seen %s."
+msgstr "Ich habe %s nicht gesehen."
+
+#: plugin.py:246
+msgid "I don't know who that is."
+msgstr "Ich weiß nicht wer das ist."
+
+#: plugin.py:252
+msgid ""
+"[<nick>]\n"
+"\n"
+"            Returns the hostmask of <nick>.  If <nick> isn't given, return the\n"
+"            hostmask of the person giving the command.\n"
+"            "
+msgstr ""
+"[<Nick>]\n"
+"\n"
+"Gibt die Hostmaske von <Nick> aus. Falls <Nick> nicht angegeben wird, wird die Hostmaske der Person ausgegeben, die den Befehl gegeben hat."
+
+#: plugin.py:264
+msgid ""
+"[<name>]\n"
+"\n"
+"            Returns the hostmasks of the user specified by <name>; if <name>\n"
+"            isn't specified, returns the hostmasks of the user calling the\n"
+"            command.\n"
+"            "
+msgstr ""
+"[<Name>]\n"
+"\n"
+"Gibt die Hostmaske des Benutzers <Name> aus; falls <Name> nicht angegeben ist, wird die Hostmaskes des Benutzer ausgegeben, der den Befehl aufgerufen hat."
+
+#: plugin.py:276
+msgid "%s has no registered hostmasks."
+msgstr "%s hat keine Hostmasken gesetzt."
+
+#: plugin.py:283
+msgid "You may only retrieve your own hostmasks."
+msgstr "Du darfst nur deine eigene Hostmaske abfragen"
+
+#: plugin.py:299
+msgid ""
+"[<name>] [<hostmask>] [<password>]\n"
+"\n"
+"            Adds the hostmask <hostmask> to the user specified by <name>.  The\n"
+"            <password> may only be required if the user is not recognized by\n"
+"            hostmask.  <password> is also not required if an owner user is\n"
+"            giving the command on behalf of some other user.  If <hostmask> is\n"
+"            not given, it defaults to your current hostmask.  If <name> is not\n"
+"            given, it defaults to your currently identified name.  This message\n"
+"            must be sent to the bot privately (not on a channel) since it may\n"
+"            contain a password.\n"
+"            "
+msgstr ""
+"[<Name>] [<Hostmaske>] [<Passwort>]\n"
+"\n"
+"Fühgt die Hostmaske <Hostmaske> dem Benutzer <Name> hinzu. Das <Passwort> wird nur benötigt, falls der Benutzer nicht anhand seiner Hostmaske erkannt wird. <Passwort> wird auch nicht benötigt wenn ein Besitzer diesen Befehl für einen anderen Benutzer ausführt. Falls <Hostmaske> nicht angegben wird, wird deine momentane Hostmaske benutzt. Falls <Name> nicht angegeben ist, wird der Name benutzt über den du momentan identifiziert bist. Diese Nachricht muss dem Bot privat gesendet werden (nicht in einem Kanal), da sie ein Passwort enhalten könnte."
+
+#: plugin.py:313
+msgid "hostmask"
+msgstr "Hostmaske"
+
+#: plugin.py:314
+msgid "Make sure your hostmask includes a nick, then an exclamation point (!), then a user, then an at symbol (@), then a host.  Feel free to use wildcards (* and ?, which work just like they do on the command line) in any of these parts."
+msgstr "Stelle sicher das deine Hostmaske einen Nicknamen, dann ein Ausrufezeichen (!), dann einen User, dann ein at Symbol (@) und dann den Host beinhaltet. Du kannst Wildcards verwenden ( * und ?, welche funktionrien wie in der Befehlszeile), in jedem dieser Abschnitte"
+
+#: plugin.py:324
+#: plugin.py:347
+msgid "That hostmask is already registered."
+msgstr "Diese Hostmaske ist schon registriert."
+
+#: plugin.py:355
+msgid ""
+"<name> <hostmask> [<password>]\n"
+"\n"
+"            Removes the hostmask <hostmask> from the record of the user\n"
+"            specified by <name>.  If the hostmask given is 'all' then all\n"
+"            hostmasks will be removed.  The <password> may only be required if\n"
+"            the user is not recognized by his hostmask.  This message must be\n"
+"            sent to the bot privately (not on a channel) since it may contain a\n"
+"            password.\n"
+"            "
+msgstr ""
+"<Name> <Hostmaske> [<Passwort>]\n"
+"\n"
+"Entfernt die Hostmaske <Hostmaske> vom Benutzereintrag von <Name>. Falls die angegebene Hostmaske 'all' ist, werden alle Hostmasken entfernt. Das <Passwort> wird nur benötigt, falls der Benutzer nicht über seine Hostmaske erkannt wird. Diese Nachricht muss dem Bot privat gesendet werden (nicht in einem Kanal), da sie ein Passwort enhalten könnte."
+
+#: plugin.py:374
+msgid "All hostmasks removed."
+msgstr "Alle Hostmasken entfernt."
+
+#: plugin.py:378
+msgid "There was no such hostmask."
+msgstr "Es gibt keine solche Hostmaske."
+
+#: plugin.py:387
+msgid ""
+"[<name>]\n"
+"\n"
+"        Returns the capabilities of the user specified by <name>; if <name>\n"
+"        isn't specified, returns the capabilities of the user calling the\n"
+"        command.\n"
+"        "
+msgstr ""
+"[<Name>]\n"
+"\n"
+"Gibt die Fähigkeiten des Benutzers <Name> aus; falls <Name> nicht angegeben wird, werden die Fähigkeiten des Benutzer ausgegeben, der diesen Befehl ausführt."
+
+#: plugin.py:407
+msgid ""
+"<name> <password>\n"
+"\n"
+"        Identifies the user as <name>. This command (and all other\n"
+"        commands that include a password) must be sent to the bot privately,\n"
+"        not in a channel.\n"
+"        "
+msgstr ""
+"<Name> <Passwort>\n"
+"\n"
+"identifiziert den Benutzer als <Name>. Dieser Befehl (und alle anderen Befehle die ein Passwort beinhalten) muss an den Bot privat gesendet werden, nicht in einem Kanal."
+
+#: plugin.py:419
+msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
+msgstr "Dein Sicherheitsflag ist auf wahr gesetzt und deine Hostmaske passt zu keiner Hostmaske die zu deinen passt."
+
+#: plugin.py:429
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Un-identifies you.  Note that this may not result in the desired\n"
+"        effect of causing the bot not to recognize you anymore, since you may\n"
+"        have added hostmasks to your user that can cause the bot to continue to\n"
+"        recognize you.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Hebt deine Identifizierung auf. Beachte das dies eventuell nicht den geschwünschten Effekt erzielt, dass dich der Bot nichtmehr erkennt. Da du du möglicherweise Hostmasken zu deinem Bot hinzugefügt hast, die dazu führen das der Bot dich weitehrin erkennt."
+
+#: plugin.py:438
+msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
+msgstr "Falls du weiterhin beachtet wirst nach diesem Befehl, wirst du durch deine Hostmaske beachtet, anstatt deines Passworts. Du musst die Hostmaske entfernen die dazu führt du das beachtet wirst um nicht mehr beachtet zu werden."
+
+#: plugin.py:447
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the name of the user calling the command.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt den Namen den Benutzers aus, der den Befehl aufruft."
+
+#: plugin.py:455
+msgid "I don't recognize you."
+msgstr "Ich erkenne dich nicht"
+
+#: plugin.py:460
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns some statistics on the user database.\n"
+"        "
+msgstr ""
+"hat keine Argumente\n"
+"\n"
+"Gibt ein paar Statistiken über die Benutzerdatenbank zurück."
+
+#: plugin.py:478
+msgid "I have %s registered users with %s registered hostmasks; %n and %n."
+msgstr "Ich habe %s registierte Benutzer mit %s registrierten Hostmasken; %n und %n."
+

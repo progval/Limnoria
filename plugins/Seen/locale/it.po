@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
+"Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-08-10 14:43+0200\n"
+"PO-Revision-Date: 2012-03-16 00:09+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -10,31 +10,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: plugin.py:204 plugin.py:285
+#: plugin.py:201 plugin.py:282
 msgid "%s was last seen in %s %s ago: %s"
 msgstr "%s è stato visto per l'ultima volta in %s %s fa: %s"
 
-#: plugin.py:211
+#: plugin.py:208
 msgid "%s (%s ago)"
 msgstr "%s (%s fa)"
 
-#: plugin.py:213
+#: plugin.py:210
 msgid "%s could be %L"
 msgstr "%s potrebbe essere %L"
 
-#: plugin.py:213
+#: plugin.py:210
 msgid "or"
 msgstr "oppure"
 
-#: plugin.py:215
+#: plugin.py:212
 msgid "I haven't seen anyone matching %s."
 msgstr "Non ho visto nessuno che corrisponda a %s."
 
-#: plugin.py:217 plugin.py:289
+#: plugin.py:214 plugin.py:286
 msgid "I have not seen %s."
 msgstr "Non ho visto %s."
 
-#: plugin.py:221
+#: plugin.py:218
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -51,7 +51,7 @@ msgstr ""
 "        stesso. <nick> può contenere * come wildcard.\n"
 "        "
 
-#: plugin.py:232
+#: plugin.py:229
 #, docstring
 msgid ""
 "[<channel>] [--user <name>] [<nick>]\n"
@@ -74,15 +74,15 @@ msgstr ""
 "        solo se il messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:262
+#: plugin.py:259
 msgid "Someone was last seen in %s %s ago: %s"
 msgstr "Qualcuno è stato visto per l'ultima volta in %s %s fa: %s"
 
-#: plugin.py:266
+#: plugin.py:263
 msgid "I have never seen anyone."
 msgstr "Non ho mai visto nessuno."
 
-#: plugin.py:270
+#: plugin.py:267
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -97,7 +97,7 @@ msgstr ""
 "        solo se il messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:293
+#: plugin.py:290
 #, docstring
 msgid ""
 "[<channel>] <name>\n"
@@ -117,7 +117,7 @@ msgstr ""
 "        <canale> è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:306
+#: plugin.py:303
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -130,9 +130,13 @@ msgstr ""
 "        Riporta i messaggi da quando <nick> ha lasciato il canale l'ultima volta.\n"
 "        "
 
+#: plugin.py:310
+msgid "I am not in %s."
+msgstr "Non sono in %s."
+
 #: plugin.py:313
-msgid "You must be in %s to use this command."
-msgstr "Per usare questo comando bisogna essere in %s."
+msgid "%s must be in %s to use this command."
+msgstr "Per usare questo comando %s deve essere in %s."
 
 #: plugin.py:334
 msgid "I couldn't find in my history of %s messages where %r last left the %s"

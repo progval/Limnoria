@@ -57,9 +57,11 @@ class RealSupyHTTPServer(HTTPServer):
     running = False
     def hook(self, subdir, callback):
         if subdir in self.callbacks:
-            raise KeyError('This subdir is already hooked.')
-        else:
-            self.callbacks[subdir] = callback
+            log.warning(('The HTTP subdirectory `%s` was already hooked but '
+                    'has been claimed by another plugin (or maybe you '
+                    'reloaded the plugin and it didn\'t properly unhook. '
+                    'Forced unhook.') % subdir)
+        self.callbacks[subdir] = callback
     def unhook(self, subdir):
         callback = self.callbacks.pop(subdir) # May raise a KeyError. We don't care.
         callback.doUnhook(self)
@@ -82,6 +84,8 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_X(self, callbackMethod, *args, **kwargs):
         if self.path == '/':
             callback = SupyIndex()
+        elif self.path == '/robots.txt':
+            callback = RobotsTxt()
         else:
             subdir = self.path.split('/')[1]
             try:
@@ -130,8 +134,8 @@ class SupyHTTPServerCallback:
     neither overriden this message or defined an handler for this query.""")
 
     def doGet(self, handler, path, *args, **kwargs):
-        handler.send_response(400)
-        self.send_header('Content_type', 'text/plain')
+        handler.send_response(404)
+        self.send_header('Content_type', 'text/plain; charset=utf-8')
         self.send_header('Content-Length', len(self.defaultResponse))
         self.end_headers()
         self.wfile.write(self.defaultResponse)
@@ -152,7 +156,7 @@ class Supy404(SupyHTTPServerCallback):
     trained to help you in such a case.""")
     def doGet(self, handler, path, *args, **kwargs):
         handler.send_response(404)
-        self.send_header('Content_type', 'text/plain')
+        self.send_header('Content_type', 'text/plain; charset=utf-8')
         self.send_header('Content-Length', len(self.response))
         self.end_headers()
         self.wfile.write(self.response)
@@ -181,8 +185,20 @@ class SupyIndex(SupyHTTPServerCallback):
             plugins = _('No plugins available.')
         else:
             plugins = '<ul><li>%s</li></ul>' % '</li><li>'.join(
-                    ['<a href="/%s">%s</a>' % (x,y.name) for x,y in plugins])
+                    ['<a href="/%s/">%s</a>' % (x,y.name) for x,y in plugins])
         response = self.template % plugins
+        handler.send_response(200)
+        self.send_header('Content_type', 'text/html')
+        self.send_header('Content-Length', len(response))
+        self.end_headers()
+        self.wfile.write(response)
+
+class RobotsTxt(SupyHTTPServerCallback):
+    """Serves the robot.txt file to robots."""
+    name = 'robotstxt'
+    defaultResponse = _('Request not handled')
+    def doGet(self, handler, path):
+        response = conf.supybot.servers.http.robots().replace('\\n', '\n')
         handler.send_response(200)
         self.send_header('Content_type', 'text/html')
         self.send_header('Content-Length', len(response))

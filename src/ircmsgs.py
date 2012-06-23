@@ -519,11 +519,11 @@ def unbans(channel, hostmasks, prefix='', msg=None):
     if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert all(isUserHostmask, hostmasks), hostmasks
+    modes = [('-b', s) for s in hostmasks]
     if msg and not prefix:
         prefix = msg.prefix
-    return IrcMsg(prefix=prefix, command='MODE', msg=msg,
-                  args=(channel, '-' + ('b'*len(hostmasks)),
-                                        ' '.join(hostmasks)))
+    return IrcMsg(prefix=prefix, command='MODE',
+                  args=[channel] + ircutils.joinModes(modes), msg=msg)
 
 def kick(channel, nick, s='', prefix='', msg=None):
     """Returns a KICK to kick nick from channel with the message msg."""
@@ -728,7 +728,10 @@ def whois(nick, mask='', prefix='', msg=None):
         assert isNick(nick), repr(nick)
     if msg and not prefix:
         prefix = msg.prefix
-    return IrcMsg(prefix=prefix, command='WHOIS', args=(nick, mask), msg=msg)
+    args = (nick,)
+    if mask:
+        args = (nick, mask)
+    return IrcMsg(prefix=prefix, command='WHOIS', args=args, msg=msg)
 
 def names(channel=None, prefix='', msg=None):
     if conf.supybot.protocols.irc.strictRfc():
@@ -748,6 +751,16 @@ def mode(channel, args=(), prefix='', msg=None):
     else:
         args = tuple(map(str, args))
     return IrcMsg(prefix=prefix, command='MODE', args=(channel,)+args, msg=msg)
+
+def modes(channel, args=(), prefix='', msg=None):
+    """Returns a MODE to quiet each of nicks on channel."""
+    if conf.supybot.protocols.irc.strictRfc():
+        assert isChannel(channel), repr(channel)
+    modes = args
+    if msg and not prefix:
+        prefix = msg.prefix
+    return IrcMsg(prefix=prefix, command='MODE',
+                  args=[channel] + ircutils.joinModes(modes), msg=msg)
 
 def limit(channel, limit, prefix='', msg=None):
     return mode(channel, ['+l', limit], prefix=prefix, msg=msg)

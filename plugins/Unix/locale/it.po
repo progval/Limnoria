@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
+"Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-10 14:21+0200\n"
+"PO-Revision-Date: 2012-01-02 20:09+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -75,7 +75,14 @@ msgid ""
 "    what command will be called for the spell command."
 msgstr "Determina quale comando verrà richiamato tramite \"spell\"."
 
-#: config.py:87
+#: config.py:85
+msgid ""
+"Determines what aspell dictionary will be used\n"
+"    for spell checking."
+msgstr ""
+"Determina quale dizionario di aspell verrà utilizzato per il controllo ortografico."
+
+#: config.py:90
 msgid ""
 "Determines what\n"
 "    command will be called for the wtf command."
@@ -171,27 +178,31 @@ msgstr ""
 msgid "The spell checking command is not configured.  If one is installed, reconfigure supybot.plugins.Unix.spell.command appropriately."
 msgstr "Il comando di correzione ortografica non è configurato. Se ve n'è uno installato, configurare la variabile supybot.plugins.Unix.spell.command in modo appropriato."
 
-#: plugin.py:147
+#: plugin.py:148
 msgid "<word> must begin with an alphabet character."
 msgstr "<parola> deve iniziare con un carattere dell'alfabeto."
 
-#: plugin.py:169
+#: plugin.py:170
 msgid "No results found."
 msgstr "Nessun risultato trovato."
 
-#: plugin.py:180
+#: plugin.py:181
 msgid "%q may be spelled correctly."
 msgstr "%q sembra scritto correttamente."
 
-#: plugin.py:182
+#: plugin.py:183
 msgid "I could not find an alternate spelling for %q"
 msgstr "Impossibile trovare un'ortografia alternativa per %q"
 
-#: plugin.py:186
+#: plugin.py:187
 msgid "Possible spellings for %q: %L."
 msgstr "Ortografia possibile per %q: %L."
 
-#: plugin.py:195
+#: plugin.py:190
+msgid "Something unexpected was seen in the [ai]spell output."
+msgstr "È stato trovato qualcosa di inaspettato nell'output di [ai]spell."
+
+#: plugin.py:196
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -204,15 +215,15 @@ msgstr ""
 "        Restituisce un biscottino della fortuna dal programma *nix fortune.\n"
 "        "
 
-#: plugin.py:215
+#: plugin.py:217
 msgid "It seems the configured fortune command was not available."
 msgstr "Sembra che il comando fortune configurato non sia disponibile."
 
-#: plugin.py:224
+#: plugin.py:226
 msgid "The fortune command is not configured. If fortune is installed on this system, reconfigure the supybot.plugins.Unix.fortune.command configuration variable appropriately."
 msgstr "Il comando fortune non è configurato. Se ve n'è uno installato, configurare la variabile supybot.plugins.Unix.fortune.command in modo appropriato."
 
-#: plugin.py:231
+#: plugin.py:233
 #, docstring
 msgid ""
 "[is] <something>\n"
@@ -228,15 +239,15 @@ msgstr ""
 "        in NetBSD 1.5. Nella maggior parte delle macchine *nix è disponibile nel pacchetto \"bsdgames\".\n"
 "        "
 
-#: plugin.py:246
+#: plugin.py:248
 msgid "It seems the configured wtf command was not available."
 msgstr "Sembra che il comando wtf configurato non sia disponibile."
 
-#: plugin.py:255
+#: plugin.py:257
 msgid "The wtf command is not configured.  If it is installed on this system, reconfigure the supybot.plugins.Unix.wtf.command configuration variable appropriately."
 msgstr "Il comando wtf non è configurato. Se ve n'è uno installato, configurare la variabile supybot.plugins.Unix.wtf.command in modo appropriato."
 
-#: plugin.py:263
+#: plugin.py:265
 #, docstring
 msgid ""
 "[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>\n"
@@ -252,7 +263,33 @@ msgstr ""
 "        pacchetti (il default è 5). --i è limitato a 5. --W è limitato a 10.\n"
 "        "
 
-#: plugin.py:315
+#: plugin.py:317
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uptime from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+"non necessita argomenti\n"
+"\n"
+"        Riporta l'uptime del sistema su cui è in esecuzione il bot.\n"
+"        "
+
+#: plugin.py:345
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the uname -a from the system the bot is runnning on.\n"
+"        "
+msgstr ""
+"non necessita argomenti\n"
+"\n"
+"        Riporta il risultato di 'uname -a' dal sistema su cui è in esecuzione il bot.\n"
+"        "
+
+#: plugin.py:373
 #, docstring
 msgid ""
 "<command to call with any arguments> \n"
