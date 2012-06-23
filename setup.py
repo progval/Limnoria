@@ -52,26 +52,8 @@ import subprocess
 plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
-version = None
-try:
-    proc = subprocess.Popen('git show HEAD --format=%ci', shell=True,
-            stdout=subprocess.PIPE)
-    version = proc.stdout.readline() \
-            .strip() \
-            .replace(' +', '+') \
-            .replace(' ', 'T')
-
-except:
-    pass
-if not version:
-    from time import gmtime, strftime
-    version = 'installed on ' + strftime("%Y-%m-%dT%H:%M:%S+0000", gmtime())
-try:
-    os.unlink(os.path.join('src', 'version.py'))
-except OSError: # Does not exist
-    pass
 open(os.path.join('src', 'version.py'), 'a').write(
-        "version = '0.83.4.1+limnoria %s'\n" % version)
+        "version = '0.83.4.1+limnoria2'\n")
 
 from src.version import version
 
