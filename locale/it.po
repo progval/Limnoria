@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2012-04-23 18:33+0200\n"
+"PO-Revision-Date: 2012-06-09 21:49+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -19,51 +19,51 @@ msgstr "Errore: "
 msgid "Error: I tried to send you an empty message."
 msgstr "Errore: ho cercato di inviarti un messaggio vuoto."
 
-#: src/callbacks.py:288
+#: src/callbacks.py:292
 msgid "Missing \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
 msgstr "\"%s\" mancante. Dovresti racchiudere gli argomenti tra virgolette per evitare che le parentesi vengano interpretate come comandi nidificati."
 
-#: src/callbacks.py:318
+#: src/callbacks.py:322
 msgid "\"|\" with nothing preceding.  I obviously can't do a pipe with nothing before the |."
 msgstr "\"|\" con niente che la precede. Ovviamente non posso usare una pipe senza nulla prima di |."
 
-#: src/callbacks.py:326
+#: src/callbacks.py:330
 msgid "Spurious \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
 msgstr "\"%s\" eccedente. Dovresti racchiudere gli argomenti tra virgolette per evitare che le parentesi vengano interpretate come comandi nidificati."
 
-#: src/callbacks.py:335
+#: src/callbacks.py:339
 msgid "\"|\" with nothing following.  I obviously can't do a pipe with nothing after the |."
 msgstr "\"|\" con niente che la segue. Ovviamente non posso usare una pipe senza nulla dopo di |."
 
-#: src/callbacks.py:519
+#: src/callbacks.py:524
 msgid "%s is not a valid %s."
 msgstr "%s non è un %s valido."
 
-#: src/callbacks.py:521
+#: src/callbacks.py:526
 msgid "That's not a valid %s."
 msgstr "Questo non è un %s valido."
 
-#: src/callbacks.py:599
+#: src/callbacks.py:604
 msgid "You've attempted more nesting than is currently allowed on this bot."
 msgstr "Hai tentato di nidificare più di quanto sia attualmente consentito."
 
-#: src/callbacks.py:778
+#: src/callbacks.py:773
 msgid "The command %q is available in the %L plugins.  Please specify the plugin whose command you wish to call by using its name as a command before %q."
 msgstr "Il comando %q è disponibile nei plugin %L. Specifica in quale plugin si trova quello che desideri usare aggiungendo il suo nome prima di %q."
 
-#: src/callbacks.py:864 src/callbacks.py:877
+#: src/callbacks.py:869 src/callbacks.py:882
 msgid "(XX more messages)"
 msgstr "(XX altri messaggi)"
 
-#: src/callbacks.py:909
+#: src/callbacks.py:914
 msgid "more message"
 msgstr "altro messaggio"
 
-#: src/callbacks.py:911
+#: src/callbacks.py:916
 msgid "more messages"
 msgstr "altri messaggi"
 
-#: src/callbacks.py:1028
+#: src/callbacks.py:1033
 msgid ""
 "Determines what commands are currently disabled.  Such\n"
 "    commands will not appear in command lists, etc.  They will appear not even\n"
@@ -72,11 +72,11 @@ msgstr ""
 "Determina quali comandi sono attualmente disabilitati. Questi non appariranno\n"
 "    nell'elenco dei comandi, ecc.; sarà come se non esistessero."
 
-#: src/callbacks.py:1224
+#: src/callbacks.py:1231
 msgid "Invalid arguments for %s."
 msgstr "Argomenti non validi per %s."
 
-#: src/callbacks.py:1250
+#: src/callbacks.py:1257
 msgid "The %q command has no help."
 msgstr "Il comando %q non ha un help."
 
