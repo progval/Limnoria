@@ -220,6 +220,10 @@ repositories = {
                                                    'amscanne',
                                                    'supybot-scrum',
                                                    ),
+               'Hoaas':            GithubRepository(
+                                                   'Hoaas',
+                                                   'Supybot-plugins'
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
