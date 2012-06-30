@@ -317,6 +317,18 @@ class Network(callbacks.Plugin):
         irc.reply(otherIrc.driver.__class__.__module__[8:])
     driver = wrap(driver, ['networkIrc'])
 
+    @internationalizeDocstring
+    def uptime(self, irc, msg, args, otherIrc):
+        """[<network>]
+        
+        Returns the time duration since the connection was established.
+        """
+        network = otherIrc.network
+        now = time.time()
+        started = otherIrc.startedAt
+        irc.reply(_("I've been connected to %s for %s.") %
+                            (network, utils.timeElapsed(now - started)))
+    uptime = wrap(uptime, ['networkIrc'])
 
 Class = Network
 

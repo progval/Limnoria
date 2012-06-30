@@ -615,6 +615,7 @@ class Irc(IrcCommandDispatcher):
         self.zombie = False
         world.ircs.append(self)
         self.network = network
+        self.startedAt = time.time()
         self.callbacks = callbacks
         self.state = IrcState()
         self.queue = IrcMsgQueue()
