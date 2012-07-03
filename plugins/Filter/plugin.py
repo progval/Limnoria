@@ -357,7 +357,8 @@ class Filter(callbacks.Plugin):
         if c == ' ':
             return c
         if fg is None:
-            fg = str(random.randint(2, 15)).zfill(2)
+            fg = random.randint(2, 15)
+        fg = str(fg).zfill(2)
         return '\x03%s%s' % (fg, c)
 
     def colorize(self, irc, msg, args, text):

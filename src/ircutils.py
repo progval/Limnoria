@@ -410,11 +410,16 @@ class FormatParser(object):
         i = 0
         setI = False
         c = self.getChar()
-        while c.isdigit() and i < 100:
-            setI = True
-            i *= 10
-            i += int(c)
-            c = self.getChar()
+        while c.isdigit():
+            j = i * 10
+            j += int(c)
+            if j >= 16:
+                self.ungetChar(c)
+                break
+            else:
+                setI = True
+                i = j
+                c = self.getChar()
         self.ungetChar(c)
         if setI:
             return i
@@ -426,6 +431,8 @@ class FormatParser(object):
         c = self.getChar()
         if c == ',':
             context.bg = self.getInt()
+        else:
+            self.ungetChar(c)
 
 def wrap(s, length):
     processed = []
