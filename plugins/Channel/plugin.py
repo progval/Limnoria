@@ -396,7 +396,7 @@ class Channel(callbacks.Plugin):
 
     @internationalizeDocstring
     def invite(self, irc, msg, args, channel, nick):
-        """[<channel>] <nick>
+        """[<channel>] [<nick>]
 
         If you have the #channel,op capability, this will invite <nick>
         to join <channel>. <channel> is only necessary if the message isn't
