@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-06 09:59+0200\n"
+"PO-Revision-Date: 2012-07-04 19:51+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
 "Language: it\n"
@@ -206,4 +206,21 @@ msgstr ""
 "        Riporta l'attuale driver di rete per <rete>. <rete> è necessaria\n"
 "        solo se la rete è differente da quella sulla quale è inviato il comando.\n"
 "        "
+
+#: plugin.py:322
+#, docstring
+msgid ""
+"[<network>]\n"
+"        \n"
+"        Returns the time duration since the connection was established.\n"
+"        "
+msgstr ""
+"[<rete>]\n"
+"        \n"
+"        Riporta da quanto tempo è connesso il bot.\n"
+"        "
+
+#: plugin.py:329
+msgid "I've been connected to %s for %s."
+msgstr "Sono connesso a %s da %s."
 
