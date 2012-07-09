@@ -224,6 +224,10 @@ repositories = {
                                                    'Hoaas',
                                                    'Supybot-plugins'
                                                    ),
+               'nyuszika7h':       GithubRepository(
+                                                   'nyuszika7h',
+                                                   'Supybot-plugins'
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
