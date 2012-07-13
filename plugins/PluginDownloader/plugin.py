@@ -84,9 +84,10 @@ class GithubRepository(GitRepository):
     def getPluginList(self):
         plugins = self._query(
                                   'repos',
-                                  '%s/%s/contents' % (
+                                  '%s/%s/contents%s' % (
                                                           self._username,
                                                           self._reponame,
+                                                          self._path,
                                                           )
                                   )
         if plugins is None:
@@ -222,6 +223,10 @@ repositories = {
                                                    ),
                'Hoaas':            GithubRepository(
                                                    'Hoaas',
+                                                   'Supybot-plugins'
+                                                   ),
+               'nyuszika7h':       GithubRepository(
+                                                   'nyuszika7h',
                                                    'Supybot-plugins'
                                                    ),
                }
