@@ -291,6 +291,11 @@ class Google(callbacks.PluginRegexp):
                 .replace('\\', '\\\\')
         js = simplejson.loads(js)
 
+        # Currency conversion
+        if js['icc'] == True:
+            irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
+            return
+
         url = self._googleUrl(expr)
         html = utils.web.getUrl(url)
         match = self._calcRe1.search(html)
