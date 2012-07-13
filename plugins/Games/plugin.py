@@ -131,7 +131,8 @@ class Games(callbacks.Plugin):
         if self._rouletteChamber == self._rouletteBullet:
             self._rouletteBullet = random.randrange(0, 6)
             self._rouletteChamber = random.randrange(0, 6)
-            if irc.nick in irc.state.channels[channel].ops:
+            if irc.nick in irc.state.channels[channel].ops or \
+                    irc.nick in irc.state.channels[channel].halfops:
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick, 'BANG!'))
             else:
                 irc.reply(_('*BANG* Hey, who put a blank in here?!'),
