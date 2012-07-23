@@ -61,12 +61,16 @@ def rsplit(s, sep=None, maxsplit=-1):
 
 def normalizeWhitespace(s, removeNewline=True):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
-    s = str(s)
+    replace_fn = lambda x, y, z: str.replace(x, y, z)
+    if isinstance(s, unicode):
+        replace_fn = lambda x, y, z: unicode.replace(x, y, z)
+    else:
+        s = str(s)
     if removeNewline:
-        s = str.replace(s, '\n', '')
-    s = str.replace(s, '\t', ' ')
+        s = replace_fn(s, '\n', '')
+    s = replace_fn(s, '\t', ' ')
     while '  ' in s:
-        s = str.replace(s, '  ', ' ')
+        s = replace_fn(s, '  ', ' ')
     return s
 
 def distance(s, t):
