@@ -81,7 +81,7 @@ msgid ""
 msgstr ""
 "<canal|nick> <text>\n"
 "\n"
-"Envoie le <texte> au <canal|nick>. Vous ne pouvez envoyer à <nick> que si /cs register ##fschfsch supybot.plugins.Anonymous.allowPrivateTarget vaut True."
+"Envoie le <texte> au <canal|nick>. Vous ne pouvez envoyer à <nick> que si supybot.plugins.Anonymous.allowPrivateTarget vaut True."
 
 #: plugin.py:94
 msgid ""
