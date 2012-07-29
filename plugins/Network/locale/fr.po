@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-16 12:52+CEST\n"
+"POT-Creation-Date: 2012-07-04 19:47+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -183,4 +183,19 @@ msgstr ""
 "[<réseau>]\n"
 "\n"
 "Retourne le 'driver' actuel pour le <réseau>. Le <réseau> n'est nécessaire que s'il ne s'agit pas du réseau sur lequel la commande est envoyée."
+
+#: plugin.py:322
+msgid ""
+"[<network>]\n"
+"        \n"
+"        Returns the time duration since the connection was established.\n"
+"        "
+msgstr ""
+"[<network>]\n"
+"\n"
+"Indique depuis combien de temps la connexion est établie."
+
+#: plugin.py:329
+msgid "I've been connected to %s for %s."
+msgstr "Je suis connecté à %s depuis %s."
 

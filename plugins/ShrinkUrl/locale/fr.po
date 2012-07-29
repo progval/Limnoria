@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-20 08:55+CEST\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -22,8 +22,8 @@ msgstr "Ce plugin offre un snarfer qui récupère de longues URLs envoyées sur 
 
 #: config.py:45
 #: config.py:49
-msgid "Valid values include 'ln', 'tiny', 'xrl', and 'x0'."
-msgstr "Les valeurs valides incluent 'ln', 'tiny', 'xrl', et 'x0'."
+msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
+msgstr "Les valeurs valides incluent 'ln', 'tiny', 'xrl', 'goo', et 'x0'."
 
 #: config.py:71
 msgid ""
@@ -79,7 +79,7 @@ msgid ""
 "    services to rotate through for the shrinkSnarfer and outFilter."
 msgstr "Si définit à une valeur non vide, définit la liste des services à faire tourner pour shrinkSnarfer et outFilter."
 
-#: plugin.py:169
+#: plugin.py:171
 msgid ""
 "<url>\n"
 "\n"
@@ -90,7 +90,7 @@ msgstr ""
 "\n"
 "Retourne une version de ln-s.net de l'<url>."
 
-#: plugin.py:194
+#: plugin.py:196
 msgid ""
 "<url>\n"
 "\n"
@@ -101,7 +101,7 @@ msgstr ""
 "\n"
 "Retourne une version de TinyURL.com de l'<url>."
 
-#: plugin.py:222
+#: plugin.py:224
 msgid ""
 "<url>\n"
 "\n"
@@ -112,7 +112,18 @@ msgstr ""
 "\n"
 "Retourne une version de xrl.us de l'<url>."
 
-#: plugin.py:248
+#: plugin.py:255
+msgid ""
+"<url>\n"
+"\n"
+"        Returns an goo.gl version of <url>.\n"
+"        "
+msgstr ""
+"<url>\n"
+"\n"
+"Retourne une version de goo.gl de l'<url>."
+
+#: plugin.py:281
 msgid ""
 "<url>\n"
 "\n"
