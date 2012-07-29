@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-09 09:00+CEST\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,12 +22,7 @@ msgid ""
 "             like this snarfer to be enabled?"
 msgstr ""
 
-#: config.py:45
-#, docstring
-msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
-msgstr ""
-
-#: config.py:49
+#: config.py:45 config.py:49
 #, docstring
 msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
 msgstr ""
