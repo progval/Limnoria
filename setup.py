@@ -49,8 +49,6 @@ import os
 import subprocess
 
 
-from src.version import version
-
 plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
