@@ -134,7 +134,7 @@ msgid ""
 "        accepts a filtering level ('active', 'moderate', 'off').\n"
 "        "
 msgstr ""
-"<recherche> [--filtre <valeur>] [--language <valeur>]\n"
+"<recherche> [--filter <valeur>] [--language <valeur>]\n"
 "\n"
 "Rercherche la chaîne donnée sur Google. Autant de résultats que possible sont donnés. --language accepte une abbréviation de langue ; --filter accepte un niveau de filtrage ('active', 'moderate', 'off')."
 

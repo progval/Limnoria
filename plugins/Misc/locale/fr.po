@@ -286,8 +286,8 @@ msgid ""
 "        given <beginning>.\n"
 "        <channel> defaults to the current channel."
 msgstr ""
-"[<canal>] <lettres> [--match-case]\\n"
-"Retourne le nick de quelqu'un dans le salon dont le nick commence par les <lettres> indiquées.<channel> correspond par défaut au salon actuel."
+"[<canal>] <lettres> [--match-case]\n"
+"Retourne le nick de quelqu'un dans le salon dont le nick commence par les <lettres> indiquées. <channel> correspond par défaut au salon actuel."
 
 #: plugin.py:549
 msgid "I'm not even in %s."
