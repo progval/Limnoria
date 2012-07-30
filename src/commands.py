@@ -348,7 +348,7 @@ def validChannel(irc, msg, args, state):
     if irc.isChannel(args[0]):
         state.args.append(args.pop(0))
     else:
-        state.errorInvalid('channel', args[0])
+        state.errorInvalid(_('channel'), args[0])
 
 def getHostmask(irc, msg, args, state):
     if ircutils.isUserHostmask(args[0]):
@@ -424,11 +424,11 @@ def getNick(irc, msg, args, state):
     if ircutils.isNick(args[0], conf.supybot.protocols.irc.strictRfc()):
         if 'nicklen' in irc.state.supported:
             if len(args[0]) > irc.state.supported['nicklen']:
-                state.errorInvalid('nick', args[0],
+                state.errorInvalid(_('nick'), args[0],
                                  _('That nick is too long for this server.'))
         state.args.append(args.pop(0))
     else:
-        state.errorInvalid('nick', args[0])
+        state.errorInvalid(_('nick'), args[0])
 
 def getSeenNick(irc, msg, args, state, errmsg=None):
     try:
@@ -436,7 +436,7 @@ def getSeenNick(irc, msg, args, state, errmsg=None):
         state.args.append(args.pop(0))
     except KeyError:
         if errmsg is None:
-            errmsg = 'I haven\'t seen %s.' % args[0]
+            errmsg = _('I haven\'t seen %s.') % args[0]
         state.error(errmsg, Raise=True)
 
 def getChannel(irc, msg, args, state):
@@ -585,13 +585,13 @@ def getUrl(irc, msg, args, state):
     if utils.web.urlRe.match(args[0]):
         state.args.append(args.pop(0))
     else:
-        state.errorInvalid('url', args[0])
+        state.errorInvalid(_('url'), args[0])
 
 def getEmail(irc, msg, args, state):
     if utils.net.emailRe.match(args[0]):
         state.args.append(args.pop(0))
     else:
-        state.errorInvalid('email', args[0])
+        state.errorInvalid(_('email'), args[0])
 
 def getHttpUrl(irc, msg, args, state):
     if utils.web.httpUrlRe.match(args[0]):

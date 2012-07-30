@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-09 19:15+CEST\n"
+"POT-Creation-Date: 2012-07-30 11:34+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,6 +140,10 @@ msgstr ""
 msgid "I need to be at least halfopped to %s."
 msgstr ""
 
+#: src/commands.py:351 src/commands.py:498
+msgid "channel"
+msgstr ""
+
 #: src/commands.py:362
 msgid "nick or hostmask"
 msgstr ""
@@ -148,8 +152,16 @@ msgstr ""
 msgid "regular expression"
 msgstr ""
 
+#: src/commands.py:427 src/commands.py:431
+msgid "nick"
+msgstr ""
+
 #: src/commands.py:428
 msgid "That nick is too long for this server."
+msgstr ""
+
+#: src/commands.py:439
+msgid "I haven't seen %s."
 msgstr ""
 
 #: src/commands.py:477 src/commands.py:496
@@ -164,10 +176,6 @@ msgstr ""
 msgid "You must be in %s."
 msgstr ""
 
-#: src/commands.py:498
-msgid "channel"
-msgstr ""
-
 #: src/commands.py:505
 msgid "%s is not in %s."
 msgstr ""
@@ -178,6 +186,14 @@ msgstr ""
 
 #: src/commands.py:556
 msgid "This message must be sent in a channel."
+msgstr ""
+
+#: src/commands.py:588
+msgid "url"
+msgstr ""
+
+#: src/commands.py:594
+msgid "email"
 msgstr ""
 
 #: src/commands.py:602
