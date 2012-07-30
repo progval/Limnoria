@@ -147,10 +147,10 @@ class Misc(callbacks.Plugin):
                                      'plugin.'), plugin, tokens[1],
                                      plugin, plugin))
                 else:
-                    irc.errorInvalid('command', tokens[0], repr=False)
+                    irc.errorInvalid(_('command'), tokens[0], repr=False)
             else:
                 command = tokens and tokens[0] or ''
-                irc.errorInvalid('command', command, repr=False)
+                irc.errorInvalid(_('command'), command, repr=False)
         else:
             if tokens:
                 # echo [] will get us an empty token set, but there's no need
