@@ -116,12 +116,12 @@ def close(registry, filename, private=True):
                     try:
                         x = value.__class__(value._default, value._help)
                     except Exception, e:
-                        exception('Exception instantiating default for %s:',
+                        exception('Exception instantiating default for %s:' %
                                   value._name)
                     try:
                         lines.append('# Default value: %s\n' % x)
                     except Exception, e:
-                        exception('Exception printing default value of %s:',
+                        exception('Exception printing default value of %s:' %
                                   value._name)
             lines.append('###\n')
             fd.writelines(lines)
