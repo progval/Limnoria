@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2012-06-03 04:38+CEST\n"
+"POT-Creation-Date: 2012-07-31 19:07+UTC\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -74,6 +74,32 @@ msgid ""
 "    supybot.plugins.RSS.announce.showLinks affects whether links will be\n"
 "    listed when a feed is automatically announced."
 msgstr "Détermine si le bot listera le lien de chaque flus avec son titre, lorsque la commande rss est appelée. supybot.plugins.RSS.announce.showLinks affecte si les liens sont affichés lorsqu'un flux est annoncé automatiquement."
+
+#: config.py:84
+msgid ""
+"Indicates how many headlines an rss feed\n"
+"    will output by default, if no number is provided."
+msgstr "Indique combien d'éléments un flux rss affichera par défaut, si aucun nombre n'est donné."
+
+#: config.py:87
+msgid ""
+"Indicates how many headlines an rss feed\n"
+"    will output when it is first added to announce for a channel."
+msgstr "Indique combien d'éléments un flux rss affichera lorsque qu'il vient d'être configuré pour être annoncé sur le salon."
+
+#: config.py:90
+msgid ""
+"Space separated list of \n"
+"    strings, lets you filter headlines to those containing one or more items\n"
+"    in this whitelist."
+msgstr "Liste séparée par des espaces de chaînes, qui vous permet de filtrer les éléments par liste blanche."
+
+#: config.py:94
+msgid ""
+"Space separated list of \n"
+"    strings, lets you filter headlines to those not containing any items\n"
+"    in this blacklist."
+msgstr "Liste séparée par des espaces de chaînes, qui vous permet de filtrer les éléments par liste noire."
 
 #: config.py:100
 msgid ""
