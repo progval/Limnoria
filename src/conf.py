@@ -314,6 +314,8 @@ for (name, s) in registry._cache.iteritems():
 registerGroup(supybot, 'reply')
 
 registerGroup(supybot.reply, 'format')
+registerChannelValue(supybot.reply.format, 'url',
+    registry.String('<%s>', _("""Determines how urls should be formatted.""")))
 registerChannelValue(supybot.reply.format, 'time',
     registry.String('%I:%M %p, %B %d, %Y', _("""Determines how timestamps
     printed for human reading should be formatted. Refer to the Python

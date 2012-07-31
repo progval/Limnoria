@@ -54,6 +54,12 @@ class GoogleTestCase(ChannelPluginTestCase):
             # Unicode check
             self.assertNotError('google ae')
 
+        def testSearchFormat(self):
+            self.assertRegexp('google foo', '<http://.*>')
+            self.assertNotError('config reply.format.url %s')
+            self.assertRegexp('google foo', 'http://.*')
+            self.assertNotRegexp('google foo', '<http://.*>')
+
         def testSearchOneToOne(self):
             self.assertRegexp('google dupa', ';')
             self.assertNotError('config plugins.Google.oneToOne True')

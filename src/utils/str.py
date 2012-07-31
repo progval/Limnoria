@@ -471,7 +471,8 @@ def format(s, *args, **kwargs):
         elif char == 't':
             return timestamp(args.pop())
         elif char == 'u':
-            return '<%s>' % args.pop()
+            import supybot.conf as conf
+            return conf.supybot.reply.format.url() % args.pop()
         elif char == 'v':
             args.pop()
             return ''
