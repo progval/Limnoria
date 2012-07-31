@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-03 04:38+CEST\n"
+"POT-Creation-Date: 2012-07-31 19:07+UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,6 +76,32 @@ msgid ""
 "    along with the title of the feed when the rss command is called.\n"
 "    supybot.plugins.RSS.announce.showLinks affects whether links will be\n"
 "    listed when a feed is automatically announced."
+msgstr ""
+
+#: config.py:84
+msgid ""
+"Indicates how many headlines an rss feed\n"
+"    will output by default, if no number is provided."
+msgstr ""
+
+#: config.py:87
+msgid ""
+"Indicates how many headlines an rss feed\n"
+"    will output when it is first added to announce for a channel."
+msgstr ""
+
+#: config.py:90
+msgid ""
+"Space separated list of \n"
+"    strings, lets you filter headlines to those containing one or more items\n"
+"    in this whitelist."
+msgstr ""
+
+#: config.py:94
+msgid ""
+"Space separated list of \n"
+"    strings, lets you filter headlines to those not containing any items\n"
+"    in this blacklist."
 msgstr ""
 
 #: config.py:100
