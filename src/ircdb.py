@@ -219,6 +219,7 @@ class IrcUser(object):
             self.hostmasks = ircutils.IrcSet() # hostmasks used for recognition
         else:
             self.hostmasks = hostmasks
+        self.gpgkeys = [] # GPG key ids
 
     def __repr__(self):
         return format('%s(id=%s, ignore=%s, password="", name=%q, hashed=%r, '
@@ -326,6 +327,8 @@ class IrcUser(object):
             write('capability %s' % capability)
         for hostmask in self.hostmasks:
             write('hostmask %s' % hostmask)
+        for key in self.gpgkeys:
+            write('gpgkey %s' % key)
         fd.write(os.linesep)
 
 
@@ -498,6 +501,10 @@ class IrcUserCreator(Creator):
     def capability(self, rest, lineno):
         self._checkId()
         self.u.capabilities.add(rest)
+
+    def gpgkey(self, rest, lineno):
+        self._checkId()
+        self.u.gpgkeys.append(rest)
 
     def finish(self):
         if self.u.name:

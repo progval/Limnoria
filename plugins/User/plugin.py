@@ -30,6 +30,7 @@
 import re
 import fnmatch
 
+import supybot.gpg as gpg
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
@@ -381,6 +382,43 @@ class User(callbacks.Plugin):
             irc.replySuccess(s)
         remove = wrap(remove, ['private', 'otherUser', 'something',
                                additional('something', '')])
+
+    class gpg(callbacks.Commands):
+        def callCommand(self, command, irc, msg, *args, **kwargs):
+            if gpg.available:
+                return super(gpg, self) \
+                        .callCommand(command, irc, msg, *args, **kwargs)
+            else:
+                irc.error(_('GPG features are not enabled.'))
+
+        @internationalizeDocstring
+        def add(self, irc, msg, args, user, keyid, keyserver):
+            """<key id> <key server>
+
+            Add a GPG key to your account."""
+            result = gpg.keyring.recv_keys(keyserver, keyid)
+            count = len(result.fingerprints)
+            if count:
+                user.gpgkeys.append(keyid)
+                irc.reply(format(_('Successful import of %n: %L'),
+                    (count, _('key')),
+                    [x.fingerprint for x in result.results]))
+            else:
+                irc.error(_('GPG key not found on the key server.'))
+        add = wrap(add, ['user', 'somethingWithoutSpaces',
+                'somethingWithoutSpaces'])
+
+        @internationalizeDocstring
+        def remove(self, irc, msg, args, user, keyid):
+            """<key id>
+
+            Remove a GPG key from your account."""
+            try:
+                user.gpgkeys.remove(keyid)
+                irc.replySuccess()
+            except KeyError:
+                irc.error(_('GPG key not associated with your account.'))
+        remove = wrap(remove, ['user', 'somethingWithoutSpaces'])
 
     @internationalizeDocstring
     def capabilities(self, irc, msg, args, user):
