@@ -454,9 +454,9 @@ registerChannelValue(supybot.reply, 'showSimpleSyntax',
     help) rather than the full help.""")))
 
 class ValidPrefixChars(registry.String):
-    """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?"""
+    """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?°"""
     def setValue(self, v):
-        if v.translate(utils.str.chars, '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
+        if v.translate(utils.str.chars, '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?°'):
             self.error()
         registry.String.setValue(self, v)
 
