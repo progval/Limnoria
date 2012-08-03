@@ -396,27 +396,39 @@ class User(callbacks.Plugin):
             """<key id> <key server>
 
             Add a GPG key to your account."""
+            if keyid in user.gpgkeys:
+                irc.error(_('This key is already associated with your '
+                    'account.'))
+                return
             result = gpg.keyring.recv_keys(keyserver, keyid)
-            count = len(result.fingerprints)
-            if count:
+            reply = format(_('%n imported, %i unchanged, %i not imported.'),
+                    (result.imported, _('key')),
+                    result.unchanged,
+                    result.not_imported,
+                    [x['fingerprint'] for x in result.results])
+            if result.imported == 1:
                 user.gpgkeys.append(keyid)
-                irc.reply(format(_('Successful import of %n: %L'),
-                    (count, _('key')),
-                    [x.fingerprint for x in result.results]))
+                irc.reply(reply)
             else:
-                irc.error(_('GPG key not found on the key server.'))
+                irc.error(reply)
         add = wrap(add, ['user', 'somethingWithoutSpaces',
                 'somethingWithoutSpaces'])
 
         @internationalizeDocstring
-        def remove(self, irc, msg, args, user, keyid):
-            """<key id>
+        def remove(self, irc, msg, args, user, fingerprint):
+            """<fingerprint>
 
             Remove a GPG key from your account."""
             try:
-                user.gpgkeys.remove(keyid)
+                keyids = [x['keyid'] for x in gpg.keyring.list_keys()
+                        if x['fingerprint'] == fingerprint]
+                if len(keyids) == 0:
+                    raise ValueError
+                for keyid in keyids:
+                    user.gpgkeys.remove(keyid)
+                gpg.keyring.delete_keys(fingerprint)
                 irc.replySuccess()
-            except KeyError:
+            except ValueError:
                 irc.error(_('GPG key not associated with your account.'))
         remove = wrap(remove, ['user', 'somethingWithoutSpaces'])
 

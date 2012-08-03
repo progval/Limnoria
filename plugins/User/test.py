@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import supybot.gpg as gpg
 from supybot.test import *
 
 import supybot.world as world
@@ -36,6 +37,11 @@ class UserTestCase(PluginTestCase):
     plugins = ('User',)
     prefix1 = 'somethingElse!user@host.tld'
     prefix2 = 'EvensomethingElse!user@host.tld'
+
+    def setUp(self):
+        super(UserTestCase, self).setUp()
+        gpg.loadKeyring()
+
     def testHostmaskList(self):
         self.assertError('hostmask list')
         original = self.prefix
@@ -135,6 +141,20 @@ class UserTestCase(PluginTestCase):
         self.assertResponse('user list', 'Foo')
         self.assertNotError('load Seen')
         self.assertResponse('user list', 'Foo')
+
+    if network:
+        def testGpgAddRemove(self):
+            self.assertNotError('register foo bar')
+            self.assertError('user gpg add 51E516F0B0C5CE6A pgp.mit.edu')
+            self.assertResponse('user gpg add EB17F1E0CEB63930 pgp.mit.edu',
+                    '1 key imported, 0 unchanged, 0 not imported.')
+            self.assertNotError(
+                    'user gpg remove F88ECDE235846FA8652DAF5FEB17F1E0CEB63930')
+            self.assertResponse('user gpg add EB17F1E0CEB63930 pgp.mit.edu',
+                    '1 key imported, 0 unchanged, 0 not imported.')
+            self.assertResponse('user gpg add EB17F1E0CEB63930 pgp.mit.edu',
+                    'Error: This key is already associated with your account.')
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

@@ -60,9 +60,11 @@ def fallback(default_return=None):
 @fallback()
 def loadKeyring():
     global keyring
-    path = conf.supybot.directories.data.dirize('GPGkeyring')
+    path = os.path.abspath(conf.supybot.directories.data.dirize('GPGkeyring'))
     if not os.path.isdir(path):
-        os.mkdir(path)
+        log.info('Creating directory %s' % path)
+        os.mkdir(path, 0700)
+    assert os.path.isdir(path)
     keyring = gnupg.GPG(gnupghome=path)
 loadKeyring()
 
