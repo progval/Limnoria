@@ -220,10 +220,19 @@ def perlVariableSubstitute(vars, text):
 
 def multipleReplacer(dict_):
     """Return a function that replaces all dict keys by the associated
-    value."""
+    value. More efficient than multiple .replace()."""
     dict_ = {re.escape(key): val for key,val in dict_.items()}
     matcher = re.compile('|'.join(dict_.keys()))
     return lambda x:matcher.sub(lambda m: dict_[m.group(0)], x)
+
+def multipleRemover(list_):
+    """Return a function that removes all words in the list. A bit more
+    efficient than multipleReplacer"""
+    list_ = [re.escape(x) for x in list_]
+    matcher = re.compile('|'.join(list_))
+    return lambda x:matcher.sub(lambda m: '', x)
+
+
 
 def commaAndify(seq, comma=',', And='and'):
     """Given a a sequence, returns an English clause for that sequence.
