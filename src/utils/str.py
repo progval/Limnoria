@@ -218,6 +218,13 @@ def perlVariableSubstitute(vars, text):
                 return '$' + unbraced
     return _perlVarSubstituteRe.sub(replacer, text)
 
+def multipleReplacer(dict_):
+    """Return a function that replaces all dict keys by the associated
+    value."""
+    dict_ = {re.escape(key): val for key,val in dict_.items()}
+    matcher = re.compile('|'.join(dict_.keys()))
+    return lambda x:matcher.sub(lambda m: dict_[m.group(0)], x)
+
 def commaAndify(seq, comma=',', And='and'):
     """Given a a sequence, returns an English clause for that sequence.
 

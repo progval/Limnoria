@@ -309,6 +309,10 @@ class StrTest(SupyTestCase):
         f = PRTR('s/^/foo/')
         self.assertEqual(f('bar'), 'foobar')
 
+    def testmultipleReplacer(self):
+        replacer = utils.str.multipleReplacer({'foo': 'bar', 'a': 'b'})
+        self.assertEqual(replacer('hi foo hi'), 'hi bar hi')
+
     def testPReToReplacerDifferentSeparator(self):
         f = utils.str.perlReToReplacer('s#foo#bar#')
         self.assertEqual(f('foobarbaz'), 'barbarbaz')
