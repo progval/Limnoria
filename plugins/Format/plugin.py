@@ -95,7 +95,7 @@ class Format(callbacks.Plugin):
         if len(bad) != len(good):
             irc.error(_('<chars to translate> must be the same length as '
                       '<chars to replace those with>.'), Raise=True)
-        irc.reply(text.translate(string.maketrans(bad, good)))
+        irc.reply(utils.str.MultipleReplacer(dict(zip(bad, good)))(text))
     translate = wrap(translate, ['something', 'something', 'text'])
 
     @internationalizeDocstring

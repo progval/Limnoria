@@ -232,7 +232,8 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     lithp = wrap(lithp, ['text'])
 
-    _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
+    _leettrans = utils.str.MultipleReplacer(dict(zip('oOaAeElBTiIts',
+                                                     '004433187!1+5')))
     _leetres = [(re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
                 (re.compile(r'fear'), 'ph33r'),
                 (re.compile(r'[aA][tT][eE]'), '8'),
@@ -247,7 +248,7 @@ class Filter(callbacks.Plugin):
         """
         for (r, sub) in self._leetres:
             text = re.sub(r, sub, text)
-        text = text.translate(self._leettrans)
+        text = self._leettrans(text)
         irc.reply(text)
     leet = wrap(leet, ['text'])
 
@@ -648,7 +649,7 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     shrink = wrap(shrink, ['text'])
 
-    _azn_trans = string.maketrans('rlRL', 'lrLR')
+    _azn_trans = utils.str.MultipleReplacer(dict(zip('rlRL', 'lrLR')))
     @internationalizeDocstring
     def azn(self, irc, msg, args, text):
         """<text>

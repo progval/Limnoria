@@ -51,6 +51,7 @@ import re
 import math
 import string
 
+import supybot.utils as utils
 import supybot.callbacks as callbacks
 from supybot.commands import wrap, additional
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
@@ -116,11 +117,12 @@ class Nickometer(callbacks.Plugin):
                        ('\\[rkx]0', 1000),
                        ('\\0[rkx]', 1000)]
 
-        letterNumberTranslator = string.maketrans('023457+8', 'ozeasttb')
+        letterNumberTranslator = utils.str.MultipleReplacer(dict(zip(
+                '023457+8', 'ozeasttb')))
         for special in specialCost:
             tempNick = nick
             if special[0][0] != '\\':
-                tempNick = tempNick.translate(letterNumberTranslator)
+                tempNick = letterNumberTranslator(tempNick)
 
             if tempNick and re.search(special[0], tempNick, re.IGNORECASE):
                 score += self.punish(special[1], 'matched special case /%s/' %
