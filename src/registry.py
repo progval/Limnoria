@@ -57,7 +57,10 @@ class InvalidRegistryName(RegistryException):
 class InvalidRegistryValue(RegistryException):
     pass
 
-class NonExistentRegistryEntry(RegistryException):
+class NonExistentRegistryEntry(RegistryException, AttributeError):
+    # If we use hasattr() on a configuration group/value, Python 3 calls
+    # __getattr__ and looks for an AttributeError, so __getattr__ has to
+    # raise an AttributeError if a registry entry does not exist.
     pass
 
 _cache = utils.InsensitivePreservingDict()
