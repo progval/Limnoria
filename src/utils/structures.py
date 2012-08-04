@@ -33,7 +33,7 @@ Data structures for Python.
 
 import time
 import types
-import UserDict
+import collections
 from itertools import imap
 
 class RingBuffer(object):
@@ -418,7 +418,7 @@ class MultiSet(object):
         return elt in self.d
 
 
-class CacheDict(UserDict.DictMixin):
+class CacheDict(collections.MutableMapping):
     def __init__(self, max, **kwargs):
         self.d = dict(**kwargs)
         self.max = max
@@ -442,6 +442,9 @@ class CacheDict(UserDict.DictMixin):
 
     def __iter__(self):
         return iter(self.d)
+
+    def __len__(self):
+        return len(self.d)
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
