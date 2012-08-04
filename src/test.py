@@ -531,19 +531,19 @@ def open_http(url, data=None):
         auth = base64.b64encode(user_passwd).strip()
     else:
         auth = None
-    h = HTTP(host)
+    c = FakeHTTPConnection(host)
     if data is not None:
-        h.putrequest('POST', selector)
-        h.putheader('Content-Type', 'application/x-www-form-urlencoded')
-        h.putheader('Content-Length', '%d' % len(data))
+        c.putrequest('POST', selector)
+        c.putheader('Content-Type', 'application/x-www-form-urlencoded')
+        c.putheader('Content-Length', '%d' % len(data))
     else:
-        h.putrequest('GET', selector)
-    if proxy_auth: h.putheader('Proxy-Authorization', 'Basic %s' % proxy_auth)
-    if auth: h.putheader('Authorization', 'Basic %s' % auth)
-    if realhost: h.putheader('Host', realhost)
-    for args in urllib.URLopener().addheaders: h.putheader(*args)
-    h.endheaders()
-    return h
+        c.putrequest('GET', selector)
+    if proxy_auth: c.putheader('Proxy-Authorization', 'Basic %s' % proxy_auth)
+    if auth: c.putheader('Authorization', 'Basic %s' % auth)
+    if realhost: c.putheader('Host', realhost)
+    for args in urllib.URLopener().addheaders: c.putheader(*args)
+    c.endheaders()
+    return c
 
 class FakeHTTPConnection(httplib.HTTPConnection):
     _data = ''
@@ -561,9 +561,6 @@ class FakeHTTPConnection(httplib.HTTPConnection):
     #    self.sock = self.wfile
     #def getresponse(self, *args, **kwargs):
     #    pass
-
-class HTTP(httplib.HTTP):
-    _connection_class = FakeHTTPConnection
 
 class HTTPPluginTestCase(PluginTestCase):
     def setUp(self):
