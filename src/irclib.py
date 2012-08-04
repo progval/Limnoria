@@ -42,7 +42,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 
 from utils.str import rsplit
-from utils.iter import imap, chain, cycle
+from utils.iter import chain, cycle
 from utils.structures import queue, smallqueue, RingBuffer
 
 ###
