@@ -166,6 +166,7 @@ class _PluginInternationalization:
         self.translations = {}
         for line in translationFile:
             line = line[0:-1] # Remove the ending \n
+            line = line.decode('utf8', errors='replace')
 
             if line.startswith(MSGID):
                 # Don't check if step is WAITING_FOR_MSGID
@@ -217,10 +218,10 @@ class _PluginInternationalization:
 
     def _unescape(self, string, removeNewline=False):
         import supybot.utils as utils
-        string = str.replace(string, '\\n\\n', '\n\n')
-        string = str.replace(string, '\\n', ' ')
-        string = str.replace(string, '\\"', '"')
-        string = str.replace(string, "\'", "'")
+        string = string.replace('\\n\\n', '\n\n')
+        string = string.replace('\\n', ' ')
+        string = string.replace('\\"', '"')
+        string = string.replace("\'", "'")
         string = utils.str.normalizeWhitespace(string, removeNewline)
         return string
 
@@ -317,7 +318,6 @@ class internationalizedFunction:
     def __init__(self, internationalizer, name, function):
         self._internationalizer = internationalizer
         self._name = name
-        self.__call__ = function
         self._origin = function
         internationalizedFunctions.append(self)
     def loadLocale(self):
@@ -327,7 +327,10 @@ class internationalizedFunction:
     def restore(self):
         self.__call__ = self._origin
 
-class internationalizedString(str):
+    def __call__(self, *args, **kwargs):
+        return self._origin(*args, **kwargs)
+
+class internationalizedString(unicode):
     """Simple subclass to str, that allow to add attributes. Also used to
     know if a string is already localized"""
     pass
