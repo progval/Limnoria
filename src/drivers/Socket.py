@@ -34,6 +34,7 @@ Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 
 from __future__ import division
 
+import sys
 import time
 import select
 import socket
@@ -52,7 +53,7 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.drivers as drivers
 import supybot.schedule as schedule
-from supybot.utils.iter import imap
+from itertools import imap
 
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
@@ -62,7 +63,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.conn = None
         self.servers = ()
         self.eagains = 0
-        self.inbuffer = ''
+        self.inbuffer = b''
         self.outbuffer = ''
         self.zombie = False
         self.connected = False
@@ -114,7 +115,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             while msgs[-1] is not None:
                 msgs.append(self.irc.takeMsg())
             del msgs[-1]
-            self.outbuffer += ''.join(imap(str, msgs))
+            if sys.version_info[0] < 3:
+                self.outbuffer += ''.join(imap(str, msgs))
+            else:
+                self.outbuffer += b''.join([x.encode(errors='replace')
+                    for x in msgs])
         if self.outbuffer:
             try:
                 sent = self.conn.send(self.outbuffer)
@@ -140,9 +145,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         try:
             self.inbuffer += self.conn.recv(1024)
             self.eagains = 0 # If we successfully recv'ed, we can reset this.
-            lines = self.inbuffer.split('\n')
+            lines = self.inbuffer.split(b'\n')
             self.inbuffer = lines.pop()
             for line in lines:
+                if sys.version_info[0] >= 3:
+                    line = line.decode(errors='replace')
                 msg = drivers.parseMsg(line)
                 if msg is not None:
                     self.irc.feedMsg(msg)
