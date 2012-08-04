@@ -48,6 +48,7 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Unix')
 
+_progstats_endline_remover = utils.str.MultipleRemover('\r\n')
 def progstats():
     pw = pwd.getpwuid(os.getuid())
     response = format('Process ID %i running as user %q and as group %q '
@@ -55,7 +56,7 @@ def progstats():
                       'Running on Python %s.',
                       os.getpid(), pw[0], pw[3],
                       os.getcwd(), ' '.join(sys.argv),
-                      sys.version.translate(utils.str.chars, '\r\n'))
+                      _progstats_endline_remover(sys.version))
     return response
 
 class TimeoutError(IOError):

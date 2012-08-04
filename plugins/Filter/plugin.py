@@ -656,7 +656,7 @@ class Filter(callbacks.Plugin):
 
         Returns <text> with the l's made into r's and r's made into l's.
         """
-        text = text.translate(self._azn_trans)
+        text = self._azn_trans(text)
         irc.reply(text)
     azn = wrap(azn, ['text'])
 
