@@ -1,18 +1,20 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-07-23 17:08+0200\n"
+"POT-Creation-Date: 2012-07-04 19:47+CEST\n"
+"PO-Revision-Date: 2012-08-04 15:36+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
-"Language-Team: \n"
+"Language-Team: Finnish <>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: plugin.py:57
 msgid ""
@@ -209,4 +211,19 @@ msgstr ""
 "        vain jos komentoa ei lähetetä verkossa, johon tämän komennon on tarkoitus\n"
 "        vaikuttaa.\n"
 "        "
+
+#: plugin.py:322
+msgid ""
+"[<network>]\n"
+"        \n"
+"        Returns the time duration since the connection was established.\n"
+"        "
+msgstr ""
+"[<verkko>\n"
+"\n"
+" Palauttaa ajan, joka on kulunut siitä, kun yhteys muodostettiin.]"
+
+#: plugin.py:329
+msgid "I've been connected to %s for %s."
+msgstr "Olen ollut yhteydessä verkkoon %s ajan %s."
 
