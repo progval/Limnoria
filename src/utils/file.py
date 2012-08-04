@@ -83,7 +83,7 @@ def touch(filename):
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
     r = random.Random()
-    m = crypt.md5(suffix)
+    m = crypt.md5(suffix.encode('utf8'))
     r.seed(time.time())
     s = str(r.getstate())
     period = random.random()
@@ -95,7 +95,7 @@ def mktemp(suffix=''):
         m.update(s)
         m.update(str(now))
         s = m.hexdigest()
-    return crypt.sha(s + str(time.time())).hexdigest() + suffix
+    return crypt.sha((s + str(time.time())).encode('utf8')).hexdigest()+suffix
 
 def nonCommentLines(fd):
     for line in fd:
