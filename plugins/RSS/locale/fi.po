@@ -1,12 +1,12 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011, 2012.
+# RSS plugin in Limnoria.
+# Copyright (C) Limnoria 2011
+# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2012-07-31 19:07+UTC\n"
-"PO-Revision-Date: 2012-08-04 15:02+0200\n"
+"PO-Revision-Date: 2012-08-04 15:07+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: \n"
