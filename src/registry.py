@@ -30,7 +30,9 @@
 
 import re
 import os
+import sys
 import time
+import codecs
 import string
 import textwrap
 
@@ -63,6 +65,10 @@ class NonExistentRegistryEntry(RegistryException, AttributeError):
     # raise an AttributeError if a registry entry does not exist.
     pass
 
+ENCODING = 'string_escape' if sys.version_info[0] < 3 else 'unicode_escape'
+decoder = codecs.getdecoder(ENCODING)
+encoder = codecs.getencoder(ENCODING)
+
 _cache = utils.InsensitivePreservingDict()
 _lastModified = 0
 def open_registry(filename, clear=False):
@@ -92,7 +98,8 @@ def open_registry(filename, clear=False):
         try:
             (key, value) = re.split(r'(?<!\\):', acc, 1)
             key = key.strip()
-            value = value.strip().decode('string_escape')
+            value = value.strip()
+            value = decoder(value)[0]
             acc = ''
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line %r' % acc
@@ -106,7 +113,7 @@ def close(registry, filename, private=True):
     for (name, value) in registry.getValues(getChildren=True):
         help = value.help()
         if help:
-            lines = textwrap.wrap(value._help)
+            lines = textwrap.wrap(value._help.encode('utf8', errors='replace'))
             for (i, line) in enumerate(lines):
                 lines[i] = '# %s\n' % line
             lines.insert(0, '###\n')
@@ -148,7 +155,7 @@ def isValidRegistryName(name):
     return len(name.split()) == 1 and not name.startswith('_')
 
 def escape(name):
-    name = name.encode('string_escape')
+    name = encoder(name)[0]
     name = name.replace(':', '\\:')
     name = name.replace('.', '\\.')
     return name
@@ -156,7 +163,7 @@ def escape(name):
 def unescape(name):
     name = name.replace('\\.', '.')
     name = name.replace('\\:', ':')
-    name = name.decode('string_escape')
+    name = decoder(name)[0]
     return name
 
 _splitRe = re.compile(r'(?<!\\)\.')
@@ -367,7 +374,7 @@ class Value(Group):
         return repr(self())
 
     def serialize(self):
-        return str(self).encode('string_escape')
+        return encoder(str(self))[0]
 
     # We tried many, *many* different syntactic methods here, and this one was
     # simply the best -- not very intrusive, easily overridden by subclasses,
