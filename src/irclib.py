@@ -1073,7 +1073,7 @@ class Irc(IrcCommandDispatcher):
         if isinstance(other, self.__class__):
             return id(self) == id(other)
         else:
-            return other == self
+            return other.__eq__(self)
 
     def __ne__(self, other):
         return not (self == other)
