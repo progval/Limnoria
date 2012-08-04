@@ -35,6 +35,8 @@ dicts, a nick class to handle nicks (so comparisons and hashing and whatnot
 work in an IRC-case-insensitive fashion), and numerous other things.
 """
 
+from __future__ import division
+
 import re
 import time
 import random
@@ -483,7 +485,7 @@ def dccIP(ip):
     x = 256**3
     for quad in ip.split('.'):
         i += int(quad)*x
-        x /= 256
+        x //= 256
     return i
 
 def unDccIP(i):
@@ -492,7 +494,7 @@ def unDccIP(i):
     L = []
     while len(L) < 4:
         L.append(i % 256)
-        i /= 256
+        i //= 256
     L.reverse()
     return '.'.join(imap(str, L))
 
