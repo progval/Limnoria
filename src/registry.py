@@ -155,7 +155,7 @@ def isValidRegistryName(name):
     return len(name.split()) == 1 and not name.startswith('_')
 
 def escape(name):
-    name = encoder(name)[0]
+    name = encoder(name)[0].decode()
     name = name.replace(':', '\\:')
     name = name.replace('.', '\\.')
     return name
@@ -163,7 +163,7 @@ def escape(name):
 def unescape(name):
     name = name.replace('\\.', '.')
     name = name.replace('\\:', ':')
-    name = decoder(name)[0]
+    name = decoder(name.encode())[0]
     return name
 
 _splitRe = re.compile(r'(?<!\\)\.')
