@@ -39,9 +39,9 @@ from iter import ifilter
 import crypt
 
 def contents(filename):
-    return file(filename).read()
+    return open(filename).read()
 
-def open(filename, mode='wb', *args, **kwargs):
+def open_mkdir(filename, mode='wb', *args, **kwargs):
     """filename -> file object.
 
     Returns a file object for filename, creating as many directories as may be
@@ -53,15 +53,15 @@ def open(filename, mode='wb', *args, **kwargs):
         raise ValueError, 'utils.file.open expects to write.'
     (dirname, basename) = os.path.split(filename)
     os.makedirs(dirname)
-    return file(filename, mode, *args, **kwargs)
+    return open(filename, mode, *args, **kwargs)
 
 def copy(src, dst):
     """src, dst -> None
 
     Copies src to dst, using this module's 'open' function to open dst.
     """
-    srcfd = file(src)
-    dstfd = open(dst, 'wb')
+    srcfd = open(src)
+    dstfd = open_mkdir(dst, 'wb')
     shutil.copyfileobj(srcfd, dstfd)
 
 def writeLine(fd, line):
@@ -70,14 +70,14 @@ def writeLine(fd, line):
         fd.write('\n')
 
 def readLines(filename):
-    fd = file(filename)
+    fd = open(filename)
     try:
         return [line.rstrip('\r\n') for line in fd.readlines()]
     finally:
         fd.close()
 
 def touch(filename):
-    fd = file(filename, 'w')
+    fd = open(filename, 'w')
     fd.close()
 
 def mktemp(suffix=''):
@@ -190,7 +190,7 @@ class AtomicFile(file):
                 # rename a file (and shutil.move will use os.rename if
                 # possible), we first check if we have the write permission
                 # and only then do we write.
-                fd = file(self.filename, 'a')
+                fd = open(self.filename, 'a')
                 fd.close()
                 shutil.move(self.tempFilename, self.filename)
 

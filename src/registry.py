@@ -62,12 +62,12 @@ class NonExistentRegistryEntry(RegistryException):
 
 _cache = utils.InsensitivePreservingDict()
 _lastModified = 0
-def open(filename, clear=False):
+def open_registry(filename, clear=False):
     """Initializes the module by loading the registry file into memory."""
     global _lastModified
     if clear:
         _cache.clear()
-    _fd = file(filename)
+    _fd = open(filename)
     fd = utils.file.nonCommentNonEmptyLines(_fd)
     acc = ''
     slashEnd = re.compile(r'\\*$')

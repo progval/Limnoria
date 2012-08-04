@@ -267,7 +267,7 @@ class ChannelUserDB(ChannelUserDictionary):
         ChannelUserDictionary.__init__(self)
         self.filename = filename
         try:
-            fd = file(self.filename)
+            fd = open(self.filename)
         except EnvironmentError, e:
             log.warning('Couldn\'t open %s: %s.', self.filename, e)
             return
@@ -564,7 +564,7 @@ class PeriodicFileDownloader(object):
                 return
             confDir = conf.supybot.directories.data()
             newFilename = os.path.join(confDir, utils.file.mktemp())
-            outfd = file(newFilename, 'wb')
+            outfd = open(newFilename, 'wb')
             start = time.time()
             s = infd.read(4096)
             while s:
