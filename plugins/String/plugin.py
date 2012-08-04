@@ -28,7 +28,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
 import types
+import codecs
 import binascii
 
 import supybot.utils as utils
@@ -72,10 +74,18 @@ class String(callbacks.Plugin):
         available in the documentation of the Python codecs module:
         <http://docs.python.org/library/codecs.html#standard-encodings>.
         """
+        if encoding in 'base64 bz2 hex quopri uu zlib':
+            encoding += '_codec'
         try:
-            irc.reply(text.encode(encoding).rstrip('\n'))
+            encoder = codecs.getencoder(encoding)
         except LookupError:
             irc.errorInvalid(_('encoding'), encoding)
+        text = encoder(text)[0]
+        if sys.version_info[0] < 3 and isinstance(text, unicode):
+            text = text.encode('utf-8')
+        elif sys.version_info[0] >= 3 and isinstance(text, bytes):
+            text = text.decode()
+        irc.reply(text.rstrip('\n'))
     encode = wrap(encode, ['something', 'text'])
 
     @internationalizeDocstring
@@ -86,19 +96,26 @@ class String(callbacks.Plugin):
         available in the documentation of the Python codecs module:
         <http://docs.python.org/library/codecs.html#standard-encodings>.
         """
+        if encoding in 'base64 bz2 hex quopri uu zlib':
+            encoding += '_codec'
         try:
-            s = text.decode(encoding)
-            # Not all encodings decode to a unicode object.  Only encode those
-            # that do.
-            if isinstance(s, unicode):
-                s = s.encode('utf-8')
-            irc.reply(s)
+            decoder = codecs.getdecoder(encoding)
         except LookupError:
             irc.errorInvalid(_('encoding'), encoding)
+        if sys.version_info[0] >= 3:
+            text = text.encode()
+        try:
+            text = decoder(text)[0]
         except binascii.Error:
             irc.errorInvalid(_('base64 string'),
                              s=_('Base64 strings must be a multiple of 4 in '
                                'length, padded with \'=\' if necessary.'))
+            return
+        if sys.version_info[0] < 3 and isinstance(text, unicode):
+            text = text.encode('utf-8')
+        elif sys.version_info[0] >= 3 and isinstance(text, bytes):
+            text = text.decode()
+        irc.reply(text)
     decode = wrap(decode, ['something', 'text'])
 
     @internationalizeDocstring
