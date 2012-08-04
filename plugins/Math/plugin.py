@@ -78,7 +78,7 @@ class Math(callbacks.Plugin):
         while number != 0:
             digit = number % base
             if digit >= 10:
-                digit = string.uppercase[digit - 10]
+                digit = string.ascii_uppercase[digit - 10]
             else:
                 digit = str(digit)
             digits.append(digit)
