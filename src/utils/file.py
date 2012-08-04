@@ -174,6 +174,15 @@ class AtomicFile(object):
                 os.remove(self.tempFilename)
             self.rolledback = True
 
+    def seek(self, offset):
+        return self._fd.seek(offset)
+
+    def tell(self):
+        return self._fd.tell()
+
+    def flush(self):
+        return self._fd.flush()
+
     def close(self):
         if not self.rolledback:
             self._fd.close()
