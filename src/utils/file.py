@@ -34,7 +34,7 @@ import random
 import shutil
 import os.path
 
-from iter import ifilter
+from itertools import ifilter
 
 import crypt
 
