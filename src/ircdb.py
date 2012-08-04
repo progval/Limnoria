@@ -153,7 +153,7 @@ class CapabilitySet(set):
         elif self.__parent.__contains__(_invert(capability)):
             return False
         else:
-            return False
+            raise KeyError
 
     def __repr__(self):
         return '%s([%s])' % (self.__class__.__name__,
