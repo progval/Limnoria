@@ -148,7 +148,7 @@ def saltHash(password, salt=None, hash='sha'):
         hasher = crypt.sha
     elif hash == 'md5':
         hasher = crypt.md5
-    return '|'.join([salt, hasher(salt + password).hexdigest()])
+    return '|'.join([salt, hasher((salt + password).encode('utf8')).hexdigest()])
 
 def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
