@@ -44,8 +44,6 @@ from structures import TwoWayDictionary
 from supybot.i18n import PluginInternationalization
 internationalizeFunction=PluginInternationalization().internationalizeFunction
 
-chars = string.maketrans('', '')
-
 def rsplit(s, sep=None, maxsplit=-1):
     """Equivalent to str.split, except splitting from the right."""
     if sys.version_info < (2, 4, 0):
