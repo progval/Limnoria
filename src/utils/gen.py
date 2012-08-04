@@ -37,10 +37,11 @@ import compiler
 import textwrap
 import UserDict
 import traceback
+from itertools import imap
 
 from str import format
 from file import mktemp
-from iter import imap, all
+from iter import all
 
 import crypt
 
