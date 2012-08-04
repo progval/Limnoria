@@ -148,8 +148,8 @@ def ilen(iterable):
         i += 1
     return i
 
-def startswith(long, short):
-    longI = iter(long)
+def startswith(long_, short):
+    longI = iter(long_)
     shortI = iter(short)
     try:
         while True:
