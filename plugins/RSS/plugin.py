@@ -31,7 +31,6 @@
 import time
 import types
 import socket
-import sgmllib
 import threading
 
 import supybot.conf as conf
@@ -45,7 +44,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('RSS')
 
 try:
-    feedparser = utils.python.universalImport('feedparser', 'local.feedparser')
+    feedparser = utils.python.universalImport('feedparser.feedparser',
+            'local.feedparser.feedparser', 'feedparser', 'local.feedparser')
 except ImportError:
     raise callbacks.Error, \
             'You the feedparser module installed to use this plugin.  ' \
@@ -261,7 +261,7 @@ class RSS(callbacks.Plugin):
                     results = feedparser.parse(url)
                     if 'bozo_exception' in results:
                         raise results['bozo_exception']
-                except sgmllib.SGMLParseError:
+                except feedparser.sgmllib.SGMLParseError:
                     self.log.exception('Uncaught exception from feedparser:')
                     raise callbacks.Error, 'Invalid (unparsable) RSS feed.'
                 except socket.timeout:
