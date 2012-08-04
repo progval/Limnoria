@@ -115,7 +115,7 @@ def chunks(fd, size):
 ##         yield chunk
 ##         chunk = fd.read(size)
 
-class AtomicFile(file):
+class AtomicFile(object):
     """Used for files that need to be atomically written -- i.e., if there's a
     failure, the original file remains, unmodified.  mode must be 'w' or 'wb'"""
     class default(object): # Holder for values.
@@ -152,18 +152,31 @@ class AtomicFile(file):
             self.tempFilename = os.path.join(tmpDir, tempFilename)
         # This doesn't work because of the uncollectable garbage effect.
         # self.__parent = super(AtomicFile, self)
-        super(AtomicFile, self).__init__(self.tempFilename, mode)
+        self._fd = open(self.tempFilename, mode)
+
+    @property
+    def closed(self):
+        return self._fd.closed
+
+    def close(self):
+        return self._fd.close()
+
+    def write(self, data):
+        return self._fd.write(data)
+
+    def writelines(self, lines):
+        return self._fd.writelines(lines)
 
     def rollback(self):
         if not self.closed:
-            super(AtomicFile, self).close()
+            self._fd.close()
             if os.path.exists(self.tempFilename):
                 os.remove(self.tempFilename)
             self.rolledback = True
 
     def close(self):
         if not self.rolledback:
-            super(AtomicFile, self).close()
+            self._fd.close()
             # We don't mind writing an empty file if the file we're overwriting
             # doesn't exist.
             newSize = os.path.getsize(self.tempFilename)
