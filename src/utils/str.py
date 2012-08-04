@@ -45,7 +45,6 @@ from structures import TwoWayDictionary
 from supybot.i18n import PluginInternationalization
 internationalizeFunction=PluginInternationalization().internationalizeFunction
 
-curry = new.instancemethod
 chars = string.maketrans('', '')
 
 def rsplit(s, sep=None, maxsplit=-1):
@@ -195,9 +194,11 @@ def perlReToReplacer(s):
     if 'g' in flags:
         g = True
         flags = filter('g'.__ne__, flags)
+    if isinstance(flags, list):
+        flags = ''.join(flags)
     r = perlReToPythonRe(sep.join(('', regexp, flags)))
     if g:
-        return curry(r.sub, replace)
+        return lambda s: r.sub(replace, s)
     else:
         return lambda s: r.sub(replace, s, 1)
 
