@@ -218,19 +218,31 @@ def perlVariableSubstitute(vars, text):
                 return '$' + unbraced
     return _perlVarSubstituteRe.sub(replacer, text)
 
-def multipleReplacer(dict_):
-    """Return a function that replaces all dict keys by the associated
+class MultipleReplacer:
+    """Return a callable that replaces all dict keys by the associated
     value. More efficient than multiple .replace()."""
-    dict_ = {re.escape(key): val for key,val in dict_.items()}
-    matcher = re.compile('|'.join(dict_.keys()))
-    return lambda x:matcher.sub(lambda m: dict_[m.group(0)], x)
 
-def multipleRemover(list_):
-    """Return a function that removes all words in the list. A bit more
+    # We use an object instead of a lambda function because it avoids the
+    # need for using the staticmethod() on the lambda function if assigning
+    # it to a class in Python 3.
+    def __init__(self, dict_):
+        self._dict = dict_
+        dict_ = {re.escape(key): val for key,val in dict_.items()}
+        self._matcher = re.compile('|'.join(dict_.keys()))
+    def __call__(self, s):
+        return self._matcher.sub(lambda m: self._dict[m.group(0)], s)
+def multipleReplacer(dict_):
+    return MultipleReplacer(dict_)
+
+class MultipleRemover:
+    """Return a callable that removes all words in the list. A bit more
     efficient than multipleReplacer"""
-    list_ = [re.escape(x) for x in list_]
-    matcher = re.compile('|'.join(list_))
-    return lambda x:matcher.sub(lambda m: '', x)
+    # See comment of  MultipleReplacer
+    def __init__(self, list_):
+        list_ = [re.escape(x) for x in list_]
+        self._matcher = re.compile('|'.join(list_))
+    def __call__(self, s):
+        return self._matcher.sub(lambda m: '', s)
 
 
 

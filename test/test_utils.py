@@ -310,11 +310,11 @@ class StrTest(SupyTestCase):
         self.assertEqual(f('bar'), 'foobar')
 
     def testMultipleReplacer(self):
-        replacer = utils.str.multipleReplacer({'foo': 'bar', 'a': 'b'})
+        replacer = utils.str.MultipleReplacer({'foo': 'bar', 'a': 'b'})
         self.assertEqual(replacer('hi foo hi'), 'hi bar hi')
 
     def testMultipleRemover(self):
-        remover = utils.str.multipleRemover(['foo', 'bar'])
+        remover = utils.str.MultipleRemover(['foo', 'bar'])
         self.assertEqual(remover('testfoobarbaz'), 'testbaz')
 
     def testPReToReplacerDifferentSeparator(self):
