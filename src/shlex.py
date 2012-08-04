@@ -19,9 +19,8 @@ class shlex:
             self.instream = sys.stdin
             self.infile = None
         self.commenters = '#'
-        self.wordchars = ('abcdfeghijklmnopqrstuvwxyz'
-                          'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_')
         self.whitespace = ' \t\r\n'
+        self.separators = self.whitespace
         self.quotes = '\'"'
         self.state = ' '
         self.pushback = []
@@ -121,7 +120,7 @@ class shlex:
                 elif nextchar in self.commenters:
                     self.instream.readline()
                     self.lineno = self.lineno + 1
-                elif nextchar in self.wordchars:
+                elif nextchar not in self.separators:
                     self.token = nextchar
                     self.state = 'a'
                 elif nextchar in self.quotes:
@@ -166,7 +165,7 @@ class shlex:
                 elif nextchar in self.commenters:
                     self.instream.readline()
                     self.lineno = self.lineno + 1
-                elif nextchar in self.wordchars or nextchar in self.quotes:
+                elif nextchar not in self.separators or nextchar in self.quotes:
                     self.token = self.token + nextchar
                 else:
                     self.pushback = [nextchar] + self.pushback
