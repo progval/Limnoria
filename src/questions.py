@@ -115,7 +115,7 @@ def yn(prompt, default=None):
         else:
             default = 'n'
     s = expect(prompt, ['y', 'n'], default=default)
-    if s is 'y':
+    if s == 'y':
         return True
     else:
         return False
