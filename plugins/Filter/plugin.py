@@ -29,6 +29,7 @@
 ###
 
 import re
+import codecs
 import string
 import random
 from cStringIO import StringIO
@@ -102,6 +103,7 @@ class Filter(callbacks.Plugin):
                      [('checkChannelCapability', 'op'),
                       additional('commandName')])
 
+    _hebrew_remover = utils.str.MultipleRemover('aeiou')
     @internationalizeDocstring
     def hebrew(self, irc, msg, args, text):
         """<text>
@@ -110,8 +112,7 @@ class Filter(callbacks.Plugin):
         named 'hebrew' it's because I (jemfinch) thought of it in Hebrew class,
         and printed Hebrew often elides the vowels.)
         """
-        text = filter(lambda c: c not in 'aeiou', text)
-        irc.reply(text)
+        irc.reply(self._hebrew_remover(text))
     hebrew = wrap(hebrew, ['text'])
 
     @internationalizeDocstring
@@ -174,6 +175,7 @@ class Filter(callbacks.Plugin):
         irc.reply(''.join(L))
     unbinary = wrap(unbinary, ['text'])
 
+    _hex_encoder = staticmethod(codecs.getencoder('hex_codec'))
     @internationalizeDocstring
     def hexlify(self, irc, msg, args, text):
         """<text>
@@ -181,9 +183,10 @@ class Filter(callbacks.Plugin):
         Returns a hexstring from the given string; a hexstring is a string
         composed of the hexadecimal value of each character in the string
         """
-        irc.reply(text.encode('hex_codec'))
+        irc.reply(self._hex_encoder(text.encode('utf8'))[0].decode('utf8'))
     hexlify = wrap(hexlify, ['text'])
 
+    _hex_decoder = staticmethod(codecs.getdecoder('hex_codec'))
     @internationalizeDocstring
     def unhexlify(self, irc, msg, args, text):
         """<hexstring>
@@ -192,11 +195,12 @@ class Filter(callbacks.Plugin):
         <hexstring> must be a string of hexadecimal digits.
         """
         try:
-            irc.reply(text.decode('hex_codec'))
+            irc.reply(self._hex_decoder(text.encode('utf8'))[0].decode('utf8'))
         except TypeError:
             irc.error(_('Invalid input.'))
     unhexlify = wrap(unhexlify, ['text'])
 
+    _rot13_encoder = codecs.getencoder('rot-13')
     @internationalizeDocstring
     def rot13(self, irc, msg, args, text):
         """<text>
@@ -205,7 +209,7 @@ class Filter(callbacks.Plugin):
         commonly used for text that simply needs to be hidden from inadvertent
         reading by roaming eyes, since it's easily reversible.
         """
-        irc.reply(text.encode('rot13'))
+        irc.reply(self._rot13_encoder(text)[0])
     rot13 = wrap(rot13, ['text'])
 
     @internationalizeDocstring
