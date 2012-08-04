@@ -1,12 +1,12 @@
 # PluginDownloader plugin in Limnoria.
 # Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011, 2012.
+# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-04-29 19:20+EEST\n"
-"PO-Revision-Date: 2012-04-29 20:48+0200\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
+"PO-Revision-Date: 2012-08-04 15:22+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: \n"
@@ -16,7 +16,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
-#: plugin.py:245
+#: plugin.py:235
 msgid ""
 "This plugin allows you to install unofficial plugins from\n"
 "    multiple repositories easily. Use the \"repolist\" command to see list of\n"
@@ -30,7 +30,7 @@ msgstr ""
 " jotka ovat saatavilla kyseisessä ohjelmistolähteessä. Kun tahdot asentaa lisäosan,\n"
 " suorita vain komento \"install <ohjelmistolähde> <lisäosa>\"."
 
-#: plugin.py:253
+#: plugin.py:245
 msgid ""
 "[<repository>]\n"
 "\n"
@@ -44,21 +44,22 @@ msgstr ""
 " <ohjelmistolähdettä> ei ole annettu, palauttaa listan kaikista saataville olevista\n"
 " ohjelmistolähteistä."
 
-#: plugin.py:261
-#: plugin.py:272
+#: plugin.py:253
+#: plugin.py:264
 msgid ", "
 msgstr ", "
 
-#: plugin.py:263
-#: plugin.py:282
+#: plugin.py:255
+#: plugin.py:274
+#: plugin.py:299
 msgid "This repository does not exist or is not known by this bot."
 msgstr "Tämä ohjelmistolähde ei ole olemassakaan tai tämä botti ei tiedä siitä."
 
-#: plugin.py:270
+#: plugin.py:262
 msgid "No plugin found in this repository."
 msgstr "Lisäosaa ei löytynyt tästä ohjelmistolähteestä."
 
-#: plugin.py:277
+#: plugin.py:269
 msgid ""
 "<repository> <plugin>\n"
 "\n"
@@ -68,9 +69,28 @@ msgstr ""
 "\n"
 "  Lataa ja asentaa <lisäosan> <ohjelmistolähteestä>."
 
-#: plugin.py:287
+#: plugin.py:279
+#: plugin.py:304
 msgid "This plugin does not exist in this repository."
 msgstr "Tämä lisäosa ei ole tässä ohjelmistolähteessä."
+
+#: plugin.py:294
+msgid ""
+"<repository> <plugin>\n"
+"\n"
+"        Displays informations on the <plugin> in the <repository>."
+msgstr ""
+"<ohjelmistolähde> <lisäosa>\n"
+"\n"
+" Näyttää tietoja <lisäosasta> <ohjelmistolähteessä>."
+
+#: plugin.py:308
+msgid "No README found for this plugin"
+msgstr "Tämän lisäosan README-tiedostoa ei löydy."
+
+#: plugin.py:311
+msgid "This plugin has no description."
+msgstr "Tällä lisäosalla ei ole kuvausta."
 
 #~ msgid ""
 #~ "Add the help for \"@plugin help PluginDownloader\" here\n"
