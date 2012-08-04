@@ -83,12 +83,13 @@ class Internet(callbacks.Plugin):
         except socket.error, e:
             irc.error(str(e))
             return
-        t.write(domain)
-        t.write('\r\n')
+        t.write(domain.encode('ascii'))
+        t.write(b'\r\n')
         s = t.read_all()
         server = registrar = updated = created = expires = status = ''
         for line in s.splitlines():
-            line = line.strip()
+            line = line.decode('ascii').strip()
+            print(repr(line))
             if not line or ':' not in line:
                 continue
             if not server and any(line.startswith, self._domain):
@@ -121,13 +122,13 @@ class Internet(callbacks.Plugin):
         except socket.error, e:
             irc.error(str(e))
             return
-        t.write('registrar ')
-        t.write(registrar.split('(')[0].strip())
-        t.write('\n')
+        t.write(b'registrar ')
+        t.write(registrar.split('(')[0].strip().encode('ascii'))
+        t.write(b'\n')
         s = t.read_all()
         url = ''
         for line in s.splitlines():
-            line = line.strip()
+            line = line.decode('ascii').strip()
             if not line:
                 continue
             if line.startswith('Email'):
