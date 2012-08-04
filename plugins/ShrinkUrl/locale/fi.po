@@ -1,18 +1,20 @@
 # ShrinkUrl plugin in Limnoria.
 # Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-09-30 20:14+0200\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
+"PO-Revision-Date: 2012-08-04 15:15+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Finnish <>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: config.py:39
 msgid ""
@@ -21,14 +23,13 @@ msgid ""
 "             like this snarfer to be enabled?"
 msgstr ""
 "Tämä lisäosa tarjoaa kaappaajan,joka palauttaa lyhyemmän\n"
-"             version pitkistä URL-osoitteista, jotka lähetetään kanavalle.  Haluaisitko\n"
-"             tämän kaappaajan olevan käytössä?"
+" version pitkistä URL-osoitteista, jotka lähetetään kanavalle. Haluaisitko\n"
+" tämän kaappaajan olevan käytössä?"
 
 #: config.py:45
 #: config.py:49
-#, docstring
-msgid "Valid values include 'ln', 'tiny', 'xrl', and 'x0'."
-msgstr "Kelvollisen arvot ovat 'ln', 'tiny', 'xrl', ja 'x0'."
+msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
+msgstr "Kelvolliset arvot ovat 'ln', 'tiny', 'xrl', 'goo' ja 'x0' ."
 
 #: config.py:71
 msgid ""
@@ -106,8 +107,7 @@ msgstr ""
 "Jos tämä on asetettu muuksi, kuin tyhjäksi arvoksi, määrittää listan\n"
 "    palveluista, joita käytetään kutistuskaappaajalle ja ulostulon suodattimelle."
 
-#: plugin.py:169
-#, docstring
+#: plugin.py:171
 msgid ""
 "<url>\n"
 "\n"
@@ -119,8 +119,7 @@ msgstr ""
 "        Palauttaa ln-s.net version <URL-osoitteesta>.\n"
 "        "
 
-#: plugin.py:194
-#, docstring
+#: plugin.py:196
 msgid ""
 "<url>\n"
 "\n"
@@ -132,8 +131,7 @@ msgstr ""
 "        Palauttaa TinyURL.com palvelun lyhentämän version <URL-osoitteesta>.\n"
 "        "
 
-#: plugin.py:222
-#, docstring
+#: plugin.py:224
 msgid ""
 "<url>\n"
 "\n"
@@ -145,8 +143,18 @@ msgstr ""
 "        Palauttaa xrl.us palvelun lyhentämän version <URL-osoitteesta>.\n"
 "        "
 
-#: plugin.py:248
-#, docstring
+#: plugin.py:255
+msgid ""
+"<url>\n"
+"\n"
+"        Returns an goo.gl version of <url>.\n"
+"        "
+msgstr ""
+"<url>\n"
+"\n"
+" Palauttaa goo.gl-palvelun lyhentämän version <URL-osoitteesta>."
+
+#: plugin.py:281
 msgid ""
 "<url>\n"
 "\n"
