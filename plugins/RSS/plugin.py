@@ -28,8 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import new
 import time
+import types
 import socket
 import sgmllib
 import threading
@@ -349,7 +349,7 @@ class RSS(callbacks.Plugin):
             args.insert(0, url)
             self.rss(irc, msg, args)
         f = utils.python.changeFunctionName(f, name, docstring)
-        f = new.instancemethod(f, self, RSS)
+        f = types.MethodType(f, self, RSS)
         self.feedNames[name] = (url, f)
         self._registerFeed(name, url)
 

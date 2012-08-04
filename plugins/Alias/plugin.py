@@ -29,7 +29,7 @@
 ###
 
 import re
-import new
+import types
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -264,7 +264,7 @@ class Alias(callbacks.Plugin):
                 raise AliasError, format('Alias %q is locked.', name)
         try:
             f = makeNewAlias(name, alias)
-            f = new.instancemethod(f, self, Alias)
+            f = types.MethodType(f, self, Alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
         aliasGroup = self.registryValue('aliases', value=False)
