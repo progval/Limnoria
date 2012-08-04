@@ -38,8 +38,8 @@ import time
 import random
 import fnmatch
 import os.path
-import UserDict
 import threading
+import collections
 
 import supybot.log as log
 import supybot.dbi as dbi
@@ -230,7 +230,7 @@ class DbiChannelDB(object):
         return _getDbAndDispatcher
 
 
-class ChannelUserDictionary(UserDict.DictMixin):
+class ChannelUserDictionary(collections.MutableMapping):
     IdDict = dict
     def __init__(self):
         self.channels = ircutils.IrcDict()
@@ -245,6 +245,15 @@ class ChannelUserDictionary(UserDict.DictMixin):
 
     def __delitem__(self, (channel, id)):
         del self.channels[channel][id]
+
+    def __iter__(self):
+        for channel, ids in self.channels.items():
+            for id_, value in ids.items():
+                yield (channel, id_)
+        raise StopIteration()
+
+    def __len__(self):
+        return sum([len(x) for x in self.channels])
 
     def iteritems(self):
         for (channel, ids) in self.channels.iteritems():
