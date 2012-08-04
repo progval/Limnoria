@@ -38,6 +38,7 @@ work in an IRC-case-insensitive fashion), and numerous other things.
 from __future__ import division
 
 import re
+import sys
 import time
 import random
 import string
@@ -460,9 +461,10 @@ def isValidArgument(s):
 
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
-    if isinstance(s, unicode):
+    if sys.version_info[0] < 3 and isinstance(s, unicode):
         s = s.encode('utf-8')
-    elif not isinstance(s, basestring):
+    elif (sys.version_info[0] < 3 and not isinstance(s, basestring)) or \
+            (sys.version_info[0] >= 3 and not isinstance(s, str)):
         debug('Got a non-string in safeArgument: %r', s)
         s = str(s)
     if isValidArgument(s):
