@@ -30,7 +30,6 @@
 
 import re
 import json
-import httplib2
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -240,10 +239,9 @@ class ShrinkUrl(callbacks.PluginRegexp):
         try:
             return self.db.get('goo', url)
         except KeyError:
-            text = httplib2.Http().request(self._gooApi,
-                    'POST',
+            text = utils.web.getUrl(self._gooApi,
                     headers={'content-type':'application/json'},
-                    body=json.dumps({'longUrl': url}))[1]
+                    data=json.dumps({'longUrl': url}))
             googl = json.loads(text)['id']
             if len(googl) > 0 :
                 self.db.set('goo', url, googl)
