@@ -30,13 +30,12 @@
 
 import os
 import sys
-import new
 import time
 import types
 import compiler
 import textwrap
-import UserDict
 import traceback
+import collections
 from itertools import imap
 
 from str import format
@@ -231,7 +230,7 @@ class IterableMap(object):
         return False
 
 
-class InsensitivePreservingDict(UserDict.DictMixin, object):
+class InsensitivePreservingDict(collections.MutableMapping):
     def key(self, s):
         """Override this if you wish."""
         if s is not None:
@@ -264,6 +263,12 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
 
     def __delitem__(self, k):
         del self.data[self.key(k)]
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
 
     def iteritems(self):
         return self.data.itervalues()
