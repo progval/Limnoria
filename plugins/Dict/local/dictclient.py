@@ -45,15 +45,15 @@ class Connection:
     def __init__(self, hostname = 'localhost', port = 2628):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((hostname, port))
-        self.rfile = self.sock.makefile("rt")
-        self.wfile = self.sock.makefile("wt", 0)
+        self.rfile = self.sock.makefile("rb")
+        self.wfile = self.sock.makefile("wb", 0)
         self.saveconnectioninfo()
 
     def getresultcode(self):
         """Generic function to get a result code.  It will return a list
         consisting of two items: the integer result code and the text
         following.  You will not usually use this function directly."""
-        line = self.rfile.readline().strip()
+        line = self.rfile.readline().decode('ascii').strip()
         code, text = line.split(' ', 1)
         return [int(code), text]
 
@@ -72,7 +72,7 @@ class Connection:
         part only.  Does not get any codes or anything!  Returns a string."""
         data = []
         while 1:
-            line = self.rfile.readline().strip()
+            line = self.rfile.readline().decode('ascii').strip()
             if line == '.':
                 break
             data.append(line)
@@ -163,7 +163,7 @@ class Connection:
     def sendcommand(self, command):
         """Takes a command, without a newline character, and sends it to
         the server."""
-        self.wfile.write(command + "\n")
+        self.wfile.write(command.encode('ascii') + b"\n")
 
     def define(self, database, word):
         """Returns a list of Definition objects for each matching
