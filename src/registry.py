@@ -113,7 +113,7 @@ def close(registry, filename, private=True):
     for (name, value) in registry.getValues(getChildren=True):
         help = value.help()
         if help:
-            lines = textwrap.wrap(value._help.encode('utf8', errors='replace'))
+            lines = textwrap.wrap(value._help)
             for (i, line) in enumerate(lines):
                 lines[i] = '# %s\n' % line
             lines.insert(0, '###\n')
@@ -374,7 +374,7 @@ class Value(Group):
         return repr(self())
 
     def serialize(self):
-        return encoder(str(self))[0]
+        return encoder(str(self))[0].decode()
 
     # We tried many, *many* different syntactic methods here, and this one was
     # simply the best -- not very intrusive, easily overridden by subclasses,
