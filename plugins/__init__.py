@@ -313,7 +313,12 @@ class ChannelUserDB(ChannelUserDictionary):
                       self.__class__.__name__)
             fd.rollback()
             return
-        items.sort()
+        try:
+            items.sort()
+        except TypeError:
+            # FIXME: Implement an algorithm that can order dictionnaries
+            # with both strings and integers as keys.
+            pass
         for ((channel, id), v) in items:
             L = self.serialize(v)
             L.insert(0, id)
