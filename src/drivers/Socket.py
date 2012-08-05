@@ -115,14 +115,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             while msgs[-1] is not None:
                 msgs.append(self.irc.takeMsg())
             del msgs[-1]
-            if sys.version_info[0] < 3:
-                self.outbuffer += ''.join(imap(str, msgs))
-            else:
-                self.outbuffer += b''.join([x.encode(errors='replace')
-                    for x in msgs])
+            self.outbuffer += ''.join(imap(str, msgs))
         if self.outbuffer:
             try:
-                sent = self.conn.send(self.outbuffer)
+                if sys.version_info[0] < 3:
+                    sent = self.conn.send(self.outbuffer)
+                else:
+                    sent = self.conn.send(self.outbuffer.encode())
                 self.outbuffer = self.outbuffer[sent:]
                 self.eagains = 0
             except socket.error, e:
