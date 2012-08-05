@@ -98,13 +98,13 @@ def choice(iterable):
         return random.choice(iterable)
     else:
         n = 1
-        m = new.module('') # Guaranteed unique value.
-        ret = m
+        found = False
         for x in iterable:
             if random.random() < 1/n:
                 ret = x
+                found = True
             n += 1
-        if ret is m:
+        if not found:
             raise IndexError
         return ret
 
