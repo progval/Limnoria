@@ -145,9 +145,7 @@ class GenTest(SupyTestCase):
         L = ['a', 'c', 'b']
         self.assertEqual(sorted(L), ['a', 'b', 'c'])
         self.assertEqual(L, ['a', 'c', 'b'])
-        def mycmp(x, y):
-            return -cmp(x, y)
-        self.assertEqual(sorted(L, mycmp), ['c', 'b', 'a'])
+        self.assertEqual(sorted(L, reverse=True), ['c', 'b', 'a'])
 
     def testTimeElapsed(self):
         self.assertRaises(ValueError, utils.timeElapsed, 0,
