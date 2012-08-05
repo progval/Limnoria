@@ -361,7 +361,7 @@ class Unix(callbacks.Plugin):
             (out, err) = inst.communicate()
             inst.wait()
             lines = out.splitlines()
-            lines = map(str.rstrip, lines)
+            lines = [x.decode('utf8').rstrip() for x in lines]
             lines = filter(None, lines)
             irc.replies(lines, joiner=' ')
         else:
