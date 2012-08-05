@@ -53,7 +53,7 @@ class Connection:
         """Generic function to get a result code.  It will return a list
         consisting of two items: the integer result code and the text
         following.  You will not usually use this function directly."""
-        line = self.rfile.readline().decode('ascii').strip()
+        line = self.rfile.readline().decode('utf8').strip()
         code, text = line.split(' ', 1)
         return [int(code), text]
 
