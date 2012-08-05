@@ -330,7 +330,7 @@ class internationalizedFunction:
     def __call__(self, *args, **kwargs):
         return self._origin(*args, **kwargs)
 
-class internationalizedString(unicode):
+class internationalizedString(str):
     """Simple subclass to str, that allow to add attributes. Also used to
     know if a string is already localized"""
     pass
