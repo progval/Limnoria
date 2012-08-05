@@ -473,7 +473,7 @@ class String(Value):
 
     _printable = string.printable[:-4]
     def _needsQuoting(self, s):
-        return s.translate(utils.str.chars, self._printable) and s.strip() != s
+        return any([x not in self._printable for x in s]) and s.strip() != s
 
     def __str__(self):
         s = self.value

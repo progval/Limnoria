@@ -109,8 +109,9 @@ def canonicalCapability(capability):
     assert isCapability(capability), 'got %s' % capability
     return capability.lower()
 
+_unwildcard_remover = utils.str.MultipleRemover('!@*?')
 def unWildcardHostmask(hostmask):
-    return hostmask.translate(utils.str.chars, '!@*?')
+    return _unwildcard_remover(hostmask)
 
 _invert = invertCapability
 class CapabilitySet(set):
