@@ -166,7 +166,7 @@ class _PluginInternationalization:
         self.translations = {}
         for line in translationFile:
             line = line[0:-1] # Remove the ending \n
-            line = line.decode('utf8', errors='replace')
+            line = line
 
             if line.startswith(MSGID):
                 # Don't check if step is WAITING_FOR_MSGID
