@@ -349,7 +349,7 @@ class RSS(callbacks.Plugin):
             args.insert(0, url)
             self.rss(irc, msg, args)
         f = utils.python.changeFunctionName(f, name, docstring)
-        f = types.MethodType(f, self, RSS)
+        f = types.MethodType(f, self)
         self.feedNames[name] = (url, f)
         self._registerFeed(name, url)
 

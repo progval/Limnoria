@@ -264,7 +264,7 @@ class Alias(callbacks.Plugin):
                 raise AliasError, format('Alias %q is locked.', name)
         try:
             f = makeNewAlias(name, alias)
-            f = types.MethodType(f, self, Alias)
+            f = types.MethodType(f, self)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
         aliasGroup = self.registryValue('aliases', value=False)
