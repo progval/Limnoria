@@ -89,7 +89,6 @@ class Internet(callbacks.Plugin):
         server = registrar = updated = created = expires = status = ''
         for line in s.splitlines():
             line = line.decode('ascii').strip()
-            print(repr(line))
             if not line or ':' not in line:
                 continue
             if not server and any(line.startswith, self._domain):
