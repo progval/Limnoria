@@ -206,20 +206,25 @@ class IterableMap(object):
     def iterkeys(self):
         for (key, _) in self.iteritems():
             yield key
-    __iter__ = iterkeys
 
     def itervalues(self):
         for (_, value) in self.iteritems():
             yield value
 
-    def items(self):
-        return list(self.iteritems())
+    if sys.version_info[0] < 3:
+        # Our 2to3 fixers automatically rename iteritems/iterkeys/itervalues
+        # to items/keys/values
+        def items(self):
+            return list(self.iteritems())
 
-    def keys(self):
-        return list(self.iterkeys())
+        def keys(self):
+            return list(self.iterkeys())
 
-    def values(self):
-        return list(self.itervalues())
+        def values(self):
+            return list(self.itervalues())
+        __iter__ = iterkeys
+    else:
+        __iter__ = items
 
     def __len__(self):
         ret = 0
