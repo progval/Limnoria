@@ -32,6 +32,8 @@ Database module, similar to dbhash.  Uses a format similar to (if not entirely
 the same as) DJB's CDB <http://cr.yp.to/cdb.html>.
 """
 
+from __future__ import division
+
 import os
 import sys
 import struct
@@ -144,8 +146,8 @@ class Maker(object):
         hashPointer = h % 256
         startPosition = self.fd.tell()
         self.fd.write(pack2Ints(len(key), len(data)))
-        self.fd.write(key)
-        self.fd.write(data)
+        self.fd.write(key.encode())
+        self.fd.write(data.encode())
         self.hashes[hashPointer].append((h, startPosition))
 
     def finish(self):
@@ -164,7 +166,7 @@ class Maker(object):
         hashLen = len(hash) * 2
         a = [(0, 0)] * hashLen
         for (h, pos) in hash:
-            i = (h / 256) % hashLen
+            i = (h // 256) % hashLen
             while a[i] != (0, 0):
                 i = (i + 1) % hashLen
             a[i] = (h, pos)
@@ -208,7 +210,8 @@ class Reader(utils.IterableMap):
         while self.hslots < self.loop:
             (klen, dlen) = unpack2Ints(self._read(8, self.hslots))
             dpos = self.hslots + 8 + klen
-            ret = (self._read(klen, self.hslots+8), self._read(dlen, dpos))
+            ret = (self._read(klen, self.hslots+8).decode(),
+                    self._read(dlen, dpos).decode())
             self.hslots = dpos + dlen
             yield ret
         self.loop = 0
@@ -221,7 +224,7 @@ class Reader(utils.IterableMap):
                                                     (self.khash * 8) & 2047))
             if not self.hslots:
                 return False
-            self.kpos = self.hpos + (((self.khash / 256) % self.hslots) * 8)
+            self.kpos = self.hpos + (((self.khash // 256) % self.hslots) * 8)
         while self.loop < self.hslots:
             (h, p) = unpack2Ints(self._read(8, self.kpos))
             if p == 0:
@@ -243,7 +246,7 @@ class Reader(utils.IterableMap):
         return self._findnext(key)
 
     def _getCurrentData(self):
-        return self._read(self.dlen, self.dpos)
+        return self._read(self.dlen, self.dpos).decode()
 
     def find(self, key, loop=0):
         if self._find(key, loop=loop):
@@ -269,7 +272,7 @@ class Reader(utils.IterableMap):
     def __len__(self):
         (start,) = struct.unpack('<i', self._read(4, 0))
         self.fd.seek(0, 2)
-        return ((self.fd.tell() - start) / 16)
+        return ((self.fd.tell() - start) // 16)
 
     has_key = _find
     __contains__ = has_key
@@ -292,7 +295,7 @@ class ReaderWriter(utils.IterableMap):
 
     def _openFiles(self):
         self.cdb = Reader(self.filename)
-        self.journal = open(self.journalName, 'wb')
+        self.journal = open(self.journalName, 'w')
 
     def _closeFiles(self):
         self.cdb.close()
@@ -312,7 +315,7 @@ class ReaderWriter(utils.IterableMap):
         removals = set()
         adds = {}
         try:
-            fd = open(self.journalName, 'rb')
+            fd = open(self.journalName, 'r')
             while 1:
                 (initchar, key, value) = _readKeyValue(fd)
                 if initchar is None:
