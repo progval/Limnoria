@@ -138,7 +138,7 @@ class GithubRepository(GitRepository):
                     if extractedFile is None:
                         os.mkdir(newFileName)
                     else:
-                        open(newFileName, 'a').write(extractedFile.read())
+                        open(newFileName, 'ab').write(extractedFile.read())
         finally:
             archive.close()
             del archive
