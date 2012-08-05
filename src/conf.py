@@ -91,7 +91,7 @@ def registerChannelValue(group, name, value):
     value.channelValue = True
     g = group.register(name, value)
     gname = g._name.lower()
-    for name in registry._cache.iterkeys():
+    for name in registry._cache.keys():
         if name.lower().startswith(gname) and len(gname) < len(name):
             name = name[len(gname)+1:] # +1 for .
             parts = registry.split(name)
@@ -187,7 +187,7 @@ class ValidChannel(registry.String):
     def error(self):
         try:
             super(ValidChannel, self).error()
-        except registry.InvalidRegistryValue, e:
+        except registry.InvalidRegistryValue as e:
             e.channel = self.channel
             raise e
 
@@ -245,7 +245,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
 
     def __call__(self):
         L = registry.SpaceSeparatedListOfStrings.__call__(self)
-        return map(self.convert, L)
+        return list(map(self.convert, L))
 
     def __str__(self):
         return ' '.join(registry.SpaceSeparatedListOfStrings.__call__(self))
@@ -259,7 +259,7 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
     Value = ValidChannel
     def join(self, channel):
-        import ircmsgs # Don't put this globally!  It's recursive.
+        from . import ircmsgs # Don't put this globally!  It's recursive.
         key = self.key.get(channel)()
         if key:
             return ircmsgs.join(channel, key)
@@ -300,7 +300,7 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
     return network
 
 # Let's fill our networks.
-for (name, s) in registry._cache.iteritems():
+for (name, s) in registry._cache.items():
     if name.startswith('supybot.networks.'):
         parts = name.split('.')
         name = parts[2]
@@ -901,7 +901,7 @@ class CDB(registry.Boolean):
         import supybot.cdb as cdb
         basename = os.path.basename(filename)
         journalName = supybot.directories.data.tmp.dirize(basename+'.journal')
-        return cdb.open(filename, 'c',
+        return cdb.open_db(filename, 'c',
                         journalName=journalName,
                         maxmods=self.maximumModifications())
 
@@ -944,7 +944,7 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         self.__parent = super(Banmask, self)
         self.__parent.__init__(*args, **kwargs)
         self.__doc__ = format('Valid values include %L.',
-                              map(repr, self.validStrings))
+                              list(map(repr, self.validStrings)))
 
     def help(self):
         strings = [s for s in self.validStrings if s]
@@ -960,7 +960,7 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         return self.validStrings[i]
 
     def setValue(self, v):
-        v = map(self.normalize, v)
+        v = list(map(self.normalize, v))
         for s in v:
             if s not in self.validStrings:
                 self.error()

@@ -60,7 +60,7 @@ def dump(map, fd=sys.stdout):
     for (key, value) in map.iteritems():
         fd.write('+%s,%s:%s->%s\n' % (len(key), len(value), key, value))
 
-def open(filename, mode='r', **kwargs):
+def open_db(filename, mode='r', **kwargs):
     """Opens a database; used for compatibility with other database modules."""
     if mode == 'r':
         return Reader(filename, **kwargs)
@@ -114,7 +114,7 @@ def make(dbFilename, readFilename=None):
     if readFilename is None:
         readfd = sys.stdin
     else:
-        readfd = file(readFilename, 'r')
+        readfd = open(readFilename, 'rb')
     maker = Maker(dbFilename)
     while 1:
         (initchar, key, value) = _readKeyValue(readfd)
@@ -129,7 +129,7 @@ def make(dbFilename, readFilename=None):
 class Maker(object):
     """Class for making CDB databases."""
     def __init__(self, filename):
-        self.fd = utils.file.AtomicFile(filename)
+        self.fd = utils.file.AtomicFile(filename, 'wb')
         self.filename = filename
         self.fd.seek(2048)
         self.hashPointers = [(0, 0)] * 256
@@ -182,7 +182,7 @@ class Reader(utils.IterableMap):
     """Class for reading from a CDB database."""
     def __init__(self, filename):
         self.filename = filename
-        self.fd = file(filename, 'r')
+        self.fd = open(filename, 'rb')
         self.loop = 0
         self.khash = 0
         self.kpos = 0
@@ -292,7 +292,7 @@ class ReaderWriter(utils.IterableMap):
 
     def _openFiles(self):
         self.cdb = Reader(self.filename)
-        self.journal = file(self.journalName, 'w')
+        self.journal = open(self.journalName, 'wb')
 
     def _closeFiles(self):
         self.cdb.close()
@@ -312,7 +312,7 @@ class ReaderWriter(utils.IterableMap):
         removals = set()
         adds = {}
         try:
-            fd = file(self.journalName, 'r')
+            fd = open(self.journalName, 'rb')
             while 1:
                 (initchar, key, value) = _readKeyValue(fd)
                 if initchar is None:
@@ -457,7 +457,7 @@ class Shelf(ReaderWriter):
 if __name__ == '__main__':
     if sys.argv[0] == 'cdbdump':
         if len(sys.argv) == 2:
-            fd = file(sys.argv[1], 'r')
+            fd = open(sys.argv[1], 'rb')
         else:
             fd = sys.stdin
         db = Reader(fd)

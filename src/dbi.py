@@ -280,7 +280,7 @@ class CdbMapping(MappingInterface):
             self.db['nextId'] = '1'
 
     def _openCdb(self, *args, **kwargs):
-        self.db = cdb.open(self.filename, 'c', **kwargs)
+        self.db = cdb.open_db(self.filename, 'c', **kwargs)
 
     def _getNextId(self):
         i = int(self.db['nextId'])
