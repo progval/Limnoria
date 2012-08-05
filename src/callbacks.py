@@ -284,7 +284,8 @@ class Tokenizer(object):
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
             token = token[1:-1]
-            token = token.encode().decode('string_escape')
+            encoding_prefix = 'string' if sys.version_info[0]<3 else 'unicode'
+            token = token.encode().decode(encoding_prefix + '_escape')
         return token
 
     def _insideBrackets(self, lexer):
