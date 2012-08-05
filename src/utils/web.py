@@ -49,7 +49,9 @@ from str import normalizeWhitespace
 Request = urllib2.Request
 urlquote = urllib.quote
 urlunquote = urllib.unquote
-urlencode = urllib.urlencode
+
+def urlencode(*args, **kwargs):
+    return urllib.urlencode(*args, **kwargs).encode()
 
 class Error(Exception):
     pass
