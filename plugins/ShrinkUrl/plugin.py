@@ -157,6 +157,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             return self.db.get('ln', url)
         except KeyError:
             text = utils.web.getUrl('http://ln-s.net/home/api.jsp?url=' + url)
+            text = text.decode()
             (code, text) = text.split(None, 1)
             text = text.strip()
             if code == '200':
@@ -185,6 +186,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             return self.db.get('tiny', url)
         except KeyError:
             text = utils.web.getUrl('http://tinyurl.com/api-create.php?url=' + url)
+            text = text.decode()
             if text.startswith('Error'):
                 raise ShrinkError, text[5:]
             self.db.set('tiny', url, text)
@@ -212,7 +214,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             return self.db.get('xrl', quotedurl)
         except KeyError:
             data = utils.web.urlencode({'long_url': url})
-            text = utils.web.getUrl(self._xrlApi, data=data)
+            text = utils.web.getUrl(self._xrlApi, data=data).decode()
             if text.startswith('ERROR:'):
                 raise ShrinkError, text[6:]
             self.db.set('xrl', quotedurl, text)
@@ -241,8 +243,8 @@ class ShrinkUrl(callbacks.PluginRegexp):
         except KeyError:
             text = utils.web.getUrl(self._gooApi,
                     headers={'content-type':'application/json'},
-                    data=json.dumps({'longUrl': url}))
-            googl = json.loads(text)['id']
+                    data=json.dumps({'longUrl': url}).encode())
+            googl = json.loads(text.decode())['id']
             if len(googl) > 0 :
                 self.db.set('goo', url, googl)
                 return googl
@@ -268,7 +270,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
         try:
             return self.db.get('x0', url)
         except KeyError:
-            text = utils.web.getUrl(self._x0Api % url)
+            text = utils.web.getUrl(self._x0Api % url).decode()
             if text.startswith('ERROR:'):
                 raise ShrinkError, text[6:]
             self.db.set('x0', url, text)
