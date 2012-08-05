@@ -37,40 +37,40 @@ def pluralize(s):
     """
     lowered = s.lower()
     if lowered.endswith('ou') and \
-	lowered in ['bijou', 'caillou', 'chou', 'genou', 'hibou', 'joujou',
-		    'pou']:
-	return s + 'x'
+        lowered in ['bijou', 'caillou', 'chou', 'genou', 'hibou', 'joujou',
+                    'pou']:
+        return s + 'x'
     elif lowered.endswith('al') and \
-	lowered not in ['bal', 'carnaval', 'chacal', 'festival', 'récital',
-		  'régal', 'cal', 'étal', 'aval', 'caracal', 'val', 'choral',
-		  'corral', 'galgal', 'gayal']:
-	return s[0:-2] + 'aux'
+        lowered not in ['bal', 'carnaval', 'chacal', 'festival', 'récital',
+                  'régal', 'cal', 'étal', 'aval', 'caracal', 'val', 'choral',
+                  'corral', 'galgal', 'gayal']:
+        return s[0:-2] + 'aux'
     elif lowered.endswith('ail') and \
-	lowered not in ['bail', 'corail', 'émail', 'soupirail', 'travail',
-			'ventail', 'vitrail', 'aspirail', 'fermail']:
-	return s[0:-3] + 'aux'
+        lowered not in ['bail', 'corail', 'émail', 'soupirail', 'travail',
+                        'ventail', 'vitrail', 'aspirail', 'fermail']:
+        return s[0:-3] + 'aux'
     elif lowered.endswith('eau'):
-	return s + 'x'
+        return s + 'x'
     elif lowered == 'pare-feu':
-	return s
+        return s
     elif lowered.endswith('eu') and \
-	lowered not in ['bleu', 'pneu', 'émeu', 'enfeu']:
-	# Note: when 'lieu' is a fish, it has a 's' ; else, it has a 'x'
-	return s + 'x'
+        lowered not in ['bleu', 'pneu', 'émeu', 'enfeu']:
+        # Note: when 'lieu' is a fish, it has a 's' ; else, it has a 'x'
+        return s + 'x'
     else:
-	return s + 's'
+        return s + 's'
 
 def depluralize(s):
     """Returns the singular of s."""
     lowered = s.lower()
     if lowered.endswith('aux') and \
-	lowered in ['baux', 'coraux', 'émaux', 'soupiraux', 'travaux',
-			'ventaux', 'vitraux', 'aspiraux', 'fermaux']:
-	return s[0:-3] + 'ail'
+        lowered in ['baux', 'coraux', 'émaux', 'soupiraux', 'travaux',
+                        'ventaux', 'vitraux', 'aspiraux', 'fermaux']:
+        return s[0:-3] + 'ail'
     elif lowered.endswith('aux'):
-	return s[0:-3] + 'al'
+        return s[0:-3] + 'al'
     else:
-	return s[0:-1]
+        return s[0:-1]
 
 def ordinal(i):
     """Returns i + the ordinal indicator for the number.
@@ -79,9 +79,9 @@ def ordinal(i):
     """
     i = int(i)
     if i == 1:
-	return '1er'
+        return '1er'
     else:
-	return '%sème' % i
+        return '%sème' % i
 
 def be(i):
     """Returns the form of the verb 'être' based on the number i."""
