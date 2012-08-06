@@ -289,6 +289,10 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
     registerGlobalValue(network, 'nick', ValidNickOrEmpty('', _("""Determines
         what nick the bot will use on this network. If empty, defaults to
         supybot.nick.""")))
+    registerGlobalValue(network, 'umodes',
+        registry.String('', _("""Determines what user modes the bot will request
+        from the server when it first connects. If empty, defaults to
+        supybot.protocols.irc.umodes""")))
     sasl = registerGroup(network, 'sasl')
     registerGlobalValue(sasl, 'username', registry.String(sasl_username,
         _("""Determines what SASL username will be used on %s. This should
