@@ -80,7 +80,7 @@ By default you must run the bot with full path to the binary unless you specify 
 Run and add the following command to your shellrc, which is usually ~/.bashrc or ~/.zshrc , so you can run the programs without needing to write full paths to the binaries.
 
 ```
-PATH=$HOME/.local:$PATH
+PATH=$HOME/.local/bin:$PATH
 ```
 
 # Upgrading

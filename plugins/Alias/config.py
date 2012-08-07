@@ -42,5 +42,6 @@ def configure(advanced):
 
 Alias = conf.registerPlugin('Alias')
 conf.registerGroup(Alias, 'aliases')
+conf.registerGroup(Alias, 'escapedaliases')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

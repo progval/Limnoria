@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-29 17:55+UTC\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:260
+#: plugin.py:235
 #, docstring
 msgid ""
 "This plugin allows you to install unofficial plugins from\n"
@@ -25,7 +25,7 @@ msgid ""
 "    just run command \"install <repository> <plugin>\"."
 msgstr ""
 
-#: plugin.py:268
+#: plugin.py:245
 #, docstring
 msgid ""
 "[<repository>]\n"
@@ -35,19 +35,19 @@ msgid ""
 "        repositories."
 msgstr ""
 
-#: plugin.py:276 plugin.py:287
+#: plugin.py:253 plugin.py:264
 msgid ", "
 msgstr ""
 
-#: plugin.py:278 plugin.py:297 plugin.py:322
+#: plugin.py:255 plugin.py:274 plugin.py:299
 msgid "This repository does not exist or is not known by this bot."
 msgstr ""
 
-#: plugin.py:285
+#: plugin.py:262
 msgid "No plugin found in this repository."
 msgstr ""
 
-#: plugin.py:292
+#: plugin.py:269
 #, docstring
 msgid ""
 "<repository> <plugin>\n"
@@ -55,11 +55,11 @@ msgid ""
 "        Downloads and installs the <plugin> from the <repository>."
 msgstr ""
 
-#: plugin.py:302 plugin.py:327
+#: plugin.py:279 plugin.py:304
 msgid "This plugin does not exist in this repository."
 msgstr ""
 
-#: plugin.py:317
+#: plugin.py:294
 #, docstring
 msgid ""
 "<repository> <plugin>\n"
@@ -67,11 +67,11 @@ msgid ""
 "        Displays informations on the <plugin> in the <repository>."
 msgstr ""
 
-#: plugin.py:331
+#: plugin.py:308
 msgid "No README found for this plugin"
 msgstr ""
 
-#: plugin.py:334
+#: plugin.py:311
 msgid "This plugin has no description."
 msgstr ""
 

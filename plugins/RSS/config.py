@@ -81,19 +81,19 @@ conf.registerChannelValue(RSS, 'showLinks',
     supybot.plugins.RSS.announce.showLinks affects whether links will be
     listed when a feed is automatically announced.""")))
 conf.registerGlobalValue(RSS, 'defaultNumberOfHeadlines',
-    registry.PositiveInteger(1, """Indicates how many headlines an rss feed
-    will output by default, if no number is provided."""))
+    registry.PositiveInteger(1, _("""Indicates how many headlines an rss feed
+    will output by default, if no number is provided.""")))
 conf.registerChannelValue(RSS, 'initialAnnounceHeadlines',
-    registry.PositiveInteger(5, """Indicates how many headlines an rss feed
-    will output when it is first added to announce for a channel."""))
+    registry.PositiveInteger(5, _("""Indicates how many headlines an rss feed
+    will output when it is first added to announce for a channel.""")))
 conf.registerChannelValue(RSS, 'keywordWhitelist',
-    registry.SpaceSeparatedSetOfStrings([], """Space separated list of 
+    registry.SpaceSeparatedSetOfStrings([], _("""Space separated list of 
     strings, lets you filter headlines to those containing one or more items
-    in this whitelist."""))
+    in this whitelist.""")))
 conf.registerChannelValue(RSS, 'keywordBlacklist',
-    registry.SpaceSeparatedSetOfStrings([], """Space separated list of 
+    registry.SpaceSeparatedSetOfStrings([], _("""Space separated list of 
     strings, lets you filter headlines to those not containing any items
-    in this blacklist."""))
+    in this blacklist.""")))
 
 conf.registerGroup(RSS, 'announce')
 conf.registerChannelValue(RSS.announce, 'showLinks',

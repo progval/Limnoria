@@ -141,7 +141,7 @@ class Google(callbacks.PluginRegexp):
             raise callbacks.Error, _('We broke The Google!')
         return json
 
-    def formatData(self, data, bold=True, max=0):
+    def formatData(self, data, bold=True, max=0, onetoone=False):
         if isinstance(data, basestring):
             return data
         results = []
@@ -159,8 +159,10 @@ class Google(callbacks.PluginRegexp):
                 results.append(url)
         if not results:
             return format(_('No matches found.'))
+        elif onetoone:
+            return results
         else:
-            return format('; '.join(results))
+            return [format('; '.join(results))]
 
     @internationalizeDocstring
     def lucky(self, irc, msg, args, opts, text):
@@ -201,8 +203,13 @@ class Google(callbacks.PluginRegexp):
             return
         bold = self.registryValue('bold', msg.args[0])
         max = self.registryValue('maximumResults', msg.args[0])
-        irc.reply(self.formatData(data['responseData']['results'],
-                                  bold=bold, max=max))
+        # We don't use supybot.reply.oneToOne here, because you generally
+        # do not want @google to echo ~20 lines of results, even if you
+        # have reply.oneToOne enabled.
+        onetoone = self.registryValue('oneToOne', msg.args[0])
+        for result in self.formatData(data['responseData']['results'],
+                                  bold=bold, max=max, onetoone=onetoone):
+            irc.reply(result)
     google = wrap(google, [getopts({'language':'something',
                                     'filter':''}),
                            'text'])

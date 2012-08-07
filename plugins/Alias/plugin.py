@@ -103,6 +103,54 @@ def findBiggestAt(alias):
     else:
         return 0
 
+def escapeAlias(alias):
+    """Encodes [a-z0-9.]+ into [a-z][a-z0-9].
+    Format: a<number of escaped chars>a(<index>d)+<word without dots>."""
+    prefix = ''
+    new_alias = ''
+    prefixes = 0
+    for index, char in enumerate(alias):
+        if char == '.':
+            prefix += '%sd' % index
+            prefixes += 1
+        else:
+            new_alias += char
+    pre_prefix = 'a%ia' % prefixes
+    return pre_prefix + prefix + new_alias
+
+def unescapeAlias(alias):
+    alias = alias[1:] # Strip the leading 'a'
+    escaped_nb = ''
+    while alias[0] in '0123456789':
+        escaped_nb += alias[0]
+        alias = alias[1:]
+    alias = alias[1:]
+    escaped_nb = int(escaped_nb)
+    escaped_chars = []
+    while alias[0] in '0123456789':
+        current_group = ''
+        while alias[0] in '0123456789':
+            current_group += alias[0]
+            alias = alias[1:]
+        if alias[0] == 'd':
+            char = '.'
+        else:
+            char = alias[0]
+        alias = alias[1:]
+        escaped_chars.append((int(current_group), char))
+        if len(escaped_chars) == escaped_nb:
+            break
+    new_alias = ''
+    index = 0
+    for char in alias:
+        if escaped_chars and index == escaped_chars[0][0]:
+            new_alias += escaped_chars[0][1]
+            escaped_chars.pop(0)
+            index += 1
+        new_alias += char
+        index += 1
+    return new_alias
+
 def makeNewAlias(name, alias):
     original = alias
     biggestDollar = findBiggestDollar(original)
@@ -175,6 +223,7 @@ class Alias(callbacks.Plugin):
         self.aliases = {}
         # XXX This should go.  aliases should be a space separate list, etc.
         group = conf.supybot.plugins.Alias.aliases
+        group2 = conf.supybot.plugins.Alias.escapedaliases
         for (name, alias) in registry._cache.iteritems():
             name = name.lower()
             if name.startswith('supybot.plugins.alias.aliases.'):
@@ -184,11 +233,24 @@ class Alias(callbacks.Plugin):
                 conf.registerGlobalValue(group, name, registry.String('', ''))
                 conf.registerGlobalValue(group.get(name), 'locked',
                                          registry.Boolean(False, ''))
+            elif name.startswith('supybot.plugins.alias.escapedaliases.'):
+                name = name[len('supybot.plugins.alias.escapedaliases.'):]
+                if '.' in name:
+                    continue
+                conf.registerGlobalValue(group2, name,
+                        registry.String('', ''))
+                conf.registerGlobalValue(group2.get(name),
+                    'locked', registry.Boolean(False, ''))
         for (name, value) in group.getValues(fullNames=False):
             name = name.lower() # Just in case.
             command = value()
             locked = value.locked()
             self.aliases[name] = [command, locked, None]
+        for (name, value) in group2.getValues(fullNames=False):
+            name = name.lower() # Just in case.
+            command = value()
+            locked = value.locked()
+            self.aliases[unescapeAlias(name)] = [command, locked, None]
         for (alias, (command, locked, _)) in self.aliases.items():
             try:
                 self.addAlias(irc, alias, command, locked)
@@ -267,12 +329,18 @@ class Alias(callbacks.Plugin):
             f = new.instancemethod(f, self, Alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
-        aliasGroup = self.registryValue('aliases', value=False)
+        if '.' in name:
+            aliasGroup = self.registryValue('escapedaliases', value=False)
+            confname = escapeAlias(name)
+        else:
+            aliasGroup = self.registryValue('aliases', value=False)
+            confname = name
         if name in self.aliases:
             # We gotta remove it so its value gets updated.
-            aliasGroup.unregister(name)
-        conf.registerGlobalValue(aliasGroup, name, registry.String(alias, ''))
-        conf.registerGlobalValue(aliasGroup.get(name), 'locked',
+            aliasGroup.unregister(confname)
+        conf.registerGlobalValue(aliasGroup, confname,
+                                 registry.String(alias, ''))
+        conf.registerGlobalValue(aliasGroup.get(confname), 'locked',
                                  registry.Boolean(lock, ''))
         self.aliases[name] = [alias, lock, f]
 

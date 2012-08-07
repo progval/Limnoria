@@ -7,25 +7,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: limnoria\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-04-19 18:31+0000\n"
-"PO-Revision-Date: 2012-04-19 19:43+0000\n"
-"Last-Translator: Valentin Lorentz <progval+launchpad@progval.net>\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
+"PO-Revision-Date: 2012-07-29 12:01+0100\n"
+"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2012-04-19 19:44+0000\n"
 "X-Generator: Launchpad (build 15120)\n"
 
-#: plugin.py:219
-#, docstring
+#: plugin.py:235
 msgid ""
-"Add the help for \"@plugin help PluginDownloader\" here\n"
-"    This should describe *how* to use this plugin."
-msgstr ""
+"This plugin allows you to install unofficial plugins from\n"
+"    multiple repositories easily. Use the \"repolist\" command to see list of\n"
+"    available repositories and \"repolist <repository>\" to list plugins, \n"
+"    which are available in that repository. When you want to install plugin,\n"
+"    just run command \"install <repository> <plugin>\"."
+msgstr "Ce plugin vous permet d'installer des plugins non officiels depuis de multiples dépôts facilement. Utilisez la commande \"repolist\" pour avoir une liste des dépôts disponibles et \"repolist <dépôt>\" pour lister les plugins qui sont disponibles dans le dépôt. Lorsque vous voulez installer un plugin, utilisez simplement la commande \"install <dépôt> <plugin>\"."
 
-#: plugin.py:224
-#, docstring
+#: plugin.py:245
 msgid ""
 "[<repository>]\n"
 "\n"
@@ -35,23 +37,24 @@ msgid ""
 msgstr ""
 "[<dépôt>]\n"
 "\n"
-"Affiche une liste des plugins du <dépôt>. Si <dépôt> n'est pas donné, "
-"retourne une liste des dépôts disponibles."
+"Affiche une liste des plugins du <dépôt>. Si <dépôt> n'est pas donné, retourne une liste des dépôts disponibles."
 
-#: plugin.py:232 plugin.py:243
+#: plugin.py:253
+#: plugin.py:264
 msgid ", "
 msgstr ", "
 
-#: plugin.py:234 plugin.py:253
+#: plugin.py:255
+#: plugin.py:274
+#: plugin.py:299
 msgid "This repository does not exist or is not known by this bot."
 msgstr "Ce dépôt n'existe pas ou n'est pas connu de ce bot."
 
-#: plugin.py:241
+#: plugin.py:262
 msgid "No plugin found in this repository."
 msgstr "Aucun plugin trouvé dans ce dépôt."
 
-#: plugin.py:248
-#, docstring
+#: plugin.py:269
 msgid ""
 "<repository> <plugin>\n"
 "\n"
@@ -61,6 +64,26 @@ msgstr ""
 "\n"
 "Télécharge et installe le <plugin> depuis le <dépôt>."
 
-#: plugin.py:258
+#: plugin.py:279
+#: plugin.py:304
 msgid "This plugin does not exist in this repository."
 msgstr "Ce plugin n'existe pas dans ce dépôt."
+
+#: plugin.py:294
+msgid ""
+"<repository> <plugin>\n"
+"\n"
+"        Displays informations on the <plugin> in the <repository>."
+msgstr ""
+"<dépôt> <plugin>\n"
+"\n"
+"Affiche des informations sur <plugin> depuis le <dépôt>."
+
+#: plugin.py:308
+msgid "No README found for this plugin"
+msgstr "Aucun README trouvé pour ce plugin."
+
+#: plugin.py:311
+msgid "This plugin has no description."
+msgstr "Ce plugin n'a pas de description."
+

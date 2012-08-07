@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -344,17 +344,28 @@ msgstr ""
 msgid ""
 "[<channel>]\n"
 "\n"
+"        Saves the topic in <channel> to be restored with @topic default\n"
+"        later. <channel> is only necessary if the message isn't sent in\n"
+"        the channel itself.\n"
+"        "
+msgstr ""
+
+#: plugin.py:597
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
 "        Sets the topic in <channel> to the default topic for <channel>.  The\n"
 "        default topic for a channel may be configured via the configuration\n"
 "        variable supybot.plugins.Topic.default.\n"
 "        "
 msgstr ""
 
-#: plugin.py:591
+#: plugin.py:610
 msgid "There is no default topic configured for %s."
 msgstr ""
 
-#: plugin.py:597
+#: plugin.py:616
 #, docstring
 msgid ""
 "[<channel>] <separator>\n"

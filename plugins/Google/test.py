@@ -31,7 +31,7 @@
 from supybot.test import *
 
 class GoogleTestCase(ChannelPluginTestCase):
-    plugins = ('Google',)
+    plugins = ('Google', 'Config')
     if network:
         def testCalcHandlesMultiplicationSymbol(self):
             self.assertNotRegexp('google calc seconds in a century', r'215')
@@ -53,6 +53,17 @@ class GoogleTestCase(ChannelPluginTestCase):
             self.assertRegexp('google dupa', r'dupa')
             # Unicode check
             self.assertNotError('google ae')
+
+        def testSearchFormat(self):
+            self.assertRegexp('google foo', '<http://.*>')
+            self.assertNotError('config reply.format.url %s')
+            self.assertRegexp('google foo', 'http://.*')
+            self.assertNotRegexp('google foo', '<http://.*>')
+
+        def testSearchOneToOne(self):
+            self.assertRegexp('google dupa', ';')
+            self.assertNotError('config plugins.Google.oneToOne True')
+            self.assertNotRegexp('google dupa', ';')
 
         def testFight(self):
             self.assertRegexp('fight supybot moobot', r'.*supybot.*: \d+')

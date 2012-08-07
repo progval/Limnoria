@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
@@ -134,7 +134,7 @@ msgid ""
 "        accepts a filtering level ('active', 'moderate', 'off').\n"
 "        "
 msgstr ""
-"<recherche> [--filtre <valeur>] [--language <valeur>]\n"
+"<recherche> [--filter <valeur>] [--language <valeur>]\n"
 "\n"
 "Rercherche la chaîne donnée sur Google. Autant de résultats que possible sont donnés. --language accepte une abbréviation de langue ; --filter accepte un niveau de filtrage ('active', 'moderate', 'off')."
 
@@ -165,36 +165,11 @@ msgstr ""
 "\n"
 "Retourne les résultats de chaque recherche, dans l'ordre, par ordre croissant du nombre de résultats."
 
-#: plugin.py:252
-msgid ""
-"<from-language> [to] <to-language> <text>\n"
-"\n"
-"        Returns <text> translated from <from-language> into <to-language>.\n"
-"        Beware that translating to or from languages that use multi-byte\n"
-"        characters may result in some very odd results.\n"
-"        "
-msgstr ""
-"<langue de départ> [to] <langue finale> <texte>\n"
-"\n"
-
-#: plugin.py:271
-msgid "from language"
-msgstr "de la langue"
-
-#: plugin.py:272
-#: plugin.py:281
-msgid "Valid languages are: %L"
-msgstr "Les langues valides sont : %L"
-
-#: plugin.py:280
-msgid "to language"
-msgstr "vers la langue"
-
-#: plugin.py:314
+#: plugin.py:250
 msgid "^google\\s+(.*)$"
 msgstr "^google\\s+(.*)$"
 
-#: plugin.py:343
+#: plugin.py:279
 msgid ""
 "<expression>\n"
 "\n"
@@ -205,11 +180,11 @@ msgstr ""
 "\n"
 "Utilise la calculatrice Google pour calculer la valeur de l'<expression>."
 
-#: plugin.py:370
+#: plugin.py:312
 msgid "Google says: Error: %s."
 msgstr "Google dit : Erreur : %s."
 
-#: plugin.py:377
+#: plugin.py:319
 msgid ""
 "<phone number>\n"
 "\n"
@@ -220,9 +195,30 @@ msgstr ""
 "\n"
 "Recherche le <numéro de téléphone> sur Google."
 
-#: plugin.py:391
+#: plugin.py:333
 msgid "Google's phonebook didn't come up with anything."
 msgstr "L'annuaire téléphonique de Google ne donne aucun résultat."
+
+#~ msgid ""
+#~ "<from-language> [to] <to-language> <text>\n"
+#~ "\n"
+#~ "        Returns <text> translated from <from-language> into <to-"
+#~ "language>.\n"
+#~ "        Beware that translating to or from languages that use multi-byte\n"
+#~ "        characters may result in some very odd results.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<langue de départ> [to] <langue finale> <texte>\n"
+#~ "\n"
+
+#~ msgid "from language"
+#~ msgstr "de la langue"
+
+#~ msgid "Valid languages are: %L"
+#~ msgstr "Les langues valides sont : %L"
+
+#~ msgid "to language"
+#~ msgstr "vers la langue"
 
 #~ msgid "Google's calculator didn't come up with anything."
 #~ msgstr "La calculatrice Google ne donne aucun résultat."

@@ -205,6 +205,10 @@ class _PluginInternationalization:
                 if translated == '':
                     translated = untranslated
                 self._addToDatabase(untranslated, translated)
+        if step is IN_MSGSTR:
+            if translated == '':
+                translated = untranslated
+            self._addToDatabase(untranslated, translated)
 
     def _addToDatabase(self, untranslated, translated):
         untranslated = self._unescape(untranslated, True)

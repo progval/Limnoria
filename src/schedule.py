@@ -101,7 +101,7 @@ class Schedule(drivers.IrcDriver):
         # but that would only save a constant factor (we're already linear for
         # the listcomp) so I'm not worried about it right now.
         with self.lock:
-            self.schedule = [x for x in self.schedule if f != name]
+            self.schedule = [x for x in self.schedule if x[1] != name]
             heapq.heapify(self.schedule)
         return f
 

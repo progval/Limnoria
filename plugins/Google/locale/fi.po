@@ -1,19 +1,20 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
-"PO-Revision-Date: 2012-03-15 08:54+0200\n"
+"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
+"PO-Revision-Date: 2012-08-04 15:48+0200\n"
 "Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
-"Language-Team: \n"
+"Language-Team: Finnish <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: config.py:39
 msgid ""
@@ -22,10 +23,10 @@ msgid ""
 "              When supybot sees such a URL, it will parse the web page\n"
 "              for information and reply with the results."
 msgstr ""
-"Google lisäosalla on toiminnallisuus vahtia URL:eja, jotka\n"
-"              täsmäävät tiettyyn kuvioon. (Me kutsumme tätä snarfferiksi)\n"
-"              Kun supybot näkee sellaisen URL:in, se jäsentää verkkosivun\n"
-"              tiedolle ja vastaa tuloksilla."
+"Google lisäosalla on toiminnallisuus vahtia URL-osoitteita, jotka\n"
+" täsmäävät tiettyyn kuvioon. (Me kutsumme tätä kaappaajaksi)\n"
+" Kun supybot näkee sellaisen URL-osoitteen, se jäsentää verkkosivun\n"
+" tiedot ja vastaa tuloksilla."
 
 #: config.py:43
 msgid "Do you want the Google search snarfer enabled by default?"
@@ -196,40 +197,11 @@ msgstr ""
 "        pienimpään.\n"
 "        "
 
-#: plugin.py:252
-msgid ""
-"<from-language> [to] <to-language> <text>\n"
-"\n"
-"        Returns <text> translated from <from-language> into <to-language>.\n"
-"        Beware that translating to or from languages that use multi-byte\n"
-"        characters may result in some very odd results.\n"
-"        "
-msgstr ""
-"<kielestä> [to] <kielelle> <teksti>\n"
-"\n"
-"        Palauttaa <tekstin> käännettynä <kielestä> <kieleksi>.\n"
-"        Ole tietoinen, että kääntäminen monesta tai monelle kielelle, jotka käyttävät moni-bittisiä\n"
-"        merkkejä voivat johtaa hyvin omituisiin tuloksiin.\n"
-"        "
-
-#: plugin.py:271
-msgid "from language"
-msgstr "kielestä"
-
-#: plugin.py:272
-#: plugin.py:281
-msgid "Valid languages are: %L"
-msgstr "Kelvolliset kielet ovat: %L"
-
-#: plugin.py:280
-msgid "to language"
-msgstr "kielelle"
-
-#: plugin.py:314
+#: plugin.py:250
 msgid "^google\\s+(.*)$"
 msgstr "^google\\s+(.*)$"
 
-#: plugin.py:343
+#: plugin.py:279
 msgid ""
 "<expression>\n"
 "\n"
@@ -241,11 +213,11 @@ msgstr ""
 "        Käyttää Googlen laskinta laskeakseen <lausekkeen> arvon.\n"
 "        "
 
-#: plugin.py:370
+#: plugin.py:312
 msgid "Google says: Error: %s."
 msgstr "Google sanoo: Virhe: %s."
 
-#: plugin.py:377
+#: plugin.py:319
 msgid ""
 "<phone number>\n"
 "\n"
@@ -257,9 +229,35 @@ msgstr ""
 "        Etsii <puhelinnumeroa> Googlesta.\n"
 "        "
 
-#: plugin.py:391
+#: plugin.py:333
 msgid "Google's phonebook didn't come up with anything."
 msgstr "Googlen puhelinluettelo ei keksinyt mitään."
+
+#~ msgid ""
+#~ "<from-language> [to] <to-language> <text>\n"
+#~ "\n"
+#~ "        Returns <text> translated from <from-language> into <to-"
+#~ "language>.\n"
+#~ "        Beware that translating to or from languages that use multi-byte\n"
+#~ "        characters may result in some very odd results.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<kielestä> [to] <kielelle> <teksti>\n"
+#~ "\n"
+#~ "        Palauttaa <tekstin> käännettynä <kielestä> <kieleksi>.\n"
+#~ "        Ole tietoinen, että kääntäminen monesta tai monelle kielelle, "
+#~ "jotka käyttävät moni-bittisiä\n"
+#~ "        merkkejä voivat johtaa hyvin omituisiin tuloksiin.\n"
+#~ "        "
+
+#~ msgid "from language"
+#~ msgstr "kielestä"
+
+#~ msgid "Valid languages are: %L"
+#~ msgstr "Kelvolliset kielet ovat: %L"
+
+#~ msgid "to language"
+#~ msgstr "kielelle"
 
 #~ msgid "Google's calculator didn't come up with anything."
 #~ msgstr "Googlen laskin ei keksinyt mitään."
