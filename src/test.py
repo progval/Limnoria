@@ -285,7 +285,6 @@ class PluginTestCase(SupyTestCase):
         m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
-        self.failUnless(lastGetHelp in m.args[1],
         msg = m.args[1]
         if 'more message' in msg:
             msg = msg[0:-27] # Strip (XXX more messages)
