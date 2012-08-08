@@ -30,7 +30,6 @@
 from __future__ import division
 
 import sys
-import new
 import random
 
 from itertools import *
@@ -99,13 +98,13 @@ def choice(iterable):
         return random.choice(iterable)
     else:
         n = 1
-        m = new.module('') # Guaranteed unique value.
-        ret = m
+        found = False
         for x in iterable:
             if random.random() < 1/n:
                 ret = x
+                found = True
             n += 1
-        if ret is m:
+        if not found:
             raise IndexError
         return ret
 
@@ -148,8 +147,8 @@ def ilen(iterable):
         i += 1
     return i
 
-def startswith(long, short):
-    longI = iter(long)
+def startswith(long_, short):
+    longI = iter(long_)
     shortI = iter(short)
     try:
         while True:

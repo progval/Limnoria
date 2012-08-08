@@ -34,7 +34,6 @@ Simple utility functions related to strings.
 """
 
 import re
-import new
 import sys
 import string
 import textwrap
@@ -44,9 +43,6 @@ from structures import TwoWayDictionary
 
 from supybot.i18n import PluginInternationalization
 internationalizeFunction=PluginInternationalization().internationalizeFunction
-
-curry = new.instancemethod
-chars = string.maketrans('', '')
 
 def rsplit(s, sep=None, maxsplit=-1):
     """Equivalent to str.split, except splitting from the right."""
@@ -96,17 +92,42 @@ def distance(s, t):
             d[i][j] = min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost)
     return d[n][m]
 
-_soundextrans = string.maketrans(string.ascii_uppercase,
-                                 '01230120022455012623010202')
-_notUpper = chars.translate(chars, string.ascii_uppercase)
+class MultipleReplacer:
+    """Return a callable that replaces all dict keys by the associated
+    value. More efficient than multiple .replace()."""
+
+    # We use an object instead of a lambda function because it avoids the
+    # need for using the staticmethod() on the lambda function if assigning
+    # it to a class in Python 3.
+    def __init__(self, dict_):
+        self._dict = dict_
+        dict_ = {re.escape(key): val for key,val in dict_.items()}
+        self._matcher = re.compile('|'.join(dict_.keys()))
+    def __call__(self, s):
+        return self._matcher.sub(lambda m: self._dict[m.group(0)], s)
+def multipleReplacer(dict_):
+    return MultipleReplacer(dict_)
+
+class MultipleRemover:
+    """Return a callable that removes all words in the list. A bit more
+    efficient than multipleReplacer"""
+    # See comment of  MultipleReplacer
+    def __init__(self, list_):
+        list_ = [re.escape(x) for x in list_]
+        self._matcher = re.compile('|'.join(list_))
+    def __call__(self, s):
+        return self._matcher.sub(lambda m: '', s)
+
+_soundextrans = MultipleReplacer(dict(zip(string.ascii_uppercase,
+                                 '01230120022455012623010202')))
 def soundex(s, length=4):
     """Returns the soundex hash of a given string."""
     s = s.upper() # Make everything uppercase.
-    s = s.translate(chars, _notUpper) # Delete non-letters.
+    s = ''.join([x for x in s if x in string.ascii_uppercase])
     if not s:
         raise ValueError, 'Invalid string for soundex: %s'
     firstChar = s[0] # Save the first character.
-    s = s.translate(_soundextrans) # Convert to soundex numbers.
+    s = _soundextrans(s) # Convert to soundex numbers.
     s = s.lstrip(s[0]) # Remove all repeated first characters.
     L = [firstChar]
     for c in s:
@@ -120,7 +141,8 @@ def dqrepr(s):
     """Returns a repr() of s guaranteed to be in double quotes."""
     # The wankers-that-be decided not to use double-quotes anymore in 2.3.
     # return '"' + repr("'\x00" + s)[6:]
-    return '"%s"' % s.encode('string_escape').replace('"', '\\"')
+    encoding = 'string_escape' if sys.version_info[0] < 3 else 'unicode_escape'
+    return '"%s"' % s.encode(encoding).decode().replace('"', '\\"')
 
 def quoted(s):
     """Returns a quoted s."""
@@ -194,9 +216,11 @@ def perlReToReplacer(s):
     if 'g' in flags:
         g = True
         flags = filter('g'.__ne__, flags)
+    if isinstance(flags, list):
+        flags = ''.join(flags)
     r = perlReToPythonRe(sep.join(('', regexp, flags)))
     if g:
-        return curry(r.sub, replace)
+        return lambda s: r.sub(replace, s)
     else:
         return lambda s: r.sub(replace, s, 1)
 

@@ -46,7 +46,7 @@ if not os.path.exists('doc-conf'):
 
 registryFilename = os.path.join('doc-conf', 'doc.conf')
 try:
-    fd = file(registryFilename, 'w')
+    fd = open(registryFilename, 'w')
     fd.write("""
 supybot.directories.data: doc-data
 supybot.directories.conf: doc-conf
@@ -62,7 +62,7 @@ except EnvironmentError, e:
     error('Unable to open %s for writing.' % registryFilename)
 
 import supybot.registry as registry
-registry.open(registryFilename)
+registry.open_registry(registryFilename)
 
 import supybot.log as log
 import supybot.conf as conf
@@ -228,7 +228,7 @@ def genDoc(m, options):
     path = os.path.join(options.outputDir, '%s.%s' % (Plugin.name,
                                                       options.format))
     try:
-        fd = file(path, 'w')
+        fd = open(path, 'w')
     except EnvironmentError, e:
         error('Unable to open %s for writing.' % path)
     f = getattr(Plugin, 'render%s' % options.format.upper(), None)

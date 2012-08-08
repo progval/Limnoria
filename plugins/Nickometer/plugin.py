@@ -45,12 +45,15 @@
 #    #
 ###
 
+from __future__ import division
+
 import supybot
 
 import re
 import math
 import string
 
+import supybot.utils as utils
 import supybot.callbacks as callbacks
 from supybot.commands import wrap, additional
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
@@ -116,11 +119,12 @@ class Nickometer(callbacks.Plugin):
                        ('\\[rkx]0', 1000),
                        ('\\0[rkx]', 1000)]
 
-        letterNumberTranslator = string.maketrans('023457+8', 'ozeasttb')
+        letterNumberTranslator = utils.str.MultipleReplacer(dict(zip(
+                '023457+8', 'ozeasttb')))
         for special in specialCost:
             tempNick = nick
             if special[0][0] != '\\':
-                tempNick = tempNick.translate(letterNumberTranslator)
+                tempNick = letterNumberTranslator(tempNick)
 
             if tempNick and re.search(special[0], tempNick, re.IGNORECASE):
                 score += self.punish(special[1], 'matched special case /%s/' %
@@ -218,7 +222,7 @@ class Nickometer(callbacks.Plugin):
 
         # Use an appropriate function to map [0, +inf) to [0, 100)
         percentage = 100 * (1 + math.tanh((score - 400.0) / 400.0)) * \
-                     (1 - 1 / (1 + score / 5.0)) / 2
+                     (1 - 1 / (1 + score / 5.0)) // 2
 
         # if it's above 99.9%, show as many digits as is interesting
         score_string=re.sub('(99\\.9*\\d|\\.\\d).*','\\1',`percentage`)

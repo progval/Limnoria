@@ -42,7 +42,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 
 from utils.str import rsplit
-from utils.iter import imap, chain, cycle
+from utils.iter import chain, cycle
 from utils.structures import queue, smallqueue, RingBuffer
 
 ###
@@ -1075,7 +1075,7 @@ class Irc(IrcCommandDispatcher):
         if isinstance(other, self.__class__):
             return id(self) == id(other)
         else:
-            return other == self
+            return other.__eq__(self)
 
     def __ne__(self, other):
         return not (self == other)

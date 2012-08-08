@@ -91,7 +91,8 @@ class Web(callbacks.PluginRegexp):
                 return
             try:
                 size = conf.supybot.protocols.http.peekSize()
-                text = utils.web.getUrl(url, size=size)
+                text = utils.web.getUrl(url, size=size) \
+                        .decode('utf8', errors='replace')
             except utils.web.Error, e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 return
@@ -134,7 +135,8 @@ class Web(callbacks.PluginRegexp):
         course.
         """
         size = conf.supybot.protocols.http.peekSize()
-        s = utils.web.getUrl(url, size=size)
+        s = utils.web.getUrl(url, size=size) \
+                        .decode('utf8', errors='replace')
         m = self._doctypeRe.search(s)
         if m:
             s = utils.str.normalizeWhitespace(m.group(0))
@@ -175,7 +177,8 @@ class Web(callbacks.PluginRegexp):
         Returns the HTML <title>...</title> of a URL.
         """
         size = conf.supybot.protocols.http.peekSize()
-        text = utils.web.getUrl(url, size=size)
+        text = utils.web.getUrl(url, size=size) \
+                        .decode('utf8', errors='replace')
         parser = Title()
         try:
             parser.feed(text)
@@ -201,7 +204,8 @@ class Web(callbacks.PluginRegexp):
         webserver is running on the host given.
         """
         url = 'http://uptime.netcraft.com/up/graph/?host=' + hostname
-        html = utils.web.getUrl(url)
+        html = utils.web.getUrl(url) \
+                        .decode('utf8', errors='replace')
         m = self._netcraftre.search(html)
         if m:
             html = m.group(1)
@@ -246,7 +250,8 @@ class Web(callbacks.PluginRegexp):
             irc.error(_('This command is disabled '
                       '(supybot.plugins.Web.fetch.maximum is set to 0).'),
                       Raise=True)
-        fd = utils.web.getUrlFd(url)
+        fd = utils.web.getUrlFd(url) \
+                        .decode('utf8', errors='replace')
         irc.reply(fd.read(max))
     fetch = wrap(fetch, ['url'])
 

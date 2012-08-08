@@ -30,7 +30,9 @@
 
 import re
 import os
+import sys
 import time
+import codecs
 import string
 import textwrap
 
@@ -57,17 +59,24 @@ class InvalidRegistryName(RegistryException):
 class InvalidRegistryValue(RegistryException):
     pass
 
-class NonExistentRegistryEntry(RegistryException):
+class NonExistentRegistryEntry(RegistryException, AttributeError):
+    # If we use hasattr() on a configuration group/value, Python 3 calls
+    # __getattr__ and looks for an AttributeError, so __getattr__ has to
+    # raise an AttributeError if a registry entry does not exist.
     pass
+
+ENCODING = 'string_escape' if sys.version_info[0] < 3 else 'unicode_escape'
+decoder = codecs.getdecoder(ENCODING)
+encoder = codecs.getencoder(ENCODING)
 
 _cache = utils.InsensitivePreservingDict()
 _lastModified = 0
-def open(filename, clear=False):
+def open_registry(filename, clear=False):
     """Initializes the module by loading the registry file into memory."""
     global _lastModified
     if clear:
         _cache.clear()
-    _fd = file(filename)
+    _fd = open(filename)
     fd = utils.file.nonCommentNonEmptyLines(_fd)
     acc = ''
     slashEnd = re.compile(r'\\*$')
@@ -89,7 +98,8 @@ def open(filename, clear=False):
         try:
             (key, value) = re.split(r'(?<!\\):', acc, 1)
             key = key.strip()
-            value = value.strip().decode('string_escape')
+            value = value.strip()
+            value = decoder(value)[0]
             acc = ''
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line %r' % acc
@@ -145,7 +155,7 @@ def isValidRegistryName(name):
     return len(name.split()) == 1 and not name.startswith('_')
 
 def escape(name):
-    name = name.encode('string_escape')
+    name = encoder(name)[0].decode()
     name = name.replace(':', '\\:')
     name = name.replace('.', '\\.')
     return name
@@ -153,7 +163,7 @@ def escape(name):
 def unescape(name):
     name = name.replace('\\.', '.')
     name = name.replace('\\:', ':')
-    name = name.decode('string_escape')
+    name = decoder(name.encode())[0]
     return name
 
 _splitRe = re.compile(r'(?<!\\)\.')
@@ -364,7 +374,7 @@ class Value(Group):
         return repr(self())
 
     def serialize(self):
-        return str(self).encode('string_escape')
+        return encoder(str(self))[0].decode()
 
     # We tried many, *many* different syntactic methods here, and this one was
     # simply the best -- not very intrusive, easily overridden by subclasses,
@@ -463,7 +473,7 @@ class String(Value):
 
     _printable = string.printable[:-4]
     def _needsQuoting(self, s):
-        return s.translate(utils.str.chars, self._printable) and s.strip() != s
+        return any([x not in self._printable for x in s]) and s.strip() != s
 
     def __str__(self):
         s = self.value

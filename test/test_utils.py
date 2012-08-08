@@ -145,9 +145,7 @@ class GenTest(SupyTestCase):
         L = ['a', 'c', 'b']
         self.assertEqual(sorted(L), ['a', 'b', 'c'])
         self.assertEqual(L, ['a', 'c', 'b'])
-        def mycmp(x, y):
-            return -cmp(x, y)
-        self.assertEqual(sorted(L, mycmp), ['c', 'b', 'a'])
+        self.assertEqual(sorted(L, reverse=True), ['c', 'b', 'a'])
 
     def testTimeElapsed(self):
         self.assertRaises(ValueError, utils.timeElapsed, 0,
@@ -308,6 +306,14 @@ class StrTest(SupyTestCase):
         self.assertEqual(f('foo'), 'foo/bar')
         f = PRTR('s/^/foo/')
         self.assertEqual(f('bar'), 'foobar')
+
+    def testMultipleReplacer(self):
+        replacer = utils.str.MultipleReplacer({'foo': 'bar', 'a': 'b'})
+        self.assertEqual(replacer('hi foo hi'), 'hi bar hi')
+
+    def testMultipleRemover(self):
+        remover = utils.str.MultipleRemover(['foo', 'bar'])
+        self.assertEqual(remover('testfoobarbaz'), 'testbaz')
 
     def testPReToReplacerDifferentSeparator(self):
         f = utils.str.perlReToReplacer('s#foo#bar#')

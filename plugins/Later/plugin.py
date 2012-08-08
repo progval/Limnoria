@@ -68,7 +68,7 @@ class Later(callbacks.Plugin):
 
     def _openNotes(self):
         try:
-            fd = file(self.filename)
+            fd = open(self.filename)
         except EnvironmentError, e:
             self.log.warning('Couldn\'t open %s: %s', self.filename, e)
             return

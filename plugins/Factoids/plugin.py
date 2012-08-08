@@ -649,7 +649,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     change = wrap(change, ['channel', 'something',
                            'factoidId', 'regexpReplacer'])
 
-    _sqlTrans = string.maketrans('*?', '%_')
+    _sqlTrans = utils.str.MultipleReplacer({'*': '%', '?': '_'})
     @internationalizeDocstring
     def search(self, irc, msg, args, channel, optlist, globs):
         """[<channel>] [--values] [--{regexp} <value>] [<glob> ...]
@@ -681,7 +681,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 predicateName += 'p'
         for glob in globs:
             criteria.append('TARGET LIKE ?')
-            formats.append(glob.translate(self._sqlTrans))
+            formats.append(self._sqlTrans(glob))
         cursor = db.cursor()
         sql = """SELECT keys.key FROM %s WHERE %s""" % \
               (', '.join(tables), ' AND '.join(criteria))

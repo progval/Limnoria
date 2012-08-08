@@ -35,6 +35,7 @@ This module contains the basic callbacks for handling PRIVMSGs.
 import supybot
 
 import re
+import sys
 import copy
 import time
 import shlex
@@ -151,14 +152,16 @@ def canonicalName(command):
     Currently, this makes everything lowercase and removes all dashes and
     underscores.
     """
-    if isinstance(command, unicode):
+    if sys.version_info[0] < 3 and isinstance(command, unicode):
         command = command.encode('utf-8')
+    elif sys.version_info[0] >= 3 and isinstance(command, bytes):
+        command = command.decode()
     special = '\t -_'
     reAppend = ''
     while command and command[-1] in special:
         reAppend = command[-1] + reAppend
         command = command[:-1]
-    return command.translate(utils.str.chars, special).lower() + reAppend
+    return ''.join([x for x in command if x not in special]).lower() + reAppend
 
 def reply(msg, s, prefixNick=None, private=None,
           notice=None, to=None, action=None, error=False):
@@ -262,10 +265,10 @@ class Tokenizer(object):
     #
     # These are the characters valid in a token.  Everything printable except
     # double-quote, left-bracket, and right-bracket.
-    validChars = utils.str.chars.translate(utils.str.chars, '\x00\r\n \t')
+    separators = '\x00\r\n \t'
     def __init__(self, brackets='', pipe=False, quotes='"'):
         if brackets:
-            self.validChars=self.validChars.translate(utils.str.chars, brackets)
+            self.separators += brackets
             self.left = brackets[0]
             self.right = brackets[1]
         else:
@@ -273,15 +276,16 @@ class Tokenizer(object):
             self.right = ''
         self.pipe = pipe
         if self.pipe:
-            self.validChars = self.validChars.translate(utils.str.chars, '|')
+            self.separators += '|'
         self.quotes = quotes
-        self.validChars = self.validChars.translate(utils.str.chars, quotes)
+        self.separators += quotes
 
 
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
             token = token[1:-1]
-            token = token.decode('string_escape')
+            encoding_prefix = 'string' if sys.version_info[0]<3 else 'unicode'
+            token = token.encode().decode(encoding_prefix + '_escape')
         return token
 
     def _insideBrackets(self, lexer):
@@ -307,7 +311,7 @@ class Tokenizer(object):
         lexer = shlex.shlex(StringIO(s))
         lexer.commenters = ''
         lexer.quotes = self.quotes
-        lexer.wordchars = self.validChars
+        lexer.separators = self.separators
         args = []
         ends = []
         while True:

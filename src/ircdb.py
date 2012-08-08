@@ -42,7 +42,7 @@ import supybot.world as world
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.unpreserve as unpreserve
-from utils.iter import imap, ilen, ifilter
+from itertools import imap, ifilter
 
 def isCapability(capability):
     return len(capability.split(None, 1)) == 1
@@ -109,8 +109,9 @@ def canonicalCapability(capability):
     assert isCapability(capability), 'got %s' % capability
     return capability.lower()
 
+_unwildcard_remover = utils.str.MultipleRemover('!@*?')
 def unWildcardHostmask(hostmask):
-    return hostmask.translate(utils.str.chars, '!@*?')
+    return _unwildcard_remover(hostmask)
 
 _invert = invertCapability
 class CapabilitySet(set):
@@ -844,7 +845,7 @@ class IgnoresDB(object):
 
     def open(self, filename):
         self.filename = filename
-        fd = file(self.filename)
+        fd = open(self.filename)
         for line in utils.file.nonCommentNonEmptyLines(fd):
             try:
                 line = line.rstrip('\r\n')

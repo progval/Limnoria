@@ -84,7 +84,7 @@ class TransactionMixin(python.Object):
             raise InvalidCwd(expected)
         
     def _journalCommands(self):
-        journal = file(self._journalName)
+        journal = open(self._journalName)
         for line in journal:
             line = line.rstrip('\n')
             (command, rest) = line.split(None, 1)
@@ -112,8 +112,8 @@ class Transaction(TransactionMixin):
             raise FailedAcquisition(self.txnDir, e)
         os.mkdir(self.dirize(self.ORIGINALS))
         os.mkdir(self.dirize(self.REPLACEMENTS))
-        self._journal = file(self._journalName, 'a')
-        cwd = file(self.dirize('cwd'), 'w')
+        self._journal = open(self._journalName, 'a')
+        cwd = open(self.dirize('cwd'), 'w')
         cwd.write(os.getcwd())
         cwd.close()
 
@@ -179,7 +179,7 @@ class Transaction(TransactionMixin):
         self._journalCommand('append', filename, length)
         replacement = self._replacement(filename)
         File.copy(filename, replacement)
-        return file(replacement, 'a')
+        return open(replacement, 'a')
 
     def commit(self, removeWhenComplete=True):
         self._journal.close()
@@ -218,7 +218,7 @@ class Rollback(TransactionMixin):
         shutil.copy(self._original(filename), filename)
 
     def rollbackAppend(self, filename, length):
-        fd = file(filename, 'a')
+        fd = open(filename, 'a')
         fd.truncate(int(length))
         fd.close()
         

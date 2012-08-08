@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
 import os.path
 import unittest
 
@@ -36,6 +37,7 @@ load = unittest.defaultTestLoader.loadTestsFromModule
 
 GLOBALS = globals()
 dirname = os.path.dirname(__file__)
+sys.path.append(dirname)
 filenames = os.listdir(dirname)
 # Uncomment these if you need some consistency in the order these tests run.
 # filenames.sort()
@@ -43,8 +45,8 @@ filenames = os.listdir(dirname)
 for filename in filenames:
     if filename.startswith('test_') and filename.endswith('.py'):
         name = filename[:-3]
-        exec 'import %s' % name in GLOBALS
-        test.suites.append(load(GLOBALS[name]))
+        plugin = __import__(name)
+        test.suites.append(load(plugin))
 
 module = None
     

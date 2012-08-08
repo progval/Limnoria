@@ -29,6 +29,8 @@
 ###
 
 import os
+import io
+import sys
 import json
 import shutil
 import urllib
@@ -36,6 +38,7 @@ import urllib2
 import tarfile
 from cStringIO import StringIO
 
+BytesIO = StringIO if sys.version_info[0] < 3 else io.BytesIO
 
 import supybot.log as log
 import supybot.conf as conf
@@ -79,7 +82,7 @@ class GithubRepository(GitRepository):
         args = dict([(x,y) for x,y in args.items() if y is not None])
         url = '%s/%s/%s?%s' % (self._apiUrl, type_, uri_end,
                                urllib.urlencode(args))
-        return json.load(utils.web.getUrlFd(url))
+        return json.loads(utils.web.getUrl(url).decode('utf8'))
 
     def getPluginList(self):
         plugins = self._query(
@@ -101,14 +104,17 @@ class GithubRepository(GitRepository):
 
     def _download(self, plugin):
         try:
-            fileObject = urllib2.urlopen(self._downloadUrl)
-            fileObject2 = StringIO()
-            fileObject2.write(fileObject.read())
-            fileObject.close()
-            fileObject2.seek(0)
-            return tarfile.open(fileobj=fileObject2, mode='r:gz')
-        finally:
-            del fileObject
+            response = utils.web.getUrlFd(self._downloadUrl)
+            if sys.version_info[0] < 3:
+                assert response.getcode() == 200, response.getcode()
+            else:
+                assert response.status == 200, response.status
+            fileObject = BytesIO()
+            fileObject.write(response.read())
+        finally: # urllib does not handle 'with' statements :(
+            response.close()
+        fileObject.seek(0)
+        return tarfile.open(fileobj=fileObject, mode='r:gz')
     def install(self, plugin):
         archive = self._download(plugin)
         prefix = archive.getnames()[0]
@@ -132,7 +138,7 @@ class GithubRepository(GitRepository):
                     if extractedFile is None:
                         os.mkdir(newFileName)
                     else:
-                        open(newFileName, 'a').write(extractedFile.read())
+                        open(newFileName, 'ab').write(extractedFile.read())
         finally:
             archive.close()
             del archive

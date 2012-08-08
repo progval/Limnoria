@@ -31,7 +31,6 @@
 import sys
 import types
 import fnmatch
-import UserDict
 import threading
 
 def universalImport(*names):

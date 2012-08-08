@@ -602,15 +602,8 @@ def join(channel, key=None, prefix='', msg=None):
         return IrcMsg(prefix=prefix, command='JOIN', args=(channel,), msg=msg)
     else:
         if conf.supybot.protocols.irc.strictRfc():
-            assert key.translate(utils.str.chars,
-                                 utils.str.chars[128:]) == key and \
-                   '\x00' not in key and \
-                   '\r' not in key and \
-                   '\n' not in key and \
-                   '\f' not in key and \
-                   '\t' not in key and \
-                   '\v' not in key and \
-                   ' ' not in key
+            chars = '\x00\r\n\f\t\v '
+            assert not any([(ord(x) >= 128 or x in chars) for x in key])
         return IrcMsg(prefix=prefix, command='JOIN',
                       args=(channel, key), msg=msg)
 
@@ -628,17 +621,10 @@ def joins(channels, keys=None, prefix='', msg=None):
                       command='JOIN',
                       args=(','.join(channels),), msg=msg)
     else:
-        for key in keys:
-            if conf.supybot.protocols.irc.strictRfc():
-                assert key.translate(utils.str.chars,
-                                     utils.str.chars[128:])==key and \
-                       '\x00' not in key and \
-                       '\r' not in key and \
-                       '\n' not in key and \
-                       '\f' not in key and \
-                       '\t' not in key and \
-                       '\v' not in key and \
-                       ' ' not in key
+        if conf.supybot.protocols.irc.strictRfc():
+            chars = '\x00\r\n\f\t\v '
+            for key in keys:
+                assert not any([(ord(x) >= 128 or x in chars) for x in key])
         return IrcMsg(prefix=prefix,
                       command='JOIN',
                       args=(','.join(channels), ','.join(keys)), msg=msg)

@@ -40,7 +40,7 @@ class Reader(object):
         return s.lower()
 
     def readFile(self, filename):
-        self.read(file(filename))
+        self.read(open(filename))
 
     def read(self, fd):
         lineno = 0

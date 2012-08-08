@@ -28,7 +28,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
 import types
+import codecs
+import base64
 import binascii
 
 import supybot.utils as utils
@@ -72,10 +75,31 @@ class String(callbacks.Plugin):
         available in the documentation of the Python codecs module:
         <http://docs.python.org/library/codecs.html#standard-encodings>.
         """
+        # Binary codecs are prefixed with _codec in Python 3
+        if encoding in 'base64 bz2 hex quopri uu zlib':
+            encoding += '_codec'
+        if encoding.endswith('_codec'):
+            text = text.encode()
+
+        # Do the encoding
         try:
-            irc.reply(text.encode(encoding).rstrip('\n'))
+            encoder = codecs.getencoder(encoding)
         except LookupError:
             irc.errorInvalid(_('encoding'), encoding)
+        text = encoder(text)[0]
+
+        # If this is a binary codec, re-encode it with base64
+        if encoding.endswith('_codec') and encoding != 'base64_codec':
+            text = codecs.getencoder('base64_codec')(text)[0].decode()
+
+        # Change result into a string
+        if sys.version_info[0] < 3 and isinstance(text, unicode):
+            text = text.encode('utf-8')
+        elif sys.version_info[0] >= 3 and isinstance(text, bytes):
+            text = text.decode()
+
+        # Reply
+        irc.reply(text.rstrip('\n'))
     encode = wrap(encode, ['something', 'text'])
 
     @internationalizeDocstring
@@ -86,19 +110,37 @@ class String(callbacks.Plugin):
         available in the documentation of the Python codecs module:
         <http://docs.python.org/library/codecs.html#standard-encodings>.
         """
+        # Binary codecs are prefixed with _codec in Python 3
+        if encoding in 'base64 bz2 hex quopri uu zlib':
+            encoding += '_codec'
+
+        # If this is a binary codec, pre-decode it with base64
+        if encoding.endswith('_codec') and encoding != 'base64_codec':
+            text = codecs.getdecoder('base64_codec')(text.encode())[0]
+
+        # Do the decoding
         try:
-            s = text.decode(encoding)
-            # Not all encodings decode to a unicode object.  Only encode those
-            # that do.
-            if isinstance(s, unicode):
-                s = s.encode('utf-8')
-            irc.reply(s)
+            decoder = codecs.getdecoder(encoding)
         except LookupError:
             irc.errorInvalid(_('encoding'), encoding)
+        if sys.version_info[0] >= 3 and not isinstance(text, bytes):
+            text = text.encode()
+        try:
+            text = decoder(text)[0]
         except binascii.Error:
             irc.errorInvalid(_('base64 string'),
                              s=_('Base64 strings must be a multiple of 4 in '
                                'length, padded with \'=\' if necessary.'))
+            return
+
+        # Change result into a string
+        if sys.version_info[0] < 3 and isinstance(text, unicode):
+            text = text.encode('utf-8')
+        elif sys.version_info[0] >= 3 and isinstance(text, bytes):
+            text = text.decode()
+
+        # Reply
+        irc.reply(text)
     decode = wrap(decode, ['something', 'text'])
 
     @internationalizeDocstring

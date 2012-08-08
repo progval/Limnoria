@@ -38,8 +38,8 @@ import time
 import random
 import fnmatch
 import os.path
-import UserDict
 import threading
+import collections
 
 import supybot.log as log
 import supybot.dbi as dbi
@@ -230,7 +230,7 @@ class DbiChannelDB(object):
         return _getDbAndDispatcher
 
 
-class ChannelUserDictionary(UserDict.DictMixin):
+class ChannelUserDictionary(collections.MutableMapping):
     IdDict = dict
     def __init__(self):
         self.channels = ircutils.IrcDict()
@@ -245,6 +245,15 @@ class ChannelUserDictionary(UserDict.DictMixin):
 
     def __delitem__(self, (channel, id)):
         del self.channels[channel][id]
+
+    def __iter__(self):
+        for channel, ids in self.channels.items():
+            for id_, value in ids.items():
+                yield (channel, id_)
+        raise StopIteration()
+
+    def __len__(self):
+        return sum([len(x) for x in self.channels])
 
     def iteritems(self):
         for (channel, ids) in self.channels.iteritems():
@@ -267,7 +276,7 @@ class ChannelUserDB(ChannelUserDictionary):
         ChannelUserDictionary.__init__(self)
         self.filename = filename
         try:
-            fd = file(self.filename)
+            fd = open(self.filename)
         except EnvironmentError, e:
             log.warning('Couldn\'t open %s: %s.', self.filename, e)
             return
@@ -304,7 +313,12 @@ class ChannelUserDB(ChannelUserDictionary):
                       self.__class__.__name__)
             fd.rollback()
             return
-        items.sort()
+        try:
+            items.sort()
+        except TypeError:
+            # FIXME: Implement an algorithm that can order dictionnaries
+            # with both strings and integers as keys.
+            pass
         for ((channel, id), v) in items:
             L = self.serialize(v)
             L.insert(0, id)
@@ -564,7 +578,7 @@ class PeriodicFileDownloader(object):
                 return
             confDir = conf.supybot.directories.data()
             newFilename = os.path.join(confDir, utils.file.mktemp())
-            outfd = file(newFilename, 'wb')
+            outfd = open(newFilename, 'wb')
             start = time.time()
             s = infd.read(4096)
             while s:
