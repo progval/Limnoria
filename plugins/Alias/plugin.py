@@ -113,6 +113,9 @@ def escapeAlias(alias):
         if char == '.':
             prefix += '%sd' % index
             prefixes += 1
+        elif char == '|':
+            prefix += '%sp' % index
+            prefixes += 1
         else:
             new_alias += char
     pre_prefix = 'a%ia' % prefixes
@@ -134,6 +137,8 @@ def unescapeAlias(alias):
             alias = alias[1:]
         if alias[0] == 'd':
             char = '.'
+        elif alias[0] == 'p':
+            char = '|'
         else:
             char = alias[0]
         alias = alias[1:]
@@ -309,8 +314,6 @@ class Alias(callbacks.Plugin):
     def addAlias(self, irc, name, alias, lock=False):
         if self._invalidCharsRe.search(name):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
-        if '|' in name:
-            raise AliasError, 'Names cannot contain pipes.'
         realName = callbacks.canonicalName(name)
         if name != realName:
             s = format(_('That name isn\'t valid.  Try %q instead.'), realName)
@@ -329,7 +332,7 @@ class Alias(callbacks.Plugin):
             f = new.instancemethod(f, self, Alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
-        if '.' in name:
+        if '.' in name or '|' in name:
             aliasGroup = self.registryValue('escapedaliases', value=False)
             confname = escapeAlias(name)
         else:

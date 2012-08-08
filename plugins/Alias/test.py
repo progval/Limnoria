@@ -141,6 +141,9 @@ class EscapedAliasTestCase(ChannelPluginTestCase):
         self.assertNotError('alias add spam.egg echo hi')
         self.assertResponse('spam.egg', 'hi')
 
+        self.assertNotError('alias add spam|egg echo hey')
+        self.assertResponse('spam|egg', 'hey')
+
     def testWriteDatabase(self):
         self.assertNotError('alias add fooo.spam echo egg')
         self.assertResponse('fooo.spam', 'egg')
