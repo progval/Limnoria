@@ -439,7 +439,7 @@ class RichReplyMethods(object):
         return self.reply(s, **kwargs)
 
     def replies(self, L, prefixer=None, joiner=None,
-                onlyPrefixFirst=False, **kwargs):
+                onlyPrefixFirst=False, to=None, **kwargs):
         if prefixer is None:
             prefixer = ''
         if joiner is None:
@@ -448,7 +448,11 @@ class RichReplyMethods(object):
             prefixer = prefixer.__add__
         if isinstance(joiner, basestring):
             joiner = joiner.join
-        if conf.supybot.reply.oneToOne():
+        if ircutils.isChannel(to):
+            oneToOne = conf.get(conf.supybot.reply.oneToOne, to)
+        else:
+            oneToOne = conf.supybot.reply.oneToOne()
+        if oneToOne:
             return self.reply(prefixer(joiner(L)), **kwargs)
         else:
             msg = None

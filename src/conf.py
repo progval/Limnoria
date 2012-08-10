@@ -369,7 +369,7 @@ registerChannelValue(supybot.reply.mores, 'instant',
     they are formed).  Defaults to 1, which means that a more command will be
     required for all but the first chunk.""")))
 
-registerGlobalValue(supybot.reply, 'oneToOne',
+registerChannelValue(supybot.reply, 'oneToOne',
     registry.Boolean(True, _("""Determines whether the bot will send
     multi-message replies in a single message or in multiple messages.  For
     safety purposes (so the bot is less likely to flood) it will normally send
