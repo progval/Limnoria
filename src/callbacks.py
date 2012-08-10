@@ -453,7 +453,7 @@ class RichReplyMethods(object):
         else:
             oneToOne = conf.supybot.reply.oneToOne()
         if oneToOne:
-            return self.reply(prefixer(joiner(L)), **kwargs)
+            return self.reply(prefixer(joiner(L)), to=to, **kwargs)
         else:
             msg = None
             first = True
@@ -461,11 +461,11 @@ class RichReplyMethods(object):
                 if onlyPrefixFirst:
                     if first:
                         first = False
-                        msg = self.reply(prefixer(s), **kwargs)
+                        msg = self.reply(prefixer(s), to=to, **kwargs)
                     else:
-                        msg = self.reply(s, **kwargs)
+                        msg = self.reply(s, to=to, **kwargs)
                 else:
-                    msg = self.reply(prefixer(s), **kwargs)
+                    msg = self.reply(prefixer(s), to=to, **kwargs)
             return msg
 
     def noReply(self):
