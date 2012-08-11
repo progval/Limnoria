@@ -30,6 +30,7 @@
 
 import re
 import json
+import urllib
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -264,6 +265,35 @@ class ShrinkUrl(callbacks.PluginRegexp):
         except ShrinkError, e:
             irc.error(str(e))
     goo = thread(wrap(goo, ['url']))
+
+    _ur1Api = 'http://ur1.ca/'
+    _ur1Regexp = re.compile(r'<a href="(?P<url>[^"]+)">')
+    def _getUr1Url(self, url):
+        try:
+            return self.db.get('ur1ca', utils.web.urlquote(url))
+        except KeyError:
+            parameters = utils.web.urlencode({'longurl': url})
+            response = utils.web.getUrl(self._ur1Api, data=parameters)
+            ur1ca = self._ur1Regexp.search(response.decode()).group('url')
+            if len(ur1ca) > 0 :
+                self.db.set('ur1', url, ur1ca)
+                return ur1ca
+            else:
+                raise ShrinkError, text
+
+    def ur1(self, irc, msg, args, url):
+        """<url>
+
+        Returns an ur1 version of <url>.
+        """
+        try:
+            ur1url = self._getUr1Url(url)
+            m = irc.reply(ur1url)
+            if m is not None:
+                m.tag('shrunken')
+        except ShrinkError, e:
+            irc.error(str(e))
+    ur1 = thread(wrap(ur1, ['url']))
 
     _x0Api = 'http://api.x0.no/?%s'
     def _getX0Url(self, url):
