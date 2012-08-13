@@ -101,7 +101,7 @@ class MultipleReplacer:
     # it to a class in Python 3.
     def __init__(self, dict_):
         self._dict = dict_
-        dict_ = {re.escape(key): val for key,val in dict_.items()}
+        dict_ = dict([(re.escape(key), val) for key,val in dict_.items()])
         self._matcher = re.compile('|'.join(dict_.keys()))
     def __call__(self, s):
         return self._matcher.sub(lambda m: self._dict[m.group(0)], s)
