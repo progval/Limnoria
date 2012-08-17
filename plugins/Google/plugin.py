@@ -269,7 +269,7 @@ class Google(callbacks.PluginRegexp):
         """
         urlig = self._googleUrlIG(expr)
         js = utils.web.getUrl(urlig).decode('utf8')
-        # fix bad google json
+        # Convert JavaScript to JSON. Ouch.
         js = js \
                 .replace('lhs:','"lhs":') \
                 .replace('rhs:','"rhs":') \
@@ -277,11 +277,6 @@ class Google(callbacks.PluginRegexp):
                 .replace('icc:','"icc":') \
                 .replace('\\', '\\\\')
         js = json.loads(js)
-
-        # Currency conversion
-        if js['icc'] == True:
-            irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
-            return
 
         url = self._googleUrl(expr)
         html = utils.web.getUrl(url).decode('utf8')
@@ -294,10 +289,15 @@ class Google(callbacks.PluginRegexp):
             s = self._calcFontRe.sub(r',', s)
             s = self._calcTimesRe.sub(r'*', s)
             s = utils.web.htmlToText(s)
-            irc.reply(s)
-        else:
-            irc.reply(_('Google says: Error: %s.') % (js['error'],))
-            irc.reply('Google\'s calculator didn\'t come up with anything.')
+            if ' = ' in s: # Extra check, since the regex seems to fail.
+                irc.reply(s)
+                return
+            elif js['lhs'] and js['rhs']:
+                # Outputs the original result. Might look ugly.
+                irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
+                return
+        irc.reply(_('Google says: Error: %s.') % (js['error'],))
+        irc.reply('Google\'s calculator didn\'t come up with anything.')
     calc = wrap(calc, ['text'])
 
     _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
