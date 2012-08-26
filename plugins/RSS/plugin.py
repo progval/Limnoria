@@ -256,6 +256,7 @@ class RSS(callbacks.Plugin):
             # and DoS the website in question.
             self.acquireLock(url)
             if self.willGetNewFeed(url):
+                results = None
                 try:
                     self.log.debug('Downloading new feed from %u', url)
                     results = feedparser.parse(url)
@@ -270,7 +271,9 @@ class RSS(callbacks.Plugin):
                     # These seem mostly harmless.  We'll need reports of a
                     # kind that isn't.
                     self.log.debug('Allowing bozo_exception %r through.', e)
-                if results.get('feed', {}):
+                if results is None:
+                    self.log.error('Could not fetch feed %s' % url)
+                elif results.get('feed', {}):
                     self.cachedFeeds[url] = results
                     self.lastRequest[url] = time.time()
                 else:
