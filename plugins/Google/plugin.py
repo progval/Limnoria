@@ -138,7 +138,7 @@ class Google(callbacks.PluginRegexp):
             else:
                 results.append(url)
         if not results:
-            return format(_('No matches found.'))
+            return [format(_('No matches found.'))]
         elif onetoone:
             return results
         else:
