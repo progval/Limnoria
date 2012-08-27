@@ -58,8 +58,14 @@ class AutoMode(callbacks.Plugin):
                     if self.registryValue(type, channel):
                         self.log.info('Scheduling auto-%s of %s in %s.',
                                       type, msg.prefix, channel)
+                        def dismiss():
+                            """Determines whether or not a mode has already
+                            been applied."""
+                            l = getattr(irc.state.channels[channel], type+'s')
+                            return (msg.nick in l)
                         msgmaker = getattr(ircmsgs, type)
-                        schedule_msg(msgmaker(channel, msg.nick))
+                        schedule_msg(msgmaker(channel, msg.nick),
+                                dismiss)
                         raise Continue # Even if fallthrough, let's only do one.
                     elif not fallthrough:
                         self.log.debug('%s has %s, but supybot.plugins.AutoMode.%s'
@@ -68,9 +74,12 @@ class AutoMode(callbacks.Plugin):
                         raise Continue
             except KeyError:
                 pass
-        def schedule_msg(msg):
+        def schedule_msg(msg, dismiss):
             def f():
-                irc.queueMsg(msg)
+                if not dismiss():
+                    irc.queueMsg(msg)
+                else:
+                    self.log.info('Dismissing auto-mode for ProgVal.')
             delay = self.registryValue('delay', channel)
             if delay:
                 schedule.addEvent(f, time.time() + delay)
