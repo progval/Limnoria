@@ -29,7 +29,6 @@
 
 import os
 import time
-import shlex
 import string
 
 from cStringIO import StringIO
@@ -37,6 +36,7 @@ from cStringIO import StringIO
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
+import supybot.shlex as shlex
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -44,9 +44,8 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('MoobotFactoids')
 
-allchars = string.maketrans('', '')
 class OptionList(object):
-    validChars = allchars.translate(allchars, '|()')
+    separators = '|()'
     def _insideParens(self, lexer):
         ret = []
         while True:
@@ -73,7 +72,7 @@ class OptionList(object):
         lexer.commenters = ''
         lexer.quotes = ''
         lexer.whitespace = ''
-        lexer.wordchars = self.validChars
+        lexer.separators += self.separators
         ret = []
         while True:
             token = lexer.get_token()

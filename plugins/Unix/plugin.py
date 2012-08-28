@@ -48,6 +48,7 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Unix')
 
+_progstats_endline_remover = utils.str.MultipleRemover('\r\n')
 def progstats():
     pw = pwd.getpwuid(os.getuid())
     response = format('Process ID %i running as user %q and as group %q '
@@ -55,7 +56,7 @@ def progstats():
                       'Running on Python %s.',
                       os.getpid(), pw[0], pw[3],
                       os.getcwd(), ' '.join(sys.argv),
-                      sys.version.translate(utils.str.chars, '\r\n'))
+                      _progstats_endline_remover(sys.version))
     return response
 
 class TimeoutError(IOError):
@@ -108,7 +109,7 @@ class Unix(callbacks.Plugin):
         irc.reply(format('%i', os.getpid()), private=True)
     pid = wrap(pid, [('checkCapability', 'owner')])
 
-    _cryptre = re.compile(r'[./0-9A-Za-z]')
+    _cryptre = re.compile(b'[./0-9A-Za-z]')
     @internationalizeDocstring
     def crypt(self, irc, msg, args, password, salt):
         """<password> [<salt>]
@@ -119,12 +120,12 @@ class Unix(callbacks.Plugin):
         based crypt rather than the standard DES based crypt.
         """
         def makeSalt():
-            s = '\x00'
-            while self._cryptre.sub('', s) != '':
+            s = b'\x00'
+            while self._cryptre.sub(b'', s) != b'':
                 s = struct.pack('<h', random.randrange(-(2**15), 2**15))
             return s
         if not salt:
-            salt = makeSalt()
+            salt = makeSalt().decode()
         irc.reply(crypt.crypt(password, salt))
     crypt = wrap(crypt, ['something', additional('something')])
 
@@ -156,15 +157,15 @@ class Unix(callbacks.Plugin):
             irc.error(e, Raise=True)
         ret = inst.poll()
         if ret is not None:
-            s = inst.stderr.readline()
+            s = inst.stderr.readline().decode('utf8')
             if not s:
-                s = inst.stdout.readline()
+                s = inst.stdout.readline().decode('utf8')
             s = s.rstrip('\r\n')
             s = s.lstrip('Error: ')
             irc.error(s, Raise=True)
-        (out, err) = inst.communicate(word)
+        (out, err) = inst.communicate(word.encode())
         inst.wait()
-        lines = filter(None, out.splitlines())
+        lines = [x.decode('utf8') for x in out.splitlines() if x]
         lines.pop(0) # Banner
         if not lines:
             irc.error(_('No results found.'), Raise=True)
@@ -212,7 +213,7 @@ class Unix(callbacks.Plugin):
                 inst = subprocess.Popen(args, close_fds=True,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE,
-                                        stdin=file(os.devnull))
+                                        stdin=open(os.devnull))
             except OSError, e:
                 irc.error(_('It seems the configured fortune command was '
                           'not available.'), Raise=True)
@@ -242,15 +243,15 @@ class Unix(callbacks.Plugin):
             try:
                 inst = subprocess.Popen([wtfCmd, something], close_fds=True,
                                         stdout=subprocess.PIPE,
-                                        stderr=file(os.devnull),
-                                        stdin=file(os.devnull))
+                                        stderr=open(os.devnull),
+                                        stdin=open(os.devnull))
             except OSError:
                 irc.error(_('It seems the configured wtf command was not '
                           'available.'), Raise=True)
             (out, _) = inst.communicate()
             inst.wait()
             if out:
-                response = out.splitlines()[0].strip()
+                response = out.decode('utf8').splitlines()[0].strip()
                 response = utils.str.normalizeWhitespace(response)
                 irc.reply(response)
         else:
@@ -292,15 +293,15 @@ class Unix(callbacks.Plugin):
             try:
                 inst = subprocess.Popen(args, stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
-                                              stdin=file(os.devnull))
+                                              stdin=open(os.devnull))
             except OSError, e:
                 irc.error('It seems the configured ping command was '
                           'not available (%s).' % e, Raise=True)
             result = inst.communicate()
             if result[1]: # stderr
-                irc.error(' '.join(result[1].split()))
+                irc.error(' '.join(result[1].decode('utf8').split()))
             else:
-                response = result[0].split("\n");
+                response = result[0].decode('utf8').split("\n");
                 if response[1]:
                     irc.reply(' '.join(response[1].split()[3:5]).split(':')[0]
                               + ': ' + ' '.join(response[-3:]))
@@ -325,14 +326,14 @@ class Unix(callbacks.Plugin):
                 inst = subprocess.Popen(args, close_fds=True,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE,
-                                        stdin=file(os.devnull))
+                                        stdin=open(os.devnull))
             except OSError, e:
                 irc.error('It seems the configured uptime command was '
                           'not available.', Raise=True)
             (out, err) = inst.communicate()
             inst.wait()
             lines = out.splitlines()
-            lines = map(str.rstrip, lines)
+            lines = [x.decode('utf8').rstrip() for x in lines]
             lines = filter(None, lines)
             irc.replies(lines, joiner=' ')
         else:
@@ -353,14 +354,14 @@ class Unix(callbacks.Plugin):
                 inst = subprocess.Popen(args, close_fds=True,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE,
-                                        stdin=file(os.devnull))
+                                        stdin=open(os.devnull))
             except OSError, e:
                 irc.error('It seems the configured uptime command was '
                           'not available.', Raise=True)
             (out, err) = inst.communicate()
             inst.wait()
             lines = out.splitlines()
-            lines = map(str.rstrip, lines)
+            lines = [x.decode('utf8').rstrip() for x in lines]
             lines = filter(None, lines)
             irc.replies(lines, joiner=' ')
         else:
@@ -382,15 +383,15 @@ class Unix(callbacks.Plugin):
         try:
             inst = subprocess.Popen(args, stdout=subprocess.PIPE, 
                                           stderr=subprocess.PIPE,
-                                          stdin=file(os.devnull))
+                                          stdin=open(os.devnull))
         except OSError, e:
             irc.error('It seems the requested command was '
                       'not available (%s).' % e, Raise=True)
         result = inst.communicate()
         if result[1]: # stderr
-            irc.error(' '.join(result[1].split()))
+            irc.error(' '.join(result[1].decode('utf8').split()))
         if result[0]: # stdout
-            response = result[0].split("\n");
+            response = result[0].decode('utf8').split("\n");
             response = [l for l in response if l]
             irc.replies(response)
     call = thread(wrap(call, ["owner", "text"]))

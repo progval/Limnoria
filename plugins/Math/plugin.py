@@ -78,7 +78,7 @@ class Math(callbacks.Plugin):
         while number != 0:
             digit = number % base
             if digit >= 10:
-                digit = string.uppercase[digit - 10]
+                digit = string.ascii_uppercase[digit - 10]
             else:
                 digit = str(digit)
             digits.append(digit)
@@ -148,6 +148,8 @@ class Math(callbacks.Plugin):
         else:
             return '%s%s' % (realS, imagS)
 
+    _calc_match_forbidden_chars = re.compile('[_[\]]')
+    _calc_remover = utils.str.MultipleRemover('_[] \t')
     ###
     # So this is how the 'calc' command works:
     # First, we make a nice little safe environment for evaluation; basically,
@@ -167,12 +169,12 @@ class Math(callbacks.Plugin):
         crash to the bot with something like '10**10**10**10'.  One consequence
         is that large values such as '10**24' might not be exact.
         """
-        if text != text.translate(utils.str.chars, '_[]'):
+        if self._calc_match_forbidden_chars.match(text):
             irc.error(_('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.'))
             return
-        #text = text.translate(utils.str.chars, '_[] \t')
+        text = self._calc_remover(text)
         if 'lambda' in text:
             irc.error(_('You can\'t use lambda in this command.'))
             return
@@ -221,14 +223,14 @@ class Math(callbacks.Plugin):
         math, and can thus cause the bot to suck up CPU.  Hence it requires
         the 'trusted' capability to use.
         """
-        if text != text.translate(utils.str.chars, '_[]'):
+        if self._calc_match_forbidden_chars.match(text):
             irc.error(_('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.'))
             return
         # This removes spaces, too, but we'll leave the removal of _[] for
         # safety's sake.
-        text = text.translate(utils.str.chars, '_[] \t')
+        text = self._calc_remover(text)
         if 'lambda' in text:
             irc.error(_('You can\'t use lambda in this command.'))
             return

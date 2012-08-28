@@ -29,13 +29,14 @@
 ###
 
 import re
+import sys
 import socket
 import urllib
 import urllib2
 import httplib
-import sgmllib
 import urlparse
 import htmlentitydefs
+from HTMLParser import HTMLParser
 
 sockerrors = (socket.error,)
 try:
@@ -48,7 +49,9 @@ from str import normalizeWhitespace
 Request = urllib2.Request
 urlquote = urllib.quote
 urlunquote = urllib.unquote
-urlencode = urllib.urlencode
+
+def urlencode(*args, **kwargs):
+    return urllib.urlencode(*args, **kwargs).encode()
 
 class Error(Exception):
     pass
@@ -150,19 +153,19 @@ def getUrl(url, size=None, headers=None, data=None):
 def getDomain(url):
     return urlparse.urlparse(url)[1]
 
-class HtmlToText(sgmllib.SGMLParser):
+class HtmlToText(HTMLParser, object):
     """Taken from some eff-bot code on c.l.p."""
     entitydefs = htmlentitydefs.entitydefs.copy()
     entitydefs['nbsp'] = ' '
     def __init__(self, tagReplace=' '):
         self.data = []
         self.tagReplace = tagReplace
-        sgmllib.SGMLParser.__init__(self)
+        super(HtmlToText, self).__init__()
 
-    def unknown_starttag(self, tag, attr):
+    def handle_starttag(self, tag, attr):
         self.data.append(self.tagReplace)
 
-    def unknown_endtag(self, tag):
+    def handle_endtag(self, tag):
         self.data.append(self.tagReplace)
 
     def handle_data(self, data):
@@ -175,6 +178,8 @@ class HtmlToText(sgmllib.SGMLParser):
 def htmlToText(s, tagReplace=' '):
     """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
     """
+    if sys.version_info[0] >= 3 and isinstance(s, bytes):
+        s = s.decode()
     x = HtmlToText(tagReplace)
     x.feed(s)
     return x.getText()

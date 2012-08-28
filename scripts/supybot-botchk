@@ -33,7 +33,7 @@
 VERBOSE = False
 
 def readPid(filename):
-    fd = file(filename)
+    fd = open(filename)
     try:
         return int(fd.read().strip())
     finally:

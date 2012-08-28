@@ -34,6 +34,7 @@ import imp
 import sys
 import json
 import time
+from itertools import ifilter
 
 import supybot
 
@@ -47,7 +48,6 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot import commands
 
-from supybot.utils.iter import ifilter
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
 
@@ -296,7 +296,8 @@ class Misc(callbacks.Plugin):
                     'commits/%s'
             versions = {}
             for branch in ('master', 'testing'):
-                data = json.load(utils.web.getUrlFd(newestUrl % branch))
+                data = json.loads(utils.web.getUrl(newestUrl % branch)
+                        .decode('utf8'))
                 version = data['commit']['committer']['date']
                 # Strip the last ':':
                 version = ''.join(version.rsplit(':', 1))

@@ -28,10 +28,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import new
 import time
+import types
 import socket
-import sgmllib
 import threading
 
 import supybot.conf as conf
@@ -45,7 +44,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('RSS')
 
 try:
-    feedparser = utils.python.universalImport('feedparser', 'local.feedparser')
+    feedparser = utils.python.universalImport('feedparser.feedparser',
+            'local.feedparser.feedparser', 'feedparser', 'local.feedparser')
 except ImportError:
     raise callbacks.Error, \
             'You the feedparser module installed to use this plugin.  ' \
@@ -256,12 +256,13 @@ class RSS(callbacks.Plugin):
             # and DoS the website in question.
             self.acquireLock(url)
             if self.willGetNewFeed(url):
+                results = None
                 try:
                     self.log.debug('Downloading new feed from %u', url)
                     results = feedparser.parse(url)
                     if 'bozo_exception' in results:
                         raise results['bozo_exception']
-                except sgmllib.SGMLParseError:
+                except feedparser.sgmllib.SGMLParseError:
                     self.log.exception('Uncaught exception from feedparser:')
                     raise callbacks.Error, 'Invalid (unparsable) RSS feed.'
                 except socket.timeout:
@@ -270,7 +271,9 @@ class RSS(callbacks.Plugin):
                     # These seem mostly harmless.  We'll need reports of a
                     # kind that isn't.
                     self.log.debug('Allowing bozo_exception %r through.', e)
-                if results.get('feed', {}):
+                if results is None:
+                    self.log.error('Could not fetch feed %s' % url)
+                elif results.get('feed', {}):
                     self.cachedFeeds[url] = results
                     self.lastRequest[url] = time.time()
                 else:
@@ -349,7 +352,7 @@ class RSS(callbacks.Plugin):
             args.insert(0, url)
             self.rss(irc, msg, args)
         f = utils.python.changeFunctionName(f, name, docstring)
-        f = new.instancemethod(f, self, RSS)
+        f = types.MethodType(f, self)
         self.feedNames[name] = (url, f)
         self._registerFeed(name, url)
 

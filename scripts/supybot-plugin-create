@@ -266,7 +266,7 @@ def main():
     os.mkdir(pathname)
 
     def writeFile(filename, s):
-        fd = file(os.path.join(pathname, filename), 'w')
+        fd = open(os.path.join(pathname, filename), 'w')
         try:
             fd.write(s)
         finally:

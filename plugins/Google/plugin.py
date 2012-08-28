@@ -44,26 +44,7 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Google')
 
-simplejson = None
-
-try:
-    simplejson = utils.python.universalImport('json')
-except ImportError:
-    pass
-
-try:
-    # The 3rd party simplejson module was included in Python 2.6 and renamed to
-    # json.  Unfortunately, this conflicts with the 3rd party json module.
-    # Luckily, the 3rd party json module has a different interface so we test
-    # to make sure we aren't using it.
-    if simplejson is None or hasattr(simplejson, 'read'):
-        simplejson = utils.python.universalImport('simplejson',
-                                                  'local.simplejson')
-except ImportError:
-    raise callbacks.Error, \
-            'You need Python2.6 or the simplejson module installed to use ' \
-            'this plugin.  Download the module at ' \
-            '<http://undefined.org/python/#simplejson>.'
+import json
 
 class Google(callbacks.PluginRegexp):
     threaded = True
@@ -132,14 +113,13 @@ class Google(callbacks.PluginRegexp):
         if 'rsz' not in opts:
             opts['rsz'] = 'large'
 
-        fd = utils.web.getUrlFd('%s?%s' % (self._gsearchUrl,
+        text = utils.web.getUrl('%s?%s' % (self._gsearchUrl,
                                            urllib.urlencode(opts)),
-                                headers)
-        json = simplejson.load(fd)
-        fd.close()
-        if json['responseStatus'] != 200:
+                                headers=headers).decode('utf8')
+        data = json.loads(text)
+        if data['responseStatus'] != 200:
             raise callbacks.Error, _('We broke The Google!')
-        return json
+        return data
 
     def formatData(self, data, bold=True, max=0, onetoone=False):
         if isinstance(data, basestring):
@@ -158,7 +138,7 @@ class Google(callbacks.PluginRegexp):
             else:
                 results.append(url)
         if not results:
-            return format(_('No matches found.'))
+            return [format(_('No matches found.'))]
         elif onetoone:
             return results
         else:
@@ -174,9 +154,9 @@ class Google(callbacks.PluginRegexp):
         opts = dict(opts)
         data = self.search(text, msg.args[0], {'smallsearch': True})
         if data['responseData']['results']:
-            url = data['responseData']['results'][0]['unescapedUrl'].encode('utf-8')
+            url = data['responseData']['results'][0]['unescapedUrl']
             if opts.has_key('snippet'):
-                snippet = data['responseData']['results'][0]['content'].encode('utf-8')
+                snippet = data['responseData']['results'][0]['content']
                 snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
             else:
                 snippet = ""
@@ -288,23 +268,18 @@ class Google(callbacks.PluginRegexp):
         Uses Google's calculator to calculate the value of <expression>.
         """
         urlig = self._googleUrlIG(expr)
-        js = utils.web.getUrl(urlig)
-        # fix bad google json
+        js = utils.web.getUrl(urlig).decode('utf8')
+        # Convert JavaScript to JSON. Ouch.
         js = js \
                 .replace('lhs:','"lhs":') \
                 .replace('rhs:','"rhs":') \
                 .replace('error:','"error":') \
                 .replace('icc:','"icc":') \
                 .replace('\\', '\\\\')
-        js = simplejson.loads(js)
-
-        # Currency conversion
-        if js['icc'] == True:
-            irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
-            return
+        js = json.loads(js)
 
         url = self._googleUrl(expr)
-        html = utils.web.getUrl(url)
+        html = utils.web.getUrl(url).decode('utf8')
         match = self._calcRe1.search(html)
         if match is None:
             match = self._calcRe2.search(html)
@@ -314,10 +289,15 @@ class Google(callbacks.PluginRegexp):
             s = self._calcFontRe.sub(r',', s)
             s = self._calcTimesRe.sub(r'*', s)
             s = utils.web.htmlToText(s)
-            irc.reply(s)
-        else:
-            irc.reply(_('Google says: Error: %s.') % (js['error'],))
-            irc.reply('Google\'s calculator didn\'t come up with anything.')
+            if ' = ' in s: # Extra check, since the regex seems to fail.
+                irc.reply(s)
+                return
+            elif js['lhs'] and js['rhs']:
+                # Outputs the original result. Might look ugly.
+                irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
+                return
+        irc.reply(_('Google says: Error: %s.') % (js['error'],))
+        irc.reply('Google\'s calculator didn\'t come up with anything.')
     calc = wrap(calc, ['text'])
 
     _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
@@ -328,7 +308,7 @@ class Google(callbacks.PluginRegexp):
         Looks <phone number> up on Google.
         """
         url = self._googleUrl(phonenumber)
-        html = utils.web.getUrl(url)
+        html = utils.web.getUrl(url).decode('utf8')
         m = self._phoneRe.search(html)
         if m is not None:
             s = m.group(1)

@@ -97,14 +97,14 @@ class DirMapping(MappingInterface):
             self._setMax(1)
 
     def _setMax(self, id):
-        fd = file(os.path.join(self.dirname, 'max'), 'w')
+        fd = open(os.path.join(self.dirname, 'max'), 'w')
         try:
             fd.write(str(id))
         finally:
             fd.close()
 
     def _getMax(self):
-        fd = file(os.path.join(self.dirname, 'max'))
+        fd = open(os.path.join(self.dirname, 'max'))
         try:
             i = int(fd.read())
             return i
@@ -116,7 +116,7 @@ class DirMapping(MappingInterface):
 
     def get(self, id):
         try:
-            fd = file(self._makeFilename(id))
+            fd = open(self._makeFilename(id))
             return fd.read()
         except EnvironmentError, e:
             exn = NoRecordError(id)
@@ -124,13 +124,13 @@ class DirMapping(MappingInterface):
             raise exn
 
     def set(self, id, s):
-        fd = file(self._makeFilename(id), 'w')
+        fd = open(self._makeFilename(id), 'w')
         fd.write(s)
         fd.close()
 
     def add(self, s):
         id = self._getMax()
-        fd = file(self._makeFilename(id), 'w')
+        fd = open(self._makeFilename(id), 'w')
         try:
             fd.write(s)
             return id
@@ -147,7 +147,7 @@ class FlatfileMapping(MappingInterface):
     def __init__(self, filename, maxSize=10**6):
         self.filename = filename
         try:
-            fd = file(self.filename)
+            fd = open(self.filename)
             strId = fd.readline().rstrip()
             self.maxSize = len(strId)
             try:
@@ -169,7 +169,7 @@ class FlatfileMapping(MappingInterface):
     def _incrementCurrentId(self, fd=None):
         fdWasNone = fd is None
         if fdWasNone:
-            fd = file(self.filename, 'a')
+            fd = open(self.filename, 'a')
         fd.seek(0)
         self.currentId += 1
         fd.write(self._canonicalId(self.currentId))
@@ -187,7 +187,7 @@ class FlatfileMapping(MappingInterface):
 
     def add(self, s):
         line = self._joinLine(self.currentId, s)
-        fd = file(self.filename, 'r+')
+        fd = open(self.filename, 'r+')
         try:
             fd.seek(0, 2) # End.
             fd.write(line)
@@ -199,7 +199,7 @@ class FlatfileMapping(MappingInterface):
     def get(self, id):
         strId = self._canonicalId(id)
         try:
-            fd = file(self.filename)
+            fd = open(self.filename)
             fd.readline() # First line, nextId.
             for line in fd:
                 (lineId, s) = self._splitLine(line)
@@ -215,7 +215,7 @@ class FlatfileMapping(MappingInterface):
     def set(self, id, s):
         strLine = self._joinLine(id, s)
         try:
-            fd = file(self.filename, 'r+')
+            fd = open(self.filename, 'r+')
             self.remove(id, fd)
             fd.seek(0, 2) # End.
             fd.write(strLine)
@@ -227,7 +227,7 @@ class FlatfileMapping(MappingInterface):
         strId = self._canonicalId(id)
         try:
             if fdWasNone:
-                fd = file(self.filename, 'r+')
+                fd = open(self.filename, 'r+')
             fd.seek(0)
             fd.readline() # First line, nextId
             pos = fd.tell()
@@ -247,7 +247,7 @@ class FlatfileMapping(MappingInterface):
                 fd.close()
 
     def __iter__(self):
-        fd = file(self.filename)
+        fd = open(self.filename)
         fd.readline() # First line, nextId.
         for line in fd:
             (id, s) = self._splitLine(line)
@@ -256,7 +256,7 @@ class FlatfileMapping(MappingInterface):
         fd.close()
 
     def vacuum(self):
-        infd = file(self.filename)
+        infd = open(self.filename)
         outfd = utils.file.AtomicFile(self.filename,makeBackupIfSmaller=False)
         outfd.write(infd.readline()) # First line, nextId.
         for line in infd:
@@ -280,7 +280,7 @@ class CdbMapping(MappingInterface):
             self.db['nextId'] = '1'
 
     def _openCdb(self, *args, **kwargs):
-        self.db = cdb.open(self.filename, 'c', **kwargs)
+        self.db = cdb.open_db(self.filename, 'c', **kwargs)
 
     def _getNextId(self):
         i = int(self.db['nextId'])

@@ -33,7 +33,7 @@ Data structures for Python.
 
 import time
 import types
-import UserDict
+import collections
 from itertools import imap
 
 class RingBuffer(object):
@@ -121,11 +121,11 @@ class RingBuffer(object):
         if self.full:
             oidx = idx
             if type(oidx) == types.SliceType:
-                range = xrange(*slice.indices(oidx, len(self)))
-                if len(range) != len(elt):
+                range_ = xrange(*slice.indices(oidx, len(self)))
+                if len(range_) != len(elt):
                     raise ValueError, 'seq must be the same length as slice.'
                 else:
-                    for (i, x) in zip(range, elt):
+                    for (i, x) in zip(range_, elt):
                         self[i] = x
             else:
                 (m, idx) = divmod(oidx, len(self.L))
@@ -135,11 +135,11 @@ class RingBuffer(object):
                 self.L[idx] = elt
         else:
             if type(idx) == types.SliceType:
-                range = xrange(*slice.indices(idx, len(self)))
-                if len(range) != len(elt):
+                range_ = xrange(*slice.indices(idx, len(self)))
+                if len(range_) != len(elt):
                     raise ValueError, 'seq must be the same length as slice.'
                 else:
-                    for (i, x) in zip(range, elt):
+                    for (i, x) in zip(range_, elt):
                         self[i] = x
             else:
                 self.L[idx] = elt
@@ -240,15 +240,15 @@ class queue(object):
         if len(self) == 0:
             raise IndexError, 'queue index out of range'
         if type(oidx) == types.SliceType:
-            range = xrange(*slice.indices(oidx, len(self)))
-            if len(range) != len(value):
+            range_ = xrange(*slice.indices(oidx, len(self)))
+            if len(range_) != len(value):
                 raise ValueError, 'seq must be the same length as slice.'
             else:
-                for i in range:
+                for i in range_:
                     (m, idx) = divmod(oidx, len(self))
                     if m and m != -1:
                         raise IndexError, oidx
-                for (i, x) in zip(range, value):
+                for (i, x) in zip(range_, value):
                     self[i] = x
         else:
             (m, idx) = divmod(oidx, len(self))
@@ -261,8 +261,8 @@ class queue(object):
 
     def __delitem__(self, oidx):
         if type(oidx) == types.SliceType:
-            range = xrange(*slice.indices(oidx, len(self)))
-            for i in range:
+            range_ = xrange(*slice.indices(oidx, len(self)))
+            for i in range_:
                 del self[i]
         else:
             (m, idx) = divmod(oidx, len(self))
@@ -418,7 +418,7 @@ class MultiSet(object):
         return elt in self.d
 
 
-class CacheDict(UserDict.DictMixin):
+class CacheDict(collections.MutableMapping):
     def __init__(self, max, **kwargs):
         self.d = dict(**kwargs)
         self.max = max
@@ -442,6 +442,9 @@ class CacheDict(UserDict.DictMixin):
 
     def __iter__(self):
         return iter(self.d)
+
+    def __len__(self):
+        return len(self.d)
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

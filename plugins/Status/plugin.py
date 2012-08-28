@@ -153,7 +153,7 @@ class Status(callbacks.Plugin):
                     cmd = 'ps -o rss -p %s' % pid
                     try:
                         inst = subprocess.Popen(cmd.split(), close_fds=True,
-                                                stdin=file(os.devnull),
+                                                stdin=open(os.devnull),
                                                 stdout=subprocess.PIPE,
                                                 stderr=subprocess.PIPE)
                     except OSError:

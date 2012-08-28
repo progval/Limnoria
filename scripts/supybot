@@ -184,7 +184,7 @@ if __name__ == '__main__':
         i18n.getLocaleFromRegistryFilename(registryFilename)
         try:
             # The registry *MUST* be opened before importing log or conf.
-            registry.open(registryFilename)
+            registry.open_registry(registryFilename)
             shutil.copy(registryFilename, registryFilename + '.bak')
         except registry.InvalidRegistryFile, e:
             s = '%s in %s.  Please fix this error and start supybot again.' % \
@@ -290,7 +290,7 @@ if __name__ == '__main__':
     pidFile = conf.supybot.pidFile()
     if pidFile:
         try:
-            fd = file(pidFile, 'w')
+            fd = open(pidFile, 'w')
             pid = os.getpid()
             fd.write('%s%s' % (pid, os.linesep))
             fd.close()
@@ -319,10 +319,10 @@ if __name__ == '__main__':
                                     'userdata.conf')
     # Let's open this now since we've got our directories setup.
     if not os.path.exists(userdataFilename):
-        fd = file(userdataFilename, 'w')
+        fd = open(userdataFilename, 'w')
         fd.write('\n')
         fd.close()
-    registry.open(userdataFilename)
+    registry.open_registry(userdataFilename)
 
     import supybot.irclib as irclib
     import supybot.ircmsgs as ircmsgs

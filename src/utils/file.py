@@ -34,14 +34,14 @@ import random
 import shutil
 import os.path
 
-from iter import ifilter
+from itertools import ifilter
 
 import crypt
 
 def contents(filename):
-    return file(filename).read()
+    return open(filename).read()
 
-def open(filename, mode='wb', *args, **kwargs):
+def open_mkdir(filename, mode='wb', *args, **kwargs):
     """filename -> file object.
 
     Returns a file object for filename, creating as many directories as may be
@@ -53,15 +53,15 @@ def open(filename, mode='wb', *args, **kwargs):
         raise ValueError, 'utils.file.open expects to write.'
     (dirname, basename) = os.path.split(filename)
     os.makedirs(dirname)
-    return file(filename, mode, *args, **kwargs)
+    return open(filename, mode, *args, **kwargs)
 
 def copy(src, dst):
     """src, dst -> None
 
     Copies src to dst, using this module's 'open' function to open dst.
     """
-    srcfd = file(src)
-    dstfd = open(dst, 'wb')
+    srcfd = open(src)
+    dstfd = open_mkdir(dst, 'wb')
     shutil.copyfileobj(srcfd, dstfd)
 
 def writeLine(fd, line):
@@ -70,20 +70,20 @@ def writeLine(fd, line):
         fd.write('\n')
 
 def readLines(filename):
-    fd = file(filename)
+    fd = open(filename)
     try:
         return [line.rstrip('\r\n') for line in fd.readlines()]
     finally:
         fd.close()
 
 def touch(filename):
-    fd = file(filename, 'w')
+    fd = open(filename, 'w')
     fd.close()
 
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
     r = random.Random()
-    m = crypt.md5(suffix)
+    m = crypt.md5(suffix.encode('utf8'))
     r.seed(time.time())
     s = str(r.getstate())
     period = random.random()
@@ -95,7 +95,7 @@ def mktemp(suffix=''):
         m.update(s)
         m.update(str(now))
         s = m.hexdigest()
-    return crypt.sha(s + str(time.time())).hexdigest() + suffix
+    return crypt.sha((s + str(time.time())).encode('utf8')).hexdigest()+suffix
 
 def nonCommentLines(fd):
     for line in fd:
@@ -115,7 +115,7 @@ def chunks(fd, size):
 ##         yield chunk
 ##         chunk = fd.read(size)
 
-class AtomicFile(file):
+class AtomicFile(object):
     """Used for files that need to be atomically written -- i.e., if there's a
     failure, the original file remains, unmodified.  mode must be 'w' or 'wb'"""
     class default(object): # Holder for values.
@@ -152,18 +152,40 @@ class AtomicFile(file):
             self.tempFilename = os.path.join(tmpDir, tempFilename)
         # This doesn't work because of the uncollectable garbage effect.
         # self.__parent = super(AtomicFile, self)
-        super(AtomicFile, self).__init__(self.tempFilename, mode)
+        self._fd = open(self.tempFilename, mode)
+
+    @property
+    def closed(self):
+        return self._fd.closed
+
+    def close(self):
+        return self._fd.close()
+
+    def write(self, data):
+        return self._fd.write(data)
+
+    def writelines(self, lines):
+        return self._fd.writelines(lines)
 
     def rollback(self):
         if not self.closed:
-            super(AtomicFile, self).close()
+            self._fd.close()
             if os.path.exists(self.tempFilename):
                 os.remove(self.tempFilename)
             self.rolledback = True
 
+    def seek(self, offset):
+        return self._fd.seek(offset)
+
+    def tell(self):
+        return self._fd.tell()
+
+    def flush(self):
+        return self._fd.flush()
+
     def close(self):
         if not self.rolledback:
-            super(AtomicFile, self).close()
+            self._fd.close()
             # We don't mind writing an empty file if the file we're overwriting
             # doesn't exist.
             newSize = os.path.getsize(self.tempFilename)
@@ -190,7 +212,7 @@ class AtomicFile(file):
                 # rename a file (and shutil.move will use os.rename if
                 # possible), we first check if we have the write permission
                 # and only then do we write.
-                fd = file(self.filename, 'a')
+                fd = open(self.filename, 'a')
                 fd.close()
                 shutil.move(self.tempFilename, self.filename)
 

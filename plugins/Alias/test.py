@@ -33,7 +33,7 @@ import supybot.conf as conf
 import supybot.plugin as plugin
 import supybot.registry as registry
 
-Alias = plugin.loadPluginModule('Alias')
+import plugin as Alias
 
 class FunctionsTest(SupyTestCase):
     def testFindBiggestDollar(self):
@@ -140,6 +140,9 @@ class EscapedAliasTestCase(ChannelPluginTestCase):
     def testAdd(self):
         self.assertNotError('alias add spam.egg echo hi')
         self.assertResponse('spam.egg', 'hi')
+
+        self.assertNotError('alias add spam|egg echo hey')
+        self.assertResponse('spam|egg', 'hey')
 
     def testWriteDatabase(self):
         self.assertNotError('alias add fooo.spam echo egg')

@@ -65,6 +65,8 @@ class Formatter(logging.Formatter):
 
     def format(self, record):
         self._fmt = self._fmtConf()
+        if hasattr(self, '_style'): # Python 3
+            self._style._fmt = self._fmtConf()
         return logging.Formatter.format(self, record)
 
 

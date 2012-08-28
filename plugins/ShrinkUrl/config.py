@@ -43,10 +43,10 @@ def configure(advanced):
 
 class ShrinkService(registry.OnlySomeStrings):
     """Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."""
-    validStrings = ('ln', 'tiny', 'xrl', 'goo', 'x0')
+    validStrings = ('ln', 'tiny', 'xrl', 'goo', 'ur1', 'x0')
 
 class ShrinkCycle(registry.SpaceSeparatedListOfStrings):
-    """Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."""
+    """Valid values include 'ln', 'tiny', 'xrl', 'goo', 'ur1', and 'x0'."""
     Value = ShrinkService
 
     def __init__(self, *args, **kwargs):

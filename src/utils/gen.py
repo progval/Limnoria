@@ -30,17 +30,16 @@
 
 import os
 import sys
-import new
+import ast
 import time
 import types
-import compiler
 import textwrap
-import UserDict
 import traceback
+import collections
+from itertools import imap
 
 from str import format
 from file import mktemp
-from iter import imap, all
 
 import crypt
 
@@ -148,34 +147,38 @@ def saltHash(password, salt=None, hash='sha'):
         hasher = crypt.sha
     elif hash == 'md5':
         hasher = crypt.md5
-    return '|'.join([salt, hasher(salt + password).hexdigest()])
+    return '|'.join([salt, hasher((salt + password).encode('utf8')).hexdigest()])
 
+_astStr2 = ast.Str if sys.version_info[0] < 3 else ast.Bytes
 def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
     without unsafely using eval()."""
     try:
-        node = compiler.parse(s)
+        node = ast.parse(s)
     except SyntaxError, e:
         raise ValueError, 'Invalid string: %s.' % e
-    nodes = compiler.parse(s).node.nodes
+    nodes = ast.parse(s).body
     if not nodes:
-        if node.__class__ is compiler.ast.Module:
+        if node.__class__ is ast.Module:
             return node.doc
         else:
             raise ValueError, format('Unsafe string: %q', s)
     node = nodes[0]
-    if node.__class__ is not compiler.ast.Discard:
-        raise ValueError, format('Invalid expression: %q', s)
-    node = node.getChildNodes()[0]
     def checkNode(node):
-        if node.__class__ is compiler.ast.Const:
+        if node.__class__ is ast.Expr:
+            node = node.value
+        if node.__class__ in (ast.Num,
+                              ast.Str,
+                              _astStr2):
             return True
-        if node.__class__ in (compiler.ast.List,
-                              compiler.ast.Tuple,
-                              compiler.ast.Dict):
-            return all(checkNode, node.getChildNodes())
-        if node.__class__ is compiler.ast.Name:
-            if node.name in namespace:
+        elif node.__class__ in (ast.List,
+                              ast.Tuple):
+            return all([checkNode(x) for x in node.elts])
+        elif node.__class__ is ast.Dict:
+            return all([checkNode(x) for x in node.values]) and \
+                    all([checkNode(x) for x in node.values])
+        elif node.__class__ is ast.Name:
+            if node.id in namespace:
                 return True
             else:
                 return False
@@ -203,20 +206,25 @@ class IterableMap(object):
     def iterkeys(self):
         for (key, _) in self.iteritems():
             yield key
-    __iter__ = iterkeys
 
     def itervalues(self):
         for (_, value) in self.iteritems():
             yield value
 
-    def items(self):
-        return list(self.iteritems())
+    if sys.version_info[0] < 3:
+        # Our 2to3 fixers automatically rename iteritems/iterkeys/itervalues
+        # to items/keys/values
+        def items(self):
+            return list(self.iteritems())
 
-    def keys(self):
-        return list(self.iterkeys())
+        def keys(self):
+            return list(self.iterkeys())
 
-    def values(self):
-        return list(self.itervalues())
+        def values(self):
+            return list(self.itervalues())
+        __iter__ = iterkeys
+    else:
+        __iter__ = items
 
     def __len__(self):
         ret = 0
@@ -230,7 +238,7 @@ class IterableMap(object):
         return False
 
 
-class InsensitivePreservingDict(UserDict.DictMixin, object):
+class InsensitivePreservingDict(collections.MutableMapping):
     def key(self, s):
         """Override this if you wish."""
         if s is not None:
@@ -263,6 +271,12 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
 
     def __delitem__(self, k):
         del self.data[self.key(k)]
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
 
     def iteritems(self):
         return self.data.itervalues()

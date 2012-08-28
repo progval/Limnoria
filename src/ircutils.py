@@ -35,7 +35,10 @@ dicts, a nick class to handle nicks (so comparisons and hashing and whatnot
 work in an IRC-case-insensitive fashion), and numerous other things.
 """
 
+from __future__ import division
+
 import re
+import sys
 import time
 import random
 import string
@@ -43,6 +46,7 @@ import textwrap
 from cStringIO import StringIO as sio
 
 import supybot.utils as utils
+from itertools import imap
 
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
@@ -90,13 +94,14 @@ def joinHostmask(nick, ident, host):
     assert nick and ident and host
     return intern('%s!%s@%s' % (nick, ident, host))
 
-_rfc1459trans = string.maketrans(string.ascii_uppercase + r'\[]~',
-                                 string.ascii_lowercase + r'|{}^')
+_rfc1459trans = utils.str.MultipleReplacer(dict(zip(
+                                 string.ascii_uppercase + r'\[]~',
+                                 string.ascii_lowercase + r'|{}^')))
 def toLower(s, casemapping=None):
     """s => s
     Returns the string s lowered according to IRC case rules."""
     if casemapping is None or casemapping == 'rfc1459':
-        return s.translate(_rfc1459trans)
+        return _rfc1459trans(s)
     elif casemapping == 'ascii': # freenode
         return s.lower()
     else:
@@ -456,9 +461,10 @@ def isValidArgument(s):
 
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
-    if isinstance(s, unicode):
+    if sys.version_info[0] < 3 and isinstance(s, unicode):
         s = s.encode('utf-8')
-    elif not isinstance(s, basestring):
+    elif (sys.version_info[0] < 3 and not isinstance(s, basestring)) or \
+            (sys.version_info[0] >= 3 and not isinstance(s, str)):
         debug('Got a non-string in safeArgument: %r', s)
         s = str(s)
     if isValidArgument(s):
@@ -481,7 +487,7 @@ def dccIP(ip):
     x = 256**3
     for quad in ip.split('.'):
         i += int(quad)*x
-        x /= 256
+        x //= 256
     return i
 
 def unDccIP(i):
@@ -490,9 +496,9 @@ def unDccIP(i):
     L = []
     while len(L) < 4:
         L.append(i % 256)
-        i /= 256
+        i //= 256
     L.reverse()
-    return '.'.join(utils.iter.imap(str, L))
+    return '.'.join(imap(str, L))
 
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""

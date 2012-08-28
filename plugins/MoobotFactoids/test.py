@@ -37,7 +37,7 @@ try:
 except ImportError:
     sqlite = None
 
-MF = plugin.loadPluginModule('MoobotFactoids')
+import plugin
 MFconf = conf.supybot.plugins.MoobotFactoids
 
 class OptionListTestCase(SupyTestCase):
@@ -47,7 +47,7 @@ class OptionListTestCase(SupyTestCase):
         original = L[:]
         while max and L:
             max -= 1
-            option = MF.plugin.pickOptions(s)
+            option = plugin.pickOptions(s)
             self.failUnless(option in original,
                             'Option %s not in %s' % (option, original))
             if option in L:
