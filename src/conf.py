@@ -291,13 +291,13 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
         completed.""") % name))
     registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
         _("""Determines what channels the bot will join only on %s.""") %
-        name))
+        name, private=True))
     registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         _("""Determines whether the bot will attempt to connect with SSL
         sockets to %s.""") % name))
     registerChannelValue(network.channels, 'key', registry.String('',
         _("""Determines what key (if any) will be used to join the
-        channel.""")))
+        channel."""), private=True))
     registerGlobalValue(network, 'nick', ValidNickOrEmpty('', _("""Determines
         what nick the bot will use on this network. If empty, defaults to
         supybot.nick.""")))
