@@ -218,6 +218,9 @@ class Seen(callbacks.Plugin):
         saying. <channel> is only necessary if the message isn't sent on the
         channel itself. <nick> may contain * as a wildcard.
         """
+        if channel not in irc.state.channels.keys():
+            irc.error(format('I am not in %s.', channel))
+            return
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
@@ -234,6 +237,9 @@ class Seen(callbacks.Plugin):
         and returns the last time user was active in <channel>.  <channel> is
         only necessary if the message isn't sent on the channel itself.
         """
+        if channel not in irc.state.channels.keys():
+            irc.error(format('I am not in %s.', channel))
+            return
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
@@ -270,6 +276,9 @@ class Seen(callbacks.Plugin):
         Returns the last thing said in <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
+        if channel not in irc.state.channels.keys():
+            irc.error(format('I am not in %s.', channel))
+            return
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
@@ -298,6 +307,9 @@ class Seen(callbacks.Plugin):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        if channel not in irc.state.channels.keys():
+            irc.error(format('I am not in %s.', channel))
+            return
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
@@ -309,6 +321,9 @@ class Seen(callbacks.Plugin):
 
         Returns the messages since <nick> last left the channel.
         """
+        if channel not in irc.state.channels.keys():
+            irc.error(format('I am not in %s.', channel))
+            return
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
