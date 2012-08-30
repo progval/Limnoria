@@ -262,12 +262,12 @@ def registerNetwork(name, password='', ssl=False):
         is completed.""" % name))
     registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
         """Space-separated list of channels the bot will join only on %s."""
-        % name))
+        % name, private=True))
     registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         """Determines whether the bot will attempt to connect with SSL sockets
         to %s.""" % name))
     registerChannelValue(network.channels, 'key', registry.String('',
-        """Determines what key (if any) will be used to join the channel."""))
+        """Determines what key (if any) will be used to join the channel.""", private=True))
     return network
 
 # Let's fill our networks.
