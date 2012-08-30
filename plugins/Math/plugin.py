@@ -197,7 +197,7 @@ class Math(callbacks.Plugin):
                 # use of str() on large numbers loses information:
                 # str(float(33333333333333)) => '3.33333333333e+13'
                 # float('3.33333333333e+13') => 33333333333300.0
-                return '%f' % x
+                return '%.16f' % x
             return str(x)
         text = self._mathRe.sub(handleMatch, text)
         try:

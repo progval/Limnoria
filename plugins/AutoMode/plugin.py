@@ -79,7 +79,7 @@ class AutoMode(callbacks.Plugin):
                 if not dismiss():
                     irc.queueMsg(msg)
                 else:
-                    self.log.info('Dismissing auto-mode for ProgVal.')
+                    self.log.info('Dismissing auto-mode for %s.' % msg.nick)
             delay = self.registryValue('delay', channel)
             if delay:
                 schedule.addEvent(f, time.time() + delay)
