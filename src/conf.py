@@ -267,12 +267,12 @@ def registerNetwork(name, password='', ssl=False):
         be tried in order, wrapping back to the first when the cycle is
         completed.""" % name))
     registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
-        """Determines what channels the bot will join only on %s.""" % name))
+        """Determines what channels the bot will join only on %s.""" % name, private=True))
     registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         """Determines whether the bot will attempt to connect with SSL sockets
         to %s.""" % name))
     registerChannelValue(network.channels, 'key', registry.String('',
-        """Determines what key (if any) will be used to join the channel."""))
+        """Determines what key (if any) will be used to join the channel.""", private=True))
     return network
 
 # Let's fill our networks.
