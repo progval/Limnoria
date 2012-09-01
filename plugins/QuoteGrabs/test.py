@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2004, Daniel DiPaolo
-# Copyright (c) 2008, James Vega
+# Copyright (c) 2008, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
