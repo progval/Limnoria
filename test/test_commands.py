@@ -30,6 +30,7 @@
 from supybot.test import *
 
 from supybot.commands import *
+import supybot.conf as conf
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.callbacks as callbacks
@@ -71,6 +72,16 @@ class GeneralContextTestCase(CommandsTestCase):
     def testSpecInt(self):
         self.assertState(['int'], ['1'], [1])
         self.assertState(['int', 'int', 'int'], ['1', '2', '3'], [1, 2, 3])
+
+    def testSpecNick(self):
+        strict = conf.supybot.protocols.irc.strictRfc()
+        try:
+            conf.supybot.protocols.irc.strictRfc.setValue(True)
+            self.assertError(['nick'], ['1abc'])
+            conf.supybot.protocols.irc.strictRfc.setValue(False)
+            self.assertState(['nick'], ['1abc'], ['1abc'])
+        finally:
+            conf.supybot.protocols.irc.strictRfc.setValue(strict)
 
     def testSpecLong(self):
         self.assertState(['long'], ['1'], [1L])

@@ -47,6 +47,8 @@ import glob
 import shutil
 import os.path
 
+from src.version import version
+
 plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
@@ -116,13 +118,12 @@ package_dir = {'supybot': 'src',
 for plugin in plugins:
     package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
 
-version = '0.83.4.1+git'
 setup(
     # Metadata
     name='supybot',
     version=version,
     author='Jeremy Fincher',
-    url='http://supybot.com/',
+    url='http://sourceforge.net/projects/supybot/',
     author_email='jemfinch@supybot.com',
     download_url='http://www.sf.net/project/showfiles.php?group_id=58965',
     description='A flexible and extensible Python IRC bot and framework.',

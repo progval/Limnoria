@@ -240,7 +240,7 @@ class ChannelState(utils.python.Object):
         self.users = ircutils.IrcSet()
         self.voices = ircutils.IrcSet()
         self.halfops = ircutils.IrcSet()
-        self.modes = ircutils.IrcDict()
+        self.modes = {}
 
     def isOp(self, nick):
         return nick in self.ops
@@ -405,10 +405,10 @@ class IrcState(IrcCommandDispatcher):
         """Handles parsing the 004 reply
 
         Supported user and channel modes are cached"""
-        # msg.args = [server, ircd-version, umodes, modes,
+        # msg.args = [nick, server, ircd-version, umodes, modes,
         #             modes that require arguments? (non-standard)]
-        self.supported['umodes'] = msg.args[2]
-        self.supported['chanmodes'] = msg.args[3]
+        self.supported['umodes'] = msg.args[3]
+        self.supported['chanmodes'] = msg.args[4]
 
     _005converters = utils.InsensitivePreservingDict({
         'modes': int,

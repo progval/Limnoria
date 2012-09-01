@@ -465,13 +465,15 @@ class RichReplyMethods(object):
         if isinstance(capability, basestring): # checkCommandCapability!
             log.warning('Denying %s for lacking %q capability.',
                         self.msg.prefix, capability)
-            if not self._getConfig(conf.supybot.reply.error.noCapability):
-                v = self._getConfig(conf.supybot.replies.noCapability)
-                s = self.__makeReply(v % capability, s)
-                return self._error(s, **kwargs)
+            # noCapability means "don't send a specific capability error
+            # message" not "don't send a capability error message at all", like
+            # one would think
+            if self._getConfig(conf.supybot.reply.error.noCapability):
+                v = self._getConfig(conf.supybot.replies.genericNoCapability)
             else:
-                log.debug('Not sending capability error, '
-                          'supybot.reply.error.noCapability is False.')
+                v = self._getConfig(conf.supybot.replies.noCapability)
+            s = self.__makeReply(v % capability, s)
+            return self._error(s, **kwargs)
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)
@@ -1167,7 +1169,12 @@ class Commands(BasePlugin):
         method(irc, msg, *args, **kwargs)
 
     def _callCommand(self, command, irc, msg, *args, **kwargs):
-        self.log.info('%s called by %q.', formatCommand(command), msg.prefix)
+        if irc.nick == msg.args[0]:
+            self.log.info('%s called in private by %q.', formatCommand(command),
+                    msg.prefix)
+        else:
+            self.log.info('%s called on %s by %q.', formatCommand(command),
+                    msg.args[0], msg.prefix)
         # XXX I'm being extra-special-careful here, but we need to refactor
         #     this.
         try:

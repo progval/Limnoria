@@ -103,6 +103,8 @@ class Math(callbacks.Plugin):
     _mathEnv['abs'] = abs
     _mathEnv['max'] = max
     _mathEnv['min'] = min
+    _mathSafeEnv = dict([(x,y) for x,y in _mathEnv.items()
+        if x not in ['factorial']])
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d)])-)?'
                          r'(?:0x[A-Fa-f\d]+|'
                          r'0[0-7]+|'
@@ -191,7 +193,7 @@ class Math(callbacks.Plugin):
         text = self._mathRe.sub(handleMatch, text)
         try:
             self.log.info('evaluating %q from %s', text, msg.prefix)
-            x = complex(eval(text, self._mathEnv, self._mathEnv))
+            x = complex(eval(text, self._mathSafeEnv, self._mathSafeEnv))
             irc.reply(self._complexToString(x))
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)
