@@ -30,10 +30,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import os
 import sys
 
-if sys.version_info < (2, 4, 0):
-    sys.stderr.write("Supybot requires Python 2.4 or newer.\n")
+if sys.version_info < (2, 6, 0):
+    sys.stderr.write("Supybot requires Python 2.6 or newer.")
+    sys.stderr.write(os.linesep)
     sys.exit(-1)
 
 import textwrap
