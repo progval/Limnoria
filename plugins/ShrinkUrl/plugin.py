@@ -46,9 +46,12 @@ class CdbShrunkenUrlDB(object):
     def __init__(self, filename):
         self.dbs = {}
         cdb = conf.supybot.databases.types.cdb
-        for service in conf.supybot.plugins.ShrinkUrl.default.validStrings:
+        def register_service(service):
             dbname = filename.replace('.db', service.capitalize() + '.db')
             self.dbs[service] = cdb.connect(dbname)
+        for service in conf.supybot.plugins.ShrinkUrl.default.validStrings:
+            register_service(service)
+        register_service('Expand')
 
     def get(self, service, url):
         return self.dbs[service][url]
@@ -319,6 +322,32 @@ class ShrinkUrl(callbacks.PluginRegexp):
         except ShrinkError, e:
             irc.error(str(e))
     x0 = thread(wrap(x0, ['url']))
+
+    def _getExpandUrl(self, url):
+        url = utils.web.urlquote(url)
+        try:
+            return self.db.get('Expand', url)
+        except KeyError:
+            text = utils.web.getUrl('http://api.longurl.org/v2/expand?url=' + url)
+            text = text.decode()
+            text = text.split('<![CDATA[', 1)[1].split(']]>', 1)[0]
+            self.db.set('Expand', url, text)
+            return text
+
+    @internationalizeDocstring
+    def expand(self, irc, msg, args, url):
+        """<url>
+
+        Returns an expanded version of <url>.
+        """
+        try:
+            expandurl = self._getExpandUrl(url)
+            m = irc.reply(expandurl)
+            if m is not None:
+                m.tag('shrunken')
+        except ShrinkError, e:
+            irc.error(str(e))
+    expand = thread(wrap(expand, ['url']))
 
 Class = ShrinkUrl
 
