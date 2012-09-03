@@ -30,7 +30,7 @@ msgid "Cannot join %s, I was not invited."
 msgstr "Ei voi liittyä kanavalle %s, minua ei ole kutsuttu."
 
 #: plugin.py:88
-msgid "Cannot join %s, it's banned me."
+msgid "Cannot join %s, I am banned."
 msgstr "Ei voi liittyä kanavalle %s, se on antanut minulle porttikiellon."
 
 #: plugin.py:96

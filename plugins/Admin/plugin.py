@@ -85,7 +85,7 @@ class Admin(callbacks.Plugin):
         try:
             channel = msg.args[1]
             (irc, msg) = self.joins.pop(channel)
-            irc.error(_('Cannot join %s, it\'s banned me.') % channel)
+            irc.error(_('Cannot join %s, I am banned.') % channel)
         except KeyError:
             self.log.debug('Got 474 without Admin.join being called.')
 

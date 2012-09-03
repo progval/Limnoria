@@ -29,7 +29,7 @@ msgid "Cannot join %s, I was not invited."
 msgstr ""
 
 #: plugin.py:88
-msgid "Cannot join %s, it's banned me."
+msgid "Cannot join %s, I am banned."
 msgstr ""
 
 #: plugin.py:96
