@@ -73,8 +73,6 @@ except OSError: # Does not exist
 open(os.path.join('src', 'version.py'), 'a').write(
         "version = '0.83.4.1+limnoria %s'\n" % version)
 
-from src.version import version
-
 def normalizeWhitespace(s):
     return ' '.join(s.split())
 
