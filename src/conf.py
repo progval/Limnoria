@@ -1097,6 +1097,9 @@ registerGlobalValue(supybot.servers.http, 'keepAlive',
 registerGlobalValue(supybot.servers.http, 'robots',
     registry.String('', _("""Determines the content of the robots.txt file,
     served on the server to search engine.""")))
+registerGlobalValue(supybot.servers.http, 'favicon',
+    registry.String('', _("""Determines the path of the file served as
+    favicon to browsers.""")))
 
 
 ###

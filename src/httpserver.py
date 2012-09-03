@@ -31,6 +31,7 @@
 An embedded and centralized HTTP server for Supybot's plugins.
 """
 
+import os
 import cgi
 from threading import Event, Thread
 from cStringIO import StringIO
@@ -86,6 +87,8 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
             callback = SupyIndex()
         elif self.path == '/robots.txt':
             callback = RobotsTxt()
+        elif self.path == '/favicon.ico':
+            callback = Favicon()
         else:
             subdir = self.path.split('/')[1]
             try:
@@ -200,10 +203,43 @@ class RobotsTxt(SupyHTTPServerCallback):
     def doGet(self, handler, path):
         response = conf.supybot.servers.http.robots().replace('\\n', '\n')
         handler.send_response(200)
-        self.send_header('Content_type', 'text/html')
+        self.send_header('Content-type', 'text/plain')
         self.send_header('Content-Length', len(response))
         self.end_headers()
         self.wfile.write(response)
+
+class Favicon(SupyHTTPServerCallback):
+    """Services the favicon.ico file to browsers."""
+    name = 'favicon'
+    defaultResponse = _('Request not handled')
+    def doGet(self, handler, path):
+        file_path = conf.supybot.servers.http.favicon()
+        found = False
+        if file_path:
+            try:
+                icon = open(file_path, 'r')
+                found = True
+            except IOError:
+                pass
+        if found:
+            response = icon.read()
+            filename = file_path.rsplit(os.sep, 1)[1]
+            if '.' in filename:
+                ext = filename.rsplit('.', 1)[1]
+            else:
+                ext = 'ico'
+            # I have no idea why, but this headers are already sent.
+            # self.send_header('Content-Length', len(response))
+            # self.send_header('Content-type', 'image/' + ext)
+            # self.end_headers()
+            self.wfile.write(response)
+        else:
+            response = _('No favicon set.')
+            handler.send_response(404)
+            self.send_header('Content-type', 'text/plain')
+            self.send_header('Content-Length', len(response))
+            self.end_headers()
+            self.wfile.write(response)
 
 httpServer = None
 
