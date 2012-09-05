@@ -1,1 +1,1 @@
-This plugin keeps stats of the channel and returns them with the command ChannelStats.
+This plugin keeps stats of the channel and returns them with the command channelstats.
