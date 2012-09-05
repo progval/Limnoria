@@ -70,8 +70,9 @@ try:
     os.unlink(os.path.join('src', 'version.py'))
 except OSError: # Does not exist
     pass
-open(os.path.join('src', 'version.py'), 'a').write(
-        "version = '0.83.4.1+limnoria %s'\n" % version)
+f = open(os.path.join('src', 'version.py'), 'a') # Fix for pypy.
+f.write("version = '0.83.4.1+limnoria %s'\n" % version)
+f.close()
 
 def normalizeWhitespace(s):
     return ' '.join(s.split())
