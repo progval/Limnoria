@@ -231,52 +231,6 @@ class Google(callbacks.PluginRegexp):
         s = ', '.join([format('%s: %i', bold(s), i) for (i, s) in results])
         irc.reply(s)
 
-    _gtranslateUrl='http://ajax.googleapis.com/ajax/services/language/translate'
-    def translate(self, irc, msg, args, fromLang, toLang, text):
-        """<from-language> [to] <to-language> <text>
-
-        Returns <text> translated from <from-language> into <to-language>.
-        Beware that translating to or from languages that use multi-byte
-        characters may result in some very odd results.
-        """
-        channel = msg.args[0]
-        ref = self.registryValue('referer')
-        if not ref:
-            ref = 'http://%s/%s' % (dynamic.irc.server,
-                                    dynamic.irc.nick)
-        headers = utils.web.defaultHeaders
-        headers['Referer'] = ref
-        opts = {'q': text, 'v': '1.0'}
-        lang = conf.supybot.plugins.Google.defaultLanguage
-        if fromLang.capitalize() in lang.transLangs:
-            fromLang = lang.transLangs[fromLang.capitalize()]
-        elif lang.normalize('lang_'+fromLang)[5:] \
-                not in lang.transLangs.values():
-            irc.errorInvalid('from language', fromLang,
-                             format('Valid languages are: %L',
-                                    lang.transLangs.keys()))
-        else:
-            fromLang = lang.normalize('lang_'+fromLang)[5:]
-        if toLang.capitalize() in lang.transLangs:
-            toLang = lang.transLangs[toLang.capitalize()]
-        elif lang.normalize('lang_'+toLang)[5:] \
-                not in lang.transLangs.values():
-            irc.errorInvalid('to language', toLang,
-                             format('Valid languages are: %L',
-                                    lang.transLangs.keys()))
-        else:
-            toLang = lang.normalize('lang_'+toLang)[5:]
-        opts['langpair'] = '%s|%s' % (fromLang, toLang)
-        fd = utils.web.getUrlFd('%s?%s' % (self._gtranslateUrl,
-                                           urllib.urlencode(opts)),
-                                headers)
-        json = simplejson.load(fd)
-        fd.close()
-        if json['responseStatus'] != 200:
-            raise callbacks.Error, 'We broke The Google!'
-        irc.reply(json['responseData']['translatedText'].encode('utf-8'))
-    translate = wrap(translate, ['something', 'to', 'something', 'text'])
-
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
         if not self.registryValue('searchSnarfer', msg.args[0]):
