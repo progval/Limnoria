@@ -242,54 +242,6 @@ class Google(callbacks.PluginRegexp):
             irc.reply(url.encode('utf-8'), prefixNick=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
 
-    def _googleUrl(self, s):
-        s = s.replace('+', '%2B')
-        s = s.replace(' ', '+')
-        url = r'http://google.com/search?q=' + s
-        return url
-
-    _calcRe = re.compile(r'<h\d class="?r"?.*?<b>(.*?)</b>', re.I)
-    _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
-    _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
-    _calcTimesRe = re.compile(r'&(?:times|#215);')
-    def calc(self, irc, msg, args, expr):
-        """<expression>
-
-        Uses Google's calculator to calculate the value of <expression>.
-        """
-        url = self._googleUrl(expr)
-        html = utils.web.getUrl(url)
-        match = self._calcRe.search(html)
-        if match is not None:
-            s = match.group(1)
-            s = self._calcSupRe.sub(r'^(\1)', s)
-            s = self._calcFontRe.sub(r',', s)
-            s = self._calcTimesRe.sub(r'*', s)
-            irc.reply(s)
-        else:
-            irc.reply('Google\'s calculator didn\'t come up with anything.')
-    calc = wrap(calc, ['text'])
-
-    _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
-    def phonebook(self, irc, msg, args, phonenumber):
-        """<phone number>
-
-        Looks <phone number> up on Google.
-        """
-        url = self._googleUrl(phonenumber)
-        html = utils.web.getUrl(url)
-        m = self._phoneRe.search(html)
-        if m is not None:
-            s = m.group(1)
-            s = s.replace('<b>', '')
-            s = s.replace('</b>', '')
-            s = utils.web.htmlToText(s)
-            irc.reply(s)
-        else:
-            irc.reply('Google\'s phonebook didn\'t come up with anything.')
-    phonebook = wrap(phonebook, ['text'])
-
-
 Class = Google
 
 
