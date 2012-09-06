@@ -32,8 +32,8 @@ from supybot.test import *
 class PluginTestCase(PluginTestCase):
     plugins = ('Plugin', 'Utilities')
     def testPlugin(self):
-        self.assertRegexp('plugin plugin', 'available.*Plugin plugin')
-        self.assertResponse('echo [plugin plugin]', 'Plugin')
+        self.assertRegexp('plugin ignore', 'available.*Utilities plugin')
+        self.assertResponse('echo [plugin ignore]', 'Utilities')
 
     def testList(self):
         self.assertRegexp('plugin list', 'Plugin.*Utilities')
