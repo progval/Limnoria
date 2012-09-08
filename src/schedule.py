@@ -34,6 +34,7 @@ Supybot driver.
 
 import time
 import heapq
+from threading import Lock
 
 import supybot.log as log
 import supybot.world as world
@@ -61,10 +62,12 @@ class Schedule(drivers.IrcDriver):
         self.schedule = []
         self.events = {}
         self.counter = 0
+        self.lock = Lock()
 
     def reset(self):
-        self.events.clear()
-        self.schedule[:] = []
+        with self.lock:
+            self.events.clear()
+            self.schedule[:] = []
         # We don't reset the counter here because if someone has held an id of
         # one of the nuked events, we don't want him removing new events with
         # his old id.
@@ -72,7 +75,7 @@ class Schedule(drivers.IrcDriver):
     def name(self):
         return 'Schedule'
 
-    def addEvent(self, f, t, name=None):
+    def addEvent(self, f, t, name=None, args=[], kwargs={}):
         """Schedules an event f to run at time t.
 
         name must be hashable and not an int.
@@ -82,20 +85,22 @@ class Schedule(drivers.IrcDriver):
             self.counter += 1
         assert name not in self.events, \
                'An event with the same name has already been scheduled.'
-        self.events[name] = f
-        heapq.heappush(self.schedule, mytuple((t, name)))
+        with self.lock:
+            self.events[name] = f
+            heapq.heappush(self.schedule, mytuple((t, name, args, kwargs)))
         return name
 
     def removeEvent(self, name):
         """Removes the event with the given name from the schedule."""
         f = self.events.pop(name)
-        self.schedule = [(t, n) for (t, n) in self.schedule if n != name]
         # We must heapify here because the heap property may not be preserved
         # by the above list comprehension.  We could, conceivably, just mark
         # the elements of the heap as removed and ignore them when we heappop,
         # but that would only save a constant factor (we're already linear for
         # the listcomp) so I'm not worried about it right now.
-        heapq.heapify(self.schedule)
+        with self.lock:
+            self.schedule = [x for x in self.schedule if x[1] != name]
+            heapq.heapify(self.schedule)
         return f
 
     def rescheduleEvent(self, name, t):
@@ -123,11 +128,12 @@ class Schedule(drivers.IrcDriver):
                       'why do we continue to live?')
             time.sleep(1) # We're the only driver; let's pause to think.
         while self.schedule and self.schedule[0][0] < time.time():
-            (t, name) = heapq.heappop(self.schedule)
-            f = self.events[name]
+            with self.lock:
+                (t, name, args, kwargs) = heapq.heappop(self.schedule)
+                f = self.events[name]
             del self.events[name]
             try:
-                f()
+                f(*args, **kwargs)
             except Exception, e:
                 log.exception('Uncaught exception in scheduled function:')
 
