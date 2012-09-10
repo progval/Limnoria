@@ -407,7 +407,7 @@ registerChannelValue(supybot.reply.error, 'noCapability',
 
 registerChannelValue(supybot.reply, 'inPrivate',
     registry.Boolean(False, _("""Determines whether the bot will reply
-     privatelywhen replying in a channel, rather than replying to the whole
+     privately when replying in a channel, rather than replying to the whole
      channel.""")))
 
 registerChannelValue(supybot.reply, 'withNotice',

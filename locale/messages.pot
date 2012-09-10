@@ -412,7 +412,7 @@ msgstr ""
 #: src/conf.py:403
 msgid ""
 "Determines whether the bot will reply\n"
-"     privatelywhen replying in a channel, rather than replying to the whole\n"
+"     privately when replying in a channel, rather than replying to the whole\n"
 "     channel."
 msgstr ""
 
