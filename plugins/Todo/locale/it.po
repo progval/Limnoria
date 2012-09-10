@@ -37,7 +37,7 @@ msgstr ""
 
 #: plugin.py:146
 msgid "You are not allowed to see other users todo-list."
-msgstr "Non hai l'autorizzazione pe rleggere la lista delle cose da fare degli altri utenti."
+msgstr "Non hai l'autorizzazione per leggere la lista delle cose da fare degli altri utenti."
 
 #: plugin.py:153
 msgid "#%i: %s"
