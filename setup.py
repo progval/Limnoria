@@ -38,16 +38,8 @@ if sys.version_info < (2, 6, 0):
     sys.stderr.write(os.linesep)
     sys.exit(-1)
 
-import textwrap
-
-clean = False
-while '--clean' in sys.argv:
-    clean = True
-    sys.argv.remove('--clean')
-
-import glob
-import shutil
 import os.path
+import textwrap
 
 from src.version import version
 
@@ -58,8 +50,7 @@ def normalizeWhitespace(s):
     return ' '.join(s.split())
 
 try:
-    from distutils.core import setup
-    from distutils.sysconfig import get_python_lib
+    from setuptools import setup
 except ImportError, e:
     s = normalizeWhitespace("""Supybot requires the distutils package to
     install. This package is normally included with Python, but for some
@@ -76,16 +67,6 @@ except ImportError, e:
     sys.stderr.write(textwrap.fill(s))
     sys.stderr.write(os.linesep*2)
     sys.exit(-1)
-
-if clean:
-    previousInstall = os.path.join(get_python_lib(), 'supybot')
-    if os.path.exists(previousInstall):
-        try:
-            print 'Removing current installation.'
-            shutil.rmtree(previousInstall)
-        except Exception, e:
-            print 'Couldn\'t remove former installation: %s' % e
-            sys.exit(-1)
 
 packages = ['supybot',
             'supybot.utils',
@@ -141,7 +122,8 @@ setup(
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
         'Operating System :: Microsoft :: Windows',
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         ],
 
     # Installation data
