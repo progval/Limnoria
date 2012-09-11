@@ -30,6 +30,7 @@
 
 import re
 import cgi
+import json
 import time
 import socket
 import urllib
@@ -41,27 +42,6 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-
-simplejson = None
-
-try:
-    simplejson = utils.python.universalImport('json')
-except ImportError:
-    pass
-
-try:
-    # The 3rd party simplejson module was included in Python 2.6 and renamed to
-    # json.  Unfortunately, this conflicts with the 3rd party json module.
-    # Luckily, the 3rd party json module has a different interface so we test
-    # to make sure we aren't using it.
-    if simplejson is None or hasattr(simplejson, 'read'):
-        simplejson = utils.python.universalImport('simplejson',
-                                                  'local.simplejson')
-except ImportError:
-    raise callbacks.Error, \
-            'You need Python2.6 or the simplejson module installed to use ' \
-            'this plugin.  Download the module at ' \
-            '<http://undefined.org/python/#simplejson>.'
 
 class Google(callbacks.PluginRegexp):
     threaded = True
@@ -132,11 +112,11 @@ class Google(callbacks.PluginRegexp):
         fd = utils.web.getUrlFd('%s?%s' % (self._gsearchUrl,
                                            urllib.urlencode(opts)),
                                 headers)
-        json = simplejson.load(fd)
+        resp = json.load(fd)
         fd.close()
-        if json['responseStatus'] != 200:
+        if resp['responseStatus'] != 200:
             raise callbacks.Error, 'We broke The Google!'
-        return json
+        return resp
 
     def formatData(self, data, bold=True, max=0):
         if isinstance(data, basestring):

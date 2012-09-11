@@ -95,8 +95,6 @@ packages = ['supybot',
             [
              'supybot.plugins.Dict.local',
              'supybot.plugins.Math.local',
-             'supybot.plugins.Google.local',
-             'supybot.plugins.Google.local.simplejson',
              'supybot.plugins.RSS.local',
              'supybot.plugins.Time.local',
              'supybot.plugins.Time.local.dateutil',
