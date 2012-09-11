@@ -77,8 +77,6 @@ packages = ['supybot',
              'supybot.plugins.Dict.local',
              'supybot.plugins.Math.local',
              'supybot.plugins.RSS.local',
-             'supybot.plugins.Time.local',
-             'supybot.plugins.Time.local.dateutil',
             ]
 
 package_dir = {'supybot': 'src',
@@ -88,9 +86,6 @@ package_dir = {'supybot': 'src',
                'supybot.plugins.Dict.local': 'plugins/Dict/local',
                'supybot.plugins.Math.local': 'plugins/Math/local',
                'supybot.plugins.RSS.local': 'plugins/RSS/local',
-               'supybot.plugins.Time.local': 'plugins/Time/local',
-               'supybot.plugins.Time.local.dateutil':
-               'plugins/Time/local/dateutil',
               }
 
 for plugin in plugins:
@@ -138,7 +133,12 @@ setup(
              'scripts/supybot-adduser',
              'scripts/supybot-plugin-doc',
              'scripts/supybot-plugin-create',
-             ]
+             ],
+
+    install_requires=[
+        # Time plugin
+        'python-dateutil <2.0,>=1.3',
+        ],
     )
 
 
