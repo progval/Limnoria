@@ -151,6 +151,9 @@ class GithubRepository(GitRepository):
             if file.name == prefix + dirname + '/README.txt':
                 extractedFile = archive.extractfile(file)
                 return extractedFile.read()
+            elif file.name == prefix + dirname + '/README.md':
+                extractedFile = archive.extractfile(file)
+                return extractedFile.read()
 
     def _getWritableDirectoryFromList(self, directories):
         for directory in directories:
