@@ -148,10 +148,7 @@ class GithubRepository(GitRepository):
         prefix = archive.getnames()[0]
         dirname = ''.join((self._path, plugin))
         for file in archive.getmembers():
-            if file.name == prefix + dirname + '/README.txt':
-                extractedFile = archive.extractfile(file)
-                return extractedFile.read()
-            elif file.name == prefix + dirname + '/README.md':
+            if file.name.startswith(prefix + dirname + '/README'):
                 extractedFile = archive.extractfile(file)
                 return extractedFile.read()
 
