@@ -108,6 +108,22 @@ class AutoMode(callbacks.Plugin):
             irc.queueMsg(ircmsgs.ban(channel, banmask))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
 
+        user = ircdb.users.getUser(ircdb.users.getUserId(msg.prefix))
+        pattern = re.compile('-\+')
+        for item in self.registryValue('extra', channel):
+            try:
+                username, modes = pattern.split(item, maxsplit=1)
+            except ValueError: # No - or + in item
+                log.error('%r is not a valid item for '
+                        'supybot.plugins.AutoMode.extra')
+                continue
+            if username != user.name:
+                continue
+            else:
+                schedule_msg(ircmsgs.mode(msg.nick, modes), lambda :True)
+                break
+
+
 
 Class = AutoMode
 
