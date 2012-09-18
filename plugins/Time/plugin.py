@@ -30,12 +30,12 @@
 import time
 TIME = time # For later use.
 
+from dateutil import parser
+
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
-
-parser = utils.python.universalImport('dateutil.parser', 'local.dateutil.parser')
 
 def parse(s):
     todo = []
