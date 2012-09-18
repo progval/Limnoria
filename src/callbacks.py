@@ -32,8 +32,6 @@
 This module contains the basic callbacks for handling PRIVMSGs.
 """
 
-import supybot
-
 import re
 import copy
 import time
@@ -43,16 +41,9 @@ import inspect
 import operator
 from cStringIO import StringIO
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.ircdb as ircdb
-import supybot.irclib as irclib
-import supybot.ircmsgs as ircmsgs
-import supybot.ircutils as ircutils
-import supybot.registry as registry
-from supybot.utils.iter import any, all
+from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry, utils,
+        world)
+from .utils.iter import any, all
 
 def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,

@@ -33,10 +33,7 @@ import imp
 import os.path
 import linecache
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.registry as registry
-import supybot.callbacks as callbacks
+from . import callbacks, conf, log, registry
 
 installDir = os.path.dirname(sys.modules[__name__].__file__)
 _pluginsDir = os.path.join(installDir, 'plugins')

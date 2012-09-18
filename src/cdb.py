@@ -38,7 +38,7 @@ import struct
 import os.path
 import cPickle as pickle
 
-import supybot.utils as utils
+from . import utils
 
 def hash(s):
     """DJB's hash function for CDB."""

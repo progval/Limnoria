@@ -32,7 +32,7 @@ import sys
 import os.path
 import dynamicScope
 
-import supybot.utils as utils
+from . import utils
 
 __builtins__['format'] = utils.str.format
 

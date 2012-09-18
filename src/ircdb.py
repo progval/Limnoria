@@ -28,20 +28,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import division
-
 import os
 import time
 import operator
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.ircutils as ircutils
-import supybot.registry as registry
-import supybot.unpreserve as unpreserve
-from utils.iter import imap, ilen, ifilter
+from . import conf, ircutils, log, registry, unpreserve, utils, world
+from .utils.iter import imap, ilen, ifilter
 
 def isCapability(capability):
     return len(capability.split(None, 1)) == 1

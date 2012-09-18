@@ -38,11 +38,10 @@ import textwrap
 import UserDict
 import traceback
 
-from str import format
-from file import mktemp
-from iter import imap, all
-
-import crypt
+from . import crypt
+from .str import format
+from .file import mktemp
+from .iter import imap, all
 
 def abbrev(strings, d=None):
     """Returns a dictionary mapping unambiguous abbreviations to full forms."""

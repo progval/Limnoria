@@ -33,14 +33,8 @@ import sys
 import time
 import socket
 
-import supybot.utils as utils
-import supybot.registry as registry
-import supybot.ircutils as ircutils
-
-###
-# version: This should be pretty obvious.
-###
-from supybot.version import version
+from . import ircutils, registry, utils
+from .version import version
 
 ###
 # *** The following variables are affected by command-line options.  They are
@@ -249,7 +243,7 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
     Value = ValidChannel
     def join(self, channel):
-        import ircmsgs # Don't put this globally!  It's recursive.
+        from . import ircmsgs # Don't put this globally!  It's recursive.
         key = self.key.get(channel)()
         if key:
             return ircmsgs.join(channel, key)
@@ -856,7 +850,7 @@ registerChannelValue(supybot.databases.plugins.channelSpecific.link, 'allow',
 
 class CDB(registry.Boolean):
     def connect(self, filename):
-        import supybot.cdb as cdb
+        from . import cdb
         basename = os.path.basename(filename)
         journalName = supybot.directories.data.tmp.dirize(basename+'.journal')
         return cdb.open(filename, 'c',

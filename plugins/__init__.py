@@ -41,15 +41,8 @@ import os.path
 import UserDict
 import threading
 
-import supybot.log as log
-import supybot.dbi as dbi
-import supybot.conf as conf
-import supybot.ircdb as ircdb
-import supybot.utils as utils
-import supybot.world as world
-from supybot.commands import *
-import supybot.ircutils as ircutils
-import supybot.callbacks as callbacks
+from .. import callbacks, conf, dbi, ircdb, ircutils, log, utils, world
+from ..commands import *
 
 try:
     # We need to sweep away all that mx.* crap because our code doesn't account

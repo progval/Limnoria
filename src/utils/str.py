@@ -38,8 +38,8 @@ import sys
 import string
 import textwrap
 
-from iter import all, any
-from structures import TwoWayDictionary
+from .iter import all, any
+from .structures import TwoWayDictionary
 
 curry = new.instancemethod
 chars = string.maketrans('', '')

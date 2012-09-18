@@ -35,9 +35,7 @@ import os
 import shutil
 import os.path
 
-import error
-import python
-import file as File
+from . import error, file as File, python
 
 # 'txn' is used as an abbreviation for 'transaction' in the following source.
 

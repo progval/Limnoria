@@ -38,13 +38,8 @@ import time
 import select
 import socket
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.drivers as drivers
-import supybot.schedule as schedule
-from supybot.utils.iter import imap
+from .. import (conf, drivers, log, schedule, utils, world)
+from ..utils.iter import imap
 
 try:
     import ssl

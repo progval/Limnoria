@@ -43,7 +43,7 @@ try:
 except AttributeError:
     pass
 
-from str import normalizeWhitespace
+from .str import normalizeWhitespace
 
 Request = urllib2.Request
 urlquote = urllib.quote

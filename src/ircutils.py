@@ -42,7 +42,7 @@ import string
 import textwrap
 from cStringIO import StringIO as sio
 
-import supybot.utils as utils
+from . import utils
 
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""

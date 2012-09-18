@@ -34,7 +34,7 @@ import time
 import string
 import textwrap
 
-import supybot.utils as utils
+from . import utils
 
 def error(s):
    """Replace me with something better from another module!"""

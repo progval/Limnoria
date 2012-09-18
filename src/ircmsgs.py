@@ -38,10 +38,8 @@ object (which, as you'll read later, is quite...full-featured :))
 import re
 import time
 
-import supybot.conf as conf
-import supybot.utils as utils
-from supybot.utils.iter import all
-import supybot.ircutils as ircutils
+from . import conf, ircutils, utils
+from .utils.iter import all
 
 ###
 # IrcMsg class -- used for representing IRC messages acquired from a network.

@@ -38,15 +38,7 @@ import getopt
 import inspect
 import threading
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.ircdb as ircdb
-import supybot.ircmsgs as ircmsgs
-import supybot.ircutils as ircutils
-import supybot.callbacks as callbacks
-
+from . import callbacks, conf, ircdb, ircmsgs, ircutils, log, utils, world
 
 ###
 # Non-arg wrappers -- these just change the behavior of a command without

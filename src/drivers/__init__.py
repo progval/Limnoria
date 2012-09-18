@@ -36,10 +36,7 @@ import sys
 import time
 import socket
 
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.log as supylog
-import supybot.ircmsgs as ircmsgs
+from .. import conf, ircmsgs, log as supylog, utils
 
 _drivers = {}
 _deadDrivers = []
