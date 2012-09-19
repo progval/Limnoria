@@ -92,7 +92,7 @@ class Web(callbacks.PluginRegexp):
             try:
                 size = conf.supybot.protocols.http.peekSize()
                 text = utils.web.getUrl(url, size=size) \
-                        .decode('utf8', errors='replace')
+                        .decode('utf8')
             except utils.web.Error, e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 return
@@ -136,7 +136,7 @@ class Web(callbacks.PluginRegexp):
         """
         size = conf.supybot.protocols.http.peekSize()
         s = utils.web.getUrl(url, size=size) \
-                        .decode('utf8', errors='replace')
+                        .decode('utf8')
         m = self._doctypeRe.search(s)
         if m:
             s = utils.str.normalizeWhitespace(m.group(0))
@@ -178,7 +178,7 @@ class Web(callbacks.PluginRegexp):
         """
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size) \
-                        .decode('utf8', errors='replace')
+                        .decode('utf8')
         parser = Title()
         try:
             parser.feed(text)
@@ -205,7 +205,7 @@ class Web(callbacks.PluginRegexp):
         """
         url = 'http://uptime.netcraft.com/up/graph/?host=' + hostname
         html = utils.web.getUrl(url) \
-                        .decode('utf8', errors='replace')
+                        .decode('utf8')
         m = self._netcraftre.search(html)
         if m:
             html = m.group(1)
@@ -251,7 +251,7 @@ class Web(callbacks.PluginRegexp):
                       '(supybot.plugins.Web.fetch.maximum is set to 0).'),
                       Raise=True)
         fd = utils.web.getUrlFd(url) \
-                        .decode('utf8', errors='replace')
+                        .decode('utf8')
         irc.reply(fd.read(max))
     fetch = wrap(fetch, ['url'])
 
