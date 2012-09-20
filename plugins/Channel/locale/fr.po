@@ -316,7 +316,7 @@ msgstr "Tous les bannissements sur %s correspondant à %s ont été supprimés."
 
 #: plugin.py:393
 msgid "No bans matching %s were found on %s."
-msgstr "Aucun bannissement correspondant à % n'a été trouvé sur %s."
+msgstr "Aucun bannissement correspondant à %s n'a été trouvé sur %s."
 
 #: plugin.py:396
 msgid "unban someone"
