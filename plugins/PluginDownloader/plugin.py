@@ -148,7 +148,7 @@ class GithubRepository(GitRepository):
         prefix = archive.getnames()[0]
         dirname = ''.join((self._path, plugin))
         for file in archive.getmembers():
-            if file.name == prefix + dirname + '/README.txt':
+            if file.name.startswith(prefix + dirname + '/README'):
                 extractedFile = archive.extractfile(file)
                 return extractedFile.read()
 
@@ -234,6 +234,10 @@ repositories = {
                'nyuszika7h':       GithubRepository(
                                                    'nyuszika7h',
                                                    'Supybot-plugins'
+                                                   ),
+               'resistivecorpse':  GithubRepository(
+                                                   'resistivecorpse',
+                                                   'supybot-plugins'
                                                    ),
                }
 

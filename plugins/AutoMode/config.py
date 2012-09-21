@@ -75,5 +75,8 @@ conf.registerChannelValue(AutoMode, 'delay',
     registry.Integer(0, _("""Determines how many seconds the bot will wait
     before applying a mode. Has no effect on bans.""")))
 
+conf.registerChannelValue(AutoMode, 'extra',
+    registry.SpaceSeparatedListOfStrings([], _("""Extra modes that will be
+    applied to a user. Example syntax: user1+o-v user2+v user3-v""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

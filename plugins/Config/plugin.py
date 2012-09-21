@@ -80,7 +80,7 @@ def _reload():
     ircdb.users.reload()
     ircdb.ignores.reload()
     ircdb.channels.reload()
-    registry.open(world.registryFilename)
+    registry.open_registry(world.registryFilename)
 
 def _hupHandler(sig, frame):
     log.info('Received SIGHUP, reloading configuration.')

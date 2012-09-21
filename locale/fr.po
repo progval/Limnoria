@@ -422,7 +422,7 @@ msgstr "Détermine si le bot enverra un message d'erreur    aux utilisateurs qui
 #: ../src/conf.py:403
 msgid ""
 "Determines whether the bot will reply\n"
-"     privatelywhen replying in a channel, rather than replying to the whole\n"
+"     privately when replying in a channel, rather than replying to the whole\n"
 "     channel."
 msgstr "Détermine si le bot répondra en privé,    plutôt que de répondre sur le canal."
 

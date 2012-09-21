@@ -28,8 +28,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
 import time
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
@@ -92,6 +94,26 @@ class AutoMode(callbacks.Plugin):
             do('voice')
         except Continue:
             return
+        finally:
+            user = ircdb.users.getUser(ircdb.users.getUserId(msg.prefix))
+            pattern = re.compile('-|\+')
+            for item in self.registryValue('extra', channel):
+                try:
+                    username, modes = pattern.split(item, maxsplit=1)
+                    modes = item[len(username)] + modes
+                except ValueError: # No - or + in item
+                    log.error(('%r is not a valid item for '
+                            'supybot.plugins.AutoMode.extra') % item)
+                    continue
+                if username != user.name:
+                    continue
+                else:
+                    self.log.info('Scheduling auto-modes %s of %s in %s.',
+                                  modes, msg.prefix, channel)
+                    modes = [modes] + \
+                            ([msg.nick]*len(pattern.sub('', modes)))
+                    schedule_msg(ircmsgs.mode(channel, modes), lambda :False)
+                    break
         c = ircdb.channels.getChannel(channel)
         if c.checkBan(msg.prefix) and self.registryValue('ban', channel):
             period = self.registryValue('ban.period', channel)
@@ -107,6 +129,8 @@ class AutoMode(callbacks.Plugin):
             banmask =conf.supybot.protocols.irc.banmask.makeBanmask(msg.prefix)
             irc.queueMsg(ircmsgs.ban(channel, banmask))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
+
+
 
 
 Class = AutoMode

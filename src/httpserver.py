@@ -231,7 +231,7 @@ class Favicon(SupyHTTPServerCallback):
             # I have no idea why, but this headers are already sent.
             # self.send_header('Content-Length', len(response))
             # self.send_header('Content-type', 'image/' + ext)
-            # self.end_headers()
+            # self.end_headers()
             self.wfile.write(response)
         else:
             response = _('No favicon set.')
