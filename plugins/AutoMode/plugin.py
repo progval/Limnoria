@@ -87,15 +87,11 @@ class AutoMode(callbacks.Plugin):
                 schedule.addEvent(f, time.time() + delay)
             else:
                 f()
-        try:
-            do('op')
-            if 'h' in irc.state.supported['prefix']:
-                do('halfop')
-            do('voice')
-        except Continue:
-            return
-        finally:
-            user = ircdb.users.getUser(ircdb.users.getUserId(msg.prefix))
+        def extra_modes():
+            try:
+                user = ircdb.users.getUser(ircdb.users.getUserId(msg.prefix))
+            except KeyError:
+                return
             pattern = re.compile('-|\+')
             for item in self.registryValue('extra', channel):
                 try:
@@ -114,6 +110,15 @@ class AutoMode(callbacks.Plugin):
                             ([msg.nick]*len(pattern.sub('', modes)))
                     schedule_msg(ircmsgs.mode(channel, modes), lambda :False)
                     break
+        try:
+            do('op')
+            if 'h' in irc.state.supported['prefix']:
+                do('halfop')
+            do('voice')
+        except Continue:
+            return
+        finally:
+            extra_modes()
         c = ircdb.channels.getChannel(channel)
         if c.checkBan(msg.prefix) and self.registryValue('ban', channel):
             period = self.registryValue('ban.period', channel)
