@@ -631,7 +631,7 @@ msgid ""
 "    supybot.capabilities.default is set to False, meaning that no commands are\n"
 "    allowed unless explicitly in your capabilities.  Either way, you can't do\n"
 "    what you want to do."
-msgstr "Il vous manque une capacité.    Ceci peut être dû au fait que vous possédez actuellement une    anti-capacité quant à la commande que vous tentez d'utiliser, ou    que le canal fourni cette anti-capacité par défaut, ou parce que    les capacités globales incluent cette anti-capacité. Cela peut    également être du au fait que supybot.capabilities.default est    défini à False, ce qui signifit qu'une commande n'est autorisée par    défaut (elles doivent être autorisées une par une par un administrateur).    En clair, vous ne pouvez pas le faire."
+msgstr "Il vous manque une capacité.    Ceci peut être dû au fait que vous possédez actuellement une    anti-capacité quant à la commande que vous tentez d'utiliser, ou    que le canal fourni cette anti-capacité par défaut, ou parce que    les capacités globales incluent cette anti-capacité. Cela peut    également être du au fait que supybot.capabilities.default est    défini à False, ce qui signifie qu'une commande n'est autorisée par    défaut (elles doivent être autorisées une par une par un administrateur).    En clair, vous ne pouvez pas le faire."
 
 #: ../src/conf.py:551
 msgid ""
@@ -851,7 +851,7 @@ msgid ""
 "    This means that to add another directory, you can nest the former value and\n"
 "    add a new one.  E.g. you can say: bot: 'config supybot.directories.plugins\n"
 "    [config supybot.directories.plugins], newPluginDirectory'."
-msgstr "Détermine dans quel répertoire    le bot recherchera les plugins. Accepte une liste de chaînes séparées par    des virgules. Ce qui signifit que si vous voulez ajouter un autre    répertoire, vous pouvez imbriquer la forme actuelle la nouvelle. Par    exemple, vous pouvez dire : 'config supybot.directories.plugins    [config supybot.directories.plugins], nouveauRepertoireDePlugins'."
+msgstr "Détermine dans quel répertoire    le bot recherchera les plugins. Accepte une liste de chaînes séparées par    des virgules. Ce qui signifie que si vous voulez ajouter un autre    répertoire, vous pouvez imbriquer la forme actuelle la nouvelle. Par    exemple, vous pouvez dire : 'config supybot.directories.plugins    [config supybot.directories.plugins], nouveauRepertoireDePlugins'."
 
 #: ../src/conf.py:784
 msgid ""
@@ -1091,7 +1091,7 @@ msgid ""
 "    objects will be.  This means that *all* sockets will timeout when this many\n"
 "    seconds has gone by (unless otherwise modified by the author of the code\n"
 "    that uses the sockets)."
-msgstr "Détermine quel timeout est utilisé par défaut pour les    sockets. Ceci signifit que *toutes* les sockets expireront au bout de cette    durée (à moins que l'auteur du code n'ait changé cette valeur)."
+msgstr "Détermine quel timeout est utilisé par défaut pour les    sockets. Ceci signifie que *toutes* les sockets expireront au bout de cette    durée (à moins que l'auteur du code n'ait changé cette valeur)."
 
 #: ../src/conf.py:1127
 msgid ""
