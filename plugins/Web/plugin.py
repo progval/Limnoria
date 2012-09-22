@@ -107,7 +107,7 @@ class Web(callbacks.PluginRegexp):
                 domain = utils.web.getDomain(url)
                 title = utils.web.htmlToText(parser.title.strip())
                 if sys.version_info[0] < 3:
-                    title = title.encode('utf8', errors='replace')
+                    title = title.encode('utf8', 'replace')
                 s = format(_('Title: %s (at %s)'), title, domain)
                 irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
