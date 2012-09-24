@@ -230,7 +230,7 @@ class Unix(callbacks.Plugin):
                       'variable appropriately.'))
 
     @internationalizeDocstring
-    def wtf(self, irc, msg, args, _, something):
+    def wtf(self, irc, msg, args, foo, something):
         """[is] <something>
 
         Returns wtf <something> is.  'wtf' is a *nix command that first
@@ -248,7 +248,7 @@ class Unix(callbacks.Plugin):
             except OSError:
                 irc.error(_('It seems the configured wtf command was not '
                           'available.'), Raise=True)
-            (out, _) = inst.communicate()
+            (out, foo) = inst.communicate()
             inst.wait()
             if out:
                 response = out.decode('utf8').splitlines()[0].strip()
