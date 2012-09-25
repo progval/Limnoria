@@ -206,8 +206,8 @@ class ChannelLogger(callbacks.Plugin):
                 self.doLog(irc, channel,
                            '*** %s is now known as %s\n', oldNick, newNick)
     def doJoin(self, irc, msg):
-        if(self.registryValue('showJoinParts', msg.args[0])):
-            for channel in msg.args[0].split(','):
+        for channel in msg.args[0].split(','):
+            if(self.registryValue('showJoinParts', msg.args[0])):
                 self.doLog(irc, channel,
                            '*** %s <%s> has joined %s\n',
                            msg.nick, msg.prefix, channel)
@@ -227,12 +227,12 @@ class ChannelLogger(callbacks.Plugin):
                        '*** %s was kicked by %s\n', target, msg.nick)
 
     def doPart(self, irc, msg):
-        if(self.registryValue('showJoinParts', msg.args[0])):
-            if len(msg.args) > 1:
-                reason = " (%s)" % msg.args[1]
-            else:
-                reason = ""
-            for channel in msg.args[0].split(','):
+        if len(msg.args) > 1:
+            reason = " (%s)" % msg.args[1]
+        else:
+            reason = ""
+        for channel in msg.args[0].split(','):
+            if(self.registryValue('showJoinParts', msg.args[0])):
                 self.doLog(irc, channel,
                            '*** %s <%s> has left %s%s\n',
                            msg.nick, msg.prefix, channel, reason)
@@ -260,7 +260,7 @@ class ChannelLogger(callbacks.Plugin):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
         for (channel, chan) in self.lastStates[irc].channels.iteritems():
-            if(self.registryValue('showJoinParts', msg.args[0])):
+            if(self.registryValue('showJoinParts', channel)):
                 if msg.nick in chan.users:
                     self.doLog(irc, channel,
                                '*** %s <%s> has quit IRC%s\n',
