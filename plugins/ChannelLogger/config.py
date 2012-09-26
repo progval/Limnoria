@@ -48,6 +48,8 @@ conf.registerGlobalValue(ChannelLogger, 'flushImmediately',
     registry.Boolean(False, _("""Determines whether channel logfiles will be
     flushed anytime they're written to, rather than being buffered by the
     operating system.""")))
+conf.registerChannelValue(ChannelLogger, 'showJoinParts',
+    registry.Boolean(True, _("""Determines wether joins and parts are logged""")))
 conf.registerChannelValue(ChannelLogger, 'stripFormatting',
     registry.Boolean(True, _("""Determines whether formatting characters (such
     as bolding, color, etc.) are removed when writing the logs to disk.""")))
