@@ -207,7 +207,7 @@ class ChannelLogger(callbacks.Plugin):
                            '*** %s is now known as %s\n', oldNick, newNick)
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
-            if(self.registryValue('showJoinParts', msg.args[0])):
+            if(self.registryValue('showJoinParts', channel)):
                 self.doLog(irc, channel,
                            '*** %s <%s> has joined %s\n',
                            msg.nick, msg.prefix, channel)
@@ -232,7 +232,7 @@ class ChannelLogger(callbacks.Plugin):
         else:
             reason = ""
         for channel in msg.args[0].split(','):
-            if(self.registryValue('showJoinParts', msg.args[0])):
+            if(self.registryValue('showJoinParts', channel)):
                 self.doLog(irc, channel,
                            '*** %s <%s> has left %s%s\n',
                            msg.nick, msg.prefix, channel, reason)
