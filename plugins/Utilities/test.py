@@ -39,6 +39,11 @@ class UtilitiesTestCase(PluginTestCase):
         self.assertNotError('success 1')
         self.assertError('success [re m/foo bar]')
 
+    def testConcat(self):
+        self.assertResponse('concat foo bar', 'foobar')
+        self.assertResponse('concat [echo foo] [echo bar]', 'foobar')
+        self.assertResponse('concat "foo bar"', 'foo bar')
+
     def testLast(self):
         self.assertResponse('utilities last foo bar baz', 'baz')
 

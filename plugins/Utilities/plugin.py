@@ -68,6 +68,15 @@ class Utilities(callbacks.Plugin):
     success = wrap(success, [additional('text')])
 
     @internationalizeDocstring
+    def concat(self, irc, msg, args, things):
+        """<arg> [<arg> ...]
+
+        Concatenates all arguments.
+        """
+        irc.reply(''.join(things))
+    concat = wrap(concat, [many('anything')])
+
+    @internationalizeDocstring
     def last(self, irc, msg, args):
         """<text> [<text> ...]
 
