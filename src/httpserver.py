@@ -33,6 +33,7 @@ An embedded and centralized HTTP server for Supybot's plugins.
 
 import os
 import cgi
+import socket
 from threading import Event, Thread
 from cStringIO import StringIO
 from SocketServer import ThreadingMixIn
@@ -54,8 +55,18 @@ class RequestNotHandled(Exception):
 class RealSupyHTTPServer(HTTPServer):
     # TODO: make this configurable
     timeout = 0.5
-    callbacks = {}
     running = False
+
+    def __init__(self, address, protocol, callback):
+        if protocol == 4:
+            self.address_family = socket.AF_INET
+        elif protocol == 6:
+            self.address_family = socket.AF_INET6
+        else:
+            raise AssertionError(protocol)
+        HTTPServer.__init__(self, address, callback)
+        self.callbacks = {}
+
     def hook(self, subdir, callback):
         if subdir in self.callbacks:
             log.warning(('The HTTP subdirectory `%s` was already hooked but '
@@ -67,6 +78,9 @@ class RealSupyHTTPServer(HTTPServer):
         callback = self.callbacks.pop(subdir) # May raise a KeyError. We don't care.
         callback.doUnhook(self)
         return callback
+
+    def __str__(self):
+        return 'server at %s %i' % self.server_address[0:2]
 
 class TestSupyHTTPServer(RealSupyHTTPServer):
     def __init__(self, *args, **kwargs):
@@ -241,39 +255,50 @@ class Favicon(SupyHTTPServerCallback):
             self.end_headers()
             self.wfile.write(response)
 
-httpServer = None
+http_servers = None
 
 def startServer():
     """Starts the HTTP server. Shouldn't be called from other modules.
     The callback should be an instance of a child of SupyHTTPServerCallback."""
-    global httpServer
-    log.info('Starting HTTP server.')
-    address = (configGroup.host(), configGroup.port())
-    httpServer = SupyHTTPServer(address, SupyHTTPRequestHandler)
-    Thread(target=httpServer.serve_forever, name='HTTP Server').start()
+    global http_servers
+    addresses4 = [(4, (x, configGroup.port()))
+            for x in configGroup.hosts4().split(' ') if x != '']
+    addresses6 = [(6, (x, configGroup.port()))
+            for x in configGroup.hosts6().split(' ') if x != '']
+    http_servers = []
+    for protocol, address in (addresses4 + addresses6):
+        server = SupyHTTPServer(address, protocol, SupyHTTPRequestHandler)
+        Thread(target=server.serve_forever, name='HTTP Server').start()
+        http_servers.append(server)
+        log.info('Starting HTTP server: %s' % str(server))
 
 def stopServer():
     """Stops the HTTP server. Should be run only from this module or from
     when the bot is dying (ie. from supybot.world)"""
-    global httpServer
-    if httpServer is not None:
-        log.info('Stopping HTTP server.')
-        httpServer.shutdown()
-        httpServer = None
+    global http_servers
+    if http_servers is not None:
+        for server in http_servers:
+            log.info('Stopping HTTP server: %s' % str(server))
+            server.shutdown()
+            server = None
 
 if configGroup.keepAlive():
     startServer()
 
 def hook(subdir, callback):
     """Sets a callback for a given subdir."""
-    if httpServer is None:
+    if http_servers is None:
         startServer()
-    httpServer.hook(subdir, callback)
+    assert isinstance(http_servers, list)
+    for server in http_servers:
+        server.hook(subdir, callback)
 
 def unhook(subdir):
     """Unsets the callback assigned to the given subdir, and return it."""
-    global httpServer
-    assert httpServer is not None
-    callback = httpServer.unhook(subdir)
-    if len(httpServer.callbacks) <= 0 and not configGroup.keepAlive():
-        stopServer()
+    global http_servers
+    assert isinstance(http_servers, list)
+    for server in http_servers:
+        callback = server.unhook(subdir)
+        if len(server.callbacks) <= 0 and not configGroup.keepAlive():
+            server.shutdown()
+            http_servers.remove(server)
