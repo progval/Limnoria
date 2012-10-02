@@ -239,8 +239,8 @@ class Web(callbacks.PluginRegexp):
         timeout = self.registryValue('fetch.timeout')
         if timeout == 0:
             timeout = None
-        fd = utils.web.getUrlFd(url, timeout=timeout)
-        irc.reply(fd.read(max))
+        s = utils.web.getUrl(url, timeout=timeout, size=max)
+        irc.reply(s)
     fetch = wrap(fetch, ['url'])
 
 Class = Web
