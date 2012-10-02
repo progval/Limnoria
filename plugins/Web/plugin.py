@@ -253,9 +253,9 @@ class Web(callbacks.PluginRegexp):
             irc.error(_('This command is disabled '
                       '(supybot.plugins.Web.fetch.maximum is set to 0).'),
                       Raise=True)
-        fd = utils.web.getUrlFd(url) \
+        fd = utils.web.getUrl(url, size=max) \
                         .decode('utf8')
-        irc.reply(fd.read(max))
+        irc.reply(fd)
     fetch = wrap(fetch, ['url'])
 
 Class = Web
