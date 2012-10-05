@@ -257,11 +257,12 @@ def registerNetwork(name, password='', ssl=False):
         technically passwords are server-specific and not network-specific,
         but this is the best we can do right now.""" % name, private=True))
     registryServers = registerGlobalValue(network, 'servers', Servers([],
-        """Determines what servers the bot will connect to for %s.  Each will
-        be tried in order, wrapping back to the first when the cycle is
-        completed.""" % name))
+        """Space-separated list of servers the bot will connect to for %s.
+        Each will be tried in order, wrapping back to the first when the cycle
+        is completed.""" % name))
     registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
-        """Determines what channels the bot will join only on %s.""" % name))
+        """Space-separated list of channels the bot will join only on %s."""
+        % name))
     registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         """Determines whether the bot will attempt to connect with SSL sockets
         to %s.""" % name))
