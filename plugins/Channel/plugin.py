@@ -548,7 +548,7 @@ class Channel(callbacks.Plugin):
             c.addBan(banmask, expires)
             ircdb.channels.setChannel(channel, c)
             irc.replySuccess()
-        add = wrap(add, ['op', 'banmask', additional('expiry', 0)])
+        add = wrap(add, ['op', first('hostmask', 'banmask'), additional('expiry', 0)])
 
         @internationalizeDocstring
         def remove(self, irc, msg, args, channel, banmask):
