@@ -299,7 +299,51 @@ class Channel(callbacks.Plugin):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        self._ban(irc, msg, args,
+                channel, optlist, bannedNick, expiry, reason, True)
+    kban = wrap(kban,
+                ['op',
+                 getopts({'exact':'', 'nick':'', 'user':'', 'host':''}),
+                 ('isGranted', _('kick or ban someone')),
+                 'nickInChannel',
+                 optional('expiry', 0),
+                 additional('text')])
+
+    @internationalizeDocstring
+    def iban(self, irc, msg, args,
+             channel, optlist, bannedNick, expiry):
+        """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]
+
+        If you have the #channel,op capability, this will ban <nick> for
+        as many seconds as you specify, or else (if you specify 0 seconds or
+        don't specify a number of seconds) it will ban the person indefinitely.
+        --exact bans only the exact hostmask; --nick bans just the nick;
+        --user bans just the user, and --host bans just the host.  You can
+        combine these options as you choose.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        self._ban(irc, msg, args,
+                channel, optlist, bannedNick, expiry, None, False)
+    iban = wrap(iban,
+                ['op',
+                 getopts({'exact':'', 'nick':'', 'user':'', 'host':''}),
+                 ('isGranted', _('ban someone')),
+                 first('nick', 'hostmask'),
+                 optional('expiry', 0)])
+
+    def _ban(self, irc, msg, args,
+            channel, optlist, target, expiry, reason, kick):
         # Check that they're not trying to make us kickban ourself.
+        if irc.isNick(target):
+            bannedNick = target
+            try:
+                bannedHostmask = irc.state.nickToHostmask(target)
+            except KeyError:
+                irc.error(format(_('I haven\'t seen %s.'), bannedNick), Raise=True)
+        else:
+            bannedNick = ircutils.nickFromHostmask(target)
+            bannedHostmask = target
         if not irc.isNick(bannedNick):
             self.log.warning('%q tried to kban a non nick: %q',
                              msg.prefix, bannedNick)
@@ -310,10 +354,6 @@ class Channel(callbacks.Plugin):
             return
         if not reason:
             reason = msg.nick
-        try:
-            bannedHostmask = irc.state.nickToHostmask(bannedNick)
-        except KeyError:
-            irc.error(format(_('I haven\'t seen %s.'), bannedNick), Raise=True)
         capability = ircdb.makeChannelCapability(channel, 'op')
         banmaskstyle = conf.supybot.protocols.irc.banmask
         banmask = banmaskstyle.makeBanmask(bannedHostmask, [o[0] for o in optlist])
@@ -334,7 +374,8 @@ class Channel(callbacks.Plugin):
             if irc.state.channels[channel].isOp(bannedNick):
                 irc.queueMsg(ircmsgs.deop(channel, bannedNick))
             irc.queueMsg(ircmsgs.ban(channel, banmask))
-            irc.queueMsg(ircmsgs.kick(channel, bannedNick, reason))
+            if kick:
+                irc.queueMsg(ircmsgs.kick(channel, bannedNick, reason))
             if expiry > 0:
                 def f():
                     if channel in irc.state.channels and \
@@ -357,13 +398,6 @@ class Channel(callbacks.Plugin):
                              msg.prefix, capability)
             irc.errorNoCapability(capability)
             exact,nick,user,host
-    kban = wrap(kban,
-                ['op',
-                 getopts({'exact':'', 'nick':'', 'user':'', 'host':''}),
-                 ('isGranted', _('kick or ban someone')),
-                 'nickInChannel',
-                 optional('expiry', 0),
-                 additional('text')])
 
     @internationalizeDocstring
     def unban(self, irc, msg, args, channel, hostmask):
