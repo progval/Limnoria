@@ -312,7 +312,7 @@ class Channel(callbacks.Plugin):
     @internationalizeDocstring
     def iban(self, irc, msg, args,
              channel, optlist, bannedNick, expiry):
-        """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]
+        """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>]
 
         If you have the #channel,op capability, this will ban <nick> for
         as many seconds as you specify, or else (if you specify 0 seconds or
