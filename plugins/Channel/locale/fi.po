@@ -1,16 +1,21 @@
+#
+# Mika Suomalainen <mkaysi@outlook.com>, 2012.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot Channel\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
-"PO-Revision-Date: \n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2012-10-07 18:04+EEST\n"
+"PO-Revision-Date: 2012-10-07 18:12+0200\n"
+"Last-Translator: Mika Suomalainen <mkaysi@outlook.com>\n"
+"Language-Team: suomi <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Finnish\n"
 "X-Poedit-Country: FINLAND\n"
+"Plural-Forms: \n"
+"X-Generator: Gtranslator 2.91.5\n"
 
 #: config.py:48
 msgid ""
@@ -164,7 +169,7 @@ msgstr ""
 msgid "halfop someone"
 msgstr "halfoppaa joku"
 
-#: plugin.py:168
+#: plugin.py:184
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
@@ -182,11 +187,11 @@ msgstr ""
 "        lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:190
+#: plugin.py:192
 msgid "voice someone"
 msgstr "anna jollekulle ääni"
 
-#: plugin.py:195
+#: plugin.py:197
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
@@ -202,15 +207,15 @@ msgstr ""
 "        opit henkilöltä joka lähettää viestin.\n"
 "        "
 
-#: plugin.py:202
+#: plugin.py:204
 msgid "I cowardly refuse to deop myself.  If you really want me deopped, tell me to op you and then deop me yourself."
 msgstr "Minä pelkurimaisesti kieltäydyn poistamasta oppeja itseltäni. Jos todella tahdot poistaa minulta opit, käske minun opata sinut ja sitten poista opit minut itse."
 
-#: plugin.py:210
+#: plugin.py:212
 msgid "deop someone"
 msgstr "deoppaa joku"
 
-#: plugin.py:215
+#: plugin.py:217
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
@@ -226,15 +231,15 @@ msgstr ""
 "        viestin lähettäneeltä henkilöltä poistetaan puoli-kanavaoperaattorin oikeudet.\n"
 "        "
 
-#: plugin.py:222
+#: plugin.py:224
 msgid "I cowardly refuse to dehalfop myself.  If you really want me dehalfopped, tell me to op you and then dehalfop me yourself."
 msgstr "Minä pelkurimaisesti kieltäydyn poistamaan half-oppeja itseltäni. Jos haluat minut half-opatuksi, käske minun opata sinut ja sitten poista half-op minut itse."
 
-#: plugin.py:230
+#: plugin.py:232
 msgid "dehalfop someone"
 msgstr "poista joltakulta half-op"
 
-#: plugin.py:235
+#: plugin.py:237
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
@@ -250,11 +255,11 @@ msgstr ""
 "        joka lähettää viestin.\n"
 "        "
 
-#: plugin.py:242
+#: plugin.py:244
 msgid "I cowardly refuse to devoice myself.  If you really want me devoiced, tell me to op you and then devoice me yourself."
 msgstr "Minä pelkurimaisesti kieltäydyn poistamasta ääntä itseltäni. Jos todella tahdot poistaa minulta äänen, käske minut oppaamaan sinut ja sitten poista ääni minulta itse."
 
-#: plugin.py:255
+#: plugin.py:253
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -270,7 +275,7 @@ msgstr ""
 "       jos viestiä ei lähetetä kanavalta itsestään.\n"
 "        "
 
-#: plugin.py:268
+#: plugin.py:266
 msgid ""
 "[<channel>] <nick>[, <nick>, ...] [<reason>]\n"
 "\n"
@@ -288,19 +293,19 @@ msgstr ""
 "        itseltään.\n"
 "        "
 
-#: plugin.py:276
+#: plugin.py:274
 msgid "I cowardly refuse to kick myself."
 msgstr "Minä pelkurimaisesti kieltäydyn potkimasta itseäni."
 
-#: plugin.py:281
+#: plugin.py:279
 msgid "The reason you gave is longer than the allowed length for a KICK reason on this server."
 msgstr "Syy, jonka annoit on pidempi kuin sallittu pituus POTKIMIS-syyksi tällä palvelimella."
 
-#: plugin.py:286
+#: plugin.py:284
 msgid "kick someone"
 msgstr "potki joku"
 
-#: plugin.py:292
+#: plugin.py:290
 msgid ""
 "[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]\n"
 "\n"
@@ -328,27 +333,55 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:311
-msgid "I cowardly refuse to kickban myself."
-msgstr "Minä pelkurimaisesti kieltäydyn potkimasta itseäni ja antamasta itselleni porttikieltoa."
-
-#: plugin.py:318
-msgid "I haven't seen %s."
-msgstr "Minä en ole nähnyt käyttäjää %s."
-
-#: plugin.py:326
-msgid "I cowardly refuse to ban myself."
-msgstr "Minä pelkurimaisesti kieltäydyn antamasta itselleni porttikieltoa."
-
-#: plugin.py:353
-msgid "%s has %s too, you can't ban him/her/it."
-msgstr "Käyttäjälltä %s on myös valtuus %s, et voi antaa hänelle/sille porttikieltoa."
-
-#: plugin.py:365
+#: plugin.py:307
 msgid "kick or ban someone"
 msgstr "potki tai anna jollekulle porttikielto"
 
-#: plugin.py:372
+#: plugin.py:315
+msgid ""
+"[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>]\n"
+"\n"
+"        If you have the #channel,op capability, this will ban <nick> for\n"
+"        as many seconds as you specify, or else (if you specify 0 seconds or\n"
+"        don't specify a number of seconds) it will ban the person indefinitely.\n"
+"        --exact bans only the exact hostmask; --nick bans just the nick;\n"
+"        --user bans just the user, and --host bans just the host.  You can\n"
+"        combine these options as you choose.\n"
+"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<kanava>] [--{exact,nick,user,host}] <nimimerkki> [<sekuntit>]\n"
+"\n"
+" Jos sinulla on #kanava,op valtuus, tämä antaa porttikiellon <nimimerkille> \n"
+" niin moneksi sekuntiksi kuin määrität, tai muuten (jos määrität 0 sekuntia tai\n"
+" et määritä sekuntien lukumäärää) se antaa henkilölle ikuisen porttikiellon.\n"
+" --exact antaa porttikiellon vain hostmaskille; --nick antaa porttikiellon vain nimimerkille;\n"
+" --user antaa porttikiellon vain käyttäjälle, ja --host antaa porttikiellon vain isännälle.  Voit\n"
+" yhdistää näitä vaihtoehtoja mielesi mukaan. \n"
+" <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään."
+
+#: plugin.py:331
+msgid "ban someone"
+msgstr "anna jollekulle porttikielto"
+
+#: plugin.py:343
+msgid "I haven't seen %s."
+msgstr "Minä en ole nähnyt käyttäjää %s."
+
+#: plugin.py:353
+msgid "I cowardly refuse to kickban myself."
+msgstr "Minä pelkurimaisesti kieltäydyn potkimasta itseäni ja antamasta itselleni porttikieltoa."
+
+#: plugin.py:364
+msgid "I cowardly refuse to ban myself."
+msgstr "Minä pelkurimaisesti kieltäydyn antamasta itselleni porttikieltoa."
+
+#: plugin.py:392
+msgid "%s has %s too, you can't ban him/her/it."
+msgstr "Käyttäjälltä %s on myös valtuus %s, et voi antaa hänelle/sille porttikieltoa."
+
+#: plugin.py:404
 msgid ""
 "[<channel>] [<hostmask>]\n"
 "\n"
@@ -368,19 +401,19 @@ msgstr ""
 "        vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:389
+#: plugin.py:421
 msgid "All bans on %s matching %s have been removed."
 msgstr "Kaikki porttikiellot, jotka täsmäävät kanavalla %s käyttäjään %s on poistettu."
 
-#: plugin.py:393
+#: plugin.py:425
 msgid "No bans matching %s were found on %s."
 msgstr "Banneja, jotka täsmäävät käyttäjään %s ei löydetty kanavalla %s."
 
-#: plugin.py:396
+#: plugin.py:428
 msgid "unban someone"
 msgstr "poista joltakulta porttikielto"
 
-#: plugin.py:401
+#: plugin.py:433
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
@@ -396,19 +429,19 @@ msgstr ""
 "        ei lähetetä kanavalla itsessään.\n"
 "        "
 
-#: plugin.py:410
+#: plugin.py:442
 msgid "invite someone"
 msgstr "kutsu joku"
 
-#: plugin.py:429
+#: plugin.py:461
 msgid "%s is already in %s."
 msgstr "%s on jo kanavalla %s"
 
-#: plugin.py:436
+#: plugin.py:468
 msgid "There is no %s on this network."
 msgstr "Käyttäjä %s ei ole tässä verkossa."
 
-#: plugin.py:448
+#: plugin.py:480
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -426,7 +459,7 @@ msgstr ""
 "            kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:463
+#: plugin.py:495
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -443,7 +476,7 @@ msgstr ""
 "            <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:478
+#: plugin.py:510
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -455,15 +488,15 @@ msgstr ""
 "            Palauttaa kanavat, joilla botti on lobotomoitu.\n"
 "            "
 
-#: plugin.py:493
+#: plugin.py:525
 msgid "I'm currently lobotomized in %L."
 msgstr "Minut on tällä hetkellä lobotomoity seuraavilla kanavilla: %L."
 
-#: plugin.py:496
+#: plugin.py:528
 msgid "I'm not currently lobotomized in any channels that you're in."
 msgstr "En tällä hetkellä ole lobotomoitu millään kanavalla, jolla sinä olet."
 
-#: plugin.py:503
+#: plugin.py:535
 msgid ""
 "[<channel>] <nick|hostmask> [<expires>]\n"
 "\n"
@@ -491,7 +524,7 @@ msgstr ""
 "            kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:523
+#: plugin.py:555
 msgid ""
 "[<channel>] <hostmask>\n"
 "\n"
@@ -507,11 +540,11 @@ msgstr ""
 "            viestiä ei lähetetä kanavalla itsellään.\n"
 "             "
 
-#: plugin.py:535
+#: plugin.py:567
 msgid "There are no persistent bans for that hostmask."
 msgstr "Tuolla hostmaskilla ei ole pysyvää porttikieltoa."
 
-#: plugin.py:540
+#: plugin.py:572
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -525,19 +558,19 @@ msgstr ""
 "            pysyvät bannit #kanavalla.\n"
 "            "
 
-#: plugin.py:550
+#: plugin.py:582
 msgid "%q (expires %t)"
 msgstr "%q (venhentuu %t)"
 
-#: plugin.py:553
+#: plugin.py:585
 msgid "%q (never expires)"
 msgstr "%q (ei vanhene ikinä)"
 
-#: plugin.py:557
+#: plugin.py:589
 msgid "There are no persistent bans on %s."
 msgstr "Kanavalla %s ei ole pysyviä porttikieltoja."
 
-#: plugin.py:564
+#: plugin.py:596
 msgid ""
 "[<channel>] <nick|hostmask> [<expires>]\n"
 "\n"
@@ -561,7 +594,7 @@ msgstr ""
 "            kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:582
+#: plugin.py:614
 msgid ""
 "[<channel>] <hostmask>\n"
 "\n"
@@ -577,11 +610,11 @@ msgstr ""
 "            viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:594
+#: plugin.py:626
 msgid "There are no ignores for that hostmask."
 msgstr "Tuolla hostmaskilla ei ole pysyviä huomiotta jättämisiä."
 
-#: plugin.py:599
+#: plugin.py:631
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -597,11 +630,11 @@ msgstr ""
 "            kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:608
+#: plugin.py:640
 msgid "I'm not currently ignoring any hostmasks in %q"
 msgstr "En tällä hetkellä jätä mitään hostmaskia huomiotta kanavalla %q."
 
-#: plugin.py:619
+#: plugin.py:651
 msgid ""
 "[<channel>] <nick|username> <capability> [<capability> ...]\n"
 "\n"
@@ -619,7 +652,7 @@ msgstr ""
 "            vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:635
+#: plugin.py:667
 msgid ""
 "[<channel>] <name|hostmask> <capability> [<capability> ...]\n"
 "\n"
@@ -637,11 +670,11 @@ msgstr ""
 "            vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:654
+#: plugin.py:686
 msgid "That user didn't have the %L %s."
 msgstr "Tuolla käyttäjällä ei ollut valtuutta %L kanavalla %s."
 
-#: plugin.py:663
+#: plugin.py:695
 msgid ""
 "[<channel>] {True|False}\n"
 "\n"
@@ -659,7 +692,7 @@ msgstr ""
 "            jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:681
+#: plugin.py:713
 msgid ""
 "[<channel>] <capability> [<capability> ...]\n"
 "\n"
@@ -675,7 +708,7 @@ msgstr ""
 "            vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:696
+#: plugin.py:728
 msgid ""
 "[<channel>] <capability> [<capability> ...]\n"
 "\n"
@@ -693,15 +726,15 @@ msgstr ""
 "            vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:712
+#: plugin.py:744
 msgid "capability"
 msgstr "valtuus"
 
-#: plugin.py:715
+#: plugin.py:747
 msgid "I do not know about the %L %s."
 msgstr "En tiedä valtuudesta %L kanavalla %s."
 
-#: plugin.py:722
+#: plugin.py:754
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -715,7 +748,7 @@ msgstr ""
 "            vaadittu vain, jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:734
+#: plugin.py:766
 msgid ""
 "[<channel>] [<plugin>] [<command>]\n"
 "\n"
@@ -735,17 +768,17 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:750
-#: plugin.py:789
+#: plugin.py:782
+#: plugin.py:821
 msgid "The %s plugin does not have a command called %s."
 msgstr "%s lisäosassa ei ole komentoa %s."
 
-#: plugin.py:757
-#: plugin.py:796
+#: plugin.py:789
+#: plugin.py:828
 msgid "No plugin or command named %s could be found."
 msgstr "Lisäosaa tai komentoa nimeltä %s ei löytynyt."
 
-#: plugin.py:773
+#: plugin.py:805
 msgid ""
 "[<channel>] [<plugin>] [<command>]\n"
 "\n"
@@ -765,11 +798,11 @@ msgstr ""
 "        on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:810
+#: plugin.py:842
 msgid "%s was not disabled."
 msgstr "%s ei ollut poistettu käytöstä."
 
-#: plugin.py:819
+#: plugin.py:851
 msgid ""
 "[<channel>] [--count]\n"
 "\n"
@@ -784,11 +817,11 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:831
+#: plugin.py:863
 msgid "You don't have access to that information."
 msgstr "Sinulla ei ole pääsyoikeutta tuohon tietoon."
 
-#: plugin.py:845
+#: plugin.py:877
 msgid ""
 "Internal message for notifying all the #channel,ops in a channel of\n"
 "        a given situation."
@@ -796,15 +829,15 @@ msgstr ""
 "Sisäinen viesti huomattamaan kaikkia henkilöitä, joilla on #kanava,op valtuus kanavalla,\n"
 "        annetusta tilanteesta."
 
-#: plugin.py:848
+#: plugin.py:880
 msgid "Alert to all %s ops: %s"
 msgstr "Hälytys kaikille kanavan %s operaattoreille: %s"
 
-#: plugin.py:850
+#: plugin.py:882
 msgid " (from %s)"
 msgstr "(lähettänyt %s)"
 
-#: plugin.py:858
+#: plugin.py:890
 msgid ""
 "[<channel>] <text>\n"
 "\n"
