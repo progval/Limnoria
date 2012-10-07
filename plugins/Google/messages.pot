@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
+"POT-Creation-Date: 2012-10-07 18:43+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,28 +60,34 @@ msgstr ""
 
 #: config.py:115
 msgid ""
+"Determines whether results are sent in\n"
+"    different lines or all in the same one."
+msgstr ""
+
+#: config.py:118
+msgid ""
 "Determines the maximum number of results returned\n"
 "    from the google command."
 msgstr ""
 
-#: config.py:118
+#: config.py:121
 msgid ""
 "Determines what default language is used in\n"
 "    searches.  If left empty, no specific language will be requested."
 msgstr ""
 
-#: config.py:118
+#: config.py:121
 msgid "en"
 msgstr ""
 
-#: config.py:121
+#: config.py:124
 msgid ""
 "Determines what level of search filtering to use\n"
 "    by default.  'active' - most filtering, 'moderate' - default filtering,\n"
 "    'off' - no filtering"
 msgstr ""
 
-#: plugin.py:101
+#: plugin.py:82
 #, docstring
 msgid ""
 "Perform a search using Google's AJAX API.\n"
@@ -95,15 +101,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:141 plugin.py:200
+#: plugin.py:121 plugin.py:182
 msgid "We broke The Google!"
 msgstr ""
 
-#: plugin.py:161
+#: plugin.py:141
 msgid "No matches found."
 msgstr ""
 
-#: plugin.py:167
+#: plugin.py:149
 #, docstring
 msgid ""
 "[--snippet] <search>\n"
@@ -113,11 +119,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:184
+#: plugin.py:166
 msgid "Google found nothing."
 msgstr ""
 
-#: plugin.py:189
+#: plugin.py:171
 #, docstring
 msgid ""
 "<search> [--{filter,language} <value>]\n"
@@ -128,7 +134,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:212
+#: plugin.py:199
 #, docstring
 msgid ""
 "<url>\n"
@@ -137,11 +143,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:223
+#: plugin.py:210
 msgid "Google seems to have no cache for that site."
 msgstr ""
 
-#: plugin.py:228
+#: plugin.py:215
 #, docstring
 msgid ""
 "<search string> <search string> [<search string> ...]\n"
@@ -151,12 +157,22 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:250
+#: plugin.py:238
+#, docstring
+msgid ""
+"<source language> [to] <target language> <text>\n"
+"\n"
+"        Returns <text> translated from <source language> into <target\n"
+"        language>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:275
 #, docstring
 msgid "^google\\s+(.*)$"
 msgstr ""
 
-#: plugin.py:279
+#: plugin.py:304
 #, docstring
 msgid ""
 "<expression>\n"
@@ -165,11 +181,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:312
+#: plugin.py:337
 msgid "Google says: Error: %s."
 msgstr ""
 
-#: plugin.py:319
+#: plugin.py:344
 #, docstring
 msgid ""
 "<phone number>\n"
@@ -178,7 +194,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:333
+#: plugin.py:358
 msgid "Google's phonebook didn't come up with anything."
 msgstr ""
 
