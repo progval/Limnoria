@@ -183,7 +183,16 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         server = self._getNextServer()
         drivers.log.connect(self.currentServer)
         try:
-            self.conn = utils.net.getSocket(server[0])
+            socks_proxy = getattr(conf.supybot.networks, self.irc.network) \
+                    .socksproxy()
+            try:
+                if socks_proxy:
+                    import socks
+            except ImportError:
+                log.error('Cannot use socks proxy (SocksiPy not installed), '
+                        'using direct connection instead.')
+                socks_proxy = ''
+            self.conn = utils.net.getSocket(server[0], socks_proxy)
             vhost = conf.supybot.protocols.irc.vhost()
             self.conn.bind((vhost, 0))
         except socket.error, e:

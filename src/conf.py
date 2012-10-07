@@ -254,6 +254,18 @@ class Servers(registry.SpaceSeparatedListOfStrings):
         L = registry.SpaceSeparatedListOfStrings.__call__(self)
         L.append(s)
 
+class SocksProxy(registry.String):
+    """Value must be a valid hostname:port string."""
+    def setValue(self, v):
+        # TODO: improve checks
+        if ':' not in v:
+            self.error()
+        try:
+            int(v.rsplit(':'))
+        except ValueError:
+            self.error()
+        super(SocksProxy, self).setValue(v)
+
 class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     sorted = True
     List = ircutils.IrcSet
@@ -301,6 +313,9 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
     registerGlobalValue(sasl, 'password', registry.String(sasl_password,
         _("""Determines what SASL password will be used on %s.""") \
         % name, private=True))
+    registerGlobalValue(network, 'socksproxy', registry.String('',
+        _("""If not empty, determines the hostname of the socks proxy that
+        will be used to connect to this network.""")))
     return network
 
 # Let's fill our networks.
