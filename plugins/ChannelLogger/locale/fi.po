@@ -1,20 +1,22 @@
 # ChannelLogger plugin in Limnoria.
-# Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Copyright (C) 2011, 2012 Limnoria
+# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot Channellogger\n"
-"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
-"PO-Revision-Date: \n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2012-10-07 18:37+EEST\n"
+"PO-Revision-Date: 2012-10-07 18:39+0200\n"
+"Last-Translator: Mika Suomalainen <mkaysi@outlook.com>\n"
+"Language-Team: suomi <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Finnish\n"
 "X-Poedit-Country: FINLAND\n"
+"Plural-Forms: \n"
+"X-Generator: Gtranslator 2.91.5\n"
 
 #: config.py:46
 msgid "Determines whether logging is enabled."
@@ -31,6 +33,10 @@ msgstr ""
 " puskuroimana."
 
 #: config.py:52
+msgid "Determines wether joins and parts are logged"
+msgstr "Määrittää kirjoitetaanko liittymiset ja poistumiset lokiin"
+
+#: config.py:54
 msgid ""
 "Determines whether formatting characters (such\n"
 "    as bolding, color, etc.) are removed when writing the logs to disk."
@@ -38,7 +44,7 @@ msgstr ""
 "Määrittää pitääkö muotoilumerkit (kuten\n"
 "korostukset, väri, jne.) poistaa kun lokeja kirjoitetaan levylle."
 
-#: config.py:55
+#: config.py:57
 msgid ""
 "Determines whether the logs for this channel are\n"
 "    timestamped with the timestamp in supybot.log.timestampFormat."
@@ -46,7 +52,7 @@ msgstr ""
 "Määrittää laitetaanko tämän kanavan lokitiedostoihin\n"
 " aikaleimat aikaleimalla, joka on määritetty asetuksella supybot.log.timestampFormat."
 
-#: config.py:58
+#: config.py:60
 msgid ""
 "Determines what string a message should be\n"
 "    prefixed with in order not to be logged.  If you don't want any such\n"
@@ -56,7 +62,7 @@ msgstr ""
 " ei tallenneta lokiin.  Jos et halua\n"
 " merkkiketjua, aseta se tyhjäksi merkkiketjuksi."
 
-#: config.py:62
+#: config.py:64
 msgid ""
 "Determines whether the bot will automatically\n"
 "    rotate the logs for this channel.  The bot will rotate logs when the\n"
@@ -68,7 +74,7 @@ msgstr ""
 " kun aikaleima lokeille vaihtuu.  Aikaleima asetetaan\n"
 " 'filenameTimestamp' asetusarvon mukaan."
 
-#: config.py:67
+#: config.py:69
 msgid ""
 "Determines how to represent the timestamp\n"
 "    used for the filename in rotated logs.  When this timestamp changes, the\n"
@@ -84,7 +90,7 @@ msgstr ""
 " lokisi käännetyksi, sinun täytyy myös ottaa käyttöön\n"
 " supybot.plugins.ChannelLogger.rotateLogs."
 
-#: config.py:75
+#: config.py:77
 msgid ""
 "Determines whether the bot will partition its\n"
 "    channel logs into separate directories based on different criteria."
@@ -92,7 +98,7 @@ msgstr ""
 "Määrittää osioiko botti kanavalokinsa\n"
 " eri hakemistoihin perustuen eri kriteereihin."
 
-#: config.py:78
+#: config.py:80
 msgid ""
 "Determines whether the bot will use a network\n"
 "    directory if using directories."
@@ -100,7 +106,7 @@ msgstr ""
 "Määrittää käyttääkö botti verkkohakemistoa\n"
 " jos käytetään hakemistoja."
 
-#: config.py:81
+#: config.py:83
 msgid ""
 "Determines whether the bot will use a channel\n"
 "    directory if using directories."
@@ -108,7 +114,7 @@ msgstr ""
 "Määrittää käyttääkö botti kanavahakemistoa\n"
 " jos käytetään hakemistoja."
 
-#: config.py:84
+#: config.py:86
 msgid ""
 "Determines whether the bot will use a timestamp\n"
 "    (determined by supybot.plugins.ChannelLogger.directories.timestamp.format)\n"
@@ -118,7 +124,7 @@ msgstr ""
 "    (supybot.plugins.ChannelLogger.directories.timestamp.format määrittämänä\n"
 " jos käytetään hakemistoja."
 
-#: config.py:88
+#: config.py:90
 msgid ""
 "Determines what timestamp format will be used in\n"
 "    the directory structure for channel logs if\n"
