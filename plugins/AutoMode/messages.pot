@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-19 21:37+CEST\n"
+"POT-Creation-Date: 2012-10-07 18:54+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,5 +71,18 @@ msgstr ""
 msgid ""
 "Determines how many seconds the bot will wait\n"
 "    before applying a mode. Has no effect on bans."
+msgstr ""
+
+#: config.py:79
+msgid ""
+"Extra modes that will be\n"
+"    applied to a user. Example syntax: user1+o-v user2+v user3-v"
+msgstr ""
+
+#: plugin.py:64
+#, docstring
+msgid ""
+"Determines whether or not a mode has already\n"
+"                            been applied."
 msgstr ""
 
