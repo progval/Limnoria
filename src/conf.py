@@ -261,7 +261,7 @@ class SocksProxy(registry.String):
         if ':' not in v:
             self.error()
         try:
-            int(v.rsplit(':'))
+            int(v.rsplit(':', 2)[1])
         except ValueError:
             self.error()
         super(SocksProxy, self).setValue(v)
