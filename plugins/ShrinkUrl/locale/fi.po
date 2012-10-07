@@ -1,20 +1,21 @@
 # ShrinkUrl plugin in Limnoria.
-# Copyright (C) 2011 Limnoria
+# Copyright (C) 2011, 2012 Limnoria
 # Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
-"PO-Revision-Date: 2012-08-04 15:15+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
-"Language-Team: Finnish <>\n"
+"POT-Creation-Date: 2012-10-07 18:31+EEST\n"
+"PO-Revision-Date: 2012-10-07 18:33+0200\n"
+"Last-Translator: Mika Suomalainen <mkaysi@outlook.com>\n"
+"Language-Team: suomi <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"Plural-Forms: \n"
+"X-Generator: Gtranslator 2.91.5\n"
 
 #: config.py:39
 msgid ""
@@ -27,9 +28,12 @@ msgstr ""
 " tämän kaappaajan olevan käytössä?"
 
 #: config.py:45
-#: config.py:49
 msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
 msgstr "Kelvolliset arvot ovat 'ln', 'tiny', 'xrl', 'goo' ja 'x0' ."
+
+#: config.py:49
+msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', 'ur1', and 'x0'."
+msgstr "Kelvolliset arvot ovat 'ln', 'tiny', 'xrl', 'goo', 'ur1' ja 'x0' ."
 
 #: config.py:71
 msgid ""
@@ -107,7 +111,7 @@ msgstr ""
 "Jos tämä on asetettu muuksi, kuin tyhjäksi arvoksi, määrittää listan\n"
 "    palveluista, joita käytetään kutistuskaappaajalle ja ulostulon suodattimelle."
 
-#: plugin.py:171
+#: plugin.py:175
 msgid ""
 "<url>\n"
 "\n"
@@ -119,7 +123,7 @@ msgstr ""
 "        Palauttaa ln-s.net version <URL-osoitteesta>.\n"
 "        "
 
-#: plugin.py:196
+#: plugin.py:201
 msgid ""
 "<url>\n"
 "\n"
@@ -131,7 +135,7 @@ msgstr ""
 "        Palauttaa TinyURL.com palvelun lyhentämän version <URL-osoitteesta>.\n"
 "        "
 
-#: plugin.py:224
+#: plugin.py:229
 msgid ""
 "<url>\n"
 "\n"
@@ -143,7 +147,7 @@ msgstr ""
 "        Palauttaa xrl.us palvelun lyhentämän version <URL-osoitteesta>.\n"
 "        "
 
-#: plugin.py:255
+#: plugin.py:258
 msgid ""
 "<url>\n"
 "\n"
@@ -154,7 +158,18 @@ msgstr ""
 "\n"
 " Palauttaa goo.gl-palvelun lyhentämän version <URL-osoitteesta>."
 
-#: plugin.py:281
+#: plugin.py:287
+msgid ""
+"<url>\n"
+"\n"
+"        Returns an ur1 version of <url>.\n"
+"        "
+msgstr ""
+"<URL-osoite>\n"
+"\n"
+" Palauttaa ur1-palvelun lyhentämän version <URL-osoitteesta>.\n"
+
+#: plugin.py:313
 msgid ""
 "<url>\n"
 "\n"
@@ -165,4 +180,15 @@ msgstr ""
 "\n"
 "        Palauttaa x0.no palvelun lyhentämän version <URL-osoitteesta>.\n"
 "        "
+
+#: plugin.py:339
+msgid ""
+"<url>\n"
+"\n"
+"        Returns an expanded version of <url>.\n"
+"        "
+msgstr ""
+"<url>\n"
+"\n"
+"        Palauttaa laajennetun version <URL-osoitteesta>.\n"
 
