@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2012-10-07 18:48+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,22 +25,29 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:164
+#: plugin.py:107
+#, docstring
+msgid ""
+"Encodes [a-z0-9.]+ into [a-z][a-z0-9].\n"
+"    Format: a<number of escaped chars>a(<index>d)+<word without dots>."
+msgstr ""
+
+#: plugin.py:217
 msgid " at least"
 msgstr ""
 
-#: plugin.py:165
+#: plugin.py:218
 msgid ""
 "<an alias,%s %n>\n"
 "\n"
 "Alias for %q."
 msgstr ""
 
-#: plugin.py:166
+#: plugin.py:219
 msgid "argument"
 msgstr ""
 
-#: plugin.py:220
+#: plugin.py:287
 #, docstring
 msgid ""
 "<alias>\n"
@@ -49,11 +56,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:229 plugin.py:243
+#: plugin.py:296 plugin.py:310
 msgid "There is no such alias."
 msgstr ""
 
-#: plugin.py:234
+#: plugin.py:301
 #, docstring
 msgid ""
 "<alias>\n"
@@ -62,11 +69,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:254
+#: plugin.py:319
 msgid "That name isn't valid.  Try %q instead."
 msgstr ""
 
-#: plugin.py:292
+#: plugin.py:363
 #, docstring
 msgid ""
 "<name> <command>\n"
@@ -80,7 +87,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:315
+#: plugin.py:386
 #, docstring
 msgid ""
 "<name>\n"
