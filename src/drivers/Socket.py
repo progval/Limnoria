@@ -204,7 +204,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
         try:
             self.conn.connect(server)
-            self.conn.settimeout(conf.supybot.drivers.poll())
+            def setTimeout():
+                self.conn.settimeout(conf.supybot.drivers.poll())
+            conf.supybot.drivers.poll.addCallback(setTimeout)
+            setTimeout()
             if getattr(conf.supybot.networks, self.irc.network).ssl():
                 assert globals().has_key('ssl')
                 self.conn = ssl.wrap_socket(self.conn)
