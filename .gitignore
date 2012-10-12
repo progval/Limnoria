@@ -10,6 +10,9 @@ docs/plugins
 *.swo
 *~
 *.mo
+debian/limnoria*
+debian/python-module-stampdir/
+dist/
 push.sh
 merge.sh
 src/version.py

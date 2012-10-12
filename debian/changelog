@@ -1,0 +1,11 @@
+limnoria (0.83.4.1+limnoria2) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Valentin Lorentz <progval@progval.net>  Sun, 23 Jun 2012 17:47:00 +0200
+
+limnoria (0.83.4.1+limnoria1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Valentin Lorentz <progval@gmail.com>  Sun, 21 Aug 2011 20:58:51 +0200
