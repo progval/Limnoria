@@ -96,7 +96,12 @@ from supybot import commands
 try:
     import sqlite3
 except ImportError:
-    from pysqlite2 import dbapi2 as sqlite3 # for python2.4
+    raise ImportError('Cannot find sqlite3 module. If you are seeing this '
+            'message, it means you are running a non-standard Python '
+            'distribution that has not been compiled with sqlite3 support. '
+            'Please recompile it with sqlite3 support or report a bug to '
+            'the maintainer of the python package of your distribution.')
+
 
 class NoSuitableDatabase(Exception):
     def __init__(self, suitable):
