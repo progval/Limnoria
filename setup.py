@@ -43,30 +43,20 @@ import textwrap
 
 from src.version import version
 
-plugins = [s for s in os.listdir('plugins') if
-           os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
+try:
+    from distribute_setup import use_setuptools
+except ImportError:
+    pass
+else:
+    use_setuptools(version='0.6c9')
+
+from setuptools import setup
 
 def normalizeWhitespace(s):
     return ' '.join(s.split())
 
-try:
-    from setuptools import setup
-except ImportError, e:
-    s = normalizeWhitespace("""Supybot requires the distutils package to
-    install. This package is normally included with Python, but for some
-    unfathomable reason, many distributions to take it out of standard Python
-    and put it in another package, usually caled 'python-dev' or python-devel'
-    or something similar. This is one of the dumbest things a distribution can
-    do, because it means that developers cannot rely on *STANDARD* Python
-    modules to be present on systems of that distribution. Complain to your
-    distribution, and loudly. If you how much of our time we've wasted telling
-    people to install what should be included by default with Python you'd
-    understand why we're unhappy about this.  Anyway, to reiterate, install the
-    development package for Python that your distribution supplies.""")
-    sys.stderr.write(os.linesep*2)
-    sys.stderr.write(textwrap.fill(s))
-    sys.stderr.write(os.linesep*2)
-    sys.exit(-1)
+plugins = [s for s in os.listdir('plugins') if
+           os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
 packages = ['supybot',
             'supybot.utils',
