@@ -77,7 +77,6 @@ class RSSTestCase(ChannelPluginTestCase):
 
         def testNonAsciiFeeds(self):
             self.assertNotError('rss http://www.heise.de/newsticker/heise.rdf')
-            self.assertNotError('rss http://www.golem.de/rss.php?feed=ATOM0.3')
             self.assertNotError('rss info http://br-linux.org/main/index.xml')
 
 

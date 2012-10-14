@@ -66,7 +66,6 @@ packages = ['supybot',
             [
              'supybot.plugins.Dict.local',
              'supybot.plugins.Math.local',
-             'supybot.plugins.RSS.local',
             ]
 
 package_dir = {'supybot': 'src',
@@ -75,7 +74,6 @@ package_dir = {'supybot': 'src',
                'supybot.drivers': 'src/drivers',
                'supybot.plugins.Dict.local': 'plugins/Dict/local',
                'supybot.plugins.Math.local': 'plugins/Math/local',
-               'supybot.plugins.RSS.local': 'plugins/RSS/local',
               }
 
 for plugin in plugins:
@@ -128,6 +126,7 @@ setup(
     install_requires=[
         # Time plugin
         'python-dateutil <2.0,>=1.3',
+        'feedparser',
         ],
     )
 
