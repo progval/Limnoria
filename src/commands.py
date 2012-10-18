@@ -511,6 +511,21 @@ def getChannelOrNone(irc, msg, args, state):
     except callbacks.ArgumentError:
         state.args.append(None)
 
+def getChannelOrGlobal(irc, msg, args, state):
+    if args and args[0] == 'global':
+        channel = args.pop(0)
+        channel = 'global'
+    elif args and irc.isChannel(args[0]):
+        channel = args.pop(0)
+        state.channel = channel
+    elif irc.isChannel(msg.args[0]):
+        channel = msg.args[0]
+        state.channel = channel
+    else:
+        state.log.debug('Raising ArgumentError because there is no channel.')
+        raise callbacks.ArgumentError
+    state.args.append(channel)
+
 def checkChannelCapability(irc, msg, args, state, cap):
     if not state.channel:
         getChannel(irc, msg, args, state)
@@ -679,6 +694,7 @@ wrappers = ircutils.IrcDict({
                                # something better
     'capability': getSomethingNoSpaces,
     'channel': getChannel,
+    'channelOrGlobal': getChannelOrGlobal,
     'channelDb': getChannelDb,
     'checkCapability': checkCapability,
     'checkCapabilityButIgnoreOwner': checkCapabilityButIgnoreOwner,
