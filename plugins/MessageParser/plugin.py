@@ -115,7 +115,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         return db
 
     def _updateRank(self, channel, regexp):
-        if self.registryValue('keepRankInfo', channel):
+        subfolder = None if channel == 'global' else channel
+        if self.registryValue('keepRankInfo', subfolder):
             db = self.getDb(channel)
             cursor = db.cursor()
             cursor.execute("""SELECT usage_count
@@ -156,13 +157,17 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             if callbacks.addressed(irc.nick, msg): #message is direct command
                 return
             actions = []
-            db = self.getDb(channel)
-            cursor = db.cursor()
-            cursor.execute("SELECT regexp, action FROM triggers")
-            results = cursor.fetchall()
+            results = []
+            for channel in (channel, 'global'):
+                db = self.getDb(channel)
+                cursor = db.cursor()
+                cursor.execute("SELECT regexp, action FROM triggers")
+                # Fetch results and prepend channel name or 'global'. This
+                # prevents duplicating the following lines.
+                results.extend(map(lambda x: (channel,)+x, cursor.fetchall()))
             if len(results) == 0:
                 return
-            for (regexp, action) in results:
+            for (channel, regexp, action) in results:
                 for match in re.finditer(regexp, msg.args[1]):
                     if match is not None:
                         thisaction = action
@@ -176,7 +181,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
 
     @internationalizeDocstring
     def add(self, irc, msg, args, channel, regexp, action):
-        """[<channel>] <regexp> <action>
+        """[<channel>|global] <regexp> <action>
 
         Associates <regexp> with <action>.  <channel> is only
         necessary if the message isn't sent on the channel
@@ -212,11 +217,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         else:
             irc.error(_('That trigger is locked.'))
             return
-    add = wrap(add, ['channel', 'something', 'something'])
+    add = wrap(add, ['channelOrGlobal', 'something', 'something'])
 
     @internationalizeDocstring
     def remove(self, irc, msg, args, channel, optlist, regexp):
-        """[<channel>] [--id] <regexp>]
+        """[<channel>|global] [--id] <regexp>]
 
         Removes the trigger for <regexp> from the triggers database.
         <channel> is only necessary if
@@ -248,13 +253,13 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("""DELETE FROM triggers WHERE id=?""", (id,))
         db.commit()
         irc.replySuccess()
-    remove = wrap(remove, ['channel',
+    remove = wrap(remove, ['channelOrGlobal',
                             getopts({'id': '',}),
                             'something'])
 
     @internationalizeDocstring
     def lock(self, irc, msg, args, channel, regexp):
-        """[<channel>] <regexp>
+        """[<channel>|global] <regexp>
 
         Locks the <regexp> so that it cannot be
         removed or overwritten to.  <channel> is only necessary if the message isn't
@@ -273,11 +278,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("UPDATE triggers SET locked=1 WHERE regexp=?", (regexp,))
         db.commit()
         irc.replySuccess()
-    lock = wrap(lock, ['channel', 'text'])
+    lock = wrap(lock, ['channelOrGlobal', 'text'])
 
     @internationalizeDocstring
     def unlock(self, irc, msg, args, channel, regexp):
-        """[<channel>] <regexp>
+        """[<channel>|global] <regexp>
 
         Unlocks the entry associated with <regexp> so that it can be
         removed or overwritten.  <channel> is only necessary if the message isn't
@@ -296,11 +301,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("UPDATE triggers SET locked=0 WHERE regexp=?", (regexp,))
         db.commit()
         irc.replySuccess()
-    unlock = wrap(unlock, ['channel', 'text'])
+    unlock = wrap(unlock, ['channelOrGlobal', 'text'])
 
     @internationalizeDocstring
     def show(self, irc, msg, args, channel, optlist, regexp):
-        """[<channel>] [--id] <regexp>
+        """[<channel>|global] [--id] <regexp>
 
         Looks up the value of <regexp> in the triggers database.
         <channel> is only necessary if the message isn't sent in the channel
@@ -323,13 +328,13 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             return
 
         irc.reply("The action for regexp trigger \"%s\" is \"%s\"" % (regexp, action))
-    show = wrap(show, ['channel',
+    show = wrap(show, ['channelOrGlobal',
                         getopts({'id': '',}),
                         'something'])
 
     @internationalizeDocstring
     def info(self, irc, msg, args, channel, optlist, regexp):
-        """[<channel>] [--id] <regexp>
+        """[<channel>|global] [--id] <regexp>
 
         Display information about <regexp> in the triggers database.
         <channel> is only necessary if the message isn't sent in the channel
@@ -362,13 +367,13 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                                      time.localtime(int(added_at))),
                     usage_count,
                     locked and _("locked") or _("not locked"),))
-    info = wrap(info, ['channel',
+    info = wrap(info, ['channelOrGlobal',
                         getopts({'id': '',}),
                         'something'])
 
     @internationalizeDocstring
     def list(self, irc, msg, args, channel):
-        """[<channel>]
+        """[<channel>|global]
 
         Lists regexps present in the triggers database.
         <channel> is only necessary if the message isn't sent in the channel
@@ -387,11 +392,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         s = [ "\"%s\" (%d)" % (regexp[0], regexp[1]) for regexp in regexps ]
         separator = self.registryValue('listSeparator', channel)
         irc.reply(separator.join(s))
-    list = wrap(list, ['channel'])
+    list = wrap(list, ['channelOrGlobal'])
 
     @internationalizeDocstring
     def rank(self, irc, msg, args, channel):
-        """[<channel>]
+        """[<channel>|global]
 
         Returns a list of top-ranked regexps, sorted by usage count
         (rank). The number of regexps returned is set by the
@@ -411,11 +416,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             return
         s = [ "#%d \"%s\" (%d)" % (i+1, regexp[0], regexp[1]) for i, regexp in enumerate(regexps) ]
         irc.reply(", ".join(s))
-    rank = wrap(rank, ['channel'])
+    rank = wrap(rank, ['channelOrGlobal'])
 
     @internationalizeDocstring
     def vacuum(self, irc, msg, args, channel):
-        """[<channel>]
+        """[<channel>|global]
 
         Vacuums the database for <channel>.
         See SQLite vacuum doc here: http://www.sqlite.org/lang_vacuum.html
@@ -433,7 +438,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("""VACUUM""")
         db.commit()
         irc.replySuccess()
-    vacuum = wrap(vacuum, ['channel'])
+    vacuum = wrap(vacuum, ['channelOrGlobal'])
 MessageParser = internationalizeDocstring(MessageParser)
 
 Class = MessageParser
