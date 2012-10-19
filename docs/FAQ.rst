@@ -178,6 +178,12 @@ I've found a bug, what do I do?
 
   Submit your bug on `Sourceforge`_ through our `project page`_.
 
+Why does @tell command from Later deliver messages immediatly?
+
+  This is probably because the @tell command defaults to the one in the Misc
+  plugin, which is intended to do this. Consider using ``@later tell``
+  instead, or change the default with ``@owner defaultplugin``.
+
 Is Python installed?
 
   I run Windows, and I'm not sure if Python is installed on my computer.
