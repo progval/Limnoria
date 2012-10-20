@@ -30,6 +30,7 @@
 
 import re
 import sys
+import base64
 import socket
 import urllib
 import urllib2
@@ -61,9 +62,9 @@ _ipAddr = r'%s(?:\.%s){3}' % (_octet, _octet)
 # Base domain regex off RFC 1034 and 1738
 _label = r'[0-9a-z][-0-9a-z]*[0-9a-z]?'
 _domain = r'%s(?:\.%s)*\.[0-9a-z][-0-9a-z]+' % (_label, _label)
-_urlRe = r'(\w+://(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain, _ipAddr)
+_urlRe = r'(\w+://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain, _ipAddr)
 urlRe = re.compile(_urlRe, re.I)
-_httpUrlRe = r'(https?://(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain,
+_httpUrlRe = r'(https?://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain,
                                                                  _ipAddr)
 httpUrlRe = re.compile(_httpUrlRe, re.I)
 
@@ -110,7 +111,13 @@ def getUrlFd(url, headers=None, data=None):
         if not isinstance(url, urllib2.Request):
             if '#' in url:
                 url = url[:url.index('#')]
+            if '@' in url:
+                scheme, url = url.split('://', 2)
+                auth, url = url.split('@')
+                url = scheme + '://' + url
             request = urllib2.Request(url, headers=headers, data=data)
+            request.add_header('Authorization',
+                    'Basic ' + base64.b64encode(auth))
         else:
             request = url
             request.add_data(data)
