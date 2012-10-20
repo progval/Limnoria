@@ -35,9 +35,10 @@ Simple utility modules.
 import re
 import socket
 
-emailRe = re.compile(r"^(\w&.+-]+!)*[\w&.+-]+@"
-                     r"(([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)[a-z]{2,6}|"
-                     r"([0-9]{1,3}\.){3}[0-9]{1,3})$", re.I)
+from .web import _ipAddr, _domain
+
+emailRe = re.compile(r"^(\w&.+-]+!)*[\w&.+-]+@(%s|%s)$" % (_domain, _ipAddr),
+                     re.I)
 
 def getSocket(host):
     """Returns a socket of the correct AF_INET type (v4 or v6) in order to
