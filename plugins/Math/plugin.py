@@ -160,6 +160,13 @@ class Math(callbacks.Plugin):
         crash to the bot with something like '10**10**10**10'.  One consequence
         is that large values such as '10**24' might not be exact.
         """
+        try:
+            text = str(text)
+        except UnicodeEncodeError:
+            irc.error("There's no reason you should have fancy non-ASCII "
+                            "characters in your mathematical expression. "
+                            "Please remove them.")
+            return
         if text != text.translate(utils.str.chars, '_[]'):
             irc.error('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
