@@ -192,6 +192,10 @@ class Seen(callbacks.Plugin):
         try:
             results = []
             if '*' in name:
+                if (len(name.replace('*', '')) <
+                        self.registryValue('minimumNonWildcard', channel)):
+                    irc.error(_('Not enough non-wildcard characters.'),
+                            Raise=True)
                 results = db.seenWildcard(channel, name)
             else:
                 results = [[name, db.seen(channel, name)]]

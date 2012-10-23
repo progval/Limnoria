@@ -66,11 +66,13 @@ class ChannelDBTestCase(ChannelPluginTestCase):
                                          prefix=self.prefix))
         self.assertNotError('seen last')
         self.assertNotError('list')
+        self.assertError('seen *')
         self.assertNotError('seen %s' % self.nick)
         m = self.assertNotError('seen %s' % self.nick.upper())
         self.failUnless(self.nick.upper() in m.args[1])
         self.assertRegexp('seen user %s' % self.nick,
                           '^%s was last seen' % self.nick)
+        self.assertNotError('config plugins.Seen.minimumNonWildcard 0')
         for wildcard in self.wildcardTest:
             self.assertRegexp('seen %s' % wildcard,
                               '^%s was last seen' % self.nick)

@@ -45,6 +45,10 @@ Seen = conf.registerPlugin('Seen')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Seen, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
+conf.registerChannelValue(Seen, 'minimumNonWildcard',
+    registry.NonNegativeInteger(2, _("""The minimum non-wildcard characters
+    required to perform a 'seen' request. Of course, it only applies if there
+    is a wildcard in the request.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
