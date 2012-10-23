@@ -107,15 +107,13 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
         headers = defaultHeaders
     try:
         if not isinstance(url, urllib2.Request):
-            if '#' in url:
-                url = url[:url.index('#')]
+            (scheme, loc, path, query, frag) = urlparse.urlsplit(url)
+            (user, host) = urllib.splituser(loc)
+            url = urlparse.urlunsplit((scheme, host, path, query, ''))
             request = urllib2.Request(url, headers=headers, data=data)
-            if '@' in url:
-                scheme, url = url.split('://', 2)
-                auth, url = url.split('@')
-                url = scheme + '://' + url
+            if user:
                 request.add_header('Authorization',
-                                   'Basic ' + base64.b64encode(auth))
+                                   'Basic %s' % base64.b64encode(user))
         else:
             request = url
             request.add_data(data)
