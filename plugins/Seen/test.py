@@ -46,17 +46,24 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         ircdb.users.getUser(self.nick).addCapability(chancap)
 
     def testNoKeyErrorEscapeFromSeen(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,
+                                         prefix=self.prefix))
         self.assertRegexp('seen asldfkjasdlfkj', '^I have not seen')
         self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
 
     def testAny(self):
-        self.assertRegexp('seen any', 'test <test!user@host.domain.tld> has joined')
+        self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,
+                                         prefix=self.prefix))
+        self.assertRegexp('seen any', '%s <%s> has joined' %
+                (self.nick, self.prefix))
         self.irc.feedMsg(ircmsgs.mode(self.channel, args=('+o', self.nick),
                                       prefix=self.prefix))
         self.assertRegexp('seen any %s' % self.nick,
                           '^%s was last seen' % self.nick)
 
     def testSeen(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,
+                                         prefix=self.prefix))
         self.assertNotError('seen last')
         self.assertNotError('list')
         self.assertNotError('seen %s' % self.nick)
@@ -70,6 +77,8 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertRegexp('seen bar*', '^I haven\'t seen anyone matching')
 
     def testSeenNoUser(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,
+                                         prefix=self.prefix))
         self.assertNotRegexp('seen user alsdkfjalsdfkj', 'KeyError')
 
 
