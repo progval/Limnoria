@@ -116,8 +116,9 @@ def getUrlFd(url, headers=None, data=None):
                 auth, url = url.split('@')
                 url = scheme + '://' + url
             request = urllib2.Request(url, headers=headers, data=data)
-            request.add_header('Authorization',
-                    'Basic ' + base64.b64encode(auth))
+            if 'auth' in locals():
+                request.add_header('Authorization',
+                        'Basic ' + base64.b64encode(auth))
         else:
             request = url
             request.add_data(data)
