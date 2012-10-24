@@ -313,25 +313,13 @@ class Misc(callbacks.Plugin):
                 predicates.setdefault('without', []).append(f)
             elif option == 'regexp':
                 def f(m, arg=arg):
-                    def f1(s, arg):
-                        """Since we can't enqueue match objects into the multiprocessing queue,
-                        we'll just wrap the function to return bools."""
-                        if arg.search(s) is not None:
-                            return True
-                        else:
-                            return False
                     if ircmsgs.isAction(m):
                         m1 = ircmsgs.unAction(m)
                     else:
                         m1 = m.args[1]
-                    try:
-                        # use a subprocess here, since specially crafted regexps can
-                        # take exponential time and hang up the bot.
-                        # timeout of 0.1 should be more than enough for any normal regexp.
-                        v = commands.process(f1, m1, arg, timeout=0.1, pn=self.name(), cn='last')
-                        return v
-                    except commands.ProcessTimeoutError:
-                        return False
+                    return regexp_wrapper(m1, reobj=arg, timeout=0.1,
+                                          plugin_name=self.name(),
+                                          fcn_name='last')
                 predicates.setdefault('regexp', []).append(f)
             elif option == 'nolimit':
                 nolimit = True
