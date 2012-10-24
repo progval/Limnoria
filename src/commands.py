@@ -985,7 +985,7 @@ __all__ = [
     # Decorators.
     'urlSnarfer', 'thread',
     # Functions.
-    'wrap',
+    'wrap', 'process', 'regexp_wrapper',
     # Stuff for testing.
     'Spec',
 ]
