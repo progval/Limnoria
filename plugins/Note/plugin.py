@@ -35,7 +35,6 @@ import operator
 import supybot.dbi as dbi
 import supybot.log as log
 import supybot.conf as conf
-from supybot import commands
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 from supybot.commands import *
@@ -293,8 +292,10 @@ class Note(callbacks.Plugin):
         own = to
         for (option, arg) in optlist:
             if option == 'regexp':
-                criteria.append(lambda x: commands.regexp_wrapper(x, reobj=arg,
-                        timeout=0.1, plugin_name=self.name(), fcn_name='search'))
+                criteria.append(lambda s:
+                                regexp_wrapper(s, reobj=arg, timeout=0.1,
+                                               plugin_name=self.name(),
+                                               fcn_name='search'))
             elif option == 'sent':
                 own = frm
         if glob:

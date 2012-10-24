@@ -419,7 +419,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             if opt == 'by':
                 predicates.append(lambda r, arg=arg: r.by == arg.id)
             elif opt == 'regexp':
-                predicates.append(lambda x: regexp_wrapper(x.text, reobj=arg,
+                predicates.append(lambda r: regexp_wrapper(r.text, reobj=arg,
                         timeout=0.1, plugin_name=self.name(), fcn_name='search'))
         if glob:
             def globP(r, glob=glob.lower()):

@@ -143,7 +143,7 @@ class String(callbacks.Plugin):
         else:
             t = self.registryValue('re.timeout')
             try:
-                v = commands.process(f, text, timeout=t, pn=self.name(), cn='re')
+                v = process(f, text, timeout=t, pn=self.name(), cn='re')
                 irc.reply(v)
             except commands.ProcessTimeoutError, e:
                 irc.error("ProcessTimeoutError: %s" % (e,))
