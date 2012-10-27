@@ -239,7 +239,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
 
     def convert(self, s):
         s = self.normalize(s)
-        (server, port) = s.split(':')
+        (server, port) = s.rsplit(':', 2)
         port = int(port)
         return (server, port)
 
