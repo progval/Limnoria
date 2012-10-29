@@ -33,7 +33,7 @@ import supybot.world as world
 import supybot.ircdb as ircdb
 
 class UserTestCase(PluginTestCase):
-    plugins = ('User', 'Admin')
+    plugins = ('User', 'Admin', 'Config')
     prefix1 = 'somethingElse!user@host.tld'
     prefix2 = 'EvensomethingElse!user@host.tld'
     def testHostmaskList(self):
@@ -94,6 +94,14 @@ class UserTestCase(PluginTestCase):
 
         self.assertRegexp('user list --capability testcap', 'no matching')
         self.assertNotError('admin capability add biff testcap')
+        self.assertResponse('user list --capability testcap', 'biff')
+        self.assertNotError('config capabilities.private testcap')
+        self.assertRegexp('user list --capability testcap', 'Error:.*private')
+        self.assertNotError('admin capability add biff admin')
+        self.assertResponse('user list --capability testcap', 'biff')
+        self.assertNotError('admin capability remove biff admin')
+        self.assertRegexp('user list --capability testcap', 'Error:.*private')
+        self.assertNotError('config capabilities.private ""')
         self.assertResponse('user list --capability testcap', 'biff')
         self.assertNotError('admin capability remove biff testcap')
         self.assertRegexp('user list --capability testcap', 'no matching')

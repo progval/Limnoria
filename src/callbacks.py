@@ -484,8 +484,12 @@ class RichReplyMethods(object):
             log.warning('Denying %s for lacking %q capability.',
                         self.msg.prefix, capability)
             if not self._getConfig(conf.supybot.reply.error.noCapability):
-                v = self._getConfig(conf.supybot.replies.noCapability)
-                s = self.__makeReply(v % capability, s)
+                if capability in conf.supybot.capabilities.private():
+                    v = self._getConfig(conf.supybot.replies.genericNoCapability)
+                else:
+                    v = self._getConfig(conf.supybot.replies.noCapability)
+                    v %= capability
+                s = self.__makeReply(v, s)
                 return self._error(s, **kwargs)
             else:
                 log.debug('Not sending capability error, '

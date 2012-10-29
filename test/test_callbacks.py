@@ -531,13 +531,16 @@ class PluginRegexpTestCase(PluginTestCase):
         self.assertResponse('test', 'test <foo>')
 
 class RichReplyMethodsTestCase(PluginTestCase):
-    plugins = ()
+    plugins = ('Config',)
     class NoCapability(callbacks.Plugin):
         def error(self, irc, msg, args):
             irc.errorNoCapability('admin')
     def testErrorNoCapability(self):
         self.irc.addCallback(self.NoCapability(self.irc))
-        self.assertRegexp('error', 'admin')
+        self.assertRegexp('error', 'You don\'t have the admin capability')
+        self.assertNotError('config capabilities.private admin')
+        self.assertRegexp('error', 'Error: You\'re missing some capability')
+        self.assertNotError('config capabilities.private ""')
 
 
 class SourceNestedPluginTestCase(PluginTestCase):
