@@ -432,7 +432,7 @@ def getNick(irc, msg, args, state):
 
 def getSeenNick(irc, msg, args, state, errmsg=None):
     try:
-        _ = irc.state.nickToHostmask(args[0])
+        foo = irc.state.nickToHostmask(args[0])
         state.args.append(args.pop(0))
     except KeyError:
         if errmsg is None:
