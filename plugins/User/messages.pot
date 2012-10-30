@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-12-23 13:11+CET\n"
+"POT-Creation-Date: 2012-10-30 17:37+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,15 +25,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:64
+msgid "This is a private capability. Only admins can see who has it."
+msgstr ""
+
+#: plugin.py:89
 msgid "There are no matching registered users."
 msgstr ""
 
-#: plugin.py:82
+#: plugin.py:91
 msgid "There are no registered users."
 msgstr ""
 
-#: plugin.py:88
+#: plugin.py:97
 #, docstring
 msgid ""
 "<name> <password>\n"
@@ -48,23 +52,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:101
+#: plugin.py:110
 msgid "That name is already assigned to someone."
 msgstr ""
 
-#: plugin.py:106
+#: plugin.py:115
 msgid "username"
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:116
 msgid "Hostmasks are not valid usernames."
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:123
 msgid "Your hostmask is already registered to %s"
 msgstr ""
 
-#: plugin.py:130
+#: plugin.py:139
 #, docstring
 msgid ""
 "<name> [<password>]\n"
@@ -74,11 +78,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:145
+#: plugin.py:154
 msgid "This command has been disabled.  You'll have to ask the owner of this bot to unregister your user."
 msgstr ""
 
-#: plugin.py:158
+#: plugin.py:167
 #, docstring
 msgid ""
 "<name> <new name> [<password>]\n"
@@ -90,11 +94,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:167
+#: plugin.py:176
 msgid "%q is already registered."
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:190
 #, docstring
 msgid ""
 "[<name>] <old password> <new password>\n"
@@ -107,7 +111,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:209
+#: plugin.py:218
 #, docstring
 msgid ""
 "<password> [<True|False>]\n"
@@ -121,11 +125,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:224
+#: plugin.py:233
 msgid "Secure flag set to %s"
 msgstr ""
 
-#: plugin.py:232
+#: plugin.py:241
 #, docstring
 msgid ""
 "<hostmask|nick>\n"
@@ -135,15 +139,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:241
+#: plugin.py:250
 msgid "I haven't seen %s."
 msgstr ""
 
-#: plugin.py:246
+#: plugin.py:255
 msgid "I don't know who that is."
 msgstr ""
 
-#: plugin.py:252
+#: plugin.py:261
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -153,7 +157,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:264
+#: plugin.py:273
 #, docstring
 msgid ""
 "[<name>]\n"
@@ -164,15 +168,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:276
+#: plugin.py:285
 msgid "%s has no registered hostmasks."
 msgstr ""
 
-#: plugin.py:283
+#: plugin.py:292
 msgid "You may only retrieve your own hostmasks."
 msgstr ""
 
-#: plugin.py:299
+#: plugin.py:308
 #, docstring
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
@@ -188,19 +192,19 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:313
+#: plugin.py:322
 msgid "hostmask"
 msgstr ""
 
-#: plugin.py:314
+#: plugin.py:323
 msgid "Make sure your hostmask includes a nick, then an exclamation point (!), then a user, then an at symbol (@), then a host.  Feel free to use wildcards (* and ?, which work just like they do on the command line) in any of these parts."
 msgstr ""
 
-#: plugin.py:324 plugin.py:347
+#: plugin.py:333 plugin.py:356
 msgid "That hostmask is already registered."
 msgstr ""
 
-#: plugin.py:355
+#: plugin.py:364
 #, docstring
 msgid ""
 "<name> <hostmask> [<password>]\n"
@@ -214,15 +218,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:374
+#: plugin.py:383
 msgid "All hostmasks removed."
 msgstr ""
 
-#: plugin.py:378
+#: plugin.py:387
 msgid "There was no such hostmask."
 msgstr ""
 
-#: plugin.py:387
+#: plugin.py:396
 #, docstring
 msgid ""
 "[<name>]\n"
@@ -233,7 +237,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:407
+#: plugin.py:416
 #, docstring
 msgid ""
 "<name> <password>\n"
@@ -244,11 +248,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:419
+#: plugin.py:428
 msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
 msgstr ""
 
-#: plugin.py:429
+#: plugin.py:438
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -260,11 +264,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:438
+#: plugin.py:447
 msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
 msgstr ""
 
-#: plugin.py:447
+#: plugin.py:456
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -273,11 +277,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:455
+#: plugin.py:464
 msgid "I don't recognize you."
 msgstr ""
 
-#: plugin.py:460
+#: plugin.py:469
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -286,7 +290,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:478
+#: plugin.py:487
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
 msgstr ""
 
