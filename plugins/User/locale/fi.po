@@ -1,19 +1,21 @@
 # User plugin in Limnoria.
-# Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Copyright (C) 2011, 2012 Limnoria
+# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-12-23 13:11+CET\n"
-"PO-Revision-Date: 2012-01-06 13:05+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2012-10-30 17:37+EET\n"
+"PO-Revision-Date: 2012-10-30 17:40+0200\n"
+"Last-Translator: Mika Suomalainen <mkaysi@outlook.com>\n"
+"Language-Team: suomi <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+"Plural-Forms: \n"
+"X-Generator: Gtranslator 2.91.5\n"
 
 #: plugin.py:49
 msgid ""
@@ -29,15 +31,19 @@ msgstr ""
 "        ole annettu, palauttaa kaikki rekisteröidyt käyttäjätunnukset.\n"
 "        "
 
-#: plugin.py:80
+#: plugin.py:64
+msgid "This is a private capability. Only admins can see who has it."
+msgstr "Tämä on yksityinen valtuus. Vain ylläpitäjät voivat nähdä keillä on se."
+
+#: plugin.py:89
 msgid "There are no matching registered users."
 msgstr "Täsmääviä rekisteröityjä käyttäjiä ei ole."
 
-#: plugin.py:82
+#: plugin.py:91
 msgid "There are no registered users."
 msgstr "Rekisteröityneitä käyttäjiä ei ole."
 
-#: plugin.py:88
+#: plugin.py:97
 msgid ""
 "<name> <password>\n"
 "\n"
@@ -61,23 +67,23 @@ msgstr ""
 "        botille yksityisesti, ei kanavalla.\n"
 "        "
 
-#: plugin.py:101
+#: plugin.py:110
 msgid "That name is already assigned to someone."
 msgstr "Tuo nimi on jo liitetty johonkuhun."
 
-#: plugin.py:106
+#: plugin.py:115
 msgid "username"
 msgstr "käyttäjänimi"
 
-#: plugin.py:107
+#: plugin.py:116
 msgid "Hostmasks are not valid usernames."
 msgstr "Hostmaskit eivät ole kelvollisia käyttäjänimiä"
 
-#: plugin.py:114
+#: plugin.py:123
 msgid "Your hostmask is already registered to %s"
 msgstr "Sinun hostmaskisi on jo rekisteröity käyttäjälle %s."
 
-#: plugin.py:130
+#: plugin.py:139
 msgid ""
 "<name> [<password>]\n"
 "\n"
@@ -91,11 +97,11 @@ msgstr ""
 "        salasana ei ole vaadittu.\n"
 "        "
 
-#: plugin.py:145
+#: plugin.py:154
 msgid "This command has been disabled.  You'll have to ask the owner of this bot to unregister your user."
 msgstr "Tämä komento on poistettu käytöstä. Sinun täytyy pyytää tämän botin omistajaa poistaaksesi käyttäjätunnuksesi."
 
-#: plugin.py:158
+#: plugin.py:167
 msgid ""
 "<name> <new name> [<password>]\n"
 "\n"
@@ -113,11 +119,11 @@ msgstr ""
 "        se saattaa sisältää salasanan.\n"
 "        "
 
-#: plugin.py:167
+#: plugin.py:176
 msgid "%q is already registered."
 msgstr "%q on jo rekisteröitynyt."
 
-#: plugin.py:181
+#: plugin.py:190
 msgid ""
 "[<name>] <old password> <new password>\n"
 "\n"
@@ -137,7 +143,7 @@ msgstr ""
 "            'owner' valtuuden omaava käyttäjä), silloin <vanhan salasanan> ei tarvitse olla oikein.\n"
 "            "
 
-#: plugin.py:209
+#: plugin.py:218
 msgid ""
 "<password> [<True|False>]\n"
 "\n"
@@ -159,11 +165,11 @@ msgstr ""
 "            nykyinen arvo käännetään.\n"
 "            "
 
-#: plugin.py:224
+#: plugin.py:233
 msgid "Secure flag set to %s"
 msgstr "'Secure' lippu on asetettu arvoon %s"
 
-#: plugin.py:232
+#: plugin.py:241
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -177,15 +183,15 @@ msgstr ""
 "        käyttäjä on rekisteröitynyt.\n"
 "        "
 
-#: plugin.py:241
+#: plugin.py:250
 msgid "I haven't seen %s."
 msgstr "En ole nähnyt käyttäjää %s."
 
-#: plugin.py:246
+#: plugin.py:255
 msgid "I don't know who that is."
 msgstr "En tiedä kuka tuo on."
 
-#: plugin.py:252
+#: plugin.py:261
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -199,7 +205,7 @@ msgstr ""
 "            komennon antavan nimimerkin hostmaskin\n"
 "            "
 
-#: plugin.py:264
+#: plugin.py:273
 msgid ""
 "[<name>]\n"
 "\n"
@@ -215,15 +221,15 @@ msgstr ""
 "            hostmaskit.\n"
 "            "
 
-#: plugin.py:276
+#: plugin.py:285
 msgid "%s has no registered hostmasks."
 msgstr "%s ei ole rekisteröinyt hostmaskeja."
 
-#: plugin.py:283
+#: plugin.py:292
 msgid "You may only retrieve your own hostmasks."
 msgstr "Voit saada vain omat hostmaskisi."
 
-#: plugin.py:299
+#: plugin.py:308
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
 "\n"
@@ -249,20 +255,20 @@ msgstr ""
 "            sisältää salasanan.\n"
 "            "
 
-#: plugin.py:313
+#: plugin.py:322
 msgid "hostmask"
 msgstr "hostmask"
 
-#: plugin.py:314
+#: plugin.py:323
 msgid "Make sure your hostmask includes a nick, then an exclamation point (!), then a user, then an at symbol (@), then a host.  Feel free to use wildcards (* and ?, which work just like they do on the command line) in any of these parts."
 msgstr "Varmista, että hostmaskisi sisältää nimimerkin, sitten eroitus kohdan, p(!), sitten käyttäjän, sitten ät symboolin (@), sitten isännän.  Käytä jokerimerkkejä vapaasti (* ja ?, jotka toimivat samalla tavalla, kuin komentorivillä) missä tahansa näistä osista."
 
-#: plugin.py:324
-#: plugin.py:347
+#: plugin.py:333
+#: plugin.py:356
 msgid "That hostmask is already registered."
 msgstr "Tuo hostmaski on jo rekisteröity."
 
-#: plugin.py:355
+#: plugin.py:364
 msgid ""
 "<name> <hostmask> [<password>]\n"
 "\n"
@@ -284,15 +290,15 @@ msgstr ""
 "            salasanan.\n"
 "            "
 
-#: plugin.py:374
+#: plugin.py:383
 msgid "All hostmasks removed."
 msgstr "Kaikki hostmaskit poistettu."
 
-#: plugin.py:378
+#: plugin.py:387
 msgid "There was no such hostmask."
 msgstr "Tuollaista hostmaskia ei ollut."
 
-#: plugin.py:387
+#: plugin.py:396
 msgid ""
 "[<name>]\n"
 "\n"
@@ -307,7 +313,7 @@ msgstr ""
 "        ei ole määritetty, palauttaa käyttäjän, joka kutsuu komennonn        valtuudet.\n"
 "        "
 
-#: plugin.py:407
+#: plugin.py:416
 msgid ""
 "<name> <password>\n"
 "\n"
@@ -323,11 +329,11 @@ msgstr ""
 "        ei kanavalla.\n"
 "        "
 
-#: plugin.py:419
+#: plugin.py:428
 msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
 msgstr "Sinun 'secure' lippusi on 'true' ja sinun hostmaskisi ei täsmää yhteenkään sinun tunnettuun hostmaskiisi."
 
-#: plugin.py:429
+#: plugin.py:438
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -345,11 +351,11 @@ msgstr ""
 "        tunnistaa sinut yhä.\n"
 "        "
 
-#: plugin.py:438
+#: plugin.py:447
 msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
 msgstr "Jos pysyt tunnistettuna tämän komennon antamisen jälkeen, sinut tunnistetaan hostmaskin, eikä salasanan perusteella.  Sinun täytyy poistaa mikä tahansa hostmaski, joka aiheuttaa sinun tunnistamisesi, tullaksesi tunnistamattomaksi."
 
-#: plugin.py:447
+#: plugin.py:456
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -361,11 +367,11 @@ msgstr ""
 "        Palauttaa komennon antaneen käyttäjän tunnuksen.\n"
 "        "
 
-#: plugin.py:455
+#: plugin.py:464
 msgid "I don't recognize you."
 msgstr "Minä en tunnista sinua."
 
-#: plugin.py:460
+#: plugin.py:469
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -377,7 +383,7 @@ msgstr ""
 "        Palauttaa joitakin tilastotietoja käyttäjä tietokannasta.\n"
 "        "
 
-#: plugin.py:478
+#: plugin.py:487
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
 msgstr "Minulla on %s rekisteröityä käyttäjää %s rekisteröidyllä hostmaskilla; %n ja %n."
 
