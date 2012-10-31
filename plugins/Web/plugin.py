@@ -174,10 +174,12 @@ class Web(callbacks.PluginRegexp):
     size = wrap(size, ['httpUrl'])
 
     @internationalizeDocstring
-    def title(self, irc, msg, args, url):
-        """<url>
+    def title(self, irc, msg, args, optlist, url):
+        """[--no-filter] <url>
 
         Returns the HTML <title>...</title> of a URL.
+        If --no-filter is given, the bot won't strip special chars (action,
+        DCC, ...).
         """
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size) \
@@ -189,13 +191,17 @@ class Web(callbacks.PluginRegexp):
             self.log.debug('Encountered a problem parsing %u.  Title may '
                            'already be set, though', url)
         if parser.title:
-            irc.reply(utils.web.htmlToText(parser.title.strip()))
+            title = utils.web.htmlToText(parser.title.strip())
+            if not [y for x,y in optlist if x == 'no-filter']:
+                for i in range(1, 4):
+                    title = title.replace(chr(i), '')
+            irc.reply(title)
         elif len(text) < size:
             irc.reply(_('That URL appears to have no HTML title.'))
         else:
             irc.reply(format(_('That URL appears to have no HTML title '
                              'within the first %S.'), size))
-    title = wrap(title, ['httpUrl'])
+    title = wrap(title, [getopts({'no-filter': ''}), 'httpUrl'])
 
     _netcraftre = re.compile(r'td align="left">\s+<a[^>]+>(.*?)<a href',
                              re.S | re.I)
