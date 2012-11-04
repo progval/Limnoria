@@ -205,7 +205,8 @@ class UserCapabilitySet(CapabilitySet):
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user."""
     def __init__(self, ignore=False, password='', name='',
-                 capabilities=(), hostmasks=None, secure=False, hashed=False):
+                 capabilities=(), hostmasks=None, nicks=None,
+                 secure=False, hashed=False):
         self.id = None
         self.auth = [] # The (time, hostmask) list of auth crap.
         self.name = name # The name of the user.
@@ -220,6 +221,10 @@ class IrcUser(object):
             self.hostmasks = ircutils.IrcSet() # hostmasks used for recognition
         else:
             self.hostmasks = hostmasks
+        if nicks is None:
+            self.nicks = {} # {'network1': ['foo', 'bar'], 'network': ['baz']}
+        else:
+            self.nicks = nicks
 
     def __repr__(self):
         return format('%s(id=%s, ignore=%s, password="", name=%q, hashed=%r, '
@@ -300,6 +305,29 @@ class IrcUser(object):
         """Removes a hostmask from the user's hostmasks."""
         self.hostmasks.remove(hostmask)
 
+    def checkNick(self, network, nick):
+        """Checks a given nick against the user's nicks."""
+        return nick in self.nicks[network]
+
+    def addNick(self, network, nick):
+        """Adds a nick to the user's registered nicks on the network."""
+        global users
+        assert isinstance(network, basestring)
+        assert ircutils.isNick(nick), 'got %s' % nick
+        if users.getUserFromNick(network, nick) is not None:
+            raise KeyError
+        if network not in self.nicks:
+            self.nicks[network] = []
+        if nick not in self.nicks[network]:
+            self.nicks[network].append(nick)
+
+    def removeNick(self, network, nick):
+        """Removes a nick from the user's registered nicks on the network."""
+        assert isinstance(network, basestring)
+        if nick not in self.nicks[network]:
+            raise KeyError
+        self.nicks[network].remove(nick)
+
     def addAuth(self, hostmask):
         """Sets a user's authenticated hostmask.  This times out in 1 hour."""
         if self.checkHostmask(hostmask, useAuth=False) or not self.secure:
@@ -327,6 +355,8 @@ class IrcUser(object):
             write('capability %s' % capability)
         for hostmask in self.hostmasks:
             write('hostmask %s' % hostmask)
+        for network, nicks in self.nicks.items():
+            write('nicks %s %s' % (network, ' '.join(nicks)))
         fd.write(os.linesep)
 
 
@@ -495,6 +525,11 @@ class IrcUserCreator(Creator):
     def hostmask(self, rest, lineno):
         self._checkId()
         self.u.hostmasks.add(rest)
+
+    def nicks(self, rest, lineno):
+        self._checkId()
+        network, nicks = rest.split(' ', 2)
+        self.u.nicks[network] = nicks.split(' ')
 
     def capability(self, rest, lineno):
         self._checkId()
@@ -681,6 +716,16 @@ class UsersDictionary(utils.IterableMap):
             u = self.users[id]
         u.id = id
         return u
+
+    def getUserFromNick(self, network, nick):
+        """Return a user given its nick."""
+        for user in self.users.values():
+            try:
+                if nick in user.nicks[network]:
+                    return user
+            except KeyError:
+                pass
+        return None
 
     def hasUser(self, id):
         """Returns the database has a user given its id, name, or hostmask."""
