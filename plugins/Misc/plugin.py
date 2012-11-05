@@ -299,10 +299,8 @@ class Misc(callbacks.Plugin):
                 data = json.loads(utils.web.getUrl(newestUrl % branch)
                         .decode('utf8'))
                 version = data['commit']['committer']['date']
-                # Strip the last ':':
-                version = ''.join(version.rsplit(':', 1))
-                # Replace the last '-' by '+':
-                version = '+'.join(version.rsplit('-', 1))
+                # Strip the last 'Z':
+                version = ''.join(version.rsplit('Z', 1))
                 versions[branch] = version.encode('utf-8')
             newest = _('The newest versions available online are %s.') % \
                     ', '.join([_('%s (in %s)') % (y,x)
