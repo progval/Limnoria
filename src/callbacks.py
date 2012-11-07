@@ -285,7 +285,15 @@ class Tokenizer(object):
         if token[0] == token[-1] and token[0] in self.quotes:
             token = token[1:-1]
             encoding_prefix = 'string' if sys.version_info[0]<3 else 'unicode'
-            token = token.encode().decode(encoding_prefix + '_escape')
+            # FIXME: No need to tell you this is a hack.
+            # It has to handle both IRC commands and serialized configuration.
+            try:
+                token = token.decode(encoding_prefix + '_escape')
+            except:
+                try:
+                    token = token.encode().decode(encoding_prefix + '_escape')
+                except:
+                    pass
         return token
 
     def _insideBrackets(self, lexer):
