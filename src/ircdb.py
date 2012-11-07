@@ -528,7 +528,7 @@ class IrcUserCreator(Creator):
 
     def nicks(self, rest, lineno):
         self._checkId()
-        network, nicks = rest.split(' ', 2)
+        network, nicks = rest.split(' ', 1)
         self.u.nicks[network] = nicks.split(' ')
 
     def capability(self, rest, lineno):
