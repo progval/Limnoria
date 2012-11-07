@@ -284,6 +284,15 @@ class Config(callbacks.Plugin):
         irc.replySuccess()
     export = wrap(export, [('checkCapability', 'owner'), 'filename'])
 
+    @internationalizeDocstring
+    def reset(self, irc, msg, args, group):
+        """<name>
+
+        Resets the configuration variable <name> to its default value.
+        """
+        v = str(group.__class__(group._default, ''))
+        self._setValue(irc, msg, group, v)
+    reset = wrap(reset, ['settableConfigVar'])
 
 Class = Config
 
