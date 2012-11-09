@@ -285,7 +285,7 @@ class Config(callbacks.Plugin):
     export = wrap(export, [('checkCapability', 'owner'), 'filename'])
 
     @internationalizeDocstring
-    def reset(self, irc, msg, args, group):
+    def setdefault(self, irc, msg, args, group):
         """<name>
 
         Resets the configuration variable <name> to its default value.
