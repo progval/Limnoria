@@ -342,7 +342,13 @@ class Channel(callbacks.Plugin):
                 banmaskstyle = conf.supybot.protocols.irc.banmask
                 banmask = banmaskstyle.makeBanmask(bannedHostmask, [o[0] for o in optlist])
             except KeyError:
-                irc.error(format(_('I haven\'t seen %s.'), bannedNick), Raise=True)
+                if not conf.supybot.protocols.irc.strictRfc() and \
+                        target.startswith('$'):
+                    # Select the last part, or the whole target:
+                    bannedNick = target.split(':')[-1]
+                    banmask = bannedHostmask = target
+                else:
+                    irc.error(format(_('I haven\'t seen %s.'), bannedNick), Raise=True)
         else:
             bannedNick = ircutils.nickFromHostmask(target)
             banmask = bannedHostmask = target

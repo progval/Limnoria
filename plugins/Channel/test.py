@@ -173,6 +173,13 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertBan('iban foo!bar@baz', 'foo!bar@baz')
         self.assertBan('iban foobar', 'foobar!user@host.domain.tld')
 
+        conf.supybot.protocols.irc.strictRfc.setValue(True)
+        self.assertError('iban $a:nyuszika7h')
+        self.assertError('unban $a:nyuszika7h')
+        conf.supybot.protocols.irc.strictRfc.setValue(False)
+        self.assertBan('iban $a:nyuszika7h', '$a:nyuszika7h')
+        self.assertNotError('unban $a:nyuszika7h')
+
 ##    def testKban(self):
 ##        self.irc.prefix = 'something!else@somehwere.else'
 ##        self.irc.nick = 'something'
@@ -209,6 +216,11 @@ class ChannelTestCase(ChannelPluginTestCase):
                 # is being called but the assert is failing
                 self.assertError('ban add not!a.hostmask')
                 self.assertNotRegexp('ban add not!a.hostmask', 'KeyError')
+                self.assertError('ban add $a:nyuszika7h')
+                self.assertError('ban remove $a:nyuszika7h')
+                conf.supybot.protocols.irc.strictRfc.setValue(False)
+                self.assertNotError('ban add $a:nyuszika7h')
+                self.assertNotError('ban remove $a:nyuszika7h')
             finally:
                 conf.supybot.protocols.irc.strictRfc.setValue(orig)
         finally:

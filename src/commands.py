@@ -351,7 +351,9 @@ def validChannel(irc, msg, args, state):
         state.errorInvalid(_('channel'), args[0])
 
 def getHostmask(irc, msg, args, state):
-    if ircutils.isUserHostmask(args[0]):
+    if ircutils.isUserHostmask(args[0]) or \
+            (not conf.supybot.protocols.irc.strictRfc() and
+                    args[0].startswith('$')):
         state.args.append(args.pop(0))
     else:
         try:

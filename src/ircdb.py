@@ -387,12 +387,14 @@ class IrcChannel(object):
 
     def addBan(self, hostmask, expiration=0):
         """Adds a ban to the channel banlist."""
-        assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
+        assert not conf.supybot.protocols.irc.strictRfc() or \
+                ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
         self.bans[hostmask] = int(expiration)
 
     def removeBan(self, hostmask):
         """Removes a ban from the channel banlist."""
-        assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
+        assert not conf.supybot.protocols.irc.strictRfc() or \
+                ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
         return self.bans.pop(hostmask)
 
     def checkBan(self, hostmask):
