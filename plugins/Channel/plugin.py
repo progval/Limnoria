@@ -339,11 +339,13 @@ class Channel(callbacks.Plugin):
             bannedNick = target
             try:
                 bannedHostmask = irc.state.nickToHostmask(target)
+                banmaskstyle = conf.supybot.protocols.irc.banmask
+                banmask = banmaskstyle.makeBanmask(bannedHostmask, [o[0] for o in optlist])
             except KeyError:
                 irc.error(format(_('I haven\'t seen %s.'), bannedNick), Raise=True)
         else:
             bannedNick = ircutils.nickFromHostmask(target)
-            bannedHostmask = target
+            banmask = bannedHostmask = target
         if not irc.isNick(bannedNick):
             self.log.warning('%q tried to kban a non nick: %q',
                              msg.prefix, bannedNick)
@@ -355,8 +357,6 @@ class Channel(callbacks.Plugin):
         if not reason:
             reason = msg.nick
         capability = ircdb.makeChannelCapability(channel, 'op')
-        banmaskstyle = conf.supybot.protocols.irc.banmask
-        banmask = banmaskstyle.makeBanmask(bannedHostmask, [o[0] for o in optlist])
         # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(bannedHostmask, irc.prefix):

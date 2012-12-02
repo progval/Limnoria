@@ -156,11 +156,22 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.failUnless(m.command == 'MODE' and
                         m.args == (self.channel, '+v', 'bar'))
 
-    def assertBan(self, query, hostmask, **kwargs):
+    def assertKban(self, query, hostmask, **kwargs):
         m = self.getMsg(query, **kwargs)
         self.assertEqual(m, ircmsgs.ban(self.channel, hostmask))
         m = self.getMsg(' ')
         self.assertEqual(m.command, 'KICK')
+    def assertBan(self, query, hostmask, **kwargs):
+        m = self.getMsg(query, **kwargs)
+        self.assertEqual(m, ircmsgs.ban(self.channel, hostmask))
+
+    def testIban(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel,
+                                      prefix='foobar!user@host.domain.tld'))
+        self.assertError('iban foo!bar@baz')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+        self.assertBan('iban foo!bar@baz', 'foo!bar@baz')
+        self.assertBan('iban foobar', 'foobar!user@host.domain.tld')
 
 ##    def testKban(self):
 ##        self.irc.prefix = 'something!else@somehwere.else'
@@ -170,16 +181,16 @@ class ChannelTestCase(ChannelPluginTestCase):
 ##        self.assertError('kban foobar')
 ##        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
 ##        self.assertError('kban foobar -1')
-##        self.assertBan('kban foobar', '*!*@*.domain.tld')
-##        self.assertBan('kban --exact foobar', 'foobar!user@host.domain.tld')
-##        self.assertBan('kban --host foobar', '*!*@host.domain.tld')
-##        self.assertBan('kban --user foobar', '*!user@*')
-##        self.assertBan('kban --nick foobar', 'foobar!*@*')
-##        self.assertBan('kban --nick --user foobar', 'foobar!user@*')
-##        self.assertBan('kban --nick --host foobar',
+##        self.assertKban('kban foobar', '*!*@*.domain.tld')
+##        self.assertKban('kban --exact foobar', 'foobar!user@host.domain.tld')
+##        self.assertKban('kban --host foobar', '*!*@host.domain.tld')
+##        self.assertKban('kban --user foobar', '*!user@*')
+##        self.assertKban('kban --nick foobar', 'foobar!*@*')
+##        self.assertKban('kban --nick --user foobar', 'foobar!user@*')
+##        self.assertKban('kban --nick --host foobar',
 ##                       'foobar!*@host.domain.tld')
-##        self.assertBan('kban --user --host foobar', '*!user@host.domain.tld')
-##        self.assertBan('kban --nick --user --host foobar',
+##        self.assertKban('kban --user --host foobar', '*!user@host.domain.tld')
+##        self.assertKban('kban --nick --user --host foobar',
 ##                       'foobar!user@host.domain.tld')
 ##        self.assertNotRegexp('kban adlkfajsdlfkjsd', 'KeyError')
 ##        self.assertNotRegexp('kban foobar time', 'ValueError')
