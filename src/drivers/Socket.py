@@ -38,6 +38,13 @@ import sys
 import time
 import select
 import socket
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.drivers as drivers
+import supybot.schedule as schedule
+from itertools import imap
 try:
     import ssl
     SSLError = ssl.SSLError
@@ -47,13 +54,6 @@ except:
     class SSLError(Exception):
         pass
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.drivers as drivers
-import supybot.schedule as schedule
-from itertools import imap
 
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
