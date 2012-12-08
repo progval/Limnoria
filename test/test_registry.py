@@ -174,4 +174,11 @@ class ValuesTestCase(SupyTestCase):
         registry.open_registry(filename)
         self.assertEqual(conf.supybot.reply.whenAddressedBy.chars(), '\\')
 
+    def testWith(self):
+        v = registry.String('foo', 'help')
+        self.assertEqual(v(), 'foo')
+        with v.context('bar'):
+            self.assertEqual(v(), 'bar')
+        self.assertEqual(v(), 'foo')
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

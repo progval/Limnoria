@@ -360,6 +360,18 @@ class Value(Group):
         for callback, args, kwargs in self._callbacks:
             callback(*args, **kwargs)
 
+    def context(self, value):
+        """Return a context manager object, which sets this variable to a
+        temporary value, and set the previous value back when exiting the
+        context."""
+        class Context:
+            def __enter__(self2):
+                self2._old_value = self.value
+                self.setValue(value)
+            def __exit__(self2, exc_type, exc_value, traceback):
+                self.setValue(self2._old_value)
+        return Context()
+
     def addCallback(self, callback, *args, **kwargs):
         """Add a callback to the list. A callback is a function that will be
         called when the value is changed. You can give this function as many
