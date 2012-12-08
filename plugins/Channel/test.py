@@ -204,14 +204,11 @@ class ChannelTestCase(ChannelPluginTestCase):
 ##        self.assertError('kban %s' % self.irc.nick)
 
     def testBan(self):
-        origban = conf.supybot.protocols.irc.banmask()
-        try:
-            conf.supybot.protocols.irc.banmask.setValue(['exact'])
+        with conf.supybot.protocols.irc.banmask.context(['exact']):
             self.assertNotError('ban add foo!bar@baz')
             self.assertNotError('ban remove foo!bar@baz')
             orig = conf.supybot.protocols.irc.strictRfc()
-            try:
-                conf.supybot.protocols.irc.strictRfc.setValue(True)
+            with conf.supybot.protocols.irc.strictRfc.context(True):
                 # something wonky is going on here. irc.error (src/Channel.py|449)
                 # is being called but the assert is failing
                 self.assertError('ban add not!a.hostmask')
@@ -221,10 +218,6 @@ class ChannelTestCase(ChannelPluginTestCase):
                 conf.supybot.protocols.irc.strictRfc.setValue(False)
                 self.assertNotError('ban add $a:nyuszika7h')
                 self.assertNotError('ban remove $a:nyuszika7h')
-            finally:
-                conf.supybot.protocols.irc.strictRfc.setValue(orig)
-        finally:
-            conf.supybot.protocols.irc.banmask.setValue(origban)
 
     def testIgnore(self):
         orig = conf.supybot.protocols.irc.banmask()
@@ -235,15 +228,12 @@ class ChannelTestCase(ChannelPluginTestCase):
             self.assertResponse('channel ignore list', "'%s'" % expect)
             self.assertNotError('channel ignore remove %s' % expect)
             self.assertRegexp('channel ignore list', 'not currently')
-        try:
-            ignore('foo!bar@baz', '*!bar@baz')
-            ignore('foo!*@*')
-            conf.supybot.protocols.irc.banmask.setValue(['exact'])
+        ignore('foo!bar@baz', '*!bar@baz')
+        ignore('foo!*@*')
+        with conf.supybot.protocols.irc.banmask.context(['exact']):
             ignore('foo!bar@baz')
             ignore('foo!*@*')
             self.assertError('ban add not!a.hostmask')
-        finally:
-            conf.supybot.protocols.irc.banmask.setValue(orig)
 
     def testNicks(self):
         self.assertResponse('channel nicks', 'bar, foo, and test')
