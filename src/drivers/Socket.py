@@ -138,7 +138,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def _select(cls):
         if cls._selecting[0]:
             return
-        print repr(map(lambda x:x.name(), cls._instances))
         try:
             cls._selecting[0] = True
             for inst in cls._instances:
