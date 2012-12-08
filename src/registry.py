@@ -686,4 +686,18 @@ class Json(String):
     def __call__(self):
         return json.loads(super(Json, self).__call__())
 
+    class _Context:
+        def __init__(self, var):
+            self._var = var
+        def __enter__(self):
+            self._dict = self._var()
+            return self._dict
+        def __exit__(self, *args):
+            self._var.setValue(self._dict)
+
+    def editable(self):
+        """Return an editable dict usable within a 'with' statement and
+        committed to the configuration variable at the end."""
+        return self._Context(self)
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

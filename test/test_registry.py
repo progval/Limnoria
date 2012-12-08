@@ -138,6 +138,16 @@ class ValuesTestCase(SupyTestCase):
         self.assertEqual(v(), data)
         self.assertIsNot(v(), data)
 
+        with v.editable() as dict_:
+            dict_['supy'] = 'bot'
+            del dict_['qux']
+            self.assertNotIn('supy', v())
+            self.assertIn('qux', v())
+        self.assertIn('supy', v())
+        self.assertEqual(v()['supy'], 'bot')
+        self.assertIsNot(v()['supy'], 'bot')
+        self.assertNotIn('qux', v())
+
     def testNormalizedString(self):
         v = registry.NormalizedString("""foo
         bar           baz
