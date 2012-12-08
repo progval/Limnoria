@@ -130,6 +130,14 @@ class ValuesTestCase(SupyTestCase):
         v.set('"xyzzy')
         self.assertEqual(v(), '"xyzzy')
 
+    def testJson(self):
+        data = {'foo': ['bar', 'baz', 5], 'qux': None}
+        v = registry.Json('foo', 'help')
+        self.assertEqual(v(), 'foo')
+        v.setValue(data)
+        self.assertEqual(v(), data)
+        self.assertIsNot(v(), data)
+
     def testNormalizedString(self):
         v = registry.NormalizedString("""foo
         bar           baz

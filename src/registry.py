@@ -32,6 +32,7 @@ import re
 import os
 import sys
 import time
+import json
 import codecs
 import string
 import textwrap
@@ -677,5 +678,12 @@ class TemplatedString(String):
             self.__parent.setValue(v)
         else:
             self.error()
+
+class Json(String):
+    # Json-serializable data
+    def setValue(self, v):
+        super(Json, self).setValue(json.dumps(v))
+    def __call__(self):
+        return json.loads(super(Json, self).__call__())
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
