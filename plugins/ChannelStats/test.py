@@ -44,6 +44,7 @@ class ChannelStatsTestCase(ChannelPluginTestCase):
         _ = self.irc.takeMsg()
         chanop = ircdb.makeChannelCapability(self.channel, 'op')
         ircdb.users.getUser(self.nick).addCapability(chanop)
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
 
     def test(self):
         self.assertNotError('channelstats')
