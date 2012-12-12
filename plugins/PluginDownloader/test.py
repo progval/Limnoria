@@ -64,9 +64,9 @@ class PluginDownloaderTestCase(PluginTestCase):
         self.assertRegexp('repolist ProgVal', '(.*, )?AttackProtector(, .*)?')
 
     def testInstallProgVal(self):
-        self.assertError('plugindownloader install ProgVal Listener')
+        self.assertError('plugindownloader install ProgVal Darcs')
         self.assertNotError('plugindownloader install ProgVal AttackProtector')
-        self.assertError('plugindownloader install ProgVal Listener')
+        self.assertError('plugindownloader install ProgVal Darcs')
         self._testPluginInstalled('AttackProtector')
 
     def testInstallQuantumlemur(self):
