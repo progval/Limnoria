@@ -77,7 +77,7 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertRegexp('config supybot.replies.', 'not a valid')
         self.assertRegexp('config supybot.repl', 'not a valid')
         self.assertRegexp('config supybot.reply.withNickPrefix 123',
-                          'True or False')
+                          'True or False.*, not \'123\'.')
         self.assertRegexp('config supybot.replies foo', 'settable')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
