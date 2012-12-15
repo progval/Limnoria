@@ -705,6 +705,8 @@ class TemplatedString(String):
 
 class Json(String):
     # Json-serializable data
+    def set(self, v):
+        self.setValue(json.loads(v))
     def setValue(self, v):
         super(Json, self).setValue(json.dumps(v))
     def __call__(self):
