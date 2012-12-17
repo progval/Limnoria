@@ -164,8 +164,11 @@ class String(callbacks.Plugin):
 
         Returns the Soundex hash to a given length.  The length defaults to
         4, since that's the standard length for a soundex hash.  For unlimited
-        length, use 0.
+        length, use 0. Maximum length 1024.
         """
+        if length > 1024:
+            irc.error("Maximum allowed length is 1024.")
+            return
         irc.reply(utils.str.soundex(text, length))
     soundex = wrap(soundex, ['somethingWithoutSpaces', additional('int', 4)])
 
