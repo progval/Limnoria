@@ -136,6 +136,7 @@ class _PluginInternationalization:
     """Internationalization managment for a plugin."""
     def __init__(self, name='supybot'):
         self.name = name
+        self.translations = {}
         self.currentLocaleName = None
         i18nClasses.update({name: self})
         self.loadLocale()
@@ -157,7 +158,8 @@ class _PluginInternationalization:
                                                      localeName, 'po'), 'r')
             self._parse(translationFile)
         except IOError, PluginNotFound: # The translation is unavailable
-            self.translations = {}
+            pass
+
     def _parse(self, translationFile):
         """A .po files parser.
 
