@@ -121,10 +121,12 @@ class GithubRepository(GitRepository):
         dirname = ''.join((self._path, plugin))
         directories = conf.supybot.directories.plugins()
         directory = self._getWritableDirectoryFromList(directories)
-        assert directory is not None
+        assert directory is not None, \
+                'No valid directory in supybot.directories.plugins.'
 
         try:
-            assert archive.getmember(prefix + dirname).isdir()
+            assert archive.getmember(prefix + dirname).isdir(), \
+                'This is not a valid plugin (it is a file, not a directory).'
 
             for file in archive.getmembers():
                 if file.name.startswith(prefix + dirname):
@@ -133,7 +135,8 @@ class GithubRepository(GitRepository):
                     newFileName = newFileName[len(self._path)-1:]
                     newFileName = os.path.join(directory, newFileName)
                     if os.path.exists(newFileName):
-                        assert os.path.isdir(newFileName)
+                        assert os.path.isdir(newFileName), newFileName + \
+                                'should not be a file.'
                         shutil.rmtree(newFileName)
                     if extractedFile is None:
                         os.mkdir(newFileName)
