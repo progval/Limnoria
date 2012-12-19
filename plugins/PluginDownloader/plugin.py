@@ -292,10 +292,11 @@ class PluginDownloader(callbacks.Plugin):
                 repositories[repository].install(plugin)
                 irc.replySuccess()
             except Exception as e:
-                raise e
-                #FIXME: more detailed error message
+                import traceback
+                traceback.print_exc(e)
                 log.error(str(e))
-                irc.error('The plugin could not be installed.')
+                irc.error('The plugin could not be installed. Check the logs '
+                        'for a more detailed error.')
 
     install = wrap(install, ['owner', 'something', 'something'])
 
