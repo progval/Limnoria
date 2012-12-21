@@ -68,6 +68,7 @@ def import_conf():
     conf.registerGlobalValue(conf.supybot, 'language',
         conf.registry.String(currentLocale, """Determines the bot's default
         language. Valid values are things like en, fr, de, etc."""))
+    conf.supybot.language.addCallback(reloadLocalesIfRequired)
 
 def getPluginDir(plugin_name):
     """Gets the directory of the given plugin"""
@@ -118,8 +119,8 @@ def reloadLocalesIfRequired():
 def reloadLocales():
     for pluginName in i18nClasses:
         i18nClasses[pluginName].loadLocale()
-    for commandHash in internationalizedCommands:
-        internationalizeDocstring(internationalizedCommands[commandHash])
+    for command in internationalizedCommands.values():
+        internationalizeDocstring(command)
     for function in internationalizedFunctions:
         function.loadLocale()
 
