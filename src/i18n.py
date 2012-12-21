@@ -143,6 +143,7 @@ class _PluginInternationalization:
 
     def loadLocale(self, localeName=None):
         """(Re)loads the locale used by this class."""
+        self.translations = {}
         if localeName is None:
             localeName = currentLocale
         self.currentLocaleName = localeName
