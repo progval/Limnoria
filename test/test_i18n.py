@@ -31,7 +31,6 @@
 from supybot.test import *
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 import supybot.conf as conf
-import supybot.i18n as i18n
 
 msg_en = 'The operation succeeded.'
 msg_fr = 'Opération effectuée avec succès.'
@@ -55,5 +54,4 @@ class I18nTestCase(SupyTestCase):
         self.assertEqual(foo.__doc__, msg_en)
         with conf.supybot.language.context('fr'):
             self.assertEqual(foo.__doc__, msg_fr)
-        i18n.reloadLocales()
         self.assertEqual(foo.__doc__, msg_en)
