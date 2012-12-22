@@ -159,7 +159,7 @@ class _PluginInternationalization:
                 translationFile = open(getLocalePath(self.name,
                                                      localeName, 'po'), 'r')
             self._parse(translationFile)
-        except IOError, PluginNotFound: # The translation is unavailable
+        except (IOError, PluginNotFound): # The translation is unavailable
             pass
 
     def _parse(self, translationFile):
