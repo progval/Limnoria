@@ -506,6 +506,16 @@ class IrcState(IrcCommandDispatcher):
                 self.channels[channel] = chan
                 # I don't know why this assert was here.
                 #assert msg.nick == irc.nick, msg
+        if msg.nick == irc.nick:
+            # Ask for the ban list
+            for channel in msg.args[0].split(','):
+                irc.queueMsg(ircmsgs.mode(channel, '+b'))
+
+    def do367(self, irc, msg):
+        # Example:
+        # :server 367 user #chan some!random@user evil!channel@op 1356276459
+        state = self.channels[msg.args[1]]
+        state.bans.add(msg.args[2])
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
