@@ -407,7 +407,7 @@ class Channel(callbacks.Plugin):
 
     @internationalizeDocstring
     def unban(self, irc, msg, args, channel, hostmask):
-        """[<channel>] [<hostmask>]
+        """[<channel>] [<hostmask|--all>]
 
         Unbans <hostmask> on <channel>.  If <hostmask> is not given, unbans
         any hostmask currently banned on <channel> that matches your current
@@ -415,7 +415,11 @@ class Channel(callbacks.Plugin):
         unexpectedly (or accidentally) banned from the channel.  <channel> is
         only necessary if the message isn't sent in the channel itself.
         """
-        if hostmask:
+        if hostmask == '--all':
+            bans = irc.state.channels[channel].bans
+            self._sendMsg(irc, ircmsgs.unbans(channel, bans))
+        elif hostmask:
+            print repr(hostmask)
             self._sendMsg(irc, ircmsgs.unban(channel, hostmask))
         else:
             bans = []
@@ -432,7 +436,9 @@ class Channel(callbacks.Plugin):
                           (msg.prefix, channel))
     unban = wrap(unban, ['op',
                          ('isGranted', _('unban someone')),
-                         additional('hostmask')])
+                         additional(
+                             first('hostmask',
+                                 ('literal', '--all')))])
 
     @internationalizeDocstring
     def listbans(self, irc, msg, args, channel):
