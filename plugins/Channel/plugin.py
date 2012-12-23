@@ -435,6 +435,15 @@ class Channel(callbacks.Plugin):
                          additional('hostmask')])
 
     @internationalizeDocstring
+    def listbans(self, irc, msg, args, channel):
+        """[<channel>]
+
+        List all bans on the channel.
+        If <channel> is not given, it defaults to the current channel."""
+        irc.replies(irc.state.channels[channel].bans or [_('No bans.')])
+    listbans = wrap(listbans, ['channel'])
+
+    @internationalizeDocstring
     def invite(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
 
