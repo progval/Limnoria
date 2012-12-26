@@ -108,7 +108,7 @@ if clean:
             sys.exit(-1)
 
 packages = ['supybot',
-            'supybot.locale',
+            'supybot.locales',
             'supybot.utils',
             'supybot.drivers',
             'supybot.plugins',] + \
@@ -127,7 +127,7 @@ package_dir = {'supybot': 'src',
                'supybot.utils': 'src/utils',
                'supybot.plugins': 'plugins',
                'supybot.drivers': 'src/drivers',
-               'supybot.locale': 'locale',
+               'supybot.locales': 'locales',
                'supybot.plugins.Google.local': 'plugins/Google/local',
                'supybot.plugins.Google.local.simplejson':
                'plugins/Google/local/simplejson',
@@ -139,14 +139,14 @@ package_dir = {'supybot': 'src',
                'plugins/Time/local/dateutil',
               }
 
-package_data = {'supybot.locale': [s for s in os.listdir('locale/')]}
+package_data = {'supybot.locales': [s for s in os.listdir('locales/')]}
 
 for plugin in plugins:
     package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
-    locale_path = 'plugins/' + plugin + '/locale/'
-    locale_name = 'supybot.plugins.'+plugin
-    if os.path.exists(locale_path):
-        package_data.update({locale_name: ['locale/'+s for s in os.listdir(locale_path)]})
+    locales_path = 'plugins/' + plugin + '/locales/'
+    locales_name = 'supybot.plugins.'+plugin
+    if os.path.exists(locales_path):
+        package_data.update({locales_name: ['locales/'+s for s in os.listdir(locales_path)]})
 
 setup(
     # Metadata

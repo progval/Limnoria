@@ -98,10 +98,10 @@ def getLocalePath(name, localeName, extension):
     """Gets the path of the locale file of the given plugin ('supybot' stands
     for the core)."""
     if name != 'supybot':
-        directory = getPluginDir(name) + 'locale'
+        directory = getPluginDir(name) + 'locales'
     else:
         import ansi # Any Supybot plugin could fit
-        directory = ansi.__file__[0:-len('ansi.pyc')] + 'locale'
+        directory = ansi.__file__[0:-len('ansi.pyc')] + 'locales'
     return '%s/%s.%s' % (directory, localeName, extension)
 
 i18nClasses = {}
@@ -318,7 +318,7 @@ class _PluginInternationalization:
 class internationalizedFunction:
     """Proxy for functions that need to be fully localized.
 
-    The localization code is in locale/LOCALE.py"""
+    The localization code is in locales/LOCALE.py"""
     def __init__(self, internationalizer, name, function):
         self._internationalizer = internationalizer
         self._name = name
