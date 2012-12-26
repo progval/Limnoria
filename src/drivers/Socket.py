@@ -143,7 +143,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             for inst in cls._instances:
                 # Do not use a list comprehension here, we have to edit the list
                 # and not to reassign it.
-                if inst.conn._sock.__class__ is socket._closedsocket:
+                if (sys.version_info[0] == 3 and inst.conn._closed) or \
+                        (sys.version_info[0] == 2 and
+                            inst.conn._sock.__class__ is socket._closedsocket):
                     cls._instances.remove(inst)
             if not cls._instances:
                 return
