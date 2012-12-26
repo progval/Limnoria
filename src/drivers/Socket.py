@@ -157,7 +157,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         finally:
             cls._selecting[0] = False
         for instance in cls._instances:
-            if not instance.irc.zombie:
+            if instance.irc and not instance.irc.zombie:
                 instance._sendIfMsgs()
 
 
