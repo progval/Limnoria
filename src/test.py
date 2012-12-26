@@ -401,6 +401,9 @@ class ChannelPluginTestCase(PluginTestCase):
         self.assertEqual(m.command, 'MODE')
         m = self.irc.takeMsg()
         self.failIf(m is None, 'No message back from joining channel.')
+        self.assertEqual(m.command, 'MODE')
+        m = self.irc.takeMsg()
+        self.failIf(m is None, 'No message back from joining channel.')
         self.assertEqual(m.command, 'WHO')
 
     def _feedMsg(self, query, timeout=None, to=None, frm=None, private=False,

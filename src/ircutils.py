@@ -241,6 +241,10 @@ def separateModes(args):
             else:
                 requireArguments = _minusRequireArguments
             if c in requireArguments:
+                if not args:
+                    # It happens, for example with "MODE #channel +b", which
+                    # is used for getting the list of all bans.
+                    continue
                 arg = args.pop(0)
                 try:
                     arg = int(arg)

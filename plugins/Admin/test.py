@@ -36,6 +36,8 @@ class AdminTestCase(PluginTestCase):
             m = self.irc.takeMsg()
             self.assertEqual(m.command, 'MODE')
             m = self.irc.takeMsg()
+            self.assertEqual(m.command, 'MODE')
+            m = self.irc.takeMsg()
             self.assertEqual(m.command, 'WHO')
         self.assertRegexp('channels', 'not.*in any')
         self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
@@ -94,6 +96,8 @@ class AdminTestCase(PluginTestCase):
 
     def testPart(self):
         def getAfterJoinMessages():
+            m = self.irc.takeMsg()
+            self.assertEqual(m.command, 'MODE')
             m = self.irc.takeMsg()
             self.assertEqual(m.command, 'MODE')
             m = self.irc.takeMsg()
