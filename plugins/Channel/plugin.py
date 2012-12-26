@@ -419,7 +419,6 @@ class Channel(callbacks.Plugin):
             bans = irc.state.channels[channel].bans
             self._sendMsg(irc, ircmsgs.unbans(channel, bans))
         elif hostmask:
-            print repr(hostmask)
             self._sendMsg(irc, ircmsgs.unban(channel, hostmask))
         else:
             bans = []
