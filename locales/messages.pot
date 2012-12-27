@@ -982,7 +982,8 @@ msgstr ""
 #: src/conf.py:1019
 msgid ""
 "Determines how many old messages the bot will\n"
-"    keep around in its history."
+"    keep around in its history.  Changing this variable will not take effect\n"
+"    until the bot is restarted."
 msgstr ""
 
 #: src/conf.py:1024

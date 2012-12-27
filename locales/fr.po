@@ -992,8 +992,9 @@ msgstr "Détermine quelle vhost le bot bindera    avant de se connecter au serve
 #: ../src/conf.py:1019
 msgid ""
 "Determines how many old messages the bot will\n"
-"    keep around in its history."
-msgstr "Détermine combien de vieux messages le bot    gardera dans son historique."
+"    keep around in its history.  Changing this variable will not take effect\n"
+"    until the bot is restarted."
+msgstr "Détermine combien de vieux messages le bot    gardera dans son historique. Changer cette variable ne prend effet qu'après    avoir redémarré le bot."
 
 #: ../src/conf.py:1024
 msgid ""

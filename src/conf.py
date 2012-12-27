@@ -1038,7 +1038,8 @@ registerGlobalValue(supybot.protocols.irc, 'vhost',
 
 registerGlobalValue(supybot.protocols.irc, 'maxHistoryLength',
     registry.Integer(1000, _("""Determines how many old messages the bot will
-    keep around in its history.""")))
+    keep around in its history.  Changing this variable will not take effect
+    until the bot is restarted.""")))
 
 registerGlobalValue(supybot.protocols.irc, 'throttleTime',
     registry.Float(1.0, _("""A floating point number of seconds to throttle

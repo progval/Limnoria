@@ -346,9 +346,6 @@ class IrcState(IrcCommandDispatcher):
                  nicksToHostmasks=None, channels=None):
         if history is None:
             history = RingBuffer(conf.supybot.protocols.irc.maxHistoryLength())
-            def resize_history():
-                self.history.resize(conf.supybot.protocols.irc.maxHistoryLength())
-            conf.supybot.protocols.irc.maxHistoryLength.addCallback(resize_history)
         if supported is None:
             supported = utils.InsensitivePreservingDict()
         if nicksToHostmasks is None:
