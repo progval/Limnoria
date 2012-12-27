@@ -1,4 +1,4 @@
-###
+##
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
 #
@@ -261,9 +261,7 @@ class IrcStateTestCase(SupyTestCase):
         if len(msgs) < 10:
             return
         maxHistoryLength = conf.supybot.protocols.irc.maxHistoryLength
-        oldconfmaxhistory = maxHistoryLength()
-        try:
-            maxHistoryLength.setValue(10)
+        with maxHistoryLength.context(10):
             state = irclib.IrcState()
             for msg in msgs:
                 try:
@@ -274,8 +272,6 @@ class IrcStateTestCase(SupyTestCase):
             self.assertEqual(len(state.history), maxHistoryLength())
             self.assertEqual(list(state.history),
                              msgs[len(msgs) - maxHistoryLength():])
-        finally:
-            maxHistoryLength.setValue(oldconfmaxhistory)
 
     def testWasteland005(self):
         state = irclib.IrcState()
