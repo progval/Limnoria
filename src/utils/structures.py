@@ -52,12 +52,15 @@ class RingBuffer(object):
         self.L = []
         self.i = 0
 
-    def resize(self, i):
-        if self.full:
-            L = list(self)
-            self.reset()
-            self.L = L
-        self.maxSize = i
+    def resize(self, size):
+        L = list(self)
+        i = self.i
+        self.reset()
+        self.maxSize = size
+        for elt in L[i+1:]:
+            self.append(elt)
+        for elt in L[0:i]:
+            self.append(elt)
 
     def __len__(self):
         return len(self.L)
