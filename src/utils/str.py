@@ -86,7 +86,10 @@ _soundextrans = string.maketrans(string.ascii_uppercase,
                                  '01230120022455012623010202')
 _notUpper = chars.translate(chars, string.ascii_uppercase)
 def soundex(s, length=4):
-    """Returns the soundex hash of a given string."""
+    """Returns the soundex hash of a given string.
+
+    length=0 doesn't truncate the hash.
+    """
     s = s.upper() # Make everything uppercase.
     s = s.translate(chars, _notUpper) # Delete non-letters.
     if not s:
@@ -98,9 +101,11 @@ def soundex(s, length=4):
     for c in s:
         if c != L[-1]:
             L.append(c)
-    L = [c for c in L if c != '0'] + (['0']*(length-1))
+    L = [c for c in L if c != '0']
     s = ''.join(L)
-    return length and s[:length] or s.rstrip('0')
+    if length:
+        s = s.ljust(length, '0')[:length]
+    return s
 
 def dqrepr(s):
     """Returns a repr() of s guaranteed to be in double quotes."""
