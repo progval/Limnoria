@@ -28,9 +28,10 @@
 
 ###
 
+
 """
-Add a description of the plugin (to be presented to the user inside the wizard)
-here.  This should describe *what* the plugin does.
+Contains numerous conditional commands (such as 'if', 'and', and 'or'),
+which can be used on their own or with another plugin.
 """
 
 import supybot
