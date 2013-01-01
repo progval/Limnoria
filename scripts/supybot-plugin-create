@@ -2,7 +2,7 @@
 
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -43,8 +43,8 @@ def error(s):
     sys.stderr.write(os.linesep)
     sys.exit(-1)
 
-if sys.version_info < (2, 4, 0):
-    error('This script requires Python 2.4 or newer.')
+if sys.version_info < (2, 6, 0):
+    error('This script requires Python 2.6 or newer.')
 
 import supybot.conf as conf
 from supybot.questions import *

@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2009, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,21 +33,6 @@ from supybot.test import *
 class GoogleTestCase(ChannelPluginTestCase):
     plugins = ('Google', 'Config')
     if network:
-        def testCalcHandlesMultiplicationSymbol(self):
-            self.assertNotRegexp('google calc seconds in a century', r'215')
-
-        def testCalc(self):
-            self.assertNotRegexp('google calc e^(i*pi)+1', r'didn\'t')
-            self.assertNotRegexp('google calc 1 usd in gbp', r'didn\'t')
-
-        def testHtmlHandled(self):
-            self.assertNotRegexp('google calc '
-                                 'the speed of light '
-                                 'in microns / fortnight', '<sup>')
-            self.assertNotRegexp('google calc '
-                                 'the speed of light '
-                                 'in microns / fortnight', '&times;')
-
         def testSearch(self):
             self.assertNotError('google foo')
             self.assertRegexp('google dupa', r'dupa')
@@ -68,8 +53,5 @@ class GoogleTestCase(ChannelPluginTestCase):
         def testFight(self):
             self.assertRegexp('fight supybot moobot', r'.*supybot.*: \d+')
             self.assertNotError('fight ... !')
-
-        def testCalcDoesNotHaveExtraSpaces(self):
-            self.assertNotRegexp('google calc 1000^2', r'\s+,\s+')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

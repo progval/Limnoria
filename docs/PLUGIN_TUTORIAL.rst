@@ -325,7 +325,7 @@ information on using wrap check out the wrap tutorial (The astute Python
 programmer may note that this is very much like a decorator, and that's
 precisely what it is. However, we developed this before decorators existed and
 haven't changed the syntax due to our earlier requirement to stay compatible
-with Python 2.3.  As we now require Python 2.4 or greater, this may eventually
+with Python 2.3.  As we now require Python 2.6 or greater, this may eventually
 change to support work via decorators.)
 
 Now let's create a command with some arguments and see how we use those in our

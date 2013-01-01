@@ -2,7 +2,7 @@
 
 ###
 # Copyright (c) 2003-2004, Jeremiah Fincher
-# Copyright (c) 2009, James Vega
+# Copyright (c) 2009, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,8 +44,8 @@ import shutil
 import signal
 import cStringIO as StringIO
 
-if sys.version_info < (2, 4, 0):
-    sys.stderr.write('This program requires Python >= 2.4.0')
+if sys.version_info < (2, 6, 0):
+    sys.stderr.write('This program requires Python >= 2.6.0')
     sys.stderr.write(os.linesep)
     sys.exit(-1)
 

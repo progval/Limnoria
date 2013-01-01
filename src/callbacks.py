@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008-2010, James Vega
+# Copyright (c) 2008-2010, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -491,18 +491,23 @@ class RichReplyMethods(object):
         if isinstance(capability, basestring): # checkCommandCapability!
             log.warning('Denying %s for lacking %q capability.',
                         self.msg.prefix, capability)
-            if not self._getConfig(conf.supybot.reply.error.noCapability):
-                if capability in conf.supybot.capabilities.private():
-                    v = self._getConfig(conf.supybot.replies.genericNoCapability)
-                else:
-                    v = self._getConfig(conf.supybot.replies.noCapability)
-                    v %= capability
-                s = self.__makeReply(v, s)
-                return self._error(s, **kwargs)
+            # noCapability means "don't send a specific capability error
+            # message" not "don't send a capability error message at all", like
+            # one would think
+            if self._getConfig(conf.supybot.reply.error.noCapability) or \
+                capability in conf.supybot.capabilities.private():
+                v = self._getConfig(conf.supybot.replies.genericNoCapability)
             else:
-                log.debug('Not sending capability error, '
-                          'supybot.reply.error.noCapability is False.')
-                raise SilentError
+                v = self._getConfig(conf.supybot.replies.noCapability)
+                v %= capability
+            s = self.__makeReply(v, s)
+            return self._error(s, **kwargs)
+            if self._getConfig(conf.supybot.reply.error.noCapability):
+                v = self._getConfig(conf.supybot.replies.genericNoCapability)
+            else:
+                v = self._getConfig(conf.supybot.replies.noCapability)
+            s = self.__makeReply(v % capability, s)
+            return self._error(s, **kwargs)
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)

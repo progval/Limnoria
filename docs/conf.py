@@ -39,7 +39,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Supybot'
-copyright = u'2010, Jeremiah Fincher and James Vega'
+copyright = u'2010, Jeremiah Fincher and James McCoy'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -174,7 +174,7 @@ htmlhelp_basename = 'Supybotdoc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'Supybot.tex', u'Supybot Documentation',
-   u'Jeremiah Fincher and James Vega', 'manual'),
+   u'Jeremiah Fincher and James McCoy', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

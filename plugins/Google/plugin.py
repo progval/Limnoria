@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2008-2010, James Vega
+# Copyright (c) 2008-2010, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -233,44 +233,6 @@ class Google(callbacks.PluginRegexp):
         s = ', '.join([format('%s: %i', bold(s), i) for (i, s) in results])
         irc.reply(s)
 
-    @internationalizeDocstring
-    def translate(self, irc, msg, args, sourceLang, targetLang, text):
-        """<source language> [to] <target language> <text>
-
-        Returns <text> translated from <source language> into <target
-        language>.
-        """
-
-        channel = msg.args[0]
-
-        headers = utils.web.defaultHeaders
-        headers['User-Agent'] = ('Mozilla/5.0 (X11; U; Linux i686) '
-                                 'Gecko/20071127 Firefox/2.0.0.11')
-
-        sourceLang = urllib.quote(sourceLang)
-        targetLang = urllib.quote(targetLang)
-
-        text = urllib.quote(text)
-
-        result = utils.web.getUrlFd('http://translate.google.com/translate_a/t'
-                                    '?client=t&hl=en&sl=%s&tl=%s&multires=1'
-                                    '&otf=1&ssel=0&tsel=0&uptl=en&sc=1&text='
-                                    '%s' % (sourceLang, targetLang, text),
-                                    headers).read()
-
-        while ',,' in result:
-            result = result.replace(',,', ',null,')
-        data = json.loads(result)
-
-        try:
-            language = data[2]
-        except:
-            language = 'unknown'
-
-        irc.reply(''.join(x[0] for x in data[0]), language)
-        
-    translate = wrap(translate, ['something', 'to', 'something', 'text'])
-
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
         if not self.registryValue('searchSnarfer', msg.args[0]):
@@ -293,70 +255,6 @@ class Google(callbacks.PluginRegexp):
         s = s.replace(' ', '+')
         url = r'http://www.google.com/ig/calculator?hl=en&q=' + s
         return url
-
-    _calcRe1 = re.compile(r'<table.*class="?obcontainer"?[^>]*>(.*?)</table>', re.I)
-    _calcRe2 = re.compile(r'<h\d class="?r"?[^>]*>(?:<b>)?(.*?)(?:</b>)?</h\d>', re.I | re.S)
-    _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
-    _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
-    _calcTimesRe = re.compile(r'&(?:times|#215);')
-    @internationalizeDocstring
-    def calc(self, irc, msg, args, expr):
-        """<expression>
-
-        Uses Google's calculator to calculate the value of <expression>.
-        """
-        urlig = self._googleUrlIG(expr)
-        js = utils.web.getUrl(urlig).decode('utf8')
-        # Convert JavaScript to JSON. Ouch.
-        js = js \
-                .replace('lhs:','"lhs":') \
-                .replace('rhs:','"rhs":') \
-                .replace('error:','"error":') \
-                .replace('icc:','"icc":') \
-                .replace('\\', '\\\\')
-        js = json.loads(js)
-
-        url = self._googleUrl(expr)
-        html = utils.web.getUrl(url).decode('utf8')
-        match = self._calcRe1.search(html)
-        if match is None:
-            match = self._calcRe2.search(html)
-        if match is not None:
-            s = match.group(1)
-            s = self._calcSupRe.sub(r'^(\1)', s)
-            s = self._calcFontRe.sub(r',', s)
-            s = self._calcTimesRe.sub(r'*', s)
-            s = utils.web.htmlToText(s)
-            if ' = ' in s: # Extra check, since the regex seems to fail.
-                irc.reply(s)
-                return
-            elif js['lhs'] and js['rhs']:
-                # Outputs the original result. Might look ugly.
-                irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
-                return
-        irc.reply(_('Google says: Error: %s.') % (js['error'],))
-        irc.reply('Google\'s calculator didn\'t come up with anything.')
-    calc = wrap(calc, ['text'])
-
-    _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
-    @internationalizeDocstring
-    def phonebook(self, irc, msg, args, phonenumber):
-        """<phone number>
-
-        Looks <phone number> up on Google.
-        """
-        url = self._googleUrl(phonenumber)
-        html = utils.web.getUrl(url).decode('utf8')
-        m = self._phoneRe.search(html)
-        if m is not None:
-            s = m.group(1)
-            s = s.replace('<b>', '')
-            s = s.replace('</b>', '')
-            s = utils.web.htmlToText(s)
-            irc.reply(s)
-        else:
-            irc.reply(_('Google\'s phonebook didn\'t come up with anything.'))
-    phonebook = wrap(phonebook, ['text'])
 
 
 Class = Google

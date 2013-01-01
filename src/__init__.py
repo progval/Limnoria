@@ -54,7 +54,7 @@ class Author(object):
 
 class authors(object): # This is basically a bag.
     jemfinch = Author('Jeremy Fincher', 'jemfinch', 'jemfinch@users.sf.net')
-    jamessan = Author('James Vega', 'jamessan', 'jamessan@users.sf.net')
+    jamessan = Author('James McCoy', 'jamessan', 'vega.james@gmail.com')
     strike = Author('Daniel DiPaolo', 'Strike', 'ddipaolo@users.sf.net')
     baggins = Author('William Robinson', 'baggins', 'airbaggins@users.sf.net')
     skorobeus = Author('Kevin Murphy', 'Skorobeus', 'skoro@skoroworld.com')

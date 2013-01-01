@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008-2009, James Vega
+# Copyright (c) 2008-2009, James McCoy
 # Copyright (c) 2010, Valentin Lorentz
 # All rights reserved.
 #

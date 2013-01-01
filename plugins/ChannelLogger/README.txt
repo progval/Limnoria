@@ -1,1 +1,1 @@
-This plugin automaticly logs the channels where the bot is.
+This plugin automatically logs the channels where the bot is.

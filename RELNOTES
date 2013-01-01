@@ -1,6 +1,6 @@
 Version 0.83.5
 
-The minimum supported Python version has been bumped to 2.4.
+The minimum supported Python version has been bumped to 2.6.
 
 utils.str.perlVariableSubstitute is deprecated in favor of using Python's
 string.Template directly.  perlVariableSubstitute will be removed in a future
