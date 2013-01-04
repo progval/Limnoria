@@ -34,20 +34,19 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
     plugins = ('ShrinkUrl',)
     config = {'supybot.snarfThrottle': 0}
 
-    sfUrl ='http://sourceforge.net/tracker/?func=add&group_id=58965&atid=48947'
+    sfUrl ='http://sourceforge.net/p/supybot/bugs/?source=navbar'
     udUrl = 'http://www.urbandictionary.com/define.php?' \
             'term=all+your+base+are+belong+to+us'
-    tests = {'tiny': [(sfUrl, r'http://tinyurl.com/yg8r28z'),
+    tests = {'tiny': [(sfUrl, r'http://tinyurl.com/b7wyvfz'),
                       (udUrl, r'http://tinyurl.com/u479')],
-             'ln': [(sfUrl, r'http://ln-s.net/4LVF'),
+             'ln': [(sfUrl, r'http://ln-s.net/\+PE-'),
                     (udUrl, r'http://ln-s.net/2\$K')],
-             'xrl': [(sfUrl, r'http://xrl.us/bfq8ik'),
-                     (udUrl, r'http://xrl.us/bfnyji')],
-             'goo': [(sfUrl, r'http://goo.gl/3c59N'),
-                     (udUrl, r'http://goo.gl/ocTga')],
-             'ur1': [(sfUrl, r'http://ur1.ca/9xl25'),
+             'xrl': [(udUrl, r'http://xrl.us/bfnyji')],
+             'goo': [(sfUrl, r'http://goo.gl/krnNC'),
+                     (udUrl, r'http://goo.gl/1ejCD')],
+             'ur1': [(sfUrl, r'http://ur1.ca/ceqh8'),
                      (udUrl, r'http://ur1.ca/9xl9k')],
-             'x0': [(sfUrl, r'http://x0.no/0l2j'),
+             'x0': [(sfUrl, r'http://x0.no/a53s'),
                     (udUrl, r'http://x0.no/0l2k')]
             }
     if network:
@@ -68,11 +67,11 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
                 self.assertError(
                     'config plugins.ShrinkUrl.serviceRotation ln x1')
                 snarfer.setValue(True)
-                self.assertSnarfRegexp(self.udUrl, r'%s.* \(at' %
+                self.assertSnarfRegexp(self.udUrl, r'.*%s.* \(at' %
                                        self.tests['ln'][1][1])
-                self.assertSnarfRegexp(self.udUrl, r'%s.* \(at' %
+                self.assertSnarfRegexp(self.udUrl, r'.*%s.* \(at' %
                                        self.tests['x0'][1][1])
-                self.assertSnarfRegexp(self.udUrl, r'%s.* \(at' %
+                self.assertSnarfRegexp(self.udUrl, r'.*%s.* \(at' %
                                        self.tests['ln'][1][1])
             finally:
                 cycle.setValue(origcycle)
@@ -86,7 +85,7 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
             shrink.shrinkSnarfer.setValue(True)
             try:
                 for (url, shrunkurl) in self.tests[service]:
-                    teststr = r'%s.* \(at' % shrunkurl
+                    teststr = r'.*%s.* \(at' % shrunkurl
                     self.assertSnarfRegexp(url, teststr)
             finally:
                 shrink.default.setValue(origService)
@@ -133,8 +132,8 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
         def testExpand(self):
             self.assertResponse('expand http://x0.no/0l2k', self.udUrl)
             self.assertResponse('expand http://x0.no/0l2k', self.udUrl)
-            self.assertResponse('expand http://x0.no/0l2j', self.sfUrl)
-            self.assertResponse('expand http://x0.no/0l2j', self.sfUrl)
+            self.assertResponse('expand http://x0.no/a53s', self.sfUrl)
+            self.assertResponse('expand http://x0.no/a53s', self.sfUrl)
             self.assertResponse('expand http://x0.no/0l2k', self.udUrl)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
