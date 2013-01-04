@@ -6,7 +6,6 @@ python:
   - "2.5"
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - setuptools
 # command to run tests, e.g. python setup.py test
 script:
   - python setup.py install --user
