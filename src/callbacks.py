@@ -915,7 +915,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                   prefixNick=self.prefixNick)
                         self.irc.queueMsg(m)
                         return m
-                    msgs = ircutils.wrap(s, allowedLength)
+                    msgs = ircutils.wrap(s, allowedLength,
+                            break_long_words=True)
                     msgs.reverse()
                     instant = conf.get(conf.supybot.reply.mores.instant,target)
                     while instant > 1 and msgs:
