@@ -39,7 +39,7 @@ _ = PluginInternationalization()
 
 @internationalizeDocstring
 def foo():
-    'The operation succeeded.'
+    """The operation succeeded."""
     pass
 
 class I18nTestCase(SupyTestCase):
@@ -49,6 +49,8 @@ class I18nTestCase(SupyTestCase):
             self.assertEqual(_(msg_en), msg_fr)
         conf.supybot.language.setValue('en')
         self.assertEqual(_(msg_en), msg_en)
+        multiline = '%s\n\n%s' % (msg_en, msg_en)
+        self.assertEqual(_(multiline), multiline)
 
     def testDocstring(self):
         self.assertEqual(foo.__doc__, msg_en)
