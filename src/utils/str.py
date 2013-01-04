@@ -55,18 +55,19 @@ def rsplit(s, sep=None, maxsplit=-1):
     else:
         return s.rsplit(sep, maxsplit)
 
-def normalizeWhitespace(s, removeNewline=True):
+def normalizeWhitespace(s, removeNewline=False):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
-    replace_fn = lambda x, y, z: str.replace(x, y, z)
-    if isinstance(s, unicode):
-        replace_fn = lambda x, y, z: unicode.replace(x, y, z)
-    else:
-        s = str(s)
-    if removeNewline:
-        s = replace_fn(s, '\n', '')
-    s = replace_fn(s, '\t', ' ')
-    while '  ' in s:
-        s = replace_fn(s, '  ', ' ')
+    if not s:
+        return str(s) # not the same reference
+    starts_with_space = (s[0] in ' \n\t')
+    ends_with_space = (s[-1] in ' \n\t')
+    s = ('' if removeNewline else ' ').join(filter(bool, s.split('\n')))
+    s = ' '.join(filter(bool, s.split('\t')))
+    s = ' '.join(filter(bool, s.split(' ')))
+    if starts_with_space:
+        s = ' ' + s
+    if ends_with_space:
+        s += ' '
     return s
 
 def distance(s, t):
