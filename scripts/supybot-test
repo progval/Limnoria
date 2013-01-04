@@ -31,7 +31,6 @@
 ###
 
 import os
-import sys
 import time
 import shutil
 started = time.time()
@@ -201,11 +200,9 @@ if __name__ == '__main__':
         shutil.rmtree(conf.supybot.directories.log())
         shutil.rmtree(conf.supybot.directories.conf())
         shutil.rmtree(conf.supybot.directories.data())
-    result = runner.run(suite)
+    runner.run(suite)
 
     if hasattr(unittest, 'asserts'):
         print 'Total asserts: %s' % unittest.asserts
-
-    sys.exit(int(result.wasSuccessful()))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
