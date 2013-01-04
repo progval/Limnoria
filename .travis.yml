@@ -1,6 +1,4 @@
 language: python
-env:
-  - PATH=$PATH:$HOME/.local/bin
 python:
   - "3.2"
   - "2.7"
@@ -10,6 +8,6 @@ python:
 install:
 # command to run tests, e.g. python setup.py test
 script:
-  - python setup.py install --user
+  - python setup.py install
   - supybot-test test
   - supybot-test --plugins-dir=plugins/
