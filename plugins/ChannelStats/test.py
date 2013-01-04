@@ -44,21 +44,23 @@ class ChannelStatsTestCase(ChannelPluginTestCase):
         _ = self.irc.takeMsg()
         chanop = ircdb.makeChannelCapability(self.channel, 'op')
         ircdb.users.getUser(self.nick).addCapability(chanop)
-        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
 
     def test(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         self.assertNotError('channelstats')
         self.assertNotError('channelstats')
         self.assertNotError('channelstats')
 
     def testStats(self):
         self.assertError('channelstats stats %s' % self.nick)
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         self.assertNotError('channelstats stats %s' % self.nick)
         self.assertNotError('channelstats stats %s' % self.nick.upper())
         self.assertNotError('channelstats stats')
         self.assertRegexp('channelstats stats', self.nick)
 
     def testSelfStats(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         self.assertError('channelstats stats %s' % self.irc.nick)
         self.assertNotError('channelstats stats %s' % self.irc.nick)
         self.assertNotError('channelstats stats %s' % self.irc.nick)
@@ -76,9 +78,11 @@ class ChannelStatsTestCase(ChannelPluginTestCase):
             conf.supybot.plugins.ChannelStats.selfStats.setValue(True)
 
     def testNoKeyErrorStats(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         self.assertNotRegexp('stats sweede', 'KeyError')
 
     def testRank(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         self.assertError('channelstats stats %s' % self.irc.nick)
         self.assertNotError('channelstats stats %s' % self.irc.nick)
         self.assertNotError('channelstats stats %s' % self.irc.nick)
