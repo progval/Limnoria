@@ -1,4 +1,6 @@
 language: python
+env:
+  - PATH=$PATH:$HOME/.local/bin
 python:
   - "3.2"
   - "2.7"
