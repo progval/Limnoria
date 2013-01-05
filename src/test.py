@@ -114,6 +114,20 @@ class SupyTestCase(unittest.TestCase):
         for irc in world.ircs[:]:
             irc._reallyDie()
 
+    if sys.version_info < (2, 7, 0):
+        def assertIs(self, expr1, expr2, msg=None):
+            """Just like self.assertTrue(a is b), but with a nicer default message."""
+            if expr1 is not expr2:
+                standardMsg = '%s is not %s' % (safe_repr(expr1),
+                                                 safe_repr(expr2))
+                self.fail(self._formatMessage(msg, standardMsg))
+
+        def assertIsNot(self, expr1, expr2, msg=None):
+            """Just like self.assertTrue(a is not b), but with a nicer default message."""
+            if expr1 is expr2:
+                standardMsg = 'unexpectedly identical: %s' % (safe_repr(expr1),)
+                self.fail(self._formatMessage(msg, standardMsg))
+
 
 class PluginTestCase(SupyTestCase):
     """Subclass this to write a test case for a plugin.  See
