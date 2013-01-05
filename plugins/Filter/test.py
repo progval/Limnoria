@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
@@ -96,7 +97,7 @@ class FilterTest(ChannelPluginTestCase):
             self.assertResponse('rot13 [rot13 %s]' % s, s)
 
     def testRot13HandlesNonAsciiStuff(self):
-        self.assertNotError('rot13 \xe4')
+        self.assertNotError(u'rot13 é')
 
     def testHexlifyUnhexlify(self):
         for s in map(str, range(1000, 1010)):
