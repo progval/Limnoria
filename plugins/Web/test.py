@@ -78,7 +78,7 @@ class WebTestCase(ChannelPluginTestCase):
             try:
                 conf.supybot.plugins.Web.titleSnarfer.setValue(True)
                 self.assertSnarfRegexp('http://microsoft.com/',
-                                       'Title: Microsoft Corporation')
+                                       'Title: Microsoft')
             finally:
                 conf.supybot.plugins.Web.titleSnarfer.setValue(False)
 
