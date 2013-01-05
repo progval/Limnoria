@@ -175,18 +175,18 @@ repositories = {
                                                    'stepnem',
                                                    'supybot-plugins',
                                                    ),
-               'gsf-snapshot':     GithubRepository(
-                                                   'gsf',
+               'code4lib-snapshot':GithubRepository(
+                                                   'code4lib',
                                                    'supybot-plugins',
                                                    'Supybot-plugins-20060723',
                                                    ),
-               'gsf-edsu':         GithubRepository(
-                                                   'gsf',
+               'code4lib-edsu':    GithubRepository(
+                                                   'code4lib',
                                                    'supybot-plugins',
                                                    'edsu-plugins',
                                                    ),
-               'gsf':              GithubRepository(
-                                                   'gsf',
+               'code4lib':         GithubRepository(
+                                                   'code4lib',
                                                    'supybot-plugins',
                                                    'plugins',
                                                    ),
