@@ -28,6 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import time
+
 from supybot.test import *
 #import supybot.plugin as plugin
 import supybot.ircutils as ircutils
@@ -218,6 +220,7 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertRegexp('most popular',
                             "Top 1 requested factoid:.*moogle.*(1)")
         # Check plural response
+        time.sleep(0.1)
         self.prefix = userPrefix2
         self.assertNotError('mogle is <reply>mo')
         self.assertRegexp('most authored',
