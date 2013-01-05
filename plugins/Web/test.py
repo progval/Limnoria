@@ -71,9 +71,6 @@ class WebTestCase(ChannelPluginTestCase):
             self.assertNotError(
                         'title http://www.youtube.com/watch?v=x4BtiqPN4u8')
 
-        def testNetcraft(self):
-            self.assertNotError('netcraft slashdot.org')
-
         def testTitleSnarfer(self):
             try:
                 conf.supybot.plugins.Web.titleSnarfer.setValue(True)
