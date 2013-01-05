@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import time
 import socket
 import telnetlib
 
@@ -79,15 +80,24 @@ class Internet(callbacks.Plugin):
             irc.errorInvalid(_('domain'))
             return
         try:
-            t = telnetlib.Telnet('%s.whois-servers.net' % usertld, 43)
+            sock = utils.net.getSocket('%s.whois-servers.net' % usertld)
+            sock.connect(('%s.whois-servers.net' % usertld, 43))
         except socket.error, e:
             irc.error(str(e))
             return
+        sock.settimeout(5)
         if usertld == 'com':
-            t.write('=')
-        t.write(domain.encode('ascii'))
-        t.write(b'\r\n')
-        s = t.read_all()
+            sock.send('=')
+        sock.send(domain.encode('ascii'))
+        sock.send(b'\r\n')
+
+        s = ''
+        end_time = time.time() + 5
+        try:
+            while end_time>time.time():
+                s += sock.recv(4096)
+        except socket.error:
+            pass
         server = registrar = updated = created = expires = status = ''
         for line in s.splitlines():
             line = line.decode('ascii').strip()
