@@ -602,7 +602,7 @@ class MoobotFactoids(callbacks.Plugin):
                 latest = _('latest factoid')
             else:
                 latest = _('latest factoids')
-            irc.reply(format(_('%s: %L'), latest, L))
+            irc.reply(format(_('%i %s: %L'), len(L), latest, L))
         else:
             irc.error(_('There are no factoids in my database.'))
 
@@ -614,7 +614,7 @@ class MoobotFactoids(callbacks.Plugin):
                 requested = _('requested factoid')
             else:
                 requested = _('requested factoids')
-            irc.reply(format(_('Top %s: %L'), requested, L))
+            irc.reply(format(_('Top %i %s: %L'), len(L), requested, L))
         else:
             irc.error(_('No factoids have been requested from my database.'))
 
