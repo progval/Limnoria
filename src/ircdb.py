@@ -1046,7 +1046,8 @@ def checkCapability(hostmask, capability, users=users, channels=channels,
                     ignoreOwner=False):
     """Checks that the user specified by name/hostmask has the capability given.
     """
-    if world.testing and '__no_testcap__' not in hostmask.split('@')[1]:
+    if world.testing and ('@' not in hostmask or
+            '__no_testcap__' not in hostmask.split('@')[1]):
         return _x(capability, True)
     try:
         u = users.getUser(hostmask)
