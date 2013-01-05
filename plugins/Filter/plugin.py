@@ -209,7 +209,7 @@ class Filter(callbacks.Plugin):
         commonly used for text that simply needs to be hidden from inadvertent
         reading by roaming eyes, since it's easily reversible.
         """
-        irc.reply(self._rot13_encoder(text)[0])
+        irc.reply(self._rot13_encoder(text.decode('utf8', errors='replace'))[0])
     rot13 = wrap(rot13, ['text'])
 
     @internationalizeDocstring
