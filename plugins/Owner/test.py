@@ -28,7 +28,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from unittest import skip
+import sys
+
+if sys.version_info >= (2, 7, 0):
+    from unittest import skip
+else:
+    # Workaround
+    def skip(string):
+        return lambda x:None
 from supybot.test import *
 
 import supybot.conf as conf
