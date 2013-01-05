@@ -83,6 +83,8 @@ class Internet(callbacks.Plugin):
         except socket.error, e:
             irc.error(str(e))
             return
+        if usertld == 'com':
+            t.write('=')
         t.write(domain.encode('ascii'))
         t.write(b'\r\n')
         s = t.read_all()
