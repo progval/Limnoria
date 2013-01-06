@@ -42,7 +42,13 @@ import shlex
 import getopt
 import inspect
 import operator
-from cStringIO import StringIO
+
+if sys.version_info < (2, 7, 0):
+    # cStringIO is buggy.
+    # See http://paste.progval.net/show/227/
+    from StringIO import StringIO
+else:
+    from cStringIO import StringIO
 
 import supybot.log as log
 import supybot.conf as conf
