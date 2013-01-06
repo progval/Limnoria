@@ -8,5 +8,6 @@ install:
   - pip install pytz
 # command to run tests, e.g. python setup.py test
 script:
-  - python setup.py install
+  - echo $TRAVIS_PYTHON_VERSION
+  - if [ `echo $TRAVIS_PYTHON_VERSION | head -c 1` -eq 3 ] ; then ./sandbox/run_2to3.sh -j3; cd py3k/; python3 setup.py install; else python setup.py install; fi
   - supybot-test test --plugins-dir=plugins/
