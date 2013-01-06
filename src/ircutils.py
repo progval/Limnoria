@@ -508,7 +508,7 @@ class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
     def __new__(cls, s=''):
         x = super(IrcString, cls).__new__(cls, s)
-        x.lowered = toLower(x)
+        x.lowered = str(toLower(x))
         return x
 
     def __eq__(self, s):
