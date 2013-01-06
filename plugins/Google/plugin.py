@@ -29,6 +29,7 @@
 ###
 
 import re
+import sys
 import cgi
 import time
 import socket
@@ -130,7 +131,9 @@ class Google(callbacks.PluginRegexp):
         for result in data:
             title = utils.web.htmlToText(result['titleNoFormatting']\
                                          .encode('utf-8'))
-            url = result['unescapedUrl'].encode('utf-8')
+            url = result['unescapedUrl']
+            if sys.version_info[0] < 3:
+                url = url.encode('utf-8')
             if title:
                 if bold:
                     title = ircutils.bold(title)
