@@ -87,11 +87,11 @@ class Internet(callbacks.Plugin):
             return
         sock.settimeout(5)
         if usertld == 'com':
-            sock.send('=')
+            sock.send(b'=')
         sock.send(domain.encode('ascii'))
         sock.send(b'\r\n')
 
-        s = ''
+        s = b''
         end_time = time.time() + 5
         try:
             while end_time>time.time():
