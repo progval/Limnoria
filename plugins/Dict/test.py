@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # All rights reserved.
@@ -36,6 +37,7 @@ class DictTestCase(PluginTestCase):
             self.assertNotError('dict slash')
             self.assertNotRegexp('dict web1913 slash', 'foldoc')
             self.assertError('dict ""')
+            self.assertRegexp('dict eng-fra school', 'école')
 
         def testDictionaries(self):
             self.assertNotError('dictionaries')

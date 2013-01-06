@@ -72,7 +72,7 @@ class Connection:
         part only.  Does not get any codes or anything!  Returns a string."""
         data = []
         while 1:
-            line = self.rfile.readline().decode('ascii').strip()
+            line = self.rfile.readline().decode('utf8').strip()
             if line == '.':
                 break
             data.append(line)
