@@ -18,5 +18,5 @@ class FixDefIterkeys(fixer_base.BaseFix):
 
     def transform(self, node, results):
         name = results["name"]
-        new = Name(u"keys", prefix=name.prefix)
+        new = Name("keys", prefix=name.prefix)
         name.replace(new)

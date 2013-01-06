@@ -23,5 +23,5 @@ class FixReload(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        touch_import(u'imp', u'reload', node)
+        touch_import('imp', 'reload', node)
         return node
