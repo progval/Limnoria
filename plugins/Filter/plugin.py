@@ -29,6 +29,7 @@
 ###
 
 import re
+import sys
 import codecs
 import string
 import random
@@ -209,7 +210,9 @@ class Filter(callbacks.Plugin):
         commonly used for text that simply needs to be hidden from inadvertent
         reading by roaming eyes, since it's easily reversible.
         """
-        irc.reply(self._rot13_encoder(text.decode('utf8'))[0])
+        if sys.version_info[0] < 3:
+            text = text.decode('utf8')
+        irc.reply(self._rot13_encoder(text)[0])
     rot13 = wrap(rot13, ['text'])
 
     @internationalizeDocstring
