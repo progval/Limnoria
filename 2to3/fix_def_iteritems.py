@@ -18,5 +18,5 @@ class FixDefIteritems(fixer_base.BaseFix):
 
     def transform(self, node, results):
         name = results["name"]
-        new = Name(u"items", prefix=name.prefix)
+        new = Name("items", prefix=name.prefix)
         name.replace(new)

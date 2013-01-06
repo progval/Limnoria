@@ -18,5 +18,5 @@ class FixDefItervalues(fixer_base.BaseFix):
 
     def transform(self, node, results):
         name = results["name"]
-        new = Name(u"values", prefix=name.prefix)
+        new = Name("values", prefix=name.prefix)
         name.replace(new)
