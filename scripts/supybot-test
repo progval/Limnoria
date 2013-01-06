@@ -142,13 +142,17 @@ if __name__ == '__main__':
                       action='append', dest='pluginsDirs', default=[],
                       help='Looks in in the given directory for plugins and '
                       'loads the tests from all of them.')
+    parser.add_option('', '--exclude',
+                      action='append', dest='excludePlugins', default=[],
+                      help='List of plugins you do not want --plugins-dir '
+                      'to include.')
     (options, args) = parser.parse_args()
 
     # This must go before checking for args, of course.
     for pluginDir in options.pluginsDirs:
         for name in glob.glob(os.path.join(pluginDir, '*')):
             #print '***', name
-            if os.path.isdir(name):
+            if name not in options.excludePlugins and os.path.isdir(name):
                 args.append(name)
 
     if not args:
