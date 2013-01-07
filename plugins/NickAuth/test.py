@@ -50,7 +50,7 @@ class NickAuthTestCase(PluginTestCase):
         self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
                                          'auth',
                                          prefix=self.prefix))
-        self.assertIs(self.irc.takeMsg().command, 'WHOIS')
+        self.assertEqual(self.irc.takeMsg().command, 'WHOIS')
         self.assertError('hostmask list')
 
         self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
