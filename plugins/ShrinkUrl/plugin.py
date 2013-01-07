@@ -29,9 +29,11 @@
 ###
 
 import re
+import time
 import json
 import urllib
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
@@ -71,6 +73,17 @@ ShrunkenUrlDB = plugins.DB('ShrinkUrl', {'cdb': CdbShrunkenUrlDB})
 
 class ShrinkError(Exception):
     pass
+
+def retry(f):
+    def newf(*args, **kwargs):
+        for x in xrange(0, 3):
+            try:
+                return f(*args, **kwargs)
+            except Exception:
+                log.exception('Shrinking URL failed. Trying again.')
+                time.sleep(1)
+        return f(*args, **kwargs)
+    return newf
 
 class ShrinkUrl(callbacks.PluginRegexp):
     regexps = ['shrinkSnarfer']
@@ -155,6 +168,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
     shrinkSnarfer.__doc__ = utils.web._httpUrlRe
 
+    @retry
     def _getLnUrl(self, url):
         url = utils.web.urlquote(url)
         try:
@@ -185,6 +199,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.error(str(e))
     ln = thread(wrap(ln, ['url']))
 
+    @retry
     def _getTinyUrl(self, url):
         try:
             return self.db.get('tiny', url)
@@ -212,6 +227,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
     tiny = thread(wrap(tiny, ['url']))
 
     _xrlApi = 'http://metamark.net/api/rest/simple'
+    @retry
     def _getXrlUrl(self, url):
         quotedurl = utils.web.urlquote(url)
         try:
@@ -240,6 +256,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
     xrl = thread(wrap(xrl, ['url']))
 
     _gooApi = 'https://www.googleapis.com/urlshortener/v1/url'
+    @retry
     def _getGooUrl(self, url):
         try:
             return self.db.get('goo', url)
@@ -270,6 +287,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
 
     _ur1Api = 'http://ur1.ca/'
     _ur1Regexp = re.compile(r'<a href="(?P<url>[^"]+)">')
+    @retry
     def _getUr1Url(self, url):
         try:
             return self.db.get('ur1ca', utils.web.urlquote(url))
@@ -298,6 +316,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
     ur1 = thread(wrap(ur1, ['url']))
 
     _x0Api = 'http://api.x0.no/?%s'
+    @retry
     def _getX0Url(self, url):
         try:
             return self.db.get('x0', url)
@@ -323,6 +342,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.error(str(e))
     x0 = thread(wrap(x0, ['url']))
 
+    @retry
     def _getExpandUrl(self, url):
         url = utils.web.urlquote(url)
         try:
