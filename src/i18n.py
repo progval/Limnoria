@@ -33,6 +33,7 @@ Supybot internationalisation and localisation managment.
 
 __all__ = ['PluginInternationalization', 'internationalizeDocstring']
 
+import os
 import re
 import sys
 import time
@@ -98,10 +99,11 @@ def getLocalePath(name, localeName, extension):
     """Gets the path of the locale file of the given plugin ('supybot' stands
     for the core)."""
     if name != 'supybot':
-        directory = getPluginDir(name) + 'locales'
+        base = getPluginDir(name)
     else:
-        import ansi # Any Supybot plugin could fit
-        directory = ansi.__file__[0:-len('ansi.pyc')] + 'locales'
+        from . import ansi # Any Supybot plugin could fit
+        base = ansi.__file__[0:-len('ansi.pyc')]
+    directory = os.path.join(base, 'locales')
     return '%s/%s.%s' % (directory, localeName, extension)
 
 i18nClasses = {}
