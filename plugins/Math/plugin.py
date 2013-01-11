@@ -314,13 +314,18 @@ class Math(callbacks.Plugin):
             digits = 0
         try:
             newNum = convertcore.convert(number, unit1, unit2)
-            newNum = self._floatToString(newNum)
             if isinstance(newNum, float):
+                zeros = 0
+                for char in str(newNum).split('.')[1]:
+                    if char != '0':
+                        break
+                    zeros += 1
                 # Let's add one signifiant digit. Physicists would not like
                 # that, but common people usually do not give extra zeros...
                 # (for example, with '32 C to F', an extra digit would be
                 # expected).
-                newNum = round(newNum, digits+1)
+                newNum = round(newNum, digits + 1 + zeros)
+            newNum = self._floatToString(newNum)
             irc.reply(str(newNum))
         except convertcore.UnitDataError, ude:
             irc.error(str(ude))
