@@ -1,3 +1,6 @@
+[![Build Status (master branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=master)](https://travis-ci.org/ProgVal/Limnoria)
+[![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
+
 # EVERYONE:
 
 Read [LICENSE].  It's a 3-clause BSD license, but you should read it
