@@ -47,4 +47,13 @@ User = conf.registerPlugin('User')
 # conf.registerGlobalValue(User, 'someConfigVariableName',
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
 
+conf.registerGroup(User, 'gpg')
+
+conf.registerGlobalValue(User.gpg, 'enable',
+    registry.Boolean(True, """Determines whether or not users are
+    allowed to use GPG for authentication."""))
+conf.registerGlobalValue(User.gpg, 'TokenTimeout',
+    registry.PositiveInteger(60*10, """Determines the lifetime of a GPG
+    authentication token (in seconds)."""))
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
