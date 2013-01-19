@@ -242,6 +242,11 @@ repositories = {
                                                    'resistivecorpse',
                                                    'supybot-plugins'
                                                    ),
+               'frumious':         GithubRepository(
+                                                   'frumiousbandersnatch',
+                                                   'sobrieti-plugins',
+                                                   'plugins',
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
