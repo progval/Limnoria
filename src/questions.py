@@ -133,14 +133,15 @@ def getpass(prompt=None, secondPrompt=None):
         prompt += ' '
     while True:
         if useBold:
-            prompt += ansi.RESET
-            sys.stdout.write(ansi.BOLD)
+            prompt = ansi.BOLD + prompt + ansi.RESET
+            secondPrompt = ansi.BOLD + secondPrompt + ansi.RESET
         password = getPass(prompt)
         secondPassword = getPass(secondPrompt)
         if password != secondPassword:
             output(_('Passwords don\'t match.'))
         else:
             break
+    print
     return password
 
 
