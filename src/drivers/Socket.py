@@ -46,6 +46,14 @@ import supybot.drivers as drivers
 import supybot.schedule as schedule
 from itertools import imap
 try:
+    from chardet.universaldetector import UniversalDetector
+    chardetLoaded = True
+except:
+    drivers.log.debug('chardet module not available, '
+                      'cannot guess character encoding if'
+                      'using Python3')
+    chardetLoaded = False
+try:
     import ssl
     SSLError = ssl.SSLError
 except:
@@ -184,7 +192,27 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.inbuffer = lines.pop()
             for line in lines:
                 if sys.version_info[0] >= 3:
-                    line = line.decode(errors='replace')
+                    #first, try to decode using utf-8
+                    try:
+                        line = line.decode(encoding='utf-8', errors='strict')
+                    except UnicodeError:
+                        # if this fails and chardet is loaded, try to guess the correct encoding
+                        if chardetLoaded:
+                            u = UniversalDetector()
+                            u.feed(line)
+                            u.close()
+                            if u.result['encoding']:
+                                # try to use the guessed encoding
+                                try:
+                                    line = line.decode(u.result['encoding'], errors='strict')
+                                # on error, give up and replace the offending characters
+                                except UnicodeError:
+                                    line = line.decode(errors='replace')
+                        # if chardet is not loaded, try to decode using utf-8 and replace any
+                        # offending characters
+                        else:
+                            line = line.decode(encoding='utf-8', errors='replace')
+           
                 msg = drivers.parseMsg(line)
                 if msg is not None:
                     self.irc.feedMsg(msg)
