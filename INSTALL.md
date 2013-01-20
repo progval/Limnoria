@@ -43,6 +43,14 @@ git clone git://github.com/ProgVal/Limnoria.git
 cd Limnoria
 ```
 
+*If* you want to use Python 3.x, run these commands (the first one may take
+a few minutes):
+
+```
+./sandbox/run_2to3.sh -j3
+cd py3k/
+```
+
 The rest depends on do you have root access and do you want to perform global or local install.
 
 ## Global install
