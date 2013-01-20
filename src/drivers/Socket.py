@@ -208,6 +208,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                                 # on error, give up and replace the offending characters
                                 except UnicodeError:
                                     line = line.decode(errors='replace')
+                            else:
+                                # if no encoding could be guessed, fall back to utf-8 and
+                                # replace offending characters
+                                line = line.decode(encoding='utf-8', errors='replace')
                         # if chardet is not loaded, try to decode using utf-8 and replace any
                         # offending characters
                         else:
