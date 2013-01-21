@@ -153,7 +153,7 @@ for plugin in plugins:
 setup(
     # Metadata
     name='limnoria',
-    provides='supybot',
+    provides=['supybot'],
     version=version,
     author='Valentin Lorentz',
     url='https://github.com/ProgVal/Limnoria',
