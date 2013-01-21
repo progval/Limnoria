@@ -519,9 +519,9 @@ class TestRequestHandler(httpserver.SupyHTTPRequestHandler):
         self._headers_mode = False
 
     def do_X(self, *args, **kwargs):
-        assert httpserver.httpServer is not None, \
+        assert httpserver.http_servers, \
                 'The HTTP server is not started.'
-        self.server = httpserver.httpServer
+        self.server = httpserver.http_servers[0]
         httpserver.SupyHTTPRequestHandler.do_X(self, *args, **kwargs)
 
 # Partially stolen from the standart Python library :)
