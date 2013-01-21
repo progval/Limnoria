@@ -152,13 +152,14 @@ for plugin in plugins:
 
 setup(
     # Metadata
-    name='supybot',
+    name='limnoria',
+    provides='supybot',
     version=version,
-    author='Jeremy Fincher',
-    url='http://sourceforge.net/projects/supybot/',
-    author_email='jemfinch@supybot.com',
-    download_url='http://www.sf.net/project/showfiles.php?group_id=58965',
-    description='A flexible and extensible Python IRC bot and framework.',
+    author='Valentin Lorentz',
+    url='https://github.com/ProgVal/Limnoria',
+    author_email='progval+limnoria@progval.net',
+    download_url='http://builds.progval.net/limnoria/',
+    description='A modified version of Supybot (an IRC bot)',
     long_description=normalizeWhitespace("""A robust, full-featured Python IRC
     bot with a clean and flexible plugin API.  Equipped with a complete ACL
     system for specifying user permissions with as much as per-command
