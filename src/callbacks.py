@@ -39,13 +39,15 @@ import sys
 import copy
 import time
 import shlex
+import codecs
 import getopt
 import inspect
 import operator
 
-if sys.version_info < (2, 7, 0):
-    # cStringIO is buggy.
-    # See http://paste.progval.net/show/227/
+if sys.version_info[0] < 3:
+    # cStringIO is buggy with Python 2.6 (
+    # see http://paste.progval.net/show/227/ )
+    # and it does not handle unicode objects in Python  2.x
     from StringIO import StringIO
 else:
     from cStringIO import StringIO
@@ -290,16 +292,17 @@ class Tokenizer(object):
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
             token = token[1:-1]
-            encoding_prefix = 'string' if sys.version_info[0]<3 else 'unicode'
             # FIXME: No need to tell you this is a hack.
             # It has to handle both IRC commands and serialized configuration.
-            try:
-                token = token.decode(encoding_prefix + '_escape')
-            except:
+            if sys.version_info[0] < 3:
                 try:
-                    token = token.encode().decode(encoding_prefix + '_escape')
+                    token = token.encode('utf8').decode('string_escape')
                 except:
-                    pass
+                    token = token.decode('string_escape')
+            else:
+                token = codecs.getencoder('utf8')(token)[0]
+                token = codecs.getdecoder('unicode_escape')(token)[0]
+                token = token.encode('iso-8859-1').decode()
         return token
 
     def _insideBrackets(self, lexer):

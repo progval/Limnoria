@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
@@ -70,6 +71,12 @@ class TokenizerTestCase(SupyTestCase):
         self.assertEqual(tokenize('foo "" bar'), ['foo', '', 'bar'])
         self.assertEqual(tokenize('foo "bar baz" quux'),
                          ['foo', 'bar baz', 'quux'])
+
+    def testUnicode(self):
+        print repr((tokenize(u'好'), ['好']))
+        print repr((tokenize(u'"好"'), ['好']))
+        self.assertEqual(tokenize(u'好'), ['好'])
+        self.assertEqual(tokenize(u'"好"'), ['好'])
 
     def testNesting(self):
         self.assertEqual(tokenize('[]'), [[]])
