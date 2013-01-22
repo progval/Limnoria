@@ -294,9 +294,14 @@ class Tokenizer(object):
             token = token[1:-1]
             # FIXME: No need to tell you this is a hack.
             # It has to handle both IRC commands and serialized configuration.
+            #
+            # Whoever you are, if you make a single modification to this
+            # code, TEST the code with Python 2 & 3, both with the unit
+            # tests and on IRC with this: @echo "好"
             if sys.version_info[0] < 3:
                 try:
                     token = token.encode('utf8').decode('string_escape')
+                    token = token.decode('utf8')
                 except:
                     token = token.decode('string_escape')
             else:
