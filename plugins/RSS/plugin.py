@@ -48,7 +48,7 @@ try:
             'local.feedparser.feedparser', 'feedparser', 'local.feedparser')
 except ImportError:
     raise callbacks.Error, \
-            'You the feedparser module installed to use this plugin.  ' \
+            'You need the feedparser module installed to use this plugin.  ' \
             'Download the module at <http://feedparser.org/>.'
 
 def getFeedName(irc, msg, args, state):
