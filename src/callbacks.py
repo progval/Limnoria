@@ -307,7 +307,10 @@ class Tokenizer(object):
             else:
                 token = codecs.getencoder('utf8')(token)[0]
                 token = codecs.getdecoder('unicode_escape')(token)[0]
-                token = token.encode('iso-8859-1').decode()
+                try:
+                    token = token.encode('iso-8859-1').decode()
+                except: # Prevent issue with tokens like '"\\x80"'.
+                    pass
         return token
 
     def _insideBrackets(self, lexer):
