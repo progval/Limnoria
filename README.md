@@ -1,6 +1,6 @@
-Testing branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=master)](https://travis-ci.org/ProgVal/Limnoria)
+Master branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=master)](https://travis-ci.org/ProgVal/Limnoria)
 
-Master branch: [![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
+Testing branch: [![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
 
 # EVERYONE:
 
