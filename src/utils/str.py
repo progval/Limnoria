@@ -144,6 +144,8 @@ def dqrepr(s):
     # The wankers-that-be decided not to use double-quotes anymore in 2.3.
     # return '"' + repr("'\x00" + s)[6:]
     encoding = 'string_escape' if sys.version_info[0] < 3 else 'unicode_escape'
+    if sys.version_info[0] < 3 and isinstance(s, unicode):
+        s = s.encode('utf8', 'replace')
     return '"%s"' % s.encode(encoding).decode().replace('"', '\\"')
 
 def quoted(s):
