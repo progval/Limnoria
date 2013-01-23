@@ -35,8 +35,11 @@ supybot-adduser) are all installed to your Python directory's
 this: 
 
 ```
-C:\Python2x\python C:\Python2x\Scripts\supybot-wizard
+C:\Python27\python C:\Python27\Scripts\supybot-wizard
 ```
+
+If you are running a Python version that is not 2.7, replace "27" in the
+file names with your Python version, without the dot (for example "26".)
 
 # DEVELOPERS:
 
