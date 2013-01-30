@@ -65,6 +65,7 @@ elif sys.version_info[0] >= 3 and \
     subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')]).wait()
     os.chdir('py3k')
     subprocess.Popen([sys.executable] + sys.argv).wait()
+    exit()
 
 
 import textwrap
