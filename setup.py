@@ -31,26 +31,7 @@
 ###
 
 import sys
-
-if sys.version_info < (2, 6, 0):
-    sys.stderr.write("Supybot requires Python 2.6 or newer.\n")
-    sys.exit(-1)
-
-import textwrap
-
-clean = False
-while '--clean' in sys.argv:
-    clean = True
-    sys.argv.remove('--clean')
-
-import glob
-import shutil
-import os
 import subprocess
-
-
-plugins = [s for s in os.listdir('plugins') if
-           os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
 version = None
 try:
@@ -60,7 +41,6 @@ try:
             .strip() \
             .replace(' +', '+') \
             .replace(' ', 'T')
-
 except:
     pass
 if not version:
@@ -75,13 +55,40 @@ open(os.path.join('src', 'version.py'), 'a').write(
 
 from src.version import version
 
+if sys.version_info < (2, 6, 0):
+    sys.stderr.write("Supybot requires Python 2.6 or newer.")
+    sys.stderr.write(os.linesep)
+    sys.exit(-1)
+elif sys.version_info[0] >= 3 and \
+        not os.path.split(os.path.abspath(os.path.dirname(__file__)))[-1] == 'py3k':
+    # The second condition is used to prevent this script to run recursively
+    subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')]).wait()
+    os.chdir('py3k')
+    subprocess.Popen([sys.executable] + sys.argv).wait()
+
+
+import textwrap
+
+clean = False
+while '--clean' in sys.argv:
+    clean = True
+    sys.argv.remove('--clean')
+
+import glob
+import shutil
+import os
+
+
+plugins = [s for s in os.listdir('plugins') if
+           os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
+
 def normalizeWhitespace(s):
     return ' '.join(s.split())
 
 try:
     from distutils.core import setup
     from distutils.sysconfig import get_python_lib
-except ImportError, e:
+except ImportError as e:
     s = normalizeWhitespace("""Supybot requires the distutils package to
     install. This package is normally included with Python, but for some
     unfathomable reason, many distributions to take it out of standard Python
@@ -102,10 +109,10 @@ if clean:
     previousInstall = os.path.join(get_python_lib(), 'supybot')
     if os.path.exists(previousInstall):
         try:
-            print 'Removing current installation.'
+            print('Removing current installation.')
             shutil.rmtree(previousInstall)
-        except Exception, e:
-            print 'Couldn\'t remove former installation: %s' % e
+        except Exception as e:
+            print('Couldn\'t remove former installation: %s' % e)
             sys.exit(-1)
 
 packages = ['supybot',

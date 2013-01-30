@@ -1,6 +1,32 @@
-#! /usr/bin/python2.7
+#!/usr/bin/env python
+import os
 import sys
-from lib2to3.main import main
+import shutil
+from glob import glob
+try:
+    from lib2to3.main import main
+except ImportError:
+    print('Error: you need the 2to3 tool to run this script.')
+os.chdir(os.path.join(os.path.dirname(__file__), '..'))
+try:
+    os.unlink('src/version.py')
+except OSError:
+    pass
+try:
+    shutil.rmtree('py3k')
+except OSError:
+    pass
+os.mkdir('py3k')
+for dirname in ('locales', 'docs', 'plugins'):
+    shutil.copytree(dirname, os.path.join('py3k', dirname))
+
+files = ['run.py', 'src', 'plugins', 'test', 'setup.py'] + glob('scripts/*')
+args = ['-wWno', 'py3k']
+fixers = []
+for fix in ['all', 'def_iteritems', 'def_itervalues', 'def_iterkeys', 'reload']:
+    fixers += ['-f', fix]
+sys.argv = files + args + fixers + sys.argv
+sys.argc = len(sys.argv)
 
 import fix_def_iteritems, fix_def_itervalues, fix_def_iterkeys, fix_reload
 
