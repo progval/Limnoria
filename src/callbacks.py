@@ -293,7 +293,7 @@ class Tokenizer(object):
         if token[0] == token[-1] and token[0] in self.quotes:
             token = token[1:-1]
             # FIXME: No need to tell you this is a hack.
-            # It has to handle both IRC commands and serialized configuration.
+            # It has to handle both IRC commands and serialized configuration.
             #
             # Whoever you are, if you make a single modification to this
             # code, TEST the code with Python 2 & 3, both with the unit
