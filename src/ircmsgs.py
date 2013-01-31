@@ -196,9 +196,11 @@ class IrcMsg(object):
         return (self.__class__, (str(self),))
 
     def tag(self, tag, value=True):
+        """Affect a key:value pair to this message."""
         self.tags[tag] = value
 
     def tagged(self, tag):
+        """Get the value affected to a tag."""
         return self.tags.get(tag) # Returns None if it's not there.
 
     def __getattr__(self, attr):
