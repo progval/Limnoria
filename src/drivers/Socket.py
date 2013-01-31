@@ -243,7 +243,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             drivers.log.reconnect(self.irc.network)
             if self in self._instances:
                 self._instances.remove(self)
-            self.conn.shutdown(socket.SHUT_RDWR)
+            try:
+                self.conn.shutdown(socket.SHUT_RDWR)
+            except: # "Transport endpoint not connected"
+                pass
             self.conn.close()
             self.connected = False
         if reset:
