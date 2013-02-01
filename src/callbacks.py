@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2008-2010, James McCoy

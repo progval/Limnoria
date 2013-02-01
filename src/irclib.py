@@ -649,7 +649,11 @@ class Irc(IrcCommandDispatcher):
 
     # This *isn't* threadsafe!
     def addCallback(self, callback):
-        """Adds a callback to the callbacks list."""
+        """Adds a callback to the callbacks list.
+
+        :param callback: A callback object
+        :type callback: supybot.irclib.IrcCallback
+        """
         assert not self.getCallback(callback.name())
         self.callbacks.append(callback)
         # This is the new list we're building, which will be tsorted.
