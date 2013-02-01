@@ -84,7 +84,7 @@ class RealSupyHTTPServer(HTTPServer):
 
 class TestSupyHTTPServer(RealSupyHTTPServer):
     def __init__(self, *args, **kwargs):
-        pass
+        self.callbacks = {}
     def serve_forever(self, *args, **kwargs):
         pass
     def shutdown(self, *args, **kwargs):
@@ -151,7 +151,7 @@ class SupyHTTPServerCallback:
     neither overriden this message or defined an handler for this query.""")
 
     def doGet(self, handler, path, *args, **kwargs):
-        handler.send_response(404)
+        handler.send_response(400)
         self.send_header('Content_type', 'text/plain; charset=utf-8')
         self.send_header('Content-Length', len(self.defaultResponse))
         self.end_headers()

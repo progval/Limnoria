@@ -493,14 +493,6 @@ class ChannelPluginTestCase(PluginTestCase):
             frm = self.prefix
         self.irc.feedMsg(ircmsgs.privmsg(to, query, prefix=frm))
 
-class TestSupyHTTPServer(httpserver.SupyHTTPServer):
-    def __init__(self, *args, **kwargs):
-        pass
-    def serve_forever(self, *args, **kwargs):
-        pass
-    def shutdown(self, *args, **kwargs):
-        pass
-
 class TestRequestHandler(httpserver.SupyHTTPRequestHandler):
     def __init__(self, rfile, wfile, *args, **kwargs):
         self._headers_mode = True
@@ -523,6 +515,8 @@ class TestRequestHandler(httpserver.SupyHTTPRequestHandler):
                 'The HTTP server is not started.'
         self.server = httpserver.http_servers[0]
         httpserver.SupyHTTPRequestHandler.do_X(self, *args, **kwargs)
+
+httpserver.http_servers = [httpserver.TestSupyHTTPServer()]
 
 # Partially stolen from the standart Python library :)
 def open_http(url, data=None):
