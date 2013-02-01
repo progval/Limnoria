@@ -259,7 +259,7 @@ class Google(callbacks.PluginRegexp):
                                     '?client=t&hl=en&sl=%s&tl=%s&multires=1'
                                     '&otf=1&ssel=0&tsel=0&uptl=en&sc=1&text='
                                     '%s' % (sourceLang, targetLang, text),
-                                    headers).read()
+                                    headers).read().decode('utf8')
 
         while ',,' in result:
             result = result.replace(',,', ',null,')
