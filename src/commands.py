@@ -1039,6 +1039,13 @@ def wrap(f, specList=[], name=None, **kw):
                                'function ;)')
                 raise
     return utils.python.changeFunctionName(newf, name, f.__doc__)
+wrap.__doc__ = """Useful wrapper for plugin commands.
+
+Valid converters are: %s.
+
+:param f: A command, taking (self, irc, msg, args, ...) as arguments
+:param specList: A list of converters and contexts""" % \
+        ', '.join(sorted(wrappers.keys()))
 
 __all__ = [
     # Contexts.
