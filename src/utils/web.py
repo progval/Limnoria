@@ -179,6 +179,9 @@ class HtmlToText(HTMLParser, object):
     def handle_data(self, data):
         self.data.append(data)
 
+    def handle_entityref(self, data):
+        self.data.append(chr(htmlentitydefs.name2codepoint[data]))
+
     def getText(self):
         text = ''.join(self.data).strip()
         return normalizeWhitespace(text)
