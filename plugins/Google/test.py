@@ -54,4 +54,10 @@ class GoogleTestCase(ChannelPluginTestCase):
             self.assertRegexp('fight supybot moobot', r'.*supybot.*: \d+')
             self.assertNotError('fight ... !')
 
+        def testTranslate(self):
+            self.assertRegexp('translate en es hello world', 'mundo')
+
+        def testCalcDoesNotHaveExtraSpaces(self):
+            self.assertNotRegexp('google calc 1000^2', r'\s+,\s+')
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
