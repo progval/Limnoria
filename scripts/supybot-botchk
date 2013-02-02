@@ -117,7 +117,7 @@ if __name__ == '__main__':
         # First, we check if the pidfile is writable.  If not, supybot will just exit,
         # so we go ahead and refuse to start it.
         try:
-            file(options.pidfile, 'r+')
+            open(options.pidfile, 'r+')
         except EnvironmentError, e:
             debug('pidfile (%s) is not writable: %s' % (options.pidfile, e))
             sys.exit(-1)
