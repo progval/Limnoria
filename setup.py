@@ -33,6 +33,8 @@
 import sys
 import subprocess
 
+os.chdir(os.path.dirname(__file__))
+
 version = None
 try:
     proc = subprocess.Popen('git show HEAD --format=%ci', shell=True,
