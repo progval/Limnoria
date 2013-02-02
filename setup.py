@@ -34,7 +34,9 @@ import os
 import sys
 import subprocess
 
-os.chdir(os.path.dirname(__file__))
+path = os.path.dirname(__file__)
+if path:
+    os.chdir(path)
 
 version = None
 try:
