@@ -584,7 +584,6 @@ class FakeHTTPConnection(httplib.HTTPConnection):
         httplib.HTTPConnection.__init__(self, 'localhost')
         self.rfile = rfile
         self.wfile = wfile
-        self.connect()
     def send(self, data):
         self.wfile.write(data)
     #def putheader(self, name, value):
