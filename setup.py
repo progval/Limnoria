@@ -31,6 +31,7 @@
 ###
 
 import sys
+import tempfile
 import subprocess
 
 path = os.path.dirname(__file__)
@@ -66,7 +67,13 @@ if sys.version_info < (2, 6, 0):
 elif sys.version_info[0] >= 3 and \
         not os.path.split(os.path.abspath(os.path.dirname(__file__)))[-1] == 'py3k':
     # The second condition is used to prevent this script to run recursively
-    subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')]).wait()
+    print('Converting code from Python 2 to Python 3. This make take a '
+            'few minutes.')
+    # For some reason, using open(os.devnull) makes the subprocess exit before
+    # it finishes...
+    subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')],
+            stdout=tempfile.TemporaryFile(),
+            stderr=tempfile.TemporaryFile()).wait()
     os.chdir('py3k')
     subprocess.Popen([sys.executable] + sys.argv).wait()
     exit()
