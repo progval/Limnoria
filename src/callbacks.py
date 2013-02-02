@@ -520,12 +520,6 @@ class RichReplyMethods(object):
                 v %= capability
             s = self.__makeReply(v, s)
             return self._error(s, **kwargs)
-            if self._getConfig(conf.supybot.reply.error.noCapability):
-                v = self._getConfig(conf.supybot.replies.genericNoCapability)
-            else:
-                v = self._getConfig(conf.supybot.replies.noCapability)
-            s = self.__makeReply(v % capability, s)
-            return self._error(s, **kwargs)
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)
