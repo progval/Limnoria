@@ -132,7 +132,7 @@ if __name__ == '__main__':
                 inst.stdin.write('source %s' % filename + os.linesep)
         cmdline = '%s --daemon %s' % (options.supybot, options.conffile)
         debug('Sending cmdline to sh process.')
-        inst.stdin.write(cmdline + os.linesep)
+        inst.stdin.write(cmdline.encode('utf-8') + os.linesep.encode('utf-8'))
         inst.stdin.close()
         debug('Received from sh process: %r' % inst.stdout.read())
         ret = inst.wait()
