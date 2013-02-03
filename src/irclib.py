@@ -887,8 +887,16 @@ class Irc(IrcCommandDispatcher):
         self.ident = conf.supybot.ident()
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         self.password = conf.supybot.networks.get(self.network).password()
-        self.sasl_username = conf.supybot.networks.get(self.network).sasl.username()
-        self.sasl_password = conf.supybot.networks.get(self.network).sasl.password()
+        self.sasl_username = \
+                conf.supybot.networks.get(self.network).sasl.username()
+        # TODO Find a better way to fix this
+        if hasattr(self.sasl_username, 'decode'):
+            self.sasl_username = self.sasl_username.decode('utf-8')
+        self.sasl_password = \
+                conf.supybot.networks.get(self.network).sasl.password()
+        # TODO Find a better way to fix this
+        if hasattr(self.sasl_password, 'decode'):
+            self.sasl_password = self.sasl_password.decode('utf-8')
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         # The rest.
         self.lastTake = 0
@@ -896,6 +904,7 @@ class Irc(IrcCommandDispatcher):
         self.afterConnect = False
         self.lastping = time.time()
         self.outstandingPing = False
+
 
     def _queueConnectMessages(self):
         if self.zombie:
@@ -906,10 +915,11 @@ class Irc(IrcCommandDispatcher):
                 if not self.sasl_username:
                     log.error('SASL username is not set, unable to identify.')
                 else:
-                    auth_string = base64.b64encode(('%s\x00%s\x00%s' %
-                            (self.sasl_username, self.sasl_username,
-                             self.sasl_password)).encode('utf-8')).decode(
-                            'utf-8')
+                    auth_string = base64.b64encode('\x00'.join([
+                        self.sasl_username,
+                        self.sasl_username,
+                        self.sasl_password
+                    ]).encode('utf-8')).decode('utf-8')
                     log.debug('Sending CAP REQ command, requesting capability \'sasl\'.')
                     self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('REQ', 'sasl')))
                     log.debug('Sending AUTHENTICATE command, using mechanism PLAIN.')
