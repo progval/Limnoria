@@ -906,9 +906,9 @@ class Irc(IrcCommandDispatcher):
                 if not self.sasl_username:
                     log.error('SASL username is not set, unable to identify.')
                 else:
-                    auth_string =
-                    base64.b64encode('%s\x00%s\x00%s'.encode('utf-8') % (self.sasl_username,
-                        self.sasl_username, self.sasl_password))
+                    auth_string = base64.b64encode('%s\x00%s\x00%s'.encode(
+                        'utf-8') % (self.sasl_username, self.sasl_username,
+                                    self.sasl_password))
                     log.debug('Sending CAP REQ command, requesting capability \'sasl\'.')
                     self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('REQ', 'sasl')))
                     log.debug('Sending AUTHENTICATE command, using mechanism PLAIN.')
