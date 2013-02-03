@@ -97,7 +97,7 @@ if __name__ == '__main__':
         parser.error('No conffile given.')
 
     os.chdir(options.botdir)
-    pidfile = open(options.pidfile, 'w')
+    pidfile = open(options.pidfile, 'ab')
     pidfile.close()
 
     pid = None
