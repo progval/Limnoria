@@ -97,7 +97,8 @@ if __name__ == '__main__':
         parser.error('No conffile given.')
 
     os.chdir(options.botdir)
-    os.system('touch %s' % options.pidfile)
+    pidfile = open(options.pidfile, 'w')
+    pidfile.close()
 
     pid = None
     try:
