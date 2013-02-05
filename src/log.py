@@ -83,6 +83,7 @@ class Logger(logging.Logger):
         eId = hex(hash(eStrId) & 0xFFFFF)
         logging.Logger.exception(self, *args)
         self.error('Exception id: %s', eId)
+        self.debug(utils.python.collect_extra_debug_data())
         # The traceback should be sufficient if we want it.
         # self.error('Exception string: %s', eStrId)
 

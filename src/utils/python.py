@@ -32,6 +32,7 @@ import sys
 import types
 import fnmatch
 import threading
+import traceback
 
 def universalImport(*names):
     """Attempt to import the given modules, in order, returning the first
@@ -113,4 +114,53 @@ else:
     def glob2re(g):
         return fnmatch.translate(g)[:-7]
 
-# vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:
+
+# From http://code.activestate.com/recipes/52215-get-more-information-from-tracebacks/
+def collect_extra_debug_data():
+    """
+    Print the usual traceback information, followed by a listing of all the
+    local variables in each frame.
+    """
+    data = ''
+    try:
+        tb = sys.exc_info()[2]
+        stack = []
+
+        while tb:
+            stack.append(tb.tb_frame)
+            tb = tb.tb_next
+    finally:
+        del tb
+
+    try:
+        from supybot.version import version
+        data += 'Supybot version: %s\n\n' % version
+    except:
+        data += '(Cannot get Supybot version.)\n\n'
+
+    data += 'Locals by frame, innermost last:\n'
+    for frame in stack:
+        data += '\n\n'
+        data += ('Frame %s in %s at line %s\n' % (frame.f_code.co_name,
+                                             frame.f_code.co_filename,
+                                             frame.f_lineno))
+        for key, value in frame.f_locals.items():
+            if key == '__builtins__':
+                # This is flooding
+                continue
+            data += ('\t%20s = ' % key)
+            #We have to be careful not to cause a new error in our error
+            #printer! Calling str() on an unknown object could cause an
+            #error we don't want.
+            try:
+                data += repr(value) + '\n'
+            except:
+                data += '<ERROR WHILE PRINTING VALUE>\n'
+    data += '\n'
+    data += '+-----------------------+\n'
+    data += '| End of locals display |\n'
+    data += '+-----------------------+\n'
+    data += '\n'
+    return data
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=78:
