@@ -16,3 +16,5 @@ dist/
 push.sh
 merge.sh
 src/version.py
+MANIFEST
+py3k/
