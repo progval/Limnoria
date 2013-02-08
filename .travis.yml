@@ -12,3 +12,4 @@ script:
   - echo $TRAVIS_PYTHON_VERSION
   - python setup.py install
   - cd py3k/; supybot-test test --plugins-dir=plugins/ --exclude=plugins/PluginDownloader --exclude=plugins/ShrinkUrl
+  - cat test-logs/messages.log
