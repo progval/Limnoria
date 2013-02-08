@@ -2,6 +2,7 @@
 
 import os
 import sys
+import subprocess
 
 def main():
     directory = sys.argv[1]
@@ -10,13 +11,22 @@ def main():
             continue
         checkPlugin(os.path.join(directory, plugin))
 
+def changedir(f):
+    def newf(new_path):
+        old_path = os.getcwd()
+        os.chdir(new_path)
+        try:
+            return f('.')
+        finally:
+            os.chdir(old_path)
+    return newf
+
+
+@changedir
 def checkPlugin(pluginPath):
-    try:
-        pot = open(os.path.join(pluginPath, 'messages.pot'))
-    except IOError: # Does not exist
-        print 'WARNING: %s has no messages.pot' % pluginPath
-        return
-    localePath = os.path.join(pluginPath, 'locale')
+    subprocess.Popen('pygettext -D config.py plugin.py', shell=True).wait()
+    pot = open(os.path.join(pluginPath, 'messages.pot'))
+    localePath = os.path.join(pluginPath, 'locales')
     for translation in os.listdir(localePath):
         if not translation.endswith('.po'):
             continue
