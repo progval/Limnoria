@@ -54,7 +54,7 @@ class ShrinkCycle(registry.SpaceSeparatedListOfStrings):
         self.lastIndex = -1
 
     def setValue(self, v):
-        super(ShrinkCycle, self).setValue(v)
+        super(self.__class__, self).setValue(v)
         self.lastIndex = -1
 
     def getService(self):

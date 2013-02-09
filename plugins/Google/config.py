@@ -90,7 +90,7 @@ class NumSearchResults(registry.PositiveInteger):
     def setValue(self, v):
         if v > 8:
             self.error()
-        super(NumSearchResults, self).setValue(v)
+        super(self.__class__, self).setValue(v)
 
 class SafeSearch(registry.OnlySomeStrings):
     validStrings = ['active', 'moderate', 'off']
