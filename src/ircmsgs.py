@@ -695,7 +695,7 @@ def topic(channel, topic=None, prefix='', msg=None):
         return IrcMsg(prefix=prefix, command='TOPIC',
                       args=(channel,), msg=msg)
     else:
-        if sys.version_info[0] < 3 and isinstance(s, unicode):
+        if sys.version_info[0] < 3 and isinstance(topic, unicode):
             s = s.decode('utf8')
         assert isinstance(topic, str)
         return IrcMsg(prefix=prefix, command='TOPIC',
