@@ -7,9 +7,10 @@ isn't any way to get around it.  You can get it from [Python homepage].
 
 # Recommended Software
 
-[PySQLite] -- Version 2.x
+[PySQLite] -- Version 3.x (most Python distributions include it by default)
 
-[Twisted] -- Version 1.2.0 or greater
+[Twisted] -- Version 1.2.0 or greater (unless you actually want to use Twisted,
+you don't actually need it)
 
 [PySQLite]:https://code.google.com/p/pysqlite/
 [Twisted]:http://twistedmatrix.com/trac/
