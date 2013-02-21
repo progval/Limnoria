@@ -37,7 +37,7 @@ msgstr "Converti un nombre décimal dans une autre base, retourne une chaîne."
 msgid ""
 "Convert a number from any base, 2 through 36, to any other\n"
 "        base, 2 through 36. Returns a string."
-msgstr "Convertir un nombre de n'import quelle base, de 2 à 36, à n'importe quelle base, de 2 à 36."
+msgstr "Convertir un nombre de n'importe quelle base, de 2 à 36, à n'importe quelle base, de 2 à 36."
 
 #: plugin.py:157
 msgid ""
@@ -67,7 +67,7 @@ msgstr "Vous ne pouvez utiliser lambda dans cette commande."
 #: plugin.py:202
 #: plugin.py:236
 msgid "The answer exceeded %s or so."
-msgstr "La réponse dépacer %s."
+msgstr "La réponse dépasse %s."
 
 #: plugin.py:204
 #: plugin.py:238
