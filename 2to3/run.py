@@ -17,11 +17,14 @@ try:
 except OSError:
     pass
 os.mkdir('py3k')
-for dirname in ('locales', 'docs', 'plugins'):
+for dirname in ('locales', 'docs', 'plugins', 'src', 'test'):
     shutil.copytree(dirname, os.path.join('py3k', dirname))
+for filename in ('setup.py',):
+    shutil.copyfile(filename, os.path.join('py3k', filename))
+os.chdir('py3k')
 
 files = ['run.py', 'src', 'plugins', 'test', 'setup.py'] + glob('scripts/*')
-args = ['-wWno', 'py3k']
+args = ['-wn']
 fixers = []
 for fix in ['all', 'def_iteritems', 'def_itervalues', 'def_iterkeys', 'reload']:
     fixers += ['-f', fix]
