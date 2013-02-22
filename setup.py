@@ -81,9 +81,13 @@ elif sys.version_info[0] >= 3:
                 'few minutes.')
         # For some reason, using open(os.devnull) makes the subprocess exit before
         # it finishes...
-        subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')],
-                stdout=tempfile.TemporaryFile(),
-                stderr=tempfile.TemporaryFile()).wait()
+        if debug:
+            subprocess.Popen([sys.executable,
+                os.path.join('2to3', 'run.py')]).wait()
+        else:
+            subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')],
+                    stdout=tempfile.TemporaryFile(),
+                    stderr=tempfile.TemporaryFile()).wait()
         if debug:
             print('DEBUG: Changing dir to py3k/')
         os.chdir('py3k')
