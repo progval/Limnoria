@@ -76,5 +76,8 @@ conf.registerChannelValue(MessageParser, 'requireManageCapability',
 conf.registerChannelValue(MessageParser, 'listSeparator',
     registry.String(', ', _("""Determines the separator used between regexps when
     shown by the list command.""")))
+conf.registerChannelValue(MessageParser, 'maxTriggers',
+    registry.Integer(0, _("""Determines the maximum number of triggers in
+    one message. Set this to 0 to allow an infinite number of triggers.""")))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
