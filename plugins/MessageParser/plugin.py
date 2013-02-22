@@ -158,7 +158,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                 return
             actions = []
             results = []
-            for channel in map(plugins.getChannel, (channel, 'global')):
+            for channel in set(map(plugins.getChannel, (channel, 'global'))):
                 db = self.getDb(channel)
                 cursor = db.cursor()
                 cursor.execute("SELECT regexp, action FROM triggers")
