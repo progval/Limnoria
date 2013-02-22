@@ -17,7 +17,7 @@ try:
 except OSError:
     pass
 os.mkdir('py3k')
-for dirname in ('locales', 'docs', 'plugins', 'src', 'test'):
+for dirname in ('locales', 'docs', 'plugins', 'src', 'test', 'scripts'):
     shutil.copytree(dirname, os.path.join('py3k', dirname))
 for filename in ('setup.py',):
     shutil.copyfile(filename, os.path.join('py3k', filename))
