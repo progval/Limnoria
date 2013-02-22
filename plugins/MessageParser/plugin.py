@@ -387,7 +387,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         """
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT regexp, id FROM triggers")
+        cursor.execute("SELECT regexp, id FROM triggers ORDER BY id")
         results = cursor.fetchall()
         if len(results) != 0:
             regexps = results
