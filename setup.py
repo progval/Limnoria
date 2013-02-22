@@ -35,7 +35,11 @@ import sys
 import tempfile
 import subprocess
 
+debug = '--debug' in sys.argv
+
 path = os.path.dirname(__file__)
+if debug:
+    print('DEBUG: Changing dir from %r to %r' % (os.getcwd(), path))
 if path:
     os.chdir(path)
 
@@ -64,19 +68,32 @@ if sys.version_info < (2, 6, 0):
     sys.stderr.write("Supybot requires Python 2.6 or newer.")
     sys.stderr.write(os.linesep)
     sys.exit(-1)
-elif sys.version_info[0] >= 3 and \
-        not os.path.split(os.path.abspath(os.path.dirname(__file__)))[-1] == 'py3k':
-    # The second condition is used to prevent this script to run recursively
-    print('Converting code from Python 2 to Python 3. This make take a '
-            'few minutes.')
-    # For some reason, using open(os.devnull) makes the subprocess exit before
-    # it finishes...
-    subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')],
-            stdout=tempfile.TemporaryFile(),
-            stderr=tempfile.TemporaryFile()).wait()
-    os.chdir('py3k')
-    subprocess.Popen([sys.executable] + sys.argv).wait()
-    exit()
+elif sys.version_info[0] >= 3:
+    if os.path.split(os.path.abspath(os.path.dirname(__file__)))[-1] == 'py3k':
+        if debug:
+            print('DEBUG: Running setup.py with Python 3: second stage.')
+        while '--debug' in sys.argv:
+            sys.argv.remove('--debug')
+    else:
+        if debug:
+            print('DEBUG: Running setup.py with Python 3: first stage.')
+        print('Converting code from Python 2 to Python 3. This make take a '
+                'few minutes.')
+        # For some reason, using open(os.devnull) makes the subprocess exit before
+        # it finishes...
+        subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')],
+                stdout=tempfile.TemporaryFile(),
+                stderr=tempfile.TemporaryFile()).wait()
+        if debug:
+            print('DEBUG: Changing dir to py3k/')
+        os.chdir('py3k')
+        if debug:
+            print('DEBUG: Running %r' % ([sys.executable] + sys.argv))
+        subprocess.Popen([sys.executable] + sys.argv).wait()
+        exit()
+else:
+    while '--debug' in sys.argv:
+        sys.argv.remove('--debug')
 
 
 import textwrap
