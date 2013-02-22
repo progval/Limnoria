@@ -1,4 +1,4 @@
-###
+##
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # Copyright (c) 2010, James McCoy
 # All rights reserved.
@@ -194,7 +194,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 if sys.version_info[0] >= 3:
                     #first, try to decode using utf-8
                     try:
-                        line = line.decode(encoding='utf-8', errors='strict')
+                        line = line.decode('utf8', 'strict')
                     except UnicodeError:
                         # if this fails and chardet is loaded, try to guess the correct encoding
                         if chardetLoaded:
@@ -204,18 +204,19 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                             if u.result['encoding']:
                                 # try to use the guessed encoding
                                 try:
-                                    line = line.decode(u.result['encoding'], errors='strict')
+                                    line = line.decode(u.result['encoding'],
+                                        'strict')
                                 # on error, give up and replace the offending characters
                                 except UnicodeError:
                                     line = line.decode(errors='replace')
                             else:
                                 # if no encoding could be guessed, fall back to utf-8 and
                                 # replace offending characters
-                                line = line.decode(encoding='utf-8', errors='replace')
+                                line = line.decode('utf8', 'replace')
                         # if chardet is not loaded, try to decode using utf-8 and replace any
                         # offending characters
                         else:
-                            line = line.decode(encoding='utf-8', errors='replace')
+                            line = line.decode('utf8', 'replace')
            
                 msg = drivers.parseMsg(line)
                 if msg is not None:
