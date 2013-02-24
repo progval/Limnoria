@@ -163,6 +163,12 @@ def main():
                            'run as root.  You don\'t want this.  Don\'t do it.'
                            '  Even if you think you want it, you don\'t.  '
                            'You\'re probably dumb if you do this.')
+    parser.add_option('', '--allow-home', action='store_true',
+                      dest='allowHome',
+                      help='Determines whether the wizard will be allowed to '
+                           'run directly in the HOME directory. '
+                           'You should not do this unless you want it to '
+                           'create multiple files in your HOME directory.')
     parser.add_option('', '--no-network', action='store_false',
                       dest='network',
                       help='Determines whether the wizard will be allowed to '
@@ -171,6 +177,9 @@ def main():
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
             error('Please, don\'t run this as root.')
+    if os.name == 'posix':
+        if (os.getcwd() == os.path.expanduser('~')) and not options.allowHome:
+            error('Please, don\'t run this in your HOME directory.')
 
     filename = ''
     if args:
