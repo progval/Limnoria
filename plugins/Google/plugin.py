@@ -281,7 +281,7 @@ class Google(callbacks.PluginRegexp):
         data = self.search(searchString, msg.args[0], {'smallsearch': True})
         if data['responseData']['results']:
             url = data['responseData']['results'][0]['unescapedUrl']
-            irc.reply(url.encode('utf-8'), prefixNick=False)
+            irc.reply(url, prefixNick=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
 
     def _googleUrl(self, s):
