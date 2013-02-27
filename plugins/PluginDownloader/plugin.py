@@ -247,6 +247,10 @@ repositories = {
                                                    'sobrieti-plugins',
                                                    'plugins',
                                                    ),
+               'jonimoose':        GithubRepository(
+                                                   'Jonimoose',
+                                                   'Supybot-plugins',
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
