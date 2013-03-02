@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-02-15 23:19+CET\n"
+"POT-Creation-Date: 2013-03-02 19:04+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,16 +34,16 @@ msgid ""
 "    bytes the bot will download via the 'fetch' command in this plugin."
 msgstr ""
 
-#: plugin.py:71
+#: plugin.py:72
 #, docstring
 msgid "Add the help for \"@help Web\" here."
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:115
 msgid "Title: %s (at %s)"
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:122
 #, docstring
 msgid ""
 "<url>\n"
@@ -53,11 +53,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:121
+#: plugin.py:129
 msgid "%s: %s"
 msgstr ""
 
-#: plugin.py:131
+#: plugin.py:139
 #, docstring
 msgid ""
 "<url>\n"
@@ -67,11 +67,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:143
+#: plugin.py:152
 msgid "That URL has no specified doctype."
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:157
 #, docstring
 msgid ""
 "<url>\n"
@@ -81,50 +81,34 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:157 plugin.py:162
+#: plugin.py:166 plugin.py:171
 msgid "%u is %S long."
 msgstr ""
 
-#: plugin.py:164
+#: plugin.py:173
 msgid "The server didn't tell me how long %u is but it's longer than %S."
 msgstr ""
 
-#: plugin.py:173
+#: plugin.py:182
 #, docstring
 msgid ""
-"<url>\n"
+"[--no-filter] <url>\n"
 "\n"
 "        Returns the HTML <title>...</title> of a URL.\n"
+"        If --no-filter is given, the bot won't strip special chars (action,\n"
+"        DCC, ...).\n"
 "        "
 msgstr ""
 
-#: plugin.py:188
+#: plugin.py:205
 msgid "That URL appears to have no HTML title."
 msgstr ""
 
-#: plugin.py:190
+#: plugin.py:207
 msgid "That URL appears to have no HTML title within the first %S."
 msgstr ""
 
-#: plugin.py:198
-#, docstring
-msgid ""
-"<hostname|ip>\n"
-"\n"
-"        Returns Netcraft.com's determination of what operating system and\n"
-"        webserver is running on the host given.\n"
-"        "
-msgstr ""
-
-#: plugin.py:212
-msgid "No results found for %s."
-msgstr ""
-
-#: plugin.py:214
-msgid "The format of page the was odd."
-msgstr ""
-
-#: plugin.py:219
+#: plugin.py:213
 #, docstring
 msgid ""
 "<text>\n"
@@ -133,7 +117,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:228
+#: plugin.py:222
 #, docstring
 msgid ""
 "<text>\n"
@@ -142,7 +126,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:238
+#: plugin.py:232
 #, docstring
 msgid ""
 "<url>\n"
@@ -153,7 +137,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:246
+#: plugin.py:240
 msgid "This command is disabled (supybot.plugins.Web.fetch.maximum is set to 0)."
 msgstr ""
 

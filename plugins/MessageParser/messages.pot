@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-06-28 19:39+CEST\n"
+"POT-Creation-Date: 2013-03-02 19:04+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,12 @@ msgid ""
 "    shown by the list command."
 msgstr ""
 
+#: config.py:80
+msgid ""
+"Determines the maximum number of triggers in\n"
+"    one message. Set this to 0 to allow an infinite number of triggers."
+msgstr ""
+
 #: plugin.py:75
 #, docstring
 msgid ""
@@ -73,22 +79,22 @@ msgstr ""
 msgid "Use this to get a database for a specific channel."
 msgstr ""
 
-#: plugin.py:129
+#: plugin.py:130
 #, docstring
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr ""
 
-#: plugin.py:137
+#: plugin.py:138
 #, docstring
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
 msgstr ""
 
-#: plugin.py:179
+#: plugin.py:190
 #, docstring
 msgid ""
-"[<channel>] <regexp> <action>\n"
+"[<channel>|global] <regexp> <action>\n"
 "\n"
 "        Associates <regexp> with <action>.  <channel> is only\n"
 "        necessary if the message isn't sent on the channel\n"
@@ -96,18 +102,18 @@ msgid ""
 "        etc. being interpolated from the regexp match groups."
 msgstr ""
 
-#: plugin.py:201
+#: plugin.py:212
 msgid "Invalid python regexp: %s"
 msgstr ""
 
-#: plugin.py:213
+#: plugin.py:224
 msgid "That trigger is locked."
 msgstr ""
 
-#: plugin.py:219
+#: plugin.py:230
 #, docstring
 msgid ""
-"[<channel>] [--id] <regexp>]\n"
+"[<channel>|global] [--id] <regexp>]\n"
 "\n"
 "        Removes the trigger for <regexp> from the triggers database.\n"
 "        <channel> is only necessary if\n"
@@ -116,18 +122,18 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:241 plugin.py:271 plugin.py:294 plugin.py:322 plugin.py:352
+#: plugin.py:252 plugin.py:282 plugin.py:305 plugin.py:333 plugin.py:363
 msgid "There is no such regexp trigger."
 msgstr ""
 
-#: plugin.py:245
+#: plugin.py:256
 msgid "This regexp trigger is locked."
 msgstr ""
 
-#: plugin.py:257
+#: plugin.py:268
 #, docstring
 msgid ""
-"[<channel>] <regexp>\n"
+"[<channel>|global] <regexp>\n"
 "\n"
 "        Locks the <regexp> so that it cannot be\n"
 "        removed or overwritten to.  <channel> is only necessary if the message isn't\n"
@@ -135,10 +141,10 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:280
+#: plugin.py:291
 #, docstring
 msgid ""
-"[<channel>] <regexp>\n"
+"[<channel>|global] <regexp>\n"
 "\n"
 "        Unlocks the entry associated with <regexp> so that it can be\n"
 "        removed or overwritten.  <channel> is only necessary if the message isn't\n"
@@ -146,10 +152,10 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:303
+#: plugin.py:314
 #, docstring
 msgid ""
-"[<channel>] [--id] <regexp>\n"
+"[<channel>|global] [--id] <regexp>\n"
 "\n"
 "        Looks up the value of <regexp> in the triggers database.\n"
 "        <channel> is only necessary if the message isn't sent in the channel\n"
@@ -158,10 +164,10 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:332
+#: plugin.py:343
 #, docstring
 msgid ""
-"[<channel>] [--id] <regexp>\n"
+"[<channel>|global] [--id] <regexp>\n"
 "\n"
 "        Display information about <regexp> in the triggers database.\n"
 "        <channel> is only necessary if the message isn't sent in the channel\n"
@@ -170,22 +176,22 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:355
+#: plugin.py:366
 msgid "The regexp id is %d, regexp is \"%s\", and action is \"%s\". It was added by user %s on %s, has been triggered %d times, and is %s."
 msgstr ""
 
-#: plugin.py:364
+#: plugin.py:375
 msgid "locked"
 msgstr ""
 
-#: plugin.py:364
+#: plugin.py:375
 msgid "not locked"
 msgstr ""
 
-#: plugin.py:371
+#: plugin.py:382
 #, docstring
 msgid ""
-"[<channel>]\n"
+"[<channel>|global]\n"
 "\n"
 "        Lists regexps present in the triggers database.\n"
 "        <channel> is only necessary if the message isn't sent in the channel\n"
@@ -193,14 +199,14 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:384 plugin.py:410
+#: plugin.py:395 plugin.py:421
 msgid "There are no regexp triggers in the database."
 msgstr ""
 
-#: plugin.py:394
+#: plugin.py:405
 #, docstring
 msgid ""
-"[<channel>]\n"
+"[<channel>|global]\n"
 "\n"
 "        Returns a list of top-ranked regexps, sorted by usage count\n"
 "        (rank). The number of regexps returned is set by the\n"
@@ -209,10 +215,10 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:418
+#: plugin.py:429
 #, docstring
 msgid ""
-"[<channel>]\n"
+"[<channel>|global]\n"
 "\n"
 "        Vacuums the database for <channel>.\n"
 "        See SQLite vacuum doc here: http://www.sqlite.org/lang_vacuum.html\n"

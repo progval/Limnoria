@@ -1,17 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"POT-Creation-Date: 2013-03-02 19:04+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Français\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: config.py:46
 msgid "Determines whether logging is enabled."
@@ -22,74 +20,110 @@ msgid ""
 "Determines whether channel logfiles will be\n"
 "    flushed anytime they're written to, rather than being buffered by the\n"
 "    operating system."
-msgstr "Détermine si le fichier de logs sera enregistré à chaque fois que l'on y écrit plutôt que d'être mis en buffer par le système d'exploitation."
+msgstr ""
+"Détermine si le fichier de logs sera enregistré à chaque fois que l'on y "
+"écrit plutôt que d'être mis en buffer par le système d'exploitation."
 
 #: config.py:52
+msgid "Determines wether joins and parts are logged"
+msgstr "Détermine si les arrivées et les départs sont loggués."
+
+#: config.py:54
 msgid ""
 "Determines whether formatting characters (such\n"
 "    as bolding, color, etc.) are removed when writing the logs to disk."
-msgstr "Détermine si les caractères de formattage (comme le gras, la couleurs) sont supprimés lors de l'écriture des logs sur le disque."
+msgstr ""
+"Détermine si les caractères de formattage (comme le gras, la couleurs) sont "
+"supprimés lors de l'écriture des logs sur le disque."
 
-#: config.py:55
+#: config.py:57
 msgid ""
 "Determines whether the logs for this channel are\n"
 "    timestamped with the timestamp in supybot.log.timestampFormat."
-msgstr "Détermine si les logs de ce canal sont 'timestampés' avec le format dans supybot.log.timestampFormat"
+msgstr ""
+"Détermine si les logs de ce canal sont 'timestampés' avec le format dans "
+"supybot.log.timestampFormat"
 
-#: config.py:58
+#: config.py:60
 msgid ""
 "Determines what string a message should be\n"
 "    prefixed with in order not to be logged.  If you don't want any such\n"
 "    prefix, just set it to the empty string."
-msgstr "Détermine par quelle chaîne un message doit être préfixé pour ne pas être loggué. Vous ne voulez probablement pas d'un tel préfixe, et simplement définir une chaîne vide."
+msgstr ""
+"Détermine par quelle chaîne un message doit être préfixé pour ne pas être "
+"loggué. Vous ne voulez probablement pas d'un tel préfixe, et simplement "
+"définir une chaîne vide."
 
-#: config.py:62
+#: config.py:64
 msgid ""
 "Determines whether the bot will automatically\n"
 "    rotate the logs for this channel.  The bot will rotate logs when the\n"
 "    timestamp for the log changes.  The timestamp is set according to\n"
 "    the 'filenameTimestamp' configuration variable."
-msgstr "Détermine si le bot fera automatiquement une rotation des logs pour ce canal. Le bot fera tourner les logs lorsque leur timestamp changera. Le timestamp est défini par la variable de configuration 'filenameTimestamp'."
+msgstr ""
+"Détermine si le bot fera automatiquement une rotation des logs pour ce "
+"canal. Le bot fera tourner les logs lorsque leur timestamp changera. Le "
+"timestamp est défini par la variable de configuration 'filenameTimestamp'."
 
-#: config.py:67
+#: config.py:69
 msgid ""
 "Determines how to represent the timestamp\n"
-"    used for the filename in rotated logs.  When this timestamp changes, the\n"
-"    old logfiles will be closed and a new one started. The format characters\n"
-"    for the timestamp are in the time.strftime docs at python.org.  In order\n"
+"    used for the filename in rotated logs.  When this timestamp changes, "
+"the\n"
+"    old logfiles will be closed and a new one started. The format "
+"characters\n"
+"    for the timestamp are in the time.strftime docs at python.org.  In "
+"order\n"
 "    for your logs to be rotated, you'll also have to enable\n"
 "    supybot.plugins.ChannelLogger.rotateLogs."
-msgstr "Détermine comment représenter le timestamp utilisé pour les noms de fichiers de logs 'tournants'. Lorsque ce timestamp change, l'ancien fichier de logs sera fermé, et un nouveau sera ouvert. Le format du timestamp est le même que celui de time.strftime (documentation disponible sur python.org). Pour avoir des logs 'tournant', vous devez activer supybot.plugins.ChannelLogger.rotateLogs."
+msgstr ""
+"Détermine comment représenter le timestamp utilisé pour les noms de fichiers "
+"de logs 'tournants'. Lorsque ce timestamp change, l'ancien fichier de logs "
+"sera fermé, et un nouveau sera ouvert. Le format du timestamp est le même "
+"que celui de time.strftime (documentation disponible sur python.org). Pour "
+"avoir des logs 'tournant', vous devez activer supybot.plugins.ChannelLogger."
+"rotateLogs."
 
-#: config.py:75
+#: config.py:77
 msgid ""
 "Determines whether the bot will partition its\n"
 "    channel logs into separate directories based on different criteria."
-msgstr "Détermine si le bot partitionnera les logs de canaux dans des répertoires séparés, en fonction de différents critères."
+msgstr ""
+"Détermine si le bot partitionnera les logs de canaux dans des répertoires "
+"séparés, en fonction de différents critères."
 
-#: config.py:78
+#: config.py:80
 msgid ""
 "Determines whether the bot will use a network\n"
 "    directory if using directories."
-msgstr "Détermine si le bot utilisera un répertoire par réseau, si il utilise des répertoires."
+msgstr ""
+"Détermine si le bot utilisera un répertoire par réseau, si il utilise des "
+"répertoires."
 
-#: config.py:81
+#: config.py:83
 msgid ""
 "Determines whether the bot will use a channel\n"
 "    directory if using directories."
-msgstr "Détermine si le bot utilisera un répertoire par canal, si il utilise des répertoires."
+msgstr ""
+"Détermine si le bot utilisera un répertoire par canal, si il utilise des "
+"répertoires."
 
-#: config.py:84
+#: config.py:86
 msgid ""
 "Determines whether the bot will use a timestamp\n"
-"    (determined by supybot.plugins.ChannelLogger.directories.timestamp.format)\n"
+"    (determined by supybot.plugins.ChannelLogger.directories.timestamp."
+"format)\n"
 "    if using directories."
-msgstr "Détermine si le bot utilisera un timestamp (déterminé par supybot.plugins.ChannelLogger.directories.timestamp.format), si il utilise des répertoires."
+msgstr ""
+"Détermine si le bot utilisera un timestamp (déterminé par supybot.plugins."
+"ChannelLogger.directories.timestamp.format), si il utilise des répertoires."
 
-#: config.py:88
+#: config.py:90
 msgid ""
 "Determines what timestamp format will be used in\n"
 "    the directory structure for channel logs if\n"
 "    supybot.plugins.ChannelLogger.directories.timestamp is True."
-msgstr "Détermine quel format de timestamp sera utilisé dans la structure de répertoires pour les logs de canaux si supybot.plugins.ChannelLogger.directories.timestamp est True."
-
+msgstr ""
+"Détermine quel format de timestamp sera utilisé dans la structure de "
+"répertoires pour les logs de canaux si supybot.plugins.ChannelLogger."
+"directories.timestamp est True."
