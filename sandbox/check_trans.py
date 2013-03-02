@@ -31,7 +31,7 @@ def checkPlugin(pluginPath):
         if not translation.endswith('.po'):
             continue
         pot.seek(0)
-        potPath = os.path.join(localePath, translation)
+        potPath = os.path.join(os.getcwd(), 'locales', translation)
         po = open(potPath)
         if checkTranslation(pot, po):
             print 'OK:      ' + potPath
