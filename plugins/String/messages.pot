@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2013-03-03 19:37+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgid ""
 "    command."
 msgstr ""
 
-#: plugin.py:48
+#: plugin.py:51
 #, docstring
 msgid ""
 "<letter>\n"
@@ -36,7 +36,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:57
+#: plugin.py:60
 #, docstring
 msgid ""
 "<number>\n"
@@ -45,11 +45,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:64
+#: plugin.py:67
 msgid "That number doesn't map to an 8-bit character."
 msgstr ""
 
-#: plugin.py:69
+#: plugin.py:72
 #, docstring
 msgid ""
 "<encoding> <text>\n"
@@ -60,11 +60,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:78 plugin.py:92
+#: plugin.py:88 plugin.py:125
 msgid "encoding"
 msgstr ""
 
-#: plugin.py:83
+#: plugin.py:107
 #, docstring
 msgid ""
 "<encoding> <text>\n"
@@ -75,15 +75,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:94
+#: plugin.py:131
 msgid "base64 string"
 msgstr ""
 
-#: plugin.py:95
+#: plugin.py:132
 msgid "Base64 strings must be a multiple of 4 in length, padded with '=' if necessary."
 msgstr ""
 
-#: plugin.py:101
+#: plugin.py:148
 #, docstring
 msgid ""
 "<string1> <string2>\n"
@@ -93,22 +93,22 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:108
+#: plugin.py:155
 msgid "Levenshtein distance is a complicated algorithm, try it with some smaller inputs."
 msgstr ""
 
-#: plugin.py:116
+#: plugin.py:163
 #, docstring
 msgid ""
 "<string> [<length>]\n"
 "\n"
 "        Returns the Soundex hash to a given length.  The length defaults to\n"
 "        4, since that's the standard length for a soundex hash.  For unlimited\n"
-"        length, use 0.\n"
+"        length, use 0. Maximum length 1024.\n"
 "        "
 msgstr ""
 
-#: plugin.py:127
+#: plugin.py:177
 #, docstring
 msgid ""
 "<text>\n"
@@ -117,7 +117,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:136
+#: plugin.py:186
 #, docstring
 msgid ""
 "<regexp> <text>\n"
@@ -129,11 +129,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:198
 msgid "You probably don't want to match the empty string."
 msgstr ""
 
-#: plugin.py:162
+#: plugin.py:212
 #, docstring
 msgid ""
 "<password> <text>\n"
@@ -144,7 +144,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:175
+#: plugin.py:225
 #, docstring
 msgid ""
 "<text>\n"
@@ -155,7 +155,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:186
+#: plugin.py:236
 #, docstring
 msgid ""
 "<text>\n"

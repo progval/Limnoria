@@ -1,29 +1,34 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
+"POT-Creation-Date: 2013-03-03 19:39+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Français\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: config.py:39
 msgid ""
 "This plugin offers a snarfer that will go retrieve a shorter\n"
 "             version of long URLs that are sent to the channel.  Would you\n"
 "             like this snarfer to be enabled?"
-msgstr "Ce plugin offre un snarfer qui récupère de longues URLs envoyées sur un canal pour en envoyer une version plus courte. Voulez-vous activer ce snarfer ?"
+msgstr ""
+"Ce plugin offre un snarfer qui récupère de longues URLs envoyées sur un "
+"canal pour en envoyer une version plus courte. Voulez-vous activer ce "
+"snarfer ?"
 
 #: config.py:45
-#: config.py:49
 msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
 msgstr "Les valeurs valides incluent 'ln', 'tiny', 'xrl', 'goo', et 'x0'."
+
+#: config.py:49
+msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', 'ur1', and 'x0'."
+msgstr ""
+"Les valeurs valides incluent 'ln', 'tiny', 'xrl', 'goo', 'ur1', et 'x0'."
 
 #: config.py:71
 msgid ""
@@ -33,13 +38,20 @@ msgid ""
 "    supybot.plugins.ShrinkUrl.minimumLength) it will post a\n"
 "    smaller URL from either ln-s.net or tinyurl.com, as denoted in\n"
 "    supybot.plugins.ShrinkUrl.default."
-msgstr "Détermine si le snarfer d'URL est activé. Ce remplaceur sera à l'écoute de toutes les URLs sur lle canal, et, si elle sont suffisamment longues (déterminé par supybot.plugins.ShrinkUrl.minimumLength) le bot postera une URL raccourcie avec ln-s.net ou tinyurl.com, comme défini par supybot.plugins.ShrinkUrl.default."
+msgstr ""
+"Détermine si le snarfer d'URL est activé. Ce remplaceur sera à l'écoute de "
+"toutes les URLs sur lle canal, et, si elle sont suffisamment longues "
+"(déterminé par supybot.plugins.ShrinkUrl.minimumLength) le bot postera une "
+"URL raccourcie avec ln-s.net ou tinyurl.com, comme défini par supybot."
+"plugins.ShrinkUrl.default."
 
 #: config.py:78
 msgid ""
 "Determines whether the snarfer will show the\n"
 "    domain of the URL being snarfed along with the shrunken URL."
-msgstr "Détermine si le snarfer affichera le domaine de l'URL snarfée avec l'URL raccourcie."
+msgstr ""
+"Détermine si le snarfer affichera le domaine de l'URL snarfée avec l'URL "
+"raccourcie."
 
 #: config.py:81
 msgid ""
@@ -50,16 +62,22 @@ msgstr "La taille minimum d'une URL pour que le bot la raccourcice."
 #: config.py:84
 msgid ""
 "Determines what URLs are to be snarfed; URLs\n"
-"    matching the regexp given will not be snarfed.  Give the empty string if\n"
+"    matching the regexp given will not be snarfed.  Give the empty string "
+"if\n"
 "    you have no URLs that you'd like to exclude from being snarfed."
-msgstr "Détermine quelles URLs seront snarfées ; les URLs correspondant à l'expression régulière ne seront par snarfées. Donnez une chaîne vide si il n'y a pas d'URL que vous voulez exclure."
+msgstr ""
+"Détermine quelles URLs seront snarfées ; les URLs correspondant à "
+"l'expression régulière ne seront par snarfées. Donnez une chaîne vide si il "
+"n'y a pas d'URL que vous voulez exclure."
 
 #: config.py:88
 msgid ""
 "Determines whether the bot will shrink the\n"
 "    URLs of outgoing messages if those URLs are longer than\n"
 "    supybot.plugins.ShrinkUrl.minimumLength."
-msgstr "Détermine si le bot raccourcira les URLs des messages sortant si ces URLs sont plus longues que supybot.plugins.ShrinkUrl.minimumLength."
+msgstr ""
+"Détermine si le bot raccourcira les URLs des messages sortant si ces URLs "
+"sont plus longues que supybot.plugins.ShrinkUrl.minimumLength."
 
 #: config.py:92
 msgid ""
@@ -71,15 +89,18 @@ msgstr "Détermine quel site web le bot utilisera pour raccourcir une URL"
 msgid ""
 "Determines whether this plugin will bold\n"
 "    certain portions of its replies."
-msgstr "Détermine si ce plugin mettra en gras certaines portions de ses réponses."
+msgstr ""
+"Détermine si ce plugin mettra en gras certaines portions de ses réponses."
 
 #: config.py:98
 msgid ""
 "If set to a non-empty value, specifies the list of\n"
 "    services to rotate through for the shrinkSnarfer and outFilter."
-msgstr "Si définit à une valeur non vide, définit la liste des services à faire tourner pour shrinkSnarfer et outFilter."
+msgstr ""
+"Si définit à une valeur non vide, définit la liste des services à faire "
+"tourner pour shrinkSnarfer et outFilter."
 
-#: plugin.py:171
+#: plugin.py:189
 msgid ""
 "<url>\n"
 "\n"
@@ -90,7 +111,7 @@ msgstr ""
 "\n"
 "Retourne une version de ln-s.net de l'<url>."
 
-#: plugin.py:196
+#: plugin.py:216
 msgid ""
 "<url>\n"
 "\n"
@@ -101,7 +122,7 @@ msgstr ""
 "\n"
 "Retourne une version de TinyURL.com de l'<url>."
 
-#: plugin.py:224
+#: plugin.py:245
 msgid ""
 "<url>\n"
 "\n"
@@ -112,7 +133,7 @@ msgstr ""
 "\n"
 "Retourne une version de xrl.us de l'<url>."
 
-#: plugin.py:255
+#: plugin.py:275
 msgid ""
 "<url>\n"
 "\n"
@@ -123,7 +144,18 @@ msgstr ""
 "\n"
 "Retourne une version de goo.gl de l'<url>."
 
-#: plugin.py:281
+#: plugin.py:305
+msgid ""
+"<url>\n"
+"\n"
+"        Returns an ur1 version of <url>.\n"
+"        "
+msgstr ""
+"<url>\n"
+"\n"
+"Retourne une version de ur1 de l'<url>."
+
+#: plugin.py:332
 msgid ""
 "<url>\n"
 "\n"
@@ -134,3 +166,13 @@ msgstr ""
 "\n"
 "Retourne une version de x0.no de l'<url>."
 
+#: plugin.py:359
+msgid ""
+"<url>\n"
+"\n"
+"        Returns an expanded version of <url>.\n"
+"        "
+msgstr ""
+"<url>\n"
+"\n"
+"Retourne la version large de l'<url>."

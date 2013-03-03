@@ -1,31 +1,39 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-20 09:08+CEST\n"
+"POT-Creation-Date: 2013-03-03 19:37+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Supybot-fr <progval@gmail.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Français\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: config.py:47
 msgid ""
 "Determines the maximum size of a string\n"
-"    given to the levenshtein command.  The levenshtein command uses an O(m*n)\n"
+"    given to the levenshtein command.  The levenshtein command uses an O"
+"(m*n)\n"
 "    algorithm, which means that with strings of length 256, it can take 1.5\n"
 "    seconds to finish; with strings of length 384, though, it can take 4\n"
-"    seconds to finish, and with strings of much larger lengths, it takes more\n"
-"    and more time.  Using nested commands, strings can get quite large, hence\n"
+"    seconds to finish, and with strings of much larger lengths, it takes "
+"more\n"
+"    and more time.  Using nested commands, strings can get quite large, "
+"hence\n"
 "    this variable, to limit the size of arguments passed to the levenshtein\n"
 "    command."
-msgstr "Détermine la taille maximum d'une chaîne donnée à la commande 'levenshtein'. Cette commande utiliser un algorithme O(m*n), ce qui signifie que pour une chaîne de taille 256, il peut prendre 1,5 seconde à se finir ; pour les chaînes de taille 384, il peut en prendre 4, et ainsi de suite. En utilisant des commandes inmbriquées, les chaînes peuvent devenir très grandes, donc, utilisez cette variable pour limiter la taille des arguments passés à la commande 'levenshtein'."
+msgstr ""
+"Détermine la taille maximum d'une chaîne donnée à la commande 'levenshtein'. "
+"Cette commande utiliser un algorithme O(m*n), ce qui signifie que pour une "
+"chaîne de taille 256, il peut prendre 1,5 seconde à se finir ; pour les "
+"chaînes de taille 384, il peut en prendre 4, et ainsi de suite. En utilisant "
+"des commandes inmbriquées, les chaînes peuvent devenir très grandes, donc, "
+"utilisez cette variable pour limiter la taille des arguments passés à la "
+"commande 'levenshtein'."
 
-#: plugin.py:46
+#: plugin.py:51
 msgid ""
 "<letter>\n"
 "\n"
@@ -36,7 +44,7 @@ msgstr ""
 "\n"
 "Retourne la valeur 8 bits de la <lettre>."
 
-#: plugin.py:55
+#: plugin.py:60
 msgid ""
 "<number>\n"
 "\n"
@@ -47,11 +55,11 @@ msgstr ""
 "\n"
 "Retourne le caractère associé à la valeur 8-bits du <nombre>"
 
-#: plugin.py:62
+#: plugin.py:67
 msgid "That number doesn't map to an 8-bit character."
 msgstr "Ce nombre ne correspond pas à un caractère 8 bits."
 
-#: plugin.py:67
+#: plugin.py:72
 msgid ""
 "<encoding> <text>\n"
 "\n"
@@ -62,64 +70,81 @@ msgid ""
 msgstr ""
 "<encodage> <texte>\n"
 "\n"
-"Retourne la forme encodée du texte donnée ; les encodages valides sont disponibles dans la documentation du module codec de Python : http://docs.python.org/library/codecs.html#standard-encodings"
+"Retourne la forme encodée du texte donnée ; les encodages valides sont "
+"disponibles dans la documentation du module codec de Python : http://docs."
+"python.org/library/codecs.html#standard-encodings"
 
-#: plugin.py:76
-#: plugin.py:90
+#: plugin.py:88 plugin.py:125
 msgid "encoding"
 msgstr "encodage"
 
-#: plugin.py:81
+#: plugin.py:107
 msgid ""
 "<encoding> <text>\n"
 "\n"
-"        Returns an un-encoded form of the given text; the valid encodings are\n"
+"        Returns an un-encoded form of the given text; the valid encodings "
+"are\n"
 "        available in the documentation of the Python codecs module:\n"
 "        <http://docs.python.org/library/codecs.html#standard-encodings>.\n"
 "        "
 msgstr ""
 "<encodage> <texte>\n"
 "\n"
-"Retourne la forme désencodée du texte donnée ; les encodages valides sont disponibles dans la documentation du module codec de Python : http://docs.python.org/library/codecs.html#standard-encodings"
+"Retourne la forme désencodée du texte donnée ; les encodages valides sont "
+"disponibles dans la documentation du module codec de Python : http://docs."
+"python.org/library/codecs.html#standard-encodings"
 
-#: plugin.py:92
+#: plugin.py:131
 msgid "base64 string"
 msgstr "chaîne base64"
 
-#: plugin.py:93
-msgid "Base64 strings must be a multiple of 4 in length, padded with '=' if necessary."
-msgstr "Les chaînes base64 doivent avoir une longueur multiple de 4, entourées de '=' si nécessaire."
+#: plugin.py:132
+msgid ""
+"Base64 strings must be a multiple of 4 in length, padded with '=' if "
+"necessary."
+msgstr ""
+"Les chaînes base64 doivent avoir une longueur multiple de 4, entourées de "
+"'=' si nécessaire."
 
-#: plugin.py:99
+#: plugin.py:148
 msgid ""
 "<string1> <string2>\n"
 "\n"
-"        Returns the levenshtein distance (also known as the \"edit distance\"\n"
+"        Returns the levenshtein distance (also known as the \"edit distance"
+"\"\n"
 "        between <string1> and <string2>)\n"
 "        "
 msgstr ""
 "<chaîne 1> <chaîne 2>\n"
 "\n"
-"Retourne la distance levenhtein (aussi connue sous le nom de \"distance d'édition) entre les deux chaînes."
+"Retourne la distance levenhtein (aussi connue sous le nom de \"distance "
+"d'édition) entre les deux chaînes."
 
-#: plugin.py:106
-msgid "Levenshtein distance is a complicated algorithm, try it with some smaller inputs."
-msgstr "La distance levenshtein est un algorithme compliqué ; essayez avec des données plus petites."
+#: plugin.py:155
+msgid ""
+"Levenshtein distance is a complicated algorithm, try it with some smaller "
+"inputs."
+msgstr ""
+"La distance levenshtein est un algorithme compliqué ; essayez avec des "
+"données plus petites."
 
-#: plugin.py:114
+#: plugin.py:163
 msgid ""
 "<string> [<length>]\n"
 "\n"
 "        Returns the Soundex hash to a given length.  The length defaults to\n"
-"        4, since that's the standard length for a soundex hash.  For unlimited\n"
-"        length, use 0.\n"
+"        4, since that's the standard length for a soundex hash.  For "
+"unlimited\n"
+"        length, use 0. Maximum length 1024.\n"
 "        "
 msgstr ""
 "<chaîne> [<longueur>]\n"
 "\n"
-"Retourne un hash Soundex de la longueur donnée. La longueur par défaut est de 4, c'est le standard pour un hash soundex. Pour une longueur illimitée, utilisez 0."
+"Retourne un hash Soundex de la longueur donnée. La longueur par défaut est "
+"de 4, c'est le standard pour un hash soundex. Pour une longueur illimitée, "
+"utilisez 0. La longueur maximum est 1024."
 
-#: plugin.py:125
+#: plugin.py:177
 msgid ""
 "<text>\n"
 "\n"
@@ -128,9 +153,9 @@ msgid ""
 msgstr ""
 "<texte>\n"
 "\n"
-"Retourne la longueur du <texte>\n"
+"Retourne la longueur du <texte>."
 
-#: plugin.py:134
+#: plugin.py:186
 msgid ""
 "<regexp> <text>\n"
 "\n"
@@ -142,13 +167,18 @@ msgid ""
 msgstr ""
 "<expression régulière> <texte>\n"
 "\n"
-"Si l'<expression régulière> est de la forme de m/regexp/flags, retourne la portion du <texte> correspondant à l'expression régulière. Si l'<expression régulière> est de la forme de s/regexp/remplacement/flags, retourne le résultat de l'application de l'expression régulière sur le <texte>."
+"Si l'<expression régulière> est de la forme de m/regexp/flags, retourne la "
+"portion du <texte> correspondant à l'expression régulière. Si l'<expression "
+"régulière> est de la forme de s/regexp/remplacement/flags, retourne le "
+"résultat de l'application de l'expression régulière sur le <texte>."
 
-#: plugin.py:146
+#: plugin.py:198
 msgid "You probably don't want to match the empty string."
-msgstr "Vous ne voulez probablement appliquer une expression régulière sur une chaîne vide."
+msgstr ""
+"Vous ne voulez probablement appliquer une expression régulière sur une "
+"chaîne vide."
 
-#: plugin.py:156
+#: plugin.py:212
 msgid ""
 "<password> <text>\n"
 "\n"
@@ -159,31 +189,36 @@ msgid ""
 msgstr ""
 "<mot de passe> <texte>\n"
 "\n"
-"Retourne le <texte>, encrypté par la méthode XOR avec le <mot de passe>. Lisez http://www.yoe.org/developer/xor.html pour plus d'informations sur le cryptage XOR."
+"Retourne le <texte>, encrypté par la méthode XOR avec le <mot de passe>. "
+"Lisez http://www.yoe.org/developer/xor.html pour plus d'informations sur le "
+"cryptage XOR."
 
-#: plugin.py:169
+#: plugin.py:225
 msgid ""
 "<text>\n"
 "\n"
 "        Returns the md5 hash of a given string.  Read\n"
-"        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more information\n"
+"        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more "
+"information\n"
 "        about md5.\n"
 "        "
 msgstr ""
 "<texte>\n"
 "\n"
-"Retourne le hash md5 de la chaîne donnée. Lisez http://www.rsasecurity.com/rsalabs/faq/3-6-6.html pour plus d'informations à propos de md5."
+"Retourne le hash md5 de la chaîne donnée. Lisez http://www.rsasecurity.com/"
+"rsalabs/faq/3-6-6.html pour plus d'informations à propos de md5."
 
-#: plugin.py:180
+#: plugin.py:236
 msgid ""
 "<text>\n"
 "\n"
 "        Returns the SHA hash of a given string.  Read\n"
-"        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information\n"
+"        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more "
+"information\n"
 "        about SHA.\n"
 "        "
 msgstr ""
 "<texte>\n"
 "\n"
-"Retourne le hash SDA de la chaîne donnée. Lisez http://www.secure-hash-algorithm-md5-sha-1.co.uk/ pour plus d'informations à propos de SHA."
-
+"Retourne le hash SDA de la chaîne donnée. Lisez http://www.secure-hash-"
+"algorithm-md5-sha-1.co.uk/ pour plus d'informations à propos de SHA."

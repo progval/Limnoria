@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-10-07 18:04+EEST\n"
+"POT-Creation-Date: 2013-03-03 19:39+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,26 +273,26 @@ msgstr ""
 msgid "ban someone"
 msgstr ""
 
-#: plugin.py:343
+#: plugin.py:351
 msgid "I haven't seen %s."
 msgstr ""
 
-#: plugin.py:353
+#: plugin.py:361
 msgid "I cowardly refuse to kickban myself."
 msgstr ""
 
-#: plugin.py:364
+#: plugin.py:370
 msgid "I cowardly refuse to ban myself."
 msgstr ""
 
-#: plugin.py:392
+#: plugin.py:398
 msgid "%s has %s too, you can't ban him/her/it."
 msgstr ""
 
-#: plugin.py:404
+#: plugin.py:410
 #, docstring
 msgid ""
-"[<channel>] [<hostmask>]\n"
+"[<channel>] [<hostmask|--all>]\n"
 "\n"
 "        Unbans <hostmask> on <channel>.  If <hostmask> is not given, unbans\n"
 "        any hostmask currently banned on <channel> that matches your current\n"
@@ -302,19 +302,32 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:421
+#: plugin.py:430
 msgid "All bans on %s matching %s have been removed."
 msgstr ""
 
-#: plugin.py:425
+#: plugin.py:434
 msgid "No bans matching %s were found on %s."
 msgstr ""
 
-#: plugin.py:428
+#: plugin.py:437
 msgid "unban someone"
 msgstr ""
 
-#: plugin.py:433
+#: plugin.py:444
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
+"        List all bans on the channel.\n"
+"        If <channel> is not given, it defaults to the current channel."
+msgstr ""
+
+#: plugin.py:448
+msgid "No bans."
+msgstr ""
+
+#: plugin.py:453
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -325,19 +338,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:442
+#: plugin.py:462
 msgid "invite someone"
 msgstr ""
 
-#: plugin.py:461
+#: plugin.py:481
 msgid "%s is already in %s."
 msgstr ""
 
-#: plugin.py:468
+#: plugin.py:488
 msgid "There is no %s on this network."
 msgstr ""
 
-#: plugin.py:480
+#: plugin.py:500
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -349,7 +362,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:495
+#: plugin.py:515
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -361,7 +374,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:510
+#: plugin.py:530
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -370,15 +383,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:525
+#: plugin.py:545
 msgid "I'm currently lobotomized in %L."
 msgstr ""
 
-#: plugin.py:528
+#: plugin.py:548
 msgid "I'm not currently lobotomized in any channels that you're in."
 msgstr ""
 
-#: plugin.py:535
+#: plugin.py:555
 #, docstring
 msgid ""
 "[<channel>] <nick|hostmask> [<expires>]\n"
@@ -395,7 +408,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:555
+#: plugin.py:575
 #, docstring
 msgid ""
 "[<channel>] <hostmask>\n"
@@ -406,11 +419,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:567
+#: plugin.py:587
 msgid "There are no persistent bans for that hostmask."
 msgstr ""
 
-#: plugin.py:572
+#: plugin.py:592
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -420,19 +433,19 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:582
+#: plugin.py:602
 msgid "%q (expires %t)"
 msgstr ""
 
-#: plugin.py:585
+#: plugin.py:605
 msgid "%q (never expires)"
 msgstr ""
 
-#: plugin.py:589
+#: plugin.py:609
 msgid "There are no persistent bans on %s."
 msgstr ""
 
-#: plugin.py:596
+#: plugin.py:616
 #, docstring
 msgid ""
 "[<channel>] <nick|hostmask> [<expires>]\n"
@@ -447,7 +460,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:614
+#: plugin.py:634
 #, docstring
 msgid ""
 "[<channel>] <hostmask>\n"
@@ -458,11 +471,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:626
+#: plugin.py:646
 msgid "There are no ignores for that hostmask."
 msgstr ""
 
-#: plugin.py:631
+#: plugin.py:651
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -473,11 +486,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:640
+#: plugin.py:660
 msgid "I'm not currently ignoring any hostmasks in %q"
 msgstr ""
 
-#: plugin.py:651
+#: plugin.py:671
 #, docstring
 msgid ""
 "[<channel>] <nick|username> <capability> [<capability> ...]\n"
@@ -489,7 +502,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:667
+#: plugin.py:687
 #, docstring
 msgid ""
 "[<channel>] <name|hostmask> <capability> [<capability> ...]\n"
@@ -501,11 +514,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:686
+#: plugin.py:706
 msgid "That user didn't have the %L %s."
 msgstr ""
 
-#: plugin.py:695
+#: plugin.py:715
 #, docstring
 msgid ""
 "[<channel>] {True|False}\n"
@@ -517,7 +530,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:713
+#: plugin.py:733
 #, docstring
 msgid ""
 "[<channel>] <capability> [<capability> ...]\n"
@@ -528,7 +541,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:728
+#: plugin.py:748
 #, docstring
 msgid ""
 "[<channel>] <capability> [<capability> ...]\n"
@@ -540,15 +553,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:744
+#: plugin.py:764
 msgid "capability"
 msgstr ""
 
-#: plugin.py:747
+#: plugin.py:767
 msgid "I do not know about the %L %s."
 msgstr ""
 
-#: plugin.py:754
+#: plugin.py:774
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -558,7 +571,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:766
+#: plugin.py:786
 #, docstring
 msgid ""
 "[<channel>] [<plugin>] [<command>]\n"
@@ -571,15 +584,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:782 plugin.py:821
+#: plugin.py:802 plugin.py:841
 msgid "The %s plugin does not have a command called %s."
 msgstr ""
 
-#: plugin.py:789 plugin.py:828
+#: plugin.py:809 plugin.py:848
 msgid "No plugin or command named %s could be found."
 msgstr ""
 
-#: plugin.py:805
+#: plugin.py:825
 #, docstring
 msgid ""
 "[<channel>] [<plugin>] [<command>]\n"
@@ -592,11 +605,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:842
+#: plugin.py:862
 msgid "%s was not disabled."
 msgstr ""
 
-#: plugin.py:851
+#: plugin.py:871
 #, docstring
 msgid ""
 "[<channel>] [--count]\n"
@@ -607,26 +620,26 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:863
+#: plugin.py:883
 msgid "You don't have access to that information."
 msgstr ""
 
-#: plugin.py:877
+#: plugin.py:897
 #, docstring
 msgid ""
 "Internal message for notifying all the #channel,ops in a channel of\n"
 "        a given situation."
 msgstr ""
 
-#: plugin.py:880
+#: plugin.py:900
 msgid "Alert to all %s ops: %s"
 msgstr ""
 
-#: plugin.py:882
+#: plugin.py:902
 msgid " (from %s)"
 msgstr ""
 
-#: plugin.py:890
+#: plugin.py:910
 #, docstring
 msgid ""
 "[<channel>] <text>\n"

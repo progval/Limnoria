@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2013-03-03 19:39+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,6 +137,15 @@ msgid ""
 "        want that person to be able to see things like passwords, etc., this\n"
 "        command will export a \"sanitized\" configuration file suitable for\n"
 "        showing publicly.\n"
+"        "
+msgstr ""
+
+#: plugin.py:289
+#, docstring
+msgid ""
+"<name>\n"
+"\n"
+"        Resets the configuration variable <name> to its default value.\n"
 "        "
 msgstr ""
 

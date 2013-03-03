@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2013-03-03 19:39+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,31 +15,42 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:201 plugin.py:282
+#: config.py:49
+msgid ""
+"The minimum non-wildcard characters\n"
+"    required to perform a 'seen' request. Of course, it only applies if there\n"
+"    is a wildcard in the request."
+msgstr ""
+
+#: plugin.py:197
+msgid "Not enough non-wildcard characters."
+msgstr ""
+
+#: plugin.py:205 plugin.py:295
 msgid "%s was last seen in %s %s ago: %s"
 msgstr ""
 
-#: plugin.py:208
+#: plugin.py:212
 msgid "%s (%s ago)"
 msgstr ""
 
-#: plugin.py:210
+#: plugin.py:214
 msgid "%s could be %L"
 msgstr ""
 
-#: plugin.py:210
+#: plugin.py:214
 msgid "or"
 msgstr ""
 
-#: plugin.py:212
+#: plugin.py:216
 msgid "I haven't seen anyone matching %s."
 msgstr ""
 
-#: plugin.py:214 plugin.py:286
+#: plugin.py:218 plugin.py:299
 msgid "I have not seen %s."
 msgstr ""
 
-#: plugin.py:218
+#: plugin.py:222
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -50,7 +61,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:229
+#: plugin.py:236
 #, docstring
 msgid ""
 "[<channel>] [--user <name>] [<nick>]\n"
@@ -64,15 +75,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:259
+#: plugin.py:269
 msgid "Someone was last seen in %s %s ago: %s"
 msgstr ""
 
-#: plugin.py:263
+#: plugin.py:273
 msgid "I have never seen anyone."
 msgstr ""
 
-#: plugin.py:267
+#: plugin.py:277
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -82,7 +93,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:290
+#: plugin.py:303
 #, docstring
 msgid ""
 "[<channel>] <name>\n"
@@ -95,7 +106,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:303
+#: plugin.py:319
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -104,19 +115,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:310
+#: plugin.py:326
 msgid "I am not in %s."
 msgstr ""
 
-#: plugin.py:313
+#: plugin.py:329
 msgid "%s must be in %s to use this command."
 msgstr ""
 
-#: plugin.py:334
+#: plugin.py:352
 msgid "I couldn't find in my history of %s messages where %r last left the %s"
 msgstr ""
 
-#: plugin.py:343
+#: plugin.py:361
 msgid "Either %s didn't leave, or no messages were sent while %s was gone."
 msgstr ""
 
