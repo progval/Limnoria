@@ -187,8 +187,10 @@ class Web(callbacks.PluginRegexp):
         """
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size)
-        if sys.version_info[0] >= 3:
+        try:
             text = text.decode('utf8', 'replace')
+        except:
+            pass
         parser = Title()
         try:
             parser.feed(text)
