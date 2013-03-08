@@ -537,7 +537,7 @@ class PeriodicFileDownloader(object):
     downloaded every day, but no commands that use it are run in a week, the
     next time such a command is run, it'll be using a week-old file.  If you
     don't want such behavior, you'll have to give an error mess age to the user
-    and tell him to call you back in the morning.
+    and tell them to call you back in the morning.
 
     'function to run with downloaded file' is a function that will be passed
     a string *filename* of the downloaded file.  This will be some random

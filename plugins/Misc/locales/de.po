@@ -244,7 +244,7 @@ msgstr ""
 "Sagt <nick> den Inhalt von <text>. Benutze verschachtelte Befehle um nutzen daraus zu ziehen."
 
 #: plugin.py:483
-msgid "Dude, just give the command.  No need for the tell."
+msgid "Hey, just give the command.  No need for the tell."
 msgstr "Junge, gib mir einfach den Befehl."
 
 #: plugin.py:488

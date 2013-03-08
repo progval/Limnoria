@@ -71,8 +71,8 @@ class Schedule(drivers.IrcDriver):
             self.events.clear()
             self.schedule[:] = []
         # We don't reset the counter here because if someone has held an id of
-        # one of the nuked events, we don't want him removing new events with
-        # his old id.
+        # one of the nuked events, we don't want him/her removing new events with
+        # his/her old id.
 
     def name(self):
         return 'Schedule'

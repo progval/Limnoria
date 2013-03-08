@@ -509,7 +509,7 @@ class Misc(callbacks.Plugin):
         if target.lower() == 'me':
             target = msg.nick
         if ircutils.isChannel(target):
-            irc.error(_('Dude, just give the command.  No need for the tell.'))
+            irc.error(_('Hey, just give the command.  No need for the tell.'))
             return
         if not ircutils.isNick(target):
             irc.errorInvalid('nick', target)

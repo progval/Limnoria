@@ -366,7 +366,7 @@ class User(callbacks.Plugin):
             Removes the hostmask <hostmask> from the record of the user
             specified by <name>.  If the hostmask given is 'all' then all
             hostmasks will be removed.  The <password> may only be required if
-            the user is not recognized by his hostmask.  This message must be
+            the user is not recognized by their hostmask.  This message must be
             sent to the bot privately (not on a channel) since it may contain a
             password.
             """

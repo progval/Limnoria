@@ -265,7 +265,7 @@ class Admin(callbacks.Plugin):
             """
             # Ok, the concepts that are important with capabilities:
             #
-            ### 1) No user should be able to elevate his privilege to owner.
+            ### 1) No user should be able to elevate their privilege to owner.
             ### 2) Admin users are *not* superior to #channel.ops, and don't
             ###    have God-like powers over channels.
             ### 3) We assume that Admin users are two things: non-malicious and

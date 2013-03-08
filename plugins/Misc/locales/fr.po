@@ -248,8 +248,8 @@ msgstr ""
 "Dit le <texte> au <nick>. Utile si vous utilisez des commandes imbriquées."
 
 #: plugin.py:513
-msgid "Dude, just give the command.  No need for the tell."
-msgstr "Mec, contentes-toi de me donner la commande. Pas besoin d'utiliser 'tell'."
+msgid "Hey, just give the command.  No need for the tell."
+msgstr "Oh, contentes-toi de me donner la commande. Pas besoin d'utiliser 'tell'."
 
 #: plugin.py:518
 msgid "You just told me, why should I tell myself?"

@@ -273,7 +273,7 @@ class ChannelState(utils.python.Object):
         """Changes the user oldNick to newNick; used for NICK changes."""
         # Note that this doesn't have to have the sigil (@%+) that users
         # have to have for addUser; it just changes the name of the user
-        # without changing any of his categories.
+        # without changing any of their categories.
         for s in (self.users, self.ops, self.halfops, self.voices):
             if oldNick in s:
                 s.remove(oldNick)

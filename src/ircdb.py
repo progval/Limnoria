@@ -1001,7 +1001,7 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
             # Owners shouldn't ever be ignored.
             return False
         elif user.ignore:
-            log.debug('Ignoring %s due to his IrcUser ignore flag.', hostmask)
+            log.debug('Ignoring %s due to their IrcUser ignore flag.', hostmask)
             return True
     except KeyError:
         # If there's no user...
@@ -1130,7 +1130,7 @@ conf.registerGlobalValue(conf.supybot, 'capabilities',
 conf.registerGlobalValue(conf.supybot.capabilities, 'default',
     registry.Boolean(True, """Determines whether the bot by default will allow
     users to have a capability.  If this is disabled, a user must explicitly
-    have the capability for whatever command he wishes to run."""))
+    have the capability for whatever command they wish to run."""))
 conf.registerGlobalValue(conf.supybot.capabilities, 'private',
     registry.SpaceSeparatedListOfStrings([], """Determines what capabilities
     the bot will never tell to a non-admin whether or not a user has them."""))

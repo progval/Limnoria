@@ -281,7 +281,7 @@ msgstr ""
 "        "
 
 #: plugin.py:483
-msgid "Dude, just give the command.  No need for the tell."
+msgid "Hey, just give the command.  No need for the tell."
 msgstr "Dammi il comando, non c'è bisogno di usare \"tell\"."
 
 #: plugin.py:488

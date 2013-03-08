@@ -291,7 +291,7 @@ msgstr ""
 "        "
 
 #: plugin.py:513
-msgid "Dude, just give the command.  No need for the tell."
+msgid "Hey, just give the command.  No need for the tell."
 msgstr "Keikari, anna vain komento.  Ei tarvitse kertoa."
 
 #: plugin.py:518

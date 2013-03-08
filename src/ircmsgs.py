@@ -74,7 +74,7 @@ class IrcMsg(object):
     keyword argument representing a message from which to take all the
     attributes not provided otherwise as keyword arguments.  So, for instance,
     if a programmer wanted to take a PRIVMSG he'd gotten and simply redirect it
-    to a different source, he could do this:
+    to a different source, they could do this:
 
     IrcMsg(prefix='', args=(newSource, otherMsg.args[1]), msg=otherMsg)
     """

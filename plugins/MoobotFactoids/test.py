@@ -329,7 +329,7 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertNoResponse(' ', 3)
 
     def testConfigShowFactoidIfOnlyOneMatch(self):
-        # man these are long
+        # these are long
         MFconf = conf.supybot.plugins.MoobotFactoids
         self.assertNotError('foo is bar')
         # Default to saying the factoid value

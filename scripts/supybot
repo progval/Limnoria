@@ -117,7 +117,7 @@ def main():
                 print 'Anyway, here\'s the exception: %s' % \
                       utils.gen.exnToString(e)
             except:
-                print 'Man, this really sucks.  Not only did log.exception'
+                print 'Oh, this really sucks.  Not only did log.exception'
                 print 'raise an exception, but freaking-a, it was a string'
                 print 'exception.  People who raise string exceptions should'
                 print 'die a slow, painful death.'
@@ -168,7 +168,7 @@ if __name__ == '__main__':
 
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
-            sys.stderr.write('Dude, don\'t even try to run this as root.')
+            sys.stderr.write('Don\'t even try to run this as root.')
             sys.stderr.write(os.linesep)
             sys.exit(-1)
 

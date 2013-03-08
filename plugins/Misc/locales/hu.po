@@ -242,7 +242,7 @@ msgid ""
 msgstr "<név> <szöveg>Megmondja <név>-nek szöveget. Itt az előnyödre használhatod a beágyazott parancsokat."
 
 #: plugin.py:483
-msgid "Dude, just give the command.  No need for the tell."
+msgid "Hey, just give the command.  No need for the tell."
 msgstr "Haver, csak add meg a parancsot. Nem kell mondani."
 
 #: plugin.py:488
