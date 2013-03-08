@@ -234,7 +234,7 @@ class _PluginInternationalization:
     def __call__(self, untranslated):
         """Main function.
 
-        his is the function which is called when a plugin runs _()"""
+        This is the function which is called when a plugin runs _()"""
         if untranslated.__class__ == internationalizedString:
             return untranslated._original
         escapedUntranslated = self._unescape(untranslated, True)
