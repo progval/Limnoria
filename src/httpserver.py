@@ -52,6 +52,32 @@ configGroup = conf.supybot.servers.http
 class RequestNotHandled(Exception):
     pass
 
+TEMPLATE_DEFAULTS = {
+    'index.html': """\
+<html>
+ <head>
+  <title>""" + _('Supybot Web server index') + """</title>
+ </head>
+ <body>
+  <p>""" + _('Here is a list of the plugins that have a Web interface:') +\
+  """
+  </p>
+  %(list)s
+ </body>
+</html>""",
+    'robots.txt': """""",
+    }
+
+for filename, content in TEMPLATE_DEFAULTS.items():
+    path = conf.supybot.directories.data.web.dirize(filename)
+    if not os.path.isfile(path):
+        with open(path, 'a') as fd:
+            fd.write(content)
+
+def get_template(filename):
+    path = conf.supybot.directories.data.web.dirize(filename)
+    return open(path, 'r').read()
+
 class RealSupyHTTPServer(HTTPServer):
     # TODO: make this configurable
     timeout = 0.5
@@ -184,26 +210,14 @@ class SupyIndex(SupyHTTPServerCallback):
     """Displays the index of available plugins."""
     name = "index"
     defaultResponse = _("Request not handled.")
-    template = """
-    <html>
-     <head>
-      <title>""" + _('Supybot Web server index') + """</title>
-     </head>
-     <body>
-      <p>""" + _('Here is a list of the plugins that have a Web interface:') +\
-      """
-      </p>
-      %s
-     </body>
-    </html>"""
     def doGet(self, handler, path):
         plugins = [x for x in handler.server.callbacks.items()]
         if plugins == []:
             plugins = _('No plugins available.')
         else:
-            plugins = '<ul><li>%s</li></ul>' % '</li><li>'.join(
+            plugins = '<ul class="plugins"><li>%s</li></ul>' % '</li><li>'.join(
                     ['<a href="/%s/">%s</a>' % (x,y.name) for x,y in plugins])
-        response = self.template % plugins
+        response = get_template('index.html') % {'list': plugins}
         handler.send_response(200)
         self.send_header('Content_type', 'text/html')
         self.send_header('Content-Length', len(response))
@@ -215,7 +229,7 @@ class RobotsTxt(SupyHTTPServerCallback):
     name = 'robotstxt'
     defaultResponse = _('Request not handled')
     def doGet(self, handler, path):
-        response = conf.supybot.servers.http.robots().replace('\\n', '\n')
+        response = get_template('robots.txt')
         handler.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.send_header('Content-Length', len(response))

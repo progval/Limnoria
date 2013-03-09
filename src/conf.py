@@ -789,6 +789,9 @@ registerGlobalValue(supybot.directories, 'backup',
 registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', _("""Determines what directory temporary files
     are put into.""")))
+registerGlobalValue(supybot.directories.data, 'web',
+    DataFilenameDirectory('web', _("""Determines what directory files of the
+    web server (templates, custom images, ...) are put into.""")))
 
 utils.file.AtomicFile.default.tmpDir = supybot.directories.data.tmp
 utils.file.AtomicFile.default.backupDir = supybot.directories.backup
@@ -1113,9 +1116,6 @@ registerGlobalValue(supybot.servers.http, 'keepAlive',
     registry.Boolean(False, _("""Determines whether the server will stay
     alive if no plugin is using it. This also means that the server will
     start even if it is not used.""")))
-registerGlobalValue(supybot.servers.http, 'robots',
-    registry.String('', _("""Determines the content of the robots.txt file,
-    served on the server to search engine.""")))
 registerGlobalValue(supybot.servers.http, 'favicon',
     registry.String('', _("""Determines the path of the file served as
     favicon to browsers.""")))
