@@ -47,6 +47,13 @@ class FactoidFormat(registry.TemplatedString):
     requiredTemplates = ['value']
 
 Factoids = conf.registerPlugin('Factoids')
+conf.registerGroup(Factoids, 'web')
+conf.registerGlobalValue(Factoids.web, 'enable',
+    registry.Boolean(False, _("""Determines whether the Factoids plugins will
+    be browsable on the HTTP server.""")))
+conf.registerChannelValue(Factoids.web, 'channel',
+    registry.Boolean(False, _("""Determines whether factoids can be displayed
+    via the web server.""")))
 conf.registerChannelValue(Factoids, 'learnSeparator',
     registry.String('as', _("""Determines what separator must be used in the
     learn command.  Defaults to 'as' -- learn <key> as <value>.  Users might

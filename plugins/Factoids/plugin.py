@@ -31,6 +31,7 @@
 import os
 import time
 import string
+import urllib
 
 import supybot.conf as conf
 import supybot.ircdb as ircdb
@@ -39,6 +40,7 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+import supybot.httpserver as httpserver
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Factoids')
 
@@ -79,10 +81,138 @@ def getFactoidId(irc, msg, args, state):
 addConverter('factoid', getFactoid)
 addConverter('factoidId', getFactoidId)
 
+
+PAGE_SKELETON = """\
+<html>
+<head>
+    <title>Factoids</title>
+    <link rel="stylesheet" href="/default.css" />
+</head>
+%s
+</html>"""
+
+DEFAULT_TEMPLATES = {
+        'factoids/index.html': PAGE_SKELETON % """\
+<body class="purelisting">
+    <h1>Factoids</h1>
+    <form action="." method="post">
+        <label for="chan">Channel name:</label>
+        <input type="text" placeholder="#channel" name="chan" id="chan" />
+        <input type="submit" name="submit" value="view" />
+    </form>
+</body>""",
+        'factoids/channel.html': PAGE_SKELETON % """\
+<body class="puretable">
+    <h1>Factoids of %(channel)s</h1>
+    <table>
+        <tr class="header">
+            <th class="key">""" + _('key') + """</th>
+            <th class="id">""" + _('id') + """</th>
+            <th class="fact">""" + _('fact') + """</th>
+        </tr>
+        %(rows)s
+    </table>
+</body>"""
+}
+httpserver.set_default_templates(DEFAULT_TEMPLATES)
+
+class FactoidsCallback(httpserver.SupyHTTPServerCallback):
+    name = 'Factoids web interface'
+
+    def doGet(self, handler, path):
+        parts = path.split('/')[1:]
+        if path == '/':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(httpserver.get_template('factoids/index.html'))
+        elif len(parts) == 2:
+            channel = urllib.unquote(parts[0])
+            if not ircutils.isChannel(channel):
+                self.send_response(404)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(httpserver.get_template('generic/error.html')%
+                    {'title': 'Factoids - not a channel',
+                     'error': 'This is not a channel'})
+                return
+            if not self._plugin.registryValue('web.channel', channel):
+                self.send_response(403)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(httpserver.get_template('generic/error.html')%
+                    {'title': 'Factoids - unavailable',
+                     'error': 'This channel does not exist or its factoids '
+                              'are not available here.'})
+                return
+            db = self._plugin.getDb(channel)
+            cursor = db.cursor()
+            cursor.execute("""SELECT keys.key, factoids.id, factoids.fact
+                              FROM factoids, keys, relations
+                              WHERE relations.key_id=keys.id AND relations.fact_id=factoids.id
+                              """)
+            factoids = {}
+            for (key, id_, fact) in cursor.fetchall():
+                if key not in factoids:
+                    factoids[key] = {}
+                factoids[key][id_] = fact
+            content = ''
+            keys = factoids.keys()
+            keys.sort()
+            for key in keys:
+                facts = factoids[key]
+                content += '<tr>'
+                content += ('<td rowspan="%i" class="key">'
+                                '<a name="%s" href="#%s">%s</a>'
+                           '</td>') % (len(facts), key, key, key)
+                for id_, fact in facts.items():
+                    content += '<td class="id">%i</td>' % id_
+                    content += '<td class="fact">%s</td>' % fact
+                    content += '</tr><tr>'
+                content = content[:-len('<tr>')]
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(httpserver.get_template('factoids/channel.html')%
+                    {'channel': channel, 'rows': content})
+    def doPost(self, handler, path, form):
+        if 'chan' in form:
+            self.send_response(303)
+            self.send_header('Location',
+                    './%s/' % urllib.quote(form['chan'].value))
+            self.end_headers()
+        else:
+            self.send_response(400)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write('Missing field \'chan\'.')
+
 class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def __init__(self, irc):
         callbacks.Plugin.__init__(self, irc)
         plugins.ChannelDBHandler.__init__(self)
+        conf.supybot.plugins.Factoids.web.enable.addCallback(self._doHttpConf)
+        if self.registryValue('web.enable'):
+            self._startHttp()
+    def _doHttpConf(self, *args, **kwargs):
+        if self.registryValue('web.enable'):
+            if not self._http_running:
+                self._startHttp()
+        else:
+            if self._http_running:
+                self._stopHttp()
+    def _startHttp(self):
+        callback = FactoidsCallback()
+        callback._plugin = self
+        httpserver.hook('factoids', callback)
+        self._http_running = True
+    def _stopHttp(self):
+        httpserver.unhook('factoids')
+        self._http_running = False
+    def die(self):
+        if self.registryValue('web.enable'):
+            self._stopHttp()
+        super(self.__class__, self).die()
 
     def makeDb(self, filename):
         if os.path.exists(filename):
