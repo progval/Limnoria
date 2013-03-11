@@ -52,7 +52,7 @@ configGroup = conf.supybot.servers.http
 class RequestNotHandled(Exception):
     pass
 
-TEMPLATE_DEFAULTS = {
+DEFAULT_TEMPLATES = {
     'index.html': """\
 <html>
  <head>
@@ -68,15 +68,22 @@ TEMPLATE_DEFAULTS = {
     'robots.txt': """""",
     }
 
-for filename, content in TEMPLATE_DEFAULTS.items():
-    path = conf.supybot.directories.data.web.dirize(filename)
-    if not os.path.isfile(path):
-        with open(path, 'a') as fd:
+def set_default_templates(defaults):
+    for filename, content in defaults.items():
+        path = conf.supybot.directories.data.web.dirize(filename)
+        if os.path.isfile(path + '.example'):
+            os.unlink(path + '.example')
+        with open(path + '.example', 'a') as fd:
             fd.write(content)
+set_default_templates(DEFAULT_TEMPLATES)
 
 def get_template(filename):
     path = conf.supybot.directories.data.web.dirize(filename)
-    return open(path, 'r').read()
+    if os.path.isfile(path):
+        return open(path, 'r').read()
+    else:
+        assert os.path.isfile(path + '.example'), path + '.example'
+        return open(path + '.example', 'r').read()
 
 class RealSupyHTTPServer(HTTPServer):
     # TODO: make this configurable
