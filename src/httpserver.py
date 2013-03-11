@@ -57,14 +57,78 @@ DEFAULT_TEMPLATES = {
 <html>
  <head>
   <title>""" + _('Supybot Web server index') + """</title>
+  <link rel="stylesheet" href="/default.css" />
  </head>
- <body>
+ <body class="purelisting">
+  <h1>Supybot web server index</h1>
   <p>""" + _('Here is a list of the plugins that have a Web interface:') +\
   """
   </p>
   %(list)s
  </body>
 </html>""",
+    'generic/error.html': """\
+<html>
+ <head>
+  <title>%(title)s</title>
+  <link rel="stylesheet" href="/default.css" />
+ </head>
+ <body class="error">
+  <h1>Error</h1>
+  <p>%(error)s</p>
+ </body>
+</html>""",
+    'default.css': """\
+body {
+    background-color: #F0F0F0;
+}
+
+/************************************
+ * Classes that plugins should use. *
+ ************************************/
+
+/* Error pages */
+body.error {
+    text-align: center;
+}
+body.error p {
+    background-color: #FFE0E0;
+    border: 1px #FFA0A0 solid;
+}
+
+/* Pages that only contain a list. */
+.purelisting {
+    text-align: center;
+}
+.purelisting ul li {
+    list-style-type: none;
+}
+
+/* Pages that only contain a table. */
+.puretable {
+    text-align: center;
+}
+.puretable table
+{
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.puretable table th
+{
+    /*color: #039;*/
+    padding: 10px 8px;
+    border-bottom: 2px solid #6678b1;
+}
+
+.puretable table td
+{
+    padding: 9px 8px 0px 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+""",
     'robots.txt': """""",
     }
 
@@ -73,6 +137,8 @@ def set_default_templates(defaults):
         path = conf.supybot.directories.data.web.dirize(filename)
         if os.path.isfile(path + '.example'):
             os.unlink(path + '.example')
+        if not os.path.isdir(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
         with open(path + '.example', 'a') as fd:
             fd.write(content)
 set_default_templates(DEFAULT_TEMPLATES)
@@ -132,8 +198,8 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_X(self, callbackMethod, *args, **kwargs):
         if self.path == '/':
             callback = SupyIndex()
-        elif self.path == '/robots.txt':
-            callback = RobotsTxt()
+        elif self.path in ('/robots.txt', '/default.css'):
+            callback = Static()
         elif self.path == '/favicon.ico':
             callback = Favicon()
         else:
@@ -148,8 +214,10 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
                 'wfile', 'headers'):
             setattr(callback, name, getattr(self, name))
         # We call doX, because this is more supybotic than do_X.
-        getattr(callback, callbackMethod)(self,
-                '/' + '/'.join(self.path.split('/')[2:]),
+        path = self.path
+        if not callback.fullpath:
+            path = '/' + path.split('/', 2)[2]
+        getattr(callback, callbackMethod)(self, path,
                 *args, **kwargs)
 
     def do_GET(self):
@@ -177,6 +245,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
 class SupyHTTPServerCallback:
     """This is a base class that should be overriden by any plugin that want
     to have a Web interface."""
+    fullpath = False
     name = "Unnamed plugin"
     defaultResponse = _("""
     This is a default response of the Supybot HTTP server. If you see this
@@ -199,6 +268,7 @@ class SupyHTTPServerCallback:
 class Supy404(SupyHTTPServerCallback):
     """A 404 Not Found error."""
     name = "Error 404"
+    fullpath = True
     response = _("""
     I am a pretty clever IRC bot, but I suck at serving Web pages, particulary
     if I don't know what to serve.
@@ -216,6 +286,7 @@ class Supy404(SupyHTTPServerCallback):
 class SupyIndex(SupyHTTPServerCallback):
     """Displays the index of available plugins."""
     name = "index"
+    fullpath = True
     defaultResponse = _("Request not handled.")
     def doGet(self, handler, path):
         plugins = [x for x in handler.server.callbacks.items()]
@@ -231,12 +302,13 @@ class SupyIndex(SupyHTTPServerCallback):
         self.end_headers()
         self.wfile.write(response)
 
-class RobotsTxt(SupyHTTPServerCallback):
-    """Serves the robot.txt file to robots."""
-    name = 'robotstxt'
+class Static(SupyHTTPServerCallback):
+    """Serves static files."""
+    fullpath = True
+    name = 'static'
     defaultResponse = _('Request not handled')
     def doGet(self, handler, path):
-        response = get_template('robots.txt')
+        response = get_template(path)
         handler.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.send_header('Content-Length', len(response))
