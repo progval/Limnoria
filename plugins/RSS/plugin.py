@@ -252,7 +252,7 @@ class RSS(callbacks.Plugin):
             return {'items': [{'title': s}]}
         try:
             # This is the most obvious place to acquire the lock, because a
-            # malicious user could conceivably flood the bot with rss commands
+            # malicious user could conceivably flood the bot with RSS commands
             # and DoS the website in question.
             self.acquireLock(url)
             if self.willGetNewFeed(url):
@@ -315,7 +315,7 @@ class RSS(callbacks.Plugin):
         try:
             sitems = sorted(items, key=lambda i: i['updated'], reverse=reverse)
         except KeyError:
-            # feedparser normalizes required timestamp fields in ATOM and RSS
+            # feedparser normalizes required timestamp fields in Atom and RSS
             # to the "updated" field. Feeds missing it are unsortable by date.
             return items
         return sitems
