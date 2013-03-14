@@ -77,7 +77,7 @@ conf.registerGlobalValue(RSS, 'feeds',
     commands.""")))
 conf.registerChannelValue(RSS, 'showLinks',
     registry.Boolean(False, _("""Determines whether the bot will list the link
-    along with the title of the feed when the rss command is called.
+    along with the title of the feed when the RSS command is called.
     supybot.plugins.RSS.announce.showLinks affects whether links will be
     listed when a feed is automatically announced.""")))
 conf.registerGlobalValue(RSS, 'defaultNumberOfHeadlines',
