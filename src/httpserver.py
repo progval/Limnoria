@@ -216,7 +216,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         # We call doX, because this is more supybotic than do_X.
         path = self.path
         if not callback.fullpath:
-            path = '/' + path.split('/', 2)[2]
+            path = '/' + path.split('/', 2)[-1]
         getattr(callback, callbackMethod)(self, path,
                 *args, **kwargs)
 
