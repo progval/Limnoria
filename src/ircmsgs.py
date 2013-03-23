@@ -337,7 +337,10 @@ def prettyPrint(msg, addRecipients=False, timestampFormat=None, showNick=True):
 ###
 
 isNick = ircutils.isNick
+areNicks = ircutils.areNicks
 isChannel = ircutils.isChannel
+areChannels = ircutils.areChannels
+areReceivers = ircutils.areReceivers
 isUserHostmask = ircutils.isUserHostmask
 
 def pong(payload, prefix='', msg=None):
@@ -545,12 +548,14 @@ def kick(channel, nick, s='', prefix='', msg=None):
         return IrcMsg(prefix=prefix, command='KICK',
                       args=(channel, nick), msg=msg)
 
-def kicks(channel, nicks, s='', prefix='', msg=None):
+def kicks(channels, nicks, s='', prefix='', msg=None):
     """Returns a KICK to kick each of nicks from channel with the message msg.
     """
+    if isinstance(channels, str): # Backward compatibility
+        channels = [channels]
     if conf.supybot.protocols.irc.strictRfc():
-        assert isChannel(channel), repr(channel)
-        assert all(isNick, nicks), nicks
+        assert areChannels(channels), repr(channel)
+        assert areNicks(nicks), repr(nicks)
     if msg and not prefix:
         prefix = msg.prefix
     if sys.version_info[0] < 3 and isinstance(s, unicode):
@@ -566,7 +571,7 @@ def kicks(channel, nicks, s='', prefix='', msg=None):
 def privmsg(recipient, s, prefix='', msg=None):
     """Returns a PRIVMSG to recipient with the message msg."""
     if conf.supybot.protocols.irc.strictRfc():
-        assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
+        assert (areReceivers(recipient)), repr(recipient)
         assert s, 's must not be empty.'
     if sys.version_info[0] < 3 and isinstance(s, unicode):
         s = s.encode('utf8')
@@ -598,7 +603,7 @@ def action(recipient, s, prefix='', msg=None):
 def notice(recipient, s, prefix='', msg=None):
     """Returns a NOTICE to recipient with the message msg."""
     if conf.supybot.protocols.irc.strictRfc():
-        assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
+        assert areReceivers(recipient), repr(recipient)
         assert s, 'msg must not be empty.'
     if sys.version_info[0] < 3 and isinstance(s, unicode):
         s = s.encode('utf8')
@@ -735,7 +740,7 @@ def who(hostmaskOrChannel, prefix='', msg=None):
 def whois(nick, mask='', prefix='', msg=None):
     """Returns a WHOIS for nick."""
     if conf.supybot.protocols.irc.strictRfc():
-        assert isNick(nick), repr(nick)
+        assert areNicks(nick), repr(nick)
     if msg and not prefix:
         prefix = msg.prefix
     args = (nick,)
@@ -745,7 +750,7 @@ def whois(nick, mask='', prefix='', msg=None):
 
 def names(channel=None, prefix='', msg=None):
     if conf.supybot.protocols.irc.strictRfc():
-        assert isChannel(channel)
+        assert areChannels(channel)
     if msg and not prefix:
         prefix = msg.prefix
     if channel is not None:

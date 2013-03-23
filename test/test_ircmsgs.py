@@ -161,6 +161,18 @@ class FunctionsTestCase(SupyTestCase):
         msg = ircmsgs.action('#foo', s)
         self.assertEqual(ircmsgs.unAction(msg), s)
 
+    def testPrivmsg(self):
+        self.assertEqual(str(ircmsgs.privmsg('foo', 'bar')),
+                'PRIVMSG foo :bar\r\n')
+        self.assertEqual(str(ircmsgs.privmsg('foo,bar', 'baz')),
+                'PRIVMSG foo,bar :baz\r\n')
+
+    def testWhois(self):
+        self.assertEqual(str(ircmsgs.whois('foo')), 'WHOIS :foo\r\n')
+        self.assertEqual(str(ircmsgs.whois('foo,bar')), 'WHOIS :foo,bar\r\n')
+        self.assertRaises(AssertionError, ircmsgs.whois, '#foo')
+        self.assertRaises(AssertionError, ircmsgs.whois, 'foo,#foo')
+
     def testBan(self):
         channel = '#osu'
         ban = '*!*@*.edu'

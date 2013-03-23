@@ -43,6 +43,7 @@ import time
 import random
 import string
 import textwrap
+import functools
 from cStringIO import StringIO as sio
 
 import supybot.utils as utils
@@ -132,6 +133,11 @@ def isNick(s, strictRfc=True, nicklen=None):
                not isUserHostmask(s) and \
                not ' ' in s and not '!' in s
 
+def areNicks(s, strictRfc=True, nicklen=None):
+    """Like 'isNick(x)' but for comma-separated list."""
+    nick = functools.partial(isNick, strictRfc=strictRfc, nicklen=nicklen)
+    return all(map(nick, s.split(',')))
+
 def isChannel(s, chantypes='#&+!', channellen=50):
     """s => bool
     Returns True if s is a valid IRC channel name."""
@@ -141,6 +147,20 @@ def isChannel(s, chantypes='#&+!', channellen=50):
            s[0] in chantypes and \
            len(s) <= channellen and \
            len(s.split(None, 1)) == 1
+
+def areChannels(s, chantypes='#&+!',channellen=50):
+    """Like 'isChannel(x)' but for comma-separated list."""
+    chan = functools.partial(isChannel, chantypes=chantypes,
+            channellen=channellen)
+    return all(map(chan, s.split(',')))
+
+def areReceivers(s, strictRfc=True, nicklen=None, chantypes='#&+!',
+        channellen=50):
+    """Like 'isNick(x) or isChannel(x)' but for comma-separated list."""
+    nick = functools.partial(isNick, strictRfc=strictRfc, nicklen=nicklen)
+    chan = functools.partial(isChannel, chantypes=chantypes,
+            channellen=channellen)
+    return all(map(lambda x:nick(x) or chan(x), s.split(',')))
 
 _patternCache = utils.structures.CacheDict(1000)
 def _hostmaskPatternEqual(pattern, hostmask):
