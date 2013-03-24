@@ -517,7 +517,10 @@ class RichReplyMethods(object):
                 v = self._getConfig(conf.supybot.replies.genericNoCapability)
             else:
                 v = self._getConfig(conf.supybot.replies.noCapability)
-                v %= capability
+                try:
+                    v %= capability
+                except TypeError: # No %s in string
+                    pass
             s = self.__makeReply(v, s)
             if s:
                 return self._error(s, **kwargs)
