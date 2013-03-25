@@ -77,7 +77,7 @@ elif sys.version_info[0] >= 3:
     else:
         if debug:
             print('DEBUG: Running setup.py with Python 3: first stage.')
-        print('Converting code from Python 2 to Python 3. This make take a '
+        print('Converting code from Python 2 to Python 3. This may take a '
                 'few minutes.')
         # For some reason, using open(os.devnull) makes the subprocess exit before
         # it finishes...
