@@ -188,7 +188,7 @@ class SqliteKarmaDB(object):
 
     def dump(self, channel, filename):
         filename = conf.supybot.directories.data.dirize(filename)
-        fd = utils.transactionalFile(filename)
+        fd = utils.file.AtomicFile(filename)
         out = csv.writer(fd)
         db = self._getDb(channel)
         cursor = db.cursor()
