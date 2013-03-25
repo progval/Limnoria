@@ -459,7 +459,8 @@ def format(s, *args, **kwargs):
             return has(args.pop())
         elif char == 'L':
             t = args.pop()
-            if isinstance(t, list):
+            if isinstance(t, list) or (sys.version_info[0] >= 3 and
+                    (isinstance(t, map) or isinstance(t, filter))):
                 return commaAndify(t)
             elif isinstance(t, tuple) and len(t) == 2:
                 if not isinstance(t[0], list):

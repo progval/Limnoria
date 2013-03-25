@@ -38,7 +38,6 @@ import urllib
 import httplib
 import unittest
 import threading
-import StringIO
 
 import supybot.log as log
 import supybot.i18n as i18n
@@ -599,8 +598,12 @@ class HTTPPluginTestCase(PluginTestCase):
 
     def request(self, url, method='GET', read=True, data={}):
         assert url.startswith('/')
-        wfile = StringIO.StringIO()
-        rfile = StringIO.StringIO()
+        try:
+            from io import BytesIO as StringIO
+        except ImportError:
+            from StringIO import StringIO
+        wfile = StringIO()
+        rfile = StringIO()
         connection = FakeHTTPConnection(wfile, rfile)
         connection.putrequest(method, url)
         connection.endheaders()
