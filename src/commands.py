@@ -870,6 +870,7 @@ class first(context):
                 spec(irc, msg, args, state)
                 return
             except Exception, e:
+                e2 = e # 'e' is local.
                 errored = state.errored
                 state.errored = False
                 continue
@@ -877,7 +878,7 @@ class first(context):
             state.args.append(self.default)
         else:
             state.errored = errored
-            raise e
+            raise e2
 
 class reverse(context):
     def __call__(self, irc, msg, args, state):
