@@ -289,8 +289,7 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
                 channels_with_key.append(channel)
             else:
                 channels.append(channel)
-        return ircmsgs.join(','.join(channels_with_key + channels),
-                ','.join(keys))
+        return ircmsgs.joins(channels_with_key + channels, keys)
 
 def registerNetwork(name, password='', ssl=False, sasl_username='',
         sasl_password=''):
