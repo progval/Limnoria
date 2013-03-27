@@ -337,7 +337,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     def _reallyDie(self):
         if self.conn is not None:
-            self.conn.shutdown(socket.SHUT_RDWR)
             self.conn.close()
         drivers.IrcDriver.die(self)
         # self.irc.die() Kill off the ircs yourself, jerk!
