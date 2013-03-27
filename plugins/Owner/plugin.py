@@ -232,9 +232,7 @@ class Owner(callbacks.Plugin):
         world.starting = False
 
     def do376(self, irc, msg):
-        networkGroup = conf.supybot.networks.get(irc.network)
-        for channel in networkGroup.channels():
-            irc.queueMsg(networkGroup.channels.join(channel))
+        irc.queueMsg(conf.supybot.networks.get(irc.network).channels.joins())
     do422 = do377 = do376
 
     def doPrivmsg(self, irc, msg):
