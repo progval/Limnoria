@@ -352,6 +352,7 @@ class IrcState(IrcCommandDispatcher):
             nicksToHostmasks = ircutils.IrcDict()
         if channels is None:
             channels = ircutils.IrcDict()
+        self.ircd = None
         self.supported = supported
         self.history = history
         self.channels = channels
@@ -408,6 +409,7 @@ class IrcState(IrcCommandDispatcher):
         Supported user and channel modes are cached"""
         # msg.args = [nick, server, ircd-version, umodes, modes,
         #             modes that require arguments? (non-standard)]
+        self.ircd = msg.args[2]
         self.supported['umodes'] = msg.args[3]
         self.supported['chanmodes'] = msg.args[4]
 
