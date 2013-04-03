@@ -49,6 +49,9 @@ Web = conf.registerPlugin('Web')
 conf.registerChannelValue(Web, 'titleSnarfer',
     registry.Boolean(False, _("""Determines whether the bot will output the
     HTML title of URLs it sees in the channel.""")))
+conf.registerChannelValue(Web, 'snarferReportIOExceptions',
+    registry.Boolean(False, _("""Determines whether the bot will notfiy the user
+    about network exceptions like hostnotfound, timeout ....""")))
 conf.registerChannelValue(Web, 'nonSnarfingRegexp',
     registry.Regexp(None, _("""Determines what URLs matching the given regexp
     will not be snarfed.  Give the empty string if you have no URLs that you'd

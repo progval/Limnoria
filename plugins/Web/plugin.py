@@ -97,6 +97,8 @@ class Web(callbacks.PluginRegexp):
                     text = text.decode('utf8', 'replace')
             except utils.web.Error, e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
+                if self.registryValue('snarferReportIOExceptions', channel):
+                     irc.reply(url+" : "+utils.web.strError(e), prefixNick=False)
                 return
             parser = Title()
             try:
