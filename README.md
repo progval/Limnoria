@@ -1,3 +1,9 @@
+[http://supybot.fr.cr/doc/use/install.html](Install guide)
+
+# Build status
+
+(Currently broken because of a bug in Travis)
+
 Master branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=master)](https://travis-ci.org/ProgVal/Limnoria)
 
 Testing branch: [![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
