@@ -214,7 +214,8 @@ class RSS(callbacks.Plugin):
                     bold = self.registryValue('bold', channel)
                     sep = self.registryValue('headlineSeparator', channel)
                     prefix = self.registryValue('announcementPrefix', channel)
-                    pre = format('%s%s: ', prefix, name)
+                    suffix = self.registryValue('announcementSeparator', channel)
+                    pre = format('%s%s%s', prefix, name, suffix)
                     if bold:
                         pre = ircutils.bold(pre)
                         sep = ircutils.bold(sep)

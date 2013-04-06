@@ -60,6 +60,9 @@ conf.registerChannelValue(RSS, 'announcementPrefix',
     registry.StringWithSpaceOnRight(_('New news from '), _("""Determines what
     prefix is prepended (if any) to the new news item announcements made in the
     channel.""")))
+conf.registerChannelValue(RSS, 'announcementSeparator',
+        registry.StringWithSpaceOnRight(_(': '), _("""Determines what
+    suffix is appended to the feed name in a news item.""")))
 conf.registerChannelValue(RSS, 'announce',
     registry.SpaceSeparatedSetOfStrings([], _("""Determines which RSS feeds
     should be announced in the channel; valid input is a list of strings
