@@ -615,7 +615,7 @@ def notice(recipient, s, prefix='', msg=None):
 def join(channel, key=None, prefix='', msg=None):
     """Returns a JOIN to a channel"""
     if conf.supybot.protocols.irc.strictRfc():
-        assert isChannels(channel), repr(channel)
+        assert areChannels(channel), repr(channel)
     if msg and not prefix:
         prefix = msg.prefix
     if key is None:
