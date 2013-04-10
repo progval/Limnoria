@@ -346,14 +346,15 @@ class Misc(callbacks.Plugin):
                 return
         try:
             L = irc._mores[userHostmask]
-            chunk = L.pop()
+            number = self.registryValue('mores', msg.args[0])
+            chunks = [L.pop() for x in xrange(0, number)]
             if L:
                 if len(L) < 2:
                     more = _('more message')
                 else:
                     more = _('more messages')
-                chunk += format(' \x02(%s)\x0F', more)
-            irc.reply(chunk, True)
+                chunks[-1] += format(' \x02(%s)\x0F', more)
+            irc.replies(chunks, noLengthCheck=True, oneToOne=False)
         except KeyError:
             irc.error(_('You haven\'t asked me a command; perhaps you want '
                       'to see someone else\'s more.  To do so, call this '

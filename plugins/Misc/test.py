@@ -211,6 +211,18 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertRegexp('echo %s' % ('abc'*300), 'more')
         self.assertRegexp('more', 'more')
         self.assertNotRegexp('more', 'more')
+        with conf.supybot.plugins.Misc.mores.context(2):
+            self.assertRegexp('echo %s' % ('abc'*600), 'more')
+
+            self.assertNotRegexp('more', 'more')
+            m = self.irc.takeMsg()
+            self.assertIsNot(m, None)
+            self.assertIn('more', m.args[1])
+
+            self.assertNotRegexp('more', 'more')
+            m = self.irc.takeMsg()
+            self.assertIsNot(m, None)
+            self.assertNotIn('more', m.args[1])
 
     def testInvalidCommand(self):
         self.assertError('echo []')

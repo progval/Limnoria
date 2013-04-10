@@ -41,6 +41,9 @@ def configure(advanced):
     conf.registerPlugin('Misc', True)
 
 Misc = conf.registerPlugin('Misc')
+conf.registerChannelValue(Misc, 'mores',
+    registry.PositiveInteger(1, _("""Determines how many messages the bot
+    will issue when using the 'more' command.""")))
 conf.registerGlobalValue(Misc, 'listPrivatePlugins',
     registry.Boolean(True, _("""Determines whether the bot will list private
     plugins with the list command if given the --private switch.  If this is
