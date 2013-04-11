@@ -197,12 +197,12 @@ class KarmaTestCase(ChannelPluginTestCase):
             karma.response.setValue(True)
             karma.allowUnaddressedKarma.setValue(True)
             for m in ('++', '--'):
-                self.assertRegexp('foo%s' % m, 'operation')
-                self.assertSnarfRegexp('foo%s' % m, 'operation')
+                self.assertRegexp('foo%s' % m, 'is now')
+                self.assertSnarfRegexp('foo%s' % m, 'is now')
                 #self.assertNoResponse('foo bar%s' % m)
                 #self.assertSnarfNoResponse('foo bar%s' % m)
-                self.assertRegexp('(foo bar)%s' % m, 'operation')
-                self.assertSnarfRegexp('(foo bar)%s' % m, 'operation')
+                self.assertRegexp('(foo bar)%s' % m, 'is now')
+                self.assertSnarfRegexp('(foo bar)%s' % m, 'is now')
         finally:
             karma.response.setValue(resp)
             karma.allowUnaddressedKarma.setValue(unaddressed)
