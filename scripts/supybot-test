@@ -146,7 +146,12 @@ if __name__ == '__main__':
                       action='append', dest='excludePlugins', default=[],
                       help='List of plugins you do not want --plugins-dir '
                       'to include.')
+    parser.add_option('', '--disable-multiprocessing', action='store_true',
+                      dest='disableMultiprocessing',
+                      help='Disables multiprocessing stuff.')
     (options, args) = parser.parse_args()
+
+    conf.disableMultiprocessing = options.disableMultiprocessing
 
     # This must go before checking for args, of course.
     for pluginDir in options.pluginsDirs:

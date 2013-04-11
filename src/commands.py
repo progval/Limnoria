@@ -84,6 +84,14 @@ def process(f, *args, **kwargs):
     <timeout>, if supplied, limits the length of execution of target 
     function to <timeout> seconds."""
     timeout = kwargs.pop('timeout', None)
+
+    if conf.disableMultiprocessing:
+        pn = kwargs.pop('pn', 'Unknown')
+        cn = kwargs.pop('cn', 'unknown')
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            return e
     
     q = multiprocessing.Queue()
     def newf(f, q, *args, **kwargs):
