@@ -95,9 +95,15 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
-
-_ = PluginInternationalization('%s')
+try:
+    from supybot.i18n import PluginInternationalization
+    from supybot.i18n import internationalizeDocstring
+    _ = PluginInter
+except:
+    # These are useless functions that's allow to run the plugin on a bot
+    # without the i18n plugin
+    _ = lambda x:x
+    internationalizeDocstring = lambda x:xnationalization('%s')
 
 @internationalizeDocstring
 class %s(callbacks.Plugin):
@@ -117,9 +123,15 @@ configTemplate = '''
 
 import supybot.conf as conf
 import supybot.registry as registry
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
-
-_ = PluginInternationalization('%s')
+try:
+    from supybot.i18n import PluginInternationalization
+    from supybot.i18n import internationalizeDocstring
+    _ = PluginInternationalization('%s')
+except:
+    # These are useless functions that's allow to run the plugin on a bot
+    # without the i18n plugin
+    _ = lambda x:x
+    internationalizeDocstring = lambda x:x
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -165,14 +177,17 @@ __contributors__ = {}
 # This is a url where the most recent plugin package can be downloaded.
 __url__ = '' # 'http://supybot.com/Members/yourname/%s/download'
 
-import config
-import plugin
-reload(plugin) # In case we\'re being reloaded.
+from . import config
+from . import plugin
+from imp import reload
+# In case we\'re being reloaded.
+reload(config)
+reload(plugin)
 # Add more reloads here if you add third-party modules and want them to be
 # reloaded when this plugin is reloaded.  Don\'t forget to import them as well!
 
 if world.testing:
-    import test
+    from . import test
 
 Class = plugin.Class
 configure = config.configure
