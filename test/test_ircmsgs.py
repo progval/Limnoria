@@ -32,6 +32,7 @@ from supybot.test import *
 import copy
 import pickle
 
+import supybot.conf as conf
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 
@@ -168,10 +169,11 @@ class FunctionsTestCase(SupyTestCase):
                 'PRIVMSG foo,bar :baz\r\n')
 
     def testWhois(self):
-        self.assertEqual(str(ircmsgs.whois('foo')), 'WHOIS :foo\r\n')
-        self.assertEqual(str(ircmsgs.whois('foo,bar')), 'WHOIS :foo,bar\r\n')
-        self.assertRaises(AssertionError, ircmsgs.whois, '#foo')
-        self.assertRaises(AssertionError, ircmsgs.whois, 'foo,#foo')
+        with conf.supybot.protocols.irc.strictRfc.context(True):
+            self.assertEqual(str(ircmsgs.whois('foo')), 'WHOIS :foo\r\n')
+            self.assertEqual(str(ircmsgs.whois('foo,bar')), 'WHOIS :foo,bar\r\n')
+            self.assertRaises(AssertionError, ircmsgs.whois, '#foo')
+            self.assertRaises(AssertionError, ircmsgs.whois, 'foo,#foo')
 
     def testBan(self):
         channel = '#osu'
