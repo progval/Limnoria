@@ -35,7 +35,7 @@ class InternetTestCase(PluginTestCase):
     if network:
         def testDns(self):
             self.assertNotError('dns slashdot.org')
-            self.assertResponse('dns alsdkjfaslkdfjaslkdfj.com',
+            self.assertResponse('dns does.not.exist.',
                                 'Host not found.')
 
         def testWhois(self):
