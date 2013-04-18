@@ -955,7 +955,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     response = msgs.pop()
                     if msgs:
                         if len(msgs) == 1:
-                            more = _('more message')
+                            more = _('1 more message')
                         else:
                             more = _('more messages')
                         n = ircutils.bold('(%i %s)' % (len(msgs), more))
