@@ -1001,7 +1001,7 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
                 self.error()
         self.__parent.setValue(self.List(v))
 
-    def makeBanmask(self, hostmask, options=None):
+    def makeBanmask(self, hostmask, options=None, channel=None):
         """Create a banmask from the given hostmask.  If a style of banmask
         isn't specified via options, the value of
         conf.supybot.protocols.irc.banmask is used.
@@ -1009,7 +1009,8 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         options - A list specifying which parts of the hostmask should
         explicitly be matched: nick, user, host.  If 'exact' is given, then
         only the exact hostmask will be used."""
-        channel = dynamic.channel
+        if not channel:
+            channel = dynamic.channel
         assert channel is None or ircutils.isChannel(channel)
         (nick, user, host) = ircutils.splitHostmask(hostmask)
         bnick = '*'

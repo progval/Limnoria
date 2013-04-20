@@ -121,7 +121,7 @@ class Misc(callbacks.Plugin):
             if self.invalidCommands.len(msg) > maximum and \
                not ircdb.checkCapability(msg.prefix, 'owner'):
                 penalty = conf.supybot.abuse.flood.command.invalid.punishment()
-                banmask = banmasker(msg.prefix)
+                banmask = banmasker(msg.prefix, channel=None)
                 self.log.info('Ignoring %s for %s seconds due to an apparent '
                               'invalid command flood.', banmask, penalty)
                 if tokens and tokens[0] == 'Error:':
