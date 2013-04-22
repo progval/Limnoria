@@ -33,6 +33,7 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.callbacks as callbacks
+import supybot.ircutils as ircutils
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Anonymous')
 
@@ -85,8 +86,8 @@ class Anonymous(callbacks.Plugin):
         self._preCheck(irc, msg, target, 'say')
         self.log.info('Saying %q to %s due to %s.',
                       text, target, msg.prefix)
-        irc.reply(text, to=target)
-        irc.noReply()
+        irc.reply(text, to=target, prefixNick=False,
+                     private=not ircutils.isChannel(target))
     say = wrap(say, [first('nick', 'inChannel'), 'text'])
 
     @internationalizeDocstring
@@ -99,7 +100,6 @@ class Anonymous(callbacks.Plugin):
         self.log.info('Performing %q in %s due to %s.',
                       text, channel, msg.prefix)
         irc.reply(text, action=True, to=channel)
-        irc.noReply()
     do = wrap(do, ['inChannel', 'text'])
 Anonymous = internationalizeDocstring(Anonymous)
 
