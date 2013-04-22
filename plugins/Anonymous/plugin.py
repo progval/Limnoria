@@ -85,7 +85,7 @@ class Anonymous(callbacks.Plugin):
         self._preCheck(irc, msg, target, 'say')
         self.log.info('Saying %q to %s due to %s.',
                       text, target, msg.prefix)
-        irc.queueMsg(ircmsgs.privmsg(target, text))
+        irc.reply(text, to=target)
         irc.noReply()
     say = wrap(say, [first('nick', 'inChannel'), 'text'])
 
@@ -98,7 +98,7 @@ class Anonymous(callbacks.Plugin):
         self._preCheck(irc, msg, channel, 'do')
         self.log.info('Performing %q in %s due to %s.',
                       text, channel, msg.prefix)
-        irc.queueMsg(ircmsgs.action(channel, text))
+        irc.reply(text, action=True, to=channel)
         irc.noReply()
     do = wrap(do, ['inChannel', 'text'])
 Anonymous = internationalizeDocstring(Anonymous)
