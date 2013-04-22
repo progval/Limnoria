@@ -2,8 +2,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2013-04-21 15:38+CEST\n"
-"PO-Revision-Date: 2013-04-21 15:56+0100\n"
+"POT-Creation-Date: 2013-04-21 16:00+CEST\n"
+"PO-Revision-Date: 2013-04-21 16:01+0100\n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -84,8 +84,8 @@ msgid "(XX more messages)"
 msgstr "(XX messages supplémentaires)"
 
 #: src/callbacks.py:958
-msgid "more message"
-msgstr "message supplémentaire"
+msgid "1 more message"
+msgstr "1 message supplémentaire"
 
 #: src/callbacks.py:960
 msgid "more messages"
@@ -429,7 +429,7 @@ msgid ""
 "    remaining chunks."
 msgstr ""
 "Détermine si le bot séparera les longs messages    en morceaux et permettra "
-"aux utilisateurs d'utiliser la commande 'more'    pour récupérer les "
+"aux utilisateurs et utilisatrices d'utiliser la commande 'more'    pour récupérer les "
 "morceaux restants."
 
 #: src/conf.py:386
@@ -459,7 +459,7 @@ msgid ""
 "    required for all but the first chunk."
 msgstr ""
 "Détermine combien de 'more's sont    envoyés immédiatement (c'est à dire, "
-"avant l'utilisation de la commande    'more', juste après que l'utilisateur "
+"avant l'utilisation de la commande    'more', juste après que l'utilisateur/trice "
 "ait envoyé la commande.    Par défaut, cela vaut 1, ce qui signifie que seul "
 "le premier morceau    est envoyé. Avant l'appel de 'more'."
 
@@ -474,7 +474,7 @@ msgstr ""
 "Détermine si le bot enverra des réponses    multi-messages dans un seul "
 "message ou dans plusieurs. Pour des raisons    de sécurité (le bot est moins "
 "susceptible de flooder), il envoie tout    dans un seul message, et les "
-"utilisateurs peuvent utiliser 'more'    si nécessaire."
+"utilisateurs/trices peuvent utiliser 'more'    si nécessaire."
 
 #: src/conf.py:407
 msgid ""
@@ -524,7 +524,7 @@ msgid ""
 "    in most IRC clients."
 msgstr ""
 "Détermine si le bot enverra les erreurs    par NOTICE plutôt que par "
-"PRIVMSG. Vous pouvez faire cela pour que les    utilisateurs qui ne veulent "
+"PRIVMSG. Vous pouvez faire cela pour que les    personnes qui ne veulent "
 "pas recevoir de message d'erreur ignorent    les NOTICEs du bot.    Vous "
 "pouvez utiliser cette fonctionnalité en combinaison avec     supybot.reply."
 "errorInPrivate, pour que les erreurs en privé n'ouvrent pas une nouvelle "
@@ -540,10 +540,10 @@ msgid ""
 "    users to understand the underlying security system preventing them from\n"
 "    running certain commands."
 msgstr ""
-"Détermine si le bot enverra un message d'erreur    aux utilisateurs qui "
-"tentent d'appeler une commande pour laquelle ils    n'ont pas de capacité "
+"Détermine si le bot enverra un message d'erreur    aux personnes qui "
+"tentent d'appeler une commande pour laquelle elles n'ont pas de capacité "
 "suffisante.    Vous pouvez le mettre à True si vous ne voulez pas que les "
-"utilisateurs    comprennent le système sous-jacent de capacités pour "
+"utilisateurs/trices    comprennent le système sous-jacent de capacités pour "
 "lancer    certaines commandes."
 
 #: src/conf.py:437
@@ -577,7 +577,7 @@ msgid ""
 msgstr ""
 "Détermine si le bot répondra avec une    notice lorsque l'on s'adresse à lui "
 "en privé, pour éviter de devoir    ouvrir une fenêtre /query. Ceci peut être "
-"modifié utilisateur par    utilisateur via la varible de configuration reply."
+"modifié individuellement via la varible de configuration reply."
 "withNoticeWhenPrivate."
 
 #: src/conf.py:454
@@ -585,7 +585,7 @@ msgid ""
 "Determines whether the bot will always prefix\n"
 "     theuser's nick to its reply to that user's command."
 msgstr ""
-"Détermine si le bot préfixera toujours le nick    de l'utilisateur lors de "
+"Détermine si le bot préfixera toujours le nick    de l'utilisateur/trice lors de "
 "ses réponses à celui-ci."
 
 #: src/conf.py:458
@@ -640,7 +640,7 @@ msgid ""
 msgstr ""
 "Détermine si le bot joindra toujours les    canaux sur lesquels il est "
 "invité. Si cette valeur est à False, le bot    ne joindra un canal que si "
-"l'utilisateur l'invitant a la capacité    'admin' (ou si il lui a "
+"la personne l'invitant a la capacité    'admin' (ou si il lui a "
 "directement envoyé la commande Admin join)"
 
 #: src/conf.py:483
@@ -651,7 +651,7 @@ msgid ""
 "    will only reply with the syntax of the command (the first line of the\n"
 "    help) rather than the full help."
 msgstr ""
-"Supybot répond normalement avec une aide    complète lorsque l'utilisateur "
+"Supybot répond normalement avec une aide    complète lorsque quelqu'un "
 "se trompe dans une commande. Si cette    valeur est à True, le bot ne "
 "répondra qu'avec la syntaxe de la commande    (la première ligne de l'aide), "
 "plutôt que par toute l'aide."
@@ -803,7 +803,7 @@ msgid ""
 "    to accessing some information on a user the bot doesn't know about."
 msgstr ""
 "Détermine quel message    d'erreur est envoyé lorsque quelqu'un essaye "
-"d'accéder à une information    sur un utilisateur que le bot ne connait pas."
+"d'accéder à une information    sur une personne que le bot ne connait pas."
 
 #: src/conf.py:561
 msgid ""
@@ -848,7 +848,7 @@ msgid ""
 "to\n"
 "    use."
 msgstr ""
-"Détermine quel message d'erreur est donné lorsqu'un utilisateur    tente "
+"Détermine quel message d'erreur est donné lorsqu'une personne    tente "
 "d'utiliser une commande à laquelle il n'y pas accès."
 
 #: src/conf.py:577
@@ -882,8 +882,8 @@ msgid ""
 "    explicit capability for whatever reason."
 msgstr ""
 "Détermine le message d'erreur générique qui est donné par le bot    pour "
-"dire à quelqu'un qu'il n'a pas les capacités requises pour    utiliser une "
-"commande qu'il essaye d'utiliser, si l'auteur du code    appelant "
+"dire à quelqu'un qu'il ou elle n'a pas les capacités requises pour    utiliser une "
+"commande qu'il ou elle essaye d'utiliser, si l'auteur du code    appelant "
 "errorNoCapability ne fourni pas d'information explicite    sur la raison de "
 "ce refus."
 
@@ -988,7 +988,7 @@ msgid ""
 "    commands more nested than this."
 msgstr ""
 "Détermine le nombre maximum de    commandes imbriquées ; les utilisateurs "
-"recevront une erreur si ils    tentent d'en mettre plus."
+"recevront une erreur si ils ou elles    tentent d'en mettre plus."
 
 #: src/conf.py:661
 msgid ""
@@ -1063,8 +1063,8 @@ msgid ""
 "    60 second period, he or she will be ignored for\n"
 "    supybot.abuse.flood.command.punishment seconds."
 msgstr ""
-"Détermine le nombre maximum de commandes    qu'un utilisateur peut envoyer "
-"en une minute. Si un utilisateur dépasse    cette limite, il sera ignoré    "
+"Détermine le nombre maximum de commandes    qu'une personne peut envoyer "
+"en une minute. Si une personne dépasse    cette limite, elle sera ignoré    "
 "supybot.abuse.flood.command.punishment secondes."
 
 #: src/conf.py:702
@@ -1072,7 +1072,7 @@ msgid ""
 "Determines how many seconds the bot\n"
 "    will ignore users who flood it with commands."
 msgstr ""
-"Détermine combien de secondes le bot    ignorera les utilisateurs qui le "
+"Détermine combien de secondes le bot    ignorera les personnes qui le "
 "floodent de commandes."
 
 #: src/conf.py:706
@@ -1093,12 +1093,12 @@ msgid ""
 "    less likely (and far more annoying) for users to flood with invalid\n"
 "    commands than for them to flood with valid commands."
 msgstr ""
-"Détermine le nombre maximum de commandes    invalies qu'un utilisateur peut "
-"envoyer en une minute. Si un utilisateur    dépasse cette limite, il sera "
+"Détermine le nombre maximum de commandes    invalies qu'une personne peut "
+"envoyer en une minute. Si une personne    dépasse cette limite, elle sera "
 "ignoré    supybot.abuse.flood.command.invalid.punishment secondes. "
 "Typiquement,    cette valeur est plus petite que    value is lower than "
 "supybot.abuse.flood.command.maximum, car il est plus    probable que les "
-"utilisateurs floodent avec des commandes invalides    qu'avec des commandes "
+"personnes floodent avec des commandes invalides    qu'avec des commandes "
 "valides."
 
 #: src/conf.py:717
@@ -1110,10 +1110,10 @@ msgid ""
 "    less likely (and far more annoying) for users to flood with invalid\n"
 "    commands than for them to flood with valid commands."
 msgstr ""
-"Détermine combien de secondes le bot    ignorera les utilisateurs qui le "
+"Détermine combien de secondes le bot    ignorera les personnes qui le "
 "floodent de commandes invalides.     Typiquement,cette valeur est plus "
 "grande que    value is lower than supybot.abuse.flood.command.punishment, "
-"car il est plus    probable que les utilisateurs floodent avec des commandes "
+"car il est plus    probable que les personnes floodent avec des commandes "
 "invalides    qu'avec des commandes valides."
 
 #: src/conf.py:723
@@ -1229,7 +1229,7 @@ msgstr ""
 "Channel, Config, Misc, Owner, et User),    peu importe l'état de la "
 "configuration. Généralement, si ces plugins    sont configurés pour ne pas "
 "être chargés, vous ne pourrez plus les charger,    et finalement, vous "
-"voudrez le faire. Les utilisateurs qui ne souhaitent    pas charger ces "
+"voudrez le faire. Les personnes qui ne souhaitent    pas charger ces "
 "plugins sont suffisement intelligents pour changer la    valeur de cette "
 "variable de façon appropriée :)"
 
@@ -1262,7 +1262,7 @@ msgid ""
 "never\n"
 "    times out."
 msgstr ""
-"Détermine combien de temps au maximum un utilisateur    peut rester "
+"Détermine combien de temps au maximum une personne    peut rester "
 "identifié. Si cette valeur est inférieure ou égale à zéro,    "
 "l'identification n'expirera jamais."
 
@@ -1390,13 +1390,13 @@ msgstr ""
 "le nombre d'enregistrements non modifiés, la base de    données sera "
 "entièrement enregistrée sur le disque."
 
-#: src/conf.py:1035
+#: src/conf.py:1036
 msgid ""
 "Determines what will be used as the\n"
 "    default banmask style."
 msgstr "Détermine le style de masque de bannissement    utilisé par défaut."
 
-#: src/conf.py:1039
+#: src/conf.py:1040
 msgid ""
 "Determines whether the bot will strictly follow\n"
 "    the RFC; currently this only affects what strings are considered to be\n"
@@ -1412,7 +1412,7 @@ msgstr ""
 "nick tel queservices@this.network.server, vous devriez    défini ceci à "
 "False."
 
-#: src/conf.py:1046
+#: src/conf.py:1047
 msgid ""
 "Determines what user modes the bot will request\n"
 "    from the server when it first connects.  Many people might choose +i; "
@@ -1426,7 +1426,7 @@ msgstr ""
 "autorisent +x, ce qui indique aux services du réseau    que l'on veut "
 "'cloaker' (masquer) notre masque d'hôte."
 
-#: src/conf.py:1052
+#: src/conf.py:1053
 msgid ""
 "Determines what vhost the bot will bind to before\n"
 "    connecting to the IRC server."
@@ -1434,7 +1434,7 @@ msgstr ""
 "Détermine quelle vhost le bot bindera    avant de se connecter au serveur "
 "IRC."
 
-#: src/conf.py:1056
+#: src/conf.py:1057
 msgid ""
 "Determines how many old messages the bot will\n"
 "    keep around in its history.  Changing this variable will not take "
@@ -1444,7 +1444,7 @@ msgstr ""
 "Détermine combien de vieux messages le bot    gardera dans son historique. "
 "Changer cette variable ne prend effet qu'après    avoir redémarré le bot."
 
-#: src/conf.py:1061
+#: src/conf.py:1062
 msgid ""
 "A floating point number of seconds to throttle\n"
 "    queued messages -- that is, messages will not be sent faster than once "
@@ -1455,7 +1455,7 @@ msgstr ""
 "messages à envoyé ; c'est à dire que les messages ne    seront pas envoyé "
 "plus vite que 1 par throttleTime secondes."
 
-#: src/conf.py:1066
+#: src/conf.py:1067
 msgid ""
 "Determines whether the bot will send PINGs to\n"
 "    the server it's connected to in order to keep the connection alive and\n"
@@ -1470,7 +1470,7 @@ msgstr ""
 "débogage : vous devriez toujours laisser cette option à    True excepté si "
 "il vous arrive des trucs bizarres avec le serveur."
 
-#: src/conf.py:1073
+#: src/conf.py:1074
 msgid ""
 "Determines the number of seconds between sending\n"
 "    pings to the server, if pings are being sent to the server."
@@ -1478,7 +1478,7 @@ msgstr ""
 "Détermine le nombre de secondes entre deux    envois de PING au serveur, si "
 "les pings sont envoyés au serveur."
 
-#: src/conf.py:1078
+#: src/conf.py:1079
 msgid ""
 "Determines whether the bot will refuse\n"
 "    duplicated messages to be queued for delivery to the server.  This is a\n"
@@ -1493,7 +1493,7 @@ msgstr ""
 "plupart du temps, vous n'avez pas    à vous en préoccuper, à moins que vous "
 "ne bidouilliez des plugins."
 
-#: src/conf.py:1086
+#: src/conf.py:1087
 msgid ""
 "Determines how many seconds must elapse between\n"
 "    JOINs sent to the server."
@@ -1501,7 +1501,7 @@ msgstr ""
 "Détermine combien de secondes doivent s'écouler entre    deux envois de JOIN "
 "au serveur."
 
-#: src/conf.py:1094
+#: src/conf.py:1095
 msgid ""
 "Determines how many bytes the bot will\n"
 "    'peek' at when looking through a URL for a doctype or title or "
@@ -1514,7 +1514,7 @@ msgstr ""
 "doctype, le title, ou autre chose    dans une URL. Après avoir lu ces "
 "octets, le bot abandonnera sa recherche."
 
-#: src/conf.py:1100
+#: src/conf.py:1101
 msgid ""
 "Determines what proxy all HTTP requests should go\n"
 "    through.  The value should be of the form 'host:port'."
@@ -1523,7 +1523,7 @@ msgstr ""
 "valeur doit être de la forme 'host:port', ou    être vide s'il n'y a pas de "
 "proxy."
 
-#: src/conf.py:1120
+#: src/conf.py:1121
 msgid ""
 "Space-separated list of IPv4 hosts the HTTP server\n"
 "    will bind."
@@ -1531,7 +1531,7 @@ msgstr ""
 "Liste d'adresses IPv4 séparées par des espaces que le serveur HTTP va « "
 "binder »."
 
-#: src/conf.py:1123
+#: src/conf.py:1124
 msgid ""
 "Space-separated list of IPv6 hosts the HTTP server will\n"
 "    bind."
@@ -1539,13 +1539,13 @@ msgstr ""
 "Liste d'adresses IPv6 séparées par des espaces que le serveur HTTP va « "
 "binder »."
 
-#: src/conf.py:1126
+#: src/conf.py:1127
 msgid ""
 "Determines what port the HTTP server will\n"
 "    bind."
 msgstr "Détermine à quel port le serveur HTTP va s'attacher."
 
-#: src/conf.py:1129
+#: src/conf.py:1130
 msgid ""
 "Determines whether the server will stay\n"
 "    alive if no plugin is using it. This also means that the server will\n"
@@ -1554,13 +1554,13 @@ msgstr ""
 "Détermine si le serveur restera lancé si aucun plugin ne l'utilise. Cela "
 "signifie également que le serveur va démarrer même si il n'est pas utilisé."
 
-#: src/conf.py:1133
+#: src/conf.py:1134
 msgid ""
 "Determines the path of the file served as\n"
 "    favicon to browsers."
 msgstr "Détermine le chemin du fichier servi comme favicon aux navigateurs."
 
-#: src/conf.py:1141
+#: src/conf.py:1142
 msgid ""
 "Determines whether the bot will ignore\n"
 "    unregistered users by default.  Of course, that'll make it particularly\n"
@@ -1568,11 +1568,11 @@ msgid ""
 "your\n"
 "    problem to solve."
 msgstr ""
-"Détermine si le bot ignorera par défaut les    utilisateurs qui ne sont pas "
+"Détermine si le bot ignorera par défaut les    personness qui ne sont pas "
 "enregistrés. Bien sûr, cela rendra très    difficile pour les utilisateurs "
 "de s'enregistrer ou de s'identifier,    mais c'est votre problème."
 
-#: src/conf.py:1148
+#: src/conf.py:1149
 msgid ""
 "A string that is the external IP of the bot.  If this is the\n"
 "   empty string, the bot will attempt to find out its IP dynamically "
@@ -1583,7 +1583,7 @@ msgstr ""
 "recherchera cette IP dynamiquement (ce qui, parfois, ne marche   pas ; dans "
 "ce cas, utilisez cette variable)."
 
-#: src/conf.py:1162
+#: src/conf.py:1163
 msgid ""
 "Determines what the default timeout for socket\n"
 "    objects will be.  This means that *all* sockets will timeout when this "
@@ -1596,7 +1596,7 @@ msgstr ""
 "signifie que *toutes* les sockets expireront au bout de cette    durée (à "
 "moins que l'auteur du code n'ait changé cette valeur)."
 
-#: src/conf.py:1168
+#: src/conf.py:1169
 msgid ""
 "Determines what file the bot should write its PID\n"
 "    (Process ID) to, so you can kill it more easily.  If it's left unset (as "
@@ -1610,13 +1610,13 @@ msgstr ""
 "vide, le PID ne sera écrit dans aucun fichier.    Un redémarrage est requis "
 "pour que cette variable prenne effet."
 
-#: src/conf.py:1178
+#: src/conf.py:1179
 msgid ""
 "Determines whether the bot will automatically\n"
 "    thread all commands."
 msgstr "Détermine si le bot threadera automatiquement    toutes les commandes."
 
-#: src/conf.py:1181
+#: src/conf.py:1182
 msgid ""
 "Determines whether the bot will automatically\n"
 "    flush all flushers *very* often.  Useful for debugging when you don't "

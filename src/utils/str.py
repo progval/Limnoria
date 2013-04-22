@@ -42,7 +42,8 @@ from iter import all, any
 from structures import TwoWayDictionary
 
 from supybot.i18n import PluginInternationalization
-internationalizeFunction=PluginInternationalization().internationalizeFunction
+_ = PluginInternationalization()
+internationalizeFunction = _.internationalizeFunction
 
 def rsplit(s, sep=None, maxsplit=-1):
     """Equivalent to str.split, except splitting from the right."""
@@ -246,11 +247,13 @@ def perlVariableSubstitute(vars, text):
                 return '$' + unbraced
     return _perlVarSubstituteRe.sub(replacer, text)
 
-def commaAndify(seq, comma=',', And='and'):
+def commaAndify(seq, comma=',', And=None):
     """Given a a sequence, returns an English clause for that sequence.
 
     I.e., given [1, 2, 3], returns '1, 2, and 3'
     """
+    if And is None:
+        And = _('and')
     L = list(seq)
     if len(L) == 0:
         return ''

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-04-21 15:56+CEST\n"
+"POT-Creation-Date: 2013-04-21 16:00+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1238,5 +1238,37 @@ msgstr ""
 
 #: src/registry.py:598
 msgid "Value must be a valid regular expression, not %r."
+msgstr ""
+
+#: src/utils/gen.py:100
+msgid "year"
+msgstr ""
+
+#: src/utils/gen.py:103
+msgid "week"
+msgstr ""
+
+#: src/utils/gen.py:106
+msgid "day"
+msgstr ""
+
+#: src/utils/gen.py:109
+msgid "hour"
+msgstr ""
+
+#: src/utils/gen.py:113
+msgid "minute"
+msgstr ""
+
+#: src/utils/gen.py:116
+msgid "second"
+msgstr ""
+
+#: src/utils/gen.py:125
+msgid "%s ago"
+msgstr ""
+
+#: src/utils/str.py:256
+msgid "and"
 msgstr ""
 
