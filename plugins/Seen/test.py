@@ -59,7 +59,10 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.irc.feedMsg(ircmsgs.mode(self.channel, args=('+o', self.nick),
                                       prefix=self.prefix))
         self.assertRegexp('seen any %s' % self.nick,
-                          '^%s was last seen' % self.nick)
+                    '^%s was last seen.*:' % self.nick)
+        with conf.supybot.plugins.seen.showLastMessage.context(False):
+            self.assertRegexp('seen any %s' % self.nick,
+                        '^%s was last seen[^:]*' % self.nick)
 
     def testSeen(self):
         self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,

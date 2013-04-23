@@ -202,9 +202,12 @@ class Seen(callbacks.Plugin):
             if len(results) == 1:
                 (nick, info) = results[0]
                 (when, said) = info
-                irc.reply(format(_('%s was last seen in %s %s ago: %s'),
+                reply = format(_('%s was last seen in %s %s ago'),
                                  nick, channel,
-                                 utils.timeElapsed(time.time()-when), said))
+                                 utils.timeElapsed(time.time()-when))
+                if self.registryValue('showLastMessage', channel):
+                    reply = _('%s: %s') % (reply, said)
+                irc.reply(reply)
             elif len(results) > 1:
                 L = []
                 for (nick, info) in results:
@@ -266,9 +269,11 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, '<last>')
-            irc.reply(format(_('Someone was last seen in %s %s ago: %s'),
-                             channel, utils.timeElapsed(time.time()-when),
-                             said))
+            reply = format(_('Someone was last seen in %s %s ago'),
+                             channel, utils.timeElapsed(time.time()-when))
+            if self.registryValue('showLastMessage', channel):
+                reply = _('%s: %s') % (reply, said)
+            irc.reply(reply)
         except KeyError:
             irc.reply(_('I have never seen anyone.'))
 
@@ -292,9 +297,12 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, user.id)
-            irc.reply(format(_('%s was last seen in %s %s ago: %s'),
+            reply = format(_('%s was last seen in %s %s ago'),
                              user.name, channel,
-                             utils.timeElapsed(time.time()-when), said))
+                             utils.timeElapsed(time.time()-when))
+            if self.registryValue('showLastMessage', channel):
+                reply = _('%s: %s') % (reply, said)
+            irc.reply(reply)
         except KeyError:
             irc.reply(format(_('I have not seen %s.'), user.name))
 

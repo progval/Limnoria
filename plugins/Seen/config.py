@@ -49,6 +49,10 @@ conf.registerChannelValue(Seen, 'minimumNonWildcard',
     registry.NonNegativeInteger(2, _("""The minimum non-wildcard characters
     required to perform a 'seen' request. Of course, it only applies if there
     is a wildcard in the request.""")))
+conf.registerChannelValue(Seen, 'showLastMessage',
+    registry.Boolean(True, _("""Determines whether the last message will
+    be displayed with @seen. Useful for keeping messages from a channel
+    private.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
