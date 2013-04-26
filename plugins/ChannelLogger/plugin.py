@@ -34,6 +34,7 @@ from cStringIO import StringIO
 
 import supybot.conf as conf
 import supybot.world as world
+import supybot.ircdb as ircdb
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
@@ -183,7 +184,14 @@ class ChannelLogger(callbacks.Plugin):
         for channel in recipients.split(','):
             if irc.isChannel(channel):
                 noLogPrefix = self.registryValue('noLogPrefix', channel)
-                if noLogPrefix and text.startswith(noLogPrefix):
+                cap = ircdb.makeChannelCapability(channel, 'logChannelMessages')
+                try:
+                    logChannelMessages = ircdb.checkCapability(msg.prefix, cap,
+                        ignoreOwner=True)
+                except KeyError:
+                    logChannelMessages = True
+                if (noLogPrefix and text.startswith(noLogPrefix)) or \
+                        not logChannelMessages:
                     text = '-= THIS MESSAGE NOT LOGGED =-'
                 nick = msg.nick or irc.nick
                 if ircmsgs.isAction(msg):
