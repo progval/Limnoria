@@ -6,6 +6,9 @@ Master branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Li
 
 Testing branch: [![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
 
+Limnoria is tested with Python 2.6, 2.7, 3.2, and Pypy. Python 2.5 is not supported.
+Python 3.3 is not fully supported because of a [bug in Python](http://bugs.python.org/issue17856)
+
 # EVERYONE:
 
 Read [LICENSE].  It's a 3-clause BSD license, but you should read it
