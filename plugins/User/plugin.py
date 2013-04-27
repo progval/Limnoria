@@ -54,15 +54,15 @@ class User(callbacks.Plugin):
         predicates = []
         for (option, arg) in optlist:
             if option == 'capability':
-                try:
-                    u = ircdb.users.getUser(msg.prefix)
-                    if arg in conf.supybot.capabilities.private() and \
-                            not u._checkCapability('admin'):
-                        raise KeyError
-                except KeyError:
-                    # Note that it may be raised by checkCapability too.
-                    irc.error(_('This is a private capability. Only admins '
-                        'can see who has it.'), Raise=True)
+                if arg in conf.supybot.capabilities.private():
+                    try:
+                        u = ircdb.users.getUser(msg.prefix)
+                        if not u._checkCapability('admin'):
+                            raise KeyError
+                    except KeyError:
+                        # Note that it may be raised by checkCapability too.
+                        irc.error(_('This is a private capability. Only admins '
+                            'can see who has it.'), Raise=True)
                 def p(u, cap=arg):
                     try:
                         return u._checkCapability(cap)
