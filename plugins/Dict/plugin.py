@@ -40,12 +40,7 @@ _ = PluginInternationalization('Dict')
 
 import random
 
-try:
-    dictclient = utils.python.universalImport('dictclient', 'local.dictclient')
-except ImportError:
-    raise callbacks.Error, \
-            'You need to have dictclient installed to use this plugin.  ' \
-            'Download it at <http://quux.org:70/devel/dictclient>'
+from local import dictclient
 
 class Dict(callbacks.Plugin):
     threaded = True
