@@ -68,36 +68,6 @@ if sys.version_info < (2, 6, 0):
     sys.stderr.write("Supybot requires Python 2.6 or newer.")
     sys.stderr.write(os.linesep)
     sys.exit(-1)
-elif sys.version_info[0] >= 3:
-    if os.path.split(os.path.abspath(os.path.dirname(__file__)))[-1] == 'py3k':
-        if debug:
-            print('DEBUG: Running setup.py with Python 3: second stage.')
-        while '--debug' in sys.argv:
-            sys.argv.remove('--debug')
-    else:
-        if debug:
-            print('DEBUG: Running setup.py with Python 3: first stage.')
-        print('Converting code from Python 2 to Python 3. This may take a '
-                'few minutes.')
-        # For some reason, using open(os.devnull) makes the subprocess exit before
-        # it finishes...
-        if debug:
-            subprocess.Popen([sys.executable,
-                os.path.join('2to3', 'run.py')]).wait()
-        else:
-            subprocess.Popen([sys.executable, os.path.join('2to3', 'run.py')],
-                    stdout=tempfile.TemporaryFile(),
-                    stderr=tempfile.TemporaryFile()).wait()
-        if debug:
-            print('DEBUG: Changing dir to py3k/')
-        os.chdir('py3k')
-        if debug:
-            print('DEBUG: Running %r' % ([sys.executable] + sys.argv))
-        subprocess.Popen([sys.executable] + sys.argv).wait()
-        exit()
-else:
-    while '--debug' in sys.argv:
-        sys.argv.remove('--debug')
 
 
 import textwrap
@@ -137,6 +107,35 @@ except ImportError as e:
     sys.stderr.write(textwrap.fill(s))
     sys.stderr.write(os.linesep*2)
     sys.exit(-1)
+try:
+    from distutils.command.build_py import build_py_2to3
+    class build_py(build_py_2to3):
+        def run_2to3(self, files, options=None):
+            from distutils import log
+            from lib2to3.refactor import RefactoringTool, get_fixers_from_package
+            if not files:
+                return
+
+            # Make this class local, to delay import of 2to3
+            from lib2to3.refactor import RefactoringTool, get_fixers_from_package
+            class DistutilsRefactoringTool(RefactoringTool):
+                def log_error(self, msg, *args, **kw):
+                    log.error(msg, *args)
+
+                def log_message(self, msg, *args):
+                    log.info(msg, *args)
+
+                def log_debug(self, msg, *args):
+                    log.debug(msg, *args)
+
+            fixer_names = get_fixers_from_package('lib2to3.fixes')
+            fixer_names += get_fixers_from_package('2to3')
+            r = DistutilsRefactoringTool(fixer_names, options=options)
+            r.refactor(files, write=True)
+except ImportError:
+    # 2.x
+    from distutils.command.build_py import build_py
+
 
 if clean:
     previousInstall = os.path.join(get_python_lib(), 'supybot')
@@ -217,6 +216,7 @@ setup(
         'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
         ],
+    cmdclass = {'build_py': build_py},
 
     # Installation data
     packages=packages,
