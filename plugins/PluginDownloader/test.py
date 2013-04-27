@@ -92,5 +92,8 @@ class PluginDownloaderTestCase(PluginTestCase):
         self.assertNotError('plugindownloader install SpiderDave Pastebin')
         self._testPluginInstalled('Pastebin')
 
+if not network:
+    class PluginDownloaderTestCase(PluginTestCase):
+        pass
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
