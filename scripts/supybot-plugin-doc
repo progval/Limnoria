@@ -58,7 +58,7 @@ supybot.log.plugins.individualLogfiles: False
 supybot.databases: sqlite anydbm cdb flat pickle
 """)
     fd.close()
-except EnvironmentError, e:
+except EnvironmentError as e:
     error('Unable to open %s for writing.' % registryFilename)
 
 import supybot.registry as registry
@@ -224,12 +224,12 @@ class PluginDoc(object):
 
 def genDoc(m, options):
     Plugin = PluginDoc(m)
-    print 'Generating documentation for %s...' % Plugin.name
+    print('Generating documentation for %s...' % Plugin.name)
     path = os.path.join(options.outputDir, '%s.%s' % (Plugin.name,
                                                       options.format))
     try:
         fd = open(path, 'w')
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         error('Unable to open %s for writing.' % path)
     f = getattr(Plugin, 'render%s' % options.format.upper(), None)
     if f is None:
@@ -283,7 +283,7 @@ if __name__ == '__main__':
             pluginName = pluginName[:-3]
         try:
             pluginModule = plugin.loadPluginModule(pluginName)
-        except ImportError, e:
+        except ImportError as e:
             s = 'Failed to load plugin %s: %s\n' \
                 '%s(pluginDirs: %s)' % (pluginName, e, s,
                                         conf.supybot.directories.plugins())

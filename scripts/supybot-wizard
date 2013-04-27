@@ -92,7 +92,7 @@ def loadPlugin(name):
             to load when we load the plugin.  We'll skip over it for now, but
             you can always add it later.""")
             return None
-    except Exception, e:
+    except Exception as e:
         output("""We encountered a bit of trouble trying to load plugin %r.
         Python told us %r.  We'll skip over it for now, you can always add it
         later.""" % (name, utils.gen.exnToString(e)))
@@ -140,7 +140,7 @@ def getDirectoryName(default, basedir=os.curdir, prompt=True):
         try:
             os.makedirs(dir)
             done = True
-        except OSError, e:
+        except OSError as e:
             # 17 is File exists for Linux (and likely other POSIX systems)
             # 183 is the same for Windows
             if e.args[0] == 17 or (os.name == 'nt' and e.args[0] == 183):
@@ -385,7 +385,7 @@ def main():
             try:
                 i = int(port)
                 if not (0 < i < 65536):
-                    raise ValueError
+                    raise ValueError()
             except ValueError:
                 output("""That's not a valid port.""")
                 port = 0
@@ -468,7 +468,7 @@ def main():
             try:
                 network.channels.set(channels)
                 break
-            except registry.InvalidRegistryValue, e:
+            except registry.InvalidRegistryValue as e:
                 output(""""%s" is an invalid IRC channel.  Be sure to prefix
                 the channel with # (or +, or !, or &, but no one uses those
                 channels, really).  Be sure the channel key (if you are
@@ -484,7 +484,7 @@ def main():
             output("""Beginning configuration for %s...""" %
                    module.Class.__name__)
             module.configure(advanced)
-            print # Blank line :)
+            print() # Blank line :)
             output("""Done!""")
         else:
             conf.registerPlugin(module.__name__, currentValue=True)
@@ -603,7 +603,7 @@ def main():
                 c = anything('What would you like your bot\'s prefix '
                              'character(s) to be?')
                 conf.supybot.reply.whenAddressedBy.chars.set(c)
-            except registry.InvalidRegistryValue, e:
+            except registry.InvalidRegistryValue as e:
                 output(str(e))
                 c = ''
     else:
@@ -704,9 +704,9 @@ if __name__ == '__main__':
         # We may still be using bold text when exiting during a prompt
         if questions.useBold:
             import supybot.ansi as ansi
-            print ansi.RESET
-        print
-        print
+            print(ansi.RESET)
+        print()
+        print()
         output("""Well, it looks like you canceled out of the wizard before
         it was done.  Unfortunately, I didn't get to write anything to file.
         Please run the wizard again to completion.""")

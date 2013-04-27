@@ -195,7 +195,7 @@ if __name__ == '__main__':
             pluginName = pluginName[:-3]
         try:
             pluginModule = plugin.loadPluginModule(pluginName)
-        except (ImportError, callbacks.Error), e:
+        except (ImportError, callbacks.Error) as e:
             sys.stderr.write('Failed to load plugin %s: %s\n' % (pluginName,e))
             sys.stderr.write('(pluginDirs: %s)\n' %
                              conf.supybot.directories.plugins())
@@ -205,7 +205,7 @@ if __name__ == '__main__':
 
     suite = unittest.TestSuite(test.suites)
     runner = unittest.TextTestRunner(verbosity=2)
-    print 'Testing began at %s (pid %s)' % (time.ctime(), os.getpid())
+    print('Testing began at %s (pid %s)' % (time.ctime(), os.getpid()))
     if options.clean:
         shutil.rmtree(conf.supybot.directories.log())
         shutil.rmtree(conf.supybot.directories.conf())
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     result = runner.run(suite)
 
     if hasattr(unittest, 'asserts'):
-        print 'Total asserts: %s' % unittest.asserts
+        print('Total asserts: %s' % unittest.asserts)
 
     if result.wasSuccessful():
         sys.exit(0)

@@ -238,7 +238,7 @@ def main():
         if name.endswith('.py'):
             name = name[:-3]
         while name[0].islower():
-            print 'Plugin names must begin with a capital letter.'
+            print('Plugin names must begin with a capital letter.')
             name = something('What should the name of the plugin be?')
             if name.endswith('.py'):
                 name = name[:-3]
@@ -247,12 +247,12 @@ def main():
             error('A file or directory named %s already exists; remove or '
                   'rename it and run this program again.' % name)
 
-        print textwrap.fill(textwrap.dedent("""
+        print(textwrap.fill(textwrap.dedent("""
         Sometimes you'll want a callback to be threaded.  If its methods
         (command or regexp-based, either one) will take a significant amount
         of time to run, you'll want to thread them so they don't block the
-        entire bot.""").strip())
-        print
+        entire bot.""").strip()))
+        print()
         threaded = yn('Does your plugin need to be threaded?')
 
         realName = something(textwrap.dedent("""
@@ -270,7 +270,7 @@ def main():
     if name.endswith('.py'):
         name = name[:-3]
     while name[0].islower():
-        print 'Plugin names must begin with a capital.'
+        print('Plugin names must begin with a capital.')
         name = something('What should the name of the plugin be?')
         if name.endswith('.py'):
             name = name[:-3]
@@ -300,13 +300,13 @@ def main():
     writeFile('__init__.py',
               '# Stub so local is a module, used for third-party modules\n')
 
-    print 'Your new plugin template is in the %s directory.' % name
+    print('Your new plugin template is in the %s directory.' % name)
 
 if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print
+        print()
         output("""It looks like you cancelled out of this script before it was
         finished.  Obviously, nothing was written, but just run this script
         again whenever you want to generate a template for a plugin.""")

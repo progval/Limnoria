@@ -118,7 +118,7 @@ def main():
     ircdb.users.flush()
     #os.system('cat %s' % filename) # Was this here just for debugging?
     ircdb.users.close()
-    print 'User %s added.' % name
+    print('User %s added.' % name)
 
 if __name__ == '__main__':
     try:
