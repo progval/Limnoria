@@ -84,8 +84,8 @@ msgid "(XX more messages)"
 msgstr "(XX messages supplémentaires)"
 
 #: src/callbacks.py:958
-msgid "1 more message"
-msgstr "1 message supplémentaire"
+msgid "more message"
+msgstr "message supplémentaire"
 
 #: src/callbacks.py:960
 msgid "more messages"

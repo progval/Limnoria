@@ -56,7 +56,7 @@ msgid "(XX more messages)"
 msgstr "(XX altri messaggi)"
 
 #: src/callbacks.py:914
-msgid "1 more message"
+msgid "more message"
 msgstr "altro messaggio"
 
 #: src/callbacks.py:916

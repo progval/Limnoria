@@ -85,7 +85,7 @@ msgid "(XX more messages)"
 msgstr "(XX viestiä jatkoa)"
 
 #: src/callbacks.py:909
-msgid "1 more message"
+msgid "more message"
 msgstr "viesti jatkoa"
 
 #: src/callbacks.py:911
