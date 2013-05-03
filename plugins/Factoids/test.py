@@ -208,4 +208,10 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertNotError('learn foo as "\\"bar\\""')
         self.assertRegexp('whatis foo', r'"bar"')
 
+    def testLock(self):
+        self.assertNotError('learn foo as bar')
+        self.assertNotError('lock foo')
+        self.assertNotError('unlock foo')
+
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

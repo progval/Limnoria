@@ -583,10 +583,10 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         """
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("UPDATE factoids, keys, relations "
-                "SET factoids.locked=1 WHERE key LIKE ? AND "
-                "factoids.id=relations.fact_id AND "
-                "keys.id=relations.key_id", (key,))
+        cursor.execute("UPDATE factoids "
+                "SET locked=1 WHERE factoids.id IN "
+                "(SELECT fact_id FROM relations WHERE key_id IN "
+                "(SELECT id FROM keys WHERE key LIKE ?));", (key,))
         db.commit()
         irc.replySuccess()
     lock = wrap(lock, ['channel', 'text'])
@@ -601,10 +601,10 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         """
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""UPDATE factoids, keys, relations
-                SET factoids.locked=1 WHERE key LIKE ? AND
-                factoids.id=relations.fact_id AND
-                keys.id=relations.key_id""", (key,))
+        cursor.execute("UPDATE factoids "
+                "SET locked=0 WHERE factoids.id IN "
+                "(SELECT fact_id FROM relations WHERE key_id IN "
+                "(SELECT id FROM keys WHERE key LIKE ?));", (key,))
         db.commit()
         irc.replySuccess()
     unlock = wrap(unlock, ['channel', 'text'])
