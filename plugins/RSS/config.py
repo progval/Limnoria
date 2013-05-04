@@ -62,6 +62,9 @@ conf.registerGlobalValue(RSS, 'waitPeriod',
     registry.PositiveInteger(1800, """Indicates how many seconds the bot will
     wait between retrieving RSS feeds; requests made within this period will
     return cached results."""))
+conf.registerGlobalValue(RSS, 'stripRedirect', registry.Boolean(
+    True, """Determines whether the bot will attempt to strip url redirection
+    from headline links, by taking things after the last http://."""))
 
 conf.registerGlobalValue(RSS, 'feeds',
     FeedNames([], """Determines what feeds should be accessible as
