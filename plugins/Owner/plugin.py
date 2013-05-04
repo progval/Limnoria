@@ -456,7 +456,7 @@ class Owner(callbacks.Plugin):
                 x = module.reload()
             try:
                 module = plugin.loadPluginModule(name)
-                if hasattr(module, 'reload'):
+                if hasattr(module, 'reload') and 'x' in locals():
                     module.reload(x)
                 for callback in callbacks:
                     callback.die()
