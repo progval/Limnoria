@@ -62,6 +62,7 @@ conf.registerGlobalValue(RSS, 'waitPeriod',
     registry.PositiveInteger(1800, """Indicates how many seconds the bot will
     wait between retrieving RSS feeds; requests made within this period will
     return cached results."""))
+
 conf.registerGlobalValue(RSS, 'feeds',
     FeedNames([], """Determines what feeds should be accessible as
     commands."""))
@@ -91,7 +92,9 @@ conf.registerChannelValue(RSS.announce, 'showLinks',
     registry.Boolean(False, """Determines whether the bot will list the link
     along with the title of the feed when a feed is automatically
     announced."""))
-
+conf.registerGlobalValue(RSS.announce, 'cachePeriod',
+    registry.PositiveInteger(86400, """Maximum age of cached RSS headlines,
+    in seconds. Headline cache is used to avoid re-announcing old news."""))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
