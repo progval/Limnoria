@@ -75,6 +75,9 @@ conf.registerGlobalValue(RSS, 'sortFeedItems',
     FeedItemSortOrder('asInFeed', _("""Determines whether feed items should be
     sorted by their update timestamp or kept in the same order as they appear
     in a feed.""")))
+conf.registerGlobalValue(RSS, 'stripRedirect', registry.Boolean(
+    True, """Determines whether the bot will attempt to strip url redirection
+    from headline links, by taking things after the last http://."""))
 
 conf.registerGlobalValue(RSS, 'feeds',
     FeedNames([], _("""Determines what feeds should be accessible as

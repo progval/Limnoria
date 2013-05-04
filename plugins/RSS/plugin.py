@@ -32,6 +32,7 @@ import time
 import types
 import socket
 import threading
+import re
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -145,9 +146,13 @@ class RSS(callbacks.Plugin):
         if self.registryValue(config, channel):
             for headline in headlines:
                 if headline[1]:
+                    if self.registryValue('stripRedirect'):
+                        h = re.sub('^.*http://', 'http://', headline[1])
+                    else:
+                        h = headline[1]
                     newheadlines.append(format('%s %u',
                                                headline[0],
-                                               headline[1].encode('utf-8')))
+                                               h.encode('utf-8')))
                 else:
                     newheadlines.append(format('%s', headline[0]))
         else:
