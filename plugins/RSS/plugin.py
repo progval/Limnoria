@@ -141,25 +141,25 @@ class RSS(callbacks.Plugin):
                     self.releaseLock(url)
                     time.sleep(0.1) # So other threads can run.
 
-    def buildHeadlines(self, headlines, channel, config='announce.showLinks'):
+    def buildHeadlines(self, headlines, channel, linksconfig='announce.showLinks', dateconfig='announce.showPubDate'):
         newheadlines = []
-        if self.registryValue(config, channel):
-            for headline in headlines:
+        for headline in headlines:
+            link = ''
+            pubDate = ''
+            if self.registryValue(linksconfig, channel):
                 if headline[1]:
                     if self.registryValue('stripRedirect'):
-                        h = re.sub('^.*http://', 'http://', headline[1])
+                        link = ' <%s>' % (re.sub('^.*http://', 'http://', headline[1]),)
                     else:
-                        h = headline[1]
-                    newheadlines.append(format('%s %u',
-                                               headline[0],
-                                               h.encode('utf-8')))
-                else:
-                    newheadlines.append(format('%s', headline[0]))
-        else:
-            for headline in headlines:
-                newheadlines = [format('%s', h[0]) for h in headlines]
-        return map(lambda x:x.replace('\n', '  ').replace('\r', ''),
-                newheadlines)
+                        link = ' <%s>' % (headline[1],)
+            if self.registryValue(dateconfig, channel):
+                if headline[2]:
+                    pubDate = ' [%s]' % (headline[2],)
+            newheadlines.append(format('%s%s%s',
+                                       headline[0],
+                                       link.encode('utf-8'),
+                                       pubDate))
+        return newheadlines
 
     def _newHeadlines(self, irc, channels, name, url):
         try:
@@ -175,7 +175,7 @@ class RSS(callbacks.Plugin):
                 #oldresults = self.cachedFeeds[url]
                 #oldheadlines = self.getHeadlines(oldresults)
                 oldheadlines = self.cachedHeadlines[url]
-                oldheadlines = filter(lambda x: t - x[2] < self.registryValue('announce.cachePeriod'), oldheadlines)
+                oldheadlines = filter(lambda x: t - x[3] < self.registryValue('announce.cachePeriod'), oldheadlines)
             except KeyError:
                 oldheadlines = []
             newresults = self.getFeed(url)
@@ -340,8 +340,9 @@ class RSS(callbacks.Plugin):
         for d in self._sortFeedItems(feed['items']):
             if 'title' in d:
                 title = conv(d['title'])
-                link = d.get('link') # defaults to None
-                headlines.append((title, link, t))
+                link = d.get('link')
+                pubDate = d.get('pubDate', d.get('updated'))
+                headlines.append((title, link, pubDate, t))
         return headlines
 
     @internationalizeDocstring
@@ -460,7 +461,7 @@ class RSS(callbacks.Plugin):
         if not headlines:
             irc.error(_('Couldn\'t get RSS feed.'))
             return
-        headlines = self.buildHeadlines(headlines, channel, 'showLinks')
+        headlines = self.buildHeadlines(headlines, channel, 'showLinks', 'showPubDate')
         if n:
             headlines = headlines[:n]
         else:

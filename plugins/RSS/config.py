@@ -87,6 +87,12 @@ conf.registerChannelValue(RSS, 'showLinks',
     along with the title of the feed when the rss command is called.
     supybot.plugins.RSS.announce.showLinks affects whether links will be
     listed when a feed is automatically announced.""")))
+conf.registerChannelValue(RSS, 'showPubDate',
+    registry.Boolean(False, """Determines whether the bot will list the 
+    publication datetime stamp along with the title of the feed when the rss
+    command is called.
+    supybot.plugins.RSS.announce.showPubDate affects whether this will be
+    listed when a feed is automatically announced."""))
 conf.registerGlobalValue(RSS, 'defaultNumberOfHeadlines',
     registry.PositiveInteger(1, _("""Indicates how many headlines an rss feed
     will output by default, if no number is provided.""")))
@@ -108,8 +114,12 @@ conf.registerChannelValue(RSS.announce, 'showLinks',
     along with the title of the feed when a feed is automatically
     announced.""")))
 
+conf.registerChannelValue(RSS.announce, 'showPubDate',
+    registry.Boolean(False, """Determines whether the bot will list the 
+    publication datetime stamp along with the title of the feed when a feed
+    is automatically announced."""))
 conf.registerGlobalValue(RSS.announce, 'cachePeriod',
-    registry.PositiveInteger(86400, """Maximum age of cached RSS headlines,
+    registry.PositiveInteger(604800, """Maximum age of cached RSS headlines,
     in seconds. Headline cache is used to avoid re-announcing old news."""))
 
 
