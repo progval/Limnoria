@@ -42,7 +42,10 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Math')
 
-convertcore = utils.python.universalImport('local.convertcore')
+try:
+    from local import convertcore
+except ImportError:
+    from .local import convertcore
 
 baseArg = ('int', 'base', lambda i: i <= 36)
 
