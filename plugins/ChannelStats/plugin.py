@@ -362,7 +362,9 @@ class ChannelStats(callbacks.Plugin):
             irc.error(format('You must be in %s to use this command.', channel))
             return
         try:
-            stats = self.db.getChannelStats(channel)
+            channeldb = conf.supybot.databases.plugins.channelSpecific. \
+                    getChannelLink(channel)
+            stats = self.db.getChannelStats(channeldb)
             curUsers = len(irc.state.channels[channel].users)
             s = format(_('On %s there %h been %i messages, containing %i '
                        'characters, %n, %n, and %n; '
@@ -387,7 +389,7 @@ class ChannelStats(callbacks.Plugin):
             irc.reply(s)
         except KeyError:
             irc.error(format(_('I\'ve never been on %s.'), channel))
-    channelstats = wrap(channelstats, ['channeldb'])
+    channelstats = wrap(channelstats, ['channel'])
 
 
 Class = ChannelStats
