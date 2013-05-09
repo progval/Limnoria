@@ -75,7 +75,12 @@ class Misc(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Misc, self)
         self.__parent.__init__(irc)
-        self.invalidCommands = ircutils.FloodQueue(60)
+        self.invalidCommands = \
+                ircutils.FloodQueue(conf.supybot.abuse.flood.interval())
+        conf.supybot.abuse.flood.interval.addCallback(self.setFloodQueueTimeout)
+
+    def setFloodQueueTimeout(self, *args, **kwargs):
+        self.invalidCommands.timeout = conf.supybot.abuse.flood.interval()
 
     def callPrecedence(self, irc):
         return ([cb for cb in irc.callbacks if cb is not self], [])
@@ -103,8 +108,9 @@ class Misc(callbacks.Plugin):
             ircdb.ignores.add(banmask, time.time() + punishment)
             if conf.supybot.abuse.flood.command.invalid.notify():
                 irc.reply(_('You\'ve given me %s invalid commands within the last '
-                          'minute; I\'m now ignoring you for %s.') %
+                          '%i seconds; I\'m now ignoring you for %s.') %
                           (maximum,
+                           conf.supybot.abuse.flood.interval(),
                            utils.timeElapsed(punishment, seconds=False)))
             return
         # Now, for normal handling.

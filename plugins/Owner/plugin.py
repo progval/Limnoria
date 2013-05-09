@@ -112,7 +112,8 @@ class Owner(callbacks.Plugin):
         self.__parent = super(Owner, self)
         self.__parent.__init__(irc)
         # Setup command flood detection.
-        self.commands = ircutils.FloodQueue(60)
+        self.commands = ircutils.FloodQueue(conf.supybot.abuse.flood.interval())
+        conf.supybot.abuse.flood.interval.addCallback(self.setFloodQueueTimeout)
         # Setup plugins and default plugins for commands.
         #
         # This needs to be done before we connect to any networks so that the
@@ -235,6 +236,8 @@ class Owner(callbacks.Plugin):
         irc.queueMsg(conf.supybot.networks.get(irc.network).channels.joins())
     do422 = do377 = do376
 
+    def setFloodQueueTimeout(self, *args, **kwargs):
+        self.commands.timeout = conf.supybot.abuse.flood.interval()
     def doPrivmsg(self, irc, msg):
         assert self is irc.callbacks[0], \
                'Owner isn\'t first callback: %r' % irc.callbacks
@@ -257,8 +260,9 @@ class Owner(callbacks.Plugin):
                               'command flood.', banmask, punishment)
                 ircdb.ignores.add(banmask, time.time() + punishment)
                 irc.reply('You\'ve given me %s commands within the last '
-                          'minute; I\'m now ignoring you for %s.' %
+                          '%i seconds; I\'m now ignoring you for %s.' %
                           (maximum,
+                           conf.supybot.abuse.flood.interval(),
                            utils.timeElapsed(punishment, seconds=False)))
                 return
             try:

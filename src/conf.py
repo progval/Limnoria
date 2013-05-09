@@ -690,6 +690,9 @@ registerGlobalValue(supybot.commands.defaultPlugins, 'importantPlugins',
 ###
 registerGroup(supybot, 'abuse')
 registerGroup(supybot.abuse, 'flood')
+registerGlobalValue(supybot.abuse.flood, 'interval',
+    registry.PositiveInteger(60, _("""Determines the interval used for
+    the history storage.""")))
 registerGlobalValue(supybot.abuse.flood, 'command',
     registry.Boolean(True, _("""Determines whether the bot will defend itself
     against command-flooding.""")))

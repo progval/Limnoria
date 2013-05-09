@@ -47,7 +47,11 @@ class Ctcp(callbacks.PluginRegexp):
         self.__parent = super(Ctcp, self)
         self.__parent.__init__(irc)
         self.ignores = ircutils.IrcDict()
-        self.floods = ircutils.FloodQueue(60)
+        self.floods = ircutils.FloodQueue(conf.supybot.abuse.flood.interval())
+        conf.supybot.abuse.flood.interval.addCallback(self.setFloodQueueTimeout)
+
+    def setFloodQueueTimeout(self, *args, **kwargs):
+        self.floods.timeout = conf.supybot.abuse.flood.interval()
 
     def callCommand(self, command, irc, msg, *args, **kwargs):
         if conf.supybot.abuse.flood.ctcp():
