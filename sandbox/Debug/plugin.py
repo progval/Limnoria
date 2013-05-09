@@ -40,7 +40,16 @@ import gc
 import os
 import pwd
 import sys
-import exceptions
+try:
+    import exceptions
+except ImportError: # Python 3
+    import builtins
+    class exceptions:
+        """Pseudo-module"""
+        pass
+    for (key, value) in exceptions.__dict__.items():
+        if isinstance(value, type) and issubclass(value, Exception):
+            exceptions[key] = value
 
 import supybot.conf as conf
 import supybot.utils as utils
