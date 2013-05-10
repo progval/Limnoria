@@ -60,7 +60,8 @@ def loadPluginModule(name, ignoreDeprecation=False):
         module = imp.load_module(name, *moduleInfo)
     except:
         sys.modules.pop(name, None)
-        for key in sys.modules:
+        keys = sys.modules.keys()
+        for key in keys:
             if key.startswith(name + '.'):
                 sys.modules.pop(key)
         raise
