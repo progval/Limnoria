@@ -61,7 +61,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
     except:
         sys.modules.pop(name, None)
         for key in sys.modules:
-            if key.startwith(name + '.'):
+            if key.startswith(name + '.'):
                 sys.modules.pop(key)
         raise
     if 'deprecated' in module.__dict__ and module.deprecated:
