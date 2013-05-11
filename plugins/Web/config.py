@@ -57,6 +57,12 @@ conf.registerChannelValue(Web, 'nonSnarfingRegexp',
     will not be snarfed.  Give the empty string if you have no URLs that you'd
     like to exclude from being snarfed.""")))
 
+conf.registerGlobalValue(Web, 'urlWhitelist',
+    registry.SpaceSeparatedListOfStrings([], """If set, bot will only fetch data
+    from urls in the whitelist, i.e. starting with http://domain/optionalpath/. This will
+    apply to all commands that retrieve data from user-supplied URLs,
+    including fetch, headers, title, doctype."""))
+
 conf.registerGroup(Web, 'fetch')
 conf.registerGlobalValue(Web.fetch, 'maximum',
     registry.NonNegativeInteger(0, _("""Determines the maximum number of

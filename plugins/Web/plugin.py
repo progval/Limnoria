@@ -119,6 +119,19 @@ class Web(callbacks.PluginRegexp):
     titleSnarfer = urlSnarfer(titleSnarfer)
     titleSnarfer.__doc__ = utils.web._httpUrlRe
 
+    def _checkURLWhitelist(self, url):
+        if not self.registryValue('urlWhitelist'):
+            return True
+        passed = False
+        for wu in self.registryValue('urlWhitelist'):
+            if wu.endswith('/') and url.find(wu) == 0:
+                passed = True
+                break
+            if (not wu.endswith('/')) and (url.find(wu + '/') == 0 or url == wu):
+                passed = True
+                break
+        return passed
+
     @internationalizeDocstring
     def headers(self, irc, msg, args, url):
         """<url>
@@ -126,6 +139,9 @@ class Web(callbacks.PluginRegexp):
         Returns the HTTP headers of <url>.  Only HTTP urls are valid, of
         course.
         """
+        if not self._checkURLWhitelist(url):
+            irc.error("This url is not on the whitelist.")
+            return
         fd = utils.web.getUrlFd(url)
         try:
             s = ', '.join([format(_('%s: %s'), k, v)
@@ -143,6 +159,9 @@ class Web(callbacks.PluginRegexp):
         Returns the DOCTYPE string of <url>.  Only HTTP urls are valid, of
         course.
         """
+        if not self._checkURLWhitelist(url):
+            irc.error("This url is not on the whitelist.")
+            return
         size = conf.supybot.protocols.http.peekSize()
         s = utils.web.getUrl(url, size=size) \
                         .decode('utf8')
@@ -161,6 +180,9 @@ class Web(callbacks.PluginRegexp):
         Returns the Content-Length header of <url>.  Only HTTP urls are valid,
         of course.
         """
+        if not self._checkURLWhitelist(url):
+            irc.error("This url is not on the whitelist.")
+            return
         fd = utils.web.getUrlFd(url)
         try:
             try:
@@ -187,6 +209,9 @@ class Web(callbacks.PluginRegexp):
         If --no-filter is given, the bot won't strip special chars (action,
         DCC, ...).
         """
+        if not self._checkURLWhitelist(url):
+            irc.error("This url is not on the whitelist.")
+            return
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size)
         try:
@@ -239,6 +264,9 @@ class Web(callbacks.PluginRegexp):
         supybot.plugins.Web.fetch.maximum.  If that configuration variable is
         set to 0, this command will be effectively disabled.
         """
+        if not self._checkURLWhitelist(url):
+            irc.error("This url is not on the whitelist.")
+            return
         max = self.registryValue('fetch.maximum')
         if not max:
             irc.error(_('This command is disabled '
