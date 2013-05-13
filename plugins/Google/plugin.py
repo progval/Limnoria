@@ -140,12 +140,15 @@ class Google(callbacks.PluginRegexp):
                 results.append(format('%s: %u', title, url))
             else:
                 results.append(url)
+        if sys.version_info[0] < 3:
+            repl = lambda x:x if isinstance(x, unicode) else unicode(x, 'utf8')
+            results = map(repl, results)
         if not results:
-            return [format(_('No matches found.'))]
+            return [_('No matches found.')]
         elif onetoone:
             return results
         else:
-            return [format('; '.join(results))]
+            return [u'; '.join(results)]
 
     @internationalizeDocstring
     def lucky(self, irc, msg, args, opts, text):
