@@ -47,14 +47,7 @@ internationalizeFunction = _.internationalizeFunction
 
 def rsplit(s, sep=None, maxsplit=-1):
     """Equivalent to str.split, except splitting from the right."""
-    if sys.version_info < (2, 4, 0):
-        if sep is not None:
-            sep = sep[::-1]
-        L = s[::-1].split(sep, maxsplit)
-        L.reverse()
-        return [s[::-1] for s in L]
-    else:
-        return s.rsplit(sep, maxsplit)
+    return s.rsplit(sep, maxsplit)
 
 def normalizeWhitespace(s, removeNewline=True):
     """Normalizes the whitespace in a string; \s+ becomes one space."""

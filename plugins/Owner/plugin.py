@@ -35,10 +35,7 @@ import time
 import socket
 import linecache
 
-if sys.version_info >= (2, 5, 0):
-    import re as sre
-else:
-    import sre
+import re
 
 import supybot.log as log
 import supybot.conf as conf
@@ -385,8 +382,8 @@ class Owner(callbacks.Plugin):
         L = []
         if level == 'high':
             L.append(format('Regexp cache flushed: %n cleared.',
-                            (len(sre._cache), 'regexp')))
-            sre.purge()
+                            (len(re._cache), 'regexp')))
+            re.purge()
             L.append(format('Pattern cache flushed: %n cleared.',
                             (len(ircutils._patternCache), 'compiled pattern')))
             ircutils._patternCache.clear()

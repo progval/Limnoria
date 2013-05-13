@@ -105,14 +105,9 @@ class Synchronized(type):
 
 # Translate glob to regular expression, trimming the "match EOL" portion of
 # the regular expression.
-if sys.version_info < (2, 6, 0):
-    # Pre-2.6 just uses the $ anchor
-    def glob2re(g):
-        return fnmatch.translate(g)[:-1]
-else:
-    # Post-2.6 uses \Z(?ms) per http://issues.python.org/6665
-    def glob2re(g):
-        return fnmatch.translate(g)[:-7]
+# Post-2.6 uses \Z(?ms) per http://issues.python.org/6665
+def glob2re(g):
+    return fnmatch.translate(g)[:-7]
 
 
 # From http://code.activestate.com/recipes/52215-get-more-information-from-tracebacks/

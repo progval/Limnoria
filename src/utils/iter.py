@@ -50,23 +50,6 @@ def trueCycle(iterable):
         if not yielded:
             raise StopIteration
 
-if sys.version_info < (2, 4, 0):
-    def groupby(key, iterable):
-        if key is None:
-            key = lambda x: x
-        it = iter(iterable)
-        value = it.next() # If there are no items, this takes an early exit
-        oldkey = key(value)
-        group = [value]
-        for value in it:
-            newkey = key(value)
-            if newkey != oldkey:
-                yield group
-                group = []
-                oldkey = newkey
-            group.append(value)
-        yield group
-
 def partition(p, iterable):
     """Partitions an iterable based on a predicate p.
     Returns a (yes,no) tuple"""

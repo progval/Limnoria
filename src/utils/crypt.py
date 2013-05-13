@@ -29,11 +29,7 @@
 
 import sys
 
-if sys.version_info < (2, 5, 0):
-    from md5 import md5
-    from sha import sha
-else:
-    from hashlib import md5
-    from hashlib import sha1 as sha
+from hashlib import md5
+from hashlib import sha1 as sha
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

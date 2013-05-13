@@ -39,10 +39,7 @@ import atexit
 import threading
 import multiprocessing # python 2.6 and later!
 
-if sys.version_info >= (2, 5, 0):
-    import re as sre
-else:
-    import sre
+import re
 
 import supybot.log as log
 import supybot.conf as conf
@@ -160,7 +157,7 @@ def upkeep():
         #    registry.open(registryFilename)
     if not dying:
         if sys.version_info[0] < 3:
-            log.debug('Regexp cache size: %s', len(sre._cache))
+            log.debug('Regexp cache size: %s', len(re._cache))
         log.debug('Pattern cache size: %s', len(ircutils._patternCache))
         log.debug('HostmaskPatternEqual cache size: %s',
                   len(ircutils._hostmaskPatternEqualCache))

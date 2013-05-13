@@ -56,44 +56,6 @@ def force(x):
         return x
 (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['force'] = force
 
-if sys.version_info < (2, 4, 0):
-    def reversed(L):
-        """Iterates through a sequence in reverse."""
-        for i in xrange(len(L) - 1, -1, -1):
-            yield L[i]
-    (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['reversed'] = reversed
-
-    def sorted(iterable, cmp=None, key=None, reversed=False):
-        L = list(iterable)
-        if key is not None:
-            assert cmp is None, 'Can\'t use both cmp and key.'
-            sortBy(key, L)
-        else:
-            L.sort(cmp)
-        if reversed:
-            L.reverse()
-        return L
-
-    (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['sorted'] = sorted
-
-    import operator
-    def itemgetter(i):
-        return lambda x: x[i]
-
-    def attrgetter(attr):
-        return lambda x: getattr(x, attr)
-    operator.itemgetter = itemgetter
-    operator.attrgetter = attrgetter
-
-    import sets
-    (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['set'] = sets.Set
-    (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['frozenset'] = sets.ImmutableSet
-
-    import socket
-    # Some socket modules don't have sslerror, so we'll just make it an error.
-    if not hasattr(socket, 'sslerror'):
-        socket.sslerror = socket.error
-
 # These imports need to happen below the block above, so things get put into
 # __builtins__ appropriately.
 from gen import *
