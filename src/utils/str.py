@@ -450,7 +450,11 @@ def format(s, *args, **kwargs):
     def sub(match):
         char = match.group(1)
         if char == 's':
-            return str(args.pop())
+            token = args.pop()
+            if isinstance(token, unicode) or isinstance(token, str):
+                return token
+            else:
+                return unicode(token)
         elif char == 'i':
             # XXX Improve me!
             return str(args.pop())

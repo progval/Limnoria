@@ -180,7 +180,7 @@ class HtmlToText(HTMLParser, object):
         self.data.append(data)
 
     def handle_entityref(self, data):
-        self.data.append(chr(htmlentitydefs.name2codepoint[data]))
+        self.data.append(unichr(htmlentitydefs.name2codepoint[data]))
 
     def getText(self):
         text = ''.join(self.data).strip()
