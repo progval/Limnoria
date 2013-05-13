@@ -99,7 +99,7 @@ class StringTestCase(PluginTestCase):
             self.assertResponse('ord %s' % utils.str.dqrepr(c), str(i))
 
     def testMd5(self):
-        self.assertResponse('md5 supybot', '630f4afcfb53c9e84c0a95064bd6add3')
+        self.assertResponse('md5 supybot', '1360578d1276e945cc235654a53f9c65')
 
 
     def testEncodeDecode(self):
