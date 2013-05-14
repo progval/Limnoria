@@ -411,6 +411,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def _replyApproximateFactoids(self, irc, msg, channel, key, error=True):
         if self.registryValue('replyApproximateSearchKeys'):
             factoids = self._searchFactoid(channel, key)
+            factoids.sort()
             if factoids:
                 keylist = ["'%s'" % (fact,) for fact in factoids]
                 keylist = ', '.join(keylist)
