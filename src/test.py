@@ -117,28 +117,28 @@ class SupyTestCase(unittest.TestCase):
         def assertIn(self, member, container, msg=None):
             """Just like self.assertTrue(a in b), but with a nicer default message."""
             if member not in container:
-                standardMsg = '%s not found in %s' % (safe_repr(member),
-                                                      safe_repr(container))
+                standardMsg = '%s not found in %s' % (repr(member),
+                                                      repr(container))
                 self.fail(self._formatMessage(msg, standardMsg))
 
         def assertNotIn(self, member, container, msg=None):
             """Just like self.assertTrue(a not in b), but with a nicer default message."""
             if member in container:
-                standardMsg = '%s unexpectedly found in %s' % (safe_repr(member),
-                                                            safe_repr(container))
+                standardMsg = '%s unexpectedly found in %s' % (repr(member),
+                                                            repr(container))
                 self.fail(self._formatMessage(msg, standardMsg))
 
         def assertIs(self, expr1, expr2, msg=None):
             """Just like self.assertTrue(a is b), but with a nicer default message."""
             if expr1 is not expr2:
-                standardMsg = '%s is not %s' % (safe_repr(expr1),
-                                                 safe_repr(expr2))
+                standardMsg = '%s is not %s' % (repr(expr1),
+                                                 repr(expr2))
                 self.fail(self._formatMessage(msg, standardMsg))
 
         def assertIsNot(self, expr1, expr2, msg=None):
             """Just like self.assertTrue(a is not b), but with a nicer default message."""
             if expr1 is expr2:
-                standardMsg = 'unexpectedly identical: %s' % (safe_repr(expr1),)
+                standardMsg = 'unexpectedly identical: %s' % (repr(expr1),)
                 self.fail(self._formatMessage(msg, standardMsg))
 
 
