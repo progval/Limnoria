@@ -270,6 +270,9 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         return (keyresults, factresults,)
     
     def learn(self, irc, msg, args, channel, key, factoid):
+        if self.registryValue('requireVoice', channel) and \
+                not irc.state.channels[channel].isVoicePlus(msg.nick):
+            irc.error(_('You have to be at least voiced to teach factoids.'))
         
         # if neither key nor factoid exist, add them.
         # if key exists but factoid doesn't, add factoid, link it to existing key

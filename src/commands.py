@@ -330,9 +330,7 @@ def getHaveVoicePlus(irc, msg, args, state, action=_('do that')):
         getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
-    if not irc.state.channels[state.channel].isOp(irc.nick) and \
-            not irc.state.channels[state.channel].isHalfop(irc.nick) and \
-            not irc.state.channels[state.channel].isVoice(irc.nick):
+    if not irc.state.channels[state.channel].isVoicePlus(irc.nick):
         # isOp includes owners and protected users
         state.error(_('I need to be at least voiced to %s.') % action,
                 Raise=True)
@@ -350,8 +348,7 @@ def getHaveHalfopPlus(irc, msg, args, state, action=_('do that')):
         getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
-    if not irc.state.channels[state.channel].isOp(irc.nick) and \
-            not irc.state.channels[state.channel].isHalfop(irc.nick):
+    if not irc.state.channels[state.channel].isHalfopPlus(irc.nick):
         # isOp includes owners and protected users
         state.error(_('I need to be at least halfopped to %s.') % action,
                 Raise=True)

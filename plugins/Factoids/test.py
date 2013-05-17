@@ -29,6 +29,7 @@
 ###
 
 from supybot.test import *
+import supybot.conf as conf
 
 try:
     import sqlite3
@@ -75,6 +76,12 @@ class FactoidsTestCase(ChannelPluginTestCase):
 
         self.assertError('learn foo bar baz') # No 'as'
         self.assertError('learn foo bar') # No 'as'
+
+        with conf.supybot.plugins.Factoids.requireVoice.context(True):
+            self.assertError('learn jemfinch as my primary author')
+            self.irc.feedMsg(ircmsgs.mode(self.channel,
+                args=('+h', self.nick)))
+            self.assertNotError('learn jemfinch as my primary author')
 
     def testChangeFactoid(self):
         self.assertNotError('learn foo as bar')

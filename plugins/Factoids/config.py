@@ -54,6 +54,10 @@ conf.registerGlobalValue(Factoids.web, 'enable',
 conf.registerChannelValue(Factoids.web, 'channel',
     registry.Boolean(False, _("""Determines whether factoids can be displayed
     via the web server.""")))
+
+conf.registerChannelValue(Factoids, 'requireVoice',
+    registry.Boolean(False, _("""Only allows a user with voice or above on a
+    channel to use the command.""")))
 conf.registerChannelValue(Factoids, 'learnSeparator',
     registry.String('as', _("""Determines what separator must be used in the
     learn command.  Defaults to 'as' -- learn <key> as <value>.  Users might

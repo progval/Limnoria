@@ -245,10 +245,16 @@ class ChannelState(utils.python.Object):
 
     def isOp(self, nick):
         return nick in self.ops
+    def isOpPlus(self, nick):
+        return nick in self.ops
     def isVoice(self, nick):
         return nick in self.voices
+    def isVoicePlus(self, nick):
+        return nick in self.voices or nick in self.halfops or nick in self.ops
     def isHalfop(self, nick):
         return nick in self.halfops
+    def isHalfopPlus(self, nick):
+        return nick in self.halfops or nick in self.ops
 
     def addUser(self, user):
         "Adds a given user to the ChannelState.  Power prefixes are handled."
