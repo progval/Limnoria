@@ -325,6 +325,18 @@ def getHaveVoice(irc, msg, args, state, action=_('do that')):
     if not irc.state.channels[state.channel].isVoice(irc.nick):
         state.error(_('I need to be voiced to %s.') % action, Raise=True)
 
+def getHaveVoicePlus(irc, msg, args, state, action=_('do that')):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
+    if not irc.state.channels[state.channel].isOp(irc.nick) and \
+            not irc.state.channels[state.channel].isHalfop(irc.nick) and \
+            not irc.state.channels[state.channel].isVoice(irc.nick):
+        # isOp includes owners and protected users
+        state.error(_('I need to be at least voiced to %s.') % action,
+                Raise=True)
+
 def getHaveHalfop(irc, msg, args, state, action=_('do that')):
     if not state.channel:
         getChannel(irc, msg, args, state)
@@ -333,15 +345,7 @@ def getHaveHalfop(irc, msg, args, state, action=_('do that')):
     if not irc.state.channels[state.channel].isHalfop(irc.nick):
         state.error(_('I need to be halfopped to %s.') % action, Raise=True)
 
-def getHaveOp(irc, msg, args, state, action=_('do that')):
-    if not state.channel:
-        getChannel(irc, msg, args, state)
-    if state.channel not in irc.state.channels:
-        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
-    if not irc.state.channels[state.channel].isOp(irc.nick):
-        state.error(_('I need to be opped to %s.') % action, Raise=True)
-
-def getIsGranted(irc, msg, args, state, action=_('do that')):
+def getHaveHalfopPlus(irc, msg, args, state, action=_('do that')):
     if not state.channel:
         getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
@@ -351,6 +355,14 @@ def getIsGranted(irc, msg, args, state, action=_('do that')):
         # isOp includes owners and protected users
         state.error(_('I need to be at least halfopped to %s.') % action,
                 Raise=True)
+
+def getHaveOp(irc, msg, args, state, action=_('do that')):
+    if not state.channel:
+        getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
+    if not irc.state.channels[state.channel].isOp(irc.nick):
+        state.error(_('I need to be opped to %s.') % action, Raise=True)
 
 def validChannel(irc, msg, args, state):
     if irc.isChannel(args[0]):
@@ -700,8 +712,7 @@ wrappers = ircutils.IrcDict({
     'banmask': getBanmask,
     'boolean': getBoolean,
     'callerInGivenChannel': callerInGivenChannel,
-    'isGranted': getIsGranted, # I know this name sucks, but I can't find
-                               # something better
+    'isGranted': getHaveHalfopPlus, # Backward compatibility
     'capability': getSomethingNoSpaces,
     'channel': getChannel,
     'channelOrGlobal': getChannelOrGlobal,
@@ -718,8 +729,11 @@ wrappers = ircutils.IrcDict({
     'glob': getGlob,
     'halfop': getHalfop,
     'haveHalfop': getHaveHalfop,
+    'haveHalfop+': getHaveHalfopPlus,
     'haveOp': getHaveOp,
+    'haveOp+': getHaveOp, # We don't handle modes greater than op.
     'haveVoice': getHaveVoice,
+    'haveVoice+': getHaveVoicePlus,
     'hostmask': getHostmask,
     'httpUrl': getHttpUrl,
     'id': getId,

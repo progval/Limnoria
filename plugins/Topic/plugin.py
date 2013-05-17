@@ -481,7 +481,7 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         irc.queueMsg(ircmsgs.mode(channel, '+t'))
         irc.noReply()
-    lock = wrap(lock, ['channel', ('isGranted', _('lock the topic'))])
+    lock = wrap(lock, ['channel', ('haveHalfop+', _('lock the topic'))])
 
     @internationalizeDocstring
     def unlock(self, irc, msg, args, channel):
@@ -495,7 +495,7 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         irc.queueMsg(ircmsgs.mode(channel, '-t'))
         irc.noReply()
-    unlock = wrap(unlock, ['channel', ('isGranted', _('unlock the topic'))])
+    unlock = wrap(unlock, ['channel', ('haveHalfop+', _('unlock the topic'))])
 
     @internationalizeDocstring
     def restore(self, irc, msg, args, channel):
