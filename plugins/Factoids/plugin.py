@@ -649,6 +649,9 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
+        if self.registryValue('requireVoice', channel) and \
+                not irc.state.channels[channel].isVoicePlus(msg.nick):
+            irc.error(_('You have to be at least voiced to remove factoids.'))
         number = None
         if len(words) > 1:
             if words[-1].isdigit():
