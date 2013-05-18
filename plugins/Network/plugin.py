@@ -29,6 +29,7 @@
 ###
 
 import time
+import functools
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -149,11 +150,12 @@ class Network(callbacks.Plugin):
         if (irc, nick) not in self._whois:
             return
         else:
-            self._whois[(irc, nick)][-1][msg.command] = msg
+            self._whois[(irc, nick)][2][msg.command] = msg
 
     # These are all sent by a WHOIS response.
     do301 = do311
     do312 = do311
+    do314 = do311
     do317 = do311
     do319 = do311
     do320 = do311
@@ -163,9 +165,10 @@ class Network(callbacks.Plugin):
         loweredNick = ircutils.toLower(nick)
         if (irc, loweredNick) not in self._whois:
             return
-        (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
-        hostmask = '@'.join(d['311'].args[2:4])
-        user = d['311'].args[-1]
+        (replyIrc, replyMsg, d, command) = self._whois[(irc, loweredNick)]
+        START_CODE = '311' if command == 'whois' else '314'
+        hostmask = '@'.join(d[START_CODE].args[2:4])
+        user = d[START_CODE].args[-1]
         if '319' in d:
             channels = d['319'].args[-1].split()
             ops = []
@@ -218,7 +221,10 @@ class Network(callbacks.Plugin):
                 else:
                     L.append(format(_('is on %L'), normal))
         else:
-            L = [_('isn\'t on any non-secret channels')]
+            if command == 'whois':
+                L = [_('isn\'t on any non-secret channels')]
+            else:
+                L = []
         channels = format('%L', L)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
@@ -229,6 +235,8 @@ class Network(callbacks.Plugin):
             signon = _('<unknown>')
         if '312' in d:
             server = d['312'].args[2]
+            if len(d['312']) > 3:
+                signoff = d['312'].args[3]
         else:
             server = _('<unknown>')
         if '301' in d:
@@ -242,22 +250,33 @@ class Network(callbacks.Plugin):
                 identify = ''
         else:
             identify = ''
-        s = _('%s (%s) has been%s on server %s since %s (idle for %s) and '
-            '%s.%s') % (user, hostmask, identify, server, signon, idle,
-                       channels, away)
+        if command == 'whois':
+            s = _('%s (%s) has been%s on server %s since %s (idle for %s) and '
+                '%s.%s').decode('utf8') % (user, hostmask, identify, server,
+                        signon, idle, channels, away)
+        else:
+            s = _('%s (%s) has been%s on server %s and disconnect on %s.') \
+                    .decode('utf8') % \
+                    (user, hostmask, identify, server, signoff)
         replyIrc.reply(s)
         del self._whois[(irc, loweredNick)]
+    do369 = do318
 
     def do402(self, irc, msg):
         nick = msg.args[1]
         loweredNick = ircutils.toLower(nick)
         if (irc, loweredNick) not in self._whois:
             return
-        (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
+        (replyIrc, replyMsg, d, command) = self._whois[(irc, loweredNick)]
         del self._whois[(irc, loweredNick)]
-        s = _('There is no %s on %s.') % (nick, irc.network)
+        if command == 'whois':
+            template = _('There is no %s on %s.')
+        else:
+            template = _('There was no %s on %s.')
+        s = template  % (nick, irc.network)
         replyIrc.reply(s)
     do401 = do402
+    do406 = do402
 
     @internationalizeDocstring
     def whois(self, irc, msg, args, otherIrc, nick):
@@ -272,8 +291,24 @@ class Network(callbacks.Plugin):
         # giving the command.  Yeah, it made me say wtf too.
         nick = ircutils.toLower(nick)
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
-        self._whois[(otherIrc, nick)] = (irc, msg, {})
+        self._whois[(otherIrc, nick)] = (irc, msg, {}, 'whois')
     whois = wrap(whois, ['networkIrc', 'nick'])
+
+    @internationalizeDocstring
+    def whowas(self, irc, msg, args, otherIrc, nick):
+        """[<network>] <nick>
+
+        Returns the WHOIS response <network> gives for <nick>.  <network> is
+        only necessary if the network is different than the network the command
+        is sent on.
+        """
+        # The double nick here is necessary because single-nick WHOIS only works
+        # if the nick is on the same server (*not* the same network) as the user
+        # giving the command.  Yeah, it made me say wtf too.
+        nick = ircutils.toLower(nick)
+        otherIrc.queueMsg(ircmsgs.whowas(nick, nick))
+        self._whois[(otherIrc, nick)] = (irc, msg, {}, 'whowas')
+    whowas = wrap(whowas, ['networkIrc', 'nick'])
 
     @internationalizeDocstring
     def networks(self, irc, msg, args):

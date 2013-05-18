@@ -38,6 +38,7 @@ object (which, as you'll read later, is quite...full-featured :))
 import re
 import sys
 import time
+import functools
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -737,7 +738,7 @@ def who(hostmaskOrChannel, prefix='', msg=None):
     return IrcMsg(prefix=prefix, command='WHO',
                   args=(hostmaskOrChannel,), msg=msg)
 
-def whois(nick, mask='', prefix='', msg=None):
+def _whois(COMMAND, nick, mask='', prefix='', msg=None):
     """Returns a WHOIS for nick."""
     if conf.supybot.protocols.irc.strictRfc():
         assert areNicks(nick), repr(nick)
@@ -746,7 +747,9 @@ def whois(nick, mask='', prefix='', msg=None):
     args = (nick,)
     if mask:
         args = (nick, mask)
-    return IrcMsg(prefix=prefix, command='WHOIS', args=args, msg=msg)
+    return IrcMsg(prefix=prefix, command=COMMAND, args=args, msg=msg)
+whois = functools.partial(_whois, 'WHOIS')
+whowas = functools.partial(_whois, 'WHOWAS')
 
 def names(channel=None, prefix='', msg=None):
     if conf.supybot.protocols.irc.strictRfc():
