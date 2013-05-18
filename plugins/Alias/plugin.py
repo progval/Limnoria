@@ -29,6 +29,7 @@
 ###
 
 import re
+import sys
 import types
 
 import supybot.conf as conf
@@ -215,6 +216,8 @@ def makeNewAlias(name, alias):
     flexargs = ''
     if biggestDollar and (wildcard or biggestAt):
         flexargs = _(' at least')
+    if sys.version_info[0] == 2:
+        alias = alias.decode('utf8')
     doc =format(_('<an alias,%s %n>\n\nAlias for %q.'),
                 flexargs, (biggestDollar, _('argument')), alias)
     f = utils.python.changeFunctionName(f, name, doc)
