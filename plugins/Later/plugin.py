@@ -150,7 +150,7 @@ class Later(callbacks.Plugin):
     def tell(self, irc, msg, args, nick, text):
         """<nick> <text>
 
-        Tells <nick> <text> the next time <nick> is in seen.  <nick> can
+        Tells <nick> <text> the next time <nick> is seen.  <nick> can
         contain wildcard characters, and the first matching nick will be
         given the note.
         """
