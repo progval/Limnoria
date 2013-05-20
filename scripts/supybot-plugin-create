@@ -97,15 +97,12 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 try:
     from supybot.i18n import PluginInternationalization
-    from supybot.i18n import internationalizeDocstring
-    _ = PluginInter
+    _ = PluginInternationalization('%s')
 except:
-    # These are useless functions that's allow to run the plugin on a bot
-    # without the i18n plugin
+    # Placeholder that allows to run the plugin on a bot
+    # without the i18n module
     _ = lambda x:x
-    internationalizeDocstring = lambda x:xnationalization('%s')
 
-@internationalizeDocstring
 class %s(callbacks.Plugin):
     """Add the help for "@plugin help %s" here
     This should describe *how* to use this plugin."""
@@ -125,13 +122,11 @@ import supybot.conf as conf
 import supybot.registry as registry
 try:
     from supybot.i18n import PluginInternationalization
-    from supybot.i18n import internationalizeDocstring
     _ = PluginInternationalization('%s')
 except:
-    # These are useless functions that's allow to run the plugin on a bot
-    # without the i18n plugin
+    # Placeholder that allows to run the plugin on a bot
+    # without the i18n module
     _ = lambda x:x
-    internationalizeDocstring = lambda x:x
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is

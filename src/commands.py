@@ -1039,6 +1039,8 @@ class Spec(object):
         return state
 
 def _wrap(f, specList=[], name=None, **kw):
+    assert hasattr(f, '__doc__')
+    f = internationalizeDocstring(f)
     name = name or f.func_name
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
