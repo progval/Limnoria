@@ -1038,7 +1038,7 @@ class Spec(object):
             raise callbacks.ArgumentError
         return state
 
-def wrap(f, specList=[], name=None, **kw):
+def _wrap(f, specList=[], name=None, **kw):
     name = name or f.func_name
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
@@ -1059,6 +1059,19 @@ def wrap(f, specList=[], name=None, **kw):
                                'function ;)')
                 raise
     return utils.python.changeFunctionName(newf, name, f.__doc__)
+
+def wrap(f, *args, **kwargs):
+    if callable(f):
+        # Old-style call OR decorator syntax with no converter.
+        # f is the command.
+        return _wrap(f, *args, **kwargs)
+    else:
+        # Call with the Python decorator syntax
+        assert isinstance(f, list) or isinstance(f, tuple)
+        specList = f
+        def decorator(f):
+            return _wrap(f, specList, *args, **kwargs)
+        return decorator
 wrap.__doc__ = """Useful wrapper for plugin commands.
 
 Valid converters are: %s.
