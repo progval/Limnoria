@@ -180,6 +180,17 @@ def main():
     if os.name == 'posix':
         if (os.getcwd() == os.path.expanduser('~')) and not options.allowHome:
             error('Please, don\'t run this in your HOME directory.')
+    if os.path.isfile(os.path.join('scripts', 'supybot-wizard')) or \
+            os.path.isfile(os.path.join('..', 'scripts', 'supybot-wizard')):
+        print('')
+        print('+------------------------------------------------------------+')
+        print('| +--------------------------------------------------------+ |')
+        print('| | Warning: It looks like you are running the wizard from | |')
+        print('| | the Supybot source directory. This is not recommended. | |')
+        print('| | Please press Ctrl-C and change to another directory.   | |')
+        print('| +--------------------------------------------------------+ |')
+        print('+------------------------------------------------------------+')
+        print('')
 
     filename = ''
     if args:
