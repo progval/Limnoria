@@ -130,7 +130,7 @@ class IrcMsg(object):
             else:
                 self.prefix = prefix
                 self.command = command
-                assert all(ircutils.isValidArgument, args)
+                assert all(ircutils.isValidArgument, args), args
                 self.args = args
         self.args = tuple(self.args)
         if isUserHostmask(self.prefix):
