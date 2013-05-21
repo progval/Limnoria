@@ -122,7 +122,7 @@ class AdminTestCase(PluginTestCase):
             self.assertEqual(m.command, 'NICK')
             self.assertEqual(m.args[0], 'foobar')
         finally:
-            conf.supybot.nick.setValue(original)
+            conf.supybot.networks.test.nick.setValue('')
 
     def testAddCapabilityOwner(self):
         self.assertError('admin capability add %s owner' % self.nick)

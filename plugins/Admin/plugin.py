@@ -212,19 +212,21 @@ class Admin(callbacks.Plugin):
                 self.log.debug('Got NICK without Admin.nick being called.')
 
     @internationalizeDocstring
-    def nick(self, irc, msg, args, nick):
-        """[<nick>]
+    def nick(self, irc, msg, args, nick, network):
+        """[<nick>] [<network>]
 
         Changes the bot's nick to <nick>.  If no nick is given, returns the
         bot's current nick.
         """
+        network = network or irc.network
         if nick:
-            conf.supybot.nick.setValue(nick)
+            group = getattr(conf.supybot.networks, network)
+            group.nick.setValue(nick)
             irc.queueMsg(ircmsgs.nick(nick))
             self.pendingNickChanges[irc.getRealIrc()] = irc
         else:
             irc.reply(irc.nick)
-    nick = wrap(nick, [additional('nick')])
+    nick = wrap(nick, [additional('nick'), additional('something')])
 
     @internationalizeDocstring
     def part(self, irc, msg, args, channel, reason):
