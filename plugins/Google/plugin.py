@@ -290,13 +290,15 @@ class Google(callbacks.PluginRegexp):
     def _googleUrl(self, s):
         s = s.replace('+', '%2B')
         s = s.replace(' ', '+')
-        url = r'http://google.com/search?q=' + s
+        url = r'http://%s/search?q=%s' % \
+                (self.registryValue('baseUrl', channel), s)
         return url
 
     def _googleUrlIG(self, s):
         s = s.replace('+', '%2B')
         s = s.replace(' ', '+')
-        url = r'http://www.google.com/ig/calculator?hl=en&q=' + s
+        url = r'http://%s/ig/calculator?hl=en&q=%s' % \
+                (self.registryValue('baseUrl', channel), s)
         return url
 
     _calcRe1 = re.compile(r'<table.*class="?obcontainer"?[^>]*>(.*?)</table>', re.I)

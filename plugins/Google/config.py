@@ -101,6 +101,9 @@ conf.registerGlobalValue(Google, 'referer',
     the Referer field of the search requests.  If this value is empty, a
     Referer will be generated in the following format:
     http://$server/$botName""")))
+conf.registerChannelValue(Google, 'baseUrl',
+    registry.String('google.com', _("""Determines the base URL used for
+    requests.""")))
 conf.registerChannelValue(Google, 'searchSnarfer',
     registry.Boolean(False, _("""Determines whether the search snarfer is
     enabled.  If so, messages (even unaddressed ones) beginning with the word
