@@ -51,8 +51,11 @@ class Channel(callbacks.Plugin):
         channel = msg.args[0]
         if msg.args[1] == irc.nick:
             if self.registryValue('alwaysRejoin', channel):
+                self.log.info('Kicked from %s. Rejoining.' % channel)
                 networkGroup = conf.supybot.networks.get(irc.network)
                 irc.sendMsg(networkGroup.channels.join(channel))
+            else:
+                self.log.info('Kicked from %s. Not auto-rejoining.' % channel)
 
     def _sendMsg(self, irc, msg):
         irc.queueMsg(msg)
