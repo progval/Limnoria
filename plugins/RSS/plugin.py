@@ -152,7 +152,8 @@ class RSS(callbacks.Plugin):
         else:
             for headline in headlines:
                 newheadlines = [format('%s', h[0]) for h in headlines]
-        return newheadlines
+        return map(lambda x:x.replace('\n', '  ').replace('\r', ''),
+                newheadlines)
 
     def _newHeadlines(self, irc, channels, name, url):
         try:
