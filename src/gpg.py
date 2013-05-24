@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2004-2005, Jeremiah Fincher
+# Copyright (c) 2012, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,46 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import os
 
+import supybot.log as log
 import supybot.conf as conf
-import supybot.registry as registry
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
-_ = PluginInternationalization('User')
+import supybot.world as world
 
-def configure(advanced):
-    # This will be called by supybot to configure this module.  advanced is
-    # a bool that specifies whether the user identified himself as an advanced
-    # user or not.  You should effect your configuration by manipulating the
-    # registry as appropriate.
-    from supybot.questions import expect, anything, something, yn
-    conf.registerPlugin('User', True)
+try:
+    import gnupg
+except ImportError:
+    # As we do not want Supybot to depend on GnuPG, we will use it only if
+    # it is available. Otherwise, we just don't allow user auth through GPG.
+    log.debug('Cannot import gnupg, using fallback.')
+    gnupg = None
 
+available = (gnupg is not None)
 
-User = conf.registerPlugin('User')
-# This is where your configuration variables (if any) should go.  For example:
-# conf.registerGlobalValue(User, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+def fallback(default_return=None):
+    """Decorator.
+    Does nothing if gnupg is loaded. Otherwise, returns the supplied
+    default value."""
+    def decorator(f):
+        if available:
+            def newf(*args, **kwargs):
+                return f(*args, **kwargs)
+        else:
+            def newf(*args, **kwargs):
+                return default_return
+        return newf
+    return decorator
 
-conf.registerGroup(User, 'gpg')
+@fallback()
+def loadKeyring():
+    global keyring
+    path = os.path.abspath(conf.supybot.directories.data.dirize('GPGkeyring'))
+    if not os.path.isdir(path):
+        log.info('Creating directory %s' % path)
+        os.mkdir(path, 0700)
+    assert os.path.isdir(path)
+    keyring = gnupg.GPG(gnupghome=path)
+loadKeyring()
 
-conf.registerGlobalValue(User.gpg, 'enable',
-    registry.Boolean(True, """Determines whether or not users are
-    allowed to use GPG for authentication."""))
-conf.registerGlobalValue(User.gpg, 'TokenTimeout',
-    registry.PositiveInteger(60*10, """Determines the lifetime of a GPG
-    authentication token (in seconds)."""))
-
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+# Reload the keyring if path changed
+conf.supybot.directories.data.addCallback(loadKeyring)
