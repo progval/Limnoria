@@ -29,6 +29,7 @@
 ###
 
 import re
+import sys
 import time
 
 import supybot.log as log
@@ -206,6 +207,8 @@ class Seen(callbacks.Plugin):
                                  nick, channel,
                                  utils.timeElapsed(time.time()-when))
                 if self.registryValue('showLastMessage', channel):
+                    if sys.version_info[0] < 3:
+                        said = said.decode('utf8')
                     reply = _('%s: %s') % (reply, said)
                 irc.reply(reply)
             elif len(results) > 1:
