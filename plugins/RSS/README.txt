@@ -5,6 +5,9 @@ In order to use this plugin you must have the following modules
 installed:
 - feedparser: http://feedparser.org/
 
+If you are experiencing TypeError issues with Python 3, please apply this
+patch: http://code.google.com/p/feedparser/issues/detail?id=403
+
 Basic usage
 -----------
 
