@@ -262,7 +262,7 @@ class RSS(callbacks.Plugin):
                 try:
                     self.log.debug('Downloading new feed from %u', url)
                     results = feedparser.parse(url)
-                    if 'bozo_exception' in results:
+                    if 'bozo_exception' in results and not results['entries']:
                         raise results['bozo_exception']
                 except feedparser.sgmllib.SGMLParseError:
                     self.log.exception('Uncaught exception from feedparser:')

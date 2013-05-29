@@ -189,8 +189,15 @@ class HtmlToText(HTMLParser, object):
 def htmlToText(s, tagReplace=' '):
     """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
     """
-    if sys.version_info[0] >= 3 and isinstance(s, bytes):
-        s = s.decode()
+    try:
+        import chardet
+    except ImportError:
+        s = s.decode('utf8')
+    else:
+        u = chardet.universaldetector.UniversalDetector()
+        u.feed(s)
+        u.close()
+        s = s.decode(u.result['encoding'])
     x = HtmlToText(tagReplace)
     x.feed(s)
     return x.getText()
