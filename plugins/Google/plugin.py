@@ -294,7 +294,7 @@ class Google(callbacks.PluginRegexp):
                 (self.registryValue('baseUrl', channel), s)
         return url
 
-    def _googleUrlIG(self, s):
+    def _googleUrlIG(self, s, channel):
         s = s.replace('+', '%2B')
         s = s.replace(' ', '+')
         url = r'http://%s/ig/calculator?hl=en&q=%s' % \
@@ -312,7 +312,10 @@ class Google(callbacks.PluginRegexp):
 
         Uses Google's calculator to calculate the value of <expression>.
         """
-        urlig = self._googleUrlIG(expr)
+        channel = msg.args[0]
+        if not isChannel(channel):
+            channel = None
+        urlig = self._googleUrlIG(expr, channel)
         js = utils.web.getUrl(urlig).decode('utf8')
         # Convert JavaScript to JSON. Ouch.
         js = js \
