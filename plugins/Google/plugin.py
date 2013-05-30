@@ -287,7 +287,7 @@ class Google(callbacks.PluginRegexp):
             irc.reply(url, prefixNick=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
 
-    def _googleUrl(self, s):
+    def _googleUrl(self, s, channel):
         s = s.replace('+', '%2B')
         s = s.replace(' ', '+')
         url = r'http://%s/search?q=%s' % \
@@ -313,7 +313,7 @@ class Google(callbacks.PluginRegexp):
         Uses Google's calculator to calculate the value of <expression>.
         """
         channel = msg.args[0]
-        if not isChannel(channel):
+        if not ircutils.isChannel(channel):
             channel = None
         urlig = self._googleUrlIG(expr, channel)
         js = utils.web.getUrl(urlig).decode('utf8')
@@ -326,7 +326,7 @@ class Google(callbacks.PluginRegexp):
                 .replace('\\', '\\\\')
         js = json.loads(js)
 
-        url = self._googleUrl(expr)
+        url = self._googleUrl(expr, channel)
         html = utils.web.getUrl(url).decode('utf8')
         match = self._calcRe1.search(html)
         if match is None:
@@ -355,7 +355,10 @@ class Google(callbacks.PluginRegexp):
 
         Looks <phone number> up on Google.
         """
-        url = self._googleUrl(phonenumber)
+        channel = msg.args[0]
+        if not ircutils.isChannel(channel):
+            channel = None
+        url = self._googleUrl(phonenumber, channel)
         html = utils.web.getUrl(url).decode('utf8')
         m = self._phoneRe.search(html)
         if m is not None:
