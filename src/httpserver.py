@@ -102,7 +102,13 @@ body.error p {
 .purelisting {
     text-align: center;
 }
+.purelisting ul {
+    margin: 0;
+    padding: 0;
+}
 .purelisting ul li {
+    margin: 0;
+    padding: 0;
     list-style-type: none;
 }
 
