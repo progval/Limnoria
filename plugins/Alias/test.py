@@ -68,6 +68,8 @@ class AliasTestCase(ChannelPluginTestCase):
     def testAliasHelp(self):
         self.assertNotError('alias add slashdot foo')
         self.assertRegexp('help slashdot', "Alias for .*foo")
+        self.assertNotError('alias add nonascii echo éé')
+        self.assertRegexp('help nonascii', "Alias for .*echo éé")
 
     def testRemove(self):
         self.assertNotError('alias add foo echo bar')

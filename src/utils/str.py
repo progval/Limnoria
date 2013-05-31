@@ -444,10 +444,12 @@ def format(s, *args, **kwargs):
         char = match.group(1)
         if char == 's':
             token = args.pop()
-            if isinstance(token, unicode) or isinstance(token, str):
+            if isinstance(token, str):
                 return token
+            elif sys.version_info[0] < 3 and isinstance(token, unicode):
+                return token.encode('utf8')
             else:
-                return unicode(token)
+                return str(token)
         elif char == 'i':
             # XXX Improve me!
             return str(args.pop())
