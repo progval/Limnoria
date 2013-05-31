@@ -32,6 +32,7 @@ An embedded and centralized HTTP server for Supybot's plugins.
 """
 
 import os
+import sys
 import cgi
 import socket
 from threading import Event, Thread
@@ -347,7 +348,9 @@ class Favicon(SupyHTTPServerCallback):
             self.send_header('Content-type', 'text/plain')
             self.send_header('Content-Length', len(response))
             self.end_headers()
-            self.wfile.write(response.encode())
+            if sys.version_info[0] >= 3:
+                response = response.encode()
+            self.wfile.write(response)
 
 http_servers = None
 
