@@ -72,6 +72,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         drivers.IrcDriver.__init__(self, irc)
         drivers.ServersMixin.__init__(self, irc)
         self.conn = None
+        self._attempt = -1
         self.servers = ()
         self.eagains = 0
         self.inbuffer = b''
@@ -239,6 +240,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.reconnect(reset=False, **kwargs)
 
     def reconnect(self, reset=True):
+        self._attempt += 1
         self.nextReconnectTime = None
         if self.connected:
             drivers.log.reconnect(self.irc.network)
@@ -256,6 +258,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         else:
             drivers.log.debug('Not resetting %s.', self.irc)
         server = self._getNextServer()
+        address = utils.net.getAddressFromHostname(server[0],
+                attempt=self._attempt)
         drivers.log.connect(self.currentServer)
         try:
             socks_proxy = getattr(conf.supybot.networks, self.irc.network) \
@@ -267,7 +271,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 log.error('Cannot use socks proxy (SocksiPy not installed), '
                         'using direct connection instead.')
                 socks_proxy = ''
-            self.conn = utils.net.getSocket(server[0], socks_proxy)
+            self.conn = utils.net.getSocket(address, socks_proxy)
             vhost = conf.supybot.protocols.irc.vhost()
             self.conn.bind((vhost, 0))
         except socket.error, e:
@@ -281,7 +285,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             if getattr(conf.supybot.networks, self.irc.network).ssl():
                 assert globals().has_key('ssl')
                 self.conn = ssl.wrap_socket(self.conn)
-            self.conn.connect(server)
+            self.conn.connect((address, server[1]))
             def setTimeout():
                 self.conn.settimeout(conf.supybot.drivers.poll())
             conf.supybot.drivers.poll.addCallback(setTimeout)

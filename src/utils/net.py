@@ -80,6 +80,14 @@ class EmailRe:
         return count >= 1
 emailRe = EmailRe()
 
+def getAddressFromHostname(host, attempt=0):
+    addrinfo = socket.getaddrinfo(host, None)
+    addresses = []
+    for (family, socktype, proto, canonname, sockaddr) in addrinfo:
+        if sockaddr[0] not in addresses:
+            addresses.append(sockaddr[0])
+    return addresses[attempt % len(addresses)]
+
 def getSocket(host, socks_proxy=None):
     """Returns a socket of the correct AF_INET type (v4 or v6) in order to
     communicate with host.
