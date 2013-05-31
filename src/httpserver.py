@@ -281,7 +281,10 @@ class Supy404(SupyHTTPServerCallback):
         self.send_header('Content_type', 'text/plain; charset=utf-8')
         self.send_header('Content-Length', len(self.response))
         self.end_headers()
-        self.wfile.write(self.response.encode())
+        response = self.response
+        if sys.version_info[0] >= 3:
+            response = response.encode()
+        self.wfile.write(response)
 
     doPost = doHead = doGet
 
@@ -352,7 +355,7 @@ class Favicon(SupyHTTPServerCallback):
                 response = response.encode()
             self.wfile.write(response)
 
-http_servers = None
+http_servers = []
 
 def startServer():
     """Starts the HTTP server. Shouldn't be called from other modules.
@@ -373,18 +376,17 @@ def stopServer():
     """Stops the HTTP server. Should be run only from this module or from
     when the bot is dying (ie. from supybot.world)"""
     global http_servers
-    if http_servers is not None:
-        for server in http_servers:
-            log.info('Stopping HTTP server: %s' % str(server))
-            server.shutdown()
-            server = None
+    for server in http_servers:
+        log.info('Stopping HTTP server: %s' % str(server))
+        server.shutdown()
+        server = None
 
 if configGroup.keepAlive():
     startServer()
 
 def hook(subdir, callback):
     """Sets a callback for a given subdir."""
-    if http_servers is None:
+    if not http_servers:
         startServer()
     assert isinstance(http_servers, list)
     for server in http_servers:
