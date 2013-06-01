@@ -56,10 +56,10 @@ class RequestNotHandled(Exception):
 DEFAULT_TEMPLATES = {
     'index.html': """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>""" + _('Supybot Web server index') + """</title>
-  <link rel="stylesheet" href="/default.css" />
+  <link rel="stylesheet" type="text/css" href="/default.css" media="screen" />
  </head>
  <body class="purelisting">
   <h1>Supybot web server index</h1>
@@ -206,8 +206,10 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_X(self, callbackMethod, *args, **kwargs):
         if self.path == '/':
             callback = SupyIndex()
-        elif self.path in ('/robots.txt', '/default.css'):
-            callback = Static()
+        elif self.path in ('/robots.txt',):
+            callback = Static('text/plain')
+        elif self.path in ('/default.css',):
+            callback = Static('text/css')
         elif self.path == '/favicon.ico':
             callback = Favicon()
         else:
@@ -250,7 +252,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         log.info('HTTP request: %s - %s' %
                 (self.address_string(), format % args))
 
-class SupyHTTPServerCallback:
+class SupyHTTPServerCallback(object):
     """This is a base class that should be overriden by any plugin that want
     to have a Web interface."""
     fullpath = False
@@ -318,10 +320,13 @@ class Static(SupyHTTPServerCallback):
     fullpath = True
     name = 'static'
     defaultResponse = _('Request not handled')
+    def __init__(self, mimetype='text/plain'):
+        super(Static, self).__init__()
+        self._mimetype = mimetype
     def doGet(self, handler, path):
         response = get_template(path)
         handler.send_response(200)
-        self.send_header('Content-type', 'text/plain')
+        self.send_header('Content-type', self._mimetype)
         self.send_header('Content-Length', len(response))
         self.end_headers()
         self.wfile.write(response)
