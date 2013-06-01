@@ -1038,9 +1038,9 @@ class Spec(object):
             raise callbacks.ArgumentError
         return state
 
-def _wrap(f, specList=[], name=None, **kw):
+def _wrap(f, specList=[], name=None, checkDoc=True, **kw):
     name = name or f.func_name
-    assert hasattr(f, '__doc__') and f.__doc__, \
+    assert (not checkDoc) or (hasattr(f, '__doc__') and f.__doc__), \
                 'Command %r has no docstring.' % name
     f = internationalizeDocstring(f)
     spec = Spec(specList, **kw)

@@ -310,7 +310,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         else:
             irc.error("This key-factoid relationship already exists.")
         
-    learn = wrap(learn, ['factoid'])
+    learn = wrap(learn, ['factoid'], checkDoc=False)
     learn._fake__doc__ = _("""[<channel>] <key> %s <value>
 
                          Associates <key> with <value>.  <channel> is only
