@@ -83,7 +83,9 @@ addConverter('factoidId', getFactoidId)
 
 
 PAGE_SKELETON = """\
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Factoids</title>
     <link rel="stylesheet" href="/default.css" />
@@ -123,14 +125,14 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
         parts = path.split('/')[1:]
         if path == '/':
             self.send_response(200)
-            self.send_header('Content-type', 'text/html')
+            self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
             self.wfile.write(httpserver.get_template('factoids/index.html'))
         elif len(parts) == 2:
             channel = urllib.unquote(parts[0])
             if not ircutils.isChannel(channel):
                 self.send_response(404)
-                self.send_header('Content-type', 'text/html')
+                self.send_header('Content-type', 'text/html; charset=utf-8')
                 self.end_headers()
                 self.wfile.write(httpserver.get_template('generic/error.html')%
                     {'title': 'Factoids - not a channel',
@@ -138,7 +140,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
                 return
             if not self._plugin.registryValue('web.channel', channel):
                 self.send_response(403)
-                self.send_header('Content-type', 'text/html')
+                self.send_header('Content-type', 'text/html; charset=utf-8')
                 self.end_headers()
                 self.wfile.write(httpserver.get_template('generic/error.html')%
                     {'title': 'Factoids - unavailable',
@@ -171,7 +173,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
                     content += '</tr><tr>'
                 content = content[:-len('<tr>')]
             self.send_response(200)
-            self.send_header('Content-type', 'text/html')
+            self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
             self.wfile.write(httpserver.get_template('factoids/channel.html')%
                     {'channel': channel, 'rows': content})
@@ -183,7 +185,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
             self.end_headers()
         else:
             self.send_response(400)
-            self.send_header('Content-type', 'text/plain')
+            self.send_header('Content-type', 'text/plain; charset=utf-8')
             self.end_headers()
             self.wfile.write('Missing field \'chan\'.')
 
