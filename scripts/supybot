@@ -184,9 +184,9 @@ if __name__ == '__main__':
         docs/GETTING_STARTED and follow the instructions."""))
     else:
         registryFilename = args.pop()
-        i18n.getLocaleFromRegistryFilename(registryFilename)
         try:
             # The registry *MUST* be opened before importing log or conf.
+            i18n.getLocaleFromRegistryFilename(registryFilename)
             registry.open_registry(registryFilename)
             shutil.copy(registryFilename, registryFilename + '.bak')
         except registry.InvalidRegistryFile as e:
