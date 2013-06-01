@@ -68,6 +68,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     _selecting = [False] # We want it to be mutable.
     def __init__(self, irc):
         self._instances.append(self)
+        assert irc is not None
         self.irc = irc
         drivers.IrcDriver.__init__(self, irc)
         drivers.ServersMixin.__init__(self, irc)
