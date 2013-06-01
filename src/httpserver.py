@@ -55,6 +55,7 @@ class RequestNotHandled(Exception):
 
 DEFAULT_TEMPLATES = {
     'index.html': """\
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
@@ -70,7 +71,9 @@ DEFAULT_TEMPLATES = {
  </body>
 </html>""",
     'generic/error.html': """\
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>%(title)s</title>
   <link rel="stylesheet" href="/default.css" />
@@ -207,7 +210,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         if self.path == '/':
             callback = SupyIndex()
         elif self.path in ('/robots.txt',):
-            callback = Static('text/plain')
+            callback = Static('text/plain; charset=utf-8')
         elif self.path in ('/default.css',):
             callback = Static('text/css')
         elif self.path == '/favicon.ico':
@@ -264,7 +267,7 @@ class SupyHTTPServerCallback(object):
 
     def doGet(self, handler, path, *args, **kwargs):
         handler.send_response(400)
-        self.send_header('Content_type', 'text/plain; charset=utf-8')
+        self.send_header('Content-Type', 'text/plain; charset=utf-8; charset=utf-8')
         self.send_header('Content-Length', len(self.defaultResponse))
         self.end_headers()
         self.wfile.write(self.defaultResponse.encode())
@@ -286,7 +289,7 @@ class Supy404(SupyHTTPServerCallback):
     trained to help you in such a case.""")
     def doGet(self, handler, path, *args, **kwargs):
         handler.send_response(404)
-        self.send_header('Content_type', 'text/plain; charset=utf-8')
+        self.send_header('Content-Type', 'text/plain; charset=utf-8; charset=utf-8')
         self.send_header('Content-Length', len(self.response))
         self.end_headers()
         response = self.response
@@ -310,7 +313,7 @@ class SupyIndex(SupyHTTPServerCallback):
                     ['<a href="/%s/">%s</a>' % (x,y.name) for x,y in plugins])
         response = get_template('index.html') % {'list': plugins}
         handler.send_response(200)
-        self.send_header('Content_type', 'text/html')
+        self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', len(response))
         self.end_headers()
         self.wfile.write(response)
@@ -320,7 +323,7 @@ class Static(SupyHTTPServerCallback):
     fullpath = True
     name = 'static'
     defaultResponse = _('Request not handled')
-    def __init__(self, mimetype='text/plain'):
+    def __init__(self, mimetype='text/plain; charset=utf-8'):
         super(Static, self).__init__()
         self._mimetype = mimetype
     def doGet(self, handler, path):
@@ -359,7 +362,7 @@ class Favicon(SupyHTTPServerCallback):
         else:
             response = _('No favicon set.')
             handler.send_response(404)
-            self.send_header('Content-type', 'text/plain')
+            self.send_header('Content-type', 'text/plain; charset=utf-8')
             self.send_header('Content-Length', len(response))
             self.end_headers()
             if sys.version_info[0] >= 3:
