@@ -52,8 +52,8 @@ def abbrev(strings, d=None):
         for i in xrange(1, len(s)+1):
             yield s[:i]
     if len(strings) != len(set(strings)):
-        raise ValueError, \
-              'strings given to utils.abbrev have duplicates: %r' % strings
+        raise ValueError(
+              'strings given to utils.abbrev have duplicates: %r' % strings)
     if d is None:
         d = {}
     for s in strings:
