@@ -119,6 +119,22 @@ try:
             # Make this class local, to delay import of 2to3
             from lib2to3.refactor import RefactoringTool, get_fixers_from_package
             class DistutilsRefactoringTool(RefactoringTool):
+                def refactor(self, files, *args, **kwargs):
+                    self._total_files = len(files)
+                    self._refactored_files = 0
+                    super(DistutilsRefactoringTool, self).refactor(files,
+                            *args, **kwargs)
+                    del self._total_files
+                    del self._refactored_files
+                def refactor_file(self, filename, *args, **kwargs):
+                    if self._total_files//10 != 0 and \
+                            self._refactored_files % (self._total_files//10) == 0:
+                        print('Refactoring files: %i%% (%i on %i).' %
+                                (self._refactored_files/(self._total_files//10)*10,
+                                 self._refactored_files, self._total_files))
+                    self._refactored_files += 1
+                    return super(DistutilsRefactoringTool, self).refactor_file(
+                            filename, *args, **kwargs)
                 def log_error(self, msg, *args, **kw):
                     log.error(msg, *args)
 
