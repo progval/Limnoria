@@ -190,7 +190,7 @@ def htmlToText(s, tagReplace=' '):
     """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
     """
     try:
-        import chardet
+        import chardet.universaldetector
     except ImportError:
         s = s.decode('utf8')
     else:
