@@ -192,7 +192,8 @@ def htmlToText(s, tagReplace=' '):
     try:
         import chardet.universaldetector
     except ImportError:
-        s = s.decode('utf8')
+        if sys.version_info[0] < 3 or isinstance(s, bytes):
+            s = s.decode('utf8')
     else:
         u = chardet.universaldetector.UniversalDetector()
         u.feed(s)
