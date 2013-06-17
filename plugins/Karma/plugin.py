@@ -262,7 +262,7 @@ class Karma(callbacks.Plugin):
 
     def invalidCommand(self, irc, msg, tokens):
         channel = msg.args[0]
-        if not irc.isChannel(channel):
+        if not irc.isChannel(channel) or not tokens:
             return
         if tokens[-1][-2:] in ('++', '--'):
             thing = ' '.join(tokens)
