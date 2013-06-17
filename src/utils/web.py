@@ -117,8 +117,13 @@ def getUrlFd(url, headers=None, data=None):
                 url = scheme + '://' + url
             request = urllib2.Request(url, headers=headers, data=data)
             if 'auth' in locals():
+                if sys.version_info[0] >= 3 and isinstance(auth, str):
+                    auth = auth.encode()
+                auth = base64.b64encode(auth)
+                if sys.version_info[0] >= 3:
+                    auth = auth.decode()
                 request.add_header('Authorization',
-                        'Basic ' + base64.b64encode(auth))
+                        'Basic ' + auth)
         else:
             request = url
             request.add_data(data)
@@ -211,4 +216,5 @@ def mungeEmail(s):
     return s
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+
 
