@@ -129,7 +129,8 @@ if __name__ == '__main__':
             filename = os.path.join(home, filename)
             if os.path.exists(filename):
                 debug('Found %s, sourcing.' % filename)
-                inst.stdin.write('source %s' % filename + os.linesep)
+                command = 'source %s' % filename + os.linesep
+                inst.stdin.write(command.encode('utf-8'))
         cmdline = '%s --daemon %s' % (options.supybot, options.conffile)
         debug('Sending cmdline to sh process.')
         inst.stdin.write(cmdline.encode('utf-8') + os.linesep.encode('utf-8'))
