@@ -12,4 +12,4 @@ install:
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - python setup.py install
-  - supybot-test test --plugins-dir=./build/lib/supybot/plugins/ --no-network --disable-multiprocessing
+  - supybot-test test --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing

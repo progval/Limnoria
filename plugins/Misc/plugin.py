@@ -88,6 +88,7 @@ class Misc(callbacks.Plugin):
     def invalidCommand(self, irc, msg, tokens):
         assert not msg.repliedTo, 'repliedTo msg in Misc.invalidCommand.'
         assert self is irc.callbacks[-1], 'Misc isn\'t last callback.'
+        assert msg.command in ('PRIVMSG', 'NOTICE')
         self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)
         # First, we check for invalidCommand floods.  This is rightfully done
         # here since this will be the last invalidCommand called, and thus it
@@ -125,7 +126,9 @@ class Misc(callbacks.Plugin):
             banmasker = conf.supybot.protocols.irc.banmask.makeBanmask
             self.invalidCommands.enqueue(msg)
             if self.invalidCommands.len(msg) > maximum and \
-               not ircdb.checkCapability(msg.prefix, 'owner'):
+               not ircdb.checkCapability(msg.prefix, 'owner') and \
+               msg.prefix != irc.prefix and \
+               ircutils.isUserHostmask(msg.prefix):
                 penalty = conf.supybot.abuse.flood.command.invalid.punishment()
                 banmask = banmasker(msg.prefix, channel=None)
                 self.log.info('Ignoring %s for %s seconds due to an apparent '

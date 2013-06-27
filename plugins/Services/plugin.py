@@ -264,6 +264,10 @@ class Services(callbacks.Plugin):
                              on)
         elif 'inviting' in s:
             self.log.debug('Got "Inviting to channel" from ChanServ %s.', on)
+        elif s.startswith('['):
+            chanTypes = irc.state.supported['CHANTYPES']
+            if re.match(r'^\[[%s]' % re.escape(chanTypes), s):
+                self.log.debug('Got entrymsg from ChanServ %s.', on)
         else:
             self.log.warning('Got unexpected notice from ChanServ %s: %r.',
                              on, msg)

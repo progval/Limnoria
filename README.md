@@ -1,4 +1,4 @@
-[http://supybot.fr.cr/doc/use/install.html](Install guide)
+[Install guide](http://supybot.fr.cr/doc/use/install.html)
 
 # Build status
 

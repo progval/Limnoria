@@ -910,6 +910,7 @@ class Irc(IrcCommandDispatcher):
         self.lastTake = 0
         self.server = 'unset'
         self.afterConnect = False
+        self.startedAt = time.time()
         self.lastping = time.time()
         self.outstandingPing = False
 
