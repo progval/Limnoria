@@ -75,6 +75,7 @@ conf.registerGlobalValue(RSS, 'sortFeedItems',
     FeedItemSortOrder('asInFeed', _("""Determines whether feed items should be
     sorted by their update timestamp or kept in the same order as they appear
     in a feed.""")))
+
 conf.registerGlobalValue(RSS, 'feeds',
     FeedNames([], _("""Determines what feeds should be accessible as
     commands.""")))
@@ -104,6 +105,9 @@ conf.registerChannelValue(RSS.announce, 'showLinks',
     along with the title of the feed when a feed is automatically
     announced.""")))
 
+conf.registerGlobalValue(RSS.announce, 'cachePeriod',
+    registry.PositiveInteger(86400, """Maximum age of cached RSS headlines,
+    in seconds. Headline cache is used to avoid re-announcing old news."""))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

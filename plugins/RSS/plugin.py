@@ -72,6 +72,7 @@ class RSS(callbacks.Plugin):
         self.locks = {}
         self.lastRequest = {}
         self.cachedFeeds = {}
+        self.cachedHeadlines = {}
         self.gettingLockLock = threading.Lock()
         for name in self.registryValue('feeds'):
             self._registerFeed(name)
@@ -164,9 +165,12 @@ class RSS(callbacks.Plugin):
             # Note that we're allowed to acquire this lock twice within the
             # same thread because it's an RLock and not just a normal Lock.
             self.acquireLock(url)
+            t = time.time()
             try:
-                oldresults = self.cachedFeeds[url]
-                oldheadlines = self.getHeadlines(oldresults)
+                #oldresults = self.cachedFeeds[url]
+                #oldheadlines = self.getHeadlines(oldresults)
+                oldheadlines = self.cachedHeadlines[url]
+                oldheadlines = filter(lambda x: t - x[2] < self.registryValue('announce.cachePeriod'), oldheadlines)
             except KeyError:
                 oldheadlines = []
             newresults = self.getFeed(url)
@@ -179,11 +183,13 @@ class RSS(callbacks.Plugin):
                     return
             def normalize(headline):
                 return (tuple(headline[0].lower().split()), headline[1])
-            oldheadlines = set(map(normalize, oldheadlines))
+            oldheadlinesset = set(map(normalize, oldheadlines))
             for (i, headline) in enumerate(newheadlines):
-                if normalize(headline) in oldheadlines:
+                if normalize(headline) in oldheadlinesset:
                     newheadlines[i] = None
             newheadlines = filter(None, newheadlines) # Removes Nones.
+            oldheadlines.extend(newheadlines)
+            self.cachedHeadlines[url] = oldheadlines
             if newheadlines:
                 def filter_whitelist(headline):
                     v = False
@@ -324,15 +330,13 @@ class RSS(callbacks.Plugin):
 
     def getHeadlines(self, feed):
         headlines = []
+        t = time.time()
         conv = self._getConverter(feed)
         for d in self._sortFeedItems(feed['items']):
             if 'title' in d:
                 title = conv(d['title'])
-                link = d.get('link')
-                if link:
-                    headlines.append((title, link))
-                else:
-                    headlines.append((title, None))
+                link = d.get('link') # defaults to None
+                headlines.append((title, link, t))
         return headlines
 
     @internationalizeDocstring
