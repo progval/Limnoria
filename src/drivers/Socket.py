@@ -46,13 +46,13 @@ import supybot.drivers as drivers
 import supybot.schedule as schedule
 from itertools import imap
 try:
-    from chardet.universaldetector import UniversalDetector
-    chardetLoaded = True
+    from charade.universaldetector import UniversalDetector
+    charadeLoaded = True
 except:
-    drivers.log.debug('chardet module not available, '
+    drivers.log.debug('charade module not available, '
                       'cannot guess character encoding if'
                       'using Python3')
-    chardetLoaded = False
+    charadeLoaded = False
 try:
     import ssl
     SSLError = ssl.SSLError
@@ -198,8 +198,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     try:
                         line = line.decode('utf8', 'strict')
                     except UnicodeError:
-                        # if this fails and chardet is loaded, try to guess the correct encoding
-                        if chardetLoaded:
+                        # if this fails and charade is loaded, try to guess the correct encoding
+                        if charadeLoaded:
                             u = UniversalDetector()
                             u.feed(line)
                             u.close()
@@ -215,11 +215,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                                 # if no encoding could be guessed, fall back to utf-8 and
                                 # replace offending characters
                                 line = line.decode('utf8', 'replace')
-                        # if chardet is not loaded, try to decode using utf-8 and replace any
+                        # if charade is not loaded, try to decode using utf-8 and replace any
                         # offending characters
                         else:
                             line = line.decode('utf8', 'replace')
-           
+
                 msg = drivers.parseMsg(line)
                 if msg is not None:
                     self.irc.feedMsg(msg)
