@@ -36,6 +36,7 @@ from __future__ import division
 
 import sys
 import time
+import errno
 import select
 import socket
 import supybot.log as log
@@ -164,8 +165,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             for instance in cls._instances:
                 if instance.conn in rlist:
                     instance._read()
-        except select.error: # 'Interrupted system call'
-            pass
+        except select.error as e:
+            if e.args[0] != errno.EINTR:
+                # 'Interrupted system call'
+                raise
         finally:
             cls._selecting[0] = False
         for instance in cls._instances:
