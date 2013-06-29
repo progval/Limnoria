@@ -193,6 +193,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def __init__(self, irc):
         callbacks.Plugin.__init__(self, irc)
         plugins.ChannelDBHandler.__init__(self)
+        self._http_running = False
         conf.supybot.plugins.Factoids.web.enable.addCallback(self._doHttpConf)
         if self.registryValue('web.enable'):
             self._startHttp()
