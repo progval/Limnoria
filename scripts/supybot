@@ -44,6 +44,7 @@ import shutil
 import signal
 if sys.version_info[0] < 3:
     import cStringIO as StringIO
+    StringIO = StringIO.StringIO
 else:
     from io import StringIO
 
@@ -273,8 +274,8 @@ if __name__ == '__main__':
         # level WARNING on upkeep.
         sys.stdout.close()
         sys.stderr.close()
-        sys.stdout = StringIO.StringIO()
-        sys.stderr = StringIO.StringIO()
+        sys.stdout = StringIO()
+        sys.stderr = StringIO()
         # We have to be really methodical here.
         os.close(0)
         os.close(1)

@@ -149,6 +149,8 @@ def upkeep():
         except IOError: # Win98 sux0rs!
             pass
     if conf.daemonized:
+        if sys.version_info[0] >= 3:
+            from io import TextIOWrapper as file
         # If we're daemonized, sys.stdout has been replaced with a StringIO
         # object, so let's see if anything's been printed, and if so, let's
         # log.warning it (things shouldn't be printed, and we're more likely
