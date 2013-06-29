@@ -164,6 +164,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             for instance in cls._instances:
                 if instance.conn in rlist:
                     instance._read()
+        except select.error: # 'Interrupted system call'
+            pass
         finally:
             cls._selecting[0] = False
         for instance in cls._instances:
