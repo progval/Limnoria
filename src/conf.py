@@ -239,7 +239,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
 
     def convert(self, s):
         s = self.normalize(s)
-        (server, port) = s.rsplit(':', 2)
+        (server, port) = s.rsplit(':', 1)
         port = int(port)
         return (server, port)
 
@@ -261,7 +261,7 @@ class SocksProxy(registry.String):
         if ':' not in v:
             self.error()
         try:
-            int(v.rsplit(':', 2)[1])
+            int(v.rsplit(':', 1)[1])
         except ValueError:
             self.error()
         super(SocksProxy, self).setValue(v)
