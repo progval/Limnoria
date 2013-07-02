@@ -93,13 +93,15 @@ class Web(callbacks.PluginRegexp):
             try:
                 size = conf.supybot.protocols.http.peekSize()
                 text = utils.web.getUrl(url, size=size)
-                if sys.version_info[0] >= 3:
-                    text = text.decode('utf8', 'replace')
             except utils.web.Error, e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 if self.registryValue('snarferReportIOExceptions', channel):
                      irc.reply(url+" : "+utils.web.strError(e), prefixNick=False)
                 return
+            try:
+                text = text.decode('utf8', 'replace')
+            except:
+                pass
             parser = Title()
             try:
                 parser.feed(text)
