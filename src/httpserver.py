@@ -258,6 +258,15 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
 class SupyHTTPServerCallback(object):
     """This is a base class that should be overriden by any plugin that want
     to have a Web interface."""
+    __metaclass__ = log.MetaFirewall
+    __firewalled__ = {'doGet': None,
+                      'doPost': None,
+                      'doHead': None,
+                      'doPut': None,
+                      'doDelete': None,
+                     }
+
+
     fullpath = False
     name = "Unnamed plugin"
     defaultResponse = _("""
