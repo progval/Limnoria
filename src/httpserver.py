@@ -316,6 +316,8 @@ class SupyIndex(SupyHTTPServerCallback):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', len(response))
         self.end_headers()
+        if sys.version_info[0] >= 3:
+            response = response.encode()
         self.wfile.write(response)
 
 class Static(SupyHTTPServerCallback):
@@ -332,6 +334,8 @@ class Static(SupyHTTPServerCallback):
         self.send_header('Content-type', self._mimetype)
         self.send_header('Content-Length', len(response))
         self.end_headers()
+        if sys.version_info[0] >= 3:
+            response = response.encode()
         self.wfile.write(response)
 
 class Favicon(SupyHTTPServerCallback):
