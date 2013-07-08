@@ -204,7 +204,7 @@ class Group(object):
         raise ValueError, 'Groups have no value.'
 
     def __nonExistentEntry(self, attr):
-        s = '%s is not a valid entry in %s' % (attr, self._name)
+        s = '%r is not a valid entry in %r' % (attr, self._name)
         raise NonExistentRegistryEntry, s
 
     def __makeChild(self, attr, s):
