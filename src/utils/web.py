@@ -166,8 +166,18 @@ def getUrl(url, size=None, headers=None, data=None):
 def getDomain(url):
     return urlparse.urlparse(url)[1]
 
+_charset_re = ('<meta[^a-z<>]+charset='
+    """(?P<charset>("[^"]+"|'[^']+'))""")
 def getEncoding(s):
-    # TODO: use <meta charset />
+    try:
+        match = re.search(_charset_re, s, re.MULTILINE)
+        if match:
+            return match.group('charset')[1:-1]
+    except:
+        match = re.search(_charset_re.encode(), s, re.MULTILINE)
+        if match:
+            return match.group('charset').decode()[1:-1]
+
     try:
         import charade.universaldetector
         u = charade.universaldetector.UniversalDetector()
