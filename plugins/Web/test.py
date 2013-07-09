@@ -94,6 +94,24 @@ class WebTestCase(ChannelPluginTestCase):
             finally:
                 conf.supybot.plugins.Web.nonSnarfingRegexp.setValue(snarf)
 
+        def testWhitelist(self):
+            fm = conf.supybot.plugins.Web.fetch.maximum()
+            uw = conf.supybot.plugins.Web.urlWhitelist()
+            try:
+                conf.supybot.plugins.Web.fetch.maximum.set(1024)
+                self.assertNotError('web fetch http://fsf.org')
+                conf.supybot.plugins.Web.urlWhitelist.set('http://slashdot.org')
+                self.assertError('web fetch http://fsf.org')
+                self.assertError('wef title http://fsf.org')
+                self.assertError('web fetch http://slashdot.org.evildomain.com')
+                self.assertNotError('web fetch http://slashdot.org')
+                self.assertNotError('web fetch http://slashdot.org/recent')
+                conf.supybot.plugins.Web.urlWhitelist.set('http://slashdot.org http://fsf.org')
+                self.assertNotError('doctype http://fsf.org')
+            finally:
+                conf.supybot.plugins.Web.urlWhitelist.set('')
+                conf.supybot.plugins.Web.fetch.maximum.set(fm)
+
     def testNonSnarfingRegexpConfigurable(self):
         self.assertSnarfNoResponse('http://foo.bar.baz/', 2)
         try:
@@ -102,22 +120,5 @@ class WebTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.plugins.Web.nonSnarfingRegexp.set('')
 
-    def testWhitelist(self):
-        fm = conf.supybot.plugins.Web.fetch.maximum()
-        uw = conf.supybot.plugins.Web.urlWhitelist()
-        try:
-            conf.supybot.plugins.Web.fetch.maximum.set(1024)
-            self.assertNotError('web fetch http://fsf.org')
-            conf.supybot.plugins.Web.urlWhitelist.set('http://slashdot.org')
-            self.assertError('web fetch http://fsf.org')
-            self.assertError('wef title http://fsf.org')
-            self.assertError('web fetch http://slashdot.org.evildomain.com')
-            self.assertNotError('web fetch http://slashdot.org')
-            self.assertNotError('web fetch http://slashdot.org/recent')
-            conf.supybot.plugins.Web.urlWhitelist.set('http://slashdot.org http://fsf.org')
-            self.assertNotError('doctype http://fsf.org')
-        finally:
-            conf.supybot.plugins.Web.urlWhitelist.set('')
-            conf.supybot.plugins.Web.fetch.maximum.set(fm)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
