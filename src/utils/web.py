@@ -166,6 +166,17 @@ def getUrl(url, size=None, headers=None, data=None):
 def getDomain(url):
     return urlparse.urlparse(url)[1]
 
+def getEncoding(s):
+    # TODO: use <meta charset />
+    try:
+        import charade.universaldetector
+        u = charade.universaldetector.UniversalDetector()
+        u.feed(s)
+        u.close()
+        return u.result['encoding']
+    except:
+        return None
+
 class HtmlToText(HTMLParser, object):
     """Taken from some eff-bot code on c.l.p."""
     entitydefs = htmlentitydefs.entitydefs.copy()
@@ -191,21 +202,10 @@ class HtmlToText(HTMLParser, object):
         text = ''.join(self.data).strip()
         return normalizeWhitespace(text)
 
-def get_encoding(s):
-    # TODO: use <meta charset />
-    try:
-        import charade.universaldetector
-        u = charade.universaldetector.UniversalDetector()
-        u.feed(s)
-        u.close()
-        return u.result['encoding']
-    except:
-        return None
-
 def htmlToText(s, tagReplace=' '):
     """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
     """
-    encoding = get_encoding(s)
+    encoding = getEncoding(s)
     if encoding:
         s = s.decode(encoding)
     else:

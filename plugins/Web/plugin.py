@@ -99,7 +99,7 @@ class Web(callbacks.PluginRegexp):
                      irc.reply(url+" : "+utils.web.strError(e), prefixNick=False)
                 return
             try:
-                text = text.decode(utils.web.get_encoding(text) or 'utf8',
+                text = text.decode(utils.web.getEncoding(text) or 'utf8',
                         'replace')
             except:
                 pass
@@ -218,7 +218,7 @@ class Web(callbacks.PluginRegexp):
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size)
         try:
-            text = text.decode(utils.web.get_encoding(text) or 'utf8',
+            text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')
         except:
             pass
