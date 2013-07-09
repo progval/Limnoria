@@ -191,16 +191,24 @@ class HtmlToText(HTMLParser, object):
         text = ''.join(self.data).strip()
         return normalizeWhitespace(text)
 
-def htmlToText(s, tagReplace=' '):
-    """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
-    """
+def get_encoding(s):
+    # TODO: use <meta charset />
     try:
         import charade.universaldetector
         u = charade.universaldetector.UniversalDetector()
         u.feed(s)
         u.close()
-        s = s.decode(u.result['encoding'])
+        return u.result['encoding']
     except:
+        return None
+
+def htmlToText(s, tagReplace=' '):
+    """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
+    """
+    encoding = get_encoding(s)
+    if encoding:
+        s = s.decode(encoding)
+    else:
         try:
             if sys.version_info[0] < 3 or isinstance(s, bytes):
                 s = s.decode('utf8')
@@ -214,6 +222,7 @@ def mungeEmail(s):
     s = s.replace('@', ' AT ')
     s = s.replace('.', ' DOT ')
     return s
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
