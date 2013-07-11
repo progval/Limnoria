@@ -304,7 +304,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def random(self, irc, msg, args, channel):
         """[<channel>]
 
-        Returns a random factoid from the database for <channel>.  <channel>
+        Returns random factoids from the database for <channel>.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
         db = self.getDb(channel)
