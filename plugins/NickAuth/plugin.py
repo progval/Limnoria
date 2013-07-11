@@ -113,7 +113,11 @@ class NickAuth(callbacks.Plugin):
             <network> defaults to the current network.
             """
             network = network.network or irc.network
-            user = user or ircdb.users.getUser(msg.prefix)
+            try:
+                user = user or ircdb.users.getUser(msg.prefix)
+            except KeyError:
+                irc.error(_('You are not identified and <user> is not given.'),
+                        Raise=True)
             self._check_auth(irc, msg, user)
             try:
                 list_ = user.nicks[network]
