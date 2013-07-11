@@ -346,9 +346,10 @@ def firewall(f, errorHandler=None):
         if s is None:
             s = 'Uncaught exception'
         if hasattr(self, 'log'):
-            self.log.exception('%s:', s)
+            logging_function = self.log.exception
         else:
-            exception('%s in %s.%s:', s, self.__class__.__name__, f.func_name)
+            logging_function = exception
+        logging_function('%s in %s.%s:', s, self.__class__.__name__, f.func_name)
     def m(self, *args, **kwargs):
         try:
             return f(self, *args, **kwargs)
