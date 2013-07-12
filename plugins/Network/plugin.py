@@ -252,11 +252,10 @@ class Network(callbacks.Plugin):
             identify = ''
         if command == 'whois':
             s = _('%s (%s) has been%s on server %s since %s (idle for %s) and '
-                '%s.%s').decode('utf8') % (user, hostmask, identify, server,
+                '%s.%s') % (user, hostmask, identify, server,
                         signon, idle, channels, away)
         else:
-            s = _('%s (%s) has been%s on server %s and disconnect on %s.') \
-                    .decode('utf8') % \
+            s = _('%s (%s) has been%s on server %s and disconnect on %s.') % \
                     (user, hostmask, identify, server, signoff)
         replyIrc.reply(s)
         del self._whois[(irc, loweredNick)]
