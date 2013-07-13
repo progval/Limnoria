@@ -361,7 +361,7 @@ class Misc(callbacks.Plugin):
                 if len(L) < 2:
                     more = _('1 more message')
                 else:
-                    more = _('more messages')
+                    more = _('%i more messages') % len(L)
                 chunks[-1] += format(' \x02(%s)\x0F', more)
             irc.replies(chunks, noLengthCheck=True, oneToOne=False)
         except KeyError:

@@ -188,7 +188,7 @@ msgid "1 more message"
 msgstr ""
 
 #: plugin.py:355
-msgid "more messages"
+msgid "%i more messages"
 msgstr ""
 
 #: plugin.py:359

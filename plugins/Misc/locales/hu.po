@@ -198,8 +198,9 @@ msgid "1 more message"
 msgstr "eggyel több üzenet"
 
 #: plugin.py:325
-msgid "more messages"
-msgstr "több üzenet"
+#, fuzzy
+msgid "%i more messages"
+msgstr "%i több üzenet"
 
 #: plugin.py:329
 msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."

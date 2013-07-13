@@ -193,11 +193,12 @@ msgstr "Sorry, Ich kann nicht mehr für %s finden"
 #: plugin.py:323
 #, fuzzy
 msgid "1 more message"
-msgstr "mehr Nachricht"
+msgstr "1 mehr Nachricht"
 
 #: plugin.py:325
-msgid "more messages"
-msgstr "mehr Nachrichten"
+#, fuzzy
+msgid "%i more messages"
+msgstr "%i mehr Nachrichten"
 
 #: plugin.py:329
 msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
