@@ -229,7 +229,8 @@ msgid "Sorry, I can't find any mores for %s"
 msgstr "Anteeksi, en voi löytää jatkoa %s:lle."
 
 #: plugin.py:353
-msgid "more message"
+#, fuzzy
+msgid "1 more message"
 msgstr "viesti lisää"
 
 #: plugin.py:355

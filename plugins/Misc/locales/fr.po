@@ -195,8 +195,8 @@ msgid "Sorry, I can't find any mores for %s"
 msgstr "Désolé, je ne peux trouver de 'more' pour %s"
 
 #: plugin.py:353
-msgid "more message"
-msgstr "autre message"
+msgid "1 more message"
+msgstr "1 autre message"
 
 #: plugin.py:355
 msgid "more messages"

@@ -359,7 +359,7 @@ class Misc(callbacks.Plugin):
             chunks = [L.pop() for x in xrange(0, number)]
             if L:
                 if len(L) < 2:
-                    more = _('more message')
+                    more = _('1 more message')
                 else:
                     more = _('more messages')
                 chunks[-1] += format(' \x02(%s)\x0F', more)

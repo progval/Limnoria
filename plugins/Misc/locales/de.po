@@ -191,7 +191,8 @@ msgid "Sorry, I can't find any mores for %s"
 msgstr "Sorry, Ich kann nicht mehr für %s finden"
 
 #: plugin.py:323
-msgid "more message"
+#, fuzzy
+msgid "1 more message"
 msgstr "mehr Nachricht"
 
 #: plugin.py:325
