@@ -256,8 +256,7 @@ class InsensitivePreservingDict(collections.MutableMapping):
             self.update(dict)
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__,
-                           super(InsensitivePreservingDict, self).__repr__())
+        return '%s(%r)' % (self.__class__.__name__, self.data)
 
     def fromkeys(cls, keys, s=None, dict=None, key=None):
         d = cls(dict=dict, key=key)
