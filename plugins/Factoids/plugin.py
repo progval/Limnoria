@@ -44,10 +44,7 @@ import supybot.httpserver as httpserver
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Factoids')
 
-try:
-    import sqlite3
-except ImportError:
-    from pysqlite2 import dbapi2 as sqlite3 # for python2.4
+import sqlite3
 
 import re
 from supybot.utils.seq import dameraulevenshtein

@@ -98,10 +98,7 @@ class SqliteMoobotDB(object):
         self.dbs.clear()
 
     def _getDb(self, channel):
-        try:
-            import sqlite3
-        except ImportError:
-            from pysqlite2 import dbapi2 as sqlite3 # for python2.4
+        import sqlite3
 
         if channel in self.dbs:
             return self.dbs[channel]

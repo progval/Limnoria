@@ -46,19 +46,6 @@ except:
     _ = lambda x:x
     internationalizeDocstring = lambda x:x
 
-# builtin any is overwritten by callbacks... and python2.4 doesn't have it
-def _any(iterable):
-    for element in iterable:
-        if element:
-            return True
-    return False
-# for consistency with above, and for python2.4
-def _all(iterable):
-    for element in iterable:
-        if not element:
-            return False
-    return True
-
 
 class Conditional(callbacks.Plugin):
     """Add the help for "@plugin help Conditional" here
@@ -98,7 +85,7 @@ class Conditional(callbacks.Plugin):
 
         Returns true if all conditions supplied evaluate to true.
         """
-        if _all(conds):
+        if __builtins__.all(conds):
             irc.reply("true")
         else:
             irc.reply("false")
@@ -110,7 +97,7 @@ class Conditional(callbacks.Plugin):
 
         Returns true if any one of conditions supplied evaluates to true.
         """
-        if _any(conds):
+        if __builtins__.any(conds):
             irc.reply("true")
         else:
             irc.reply("false")

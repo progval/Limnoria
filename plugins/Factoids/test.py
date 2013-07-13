@@ -31,10 +31,7 @@
 from supybot.test import *
 import supybot.conf as conf
 
-try:
-    import sqlite3
-except ImportError:
-    from pysqlite2 import dbapi2 as sqlite3 # for python2.4
+import sqlite3
 
 class FactoidsTestCase(ChannelPluginTestCase):
     plugins = ('Factoids',)
