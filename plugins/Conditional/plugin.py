@@ -46,6 +46,12 @@ except:
     _ = lambda x:x
     internationalizeDocstring = lambda x:x
 
+if isinstance(__builtins__, dict):
+    _any = __builtins__['any']
+    _all = __builtins__['all']
+else:
+    _any = __builtins__.any
+    _all = __builtins__.all
 
 class Conditional(callbacks.Plugin):
     """Add the help for "@plugin help Conditional" here
@@ -85,7 +91,7 @@ class Conditional(callbacks.Plugin):
 
         Returns true if all conditions supplied evaluate to true.
         """
-        if __builtins__.all(conds):
+        if _all(conds):
             irc.reply("true")
         else:
             irc.reply("false")
@@ -97,7 +103,7 @@ class Conditional(callbacks.Plugin):
 
         Returns true if any one of conditions supplied evaluates to true.
         """
-        if __builtins__.any(conds):
+        if _any(conds):
             irc.reply("true")
         else:
             irc.reply("false")
