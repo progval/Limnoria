@@ -518,8 +518,14 @@ class IrcState(IrcCommandDispatcher):
     def do367(self, irc, msg):
         # Example:
         # :server 367 user #chan some!random@user evil!channel@op 1356276459
-        state = self.channels[msg.args[1]]
-        state.bans.add(msg.args[2])
+        try:
+            state = self.channels[msg.args[1]]
+        except KeyError:
+            # We have been kicked of the channel before the server replied to
+            # the MODE +b command.
+            pass
+        else:
+            state.bans.add(msg.args[2])
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
