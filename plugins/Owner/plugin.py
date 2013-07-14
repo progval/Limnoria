@@ -230,7 +230,9 @@ class Owner(callbacks.Plugin):
         world.starting = False
 
     def do376(self, irc, msg):
-        irc.queueMsg(conf.supybot.networks.get(irc.network).channels.joins())
+        msg = conf.supybot.networks.get(irc.network).channels.joins()
+        if msg:
+            irc.queueMsg(msg)
     do422 = do377 = do376
 
     def setFloodQueueTimeout(self, *args, **kwargs):
