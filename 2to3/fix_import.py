@@ -94,10 +94,11 @@ class FixImport(fixer_base.BaseFix):
         # so can't be a relative import.
         if not exists(join(dirname(base_path), "__init__.py")):
             return False
-        if isdir(base_path):
+        (path, filename) = split(base_path) 
+        if isdir(base_path) and filename in listdir(path):
+            # We use listdir too because of case-insensitivity on Windows
             return True
         for ext in [".py", ".pyc", ".so", ".sl", ".pyd"]:
-            (path, filename) = split(base_path) 
             if (filename + ext) in listdir(path):
                 # We use this instead of os.path.exists because of case-insensitivity
                 # on Windows
