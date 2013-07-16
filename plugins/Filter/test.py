@@ -102,6 +102,7 @@ class FilterTest(ChannelPluginTestCase):
     def testHexlifyUnhexlify(self):
         for s in map(str, range(1000, 1010)):
             self.assertResponse('unhexlify [hexlify %s]' % s, s)
+        self.assertNotError('unhexlify ff')
 
     def testScramble(self):
         s = 'the recalcitrant jamessan tests his scramble function'

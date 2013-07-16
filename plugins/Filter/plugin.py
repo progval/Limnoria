@@ -196,7 +196,8 @@ class Filter(callbacks.Plugin):
         <hexstring> must be a string of hexadecimal digits.
         """
         try:
-            irc.reply(self._hex_decoder(text.encode('utf8'))[0].decode('utf8'))
+            irc.reply(self._hex_decoder(text.encode('utf8'))[0]
+                    .decode('utf8', 'replace'))
         except TypeError:
             irc.error(_('Invalid input.'))
     unhexlify = wrap(unhexlify, ['text'])
