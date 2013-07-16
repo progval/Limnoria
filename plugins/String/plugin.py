@@ -239,7 +239,7 @@ class String(callbacks.Plugin):
         http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information
         about SHA.
         """
-        irc.reply(utils.crypt.sha(text).hexdigest())
+        irc.reply(utils.crypt.sha(text.encode('utf8')).hexdigest())
     sha = wrap(sha, ['text'])
 
 Class = String
