@@ -149,13 +149,13 @@ class RSS(callbacks.Plugin):
             if self.registryValue(linksconfig, channel):
                 if headline[1]:
                     if self.registryValue('stripRedirect'):
-                        link = ' <%s>' % (re.sub('^.*http://', 'http://', headline[1]),)
+                        link = re.sub('^.*http://', 'http://', headline[1])
                     else:
-                        link = ' <%s>' % (headline[1],)
+                        link = headline[1]
             if self.registryValue(dateconfig, channel):
                 if headline[2]:
                     pubDate = ' [%s]' % (headline[2],)
-            newheadlines.append(format('%s%s%s',
+            newheadlines.append(format('%s %u%s',
                                        headline[0],
                                        link.encode('utf-8'),
                                        pubDate))
