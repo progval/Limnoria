@@ -157,7 +157,7 @@ class RSS(callbacks.Plugin):
                     pubDate = ' [%s]' % (headline[2],)
             newheadlines.append(format('%s %u%s',
                                        headline[0],
-                                       link.encode('utf-8'),
+                                       link,
                                        pubDate))
         return newheadlines
 
