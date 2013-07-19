@@ -57,6 +57,9 @@ conf.registerChannelValue(MessageParser, 'enable',
     registry.Boolean(True, _("""Determines whether the
     message parser is enabled.  If enabled, will trigger on regexps
     added to the regexp db.""")))
+conf.registerChannelValue(MessageParser, 'enableForNotices',
+    registry.Boolean(False, _("""Determines whether the message parser
+    is enabled for NOTICE messages too.""")))
 conf.registerChannelValue(MessageParser, 'keepRankInfo',
     registry.Boolean(True, _("""Determines whether we keep updating the usage
     count for each regexp, for popularity ranking.""")))

@@ -146,13 +146,11 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         else:
             return True
 
-    def doPrivmsg(self, irc, msg):
+    def do_privmsg_notice(self, irc, msg):
         channel = msg.args[0]
         if not irc.isChannel(channel):
             return
         if self.registryValue('enable', channel):
-            if callbacks.addressed(irc.nick, msg): #message is direct command
-                return
             actions = []
             results = []
             for channel in set(map(plugins.getChannel, (channel, 'global'))):
@@ -181,6 +179,14 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
 
             for action in actions:
                 self._runCommandFunction(irc, msg, action)
+
+    def doPrivmsg(self, irc, msg):
+        if not callbacks.addressed(irc.nick, msg): #message is not direct command
+            self.do_privmsg_notice(irc, msg)
+
+    def doNotice(self, irc, msg):
+        if self.registryValue('enableForNotices', msg.args[0]):
+            self.do_privmsg_notice(irc, msg)
 
     @internationalizeDocstring
     def add(self, irc, msg, args, channel, regexp, action):
