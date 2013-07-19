@@ -288,15 +288,13 @@ class Google(callbacks.PluginRegexp):
     googleSnarfer = urlSnarfer(googleSnarfer)
 
     def _googleUrl(self, s, channel):
-        s = s.replace('+', '%2B')
-        s = s.replace(' ', '+')
+        s = urllib.quote_plus(s)
         url = r'http://%s/search?q=%s' % \
                 (self.registryValue('baseUrl', channel), s)
         return url
 
     def _googleUrlIG(self, s, channel):
-        s = s.replace('+', '%2B')
-        s = s.replace(' ', '+')
+        s = urllib.quote_plus(s)
         url = r'http://%s/ig/calculator?hl=en&q=%s' % \
                 (self.registryValue('baseUrl', channel), s)
         return url
