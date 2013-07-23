@@ -97,10 +97,6 @@ class AkaTestCase(ChannelPluginTestCase):
         self.assertNotError('aka add channel echo $channel')
         self.assertResponse('aka channel', self.channel)
 
-    def testNick(self):
-        self.assertNotError('aka add sendingnick "rot13 [rot13 $nick]"')
-        self.assertResponse('sendingnick', self.nick)
-
     def testAddRemoveAka(self):
         cb = self.irc.getCallback('Aka')
         cb._add_aka('global', 'foobar', 'echo sbbone')
