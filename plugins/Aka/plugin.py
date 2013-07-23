@@ -34,6 +34,7 @@ import sys
 import datetime
 
 import supybot.utils as utils
+import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -378,6 +379,15 @@ class Aka(callbacks.Plugin):
                                 'channel': 'somethingWithoutSpaces',
                             }), 'commandName'])
 
+    def _checkManageCapabilities(self, irc, msg, channel):
+        """Check if the user has any of the required capabilities to manage
+        the regexp database."""
+        if channel != 'global':
+            capability = ircdb.makeChannelCapability(channel, 'op')
+        else:
+            capability = 'admin'
+        if not ircdb.checkCapability(msg.prefix, capability):
+            irc.errorNoCapability(capability, Raise=True)
 
     def lock(self, irc, msg, args, optlist, user, name):
         """[--channel <#channel>] <alias>
@@ -391,6 +401,7 @@ class Aka(callbacks.Plugin):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
+        self._checkManageCapabilities(irc, msg, channel)
         try:
             self._db.lock_aka(channel, name, user.name)
         except AkaError as e:
@@ -399,7 +410,7 @@ class Aka(callbacks.Plugin):
             irc.replySuccess()
     lock = wrap(lock, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }), 'admin', 'user', 'commandName'])
+                            }), 'user', 'commandName'])
 
     def unlock(self, irc, msg, args, optlist, user, name):
         """[--channel <#channel>] <alias>
@@ -413,6 +424,7 @@ class Aka(callbacks.Plugin):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
+        self._checkManageCapabilities(irc, msg, channel)
         try:
             self._db.unlock_aka(channel, name, user.name)
         except AkaError as e:
@@ -421,7 +433,7 @@ class Aka(callbacks.Plugin):
             irc.replySuccess()
     unlock = wrap(unlock, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }), 'admin', 'user', 'commandName'])
+                            }), 'user', 'commandName'])
 
 Class = Aka
 
