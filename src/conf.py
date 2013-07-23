@@ -847,6 +847,8 @@ class Databases(registry.SpaceSeparatedListOfStrings):
                 v.insert(0, 'sqlite')
             if 'sqlite3' in sys.modules:
                 v.insert(0, 'sqlite3')
+            if 'sqlalchemy' in sys.modules:
+                v.insert(0, 'sqlalchemy')
         return v
 
     def serialize(self):
