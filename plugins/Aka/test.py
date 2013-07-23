@@ -129,12 +129,14 @@ class AkaTestCase(ChannelPluginTestCase):
 
     def testChannelPriority(self):
         self.assertNotError('aka add spam "echo foo"')
-        self.assertNotError('aka add --channel #channel spam "echo bar"')
+        self.assertNotError('aka add --channel %s spam "echo bar"' %
+                self.channel)
         self.assertResponse('spam', 'bar')
 
-        self.assertNotError('aka add --channel #channel egg "echo baz"')
+        self.assertNotError('aka add --channel %s egg "echo baz"' %
+                self.channel)
         self.assertNotError('aka add egg "echo qux"')
-        self.assertResponse('spam', 'baz')
+        self.assertResponse('egg', 'baz')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

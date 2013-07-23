@@ -101,10 +101,15 @@ if sqlalchemy:
             return list_
 
         def get_alias(self, channel, name):
-            return self.get_db(channel).query(Alias.alias) \
-                    .filter(Alias.name == name).one()[0]
+            try:
+                return self.get_db(channel).query(Alias.alias) \
+                        .filter(Alias.name == name).one()[0]
+            except sqlalchemy.orm.exc.NoResultFound:
+                return None
 
         def add_aka(self, channel, name, alias):
+            if self.has_aka(channel, name):
+                raise AliasError(_('This Aka already exists.'))
             if sys.version_info[0] < 3:
                 if isinstance(name, str):
                     name = name.decode('utf8')
@@ -178,7 +183,7 @@ class Aka(callbacks.Plugin):
     def listCommands(self):
         channel = dynamic.channel
         return set(self._db.get_aka_list(channel) +
-                self._db.get_aka_list() +
+                self._db.get_aka_list('global') +
                 self.__parent.listCommands())
 
     def getCommandMethod(self, command=None, name=None):
@@ -246,23 +251,23 @@ class Aka(callbacks.Plugin):
         return f
 
     def _add_aka(self, channel, name, alias):
-        if self.isCommandMethod(name):
+        if self.__parent.isCommandMethod(name):
             raise AliasError(_('You can\'t overwrite commands in '
                     'this plugin.'))
         biggestDollar = findBiggestDollar(alias)
         biggestAt = findBiggestAt(alias)
         wildcard = '$*' in alias
         if biggestAt and wildcard:
-            raise AliasError('Can\'t mix $* and optional args (@1, etc.)')
+            raise AliasError(_('Can\'t mix $* and optional args (@1, etc.)'))
         if alias.count('$*') > 1:
-            raise AliasError('There can be only one $* in an alias.')
+            raise AliasError(_('There can be only one $* in an alias.'))
         self._db.add_aka(channel, name, alias)
 
     def _remove_aka(self, channel, name):
         self._db.remove_aka(channel, name)
 
-    def add(self, irc, msg, args, channel, name, alias):
-        """[<#channel|global>] <name> <command>
+    def add(self, irc, msg, args, optlist, name, alias):
+        """[--channel <#channel>] <name> <command>
 
         Defines an alias <name> that executes <command>.  The <command>
         should be in the standard "command argument [nestedcommand argument]"
@@ -271,6 +276,13 @@ class Aka(callbacks.Plugin):
         etc. can be used for optional arguments.  $* simply means "all
         remaining arguments," and cannot be combined with optional arguments.
         """
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
         if ' ' not in alias:
             # If it's a single word, they probably want $*.
             alias += ' $*'
@@ -281,8 +293,9 @@ class Aka(callbacks.Plugin):
             irc.replySuccess()
         except AliasError as e:
             irc.error(str(e))
-    add = wrap(add, [first(('literal', 'global'), 'channel'),
-                     'commandName', 'text'])
+    add = wrap(add, [getopts({
+                                'channel': 'somethingWithoutSpaces',
+                            }),'commandName', 'text'])
 
     def remove(self, irc, msg, args, channel, name):
         """[<#channel|global>] <name>
