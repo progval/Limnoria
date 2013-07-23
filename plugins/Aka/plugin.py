@@ -31,6 +31,7 @@
 import re
 import os
 import sys
+import datetime
 
 import supybot.utils as utils
 from supybot.commands import *
@@ -54,17 +55,22 @@ if sqlalchemy:
         __tablename__ = 'aliases'
 
         id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-        name = sqlalchemy.Column(sqlalchemy.String, unique=True)
-        alias = sqlalchemy.Column(sqlalchemy.String)
+        name = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=False)
+        alias = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
+        locked = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+        locked_by = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+        locked_at = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
 
         def __init__(self, name, alias):
             self.name = name
             self.alias = alias
+            self.locked = False
+            self.locked_by = None
+            self.locked_at = None
         def __repr__(self):
             return "<Alias('%r', '%r')>" % (self.name, self.alias)
 
-    # TODO: Add table for locks
     # TODO: Add table for usage statistics
 
     class SqlAlchemyAkaDB(object):
@@ -110,7 +116,7 @@ if sqlalchemy:
 
         def add_aka(self, channel, name, alias):
             if self.has_aka(channel, name):
-                raise AliasError(_('This Aka already exists.'))
+                raise AkaError(_('This Aka already exists.'))
             if sys.version_info[0] < 3:
                 if isinstance(name, str):
                     name = name.decode('utf8')
@@ -125,6 +131,43 @@ if sqlalchemy:
             db.query(Alias).filter(Alias.name == name).delete()
             db.commit()
 
+        def lock_aka(self, channel, name, by):
+            db = self.get_db(channel)
+            try:
+                aka = db.query(Alias) \
+                        .filter(Alias.name == name).one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                raise AkaError(_('This Aka does not exist'))
+            if aka.locked:
+                raise AkaError(_('This Aka is already locked.'))
+            aka.locked = True
+            aka.locked_by = by
+            aka.locked_at = datetime.datetime.now()
+            db.commit()
+
+        def unlock_aka(self, channel, name, by):
+            db = self.get_db(channel)
+            try:
+                aka = db.query(Alias.alias) \
+                        .filter(Alias.name == name).one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                raise AkaError(_('This Aka does not exist'))
+            if aka.locked:
+                raise AkaError(_('This Aka is already unlocked.'))
+            aka.locked = False
+            aka.locked_by = by
+            aka.locked_at = datetime.datetime.now()
+            db.commit()
+
+        def get_aka_lock(self, channel, name):
+            try:
+                return self.get_db(channel) \
+                        .query(Alias.locked, Alias.locked_by, Alias.locked_at)\
+                        .filter(Alias.name == name).one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                raise AkaError(_('This Aka does not exist'))
+
+
 def getArgs(args, required=1, optional=0, wildcard=0):
     if len(args) < required:
         raise callbacks.ArgumentError
@@ -138,10 +181,10 @@ def getArgs(args, required=1, optional=0, wildcard=0):
             ret = list(args)
     return ret
 
-class AliasError(Exception):
+class AkaError(Exception):
     pass
 
-class RecursiveAlias(AliasError):
+class RecursiveAlias(AkaError):
     pass
 
 dollarRe = re.compile(r'\$(\d+)')
@@ -253,20 +296,24 @@ class Aka(callbacks.Plugin):
 
     def _add_aka(self, channel, name, alias):
         if self.__parent.isCommandMethod(name):
-            raise AliasError(_('You can\'t overwrite commands in '
+            raise AkaError(_('You can\'t overwrite commands in '
                     'this plugin.'))
         if self._db.has_aka(channel, name):
-            raise AliasError(_('This Aka already exists.'))
+            raise AkaError(_('This Aka already exists.'))
         biggestDollar = findBiggestDollar(alias)
         biggestAt = findBiggestAt(alias)
         wildcard = '$*' in alias
         if biggestAt and wildcard:
-            raise AliasError(_('Can\'t mix $* and optional args (@1, etc.)'))
+            raise AkaError(_('Can\'t mix $* and optional args (@1, etc.)'))
         if alias.count('$*') > 1:
-            raise AliasError(_('There can be only one $* in an alias.'))
+            raise AkaError(_('There can be only one $* in an alias.'))
         self._db.add_aka(channel, name, alias)
 
-    def _remove_aka(self, channel, name):
+    def _remove_aka(self, channel, name, evenIfLocked=False):
+        if not evenIfLocked:
+            (locked, by, at) = self._db.get_aka_lock(channel, name)
+            if locked:
+                raise AkaError(_('This Aka is locked.'))
         self._db.remove_aka(channel, name)
 
     def add(self, irc, msg, args, optlist, name, alias):
@@ -294,26 +341,74 @@ class Aka(callbacks.Plugin):
             self.log.info('Adding Aka %q for %q (from %s)',
                           name, alias, msg.prefix)
             irc.replySuccess()
-        except AliasError as e:
+        except AkaError as e:
             irc.error(str(e))
     add = wrap(add, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }),'commandName', 'text'])
+                            }), 'commandName', 'text'])
 
-    def remove(self, irc, msg, args, channel, name):
-        """[<#channel|global>] <name>
+    def remove(self, irc, msg, args, optlist, name):
+        """[--channel <#channel>] <name>
 
         Removes the given alias, if unlocked.
         """
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
         try:
             self._remove_aka(channel, name)
             self.log.info('Removing Aka %q (from %s)', name, msg.prefix)
             irc.replySuccess()
-        except AliasError as e:
+        except AkaError as e:
             irc.error(str(e))
-    remove = wrap(remove, [first(('literal', 'global'), 'channel'),
-                           'commandName'])
+    remove = wrap(remove, [getopts({
+                                'channel': 'somethingWithoutSpaces',
+                            }), 'commandName'])
 
+
+    def lock(self, irc, msg, args, optlist, user, name):
+        """[--channel <#channel>] <alias>
+
+        Locks an alias so that no one else can change it.
+        """
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
+        try:
+            self._db.lock_aka(channel, name, user)
+        except AkaError as e:
+            irc.error(str(e))
+    lock = wrap(lock, [getopts({
+                                'channel': 'somethingWithoutSpaces',
+                            }), 'admin', 'commandName'])
+
+    def unlock(self, irc, msg, args, optlist, user, name):
+        """[--channel <#channel>] <alias>
+
+        Unlocks an alias so that people can define new aliases over it.
+        """
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
+        try:
+            self._db.lock_aka(channel, name, user)
+        except AkaError as e:
+            irc.error(str(e))
+    unlock = wrap(unlock, [getopts({
+                                'channel': 'somethingWithoutSpaces',
+                            }), 'admin', 'commandName'])
 
 Class = Aka
 

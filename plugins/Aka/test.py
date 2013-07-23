@@ -103,11 +103,12 @@ class AkaTestCase(ChannelPluginTestCase):
 
     def testAddRemoveAka(self):
         cb = self.irc.getCallback('Aka')
-        cb._add_aka(None, 'foobar', 'echo sbbone', lock=True)
+        cb._add_aka('global', 'foobar', 'echo sbbone')
+        cb._db.lock_aka('global', 'foobar', 'evil_admin')
         self.assertResponse('foobar', 'sbbone')
-        self.assertRaises(Aka.AkaError, cb.removeAka, 'foobar')
-        cb._remove_aka(None, 'foobar', evenIfLocked=True)
-        self.failIf('foobar' in cb.akaes)
+        self.assertRaises(Aka.AkaError, cb._remove_aka, 'global', 'foobar')
+        cb._remove_aka('global', 'foobar', evenIfLocked=True)
+        self.assertNotRegexp('list Aka', 'foobar')
         self.assertError('foobar')
 
     def testOptionalArgs(self):
