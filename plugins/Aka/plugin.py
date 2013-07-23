@@ -148,11 +148,11 @@ if sqlalchemy:
         def unlock_aka(self, channel, name, by):
             db = self.get_db(channel)
             try:
-                aka = db.query(Alias.alias) \
+                aka = db.query(Alias) \
                         .filter(Alias.name == name).one()
             except sqlalchemy.orm.exc.NoResultFound:
                 raise AkaError(_('This Aka does not exist'))
-            if aka.locked:
+            if not aka.locked:
                 raise AkaError(_('This Aka is already unlocked.'))
             aka.locked = False
             aka.locked_by = by
@@ -219,13 +219,13 @@ class Aka(callbacks.Plugin):
         self._db = AkaDB()
 
     def isCommandMethod(self, name):
-        channel = dynamic.channel
+        channel = dynamic.channel or 'global'
         return self._db.has_aka(channel, name) or \
                 self._db.has_aka('global', name) or \
                 self.__parent.isCommandMethod(name)
 
     def listCommands(self):
-        channel = dynamic.channel
+        channel = dynamic.channel or 'global'
         return set(self._db.get_aka_list(channel) +
                 self._db.get_aka_list('global') +
                 self.__parent.listCommands())
@@ -238,7 +238,7 @@ class Aka(callbacks.Plugin):
             except AttributeError:
                 pass
         name = name or callbacks.formatCommand(command)
-        channel = dynamic.channel
+        channel = dynamic.channel or 'global'
         original = self._db.get_alias(channel, name)
         if not original:
             original = self._db.get_alias('global', name)
@@ -289,8 +289,17 @@ class Aka(callbacks.Plugin):
             flexargs = _(' at least')
         else:
             flexargs = ''
-        doc = format(_('<an alias,%s %n>\n\nAlias for %q.'),
-                    flexargs, (biggestDollar, _('argument')), original)
+        try:
+            lock = self._db.get_aka_lock(channel, name)
+        except AkaError:
+            lock = self._db.get_aka_lock('global', name)
+        (locked, locked_by, locked_at) = lock
+        if locked:
+            lock = ' ' + _('Locked by %s at %s') % (locked_by, locked_at)
+        else:
+            lock = ''
+        doc = format(_('<an alias,%s %n>\n\nAlias for %q.%s'),
+                    flexargs, (biggestDollar, _('argument')), original, lock)
         f = utils.python.changeFunctionName(f, name, doc)
         return f
 
@@ -383,12 +392,14 @@ class Aka(callbacks.Plugin):
                             Raise=True)
                 channel = arg
         try:
-            self._db.lock_aka(channel, name, user)
+            self._db.lock_aka(channel, name, user.name)
         except AkaError as e:
             irc.error(str(e))
+        else:
+            irc.replySuccess()
     lock = wrap(lock, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }), 'admin', 'commandName'])
+                            }), 'admin', 'user', 'commandName'])
 
     def unlock(self, irc, msg, args, optlist, user, name):
         """[--channel <#channel>] <alias>
@@ -403,12 +414,14 @@ class Aka(callbacks.Plugin):
                             Raise=True)
                 channel = arg
         try:
-            self._db.lock_aka(channel, name, user)
+            self._db.unlock_aka(channel, name, user.name)
         except AkaError as e:
             irc.error(str(e))
+        else:
+            irc.replySuccess()
     unlock = wrap(unlock, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }), 'admin', 'commandName'])
+                            }), 'admin', 'user', 'commandName'])
 
 Class = Aka
 

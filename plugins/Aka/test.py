@@ -52,8 +52,7 @@ class FunctionsTest(SupyTestCase):
         self.assertEqual(Aka.findBiggestDollar('foo $1 $3'), 3)
         self.assertEqual(Aka.findBiggestDollar('$10 bar $1'), 10)
 
-
-class AkaTestCase(ChannelPluginTestCase):
+class AkaChannelTestCase(ChannelPluginTestCase):
     plugins = ('Aka', 'Filter', 'Utilities', 'Format', 'Reply')
 
     def testDoesNotOverwriteCommands(self):
@@ -135,5 +134,18 @@ class AkaTestCase(ChannelPluginTestCase):
         self.assertNotError('aka add egg "echo qux"')
         self.assertResponse('egg', 'baz')
 
+class AkaTestCase(PluginTestCase):
+    plugins = ('Aka', 'User')
+
+    def testAkaLockedHelp(self):
+        self.assertNotError('register evil_admin foo')
+
+        self.assertNotError('aka add slashdot foo')
+        self.assertRegexp('help slashdot', "Alias for .*foo")
+        self.assertNotRegexp('help slashdot', 'Locked by')
+        self.assertNotError('aka lock slashdot')
+        self.assertRegexp('help slashdot', 'Locked by evil_admin')
+        self.assertNotError('aka unlock slashdot')
+        self.assertNotRegexp('help slashdot', 'Locked by')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
