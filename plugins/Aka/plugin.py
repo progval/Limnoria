@@ -54,8 +54,9 @@ if sqlalchemy:
         __tablename__ = 'aliases'
 
         id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-        name = sqlalchemy.Column(sqlalchemy.String)
+        name = sqlalchemy.Column(sqlalchemy.String, unique=True)
         alias = sqlalchemy.Column(sqlalchemy.String)
+
 
         def __init__(self, name, alias):
             self.name = name
@@ -254,6 +255,8 @@ class Aka(callbacks.Plugin):
         if self.__parent.isCommandMethod(name):
             raise AliasError(_('You can\'t overwrite commands in '
                     'this plugin.'))
+        if self._db.has_aka(channel, name):
+            raise AliasError(_('This Aka already exists.'))
         biggestDollar = findBiggestDollar(alias)
         biggestAt = findBiggestAt(alias)
         wildcard = '$*' in alias
