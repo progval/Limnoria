@@ -138,6 +138,12 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertNotError(u'aka add café "echo coffee"')
         self.assertResponse(u'café', 'coffee')
 
+        self.assertNotError('aka add "foo bar" "echo spam"')
+        self.assertResponse('foo bar', 'spam')
+        self.assertNotError('aka add "foo" "echo egg"')
+        self.assertResponse('foo bar', 'spam')
+        self.assertResponse('foo', 'egg')
+
 class AkaTestCase(PluginTestCase):
     plugins = ('Aka', 'User')
 

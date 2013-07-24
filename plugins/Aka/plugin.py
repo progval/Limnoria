@@ -238,21 +238,38 @@ class Aka(callbacks.Plugin):
         return self._db.has_aka(channel, name) or \
                 self._db.has_aka('global', name) or \
                 self.__parent.isCommandMethod(name)
+    isCommand = isCommandMethod
 
     def listCommands(self):
         channel = dynamic.channel or 'global'
-        return set(self._db.get_aka_list(channel) +
+        return list(set(self._db.get_aka_list(channel) +
                 self._db.get_aka_list('global') +
-                self.__parent.listCommands())
+                self.__parent.listCommands()))
 
-    def getCommandMethod(self, command=None, name=None):
-        if command:
-            assert name is None
+    def getCommand(self, args):
+        canonicalName = callbacks.canonicalName
+        # All the code from here to the 'for' loop is copied from callbacks.py
+        assert args == map(canonicalName, args)
+        first = args[0]
+        for cb in self.cbs:
+            if first == cb.canonicalName():
+                return cb.getCommand(args)
+        if first == self.canonicalName() and len(args) > 1:
+            ret = self.getCommand(args[1:])
+            if ret:
+                return [first] + ret
+        for i in xrange(len(args), 0, -1):
+            if self.isCommandMethod(callbacks.formatCommand(args[0:i])):
+                return args[0:i]
+        return []
+
+    def getCommandMethod(self, command):
+        if len(command) == 1 or command[0] == self.canonicalName():
             try:
                 return self.__parent.getCommandMethod(command)
             except AttributeError:
                 pass
-        name = name or callbacks.formatCommand(command)
+        name = callbacks.formatCommand(command)
         channel = dynamic.channel or 'global'
         original = self._db.get_alias(channel, name)
         if not original:
@@ -369,7 +386,7 @@ class Aka(callbacks.Plugin):
             irc.error(str(e))
     add = wrap(add, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }), 'commandName', 'text'])
+                            }), 'something', 'text'])
 
     def remove(self, irc, msg, args, optlist, name):
         """[--channel <#channel>] <name>
@@ -391,7 +408,7 @@ class Aka(callbacks.Plugin):
             irc.error(str(e))
     remove = wrap(remove, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }), 'commandName'])
+                            }), 'something'])
 
     def _checkManageCapabilities(self, irc, msg, channel):
         """Check if the user has any of the required capabilities to manage
@@ -424,7 +441,7 @@ class Aka(callbacks.Plugin):
             irc.replySuccess()
     lock = wrap(lock, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }), 'user', 'commandName'])
+                            }), 'user', 'something'])
 
     def unlock(self, irc, msg, args, optlist, user, name):
         """[--channel <#channel>] <alias>
@@ -447,7 +464,7 @@ class Aka(callbacks.Plugin):
             irc.replySuccess()
     unlock = wrap(unlock, [getopts({
                                 'channel': 'somethingWithoutSpaces',
-                            }), 'user', 'commandName'])
+                            }), 'user', 'something'])
 
 Class = Aka
 
