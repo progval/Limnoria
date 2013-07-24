@@ -100,6 +100,8 @@ if sqlalchemy:
 
 
         def has_aka(self, channel, name):
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
             count = self.get_db(channel).query(Alias) \
                     .filter(Alias.name == name) \
                     .count()
@@ -109,6 +111,8 @@ if sqlalchemy:
             return list_
 
         def get_alias(self, channel, name):
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
             try:
                 return self.get_db(channel).query(Alias.alias) \
                         .filter(Alias.name == name).one()[0]
@@ -128,11 +132,15 @@ if sqlalchemy:
             db.commit()
 
         def remove_aka(self, channel, name):
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
             db = self.get_db(channel)
             db.query(Alias).filter(Alias.name == name).delete()
             db.commit()
 
         def lock_aka(self, channel, name, by):
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
             db = self.get_db(channel)
             try:
                 aka = db.query(Alias) \
@@ -147,6 +155,8 @@ if sqlalchemy:
             db.commit()
 
         def unlock_aka(self, channel, name, by):
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
             db = self.get_db(channel)
             try:
                 aka = db.query(Alias) \
@@ -161,6 +171,8 @@ if sqlalchemy:
             db.commit()
 
         def get_aka_lock(self, channel, name):
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
             try:
                 return self.get_db(channel) \
                         .query(Alias.locked, Alias.locked_by, Alias.locked_at)\
@@ -220,6 +232,8 @@ class Aka(callbacks.Plugin):
         self._db = AkaDB()
 
     def isCommandMethod(self, name):
+        if sys.version_info[0] < 3 and isinstance(name, str):
+            name = name.decode('utf8')
         channel = dynamic.channel or 'global'
         return self._db.has_aka(channel, name) or \
                 self._db.has_aka('global', name) or \
@@ -348,8 +362,8 @@ class Aka(callbacks.Plugin):
             alias += ' $*'
         try:
             self._add_aka(channel, name, alias)
-            self.log.info('Adding Aka %q for %q (from %s)',
-                          name, alias, msg.prefix)
+            self.log.info('Adding Aka %r for %r (from %s)' % (
+                          name, alias, msg.prefix))
             irc.replySuccess()
         except AkaError as e:
             irc.error(str(e))
@@ -371,7 +385,7 @@ class Aka(callbacks.Plugin):
                 channel = arg
         try:
             self._remove_aka(channel, name)
-            self.log.info('Removing Aka %q (from %s)', name, msg.prefix)
+            self.log.info('Removing Aka %r (from %s)' % (name, msg.prefix))
             irc.replySuccess()
         except AkaError as e:
             irc.error(str(e))

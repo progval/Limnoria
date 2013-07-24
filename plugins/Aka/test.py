@@ -134,6 +134,10 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertNotError('aka add egg "echo qux"')
         self.assertResponse('egg', 'baz')
 
+    def testComplicatedNames(self):
+        self.assertNotError(u'aka add café "echo coffee"')
+        self.assertResponse(u'café', 'coffee')
+
 class AkaTestCase(PluginTestCase):
     plugins = ('Aka', 'User')
 
