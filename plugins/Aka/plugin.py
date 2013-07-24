@@ -352,7 +352,8 @@ class Aka(callbacks.Plugin):
         arguments to the alias; they'll be filled with the first, second, etc.
         arguments.  $1, $2, etc. can be used for required arguments.  @1, @2,
         etc. can be used for optional arguments.  $* simply means "all
-        remaining arguments," and cannot be combined with optional arguments.
+        arguments that have not replaced $1, $2, etc.", ie. it will also
+        include optional arguments.
         """
         channel = 'global'
         for (option, arg) in optlist:
