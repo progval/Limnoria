@@ -53,7 +53,8 @@ class FunctionsTest(SupyTestCase):
         self.assertEqual(Aka.findBiggestDollar('$10 bar $1'), 10)
 
 class AkaChannelTestCase(ChannelPluginTestCase):
-    plugins = ('Aka', 'Filter', 'Utilities', 'Format', 'Reply')
+    plugins = ('Aka', 'Conditional', 'Filter', 'Math', 'Utilities',
+            'Format', 'Reply')
 
     def testDoesNotOverwriteCommands(self):
         # We don't have dispatcher commands anymore
@@ -147,6 +148,13 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertNotError('aka add "foo" "echo egg"')
         self.assertResponse('foo bar', 'spam')
         self.assertResponse('foo', 'egg')
+
+    def testRecursivity(self):
+        self.assertNotError('aka add fact '
+                r'"cif [nceq $1 0] \"echo 1\" '
+                r'\"calc $1 * [fact [calc $1 - 1]]\""')
+        self.assertResponse('fact 4', '24')
+        self.assertRegexp('fact 50', 'more nesting')
 
 class AkaTestCase(PluginTestCase):
     plugins = ('Aka', 'User')
