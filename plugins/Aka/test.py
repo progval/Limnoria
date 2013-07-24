@@ -86,7 +86,11 @@ class AkaChannelTestCase(ChannelPluginTestCase):
     def testAllArgs(self):
         self.assertNotError('aka add swap "echo $2 $1 $*"')
         self.assertResponse('swap 1 2 3 4 5', '2 1 3 4 5')
-        self.assertError('aka add foo "echo $1 @1 $*"')
+        self.assertNotError('aka add foo "echo $1 @1 $*"')
+        self.assertResponse('foo bar baz qux', 'bar baz baz qux')
+        self.assertNotError('aka remove foo')
+        self.assertNotError('aka add foo "echo $* $2 $*"')
+        self.assertResponse('foo bar baz qux quux', 'qux quux baz qux quux')
         self.assertNotError('aka add moo echo $1 $*')
         self.assertError('moo')
         self.assertResponse('moo foo', 'foo')
