@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-06-28 19:40+CEST\n"
+"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,25 @@ msgid ""
 "    out."
 msgstr ""
 
-#: config.py:51
+#: config.py:52
+msgid ""
+"Determines whether the Factoids plugins will\n"
+"    be browsable on the HTTP server."
+msgstr ""
+
+#: config.py:55
+msgid ""
+"Determines whether factoids can be displayed\n"
+"    via the web server."
+msgstr ""
+
+#: config.py:59
+msgid ""
+"Only allows a user with voice or above on a\n"
+"    channel to use the command."
+msgstr ""
+
+#: config.py:62
 msgid ""
 "Determines what separator must be used in the\n"
 "    learn command.  Defaults to 'as' -- learn <key> as <value>.  Users might\n"
@@ -30,21 +48,21 @@ msgid ""
 "    configurable."
 msgstr ""
 
-#: config.py:56
+#: config.py:67
 msgid ""
 "Determines whether the bot will reply with the\n"
 "    single matching factoid if only one factoid matches when using the search\n"
 "    command."
 msgstr ""
 
-#: config.py:60
+#: config.py:71
 msgid ""
 "Determines whether the bot will reply to invalid\n"
 "    commands by searching for a factoid; basically making the whatis\n"
 "    unnecessary when you want all factoids for a given key."
 msgstr ""
 
-#: config.py:64
+#: config.py:75
 msgid ""
 "If you try to look up a nonexistent factoid,\n"
 "    this setting make the bot try to find some possible matching keys through\n"
@@ -52,11 +70,11 @@ msgid ""
 "    before giving up."
 msgstr ""
 
-#: config.py:69
+#: config.py:80
 msgid "$key could be $value."
 msgstr ""
 
-#: config.py:69
+#: config.py:80
 msgid ""
 "Determines the format of\n"
 "    the response given when a factoid's value is requested.  All the standard\n"
@@ -64,7 +82,23 @@ msgid ""
 "    for the factoid's value."
 msgstr ""
 
-#: plugin.py:179
+#: plugin.py:108
+msgid "key"
+msgstr ""
+
+#: plugin.py:109
+msgid "id"
+msgstr ""
+
+#: plugin.py:110
+msgid "fact"
+msgstr ""
+
+#: plugin.py:275
+msgid "You have to be at least voiced to teach factoids."
+msgstr ""
+
+#: plugin.py:312
 msgid ""
 "[<channel>] <key> %s <value>\n"
 "\n"
@@ -76,7 +110,7 @@ msgid ""
 "                         "
 msgstr ""
 
-#: plugin.py:199
+#: plugin.py:332
 #, docstring
 msgid ""
 "Try to typo-match input to possible factoids.\n"
@@ -87,15 +121,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:257 plugin.py:386
+#: plugin.py:390 plugin.py:520
 msgid "That's not a valid number for that key."
 msgstr ""
 
-#: plugin.py:279 plugin.py:372 plugin.py:598
+#: plugin.py:412 plugin.py:506 plugin.py:735
 msgid "No factoid matches that key."
 msgstr ""
 
-#: plugin.py:304
+#: plugin.py:438
 #, docstring
 msgid ""
 "[<channel>] [--raw] <key> [<number>]\n"
@@ -108,11 +142,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:321 plugin.py:523
+#: plugin.py:455 plugin.py:660
 msgid "key id"
 msgstr ""
 
-#: plugin.py:334
+#: plugin.py:468
 #, docstring
 msgid ""
 "[<channel>] <oldkey> <newkey> [<number>]\n"
@@ -126,15 +160,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:381 plugin.py:398
+#: plugin.py:515 plugin.py:532
 msgid "This key-factoid relationship already exists."
 msgstr ""
 
-#: plugin.py:389
+#: plugin.py:523
 msgid "This key has more than one factoid associated with it, but you have not provided a number."
 msgstr ""
 
-#: plugin.py:403
+#: plugin.py:537
 #, docstring
 msgid ""
 "[<channel>] [--plain] [--alpha] [<number>]\n"
@@ -154,7 +188,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:448
+#: plugin.py:582
 #, docstring
 msgid ""
 "[<channel>] <key>\n"
@@ -165,7 +199,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:466
+#: plugin.py:600
 #, docstring
 msgid ""
 "[<channel>] <key>\n"
@@ -176,7 +210,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:505
+#: plugin.py:639
 #, docstring
 msgid ""
 "[<channel>] <key> [<number>|*]\n"
@@ -194,33 +228,37 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:537
+#: plugin.py:654
+msgid "You have to be at least voiced to remove factoids."
+msgstr ""
+
+#: plugin.py:674
 msgid "There is no such factoid."
 msgstr ""
 
-#: plugin.py:547
+#: plugin.py:684
 msgid "Invalid factoid number."
 msgstr ""
 
-#: plugin.py:552
+#: plugin.py:689
 msgid "%s factoids have that key.  Please specify which one to remove, or use * to designate all of them."
 msgstr ""
 
-#: plugin.py:560
+#: plugin.py:697
 #, docstring
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Returns a random factoid from the database for <channel>.  <channel>\n"
+"        Returns random factoids from the database for <channel>.  <channel>\n"
 "        is only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 
-#: plugin.py:582
+#: plugin.py:719
 msgid "I couldn't find a factoid."
 msgstr ""
 
-#: plugin.py:587
+#: plugin.py:724
 #, docstring
 msgid ""
 "[<channel>] <key>\n"
@@ -231,15 +269,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:613
+#: plugin.py:750
 msgid "#%i was added by %s at %s, and has been recalled %n"
 msgstr ""
 
-#: plugin.py:616
+#: plugin.py:753
 msgid "time"
 msgstr ""
 
-#: plugin.py:626
+#: plugin.py:763
 #, docstring
 msgid ""
 "[<channel>] <key> <number> <regexp>\n"
@@ -249,11 +287,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:640
+#: plugin.py:777
 msgid "I couldn't find any key %q"
 msgstr ""
 
-#: plugin.py:655
+#: plugin.py:792
 #, docstring
 msgid ""
 "[<channel>] [--values] [--{regexp} <value>] [<glob> ...]\n"
@@ -264,11 +302,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:692 plugin.py:701
+#: plugin.py:829 plugin.py:838
 msgid "No keys matched that query."
 msgstr ""
 
-#: plugin.py:697 plugin.py:706
+#: plugin.py:834 plugin.py:843
 msgid "More than 100 keys matched that query; please narrow your query."
 msgstr ""
 

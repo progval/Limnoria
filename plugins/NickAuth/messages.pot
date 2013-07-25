@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-11-04 11:10+EET\n"
+"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,11 +69,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:125
+#: plugin.py:119
+msgid "You are not identified and <user> is not given."
+msgstr ""
+
+#: plugin.py:129
 msgid "You have no recognized nick on this network."
 msgstr ""
 
-#: plugin.py:132
+#: plugin.py:136
 #, docstring
 msgid ""
 "takes no argument\n"
@@ -83,11 +87,11 @@ msgid ""
 "        network services."
 msgstr ""
 
-#: plugin.py:158
+#: plugin.py:162
 msgid "You are now authenticated as %s."
 msgstr ""
 
-#: plugin.py:160
+#: plugin.py:164
 msgid "No user has this nick on this network."
 msgstr ""
 

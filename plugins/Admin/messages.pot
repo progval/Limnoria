@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,14 +87,14 @@ msgstr ""
 #: plugin.py:216
 #, docstring
 msgid ""
-"[<nick>]\n"
+"[<nick>] [<network>]\n"
 "\n"
 "        Changes the bot's nick to <nick>.  If no nick is given, returns the\n"
 "        bot's current nick.\n"
 "        "
 msgstr ""
 
-#: plugin.py:231
+#: plugin.py:233
 #, docstring
 msgid ""
 "[<channel>] [<reason>]\n"
@@ -106,11 +106,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:249
+#: plugin.py:251
 msgid "I'm not in %s."
 msgstr ""
 
-#: plugin.py:261
+#: plugin.py:263
 #, docstring
 msgid ""
 "<name|hostmask> <capability>\n"
@@ -120,15 +120,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:281
+#: plugin.py:283
 msgid "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser program (or edit the users.conf file yourself) to add an owner capability."
 msgstr ""
 
-#: plugin.py:292
+#: plugin.py:294
 msgid "You can't add capabilities you don't have."
 msgstr ""
 
-#: plugin.py:297
+#: plugin.py:299
 #, docstring
 msgid ""
 "<name|hostmask> <capability>\n"
@@ -138,15 +138,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:309
+#: plugin.py:311
 msgid "That user doesn't have that capability."
 msgstr ""
 
-#: plugin.py:311
+#: plugin.py:313
 msgid "You can't remove capabilities you don't have."
 msgstr ""
 
-#: plugin.py:319
+#: plugin.py:321
 #, docstring
 msgid ""
 "<hostmask|nick> [<expires>]\n"
@@ -158,7 +158,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:332
+#: plugin.py:334
 #, docstring
 msgid ""
 "<hostmask|nick>\n"
@@ -168,11 +168,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:341
+#: plugin.py:343
 msgid "%s wasn't in the ignores database."
 msgstr ""
 
-#: plugin.py:346
+#: plugin.py:348
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -181,11 +181,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:354
+#: plugin.py:356
 msgid "I'm not currently globally ignoring anyone."
 msgstr ""
 
-#: plugin.py:360
+#: plugin.py:362
 #, docstring
 msgid ""
 "takes no arguments\n"

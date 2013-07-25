@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-07-31 19:07+UTC\n"
+"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,33 +44,43 @@ msgid "New news from "
 msgstr ""
 
 #: config.py:64
+msgid ": "
+msgstr ""
+
+#: config.py:64
+msgid ""
+"Determines what\n"
+"    suffix is appended to the feed name in a news item."
+msgstr ""
+
+#: config.py:67
 msgid ""
 "Determines which RSS feeds\n"
 "    should be announced in the channel; valid input is a list of strings\n"
 "    (either registered RSS feeds or RSS feed URLs) separated by spaces."
 msgstr ""
 
-#: config.py:68
+#: config.py:71
 msgid ""
 "Indicates how many seconds the bot will\n"
 "    wait between retrieving RSS feeds; requests made within this period will\n"
 "    return cached results."
 msgstr ""
 
-#: config.py:72
+#: config.py:75
 msgid ""
 "Determines whether feed items should be\n"
 "    sorted by their update timestamp or kept in the same order as they appear\n"
 "    in a feed."
 msgstr ""
 
-#: config.py:76
+#: config.py:83
 msgid ""
 "Determines what feeds should be accessible as\n"
 "    commands."
 msgstr ""
 
-#: config.py:79
+#: config.py:86
 msgid ""
 "Determines whether the bot will list the link\n"
 "    along with the title of the feed when the rss command is called.\n"
@@ -78,40 +88,40 @@ msgid ""
 "    listed when a feed is automatically announced."
 msgstr ""
 
-#: config.py:84
+#: config.py:97
 msgid ""
 "Indicates how many headlines an rss feed\n"
 "    will output by default, if no number is provided."
 msgstr ""
 
-#: config.py:87
+#: config.py:100
 msgid ""
 "Indicates how many headlines an rss feed\n"
 "    will output when it is first added to announce for a channel."
 msgstr ""
 
-#: config.py:90
+#: config.py:103
 msgid ""
 "Space separated list of \n"
 "    strings, lets you filter headlines to those containing one or more items\n"
 "    in this whitelist."
 msgstr ""
 
-#: config.py:94
+#: config.py:107
 msgid ""
 "Space separated list of \n"
 "    strings, lets you filter headlines to those not containing any items\n"
 "    in this blacklist."
 msgstr ""
 
-#: config.py:100
+#: config.py:113
 msgid ""
 "Determines whether the bot will list the link\n"
 "    along with the title of the feed when a feed is automatically\n"
 "    announced."
 msgstr ""
 
-#: plugin.py:62
+#: plugin.py:63
 #, docstring
 msgid ""
 "This plugin is useful both for announcing updates to RSS feeds in a\n"
@@ -120,12 +130,12 @@ msgid ""
 "    command to determine what feeds should be announced in a given channel."
 msgstr ""
 
-#: plugin.py:304
+#: plugin.py:320
 #, docstring
 msgid "Return feed items, sorted according to sortFeedItems."
 msgstr ""
 
-#: plugin.py:358
+#: plugin.py:373
 #, docstring
 msgid ""
 "<name> <url>\n"
@@ -135,7 +145,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:369
+#: plugin.py:384
 #, docstring
 msgid ""
 "<name>\n"
@@ -145,11 +155,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:375
+#: plugin.py:390
 msgid "That's not a valid RSS feed command name."
 msgstr ""
 
-#: plugin.py:386
+#: plugin.py:401
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -159,11 +169,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:393
+#: plugin.py:408
 msgid "I am currently not announcing any feeds."
 msgstr ""
 
-#: plugin.py:398
+#: plugin.py:413
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -175,7 +185,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:416
+#: plugin.py:431
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -187,7 +197,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:434
+#: plugin.py:449
 #, docstring
 msgid ""
 "<url> [<number of headlines>]\n"
@@ -197,11 +207,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:447
+#: plugin.py:462
 msgid "Couldn't get RSS feed."
 msgstr ""
 
-#: plugin.py:462
+#: plugin.py:477
 #, docstring
 msgid ""
 "<url|feed>\n"
@@ -211,11 +221,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:475
+#: plugin.py:490
 msgid "I couldn't retrieve that RSS feed."
 msgstr ""
 
-#: plugin.py:488
+#: plugin.py:503
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr ""
 
