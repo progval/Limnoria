@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-07-26 09:20+UTC\n"
+"POT-Creation-Date: 2013-07-26 09:23+UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -459,7 +459,7 @@ msgstr ""
 #: src/conf.py:458
 msgid ""
 "Determines whether the bot will always prefix\n"
-"     theuser's nick to its reply to that user's command."
+"     the user's nick to its reply to that user's command."
 msgstr ""
 
 #: src/conf.py:462

@@ -456,7 +456,7 @@ registerGlobalValue(supybot.reply, 'withNoticeWhenPrivate',
 
 registerChannelValue(supybot.reply, 'withNickPrefix',
     registry.Boolean(True, _("""Determines whether the bot will always prefix
-     theuser's nick to its reply to that user's command.""")))
+     the user's nick to its reply to that user's command.""")))
 
 registerChannelValue(supybot.reply, 'whenNotAddressed',
     registry.Boolean(False, _("""Determines whether the bot should attempt to
