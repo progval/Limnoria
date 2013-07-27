@@ -38,7 +38,7 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Time')
 
-parser = utils.python.universalImport('dateutil.parser', 'local.dateutil.parser')
+from .local.dateutil import parser
 
 def parse(s):
     todo = []
