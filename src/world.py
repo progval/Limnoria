@@ -149,13 +149,10 @@ def upkeep():
         except IOError: # Win98 sux0rs!
             pass
     if conf.daemonized:
-        if sys.version_info[0] >= 3:
-            from io import TextIOWrapper as file
         # If we're daemonized, sys.stdout has been replaced with a StringIO
         # object, so let's see if anything's been printed, and if so, let's
         # log.warning it (things shouldn't be printed, and we're more likely
         # to get bug reports if we make it a warning).
-        assert not type(sys.stdout) == file, 'Not a StringIO object!'
         if not hasattr(sys.stdout, 'getvalue'):
             # Stupid twisted sometimes replaces our stdout with theirs, because
             # "The Twisted Way Is The Right Way" (ha!).  So we're stuck simply
@@ -167,7 +164,6 @@ def upkeep():
             log.warning('Printed to stdout after daemonization: %s', s)
             sys.stdout.seek(0)
             sys.stdout.truncate() # Truncates to current offset.
-        assert not type(sys.stderr) == file, 'Not a StringIO object!'
         s = sys.stderr.getvalue()
         if s:
             log.error('Printed to stderr after daemonization: %s', s)
