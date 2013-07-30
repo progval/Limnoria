@@ -412,8 +412,12 @@ class Filter(callbacks.Plugin):
 
         Returns <text> colorized like a rainbow.
         """
+        if sys.version_info[0] < 3:
+            text = text.decode('utf-8')
         colors = utils.iter.cycle(['04', '07', '08', '03', '02', '12', '06'])
         L = [self._color(c, fg=colors.next()) for c in text]
+        if sys.version_info[0] < 3:
+            L = [c.encode('utf-8') for c in L]
         irc.reply(''.join(L) + '\x03')
     rainbow = wrap(rainbow, ['text'])
 
