@@ -153,7 +153,10 @@ class GithubRepository(GitRepository):
         for file in archive.getmembers():
             if file.name.startswith(prefix + dirname + '/README'):
                 extractedFile = archive.extractfile(file)
-                return extractedFile.read()
+                content = extractedFile.read()
+                if sys.version_info[0] >= 3:
+                    content = content.decode()
+                return content
 
     def _getWritableDirectoryFromList(self, directories):
         for directory in directories:
