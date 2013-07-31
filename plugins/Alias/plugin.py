@@ -359,7 +359,11 @@ class Alias(callbacks.Plugin):
         if name in self.aliases and self.isCommandMethod(name):
             if evenIfLocked or not self.aliases[name][1]:
                 del self.aliases[name]
-                conf.supybot.plugins.Alias.aliases.unregister(name)
+                if '.' in name or '|' in name:
+                    conf.supybot.plugins.Alias.escapedaliases.unregister(
+                            escapeAlias(name))
+                else:
+                    conf.supybot.plugins.Alias.aliases.unregister(name)
             else:
                 raise AliasError, 'That alias is locked.'
         else:
