@@ -157,7 +157,7 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertRegexp('fact 50', 'more nesting')
 
 class AkaTestCase(PluginTestCase):
-    plugins = ('Aka', 'User')
+    plugins = ('Aka', 'Alias', 'User', 'Utilities')
 
     def testAkaLockedHelp(self):
         self.assertNotError('register evil_admin foo')
@@ -169,5 +169,34 @@ class AkaTestCase(PluginTestCase):
         self.assertRegexp('help slashdot', 'Locked by evil_admin')
         self.assertNotError('aka unlock slashdot')
         self.assertNotRegexp('help slashdot', 'Locked by')
+
+    def testAliasImport(self):
+        self.assertNotError('alias add foo "echo bar"')
+        self.assertNotError(u'alias add baz "echo café"')
+        self.assertNotError('aka add qux "echo quux"')
+        self.assertResponse('alias foo', 'bar')
+        self.assertResponse('alias baz', 'café')
+        self.assertRegexp('aka foo', 'there is no command named')
+        self.assertResponse('aka qux', 'quux')
+
+        self.assertNotError('aka importaliasdatabase')
+
+        self.assertRegexp('alias foo', 'there is no command named')
+        self.assertResponse('aka foo', 'bar')
+        self.assertResponse('aka baz', 'café')
+        self.assertResponse('aka qux', 'quux')
+
+        self.assertNotError('alias add foo "echo test"')
+        self.assertNotError('alias add spam "echo egg"')
+
+        self.assertRegexp('aka importaliasdatabase',
+            r'the 1 following command: foo \(This Aka already exists.\)$')
+        self.assertResponse('aka foo', 'bar')
+        self.assertResponse('alias foo', 'test')
+        self.assertRegexp('alias spam', 'there is no command named')
+        self.assertResponse('aka spam', 'egg')
+
+
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -454,6 +454,30 @@ class Aka(callbacks.Plugin):
                                 'channel': 'somethingWithoutSpaces',
                             }), 'user', 'something'])
 
+    def importaliasdatabase(self, irc, msg, args):
+        """takes no arguments
+
+        Imports the Alias database into Aka's, and clean the former."""
+        alias_plugin = irc.getCallback('Alias')
+        if alias_plugin is None:
+            irc.error(_('Alias plugin is not loaded.'), Raise=True)
+        errors = {}
+        for (name, (command, locked, func)) in alias_plugin.aliases.items():
+            try:
+                self._add_aka('global', name, command)
+            except AkaError as e:
+                errors[name] = e.args[0]
+            else:
+                alias_plugin.removeAlias(name)
+        if errors:
+            irc.error(format(_('Error occured when importing the %n: %L'),
+                (len(errors), 'following', 'command'),
+                map(lambda x:'%s (%s)' % x, errors.items())))
+        else:
+            irc.replySuccess()
+    importaliasdatabase = wrap(importaliasdatabase, ['owner'])
+
+
 Class = Aka
 
 
