@@ -106,6 +106,7 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         cb._add_aka('global', 'foobar', 'echo sbbone')
         cb._db.lock_aka('global', 'foobar', 'evil_admin')
         self.assertResponse('foobar', 'sbbone')
+        self.assertRegexp('list Aka', 'foobar')
         self.assertRaises(Aka.AkaError, cb._remove_aka, 'global', 'foobar')
         cb._remove_aka('global', 'foobar', evenIfLocked=True)
         self.assertNotRegexp('list Aka', 'foobar')

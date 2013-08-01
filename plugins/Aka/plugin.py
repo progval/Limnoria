@@ -242,8 +242,9 @@ class Aka(callbacks.Plugin):
 
     def listCommands(self):
         channel = dynamic.channel or 'global'
-        return list(set(self._db.get_aka_list(channel) +
-                self._db.get_aka_list('global') +
+        return list(set(map(callbacks.formatCommand,
+                            self._db.get_aka_list(channel) +
+                            self._db.get_aka_list('global')) +
                 self.__parent.listCommands()))
 
     def getCommand(self, args):
