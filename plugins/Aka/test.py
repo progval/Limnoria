@@ -164,12 +164,12 @@ class AkaTestCase(PluginTestCase):
         self.assertNotError('register evil_admin foo')
 
         self.assertNotError('aka add slashdot foo')
-        self.assertRegexp('help slashdot', "Alias for .*foo")
-        self.assertNotRegexp('help slashdot', 'Locked by')
+        self.assertRegexp('help aka slashdot', "Alias for .*foo")
+        self.assertNotRegexp('help aka slashdot', 'Locked by')
         self.assertNotError('aka lock slashdot')
-        self.assertRegexp('help slashdot', 'Locked by evil_admin')
+        self.assertRegexp('help aka slashdot', 'Locked by evil_admin')
         self.assertNotError('aka unlock slashdot')
-        self.assertNotRegexp('help slashdot', 'Locked by')
+        self.assertNotRegexp('help aka slashdot', 'Locked by')
 
     def testAliasImport(self):
         self.assertNotError('alias add foo "echo bar"')
