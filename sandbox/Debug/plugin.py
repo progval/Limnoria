@@ -184,6 +184,7 @@ class Debug(callbacks.Privmsg):
         irc.reply(format('%L', map(str, L)))
     collect = wrap(collect, [additional('positiveInt', 1)])
 
+    _progstats_endline_remover = utils.str.MultipleRemover('\r\n')
     def progstats(self, irc, msg, args):
         """takes no arguments
 
@@ -195,7 +196,7 @@ class Debug(callbacks.Privmsg):
                    'Running on Python %s.' % \
                    (os.getpid(), pw[0], pw[3],
                     os.getcwd(), ' '.join(sys.argv),
-                    sys.version.translate(string.ascii, '\r\n'))
+                    self._progstats_endline_remover(sys.version))
         irc.reply(response)
     progstats = wrap(progstats)
 
