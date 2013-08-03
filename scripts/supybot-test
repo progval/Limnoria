@@ -157,7 +157,11 @@ if __name__ == '__main__':
     for pluginDir in options.pluginsDirs:
         for name in glob.glob(os.path.join(pluginDir, '*')):
             #print '***', name
-            if name not in options.excludePlugins and os.path.isdir(name):
+            print(repr(name))
+            if not any(map(lambda x:name in x,
+                           map(glob.glob, options.excludePlugins))) and \
+                    os.path.isdir(name):
+                print('foo')
                 args.append(name)
 
     if not args:
