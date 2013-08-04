@@ -200,17 +200,24 @@ class Conditional(callbacks.Plugin):
     le = wrap(le, ['anything', 'anything'])
 
     @internationalizeDocstring
-    def match(self, irc, msg, args, item1, item2):
-        """<item1> <item2>
+    def match(self, irc, msg, args, optlist, item1, item2):
+        """[--case-insensitive] <item1> <item2>
 
         Determines if <item1> is a substring of <item2>.
         Returns true if <item1> is contained in <item2>.
+
+        Will only match case if --case-insensitive is not given.
         """
+        optlist = dict(optlist)
+        if 'case-insensitive' in optlist:
+            item1 = item1.lower()
+            item2 = item2.lower()
         if item2.find(item1) != -1:
             irc.reply('true')
         else:
             irc.reply('false')
-    match = wrap(match, ['something', 'something'])
+    match = wrap(match, [getopts({'case-insensitive': ''}),
+                         'something', 'something'])
 
     @internationalizeDocstring
     def nceq(self, irc, msg, args, item1, item2):

@@ -98,6 +98,8 @@ class ConditionalTestCase(PluginTestCase):
     def testMatch(self):
         self.assertRegexp('match bla mooblafoo', 'true')
         self.assertRegexp('match bla mooblfoo', 'false')
+        self.assertRegexp('match Bla moobLafoo', 'false')
+        self.assertRegexp('match --case-insensitive Bla moobLafoo', 'true')
         self.assertError('match bla bla stuff')
     
     def testNceq(self):
