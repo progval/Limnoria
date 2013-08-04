@@ -73,6 +73,29 @@ class TestSchedule(SupyTestCase):
         sched.run()
         self.assertEqual(i[0], 1)
 
+    def testPeriodic(self):
+        sched = schedule.Schedule()
+        i = [0]
+        def inc():
+            i[0] += 1
+        n = sched.addPeriodicEvent(inc, 1, name='test_periodic')
+        time.sleep(0.6)
+        sched.run() # 0.6
+        self.assertEqual(i[0], 1)
+        time.sleep(0.6)
+        sched.run() # 1.2
+        self.assertEqual(i[0], 2)
+        time.sleep(0.6)
+        sched.run() # 1.8
+        self.assertEqual(i[0], 2)
+        time.sleep(0.6)
+        sched.run() # 2.4
+        self.assertEqual(i[0], 3)
+        sched.removePeriodicEvent(n)
+        time.sleep(1)
+        sched.run() # 3.4
+        self.assertEqual(i[0], 3)
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
