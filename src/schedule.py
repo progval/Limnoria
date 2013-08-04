@@ -36,6 +36,7 @@ from __future__ import with_statement
 
 import time
 import heapq
+import functools
 from threading import Lock
 
 import supybot.log as log
@@ -109,14 +110,19 @@ class Schedule(drivers.IrcDriver):
         f = self.removeEvent(name)
         self.addEvent(f, t, name=name)
 
-    def addPeriodicEvent(self, f, t, name=None, now=True, args=[], kwargs={}):
+    def addPeriodicEvent(self, f, t, name=None, now=True, args=[], kwargs={},
+            count=None):
         """Adds a periodic event that is called every t seconds."""
-        def wrapper():
+        def wrapper(count):
             try:
                 f(*args, **kwargs)
             finally:
                 # Even if it raises an exception, let's schedule it.
-                return self.addEvent(wrapper, time.time() + t, name)
+                if count[0] is not None:
+                    count[0] -= 1
+                if count[0] is None or count[0] > 0:
+                    return self.addEvent(wrapper, time.time() + t, name)
+        wrapper = functools.partial(wrapper, [count])
         if now:
             return wrapper()
         else:
