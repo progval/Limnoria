@@ -127,7 +127,10 @@ class Debug(callbacks.Privmsg):
 
         Raises the exception matching <exception name>.
         """
-        exn = getattr(exceptions, name)
+        if isinstance(__builtins__, dict):
+            exn = __builtins__[name]
+        else:
+            exn = getattr(__builtins__, name)
         raise exn, msg.prefix
     exn = wrap(exn, ['text'])
 
