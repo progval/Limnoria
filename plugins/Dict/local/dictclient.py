@@ -54,6 +54,8 @@ class Connection:
         consisting of two items: the integer result code and the text
         following.  You will not usually use this function directly."""
         line = self.rfile.readline().decode('utf8').strip()
+        if line.startswith('['):
+            return [None, line]
         code, text = line.split(' ', 1)
         return [int(code), text]
 
@@ -194,7 +196,7 @@ class Connection:
 
         while 1:
             code, text = self.getresultcode()
-            if code != 151:
+            if code != 151 or code is None:
                 break
 
             resultword, resultdb = re.search('^"(.+)" (\S+)', text).groups()
