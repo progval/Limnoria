@@ -142,7 +142,7 @@ msgid "%s must be in %s to use this command."
 msgstr "Käyttäjän %s täytyy olla kanavalla %s käyttääkseen tätä komentoa."
 
 #: plugin.py:334
-msgid "I couldn't find in my history of %s messages where %r last left the %s"
+msgid "I couldn't find in my history of %s messages where %r last left %s"
 msgstr "En voinut löytää %s viestin historiasta milloin %r viimeksi lähti kanavalta %s"
 
 #: plugin.py:343
