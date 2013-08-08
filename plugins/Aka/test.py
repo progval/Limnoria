@@ -157,6 +157,10 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertResponse('fact 4', '24')
         self.assertRegexp('fact 50', 'more nesting')
 
+    def testDollarStarNesting(self):
+        self.assertNotError('aka add alias aka $*')
+        self.assertNotError('alias add a+ aka add $*')
+
 class AkaTestCase(PluginTestCase):
     plugins = ('Aka', 'Alias', 'User', 'Utilities')
 
@@ -196,8 +200,6 @@ class AkaTestCase(PluginTestCase):
         self.assertResponse('alias foo', 'test')
         self.assertRegexp('alias spam', 'there is no command named')
         self.assertResponse('aka spam', 'egg')
-
-
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -298,14 +298,17 @@ class Aka(callbacks.Plugin):
                 replace(tokens, lambda s: atRe.sub(regexpReplace, s))
             if wildcard:
                 def everythingReplace(tokens):
+                    new_tokens = []
                     for (i, token) in enumerate(tokens):
                         if isinstance(token, list):
                             if everythingReplace(token):
                                 return
                         if token == '$*':
-                            tokens[i:i+1] = args
-                        elif '$*' in token:
-                            tokens[i] = token.replace('$*', ' '.join(args))
+                            new_tokens.extend(args)
+                        else:
+                            new_tokens.append(
+                                    token.replace('$*', ' '.join(args)))
+                    tokens[:] = new_tokens
                     return False
                 everythingReplace(tokens)
             self.Proxy(irc, msg, tokens)
