@@ -138,7 +138,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         if capabilities:
             for capability in re.split(r'\s*;\s*', capabilities):
                 if capability.startswith('channel,'):
-                    capability = ircdb.makeChannelCapability(channel, capability[8:])
+                    capability = capability[8:]
+                    if channel != 'global':
+                        capability = ircdb.makeChannelCapability(channel, capability)
                 if capability and ircdb.checkCapability(msg.prefix, capability):
                     #print "has capability:", capability
                     return True
