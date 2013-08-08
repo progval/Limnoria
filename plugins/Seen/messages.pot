@@ -135,7 +135,7 @@ msgid "%s must be in %s to use this command."
 msgstr ""
 
 #: plugin.py:363
-msgid "I couldn't find in my history of %s messages where %r last left the %s"
+msgid "I couldn't find in my history of %s messages where %r last left %s"
 msgstr ""
 
 #: plugin.py:372

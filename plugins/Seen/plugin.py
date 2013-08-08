@@ -361,7 +361,7 @@ class Seen(callbacks.Plugin):
                 break
         else: # I never use this; it only kicks in when the for loop exited normally.
             irc.error(format(_('I couldn\'t find in my history of %s messages '
-                             'where %r last left the %s'),
+                             'where %r last left %s'),
                              len(irc.state.history), nick, channel))
             return
         msgs = [m for m in irc.state.history[i:end]
