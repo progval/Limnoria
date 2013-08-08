@@ -123,7 +123,7 @@ msgid "%s must be in %s to use this command."
 msgstr "Du musst in %s sein, um diesen Befehl zu benutzen."
 
 #: plugin.py:334
-msgid "I couldn't find in my history of %s messages where %r last left the %s"
+msgid "I couldn't find in my history of %s messages where %r last left %s"
 msgstr "Ich konnte in meiner Vergangenheit von %s Nachrichten nichts finden, wo %r zuletzt %s verlassen hat."
 
 #: plugin.py:343
