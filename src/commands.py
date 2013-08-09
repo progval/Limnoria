@@ -89,7 +89,9 @@ def process(f, *args, **kwargs):
     <timeout>, if supplied, limits the length of execution of target 
     function to <timeout> seconds."""
     timeout = kwargs.pop('timeout', None)
-    heap_size = kwargs.pop('heap_size', resource.RLIM_INFINITY)
+    heap_size = kwargs.pop('heap_size', None)
+    if resource and heap_size is None:
+        heap_size = resource.RLIM_INFINITY
 
     if conf.disableMultiprocessing:
         pn = kwargs.pop('pn', 'Unknown')
