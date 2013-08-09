@@ -37,6 +37,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
+import supybot.commands as commands
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
@@ -68,16 +69,55 @@ class Title(HTMLParser.HTMLParser):
             if name in self.entitydefs:
                 self.title += self.entitydefs[name]
 
+class DelayedIrc:
+    def __init__(self, irc, msg):
+        self._irc = irc
+        self._msg = msg
+        self._replies = []
+    def reply(self, *args, **kwargs):
+        self._replies.append(callbacks.reply(self._msg, *args, **kwargs))
+    def error(self, *args, **kwargs):
+        self._replies.append(callbacks.error(self._msg, *args, **kwargs))
+    def __getattr__(self, name):
+        assert name not in ('reply', 'error', '_irc', '_msg', '_replies')
+        return getattr(self._irc, name)
+
+def fetch_sandbox(f):
+    """Runs a command in a forked process with limited memory resources
+    to prevent memory bomb caused by specially crafted http responses."""
+    def process(self, irc, msg, *args, **kwargs):
+        delayed_irc = DelayedIrc(irc, msg)
+        f(self, delayed_irc, msg, *args, **kwargs)
+        return delayed_irc._replies
+    def newf(self, irc, *args):
+        try:
+            replies = commands.process(process, self, irc, *args,
+                    timeout=5, heap_size=1024*1024,
+                    pn=self.name(), cn=f.func_name)
+        except commands.ProcessTimeoutError:
+            raise utils.web.Error(_('Page is too big.'))
+        else:
+            for reply in replies:
+                irc.queueMsg(reply)
+    newf.__doc__ = f.__doc__
+    return newf
+
+def catch_web_errors(f):
+    """Display a nice error instead of "An error has occurred"."""
+    def newf(self, irc, *args, **kwargs):
+        try:
+            f(self, irc, *args, **kwargs)
+        except utils.web.Error as e:
+            irc.reply(str(e))
+    newf.__doc__ = f.__doc__
+    return newf
+
 class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
     threaded = True
     regexps = ['titleSnarfer']
-    def callCommand(self, command, irc, msg, *args, **kwargs):
-        try:
-            super(Web, self).callCommand(command, irc, msg, *args, **kwargs)
-        except utils.web.Error, e:
-            irc.reply(str(e))
 
+    @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
         channel = msg.args[0]
         if not irc.isChannel(channel):
@@ -135,6 +175,8 @@ class Web(callbacks.PluginRegexp):
                 break
         return passed
 
+    @catch_web_errors
+    @fetch_sandbox
     @internationalizeDocstring
     def headers(self, irc, msg, args, url):
         """<url>
@@ -155,6 +197,8 @@ class Web(callbacks.PluginRegexp):
     headers = wrap(headers, ['httpUrl'])
 
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
+    @catch_web_errors
+    @fetch_sandbox
     @internationalizeDocstring
     def doctype(self, irc, msg, args, url):
         """<url>
@@ -176,6 +220,8 @@ class Web(callbacks.PluginRegexp):
             irc.reply(_('That URL has no specified doctype.'))
     doctype = wrap(doctype, ['httpUrl'])
 
+    @catch_web_errors
+    @fetch_sandbox
     @internationalizeDocstring
     def size(self, irc, msg, args, url):
         """<url>
@@ -204,6 +250,8 @@ class Web(callbacks.PluginRegexp):
             fd.close()
     size = wrap(size, ['httpUrl'])
 
+    @catch_web_errors
+    @fetch_sandbox
     @internationalizeDocstring
     def title(self, irc, msg, args, optlist, url):
         """[--no-filter] <url>
@@ -260,6 +308,8 @@ class Web(callbacks.PluginRegexp):
         irc.reply(s)
     urlunquote = wrap(urlunquote, ['text'])
 
+    @catch_web_errors
+    @fetch_sandbox
     @internationalizeDocstring
     def fetch(self, irc, msg, args, url):
         """<url>
