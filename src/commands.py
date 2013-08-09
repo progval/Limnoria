@@ -99,7 +99,7 @@ def process(f, *args, **kwargs):
         try:
             return f(*args, **kwargs)
         except Exception as e:
-            return e
+            raise e
     
     q = multiprocessing.Queue()
     def newf(f, q, *args, **kwargs):
