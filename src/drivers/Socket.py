@@ -126,6 +126,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.eagains += 1
 
     def _sendIfMsgs(self):
+        if not self.connected:
+            return
         if not self.zombie:
             msgs = [self.irc.takeMsg()]
             while msgs[-1] is not None:
@@ -154,7 +156,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             for inst in cls._instances:
                 # Do not use a list comprehension here, we have to edit the list
                 # and not to reassign it.
-                if (sys.version_info[0] == 3 and inst.conn._closed) or \
+                if not inst.connected or \
+                        (sys.version_info[0] == 3 and inst.conn._closed) or \
                         (sys.version_info[0] == 2 and
                             inst.conn._sock.__class__ is socket._closedsocket):
                     cls._instances.remove(inst)
@@ -264,8 +267,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         else:
             drivers.log.debug('Not resetting %s.', self.irc)
         server = self._getNextServer()
-        address = utils.net.getAddressFromHostname(server[0],
-                attempt=self._attempt)
+        try:
+            address = utils.net.getAddressFromHostname(server[0],
+                    attempt=self._attempt)
+        except socket.gaierror as e:
+            drivers.log.connectError(self.currentServer, e)
+            self.scheduleReconnect()
+            return
         drivers.log.connect(self.currentServer)
         try:
             socks_proxy = getattr(conf.supybot.networks, self.irc.network) \
