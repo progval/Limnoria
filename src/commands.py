@@ -40,6 +40,11 @@ import threading
 import multiprocessing #python2.6 or later!
 import Queue
 
+try:
+    import resource
+except ImportError: # Windows!
+    resource = None
+
 import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
@@ -84,6 +89,7 @@ def process(f, *args, **kwargs):
     <timeout>, if supplied, limits the length of execution of target 
     function to <timeout> seconds."""
     timeout = kwargs.pop('timeout', None)
+    heap_size = kwargs.pop('heap_size', resource.RLIM_INFINITY)
 
     if conf.disableMultiprocessing:
         pn = kwargs.pop('pn', 'Unknown')
@@ -95,6 +101,9 @@ def process(f, *args, **kwargs):
     
     q = multiprocessing.Queue()
     def newf(f, q, *args, **kwargs):
+        if resource:
+            rsrc = resource.RLIMIT_DATA
+            resource.setrlimit(rsrc, (heap_size, heap_size))
         try:
             r = f(*args, **kwargs)
             q.put(r)
@@ -111,10 +120,11 @@ def process(f, *args, **kwargs):
     try:
         v = q.get(block=False)
     except Queue.Empty:
-        v = "Nothing returned."
+        return None
     if isinstance(v, Exception):
-        v = "Error: " + str(v)
-    return v
+        raise v
+    else:
+        return v
 
 def regexp_wrapper(s, reobj, timeout, plugin_name, fcn_name):
     '''A convenient wrapper to stuff regexp search queries through a subprocess.
