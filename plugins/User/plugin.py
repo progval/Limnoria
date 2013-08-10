@@ -364,15 +364,22 @@ class User(callbacks.Plugin):
 
         @internationalizeDocstring
         def remove(self, irc, msg, args, user, hostmask, password):
-            """<name> <hostmask> [<password>]
+            """[<name>] [<hostmask>] [<password>]
 
             Removes the hostmask <hostmask> from the record of the user
             specified by <name>.  If the hostmask given is 'all' then all
             hostmasks will be removed.  The <password> may only be required if
             the user is not recognized by their hostmask.  This message must be
             sent to the bot privately (not on a channel) since it may contain a
-            password.
+            password.  If <hostmask> is
+            not given, it defaults to your current hostmask.  If <name> is not
+            given, it defaults to your currently identified name.  This message
+            must be sent to the bot privately (not on a channel) since it may
+            contain a password.
+
             """
+            if not hostmask:
+                hostmask = msg.prefix
             if not user.checkPassword(password) and \
                not user.checkHostmask(msg.prefix):
                 u = ircdb.users.getUser(msg.prefix)
@@ -391,8 +398,8 @@ class User(callbacks.Plugin):
                 return
             ircdb.users.setUser(user)
             irc.replySuccess(s)
-        remove = wrap(remove, ['private', 'otherUser', 'something',
-                               additional('something', '')])
+        remove = wrap(remove, ['private', first('otherUser', 'user'),
+                               optional('something'), additional('something', '')])
 
     class gpg(callbacks.Commands):
         def __init__(self, *args):
