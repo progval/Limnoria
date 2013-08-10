@@ -72,9 +72,13 @@ class TokenizerTestCase(SupyTestCase):
         self.assertEqual(tokenize('foo "bar baz" quux'),
                          ['foo', 'bar baz', 'quux'])
 
-    def testUnicode(self):
-        self.assertEqual(tokenize(u'好'), [u'好'])
-        self.assertEqual(tokenize(u'"好"'), [u'好'])
+    _testUnicode = """
+def testUnicode(self):
+    self.assertEqual(tokenize(u'好'), [u'好'])
+    self.assertEqual(tokenize(u'"好"'), [u'好'])"""
+    if sys.version_info[0] >= 3:
+        _testUnicode = _testUnicode.replace("u'", "'")
+    exec(_testUnicode)
 
     def testNesting(self):
         self.assertEqual(tokenize('[]'), [[]])
