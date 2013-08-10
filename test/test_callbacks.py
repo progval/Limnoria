@@ -433,6 +433,8 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse('secondcmd', 'bar')
         self.assertResponse('first firstcmd', 'foo')
         self.assertResponse('second secondcmd', 'bar')
+        self.assertRegexp('first first firstcmd',
+                'there is no command named "first" in it')
 
     def testAmbiguousError(self):
         self.irc.addCallback(self.First(self.irc))

@@ -1190,14 +1190,15 @@ class Commands(BasePlugin):
             assert isinstance(command, list)
             return self.getCommand(command) == command
 
-    def getCommand(self, args):
+    def getCommand(self, args, stripOwnName=True):
         assert args == map(canonicalName, args)
         first = args[0]
         for cb in self.cbs:
             if first == cb.canonicalName():
                 return cb.getCommand(args)
-        if first == self.canonicalName() and len(args) > 1:
-            ret = self.getCommand(args[1:])
+        if first == self.canonicalName() and len(args) > 1 and \
+                stripOwnName:
+            ret = self.getCommand(args[1:], stripOwnName=False)
             if ret:
                 return [first] + ret
         if self.isCommandMethod(first):
