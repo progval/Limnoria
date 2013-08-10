@@ -95,7 +95,7 @@ class IrcMsgQueueTestCase(SupyTestCase):
         q.enqueue(self.msg)
         try:
             repr(q)
-        except Exception, e:
+        except Exception as e:
             self.fail('repr(q) raised an exception: %s' %
                       utils.exnToString(e))
 
@@ -466,7 +466,7 @@ class IrcCallbackTestCase(SupyTestCase):
         doCommandCatcher = DoCommandCatcher()
         for msg in msgs:
             doCommandCatcher(self.irc, msg)
-        commands = map(makeCommand, msgs)
+        commands = list(map(makeCommand, msgs))
         self.assertEqual(doCommandCatcher.L, commands)
 
     def testFirstCommands(self):

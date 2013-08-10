@@ -204,7 +204,11 @@ class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.
     """
     def iteritems(self):
-        raise NotImplementedError
+        if sys.version_info[0] >= 3 and hasattr(self, 'iteritems'):
+            # For old plugins
+            return getattr(self, 'iteritems')() # avoid 2to3
+        else:
+            raise NotImplementedError()
 
     def iterkeys(self):
         for (key, _) in self.iteritems():

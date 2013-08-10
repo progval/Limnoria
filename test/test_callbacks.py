@@ -513,7 +513,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     class BadInvalidCommand(callbacks.Plugin):
         def invalidCommand(self, irc, msg, tokens):
             s = 'This shouldn\'t keep Misc.invalidCommand from being called'
-            raise Exception, s
+            raise Exception(s)
 
     def testBadInvalidCommandDoesNotKillAll(self):
         try:

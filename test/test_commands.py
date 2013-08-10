@@ -27,6 +27,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
+
 from supybot.test import *
 
 from supybot.commands import *
@@ -83,10 +85,11 @@ class GeneralContextTestCase(CommandsTestCase):
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(strict)
 
-    def testSpecLong(self):
-        self.assertState(['long'], ['1'], [1L])
-        self.assertState(['long', 'long', 'long'], ['1', '2', '3'],
-                         [1L, 2L, 3L])
+    if sys.version_info[0] < 3:
+        def testSpecLong(self):
+            self.assertState(['long'], ['1'], [long(1)])
+            self.assertState(['long', 'long', 'long'], ['1', '2', '3'],
+                             [long(1), long(2), long(3)])
 
     def testRestHandling(self):
         self.assertState([rest(None)], ['foo', 'bar', 'baz'], ['foo bar baz'])
