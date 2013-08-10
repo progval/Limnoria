@@ -47,7 +47,7 @@ class C(%s
     def foo(self):
         raise self.MyException()""" %
         ('metaclass=log.MetaFirewall):\n' if sys.version_info[0] >= 3 else
-            'object):\n__metaclass__ = log.MetaFirewall'))
+            'object):\n    __metaclass__ = log.MetaFirewall'))
 
     def testCFooDoesNotRaise(self):
         c = self.C()
