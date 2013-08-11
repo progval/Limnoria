@@ -417,7 +417,43 @@ def timestamp(t):
         t = time.time()
     return time.ctime(t)
 
-_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrsStuv%])')
+# adapted from
+# https://github.com/liudmil-mitev/experiments/blob/master/time/humanize_time.py
+def timedelta(amount, units='second'):
+    '''
+        Divide `amount` in time periods.
+        Useful for making time intervals more human readable.
+
+        >>> humanize_time(173, "hour")
+        [(1, 'week'), (5, 'hours')]
+        >>> humanize_time(17313, "second")
+        [(4, 'hours'), (48, 'minutes'), (33, 'seconds')]
+        >>> humanize_time(90, "week")
+        [(1, 'year'), (10, 'months'), (2, 'weeks')]
+        >>> humanize_time(42, "month")
+        [(3, 'years'), (6, 'months')]
+        >>> humanize_time(500, "day")
+        [(1, 'year'), (5, 'months'), (3, 'weeks'), (3, 'days')]
+    '''
+    INTERVALS = [1, 60, 3600, 86400, 604800, 2419200, 29030400]
+    NAMES = (_('second'), _('minute'), _('hour'), _('day'),
+            _('week'), _('month'), _('year'))
+
+    result = []
+
+    unit = NAMES.index(units)
+    # Convert to seconds
+    amount = amount * INTERVALS[unit]
+
+    for i in range(len(NAMES)-1, -1, -1):
+        a = int(amount // INTERVALS[i])
+        if a > 0:
+            result.append(nItems(a, NAMES[i]))
+            amount -= a * INTERVALS[i]
+
+    return ' '.join(result)
+
+_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrsStTuv%])')
 def format(s, *args, **kwargs):
     """w00t.
 
@@ -434,10 +470,15 @@ def format(s, *args, **kwargs):
     n: nItems (takes a 2-tuple of (n, item) or a 3-tuple of (n, between, item))
     S: returns a human-readable size (takes an int)
     t: time, formatted (takes an int)
+    T: time delta, formatted (takes an int)
     u: url, wrapped in braces (this should be configurable at some point)
     v: void : takes one or many arguments, but doesn't display it
        (useful for translation)
     """
+    # Note to developers: If you want to add an argument type, do not forget
+    # to add the character to the _formatRe regexp or it will be ignored
+    # (and hard to debug if you don't know the trick).
+    # Of course, you should also document it in the docstring above.
     args = list(args)
     args.reverse() # For more efficient popping.
     def sub(match):
@@ -501,6 +542,8 @@ def format(s, *args, **kwargs):
 
         elif char == 't':
             return timestamp(args.pop())
+        elif char == 'T':
+            return timedelta(args.pop())
         elif char == 'u':
             import supybot.conf as conf
             return conf.supybot.reply.format.url() % args.pop()
