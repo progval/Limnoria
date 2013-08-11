@@ -375,7 +375,7 @@ class Aka(callbacks.Plugin):
             alias += ' $*'
         try:
             self._add_aka(channel, name, alias)
-            self.log.info('Adding Aka %r for %r (from %s)' % (
+            self.log.info('Adding Aka %q for %q (from %s)' % (
                           name, alias, msg.prefix))
             irc.replySuccess()
         except AkaError as e:
@@ -398,7 +398,7 @@ class Aka(callbacks.Plugin):
                 channel = arg
         try:
             self._remove_aka(channel, name)
-            self.log.info('Removing Aka %r (from %s)' % (name, msg.prefix))
+            self.log.info('Removing Aka %q (from %s)' % (name, msg.prefix))
             irc.replySuccess()
         except AkaError as e:
             irc.error(str(e))
