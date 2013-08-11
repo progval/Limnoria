@@ -96,6 +96,10 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertError('moo')
         self.assertResponse('moo foo', 'foo')
         self.assertResponse('moo foo bar', 'foo bar')
+
+        self.assertNotError('aka add spam "echo [echo $*]"')
+        self.assertResponse('spam egg', 'egg')
+        self.assertResponse('spam egg bacon', 'egg bacon')
     
     def testChannel(self):
         self.assertNotError('aka add channel echo $channel')

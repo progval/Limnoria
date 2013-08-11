@@ -298,19 +298,23 @@ class Aka(callbacks.Plugin):
                 replace(tokens, lambda s: atRe.sub(regexpReplace, s))
             if wildcard:
                 def everythingReplace(tokens):
+                    ret = False
                     new_tokens = []
                     for (i, token) in enumerate(tokens):
                         if isinstance(token, list):
-                            if everythingReplace(token):
-                                return
+                            (sub_ret, sub_tokens) =  everythingReplace(token)
+                            new_tokens.append(sub_tokens)
+                            if sub_ret:
+                                continue
                         if token == '$*':
                             new_tokens.extend(args)
+                            ret = True
                         else:
                             new_tokens.append(
                                     token.replace('$*', ' '.join(args)))
-                    tokens[:] = new_tokens
-                    return False
-                everythingReplace(tokens)
+                            ret = True
+                    return (ret, new_tokens)
+                (ret, tokens) = everythingReplace(tokens)
             self.Proxy(irc, msg, tokens)
         if biggestDollar and (wildcard or biggestAt):
             flexargs = _(' at least')
