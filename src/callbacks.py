@@ -1150,6 +1150,7 @@ class Commands(BasePlugin):
     commandArgs = ['self', 'irc', 'msg', 'args']
     # These must be class-scope, so all plugins use the same one.
     _disabled = DisabledCommands()
+    pre_command_callbacks = []
     def name(self):
         return self.__class__.__name__
 
@@ -1243,6 +1244,10 @@ class Commands(BasePlugin):
         return L
 
     def callCommand(self, command, irc, msg, *args, **kwargs):
+        # We run all callbacks before checking if one of them returned True
+        if any(bool, list(cb(command, irc, msg, *args, **kwargs)
+                    for cb in self.pre_command_callbacks)):
+            return
         method = self.getCommandMethod(command)
         method(irc, msg, *args, **kwargs)
 
