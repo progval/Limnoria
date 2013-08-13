@@ -511,7 +511,11 @@ def format(s, *args, **kwargs):
             return timeElapsed(args.pop())
         elif char == 'u':
             import supybot.conf as conf
-            return conf.supybot.reply.format.url() % args.pop()
+            url = args.pop()
+            if url:
+                return conf.supybot.reply.format.url() % url
+            else:
+                return ''
         elif char == 'v':
             args.pop()
             return ''
