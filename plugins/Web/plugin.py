@@ -210,15 +210,8 @@ class Web(callbacks.PluginRegexp):
             irc.error("This url is not on the whitelist.")
             return
         size = conf.supybot.protocols.http.peekSize()
-        fd = utils.web.getUrlFd(url)
-        content_type = fd.getheader('Content-type', 'text/html') \
-                .split(';', 1)[0]
-        if content_type not in ('text/html', 'application/xhtml+xml',
-                'application/xhtml'):
-            irc.error(_('This is not an HTML page (content type is %r)') %
-                    content_type)
-            return
-        s = fd.read(size).decode('utf8')
+        s = utils.web.getUrl(url, size=size) \
+                        .decode('utf8')
         m = self._doctypeRe.search(s)
         if m:
             s = utils.str.normalizeWhitespace(m.group(0))
@@ -271,15 +264,7 @@ class Web(callbacks.PluginRegexp):
             irc.error("This url is not on the whitelist.")
             return
         size = conf.supybot.protocols.http.peekSize()
-        fd = utils.web.getUrlFd(url)
-        content_type = fd.getheader('Content-type', 'text/html') \
-                .split(';', 1)[0]
-        if content_type not in ('text/html', 'application/xhtml+xml',
-                'application/xhtml'):
-            irc.error(_('This is not an HTML page (content type is %r)') %
-                    content_type)
-            return
-        text = fd.read(size)
+        text = utils.web.getUrl(url, size=size)
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')

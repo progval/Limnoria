@@ -40,8 +40,6 @@ class WebTestCase(ChannelPluginTestCase):
         def testDoctype(self):
             self.assertError('doctype ftp://ftp.cdrom.com/pub/linux')
             self.assertNotError('doctype http://www.slashdot.org/')
-            self.assertRegexp('doctype http://www.google.com/favicon.ico',
-                    'Error.*not an HTML page')
             m = self.getMsg('doctype http://moobot.sf.net/')
             self.failUnless(m.args[1].endswith('>'))
 
@@ -53,8 +51,6 @@ class WebTestCase(ChannelPluginTestCase):
         def testTitle(self):
             self.assertRegexp('title http://www.slashdot.org/',
                               'News for nerds, stuff that matters')
-            self.assertRegexp('doctype http://www.google.com/favicon.ico',
-                    'Error.*not an HTML page')
             # Checks for @title not-working correctly
             self.assertResponse('title '
                 'http://www.catb.org/~esr/jargon/html/F/foo.html',
