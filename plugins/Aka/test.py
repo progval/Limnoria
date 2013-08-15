@@ -197,6 +197,7 @@ class AkaTestCase(PluginTestCase):
 
         self.assertNotError('alias add foo "echo test"')
         self.assertNotError('alias add spam "echo egg"')
+        self.assertNotError('alias lock spam')
 
         self.assertRegexp('aka importaliasdatabase',
             r'the 1 following command: foo \(This Aka already exists.\)$')

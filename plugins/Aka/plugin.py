@@ -476,7 +476,7 @@ class Aka(callbacks.Plugin):
             except AkaError as e:
                 errors[name] = e.args[0]
             else:
-                alias_plugin.removeAlias(name)
+                alias_plugin.removeAlias(name, evenIfLocked=True)
         if errors:
             irc.error(format(_('Error occured when importing the %n: %L'),
                 (len(errors), 'following', 'command'),
