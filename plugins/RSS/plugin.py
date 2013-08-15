@@ -200,6 +200,7 @@ class RSS(callbacks.Plugin):
                 if normalize(headline) in oldheadlinesset:
                     newheadlines[i] = None
             newheadlines = filter(None, newheadlines) # Removes Nones.
+            number_of_headlines = len(oldheadlines)
             oldheadlines.extend(newheadlines)
             self.cachedHeadlines[url] = oldheadlines
             if newheadlines:
@@ -218,7 +219,7 @@ class RSS(callbacks.Plugin):
                             break
                     return v
                 for channel in channels:
-                    if len(oldheadlines) == 0:
+                    if  number_of_headlines == 0:
                         channelnewheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
                     else:
                         channelnewheadlines = newheadlines[:]
