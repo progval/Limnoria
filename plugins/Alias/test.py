@@ -112,6 +112,9 @@ class AliasTestCase(ChannelPluginTestCase):
         self.failIf('foobar' in cb.aliases)
         self.assertError('foobar')
 
+        self.assertRegexp('alias add café ignore', 'Error.*can only contain')
+        self.assertRegexp('alias add 1abc ignore', 'Error.*can only contain')
+
     def testOptionalArgs(self):
         self.assertNotError('alias add myrepr "repr @1"')
         self.assertResponse('myrepr foo', '"foo"')
