@@ -438,8 +438,11 @@ class User(callbacks.Plugin):
                 irc.reply(reply)
             else:
                 irc.error(reply)
-        add = wrap(add, ['user', 'somethingWithoutSpaces',
-                'somethingWithoutSpaces'])
+        add = wrap(add, ['user',
+                         ('somethingWithoutSpaces',
+                             _('You must give a valid key id')),
+                         ('somethingWithoutSpaces',
+                             _('You must give a valid key server'))])
 
         @internationalizeDocstring
         def remove(self, irc, msg, args, user, fingerprint):
