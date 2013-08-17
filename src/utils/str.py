@@ -450,11 +450,17 @@ def format(s, *args, **kwargs):
         if char == 's':
             token = args.pop()
             if isinstance(token, str):
-                return token
+                if sys.version_info[0] < 3:
+                    return token.decode('utf-8','replace')
+                else:
+                    return token
             elif sys.version_info[0] < 3 and isinstance(token, unicode):
-                return token.encode('utf8')
+                return token.encode('utf8', 'replace')
             else:
-                return str(token)
+                if sys.version_info[0] < 3:
+                    return str(token).decode('utf-8','replace')
+                else:
+                    return str(token)
         elif char == 'i':
             # XXX Improve me!
             return str(args.pop())
