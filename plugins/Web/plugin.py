@@ -153,10 +153,8 @@ class Web(callbacks.PluginRegexp):
                 domain = utils.web.getDomain(url)
                 title = utils.web.htmlToText(parser.title.strip())
                 if sys.version_info[0] < 3:
-                    try:
+                    if isinstance(title, unicode):
                         title = title.encode('utf8', 'replace')
-                    except UnicodeDecodeError:
-                        pass
                 s = format(_('Title: %s (at %s)'), title, domain)
                 irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
