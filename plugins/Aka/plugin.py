@@ -102,6 +102,7 @@ if sqlalchemy:
         def has_aka(self, channel, name):
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
+            name = callbacks.canonicalName(name)
             count = self.get_db(channel).query(Alias) \
                     .filter(Alias.name == name) \
                     .count()
@@ -113,6 +114,7 @@ if sqlalchemy:
         def get_alias(self, channel, name):
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
+            name = callbacks.canonicalName(name)
             try:
                 return self.get_db(channel).query(Alias.alias) \
                         .filter(Alias.name == name).one()[0]
@@ -120,6 +122,7 @@ if sqlalchemy:
                 return None
 
         def add_aka(self, channel, name, alias):
+            name = callbacks.canonicalName(name)
             if self.has_aka(channel, name):
                 raise AkaError(_('This Aka already exists.'))
             if sys.version_info[0] < 3:
@@ -134,6 +137,7 @@ if sqlalchemy:
         def remove_aka(self, channel, name):
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
+            name = callbacks.canonicalName(name)
             db = self.get_db(channel)
             db.query(Alias).filter(Alias.name == name).delete()
             db.commit()
@@ -141,6 +145,7 @@ if sqlalchemy:
         def lock_aka(self, channel, name, by):
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
+            name = callbacks.canonicalName(name)
             db = self.get_db(channel)
             try:
                 aka = db.query(Alias) \
@@ -157,6 +162,7 @@ if sqlalchemy:
         def unlock_aka(self, channel, name, by):
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
+            name = callbacks.canonicalName(name)
             db = self.get_db(channel)
             try:
                 aka = db.query(Alias) \
@@ -173,6 +179,7 @@ if sqlalchemy:
         def get_aka_lock(self, channel, name):
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
+            name = callbacks.canonicalName(name)
             try:
                 return self.get_db(channel) \
                         .query(Alias.locked, Alias.locked_by, Alias.locked_at)\
