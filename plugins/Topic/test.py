@@ -225,6 +225,7 @@ class TopicTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.plugins.Topic.default.setValue(original)
 
+
     def testTopic(self):
         original = conf.supybot.plugins.Topic.format()
         try:

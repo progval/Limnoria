@@ -248,7 +248,7 @@ class Topic(callbacks.Plugin):
             self.log.debug('Not trying to restore topic in %s. I\'m not opped '
                                'and %s is +t.', channel, channel)
             return
-        if c.topic == '':
+        if c.topic == '' or self.registryValue('alwaysSetOnJoin', channel):
             try:
                 topics = self.lastTopics[channel]
                 self._sendTopics(irc, channel, topics)

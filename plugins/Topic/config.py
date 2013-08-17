@@ -61,6 +61,9 @@ conf.registerChannelValue(Topic, 'recognizeTopiclen',
 conf.registerChannelValue(Topic, 'default',
     registry.String('', _("""Determines what the default topic for the channel
     is.  This is used by the default command to set this topic.""")))
+conf.registerChannelValue(Topic, 'alwaysSetOnJoin',
+    registry.Boolean(False, _("""Determines whether the bot will set the topic
+    every time it joins, or only if the topic is empty.""")))
 conf.registerGroup(Topic, 'undo')
 conf.registerChannelValue(Topic.undo, 'max',
     registry.NonNegativeInteger(10, _("""Determines the number of previous
