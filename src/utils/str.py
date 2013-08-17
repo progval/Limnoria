@@ -454,10 +454,7 @@ def format(s, *args, **kwargs):
             elif sys.version_info[0] < 3 and isinstance(token, unicode):
                 return token.encode('utf8', 'replace')
             else:
-                if sys.version_info[0] < 3:
-                    return str(token).decode('utf-8','replace')
-                else:
-                    return str(token)
+                return str(token)
         elif char == 'i':
             # XXX Improve me!
             return str(args.pop())
