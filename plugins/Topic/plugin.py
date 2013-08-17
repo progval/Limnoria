@@ -184,7 +184,7 @@ class Topic(callbacks.Plugin):
         except (KeyError, IndexError):
             return None
 
-    def _formatTopics(self, irc, channel, topics, isDo=False, fit=False):
+    def _formatTopics(self, irc, channel, topics, fit=False):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics
         newTopic = self._joinTopic(channel, topics)
@@ -203,20 +203,16 @@ class Topic(callbacks.Plugin):
                               Raise=True)
         except KeyError:
             pass
-        return newTopics
+        return newTopic
 
-    def _sendTopics(self, irc, channel, topics=None, *args, newTopic=None,
-            **kwargs):
-        if newTopic is None:
-            assert topics is None
-            newTtopic = self.formatTopics(irc, channel, topics, *args,
-                    **kwargs)
-        else:
+    def _sendTopics(self, irc, channel, topics=None, isDo=False, fit=False):
+        if isinstance(topics, list) or isinstance(topics, tuple):
             assert topics is not None
+            topics = self._formatTopics(irc, channel, topics, fit)
         self._addUndo(channel, topics)
         if not isDo and channel in self.redos:
             del self.redos[channel]
-        irc.queueMsg(ircmsgs.topic(channel, newTopic))
+        irc.queueMsg(ircmsgs.topic(channel, topics))
         irc.noReply()
 
     def _checkManageCapabilities(self, irc, msg, channel):
@@ -264,9 +260,9 @@ class Topic(callbacks.Plugin):
             self.log.debug('No topic to auto-restore in %s.', channel)
         else:
             newTopic = self._formatTopics(irc, channel, topics)
-        if c.topic == '' or (c.topic != newTopic and
-                self.registryValue('alwaysSetOnJoin', channel)):
-            self._sendTopics(irc, channel, newTopic=newTopic)
+            if c.topic == '' or (c.topic != newTopic and
+                    self.registryValue('alwaysSetOnJoin', channel)):
+                self._sendTopics(irc, channel, newTopic)
 
     def do332(self, irc, msg):
         if msg.args[1] in self.watchingFor332:
