@@ -190,10 +190,14 @@ class ChannelLogger(callbacks.Plugin):
                         ignoreOwner=True)
                 except KeyError:
                     logChannelMessages = True
+                nick = msg.nick or irc.nick
+                if msg.tagged('ChannelLogger__relayed'):
+                    (nick, text) = text.split(' ', 1)
+                    nick = nick[1:-1]
+                    msg.args = (recipients, text)
                 if (noLogPrefix and text.startswith(noLogPrefix)) or \
                         not logChannelMessages:
                     text = '-= THIS MESSAGE NOT LOGGED =-'
-                nick = msg.nick or irc.nick
                 if ircmsgs.isAction(msg):
                     self.doLog(irc, channel,
                                '* %s %s\n', nick, ircmsgs.unAction(msg))
@@ -280,6 +284,8 @@ class ChannelLogger(callbacks.Plugin):
         if msg.command in ('PRIVMSG', 'NOTICE'):
             # Other messages should be sent back to us.
             m = ircmsgs.IrcMsg(msg=msg, prefix=irc.prefix)
+            if msg.tagged('relayedMsg'):
+                m.tag('ChannelLogger__relayed')
             self(irc, m)
         return msg
 
