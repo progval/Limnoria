@@ -70,14 +70,13 @@ class Title(HTMLParser.HTMLParser):
                 self.title += self.entitydefs[name]
 
 class DelayedIrc:
-    def __init__(self, irc, msg):
+    def __init__(self, irc):
         self._irc = irc
-        self._msg = msg
         self._replies = []
     def reply(self, *args, **kwargs):
-        self._replies.append(callbacks.reply(self._msg, *args, **kwargs))
+        self._replies.append(('reply', args, kwargs))
     def error(self, *args, **kwargs):
-        self._replies.append(callbacks.error(self._msg, *args, **kwargs))
+        self._replies.append(('error', args, kwargs))
     def __getattr__(self, name):
         assert name not in ('reply', 'error', '_irc', '_msg', '_replies')
         return getattr(self._irc, name)
@@ -86,7 +85,7 @@ def fetch_sandbox(f):
     """Runs a command in a forked process with limited memory resources
     to prevent memory bomb caused by specially crafted http responses."""
     def process(self, irc, msg, *args, **kwargs):
-        delayed_irc = DelayedIrc(irc, msg)
+        delayed_irc = DelayedIrc(irc)
         f(self, delayed_irc, msg, *args, **kwargs)
         return delayed_irc._replies
     def newf(self, irc, *args):
@@ -97,8 +96,8 @@ def fetch_sandbox(f):
         except commands.ProcessTimeoutError:
             raise utils.web.Error(_('Page is too big.'))
         else:
-            for reply in replies:
-                irc.queueMsg(reply)
+            for (method, args, kwargs) in replies:
+                getattr(irc, method)(*args, **kwargs)
     newf.__doc__ = f.__doc__
     return newf
 
