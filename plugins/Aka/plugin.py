@@ -47,7 +47,8 @@ try:
     import sqlalchemy.ext
     import sqlalchemy.ext.declarative
 except ImportError:
-    sqlalchemy = None
+    raise callbacks.error('You have to install python-sqlalchemy in order '
+            'to load this plugin.')
 
 if sqlalchemy:
 
