@@ -317,12 +317,12 @@ class Alias(callbacks.Plugin):
             irc.error(_('There is no such alias.'))
     unlock = wrap(unlock, [('checkCapability', 'admin'), 'commandName'])
 
-    _validNameRe = re.compile(r'^[a-z.|][a-z0-9.|]*$')
+    _validNameRe = re.compile(r'^[a-z.|!][a-z0-9.|!]*$')
     def addAlias(self, irc, name, alias, lock=False):
         if not self._validNameRe.search(name):
             raise AliasError('Names can only contain alphanumerical '
-                    'characters and dots and pipes (and the first letter '
-                    'cannot be a number).')
+                    'characters, dots, pipes, and exclamation marks '
+                    '(and the first character cannot be a number).')
         realName = callbacks.canonicalName(name)
         if name != realName:
             s = format(_('That name isn\'t valid.  Try %q instead.'), realName)
