@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2010, James McCoy
+# Copyright (c) 2010, 2013, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 from __future__ import division
 
 import time
+import errno
 import select
 import socket
 
@@ -163,43 +164,56 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         else:
             drivers.log.debug('Not resetting %s.', self.irc)
         server = self._getNextServer()
+        host = server[0]
+        address = None
         drivers.log.connect(self.currentServer)
-        try:
-            self.conn = utils.net.getSocket(server[0])
-            if self.networkGroup.get('ssl').value:
-                if ssl:
-                    self.plainconn = self.conn
-                    self.conn = ssl.wrap_socket(self.conn)
-                else:
-                    drivers.log.error('ssl module not available, '
-                              'cannot connect to SSL servers.')
-                    return
-            vhost = conf.supybot.protocols.irc.vhost()
-            self.conn.bind((vhost, 0))
-        except socket.error, e:
-            drivers.log.connectError(self.currentServer, e)
+        for addrinfo in socket.getaddrinfo(server[0], None,
+                                           socket.AF_UNSPEC,
+                                           socket.SOCK_STREAM):
+            address = addrinfo[4][0]
+            try:
+                self.conn = socket.socket(addrinfo[0], addrinfo[1])
+                if self.networkGroup.get('ssl').value:
+                    if ssl:
+                        self.plainconn = self.conn
+                        self.conn = ssl.wrap_socket(self.conn)
+                    else:
+                        drivers.log.error('ssl module not available, '
+                                  'cannot connect to SSL servers.')
+                        return
+                vhost = conf.supybot.protocols.irc.vhost()
+                self.conn.bind((vhost, 0))
+            except socket.error, e:
+                msg = host
+                if host != address:
+                    msg = '%s (%s)' % (host, address)
+                drivers.log.connectError(msg, e)
+                continue
+            # We allow more time for the connect here, since it might take longer.
+            # At least 10 seconds.
+            self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
+            try:
+                self.conn.connect((addrinfo[4][0], server[1]))
+                self.conn.settimeout(conf.supybot.drivers.poll())
+                self.connected = True
+                self.resetDelay()
+                break
+            except socket.error, e:
+                if e.args[0] == errno.EINPROGRESS:
+                    now = time.time()
+                    when = now + 60
+                    whenS = log.timestamp(when)
+                    drivers.log.debug('Connection in progress, scheduling '
+                                      'connectedness check for %s', whenS)
+                    self.writeCheckTime = when
+                    break
+                msg = host
+                if host != address:
+                    msg = '%s (%s)' % (host, address)
+                drivers.log.connectError(msg, e)
+                continue
+        if not self.connected:
             self.scheduleReconnect()
-            return
-        # We allow more time for the connect here, since it might take longer.
-        # At least 10 seconds.
-        self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
-        try:
-            self.conn.connect(server)
-            self.conn.settimeout(conf.supybot.drivers.poll())
-            self.connected = True
-            self.resetDelay()
-        except socket.error, e:
-            if e.args[0] == 115:
-                now = time.time()
-                when = now + 60
-                whenS = log.timestamp(when)
-                drivers.log.debug('Connection in progress, scheduling '
-                                  'connectedness check for %s', whenS)
-                self.writeCheckTime = when
-            else:
-                drivers.log.connectError(self.currentServer, e)
-                self.scheduleReconnect()
-            return
 
     def _checkAndWriteOrReconnect(self):
         self.writeCheckTime = None
