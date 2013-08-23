@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2011, James McCoy
+# Copyright (c) 2011, 2013, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,14 +44,10 @@ def getSocket(host):
     """Returns a socket of the correct AF_INET type (v4 or v6) in order to
     communicate with host.
     """
-    addrinfo = socket.getaddrinfo(host, None)
-    host = addrinfo[0][4][0]
-    if isIPV4(host):
-        return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    elif isIPV6(host):
-        return socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-    else:
-        raise socket.error, 'Something wonky happened.'
+    addrinfo = socket.getaddrinfo(host, None,
+                                  socket.AF_UNSPEC, socket.SOCK_STREAM)
+    family = addrinfo[0][0]
+    return socket.socket(family, socket.SOCK_STREAM)
 
 def isIP(s):
     """Returns whether or not a given string is an IP address.
