@@ -32,11 +32,9 @@ import sys
 import imp
 import os.path
 import linecache
+import re
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.registry as registry
-import supybot.callbacks as callbacks
+from . import callbacks, conf, log, registry
 
 installDir = os.path.dirname(sys.modules[__name__].__file__)
 _pluginsDir = os.path.join(installDir, 'plugins')
@@ -55,6 +53,13 @@ def loadPluginModule(name, ignoreDeprecation=False):
         except EnvironmentError: # OSError, IOError superclass.
             log.warning('Invalid plugin directory: %s; removing.', dir)
             conf.supybot.directories.plugins().remove(dir)
+    if name not in files:
+        matched_names = filter(lambda x: re.search(r'(?i)^%s$' % (name,), x),
+                                files)
+        if len(matched_names) == 1:
+            name = matched_names[0]
+        else:
+            raise ImportError, name
     moduleInfo = imp.find_module(name, pluginDirs)
     try:
         module = imp.load_module(name, *moduleInfo)

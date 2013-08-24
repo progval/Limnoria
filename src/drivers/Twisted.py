@@ -28,10 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.drivers as drivers
-import supybot.ircmsgs as ircmsgs
+from .. import conf, drivers, ircmsgs, log
 
 from twisted.names import client
 from twisted.internet import reactor, error

@@ -35,9 +35,8 @@ import os
 import csv
 import math
 
-import supybot.cdb as cdb
-import supybot.utils as utils
-from supybot.utils.iter import ilen
+from . import cdb, utils
+from .utils.iter import ilen
 
 class Error(Exception):
     """General error for this module."""

@@ -203,6 +203,10 @@ optional, the default value is shown.
 
   - Checks for a valid HTTP URL.
 
+* email
+
+  - Checks for a syntactically valid email address.
+
 * long, type="long"
 
   - Basically the same as int minus the predicate, except that it converts the
@@ -417,9 +421,22 @@ optional, the default value is shown.
 
   - Checks to make sure that the caller has the specified capability.
 
-"checkChannelCapability", capability
-    Checks to make sure that the caller has the specified capability on the
+* checkChannelCapability, capability
+
+  - Checks to make sure that the caller has the specified capability on the
     channel the command is called in.
+
+* op
+
+  - Checks whether the user has the op mode (+o) set.
+
+* halfop
+
+  - Checks whether the user has the halfop mode (+h) set.
+
+* voice
+
+  - Checks whether the user has the voice mode (+v) set.
 
 Contexts List
 =============

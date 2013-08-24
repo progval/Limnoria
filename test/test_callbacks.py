@@ -564,6 +564,9 @@ class SourceNestedPluginTestCase(PluginTestCase):
             """
             irc.reply('f')
 
+        def empty(self, irc, msg, args):
+            pass
+
         class g(callbacks.Commands):
             def h(self, irc, msg, args):
                 """takes no arguments
@@ -602,6 +605,7 @@ class SourceNestedPluginTestCase(PluginTestCase):
         self.assertResponse('e g h', 'h')
         self.assertResponse('e g i j', 'j')
         self.assertHelp('help f')
+        self.assertHelp('help empty')
         self.assertHelp('help same')
         self.assertHelp('help e g h')
         self.assertHelp('help e g i j')

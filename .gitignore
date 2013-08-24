@@ -1,5 +1,7 @@
 backup
 build
+dist
+supybot.egg-info
 test-data
 test-conf
 test-logs

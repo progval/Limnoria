@@ -33,8 +33,6 @@
 This module contains the basic callbacks for handling PRIVMSGs.
 """
 
-import supybot
-
 import re
 import sys
 import copy
@@ -53,17 +51,10 @@ if sys.version_info[0] < 3:
 else:
     from cStringIO import StringIO
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.ircdb as ircdb
-import supybot.irclib as irclib
-import supybot.ircmsgs as ircmsgs
-import supybot.ircutils as ircutils
-import supybot.registry as registry
-from supybot.utils.iter import any, all
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry, utils,
+        world)
+from .utils.iter import any, all
+from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 
 def _addressed(nick, msg, prefixChars=None, nicks=None,
@@ -237,7 +228,10 @@ def getHelp(method, name=None, doc=None):
     if name is None:
         name = method.__name__
     if doc is None:
-        doclines = method.__doc__.splitlines()
+        if method.__doc__ is None:
+            doclines = ['This command has no help.  Complain to the author.']
+        else:
+            doclines = method.__doc__.splitlines()
     else:
         doclines = doc.splitlines()
     s = '%s %s' % (name, doclines.pop(0))
@@ -644,7 +638,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         if maxNesting and self.nested > maxNesting:
             log.warning('%s attempted more than %s levels of nesting.',
                         self.msg.prefix, maxNesting)
-            return self.error(_('You\'ve attempted more nesting than is '
+            self.error(_('You\'ve attempted more nesting than is '
                               'currently allowed on this bot.'))
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.  There's a possibility a simple copy[:] would
@@ -1052,7 +1046,7 @@ class CommandProcess(world.SupyProcess):
         self.__parent = super(CommandProcess, self)
         self.__parent.__init__(target=target, name=procName,
                                args=args, kwargs=kwargs)
-    
+
     def run(self):
         self.__parent.run()
 

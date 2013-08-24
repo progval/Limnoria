@@ -34,6 +34,12 @@ import random
 
 from itertools import *
 
+# For old plugins
+ifilter = filter
+def ifilterfalse(p, L):
+    return ifilter(lambda x:not p(x), L)
+imap = map
+
 def len(iterable):
     """Returns the length of an iterator."""
     i = 0

@@ -34,9 +34,8 @@ import random
 import shutil
 import os.path
 
-from itertools import ifilter
-
-import crypt
+from . import crypt
+from .iter import ifilter
 
 def contents(filename):
     return open(filename).read()

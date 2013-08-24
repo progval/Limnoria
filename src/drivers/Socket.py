@@ -1,6 +1,6 @@
 ##
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2010, James McCoy
+# Copyright (c) 2010, 2013, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,13 +39,9 @@ import time
 import errno
 import select
 import socket
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.drivers as drivers
-import supybot.schedule as schedule
-from itertools import imap
+
+from .. import (conf, drivers, log, schedule, utils, world)
+from ..utils.iter import imap
 try:
     from charade.universaldetector import UniversalDetector
     charadeLoaded = True
@@ -54,6 +50,7 @@ except:
                       'cannot guess character encoding if'
                       'using Python3')
     charadeLoaded = False
+
 try:
     import ssl
     SSLError = ssl.SSLError
@@ -248,7 +245,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def connect(self, **kwargs):
         self.reconnect(reset=False, **kwargs)
 
-    def reconnect(self, reset=True):
+    def reconnect(self, wait=False, reset=True):
         self._attempt += 1
         self.nextReconnectTime = None
         if self.connected:
@@ -266,6 +263,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.irc.reset()
         else:
             drivers.log.debug('Not resetting %s.', self.irc)
+        if wait:
+            self.scheduleReconnect()
+            return
         server = self._getNextServer()
         socks_proxy = getattr(conf.supybot.networks, self.irc.network) \
                 .socksproxy()

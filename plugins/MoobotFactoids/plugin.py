@@ -512,7 +512,7 @@ class MoobotFactoids(callbacks.Plugin):
         if not info:
             irc.error(format(_('No such factoid: %q'), key))
             return
-        (created_by, _, _, _, _, _, _, locked_by, _) = info
+        (created_by, a, a, a, a, a, a, locked_by, a) = info
         # Don't perform redundant operations
         if locking and locked_by is not None:
                irc.error(format(_('Factoid %q is already locked.'), key))

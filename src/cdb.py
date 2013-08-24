@@ -40,7 +40,7 @@ import struct
 import os.path
 import cPickle as pickle
 
-import supybot.utils as utils
+from . import utils
 
 def hash(s):
     """DJB's hash function for CDB."""
@@ -184,6 +184,8 @@ class Reader(utils.IterableMap):
     """Class for reading from a CDB database."""
     def __init__(self, filename):
         self.filename = filename
+        import os
+        print(repr(os.getcwd()))
         self.fd = open(filename, 'rb')
         self.loop = 0
         self.khash = 0

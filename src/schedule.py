@@ -39,9 +39,7 @@ import heapq
 import functools
 from threading import Lock
 
-import supybot.log as log
-import supybot.world as world
-import supybot.drivers as drivers
+from . import drivers, log, world
 
 class mytuple(tuple):
     def __cmp__(self, other):

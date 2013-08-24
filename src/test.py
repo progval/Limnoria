@@ -39,20 +39,8 @@ import httplib
 import unittest
 import threading
 
-import supybot.log as log
-import supybot.i18n as i18n
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.ircdb as ircdb
-import supybot.world as world
-import supybot.irclib as irclib
-import supybot.plugin as plugin
-import supybot.drivers as drivers
-import supybot.ircmsgs as ircmsgs
-import supybot.registry as registry
-import supybot.ircutils as ircutils
-import supybot.callbacks as callbacks
-import supybot.httpserver as httpserver
+from . import (callbacks, conf, drivers, httpserver, i18n, ircdb, irclib,
+        ircmsgs, ircutils, log, plugin, registry, utils, world)
 
 i18n.import_conf()
 network = True

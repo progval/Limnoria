@@ -37,9 +37,7 @@ import codecs
 import string
 import textwrap
 
-import supybot.utils as utils
-import supybot.i18n as i18n
-
+from . import utils, i18n
 _ = i18n.PluginInternationalization()
 
 def error(s):

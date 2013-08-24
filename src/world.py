@@ -42,11 +42,7 @@ import multiprocessing
 
 import re
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.drivers as drivers
-import supybot.ircutils as ircutils
-import supybot.registry as registry
+from . import conf, drivers, ircutils, log, registry
 
 startedAt = time.time() # Just in case it doesn't get set later.
 

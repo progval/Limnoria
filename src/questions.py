@@ -35,8 +35,7 @@ import sys
 import textwrap
 from getpass import getpass as getPass
 
-import supybot.ansi as ansi
-import supybot.utils as utils
+from . import ansi, utils
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 

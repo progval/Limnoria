@@ -33,16 +33,10 @@ import sys
 import time
 import socket
 
-import supybot.utils as utils
-import supybot.registry as registry
-import supybot.ircutils as ircutils
-from supybot.i18n import PluginInternationalization
+from . import ircutils, registry, utils
+from .version import version
+from .i18n import PluginInternationalization
 _ = PluginInternationalization()
-
-###
-# version: This should be pretty obvious.
-###
-from supybot.version import version
 
 ###
 # *** The following variables are affected by command-line options.  They are
@@ -303,12 +297,12 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
         technically passwords are server-specific and not network-specific,
         but this is the best we can do right now.""") % name, private=True))
     registryServers = registerGlobalValue(network, 'servers', Servers([],
-        _("""Determines what servers the bot will connect to for %s.  Each will
-        be tried in order, wrapping back to the first when the cycle is
-        completed.""") % name))
+        _("""Space-separated list of servers the bot will connect to for %s.
+        Each will be tried in order, wrapping back to the first when the cycle
+        is completed.""") % name))
     registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
-        _("""Determines what channels the bot will join only on %s.""") %
-        name, private=True))
+        _("""Space-separated list of channels the bot will join only on %s.""")
+        % name, private=True))
     registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         _("""Determines whether the bot will attempt to connect with SSL
         sockets to %s.""") % name))
@@ -940,7 +934,7 @@ registerChannelValue(supybot.databases.plugins.channelSpecific.link, 'allow',
 
 class CDB(registry.Boolean):
     def connect(self, filename):
-        import supybot.cdb as cdb
+        from . import cdb
         basename = os.path.basename(filename)
         journalName = supybot.directories.data.tmp.dirize(basename+'.journal')
         return cdb.open_db(filename, 'c',

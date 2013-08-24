@@ -165,19 +165,20 @@ class Filter(callbacks.Plugin):
         irc.reply(''.join(L))
     binary = wrap(binary, ['text'])
 
-    @internationalizeDocstring
     def unbinary(self, irc, msg, args, text):
         """<text>
 
         Returns the character representation of binary <text>.
         Assumes ASCII, 8 digits per character.
         """
-        L = [chr(int(text[i:(i+8)], 2)) for i in xrange(0, len(text), 8)]
-        irc.reply(''.join(L))
+        try:
+            L = [chr(int(text[i:(i+8)], 2)) for i in xrange(0, len(text), 8)]
+            irc.reply(''.join(L))
+        except ValueError:
+            irc.errorInvalid('binary string', text)
     unbinary = wrap(unbinary, ['text'])
 
     _hex_encoder = staticmethod(codecs.getencoder('hex_codec'))
-    @internationalizeDocstring
     def hexlify(self, irc, msg, args, text):
         """<text>
 

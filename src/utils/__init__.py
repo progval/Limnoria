@@ -58,16 +58,7 @@ def force(x):
 
 # These imports need to happen below the block above, so things get put into
 # __builtins__ appropriately.
-from gen import *
-import net
-import seq
-import str
-import web
-import file
-import iter
-import crypt
-import error
-import python
-import transaction
+from .gen import *
+from . import crypt, error, file, iter, net, python, seq, str, transaction, web
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

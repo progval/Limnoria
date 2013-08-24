@@ -31,14 +31,14 @@ import time
 TIME = time # For later use.
 from datetime import datetime
 
+from dateutil import parser
+
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Time')
-
-from .local.dateutil import parser
 
 def parse(s):
     todo = []

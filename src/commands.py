@@ -33,6 +33,7 @@ Includes wrappers for commands.
 """
 
 import time
+import Queue
 import types
 import getopt
 import inspect
@@ -45,17 +46,9 @@ try:
 except ImportError: # Windows!
     resource = None
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.ircdb as ircdb
-import supybot.ircmsgs as ircmsgs
-import supybot.ircutils as ircutils
-import supybot.callbacks as callbacks
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from . import callbacks, conf, ircdb, ircmsgs, ircutils, log, utils, world
+from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
-
 
 ###
 # Non-arg wrappers -- these just change the behavior of a command without
@@ -251,7 +244,10 @@ def _int(s):
         return int(s, base)
     except ValueError:
         if base == 10:
-            return int(float(s))
+            try:
+                return int(float(s))
+            except OverflowError:
+                raise ValueError('I don\'t understand numbers that large.')
         else:
             raise
 
@@ -1118,7 +1114,7 @@ __all__ = [
     # Decorators.
     'urlSnarfer', 'thread',
     # Functions.
-    'wrap',
+    'wrap', 'process', 'regexp_wrapper',
     # Stuff for testing.
     'Spec',
 ]

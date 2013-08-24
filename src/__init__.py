@@ -32,12 +32,7 @@ import sys
 import os.path
 import dynamicScope
 
-try:
-    import supybot.utils as utils
-except ImportError: # We are running setup.py for the first time
-    import src
-    sys.modules['supybot'] = src
-    import src.utils as utils
+from . import utils
 
 (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['format'] = utils.str.format
 

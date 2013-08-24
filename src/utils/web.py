@@ -45,7 +45,7 @@ try:
 except AttributeError:
     pass
 
-from str import normalizeWhitespace
+from .str import normalizeWhitespace
 
 Request = urllib2.Request
 urlquote = urllib.quote
@@ -62,10 +62,11 @@ _ipAddr = r'%s(?:\.%s){3}' % (_octet, _octet)
 # Base domain regex off RFC 1034 and 1738
 _label = r'[0-9a-z][-0-9a-z]*[0-9a-z]?'
 _domain = r'%s(?:\.%s)*\.[0-9a-z][-0-9a-z]+' % (_label, _label)
-_urlRe = r'(\w+://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain, _ipAddr)
+_urlRe = r'(\w+://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain,
+                                                                   _ipAddr)
 urlRe = re.compile(_urlRe, re.I)
-_httpUrlRe = r'(https?://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain,
-                                                                 _ipAddr)
+_httpUrlRe = r'(https?://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % \
+             (_domain, _ipAddr)
 httpUrlRe = re.compile(_httpUrlRe, re.I)
 
 REFUSED = 'Connection refused.'
@@ -100,7 +101,7 @@ defaultHeaders = {
 # application-specific function.  Feel free to use a callable here.
 proxy = None
 
-def getUrlFd(url, headers=None, data=None):
+def getUrlFd(url, headers=None, data=None, timeout=None):
     """getUrlFd(url, headers=None, data=None)
 
     Opens the given url and returns a file object.  Headers and data are
@@ -109,28 +110,20 @@ def getUrlFd(url, headers=None, data=None):
         headers = defaultHeaders
     try:
         if not isinstance(url, urllib2.Request):
-            if '#' in url:
-                url = url[:url.index('#')]
-            if '@' in url:
-                scheme, url = url.split('://', 2)
-                auth, url = url.split('@')
-                url = scheme + '://' + url
+            (scheme, loc, path, query, frag) = urlparse.urlsplit(url)
+            (user, host) = urllib.splituser(loc)
+            url = urlparse.urlunsplit((scheme, host, path, query, ''))
             request = urllib2.Request(url, headers=headers, data=data)
-            if 'auth' in locals():
-                if sys.version_info[0] >= 3 and isinstance(auth, str):
-                    auth = auth.encode()
-                auth = base64.b64encode(auth)
-                if sys.version_info[0] >= 3:
-                    auth = auth.decode()
+            if user:
                 request.add_header('Authorization',
-                        'Basic ' + auth)
+                                   'Basic %s' % base64.b64encode(user))
         else:
             request = url
             request.add_data(data)
         httpProxy = force(proxy)
         if httpProxy:
             request.set_proxy(httpProxy, 'http')
-        fd = urllib2.urlopen(request)
+        fd = urllib2.urlopen(request, timeout=timeout)
         return fd
     except socket.timeout, e:
         raise Error, TIMED_OUT

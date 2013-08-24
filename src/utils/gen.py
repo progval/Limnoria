@@ -38,10 +38,10 @@ import traceback
 import collections
 from itertools import imap
 
-from str import format
-from file import mktemp
-
-import crypt
+from . import crypt
+from .str import format
+from .file import mktemp
+from .iter import imap
 
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()

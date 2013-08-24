@@ -46,7 +46,7 @@ import textwrap
 import functools
 from cStringIO import StringIO as sio
 
-import supybot.utils as utils
+from . import utils
 from itertools import imap
 
 def debug(s, *args):

@@ -122,22 +122,14 @@ if __name__ == '__main__':
             debug('pidfile (%s) is not writable: %s' % (options.pidfile, e))
             sys.exit(-1)
         debug('Bot not found, starting.')
-        home = os.environ['HOME']
-        inst = subprocess.Popen('sh', close_fds=True, stderr=subprocess.STDOUT,
-                                stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        for filename in ('.login', '.bash_profile', '.profile', '.bashrc'):
-            filename = os.path.join(home, filename)
-            if os.path.exists(filename):
-                debug('Found %s, sourcing.' % filename)
-                command = 'source %s' % filename + os.linesep
-                inst.stdin.write(command.encode('utf-8'))
-        cmdline = '%s --daemon %s' % (options.supybot, options.conffile)
-        debug('Sending cmdline to sh process.')
-        inst.stdin.write(cmdline.encode('utf-8') + os.linesep.encode('utf-8'))
-        inst.stdin.close()
-        debug('Received from sh process: %r' % inst.stdout.read())
+        cmdline = [options.supybot, '--daemon', options.conffile]
+        inst = subprocess.Popen(cmdline, close_fds=True,
+                                stderr=subprocess.STDOUT,
+                                stdin=None, stdout=subprocess.PIPE)
+        debug('Output from supybot: %r' % inst.stdout.read())
         ret = inst.wait()
-        debug('Bot started, command line %r returned %s.' % (cmdline, ret))
+        debug('Bot started, command line %r returned %s.' % (' '.join(cmdline),
+                                                             ret))
         sys.exit(ret)
     else:
         sys.exit(0)

@@ -41,57 +41,8 @@ import os.path
 import threading
 import collections
 
-import supybot.log as log
-import supybot.dbi as dbi
-import supybot.conf as conf
-import supybot.ircdb as ircdb
-import supybot.utils as utils
-import supybot.world as world
-from supybot.commands import *
-import supybot.ircutils as ircutils
-import supybot.callbacks as callbacks
-from supybot import commands
-
-## i think we don't need any of this with sqlite3
-#try:
-    ## We need to sweep away all that mx.* crap because our code doesn't account
-    ## for PySQLite's arbitrary use of it.  Whoever decided to change sqlite's
-    ## behavior based on whether or not that module is installed was a *CRACK*
-    ## **FIEND**, plain and simple.
-    #mxCrap = {}
-    #for (name, module) in sys.modules.items():
-        #if name.startswith('mx'):
-            #mxCrap[name] = module
-            #sys.modules.pop(name)
-    ## Now that the mx crap is gone, we can import sqlite.
-    #import sqlite3 as sqlite
-    ## And now we'll put it back, even though it sucks.
-    #sys.modules.update(mxCrap)
-    ## Just in case, we'll do this as well.  It doesn't seem to work fine by
-    ## itself, though, or else we'd just do this in the first place.
-    #sqlite.have_datetime = False
-    #Connection = sqlite.Connection
-    #class MyConnection(sqlite.Connection):
-        #def commit(self, *args, **kwargs):
-            #if self.autocommit:
-                #return
-            #else:
-                #Connection.commit(self, *args, **kwargs)
-
-        #def __del__(self):
-            #try:
-                #Connection.__del__(self)
-            #except AttributeError:
-                #pass
-            #except Exception, e:
-                #try:
-                    #log.exception('Uncaught exception in __del__:')
-                #except:
-                    #pass
-    #sqlite.Connection = MyConnection
-    ##del Connection.__del__
-#except ImportError:
-    #pass
+from .. import callbacks, conf, dbi, ircdb, ircutils, log, utils, world
+from ..commands import *
 
 try:
     import sqlite3
@@ -451,9 +402,8 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             if opt == 'by':
                 predicates.append(lambda r, arg=arg: r.by == arg.id)
             elif opt == 'regexp':
-                predicates.append(lambda x: commands.regexp_wrapper(x.text, reobj=arg, 
-                        timeout=0.1, plugin_name = self.name(), fcn_name='search'))
-                #predicates.append(lambda r, arg=arg: arg.search(r.text))
+                predicates.append(lambda r: regexp_wrapper(r.text, reobj=arg,
+                        timeout=0.1, plugin_name=self.name(), fcn_name='search'))
         if glob:
             def globP(r, glob=glob.lower()):
                 return fnmatch.fnmatch(r.text.lower(), glob)

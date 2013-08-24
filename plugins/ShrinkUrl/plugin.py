@@ -258,14 +258,16 @@ class ShrinkUrl(callbacks.PluginRegexp):
     _gooApi = 'https://www.googleapis.com/urlshortener/v1/url'
     @retry
     def _getGooUrl(self, url):
+        url = utils.web.urlquote(url)
         try:
             return self.db.get('goo', url)
         except KeyError:
-            text = utils.web.getUrl(self._gooApi,
-                    headers={'content-type':'application/json'},
-                    data=json.dumps({'longUrl': url}).encode())
-            googl = json.loads(text.decode())['id']
-            if len(googl) > 0 :
+            headers = utils.web.defaultHeaders.copy()
+            headers['content-type'] = 'application/json'
+            data = json.dumps({'longUrl': url})
+            text = utils.web.getUrl(self._gooApi, data=data, headers=headers)
+            googl = json.loads(text)['id']
+            if googl:
                 self.db.set('goo', url, googl)
                 return googl
             else:
@@ -295,7 +297,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             parameters = utils.web.urlencode({'longurl': url})
             response = utils.web.getUrl(self._ur1Api, data=parameters)
             ur1ca = self._ur1Regexp.search(response.decode()).group('url')
-            if len(ur1ca) > 0 :
+            if ur1ca:
                 self.db.set('ur1', url, ur1ca)
                 return ur1ca
             else:

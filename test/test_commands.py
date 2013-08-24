@@ -74,6 +74,7 @@ class GeneralContextTestCase(CommandsTestCase):
     def testSpecInt(self):
         self.assertState(['int'], ['1'], [1])
         self.assertState(['int', 'int', 'int'], ['1', '2', '3'], [1, 2, 3])
+        self.assertError(['int'], ['9e999'])
 
     def testSpecNick(self):
         strict = conf.supybot.protocols.irc.strictRfc()

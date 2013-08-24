@@ -41,12 +41,13 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
                       (udUrl, r'http://tinyurl.com/u479')],
              'ln': [(sfUrl, r'http://ln-s.net/\+PE-'),
                     (udUrl, r'http://ln-s.net/2\$K')],
-             'xrl': [(udUrl, r'http://xrl.us/bfnyji')],
-             'goo': [(sfUrl, r'http://goo.gl/krnNC'),
-                     (udUrl, r'http://goo.gl/1ejCD')],
-             'ur1': [(sfUrl, r'http://ur1.ca/ceqh8'),
+             'xrl': [(sfUrl, r'http://xrl.us/bfq8ik'),
+                     (udUrl, r'http://xrl.us/bfnyji')],
+             'goo': [(sfUrl, r'http://goo.gl/3c59N'),
+                     (udUrl, r'http://goo.gl/ocTga')],
+             'ur1': [(sfUrl, r'http://ur1.ca/9xl25'),
                      (udUrl, r'http://ur1.ca/9xl9k')],
-             'x0': [(sfUrl, r'http://x0.no/a53s'),
+             'x0': [(sfUrl, r'http://x0.no/0l2j'),
                     (udUrl, r'http://x0.no/0l2k')]
             }
     if network:

@@ -69,44 +69,24 @@ if sys.version_info < (2, 6, 0):
     sys.stderr.write(os.linesep)
     sys.exit(-1)
 
-
-import textwrap
-
-clean = False
-while '--clean' in sys.argv:
-    clean = True
-    sys.argv.remove('--clean')
-
 import glob
 import shutil
 import os
+import textwrap
 
 
-plugins = [s for s in os.listdir('plugins') if
-           os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
+try:
+    from distribute_setup import use_setuptools
+except ImportError:
+    pass
+else:
+    use_setuptools(version='0.6c9')
+
+from setuptools import setup
 
 def normalizeWhitespace(s):
     return ' '.join(s.split())
 
-try:
-    from distutils.core import setup
-    from distutils.sysconfig import get_python_lib
-except ImportError as e:
-    s = normalizeWhitespace("""Supybot requires the distutils package to
-    install. This package is normally included with Python, but for some
-    unfathomable reason, many distributions to take it out of standard Python
-    and put it in another package, usually caled 'python-dev' or python-devel'
-    or something similar. This is one of the dumbest things a distribution can
-    do, because it means that developers cannot rely on *STANDARD* Python
-    modules to be present on systems of that distribution. Complain to your
-    distribution, and loudly. If you how much of our time we've wasted telling
-    people to install what should be included by default with Python you'd
-    understand why we're unhappy about this.  Anyway, to reiterate, install the
-    development package for Python that your distribution supplies.""")
-    sys.stderr.write(os.linesep*2)
-    sys.stderr.write(textwrap.fill(s))
-    sys.stderr.write(os.linesep*2)
-    sys.exit(-1)
 try:
     from distutils.command.build_py import build_py_2to3
     class build_py(build_py_2to3):
@@ -154,15 +134,9 @@ except ImportError:
     from distutils.command.build_py import build_py
 
 
-if clean:
-    previousInstall = os.path.join(get_python_lib(), 'supybot')
-    if os.path.exists(previousInstall):
-        try:
-            print('Removing current installation.')
-            shutil.rmtree(previousInstall)
-        except Exception as e:
-            print('Couldn\'t remove former installation: %s' % e)
-            sys.exit(-1)
+
+plugins = [s for s in os.listdir('plugins') if
+           os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
 packages = ['supybot',
             'supybot.locales',
@@ -173,24 +147,15 @@ packages = ['supybot',
             [
              'supybot.plugins.Dict.local',
              'supybot.plugins.Math.local',
-             'supybot.plugins.Google.local',
-             'supybot.plugins.RSS.local',
-             'supybot.plugins.Time.local',
-             'supybot.plugins.Time.local.dateutil',
             ]
 
 package_dir = {'supybot': 'src',
                'supybot.utils': 'src/utils',
+               'supybot.locales': 'locales',
                'supybot.plugins': 'plugins',
                'supybot.drivers': 'src/drivers',
-               'supybot.locales': 'locales',
-               'supybot.plugins.Google.local': 'plugins/Google/local',
                'supybot.plugins.Dict.local': 'plugins/Dict/local',
                'supybot.plugins.Math.local': 'plugins/Math/local',
-               'supybot.plugins.RSS.local': 'plugins/RSS/local',
-               'supybot.plugins.Time.local': 'plugins/Time/local',
-               'supybot.plugins.Time.local.dateutil':
-               'plugins/Time/local/dateutil',
               }
 
 package_data = {'supybot.locales': [s for s in os.listdir('locales/')]}
@@ -229,7 +194,8 @@ setup(
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
         'Operating System :: Microsoft :: Windows',
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         ],
     cmdclass = {'build_py': build_py},
 
@@ -248,14 +214,12 @@ setup(
              'scripts/supybot-plugin-doc',
              'scripts/supybot-plugin-create',
              ],
-    data_files=[('share/man/man1', ['docs/man/supybot.1']),
-                ('share/man/man1', ['docs/man/supybot-test.1']),
-                ('share/man/man1', ['docs/man/supybot-botchk.1']),
-                ('share/man/man1', ['docs/man/supybot-wizard.1']),
-                ('share/man/man1', ['docs/man/supybot-adduser.1']),
-                ('share/man/man1', ['docs/man/supybot-plugin-doc.1']),
-                ('share/man/man1', ['docs/man/supybot-plugin-create.1']),
-        ]
+
+    install_requires=[
+        # Time plugin
+        'python-dateutil >=2.0',
+        'feedparser',
+        ],
     )
 
 

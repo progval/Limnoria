@@ -68,4 +68,9 @@ conf.registerGlobalValue(Web.fetch, 'maximum',
     registry.NonNegativeInteger(0, _("""Determines the maximum number of
     bytes the bot will download via the 'fetch' command in this plugin.""")))
 
+conf.registerGlobalValue(Web.fetch, 'timeout',
+    registry.NonNegativeInteger(5, """Determines the maximum number of
+    seconds the bot will wait for the site to respond, when using the 'fetch'
+    command in this plugin. If 0, will use socket.defaulttimeout"""))
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

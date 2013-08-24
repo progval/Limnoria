@@ -37,12 +37,7 @@ import operator
 import textwrap
 import traceback
 
-import supybot.ansi as ansi
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.registry as registry
-
-import supybot.ircutils as ircutils
+from . import ansi, conf, ircutils, registry, utils
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
 

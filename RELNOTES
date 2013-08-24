@@ -10,6 +10,8 @@ Factoids' config variable supybot.plugins.Factoids.factoidPrefix has been
 replaced by supybot.plugins.Factoids.format, which allows the user to
 determine exactly how replies to Factoid queries are formatted.
 
+supybot-botchk no longer runs supybot inside an instance of /bin/sh.
+
 
 Version 0.83.4.1
 

@@ -33,17 +33,10 @@ import time
 import random
 import base64
 
-import supybot.log as log
-import supybot.conf as conf
-import supybot.utils as utils
-import supybot.world as world
-import supybot.ircdb as ircdb
-import supybot.ircmsgs as ircmsgs
-import supybot.ircutils as ircutils
-
-from utils.str import rsplit
-from utils.iter import chain, cycle
-from utils.structures import queue, smallqueue, RingBuffer
+from . import conf, ircdb, ircmsgs, ircutils, log, utils, world
+from .utils.str import rsplit
+from .utils.iter import imap, chain, cycle
+from .utils.structures import queue, smallqueue, RingBuffer
 
 ###
 # The base class for a callback to be registered with an Irc object.  Shows

@@ -211,14 +211,6 @@ class Debug(callbacks.Privmsg):
         irc.reply(repr(os.environ))
     environ = wrap(environ)
 
-    def clearq(self, irc, msg, args):
-        """takes no arguments
-
-        Clears the current send queue for this network.
-        """
-        irc.queue.reset()
-        irc.replySuccess()
-
 
 Class = Debug
 
