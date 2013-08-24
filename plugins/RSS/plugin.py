@@ -222,6 +222,7 @@ class RSS(callbacks.Plugin):
             # and DoS the website in question.
             self.acquireLock(url)
             if self.willGetNewFeed(url):
+                results = {}
                 try:
                     self.log.debug('Downloading new feed from %u', url)
                     results = feedparser.parse(url)
