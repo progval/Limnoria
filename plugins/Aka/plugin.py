@@ -245,7 +245,7 @@ class Aka(callbacks.Plugin):
         args = name.split(' ')
         if len(args) > 1 and \
                 callbacks.canonicalName(args[0]) != self.canonicalName():
-            for cb in dynamic.irc.callbacks: # including this plugin
+            for cb in dynamic.irc.callbacks: # including this plugin
                 if cb.getCommand(args[0:-1]):
                     return False
         channel = dynamic.channel or 'global'
