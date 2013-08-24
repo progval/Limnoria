@@ -152,7 +152,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def connect(self, **kwargs):
         self.reconnect(reset=False, **kwargs)
 
-    def reconnect(self, reset=True):
+    def reconnect(self, wait=False, reset=True):
         self.nextReconnectTime = None
         if self.connected:
             drivers.log.reconnect(self.irc.network)
@@ -163,6 +163,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.irc.reset()
         else:
             drivers.log.debug('Not resetting %s.', self.irc)
+        if wait:
+            self.scheduleReconnect()
+            return
         server = self._getNextServer()
         host = server[0]
         address = None
