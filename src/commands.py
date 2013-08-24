@@ -504,11 +504,12 @@ def getSomething(irc, msg, args, state, errorMsg=None, p=None):
     else:
         state.args.append(args.pop(0))
 
-def getSomethingNoSpaces(irc, msg, args, state, *L):
+def getSomethingNoSpaces(irc, msg, args, state, errorMsg=None):
     def p(s):
         return len(s.split(None, 1)) == 1
-    errmsg = 'You must not give a string containing spaces as an argument.'
-    getSomething(irc, msg, args, state, p=p, errorMsg=errmsg, *L)
+    if errorMsg is None:
+        errorMsg='You must not give a string containing spaces as an argument.'
+    getSomething(irc, msg, args, state, errorMsg=errorMsg, p=p)
 
 def private(irc, msg, args, state):
     if irc.isChannel(msg.args[0]):
