@@ -151,8 +151,19 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertNotError('aka add "foo bar" "echo spam"')
         self.assertResponse('foo bar', 'spam')
         self.assertNotError('aka add "foo" "echo egg"')
-        self.assertResponse('foo bar', 'spam')
         self.assertResponse('foo', 'egg')
+        # You could expect 'spam' here, but in fact, this is dangerous.
+        # Just imagine this session:
+        # <evil_user> aka add "echo foo" quit
+        # <bot> The operation succeeded.
+        # ...
+        # <owner> echo foo
+        # * bot has quit
+        self.assertResponse('foo bar', 'egg')
+
+    def testNoOverride(self):
+        self.assertNotError('aka add "echo foo" "echo bar"')
+        self.assertResponse('echo foo', 'foo')
 
     def testRecursivity(self):
         self.assertNotError('aka add fact '
