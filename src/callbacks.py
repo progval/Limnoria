@@ -214,7 +214,10 @@ def getHelp(method, name=None, doc=None):
     if name is None:
         name = method.__name__
     if doc is None:
-        doclines = method.__doc__.splitlines()
+        if method.__doc__ is None:
+            doclines = ['This command has no help.  Complain to the author.']
+        else:
+            doclines = method.__doc__.splitlines()
     else:
         doclines = doc.splitlines()
     s = '%s %s' % (name, doclines.pop(0))
