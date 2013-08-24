@@ -211,7 +211,10 @@ def _int(s):
         return int(s, base)
     except ValueError:
         if base == 10:
-            return int(float(s))
+            try:
+                return int(float(s))
+            except OverflowError:
+                raise ValueError('I don\'t understand numbers that large.')
         else:
             raise
 
