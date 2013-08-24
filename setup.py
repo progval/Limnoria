@@ -218,6 +218,9 @@ setup(
     install_requires=[
         # Time plugin
         'python-dateutil >=2.0',
+        'pytz',
+        'charade',
+        'sqlalchemy',
         'feedparser',
         ],
     )
