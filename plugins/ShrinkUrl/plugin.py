@@ -268,7 +268,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             parameters = utils.web.urlencode({'longurl': url})
             response = utils.web.getUrl(self._ur1Api, data=parameters)
             ur1ca = self._ur1Regexp.search(response.decode()).group('url')
-            if ur1ca > 0 :
+            if ur1ca:
                 self.db.set('ur1', url, ur1ca)
                 return ur1ca
             else:
