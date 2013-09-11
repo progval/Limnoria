@@ -310,7 +310,7 @@ class Misc(callbacks.Plugin):
                         .decode('utf8'))
                 version = data['commit']['committer']['date']
                 # Strip the last 'Z':
-                version = ''.join(version.rsplit('Z', 1))
+                version = ''.join(version.rsplit('Z', 1)).replace(':', '-')
                 versions[branch] = version
             newest = _('The newest versions available online are %s.') % \
                     ', '.join([_('%s (in %s)') % (y,x)
