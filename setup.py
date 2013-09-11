@@ -49,8 +49,9 @@ try:
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     version = proc.stdout.readline() \
             .strip() \
-            .replace(' +', '+') \
-            .replace(' ', 'T')
+            .split(' +')[0] \
+            .replace(' ', 'T') \
+            .replace(':', '-')
 except:
     pass
 if not version:
