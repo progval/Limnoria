@@ -55,7 +55,7 @@ except:
     pass
 if not version:
     from time import gmtime, strftime
-    version = 'installed on ' + strftime("%Y-%m-%dT%H:%M:%S+0000", gmtime())
+    version = 'installed on ' + strftime("%Y-%m-%dT%H-%M-%S", gmtime())
 try:
     os.unlink(os.path.join('src', 'version.py'))
 except OSError: # Does not exist
