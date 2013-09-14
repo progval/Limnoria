@@ -327,9 +327,11 @@ class Seen(callbacks.Plugin):
 
     @internationalizeDocstring
     def since(self, irc, msg, args, channel,  nick):
-        """[<channel>] <nick>
+        """[<channel>] [<nick>]
 
         Returns the messages since <nick> last left the channel.
+        If <nick> is not given, it defaults to the nickname of the person
+        calling the command.
         """
         if nick is None:
             nick = msg.nick
