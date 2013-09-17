@@ -542,7 +542,8 @@ class IrcUserCreator(Creator):
                 self.users.setUser(self.u)
             except DuplicateHostmask:
                 log.error('Hostmasks for %s collided with another user\'s.  '
-                          'Resetting hostmasks for %s.', self.u.name)
+                          'Resetting hostmasks for %s.',
+                          self.u.name, self.u.name)
                 # Some might argue that this is arbitrary, and perhaps it is.
                 # But we've got to do *something*, so we'll show some deference
                 # to our lower-numbered users.
