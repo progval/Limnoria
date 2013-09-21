@@ -47,6 +47,13 @@ class Format(callbacks.Plugin):
         irc.reply(ircutils.bold(text))
     bold = wrap(bold, ['text'])
 
+    @wrap(['text'])
+    def stripformatting(self, irc, msg, args, text):
+        """<text>
+
+        Strips bold, underline, and colors from <text>."""
+        irc.reply(ircutils.stripFormatting(text))
+
     @internationalizeDocstring
     def reverse(self, irc, msg, args, text):
         """<text>
