@@ -252,7 +252,7 @@ class IrcUserTestCase(IrcdbTestCase):
             self.failIf(u.checkHostmask('foo!bar@baz'))
         finally:
             conf.supybot.databases.users.timeoutIdentification.setValue(orig)
-            
+
     def testMultipleAuth(self):
         orig = conf.supybot.databases.users.timeoutIdentification()
         try:
@@ -260,6 +260,9 @@ class IrcUserTestCase(IrcdbTestCase):
             u = ircdb.IrcUser()
             u.addAuth('foo!bar@baz')
             self.failUnless(u.checkHostmask('foo!bar@baz'))
+            u.addAuth('foo!bar@baz')
+            self.failUnless(u.checkHostmask('foo!bar@baz'))
+            self.failUnless(len(u.auth) == 1)
             u.addAuth('boo!far@fizz')
             self.failUnless(u.checkHostmask('boo!far@fizz'))
             time.sleep(2.1)
