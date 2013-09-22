@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2009, Jeremiah Fincher
-# Copyright (c) 2009, James McCoy
+# Copyright (c) 2009,2013, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -291,9 +291,20 @@ class IrcUser(object):
         self.hostmasks.remove(hostmask)
 
     def addAuth(self, hostmask):
-        """Sets a user's authenticated hostmask.  This times out in 1 hour."""
+        """Sets a user's authenticated hostmask.  This times out according to
+        conf.supybot.timeoutIdentification.  If hostmask exactly matches an
+        existing, known hostmask, the previous entry is removed."""
         if self.checkHostmask(hostmask, useAuth=False) or not self.secure:
             self.auth.append((time.time(), hostmask))
+            knownHostmasks = set()
+            def uniqueHostmask(auth):
+                (_, mask) = auth
+                if mask not in knownHostmasks:
+                    knownHostmasks.add(mask)
+                    return True
+                return False
+            uniqued = filter(uniqueHostmask, reversed(self.auth))
+            self.auth = list(reversed(uniqued))
         else:
             raise ValueError, 'secure flag set, unmatched hostmask'
 
