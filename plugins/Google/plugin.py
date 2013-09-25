@@ -267,6 +267,8 @@ class Google(callbacks.PluginRegexp):
 
         while ',,' in result:
             result = result.replace(',,', ',null,')
+        while '[,' in result:
+            result = result.replace('[,', '[')
         data = json.loads(result)
 
         try:
