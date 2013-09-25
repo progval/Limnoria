@@ -1,6 +1,5 @@
 *.mo
-*.pyc
-*.swo
+*.py[co]
 *~
 .*.s[a-w][a-p]
 .s[a-w][a-p]
