@@ -252,7 +252,9 @@ class Group(object):
         if not isValidRegistryName(name):
             raise InvalidRegistryName, name
         if node is None:
-            node = Group()
+            node = Group(private=self._private)
+        else:
+            node._private = node._private or self._private
         # We tried in any number of horrible ways to make it so that
         # re-registering something would work.  It doesn't, plain and simple.
         # For the longest time, we had an "Is this right?" comment here, but

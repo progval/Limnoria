@@ -199,4 +199,29 @@ class ValuesTestCase(SupyTestCase):
             self.assertEqual(v(), 'bar')
         self.assertEqual(v(), 'foo')
 
+class SecurityTestCase(SupyTestCase):
+    def testPrivate(self):
+        v = registry.String('foo', 'help')
+        self.assertFalse(v._private)
+        v = registry.String('foo', 'help', private=True)
+        self.assertTrue(v._private)
+
+        g = registry.Group('foo')
+        v = registry.String('foo', 'help')
+        g.register('val', v)
+        self.assertFalse(g._private)
+        self.assertFalse(g.val._private)
+
+        g = registry.Group('foo', private=True)
+        v = registry.String('foo', 'help')
+        g.register('val', v)
+        self.assertTrue(g._private)
+        self.assertTrue(g.val._private)
+
+        g = registry.Group('foo')
+        v = registry.String('foo', 'help', private=True)
+        g.register('val', v)
+        self.assertFalse(g._private)
+        self.assertTrue(g.val._private)
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
