@@ -42,14 +42,6 @@ import os.path
 import textwrap
 
 from src.version import version
-
-try:
-    from distribute_setup import use_setuptools
-except ImportError:
-    pass
-else:
-    use_setuptools(version='0.6c9')
-
 from setuptools import setup
 
 def normalizeWhitespace(s):
@@ -84,9 +76,12 @@ setup(
     name='supybot',
     version=version,
     author='Jeremy Fincher',
-    url='http://sourceforge.net/projects/supybot/',
     author_email='jemfinch@supybot.com',
-    download_url='http://www.sf.net/project/showfiles.php?group_id=58965',
+    maintainer='James McCoy',
+    maintainer_email='jamessan@users.sourceforge.net',
+    url='https://sourceforge.net/projects/supybot/',
+    download_url='https://sourceforge.net/projects/supybot/files/',
+    platforms=['linux', 'linux2', 'win32', 'cygwin', 'darwin'],
     description='A flexible and extensible Python IRC bot and framework.',
     long_description=normalizeWhitespace("""A robust, full-featured Python IRC
     bot with a clean and flexible plugin API.  Equipped with a complete ACL
