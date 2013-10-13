@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2010-2011, James McCoy
+# Copyright (c) 2010-2011, 2013, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -243,7 +243,7 @@ class Seen(callbacks.Plugin):
         else:
             self._last(irc, channel, any=True)
     any = wrap(any, ['channel', getopts({'user': 'otherUser'}),
-                     additional('nick')])
+                     additional('something')])
 
     def _last(self, irc, channel, any=False):
         if any:

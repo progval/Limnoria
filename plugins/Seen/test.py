@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2013, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -55,6 +56,16 @@ class ChannelDBTestCase(ChannelPluginTestCase):
                                       prefix=self.prefix))
         self.assertRegexp('seen any %s' % self.nick,
                           '^%s was last seen' % self.nick)
+        orig = conf.supybot.protocols.irc.strictRfc()
+        try:
+            for state in (True, False):
+                conf.supybot.protocols.irc.strictRfc.setValue(state)
+                for wildcard in self.wildcardTest:
+                    self.assertRegexp('seen any %s' % wildcard,
+                                      '^%s was last seen' % self.nick)
+                self.assertRegexp('seen any bar*', '^I haven\'t seen anyone matching')
+        finally:
+            conf.supybot.protocols.irc.strictRfc.setValue(orig)
 
     def testSeen(self):
         self.assertNotError('seen last')
@@ -64,10 +75,16 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.failUnless(self.nick.upper() in m.args[1])
         self.assertRegexp('seen user %s' % self.nick,
                           '^%s was last seen' % self.nick)
-        for wildcard in self.wildcardTest:
-            self.assertRegexp('seen %s' % wildcard,
-                              '^%s was last seen' % self.nick)
-        self.assertRegexp('seen bar*', '^I haven\'t seen anyone matching')
+        orig = conf.supybot.protocols.irc.strictRfc()
+        try:
+            for state in (True, False):
+                conf.supybot.protocols.irc.strictRfc.setValue(state)
+                for wildcard in self.wildcardTest:
+                    self.assertRegexp('seen %s' % wildcard,
+                                      '^%s was last seen' % self.nick)
+                self.assertRegexp('seen bar*', '^I haven\'t seen anyone matching')
+        finally:
+            conf.supybot.protocols.irc.strictRfc.setValue(orig)
 
     def testSeenNoUser(self):
         self.assertNotRegexp('seen user alsdkfjalsdfkj', 'KeyError')
