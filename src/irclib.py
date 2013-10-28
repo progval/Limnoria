@@ -532,7 +532,11 @@ class IrcState(IrcCommandDispatcher):
 
     def do324(self, irc, msg):
         channel = msg.args[1]
-        chan = self.channels[channel]
+        try:
+            chan = self.channels[channel]
+        except KeyError:
+            chan = ChannelState()
+            self.channels[channel] = chan
         for (mode, value) in ircutils.separateModes(msg.args[2:]):
             modeChar = mode[1]
             if mode[0] == '+' and mode[1] not in 'ovh':
@@ -543,7 +547,11 @@ class IrcState(IrcCommandDispatcher):
     def do329(self, irc, msg):
         # This is the last part of an empty mode.
         channel = msg.args[1]
-        chan = self.channels[channel]
+        try:
+            chan = self.channels[channel]
+        except KeyError:
+            chan = ChannelState()
+            self.channels[channel] = chan
         chan.created = int(msg.args[2])
 
     def doPart(self, irc, msg):
