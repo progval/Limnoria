@@ -321,7 +321,7 @@ class Misc(callbacks.Plugin):
                      'from the Limnoria repository.')
         s = _('The current (running) version of this Supybot is %s, '
               'running on Python %s.  %s') % \
-            (conf.version, sys.version, newest)
+            (conf.version, sys.version.replace('\n', ' '), newest)
         irc.reply(s)
     version = wrap(thread(version))
 
