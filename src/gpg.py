@@ -41,7 +41,8 @@ except ImportError:
     log.debug('Cannot import gnupg, using fallback.')
     gnupg = None
 try:
-    gnupg.GPG(gnupghome=None)
+    if gnupg:
+        gnupg.GPG(gnupghome=None)
 except TypeError:
     # This is the 'gnupg' library, not 'python-gnupg'.
     gnupg = None
