@@ -12,8 +12,11 @@ isn't any way to get around it.  You can get it from [Python homepage].
 [Twisted] -- Version 1.2.0 or greater (unless you actually want to use Twisted,
 you don't actually need it)
 
+[SQLAlchemy] -- If you want the Aka plugin (and probably other plugins in the future)
+
 [PySQLite]:https://code.google.com/p/pysqlite/
 [Twisted]:http://twistedmatrix.com/trac/
+[SQLAlchemy]:http://www.sqlalchemy.org/
 
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
