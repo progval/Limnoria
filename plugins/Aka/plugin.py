@@ -244,7 +244,7 @@ class Aka(callbacks.Plugin):
         if len(args) > 1 and \
                 callbacks.canonicalName(args[0]) != self.canonicalName():
             for cb in dynamic.irc.callbacks: # including this plugin
-                if cb.getCommand(args[0:-1]):
+                if cb.name() != self.name() and cb.getCommand(args[0:-1]):
                     return False
         if sys.version_info[0] < 3 and isinstance(name, str):
             name = name.decode('utf8')
