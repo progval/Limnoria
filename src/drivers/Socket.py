@@ -158,6 +158,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                         (sys.version_info[0] == 2 and
                             inst.conn._sock.__class__ is socket._closedsocket):
                     cls._instances.remove(inst)
+                elif inst.conn.fileno() == -1:
+                    inst.reconnect()
             if not cls._instances:
                 return
             rlist, wlist, xlist = select.select([x.conn for x in cls._instances],
