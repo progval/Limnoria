@@ -278,6 +278,9 @@ class Misc(callbacks.Plugin):
 
         This command gives a useful description of what <command> does.
         <plugin> is only necessary if the command is in more than one plugin.
+
+        You may also want to use the 'list' command to list all available
+        plugins and commands.
         """
         command = map(callbacks.canonicalName, command)
         (maxL, cbs) = irc.findCallbacksForArgs(command)
