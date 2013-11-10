@@ -306,6 +306,9 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
     registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         _("""Determines whether the bot will attempt to connect with SSL
         sockets to %s.""") % name))
+    registerGlobalValue(network, 'certfile', registry.String('',
+        _("""Determines what certificate file (if any) the bot will use to
+        connect with SSL sockets to %s.""") % name))
     registerChannelValue(network.channels, 'key', registry.String('',
         _("""Determines what key (if any) will be used to join the
         channel."""), private=True))
