@@ -308,7 +308,7 @@ class PluginDownloader(callbacks.Plugin):
                 irc.replySuccess()
             except Exception as e:
                 import traceback
-                traceback.print_exc(e)
+                traceback.print_exc()
                 log.error(str(e))
                 irc.error('The plugin could not be installed. Check the logs '
                         'for a more detailed error.')
