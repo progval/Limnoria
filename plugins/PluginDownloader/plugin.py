@@ -337,9 +337,7 @@ class PluginDownloader(callbacks.Plugin):
                     irc.error(_('This plugin has no description.'))
                 else:
                     info = info.split('\n\n')[0]
-                    for line in info.split('\n'):
-                        if line != '':
-                            irc.reply(line)
+                    irc.reply(info.replace('\n', ' '))
     info = wrap(info, ['something', optional('something')])
 
 
