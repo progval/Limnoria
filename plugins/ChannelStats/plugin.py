@@ -358,9 +358,11 @@ class ChannelStats(callbacks.Plugin):
         Returns the statistics for <channel>.  <channel> is only necessary if
         the message isn't sent on the channel itself.
         """
-        if msg.nick not in irc.state.channels[channel].users:
-            irc.error(format('You must be in %s to use this command.', channel))
-            return
+        if channel not in irc.state.channels:
+            irc.error(_('I am not in %s.', channel), Raise=True)
+        elif msg.nick not in irc.state.channels[channel].users:
+            irc.error(_('You must be in %s to use this command.') % channel,
+                    Raise=True)
         try:
             channeldb = conf.supybot.databases.plugins.channelSpecific. \
                     getChannelLink(channel)
