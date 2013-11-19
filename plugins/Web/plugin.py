@@ -151,7 +151,9 @@ class Web(callbacks.PluginRegexp):
                 self.log.debug('Encountered a problem parsing %u.  Title may '
                                'already be set, though', url)
             if parser.title:
-                domain = utils.web.getDomain(fd.geturl())
+                domain = utils.web.getDomain(fd.geturl()
+                        if self.registryValue('snarferShowTargetDomain', channel)
+                        else url)
                 title = utils.web.htmlToText(parser.title.strip())
                 if sys.version_info[0] < 3:
                     if isinstance(title, unicode):
