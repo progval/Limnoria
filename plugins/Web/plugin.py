@@ -119,6 +119,7 @@ class Web(callbacks.PluginRegexp):
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
         channel = msg.args[0]
+        fd = None
         if not irc.isChannel(channel):
             return
         if callbacks.addressed(irc.nick, msg):
@@ -131,7 +132,9 @@ class Web(callbacks.PluginRegexp):
                 return
             try:
                 size = conf.supybot.protocols.http.peekSize()
-                text = utils.web.getUrl(url, size=size)
+                fd = utils.web.getUrlFd(url)
+                text = fd.read(size)
+                fd.close()
             except utils.web.Error, e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 if self.registryValue('snarferReportIOExceptions', channel):
@@ -149,7 +152,7 @@ class Web(callbacks.PluginRegexp):
                 self.log.debug('Encountered a problem parsing %u.  Title may '
                                'already be set, though', url)
             if parser.title:
-                domain = utils.web.getDomain(url)
+                domain = utils.web.getDomain(fd.geturl())
                 title = utils.web.htmlToText(parser.title.strip())
                 if sys.version_info[0] < 3:
                     if isinstance(title, unicode):
