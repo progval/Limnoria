@@ -29,6 +29,7 @@
 ###
 
 import os
+import sys
 import shutil
 
 from supybot.test import *
@@ -96,6 +97,12 @@ class PluginDownloaderTestCase(PluginTestCase):
         self.assertResponse('plugindownloader info ProgVal Twitter',
                 'Advanced Twitter plugin for Supybot, with capabilities '
                 'handling, and per-channel user account.')
+
+    if sys.version_info[0] >= 3:
+        def test_2to3(self):
+            self.assertRegexp('plugindownloader install SpiderDave Pastebin',
+                    'convert')
+            self.assertNotError('load Pastebin')
 
 if not network:
     class PluginDownloaderTestCase(PluginTestCase):
