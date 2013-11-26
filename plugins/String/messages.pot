@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-03-03 19:37+CET\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,16 @@ msgid ""
 "    command."
 msgstr ""
 
-#: plugin.py:51
+#: config.py:58
+msgid ""
+"Determines the maximum time, in seconds, that\n"
+"    a regular expression is given to execute before being terminated. Since\n"
+"    there is a possibility that user input for the re command can cause it to\n"
+"    eat up large amounts of ram or cpu time, it's a good idea to keep this \n"
+"    low. Most normal regexps should not take very long at all."
+msgstr ""
+
+#: plugin.py:52
 #, docstring
 msgid ""
 "<letter>\n"
@@ -36,7 +45,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:60
+#: plugin.py:61
 #, docstring
 msgid ""
 "<number>\n"
@@ -45,11 +54,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:67
+#: plugin.py:68
 msgid "That number doesn't map to an 8-bit character."
 msgstr ""
 
-#: plugin.py:72
+#: plugin.py:73
 #, docstring
 msgid ""
 "<encoding> <text>\n"
@@ -60,11 +69,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:88 plugin.py:125
+#: plugin.py:89 plugin.py:126
 msgid "encoding"
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:108
 #, docstring
 msgid ""
 "<encoding> <text>\n"
@@ -75,15 +84,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:131
+#: plugin.py:132
 msgid "base64 string"
 msgstr ""
 
-#: plugin.py:132
+#: plugin.py:133
 msgid "Base64 strings must be a multiple of 4 in length, padded with '=' if necessary."
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:149
 #, docstring
 msgid ""
 "<string1> <string2>\n"
@@ -93,11 +102,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:155
+#: plugin.py:156
 msgid "Levenshtein distance is a complicated algorithm, try it with some smaller inputs."
 msgstr ""
 
-#: plugin.py:163
+#: plugin.py:164
 #, docstring
 msgid ""
 "<string> [<length>]\n"
@@ -108,7 +117,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:177
+#: plugin.py:178
 #, docstring
 msgid ""
 "<text>\n"
@@ -117,7 +126,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:186
+#: plugin.py:187
 #, docstring
 msgid ""
 "<regexp> <text>\n"
@@ -129,7 +138,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:198
+#: plugin.py:199
 msgid "You probably don't want to match the empty string."
 msgstr ""
 

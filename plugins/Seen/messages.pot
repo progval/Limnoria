@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -120,25 +120,27 @@ msgstr ""
 #: plugin.py:330
 #, docstring
 msgid ""
-"[<channel>] <nick>\n"
+"[<channel>] [<nick>]\n"
 "\n"
 "        Returns the messages since <nick> last left the channel.\n"
+"        If <nick> is not given, it defaults to the nickname of the person\n"
+"        calling the command.\n"
 "        "
 msgstr ""
 
-#: plugin.py:337
+#: plugin.py:339
 msgid "I am not in %s."
 msgstr ""
 
-#: plugin.py:340
+#: plugin.py:342
 msgid "%s must be in %s to use this command."
 msgstr ""
 
-#: plugin.py:363
+#: plugin.py:365
 msgid "I couldn't find in my history of %s messages where %r last left %s"
 msgstr ""
 
-#: plugin.py:372
+#: plugin.py:374
 msgid "Either %s didn't leave, or no messages were sent while %s was gone."
 msgstr ""
 

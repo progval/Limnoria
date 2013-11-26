@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgid ""
 "    the amount of memory being used by the bot."
 msgstr ""
 
-#: plugin.py:71
+#: plugin.py:72
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -42,19 +42,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:81
 msgid "%s as %L"
 msgstr ""
 
-#: plugin.py:81
+#: plugin.py:82
 msgid "I am connected to %L."
 msgstr ""
 
-#: plugin.py:83
+#: plugin.py:84
 msgid "I am currently in code profiling mode."
 msgstr ""
 
-#: plugin.py:89
+#: plugin.py:90
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -63,7 +63,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:95
+#: plugin.py:96
 msgid "I have spawned %n; %n %b still currently active: %L."
 msgstr ""
 
@@ -72,19 +72,29 @@ msgstr ""
 msgid ""
 "takes no arguments\n"
 "\n"
+"        Returns the number of processes that have been spawned, and list of\n"
+"        ones that are still active.\n"
+"        "
+msgstr ""
+
+#: plugin.py:118
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
 "        Returns some interesting network-related statistics.\n"
 "        "
 msgstr ""
 
-#: plugin.py:111
+#: plugin.py:126
 msgid "an indeterminate amount of time"
 msgstr ""
 
-#: plugin.py:112
+#: plugin.py:127
 msgid "I have received %s messages for a total of %S.  I have sent %s messages for a total of %S.  I have been connected to %s for %s."
 msgstr ""
 
-#: plugin.py:121
+#: plugin.py:136
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -93,23 +103,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:131
+#: plugin.py:146
 msgid "My children have taken %.2f seconds of user time and %.2f seconds of system time for a total of %.2f seconds of CPU time."
 msgstr ""
 
-#: plugin.py:138
+#: plugin.py:153
 msgid "I have taken %.2f seconds of user time and %.2f seconds of system time, for a total of %.2f seconds of CPU time.  %s"
 msgstr ""
 
-#: plugin.py:160
+#: plugin.py:175
 msgid "Unable to run ps command."
 msgstr ""
 
-#: plugin.py:166
+#: plugin.py:181
 msgid "  I'm taking up %S of memory."
 msgstr ""
 
-#: plugin.py:175
+#: plugin.py:190
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -118,11 +128,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:185
+#: plugin.py:200
 msgid "I offer a total of %n in %n.  I have processed %n."
 msgstr ""
 
-#: plugin.py:194
+#: plugin.py:209
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -131,7 +141,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:208
+#: plugin.py:223
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -140,11 +150,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:212
+#: plugin.py:227
 msgid "I have been running for %s."
 msgstr ""
 
-#: plugin.py:219
+#: plugin.py:234
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -153,7 +163,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:228
+#: plugin.py:243
 #, docstring
 msgid ""
 "takes no arguments\n"

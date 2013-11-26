@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,11 +29,19 @@ msgstr ""
 msgid ""
 "<text>\n"
 "\n"
+"        Strips bold, underline, and colors from <text>."
+msgstr ""
+
+#: plugin.py:59
+#, docstring
+msgid ""
+"<text>\n"
+"\n"
 "        Returns <text> in reverse-video.\n"
 "        "
 msgstr ""
 
-#: plugin.py:61
+#: plugin.py:68
 #, docstring
 msgid ""
 "<text>\n"
@@ -42,7 +50,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:70
+#: plugin.py:77
 #, docstring
 msgid ""
 "<foreground> [<background>] <text>\n"
@@ -52,7 +60,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:87
 #, docstring
 msgid ""
 "<separator> <string 1> [<string> ...]\n"
@@ -61,7 +69,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:89
+#: plugin.py:96
 #, docstring
 msgid ""
 "<chars to translate> <chars to replace those with> <text>\n"
@@ -72,11 +80,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:96
+#: plugin.py:103
 msgid "<chars to translate> must be the same length as <chars to replace those with>."
 msgstr ""
 
-#: plugin.py:103
+#: plugin.py:110
 #, docstring
 msgid ""
 "<substring to translate> <substring to replace it with> <text>\n"
@@ -86,7 +94,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:112
+#: plugin.py:119
 #, docstring
 msgid ""
 "<text>\n"
@@ -95,7 +103,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:121
+#: plugin.py:128
 #, docstring
 msgid ""
 "<text>\n"
@@ -104,7 +112,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:130
+#: plugin.py:137
 #, docstring
 msgid ""
 "<text>\n"
@@ -113,7 +121,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:139
+#: plugin.py:146
 #, docstring
 msgid ""
 "<text>\n"
@@ -122,7 +130,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:155
 #, docstring
 msgid ""
 "<text>\n"
@@ -131,7 +139,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:157
+#: plugin.py:164
 #, docstring
 msgid ""
 "<string 1> <string 2>\n"
@@ -142,7 +150,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:168
+#: plugin.py:175
 #, docstring
 msgid ""
 "<size> <text>\n"
@@ -153,7 +161,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:179
+#: plugin.py:186
 #, docstring
 msgid ""
 "<number> <text>\n"
@@ -163,7 +171,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:192
+#: plugin.py:199
 #, docstring
 msgid ""
 "<format string> [<arg> ...]\n"
@@ -174,7 +182,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:206
+#: plugin.py:213
 msgid "Not enough arguments for the format string."
 msgstr ""
 

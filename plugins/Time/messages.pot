@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid ""
 "    the empty string, the timestamp will not be shown."
 msgstr ""
 
-#: plugin.py:61
+#: plugin.py:64
 #, docstring
 msgid ""
 "[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
@@ -36,7 +36,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:96
+#: plugin.py:99
 #, docstring
 msgid ""
 "<time string>\n"
@@ -47,11 +47,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:107 plugin.py:123
+#: plugin.py:106 plugin.py:123
+msgid "This command is not available on this bot, ask the owner to install the python-dateutil library."
+msgstr ""
+
+#: plugin.py:113 plugin.py:132
 msgid "That's right now!"
 msgstr ""
 
-#: plugin.py:112
+#: plugin.py:118
 #, docstring
 msgid ""
 "<time string>\n"
@@ -60,7 +64,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:128
+#: plugin.py:137
 #, docstring
 msgid ""
 "[<seconds since epoch>]\n"
@@ -70,11 +74,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:134
+#: plugin.py:143
 msgid "number of seconds since epoch"
 msgstr ""
 
-#: plugin.py:139
+#: plugin.py:148
 #, docstring
 msgid ""
 "[<format>] [<seconds since epoch>]\n"
@@ -85,7 +89,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:156
+#: plugin.py:165
 #, docstring
 msgid ""
 "<seconds>\n"
@@ -95,7 +99,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:166
+#: plugin.py:175
 #, docstring
 msgid ""
 "<region>/<city>\n"
@@ -103,11 +107,11 @@ msgid ""
 "        Takes a city and its region, and returns the locale time."
 msgstr ""
 
-#: plugin.py:172
+#: plugin.py:181
 msgid "Python-tz is required by the command, but is not installed on this computer."
 msgstr ""
 
-#: plugin.py:177
+#: plugin.py:187
 msgid "Unknown timezone"
 msgstr ""
 

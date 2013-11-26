@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,13 +47,19 @@ msgid ""
 "    is.  This is used by the default command to set this topic."
 msgstr ""
 
-#: config.py:66
+#: config.py:65
+msgid ""
+"Determines whether the bot will set the topic\n"
+"    every time it joins, or only if the topic is empty."
+msgstr ""
+
+#: config.py:69
 msgid ""
 "Determines the number of previous\n"
 "    topics to keep around in case the undo command is called."
 msgstr ""
 
-#: config.py:69
+#: config.py:72
 msgid ""
 "Determines the\n"
 "    capabilities required (if any) to make any topic changes,\n"
@@ -87,7 +93,7 @@ msgstr ""
 msgid "That topic is too long for this server (maximum length: %i; this topic: %i)."
 msgstr ""
 
-#: plugin.py:213
+#: plugin.py:219
 #, docstring
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
@@ -101,7 +107,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:267
+#: plugin.py:276
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -111,7 +117,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:278
+#: plugin.py:287
 #, docstring
 msgid ""
 "[<channel>] <topic>\n"
@@ -121,7 +127,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:293
+#: plugin.py:302
 #, docstring
 msgid ""
 "[<channel>] <topic>\n"
@@ -133,7 +139,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:310
+#: plugin.py:319
 #, docstring
 msgid ""
 "[<channel>] <number> <topic>\n"
@@ -142,7 +148,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:324
+#: plugin.py:333
 #, docstring
 msgid ""
 "[<channel>] <topic>\n"
@@ -153,7 +159,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:340
+#: plugin.py:349
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -163,11 +169,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:350
+#: plugin.py:359
 msgid "I can't shuffle 1 or fewer topics."
 msgstr ""
 
-#: plugin.py:362
+#: plugin.py:371
 #, docstring
 msgid ""
 "[<channel>] <number> [<number> ...]\n"
@@ -179,19 +185,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:375
+#: plugin.py:384
 msgid "I cannot reorder 1 or fewer topics."
 msgstr ""
 
-#: plugin.py:377
+#: plugin.py:386
 msgid "All topic numbers must be specified."
 msgstr ""
 
-#: plugin.py:379
+#: plugin.py:388
 msgid "Duplicate topic numbers cannot be specified."
 msgstr ""
 
-#: plugin.py:387
+#: plugin.py:396
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -202,11 +208,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:396
+#: plugin.py:405
 msgid "%i: %s"
 msgstr ""
 
-#: plugin.py:403
+#: plugin.py:412
 #, docstring
 msgid ""
 "[<channel>] <number>\n"
@@ -217,7 +223,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:418
+#: plugin.py:424
 #, docstring
 msgid ""
 "[<channel>] <number> <regexp>\n"
@@ -230,7 +236,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:436
+#: plugin.py:442
 #, docstring
 msgid ""
 "[<channel>] [<number>] <topic>\n"
@@ -241,7 +247,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:457
+#: plugin.py:463
 #, docstring
 msgid ""
 "[<channel>] <number>\n"
@@ -253,7 +259,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:474
+#: plugin.py:480
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -263,11 +269,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:484
+#: plugin.py:490
 msgid "lock the topic"
 msgstr ""
 
-#: plugin.py:488
+#: plugin.py:494
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -277,11 +283,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:498
+#: plugin.py:504
 msgid "unlock the topic"
 msgstr ""
 
-#: plugin.py:502
+#: plugin.py:508
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -291,11 +297,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:513
+#: plugin.py:519
 msgid "I haven't yet set the topic in %s."
 msgstr ""
 
-#: plugin.py:521
+#: plugin.py:527
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -306,11 +312,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:535
+#: plugin.py:541
 msgid "There are no more undos for %s."
 msgstr ""
 
-#: plugin.py:540
+#: plugin.py:546
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -320,11 +326,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:552
+#: plugin.py:558
 msgid "There are no redos for %s."
 msgstr ""
 
-#: plugin.py:557
+#: plugin.py:563
 #, docstring
 msgid ""
 "[<channel>] <first topic number> <second topic number>\n"
@@ -335,11 +341,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:568
+#: plugin.py:574
 msgid "I refuse to swap the same topic with itself."
 msgstr ""
 
-#: plugin.py:578
+#: plugin.py:584
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -350,7 +356,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:597
+#: plugin.py:603
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -361,11 +367,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:610
+#: plugin.py:616
 msgid "There is no default topic configured for %s."
 msgstr ""
 
-#: plugin.py:616
+#: plugin.py:622
 #, docstring
 msgid ""
 "[<channel>] <separator>\n"
