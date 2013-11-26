@@ -31,8 +31,6 @@ import time
 TIME = time # For later use.
 from datetime import datetime
 
-from dateutil import parser
-
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
@@ -40,20 +38,25 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Time')
 
-def parse(s):
-    todo = []
-    s = s.replace('noon', '12:00')
-    s = s.replace('midnight', '00:00')
-    if 'tomorrow' in s:
-        todo.append(lambda i: i + 86400)
-        s = s.replace('tomorrow', '')
-    if 'next week' in s:
-        todo.append(lambda i: i + 86400*7)
-        s = s.replace('next week', '')
-    i = int(time.mktime(parser.parse(s, fuzzy=True).timetuple()))
-    for f in todo:
-        i = f(i)
-    return i
+
+try:
+    from dateutil import parser
+    def parse(s):
+        todo = []
+        s = s.replace('noon', '12:00')
+        s = s.replace('midnight', '00:00')
+        if 'tomorrow' in s:
+            todo.append(lambda i: i + 86400)
+            s = s.replace('tomorrow', '')
+        if 'next week' in s:
+            todo.append(lambda i: i + 86400*7)
+            s = s.replace('next week', '')
+        i = int(time.mktime(parser.parse(s, fuzzy=True).timetuple()))
+        for f in todo:
+            i = f(i)
+        return i
+except ImportError:
+    parse = None
 
 class Time(callbacks.Plugin):
     @internationalizeDocstring
@@ -99,6 +102,9 @@ class Time(callbacks.Plugin):
         <time string> can be any number of natural formats; just try something
         and see if it will work.
         """
+        if not parse:
+            irc.error(_('This command is not available on this bot, ask the '
+                'owner to install the python-dateutil library.'), Raise=True)
         now = int(time.time())
         new = parse(s)
         if new != now:
@@ -113,6 +119,9 @@ class Time(callbacks.Plugin):
 
         Returns the number of seconds until <time string>.
         """
+        if not parse:
+            irc.error(_('This command is not available on this bot, ask the '
+                'owner to install the python-dateutil library.'), Raise=True)
         now = int(time.time())
         new = parse(s)
         if new != now:

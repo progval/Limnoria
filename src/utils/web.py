@@ -199,7 +199,14 @@ class HtmlToText(HTMLParser, object):
         self.data.append(data)
 
     def handle_entityref(self, data):
-        self.data.append(unichr(htmlentitydefs.name2codepoint[data]))
+        if data in htmlentitydefs.name2codepoint:
+            self.data.append(unichr(htmlentitydefs.name2codepoint[data]))
+        elif sys.version_info[0] >= 3 and isinstance(data, bytes):
+            self.data.append(data.decode())
+        elif sys.version_info[0] < 3 and isinstance(data, str):
+            self.data.append(data.decode('utf8', errors='replace'))
+        else:
+            self.data.append(data)
 
     def getText(self):
         text = ''.join(self.data).strip()

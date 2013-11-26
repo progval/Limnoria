@@ -254,6 +254,10 @@ repositories = {
                                                    'Jonimoose',
                                                    'Supybot-plugins',
                                                    ),
+               'skgsergio':        GithubRepository(
+                                                   'skgsergio',
+                                                   'Limnoria-plugins',
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):

@@ -131,11 +131,13 @@ class Web(callbacks.PluginRegexp):
                 return
             try:
                 size = conf.supybot.protocols.http.peekSize()
-                text = utils.web.getUrl(url, size=size)
-            except utils.web.Error, e:
+                fd = utils.web.getUrlFd(url)
+                text = fd.read(size)
+                fd.close()
+            except socket.timeout, e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 if self.registryValue('snarferReportIOExceptions', channel):
-                     irc.reply(url+" : "+utils.web.strError(e), prefixNick=False)
+                     irc.reply(url+" : "+utils.web.TIMED_OUT, prefixNick=False)
                 return
             try:
                 text = text.decode(utils.web.getEncoding(text) or 'utf8',
@@ -149,7 +151,9 @@ class Web(callbacks.PluginRegexp):
                 self.log.debug('Encountered a problem parsing %u.  Title may '
                                'already be set, though', url)
             if parser.title:
-                domain = utils.web.getDomain(url)
+                domain = utils.web.getDomain(fd.geturl()
+                        if self.registryValue('snarferShowTargetDomain', channel)
+                        else url)
                 title = utils.web.htmlToText(parser.title.strip())
                 if sys.version_info[0] < 3:
                     if isinstance(title, unicode):
