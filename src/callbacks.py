@@ -1239,7 +1239,7 @@ class Commands(BasePlugin):
 
     def callCommand(self, command, irc, msg, *args, **kwargs):
         # We run all callbacks before checking if one of them returned True
-        if any(bool, list(cb(command, irc, msg, *args, **kwargs)
+        if any(bool, list(cb(self, command, irc, msg, *args, **kwargs)
                     for cb in self.pre_command_callbacks)):
             return
         method = self.getCommandMethod(command)
