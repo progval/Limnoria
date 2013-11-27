@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-07-29 11:54+CEST\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,19 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:235
+#: plugin.py:171
+msgid "Plugin is probably not compatible with your Python version (3.x) but could not be converted because 2to3 is not installed."
+msgstr ""
+
+#: plugin.py:178
+msgid "Plugin was designed for Python 2, but an attempt to convert it to Python 3 has been made. There is no garantee it will work, though."
+msgstr ""
+
+#: plugin.py:182
+msgid "Plugin successfully installed."
+msgstr ""
+
+#: plugin.py:299
 #, docstring
 msgid ""
 "This plugin allows you to install unofficial plugins from\n"
@@ -25,7 +37,7 @@ msgid ""
 "    just run command \"install <repository> <plugin>\"."
 msgstr ""
 
-#: plugin.py:245
+#: plugin.py:309
 #, docstring
 msgid ""
 "[<repository>]\n"
@@ -35,19 +47,19 @@ msgid ""
 "        repositories."
 msgstr ""
 
-#: plugin.py:253 plugin.py:264
+#: plugin.py:317 plugin.py:328
 msgid ", "
 msgstr ""
 
-#: plugin.py:255 plugin.py:274 plugin.py:299
+#: plugin.py:319 plugin.py:338 plugin.py:363
 msgid "This repository does not exist or is not known by this bot."
 msgstr ""
 
-#: plugin.py:262
+#: plugin.py:326
 msgid "No plugin found in this repository."
 msgstr ""
 
-#: plugin.py:269
+#: plugin.py:333
 #, docstring
 msgid ""
 "<repository> <plugin>\n"
@@ -55,11 +67,11 @@ msgid ""
 "        Downloads and installs the <plugin> from the <repository>."
 msgstr ""
 
-#: plugin.py:279 plugin.py:304
+#: plugin.py:343 plugin.py:368
 msgid "This plugin does not exist in this repository."
 msgstr ""
 
-#: plugin.py:294
+#: plugin.py:358
 #, docstring
 msgid ""
 "<repository> <plugin>\n"
@@ -67,11 +79,11 @@ msgid ""
 "        Displays informations on the <plugin> in the <repository>."
 msgstr ""
 
-#: plugin.py:308
+#: plugin.py:372
 msgid "No README found for this plugin"
 msgstr ""
 
-#: plugin.py:311
+#: plugin.py:375
 msgid "This plugin has no description."
 msgstr ""
 

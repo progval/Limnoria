@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-06-28 19:37+CEST\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,19 +15,19 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:64
+#: plugin.py:57
 #, docstring
 msgid ""
 "Add the help for \"@plugin help Conditional\" here\n"
 "    This should describe *how* to use this plugin."
 msgstr ""
 
-#: plugin.py:71
+#: plugin.py:64
 #, docstring
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:73
 #, docstring
 msgid ""
 "<condition> <ifcommand> <elsecommand>\n"
@@ -40,7 +40,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:97
+#: plugin.py:90
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -49,7 +49,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:109
+#: plugin.py:102
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -58,7 +58,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:121
+#: plugin.py:114
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -67,7 +67,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:133
+#: plugin.py:126
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -77,7 +77,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:146
+#: plugin.py:139
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -87,7 +87,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:159
+#: plugin.py:152
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -97,7 +97,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:172
+#: plugin.py:165
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -107,7 +107,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:185
+#: plugin.py:178
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -117,7 +117,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:198
+#: plugin.py:191
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -127,13 +127,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:211
+#: plugin.py:204
 #, docstring
 msgid ""
-"<item1> <item2>\n"
+"[--case-insensitive] <item1> <item2>\n"
 "\n"
 "        Determines if <item1> is a substring of <item2>.\n"
 "        Returns true if <item1> is contained in <item2>.\n"
+"\n"
+"        Will only match case if --case-insensitive is not given.\n"
 "        "
 msgstr ""
 

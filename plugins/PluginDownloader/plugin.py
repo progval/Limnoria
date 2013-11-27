@@ -128,6 +128,7 @@ class GithubRepository(GitRepository):
             assert archive.getmember(prefix + dirname).isdir(), \
                 'This is not a valid plugin (it is a file, not a directory).'
 
+            run_2to3 = sys.version_info[0] >= 3
             for file in archive.getmembers():
                 if file.name.startswith(prefix + dirname):
                     extractedFile = archive.extractfile(file)
@@ -141,10 +142,44 @@ class GithubRepository(GitRepository):
                     if extractedFile is None:
                         os.mkdir(newFileName)
                     else:
-                        open(newFileName, 'ab').write(extractedFile.read())
+                        with open(newFileName, 'ab') as fd:
+                            reload_imported = False
+                            for line in extractedFile.readlines():
+                                if sys.version_info[0] >= 3:
+                                    if 'import reload' in line.decode():
+                                        reload_imported = True
+                                    elif not reload_imported and \
+                                            'reload(' in line.decode():
+                                        fd.write('from imp import reload\n' \
+                                                .encode())
+                                        reload_imported = True
+                                fd.write(line)
+                    if newFileName.endswith('__init__.py'):
+                        with open(newFileName) as fd:
+                            lines = list(filter(lambda x:'import plugin' in x,
+                                fd.readlines()))
+                            if lines and lines[0].startswith('from . import'):
+                                # This should be already Python 3-compatible
+                                run_2to3 = False
         finally:
             archive.close()
             del archive
+        if run_2to3:
+            try:
+                import lib2to3
+            except ImportError:
+                return _('Plugin is probably not compatible with your '
+                        'Python version (3.x) but could not be converted '
+                        'because 2to3 is not installed.')
+            import subprocess
+            fixers = []
+            subprocess.Popen(['2to3', '-wn', os.path.join(directory, plugin)]) \
+                    .wait()
+            return _('Plugin was designed for Python 2, but an attempt to '
+                    'convert it to Python 3 has been made. There is no '
+                    'garantee it will work, though.')
+        else:
+            return _('Plugin successfully installed.')
 
     def getInfo(self, plugin):
         archive = self._download(plugin)
@@ -308,8 +343,7 @@ class PluginDownloader(callbacks.Plugin):
             irc.error(_('This plugin does not exist in this repository.'))
         else:
             try:
-                repositories[repository].install(plugin)
-                irc.replySuccess()
+                irc.reply(repositories[repository].install(plugin))
             except Exception as e:
                 import traceback
                 traceback.print_exc()

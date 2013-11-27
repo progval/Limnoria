@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
+"POT-Creation-Date: 2013-11-26 23:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,27 +29,50 @@ msgstr ""
 
 #: config.py:56
 msgid ""
+"Determines whether the domain name displayed\n"
+"    by the snarfer will be the original one (posted on IRC) or the target one\n"
+"    (got after following redirects, if any)."
+msgstr ""
+
+#: config.py:60
+msgid ""
 "Determines what URLs matching the given regexp\n"
 "    will not be snarfed.  Give the empty string if you have no URLs that you'd\n"
 "    like to exclude from being snarfed."
 msgstr ""
 
-#: config.py:68
+#: config.py:72
 msgid ""
 "Determines the maximum number of\n"
 "    bytes the bot will download via the 'fetch' command in this plugin."
 msgstr ""
 
-#: plugin.py:72
+#: plugin.py:85
+#, docstring
+msgid ""
+"Runs a command in a forked process with limited memory resources\n"
+"    to prevent memory bomb caused by specially crafted http responses."
+msgstr ""
+
+#: plugin.py:97
+msgid "Page is too big."
+msgstr ""
+
+#: plugin.py:105
+#, docstring
+msgid "Display a nice error instead of \"An error has occurred\"."
+msgstr ""
+
+#: plugin.py:115
 #, docstring
 msgid "Add the help for \"@help Web\" here."
 msgstr ""
 
-#: plugin.py:120
+#: plugin.py:161
 msgid "Title: %s (at %s)"
 msgstr ""
 
-#: plugin.py:140
+#: plugin.py:183
 #, docstring
 msgid ""
 "<url>\n"
@@ -59,11 +82,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:150
+#: plugin.py:193
 msgid "%s: %s"
 msgstr ""
 
-#: plugin.py:160
+#: plugin.py:205
 #, docstring
 msgid ""
 "<url>\n"
@@ -73,11 +96,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:176
+#: plugin.py:221
 msgid "That URL has no specified doctype."
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:228
 #, docstring
 msgid ""
 "<url>\n"
@@ -87,15 +110,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:193 plugin.py:198
+#: plugin.py:240 plugin.py:245
 msgid "%u is %S long."
 msgstr ""
 
-#: plugin.py:200
+#: plugin.py:247
 msgid "The server didn't tell me how long %u is but it's longer than %S."
 msgstr ""
 
-#: plugin.py:209
+#: plugin.py:258
 #, docstring
 msgid ""
 "[--no-filter] <url>\n"
@@ -106,15 +129,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:238
+#: plugin.py:287
 msgid "That URL appears to have no HTML title."
 msgstr ""
 
-#: plugin.py:240
+#: plugin.py:289
 msgid "That URL appears to have no HTML title within the first %S."
 msgstr ""
 
-#: plugin.py:246
+#: plugin.py:295
 #, docstring
 msgid ""
 "<text>\n"
@@ -123,7 +146,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:255
+#: plugin.py:304
 #, docstring
 msgid ""
 "<text>\n"
@@ -132,7 +155,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:265
+#: plugin.py:316
 #, docstring
 msgid ""
 "<url>\n"
@@ -143,7 +166,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:276
+#: plugin.py:327
 msgid "This command is disabled (supybot.plugins.Web.fetch.maximum is set to 0)."
 msgstr ""
 
