@@ -33,6 +33,7 @@ import os
 import sys
 import datetime
 
+import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 from supybot.commands import *
