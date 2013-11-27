@@ -306,7 +306,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 assert globals().has_key('ssl')
                 certfile = getattr(conf.supybot.networks, self.irc.network) \
                         .certfile()
-                if not certfile or not os.path.isfile(certfile):
+                if not certfile:
+                    certfile = None
+                elif not os.path.isfile(certfile):
                     drivers.log.warning('Could not find cert file %s.' %
                             certfile)
                     certfile = None
