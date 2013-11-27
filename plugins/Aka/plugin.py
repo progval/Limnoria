@@ -334,6 +334,7 @@ class Aka(callbacks.Plugin):
                             ret = True
                     return (ret, new_tokens)
                 (ret, tokens) = everythingReplace(tokens)
+            maxNesting = conf.supybot.commands.nested.maximum()
             if maxNesting and irc.nested+1 > maxNesting:
                 irc.error(_('You\'ve attempted more nesting than is '
                       'currently allowed on this bot.'), Raise=True)
