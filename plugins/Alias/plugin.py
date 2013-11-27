@@ -393,7 +393,7 @@ class Alias(callbacks.Plugin):
             irc.replySuccess()
         except AliasError, e:
             irc.error(str(e))
-    add = wrap(add, ['commandName', 'text'])
+    add = wrap(add, [('checkCapability', 'admin'), 'commandName', 'text'])
 
     @internationalizeDocstring
     def remove(self, irc, msg, args, name):
@@ -407,7 +407,7 @@ class Alias(callbacks.Plugin):
             irc.replySuccess()
         except AliasError, e:
             irc.error(str(e))
-    remove = wrap(remove, ['commandName'])
+    remove = wrap(remove, [('checkCapability', 'admin'), 'commandName'])
 
 
 Class = Alias
