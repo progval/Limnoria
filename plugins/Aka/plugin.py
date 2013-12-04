@@ -33,6 +33,7 @@ import os
 import sys
 import datetime
 
+import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 from supybot.commands import *
@@ -299,6 +300,8 @@ class Aka(callbacks.Plugin):
             if biggestDollar or biggestAt:
                 args = getArgs(args, required=biggestDollar, optional=biggestAt,
                                 wildcard=wildcard)
+            max_len = conf.supybot.reply.maximumLength()
+            args = list(map(lambda x:x[:max_len], args))
             def regexpReplace(m):
                 idx = int(m.group(1))
                 return args[idx-1]
@@ -331,6 +334,10 @@ class Aka(callbacks.Plugin):
                             ret = True
                     return (ret, new_tokens)
                 (ret, tokens) = everythingReplace(tokens)
+            maxNesting = conf.supybot.commands.nested.maximum()
+            if maxNesting and irc.nested+1 > maxNesting:
+                irc.error(_('You\'ve attempted more nesting than is '
+                      'currently allowed on this bot.'), Raise=True)
             self.Proxy(irc, msg, tokens)
         if biggestDollar and (wildcard or biggestAt):
             flexargs = _(' at least')

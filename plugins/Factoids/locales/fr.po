@@ -110,7 +110,7 @@ msgid ""
 msgstr ""
 "[<canal>] <clef> [<nombre>]\n"
 "\n"
-"Regarde la valeur de la <clef> dans la base de données de factoids. Si un <nombre> est donné, retourne la factoid exacte.Si l'option --raw est donnée, aucune substitution de variable ne sera effectuée avant d'afficher la factoid.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Regarde la valeur de la <clef> dans la base de données de factoids. Si un <nombre> est donné, retourne la factoid exacte. Si l'option --raw est donnée, aucune substitution de variable ne sera effectuée avant d'afficher la factoid.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:321
 #: plugin.py:523
@@ -131,7 +131,7 @@ msgid ""
 msgstr ""
 "[<canal>] <ancienne clef> <nouvelle clef> [<nombre>]\n"
 "\n"
-"Ajoute une <nouvelle clef> à la factoid correspondant à l'<ancienne clef>.Le <nombre> n'est nécessaire que si il y a plus d'une factoid associée à l'<ancienne clef>.La même action peut être accomplie en utilisant la fonction 'learn' avec la <nouvelle clef>, sans le contenu actuel de la factoid."
+"Ajoute une <nouvelle clef> à la factoid correspondant à l'<ancienne clef>. Le <nombre> n'est nécessaire que si il y a plus d'une factoid associée à l'<ancienne clef>.La même action peut être accomplie en utilisant la fonction 'learn' avec la <nouvelle clef>, sans le contenu actuel de la factoid."
 
 #: plugin.py:381
 #: plugin.py:398
@@ -162,7 +162,7 @@ msgid ""
 msgstr ""
 "[<canal>] [--plain] [--alpha] [<nombre>]\n"
 "\n"
-"Retourne une liste des factoids les plus utilisées. Si le <nombre> n'est pas fourni, il correspond par défaut au nombre de clefs de factoids défini dans la clef de registre rankListLength.Si --plain est donné, le numéro des rangs et le comptage des utilisations n'est pas inclu dans la sortie.Si --alpha est donné, en plus de --plain, les clefs seront triées alphabétiquement, au lieu de l'être par leur rang.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Retourne une liste des factoids les plus utilisées. Si le <nombre> n'est pas fourni, il correspond par défaut au nombre de clefs de factoids défini dans la clef de registre rankListLength. Si --plain est donné, le numéro des rangs et le comptage des utilisations n'est pas inclu dans la sortie. Si --alpha est donné, en plus de --plain, les clefs seront triées alphabétiquement, au lieu de l'être par leur rang.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:448
 msgid ""
@@ -208,7 +208,7 @@ msgid ""
 msgstr ""
 "[<canal>] <clef> [<nombre>|*]\n"
 "\n"
-"Enlève la factoid <clef> de la base de données. Si il y a plus d'une factoid avec cette clef, un <nombre> est requis pour déterminer laquelle sera supprimée. Un joker * peut être utilisé pour enlever toutes les factoids avec cette clef.Si, en tant que résultat, la clef (factoid) n'a plus aucune relation avec une autre factoid (clef), elle devrait être supprimée de la base de données.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Enlève la factoid <clef> de la base de données. Si il y a plus d'une factoid avec cette clef, un <nombre> est requis pour déterminer laquelle sera supprimée. Un joker * peut être utilisé pour enlever toutes les factoids avec cette clef. Si, en tant que résultat, la clef (factoid) n'a plus aucune relation avec une autre factoid (clef), elle devrait être supprimée de la base de données.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
 #: plugin.py:537
 msgid "There is no such factoid."

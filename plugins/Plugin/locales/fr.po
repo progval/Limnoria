@@ -60,7 +60,7 @@ msgid ""
 msgstr ""
 "<commande>\n"
 "\n"
-"Retourne le nom du plugin qui serait utilisé pour appeller la <commande>.Si il ne peut être déterminé (c'est à dire s'il y a un conflit, sans plugin par défaut), la liste de tous les plugins contenant cette commande sera renvoyée."
+"Retourne le nom du plugin qui serait utilisé pour appeller la <commande>. Si il ne peut être déterminé (c'est à dire s'il y a un conflit, sans plugin par défaut), la liste de tous les plugins contenant cette commande sera renvoyée."
 
 #: plugin.py:91
 msgid "plugins"

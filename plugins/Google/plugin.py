@@ -302,11 +302,9 @@ class Google(callbacks.PluginRegexp):
                 (self.registryValue('baseUrl', channel), s)
         return url
 
-    _calcRe1 = re.compile(r'<table.*class="?obcontainer"?[^>]*>(.*?)</table>', re.I)
-    _calcRe2 = re.compile(r'<h\d class="?r"?[^>]*>(?:<b>)?(.*?)(?:</b>)?</h\d>', re.I | re.S)
-    _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
-    _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
-    _calcTimesRe = re.compile(r'&(?:times|#215);')
+    _calcRe1 = re.compile(r'<span class="cwcot".*?>(.*?)</span>', re.I)
+    _calcRe2 = re.compile(r'<div class="vk_ans.*?>(.*?)</div>', re.I | re.S)
+    _calcRe3 = re.compile(r'<div class="side_div" id="rhs_div">.*?<input class="ucw_data".*?value="(.*?)"', re.I)
     @internationalizeDocstring
     def calc(self, irc, msg, args, expr):
         """<expression>
@@ -317,36 +315,28 @@ class Google(callbacks.PluginRegexp):
         if not ircutils.isChannel(channel):
             channel = None
         urlig = self._googleUrlIG(expr, channel)
-        js = utils.web.getUrl(urlig).decode('utf8')
-        # Convert JavaScript to JSON. Ouch.
-        js = js \
-                .replace('lhs:','"lhs":') \
-                .replace('rhs:','"rhs":') \
-                .replace('error:','"error":') \
-                .replace('icc:','"icc":') \
-                .replace('\\', '\\\\')
-        js = json.loads(js)
-
-        url = self._googleUrl(expr, channel)
-        html = utils.web.getUrl(url).decode('utf8')
+        h = {"User-Agent":"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36"}
+        html = utils.web.getUrl(urlig, headers=h).decode('utf8')
         match = self._calcRe1.search(html)
-        if match is None:
+        if not match:
             match = self._calcRe2.search(html)
-        if match is not None:
+            if not match:
+                match = self._calcRe3.search(html)
+                if not match:
+                    irc.reply("I could not find an output from Google Calc for: %s" % expr)
+                    self.log.info("HTML: {0}".format(html))
+                    return
+                else:
+                    s = match.group(1)
+            else:
+                s = match.group(1)
+        else:
             s = match.group(1)
-            s = self._calcSupRe.sub(r'^(\1)', s)
-            s = self._calcFontRe.sub(r',', s)
-            s = self._calcTimesRe.sub(r'*', s)
-            s = utils.web.htmlToText(s)
-            if ' = ' in s: # Extra check, since the regex seems to fail.
-                irc.reply(s)
-                return
-            elif js['lhs'] and js['rhs']:
-                # Outputs the original result. Might look ugly.
-                irc.reply("%s = %s" % (js['lhs'], js['rhs'],))
-                return
-        irc.reply(_('Google says: Error: %s.') % (js['error'],))
-        irc.reply('Google\'s calculator didn\'t come up with anything.')
+        # do some cleanup of text
+        s = re.sub(r'<sup>(.*)</sup>&#8260;<sub>(.*)</sub>', r' \1/\2', s)
+        s = re.sub(r'<sup>(.*)</sup>', r'^\1', s)
+        s = utils.web.htmlToText(s)
+        irc.reply("%s = %s" % (expr, s))
     calc = wrap(calc, ['text'])
 
     _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
