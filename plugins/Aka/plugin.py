@@ -271,7 +271,7 @@ class Aka(callbacks.Plugin):
         first = args[0]
         for cb in self.cbs:
             if first == cb.canonicalName():
-                return cb.getCommand(args)
+                return cb.getCommand(args[1:])
         if first == self.canonicalName() and len(args) > 1:
             ret = self.getCommand(args[1:])
             if ret:

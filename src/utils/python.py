@@ -139,7 +139,12 @@ def collect_extra_debug_data():
         data += ('Frame %s in %s at line %s\n' % (frame.f_code.co_name,
                                              frame.f_code.co_filename,
                                              frame.f_lineno))
-        for key, value in frame.f_locals.items():
+        frame_locals = frame.f_locals
+        for inspected in ('self', 'cls'):
+            if inspected in frame_locals:
+                for (key, value) in frame_locals[inspected].__dict__.items():
+                    frame_locals['%s.%s' % (inspected, key)] = value
+        for key, value in frame_locals.items():
             if key == '__builtins__':
                 # This is flooding
                 continue
