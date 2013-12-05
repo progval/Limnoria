@@ -229,7 +229,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                             line = line.decode('utf8', 'replace')
 
                 msg = drivers.parseMsg(line)
-                if msg is not None:
+                if msg is not None and self.irc is not None:
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
