@@ -146,7 +146,7 @@ def addressed(nick, msg, **kwargs):
         msg.tag('addressed', payload)
         return payload
 
-def canonicalName(command):
+def canonicalName(command, preserve_spaces=False):
     """Turn a command into its canonical form.
 
     Currently, this makes everything lowercase and removes all dashes and
@@ -156,7 +156,9 @@ def canonicalName(command):
         command = command.encode('utf-8')
     elif sys.version_info[0] >= 3 and isinstance(command, bytes):
         command = command.decode()
-    special = '\t -_'
+    special = '\t-_'
+    if not preserve_spaces:
+        special += ' '
     reAppend = ''
     while command and command[-1] in special:
         reAppend = command[-1] + reAppend

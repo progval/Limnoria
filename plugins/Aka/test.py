@@ -164,6 +164,9 @@ class AkaChannelTestCase(ChannelPluginTestCase):
     def testNoOverride(self):
         self.assertNotError('aka add "echo foo" "echo bar"')
         self.assertResponse('echo foo', 'foo')
+        self.assertNotError('aka add foo "echo baz"')
+        self.assertNotError('aka add "foo bar" "echo qux"')
+        self.assertResponse('foo bar', 'baz')
 
     def testRecursivity(self):
         self.assertNotError('aka add fact '
