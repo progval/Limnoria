@@ -102,7 +102,7 @@ if sqlalchemy:
 
 
         def has_aka(self, channel, name):
-            name = callbacks.canonicalName(name)
+            name = callbacks.canonicalName(name, preserve_spaces=True)
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
             count = self.get_db(channel).query(Alias) \
@@ -114,7 +114,7 @@ if sqlalchemy:
             return list_
 
         def get_alias(self, channel, name):
-            name = callbacks.canonicalName(name)
+            name = callbacks.canonicalName(name, preserve_spaces=True)
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
             try:
@@ -124,7 +124,7 @@ if sqlalchemy:
                 return None
 
         def add_aka(self, channel, name, alias):
-            name = callbacks.canonicalName(name)
+            name = callbacks.canonicalName(name, preserve_spaces=True)
             if self.has_aka(channel, name):
                 raise AkaError(_('This Aka already exists.'))
             if sys.version_info[0] < 3:
@@ -137,7 +137,7 @@ if sqlalchemy:
             db.commit()
 
         def remove_aka(self, channel, name):
-            name = callbacks.canonicalName(name)
+            name = callbacks.canonicalName(name, preserve_spaces=True)
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
             db = self.get_db(channel)
@@ -145,7 +145,7 @@ if sqlalchemy:
             db.commit()
 
         def lock_aka(self, channel, name, by):
-            name = callbacks.canonicalName(name)
+            name = callbacks.canonicalName(name, preserve_spaces=True)
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
             db = self.get_db(channel)
@@ -162,7 +162,7 @@ if sqlalchemy:
             db.commit()
 
         def unlock_aka(self, channel, name, by):
-            name = callbacks.canonicalName(name)
+            name = callbacks.canonicalName(name, preserve_spaces=True)
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
             db = self.get_db(channel)
@@ -179,7 +179,7 @@ if sqlalchemy:
             db.commit()
 
         def get_aka_lock(self, channel, name):
-            name = callbacks.canonicalName(name)
+            name = callbacks.canonicalName(name, preserve_spaces=True)
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
             try:
@@ -247,7 +247,7 @@ class Aka(callbacks.Plugin):
         if len(args) > 1 and \
                 callbacks.canonicalName(args[0]) != self.canonicalName():
             for cb in dynamic.irc.callbacks: # including this plugin
-                if cb.getCommand(args[0:-1]):
+                if cb.isCommandMethod(' '.join(args[0:-1])):
                     return False
         if sys.version_info[0] < 3 and isinstance(name, str):
             name = name.decode('utf8')
@@ -264,7 +264,7 @@ class Aka(callbacks.Plugin):
                             self._db.get_aka_list('global')) +
                 ['add', 'remove', 'lock', 'unlock', 'importaliasdatabase']))
 
-    def getCommand(self, args):
+    def getCommand(self, args, check_other_plugins=True):
         canonicalName = callbacks.canonicalName
         # All the code from here to the 'for' loop is copied from callbacks.py
         assert args == map(canonicalName, args)
@@ -273,10 +273,10 @@ class Aka(callbacks.Plugin):
             if first == cb.canonicalName():
                 return cb.getCommand(args[1:])
         if first == self.canonicalName() and len(args) > 1:
-            ret = self.getCommand(args[1:])
+            ret = self.getCommand(args[1:], False)
             if ret:
                 return [first] + ret
-        for i in xrange(len(args), 0, -1):
+        for i in xrange(1, len(args)+1):
             if self.isCommandMethod(callbacks.formatCommand(args[0:i])):
                 return args[0:i]
         return []
