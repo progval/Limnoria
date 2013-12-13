@@ -393,6 +393,7 @@ class Aka(callbacks.Plugin):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
+        self._checkManageCapabilities(irc, msg, channel)
         if ' ' not in alias:
             # If it's a single word, they probably want $*.
             alias += ' $*'
@@ -419,6 +420,7 @@ class Aka(callbacks.Plugin):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
+        self._checkManageCapabilities(irc, msg, channel)
         try:
             self._remove_aka(channel, name)
             self.log.info('Removing Aka %r (from %s)', name, msg.prefix)

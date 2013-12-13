@@ -504,7 +504,7 @@ def format(s, *args, **kwargs):
             t = args.pop()
             if not isinstance(t, (int, long)):
                 raise ValueError, 'Invalid value for %%S in format: %s' % t
-            for suffix in ['B','KB','MB','GB','TB']:
+            for suffix in ['B','kB','MB','GB','TB']:
                 if t < 1024:
                     return "%i%s" % (t, suffix)
                 t /= 1024
