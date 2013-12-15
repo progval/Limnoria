@@ -201,8 +201,8 @@ class Math(callbacks.Plugin):
             else:
                 i = float(s)
             x = complex(i)
-            if x == abs(x):
-                x = abs(x)
+            if x.imag == 0:
+                x = x.real
                 # Need to use string-formatting here instead of str() because
                 # use of str() on large numbers loses information:
                 # str(float(33333333333333)) => '3.33333333333e+13'
