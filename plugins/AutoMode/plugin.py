@@ -54,28 +54,35 @@ class AutoMode(callbacks.Plugin):
         fallthrough = self.registryValue('fallthrough', channel)
         def do(type):
             cap = ircdb.makeChannelCapability(channel, type)
+            cap_auto = ircdb.makeChannelCapability(channel, 'auto'+type)
             try:
-                if ircdb.checkCapability(msg.prefix, cap,
-                        ignoreOwner=not self.registryValue('owner')):
-                    if self.registryValue(type, channel):
-                        self.log.info('Scheduling auto-%s of %s in %s.',
-                                      type, msg.prefix, channel)
-                        def dismiss():
-                            """Determines whether or not a mode has already
-                            been applied."""
-                            l = getattr(irc.state.channels[channel], type+'s')
-                            return (msg.nick in l)
-                        msgmaker = getattr(ircmsgs, type)
-                        schedule_msg(msgmaker(channel, msg.nick),
-                                dismiss)
-                        raise Continue # Even if fallthrough, let's only do one.
-                    elif not fallthrough:
-                        self.log.debug('%s has %s, but supybot.plugins.AutoMode.%s'
-                                       ' is not enabled in %s, refusing to fall '
-                                       'through.', msg.prefix, cap, type, channel)
-                        raise Continue
+                apply_mode = ircdb.checkCapability(msg.prefix, cap,
+                        ignoreOwner=not self.registryValue('owner'))
             except KeyError:
-                pass
+                apply_mode = False
+            try:
+                override = ircdb.checkCapability(msg.prefix, cap_auto,
+                        ignoreOwner=not self.registryValue('owner'))
+            except KeyError:
+                override = False
+            if apply_mode or override:
+                if override or self.registryValue(type, channel):
+                    self.log.info('Scheduling auto-%s of %s in %s.',
+                                  type, msg.prefix, channel)
+                    def dismiss():
+                        """Determines whether or not a mode has already
+                        been applied."""
+                        l = getattr(irc.state.channels[channel], type+'s')
+                        return (msg.nick in l)
+                    msgmaker = getattr(ircmsgs, type)
+                    schedule_msg(msgmaker(channel, msg.nick),
+                            dismiss)
+                    raise Continue # Even if fallthrough, let's only do one.
+                elif not fallthrough:
+                    self.log.debug('%s has %s, but supybot.plugins.AutoMode.%s'
+                                   ' is not enabled in %s, refusing to fall '
+                                   'through.', msg.prefix, cap, type, channel)
+                    raise Continue
         def schedule_msg(msg, dismiss):
             def f():
                 if not dismiss():
