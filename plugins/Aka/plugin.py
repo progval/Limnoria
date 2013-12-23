@@ -312,10 +312,17 @@ class Aka(callbacks.Plugin):
                     else:
                         tokens[i] = replacer(token)
             replace(tokens, lambda s: dollarRe.sub(regexpReplace, s))
-            args = args[biggestDollar:]
             if biggestAt:
+                assert not wildcard
+                args = args[biggestDollar:]
                 replace(tokens, lambda s: atRe.sub(regexpReplace, s))
             if wildcard:
+                assert not biggestAt
+                # Gotta remove the things that have already been subbed in.
+                i = biggestDollar
+                while i:
+                    args.pop(0)
+                    i -= 1
                 def everythingReplace(tokens):
                     ret = False
                     new_tokens = []
@@ -326,14 +333,13 @@ class Aka(callbacks.Plugin):
                             if sub_ret:
                                 continue
                         if token == '$*':
-                            new_tokens.extend(args)
-                            ret = True
-                        else:
-                            new_tokens.append(
-                                    token.replace('$*', ' '.join(args)))
-                            ret = True
-                    return (ret, new_tokens)
-                (ret, tokens) = everythingReplace(tokens)
+                            tokens[i:i+1] = args
+                            return True
+                        elif '$*' in token:
+                            tokens[i] = token.replace('$*', ' '.join(args))
+                            return True
+                    return False
+                everythingReplace(tokens)
             maxNesting = conf.supybot.commands.nested.maximum()
             if maxNesting and irc.nested+1 > maxNesting:
                 irc.error(_('You\'ve attempted more nesting than is '
@@ -366,6 +372,10 @@ class Aka(callbacks.Plugin):
         biggestDollar = findBiggestDollar(alias)
         biggestAt = findBiggestAt(alias)
         wildcard = '$*' in alias
+        if biggestAt and wildcard:
+            raise AkaError(_('Can\'t mix $* and optional args (@1, etc.)'))
+        if alias.count('$*') > 1:
+            raise AkaError(_('There can be only one $* in an alias.'))
         self._db.add_aka(channel, name, alias)
 
     def _remove_aka(self, channel, name, evenIfLocked=False):
