@@ -324,14 +324,10 @@ class Aka(callbacks.Plugin):
                     args.pop(0)
                     i -= 1
                 def everythingReplace(tokens):
-                    ret = False
-                    new_tokens = []
                     for (i, token) in enumerate(tokens):
                         if isinstance(token, list):
-                            (sub_ret, sub_tokens) =  everythingReplace(token)
-                            new_tokens.append(sub_tokens)
-                            if sub_ret:
-                                continue
+                            if everythingReplace(token):
+                                return
                         if token == '$*':
                             tokens[i:i+1] = args
                             return True
