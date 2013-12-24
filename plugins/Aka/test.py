@@ -178,6 +178,10 @@ class AkaChannelTestCase(ChannelPluginTestCase):
 class AkaTestCase(PluginTestCase):
     plugins = ('Aka', 'Alias', 'User', 'Utilities')
 
+    def testMaximumLength(self):
+        self.assertNotError('aka add "foo bar baz qux quux" "echo test"')
+        self.assertError('aka add "foo bar baz qux quux corge" "echo test"')
+
     def testAkaLockedHelp(self):
         self.assertNotError('register evil_admin foo')
 

@@ -51,6 +51,10 @@ Aka = conf.registerPlugin('Aka')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Aka, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
+conf.registerGlobalValue(Aka, 'maximumWordsInName',
+    registry.Integer(5, _("""The maximum number of words allowed in a
+    command name. Setting this to an high value may slow down your bot
+    on long commands.""")))
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -276,7 +276,8 @@ class Aka(callbacks.Plugin):
             ret = self.getCommand(args[1:], False)
             if ret:
                 return [first] + ret
-        for i in xrange(1, len(args)+1):
+        max_length = self.registryValue('maximumWordsInName')
+        for i in xrange(1, min(len(args)+1, max_length)):
             if self.isCommandMethod(callbacks.formatCommand(args[0:i])):
                 return args[0:i]
         return []
@@ -365,6 +366,8 @@ class Aka(callbacks.Plugin):
                     'this plugin.'))
         if self._db.has_aka(channel, name):
             raise AkaError(_('This Aka already exists.'))
+        if len(name.split(' ')) > self.registryValue('maximumWordsInName'):
+            raise AkaError(_('This Aka has too many spaces in its name.'))
         biggestDollar = findBiggestDollar(alias)
         biggestAt = findBiggestAt(alias)
         wildcard = '$*' in alias
