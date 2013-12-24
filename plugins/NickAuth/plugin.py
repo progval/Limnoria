@@ -94,7 +94,7 @@ class NickAuth(callbacks.Plugin):
             """
             network = network.network or irc.network
             user = user or ircdb.users.getUser(msg.prefix)
-            self._check_auth(user, irc, msg)
+            self._check_auth(irc, msg, user)
             try:
                 user.removeNick(network, nick)
             except KeyError:
