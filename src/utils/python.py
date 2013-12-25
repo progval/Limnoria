@@ -142,7 +142,8 @@ def collect_extra_debug_data():
         frame_locals = frame.f_locals
         for inspected in ('self', 'cls'):
             if inspected in frame_locals:
-                if frame_locals[inspected].__dict__:
+                if hasattr(frame_locals[inspected], '__dict__') and \
+                        frame_locals[inspected].__dict__:
                     for (key, value) in frame_locals[inspected].__dict__.items():
                         frame_locals['%s.%s' % (inspected, key)] = value
         for key, value in frame_locals.items():
