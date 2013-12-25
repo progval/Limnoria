@@ -30,6 +30,7 @@
 
 import re
 import sys
+import socket
 import HTMLParser
 import htmlentitydefs
 
