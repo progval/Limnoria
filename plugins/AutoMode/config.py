@@ -48,6 +48,10 @@ conf.registerChannelValue(AutoMode, 'enable',
 conf.registerGlobalValue(AutoMode, 'owner',
     registry.Boolean(True, _("""Determines whether this plugin will automode
     owners even if they don't have op/halfop/voice/whatever capability.""")))
+conf.registerChannelValue(AutoMode, 'alternativeCapabilities',
+    registry.Boolean(False, _("""Determines whether the bot will
+    check for 'alternative capabilities' (ie. autoop, autohalfop,
+    autovoice) in addition to/instead of classic ones.""")))
 conf.registerChannelValue(AutoMode, 'fallthrough',
     registry.Boolean(False, _("""Determines whether the bot will "fall
     through" to halfop/voicing when auto-opping is turned off but
