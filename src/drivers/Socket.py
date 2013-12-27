@@ -242,7 +242,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         except socket.error, e:
             self._handleSocketError(e)
             return
-        if not self.irc.zombie:
+        if self.irc and not self.irc.zombie:
             self._sendIfMsgs()
 
     def connect(self, **kwargs):
