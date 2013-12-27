@@ -136,7 +136,7 @@ class CapabilitySet(set):
         else:
             return False
 
-    def check(self, capability):
+    def check(self, capability, ignoreOwner=False):
         """Returns the appropriate boolean for whether a given capability is
         'allowed' given its (or its anticapability's) presence in the set.
         """
@@ -244,7 +244,7 @@ class IrcUser(object):
             else:
                 return False
         else:
-            return self.capabilities.check(capability, ignoreOwner)
+            return self.capabilities.check(capability, ignoreOwner=ignoreOwner)
 
     def setPassword(self, password, hashed=False):
         """Sets the user's password."""
@@ -440,11 +440,11 @@ class IrcChannel(object):
         """Sets the default capability in the channel."""
         self.defaultAllow = b
 
-    def _checkCapability(self, capability):
+    def _checkCapability(self, capability, ignoreOwner=False):
         """Checks whether a certain capability is allowed by the channel."""
         assert isCapability(capability), 'got %s' % capability
         if capability in self.capabilities:
-            return self.capabilities.check(capability)
+            return self.capabilities.check(capability, ignoreOwner=ignoreOwner)
         else:
             if isAntiCapability(capability):
                 return not self.defaultAllow
@@ -1054,7 +1054,8 @@ def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
         return _x(capability, conf.supybot.capabilities.default())
 
 def checkCapability(hostmask, capability, users=users, channels=channels,
-                    ignoreOwner=False):
+                    ignoreOwner=False, ignoreChannelOp=False,
+                    ignoreDefaultAllow=False):
     """Checks that the user specified by name/hostmask has the capability given.
     """
     if world.testing and (not isinstance(hostmask, str) or
@@ -1075,26 +1076,31 @@ def checkCapability(hostmask, capability, users=users, channels=channels,
         return _checkCapabilityForUnknownUser(capability, users=users,
                                               channels=channels)
     if capability in u.capabilities:
-        return u._checkCapability(capability, ignoreOwner)
-    else:
-        if isChannelCapability(capability):
-            (channel, capability) = fromChannelCapability(capability)
+        try:
+            return u._checkCapability(capability, ignoreOwner)
+        except KeyError:
+            pass
+    if isChannelCapability(capability):
+        (channel, capability) = fromChannelCapability(capability)
+        if not ignoreChannelOp:
             try:
                 chanop = makeChannelCapability(channel, 'op')
                 if u._checkCapability(chanop):
                     return _x(capability, True)
             except KeyError:
                 pass
-            c = channels.getChannel(channel)
-            if capability in c.capabilities:
-                return c._checkCapability(capability)
-            else:
-                return _x(capability, c.defaultAllow)
-        defaultCapabilities = conf.supybot.capabilities()
-        if capability in defaultCapabilities:
-            return defaultCapabilities.check(capability)
+        c = channels.getChannel(channel)
+        if capability in c.capabilities:
+            return c._checkCapability(capability)
+        elif not ignoreDefaultAllow:
+            return _x(capability, c.defaultAllow)
         else:
-            return _x(capability, conf.supybot.capabilities.default())
+            return False
+    defaultCapabilities = conf.supybot.capabilities()
+    if capability in defaultCapabilities:
+        return defaultCapabilities.check(capability)
+    else:
+        return _x(capability, conf.supybot.capabilities.default())
 
 
 def checkCapabilities(hostmask, capabilities, requireAll=False):
