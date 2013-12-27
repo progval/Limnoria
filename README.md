@@ -50,4 +50,4 @@ file names with your Python version, without the dot (for example "26".)
 # DEVELOPERS:
 
 We likewise have tons of developer documentation at
-[supybot.fr.cr] for your learning adventures.  Have fun :)
+[supybot.aperio.fr] for your learning adventures.  Have fun :)
