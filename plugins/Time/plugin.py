@@ -95,13 +95,17 @@ class Time(callbacks.Plugin):
         irc.reply(str(seconds))
 
     @internationalizeDocstring
-    def at(self, irc, msg, args, s):
-        """<time string>
+    def at(self, irc, msg, args, s=None):
+        """[<time string>]
 
         Returns the number of seconds since epoch <time string> is.
         <time string> can be any number of natural formats; just try something
         and see if it will work.
+        If the <time string> is not given, defaults to now.
         """
+        if not s:
+            irc.reply(str(int(time.time())))
+            return
         if not parse:
             irc.error(_('This command is not available on this bot, ask the '
                 'owner to install the python-dateutil library.'), Raise=True)
@@ -111,7 +115,7 @@ class Time(callbacks.Plugin):
             irc.reply(str(new))
         else:
             irc.error(_('That\'s right now!'))
-    at = wrap(at, ['text'])
+    at = wrap(at, [optional('text')])
 
     @internationalizeDocstring
     def until(self, irc, msg, args, s):
