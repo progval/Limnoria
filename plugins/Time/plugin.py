@@ -105,12 +105,8 @@ class Time(callbacks.Plugin):
         if not parse:
             irc.error(_('This command is not available on this bot, ask the '
                 'owner to install the python-dateutil library.'), Raise=True)
-        now = int(time.time())
         new = parse(s)
-        if new != now:
-            irc.reply(str(new))
-        else:
-            irc.error(_('That\'s right now!'))
+        irc.reply(str(new))
     at = wrap(at, ['text'])
 
     @internationalizeDocstring
