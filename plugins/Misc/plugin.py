@@ -507,13 +507,7 @@ class Misc(callbacks.Plugin):
                                 'regexp': 'regexpMatcher',})])
 
 
-    @internationalizeDocstring
-    def tell(self, irc, msg, args, target, text):
-        """<nick> <text>
-
-        Tells the <nick> whatever <text> is.  Use nested commands to your
-        benefit here.
-        """
+    def _tell(self, irc, msg, args, target, text, notice):
         if irc.nested:
             irc.error('This command cannot be nested.', Raise=True)
         if target.lower() == 'me':
@@ -536,8 +530,27 @@ class Misc(callbacks.Plugin):
             text = '* %s %s' % (irc.nick, text)
         s = _('%s wants me to tell you: %s') % (msg.nick, text)
         irc.replySuccess()
-        irc.reply(s, to=target, private=True)
+        irc.reply(s, to=target, private=True, notice=notice)
+
+    @internationalizeDocstring
+    def tell(self, *args):
+        """<nick> <text>
+
+        Tells the <nick> whatever <text> is.  Use nested commands to your
+        benefit here.
+        """
+        self._tell(*args, notice=False)
     tell = wrap(tell, ['something', 'text'])
+
+    @internationalizeDocstring
+    def noticetell(self, *args):
+        """<nick> <text>
+
+        Tells the <nick> whatever <text> is, in a notice.  Use nested
+        commands to your benefit here.
+        """
+        self._tell(*args, notice=True)
+    noticetell = wrap(noticetell, ['something', 'text'])
 
     @internationalizeDocstring
     def ping(self, irc, msg, args):
