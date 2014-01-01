@@ -314,6 +314,8 @@ class Misc(callbacks.Plugin):
                 version = data['commit']['committer']['date']
                 # Strip the last 'Z':
                 version = ''.join(version.rsplit('Z', 1)).replace(':', '-')
+                if sys.version_info[0] < 3 and isinstance(version, unicode):
+                    version = version.encode('utf8')
                 versions[branch] = version
             newest = _('The newest versions available online are %s.') % \
                     ', '.join([_('%s (in %s)') % (y,x)
