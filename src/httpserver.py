@@ -186,6 +186,7 @@ class RealSupyHTTPServer(HTTPServer):
                     'reloaded the plugin and it didn\'t properly unhook. '
                     'Forced unhook.') % subdir)
         self.callbacks[subdir] = callback
+        callback.doHook(self, subdir)
     def unhook(self, subdir):
         callback = self.callbacks.pop(subdir) # May raise a KeyError. We don't care.
         callback.doUnhook(self)
@@ -285,6 +286,9 @@ class SupyHTTPServerCallback(object):
 
     doPost = doHead = doGet
 
+    def doHook(self, handler, subdir):
+        """Method called when hooking this callback."""
+        pass
     def doUnhook(self, handler):
         """Method called when unhooking this callback."""
         pass
