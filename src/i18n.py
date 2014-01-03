@@ -165,7 +165,8 @@ class _PluginInternationalization:
         except (IOError, PluginNotFound): # The translation is unavailable
             pass
         finally:
-            translationFile.close()
+            if 'translationFile' in locals():
+                translationFile.close()
 
     def _parse(self, translationFile):
         """A .po files parser.
