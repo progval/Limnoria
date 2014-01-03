@@ -161,7 +161,8 @@ class FlatfileMapping(MappingInterface):
             self.currentId = 0
             self._incrementCurrentId()
         finally:
-            fd.close()
+            if 'fd' in locals():
+                fd.close()
 
     def _canonicalId(self, id):
         if id is not None:
