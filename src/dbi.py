@@ -121,6 +121,8 @@ class DirMapping(MappingInterface):
             exn = NoRecordError(id)
             exn.realException = e
             raise exn
+        finally:
+            fd.close()
 
     def set(self, id, s):
         fd = open(self._makeFilename(id), 'w')
@@ -158,6 +160,8 @@ class FlatfileMapping(MappingInterface):
             self.maxSize = int(math.log10(maxSize))
             self.currentId = 0
             self._incrementCurrentId()
+        finally:
+            fd.close()
 
     def _canonicalId(self, id):
         if id is not None:

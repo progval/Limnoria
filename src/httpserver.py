@@ -157,10 +157,12 @@ set_default_templates(DEFAULT_TEMPLATES)
 def get_template(filename):
     path = conf.supybot.directories.data.web.dirize(filename)
     if os.path.isfile(path):
-        return open(path, 'r').read()
+        with open(path, 'r') as fd:
+            return fd.read()
     else:
         assert os.path.isfile(path + '.example'), path + '.example'
-        return open(path + '.example', 'r').read()
+        with open(path + '.example', 'r') as fd:
+            return fd.read()
 
 class RealSupyHTTPServer(HTTPServer):
     # TODO: make this configurable
@@ -360,6 +362,8 @@ class Favicon(SupyHTTPServerCallback):
                 found = True
             except IOError:
                 pass
+            finally:
+                icon.close()
         if found:
             response = icon.read()
             filename = file_path.rsplit(os.sep, 1)[1]

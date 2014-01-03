@@ -208,7 +208,8 @@ if __name__ == '__main__':
         lexer = shlex()
     else:
         file = sys.argv[1]
-        lexer = shlex(open(file), file)
+        with open(file) as fd:
+            lexer = shlex(fd, file)
     while 1:
         tt = lexer.get_token()
         if tt:
