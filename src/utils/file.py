@@ -38,7 +38,8 @@ from . import crypt
 from .iter import ifilter
 
 def contents(filename):
-    return open(filename).read()
+    with open(filename) as fd:
+        return fd.read()
 
 def open_mkdir(filename, mode='wb', *args, **kwargs):
     """filename -> file object.
@@ -62,6 +63,8 @@ def copy(src, dst):
     srcfd = open(src)
     dstfd = open_mkdir(dst, 'wb')
     shutil.copyfileobj(srcfd, dstfd)
+    srcfd.close()
+    dstfd.close()
 
 def writeLine(fd, line):
     fd.write(line)

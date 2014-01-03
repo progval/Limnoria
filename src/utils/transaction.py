@@ -88,6 +88,7 @@ class TransactionMixin(python.Object):
             (command, rest) = line.split(None, 1)
             args = rest.split()
             yield (command, args)
+        journal.close()
         
 
 class Transaction(TransactionMixin):

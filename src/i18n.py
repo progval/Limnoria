@@ -58,9 +58,10 @@ def getLocaleFromRegistryFilename(filename):
     """Called by the 'supybot' script. Gets the locale name before conf is
     loaded."""
     global currentLocale
-    for line in open(filename, 'r'):
-        if line.startswith('supybot.language: '):
-            currentLocale = line[len('supybot.language: '):]
+    with open(filename, 'r') as fd:
+        for line in fd:
+            if line.startswith('supybot.language: '):
+                currentLocale = line[len('supybot.language: '):]
 
 def import_conf():
     """Imports the conf into this module"""
@@ -163,6 +164,8 @@ class _PluginInternationalization:
             self._parse(translationFile)
         except (IOError, PluginNotFound): # The translation is unavailable
             pass
+        finally:
+            translationFile.close()
 
     def _parse(self, translationFile):
         """A .po files parser.
