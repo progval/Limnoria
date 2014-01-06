@@ -227,7 +227,7 @@ class Misc(callbacks.Plugin):
 
         Returns a URL saying where to get Supybot.
         """
-        irc.reply('My source is at http://supybot.com/')
+        irc.reply('My source is at http://sourceforge.net/projects/supybot/')
     source = wrap(source)
 
     def more(self, irc, msg, args, nick):
