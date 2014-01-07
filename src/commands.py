@@ -967,11 +967,18 @@ class getopts(context):
         self.spec = getopts # for repr
         self.getopts = {}
         self.getoptL = []
+        self.getoptLs = ''
         for (name, spec) in getopts.iteritems():
             if spec == '':
+                if len(name) == 1:
+                    self.getoptLs += name
+                    self.getopts[name] = None
                 self.getoptL.append(name)
                 self.getopts[name] = None
             else:
+                if len(name) == 1:
+                    self.getoptLs += name + ':'
+                    self.getopts[name] = contextify(spec)
                 self.getoptL.append(name + '=')
                 self.getopts[name] = contextify(spec)
         log.debug('getopts: %r', self.getopts)
@@ -979,10 +986,13 @@ class getopts(context):
 
     def __call__(self, irc, msg, args, state):
         log.debug('args before %r: %r', self, args)
-        (optlist, rest) = getopt.getopt(args, '', self.getoptL)
+        (optlist, rest) = getopt.getopt(args, self.getoptLs, self.getoptL)
         getopts = []
         for (opt, arg) in optlist:
-            opt = opt[2:] # Strip --
+            if opt.startswith('--'):
+                opt = opt[2:] # Strip --
+            else:
+                opt = opt[1:]
             log.debug('opt: %r, arg: %r', opt, arg)
             context = self.getopts[opt]
             if context is not None:
