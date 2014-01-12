@@ -17,3 +17,4 @@ notifications:
   irc:
     channels:
       - "chat.freenode.net#limnoria"
+    on_success: change
