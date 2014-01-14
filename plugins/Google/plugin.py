@@ -94,7 +94,7 @@ class Google(callbacks.PluginRegexp):
         if not ref:
             ref = 'http://%s/%s' % (dynamic.irc.server,
                                     dynamic.irc.nick)
-        headers = utils.web.defaultHeaders
+        headers = dict(utils.web.defaultHeaders)
         headers['Referer'] = ref
         opts = {'q': query, 'v': '1.0'}
         for (k, v) in options.iteritems():
@@ -250,7 +250,7 @@ class Google(callbacks.PluginRegexp):
 
         channel = msg.args[0]
 
-        headers = utils.web.defaultHeaders
+        headers = dict(utils.web.defaultHeaders)
         headers['User-Agent'] = ('Mozilla/5.0 (X11; U; Linux i686) '
                                  'Gecko/20071127 Firefox/2.0.0.11')
 
