@@ -132,7 +132,7 @@ class ChannelLogger(callbacks.Plugin):
             for (channel, log) in logs.items():
                 if self.registryValue('rotateLogs', channel):
                     name = self.getLogName(channel)
-                    if name != log.name:
+                    if name != os.path.basename(log.name):
                         log.close()
                         del logs[channel]
 
