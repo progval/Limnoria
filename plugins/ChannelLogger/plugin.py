@@ -132,7 +132,7 @@ class ChannelLogger(callbacks.Plugin):
             for (channel, log) in logs.items():
                 if self.registryValue('rotateLogs', channel):
                     name = self.getLogName(channel)
-                    if name != log.name:
+                    if name != os.path.basename(log.name):
                         log.close()
                         del logs[channel]
 
@@ -149,7 +149,7 @@ class ChannelLogger(callbacks.Plugin):
             try:
                 name = self.getLogName(channel)
                 logDir = self.getLogDir(irc, channel)
-                log = open(os.path.join(logDir, name), 'a')
+                log = open(os.path.join(logDir, name), encoding='utf-8', mode='a')
                 logs[channel] = log
                 return log
             except IOError:
