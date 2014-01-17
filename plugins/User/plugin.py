@@ -490,7 +490,7 @@ class User(callbacks.Plugin):
             Check the GPG signature at the <url> and authenticates you if
             the key used is associated to a user."""
             self._expire_tokens()
-            match = self._auth_re.search(utils.web.getUrl(url))
+            match = self._auth_re.search(utils.web.getUrl(url).decode('utf-8'))
             if not match:
                 irc.error(_('Signature or token not found.'), Raise=True)
             data = match.group(0)
