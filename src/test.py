@@ -81,7 +81,7 @@ class TestPlugin(callbacks.Plugin):
             irc.reply(repr(eval(' '.join(args))))
         except callbacks.ArgumentError:
             raise
-        except Exception, e:
+        except Exception as e:
             irc.reply(utils.exnToString(e))
 # Since we know we don't now need the Irc object, we just give None.  This
 # might break if callbacks.Privmsg ever *requires* the Irc object.

@@ -135,7 +135,7 @@ class Web(callbacks.PluginRegexp):
                 fd = utils.web.getUrlFd(url)
                 text = fd.read(size)
                 fd.close()
-            except socket.timeout, e:
+            except socket.timeout as e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 if self.registryValue('snarferReportIOExceptions', channel):
                      irc.reply(url+" : "+utils.web.TIMED_OUT, prefixNick=False)

@@ -289,7 +289,7 @@ class RSS(callbacks.Plugin):
                     raise callbacks.Error('Invalid (unparsable) RSS feed.')
                 except socket.timeout:
                     return error('Timeout downloading feed.')
-                except Exception, e:
+                except Exception as e:
                     # These seem mostly harmless.  We'll need reports of a
                     # kind that isn't.
                     self.log.debug('Allowing bozo_exception %r through.', e)

@@ -99,7 +99,7 @@ def getConfigVar(irc, msg, args, state):
         group = getWrapper(name)
         state.args.append(group)
         del args[0]
-    except registry.InvalidRegistryName, e:
+    except registry.InvalidRegistryName as e:
         state.errorInvalid(_('configuration variable'), str(e))
 addConverter('configVar', getConfigVar)
 
@@ -114,7 +114,7 @@ class Config(callbacks.Plugin):
     def callCommand(self, command, irc, msg, *args, **kwargs):
         try:
             super(Config, self).callCommand(command, irc, msg, *args, **kwargs)
-        except registry.InvalidRegistryValue, e:
+        except registry.InvalidRegistryValue as e:
             irc.error(str(e))
 
     def _list(self, group):

@@ -384,7 +384,7 @@ def tokenize(s, channel=None):
     try:
         ret = Tokenizer(brackets=brackets,pipe=pipe,quotes=quotes).tokenize(s)
         return ret
-    except ValueError, e:
+    except ValueError as e:
         raise SyntaxError(str(e))
 
 def formatCommand(command):
@@ -424,7 +424,7 @@ def checkCommandCapability(msg, cb, commandName):
         return not (default or \
                     any(lambda x: ircdb.checkCapability(msg.prefix, x),
                         checkAtEnd))
-    except RuntimeError, e:
+    except RuntimeError as e:
         s = ircdb.unAntiCapability(str(e))
         return s
 
@@ -717,9 +717,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 log.debug('Calling %s.invalidCommand.', cb.name())
                 try:
                     cb.invalidCommand(self, self.msg, self.args)
-                except Error, e:
+                except Error as e:
                     self.error(str(e))
-                except Exception, e:
+                except Exception as e:
                     log.exception('Uncaught exception in %s.invalidCommand.',
                                   cb.name())
                 log.debug('Finished calling %s.invalidCommand.', cb.name())
@@ -1269,7 +1269,7 @@ class Commands(BasePlugin):
                 self.callingCommand = None
         except SilentError:
             pass
-        except (getopt.GetoptError, ArgumentError), e:
+        except (getopt.GetoptError, ArgumentError) as e:
             self.log.debug('Got %s, giving argument error.',
                            utils.exnToString(e))
             help = self.getCommandHelp(command)
@@ -1277,10 +1277,10 @@ class Commands(BasePlugin):
                 irc.error(_('Invalid arguments for %s.') % method.__name__)
             else:
                 irc.reply(help)
-        except (SyntaxError, Error), e:
+        except (SyntaxError, Error) as e:
             self.log.debug('Error return: %s', utils.exnToString(e))
             irc.error(str(e))
-        except Exception, e:
+        except Exception as e:
             self.log.exception('Uncaught exception in %s.', command)
             if conf.supybot.reply.error.detailed():
                 irc.error(utils.exnToString(e))
@@ -1444,9 +1444,9 @@ class PluginRegexp(Plugin):
         method = getattr(self, name)
         try:
             method(irc, msg, m)
-        except Error, e:
+        except Error as e:
             irc.error(str(e))
-        except Exception, e:
+        except Exception as e:
             self.log.exception('Uncaught exception in _callRegexp:')
 
     def invalidCommand(self, irc, msg, tokens):

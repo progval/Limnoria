@@ -203,7 +203,7 @@ class String(callbacks.Plugin):
             try:
                 v = process(f, text, timeout=t, pn=self.name(), cn='re')
                 irc.reply(v)
-            except commands.ProcessTimeoutError, e:
+            except commands.ProcessTimeoutError as e:
                 irc.error("ProcessTimeoutError: %s" % (e,))
     re = thread(wrap(re, [first('regexpMatcher', 'regexpReplacer'),
                    'text']))

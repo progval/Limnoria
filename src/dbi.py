@@ -117,7 +117,7 @@ class DirMapping(MappingInterface):
         try:
             fd = open(self._makeFilename(id))
             return fd.read()
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             exn = NoRecordError(id)
             exn.realException = e
             raise exn
@@ -141,7 +141,7 @@ class DirMapping(MappingInterface):
     def remove(self, id):
         try:
             os.remove(self._makeFilename(id))
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             raise NoRecordError(id)
 
 class FlatfileMapping(MappingInterface):
@@ -155,7 +155,7 @@ class FlatfileMapping(MappingInterface):
                 self.currentId = int(strId)
             except ValueError:
                 raise Error('Invalid file for FlatfileMapping: %s' % filename)
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             # File couldn't be opened.
             self.maxSize = int(math.log10(maxSize))
             self.currentId = 0

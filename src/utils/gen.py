@@ -160,7 +160,7 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     without unsafely using eval()."""
     try:
         node = ast.parse(s)
-    except SyntaxError, e:
+    except SyntaxError as e:
         raise ValueError('Invalid string: %s.' % e)
     nodes = ast.parse(s).body
     if not nodes:

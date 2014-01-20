@@ -160,7 +160,7 @@ class UrlSnarfThread(world.SupyThread):
     def run(self):
         try:
             super(UrlSnarfThread, self).run()
-        except utils.web.Error, e:
+        except utils.web.Error as e:
             log.debug('Exception in urlSnarfer: %s', utils.exnToString(e))
 
 class SnarfQueue(ircutils.FloodQueue):
@@ -301,7 +301,7 @@ def getId(irc, msg, args, state, kind=None):
     try:
         args[0] = args[0].lstrip('#')
         getInt(irc, msg, args, state, type=type)
-    except Exception, e:
+    except Exception as e:
         args[0] = original
         raise
 
@@ -798,7 +798,7 @@ class UnknownConverter(KeyError):
 def getConverter(name):
     try:
         return wrappers[name]
-    except KeyError, e:
+    except KeyError as e:
         raise UnknownConverter(str(e))
 
 def callConverter(name, irc, msg, args, state, *L):
@@ -852,7 +852,7 @@ class rest(context):
             args[:] = [' '.join(args)]
             try:
                 super(rest, self).__call__(irc, msg, args, state)
-            except Exception, e:
+            except Exception as e:
                 args[:] = original
         else:
             raise IndexError
@@ -878,7 +878,7 @@ class optional(additional):
     def __call__(self, irc, msg, args, state):
         try:
             super(optional, self).__call__(irc, msg, args, state)
-        except (callbacks.ArgumentError, callbacks.Error), e:
+        except (callbacks.ArgumentError, callbacks.Error) as e:
             log.debug('Got %s, returning default.', utils.exnToString(e))
             state.errored = False
             setDefault(state, self.default)
@@ -896,7 +896,7 @@ class any(context):
                 self.__parent.__call__(irc, msg, args, st)
         except IndexError:
             pass
-        except (callbacks.ArgumentError, callbacks.Error), e:
+        except (callbacks.ArgumentError, callbacks.Error) as e:
             if not self.continueOnError:
                 raise
             else:
@@ -925,7 +925,7 @@ class first(context):
             try:
                 spec(irc, msg, args, state)
                 return
-            except Exception, e:
+            except Exception as e:
                 e2 = e # 'e' is local.
                 errored = state.errored
                 state.errored = False
@@ -956,7 +956,7 @@ class commalist(context):
                     if part: # trailing commas
                         super(commalist, self).__call__(irc, msg, [part], st)
             state.args.append(st.args)
-        except Exception, e:
+        except Exception as e:
             args[:] = original
             raise
 

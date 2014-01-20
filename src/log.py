@@ -107,7 +107,7 @@ class StdoutStreamHandler(logging.StreamHandler):
         if conf.supybot.log.stdout() and not conf.daemonized:
             try:
                 logging.StreamHandler.emit(self, record)
-            except ValueError, e: # Raised if sys.stdout is closed.
+            except ValueError as e: # Raised if sys.stdout is closed.
                 self.disable()
                 error('Error logging to stdout.  Removing stdout handler.')
                 exception('Uncaught exception in StdoutStreamHandler:')
@@ -184,7 +184,7 @@ if not os.path.exists(pluginLogDir):
 try:
     messagesLogFilename = os.path.join(_logDir, 'messages.log')
     _handler = BetterFileHandler(messagesLogFilename)
-except EnvironmentError, e:
+except EnvironmentError as e:
     raise SystemExit('Error opening messages logfile (%s).  ' \
           'Generally, this is because you are running Supybot in a directory ' \
           'you don\'t have permissions to add files in, or you\'re running ' \
@@ -348,14 +348,14 @@ def firewall(f, errorHandler=None):
     def m(self, *args, **kwargs):
         try:
             return f(self, *args, **kwargs)
-        except Exception, e:
+        except Exception as e:
             if testing:
                 raise
             logException(self)
             if errorHandler is not None:
                 try:
                     return errorHandler(self, *args, **kwargs)
-                except Exception, e:
+                except Exception as e:
                     logException(self, 'Uncaught exception in errorHandler')
     m = utils.python.changeFunctionName(m, f.func_name, f.__doc__)
     return m

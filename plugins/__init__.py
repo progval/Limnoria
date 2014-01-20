@@ -233,7 +233,7 @@ class ChannelUserDB(ChannelUserDictionary):
         self.filename = filename
         try:
             fd = open(self.filename)
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             log.warning('Couldn\'t open %s: %s.', self.filename, e)
             return
         reader = csv.reader(fd)
@@ -251,11 +251,11 @@ class ChannelUserDB(ChannelUserDictionary):
                         pass
                     v = self.deserialize(channel, id, t)
                     self[channel, id] = v
-                except Exception, e:
+                except Exception as e:
                     log.warning('Invalid line #%s in %s.',
                                 lineno, self.__class__.__name__)
                     log.debug('Exception: %s', utils.exnToString(e))
-        except Exception, e: # This catches exceptions from csv.reader.
+        except Exception as e: # This catches exceptions from csv.reader.
             log.warning('Invalid line #%s in %s.',
                         lineno, self.__class__.__name__)
             log.debug('Exception: %s', utils.exnToString(e))
@@ -525,10 +525,10 @@ class PeriodicFileDownloader(object):
         try:
             try:
                 infd = utils.web.getUrlFd(url)
-            except IOError, e:
+            except IOError as e:
                 self.log.warning('Error downloading %s: %s', url, e)
                 return
-            except utils.web.Error, e:
+            except utils.web.Error as e:
                 self.log.warning('Error downloading %s: %s', url, e)
                 return
             confDir = conf.supybot.directories.data()

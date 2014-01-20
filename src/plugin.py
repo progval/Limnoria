@@ -85,7 +85,7 @@ def loadPluginClass(irc, module, register=None):
     """Loads the plugin Class from the given module into the given Irc."""
     try:
         cb = module.Class(irc)
-    except TypeError, e:
+    except TypeError as e:
         s = str(e)
         if '2 given' in s and '__init__' in s:
             raise callbacks.Error('In our switch from CVS to Darcs (after 0.80.1), we ' \
@@ -100,7 +100,7 @@ def loadPluginClass(irc, module, register=None):
                   module.__name__)
         else:
             raise
-    except AttributeError, e:
+    except AttributeError as e:
         if 'Class' in str(e):
             raise callbacks.Error('This plugin module doesn\'t have a "Class" ' \
                   'attribute to specify which plugin should be ' \
@@ -127,7 +127,7 @@ def loadPluginClass(irc, module, register=None):
                 renameCommand(cb, command, newName)
         else:
             conf.supybot.commands.renames.unregister(plugin)
-    except registry.NonExistentRegistryEntry, e:
+    except registry.NonExistentRegistryEntry as e:
         pass # The plugin isn't there.
     irc.addCallback(cb)
     return cb

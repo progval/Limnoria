@@ -82,7 +82,7 @@ class Internet(callbacks.Plugin):
         try:
             sock = utils.net.getSocket('%s.whois-servers.net' % usertld)
             sock.connect(('%s.whois-servers.net' % usertld, 43))
-        except socket.error, e:
+        except socket.error as e:
             irc.error(str(e))
             return
         sock.settimeout(5)
@@ -130,7 +130,7 @@ class Internet(callbacks.Plugin):
             status = 'unknown'
         try:
             t = telnetlib.Telnet('whois.pir.org', 43)
-        except socket.error, e:
+        except socket.error as e:
             irc.error(str(e))
             return
         t.write(b'registrar ')

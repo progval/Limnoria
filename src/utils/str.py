@@ -194,7 +194,7 @@ def perlReToPythonRe(s):
         raise ValueError('Invalid flag: %s' % c)
     try:
         return re.compile(regexp, flag)
-    except re.error, e:
+    except re.error as e:
         raise ValueError(str(e))
 
 def perlReToReplacer(s):

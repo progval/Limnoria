@@ -140,7 +140,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     sent = self.conn.send(self.outbuffer.encode())
                 self.outbuffer = self.outbuffer[sent:]
                 self.eagains = 0
-            except socket.error, e:
+            except socket.error as e:
                 self._handleSocketError(e)
         if self.zombie and not self.outbuffer:
             self._reallyDie()
@@ -233,13 +233,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
-        except SSLError, e:
+        except SSLError as e:
             if e.args[0] == 'The read operation timed out':
                 pass
             else:
                 self._handleSocketError(e)
                 return
-        except socket.error, e:
+        except socket.error as e:
             self._handleSocketError(e)
             return
         if self.irc and not self.irc.zombie:
@@ -295,7 +295,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn = utils.net.getSocket(address, socks_proxy)
             vhost = conf.supybot.protocols.irc.vhost()
             self.conn.bind((vhost, 0))
-        except socket.error, e:
+        except socket.error as e:
             drivers.log.connectError(self.currentServer, e)
             self.scheduleReconnect()
             return
@@ -321,7 +321,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             setTimeout()
             self.connected = True
             self.resetDelay()
-        except socket.error, e:
+        except socket.error as e:
             if e.args[0] == 115:
                 now = time.time()
                 when = now + 60

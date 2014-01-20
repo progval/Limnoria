@@ -320,7 +320,7 @@ class Misc(callbacks.Plugin):
             newest = _('The newest versions available online are %s.') % \
                     ', '.join([_('%s (in %s)') % (y,x)
                                for x,y in versions.items()])
-        except utils.web.Error, e:
+        except utils.web.Error as e:
             self.log.info('Couldn\'t get website version: %s', e)
             newest = _('I couldn\'t fetch the newest version '
                      'from the Limnoria repository.')

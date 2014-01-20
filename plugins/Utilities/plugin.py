@@ -113,7 +113,7 @@ class Utilities(callbacks.Plugin):
         try:
             samp = random.sample(things, num)
             irc.reply(' '.join(samp))
-        except ValueError, e:
+        except ValueError as e:
             irc.error('%s' % (e,))
     sample = wrap(sample, ['positiveInt', many('anything')])
 

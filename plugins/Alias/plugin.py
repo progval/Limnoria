@@ -272,7 +272,7 @@ class Alias(callbacks.Plugin):
         for (alias, (command, locked, _)) in self.aliases.items():
             try:
                 self.addAlias(irc, alias, command, locked)
-            except Exception, e:
+            except Exception as e:
                 self.log.exception('Exception when trying to add alias %s.  '
                                    'Removing from the Alias database.', alias)
                 del self.aliases[alias]
@@ -397,7 +397,7 @@ class Alias(callbacks.Plugin):
             self.log.info('Adding alias %q for %q (from %s)',
                           name, alias, msg.prefix)
             irc.replySuccess()
-        except AliasError, e:
+        except AliasError as e:
             irc.error(str(e))
     add = wrap(add, ['commandName', 'text'])
 
@@ -411,7 +411,7 @@ class Alias(callbacks.Plugin):
             self.removeAlias(name)
             self.log.info('Removing alias %q (from %s)', name, msg.prefix)
             irc.replySuccess()
-        except AliasError, e:
+        except AliasError as e:
             irc.error(str(e))
     remove = wrap(remove, ['commandName'])
 

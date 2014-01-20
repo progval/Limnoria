@@ -98,7 +98,7 @@ class ChannelLogger(callbacks.Plugin):
         for log in self._logs():
             try:
                 log.flush()
-            except ValueError, e:
+            except ValueError as e:
                 if e.args[0] != 'I/O operation on a closed file':
                     self.log.exception('Odd exception:')
 

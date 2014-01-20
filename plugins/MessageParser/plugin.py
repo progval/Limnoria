@@ -128,7 +128,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         tokens = callbacks.tokenize(command)
         try:
             self.Proxy(irc.irc, msg, tokens)
-        except Exception, e:
+        except Exception as e:
             log.exception('Uncaught exception in function called by MessageParser:')
 
     def _checkManageCapabilities(self, irc, msg, channel):
@@ -213,7 +213,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         if not locked:
             try:
                 re.compile(regexp)
-            except Exception, e:
+            except Exception as e:
                 irc.error(_('Invalid python regexp: %s') % (e,))
                 return
             if ircdb.users.hasUser(msg.prefix):

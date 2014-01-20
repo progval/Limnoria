@@ -127,12 +127,12 @@ def close(registry, filename, private=True):
                     lines.append('#\n')
                     try:
                         x = value.__class__(value._default, value._help)
-                    except Exception, e:
+                    except Exception as e:
                         exception('Exception instantiating default for %s:' %
                                   value._name)
                     try:
                         lines.append('# Default value: %s\n' % x)
-                    except Exception, e:
+                    except Exception as e:
                         exception('Exception printing default value of %s:' %
                                   value._name)
             lines.append('###\n')
@@ -144,7 +144,7 @@ def close(registry, filename, private=True):
                 else:
                     s = 'CENSORED'
                 fd.write('%s: %s\n' % (name, s))
-            except Exception, e:
+            except Exception as e:
                 exception('Exception printing value:')
     fd.close()
 
@@ -615,7 +615,7 @@ class Regexp(Value):
                 self.setValue(utils.str.perlReToPythonRe(s), sr=s)
             else:
                 self.setValue(None)
-        except ValueError, e:
+        except ValueError as e:
             self.error(e)
 
     def setValue(self, v, sr=None):

@@ -56,7 +56,7 @@ class Dict(callbacks.Plugin):
             dbs = list(conn.getdbdescs().keys())
             dbs.sort()
             irc.reply(format('%L', dbs))
-        except socket.error, e:
+        except socket.error as e:
             irc.error(utils.web.strError(e))
     dictionaries = wrap(dictionaries)
 
@@ -71,7 +71,7 @@ class Dict(callbacks.Plugin):
             conn = dictclient.Connection(server)
             dbs = conn.getdbdescs().keys()
             irc.reply(utils.iter.choice(dbs))
-        except socket.error, e:
+        except socket.error as e:
             irc.error(utils.web.strError(e))
     random = wrap(random)
 
@@ -85,7 +85,7 @@ class Dict(callbacks.Plugin):
         try:
             server = conf.supybot.plugins.Dict.server()
             conn = dictclient.Connection(server)
-        except socket.error, e:
+        except socket.error as e:
             irc.error(utils.web.strError(e), Raise=True)
         dbs = set(conn.getdbdescs())
         if words[0] in dbs:
@@ -139,7 +139,7 @@ class Dict(callbacks.Plugin):
         try:
             server = conf.supybot.plugins.Dict.server()
             conn = dictclient.Connection(server)
-        except socket.error, e:
+        except socket.error as e:
             irc.error(utils.web.strError(e), Raise=True)
 
         dictionary = 'moby-thes'

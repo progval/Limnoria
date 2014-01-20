@@ -336,9 +336,9 @@ class ChannelStats(callbacks.Plugin):
                     v = eval(expr, e, e)
                 except ZeroDivisionError:
                     v = float('inf')
-                except NameError, e:
+                except NameError as e:
                     irc.errorInvalid(_('stat variable'), str(e).split()[1])
-                except Exception, e:
+                except Exception as e:
                     irc.error(utils.exnToString(e), Raise=True)
                 if id == 0:
                     users.append((v, irc.nick))

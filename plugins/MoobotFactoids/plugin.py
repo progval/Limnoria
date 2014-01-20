@@ -387,7 +387,7 @@ class MoobotFactoids(callbacks.Plugin):
         id = self._getUserId(irc, msg.prefix)
         try:
             (key, fact) = self._getKeyAndFactoid(tokens)
-        except ValueError, e:
+        except ValueError as e:
             irc.error(str(e), Raise=True)
         # Check and make sure it's not in the DB already
         if self.db.getFactoid(channel, key):
@@ -406,7 +406,7 @@ class MoobotFactoids(callbacks.Plugin):
         # It's fair game if we get to here
         try:
             r = utils.str.perlReToReplacer(regexp)
-        except ValueError, e:
+        except ValueError as e:
             irc.errorInvalid('regexp', regexp, Raise=True)
         fact = fact[0]
         new_fact = r(fact)
@@ -436,7 +436,7 @@ class MoobotFactoids(callbacks.Plugin):
         del tokens[0] # remove the "no,"
         try:
             (key, fact) = self._getKeyAndFactoid(tokens)
-        except ValueError, e:
+        except ValueError as e:
             irc.error(str(e), Raise=True)
         _ = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)

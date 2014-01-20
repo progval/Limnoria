@@ -628,10 +628,10 @@ class UsersDictionary(utils.IterableMap):
                 reader.readFile(filename)
                 self.noFlush = False
                 self.flush()
-            except EnvironmentError, e:
+            except EnvironmentError as e:
                 log.error('Invalid user dictionary file, resetting to empty.')
                 log.error('Exact error: %s', utils.exnToString(e))
-            except Exception, e:
+            except Exception as e:
                 log.exception('Exact error:')
         finally:
             self.noFlush = False
@@ -645,7 +645,7 @@ class UsersDictionary(utils.IterableMap):
         if self.filename is not None:
             try:
                 self.open(self.filename)
-            except EnvironmentError, e:
+            except EnvironmentError as e:
                 log.warning('UsersDictionary.reload failed: %s', e)
         else:
             log.error('UsersDictionary.reload called with no filename.')
@@ -834,10 +834,10 @@ class ChannelsDictionary(utils.IterableMap):
                 reader.readFile(filename)
                 self.noFlush = False
                 self.flush()
-            except EnvironmentError, e:
+            except EnvironmentError as e:
                 log.error('Invalid channel database, resetting to empty.')
                 log.error('Exact error: %s', utils.exnToString(e))
-            except Exception, e:
+            except Exception as e:
                 log.error('Invalid channel database, resetting to empty.')
                 log.exception('Exact error:')
         finally:
@@ -870,7 +870,7 @@ class ChannelsDictionary(utils.IterableMap):
             self.channels.clear()
             try:
                 self.open(self.filename)
-            except EnvironmentError, e:
+            except EnvironmentError as e:
                 log.warning('ChannelsDictionary.reload failed: %s', e)
         else:
             log.warning('ChannelsDictionary.reload without self.filename.')
@@ -913,7 +913,7 @@ class IgnoresDB(object):
                 else:
                     expiration = 0
                 self.add(hostmask, expiration)
-            except Exception, e:
+            except Exception as e:
                 log.error('Invalid line in ignores database: %q', line)
         fd.close()
 
@@ -941,7 +941,7 @@ class IgnoresDB(object):
             self.hostmasks.clear()
             try:
                 self.open(self.filename)
-            except EnvironmentError, e:
+            except EnvironmentError as e:
                 log.warning('IgnoresDB.reload failed: %s', e)
                 # Let's be somewhat transactional.
                 self.hostmasks.update(oldhostmasks)
@@ -971,7 +971,7 @@ try:
     userFile = os.path.join(confDir, conf.supybot.databases.users.filename())
     users = UsersDictionary()
     users.open(userFile)
-except EnvironmentError, e:
+except EnvironmentError as e:
     log.warning('Couldn\'t open user database: %s', e)
 
 try:
@@ -979,7 +979,7 @@ try:
                                conf.supybot.databases.channels.filename())
     channels = ChannelsDictionary()
     channels.open(channelFile)
-except EnvironmentError, e:
+except EnvironmentError as e:
     log.warning('Couldn\'t open channel database: %s', e)
 
 try:
@@ -987,7 +987,7 @@ try:
                               conf.supybot.databases.ignores.filename())
     ignores = IgnoresDB()
     ignores.open(ignoreFile)
-except EnvironmentError, e:
+except EnvironmentError as e:
     log.warning('Couldn\'t open ignore database: %s', e)
 
 
@@ -1083,7 +1083,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels,
         # Raised when no hostmasks match.
         return _checkCapabilityForUnknownUser(capability, users=users,
                                               channels=channels)
-    except ValueError, e:
+    except ValueError as e:
         # Raised when multiple hostmasks match.
         log.warning('%s: %s', hostmask, e)
         return _checkCapabilityForUnknownUser(capability, users=users,

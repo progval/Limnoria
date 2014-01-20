@@ -475,7 +475,7 @@ class IrcState(IrcCommandDispatcher):
                 converter = self._005converters.get(name, lambda x: x)
                 try:
                     self.supported[name] = converter(value)
-                except Exception, e:
+                except Exception as e:
                     log.exception('Uncaught exception in 005 converter:')
                     log.error('Name: %s, Converter: %s', name, converter)
             else:
