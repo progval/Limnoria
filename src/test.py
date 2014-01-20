@@ -147,8 +147,8 @@ class PluginTestCase(SupyTestCase):
                 for cb in self.irc.callbacks:
                     cbModule = sys.modules[cb.__class__.__module__]
                     if hasattr(cbModule, 'deprecated') and cbModule.deprecated:
-                        print
-                        print 'Ignored, %s is deprecated.' % cb.name()
+                        print('')
+                        print('Ignored, %s is deprecated.' % cb.name())
                         run = False
             if run:
                 originalRunTest()
@@ -238,7 +238,7 @@ class PluginTestCase(SupyTestCase):
         if timeout is None:
             timeout = self.timeout
         if self.myVerbose:
-            print # Extra newline, so it's pretty.
+            print('') # Extra newline, so it's pretty.
         prefixChars = conf.supybot.reply.whenAddressedBy.chars()
         if not usePrefixChar and query[0] in prefixChars:
             query = query[1:]
@@ -246,7 +246,7 @@ class PluginTestCase(SupyTestCase):
             query = query.encode('utf8') # unicode->str
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:
-            print 'Feeding: %r' % msg
+            print('Feeding: %r' % msg)
         self.irc.feedMsg(msg)
         fed = time.time()
         response = self.irc.takeMsg()
@@ -255,7 +255,7 @@ class PluginTestCase(SupyTestCase):
             drivers.run()
             response = self.irc.takeMsg()
         if self.myVerbose:
-            print 'Response: %r' % response
+            print('Response: %r' % response)
         return response
 
     def getMsg(self, query, **kwargs):
@@ -433,7 +433,7 @@ class ChannelPluginTestCase(PluginTestCase):
         if timeout is None:
             timeout = self.timeout
         if self.myVerbose:
-            print # Newline, just like PluginTestCase.
+            print('') # Newline, just like PluginTestCase.
         prefixChars = conf.supybot.reply.whenAddressedBy.chars()
         if query[0] not in prefixChars and usePrefixChar:
             query = prefixChars[0] + query
@@ -441,7 +441,7 @@ class ChannelPluginTestCase(PluginTestCase):
             query = query.encode('utf8') # unicode->str
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:
-            print 'Feeding: %r' % msg
+            print('Feeding: %r' % msg)
         self.irc.feedMsg(msg)
         fed = time.time()
         response = self.irc.takeMsg()
@@ -466,7 +466,7 @@ class ChannelPluginTestCase(PluginTestCase):
         else:
             ret = None
         if self.myVerbose:
-            print 'Returning: %r' % ret
+            print('Returning: %r' % ret)
         return ret
 
     def feedMsg(self, query, to=None, frm=None, private=False):

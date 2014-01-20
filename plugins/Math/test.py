@@ -89,9 +89,9 @@ class MathTestCase(PluginTestCase):
         self.assertError('base 4 4')
         self.assertError('base 10 12 A')
 
-        print
-        print "If we have not fixed a bug with Math.base, the following ",
-        print "tests will hang the test-suite."
+        print()
+        print("If we have not fixed a bug with Math.base, the following ")
+        print("tests will hang the test-suite.")
         self.assertRegexp('base 2 10 [base 10 2 -12]', '-12')
         self.assertRegexp('base 16 2 [base 2 16 -110101]', '-110101')
 

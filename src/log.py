@@ -95,9 +95,9 @@ class StdoutStreamHandler(logging.StreamHandler):
             # We check for ERROR there because otherwise, tracebacks (which are
             # already wrapped by Python itself) wrap oddly.
             if not isinstance(record.levelname, basestring):
-                print record
-                print record.levelname
-                print utils.stackTrace()
+                print(record)
+                print(record.levelname)
+                print(utils.stackTrace())
             prefixLen = len(record.levelname) + 1 # ' '
             s = textwrap.fill(s, width=78, subsequent_indent=' '*prefixLen)
             s.rstrip('\r\n')

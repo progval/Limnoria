@@ -42,11 +42,11 @@ _ = i18n.PluginInternationalization()
 
 def error(s):
    """Replace me with something better from another module!"""
-   print '***', s
+   print('***', s)
 
 def exception(s):
     """Ditto!"""
-    print '***', s, 'A bad exception.'
+    print('***', s, 'A bad exception.')
 
 class RegistryException(Exception):
     pass

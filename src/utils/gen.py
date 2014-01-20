@@ -28,6 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+from __future__ import print_function
+
 import os
 import sys
 import ast
@@ -345,7 +347,7 @@ def callTracer(fd=None, basename=True):
             filename = code.co_filename
             if basename:
                 filename = os.path.basename(filename)
-            print >>fd, '%s: %s(%s)' % (filename, funcname, lineno)
+            print('%s: %s(%s)' % (filename, funcname, lineno), file=fd)
     return tracer
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

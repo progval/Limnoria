@@ -36,6 +36,7 @@ work in an IRC-case-insensitive fashion), and numerous other things.
 """
 
 from __future__ import division
+from __future__ import print_function
 
 import re
 import sys
@@ -51,7 +52,7 @@ from itertools import imap
 
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
-    print '***', s % args
+    print('***', s % args)
 
 userHostmaskRe = re.compile(r'^\S+!\S+@\S+$')
 def isUserHostmask(s):
