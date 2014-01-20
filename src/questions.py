@@ -76,7 +76,10 @@ def expect(prompt, possibilities, recursed=False, default=None,
     if useBold:
         prompt += ansi.RESET
         print >>fd, ansi.BOLD,
-    s = raw_input(prompt)
+    if sys.version_info[0] >= 3:
+        s = input(prompt)
+    else:
+        s = raw_input(prompt)
     s = s.strip()
     print >>fd
     if possibilities:

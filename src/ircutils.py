@@ -87,13 +87,13 @@ def splitHostmask(hostmask):
     assert isUserHostmask(hostmask)
     nick, rest = hostmask.split('!', 1)
     user, host = rest.split('@', 1)
-    return (intern(nick), intern(user), intern(host))
+    return (sys.intern(nick), sys.intern(user), sys.intern(host))
 
 def joinHostmask(nick, ident, host):
     """nick, user, host => hostmask
     Joins the nick, ident, host into a user hostmask."""
     assert nick and ident and host
-    return intern('%s!%s@%s' % (nick, ident, host))
+    return sys.intern('%s!%s@%s' % (nick, ident, host))
 
 _rfc1459trans = utils.str.MultipleReplacer(dict(zip(
                                  string.ascii_uppercase + r'\[]~',

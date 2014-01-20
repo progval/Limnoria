@@ -450,7 +450,7 @@ class Misc(callbacks.Plugin):
         if skipfirst:
             # Drop the first message only if our current channel is the same as
             # the channel we've been instructed to look at.
-            iterable.next()
+            next(iterable)
         predicates = list(utils.iter.flatten(predicates.itervalues()))
         # Make sure the user can't get messages from channels they aren't in
         def userInChannel(m):

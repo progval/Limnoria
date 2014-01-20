@@ -44,7 +44,7 @@ def join(L):
 def split(s):
     fd = StringIO.StringIO(s)
     reader = csv.reader(fd)
-    return reader.next()
+    return next(reader)
 csv.join = join
 csv.split = split
 

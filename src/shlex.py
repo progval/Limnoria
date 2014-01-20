@@ -96,7 +96,7 @@ class shlex:
 
     def read_token(self):
         "Read a token from the input stream (no pushback or inclusions)"
-        while 1:
+        while True:
             nextchar = self.instream.read(1)
             if nextchar == '\n':
                 self.lineno = self.lineno + 1
@@ -190,7 +190,7 @@ class shlex:
         if newfile[0] == '"':
             newfile = newfile[1:-1]
         # This implements cpp-like semantics for relative-path inclusion.
-        if type(self.infile) == type("") and not os.path.isabs(newfile):
+        if isinstance(self.infile, basestring) and not os.path.isabs(newfile):
             newfile = os.path.join(os.path.dirname(self.infile), newfile)
         return (newfile, open(newfile, "r"))
 
@@ -210,7 +210,7 @@ if __name__ == '__main__':
         file = sys.argv[1]
         with open(file) as fd:
             lexer = shlex(fd, file)
-    while 1:
+    while True:
         tt = lexer.get_token()
         if tt:
             print "Token: " + repr(tt)

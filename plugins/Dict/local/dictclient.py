@@ -73,7 +73,7 @@ class Connection:
         """Used when expecting multiple lines of text -- gets the block
         part only.  Does not get any codes or anything!  Returns a string."""
         data = []
-        while 1:
+        while True:
             line = self.rfile.readline().decode('utf8').strip()
             if line == '.':
                 break
@@ -194,7 +194,7 @@ class Connection:
         if code != 150:
             raise Exception, "Unknown code %d" % code
 
-        while 1:
+        while True:
             code, text = self.getresultcode()
             if code != 151 or code is None:
                 break

@@ -118,7 +118,7 @@ def make(dbFilename, readFilename=None):
     else:
         readfd = open(readFilename, 'rb')
     maker = Maker(dbFilename)
-    while 1:
+    while True:
         (initchar, key, value) = _readKeyValue(readfd)
         if initchar is None:
             break
@@ -318,7 +318,7 @@ class ReaderWriter(utils.IterableMap):
         adds = {}
         try:
             fd = open(self.journalName, 'r')
-            while 1:
+            while True:
                 (initchar, key, value) = _readKeyValue(fd)
                 if initchar is None:
                     break

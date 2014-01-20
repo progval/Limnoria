@@ -216,7 +216,7 @@ class String(callbacks.Plugin):
         encryption.
         """
         chars = utils.iter.cycle(password)
-        ret = [chr(ord(c) ^ ord(chars.next())) for c in text]
+        ret = [chr(ord(c) ^ ord(next(chars))) for c in text]
         irc.reply(''.join(ret))
     xor = wrap(xor, ['something', 'text'])
 

@@ -145,7 +145,7 @@ class Nickometer(callbacks.Plugin):
                                     '%s consecutive non-alphas ' % len(match))
 
         # Remove balanced brackets ...
-        while 1:
+        while True:
             nickInitial = nick
             nick=re.sub('^([^()]*)(\()(.*)(\))([^()]*)$', '\1\3\5', nick, 1)
             nick=re.sub('^([^{}]*)(\{)(.*)(\})([^{}]*)$', '\1\3\5', nick, 1)

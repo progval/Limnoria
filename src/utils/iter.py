@@ -48,7 +48,7 @@ def len(iterable):
     return i
 
 def trueCycle(iterable):
-    while 1:
+    while True:
         yielded = False
         for x in iterable:
             yield x
@@ -141,7 +141,7 @@ def startswith(long_, short):
     shortI = iter(short)
     try:
         while True:
-            if shortI.next() != longI.next():
+            if next(shortI) != next(longI):
                 return False
     except StopIteration:
         return True
@@ -151,7 +151,7 @@ def limited(iterable, limit):
     iterable = iter(iterable)
     try:
         while i:
-            yield iterable.next()
+            yield next(iterable)
             i -= 1
     except StopIteration:
         raise ValueError, 'Expected %s elements in iterable (%r), got %s.' % \
