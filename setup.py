@@ -148,10 +148,24 @@ try:
                 def log_debug(self, msg, *args):
                     log.debug(msg, *args)
 
-            fixer_names = get_fixers_from_package('lib2to3.fixes')
-            fixer_names.remove('lib2to3.fixes.fix_import')
-            fixer_names += get_fixers_from_package('2to3')
-            r = DistutilsRefactoringTool(fixer_names, options=options)
+            fixer_names = ['fix_apply', 'fix_basestring', 'fix_buffer',
+                    'fix_callable', 'fix_dict', 'fix_except', 'fix_exec',
+                    'fix_execfile', 'fix_exitfunc', 'fix_filter',
+                    'fix_funcattrs', 'fix_future', 'fix_getcwdu',
+                    'fix_has_key', 'fix_idioms', 'fix_imports', 'fix_imports2',
+                    'fix_input', 'fix_intern', 'fix_isinstance',
+                    'fix_itertools', 'fix_itertools_imports', 'fix_long',
+                    'fix_map', 'fix_metaclass', 'fix_methodattrs', 'fix_ne',
+                    'fix_next', 'fix_nonzero', 'fix_numliterals',
+                    'fix_operator', 'fix_paren', 'fix_print', 'fix_raise',
+                    'fix_raw_input', 'fix_reduce', 'fix_renames', 'fix_repr',
+                    'fix_set_literal', 'fix_standarderror', 'fix_sys_exc',
+                    'fix_throw', 'fix_tuple_params', 'fix_types',
+                    'fix_unicode', 'fix_urllib', 'fix_ws_comma', 'fix_xrange',
+                    'fix_xreadlines', 'fix_zip']
+            fixers = list(map(lambda x:'lib2to3.fixes.'+x, fixer_names))
+            fixers += get_fixers_from_package('2to3')
+            r = DistutilsRefactoringTool(fixers, options=options)
             r.refactor(files, write=True)
 except ImportError:
     # 2.x
