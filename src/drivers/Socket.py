@@ -82,7 +82,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.writeCheckTime = None
         self.nextReconnectTime = None
         self.resetDelay()
-        if self.networkGroup.get('ssl').value and not globals().has_key('ssl'):
+        if self.networkGroup.get('ssl').value and 'ssl' not in globals():
             drivers.log.error('The Socket driver can not connect to SSL '
                               'servers for your Python version.  Try the '
                               'Twisted driver instead, or install a Python'
@@ -304,7 +304,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
         try:
             if getattr(conf.supybot.networks, self.irc.network).ssl():
-                assert globals().has_key('ssl')
+                assert 'ssl' in globals()
                 certfile = getattr(conf.supybot.networks, self.irc.network) \
                         .certfile()
                 if not certfile:

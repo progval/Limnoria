@@ -218,7 +218,7 @@ def perlReToReplacer(s):
     g = False
     if 'g' in flags:
         g = True
-        flags = filter('g'.__ne__, flags)
+        flags = list(filter('g'.__ne__, flags))
     if isinstance(flags, list):
         flags = ''.join(flags)
     r = perlReToPythonRe(sep.join(('', regexp, flags)))

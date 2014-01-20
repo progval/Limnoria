@@ -54,8 +54,8 @@ def loadPluginModule(name, ignoreDeprecation=False):
             log.warning('Invalid plugin directory: %s; removing.', dir)
             conf.supybot.directories.plugins().remove(dir)
     if name not in files:
-        matched_names = filter(lambda x: re.search(r'(?i)^%s$' % (name,), x),
-                                files)
+        search = lambda x: re.search(r'(?i)^%s$' % (name,), x)
+        matched_names = list(filter(search, files))
         if len(matched_names) == 1:
             name = matched_names[0]
         else:

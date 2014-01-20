@@ -149,7 +149,7 @@ class Connection:
         if not hasattr(self, 'dbobjs'):
             self.dbobjs = {}
 
-        if self.dbobjs.has_key(dbname):
+        if dbname in self.dbobjs:
             return self.dbobjs[dbname]
 
         # We use self.dbdescs explicitly since we don't want to

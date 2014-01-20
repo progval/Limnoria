@@ -181,7 +181,8 @@ class RSS(callbacks.Plugin):
                 #oldresults = self.cachedFeeds[url]
                 #oldheadlines = self.getHeadlines(oldresults)
                 oldheadlines = self.cachedHeadlines[url]
-                oldheadlines = filter(lambda x: t - x[3] < self.registryValue('announce.cachePeriod'), oldheadlines)
+                oldheadlines = list(filter(lambda x: t - x[3] <
+                    self.registryValue('announce.cachePeriod'), oldheadlines))
             except KeyError:
                 oldheadlines = []
             newresults = self.getFeed(url)
@@ -198,7 +199,7 @@ class RSS(callbacks.Plugin):
             for (i, headline) in enumerate(newheadlines):
                 if normalize(headline) in oldheadlinesset:
                     newheadlines[i] = None
-            newheadlines = filter(None, newheadlines) # Removes Nones.
+            newheadlines = list(filter(None, newheadlines)) # Removes Nones.
             number_of_headlines = len(oldheadlines)
             oldheadlines.extend(newheadlines)
             self.cachedHeadlines[url] = oldheadlines
@@ -228,6 +229,7 @@ class RSS(callbacks.Plugin):
                         channelnewheadlines = filter(filter_whitelist, channelnewheadlines)
                     if len(blacklist) != 0:
                         channelnewheadlines = filter(filter_blacklist, channelnewheadlines)
+                    channelnewheadlines = list(channelnewheadlines)
                     if len(channelnewheadlines) == 0:
                         return
                     bold = self.registryValue('bold', channel)

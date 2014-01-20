@@ -148,11 +148,10 @@ try:
                 def log_debug(self, msg, *args):
                     log.debug(msg, *args)
 
-            fixer_names = ['fix_apply', 'fix_basestring', 'fix_buffer',
-                    'fix_callable', 'fix_dict', 'fix_except', 'fix_exec',
-                    'fix_execfile', 'fix_exitfunc', 'fix_filter',
-                    'fix_funcattrs', 'fix_future', 'fix_getcwdu',
-                    'fix_has_key', 'fix_idioms', 'fix_imports', 'fix_imports2',
+            fixer_names = ['fix_basestring',
+                    'fix_dict', 'fix_except',
+                    'fix_funcattrs',
+                    'fix_idioms', 'fix_imports', 'fix_imports2',
                     'fix_input', 'fix_intern', 'fix_isinstance',
                     'fix_itertools', 'fix_itertools_imports', 'fix_long',
                     'fix_map', 'fix_metaclass', 'fix_methodattrs', 'fix_ne',

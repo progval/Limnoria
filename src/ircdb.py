@@ -334,7 +334,7 @@ class IrcUser(object):
                     knownHostmasks.add(mask)
                     return True
                 return False
-            uniqued = filter(uniqueHostmask, reversed(self.auth))
+            uniqued = list(filter(uniqueHostmask, reversed(self.auth)))
             self.auth = list(reversed(uniqued))
         else:
             raise ValueError, 'secure flag set, unmatched hostmask'

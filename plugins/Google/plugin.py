@@ -162,7 +162,7 @@ class Google(callbacks.PluginRegexp):
         data = self.search(text, msg.args[0], {'smallsearch': True})
         if data['responseData']['results']:
             url = data['responseData']['results'][0]['unescapedUrl']
-            if opts.has_key('snippet'):
+            if 'snippet' in opts:
                 snippet = data['responseData']['results'][0]['content']
                 snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
             else:

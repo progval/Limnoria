@@ -75,7 +75,7 @@ class Utilities(callbacks.Plugin):
         nested commands to run, but only the output of the last one to be
         returned.
         """
-        args = filter(None, args)
+        args = list(filter(None, args))
         if args:
             irc.reply(args[-1])
         else:
