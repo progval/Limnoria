@@ -239,10 +239,11 @@ class IterableMap(object):
             ret += 1
         return ret
 
-    def __nonzero__(self):
+    def __bool__(self):
         for _ in self.iteritems():
             return True
         return False
+    __nonzero__ = __bool__
 
 
 class InsensitivePreservingDict(collections.MutableMapping):

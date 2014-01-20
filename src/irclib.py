@@ -205,8 +205,9 @@ class IrcMsgQueue(object):
                msg in self.lowpriority or \
                msg in self.highpriority
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.highpriority or self.normal or self.lowpriority)
+    __nonzero__ = __bool__
 
     def __len__(self):
         return len(self.highpriority)+len(self.lowpriority)+len(self.normal)
