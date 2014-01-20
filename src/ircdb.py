@@ -1057,6 +1057,20 @@ def checkCapability(hostmask, capability, users=users, channels=channels,
                     ignoreOwner=False, ignoreChannelOp=False,
                     ignoreDefaultAllow=False):
     """Checks that the user specified by name/hostmask has the capability given.
+
+    ``users`` and ``channels`` default to ``ircdb.users`` and
+    ``ircdb.channels``.
+
+    ``ignoreOwner``, ``ignoreChannelOp``, and ``ignoreDefaultAllow`` are
+    used to override default behavior of the capability system in special
+    cases (actually, in the AutoMode plugin):
+
+    * ``ignoreOwner`` disables the behavior "owners have all capabilites"
+    * ``ignoreChannelOp`` disables the behavior "channel ops have all
+      channel capabilities"
+    * ``ignoreDefaultAllow`` disables the behavior "if a user does not have
+      a capability or the associated anticapability, then they have the
+      capability"
     """
     if world.testing and (not isinstance(hostmask, str) or
             '@' not in hostmask or
