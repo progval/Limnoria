@@ -628,9 +628,9 @@ class Irc(IrcCommandDispatcher):
     __firewalled__ = {'die': None,
                       'feedMsg': None,
                       'takeMsg': None,}
-    _nickSetters = set(['001', '002', '003', '004', '250', '251', '252',
+    _nickSetters = {'001', '002', '003', '004', '250', '251', '252',
                         '254', '255', '265', '266', '372', '375', '376',
-                        '333', '353', '332', '366', '005'])
+                        '333', '353', '332', '366', '005'}
     # We specifically want these callbacks to be common between all Ircs,
     # that's why we don't do the normal None default with a check.
     def __init__(self, network, callbacks=_callbacks):

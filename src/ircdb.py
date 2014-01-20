@@ -693,7 +693,7 @@ class UsersDictionary(utils.IterableMap):
                     try:
                         self._hostmaskCache[id].add(s)
                     except KeyError:
-                        self._hostmaskCache[id] = set([s])
+                        self._hostmaskCache[id] = {s}
                     return id
                 elif len(ids) == 0:
                     raise KeyError(s)

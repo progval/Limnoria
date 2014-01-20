@@ -52,7 +52,8 @@ class Formatter(logging.Formatter):
     def formatTime(self, record, datefmt=None):
         return timestamp(record.created)
 
-    def formatException(self, (E, e, tb)):
+    def formatException(self, exc_info):
+        (E, e, tb) = exc_info
         for exn in deadlyExceptions:
             if issubclass(e.__class__, exn):
                 raise
@@ -113,7 +114,7 @@ class StdoutStreamHandler(logging.StreamHandler):
                 exception('Uncaught exception in StdoutStreamHandler:')
 
     def disable(self):
-        self.setLevel(sys.maxint) # Just in case.
+        self.setLevel(sys.maxsize) # Just in case.
         _logger.removeHandler(self)
         logging._acquireLock()
         try:
@@ -142,7 +143,8 @@ class ColorizedFormatter(Formatter):
     # This was necessary because these variables aren't defined until later.
     # The staticmethod is necessary because they get treated like methods.
     _fmtConf = staticmethod(lambda : conf.supybot.log.stdout.format())
-    def formatException(self, (E, e, tb)):
+    def formatException(self, exc_info):
+        (E, e, tb) = exc_info
         if conf.supybot.log.stdout.colorized():
             return ''.join([ansi.RED,
                             Formatter.formatException(self, (E, e, tb)),

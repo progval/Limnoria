@@ -155,9 +155,7 @@ try:
                     'fix_itertools', 'fix_itertools_imports', 'fix_long',
                     'fix_map', 'fix_metaclass', 'fix_methodattrs',
                     'fix_numliterals',
-                    'fix_reduce', 'fix_renames', 'fix_repr',
-                    'fix_set_literal', 'fix_standarderror', 'fix_sys_exc',
-                    'fix_throw', 'fix_tuple_params', 'fix_types',
+                    'fix_types',
                     'fix_unicode', 'fix_urllib', 'fix_ws_comma', 'fix_xrange',
                     'fix_xreadlines', 'fix_zip']
             fixers = list(map(lambda x:'lib2to3.fixes.'+x, fixer_names))

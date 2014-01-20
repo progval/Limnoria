@@ -191,15 +191,18 @@ class ChannelUserDictionary(collections.MutableMapping):
     def __init__(self):
         self.channels = ircutils.IrcDict()
 
-    def __getitem__(self, (channel, id)):
+    def __getitem__(self, key):
+        (channel, id) = key
         return self.channels[channel][id]
 
-    def __setitem__(self, (channel, id), v):
+    def __setitem__(self, key, v):
+        (channel, id) = key
         if channel not in self.channels:
             self.channels[channel] = self.IdDict()
         self.channels[channel][id] = v
 
-    def __delitem__(self, (channel, id)):
+    def __delitem__(self, key):
+        (channel, id) = key
         del self.channels[channel][id]
 
     def __iter__(self):

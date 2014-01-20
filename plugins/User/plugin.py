@@ -415,7 +415,7 @@ class User(callbacks.Plugin):
 
         def _expire_tokens(self):
             now = time.time()
-            self._tokens = dict(filter(lambda (x,y): y[1]>now,
+            self._tokens = dict(filter(lambda x_y: x_y[1][1]>now,
                 self._tokens.items()))
 
         @internationalizeDocstring

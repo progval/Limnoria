@@ -279,7 +279,7 @@ class Channel(callbacks.Plugin):
             irc.error(_('I cowardly refuse to kick myself.'), Raise=True)
         if not reason:
             reason = msg.nick
-        kicklen = irc.state.supported.get('kicklen', sys.maxint)
+        kicklen = irc.state.supported.get('kicklen', sys.maxsize)
         if len(reason) > kicklen:
             irc.error(_('The reason you gave is longer than the allowed '
                       'length for a KICK reason on this server.'),

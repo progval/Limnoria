@@ -37,7 +37,7 @@ class shlex:
     def push_token(self, tok):
         "Push a token onto the stack popped by the get_token method"
         if self.debug >= 1:
-            print("shlex: pushing token " + `tok`)
+            print("shlex: pushing token " + repr(tok))
         self.pushback = [tok] + self.pushback
 
     def push_source(self, newstream, newfile=None):
@@ -68,7 +68,7 @@ class shlex:
             tok = self.pushback[0]
             self.pushback = self.pushback[1:]
             if self.debug >= 1:
-                print("shlex: popping token " + `tok`)
+                print("shlex: popping token " + repr(tok))
             return tok
         # No pushback.  Get a token.
         raw = self.read_token()
@@ -89,7 +89,7 @@ class shlex:
          # Neither inclusion nor EOF
         if self.debug >= 1:
             if raw:
-                print("shlex: token=" + `raw`)
+                print("shlex: token=" + repr(raw))
             else:
                 print("shlex: token=EOF")
         return raw
@@ -180,7 +180,7 @@ class shlex:
         self.token = ''
         if self.debug > 1:
             if result:
-                print("shlex: raw token=" + `result`)
+                print("shlex: raw token=" + repr(result))
             else:
                 print("shlex: raw token=EOF")
         return result

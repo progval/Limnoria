@@ -154,7 +154,8 @@ class RingBuffer(object):
     def __getstate__(self):
         return (self.maxSize, self.full, self.i, self.L)
 
-    def __setstate__(self, (maxSize, full, i, L)):
+    def __setstate__(self, state):
+        (maxSize, full, i, L) = state
         self.maxSize = maxSize
         self.full = full
         self.i = i
@@ -281,7 +282,8 @@ class queue(object):
     def __getstate__(self):
         return (list(self),)
 
-    def __setstate__(self, (L,)):
+    def __setstate__(self, state):
+        (L,) = state
         L.reverse()
         self.front = L
         self.back = []
@@ -365,7 +367,8 @@ class MaxLengthQueue(queue):
     def __getstate__(self):
         return (self.length, queue.__getstate__(self))
 
-    def __setstate__(self, (length, q)):
+    def __setstate__(self, state):
+        (length, q) = state
         self.length = length
         queue.__setstate__(self, q)
 
