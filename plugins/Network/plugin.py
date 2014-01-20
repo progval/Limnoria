@@ -50,8 +50,7 @@ class Network(callbacks.Plugin):
         if irc:
             return irc
         else:
-            raise callbacks.Error, \
-                  'I\'m not currently connected to %s.' % network
+            raise callbacks.Error('I\'m not currently connected to %s.' % network)
 
     @internationalizeDocstring
     def connect(self, irc, msg, args, opts, network, server, password):

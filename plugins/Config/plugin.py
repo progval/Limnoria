@@ -51,7 +51,7 @@ _ = PluginInternationalization('Config')
 def getWrapper(name):
     parts = registry.split(name)
     if not parts or parts[0] not in ('supybot', 'users'):
-        raise InvalidRegistryName, name
+        raise InvalidRegistryName(name)
     group = getattr(conf, parts.pop(0))
     while parts:
         try:
@@ -60,7 +60,7 @@ def getWrapper(name):
         # that we have a useful error message for the user.
         except (registry.NonExistentRegistryEntry,
                 registry.InvalidRegistryName):
-            raise registry.InvalidRegistryName, name
+            raise registry.InvalidRegistryName(name)
     return group
 
 def getCapability(name):

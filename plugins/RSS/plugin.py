@@ -286,7 +286,7 @@ class RSS(callbacks.Plugin):
                         raise results['bozo_exception']
                 except feedparser.sgmllib.SGMLParseError:
                     self.log.exception('Uncaught exception from feedparser:')
-                    raise callbacks.Error, 'Invalid (unparsable) RSS feed.'
+                    raise callbacks.Error('Invalid (unparsable) RSS feed.')
                 except socket.timeout:
                     return error('Timeout downloading feed.')
                 except Exception, e:
@@ -366,7 +366,7 @@ class RSS(callbacks.Plugin):
             self.locks[url] = threading.RLock()
         if self.isCommandMethod(name):
             s = format('I already have a command in this plugin named %s.',name)
-            raise callbacks.Error, s
+            raise callbacks.Error(s)
         def f(self, irc, msg, args):
             args.insert(0, url)
             self.rss(irc, msg, args)

@@ -57,13 +57,13 @@ def getChannel(msg, args=()):
                     'variable ' \
                     'supybot.reply.requireChannelCommandsToBeSentInChannel ' \
                     'to False.'
-                raise callbacks.Error, s
+                raise callbacks.Error(s)
         return args.pop(0)
     elif ircutils.isChannel(msg.args[0]):
         return msg.args[0]
     else:
-        raise callbacks.Error, 'Command must be sent in a channel or ' \
-                               'include a channel in its arguments.'
+        raise callbacks.Error('Command must be sent in a channel or ' \
+                               'include a channel in its arguments.')
 
 def getArgs(args, required=1, optional=0, wildcard=0):
     if len(args) < required:
@@ -163,12 +163,12 @@ def makeNewAlias(name, alias):
     biggestAt = findBiggestAt(original)
     wildcard = '$*' in original
     if biggestAt and wildcard:
-        raise AliasError, 'Can\'t mix $* and optional args (@1, etc.)'
+        raise AliasError('Can\'t mix $* and optional args (@1, etc.)')
     if original.count('$*') > 1:
-        raise AliasError, 'There can be only one $* in an alias.'
+        raise AliasError('There can be only one $* in an alias.')
     testTokens = callbacks.tokenize(original)
     if testTokens and isinstance(testTokens[0], list):
-        raise AliasError, 'Commands may not be the result of nesting.'
+        raise AliasError('Commands may not be the result of nesting.')
     def f(self, irc, msg, args):
         alias = original.replace('$nick', msg.nick)
         if '$channel' in original:
@@ -333,21 +333,21 @@ class Alias(callbacks.Plugin):
         realName = callbacks.canonicalName(name)
         if name != realName:
             s = format(_('That name isn\'t valid.  Try %q instead.'), realName)
-            raise AliasError, s
+            raise AliasError(s)
         name = realName
         if self.isCommandMethod(name):
             if realName not in self.aliases:
                 s = 'You can\'t overwrite commands in this plugin.'
-                raise AliasError, s
+                raise AliasError(s)
         if name in self.aliases:
             (currentAlias, locked, _) = self.aliases[name]
             if locked and currentAlias != alias:
-                raise AliasError, format('Alias %q is locked.', name)
+                raise AliasError(format('Alias %q is locked.', name))
         try:
             f = makeNewAlias(name, alias)
             f = types.MethodType(f, self)
         except RecursiveAlias:
-            raise AliasError, 'You can\'t define a recursive alias.'
+            raise AliasError('You can\'t define a recursive alias.')
         if '.' in name or '|' in name:
             aliasGroup = self.registryValue('escapedaliases', value=False)
             confname = escapeAlias(name)
@@ -374,9 +374,9 @@ class Alias(callbacks.Plugin):
                 else:
                     conf.supybot.plugins.Alias.aliases.unregister(name)
             else:
-                raise AliasError, 'That alias is locked.'
+                raise AliasError('That alias is locked.')
         else:
-            raise AliasError, 'There is no such alias.'
+            raise AliasError('There is no such alias.')
 
     @internationalizeDocstring
     def add(self, irc, msg, args, name, alias):

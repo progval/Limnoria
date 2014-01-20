@@ -62,9 +62,8 @@ class ShrinkCycle(registry.SpaceSeparatedListOfStrings):
         if L:
             self.lastIndex = (self.lastIndex + 1) % len(L)
             return L[self.lastIndex]
-        raise ValueError, \
-                'No services have been configured for rotation.  ' \
-                'See conf.supybot.plugins.ShrinkUrl.serviceRotation.'
+        raise ValueError('No services have been configured for rotation.  ' \
+                'See conf.supybot.plugins.ShrinkUrl.serviceRotation.')
 
 ShrinkUrl = conf.registerPlugin('ShrinkUrl')
 conf.registerChannelValue(ShrinkUrl, 'shrinkSnarfer',

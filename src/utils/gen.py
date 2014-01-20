@@ -117,7 +117,7 @@ def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
             leadingZeroes = True
             Format(_('second'), secs)
     if not ret:
-        raise ValueError, 'Time difference not great enough to be noted.'
+        raise ValueError('Time difference not great enough to be noted.')
     result = ''
     if short:
         result = ' '.join(ret)
@@ -161,13 +161,13 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     try:
         node = ast.parse(s)
     except SyntaxError, e:
-        raise ValueError, 'Invalid string: %s.' % e
+        raise ValueError('Invalid string: %s.' % e)
     nodes = ast.parse(s).body
     if not nodes:
         if node.__class__ is ast.Module:
             return node.doc
         else:
-            raise ValueError, format('Unsafe string: %q', s)
+            raise ValueError(format('Unsafe string: %q', s))
     node = nodes[0]
     def checkNode(node):
         if node.__class__ is ast.Expr:
@@ -192,7 +192,7 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     if checkNode(node):
         return eval(s, namespace, namespace)
     else:
-        raise ValueError, format('Unsafe string: %q', s)
+        raise ValueError(format('Unsafe string: %q', s))
 
 def exnToString(e):
     """Turns a simple exception instance into a string (better than str(e))"""

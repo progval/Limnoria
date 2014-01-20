@@ -167,7 +167,7 @@ class SqliteKarmaDB(object):
         elif kind == 'active':
             orderby = 'added+subtracted'
         else:
-            raise ValueError, 'invalid kind'
+            raise ValueError('invalid kind')
         sql = """SELECT name, %s FROM karma ORDER BY %s DESC LIMIT %s""" % \
               (orderby, orderby, limit)
         db = self._getDb(channel)

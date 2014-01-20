@@ -36,7 +36,7 @@ class DynamicScope(object):
             if name in f.f_locals:
                 return f.f_locals
             f = f.f_back
-        raise NameError, name
+        raise NameError(name)
     
     def __getattr__(self, name):
         try:

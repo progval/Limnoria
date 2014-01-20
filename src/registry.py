@@ -103,7 +103,7 @@ def open_registry(filename, clear=False):
             value = decoder(value)[0]
             acc = ''
         except ValueError:
-            raise InvalidRegistryFile, 'Error unpacking line %r' % acc
+            raise InvalidRegistryFile('Error unpacking line %r' % acc)
         _cache[key] = value
     _lastModified = time.time()
     _fd.close()
@@ -199,11 +199,11 @@ class Group(object):
         self.X = X
 
     def __call__(self):
-        raise ValueError, 'Groups have no value.'
+        raise ValueError('Groups have no value.')
 
     def __nonExistentEntry(self, attr):
         s = '%r is not a valid entry in %r' % (attr, self._name)
-        raise NonExistentRegistryEntry, s
+        raise NonExistentRegistryEntry(s)
 
     def __makeChild(self, attr, s):
         v = self.__class__(self._default, self._help)
@@ -250,7 +250,7 @@ class Group(object):
 
     def register(self, name, node=None):
         if not isValidRegistryName(name):
-            raise InvalidRegistryName, name
+            raise InvalidRegistryName(name)
         if node is None:
             node = Group(private=self._private)
         else:
@@ -626,9 +626,8 @@ class Regexp(Value):
             self.sr = sr
             self.__parent.setValue(v)
         else:
-            raise InvalidRegistryValue, \
-                  'Can\'t setValue a regexp, there would be an inconsistency '\
-                  'between the regexp and the recorded string value.'
+            raise InvalidRegistryValue('Can\'t setValue a regexp, there would be an inconsistency '\
+                  'between the regexp and the recorded string value.')
 
     def __str__(self):
         self() # Gotta update if we've been reloaded.

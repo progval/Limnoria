@@ -41,7 +41,7 @@ class RingBuffer(object):
     __slots__ = ('L', 'i', 'full', 'maxSize')
     def __init__(self, maxSize, seq=()):
         if maxSize <= 0:
-            raise ValueError, 'maxSize must be > 0.'
+            raise ValueError('maxSize must be > 0.')
         self.maxSize = maxSize
         self.reset()
         for elt in seq:
@@ -109,7 +109,7 @@ class RingBuffer(object):
             else:
                 (m, idx) = divmod(oidx, len(self.L))
                 if m and m != -1:
-                    raise IndexError, oidx
+                    raise IndexError(oidx)
                 idx = (idx + self.i) % len(self.L)
                 return self.L[idx]
         else:
@@ -127,21 +127,21 @@ class RingBuffer(object):
             if isinstance(oidx, types.SliceType):
                 range_ = xrange(*slice.indices(oidx, len(self)))
                 if len(range_) != len(elt):
-                    raise ValueError, 'seq must be the same length as slice.'
+                    raise ValueError('seq must be the same length as slice.')
                 else:
                     for (i, x) in zip(range_, elt):
                         self[i] = x
             else:
                 (m, idx) = divmod(oidx, len(self.L))
                 if m and m != -1:
-                    raise IndexError, oidx
+                    raise IndexError(oidx)
                 idx = (idx + self.i) % len(self.L)
                 self.L[idx] = elt
         else:
             if isinstance(idx, types.SliceType):
                 range_ = xrange(*slice.indices(idx, len(self)))
                 if len(range_) != len(elt):
-                    raise ValueError, 'seq must be the same length as slice.'
+                    raise ValueError('seq must be the same length as slice.')
                 else:
                     for (i, x) in zip(range_, elt):
                         self[i] = x
@@ -226,7 +226,7 @@ class queue(object):
 
     def __getitem__(self, oidx):
         if len(self) == 0:
-            raise IndexError, 'queue index out of range'
+            raise IndexError('queue index out of range')
         if isinstance(oidx, types.SliceType):
             L = []
             for i in xrange(*slice.indices(oidx, len(self))):
@@ -235,7 +235,7 @@ class queue(object):
         else:
             (m, idx) = divmod(oidx, len(self))
             if m and m != -1:
-                raise IndexError, oidx
+                raise IndexError(oidx)
             if len(self.front) > idx:
                 return self.front[-(idx+1)]
             else:
@@ -243,22 +243,22 @@ class queue(object):
 
     def __setitem__(self, oidx, value):
         if len(self) == 0:
-            raise IndexError, 'queue index out of range'
+            raise IndexError('queue index out of range')
         if isinstance(oidx, types.SliceType):
             range_ = xrange(*slice.indices(oidx, len(self)))
             if len(range_) != len(value):
-                raise ValueError, 'seq must be the same length as slice.'
+                raise ValueError('seq must be the same length as slice.')
             else:
                 for i in range_:
                     (m, idx) = divmod(oidx, len(self))
                     if m and m != -1:
-                        raise IndexError, oidx
+                        raise IndexError(oidx)
                 for (i, x) in zip(range_, value):
                     self[i] = x
         else:
             (m, idx) = divmod(oidx, len(self))
             if m and m != -1:
-                raise IndexError, oidx
+                raise IndexError(oidx)
             if len(self.front) > idx:
                 self.front[-(idx+1)] = value
             else:
@@ -272,7 +272,7 @@ class queue(object):
         else:
             (m, idx) = divmod(oidx, len(self))
             if m and m != -1:
-                raise IndexError, oidx
+                raise IndexError(oidx)
             if len(self.front) > idx:
                 del self.front[-(idx+1)]
             else:

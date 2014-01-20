@@ -121,7 +121,7 @@ def process(f, *args, **kwargs):
     p.join(timeout)
     if p.is_alive():
         p.terminate()
-        raise ProcessTimeoutError, "%s aborted due to timeout." % (p.name,)
+        raise ProcessTimeoutError("%s aborted due to timeout." % (p.name,))
     try:
         v = q.get(block=False)
     except Queue.Empty:
@@ -799,7 +799,7 @@ def getConverter(name):
     try:
         return wrappers[name]
     except KeyError, e:
-        raise UnknownConverter, str(e)
+        raise UnknownConverter(str(e))
 
 def callConverter(name, irc, msg, args, state, *L):
     getConverter(name)(irc, msg, args, state, *L)
@@ -1024,7 +1024,7 @@ class State(object):
             self.errored = True
             return getattr(dynamic.irc, attr)
         else:
-            raise AttributeError, attr
+            raise AttributeError(attr)
 
     def essence(self):
         st = State(self.types)

@@ -187,7 +187,7 @@ class PluginTestCase(SupyTestCase):
         ircdb.ignores.reload()
         ircdb.channels.reload()
         if self.plugins is None:
-            raise ValueError, 'PluginTestCase must have a "plugins" attribute.'
+            raise ValueError('PluginTestCase must have a "plugins" attribute.')
         self.nick = nick
         self.prefix = ircutils.joinHostmask(nick, 'user', 'host.domain.tld')
         self.irc = getTestIrc()
@@ -276,7 +276,7 @@ class PluginTestCase(SupyTestCase):
     def assertError(self, query, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
-            raise TimeoutError, query
+            raise TimeoutError(query)
         if lastGetHelp not in m.args[1]:
             self.failUnless(m.args[1].startswith('Error:'),
                             '%r did not error: %s' % (query, m.args[1]))
@@ -288,7 +288,7 @@ class PluginTestCase(SupyTestCase):
     def assertNotError(self, query, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
-            raise TimeoutError, query
+            raise TimeoutError(query)
         self.failIf(m.args[1].startswith('Error:'),
                     '%r errored: %s' % (query, m.args[1]))
         self.failIf(lastGetHelp in m.args[1],
@@ -301,7 +301,7 @@ class PluginTestCase(SupyTestCase):
     def assertHelp(self, query, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
-            raise TimeoutError, query
+            raise TimeoutError(query)
         msg = m.args[1]
         if 'more message' in msg:
             msg = msg[0:-27] # Strip (XXX more messages)
@@ -321,7 +321,7 @@ class PluginTestCase(SupyTestCase):
     def assertResponse(self, query, expectedResponse, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
-            raise TimeoutError, query
+            raise TimeoutError(query)
         self.assertEqual(m.args[1], expectedResponse,
                          '%r != %r' % (expectedResponse, m.args[1]))
         return m
@@ -333,7 +333,7 @@ class PluginTestCase(SupyTestCase):
     def assertRegexp(self, query, regexp, flags=re.I, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
-            raise TimeoutError, query
+            raise TimeoutError(query)
         self.failUnless(re.search(regexp, m.args[1], flags),
                         '%r does not match %r' % (m.args[1], regexp))
         return m
@@ -345,7 +345,7 @@ class PluginTestCase(SupyTestCase):
     def assertNotRegexp(self, query, regexp, flags=re.I, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
-            raise TimeoutError, query
+            raise TimeoutError(query)
         self.failUnless(re.search(regexp, m.args[1], flags) is None,
                         '%r matched %r' % (m.args[1], regexp))
         return m
@@ -357,7 +357,7 @@ class PluginTestCase(SupyTestCase):
     def assertAction(self, query, expectedResponse=None, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
-            raise TimeoutError, query
+            raise TimeoutError(query)
         self.failUnless(ircmsgs.isAction(m), '%r is not an action.' % m)
         if expectedResponse is not None:
             s = ircmsgs.unAction(m)
@@ -372,7 +372,7 @@ class PluginTestCase(SupyTestCase):
     def assertActionRegexp(self, query, regexp, flags=re.I, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
-            raise TimeoutError, query
+            raise TimeoutError(query)
         self.failUnless(ircmsgs.isAction(m))
         s = ircmsgs.unAction(m)
         self.failUnless(re.search(regexp, s, flags),
@@ -537,7 +537,7 @@ def open_http(url, data=None):
                 host = realhost
 
         #print "proxy via http:", host, selector
-    if not host: raise IOError, ('http error', 'no host given')
+    if not host: raise IOError('http error', 'no host given')
 
     if proxy_passwd:
         import base64

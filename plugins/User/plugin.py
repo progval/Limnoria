@@ -45,7 +45,7 @@ _ = PluginInternationalization('User')
 class User(callbacks.Plugin):
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and irc.isChannel(msg.args[0]):
-            raise callbacks.Error, conf.supybot.replies.requiresPrivacy()
+            raise callbacks.Error(conf.supybot.replies.requiresPrivacy())
 
     @internationalizeDocstring
     def list(self, irc, msg, args, optlist, glob):

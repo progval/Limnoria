@@ -155,7 +155,6 @@ try:
                     'fix_itertools', 'fix_itertools_imports', 'fix_long',
                     'fix_map', 'fix_metaclass', 'fix_methodattrs',
                     'fix_numliterals',
-                    'fix_raise',
                     'fix_reduce', 'fix_renames', 'fix_repr',
                     'fix_set_literal', 'fix_standarderror', 'fix_sys_exc',
                     'fix_throw', 'fix_tuple_params', 'fix_types',

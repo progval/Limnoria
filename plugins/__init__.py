@@ -83,7 +83,7 @@ def DB(filename, types):
                 return types[type](fn, *args, **kwargs)
             except KeyError:
                 continue
-        raise NoSuitableDatabase, types.keys()
+        raise NoSuitableDatabase(types.keys())
     return MakeDB
 
 def makeChannelFilename(filename, channel=None, dirname=None):
@@ -503,7 +503,7 @@ class PeriodicFileDownloader(object):
     periodicFiles = None
     def __init__(self):
         if self.periodicFiles is None:
-            raise ValueError, 'You must provide files to download'
+            raise ValueError('You must provide files to download')
         self.lastDownloaded = {}
         self.downloadedCounter = {}
         for filename in self.periodicFiles:

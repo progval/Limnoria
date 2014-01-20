@@ -142,7 +142,7 @@ class DirMapping(MappingInterface):
         try:
             os.remove(self._makeFilename(id))
         except EnvironmentError, e:
-            raise NoRecordError, id
+            raise NoRecordError(id)
 
 class FlatfileMapping(MappingInterface):
     def __init__(self, filename, maxSize=10**6):
@@ -154,7 +154,7 @@ class FlatfileMapping(MappingInterface):
             try:
                 self.currentId = int(strId)
             except ValueError:
-                raise Error, 'Invalid file for FlatfileMapping: %s' % filename
+                raise Error('Invalid file for FlatfileMapping: %s' % filename)
         except EnvironmentError, e:
             # File couldn't be opened.
             self.maxSize = int(math.log10(maxSize))
@@ -209,7 +209,7 @@ class FlatfileMapping(MappingInterface):
                 (lineId, s) = self._splitLine(line)
                 if lineId == strId:
                     return s
-            raise NoRecordError, id
+            raise NoRecordError(id)
         finally:
             fd.close()
 
@@ -295,7 +295,7 @@ class CdbMapping(MappingInterface):
         try:
             return self.db[str(id)]
         except KeyError:
-            raise NoRecordError, id
+            raise NoRecordError(id)
 
     # XXX Same as above.
     def set(self, id, s):

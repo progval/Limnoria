@@ -48,6 +48,7 @@ import functools
 from cStringIO import StringIO as sio
 
 from . import utils
+from . import minisix
 from itertools import imap
 
 def debug(s, *args):
@@ -88,13 +89,13 @@ def splitHostmask(hostmask):
     assert isUserHostmask(hostmask)
     nick, rest = hostmask.split('!', 1)
     user, host = rest.split('@', 1)
-    return (sys.intern(nick), sys.intern(user), sys.intern(host))
+    return (minisix.intern(nick), minisix.intern(user), minisix.intern(host))
 
 def joinHostmask(nick, ident, host):
     """nick, user, host => hostmask
     Joins the nick, ident, host into a user hostmask."""
     assert nick and ident and host
-    return sys.intern('%s!%s@%s' % (nick, ident, host))
+    return minisix.intern('%s!%s@%s' % (nick, ident, host))
 
 _rfc1459trans = utils.str.MultipleReplacer(dict(zip(
                                  string.ascii_uppercase + r'\[]~',
@@ -107,7 +108,7 @@ def toLower(s, casemapping=None):
     elif casemapping == 'ascii': # freenode
         return s.lower()
     else:
-        raise ValueError, 'Invalid casemapping: %r' % casemapping
+        raise ValueError('Invalid casemapping: %r' % casemapping)
 
 def strEqual(nick1, nick2):
     """s1, s2 => bool

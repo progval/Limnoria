@@ -937,12 +937,12 @@ class UnitGroup:
         while tmpList:
             count += 1
             if count > 5000:
-                raise UnitDataError, 'Circular unit definition'
+                raise UnitDataError('Circular unit definition')
             unit = tmpList.pop(0)
             if unit.equiv == '!':
                 self.reducedList.append(copy.copy(unit))
             elif not unit.equiv:
-                raise UnitDataError, 'Invalid conversion for "%s"' % unit.name
+                raise UnitDataError('Invalid conversion for "%s"' % unit.name)
             else:
                 if unit.fromEqn:
                     self.linear = 0
@@ -1029,7 +1029,7 @@ class UnitGroup:
         except OverflowError:
             return 1e9999
         except:
-            raise UnitDataError, 'Bad equation for %s' % self.unitList[0].name
+            raise UnitDataError('Bad equation for %s' % self.unitList[0].name)
 
     def convertStr(self, num, toGroup):
         "Return formatted string of converted number"
@@ -1063,7 +1063,7 @@ class UnitData(dict):
             lines = f.readlines()
             f.close()
         except IOError:
-            raise UnitDataError, 'Can not read "units.dat" file'
+            raise UnitDataError('Can not read "units.dat" file')
         for i in range(len(lines)):     # join continuation lines
             delta = 1
             while lines[i].rstrip().endswith('\\'):
@@ -1087,7 +1087,7 @@ class UnitData(dict):
         self.sortedKeys.sort()
 
         if len(self.sortedKeys) < len(units):
-            raise UnitDataError, 'Duplicate unit names found'
+            raise UnitDataError('Duplicate unit names found')
 
         return (types, typeUnits)
 
@@ -1132,7 +1132,7 @@ class Unit:
                         self.toEqn = self.toEqn.strip()
                     self.fromEqn = self.fromEqn.strip()
                 except AttributeError:
-                    raise UnitDataError, 'Bad equation for "%s"' % self.name
+                    raise UnitDataError('Bad equation for "%s"' % self.name)
             else:                # split factor and equiv unit for linear
                 parts = self.equiv.split(None, 1)
                 if len(parts) > 1 and re.search('[^\d\.eE\+\-\*/]', parts[0]) \

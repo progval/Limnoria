@@ -80,7 +80,7 @@ def open_db(filename, mode='r', **kwargs):
         maker.finish()
         return ReaderWriter(filename, **kwargs)
     else:
-        raise ValueError, 'Invalid flag: %s' % mode
+        raise ValueError('Invalid flag: %s' % mode)
 
 def shelf(filename, *args, **kwargs):
     """Opens a new shelf database object."""
@@ -257,7 +257,7 @@ class Reader(utils.IterableMap):
             try:
                 return self.default
             except AttributeError:
-                raise KeyError, key
+                raise KeyError(key)
 
     def findall(self, key):
         ret = []
@@ -377,7 +377,7 @@ class ReaderWriter(utils.IterableMap):
 
     def __getitem__(self, key):
         if key in self.removals:
-            raise KeyError, key
+            raise KeyError(key)
         else:
             try:
                 return self.adds[key]
@@ -386,7 +386,7 @@ class ReaderWriter(utils.IterableMap):
 
     def __delitem__(self, key):
         if key in self.removals:
-            raise KeyError, key
+            raise KeyError(key)
         else:
             if key in self.adds and key in self.cdb:
                 self._journalRemoveKey(key)
@@ -398,7 +398,7 @@ class ReaderWriter(utils.IterableMap):
             elif key in self.cdb:
                 self._journalRemoveKey(key)
             else:
-                raise KeyError, key
+                raise KeyError(key)
         self.mods += 1
         self._flushIfOverLimit()
 

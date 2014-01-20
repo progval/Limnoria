@@ -59,7 +59,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
         if len(matched_names) == 1:
             name = matched_names[0]
         else:
-            raise ImportError, name
+            raise ImportError(name)
     moduleInfo = imp.find_module(name, pluginDirs)
     try:
         module = imp.load_module(name, *moduleInfo)
@@ -74,8 +74,8 @@ def loadPluginModule(name, ignoreDeprecation=False):
         if ignoreDeprecation:
             log.warning('Deprecated plugin loaded: %s', name)
         else:
-            raise Deprecated, format('Attempted to load deprecated plugin %s',
-                                     name)
+            raise Deprecated(format('Attempted to load deprecated plugin %s',
+                                     name))
     if module.__name__ in sys.modules:
         sys.modules[module.__name__] = module
     linecache.checkcache()
@@ -88,8 +88,7 @@ def loadPluginClass(irc, module, register=None):
     except TypeError, e:
         s = str(e)
         if '2 given' in s and '__init__' in s:
-            raise callbacks.Error, \
-                  'In our switch from CVS to Darcs (after 0.80.1), we ' \
+            raise callbacks.Error('In our switch from CVS to Darcs (after 0.80.1), we ' \
                   'changed the __init__ for callbacks.Privmsg* to also ' \
                   'accept an irc argument.  This plugin (%s) is overriding ' \
                   'its __init__ method and needs to update its prototype ' \
@@ -98,17 +97,16 @@ def loadPluginClass(irc, module, register=None):
                   'parent\'s __init__. Another possible cause: the code in ' \
                   'your __init__ raised a TypeError when calling a function ' \
                   'or creating an object, which doesn\'t take 2 arguments.' %\
-                  module.__name__
+                  module.__name__)
         else:
             raise
     except AttributeError, e:
         if 'Class' in str(e):
-            raise callbacks.Error, \
-                  'This plugin module doesn\'t have a "Class" ' \
+            raise callbacks.Error('This plugin module doesn\'t have a "Class" ' \
                   'attribute to specify which plugin should be ' \
                   'instantiated.  If you didn\'t write this ' \
                   'plugin, but received it with Supybot, file ' \
-                  'a bug with us about this error.'
+                  'a bug with us about this error.')
         else:
             raise
     cb.classModule = module

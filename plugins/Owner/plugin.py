@@ -169,8 +169,8 @@ class Owner(callbacks.Plugin):
             (server, port) = group.servers()[0]
         except (registry.NonExistentRegistryEntry, IndexError):
             if serverPort is None:
-                raise ValueError, 'connect requires a (server, port) ' \
-                                  'if the network is not registered.'
+                raise ValueError('connect requires a (server, port) ' \
+                                  'if the network is not registered.')
             conf.registerNetwork(network, password, ssl)
             serverS = '%s:%s' % serverPort
             conf.supybot.networks.get(network).servers.append(serverS)

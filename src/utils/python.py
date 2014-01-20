@@ -53,7 +53,7 @@ def universalImport(*names):
                     ret = getattr(ret, parts[0])
                     del parts[0]
             return ret
-    raise ImportError, ','.join(names)
+    raise ImportError(','.join(names))
 
 def changeFunctionName(f, name, doc=None):
     if doc is None:

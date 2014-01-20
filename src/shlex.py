@@ -149,7 +149,7 @@ class shlex:
                         if self.debug >= 2:
                             print("shlex: I see EOF in quotes state")
                         # XXX what error should be raised here?
-                        raise ValueError, "No closing quotation"
+                        raise ValueError("No closing quotation")
             elif self.state == 'a':
                 if not nextchar:
                     self.state = None   # end of file

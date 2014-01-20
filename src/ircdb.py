@@ -80,7 +80,7 @@ def unAntiCapability(capability):
     """Takes an anticapability and returns the non-anti form."""
     assert isCapability(capability), 'got %s' % capability
     if not isAntiCapability(capability):
-        raise ValueError, '%s is not an anti capability' % capability
+        raise ValueError('%s is not an anti capability' % capability)
     if isChannelCapability(capability):
         (channel, capability) = fromChannelCapability(capability)
         return ','.join((channel, capability[1:]))
@@ -290,8 +290,7 @@ class IrcUser(object):
         """Adds a hostmask to the user's hostmasks."""
         assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
         if len(unWildcardHostmask(hostmask)) < 3:
-            raise ValueError, \
-                  'Hostmask must contain at least 3 non-wildcard characters.'
+            raise ValueError('Hostmask must contain at least 3 non-wildcard characters.')
         self.hostmasks.add(hostmask)
 
     def removeHostmask(self, hostmask):
@@ -337,7 +336,7 @@ class IrcUser(object):
             uniqued = list(filter(uniqueHostmask, reversed(self.auth)))
             self.auth = list(reversed(uniqued))
         else:
-            raise ValueError, 'secure flag set, unmatched hostmask'
+            raise ValueError('secure flag set, unmatched hostmask')
 
     def clearAuth(self):
         """Unsets a user's authenticated hostmask."""
@@ -492,7 +491,7 @@ class IrcChannel(object):
 
 class Creator(object):
     def badCommand(self, command, rest, lineno):
-        raise ValueError, 'Invalid command on line %s: %s' % (lineno, command)
+        raise ValueError('Invalid command on line %s: %s' % (lineno, command))
 
 class IrcUserCreator(Creator):
     u = None
@@ -503,12 +502,12 @@ class IrcUserCreator(Creator):
 
     def user(self, rest, lineno):
         if self.u.id is not None:
-            raise ValueError, 'Unexpected user command on line %s.' % lineno
+            raise ValueError('Unexpected user command on line %s.' % lineno)
         self.u.id = int(rest)
 
     def _checkId(self):
         if self.u.id is None:
-            raise ValueError, 'Unexpected user description without user.'
+            raise ValueError('Unexpected user description without user.')
 
     def name(self, rest, lineno):
         self._checkId()
@@ -571,12 +570,12 @@ class IrcChannelCreator(Creator):
 
     def channel(self, rest, lineno):
         if self.name is not None:
-            raise ValueError, 'Unexpected channel command on line %s' % lineno
+            raise ValueError('Unexpected channel command on line %s' % lineno)
         IrcChannelCreator.name = rest
 
     def _checkId(self):
         if self.name is None:
-            raise ValueError, 'Unexpected channel description without channel.'
+            raise ValueError('Unexpected channel description without channel.')
 
     def lobotomized(self, rest, lineno):
         self._checkId()
@@ -697,14 +696,14 @@ class UsersDictionary(utils.IterableMap):
                         self._hostmaskCache[id] = set([s])
                     return id
                 elif len(ids) == 0:
-                    raise KeyError, s
+                    raise KeyError(s)
                 else:
                     log.error('Multiple matches found in user database.  '
                               'Removing the offending hostmasks.')
                     for (id, hostmask) in ids.iteritems():
                         log.error('Removing %q from user %s.', hostmask, id)
                         self.users[id].removeHostmask(hostmask)
-                    raise DuplicateHostmask, 'Ids %r matched.' % ids
+                    raise DuplicateHostmask('Ids %r matched.' % ids)
         else: # Not a hostmask, must be a name.
             s = s.lower()
             try:
@@ -716,7 +715,7 @@ class UsersDictionary(utils.IterableMap):
                         self._nameCache[id] = s
                         return id
                 else:
-                    raise KeyError, s
+                    raise KeyError(s)
 
     def getUser(self, id):
         """Returns a user given its id, name, or hostmask."""
@@ -775,7 +774,7 @@ class UsersDictionary(utils.IterableMap):
         self.nextId = max(self.nextId, user.id)
         try:
             if self.getUserId(user.name) != user.id:
-                raise DuplicateHostmask, hostmask
+                raise DuplicateHostmask(hostmask)
         except KeyError:
             pass
         for hostmask in user.hostmasks:
@@ -788,10 +787,10 @@ class UsersDictionary(utils.IterableMap):
                     # raise an exception.  So instead, we'll raise an
                     # exception, but be nice and give the offending hostmask
                     # back at the same time.
-                    raise DuplicateHostmask, hostmask
+                    raise DuplicateHostmask(hostmask)
                 for otherHostmask in u.hostmasks:
                     if ircutils.hostmaskPatternEqual(hostmask, otherHostmask):
-                        raise DuplicateHostmask, hostmask
+                        raise DuplicateHostmask(hostmask)
         self.invalidateCache(user.id)
         self.users[user.id] = user
         if flush:

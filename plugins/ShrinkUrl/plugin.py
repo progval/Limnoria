@@ -182,7 +182,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 self.db.set('ln', url, text)
                 return text
             else:
-                raise ShrinkError, text
+                raise ShrinkError(text)
 
     @internationalizeDocstring
     def ln(self, irc, msg, args, url):
@@ -207,7 +207,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             text = utils.web.getUrl('http://tinyurl.com/api-create.php?url=' + url)
             text = text.decode()
             if text.startswith('Error'):
-                raise ShrinkError, text[5:]
+                raise ShrinkError(text[5:])
             self.db.set('tiny', url, text)
             return text
 
@@ -236,7 +236,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             data = utils.web.urlencode({'long_url': url})
             text = utils.web.getUrl(self._xrlApi, data=data).decode()
             if text.startswith('ERROR:'):
-                raise ShrinkError, text[6:]
+                raise ShrinkError(text[6:])
             self.db.set('xrl', quotedurl, text)
             return text
 
@@ -271,7 +271,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 self.db.set('goo', url, googl)
                 return googl
             else:
-                raise ShrinkError, text
+                raise ShrinkError(text)
 
     def goo(self, irc, msg, args, url):
         """<url>
@@ -301,7 +301,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 self.db.set('ur1', url, ur1ca)
                 return ur1ca
             else:
-                raise ShrinkError, text
+                raise ShrinkError(text)
 
     def ur1(self, irc, msg, args, url):
         """<url>
@@ -325,7 +325,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
         except KeyError:
             text = utils.web.getUrl(self._x0Api % url).decode()
             if text.startswith('ERROR:'):
-                raise ShrinkError, text[6:]
+                raise ShrinkError(text[6:])
             self.db.set('x0', url, text)
             return text
 

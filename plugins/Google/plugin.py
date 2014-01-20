@@ -120,7 +120,7 @@ class Google(callbacks.PluginRegexp):
                                 headers=headers).decode('utf8')
         data = json.loads(text)
         if data['responseStatus'] != 200:
-            raise callbacks.Error, _('We broke The Google!')
+            raise callbacks.Error(_('We broke The Google!'))
         return data
 
     def formatData(self, data, bold=True, max=0, onetoone=False):

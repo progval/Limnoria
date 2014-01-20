@@ -376,7 +376,7 @@ class MoobotFactoids(callbacks.Plugin):
             self.log.debug('Invalid tokens for {add,replace}Factoid: %s.',
                            tokens)
             s = _('Missing an \'is\' or \'_is_\'.')
-            raise ValueError, s
+            raise ValueError(s)
         (key, newfact) = map(' '.join, utils.iter.split(p, tokens, maxsplit=1))
         key = self._sanitizeKey(key)
         return (key, newfact)

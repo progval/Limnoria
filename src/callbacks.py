@@ -315,11 +315,11 @@ class Tokenizer(object):
         while True:
             token = lexer.get_token()
             if not token:
-                raise SyntaxError, _('Missing "%s".  You may want to '
+                raise SyntaxError(_('Missing "%s".  You may want to '
                                    'quote your arguments with double '
                                    'quotes in order to prevent extra '
                                    'brackets from being evaluated '
-                                   'as nested commands.') % self.right
+                                   'as nested commands.') % self.right)
             elif token == self.right:
                 return ret
             elif token == self.left:
@@ -345,26 +345,26 @@ class Tokenizer(object):
                 # for strings like 'foo | bar', where a pipe stands alone as a
                 # token, but shouldn't be treated specially.
                 if not args:
-                    raise SyntaxError, _('"|" with nothing preceding.  I '
+                    raise SyntaxError(_('"|" with nothing preceding.  I '
                                        'obviously can\'t do a pipe with '
-                                       'nothing before the |.')
+                                       'nothing before the |.'))
                 ends.append(args)
                 args = []
             elif token == self.left:
                 args.append(self._insideBrackets(lexer))
             elif token == self.right:
-                raise SyntaxError, _('Spurious "%s".  You may want to '
+                raise SyntaxError(_('Spurious "%s".  You may want to '
                                    'quote your arguments with double '
                                    'quotes in order to prevent extra '
                                    'brackets from being evaluated '
-                                   'as nested commands.') % self.right
+                                   'as nested commands.') % self.right)
             else:
                 args.append(self._handleToken(token))
         if ends:
             if not args:
-                raise SyntaxError, _('"|" with nothing following.  I '
+                raise SyntaxError(_('"|" with nothing following.  I '
                                    'obviously can\'t do a pipe with '
-                                   'nothing after the |.')
+                                   'nothing after the |.'))
             args.append(ends.pop())
             while ends:
                 args[-1].append(ends.pop())
@@ -385,7 +385,7 @@ def tokenize(s, channel=None):
         ret = Tokenizer(brackets=brackets,pipe=pipe,quotes=quotes).tokenize(s)
         return ret
     except ValueError, e:
-        raise SyntaxError, str(e)
+        raise SyntaxError(str(e))
 
 def formatCommand(command):
     return ' '.join(command)
@@ -399,7 +399,7 @@ def checkCommandCapability(msg, cb, commandName):
         if ircdb.checkCapability(msg.prefix, capability):
             log.info('Preventing %s from calling %s because of %s.',
                      msg.prefix, pluginCommand, capability)
-            raise RuntimeError, capability
+            raise RuntimeError(capability)
     try:
         antiPlugin = ircdb.makeAntiCapability(plugin)
         antiCommand = ircdb.makeAntiCapability(commandName)
@@ -497,7 +497,7 @@ class RichReplyMethods(object):
 
     def _error(self, s, Raise=False, **kwargs):
         if Raise:
-            raise Error, s
+            raise Error(s)
         else:
             return self.error(s, **kwargs)
 
@@ -598,7 +598,7 @@ class ReplyIrcProxy(RichReplyMethods):
     def error(self, s, msg=None, **kwargs):
         if 'Raise' in kwargs and kwargs['Raise']:
             if s:
-                raise Error, s
+                raise Error(s)
             else:
                 raise ArgumentError
         if msg is None:
@@ -992,7 +992,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         self.repliedTo = True
         if Raise:
             if s:
-                raise Error, s
+                raise Error(s)
             else:
                 raise ArgumentError
         if s:
