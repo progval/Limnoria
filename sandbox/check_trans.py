@@ -3,7 +3,10 @@
 import os
 import sys
 import glob
+import operator
 import subprocess
+
+from supybot.i18n import parse
 
 def main():
     directory = sys.argv[1]
@@ -63,27 +66,11 @@ def checkPlugin(pluginPath):
 
 def checkTranslation(pot, po):
     checking = False
-    for potLine in pot:
-        if not checking and potLine.startswith('msgid'):
-            checking = True
-            while True:
-                poLine = po.readline()
-                if poLine == '': # EOF
-                    return False
-                if poLine.startswith('msgid'):
-                    if poLine == potLine:
-                        break
-                    else:
-                        return False
-            continue
-        elif checking and potLine.startswith('msgstr'):
-            checking = False
-
-        if checking:
-            poLine = po.readline()
-            if potLine != poLine:
-                return False
-    return True
+    pot = set(map(operator.itemgetter(0), parse(pot)))
+    po = set(map(operator.itemgetter(0), parse(po)))
+    diff = filter(lambda x:x not in po, pot)
+    print(diff)
+    return not bool(diff)
 
 if __name__ == '__main__':
     main()
