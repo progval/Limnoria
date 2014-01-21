@@ -131,7 +131,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             while msgs[-1] is not None:
                 msgs.append(self.irc.takeMsg())
             del msgs[-1]
-            self.outbuffer += ''.join(imap(str, msgs))
+            self.outbuffer += ''.join(map(str, msgs))
         if self.outbuffer:
             try:
                 if sys.version_info[0] < 3:

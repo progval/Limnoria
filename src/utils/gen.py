@@ -38,7 +38,7 @@ import types
 import textwrap
 import traceback
 import collections
-from itertools import imap
+
 
 from . import crypt
 from .str import format
@@ -302,7 +302,7 @@ class InsensitivePreservingDict(collections.MutableMapping):
 
 class NormalizingSet(set):
     def __init__(self, iterable=()):
-        iterable = imap(self.normalize, iterable)
+        iterable = map(self.normalize, iterable)
         super(NormalizingSet, self).__init__(iterable)
 
     def normalize(self, x):

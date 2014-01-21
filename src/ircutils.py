@@ -49,7 +49,7 @@ from cStringIO import StringIO as sio
 
 from . import utils
 from . import minisix
-from itertools import imap
+
 
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
@@ -525,7 +525,7 @@ def unDccIP(i):
         L.append(i % 256)
         i //= 256
     L.reverse()
-    return '.'.join(imap(str, L))
+    return '.'.join(map(str, L))
 
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""

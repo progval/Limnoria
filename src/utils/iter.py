@@ -36,8 +36,9 @@ from itertools import *
 
 # For old plugins
 ifilter = filter
-def ifilterfalse(p, L):
-    return ifilter(lambda x:not p(x), L)
+def filterfalse(p, L):
+    return filter(lambda x:not p(x), L)
+ifilterfalse = filterfalse
 imap = map
 
 def len(iterable):
@@ -70,14 +71,14 @@ def partition(p, iterable):
 
 def any(p, iterable):
     """Returns true if any element in iterable satisfies predicate p."""
-    for elt in ifilter(p, iterable):
+    for elt in filter(p, iterable):
         return True
     else:
         return False
 
 def all(p, iterable):
     """Returns true if all elements in iterable satisfy predicate p."""
-    for elt in ifilterfalse(p, iterable):
+    for elt in filterfalse(p, iterable):
         return False
     else:
         return True

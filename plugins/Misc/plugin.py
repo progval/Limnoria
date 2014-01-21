@@ -34,7 +34,7 @@ import imp
 import sys
 import json
 import time
-from itertools import ifilter
+
 
 import supybot
 
@@ -51,6 +51,9 @@ from supybot import commands
 
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
+
+if sys.version_info[0] < 3:
+    from itertools import ifilter as filter
 
 def get_suffix(file):
     for suffix in imp.get_suffixes():
@@ -446,7 +449,7 @@ class Misc(callbacks.Plugin):
                 predicates.setdefault('regexp', []).append(f)
             elif option == 'nolimit':
                 nolimit = True
-        iterable = ifilter(self._validLastMsg, reversed(irc.state.history))
+        iterable = filter(self._validLastMsg, reversed(irc.state.history))
         if skipfirst:
             # Drop the first message only if our current channel is the same as
             # the channel we've been instructed to look at.

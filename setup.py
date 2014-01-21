@@ -150,9 +150,8 @@ try:
 
             fixer_names = ['fix_basestring',
                     'fix_dict',
-                    'fix_funcattrs',
                     'fix_imports',
-                    'fix_itertools', 'fix_itertools_imports', 'fix_long',
+                    'fix_long',
                     'fix_map', 'fix_metaclass', 'fix_methodattrs',
                     'fix_numliterals',
                     'fix_types',

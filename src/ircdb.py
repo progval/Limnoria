@@ -150,7 +150,7 @@ class CapabilitySet(set):
 
     def __repr__(self):
         return '%s([%s])' % (self.__class__.__name__,
-                             ', '.join(imap(repr, self)))
+                             ', '.join(map(repr, self)))
 
 antiOwner = makeAntiCapability('owner')
 class UserCapabilitySet(CapabilitySet):
