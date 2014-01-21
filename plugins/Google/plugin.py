@@ -143,7 +143,7 @@ class Google(callbacks.PluginRegexp):
                 results.append(url)
         if sys.version_info[0] < 3:
             repl = lambda x:x if isinstance(x, unicode) else unicode(x, 'utf8')
-            results = map(repl, results)
+            results = list(map(repl, results))
         if not results:
             return [_('No matches found.')]
         elif onetoone:

@@ -220,7 +220,7 @@ class Unix(callbacks.Plugin):
             (out, err) = inst.communicate()
             inst.wait()
             lines = out.splitlines()
-            lines = map(str.rstrip, lines)
+            lines = list(map(str.rstrip, lines))
             lines = filter(None, lines)
             irc.replies(lines, joiner=' ')
         else:

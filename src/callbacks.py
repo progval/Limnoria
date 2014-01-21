@@ -91,7 +91,7 @@ def _addressed(nick, msg, prefixChars=None, nicks=None,
         return payload[1:].strip()
     if nicks is None:
         nicks = get(conf.supybot.reply.whenAddressedBy.nicks)
-        nicks = map(ircutils.toLower, nicks)
+        nicks = list(map(ircutils.toLower, nicks))
     else:
         nicks = list(nicks) # Just in case.
     nicks.insert(0, ircutils.toLower(nick))
@@ -738,7 +738,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         """Returns a two-tuple of (command, plugins) that has the command
         (a list of strings) and the plugins for which it was a command."""
         assert isinstance(args, list)
-        args = map(canonicalName, args)
+        args = list(map(canonicalName, args))
         cbs = []
         maxL = []
         for cb in self.irc.callbacks:
@@ -783,7 +783,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
 
             # 3. Whether an importantPlugin is one of the responses.
             important = defaultPlugins.importantPlugins()
-            important = map(canonicalName, important)
+            important = list(map(canonicalName, important))
             importants = []
             for cb in cbs:
                 if cb.canonicalName() in important:
@@ -1188,7 +1188,7 @@ class Commands(BasePlugin):
             return self.getCommand(command) == command
 
     def getCommand(self, args, stripOwnName=True):
-        assert args == map(canonicalName, args)
+        assert args == list(map(canonicalName, args))
         first = args[0]
         for cb in self.cbs:
             if first == cb.canonicalName():
@@ -1206,7 +1206,7 @@ class Commands(BasePlugin):
         """Gets the given command from this plugin."""
         #print '*** %s.getCommandMethod(%r)' % (self.name(), command)
         assert not isinstance(command, basestring)
-        assert command == map(canonicalName, command)
+        assert command == list(map(canonicalName, command))
         assert self.getCommand(command) == command
         for cb in self.cbs:
             if command[0] == cb.canonicalName():

@@ -280,7 +280,7 @@ class User(callbacks.Plugin):
             command.
             """
             def getHostmasks(user):
-                hostmasks = map(repr, user.hostmasks)
+                hostmasks = list(map(repr, user.hostmasks))
                 if hostmasks:
                     hostmasks.sort()
                     return format('%L', hostmasks)
@@ -507,7 +507,7 @@ class User(callbacks.Plugin):
                 prefix, expiry = self._tokens.pop(token)
                 found = False
                 for (id, user) in ircdb.users.items():
-                    if keyid in map(lambda x:x[-len(keyid):], user.gpgkeys):
+                    if keyid in [x[-len(keyid):] for x in user.gpgkeys]:
                         user.addAuth(msg.prefix)
                         ircdb.users.setUser(user, flush=False)
                         irc.reply(_('You are now authenticated as %s.') %

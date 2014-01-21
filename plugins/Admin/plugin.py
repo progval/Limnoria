@@ -351,7 +351,7 @@ class Admin(callbacks.Plugin):
             """
             # XXX Add the expirations.
             if ircdb.ignores.hostmasks:
-                irc.reply(format('%L', (map(repr,ircdb.ignores.hostmasks))))
+                irc.reply(format('%L', (list(map(repr,ircdb.ignores.hostmasks)))))
             else:
                 irc.reply(_('I\'m not currently globally ignoring anyone.'))
         list = wrap(list)

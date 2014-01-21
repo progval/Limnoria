@@ -87,7 +87,7 @@ class RecursiveAlias(AliasError):
 dollarRe = re.compile(r'\$(\d+)')
 def findBiggestDollar(alias):
     dollars = dollarRe.findall(alias)
-    dollars = map(int, dollars)
+    dollars = list(map(int, dollars))
     dollars.sort()
     if dollars:
         return dollars[-1]
@@ -97,7 +97,7 @@ def findBiggestDollar(alias):
 atRe = re.compile(r'@(\d+)')
 def findBiggestAt(alias):
     ats = atRe.findall(alias)
-    ats = map(int, ats)
+    ats = list(map(int, ats))
     ats.sort()
     if ats:
         return ats[-1]
@@ -179,7 +179,7 @@ def makeNewAlias(name, alias):
             args = getArgs(args, required=biggestDollar, optional=biggestAt,
                             wildcard=wildcard)
         max_len = conf.supybot.reply.maximumLength()
-        args = list(map(lambda x:x[:max_len], args))
+        args = list([x[:max_len] for x in args])
         def regexpReplace(m):
             idx = int(m.group(1))
             return args[idx-1]

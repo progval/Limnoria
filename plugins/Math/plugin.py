@@ -308,7 +308,7 @@ class Math(callbacks.Plugin):
         if len(stack) == 1:
             irc.reply(str(self._complexToString(complex(stack[0]))))
         else:
-            s = ', '.join(map(self._complexToString, map(complex, stack)))
+            s = ', '.join(map(self._complexToString, list(map(complex, stack))))
             irc.reply(_('Stack: [%s]') % s)
 
     @internationalizeDocstring

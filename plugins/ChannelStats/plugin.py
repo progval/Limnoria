@@ -135,7 +135,7 @@ class StatsDB(plugins.ChannelUserDB):
         return v.values()
 
     def deserialize(self, channel, id, L):
-        L = map(int, L)
+        L = list(map(int, L))
         if id == 'channelStats':
             return ChannelStat(*L)
         else:

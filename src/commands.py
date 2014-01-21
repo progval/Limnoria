@@ -917,7 +917,7 @@ class first(context):
             self.default = kw.pop('default')
             assert not kw, 'Bad kwargs for first.__init__'
         self.spec = specs # for __repr__
-        self.specs = map(contextify, specs)
+        self.specs = list(map(contextify, specs))
 
     def __call__(self, irc, msg, args, state):
         errored = False

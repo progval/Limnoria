@@ -169,7 +169,7 @@ def unescape(name):
 
 _splitRe = re.compile(r'(?<!\\)\.')
 def split(name):
-    return map(unescape, _splitRe.split(name))
+    return list(map(unescape, _splitRe.split(name)))
 
 def join(names):
     return '.'.join(map(escape, names))
@@ -523,9 +523,9 @@ class OnlySomeStrings(String):
         self.__parent = super(OnlySomeStrings, self)
         self.__parent.__init__(*args, **kwargs)
         self.__doc__ = format(_('Valid values include %L.'),
-                              map(repr, self.validStrings))
+                              list(map(repr, self.validStrings)))
         self.errormsg = format(_('Valid values include %L, not %%r.'),
-                              map(repr, self.validStrings))
+                              list(map(repr, self.validStrings)))
 
     def help(self):
         strings = [s for s in self.validStrings if s]

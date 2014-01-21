@@ -212,7 +212,7 @@ class RecursiveAlias(AkaError):
 dollarRe = re.compile(r'\$(\d+)')
 def findBiggestDollar(alias):
     dollars = dollarRe.findall(alias)
-    dollars = map(int, dollars)
+    dollars = list(map(int, dollars))
     dollars.sort()
     if dollars:
         return dollars[-1]
@@ -222,7 +222,7 @@ def findBiggestDollar(alias):
 atRe = re.compile(r'@(\d+)')
 def findBiggestAt(alias):
     ats = atRe.findall(alias)
-    ats = map(int, ats)
+    ats = list(map(int, ats))
     ats.sort()
     if ats:
         return ats[-1]
@@ -259,15 +259,15 @@ class Aka(callbacks.Plugin):
 
     def listCommands(self):
         channel = dynamic.channel or 'global'
-        return list(set(map(callbacks.formatCommand,
+        return list(set(list(map(callbacks.formatCommand,
                             self._db.get_aka_list(channel) +
-                            self._db.get_aka_list('global')) +
+                            self._db.get_aka_list('global'))) +
                 ['add', 'remove', 'lock', 'unlock', 'importaliasdatabase']))
 
     def getCommand(self, args, check_other_plugins=True):
         canonicalName = callbacks.canonicalName
         # All the code from here to the 'for' loop is copied from callbacks.py
-        assert args == map(canonicalName, args)
+        assert args == list(map(canonicalName, args))
         first = args[0]
         for cb in self.cbs:
             if first == cb.canonicalName():
@@ -302,7 +302,7 @@ class Aka(callbacks.Plugin):
                 args = getArgs(args, required=biggestDollar, optional=biggestAt,
                                 wildcard=wildcard)
             max_len = conf.supybot.reply.maximumLength()
-            args = list(map(lambda x:x[:max_len], args))
+            args = list([x[:max_len] for x in args])
             def regexpReplace(m):
                 idx = int(m.group(1))
                 return args[idx-1]
@@ -512,7 +512,7 @@ class Aka(callbacks.Plugin):
         if errors:
             irc.error(format(_('Error occured when importing the %n: %L'),
                 (len(errors), 'following', 'command'),
-                map(lambda x:'%s (%s)' % x, errors.items())))
+                ['%s (%s)' % x for x in errors.items()]))
         else:
             irc.replySuccess()
     importaliasdatabase = wrap(importaliasdatabase, ['owner'])

@@ -302,7 +302,7 @@ class InsensitivePreservingDict(collections.MutableMapping):
 
 class NormalizingSet(set):
     def __init__(self, iterable=()):
-        iterable = map(self.normalize, iterable)
+        iterable = list(map(self.normalize, iterable))
         super(NormalizingSet, self).__init__(iterable)
 
     def normalize(self, x):

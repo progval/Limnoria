@@ -62,7 +62,7 @@ class Games(callbacks.Plugin):
         For example, 2d6 will roll 2 six-sided dice; 10d10 will roll 10
         ten-sided dice.
         """
-        (dice, sides) = map(int, m.groups())
+        (dice, sides) = list(map(int, m.groups()))
         if dice > 1000:
             irc.error(_('You can\'t roll more than 1000 dice.'))
         elif sides > 100:

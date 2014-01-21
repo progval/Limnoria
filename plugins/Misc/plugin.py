@@ -285,7 +285,7 @@ class Misc(callbacks.Plugin):
         You may also want to use the 'list' command to list all available
         plugins and commands.
         """
-        command = map(callbacks.canonicalName, command)
+        command = list(map(callbacks.canonicalName, command))
         (maxL, cbs) = irc.findCallbacksForArgs(command)
         if maxL == command:
             if len(cbs) > 1:

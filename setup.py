@@ -152,7 +152,7 @@ try:
                     'fix_dict',
                     'fix_imports',
                     'fix_long',
-                    'fix_map', 'fix_metaclass', 'fix_methodattrs',
+                    'fix_metaclass', 'fix_methodattrs',
                     'fix_numliterals',
                     'fix_types',
                     'fix_unicode', 'fix_urllib', 'fix_xrange']

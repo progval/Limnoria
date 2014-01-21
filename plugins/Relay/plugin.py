@@ -171,8 +171,8 @@ class Relay(callbacks.Plugin):
                 utils.sortBy(ircutils.toLower, voices)
                 utils.sortBy(ircutils.toLower, halfops)
                 utils.sortBy(ircutils.toLower, usersS)
-                usersS = ', '.join(filter(None, map(', '.join,
-                                  (ops,halfops,voices,usersS))))
+                usersS = ', '.join(filter(None, list(map(', '.join,
+                                  (ops,halfops,voices,usersS)))))
                 users.append(format('%s (%i): %s',
                                     ircutils.bold(network), numUsers, usersS))
         users.sort()

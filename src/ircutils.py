@@ -162,7 +162,7 @@ def areReceivers(s, strictRfc=True, nicklen=None, chantypes='#&+!',
     nick = functools.partial(isNick, strictRfc=strictRfc, nicklen=nicklen)
     chan = functools.partial(isChannel, chantypes=chantypes,
             channellen=channellen)
-    return all(map(lambda x:nick(x) or chan(x), s.split(',')))
+    return all([nick(x) or chan(x) for x in s.split(',')])
 
 _patternCache = utils.structures.CacheDict(1000)
 def _hostmaskPatternEqual(pattern, hostmask):

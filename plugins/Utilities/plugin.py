@@ -135,7 +135,7 @@ class Utilities(callbacks.Plugin):
         args = [token and token or '""' for token in rest]
         text = ' '.join(args)
         commands = command.split()
-        commands = map(callbacks.canonicalName, commands)
+        commands = list(map(callbacks.canonicalName, commands))
         tokens = callbacks.tokenize(text)
         allTokens = commands + tokens
         self.Proxy(irc, msg, allTokens)

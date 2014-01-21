@@ -54,9 +54,9 @@ class OptionList(object):
                 return '(%s' % ''.join(ret) #)
             elif token == ')':
                 if '|' in ret:
-                    L = map(''.join,
+                    L = list(map(''.join,
                             utils.iter.split('|'.__eq__, ret,
-                                             yieldEmpty=True))
+                                             yieldEmpty=True)))
                     return utils.iter.choice(L)
                 else:
                     return '(%s)' % ''.join(ret)
@@ -377,7 +377,7 @@ class MoobotFactoids(callbacks.Plugin):
                            tokens)
             s = _('Missing an \'is\' or \'_is_\'.')
             raise ValueError(s)
-        (key, newfact) = map(' '.join, utils.iter.split(p, tokens, maxsplit=1))
+        (key, newfact) = list(map(' '.join, utils.iter.split(p, tokens, maxsplit=1)))
         key = self._sanitizeKey(key)
         return (key, newfact)
 
@@ -397,8 +397,8 @@ class MoobotFactoids(callbacks.Plugin):
 
     def changeFactoid(self, irc, msg, tokens):
         id = self._getUserId(irc, msg.prefix)
-        (key, regexp) = map(' '.join,
-                            utils.iter.split('=~'.__eq__, tokens, maxsplit=1))
+        (key, regexp) = list(map(' '.join,
+                            utils.iter.split('=~'.__eq__, tokens, maxsplit=1)))
         channel = plugins.getChannel(msg.args[0])
         # Check and make sure it's in the DB
         fact = self._getFactoid(irc, channel, key)

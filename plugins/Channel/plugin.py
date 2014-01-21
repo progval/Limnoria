@@ -667,7 +667,7 @@ class Channel(callbacks.Plugin):
                 irc.reply(s)
             else:
                 L = sorted(c.ignores)
-                irc.reply(utils.str.commaAndify(map(repr, L)))
+                irc.reply(utils.str.commaAndify(list(map(repr, L))))
         list = wrap(list, ['op'])
 
     class capability(callbacks.Commands):
