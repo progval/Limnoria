@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
+"Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2011-10-30 19:20+CET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
