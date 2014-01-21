@@ -119,7 +119,6 @@ class Misc(callbacks.Plugin):
             # will only be called if this is *truly* an invalid command.
             maximum = conf.supybot.abuse.flood.command.invalid.maximum()
             banmasker = conf.supybot.protocols.irc.banmask.makeBanmask
-            self.invalidCommands.enqueue(msg)
             if self.invalidCommands.len(msg) > maximum and \
                not ircdb.checkCapability(msg.prefix, 'owner') and \
                msg.prefix != irc.prefix and \
