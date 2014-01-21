@@ -29,6 +29,7 @@
 ###
 
 from supybot.test import *
+from supybot.commands import wrap
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 import supybot.conf as conf
 
@@ -39,6 +40,11 @@ _ = PluginInternationalization()
 
 @internationalizeDocstring
 def foo():
+    """The operation succeeded."""
+    pass
+
+@wrap
+def bar():
     """The operation succeeded."""
     pass
 
@@ -54,6 +60,9 @@ class I18nTestCase(SupyTestCase):
 
     def testDocstring(self):
         self.assertEqual(foo.__doc__, msg_en)
+        self.assertEqual(bar.__doc__, msg_en)
         with conf.supybot.language.context('fr'):
             self.assertEqual(foo.__doc__, msg_fr)
+            self.assertEqual(bar.__doc__, msg_fr)
         self.assertEqual(foo.__doc__, msg_en)
+        self.assertEqual(bar.__doc__, msg_en)
