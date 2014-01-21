@@ -1,70 +1,102 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2012-07-30 11:30+CEST\n"
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2014-01-21 16:39+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
-"Language-Team: Supybot-fr <progval@gmail.com>\n"
-"Language: \n"
+"Last-Translator: \n"
+"Language-Team: Limnoria <progval@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Français\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: config.py:45
 msgid ""
+"Determines how many messages the bot\n"
+"    will issue when using the 'more' command."
+msgstr ""
+"Détermine combien de message le bot enverra lorsque l’on utilise la commande "
+"« more »."
+
+#: config.py:48
+msgid ""
 "Determines whether the bot will list private\n"
-"    plugins with the list command if given the --private switch.  If this is\n"
+"    plugins with the list command if given the --private switch.  If this "
+"is\n"
 "    disabled, non-owner users should be unable to see what private plugins\n"
 "    are loaded."
-msgstr "Détermine si le bot listera les plugins privés dans la commande 'list', si l'option --private est donné. Si cette variable est désactivée, les utilisateurs non-owner ne pourront pas voir quels plugins privés sont chargés."
+msgstr ""
+"Détermine si le bot listera les plugins privés dans la commande 'list', si "
+"l'option --private est donné. Si cette variable est désactivée, les "
+"utilisateurs non-owner ne pourront pas voir quels plugins privés sont "
+"chargés."
 
-#: config.py:50
+#: config.py:53
 msgid ""
 "Determines whether the bot will list unloaded\n"
-"    plugins with the list command if given the --unloaded switch.  If this is\n"
+"    plugins with the list command if given the --unloaded switch.  If this "
+"is\n"
 "    disabled, non-owner users should be unable to see what unloaded plugins\n"
 "    are available."
-msgstr "Détermine si le bot listera les plugins déchargés dans la commande 'list', si l'option --unloaded est donné. Si cette variable est désactivée, les utilisateurs non-owner ne pourront pas voir quels plugins déchargés sont présents."
+msgstr ""
+"Détermine si le bot listera les plugins déchargés dans la commande 'list', "
+"si l'option --unloaded est donné. Si cette variable est désactivée, les "
+"utilisateurs non-owner ne pourront pas voir quels plugins déchargés sont "
+"présents."
 
-#: config.py:55
+#: config.py:58
 msgid ""
 "Determines the format string for\n"
 "    timestamps in the Misc.last command.  Refer to the Python documentation\n"
 "    for the time module to see what formats are accepted. If you set this\n"
 "    variable to the empty string, the timestamp will not be shown."
-msgstr "Détermine la chaîne de formattage pour les timestamps de la commande Misc.last. Référez-vous à la documentation de Python sur le module 'time' pour voir quels formats sont acceptés. Si vous définissez cette variable pour être une chaîne vide, le timestamp ne sera pas affiché."
+msgstr ""
+"Détermine la chaîne de formattage pour les timestamps de la commande Misc."
+"last. Référez-vous à la documentation de Python sur le module 'time' pour "
+"voir quels formats sont acceptés. Si vous définissez cette variable pour "
+"être une chaîne vide, le timestamp ne sera pas affiché."
 
-#: config.py:62
+#: config.py:65
 msgid ""
 "Determines whether or not\n"
-"    the timestamp will be included in the output of last when it is part of a\n"
+"    the timestamp will be included in the output of last when it is part of "
+"a\n"
 "    nested command"
-msgstr "Détermine si le timestamp sera inclu dans la sortie de 'last' lorsqu'il est dans une commande imbriquée."
+msgstr ""
+"Détermine si le timestamp sera inclu dans la sortie de 'last' lorsqu'il est "
+"dans une commande imbriquée."
 
-#: config.py:66
+#: config.py:69
 msgid ""
 "Determines whether or not the\n"
 "    nick will be included in the output of last when it is part of a nested\n"
 "    command"
-msgstr "Détermine si le nick est inclu dans la sortie de 'last' lorsqu'il est dans une commande imbriquée."
+msgstr ""
+"Détermine si le nick est inclu dans la sortie de 'last' lorsqu'il est dans "
+"une commande imbriquée."
 
-#: plugin.py:105
-msgid "You've given me %s invalid commands within the last minute; I'm now ignoring you for %s."
-msgstr "Vous m'avez donné %s commandes invalides dans la dernière minute, je vous ignore maitenant pendant %s."
+#: plugin.py:112
+msgid ""
+"You've given me %s invalid commands within the last %i seconds; I'm now "
+"ignoring you for %s."
+msgstr ""
+"Vous m'avez donné %s commandes invalides durant les %i dernières secondes, "
+"je vous ignore maintenant pendant %s."
 
-#: plugin.py:144
-msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"list %s\" to see the commands in the %q plugin."
-msgstr "Le plugin %q est chargé, mais il n'a pas de commande appelée %q. Essayez \"list %s\" pour voir les commandes dans le plugin %q."
+#: plugin.py:154
+msgid ""
+"The %q plugin is loaded, but there is no command named %q in it.  Try \"list "
+"%s\" to see the commands in the %q plugin."
+msgstr ""
+"Le plugin %q est chargé, mais il n'a pas de commande appelée %q. Essayez "
+"\"list %s\" pour voir les commandes dans le plugin %q."
 
-#: plugin.py:150
-#: plugin.py:153
+#: plugin.py:160 plugin.py:163
 msgid "command"
 msgstr "commande"
 
-#: plugin.py:170
+#: plugin.py:180
 msgid ""
 "[--private] [--unloaded] [<plugin>]\n"
 "\n"
@@ -76,25 +108,36 @@ msgid ""
 msgstr ""
 "[--private] [--unloaded] [<plugin>]\n"
 "\n"
-"Liste les commandes disponibles dans le plugin donné. Si aucun plugin n'est donné, liste les plugins publics. Si --private est donné, il liste les plugins privés. Si --unloaded est donné, il liste les plugins disponibles qui ne sont pas chargés."
+"Liste les commandes disponibles dans le plugin donné. Si aucun plugin n'est "
+"donné, liste les plugins publics. Si --private est donné, il liste les "
+"plugins privés. Si --unloaded est donné, il liste les plugins disponibles "
+"qui ne sont pas chargés."
 
-#: plugin.py:191
+#: plugin.py:201
 msgid "--private and --unloaded are uncompatible options."
 msgstr "--private et --unloaded ne sont pas des options compatibles."
 
-#: plugin.py:222
+#: plugin.py:232
 msgid "There are no private plugins."
 msgstr "Il n'y a pas de plugin privé."
 
-#: plugin.py:224
+#: plugin.py:234
 msgid "There are no public plugins."
 msgstr "Il n'y a pas de plugin privé."
 
-#: plugin.py:231
-msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
-msgstr "Ce plugin existe, mais n'a pas de commande. Cela signifie probablement qu'il a des variables de configuration qui peuvent être changés pour modifier son comportement. Essayez \"config list supybot.plugins.%s\" pour voir quelles variables de configuration il a."
+#: plugin.py:241
+msgid ""
+"That plugin exists, but has no commands.  This probably means that it has "
+"some configuration variables that can be changed in order to modify its "
+"behavior.  Try \"config list supybot.plugins.%s\" to see what configuration "
+"variables it has."
+msgstr ""
+"Ce plugin existe, mais n'a pas de commande. Cela signifie probablement qu'il "
+"a des variables de configuration qui peuvent être changés pour modifier son "
+"comportement. Essayez \"config list supybot.plugins.%s\" pour voir quelles "
+"variables de configuration il a."
 
-#: plugin.py:243
+#: plugin.py:253
 msgid ""
 "<string>\n"
 "\n"
@@ -104,33 +147,45 @@ msgid ""
 msgstr ""
 "<chaîne>\n"
 "\n"
-"Recherche la <chaîne> dans les commandes actuellement fournies par le bot et retourne une list des commandes contenant cette chaîne."
+"Recherche la <chaîne> dans les commandes actuellement fournies par le bot et "
+"retourne une list des commandes contenant cette chaîne."
 
-#: plugin.py:262
+#: plugin.py:272
 msgid "No appropriate commands were found."
 msgstr "Aucune commande appropriée n'a été trouvée."
 
-#: plugin.py:267
+#: plugin.py:277
 msgid ""
 "[<plugin>] [<command>]\n"
 "\n"
 "        This command gives a useful description of what <command> does.\n"
-"        <plugin> is only necessary if the command is in more than one plugin.\n"
+"        <plugin> is only necessary if the command is in more than one "
+"plugin.\n"
+"\n"
+"        You may also want to use the 'list' command to list all available\n"
+"        plugins and commands.\n"
 "        "
 msgstr ""
 "[<plugin>] [<commande>]\n"
 "\n"
-"Cette commande donne une description utile de ce que fait la <commande>. <plugin> n'est nécessaire que si la commande est présente dans plus d'un plugin."
+"Cette commande donne une description utile de ce que fait la <commande>. "
+"<plugin> n'est nécessaire que si la commande est présente dans plus d'un "
+"plugin.Il se peut que vous vouliez utiliser la commande « list » pour lister "
+"tous les plugins et commandes disponibles."
 
-#: plugin.py:277
-msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
-msgstr "Cette commande existe dans les plugins %L. Veuillez spécifier dans quel plugin se trouve la commande pour laquelle vous cherchez de l'aide."
+#: plugin.py:290
+msgid ""
+"That command exists in the %L plugins.  Please specify exactly which plugin "
+"command you want help with."
+msgstr ""
+"Cette commande existe dans les plugins %L. Veuillez spécifier dans quel "
+"plugin se trouve la commande pour laquelle vous cherchez de l'aide."
 
-#: plugin.py:284
+#: plugin.py:297
 msgid "There is no command %q."
 msgstr "Il n'y a pas de commande %q."
 
-#: plugin.py:290
+#: plugin.py:303
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -141,23 +196,26 @@ msgstr ""
 "\n"
 "Retourne la version actuelle du bot"
 
-#: plugin.py:306
+#: plugin.py:320
 msgid "The newest versions available online are %s."
 msgstr "Les dernières versions disponibles en ligne sont %s."
 
-#: plugin.py:307
+#: plugin.py:321
 msgid "%s (in %s)"
 msgstr "%s (dans %s)"
 
-#: plugin.py:311
+#: plugin.py:325
 msgid "I couldn't fetch the newest version from the Limnoria repository."
 msgstr "Je ne peux récupérer la dernière version sur le dépôt de Limnoria."
 
-#: plugin.py:313
-msgid "The current (running) version of this Supybot is %s.  %s"
-msgstr "La version de ce Supybot est %s. %s"
+#: plugin.py:327
+msgid ""
+"The current (running) version of this Supybot is %s, running on Python %s.  "
+"%s"
+msgstr ""
+"La version actuelle de ce Supybot est %s, fonctionnant sur Python %s. %s"
 
-#: plugin.py:320
+#: plugin.py:335
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -168,74 +226,116 @@ msgstr ""
 "\n"
 "Retourne une URL disant où trouver Limnoria."
 
-#: plugin.py:324
+#: plugin.py:339
 msgid "My source is at https://github.com/ProgVal/Limnoria"
 msgstr "Ma source est disponible sur https://github.com/ProgVal/Limnoria"
 
-#: plugin.py:329
+#: plugin.py:344
 msgid ""
 "[<nick>]\n"
 "\n"
 "        If the last command was truncated due to IRC message length\n"
-"        limitations, returns the next chunk of the result of the last command.\n"
-"        If <nick> is given, it takes the continuation of the last command from\n"
+"        limitations, returns the next chunk of the result of the last "
+"command.\n"
+"        If <nick> is given, it takes the continuation of the last command "
+"from\n"
 "        <nick> instead of the person sending this message.\n"
 "        "
 msgstr ""
 "[<nick>]\n"
 "\n"
-"Si la dernière commande était tronquée par les limitations de taille des messages sur IRC, retourne le morceau suivant résultant de la dernière commande. Si le <nick> est donné, continue la dernière commande du <nick> plutôt que de la personne envoyant ce message."
+"Si la dernière commande était tronquée par les limitations de taille des "
+"messages sur IRC, retourne le morceau suivant résultant de la dernière "
+"commande. Si le <nick> est donné, continue la dernière commande du <nick> "
+"plutôt que de la personne envoyant ce message."
 
-#: plugin.py:343
+#: plugin.py:358
 msgid "%s has no public mores."
 msgstr "%s n'a pas de 'more' public."
 
-#: plugin.py:346
+#: plugin.py:361
 msgid "Sorry, I can't find any mores for %s"
 msgstr "Désolé, je ne peux trouver de 'more' pour %s"
 
-#: plugin.py:353
+#: plugin.py:369
 msgid "1 more message"
 msgstr "1 autre message"
 
-#: plugin.py:355
+#: plugin.py:371
 msgid "%i more messages"
 msgstr "%i autres messages"
 
-#: plugin.py:359
-msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
-msgstr "Vous ne m'avez donné aucune commande. Peut-être que vous voulez voir celle de quelqu'un d'autre. Pour cela, appelez cette commande en ajoutant le nick de cette personne."
+#: plugin.py:375
+msgid ""
+"You haven't asked me a command; perhaps you want to see someone else's "
+"more.  To do so, call this command with that person's nick."
+msgstr ""
+"Vous ne m'avez donné aucune commande. Peut-être que vous voulez voir celle "
+"de quelqu'un d'autre. Pour cela, appelez cette commande en ajoutant le nick "
+"de cette personne."
 
-#: plugin.py:363
+#: plugin.py:379
 msgid "That's all, there is no more."
 msgstr "C'est tout, il n'y a plus de 'more'"
 
-#: plugin.py:373
+#: plugin.py:389
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
 "\n"
-"        Returns the last message matching the given criteria.  --from requires\n"
-"        a nick from whom the message came; --in requires a channel the message\n"
-"        was sent to; --on requires a network the message was sent on; --with\n"
-"        requires some string that had to be in the message; --regexp requires\n"
+"        Returns the last message matching the given criteria.  --from "
+"requires\n"
+"        a nick from whom the message came; --in requires a channel the "
+"message\n"
+"        was sent to; --on requires a network the message was sent on; --"
+"with\n"
+"        requires some string that had to be in the message; --regexp "
+"requires\n"
 "        a regular expression the message must match; --nolimit returns all\n"
-"        the messages that can be found.  By default, the channel this command is\n"
+"        the messages that can be found.  By default, the channel this "
+"command is\n"
 "        given in is searched.\n"
 "        "
 msgstr ""
 "[--{from,in,on,with,without,regexp} <valeur>] [--nolimit]\n"
 "\n"
-"Retourne le dernier message correspondant aux critères donnés. --from requiert le nick de la personne qui a envoyé le message ; --in requiert le canal sur lequel a été envoyé le message ; --with requiert une chaîne qui doit être dans le message --regexp requiert une expression régulière à laquelle le message doit correspondre ; --nolimit retourne tous les messages qui peuvent être trouvés. Par défaut, recherche dans les logs du canal sur lequel est envoyée cette commande."
+"Retourne le dernier message correspondant aux critères donnés. --from "
+"requiert le nick de la personne qui a envoyé le message ; --in requiert le "
+"canal sur lequel a été envoyé le message ; --with requiert une chaîne qui "
+"doit être dans le message --regexp requiert une expression régulière à "
+"laquelle le message doit correspondre ; --nolimit retourne tous les messages "
+"qui peuvent être trouvés. Par défaut, recherche dans les logs du canal sur "
+"lequel est envoyée cette commande."
 
-#: plugin.py:475
+#: plugin.py:484
 msgid "The regular expression timed out."
 msgstr "L'expression régulière a pris trop de temps à être évaluée."
 
-#: plugin.py:488
-msgid "I couldn't find a message matching that criteria in my history of %s messages."
-msgstr "Je ne peux trouver de message correspondant à ce critère dans mon historique de %s messages."
+#: plugin.py:497
+msgid ""
+"I couldn't find a message matching that criteria in my history of %s "
+"messages."
+msgstr ""
+"Je ne peux trouver de message correspondant à ce critère dans mon historique "
+"de %s messages."
 
-#: plugin.py:503
+#: plugin.py:516
+msgid "Hey, just give the command.  No need for the tell."
+msgstr ""
+"Oh, contentes-toi de me donner la commande. Pas besoin d'utiliser 'tell'."
+
+#: plugin.py:521
+msgid "You just told me, why should I tell myself?"
+msgstr "Vous venez de me le dire, pourquoi devrais-je me le dire moi-même ?"
+
+#: plugin.py:526
+msgid "I haven't seen %s, I'll let you do the telling."
+msgstr "Je n'ai pas vu %s, je vous laisse lui dire."
+
+#: plugin.py:531
+msgid "%s wants me to tell you: %s"
+msgstr "%s veut que je vous dise : %s"
+
+#: plugin.py:537
 msgid ""
 "<nick> <text>\n"
 "\n"
@@ -247,23 +347,20 @@ msgstr ""
 "\n"
 "Dit le <texte> au <nick>. Utile si vous utilisez des commandes imbriquées."
 
-#: plugin.py:513
-msgid "Hey, just give the command.  No need for the tell."
-msgstr "Oh, contentes-toi de me donner la commande. Pas besoin d'utiliser 'tell'."
+#: plugin.py:547
+msgid ""
+"<nick> <text>\n"
+"\n"
+"        Tells the <nick> whatever <text> is, in a notice.  Use nested\n"
+"        commands to your benefit here.\n"
+"        "
+msgstr ""
+"<nick> <texte>\n"
+"\n"
+"Dit le <texte> à <nick>, dans une notice. Utile si vous utilisez des "
+"commandes imbriquées."
 
-#: plugin.py:518
-msgid "You just told me, why should I tell myself?"
-msgstr "Vous venez de me le dire, pourquoi devrais-je me le dire moi-même ?"
-
-#: plugin.py:523
-msgid "I haven't seen %s, I'll let you do the telling."
-msgstr "Je n'ai pas vu %s, je vous laisse lui dire."
-
-#: plugin.py:528
-msgid "%s wants me to tell you: %s"
-msgstr "%s veut que je vous dise : %s"
-
-#: plugin.py:535
+#: plugin.py:557
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -274,26 +371,27 @@ msgstr ""
 "\n"
 "Vérifie si le bot est encore en vie."
 
-#: plugin.py:539
+#: plugin.py:561
 msgid "pong"
 msgstr "pong"
 
-#: plugin.py:543
+#: plugin.py:565
 msgid ""
 "[<channel>] <beginning> [--match-case]\n"
 "\n"
-"        Returns the nick of someone on the channel whose nick begins with the\n"
+"        Returns the nick of someone on the channel whose nick begins with "
+"the\n"
 "        given <beginning>.\n"
 "        <channel> defaults to the current channel."
 msgstr ""
 "[<canal>] <lettres> [--match-case]\n"
-"Retourne le nick de quelqu'un dans le salon dont le nick commence par les <lettres> indiquées. <channel> correspond par défaut au salon actuel."
+"Retourne le nick de quelqu'un dans le salon dont le nick commence par les "
+"<lettres> indiquées. <channel> correspond par défaut au salon actuel."
 
-#: plugin.py:549
+#: plugin.py:571
 msgid "I'm not even in %s."
 msgstr "Je ne suis pas dans %s."
 
-#: plugin.py:561
+#: plugin.py:583
 msgid "No such nick."
 msgstr "Ce nick n'existe pas."
-
