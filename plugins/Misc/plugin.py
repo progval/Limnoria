@@ -52,12 +52,6 @@ from supybot import commands
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
 
-def get_suffix(file):
-    for suffix in imp.get_suffixes():
-        if file[-len(suffix[0]):] == suffix[0]:
-            return suffix
-    return None
-
 def getPluginsInDirectory(directory):
     # get modules in a given directory
     plugins = []
