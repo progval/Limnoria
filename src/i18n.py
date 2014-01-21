@@ -243,7 +243,6 @@ class _PluginInternationalization:
             return untranslated._original
         escapedUntranslated = self._unescape(untranslated, True)
         untranslated = self._unescape(untranslated, False)
-        reloadLocalesIfRequired()
         try:
             string = self._translate(escapedUntranslated)
             return self._addTracker(string, untranslated)
