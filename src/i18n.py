@@ -127,6 +127,57 @@ def reloadLocales():
     for function in internationalizedFunctions:
         function.loadLocale()
 
+def parse(translationFile):
+    step = WAITING_FOR_MSGID
+    translations = set()
+    for line in translationFile:
+        line = line[0:-1] # Remove the ending \n
+        line = line
+
+        if line.startswith(MSGID):
+            # Don't check if step is WAITING_FOR_MSGID
+            untranslated = ''
+            translated = ''
+            data = line[len(MSGID):-1]
+            if len(data) == 0: # Multiline mode
+                step = IN_MSGID
+            else:
+                untranslated += data
+                step = WAITING_FOR_MSGSTR
+
+
+        elif step is IN_MSGID and line.startswith('"') and \
+                                  line.endswith('"'):
+            untranslated += line[1:-1]
+        elif step is IN_MSGID and untranslated == '': # Empty MSGID
+            step = WAITING_FOR_MSGID
+        elif step is IN_MSGID: # the MSGID is finished
+            step = WAITING_FOR_MSGSTR
+
+
+        if step is WAITING_FOR_MSGSTR and line.startswith(MSGSTR):
+            data = line[len(MSGSTR):-1]
+            if len(data) == 0: # Multiline mode
+                step = IN_MSGSTR
+            else:
+                translations |= {(untranslated, data)}
+                step = WAITING_FOR_MSGID
+
+
+        elif step is IN_MSGSTR and line.startswith('"') and \
+                                   line.endswith('"'):
+            translated += line[1:-1]
+        elif step is IN_MSGSTR: # the MSGSTR is finished
+            step = WAITING_FOR_MSGID
+            if translated == '':
+                translated = untranslated
+            translations |= {(untranslated, data)}
+    if step is IN_MSGSTR:
+        if translated == '':
+            translated = untranslated
+        translations |= {(untranslated, data)}
+    return translations
+
 
 i18nSupybot = None
 def PluginInternationalization(name='supybot'):
@@ -172,54 +223,9 @@ class _PluginInternationalization:
         """A .po files parser.
 
         Give it a file object."""
-        step = WAITING_FOR_MSGID
         self.translations = {}
-        for line in translationFile:
-            line = line[0:-1] # Remove the ending \n
-            line = line
-
-            if line.startswith(MSGID):
-                # Don't check if step is WAITING_FOR_MSGID
-                untranslated = ''
-                translated = ''
-                data = line[len(MSGID):-1]
-                if len(data) == 0: # Multiline mode
-                    step = IN_MSGID
-                else:
-                    untranslated += data
-                    step = WAITING_FOR_MSGSTR
-
-
-            elif step is IN_MSGID and line.startswith('"') and \
-                                      line.endswith('"'):
-                untranslated += line[1:-1]
-            elif step is IN_MSGID and untranslated == '': # Empty MSGID
-                step = WAITING_FOR_MSGID
-            elif step is IN_MSGID: # the MSGID is finished
-                step = WAITING_FOR_MSGSTR
-
-
-            if step is WAITING_FOR_MSGSTR and line.startswith(MSGSTR):
-                data = line[len(MSGSTR):-1]
-                if len(data) == 0: # Multiline mode
-                    step = IN_MSGSTR
-                else:
-                    self._addToDatabase(untranslated, data)
-                    step = WAITING_FOR_MSGID
-
-
-            elif step is IN_MSGSTR and line.startswith('"') and \
-                                       line.endswith('"'):
-                translated += line[1:-1]
-            elif step is IN_MSGSTR: # the MSGSTR is finished
-                step = WAITING_FOR_MSGID
-                if translated == '':
-                    translated = untranslated
-                self._addToDatabase(untranslated, translated)
-        if step is IN_MSGSTR:
-            if translated == '':
-                translated = untranslated
-            self._addToDatabase(untranslated, translated)
+        for translation in parse(translationFile):
+            self._addToDatabase(*translation)
 
     def _addToDatabase(self, untranslated, translated):
         untranslated = self._unescape(untranslated, True)
