@@ -97,9 +97,9 @@ def joinHostmask(nick, ident, host):
     assert nick and ident and host
     return minisix.intern('%s!%s@%s' % (nick, ident, host))
 
-_rfc1459trans = utils.str.MultipleReplacer(dict(zip(
+_rfc1459trans = utils.str.MultipleReplacer(dict(list(zip(
                                  string.ascii_uppercase + r'\[]~',
-                                 string.ascii_lowercase + r'|{}^')))
+                                 string.ascii_lowercase + r'|{}^'))))
 def toLower(s, casemapping=None):
     """s => s
     Returns the string s lowered according to IRC case rules."""

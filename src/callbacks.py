@@ -1170,7 +1170,7 @@ class Commands(BasePlugin):
         if hasattr(self, name):
             method = getattr(self, name)
             if inspect.ismethod(method):
-                code = method.im_func.func_code
+                code = method.im_func.__code__
                 return inspect.getargs(code)[0] == self.commandArgs
             else:
                 return False
@@ -1217,7 +1217,7 @@ class Commands(BasePlugin):
         else:
             method = getattr(self, command[0])
             if inspect.ismethod(method):
-                code = method.im_func.func_code
+                code = method.im_func.__code__
                 if inspect.getargs(code)[0] == self.commandArgs:
                     return method
                 else:

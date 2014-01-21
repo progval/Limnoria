@@ -346,7 +346,7 @@ def firewall(f, errorHandler=None):
             logging_function = self.log.exception
         else:
             logging_function = exception
-        logging_function('%s in %s.%s:', s, self.__class__.__name__, f.func_name)
+        logging_function('%s in %s.%s:', s, self.__class__.__name__, f.__name__)
     def m(self, *args, **kwargs):
         try:
             return f(self, *args, **kwargs)
@@ -359,7 +359,7 @@ def firewall(f, errorHandler=None):
                     return errorHandler(self, *args, **kwargs)
                 except Exception as e:
                     logException(self, 'Uncaught exception in errorHandler')
-    m = utils.python.changeFunctionName(m, f.func_name, f.__doc__)
+    m = utils.python.changeFunctionName(m, f.__name__, f.__doc__)
     return m
 
 class MetaFirewall(type):

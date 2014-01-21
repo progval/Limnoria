@@ -67,7 +67,7 @@ def thread(f):
             t.start()
         else:
             f(self, irc, msg, args, *L, **kwargs)
-    return utils.python.changeFunctionName(newf, f.func_name, f.__doc__)
+    return utils.python.changeFunctionName(newf, f.__name__, f.__doc__)
 
 class ProcessTimeoutError(Exception):
     """Gets raised when a process is killed due to timeout."""
@@ -219,7 +219,7 @@ def urlSnarfer(f):
             L = list(L)
             t = UrlSnarfThread(target=doSnarf, url=url)
             t.start()
-    newf = utils.python.changeFunctionName(newf, f.func_name, f.__doc__)
+    newf = utils.python.changeFunctionName(newf, f.__name__, f.__doc__)
     return newf
 
 
@@ -1068,7 +1068,7 @@ class Spec(object):
         return state
 
 def _wrap(f, specList=[], name=None, checkDoc=True, **kw):
-    name = name or f.func_name
+    name = name or f.__name__
     assert (not checkDoc) or (hasattr(f, '__doc__') and f.__doc__), \
                 'Command %r has no docstring.' % name
     f = internationalizeDocstring(f)
@@ -1084,7 +1084,7 @@ def _wrap(f, specList=[], name=None, checkDoc=True, **kw):
             except TypeError:
                 self.log.error('Spec: %s', specList)
                 self.log.error('Received args: %s', args)
-                code = f.func_code
+                code = f.__code__
                 funcArgs = inspect.getargs(code)[0][len(self.commandArgs):]
                 self.log.error('Extra args: %s', funcArgs)
                 self.log.debug('Make sure you did not wrap a wrapped '

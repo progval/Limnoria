@@ -156,8 +156,7 @@ try:
                     'fix_map', 'fix_metaclass', 'fix_methodattrs',
                     'fix_numliterals',
                     'fix_types',
-                    'fix_unicode', 'fix_urllib', 'fix_ws_comma', 'fix_xrange',
-                    'fix_xreadlines', 'fix_zip']
+                    'fix_unicode', 'fix_urllib', 'fix_xrange']
             fixers = list(map(lambda x:'lib2to3.fixes.'+x, fixer_names))
             fixers += get_fixers_from_package('2to3')
             r = DistutilsRefactoringTool(fixers, options=options)

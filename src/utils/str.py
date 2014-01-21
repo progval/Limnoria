@@ -114,8 +114,8 @@ class MultipleRemover:
     def __call__(self, s):
         return self._matcher.sub(lambda m: '', s)
 
-_soundextrans = MultipleReplacer(dict(zip(string.ascii_uppercase,
-                                 '01230120022455012623010202')))
+_soundextrans = MultipleReplacer(dict(list(zip(string.ascii_uppercase,
+                                 '01230120022455012623010202'))))
 def soundex(s, length=4):
     """Returns the soundex hash of a given string.
 

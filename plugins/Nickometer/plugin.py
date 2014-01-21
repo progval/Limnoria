@@ -119,8 +119,8 @@ class Nickometer(callbacks.Plugin):
                        ('\\[rkx]0', 1000),
                        ('\\0[rkx]', 1000)]
 
-        letterNumberTranslator = utils.str.MultipleReplacer(dict(zip(
-                '023457+8', 'ozeasttb')))
+        letterNumberTranslator = utils.str.MultipleReplacer(dict(list(zip(
+                '023457+8', 'ozeasttb'))))
         for special in specialCost:
             tempNick = nick
             if special[0][0] != '\\':

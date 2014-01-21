@@ -479,7 +479,7 @@ class IterTest(SupyTestCase):
         self.assertEqual(lflatten(range(10)), list(range(10)))
         twoRanges = list(range(10))*2
         twoRanges.sort()
-        self.assertEqual(lflatten(zip(range(10), range(10))), twoRanges)
+        self.assertEqual(lflatten(list(zip(range(10), range(10)))), twoRanges)
         self.assertEqual(lflatten([1, [2, 3], 4]), [1, 2, 3, 4])
         self.assertEqual(lflatten([[[[[[[[[[]]]]]]]]]]), [])
         self.assertEqual(lflatten([1, [2, [3, 4], 5], 6]), [1, 2, 3, 4, 5, 6])

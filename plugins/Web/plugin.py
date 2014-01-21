@@ -93,7 +93,7 @@ def fetch_sandbox(f):
         try:
             replies = commands.process(process, self, irc, *args,
                     timeout=5, heap_size=1024*1024,
-                    pn=self.name(), cn=f.func_name)
+                    pn=self.name(), cn=f.__name__)
         except commands.ProcessTimeoutError:
             raise utils.web.Error(_('Page is too big.'))
         else:
