@@ -250,7 +250,7 @@ class _PluginInternationalization:
         """Main function.
 
         This is the function which is called when a plugin runs _()"""
-        if untranslated.__class__ == internationalizedString:
+        if untranslated.__class__ is InternationalizedString:
             return untranslated._original
         escapedUntranslated = self._unescape(untranslated, True)
         untranslated = self._unescape(untranslated, False)
@@ -265,7 +265,7 @@ class _PluginInternationalization:
         """Translate the string.
 
         C the string internationalizer if any; else, use the local database"""
-        if string.__class__ == internationalizedString:
+        if string.__class__ == InternationalizedString:
             return string._internationalizer(string.untranslated)
         else:
             return self.translations[string]
@@ -273,10 +273,10 @@ class _PluginInternationalization:
     def _addTracker(self, string, untranslated):
         """Add a kind of 'tracker' on the string, in order to keep the
         untranslated string (used when changing the locale)"""
-        if string.__class__ == internationalizedString:
+        if string.__class__ == InternationalizedString:
             return string
         else:
-            string = internationalizedString(string)
+            string = InternationalizedString(string)
             string._original = untranslated
             string._internationalizer = self
             return string
@@ -350,7 +350,7 @@ class internationalizedFunction:
     def __call__(self, *args, **kwargs):
         return self._origin(*args, **kwargs)
 
-class internationalizedString(str):
+class InternationalizedString(str):
     """Simple subclass to str, that allow to add attributes. Also used to
     know if a string is already localized"""
     pass
