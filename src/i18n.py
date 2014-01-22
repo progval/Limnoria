@@ -125,12 +125,8 @@ def reloadLocales():
         pluginClass.loadLocale()
     for command in internationalizedCommands.values():
         internationalizeDocstring(command)
-    for function_ref in list(internationalizedFunctions):
-        function = function_ref
-        if not function:
-            internationalizedFunctions.remove(function_ref)
-        else:
-            function.loadLocale()
+    for function in internationalizedFunctions:
+        function.loadLocale()
 
 def parse(translationFile):
     step = WAITING_FOR_MSGID
@@ -308,7 +304,7 @@ class _PluginInternationalization:
     def localizeFunction(self, name):
         """Returns the localized version of the function.
 
-        Should be used only by the internationalizedFunction class"""
+        Should be used only by the InternationalizedFunction class"""
         if self.name != 'supybot':
             return
         if hasattr(self, '_l10nFunctions') and \
@@ -326,12 +322,12 @@ class _PluginInternationalization:
                 self._parent = parent
                 self._name = name
             def __call__(self, obj):
-                obj = internationalizedFunction(self._parent, self._name, obj)
+                obj = InternationalizedFunction(self._parent, self._name, obj)
                 obj.loadLocale()
                 return obj
         return FunctionInternationalizer(self, name)
 
-class internationalizedFunction:
+class InternationalizedFunction:
     """Proxy for functions that need to be fully localized.
 
     The localization code is in locales/LOCALE.py"""
@@ -339,7 +335,7 @@ class internationalizedFunction:
         self._internationalizer = internationalizer
         self._name = name
         self._origin = function
-        internationalizedFunctions.append(weakref.proxy(self))
+        internationalizedFunctions.append(self)
     def loadLocale(self):
         self.__call__ = self._internationalizer.localizeFunction(self._name)
         if self.__call__ == None:
