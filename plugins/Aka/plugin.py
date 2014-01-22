@@ -147,12 +147,9 @@ if sqlite3:
                 if isinstance(alias, str):
                     alias = alias.decode('utf8')
             db = self.get_db(channel)
-            cursor = db.cursor().execute('SELECT MAX(id) FROM aliases;')
-            max_id = cursor.fetchone()[0]
-            if max_id is None:
-                max_id = 0
+            cursor = db.cursor()
             cursor.execute("""INSERT INTO aliases VALUES (
-                ?, ?, ?, 0, NULL, NULL);""", (str(max_id+1), name, alias))
+                NULL, ?, ?, 0, NULL, NULL);""", (name, alias))
             db.commit()
 
         def remove_aka(self, channel, name):
