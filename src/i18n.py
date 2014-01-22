@@ -37,6 +37,7 @@ import os
 import re
 import sys
 import time
+import weakref
 import threading
 conf = None
 # Don't import conf here ; because conf needs this module
@@ -107,9 +108,9 @@ def getLocalePath(name, localeName, extension):
     directory = os.path.join(base, 'locales')
     return '%s/%s.%s' % (directory, localeName, extension)
 
-i18nClasses = {}
-internationalizedCommands = {}
-internationalizedFunctions = [] # No need to know there name
+i18nClasses = weakref.WeakValueDictionary()
+internationalizedCommands = weakref.WeakValueDictionary()
+internationalizedFunctions = [] # No need to know their name
 
 def reloadLocalesIfRequired():
     global currentLocale
@@ -120,12 +121,16 @@ def reloadLocalesIfRequired():
         reloadLocales()
 
 def reloadLocales():
-    for pluginName in i18nClasses:
-        i18nClasses[pluginName].loadLocale()
+    for pluginClass in i18nClasses.values():
+        pluginClass.loadLocale()
     for command in internationalizedCommands.values():
         internationalizeDocstring(command)
-    for function in internationalizedFunctions:
-        function.loadLocale()
+    for function_ref in list(internationalizedFunctions):
+        function = function_ref
+        if not function:
+            internationalizedFunctions.remove(function_ref)
+        else:
+            function.loadLocale()
 
 def parse(translationFile):
     step = WAITING_FOR_MSGID
@@ -334,7 +339,7 @@ class internationalizedFunction:
         self._internationalizer = internationalizer
         self._name = name
         self._origin = function
-        internationalizedFunctions.append(self)
+        internationalizedFunctions.append(weakref.proxy(self))
     def loadLocale(self):
         self.__call__ = self._internationalizer.localizeFunction(self._name)
         if self.__call__ == None:
