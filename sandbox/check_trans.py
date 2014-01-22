@@ -69,7 +69,6 @@ def checkTranslation(pot, po):
     pot = set(map(operator.itemgetter(0), parse(pot)))
     po = set(map(operator.itemgetter(0), parse(po)))
     diff = filter(lambda x:x not in po, pot)
-    print(diff)
     return not bool(diff)
 
 if __name__ == '__main__':
