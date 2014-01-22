@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: supybot-i18n\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
-"PO-Revision-Date: 2014-01-22 07:54+0100\n"
+"POT-Creation-Date: 2014-01-22 13:46+CET\n"
+"PO-Revision-Date: 2014-01-22 13:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -162,6 +162,10 @@ msgstr ""
 "\n"
 "Retourne les statistiques pour le <canal>. <canal> n'est nécessaire que si "
 "le message n'est pas envoyé sur le canal lui-même."
+
+#: plugin.py:362
+msgid "I am not in %s."
+msgstr "Je ne suis pas dans %s."
 
 #: plugin.py:364
 msgid "You must be in %s to use this command."
