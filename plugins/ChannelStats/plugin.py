@@ -359,7 +359,7 @@ class ChannelStats(callbacks.Plugin):
         the message isn't sent on the channel itself.
         """
         if channel not in irc.state.channels:
-            irc.error(_('I am not in %s.', channel), Raise=True)
+            irc.error(_('I am not in %s.') % channel, Raise=True)
         elif msg.nick not in irc.state.channels[channel].users:
             irc.error(_('You must be in %s to use this command.') % channel,
                     Raise=True)
