@@ -72,9 +72,6 @@ class Alias(object):
     def __repr__(self):
         return "<Alias('%r', '%r')>" % (self.name, self.alias)
 if sqlite3:
-    class SQLiteAlias(Alias):
-        __slots__ = ()
-        pass
     class SQLiteAkaDB(object):
         __slots__ = ('engines', 'filename', 'dbs',)
         def __init__(self, filename):
