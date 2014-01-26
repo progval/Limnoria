@@ -161,7 +161,7 @@ def parse(translationFile):
             if len(data) == 0: # Multiline mode
                 step = IN_MSGSTR
             else:
-                translations |= set[((untranslated, data)])
+                translations |= set([(untranslated, data)])
                 step = WAITING_FOR_MSGID
 
 
@@ -172,11 +172,11 @@ def parse(translationFile):
             step = WAITING_FOR_MSGID
             if translated == '':
                 translated = untranslated
-            translations |= set[((untranslated, data)])
+            translations |= set([(untranslated, data)])
     if step is IN_MSGSTR:
         if translated == '':
             translated = untranslated
-        translations |= set[((untranslated, data)])
+        translations |= set([(untranslated, data)])
     return translations
 
 
