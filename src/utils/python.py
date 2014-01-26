@@ -58,8 +58,13 @@ def universalImport(*names):
 def changeFunctionName(f, name, doc=None):
     if doc is None:
         doc = f.__doc__
+    if hasattr(f, '__closure__'):
+        closure = f.__closure__
+    else:
+        # Pypy
+        closure = f.func_closure
     newf = types.FunctionType(f.__code__, f.__globals__, name,
-                              f.__defaults__, f.__closure__)
+                              f.__defaults__, closure)
     newf.__doc__ = doc
     return newf
 
