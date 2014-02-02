@@ -293,6 +293,10 @@ repositories = {
                                                    'skgsergio',
                                                    'Limnoria-plugins',
                                                    ),
+               'GLolol':           GithubRepository(
+                                                   'GLolol',
+                                                   'SupyPlugins',
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
