@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:52
+#: plugin.py:55
 #, docstring
 msgid ""
 "<fromBase> [<toBase>] <number>\n"
@@ -25,23 +25,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:63
+#: plugin.py:66
 msgid "Invalid <number> for base %s: %s"
 msgstr ""
 
-#: plugin.py:69
+#: plugin.py:72
 #, docstring
 msgid "Convert a decimal number to another base; returns a string."
 msgstr ""
 
-#: plugin.py:90
+#: plugin.py:93
 #, docstring
 msgid ""
 "Convert a number from any base, 2 through 36, to any other\n"
 "        base, 2 through 36. Returns a string."
 msgstr ""
 
-#: plugin.py:157
+#: plugin.py:167
 #, docstring
 msgid ""
 "<math expression>\n"
@@ -54,27 +54,31 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:166 plugin.py:220
+#: plugin.py:178
+msgid "There's no reason you should have fancy non-ASCII characters in your mathematical expression. Please remove them."
+msgstr ""
+
+#: plugin.py:183 plugin.py:237
 msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
 msgstr ""
 
-#: plugin.py:172 plugin.py:228
+#: plugin.py:189 plugin.py:245
 msgid "You can't use lambda in this command."
 msgstr ""
 
-#: plugin.py:202 plugin.py:236
+#: plugin.py:219 plugin.py:253
 msgid "The answer exceeded %s or so."
 msgstr ""
 
-#: plugin.py:204 plugin.py:238
+#: plugin.py:221 plugin.py:255
 msgid "Something in there wasn't a valid number."
 msgstr ""
 
-#: plugin.py:206 plugin.py:240
+#: plugin.py:223 plugin.py:257
 msgid "%s is not a defined function."
 msgstr ""
 
-#: plugin.py:213
+#: plugin.py:230
 #, docstring
 msgid ""
 "<math expression>\n"
@@ -85,7 +89,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:250
+#: plugin.py:267
 #, docstring
 msgid ""
 "<rpn math expression>\n"
@@ -94,19 +98,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:275
+#: plugin.py:292
 msgid "Not enough arguments for %s"
 msgstr ""
 
-#: plugin.py:288
+#: plugin.py:305
 msgid "%q is not a defined function."
 msgstr ""
 
-#: plugin.py:295
+#: plugin.py:312
 msgid "Stack: [%s]"
 msgstr ""
 
-#: plugin.py:299
+#: plugin.py:316
 #, docstring
 msgid ""
 "[<number>] <unit> to <other unit>\n"
@@ -116,7 +120,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:314
+#: plugin.py:346
 #, docstring
 msgid ""
 " [<type>]\n"

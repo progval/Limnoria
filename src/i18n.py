@@ -37,6 +37,7 @@ import os
 import re
 import sys
 import time
+import weakref
 import threading
 conf = None
 # Don't import conf here ; because conf needs this module
@@ -107,9 +108,9 @@ def getLocalePath(name, localeName, extension):
     directory = os.path.join(base, 'locales')
     return '%s/%s.%s' % (directory, localeName, extension)
 
-i18nClasses = {}
-internationalizedCommands = {}
-internationalizedFunctions = [] # No need to know there name
+i18nClasses = weakref.WeakValueDictionary()
+internationalizedCommands = weakref.WeakValueDictionary()
+internationalizedFunctions = [] # No need to know their name
 
 def reloadLocalesIfRequired():
     global currentLocale
@@ -120,12 +121,63 @@ def reloadLocalesIfRequired():
         reloadLocales()
 
 def reloadLocales():
-    for pluginName in i18nClasses:
-        i18nClasses[pluginName].loadLocale()
+    for pluginClass in i18nClasses.values():
+        pluginClass.loadLocale()
     for command in internationalizedCommands.values():
         internationalizeDocstring(command)
     for function in internationalizedFunctions:
         function.loadLocale()
+
+def parse(translationFile):
+    step = WAITING_FOR_MSGID
+    translations = set()
+    for line in translationFile:
+        line = line[0:-1] # Remove the ending \n
+        line = line
+
+        if line.startswith(MSGID):
+            # Don't check if step is WAITING_FOR_MSGID
+            untranslated = ''
+            translated = ''
+            data = line[len(MSGID):-1]
+            if len(data) == 0: # Multiline mode
+                step = IN_MSGID
+            else:
+                untranslated += data
+                step = WAITING_FOR_MSGSTR
+
+
+        elif step is IN_MSGID and line.startswith('"') and \
+                                  line.endswith('"'):
+            untranslated += line[1:-1]
+        elif step is IN_MSGID and untranslated == '': # Empty MSGID
+            step = WAITING_FOR_MSGID
+        elif step is IN_MSGID: # the MSGID is finished
+            step = WAITING_FOR_MSGSTR
+
+
+        if step is WAITING_FOR_MSGSTR and line.startswith(MSGSTR):
+            data = line[len(MSGSTR):-1]
+            if len(data) == 0: # Multiline mode
+                step = IN_MSGSTR
+            else:
+                translations |= {(untranslated, data)}
+                step = WAITING_FOR_MSGID
+
+
+        elif step is IN_MSGSTR and line.startswith('"') and \
+                                   line.endswith('"'):
+            translated += line[1:-1]
+        elif step is IN_MSGSTR: # the MSGSTR is finished
+            step = WAITING_FOR_MSGID
+            if translated == '':
+                translated = untranslated
+            translations |= {(untranslated, data)}
+    if step is IN_MSGSTR:
+        if translated == '':
+            translated = untranslated
+        translations |= {(untranslated, data)}
+    return translations
 
 
 i18nSupybot = None
@@ -172,54 +224,9 @@ class _PluginInternationalization:
         """A .po files parser.
 
         Give it a file object."""
-        step = WAITING_FOR_MSGID
         self.translations = {}
-        for line in translationFile:
-            line = line[0:-1] # Remove the ending \n
-            line = line
-
-            if line.startswith(MSGID):
-                # Don't check if step is WAITING_FOR_MSGID
-                untranslated = ''
-                translated = ''
-                data = line[len(MSGID):-1]
-                if len(data) == 0: # Multiline mode
-                    step = IN_MSGID
-                else:
-                    untranslated += data
-                    step = WAITING_FOR_MSGSTR
-
-
-            elif step is IN_MSGID and line.startswith('"') and \
-                                      line.endswith('"'):
-                untranslated += line[1:-1]
-            elif step is IN_MSGID and untranslated == '': # Empty MSGID
-                step = WAITING_FOR_MSGID
-            elif step is IN_MSGID: # the MSGID is finished
-                step = WAITING_FOR_MSGSTR
-
-
-            if step is WAITING_FOR_MSGSTR and line.startswith(MSGSTR):
-                data = line[len(MSGSTR):-1]
-                if len(data) == 0: # Multiline mode
-                    step = IN_MSGSTR
-                else:
-                    self._addToDatabase(untranslated, data)
-                    step = WAITING_FOR_MSGID
-
-
-            elif step is IN_MSGSTR and line.startswith('"') and \
-                                       line.endswith('"'):
-                translated += line[1:-1]
-            elif step is IN_MSGSTR: # the MSGSTR is finished
-                step = WAITING_FOR_MSGID
-                if translated == '':
-                    translated = untranslated
-                self._addToDatabase(untranslated, translated)
-        if step is IN_MSGSTR:
-            if translated == '':
-                translated = untranslated
-            self._addToDatabase(untranslated, translated)
+        for translation in parse(translationFile):
+            self._addToDatabase(*translation)
 
     def _addToDatabase(self, untranslated, translated):
         untranslated = self._unescape(untranslated, True)
@@ -239,11 +246,10 @@ class _PluginInternationalization:
         """Main function.
 
         This is the function which is called when a plugin runs _()"""
-        if untranslated.__class__ == internationalizedString:
+        if untranslated.__class__ is InternationalizedString:
             return untranslated._original
         escapedUntranslated = self._unescape(untranslated, True)
         untranslated = self._unescape(untranslated, False)
-        reloadLocalesIfRequired()
         try:
             string = self._translate(escapedUntranslated)
             return self._addTracker(string, untranslated)
@@ -255,7 +261,7 @@ class _PluginInternationalization:
         """Translate the string.
 
         C the string internationalizer if any; else, use the local database"""
-        if string.__class__ == internationalizedString:
+        if string.__class__ == InternationalizedString:
             return string._internationalizer(string.untranslated)
         else:
             return self.translations[string]
@@ -263,10 +269,10 @@ class _PluginInternationalization:
     def _addTracker(self, string, untranslated):
         """Add a kind of 'tracker' on the string, in order to keep the
         untranslated string (used when changing the locale)"""
-        if string.__class__ == internationalizedString:
+        if string.__class__ == InternationalizedString:
             return string
         else:
-            string = internationalizedString(string)
+            string = InternationalizedString(string)
             string._original = untranslated
             string._internationalizer = self
             return string
@@ -300,7 +306,7 @@ class _PluginInternationalization:
     def localizeFunction(self, name):
         """Returns the localized version of the function.
 
-        Should be used only by the internationalizedFunction class"""
+        Should be used only by the InternationalizedFunction class"""
         if self.name != 'supybot':
             return
         if hasattr(self, '_l10nFunctions') and \
@@ -318,12 +324,12 @@ class _PluginInternationalization:
                 self._parent = parent
                 self._name = name
             def __call__(self, obj):
-                obj = internationalizedFunction(self._parent, self._name, obj)
+                obj = InternationalizedFunction(self._parent, self._name, obj)
                 obj.loadLocale()
                 return obj
         return FunctionInternationalizer(self, name)
 
-class internationalizedFunction:
+class InternationalizedFunction:
     """Proxy for functions that need to be fully localized.
 
     The localization code is in locales/LOCALE.py"""
@@ -342,7 +348,7 @@ class internationalizedFunction:
     def __call__(self, *args, **kwargs):
         return self._origin(*args, **kwargs)
 
-class internationalizedString(str):
+class InternationalizedString(str):
     """Simple subclass to str, that allow to add attributes. Also used to
     know if a string is already localized"""
     pass

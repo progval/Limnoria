@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,7 +93,7 @@ msgid ""
 "    'off' - no filtering"
 msgstr ""
 
-#: plugin.py:83
+#: plugin.py:84
 #, docstring
 msgid ""
 "Perform a search using Google's AJAX API.\n"
@@ -107,15 +107,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:122 plugin.py:188
+#: plugin.py:123 plugin.py:189
 msgid "We broke The Google!"
 msgstr ""
 
-#: plugin.py:147
+#: plugin.py:148
 msgid "No matches found."
 msgstr ""
 
-#: plugin.py:155
+#: plugin.py:156
 #, docstring
 msgid ""
 "[--snippet] <search>\n"
@@ -125,11 +125,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:172
+#: plugin.py:173
 msgid "Google found nothing."
 msgstr ""
 
-#: plugin.py:177
+#: plugin.py:178
 #, docstring
 msgid ""
 "<search> [--{filter,language} <value>]\n"
@@ -140,7 +140,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:205
+#: plugin.py:206
 #, docstring
 msgid ""
 "<url>\n"
@@ -149,11 +149,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:216
+#: plugin.py:217
 msgid "Google seems to have no cache for that site."
 msgstr ""
 
-#: plugin.py:221
+#: plugin.py:222
 #, docstring
 msgid ""
 "<search string> <search string> [<search string> ...]\n"
@@ -163,7 +163,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:244
+#: plugin.py:245
 #, docstring
 msgid ""
 "<source language> [to] <target language> <text>\n"
@@ -173,12 +173,12 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:280
+#: plugin.py:283
 #, docstring
 msgid "^google\\s+(.*)$"
 msgstr ""
 
-#: plugin.py:311
+#: plugin.py:310
 #, docstring
 msgid ""
 "<expression>\n"
@@ -187,11 +187,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:347
-msgid "Google says: Error: %s."
-msgstr ""
-
-#: plugin.py:354
+#: plugin.py:345
 #, docstring
 msgid ""
 "<phone number>\n"
@@ -200,7 +196,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:371
+#: plugin.py:362
 msgid "Google's phonebook didn't come up with anything."
 msgstr ""
 

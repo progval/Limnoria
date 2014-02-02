@@ -1,44 +1,48 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-06-28 19:37+CEST\n"
+"POT-Creation-Date: 2014-01-22 13:46+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
-"Language-Team: Supybot-fr <progval@gmail.com>\n"
-"Language: \n"
+"Last-Translator: \n"
+"Language-Team: Limnoria <progval@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Français\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: fr\n"
 
-#: plugin.py:64
+#: plugin.py:57
 msgid ""
 "Add the help for \"@plugin help Conditional\" here\n"
 "    This should describe *how* to use this plugin."
 msgstr ""
 
-#: plugin.py:71
+#: plugin.py:64
 msgid "Run a command from message, as if command was sent over IRC."
-msgstr ""
+msgstr "."
 
-#: plugin.py:80
+#: plugin.py:73
 msgid ""
 "<condition> <ifcommand> <elsecommand>\n"
 "\n"
-"        Runs <ifcommand> if <condition> evaluates to true, runs <elsecommand>\n"
+"        Runs <ifcommand> if <condition> evaluates to true, runs "
+"<elsecommand>\n"
 "        if it evaluates to false.\n"
 "\n"
-"        Use other logical operators defined in this plugin and command nesting\n"
+"        Use other logical operators defined in this plugin and command "
+"nesting\n"
 "        to your advantage here.\n"
 "        "
 msgstr ""
 "<condition> <commande1> <commande2>\n"
 "\n"
-"Exécute la <commande1> si la <condition> est évaluée à true, lance la <commande2> si elle est évaluée à false. Utilisez d'autres opérateurs logiques définis dans ce plugin et l'imbrication de commandes à votre avantage."
+"Exécute la <commande1> si la <condition> est évaluée à true, lance la "
+"<commande2> si elle est évaluée à false. Utilisez d'autres opérateurs "
+"logiques définis dans ce plugin et l'imbrication de commandes à votre "
+"avantage."
 
-#: plugin.py:97
+#: plugin.py:90
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -49,7 +53,7 @@ msgstr ""
 "\n"
 "Retourne True si toutes les conditions sont évaluées à true."
 
-#: plugin.py:109
+#: plugin.py:102
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -60,7 +64,7 @@ msgstr ""
 "\n"
 "Retourne True si une au moins des conditions est évaluée à true."
 
-#: plugin.py:121
+#: plugin.py:114
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -71,7 +75,7 @@ msgstr ""
 "\n"
 "Retourne True si une seule des conditions est évaluée à true."
 
-#: plugin.py:133
+#: plugin.py:126
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -81,9 +85,10 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true si ils sont égaux."
+"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true "
+"si ils sont égaux."
 
-#: plugin.py:146
+#: plugin.py:139
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -93,9 +98,10 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true si ils sont inégaux."
+"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true "
+"si ils sont inégaux."
 
-#: plugin.py:159
+#: plugin.py:152
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -105,9 +111,10 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true si <élément1> est plus grand que <élément2>"
+"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true "
+"si <élément1> est plus grand que <élément2>"
 
-#: plugin.py:172
+#: plugin.py:165
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -117,9 +124,10 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true si <élément1> est plus grand ou égal à <élément2>"
+"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true "
+"si <élément1> est plus grand ou égal à <élément2>"
 
-#: plugin.py:185
+#: plugin.py:178
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -129,9 +137,10 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true si <élément1> est plus petit que <élément2>"
+"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true "
+"si <élément1> est plus petit que <élément2>"
 
-#: plugin.py:198
+#: plugin.py:191
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -141,19 +150,24 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true si <élément1> est plus petit ou égal à <élément2>"
+"Fait une comparaison de chaîne entre <élément1> et <élément2>. Retourne true "
+"si <élément1> est plus petit ou égal à <élément2>"
 
-#: plugin.py:211
+#: plugin.py:204
 msgid ""
-"<item1> <item2>\n"
+"[--case-insensitive] <item1> <item2>\n"
 "\n"
 "        Determines if <item1> is a substring of <item2>.\n"
 "        Returns true if <item1> is contained in <item2>.\n"
+"\n"
+"        Will only match case if --case-insensitive is not given.\n"
 "        "
 msgstr ""
-"<élément1> <élément2>\n"
+"[--case-insensitive] <élément1> <élément2>\n"
 "\n"
-"Détermine si <élément1> est une sous-chaîne de <élément2>. Retourne true si <élément1> est contenu dans <élément2>"
+"Détermine si <élément1> est une sous-chaîne de <élément2>. Retourne true si "
+"<élément1> est contenu dans <élément2>.Ne prendra la casse en compte que si "
+"--case-insensitive n’est pas donné."
 
 #: plugin.py:224
 msgid ""
@@ -165,7 +179,8 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true si ils sont égaux."
+"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true "
+"si ils sont égaux."
 
 #: plugin.py:237
 msgid ""
@@ -177,7 +192,8 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true si ils sont inégaux."
+"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true "
+"si ils sont inégaux."
 
 #: plugin.py:250
 msgid ""
@@ -189,7 +205,8 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true si <élément1> est plus grand que <élément2>"
+"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true "
+"si <élément1> est plus grand que <élément2>"
 
 #: plugin.py:263
 msgid ""
@@ -201,7 +218,8 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true si <élément1> est plus grand ou égal à <élément2>"
+"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true "
+"si <élément1> est plus grand ou égal à <élément2>"
 
 #: plugin.py:276
 msgid ""
@@ -213,7 +231,8 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true si <élément1> est plus petit que <élément2>"
+"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true "
+"si <élément1> est plus petit que <élément2>"
 
 #: plugin.py:289
 msgid ""
@@ -225,5 +244,5 @@ msgid ""
 msgstr ""
 "<élément1> <élément2>\n"
 "\n"
-"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true si <élément1> est plus petit ou égal à <élément2>"
-
+"Fait une comparaison numérique entre <élément1> et <élément2>. Retourne true "
+"si <élément1> est plus petit ou égal à <élément2>"

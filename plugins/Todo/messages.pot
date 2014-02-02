@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,7 @@ msgstr ""
 msgid "%s todo for %s: %s (Added at %s)"
 msgstr ""
 
-#: plugin.py:183 plugin.py:266 plugin.py:280
+#: plugin.py:183 plugin.py:267 plugin.py:281
 msgid "task id"
 msgstr ""
 
@@ -115,11 +115,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:252
+#: plugin.py:253
 msgid "No tasks matched that query."
 msgstr ""
 
-#: plugin.py:258
+#: plugin.py:259
 #, docstring
 msgid ""
 "<id> <priority>\n"
@@ -128,7 +128,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:272
+#: plugin.py:273
 #, docstring
 msgid ""
 "<task id> <regexp>\n"

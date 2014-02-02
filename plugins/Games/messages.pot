@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:46
+#: plugin.py:47
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -24,15 +24,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:51
+#: plugin.py:52
 msgid "heads"
 msgstr ""
 
-#: plugin.py:53
+#: plugin.py:54
 msgid "tails"
 msgstr ""
 
-#: plugin.py:58
+#: plugin.py:59
 #, docstring
 msgid ""
 "<dice>d<sides>\n"
@@ -43,35 +43,35 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:66
+#: plugin.py:67
 msgid "You can't roll more than 1000 dice."
 msgstr ""
 
-#: plugin.py:68
+#: plugin.py:69
 msgid "Dice can't have more than 100 sides."
 msgstr ""
 
-#: plugin.py:70
+#: plugin.py:71
 msgid "Dice can't have fewer than 3 sides."
 msgstr ""
 
-#: plugin.py:78
+#: plugin.py:79
 msgid "Dice must be of the form <dice>d<sides>"
 msgstr ""
 
-#: plugin.py:82
+#: plugin.py:83
 msgid "It is possible.|Yes!|Of course.|Naturally.|Obviously.|It shall be.|The outlook is good.|It is so.|One would be wise to think so.|The answer is certainly yes."
 msgstr ""
 
-#: plugin.py:86
+#: plugin.py:87
 msgid "In your dreams.|I doubt it very much.|No chance.|The outlook is poor.|Unlikely.|About as likely as pigs flying.|You're kidding, right?|NO!|NO.|No.|The answer is a resounding no."
 msgstr ""
 
-#: plugin.py:90
+#: plugin.py:91
 msgid "Maybe...|No clue.|_I_ don't know.|The outlook is hazy, please ask again later.|What are you asking me for?|Come again?|You know the answer better than I.|The answer is def-- oooh! shiny thing!"
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:108
 #, docstring
 msgid ""
 "[<question>]\n"
@@ -80,7 +80,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:121
+#: plugin.py:122
 #, docstring
 msgid ""
 "[spin]\n"
@@ -90,23 +90,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:128
+#: plugin.py:129
 msgid "*SPIN* Are you feeling lucky?"
 msgstr ""
 
-#: plugin.py:137
+#: plugin.py:139
 msgid "*BANG* Hey, who put a blank in here?!"
 msgstr ""
 
-#: plugin.py:139
+#: plugin.py:141
 msgid "reloads and spins the chambers."
 msgstr ""
 
-#: plugin.py:141
+#: plugin.py:143
 msgid "*click*"
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:150
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -118,11 +118,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:167
+#: plugin.py:169
 msgid "Your current monologue is at least %n long."
 msgstr ""
 
-#: plugin.py:168
+#: plugin.py:170
 msgid "line"
 msgstr ""
 

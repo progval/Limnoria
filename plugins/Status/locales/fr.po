@@ -1,37 +1,41 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2014-01-21 22:33+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
-"Language-Team: Supybot-fr <progval@gmail.com>\n"
-"Language: \n"
+"Last-Translator: \n"
+"Language-Team: Limnoria <progval@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Français\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: fr\n"
 
 #: config.py:46
 msgid ""
 "Determines whether the cpu command will list\n"
 "    the time taken by children as well as the bot's process."
-msgstr "Détermine si la commande cpu listera le temps pris par les enfants aussi bien que celui du processus du bot."
+msgstr ""
+"Détermine si la commande cpu listera le temps pris par les enfants aussi "
+"bien que celui du processus du bot."
 
 #: config.py:49
 msgid ""
 "Determines whether the cpu command will\n"
 "    provide the number of threads spawned and active."
-msgstr "Détermine si la commande cpu donnera le nombre de threads lancés et actifs."
+msgstr ""
+"Détermine si la commande cpu donnera le nombre de threads lancés et actifs."
 
 #: config.py:52
 msgid ""
 "Determines whether the cpu command will report\n"
 "    the amount of memory being used by the bot."
-msgstr "Détermine si la commande cpu donnera la quantité de mémoire utilisée par le bot."
+msgstr ""
+"Détermine si la commande cpu donnera la quantité de mémoire utilisée par le "
+"bot."
 
-#: plugin.py:71
+#: plugin.py:72
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -42,19 +46,19 @@ msgstr ""
 "\n"
 "Retourne le status du bot."
 
-#: plugin.py:80
+#: plugin.py:81
 msgid "%s as %L"
 msgstr "%s en tant que %L"
 
-#: plugin.py:81
+#: plugin.py:82
 msgid "I am connected to %L."
 msgstr "Je suis connecté à %L"
 
-#: plugin.py:83
+#: plugin.py:84
 msgid "I am currently in code profiling mode."
 msgstr "Je suis actuellement en mode de profiling du code."
 
-#: plugin.py:89
+#: plugin.py:90
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -65,11 +69,24 @@ msgstr ""
 "\n"
 "Retourne les threads actifs."
 
-#: plugin.py:95
+#: plugin.py:96
 msgid "I have spawned %n; %n %b still currently active: %L."
 msgstr "J'ai lancé %n ; %n %b encore actuellement en vie : %L."
 
 #: plugin.py:103
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the number of processes that have been spawned, and list of\n"
+"        ones that are still active.\n"
+"        "
+msgstr ""
+"ne prend pas d'argument\n"
+"\n"
+"Retourne le nombre de processus qui ont été lancés, et la liste de ceux qui "
+"sont encore actifs."
+
+#: plugin.py:118
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -80,15 +97,19 @@ msgstr ""
 "\n"
 "Retourne quelques statistiques intéressantes liées au réseau."
 
-#: plugin.py:111
+#: plugin.py:126
 msgid "an indeterminate amount of time"
 msgstr "une durée indéterminée"
 
-#: plugin.py:112
-msgid "I have received %s messages for a total of %S.  I have sent %s messages for a total of %S.  I have been connected to %s for %s."
-msgstr "J'ai reçu %s message pour un total de %S. J'ai envoyé %s messages pour un total de %S. J'ai été connecté à %s pendant %s."
+#: plugin.py:127
+msgid ""
+"I have received %s messages for a total of %S.  I have sent %s messages for "
+"a total of %S.  I have been connected to %s for %s."
+msgstr ""
+"J'ai reçu %s message pour un total de %S. J'ai envoyé %s messages pour un "
+"total de %S. J'ai été connecté à %s pendant %s."
 
-#: plugin.py:121
+#: plugin.py:136
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -99,23 +120,31 @@ msgstr ""
 "\n"
 "Retourne quelques statistiques intéressantes reliées au CPU."
 
-#: plugin.py:131
-msgid "My children have taken %.2f seconds of user time and %.2f seconds of system time for a total of %.2f seconds of CPU time."
-msgstr "Mes enfants ont pris %.2f secondes du temps utilisateur et %.2f secondes du temps système, pour un total de %.2f secondes de temps CPU."
+#: plugin.py:146
+msgid ""
+"My children have taken %.2f seconds of user time and %.2f seconds of system "
+"time for a total of %.2f seconds of CPU time."
+msgstr ""
+"Mes enfants ont pris %.2f secondes du temps utilisateur et %.2f secondes du "
+"temps système, pour un total de %.2f secondes de temps CPU."
 
-#: plugin.py:138
-msgid "I have taken %.2f seconds of user time and %.2f seconds of system time, for a total of %.2f seconds of CPU time.  %s"
-msgstr "J'ai pris %.2f secondes du temps utilisateur et %.2f secondes du temps système, pour un total de %.2f secondes de temps CPU. %s"
+#: plugin.py:153
+msgid ""
+"I have taken %.2f seconds of user time and %.2f seconds of system time, for "
+"a total of %.2f seconds of CPU time.  %s"
+msgstr ""
+"J'ai pris %.2f secondes du temps utilisateur et %.2f secondes du temps "
+"système, pour un total de %.2f secondes de temps CPU. %s"
 
-#: plugin.py:160
+#: plugin.py:175
 msgid "Unable to run ps command."
 msgstr "Impossible de lancer la commande ps."
 
-#: plugin.py:166
+#: plugin.py:181
 msgid "  I'm taking up %S of memory."
 msgstr " Je prend plus de %S de mémoire."
 
-#: plugin.py:175
+#: plugin.py:190
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -126,11 +155,11 @@ msgstr ""
 "\n"
 "Retourne quelques statistiques intéressantes liées aux commandes."
 
-#: plugin.py:185
+#: plugin.py:200
 msgid "I offer a total of %n in %n.  I have processed %n."
 msgstr "J'offre un total de %n dans %n plugins. J'ai géré %n."
 
-#: plugin.py:194
+#: plugin.py:209
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -141,7 +170,7 @@ msgstr ""
 "\n"
 "Retourne une liste des commandes offertes par le bot."
 
-#: plugin.py:208
+#: plugin.py:223
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -152,11 +181,11 @@ msgstr ""
 "\n"
 "Retourne la durée durant laquelle le bot est lancée."
 
-#: plugin.py:212
+#: plugin.py:227
 msgid "I have been running for %s."
 msgstr "Je suis lancé depuis %s."
 
-#: plugin.py:219
+#: plugin.py:234
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -167,7 +196,7 @@ msgstr ""
 "\n"
 "Retourne le(s) serveur(s) sur le(s)quel(s) le bot est."
 
-#: plugin.py:228
+#: plugin.py:243
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -177,4 +206,3 @@ msgstr ""
 "ne prend pas d'argument\n"
 "\n"
 "Retourne le(s) serveur(s) sur le(s)quel(s) le bot est."
-

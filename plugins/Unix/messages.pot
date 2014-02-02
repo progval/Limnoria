@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-04-15 18:47+EEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,7 +80,7 @@ msgid ""
 "    command will be called for the wtf command."
 msgstr ""
 
-#: plugin.py:75
+#: plugin.py:76
 #, docstring
 msgid ""
 "<error number or code>\n"
@@ -89,19 +89,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:87
+#: plugin.py:88
 msgid "I can't find the errno number for that code."
 msgstr ""
 
-#: plugin.py:90
+#: plugin.py:91
 msgid "(unknown)"
 msgstr ""
 
-#: plugin.py:91
+#: plugin.py:92
 msgid "%s (#%i): %s"
 msgstr ""
 
-#: plugin.py:96
+#: plugin.py:97
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -110,7 +110,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:104
+#: plugin.py:105
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -119,7 +119,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:115
 #, docstring
 msgid ""
 "<password> [<salt>]\n"
@@ -131,7 +131,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:133
+#: plugin.py:134
 #, docstring
 msgid ""
 "<word>\n"
@@ -142,35 +142,35 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:142
+#: plugin.py:143
 msgid "The spell checking command is not configured.  If one is installed, reconfigure supybot.plugins.Unix.spell.command appropriately."
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:149
 msgid "<word> must begin with an alphabet character."
 msgstr ""
 
-#: plugin.py:170
+#: plugin.py:171
 msgid "No results found."
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:182
 msgid "%q may be spelled correctly."
 msgstr ""
 
-#: plugin.py:183
+#: plugin.py:184
 msgid "I could not find an alternate spelling for %q"
 msgstr ""
 
-#: plugin.py:187
+#: plugin.py:188
 msgid "Possible spellings for %q: %L."
 msgstr ""
 
-#: plugin.py:190
+#: plugin.py:191
 msgid "Something unexpected was seen in the [ai]spell output."
 msgstr ""
 
-#: plugin.py:196
+#: plugin.py:197
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -179,15 +179,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:217
+#: plugin.py:218
 msgid "It seems the configured fortune command was not available."
 msgstr ""
 
-#: plugin.py:226
+#: plugin.py:227
 msgid "The fortune command is not configured. If fortune is installed on this system, reconfigure the supybot.plugins.Unix.fortune.command configuration variable appropriately."
 msgstr ""
 
-#: plugin.py:233
+#: plugin.py:234
 #, docstring
 msgid ""
 "[is] <something>\n"
@@ -198,15 +198,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:249
 msgid "It seems the configured wtf command was not available."
 msgstr ""
 
-#: plugin.py:257
+#: plugin.py:258
 msgid "The wtf command is not configured.  If it is installed on this system, reconfigure the supybot.plugins.Unix.wtf.command configuration variable appropriately."
 msgstr ""
 
-#: plugin.py:265
+#: plugin.py:266
 #, docstring
 msgid ""
 "[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>\n"
@@ -217,7 +217,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:317
+#: plugin.py:318
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -226,7 +226,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:345
+#: plugin.py:346
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -235,7 +235,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:373
+#: plugin.py:374
 #, docstring
 msgid ""
 "<command to call with any arguments> \n"

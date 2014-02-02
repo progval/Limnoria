@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-06-09 18:26+CEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgid ""
 "    messages to other users."
 msgstr ""
 
-#: plugin.py:40
+#: plugin.py:41
 #, docstring
 msgid ""
 "This plugin allows users to act through the bot anonymously.  The 'do'\n"
@@ -58,23 +58,23 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:64
+#: plugin.py:65
 msgid "You must be in %s to %q in there."
 msgstr ""
 
-#: plugin.py:68
+#: plugin.py:69
 msgid "I'm lobotomized in %s."
 msgstr ""
 
-#: plugin.py:71
+#: plugin.py:72
 msgid "That channel has set its capabilities so as to disallow the use of this plugin."
 msgstr ""
 
-#: plugin.py:74
+#: plugin.py:75
 msgid "%q cannot be used to send private messages."
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:81
 #, docstring
 msgid ""
 "<channel|nick> <text>\n"
@@ -84,7 +84,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:94
+#: plugin.py:95
 #, docstring
 msgid ""
 "<channel> <action>\n"

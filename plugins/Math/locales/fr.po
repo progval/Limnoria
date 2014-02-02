@@ -1,19 +1,18 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2010-10-17 15:35+CEST\n"
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2014-01-21 19:30+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
-"Language-Team: Supybot-fr <progval@gmail.com>\n"
-"Language: \n"
+"Last-Translator: \n"
+"Language-Team: Limnoria <progval@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Français\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: fr\n"
 
-#: plugin.py:52
+#: plugin.py:55
 msgid ""
 "<fromBase> [<toBase>] <number>\n"
 "\n"
@@ -23,63 +22,80 @@ msgid ""
 msgstr ""
 "<base 1> [<base 2>] <nombre>\n"
 "\n"
-"Converti le nombre d'une base à l'autre. La seconde base est la décimale par défaut."
+"Converti le nombre d'une base à l'autre. La seconde base est la décimale par "
+"défaut."
 
-#: plugin.py:63
+#: plugin.py:66
 msgid "Invalid <number> for base %s: %s"
 msgstr "Nombre invalide pour la base %s : %s"
 
-#: plugin.py:69
+#: plugin.py:72
 msgid "Convert a decimal number to another base; returns a string."
 msgstr "Converti un nombre décimal dans une autre base, retourne une chaîne."
 
-#: plugin.py:90
+#: plugin.py:93
 msgid ""
 "Convert a number from any base, 2 through 36, to any other\n"
 "        base, 2 through 36. Returns a string."
-msgstr "Convertir un nombre de n'importe quelle base, de 2 à 36, à n'importe quelle base, de 2 à 36."
+msgstr ""
+"Convertir un nombre de n'importe quelle base, de 2 à 36, à n'importe quelle "
+"base, de 2 à 36."
 
-#: plugin.py:157
+#: plugin.py:167
 msgid ""
 "<math expression>\n"
 "\n"
-"        Returns the value of the evaluated <math expression>.  The syntax is\n"
+"        Returns the value of the evaluated <math expression>.  The syntax "
+"is\n"
 "        Python syntax; the type of arithmetic is floating point.  Floating\n"
-"        point arithmetic is used in order to prevent a user from being able to\n"
-"        crash to the bot with something like '10**10**10**10'.  One consequence\n"
+"        point arithmetic is used in order to prevent a user from being able "
+"to\n"
+"        crash to the bot with something like '10**10**10**10'.  One "
+"consequence\n"
 "        is that large values such as '10**24' might not be exact.\n"
 "        "
 msgstr ""
 "<expression mathématique>\n"
 "\n"
-"Retourne la valeur de l'<expression mathématique> évaluée. La syntaxe est celle de Python ; le calcul est à virgule flottante. Les calculs à virgule flottante sont utilisés pour enmpêcher l'utilisateur de faire crasher le bot avec quelque chose du genre '10**10**10**10'. L'une des conséquences est que les grandes valeurs commandes '10**24' peuvent ne pas être exactes."
+"Retourne la valeur de l'<expression mathématique> évaluée. La syntaxe est "
+"celle de Python ; le calcul est à virgule flottante. Les calculs à virgule "
+"flottante sont utilisés pour enmpêcher l'utilisateur de faire crasher le bot "
+"avec quelque chose du genre '10**10**10**10'. L'une des conséquences est que "
+"les grandes valeurs commandes '10**24' peuvent ne pas être exactes."
 
-#: plugin.py:166
-#: plugin.py:220
-msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
-msgstr "Il n'y a aucune réelle raison que vous mettiez des underscores ou des crochets dans vos expressions mathématiques. Merci de les retirer."
+#: plugin.py:178
+msgid ""
+"There's no reason you should have fancy non-ASCII characters in your "
+"mathematical expression. Please remove them."
+msgstr ""
+"Il n'y a aucune réelle raison que vous mettiez des caractères non-ASCII dans "
+"vos expressions mathématiques. Merci de les retirer."
 
-#: plugin.py:172
-#: plugin.py:228
+#: plugin.py:183 plugin.py:237
+msgid ""
+"There's really no reason why you should have underscores or brackets in your "
+"mathematical expression.  Please remove them."
+msgstr ""
+"Il n'y a aucune réelle raison que vous mettiez des underscores ou des "
+"crochets dans vos expressions mathématiques. Merci de les retirer."
+
+#: plugin.py:189 plugin.py:245
 msgid "You can't use lambda in this command."
 msgstr "Vous ne pouvez utiliser lambda dans cette commande."
 
-#: plugin.py:202
-#: plugin.py:236
+#: plugin.py:219 plugin.py:253
 msgid "The answer exceeded %s or so."
 msgstr "La réponse dépasse %s."
 
-#: plugin.py:204
-#: plugin.py:238
+#: plugin.py:221 plugin.py:255
 msgid "Something in there wasn't a valid number."
 msgstr "Quelque chose là-dedans n'est pas un nombre valide"
 
-#: plugin.py:206
-#: plugin.py:240
+#: plugin.py:223 plugin.py:257
 msgid "%s is not a defined function."
 msgstr "%s n'est pas une fonction définie"
 
-#: plugin.py:213
+#: plugin.py:230
 msgid ""
 "<math expression>\n"
 "\n"
@@ -90,9 +106,11 @@ msgid ""
 msgstr ""
 "<expression mathématique>\n"
 "\n"
-"Cette commande est la même que la commande 'calc', excepté qu'elle utilise des mathématiques entières, ce qui peut causer une surconsommation de CPU de la part du bot. C'est pourquoi elle requiert la capacité 'trusted'."
+"Cette commande est la même que la commande 'calc', excepté qu'elle utilise "
+"des mathématiques entières, ce qui peut causer une surconsommation de CPU de "
+"la part du bot. C'est pourquoi elle requiert la capacité 'trusted'."
 
-#: plugin.py:250
+#: plugin.py:267
 msgid ""
 "<rpn math expression>\n"
 "\n"
@@ -103,19 +121,19 @@ msgstr ""
 "\n"
 "Retourne la valeur de l'expression mathématique NPI."
 
-#: plugin.py:275
+#: plugin.py:292
 msgid "Not enough arguments for %s"
 msgstr "Pas assez d'arguments pour %s."
 
-#: plugin.py:288
+#: plugin.py:305
 msgid "%q is not a defined function."
 msgstr "%q n'est pas une fonction définie."
 
-#: plugin.py:295
+#: plugin.py:312
 msgid "Stack: [%s]"
 msgstr "Pile : [%s]"
 
-#: plugin.py:299
+#: plugin.py:316
 msgid ""
 "[<number>] <unit> to <other unit>\n"
 "\n"
@@ -125,18 +143,23 @@ msgid ""
 msgstr ""
 "[<nombre>] <unité> to <autre unité>\n"
 "\n"
-"Convertit de l'<unité> à l'<autre unité>. Si le nombre n'est pas donné, il vaut 1 par défaut. Pour plus d'informations sur les unités, utilisez la commande 'units'."
+"Convertit de l'<unité> à l'<autre unité>. Si le nombre n'est pas donné, il "
+"vaut 1 par défaut. Pour plus d'informations sur les unités, utilisez la "
+"commande 'units'."
 
-#: plugin.py:314
+#: plugin.py:346
 msgid ""
 " [<type>]\n"
 "\n"
-"        With no arguments, returns a list of measurement types, which can be\n"
-"        passed as arguments. When called with a type as an argument, returns\n"
+"        With no arguments, returns a list of measurement types, which can "
+"be\n"
+"        passed as arguments. When called with a type as an argument, "
+"returns\n"
 "        the units of that type.\n"
 "        "
 msgstr ""
 "[<type>]\n"
 "\n"
-"Sans argument, retourne la liste des types de mesures, qui peuvent être passés en argument. Lors de l'appel avec un argument, retourne les unités de chaque type."
-
+"Sans argument, retourne la liste des types de mesures, qui peuvent être "
+"passés en argument. Lors de l'appel avec un argument, retourne les unités de "
+"chaque type."

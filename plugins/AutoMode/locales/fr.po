@@ -1,10 +1,10 @@
 # Valentin Lorentz <progval@progval.net>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2013-03-03 19:39+CET\n"
-"PO-Revision-Date: 2013-03-03 19:45+0100\n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2014-01-21 19:30+CET\n"
+"PO-Revision-Date: 2014-01-21 19:33+0100\n"
+"Last-Translator: \n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -30,6 +30,15 @@ msgstr ""
 
 #: config.py:52
 msgid ""
+"Determines whether the bot will\n"
+"    check for 'alternative capabilities' (ie. autoop, autohalfop,\n"
+"    autovoice) in addition to/instead of classic ones."
+msgstr ""
+"Détermine si le bot vérifiera les « capacités alternatives » (ie. autoop, "
+"autohalfop, autovoice) en plus/à la place des capacités classiques."
+
+#: config.py:56
+msgid ""
 "Determines whether the bot will \"fall\n"
 "    through\" to halfop/voicing when auto-opping is turned off but\n"
 "    auto-halfopping/voicing are turned on."
@@ -37,7 +46,7 @@ msgstr ""
 "Détermine si le bot ne halfopera/voicera pas lorsque l'auto-op est "
 "désactivé, même si l'auto-halfopvoice est activé."
 
-#: config.py:56
+#: config.py:60
 msgid ""
 "Determines whether the bot will automatically\n"
 "    op people with the <channel>,op capability when they join the channel.\n"
@@ -46,7 +55,7 @@ msgstr ""
 "Détermine si le bot opera automatiquement les gens qui ont la capacité "
 "<canal>,op lorsqu'ils rejoignent le canal."
 
-#: config.py:60
+#: config.py:64
 msgid ""
 "Determines whether the bot will automatically\n"
 "    halfop people with the <channel>,halfop capability when they join the\n"
@@ -55,7 +64,7 @@ msgstr ""
 "Détermine si le bot halfopera les gens qui ont la capacité <canal>,halfop "
 "lorsqu'ils rejoignent le canal."
 
-#: config.py:64
+#: config.py:68
 msgid ""
 "Determines whether the bot will automatically\n"
 "    voice people with the <channel>,voice capability when they join the\n"
@@ -64,7 +73,7 @@ msgstr ""
 "Détermine si le bot voicera automatiquement les gens avec la capacité "
 "<canal>,voice lorsqu'ils rejoingent le canal."
 
-#: config.py:68
+#: config.py:72
 msgid ""
 "Determines whether the bot will automatically\n"
 "    ban people who join the channel and are on the banlist."
@@ -72,7 +81,7 @@ msgstr ""
 "Détermine si le bot bannira automatiquement les personnes qui rejoignent le "
 "canal et qui sont sur la liste de bannissement."
 
-#: config.py:71
+#: config.py:75
 msgid ""
 "Determines how many seconds the bot\n"
 "    will automatically ban a person when banning."
@@ -80,7 +89,7 @@ msgstr ""
 "Détermine combien de secondes durera le bannissement que le bot posera sur "
 "une personne."
 
-#: config.py:75
+#: config.py:79
 msgid ""
 "Determines how many seconds the bot will wait\n"
 "    before applying a mode. Has no effect on bans."
@@ -88,7 +97,7 @@ msgstr ""
 "Détermine combien de secondes le bot attendra avant d'appliquer un mode. "
 "Cela n'a aucun effet sur les bannissements."
 
-#: config.py:79
+#: config.py:83
 msgid ""
 "Extra modes that will be\n"
 "    applied to a user. Example syntax: user1+o-v user2+v user3-v"
@@ -96,8 +105,8 @@ msgstr ""
 "Des modes supplémentaires à appliquer à un utilisateur. Par exemple : "
 "user1+o-v user2+v user3-v"
 
-#: plugin.py:64
+#: plugin.py:78
 msgid ""
 "Determines whether or not a mode has already\n"
-"                            been applied."
-msgstr ""
+"                        been applied."
+msgstr "Détermine si un mode a déjà été appliqué ou non."

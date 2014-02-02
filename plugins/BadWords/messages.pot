@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,21 +15,21 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:40
+#: config.py:42
 msgid "Would you like to add some bad words?"
 msgstr ""
 
-#: config.py:41
+#: config.py:43
 msgid "What words? (separate individual words by spaces)"
 msgstr ""
 
-#: config.py:53
+#: config.py:55
 msgid ""
 "Determines what words are\n"
 "    considered to be 'bad' so the bot won't say them."
 msgstr ""
 
-#: config.py:56
+#: config.py:58
 msgid ""
 "Determines whether the bot will require bad\n"
 "    words to be independent words, or whether it will censor them within other\n"
@@ -40,14 +40,14 @@ msgid ""
 "    plugin."
 msgstr ""
 
-#: config.py:73
+#: config.py:75
 msgid ""
 "Determines what characters will replace bad words; a\n"
 "    chunk of these characters matching the size of the replaced bad word will\n"
 "    be used to replace the bad words you've configured."
 msgstr ""
 
-#: config.py:81
+#: config.py:83
 msgid ""
 "Determines the manner in which\n"
 "    bad words will be replaced.  'nastyCharacters' (the default) will replace a\n"
@@ -58,13 +58,13 @@ msgid ""
 "    supybot.plugins.BadWords.simpleReplacement."
 msgstr ""
 
-#: config.py:89
+#: config.py:91
 msgid ""
 "Determines what word will replace bad\n"
 "    words if the replacement method is 'simple'."
 msgstr ""
 
-#: config.py:92
+#: config.py:94
 msgid ""
 "Determines whether the bot will strip\n"
 "    formatting characters from messages before it checks them for bad words.\n"
@@ -73,20 +73,20 @@ msgid ""
 "    plugins that do coloring or bolding of text."
 msgstr ""
 
-#: config.py:99
+#: config.py:101
 msgid ""
 "Determines whether the bot will kick people with\n"
 "    a warning when they use bad words."
 msgstr ""
 
-#: config.py:102
+#: config.py:104
 msgid ""
 "You have been kicked for using a word\n"
 "    prohibited in the presence of this bot.  Please use more appropriate\n"
 "    language in the future."
 msgstr ""
 
-#: config.py:104
+#: config.py:106
 msgid ""
 "Determines the kick message used by the\n"
 "    bot when kicking users for saying bad words."
@@ -100,7 +100,7 @@ msgid ""
 "    has op."
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:115
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -109,11 +109,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:124
+#: plugin.py:125
 msgid "I'm not currently censoring any bad words."
 msgstr ""
 
-#: plugin.py:129
+#: plugin.py:130
 #, docstring
 msgid ""
 "<word> [<word> ...]\n"
@@ -122,7 +122,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:141
+#: plugin.py:142
 #, docstring
 msgid ""
 "<word> [<word> ...]\n"

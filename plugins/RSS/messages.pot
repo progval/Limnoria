@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -121,7 +121,7 @@ msgid ""
 "    announced."
 msgstr ""
 
-#: plugin.py:63
+#: plugin.py:57
 #, docstring
 msgid ""
 "This plugin is useful both for announcing updates to RSS feeds in a\n"
@@ -130,12 +130,12 @@ msgid ""
 "    command to determine what feeds should be announced in a given channel."
 msgstr ""
 
-#: plugin.py:320
+#: plugin.py:325
 #, docstring
 msgid "Return feed items, sorted according to sortFeedItems."
 msgstr ""
 
-#: plugin.py:373
+#: plugin.py:378
 #, docstring
 msgid ""
 "<name> <url>\n"
@@ -145,7 +145,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:384
+#: plugin.py:389
 #, docstring
 msgid ""
 "<name>\n"
@@ -155,11 +155,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:390
+#: plugin.py:395
 msgid "That's not a valid RSS feed command name."
 msgstr ""
 
-#: plugin.py:401
+#: plugin.py:406
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -169,11 +169,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:408
+#: plugin.py:413
 msgid "I am currently not announcing any feeds."
 msgstr ""
 
-#: plugin.py:413
+#: plugin.py:418
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -185,7 +185,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:431
+#: plugin.py:436
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -197,7 +197,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:449
+#: plugin.py:454
 #, docstring
 msgid ""
 "<url> [<number of headlines>]\n"
@@ -207,11 +207,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:462
+#: plugin.py:467
 msgid "Couldn't get RSS feed."
 msgstr ""
 
-#: plugin.py:477
+#: plugin.py:482
 #, docstring
 msgid ""
 "<url|feed>\n"
@@ -221,11 +221,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:490
+#: plugin.py:495
 msgid "I couldn't retrieve that RSS feed."
 msgstr ""
 
-#: plugin.py:503
+#: plugin.py:508
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr ""
 

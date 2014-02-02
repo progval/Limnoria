@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:42
+#: plugin.py:43
 #, docstring
 msgid "Add the help for \"@help Internet\" here."
 msgstr ""
 
-#: plugin.py:46
+#: plugin.py:47
 #, docstring
 msgid ""
 "<host|ip>\n"
@@ -29,11 +29,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:53 plugin.py:60 plugin.py:64
+#: plugin.py:54 plugin.py:62
 msgid "Host not found."
 msgstr ""
 
-#: plugin.py:76
+#: plugin.py:74
 #, docstring
 msgid ""
 "<domain>\n"
@@ -42,39 +42,39 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:82
+#: plugin.py:80
 msgid "domain"
 msgstr ""
 
-#: plugin.py:111
+#: plugin.py:120
 msgid "updated %s"
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:123
 msgid "registered %s"
 msgstr ""
 
-#: plugin.py:117
+#: plugin.py:126
 msgid "expires %s"
 msgstr ""
 
-#: plugin.py:137
+#: plugin.py:146
 msgid " <registered at %s>"
 msgstr ""
 
-#: plugin.py:139
+#: plugin.py:148
 msgid " <registered by %s>"
 msgstr ""
 
-#: plugin.py:144
+#: plugin.py:153
 msgid "%s%s is %L."
 msgstr ""
 
-#: plugin.py:147
+#: plugin.py:156
 msgid "I couldn't find such a domain."
 msgstr ""
 
-#: plugin.py:152
+#: plugin.py:161
 #, docstring
 msgid ""
 "<ip>\n"

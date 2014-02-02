@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:273
+#: plugin.py:274
 #, docstring
 msgid ""
 "<text>\n"
@@ -25,7 +25,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:283
+#: plugin.py:284
 #, docstring
 msgid ""
 "<text>\n"
@@ -35,7 +35,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:298
+#: plugin.py:299
 #, docstring
 msgid ""
 "[--remove] <command> [<plugin>]\n"
@@ -47,7 +47,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:336
+#: plugin.py:337
 #, docstring
 msgid ""
 "<string to be sent to the server>\n"
@@ -56,7 +56,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:350
+#: plugin.py:351
 #, docstring
 msgid ""
 "[<text>]\n"
@@ -67,7 +67,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:366
+#: plugin.py:367
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -77,7 +77,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:376
+#: plugin.py:377
 #, docstring
 msgid ""
 "[<level>]\n"
@@ -89,7 +89,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:415
+#: plugin.py:416
 #, docstring
 msgid ""
 "[--deprecated] <plugin>\n"
@@ -101,7 +101,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:450
+#: plugin.py:451
 #, docstring
 msgid ""
 "<plugin>\n"
@@ -111,7 +111,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:479
+#: plugin.py:482
 #, docstring
 msgid ""
 "<plugin>\n"
@@ -122,7 +122,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:503
+#: plugin.py:506
 #, docstring
 msgid ""
 "{add|remove} <capability>\n"
@@ -133,7 +133,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:528
+#: plugin.py:531
 #, docstring
 msgid ""
 "[<plugin>] <command>\n"
@@ -146,7 +146,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:555
+#: plugin.py:558
 #, docstring
 msgid ""
 "[<plugin>] <command>\n"
@@ -157,7 +157,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:574
+#: plugin.py:577
 #, docstring
 msgid ""
 "<plugin> <command> <new name>\n"
@@ -166,7 +166,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:591
+#: plugin.py:594
 #, docstring
 msgid ""
 "<plugin>\n"
@@ -176,7 +176,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:604
+#: plugin.py:607
 #, docstring
 msgid ""
 "takes no argument\n"

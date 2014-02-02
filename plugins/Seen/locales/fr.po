@@ -1,15 +1,16 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2013-03-03 19:39+CET\n"
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2014-01-21 22:33+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
-"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Last-Translator: \n"
+"Language-Team: Limnoria <progval@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
+"Language: fr\n"
 
 #: config.py:49
 msgid ""
@@ -22,35 +23,48 @@ msgstr ""
 "requête \"seen\". Bien sûr, cela ne s'applique que s'il y a des jokers dans "
 "la requête."
 
-#: plugin.py:197
+#: config.py:53
+msgid ""
+"Determines whether the last message will\n"
+"    be displayed with @seen. Useful for keeping messages from a channel\n"
+"    private."
+msgstr ""
+"Détermine si le dernier message sera affiché avec @seen. Utile pour garder "
+"les messages d’un salon privés."
+
+#: plugin.py:198
 msgid "Not enough non-wildcard characters."
 msgstr "Pas assez de caractères non-joker."
 
-#: plugin.py:205 plugin.py:295
-msgid "%s was last seen in %s %s ago: %s"
-msgstr "%s a été vu pour la dernière fois sur %i il y a %s : %s"
+#: plugin.py:206 plugin.py:303
+msgid "%s was last seen in %s %s ago"
+msgstr "%s a été vu pour la dernière fois sur %s il y a %s"
 
-#: plugin.py:212
+#: plugin.py:212 plugin.py:278 plugin.py:307
+msgid "%s: %s"
+msgstr "%s : %s"
+
+#: plugin.py:218
 msgid "%s (%s ago)"
 msgstr "%s (il y a %s)"
 
-#: plugin.py:214
+#: plugin.py:220
 msgid "%s could be %L"
 msgstr "%s doit être %L"
 
-#: plugin.py:214
+#: plugin.py:220
 msgid "or"
 msgstr "ou"
 
-#: plugin.py:216
+#: plugin.py:222
 msgid "I haven't seen anyone matching %s."
 msgstr "Je n'ai vu personne correspondant à %s."
 
-#: plugin.py:218 plugin.py:299
+#: plugin.py:224 plugin.py:310
 msgid "I have not seen %s."
 msgstr "Je n'ai pas vu %s."
 
-#: plugin.py:222
+#: plugin.py:228
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
@@ -66,7 +80,7 @@ msgstr ""
 "<nick> a parlé. <canal> n'est nécessaire que si le message n'est pas envoyé "
 "sur le canal lui-même. <nick> peut contenir le joker *."
 
-#: plugin.py:236
+#: plugin.py:242
 msgid ""
 "[<channel>] [--user <name>] [<nick>]\n"
 "\n"
@@ -91,15 +105,15 @@ msgstr ""
 "en question a été vu actif sur le <canal. <canal> n'est nécessaire que si le "
 "message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:269
-msgid "Someone was last seen in %s %s ago: %s"
-msgstr "Quelqu'un a été vu pour la dernière fois sur %s il y a %s : %s"
+#: plugin.py:275
+msgid "Someone was last seen in %s %s ago"
+msgstr "Quelqu'un a été vu pour la dernière fois sur %s il y a %s"
 
-#: plugin.py:273
+#: plugin.py:281
 msgid "I have never seen anyone."
 msgstr "Je n'ai jamais vu personne."
 
-#: plugin.py:277
+#: plugin.py:285
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -113,7 +127,7 @@ msgstr ""
 "Retourne la dernière chose dite sur le <canal>. <canal> n'est nécessaire que "
 "si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:303
+#: plugin.py:314
 msgid ""
 "[<channel>] <name>\n"
 "\n"
@@ -134,32 +148,35 @@ msgstr ""
 "<nom>, il n'est pas considéré comme vu. <canal> n'est nécessaire que si le "
 "message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:319
+#: plugin.py:330
 msgid ""
-"[<channel>] <nick>\n"
+"[<channel>] [<nick>]\n"
 "\n"
 "        Returns the messages since <nick> last left the channel.\n"
+"        If <nick> is not given, it defaults to the nickname of the person\n"
+"        calling the command.\n"
 "        "
 msgstr ""
 "[<canal>] <nick>\n"
 "\n"
-"Retourne les messages depuis que <nick> est parti du canal."
+"Retourne les messages depuis que <nick> est parti du canal.<nick> correspond "
+"par défaut au nick de la personne appelant la commande."
 
-#: plugin.py:326
+#: plugin.py:339
 msgid "I am not in %s."
 msgstr "Je ne suis pas dans %s."
 
-#: plugin.py:329
+#: plugin.py:342
 msgid "%s must be in %s to use this command."
 msgstr "%s doit être dans %s pour utiliser cette commande."
 
-#: plugin.py:352
+#: plugin.py:365
 msgid "I couldn't find in my history of %s messages where %r last left %s"
 msgstr ""
 "Je ne peux pas trouver dans mon historique de %s messages, où %r a quitté il "
 "y a %s"
 
-#: plugin.py:361
+#: plugin.py:374
 msgid "Either %s didn't leave, or no messages were sent while %s was gone."
 msgstr ""
 "Soit %s n'est jamais parti, soit aucun message n'a été envoyé depuis qu'il "

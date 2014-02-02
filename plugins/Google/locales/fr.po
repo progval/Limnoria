@@ -1,15 +1,16 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2013-03-03 19:38+CET\n"
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2014-01-21 22:36+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
-"Language-Team: Supybot-fr <progval@gmail.com>\n"
+"Last-Translator: \n"
+"Language-Team: Limnoria <progval@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
+"Language: fr\n"
 
 #: config.py:39
 msgid ""
@@ -44,6 +45,12 @@ msgstr ""
 
 #: config.py:105
 msgid ""
+"Determines the base URL used for\n"
+"    requests."
+msgstr "Détermine l’URL de base utilisée pour les requêtes."
+
+#: config.py:108
+msgid ""
 "Determines whether the search snarfer is\n"
 "    enabled.  If so, messages (even unaddressed ones) beginning with the "
 "word\n"
@@ -54,7 +61,7 @@ msgstr ""
 "messages (même non adressés) commençant par 'google' seront répondus par la "
 "première URL que Google donne pour cette recherche."
 
-#: config.py:110
+#: config.py:113
 msgid ""
 "Determines whether the word 'google' in the\n"
 "    bot's output will be made colorful (like Google's logo)."
@@ -62,24 +69,26 @@ msgstr ""
 "Détermine si le mot 'google' dans la sortie du bot sera coloré (comme le "
 "logo de Google)"
 
-#: config.py:113
+#: config.py:116
 msgid "Determines whether results are bolded."
 msgstr "Détermine si les résultats sont mis en gras."
 
-#: config.py:115
+#: config.py:118
 msgid ""
 "Determines whether results are sent in\n"
 "    different lines or all in the same one."
 msgstr ""
+"Détermine si les résultats sont envoyés sur différentes lignes, ou tous sur "
+"la même."
 
-#: config.py:118
+#: config.py:121
 msgid ""
 "Determines the maximum number of results returned\n"
 "    from the google command."
 msgstr ""
 "Détermine le nombre maximum de résultats retournés par la commande google."
 
-#: config.py:121
+#: config.py:124
 msgid ""
 "Determines what default language is used in\n"
 "    searches.  If left empty, no specific language will be requested."
@@ -87,11 +96,11 @@ msgstr ""
 "Détermine quand langue par défaut est utilisée dans les recherches. Si "
 "laissé vide, aucune langue spécifique ne sera demandée."
 
-#: config.py:121
+#: config.py:124
 msgid "en"
 msgstr "fr"
 
-#: config.py:124
+#: config.py:127
 msgid ""
 "Determines what level of search filtering to use\n"
 "    by default.  'active' - most filtering, 'moderate' - default filtering,\n"
@@ -100,7 +109,7 @@ msgstr ""
 "Détermine le niveau de filtrage à utiliser par défaut. 'active' filtre tout, "
 "'moderate' est le filtre par défaut, et 'off' désactive le filtrage."
 
-#: plugin.py:83
+#: plugin.py:84
 msgid ""
 "Perform a search using Google's AJAX API.\n"
 "        search(\"search phrase\", options={})\n"
@@ -122,15 +131,15 @@ msgstr ""
 "                       (Default: \"lang_en\")\n"
 "        "
 
-#: plugin.py:122 plugin.py:185
+#: plugin.py:123 plugin.py:189
 msgid "We broke The Google!"
 msgstr "Google est toukassay !"
 
-#: plugin.py:144
+#: plugin.py:148
 msgid "No matches found."
 msgstr "Aucune correspondance."
 
-#: plugin.py:152
+#: plugin.py:156
 msgid ""
 "[--snippet] <search>\n"
 "\n"
@@ -143,11 +152,11 @@ msgstr ""
 "Effectue une recherche google, mais ne retourne que le premier résultat. Si "
 "l'option --snippet est donnée, retournera également un fragment de la page."
 
-#: plugin.py:169
+#: plugin.py:173
 msgid "Google found nothing."
 msgstr "Google n'a rien trouvé."
 
-#: plugin.py:174
+#: plugin.py:178
 msgid ""
 "<search> [--{filter,language} <value>]\n"
 "\n"
@@ -163,7 +172,7 @@ msgstr ""
 "sont donnés. --language accepte une abbréviation de langue ; --filter "
 "accepte un niveau de filtrage ('active', 'moderate', 'off')."
 
-#: plugin.py:202
+#: plugin.py:206
 msgid ""
 "<url>\n"
 "\n"
@@ -174,11 +183,11 @@ msgstr ""
 "\n"
 "Retourne un lien vers la version en cache de l'<url>, si elle est disponible."
 
-#: plugin.py:213
+#: plugin.py:217
 msgid "Google seems to have no cache for that site."
 msgstr "Google semble ne pas avoir de cache pour ce site."
 
-#: plugin.py:218
+#: plugin.py:222
 msgid ""
 "<search string> <search string> [<search string> ...]\n"
 "\n"
@@ -191,7 +200,7 @@ msgstr ""
 "Retourne les résultats de chaque recherche, dans l'ordre, par ordre "
 "croissant du nombre de résultats."
 
-#: plugin.py:241
+#: plugin.py:245
 msgid ""
 "<source language> [to] <target language> <text>\n"
 "\n"
@@ -204,11 +213,11 @@ msgstr ""
 "Retourne le <texte>, traduire de la <langue de départ> vers la <langue "
 "finale>."
 
-#: plugin.py:277
+#: plugin.py:283
 msgid "^google\\s+(.*)$"
 msgstr "^google\\s+(.*)$"
 
-#: plugin.py:306
+#: plugin.py:310
 msgid ""
 "<expression>\n"
 "\n"
@@ -219,11 +228,7 @@ msgstr ""
 "\n"
 "Utilise la calculatrice Google pour calculer la valeur de l'<expression>."
 
-#: plugin.py:339
-msgid "Google says: Error: %s."
-msgstr "Google dit : Erreur : %s."
-
-#: plugin.py:346
+#: plugin.py:345
 msgid ""
 "<phone number>\n"
 "\n"
@@ -234,9 +239,12 @@ msgstr ""
 "\n"
 "Recherche le <numéro de téléphone> sur Google."
 
-#: plugin.py:360
+#: plugin.py:362
 msgid "Google's phonebook didn't come up with anything."
 msgstr "L'annuaire téléphonique de Google ne donne aucun résultat."
+
+#~ msgid "Google says: Error: %s."
+#~ msgstr "Google dit : Erreur : %s."
 
 #~ msgid "from language"
 #~ msgstr "de la langue"

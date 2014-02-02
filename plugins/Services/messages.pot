@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -114,11 +114,11 @@ msgid ""
 "    necessary if the bot is properly configured."
 msgstr ""
 
-#: plugin.py:402
+#: plugin.py:406
 msgid "You must set supybot.plugins.Services.ChanServ before I'm able to send the %s command."
 msgstr ""
 
-#: plugin.py:408
+#: plugin.py:412
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -128,11 +128,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:414
+#: plugin.py:418
 msgid "I'm already opped in %s."
 msgstr ""
 
-#: plugin.py:421
+#: plugin.py:425
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -142,11 +142,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:427
+#: plugin.py:431
 msgid "I'm already voiced in %s."
 msgstr ""
 
-#: plugin.py:444
+#: plugin.py:448
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -158,7 +158,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:465
+#: plugin.py:469
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -170,7 +170,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:486
+#: plugin.py:490
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -179,15 +179,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:495
+#: plugin.py:499
 msgid "I don't have a configured password for my current nick."
 msgstr ""
 
-#: plugin.py:498
+#: plugin.py:502
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to do identify."
 msgstr ""
 
-#: plugin.py:504
+#: plugin.py:508
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -197,15 +197,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:513
+#: plugin.py:517
 msgid "I cowardly refuse to ghost myself."
 msgstr ""
 
-#: plugin.py:518
+#: plugin.py:522
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to ghost a nick."
 msgstr ""
 
-#: plugin.py:524
+#: plugin.py:528
 #, docstring
 msgid ""
 "<nick> [<password>]\n"
@@ -215,11 +215,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:534
+#: plugin.py:538
 msgid "That nick was not configured with a password."
 msgstr ""
 
-#: plugin.py:545
+#: plugin.py:549
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -229,7 +229,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:555
+#: plugin.py:559
 msgid "I'm not currently configured for any nicks."
 msgstr ""
 

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-07-25 11:34+CEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,10 +48,6 @@ msgid ""
 "    nick-based notes.  Do note (haha!) that these notes are *not* private\n"
 "    and don't even pretend to be; if you want such features, consider using the\n"
 "    Note plugin."
-msgstr ""
-
-#: plugin.py:84
-msgid "%s ago"
 msgstr ""
 
 #: plugin.py:86

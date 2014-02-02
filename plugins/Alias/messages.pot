@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-10-07 18:48+EEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:45
+#: plugin.py:46
 #, docstring
 msgid ""
 "Returns the channel the msg came over or the channel given in args.\n"
@@ -25,29 +25,33 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:108
 #, docstring
 msgid ""
 "Encodes [a-z0-9.]+ into [a-z][a-z0-9].\n"
 "    Format: a<number of escaped chars>a(<index>d)+<word without dots>."
 msgstr ""
 
-#: plugin.py:217
+#: plugin.py:219
+msgid "You've attempted more nesting than is currently allowed on this bot."
+msgstr ""
+
+#: plugin.py:224
 msgid " at least"
 msgstr ""
 
-#: plugin.py:218
+#: plugin.py:226 plugin.py:231
 msgid ""
 "<an alias,%s %n>\n"
 "\n"
 "Alias for %q."
 msgstr ""
 
-#: plugin.py:219
+#: plugin.py:227 plugin.py:232
 msgid "argument"
 msgstr ""
 
-#: plugin.py:287
+#: plugin.py:300
 #, docstring
 msgid ""
 "<alias>\n"
@@ -56,11 +60,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:296 plugin.py:310
+#: plugin.py:309 plugin.py:323
 msgid "There is no such alias."
 msgstr ""
 
-#: plugin.py:301
+#: plugin.py:314
 #, docstring
 msgid ""
 "<alias>\n"
@@ -69,11 +73,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:319
+#: plugin.py:335
 msgid "That name isn't valid.  Try %q instead."
 msgstr ""
 
-#: plugin.py:363
+#: plugin.py:383
 #, docstring
 msgid ""
 "<name> <command>\n"
@@ -87,7 +91,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:386
+#: plugin.py:406
 #, docstring
 msgid ""
 "<name>\n"

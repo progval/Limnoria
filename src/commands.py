@@ -1071,7 +1071,6 @@ def _wrap(f, specList=[], name=None, checkDoc=True, **kw):
     name = name or f.__name__
     assert (not checkDoc) or (hasattr(f, '__doc__') and f.__doc__), \
                 'Command %r has no docstring.' % name
-    f = internationalizeDocstring(f)
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
@@ -1090,7 +1089,8 @@ def _wrap(f, specList=[], name=None, checkDoc=True, **kw):
                 self.log.debug('Make sure you did not wrap a wrapped '
                                'function ;)')
                 raise
-    return utils.python.changeFunctionName(newf, name, f.__doc__)
+    newf2 = utils.python.changeFunctionName(newf, name, f.__doc__)
+    return internationalizeDocstring(newf2)
 
 def wrap(f, *args, **kwargs):
     if callable(f):

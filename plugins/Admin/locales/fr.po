@@ -1,17 +1,16 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-10-30 19:20+CET\n"
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2014-01-22 13:38+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
+"Last-Translator: \n"
 "Language-Team: ProgVal <progval@gmail.com>\n"
-"Language: \n"
+"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: French\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: Ascii\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: plugin.py:54
 msgid "Nick/channel temporarily unavailable."
@@ -33,75 +32,81 @@ msgstr "Ne peut joindre %s, j'y suis banni."
 msgid "Cannot join %s, my keyword was wrong."
 msgstr "Ne peut joindre %s, mon mot de passe est mauvais."
 
-#: plugin.py:104
+#: plugin.py:104 plugin.py:113
 msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr "Ne peut joindre %s, je ne suis pas identifié auprès de NickServ."
 
-#: plugin.py:134
+#: plugin.py:143
 msgid ""
 "<channel> [<key>]\n"
 "\n"
-"        Tell the bot to join the given channel.  If <key> is given, it is used\n"
+"        Tell the bot to join the given channel.  If <key> is given, it is "
+"used\n"
 "        when attempting to join the channel.\n"
 "        "
 msgstr ""
 "<canal> [<clef>]\n"
 "\n"
-"Dit au bot de rejoindre le canal donné. Si la <clef> est donnée, elle est utilisée pour rejoindre le canal."
+"Dit au bot de rejoindre le canal donné. Si la <clef> est donnée, elle est "
+"utilisée pour rejoindre le canal."
 
-#: plugin.py:147
+#: plugin.py:156
 msgid "I'm already too close to maximum number of channels for this network."
 msgstr "Je suis déjà sur un nombre de canaux trop grand pour ce réseau."
 
-#: plugin.py:156
+#: plugin.py:165
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns the channels the bot is on.  Must be given in private, in order\n"
+"        Returns the channels the bot is on.  Must be given in private, in "
+"order\n"
 "        to protect the secrecy of secret channels.\n"
 "        "
 msgstr ""
 "Ne prend pas d'argument \n"
 "\n"
-"Retourne les canaux sur lesquels le bot est. Doit être en privé, dans le but d'éviter que les canaux secrets ne soient divulgués."
+"Retourne les canaux sur lesquels le bot est. Doit être en privé, dans le but "
+"d'éviter que les canaux secrets ne soient divulgués."
 
-#: plugin.py:166
+#: plugin.py:175
 msgid "I'm not currently in any channels."
 msgstr "Je ne suis actuellement sur aucun canal."
 
-#: plugin.py:172
+#: plugin.py:181
 msgid "My connection is restricted, I can't change nicks."
 msgstr "Ma connexion est restreinte, je ne peux changer de nick."
 
-#: plugin.py:179
+#: plugin.py:188
 msgid "Someone else is already using that nick."
 msgstr "Quelqu'un d'autre utilise déjà ce nick."
 
-#: plugin.py:186
+#: plugin.py:195
 msgid "That nick is currently banned."
 msgstr "Ce nick est banni."
 
-#: plugin.py:193
+#: plugin.py:202
 msgid "I can't change nicks, the server said %q."
 msgstr "Je ne peux changer de nick, le serveur a dit %q."
 
-#: plugin.py:207
+#: plugin.py:216
 msgid ""
-"[<nick>]\n"
+"[<nick>] [<network>]\n"
 "\n"
 "        Changes the bot's nick to <nick>.  If no nick is given, returns the\n"
 "        bot's current nick.\n"
 "        "
 msgstr ""
-"[<nick>]\n"
+"[<nick>] [<réseau>]\n"
 "\n"
-"Change le nick du bot à <nick>. Si aucun nick n'est donné, retourne le nick actuel du bot."
+"Change le nick du bot à <nick>. Si aucun nick n'est donné, retourne le nick "
+"actuel du bot."
 
-#: plugin.py:222
+#: plugin.py:233
 msgid ""
 "[<channel>] [<reason>]\n"
 "\n"
-"        Tells the bot to part the list of channels you give it.  <channel> is\n"
+"        Tells the bot to part the list of channels you give it.  <channel> "
+"is\n"
 "        only necessary if you want the bot to part a channel other than the\n"
 "        current channel.  If <reason> is specified, use it as the part\n"
 "        message.\n"
@@ -109,67 +114,84 @@ msgid ""
 msgstr ""
 "[<canal>] [<raison>]\n"
 "\n"
-"Dit au bot de partir de la liste de canaux que vous avez donnée. <canal> n'est nécessaire que si vous voulez que le bot parte d'un autre canal que l'actuel. Si la <raison> est spécifiée, elle est utilisée comme message de départ."
+"Dit au bot de partir de la liste de canaux que vous avez donnée. <canal> "
+"n'est nécessaire que si vous voulez que le bot parte d'un autre canal que "
+"l'actuel. Si la <raison> est spécifiée, elle est utilisée comme message de "
+"départ."
 
-#: plugin.py:240
+#: plugin.py:251
 msgid "I'm not in %s."
 msgstr "Je ne suis pas sur %s."
 
-#: plugin.py:252
+#: plugin.py:263
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
-"            Gives the user specified by <name> (or the user to whom <hostmask>\n"
+"            Gives the user specified by <name> (or the user to whom "
+"<hostmask>\n"
 "            currently maps) the specified capability <capability>\n"
 "            "
 msgstr ""
 "<nom|masque d'hôte> <capacité>\n"
 "\n"
-"Donne la <capacité> à l'utilisateur spécifié par <nom> (ou l'utilisateur à qui correspond <masque d'hôte>)."
-
-#: plugin.py:272
-msgid "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser program (or edit the users.conf file yourself) to add an owner capability."
-msgstr "La capacité \"owner\" ne peut être ajoutée via le bot. Utilisez le programme supybot-adduser (ou éditez le fichier users.conf vous-même) pour ajouter la capacité owner."
+"Donne la <capacité> à l'utilisateur spécifié par <nom> (ou l'utilisateur à "
+"qui correspond <masque d'hôte>)."
 
 #: plugin.py:283
+msgid ""
+"The \"owner\" capability can't be added in the bot.  Use the supybot-adduser "
+"program (or edit the users.conf file yourself) to add an owner capability."
+msgstr ""
+"La capacité \"owner\" ne peut être ajoutée via le bot. Utilisez le programme "
+"supybot-adduser (ou éditez le fichier users.conf vous-même) pour ajouter la "
+"capacité owner."
+
+#: plugin.py:294
 msgid "You can't add capabilities you don't have."
 msgstr "Vous ne pouvez ajouter des capacités que vous n'avez pas."
 
-#: plugin.py:288
+#: plugin.py:299
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
 "            Takes from the user specified by <name> (or the user to whom\n"
-"            <hostmask> currently maps) the specified capability <capability>\n"
+"            <hostmask> currently maps) the specified capability "
+"<capability>\n"
 "            "
 msgstr ""
 "<nom|masque d'hôte> <capacité>\n"
 "\n"
-"Retire la <capacité> à l'utilisateur spécifié par le <nom> (ou celui à qui correspond le <masque d'hôte>)."
+"Retire la <capacité> à l'utilisateur spécifié par le <nom> (ou celui à qui "
+"correspond le <masque d'hôte>)."
 
-#: plugin.py:300
+#: plugin.py:311
 msgid "That user doesn't have that capability."
 msgstr "Cet utilisateur n'a pas cette capacité."
 
-#: plugin.py:302
+#: plugin.py:313
 msgid "You can't remove capabilities you don't have."
 msgstr "Vous ne pouvez retirer des capacités que vous n'avez pas."
 
-#: plugin.py:310
+#: plugin.py:321
 msgid ""
 "<hostmask|nick> [<expires>]\n"
 "\n"
 "            This will set a persistent ignore on <hostmask> or the hostmask\n"
-"            currently associated with <nick>. <expires> is an optional argument\n"
-"            specifying when (in \"seconds from now\") the ignore will expire; if\n"
+"            currently associated with <nick>. <expires> is an optional "
+"argument\n"
+"            specifying when (in \"seconds from now\") the ignore will "
+"expire; if\n"
 "            it isn't given, the ignore will never automatically expire.\n"
 "            "
 msgstr ""
 "<masque d'hôte|nick> [<expiration>]\n"
 "\n"
-"Ajoute un masque d'ignorance persistant sur le <masque d'hôte>, ou sur le masque d'hôte de <nick>. <expiration> est un argument optionnel spécifiant quand (en \"secondes à partir de maintenant\") l'ignorance expirera ; si elle n'est pas donnée, l'ignorance n'expirera jamais."
+"Ajoute un masque d'ignorance persistant sur le <masque d'hôte>, ou sur le "
+"masque d'hôte de <nick>. <expiration> est un argument optionnel spécifiant "
+"quand (en \"secondes à partir de maintenant\") l'ignorance expirera ; si "
+"elle n'est pas donnée, l'ignorance n'expirera jamais."
 
-#: plugin.py:323
+#: plugin.py:334
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -179,13 +201,14 @@ msgid ""
 msgstr ""
 "<masque d'hôte|nick>\n"
 "\n"
-"Ceci retirera le masque d'ignorance persistant sur le <masque d'hôte>, ou sur le masque d'hôte associé au <nick>."
+"Ceci retirera le masque d'ignorance persistant sur le <masque d'hôte>, ou "
+"sur le masque d'hôte associé au <nick>."
 
-#: plugin.py:332
+#: plugin.py:343
 msgid "%s wasn't in the ignores database."
 msgstr "%s n'étais pas dans ma base de données d'ignorance."
 
-#: plugin.py:337
+#: plugin.py:348
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -196,11 +219,11 @@ msgstr ""
 "\n"
 "Liste les masques d'hôte que le bot ignore."
 
-#: plugin.py:345
+#: plugin.py:356
 msgid "I'm not currently globally ignoring anyone."
 msgstr "Je n'ignore actuellement personne globalement."
 
-#: plugin.py:351
+#: plugin.py:360 plugin.py:371
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -210,4 +233,3 @@ msgstr ""
 "Ne prend pas d'argument\n"
 "\n"
 "Vide la queue en attente pour ce réseau."
-

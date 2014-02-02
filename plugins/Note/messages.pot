@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,7 +65,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:324
+#: plugin.py:326
 #, docstring
 msgid ""
 "[--{old,sent}] [--{from,to} <user>]\n"
@@ -77,7 +77,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:365
+#: plugin.py:367
 #, docstring
 msgid ""
 "takes no arguments\n"

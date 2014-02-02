@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,41 +15,41 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:77
+#: plugin.py:81
 #, docstring
 msgid "\001PING ?(.*)\001"
 msgstr ""
 
-#: plugin.py:86
+#: plugin.py:90
 #, docstring
 msgid "\001VERSION\001"
 msgstr ""
 
-#: plugin.py:91
+#: plugin.py:95
 #, docstring
 msgid "\001USERINFO\001"
 msgstr ""
 
-#: plugin.py:96
+#: plugin.py:100
 #, docstring
 msgid "\001TIME\001"
 msgstr ""
 
-#: plugin.py:101
+#: plugin.py:105
 #, docstring
 msgid "\001FINGER\001"
 msgstr ""
 
-#: plugin.py:104
+#: plugin.py:108
 msgid "Supybot, the best Python IRC bot in existence!"
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:111
 #, docstring
 msgid "\001SOURCE\001"
 msgstr ""
 
-#: plugin.py:123
+#: plugin.py:127
 #, docstring
 msgid ""
 "[<channel>] [--nicks]\n"

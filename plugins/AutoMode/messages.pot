@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-10-07 18:54+EEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,60 +29,67 @@ msgstr ""
 
 #: config.py:52
 msgid ""
+"Determines whether the bot will\n"
+"    check for 'alternative capabilities' (ie. autoop, autohalfop,\n"
+"    autovoice) in addition to/instead of classic ones."
+msgstr ""
+
+#: config.py:56
+msgid ""
 "Determines whether the bot will \"fall\n"
 "    through\" to halfop/voicing when auto-opping is turned off but\n"
 "    auto-halfopping/voicing are turned on."
 msgstr ""
 
-#: config.py:56
+#: config.py:60
 msgid ""
 "Determines whether the bot will automatically\n"
 "    op people with the <channel>,op capability when they join the channel.\n"
 "    "
 msgstr ""
 
-#: config.py:60
+#: config.py:64
 msgid ""
 "Determines whether the bot will automatically\n"
 "    halfop people with the <channel>,halfop capability when they join the\n"
 "    channel."
 msgstr ""
 
-#: config.py:64
+#: config.py:68
 msgid ""
 "Determines whether the bot will automatically\n"
 "    voice people with the <channel>,voice capability when they join the\n"
 "    channel."
 msgstr ""
 
-#: config.py:68
+#: config.py:72
 msgid ""
 "Determines whether the bot will automatically\n"
 "    ban people who join the channel and are on the banlist."
 msgstr ""
 
-#: config.py:71
+#: config.py:75
 msgid ""
 "Determines how many seconds the bot\n"
 "    will automatically ban a person when banning."
 msgstr ""
 
-#: config.py:75
+#: config.py:79
 msgid ""
 "Determines how many seconds the bot will wait\n"
 "    before applying a mode. Has no effect on bans."
 msgstr ""
 
-#: config.py:79
+#: config.py:83
 msgid ""
 "Extra modes that will be\n"
 "    applied to a user. Example syntax: user1+o-v user2+v user3-v"
 msgstr ""
 
-#: plugin.py:64
+#: plugin.py:78
 #, docstring
 msgid ""
 "Determines whether or not a mode has already\n"
-"                            been applied."
+"                        been applied."
 msgstr ""
 

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgid ""
 "    in a word before it will be shrunken by the shrink command/filter."
 msgstr ""
 
-#: plugin.py:50
+#: plugin.py:52
 #, docstring
 msgid ""
 "This plugin offers several commands which transform text in some way.\n"
@@ -49,7 +49,7 @@ msgid ""
 "    Not very useful, but definitely quite fun :)"
 msgstr ""
 
-#: plugin.py:84
+#: plugin.py:86
 #, docstring
 msgid ""
 "[<channel>] [<command>]\n"
@@ -60,11 +60,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:97
+#: plugin.py:99
 msgid "That's not a valid filter command."
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:110
 #, docstring
 msgid ""
 "<text>\n"
@@ -75,7 +75,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:119
+#: plugin.py:121
 #, docstring
 msgid ""
 "<text>\n"
@@ -84,7 +84,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:129
+#: plugin.py:131
 #, docstring
 msgid ""
 "<text>\n"
@@ -93,7 +93,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:142
+#: plugin.py:144
 #, docstring
 msgid ""
 "<text>\n"
@@ -102,7 +102,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:168
+#: plugin.py:169
 #, docstring
 msgid ""
 "<text>\n"
@@ -112,7 +112,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:179
+#: plugin.py:183
 #, docstring
 msgid ""
 "<text>\n"
@@ -122,7 +122,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:189
+#: plugin.py:194
 #, docstring
 msgid ""
 "<hexstring>\n"
@@ -132,11 +132,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:197
+#: plugin.py:203
 msgid "Invalid input."
 msgstr ""
 
-#: plugin.py:202
+#: plugin.py:209
 #, docstring
 msgid ""
 "<text>\n"
@@ -147,7 +147,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:213
+#: plugin.py:222
 #, docstring
 msgid ""
 "<text>\n"
@@ -156,7 +156,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:244
+#: plugin.py:254
 #, docstring
 msgid ""
 "<text>\n"
@@ -165,7 +165,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:264
+#: plugin.py:274
 #, docstring
 msgid ""
 "<text>\n"
@@ -174,7 +174,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:280
+#: plugin.py:290
 #, docstring
 msgid ""
 "<text>\n"
@@ -184,7 +184,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:345
+#: plugin.py:355
 #, docstring
 msgid ""
 "<Morse code text>\n"
@@ -193,7 +193,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:362
+#: plugin.py:372
 #, docstring
 msgid ""
 "<text>\n"
@@ -202,7 +202,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:374
+#: plugin.py:384
 #, docstring
 msgid ""
 "<text>\n"
@@ -211,7 +211,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:391
+#: plugin.py:402
 #, docstring
 msgid ""
 "<text>\n"
@@ -220,7 +220,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:401
+#: plugin.py:412
 #, docstring
 msgid ""
 "<text>\n"
@@ -229,7 +229,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:412
+#: plugin.py:427
 #, docstring
 msgid ""
 "<text>\n"
@@ -238,7 +238,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:421
+#: plugin.py:436
 #, docstring
 msgid ""
 "<text>\n"
@@ -247,7 +247,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:448
+#: plugin.py:463
 #, docstring
 msgid ""
 "<text>\n"
@@ -256,279 +256,279 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:544
+#: plugin.py:559
 msgid "ay"
 msgstr ""
 
-#: plugin.py:544
+#: plugin.py:559
 msgid "bee"
 msgstr ""
 
-#: plugin.py:544
+#: plugin.py:559
 msgid "dee"
 msgstr ""
 
-#: plugin.py:544
+#: plugin.py:559
 msgid "see"
 msgstr ""
 
-#: plugin.py:545
+#: plugin.py:560
 msgid "aych"
 msgstr ""
 
-#: plugin.py:545
+#: plugin.py:560
 msgid "ee"
 msgstr ""
 
-#: plugin.py:545
+#: plugin.py:560
 msgid "eff"
 msgstr ""
 
-#: plugin.py:545
+#: plugin.py:560
 msgid "gee"
 msgstr ""
 
-#: plugin.py:546
+#: plugin.py:561
 msgid "ell"
 msgstr ""
 
-#: plugin.py:546
+#: plugin.py:561
 msgid "eye"
 msgstr ""
 
-#: plugin.py:546
+#: plugin.py:561
 msgid "jay"
 msgstr ""
 
-#: plugin.py:546
+#: plugin.py:561
 msgid "kay"
 msgstr ""
 
-#: plugin.py:547
+#: plugin.py:562
 msgid "cue"
 msgstr ""
 
-#: plugin.py:547
+#: plugin.py:562
 msgid "em"
 msgstr ""
 
-#: plugin.py:547
+#: plugin.py:562
 msgid "en"
 msgstr ""
 
-#: plugin.py:547
+#: plugin.py:562
 msgid "oh"
 msgstr ""
 
-#: plugin.py:547
+#: plugin.py:562
 msgid "pee"
 msgstr ""
 
-#: plugin.py:548
+#: plugin.py:563
 msgid "arr"
 msgstr ""
 
-#: plugin.py:548
+#: plugin.py:563
 msgid "ess"
 msgstr ""
 
-#: plugin.py:548
+#: plugin.py:563
 msgid "tee"
 msgstr ""
 
-#: plugin.py:548
+#: plugin.py:563
 msgid "you"
 msgstr ""
 
-#: plugin.py:549
+#: plugin.py:564
 msgid "double-you"
 msgstr ""
 
-#: plugin.py:549
+#: plugin.py:564
 msgid "ecks"
 msgstr ""
 
-#: plugin.py:549
+#: plugin.py:564
 msgid "vee"
 msgstr ""
 
-#: plugin.py:549
+#: plugin.py:564
 msgid "why"
 msgstr ""
 
-#: plugin.py:550
+#: plugin.py:565
 msgid "zee"
 msgstr ""
 
-#: plugin.py:555
+#: plugin.py:570
 msgid "exclamation point"
 msgstr ""
 
-#: plugin.py:556
+#: plugin.py:571
 msgid "quote"
 msgstr ""
 
-#: plugin.py:557
+#: plugin.py:572
 msgid "pound"
 msgstr ""
 
-#: plugin.py:558
+#: plugin.py:573
 msgid "dollar sign"
 msgstr ""
 
-#: plugin.py:559
+#: plugin.py:574
 msgid "percent"
 msgstr ""
 
-#: plugin.py:560
+#: plugin.py:575
 msgid "ampersand"
 msgstr ""
 
-#: plugin.py:561
+#: plugin.py:576
 msgid "single quote"
 msgstr ""
 
-#: plugin.py:562
+#: plugin.py:577
 msgid "left paren"
 msgstr ""
 
-#: plugin.py:563
+#: plugin.py:578
 msgid "right paren"
 msgstr ""
 
-#: plugin.py:564
+#: plugin.py:579
 msgid "asterisk"
 msgstr ""
 
-#: plugin.py:565
+#: plugin.py:580
 msgid "plus"
 msgstr ""
 
-#: plugin.py:566
+#: plugin.py:581
 msgid "comma"
 msgstr ""
 
-#: plugin.py:567
+#: plugin.py:582
 msgid "minus"
 msgstr ""
 
-#: plugin.py:568
+#: plugin.py:583
 msgid "period"
 msgstr ""
 
-#: plugin.py:569
+#: plugin.py:584
 msgid "slash"
 msgstr ""
 
-#: plugin.py:570
+#: plugin.py:585
 msgid "colon"
 msgstr ""
 
-#: plugin.py:571
+#: plugin.py:586
 msgid "semicolon"
 msgstr ""
 
-#: plugin.py:572
+#: plugin.py:587
 msgid "less than"
 msgstr ""
 
-#: plugin.py:573
+#: plugin.py:588
 msgid "equals"
 msgstr ""
 
-#: plugin.py:574
+#: plugin.py:589
 msgid "greater than"
 msgstr ""
 
-#: plugin.py:575
+#: plugin.py:590
 msgid "question mark"
 msgstr ""
 
-#: plugin.py:576
+#: plugin.py:591
 msgid "at"
 msgstr ""
 
-#: plugin.py:577
+#: plugin.py:592
 msgid "left bracket"
 msgstr ""
 
-#: plugin.py:578
+#: plugin.py:593
 msgid "backslash"
 msgstr ""
 
-#: plugin.py:579
+#: plugin.py:594
 msgid "right bracket"
 msgstr ""
 
-#: plugin.py:580
+#: plugin.py:595
 msgid "caret"
 msgstr ""
 
-#: plugin.py:581
+#: plugin.py:596
 msgid "underscore"
 msgstr ""
 
-#: plugin.py:582
+#: plugin.py:597
 msgid "backtick"
 msgstr ""
 
-#: plugin.py:583
+#: plugin.py:598
 msgid "left brace"
 msgstr ""
 
-#: plugin.py:584
+#: plugin.py:599
 msgid "pipe"
 msgstr ""
 
-#: plugin.py:585
+#: plugin.py:600
 msgid "right brace"
 msgstr ""
 
-#: plugin.py:586
+#: plugin.py:601
 msgid "tilde"
 msgstr ""
 
-#: plugin.py:589
+#: plugin.py:604
 msgid "one"
 msgstr ""
 
-#: plugin.py:589
+#: plugin.py:604
 msgid "three"
 msgstr ""
 
-#: plugin.py:589
+#: plugin.py:604
 msgid "two"
 msgstr ""
 
-#: plugin.py:589
+#: plugin.py:604
 msgid "zero"
 msgstr ""
 
-#: plugin.py:590
+#: plugin.py:605
 msgid "five"
 msgstr ""
 
-#: plugin.py:590
+#: plugin.py:605
 msgid "four"
 msgstr ""
 
-#: plugin.py:590
+#: plugin.py:605
 msgid "seven"
 msgstr ""
 
-#: plugin.py:590
+#: plugin.py:605
 msgid "six"
 msgstr ""
 
-#: plugin.py:591
+#: plugin.py:606
 msgid "eight"
 msgstr ""
 
-#: plugin.py:591
+#: plugin.py:606
 msgid "nine"
 msgstr ""
 
-#: plugin.py:595
+#: plugin.py:610
 #, docstring
 msgid ""
 "<text>\n"
@@ -537,7 +537,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:625
+#: plugin.py:640
 #, docstring
 msgid ""
 "<text>\n"
@@ -546,7 +546,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:634
+#: plugin.py:649
 #, docstring
 msgid ""
 "<text>\n"
@@ -557,7 +557,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:653
+#: plugin.py:668
 #, docstring
 msgid ""
 "<text>\n"
@@ -566,7 +566,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:702
+#: plugin.py:717
 #, docstring
 msgid ""
 "<text>\n"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-07-31 19:09+CEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,57 +15,80 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:124 plugin.py:334
+#: config.py:55
+msgid ""
+"The maximum number of words allowed in a\n"
+"    command name. Setting this to an high value may slow down your bot\n"
+"    on long commands."
+msgstr ""
+
+#: plugin.py:129 plugin.py:368
 msgid "This Aka already exists."
 msgstr ""
 
-#: plugin.py:149 plugin.py:165 plugin.py:181
+#: plugin.py:156 plugin.py:173 plugin.py:190
 msgid "This Aka does not exist"
 msgstr ""
 
-#: plugin.py:151
+#: plugin.py:158
 msgid "This Aka is already locked."
 msgstr ""
 
-#: plugin.py:167
+#: plugin.py:175
 msgid "This Aka is already unlocked."
 msgstr ""
 
-#: plugin.py:226
+#: plugin.py:235
 #, docstring
 msgid ""
 "Add the help for \"@plugin help Aka\" here\n"
 "    This should describe *how* to use this plugin."
 msgstr ""
 
-#: plugin.py:312
+#: plugin.py:342
+msgid "You've attempted more nesting than is currently allowed on this bot."
+msgstr ""
+
+#: plugin.py:346
 msgid " at least"
 msgstr ""
 
-#: plugin.py:321
+#: plugin.py:355
 msgid "Locked by %s at %s"
 msgstr ""
 
-#: plugin.py:324
+#: plugin.py:358
 msgid ""
 "<an alias,%s %n>\n"
 "\n"
 "Alias for %q.%s"
 msgstr ""
 
-#: plugin.py:325
+#: plugin.py:359
 msgid "argument"
 msgstr ""
 
-#: plugin.py:331
+#: plugin.py:365
 msgid "You can't overwrite commands in this plugin."
 msgstr ""
 
-#: plugin.py:344
+#: plugin.py:370
+msgid "This Aka has too many spaces in its name."
+msgstr ""
+
+#: plugin.py:375
+msgid "Can't mix $* and optional args (@1, etc.)"
+msgstr ""
+
+#: plugin.py:377
+msgid "There can be only one $* in an alias."
+msgstr ""
+
+#: plugin.py:384
 msgid "This Aka is locked."
 msgstr ""
 
-#: plugin.py:348
+#: plugin.py:388
 #, docstring
 msgid ""
 "[--channel <#channel>] <name> <command>\n"
@@ -80,11 +103,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:362 plugin.py:388 plugin.py:420 plugin.py:443
+#: plugin.py:402 plugin.py:428 plugin.py:460 plugin.py:483
 msgid "%r is not a valid channel."
 msgstr ""
 
-#: plugin.py:380
+#: plugin.py:420
 #, docstring
 msgid ""
 "[--channel <#channel>] <name>\n"
@@ -93,14 +116,14 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:402
+#: plugin.py:442
 #, docstring
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
 msgstr ""
 
-#: plugin.py:412
+#: plugin.py:452
 #, docstring
 msgid ""
 "[--channel <#channel>] <alias>\n"
@@ -109,7 +132,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:435
+#: plugin.py:475
 #, docstring
 msgid ""
 "[--channel <#channel>] <alias>\n"
@@ -118,7 +141,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:458
+#: plugin.py:498
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -126,11 +149,11 @@ msgid ""
 "        Imports the Alias database into Aka's, and clean the former."
 msgstr ""
 
-#: plugin.py:463
+#: plugin.py:503
 msgid "Alias plugin is not loaded."
 msgstr ""
 
-#: plugin.py:473
+#: plugin.py:513
 msgid "Error occured when importing the %n: %L"
 msgstr ""
 

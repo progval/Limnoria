@@ -1,7 +1,7 @@
 # Valentin Lorentz <progval@progval.net>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
+"Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2012-04-15 18:47+EEST\n"
 "PO-Revision-Date: 2012-07-29 11:58+0100\n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-11-26 23:54+CET\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,23 +143,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:318
+#: plugin.py:320
 msgid "The newest versions available online are %s."
 msgstr ""
 
-#: plugin.py:319
+#: plugin.py:321
 msgid "%s (in %s)"
 msgstr ""
 
-#: plugin.py:323
+#: plugin.py:325
 msgid "I couldn't fetch the newest version from the Limnoria repository."
 msgstr ""
 
-#: plugin.py:325
+#: plugin.py:327
 msgid "The current (running) version of this Supybot is %s, running on Python %s.  %s"
 msgstr ""
 
-#: plugin.py:333
+#: plugin.py:335
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -168,11 +168,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:337
+#: plugin.py:339
 msgid "My source is at https://github.com/ProgVal/Limnoria"
 msgstr ""
 
-#: plugin.py:342
+#: plugin.py:344
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -184,31 +184,31 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:356
+#: plugin.py:358
 msgid "%s has no public mores."
 msgstr ""
 
-#: plugin.py:359
+#: plugin.py:361
 msgid "Sorry, I can't find any mores for %s"
 msgstr ""
 
-#: plugin.py:367
+#: plugin.py:369
 msgid "1 more message"
 msgstr ""
 
-#: plugin.py:369
+#: plugin.py:371
 msgid "%i more messages"
 msgstr ""
 
-#: plugin.py:373
+#: plugin.py:375
 msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
 msgstr ""
 
-#: plugin.py:377
+#: plugin.py:379
 msgid "That's all, there is no more."
 msgstr ""
 
-#: plugin.py:387
+#: plugin.py:389
 #, docstring
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
@@ -223,15 +223,31 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:482
+#: plugin.py:484
 msgid "The regular expression timed out."
 msgstr ""
 
-#: plugin.py:495
+#: plugin.py:497
 msgid "I couldn't find a message matching that criteria in my history of %s messages."
 msgstr ""
 
-#: plugin.py:510
+#: plugin.py:516
+msgid "Hey, just give the command.  No need for the tell."
+msgstr ""
+
+#: plugin.py:521
+msgid "You just told me, why should I tell myself?"
+msgstr ""
+
+#: plugin.py:526
+msgid "I haven't seen %s, I'll let you do the telling."
+msgstr ""
+
+#: plugin.py:531
+msgid "%s wants me to tell you: %s"
+msgstr ""
+
+#: plugin.py:537
 #, docstring
 msgid ""
 "<nick> <text>\n"
@@ -241,23 +257,17 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:520
-msgid "Hey, just give the command.  No need for the tell."
+#: plugin.py:547
+#, docstring
+msgid ""
+"<nick> <text>\n"
+"\n"
+"        Tells the <nick> whatever <text> is, in a notice.  Use nested\n"
+"        commands to your benefit here.\n"
+"        "
 msgstr ""
 
-#: plugin.py:525
-msgid "You just told me, why should I tell myself?"
-msgstr ""
-
-#: plugin.py:530
-msgid "I haven't seen %s, I'll let you do the telling."
-msgstr ""
-
-#: plugin.py:535
-msgid "%s wants me to tell you: %s"
-msgstr ""
-
-#: plugin.py:542
+#: plugin.py:557
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -266,11 +276,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:546
+#: plugin.py:561
 msgid "pong"
 msgstr ""
 
-#: plugin.py:550
+#: plugin.py:565
 #, docstring
 msgid ""
 "[<channel>] <beginning> [--match-case]\n"
@@ -280,11 +290,11 @@ msgid ""
 "        <channel> defaults to the current channel."
 msgstr ""
 
-#: plugin.py:556
+#: plugin.py:571
 msgid "I'm not even in %s."
 msgstr ""
 
-#: plugin.py:568
+#: plugin.py:583
 msgid "No such nick."
 msgstr ""
 

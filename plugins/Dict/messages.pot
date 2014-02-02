@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-06-28 19:40+CEST\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgid ""
 "    will use all dictionaries to define words."
 msgstr ""
 
-#: plugin.py:54
+#: plugin.py:49
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -45,7 +45,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:70
+#: plugin.py:65
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -54,7 +54,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:85
+#: plugin.py:80
 #, docstring
 msgid ""
 "[<dictionary>] <word>\n"
@@ -64,23 +64,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:108
+#: plugin.py:103
 msgid "You must give a word to define."
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:109
 msgid "No definition for %q could be found."
 msgstr ""
 
-#: plugin.py:117
+#: plugin.py:112
 msgid "No definition for %q could be found in %s"
 msgstr ""
 
-#: plugin.py:129
+#: plugin.py:124
 msgid "%L responded: %s"
 msgstr ""
 
-#: plugin.py:136
+#: plugin.py:131
 #, docstring
 msgid ""
 "<word> [<word> ...]\n"

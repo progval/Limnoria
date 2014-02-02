@@ -1,82 +1,145 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-06-28 19:40+CEST\n"
+"Project-Id-Version: Limnoria\n"
+"POT-Creation-Date: 2014-01-21 19:24+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
-"Language-Team: Supybot-fr <progval@gmail.com>\n"
-"Language: \n"
+"Last-Translator: \n"
+"Language-Team: Limnoria <progval@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Français\n"
-"X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: fr\n"
 
 #: config.py:45
 msgid ""
 "Value must include $value, otherwise the factoid's value would be left\n"
 "    out."
-msgstr "La valeur doit inclure $value, sinon la valeur de la factoid ne serait pas affichée."
+msgstr ""
+"La valeur doit inclure $value, sinon la valeur de la factoid ne serait pas "
+"affichée."
 
-#: config.py:51
+#: config.py:52
+msgid ""
+"Determines whether the Factoids plugins will\n"
+"    be browsable on the HTTP server."
+msgstr "Détermine si le plugin Factoids sera accessible par le serveur HTTP."
+
+#: config.py:55
+msgid ""
+"Determines whether factoids can be displayed\n"
+"    via the web server."
+msgstr "Détermine si les factoids seront affichées via le serveur web."
+
+#: config.py:59
+msgid ""
+"Only allows a user with voice or above on a\n"
+"    channel to use the command."
+msgstr ""
+"Autoriser uniquement un(e) utilisateur(trice) qui a un voice ou mieux dans "
+"le salon à utiliser la commande."
+
+#: config.py:62
 msgid ""
 "Determines what separator must be used in the\n"
-"    learn command.  Defaults to 'as' -- learn <key> as <value>.  Users might\n"
+"    learn command.  Defaults to 'as' -- learn <key> as <value>.  Users "
+"might\n"
 "    feel more comfortable with 'is' or something else, so it's\n"
 "    configurable."
-msgstr "Détermine quel séparateur est utilisé par la commande 'learn'. Par défaut, il s'agit de 'est' : 'learn <clef> as <valeur>. Les utilisateurs sont susceptibles de trouver 'is' plus confortable, ou n'importe quoi, c'est configurable."
+msgstr ""
+"Détermine quel séparateur est utilisé par la commande 'learn'. Par défaut, "
+"il s'agit de 'est' : 'learn <clef> as <valeur>. Les utilisateurs sont "
+"susceptibles de trouver 'is' plus confortable, ou n'importe quoi, c'est "
+"configurable."
 
-#: config.py:56
+#: config.py:67
 msgid ""
 "Determines whether the bot will reply with the\n"
-"    single matching factoid if only one factoid matches when using the search\n"
+"    single matching factoid if only one factoid matches when using the "
+"search\n"
 "    command."
-msgstr "Détermine si le bot répondra avec une seule factoid, même si la recherche de l'utilisateur donne plusieurs résultats."
+msgstr ""
+"Détermine si le bot répondra avec une seule factoid, même si la recherche de "
+"l'utilisateur donne plusieurs résultats."
 
-#: config.py:60
+#: config.py:71
 msgid ""
 "Determines whether the bot will reply to invalid\n"
 "    commands by searching for a factoid; basically making the whatis\n"
 "    unnecessary when you want all factoids for a given key."
-msgstr "Détermine si le bot répondra aux commandes invalides lors de la recherche d'une factoid ; permet simplement de rendre la commande 'whatis' inutile lorsque vous voulez toutes les factoids d'un clef donnée."
+msgstr ""
+"Détermine si le bot répondra aux commandes invalides lors de la recherche "
+"d'une factoid ; permet simplement de rendre la commande 'whatis' inutile "
+"lorsque vous voulez toutes les factoids d'un clef donnée."
 
-#: config.py:64
+#: config.py:75
 msgid ""
 "If you try to look up a nonexistent factoid,\n"
-"    this setting make the bot try to find some possible matching keys through\n"
-"    several approximate matching algorithms and return a list of matching keys,\n"
+"    this setting make the bot try to find some possible matching keys "
+"through\n"
+"    several approximate matching algorithms and return a list of matching "
+"keys,\n"
 "    before giving up."
-msgstr "Si vous essayez de chercher une factoid inexistante, cette option permet de faire en sorte que le bot recherche les clefs de factoids dont le nom est proche, et qu'il les affiche."
+msgstr ""
+"Si vous essayez de chercher une factoid inexistante, cette option permet de "
+"faire en sorte que le bot recherche les clefs de factoids dont le nom est "
+"proche, et qu'il les affiche."
 
-#: config.py:69
+#: config.py:80
 msgid "$key could be $value."
 msgstr "$key semble être $value."
 
-#: config.py:69
+#: config.py:80
 msgid ""
 "Determines the format of\n"
-"    the response given when a factoid's value is requested.  All the standard\n"
-"    substitutes apply, in addition to \"$key\" for the factoid's key and \"$value\"\n"
+"    the response given when a factoid's value is requested.  All the "
+"standard\n"
+"    substitutes apply, in addition to \"$key\" for the factoid's key and "
+"\"$value\"\n"
 "    for the factoid's value."
-msgstr "Détermine le format de la réponse donnée lorsqu'une valeur de factoid est demandée. Tous les substitus standards s'appliquent, en plus de \"$key\" pour la clef de la factoid et \"$value\" pour la valeur de la factoid."
+msgstr ""
+"Détermine le format de la réponse donnée lorsqu'une valeur de factoid est "
+"demandée. Tous les substitus standards s'appliquent, en plus de \"$key\" "
+"pour la clef de la factoid et \"$value\" pour la valeur de la factoid."
 
-#: plugin.py:179
+#: plugin.py:108
+msgid "key"
+msgstr "clé"
+
+#: plugin.py:109
+msgid "id"
+msgstr "n°"
+
+#: plugin.py:110
+msgid "fact"
+msgstr "factoid"
+
+#: plugin.py:275
+msgid "You have to be at least voiced to teach factoids."
+msgstr "Vous devez au moins être voice pour m’apprendre des factoids."
+
+#: plugin.py:312
 msgid ""
 "[<channel>] <key> %s <value>\n"
 "\n"
 "                         Associates <key> with <value>.  <channel> is only\n"
 "                         necessary if the message isn't sent on the channel\n"
-"                         itself.  The word '%s' is necessary to separate the\n"
-"                         key from the value.  It can be changed to another word\n"
+"                         itself.  The word '%s' is necessary to separate "
+"the\n"
+"                         key from the value.  It can be changed to another "
+"word\n"
 "                         via the learnSeparator registry value.\n"
 "                         "
 msgstr ""
 "[<canal>] <clef> %s <valeur>\n"
 "\n"
-"Associer la <clef> avec la <valeur>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même. Le mot '%s' est nécessaire pour séparer la clef de la valeur. Il peut être modifié avec la valeur de registre learnSeparator."
+"Associer la <clef> avec la <valeur>. <canal> n'est nécessaire que si le "
+"message n'est pas envoyé sur le canal lui-même. Le mot '%s' est nécessaire "
+"pour séparer la clef de la valeur. Il peut être modifié avec la valeur de "
+"registre learnSeparator."
 
-#: plugin.py:199
+#: plugin.py:332
 msgid ""
 "Try to typo-match input to possible factoids.\n"
 "        \n"
@@ -84,70 +147,81 @@ msgid ""
 "        First, try a simple wildcard search.\n"
 "        If that fails, use the Damerau-Levenshtein edit-distance metric.\n"
 "        "
-msgstr ""
+msgstr "."
 
-#: plugin.py:257
-#: plugin.py:386
+#: plugin.py:390 plugin.py:520
 msgid "That's not a valid number for that key."
 msgstr "Ce n'est pas un nombre valide pour cette clef."
 
-#: plugin.py:279
-#: plugin.py:372
-#: plugin.py:598
+#: plugin.py:412 plugin.py:506 plugin.py:735
 msgid "No factoid matches that key."
 msgstr "Aucune factoid ne correspond à cette clef."
 
-#: plugin.py:304
+#: plugin.py:438
 msgid ""
 "[<channel>] [--raw] <key> [<number>]\n"
 "\n"
 "        Looks up the value of <key> in the factoid database.  If given a\n"
 "        number, will return only that exact factoid. If '--raw' option is\n"
 "        given, no variable substitution will take place on the factoid.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canal>] <clef> [<nombre>]\n"
 "\n"
-"Regarde la valeur de la <clef> dans la base de données de factoids. Si un <nombre> est donné, retourne la factoid exacte. Si l'option --raw est donnée, aucune substitution de variable ne sera effectuée avant d'afficher la factoid.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Regarde la valeur de la <clef> dans la base de données de factoids. Si un "
+"<nombre> est donné, retourne la factoid exacte. Si l'option --raw est "
+"donnée, aucune substitution de variable ne sera effectuée avant d'afficher "
+"la factoid.<canal> n'est nécessaire que si le message n'est pas envoyé sur "
+"le canal lui-même."
 
-#: plugin.py:321
-#: plugin.py:523
+#: plugin.py:455 plugin.py:660
 msgid "key id"
 msgstr "id de clef"
 
-#: plugin.py:334
+#: plugin.py:468
 msgid ""
 "[<channel>] <oldkey> <newkey> [<number>]\n"
 "\n"
 "        Adds a new key <newkey> for factoid associated with <oldkey>.\n"
-"        <number> is only necessary if there's more than one factoid associated\n"
+"        <number> is only necessary if there's more than one factoid "
+"associated\n"
 "        with <oldkey>.\n"
 "\n"
-"        The same action can be accomplished by using the 'learn' function with\n"
+"        The same action can be accomplished by using the 'learn' function "
+"with\n"
 "        a new key but an existing (verbatim) factoid content.\n"
 "        "
 msgstr ""
 "[<canal>] <ancienne clef> <nouvelle clef> [<nombre>]\n"
 "\n"
-"Ajoute une <nouvelle clef> à la factoid correspondant à l'<ancienne clef>. Le <nombre> n'est nécessaire que si il y a plus d'une factoid associée à l'<ancienne clef>.La même action peut être accomplie en utilisant la fonction 'learn' avec la <nouvelle clef>, sans le contenu actuel de la factoid."
+"Ajoute une <nouvelle clef> à la factoid correspondant à l'<ancienne clef>. "
+"Le <nombre> n'est nécessaire que si il y a plus d'une factoid associée à "
+"l'<ancienne clef>.La même action peut être accomplie en utilisant la "
+"fonction 'learn' avec la <nouvelle clef>, sans le contenu actuel de la "
+"factoid."
 
-#: plugin.py:381
-#: plugin.py:398
+#: plugin.py:515 plugin.py:532
 msgid "This key-factoid relationship already exists."
 msgstr "Cette relation clef-factoid existe déjà."
 
-#: plugin.py:389
-msgid "This key has more than one factoid associated with it, but you have not provided a number."
-msgstr "Cette clef a plus d'une factoid associée, mais vous n'avez pas fourni un nombre."
+#: plugin.py:523
+msgid ""
+"This key has more than one factoid associated with it, but you have not "
+"provided a number."
+msgstr ""
+"Cette clef a plus d'une factoid associée, mais vous n'avez pas fourni un "
+"nombre."
 
-#: plugin.py:403
+#: plugin.py:537
 msgid ""
 "[<channel>] [--plain] [--alpha] [<number>]\n"
 "\n"
 "        Returns a list of top-ranked factoid keys, sorted by usage count\n"
-"        (rank). If <number> is not provided, the default number of factoid keys\n"
+"        (rank). If <number> is not provided, the default number of factoid "
+"keys\n"
 "        returned is set by the rankListLength registry value.\n"
 "\n"
 "        If --plain option is given, rank numbers and usage counts are not\n"
@@ -156,50 +230,65 @@ msgid ""
 "        If --alpha option is given in addition to --plain, keys are sorted\n"
 "        alphabetically, instead of by rank.\n"
 "\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canal>] [--plain] [--alpha] [<nombre>]\n"
 "\n"
-"Retourne une liste des factoids les plus utilisées. Si le <nombre> n'est pas fourni, il correspond par défaut au nombre de clefs de factoids défini dans la clef de registre rankListLength. Si --plain est donné, le numéro des rangs et le comptage des utilisations n'est pas inclu dans la sortie. Si --alpha est donné, en plus de --plain, les clefs seront triées alphabétiquement, au lieu de l'être par leur rang.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Retourne une liste des factoids les plus utilisées. Si le <nombre> n'est pas "
+"fourni, il correspond par défaut au nombre de clefs de factoids défini dans "
+"la clef de registre rankListLength. Si --plain est donné, le numéro des "
+"rangs et le comptage des utilisations n'est pas inclu dans la sortie. Si --"
+"alpha est donné, en plus de --plain, les clefs seront triées "
+"alphabétiquement, au lieu de l'être par leur rang.<canal> n'est nécessaire "
+"que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:448
+#: plugin.py:582
 msgid ""
 "[<channel>] <key>\n"
 "\n"
 "        Locks the factoid(s) associated with <key> so that they cannot be\n"
-"        removed or added to.  <channel> is only necessary if the message isn't\n"
+"        removed or added to.  <channel> is only necessary if the message "
+"isn't\n"
 "        sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canal>] <clef>\n"
 "\n"
-"Verrouille la/les factoid(s) associé(e) à la <clef>, pour qu'elles ne puissent plus être supprimées ou modifiées. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Verrouille la/les factoid(s) associé(e) à la <clef>, pour qu'elles ne "
+"puissent plus être supprimées ou modifiées. <canal> n'est nécessaire que si "
+"le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:466
+#: plugin.py:600
 msgid ""
 "[<channel>] <key>\n"
 "\n"
 "        Unlocks the factoid(s) associated with <key> so that they can be\n"
-"        removed or added to.  <channel> is only necessary if the message isn't\n"
+"        removed or added to.  <channel> is only necessary if the message "
+"isn't\n"
 "        sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canal>] <clef>\n"
 "\n"
-"Verrouille la/les factoid(s) associé(e) à la <clef>, pour qu'elles puissent être supprimées ou modifiées. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Verrouille la/les factoid(s) associé(e) à la <clef>, pour qu'elles puissent "
+"être supprimées ou modifiées. <canal> n'est nécessaire que si le message "
+"n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:505
+#: plugin.py:639
 msgid ""
 "[<channel>] <key> [<number>|*]\n"
 "\n"
 "        Removes a key-fact relationship for key <key> from the factoids\n"
-"        database.  If there is more than one such relationship for this key,\n"
+"        database.  If there is more than one such relationship for this "
+"key,\n"
 "        a number is necessary to determine which one should be removed.\n"
 "        A * can be used to remove all relationships for <key>.\n"
 "\n"
-"        If as a result, the key (factoid) remains without any relationships to\n"
+"        If as a result, the key (factoid) remains without any relationships "
+"to\n"
 "        a factoid (key), it shall be removed from the database.\n"
 "\n"
 "        <channel> is only necessary if\n"
@@ -208,58 +297,76 @@ msgid ""
 msgstr ""
 "[<canal>] <clef> [<nombre>|*]\n"
 "\n"
-"Enlève la factoid <clef> de la base de données. Si il y a plus d'une factoid avec cette clef, un <nombre> est requis pour déterminer laquelle sera supprimée. Un joker * peut être utilisé pour enlever toutes les factoids avec cette clef. Si, en tant que résultat, la clef (factoid) n'a plus aucune relation avec une autre factoid (clef), elle devrait être supprimée de la base de données.<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Enlève la factoid <clef> de la base de données. Si il y a plus d'une factoid "
+"avec cette clef, un <nombre> est requis pour déterminer laquelle sera "
+"supprimée. Un joker * peut être utilisé pour enlever toutes les factoids "
+"avec cette clef. Si, en tant que résultat, la clef (factoid) n'a plus aucune "
+"relation avec une autre factoid (clef), elle devrait être supprimée de la "
+"base de données.<canal> n'est nécessaire que si le message n'est pas envoyé "
+"sur le canal lui-même."
 
-#: plugin.py:537
+#: plugin.py:654
+msgid "You have to be at least voiced to remove factoids."
+msgstr "Vous devez au moins être voice pour supprimer des factoids."
+
+#: plugin.py:674
 msgid "There is no such factoid."
 msgstr "Cette factoid n'existe pas."
 
-#: plugin.py:547
+#: plugin.py:684
 msgid "Invalid factoid number."
 msgstr "Numéro de factoid invalide."
 
-#: plugin.py:552
-msgid "%s factoids have that key.  Please specify which one to remove, or use * to designate all of them."
-msgstr "%s factoids ont cette clef. Veuillez spécifier laquelle vous voulez supprimer ou utiliser * pour toutes les désigner."
+#: plugin.py:689
+msgid ""
+"%s factoids have that key.  Please specify which one to remove, or use * to "
+"designate all of them."
+msgstr ""
+"%s factoids ont cette clef. Veuillez spécifier laquelle vous voulez "
+"supprimer ou utiliser * pour toutes les désigner."
 
-#: plugin.py:560
+#: plugin.py:697
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Returns a random factoid from the database for <channel>.  <channel>\n"
+"        Returns random factoids from the database for <channel>.  <channel>\n"
 "        is only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canal>]\n"
 "\n"
-"Retourne une factoid aléatoire de la base de données pour le canal.  <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Retourne une factoid aléatoire de la base de données pour le canal.  <canal> "
+"n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:582
+#: plugin.py:719
 msgid "I couldn't find a factoid."
 msgstr "Je ne peux trouver une factoid"
 
-#: plugin.py:587
+#: plugin.py:724
 msgid ""
 "[<channel>] <key>\n"
 "\n"
 "        Gives information about the factoid(s) associated with <key>.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canal>] <clef>\n"
 "\n"
-"Donne des informations sur la/les factoid(s) associée(s) à la <clef>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Donne des informations sur la/les factoid(s) associée(s) à la <clef>. "
+"<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-"
+"même."
 
-#: plugin.py:613
+#: plugin.py:750
 msgid "#%i was added by %s at %s, and has been recalled %n"
 msgstr "#%i a été ajouté par %s le %s, et il y a eu %n."
 
-#: plugin.py:616
+#: plugin.py:753
 msgid "time"
 msgstr "rappel"
 
-#: plugin.py:626
+#: plugin.py:763
 msgid ""
 "[<channel>] <key> <number> <regexp>\n"
 "\n"
@@ -269,32 +376,38 @@ msgid ""
 msgstr ""
 "[<canal>] <clef> <nombre> <expression régulière>\n"
 "\n"
-"Change la factoid <nombre> associée à la <clef>, en accord avec l'<expression régulière>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Change la factoid <nombre> associée à la <clef>, en accord avec "
+"l'<expression régulière>. <canal> n'est nécessaire que si le message n'est "
+"pas envoyé sur le canal lui-même."
 
-#: plugin.py:640
+#: plugin.py:777
 msgid "I couldn't find any key %q"
 msgstr "Je ne peux trouver de clef %q"
 
-#: plugin.py:655
+#: plugin.py:792
 msgid ""
 "[<channel>] [--values] [--{regexp} <value>] [<glob> ...]\n"
 "\n"
-"        Searches the keyspace for keys matching <glob>.  If --regexp is given,\n"
-"        its associated value is taken as a regexp and matched against the keys.\n"
-"        If --values is given, search the value space instead of the keyspace.\n"
+"        Searches the keyspace for keys matching <glob>.  If --regexp is "
+"given,\n"
+"        its associated value is taken as a regexp and matched against the "
+"keys.\n"
+"        If --values is given, search the value space instead of the "
+"keyspace.\n"
 "        "
 msgstr ""
 "[<canal>] [--values] [--{regexp} <expression régulière>] [<glob>...]\n"
 "\n"
-"Recherche les clefs correspondant au <glob>. Si --regexp est donné, recherche les clefs correspondantes à l'<expression régulière>. Si --values est donné, recherche parmi les valeurs, plutôt que parmi les clefs. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Recherche les clefs correspondant au <glob>. Si --regexp est donné, "
+"recherche les clefs correspondantes à l'<expression régulière>. Si --values "
+"est donné, recherche parmi les valeurs, plutôt que parmi les clefs. <canal> "
+"n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:692
-#: plugin.py:701
+#: plugin.py:829 plugin.py:838
 msgid "No keys matched that query."
 msgstr "Aucune clef ne correspond à cette requête."
 
-#: plugin.py:697
-#: plugin.py:706
+#: plugin.py:834 plugin.py:843
 msgid "More than 100 keys matched that query; please narrow your query."
-msgstr "Plus de 100 clefs correspondent à votre requête ; veuillez la préciser."
-
+msgstr ""
+"Plus de 100 clefs correspondent à votre requête ; veuillez la préciser."

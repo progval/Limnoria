@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2014-01-22 07:53+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,16 +44,16 @@ msgid ""
 "    random grabbing."
 msgstr ""
 
-#: plugin.py:66
+#: plugin.py:63
 msgid "%s (Said by: %s; grabbed by %s at %t)"
 msgstr ""
 
-#: plugin.py:226
+#: plugin.py:223
 #, docstring
 msgid "Add the help for \"@help QuoteGrabs\" here."
 msgstr ""
 
-#: plugin.py:265
+#: plugin.py:262
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -64,15 +64,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:278
+#: plugin.py:275
 msgid "You can't quote grab yourself."
 msgstr ""
 
-#: plugin.py:285
+#: plugin.py:282
 msgid "I couldn't find a proper message to grab."
 msgstr ""
 
-#: plugin.py:290
+#: plugin.py:287
 #, docstring
 msgid ""
 "[<channel>] <number>\n"
@@ -83,15 +83,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:301
+#: plugin.py:298
 msgid "Nothing to ungrab."
 msgstr ""
 
-#: plugin.py:303
+#: plugin.py:300
 msgid "Invalid grab number."
 msgstr ""
 
-#: plugin.py:308
+#: plugin.py:305
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -101,11 +101,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:316
+#: plugin.py:313
 msgid "I couldn't find a matching quotegrab for %s."
 msgstr ""
 
-#: plugin.py:322
+#: plugin.py:319
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -117,11 +117,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:339
+#: plugin.py:336
 msgid "I couldn't find any quotegrabs for %s."
 msgstr ""
 
-#: plugin.py:345
+#: plugin.py:342
 #, docstring
 msgid ""
 "[<channel>] [<nick>]\n"
@@ -132,15 +132,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:355
+#: plugin.py:352
 msgid "Couldn't get a random quote for that nick."
 msgstr ""
 
-#: plugin.py:357
+#: plugin.py:354
 msgid "Couldn't get a random quote.  Are there any grabbed quotes in the database?"
 msgstr ""
 
-#: plugin.py:363
+#: plugin.py:360
 #, docstring
 msgid ""
 "[<channel>] <id>\n"
@@ -150,11 +150,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:371
+#: plugin.py:368
 msgid "No quotegrab for id %s"
 msgstr ""
 
-#: plugin.py:377
+#: plugin.py:374
 #, docstring
 msgid ""
 "[<channel>] <text>\n"
@@ -164,7 +164,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:392
+#: plugin.py:389
 msgid "No quotegrabs matching %s"
 msgstr ""
 

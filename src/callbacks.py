@@ -1411,15 +1411,15 @@ class PluginRegexp(Plugin):
     the bot is addressed, or triggered only when the bot isn't addressed.
     """
     flags = re.I
-    # 'regexps' methods are called whether the message is addressed or not.
     regexps = ()
-    # 'addressedRegexps' methods are called only when the message is addressed,
-    # and then, only with the payload (i.e., what is returned from the
-    # 'addressed' function.
+    """'regexps' methods are called whether the message is addressed or not."""
     addressedRegexps = ()
-    # 'unaddressedRegexps' methods are called only when the message is *not*
-    # addressed.
+    """'addressedRegexps' methods are called only when the message is addressed,
+    and then, only with the payload (i.e., what is returned from the
+    'addressed' function."""
     unaddressedRegexps = ()
+    """'unaddressedRegexps' methods are called only when the message is *not*
+    addressed."""
     Proxy = SimpleProxy
     def __init__(self, irc):
         self.__parent = super(PluginRegexp, self)

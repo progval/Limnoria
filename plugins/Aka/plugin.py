@@ -32,6 +32,7 @@ import re
 import os
 import sys
 import datetime
+import operator
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -44,17 +45,159 @@ from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization('Aka')
 
 try:
+    import sqlite3
+except ImportError:
+    sqlite3 = None
+try:
     import sqlalchemy
     import sqlalchemy.ext
     import sqlalchemy.ext.declarative
 except ImportError:
-    raise callbacks.Error('You have to install python-sqlalchemy in order '
-            'to load this plugin.')
+    sqlalchemy = None
 
-if sqlalchemy:
+if not (sqlite3 or sqlalchemy):
+    raise callbacks.Error('You have to install python-sqlite3 or '
+            'python-sqlalchemy in order to load this plugin.')
 
+available_db = {}
+
+class Alias(object):
+    __slots__ = ('name', 'alias', 'locked', 'locked_by', 'locked_at')
+    def __init__(self, name, alias):
+        self.name = name
+        self.alias = alias
+        self.locked = False
+        self.locked_by = None
+        self.locked_at = None
+    def __repr__(self):
+        return "<Alias('%r', '%r')>" % (self.name, self.alias)
+if sqlite3:
+    class SQLiteAkaDB(object):
+        __slots__ = ('engines', 'filename', 'dbs',)
+        def __init__(self, filename):
+            self.engines = ircutils.IrcDict()
+            self.filename = filename.replace('sqlite3', 'sqlalchemy')
+
+        def close(self):
+            self.dbs.clear()
+
+        def get_db(self, channel):
+            if channel in self.engines:
+                engine = self.engines[channel]
+            else:
+                filename = plugins.makeChannelFilename(self.filename, channel)
+                exists = os.path.exists(filename)
+                engine = sqlite3.connect(filename, check_same_thread=False)
+                if not exists:
+                    cursor = engine.cursor()
+                    cursor.execute("""CREATE TABLE aliases (
+                            id INTEGER NOT NULL,
+                            name VARCHAR NOT NULL,
+                            alias VARCHAR NOT NULL,
+                            locked BOOLEAN NOT NULL,
+                            locked_by VARCHAR,
+                            locked_at DATETIME,
+                            PRIMARY KEY (id),
+                            UNIQUE (name))""")
+                    engine.commit()
+                self.engines[channel] = engine
+            assert engine.execute("select 1").fetchone() == (1,)
+            return engine
+
+
+        def has_aka(self, channel, name):
+            name = callbacks.canonicalName(name, preserve_spaces=True)
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
+            db = self.get_db(channel)
+            return self.get_db(channel).cursor() \
+                    .execute("""SELECT COUNT() as count
+                                FROM aliases WHERE name = ?;""", (name,)) \
+                    .fetchone()[0]
+
+        def get_aka_list(self, channel):
+            cursor = self.get_db(channel).cursor()
+            cursor.execute("""SELECT name FROM aliases;""")
+            list_ = cursor.fetchall()
+            return list_
+
+        def get_alias(self, channel, name):
+            name = callbacks.canonicalName(name, preserve_spaces=True)
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
+            cursor = self.get_db(channel).cursor()
+            cursor.execute("""SELECT alias FROM aliases
+                              WHERE name = ?;""", (name,))
+            r = cursor.fetchone()
+            if r:
+                return r[0]
+            else:
+                return None
+
+        def add_aka(self, channel, name, alias):
+            name = callbacks.canonicalName(name, preserve_spaces=True)
+            if self.has_aka(channel, name):
+                raise AkaError(_('This Aka already exists.'))
+            if sys.version_info[0] < 3:
+                if isinstance(name, str):
+                    name = name.decode('utf8')
+                if isinstance(alias, str):
+                    alias = alias.decode('utf8')
+            db = self.get_db(channel)
+            cursor = db.cursor()
+            cursor.execute("""INSERT INTO aliases VALUES (
+                NULL, ?, ?, 0, NULL, NULL);""", (name, alias))
+            db.commit()
+
+        def remove_aka(self, channel, name):
+            name = callbacks.canonicalName(name, preserve_spaces=True)
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
+            db = self.get_db(channel)
+            db.cursor().execute('DELETE FROM aliases WHERE name = ?', (name,))
+            db.commit()
+
+        def lock_aka(self, channel, name, by):
+            name = callbacks.canonicalName(name, preserve_spaces=True)
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
+            db = self.get_db(channel)
+            cursor = db.cursor().execute("""UPDATE aliases
+                    SET locked=1, locked_at=?, locked_by=? WHERE name = ?""",
+                    (datetime.datetime.now(), by, name))
+            if cursor.rowcount == 0:
+                raise AkaError(_('This Aka does not exist'))
+            db.commit()
+
+        def unlock_aka(self, channel, name, by):
+            name = callbacks.canonicalName(name, preserve_spaces=True)
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
+            db = self.get_db(channel)
+            cursor = db.cursor()
+            cursor.execute("""UPDATE aliases SET locked=0, locked_at=?
+                              WHERE name = ?""", (datetime.datetime.now(), name))
+            if cursor.rowcount == 0:
+                raise AkaError(_('This Aka does not exist'))
+            db.commit()
+
+        def get_aka_lock(self, channel, name):
+            name = callbacks.canonicalName(name, preserve_spaces=True)
+            if sys.version_info[0] < 3 and isinstance(name, str):
+                name = name.decode('utf8')
+            cursor = self.get_db(channel).cursor()
+            cursor.execute("""SELECT locked, locked_by, locked_at
+                              FROM aliases WHERE name = ?;""", (name,))
+            r = cursor.fetchone()
+            if r:
+                return (bool(r[0]), r[1], r[2])
+            else:
+                raise AkaError(_('This Aka does not exist'))
+    available_db.update({'sqlite3': SQLiteAkaDB})
+elif sqlalchemy:
     Base = sqlalchemy.ext.declarative.declarative_base()
-    class Alias(Base):
+    class SQLAlchemyAlias(Alias, Base):
+        __slots__ = ()
         __tablename__ = 'aliases'
 
         id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
@@ -65,18 +208,10 @@ if sqlalchemy:
         locked_by = sqlalchemy.Column(sqlalchemy.String, nullable=True)
         locked_at = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
 
-        def __init__(self, name, alias):
-            self.name = name
-            self.alias = alias
-            self.locked = False
-            self.locked_by = None
-            self.locked_at = None
-        def __repr__(self):
-            return "<Alias('%r', '%r')>" % (self.name, self.alias)
-
     # TODO: Add table for usage statistics
 
     class SqlAlchemyAkaDB(object):
+        __slots__ = ('engines', 'filename', 'sqlalchemy', 'dbs')
         def __init__(self, filename):
             self.engines = ircutils.IrcDict()
             self.filename = filename
@@ -105,12 +240,12 @@ if sqlalchemy:
             name = callbacks.canonicalName(name, preserve_spaces=True)
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
-            count = self.get_db(channel).query(Alias) \
-                    .filter(Alias.name == name) \
+            count = self.get_db(channel).query(SQLAlchemyAlias) \
+                    .filter(SQLAlchemyAlias.name == name) \
                     .count()
             return bool(count)
         def get_aka_list(self, channel):
-            list_ = list(self.get_db(channel).query(Alias.name))
+            list_ = list(self.get_db(channel).query(SQLAlchemyAlias.name))
             return list_
 
         def get_alias(self, channel, name):
@@ -118,8 +253,8 @@ if sqlalchemy:
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
             try:
-                return self.get_db(channel).query(Alias.alias) \
-                        .filter(Alias.name == name).one()[0]
+                return self.get_db(channel).query(SQLAlchemyAlias.alias) \
+                        .filter(SQLAlchemyAlias.name == name).one()[0]
             except sqlalchemy.orm.exc.NoResultFound:
                 return None
 
@@ -133,7 +268,7 @@ if sqlalchemy:
                 if isinstance(alias, str):
                     alias = alias.decode('utf8')
             db = self.get_db(channel)
-            db.add(Alias(name, alias))
+            db.add(SQLAlchemyAlias(name, alias))
             db.commit()
 
         def remove_aka(self, channel, name):
@@ -141,7 +276,7 @@ if sqlalchemy:
             if sys.version_info[0] < 3 and isinstance(name, str):
                 name = name.decode('utf8')
             db = self.get_db(channel)
-            db.query(Alias).filter(Alias.name == name).delete()
+            db.query(SQLAlchemyAlias).filter(SQLAlchemyAlias.name == name).delete()
             db.commit()
 
         def lock_aka(self, channel, name, by):
@@ -150,8 +285,8 @@ if sqlalchemy:
                 name = name.decode('utf8')
             db = self.get_db(channel)
             try:
-                aka = db.query(Alias) \
-                        .filter(Alias.name == name).one()
+                aka = db.query(SQLAlchemyAlias) \
+                        .filter(SQLAlchemyAlias.name == name).one()
             except sqlalchemy.orm.exc.NoResultFound:
                 raise AkaError(_('This Aka does not exist'))
             if aka.locked:
@@ -167,8 +302,8 @@ if sqlalchemy:
                 name = name.decode('utf8')
             db = self.get_db(channel)
             try:
-                aka = db.query(Alias) \
-                        .filter(Alias.name == name).one()
+                aka = db.query(SQLAlchemyAlias) \
+                        .filter(SQLAlchemyAlias.name == name).one()
             except sqlalchemy.orm.exc.NoResultFound:
                 raise AkaError(_('This Aka does not exist'))
             if not aka.locked:
@@ -184,10 +319,12 @@ if sqlalchemy:
                 name = name.decode('utf8')
             try:
                 return self.get_db(channel) \
-                        .query(Alias.locked, Alias.locked_by, Alias.locked_at)\
-                        .filter(Alias.name == name).one()
+                        .query(SQLAlchemyAlias.locked, SQLAlchemyAlias.locked_by, SQLAlchemyAlias.locked_at)\
+                        .filter(SQLAlchemyAlias.name == name).one()
             except sqlalchemy.orm.exc.NoResultFound:
                 raise AkaError(_('This Aka does not exist'))
+
+    available_db.update({'sqlalchemy': SqlAlchemyAkaDB})
 
 
 def getArgs(args, required=1, optional=0, wildcard=0):
@@ -229,7 +366,7 @@ def findBiggestAt(alias):
     else:
         return 0
 
-AkaDB = plugins.DB('Aka', {'sqlalchemy': SqlAlchemyAkaDB})
+AkaDB = plugins.DB('Aka', available_db)
 
 class Aka(callbacks.Plugin):
     """Add the help for "@plugin help Aka" here
