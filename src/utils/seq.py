@@ -33,7 +33,7 @@ def window(L, size):
     Returns a sliding 'window' through the list L of size size."""
     assert not isinstance(L, int), 'Argument order swapped: window(L, size)'
     if size < 1:
-        raise ValueError, 'size <= 0 disallowed.'
+        raise ValueError('size <= 0 disallowed.')
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
 

@@ -138,7 +138,7 @@ class FunctionsTestCase(SupyTestCase):
              ':ACTION beats ang senseless with a 50lb Unix manual (#2)',
              ':supybot!~supybot@underthemain.net PRIVMSG #sourcereview '
              ':ACTION resizes angryman\'s terminal to 40x24 (#16)']
-        msgs = map(ircmsgs.IrcMsg, L)
+        msgs = list(map(ircmsgs.IrcMsg, L))
         for msg in msgs:
             self.failUnless(ircmsgs.isAction(msg))
 

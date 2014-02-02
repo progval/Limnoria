@@ -219,9 +219,9 @@ class Math(callbacks.Plugin):
             irc.error(_('The answer exceeded %s or so.') % maxFloat)
         except TypeError:
             irc.error(_('Something in there wasn\'t a valid number.'))
-        except NameError, e:
+        except NameError as e:
             irc.error(_('%s is not a defined function.') % str(e).split()[1])
-        except Exception, e:
+        except Exception as e:
             irc.error(str(e))
     calc = wrap(calc, ['text'])
 
@@ -253,9 +253,9 @@ class Math(callbacks.Plugin):
             irc.error(_('The answer exceeded %s or so.') % maxFloat)
         except TypeError:
             irc.error(_('Something in there wasn\'t a valid number.'))
-        except NameError, e:
+        except NameError as e:
             irc.error(_('%s is not a defined function.') % str(e).split()[1])
-        except Exception, e:
+        except Exception as e:
             irc.error(utils.exnToString(e))
     icalc = wrap(icalc, [('checkCapability', 'trusted'), 'text'])
 
@@ -308,7 +308,7 @@ class Math(callbacks.Plugin):
         if len(stack) == 1:
             irc.reply(str(self._complexToString(complex(stack[0]))))
         else:
-            s = ', '.join(map(self._complexToString, map(complex, stack)))
+            s = ', '.join(map(self._complexToString, list(map(complex, stack))))
             irc.reply(_('Stack: [%s]') % s)
 
     @internationalizeDocstring
@@ -337,7 +337,7 @@ class Math(callbacks.Plugin):
                 newNum = round(newNum, digits + 1 + zeros)
             newNum = self._floatToString(newNum)
             irc.reply(str(newNum))
-        except convertcore.UnitDataError, ude:
+        except convertcore.UnitDataError as ude:
             irc.error(str(ude))
     convert = wrap(convert, [optional('float', 1.0),'something','to','text'])
 

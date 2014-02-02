@@ -98,7 +98,7 @@ class Plugin(callbacks.Plugin):
     plugin = wrap(plugin, [many('something')])
 
     def _findCallbacks(self, irc, command):
-        command = map(callbacks.canonicalName, command)
+        command = list(map(callbacks.canonicalName, command))
         plugin_list = []
         for cb in irc.callbacks:
             if not hasattr(cb, 'getCommand'):

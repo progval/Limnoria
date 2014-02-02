@@ -83,7 +83,7 @@ def DB(filename, types):
                 return types[type](fn, *args, **kwargs)
             except KeyError:
                 continue
-        raise NoSuitableDatabase, types.keys()
+        raise NoSuitableDatabase(types.keys())
     return MakeDB
 
 def makeChannelFilename(filename, channel=None, dirname=None):
@@ -191,15 +191,18 @@ class ChannelUserDictionary(collections.MutableMapping):
     def __init__(self):
         self.channels = ircutils.IrcDict()
 
-    def __getitem__(self, (channel, id)):
+    def __getitem__(self, key):
+        (channel, id) = key
         return self.channels[channel][id]
 
-    def __setitem__(self, (channel, id), v):
+    def __setitem__(self, key, v):
+        (channel, id) = key
         if channel not in self.channels:
             self.channels[channel] = self.IdDict()
         self.channels[channel][id] = v
 
-    def __delitem__(self, (channel, id)):
+    def __delitem__(self, key):
+        (channel, id) = key
         del self.channels[channel][id]
 
     def __iter__(self):
@@ -233,7 +236,7 @@ class ChannelUserDB(ChannelUserDictionary):
         self.filename = filename
         try:
             fd = open(self.filename)
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             log.warning('Couldn\'t open %s: %s.', self.filename, e)
             return
         reader = csv.reader(fd)
@@ -251,11 +254,11 @@ class ChannelUserDB(ChannelUserDictionary):
                         pass
                     v = self.deserialize(channel, id, t)
                     self[channel, id] = v
-                except Exception, e:
+                except Exception as e:
                     log.warning('Invalid line #%s in %s.',
                                 lineno, self.__class__.__name__)
                     log.debug('Exception: %s', utils.exnToString(e))
-        except Exception, e: # This catches exceptions from csv.reader.
+        except Exception as e: # This catches exceptions from csv.reader.
             log.warning('Invalid line #%s in %s.',
                         lineno, self.__class__.__name__)
             log.debug('Exception: %s', utils.exnToString(e))
@@ -503,7 +506,7 @@ class PeriodicFileDownloader(object):
     periodicFiles = None
     def __init__(self):
         if self.periodicFiles is None:
-            raise ValueError, 'You must provide files to download'
+            raise ValueError('You must provide files to download')
         self.lastDownloaded = {}
         self.downloadedCounter = {}
         for filename in self.periodicFiles:
@@ -525,10 +528,10 @@ class PeriodicFileDownloader(object):
         try:
             try:
                 infd = utils.web.getUrlFd(url)
-            except IOError, e:
+            except IOError as e:
                 self.log.warning('Error downloading %s: %s', url, e)
                 return
-            except utils.web.Error, e:
+            except utils.web.Error as e:
                 self.log.warning('Error downloading %s: %s', url, e)
                 return
             confDir = conf.supybot.directories.data()

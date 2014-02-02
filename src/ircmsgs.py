@@ -85,7 +85,7 @@ class IrcMsg(object):
     def __init__(self, s='', command='', args=(), prefix='', msg=None):
         assert not (msg and s), 'IrcMsg.__init__ cannot accept both s and msg'
         if not s and not command and not msg:
-            raise MalformedIrcMsg, 'IRC messages require a command.'
+            raise MalformedIrcMsg('IRC messages require a command.')
         self._str = None
         self._repr = None
         self._hash = None
@@ -109,7 +109,7 @@ class IrcMsg(object):
                     self.args = s.split()
                 self.command = self.args.pop(0)
             except (IndexError, ValueError):
-                raise MalformedIrcMsg, repr(originalString)
+                raise MalformedIrcMsg(repr(originalString))
         else:
             if msg is not None:
                 if prefix:

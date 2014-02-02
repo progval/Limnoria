@@ -88,12 +88,12 @@ class SqliteKarmaDB(object):
         if len(results) == 0:
             return None
         else:
-            return map(int, results[0])
+            return list(map(int, results[0]))
 
     def gets(self, channel, things):
         db = self._getDb(channel)
         cursor = db.cursor()
-        normalizedThings = dict(zip(map(lambda s: s.lower(), things), things))
+        normalizedThings = dict(list(zip([s.lower() for s in things], things)))
         criteria = ' OR '.join(['normalized=?'] * len(normalizedThings))
         sql = """SELECT name, added-subtracted FROM karma
                  WHERE %s ORDER BY added-subtracted DESC""" % criteria
@@ -167,7 +167,7 @@ class SqliteKarmaDB(object):
         elif kind == 'active':
             orderby = 'added+subtracted'
         else:
-            raise ValueError, 'invalid kind'
+            raise ValueError('invalid kind')
         sql = """SELECT name, %s FROM karma ORDER BY %s DESC LIMIT %s""" % \
               (orderby, orderby, limit)
         db = self._getDb(channel)

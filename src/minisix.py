@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2004-2005, Jeremiah Fincher
+# Copyright (c) 2014, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""Restricted equivalent to six."""
+
 import sys
 
-class DynamicScope(object):
-    def _getLocals(self, name):
-        f = sys._getframe().f_back.f_back # _getLocals <- __[gs]etattr__ <- ...
-        while f:
-            if name in f.f_locals:
-                return f.f_locals
-            f = f.f_back
-        raise NameError(name)
-    
-    def __getattr__(self, name):
-        try:
-            return self._getLocals(name)[name]
-        except (NameError, KeyError):
-            return None
-            
-    def __setattr__(self, name, value):
-        self._getLocals(name)[name] = value
-
-(__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['dynamic'] = DynamicScope()
-
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+if sys.version_info[0] >= 3:
+    intern = sys.intern
+else:
+    if isinstance(__builtins__, dict):
+        intern = __builtins__['intern']
+    else:
+        intern = __builtins__.intern

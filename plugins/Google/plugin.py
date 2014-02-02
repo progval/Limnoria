@@ -120,7 +120,7 @@ class Google(callbacks.PluginRegexp):
                                 headers=headers).decode('utf8')
         data = json.loads(text)
         if data['responseStatus'] != 200:
-            raise callbacks.Error, _('We broke The Google!')
+            raise callbacks.Error(_('We broke The Google!'))
         return data
 
     def formatData(self, data, bold=True, max=0, onetoone=False):
@@ -143,7 +143,7 @@ class Google(callbacks.PluginRegexp):
                 results.append(url)
         if sys.version_info[0] < 3:
             repl = lambda x:x if isinstance(x, unicode) else unicode(x, 'utf8')
-            results = map(repl, results)
+            results = list(map(repl, results))
         if not results:
             return [_('No matches found.')]
         elif onetoone:
@@ -162,7 +162,7 @@ class Google(callbacks.PluginRegexp):
         data = self.search(text, msg.args[0], {'smallsearch': True})
         if data['responseData']['results']:
             url = data['responseData']['results'][0]['unescapedUrl']
-            if opts.has_key('snippet'):
+            if 'snippet' in opts:
                 snippet = data['responseData']['results'][0]['content']
                 snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
             else:

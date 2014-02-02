@@ -151,7 +151,7 @@ class Admin(callbacks.Plugin):
         networkGroup.channels().add(channel)
         if key:
             networkGroup.channels.key.get(channel).setValue(key)
-        maxchannels = irc.state.supported.get('maxchannels', sys.maxint)
+        maxchannels = irc.state.supported.get('maxchannels', sys.maxsize)
         if len(irc.state.channels) + 1 > maxchannels:
             irc.error(_('I\'m already too close to maximum number of '
                       'channels for this network.'), Raise=True)
@@ -351,7 +351,7 @@ class Admin(callbacks.Plugin):
             """
             # XXX Add the expirations.
             if ircdb.ignores.hostmasks:
-                irc.reply(format('%L', (map(repr,ircdb.ignores.hostmasks))))
+                irc.reply(format('%L', (list(map(repr,ircdb.ignores.hostmasks)))))
             else:
                 irc.reply(_('I\'m not currently globally ignoring anyone.'))
         list = wrap(list)

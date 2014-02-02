@@ -65,7 +65,7 @@ class Conditional(callbacks.Plugin):
         tokens = callbacks.tokenize(command)
         try:
             self.Proxy(irc.irc, msg, tokens)
-        except Exception, e:
+        except Exception as e:
             self.log.exception('Uncaught exception in requested function:')
 
     @internationalizeDocstring

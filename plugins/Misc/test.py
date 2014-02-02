@@ -132,8 +132,8 @@ class MiscTestCase(ChannelPluginTestCase):
 
     if network:
         def testVersion(self):
-            print '*** This test should start passing when we have our '\
-                  'threaded issues resolved.'
+            print('*** This test should start passing when we have our '\
+                  'threaded issues resolved.')
             self.assertNotError('version')
 
     def testSource(self):

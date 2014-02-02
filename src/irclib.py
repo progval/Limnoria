@@ -205,8 +205,9 @@ class IrcMsgQueue(object):
                msg in self.lowpriority or \
                msg in self.highpriority
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.highpriority or self.normal or self.lowpriority)
+    __nonzero__ = __bool__
 
     def __len__(self):
         return len(self.highpriority)+len(self.lowpriority)+len(self.normal)
@@ -434,9 +435,9 @@ class IrcState(IrcCommandDispatcher):
             assert left[0] == '(', 'Odd PREFIX in 005: %s' % s
             left = left[1:]
             assert len(left) == len(right), 'Odd PREFIX in 005: %s' % s
-            return dict(zip(left, right))
+            return dict(list(zip(left, right)))
         else:
-            return dict(zip('ovh', s))
+            return dict(list(zip('ovh', s)))
     _005converters['prefix'] = _prefixParser
     del _prefixParser
     def _maxlistParser(s):
@@ -447,7 +448,7 @@ class IrcState(IrcCommandDispatcher):
             (mode, limit) = pair.split(':', 1)
             modes += mode
             limits += (int(limit),) * len(mode)
-        return dict(zip(modes, limits))
+        return dict(list(zip(modes, limits)))
     _005converters['maxlist'] = _maxlistParser
     del _maxlistParser
     def _maxbansParser(s):
@@ -460,7 +461,7 @@ class IrcState(IrcCommandDispatcher):
                 (mode, limit) = pair.split(':', 1)
                 modes += mode
                 limits += (int(limit),) * len(mode)
-            d = dict(zip(modes, limits))
+            d = dict(list(zip(modes, limits)))
             assert 'b' in d
             return d['b']
         else:
@@ -474,7 +475,7 @@ class IrcState(IrcCommandDispatcher):
                 converter = self._005converters.get(name, lambda x: x)
                 try:
                     self.supported[name] = converter(value)
-                except Exception, e:
+                except Exception as e:
                     log.exception('Uncaught exception in 005 converter:')
                     log.error('Name: %s, Converter: %s', name, converter)
             else:

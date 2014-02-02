@@ -93,7 +93,7 @@ def fetch_sandbox(f):
         try:
             replies = commands.process(process, self, irc, *args,
                     timeout=5, heap_size=1024*1024,
-                    pn=self.name(), cn=f.func_name)
+                    pn=self.name(), cn=f.__name__)
         except commands.ProcessTimeoutError:
             raise utils.web.Error(_('Page is too big.'))
         else:
@@ -135,7 +135,7 @@ class Web(callbacks.PluginRegexp):
                 fd = utils.web.getUrlFd(url)
                 text = fd.read(size)
                 fd.close()
-            except socket.timeout, e:
+            except socket.timeout as e:
                 self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
                 if self.registryValue('snarferReportIOExceptions', channel):
                      irc.reply(url+" : "+utils.web.TIMED_OUT, prefixNick=False)

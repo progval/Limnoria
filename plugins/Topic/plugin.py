@@ -105,7 +105,7 @@ addConverter('topicNumber', getTopicNumber)
 addConverter('canChangeTopic', canChangeTopic)
 
 def splitTopic(topic, separator):
-    return filter(None, topic.split(separator))
+    return list(filter(None, topic.split(separator)))
 
 datadir = conf.supybot.directories.data()
 filename = conf.supybot.directories.data.dirize('Topic.pickle')
@@ -125,10 +125,10 @@ class Topic(callbacks.Plugin):
                 self.redos = pickle.load(pkl)
                 self.lastTopics = pickle.load(pkl)
                 self.watchingFor332 = pickle.load(pkl)
-            except Exception, e:
+            except Exception as e:
                 self.log.debug('Unable to load pickled data: %s', e)
             pkl.close()
-        except IOError, e:
+        except IOError as e:
             self.log.debug('Unable to open pickle file: %s', e)
         world.flushers.append(self._flush)
 
@@ -145,11 +145,11 @@ class Topic(callbacks.Plugin):
                 pickle.dump(self.redos, pkl)
                 pickle.dump(self.lastTopics, pkl)
                 pickle.dump(self.watchingFor332, pkl)
-            except Exception, e:
+            except Exception as e:
                 self.log.warning('Unable to store pickled data: %s', e)
             pkl.close()
             shutil.move(tempfn, filename)
-        except (IOError, shutil.Error), e:
+        except (IOError, shutil.Error) as e:
             self.log.warning('File error: %s', e)
 
     def _splitTopic(self, topic, channel):

@@ -183,7 +183,7 @@ def parse(translationFile):
 i18nSupybot = None
 def PluginInternationalization(name='supybot'):
     # This is a proxy that prevents having several objects for the same plugin
-    if i18nClasses.has_key(name):
+    if name in i18nClasses:
         return i18nClasses[name]
     else:
         return _PluginInternationalization(name)
@@ -282,8 +282,10 @@ class _PluginInternationalization:
         load its functions."""
         if self.name != 'supybot':
             return
+        path = self._getL10nCodePath()
         try:
-            execfile(self._getL10nCodePath())
+            with open(path) as fd:
+                exec(compile(fd.read(), path, 'exec'))
         except IOError: # File doesn't exist
             pass
 
@@ -308,7 +310,7 @@ class _PluginInternationalization:
         if self.name != 'supybot':
             return
         if hasattr(self, '_l10nFunctions') and \
-            self._l10nFunctions.has_key(name):
+                name in self._l10nFunctions:
             return self._l10nFunctions[name]
 
     def internationalizeFunction(self, name):
@@ -357,7 +359,7 @@ def internationalizeDocstring(obj):
     Only useful for commands (commands' docstring is displayed on IRC)"""
     if obj.__doc__ == None:
         return obj
-    if sys.modules[obj.__module__].__dict__.has_key('_'):
+    if '_' in sys.modules[obj.__module__].__dict__:
         internationalizedCommands.update({hash(obj): obj})
         try:
             obj.__doc__=sys.modules[obj.__module__]._.__call__(obj.__doc__)

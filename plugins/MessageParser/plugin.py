@@ -128,7 +128,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         tokens = callbacks.tokenize(command)
         try:
             self.Proxy(irc.irc, msg, tokens)
-        except Exception, e:
+        except Exception as e:
             log.exception('Uncaught exception in function called by MessageParser:')
 
     def _checkManageCapabilities(self, irc, msg, channel):
@@ -161,7 +161,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                 cursor.execute("SELECT regexp, action FROM triggers")
                 # Fetch results and prepend channel name or 'global'. This
                 # prevents duplicating the following lines.
-                results.extend(map(lambda x: (channel,)+x, cursor.fetchall()))
+                results.extend([(channel,)+x for x in cursor.fetchall()])
             if len(results) == 0:
                 return
             max_triggers = self.registryValue('maxTriggers', channel)
@@ -206,14 +206,14 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("SELECT id, usage_count, locked FROM triggers WHERE regexp=?", (regexp,))
         results = cursor.fetchall()
         if len(results) != 0:
-            (id, usage_count, locked) = map(int, results[0])
+            (id, usage_count, locked) = list(map(int, results[0]))
         else:
             locked = 0
             usage_count = 0
         if not locked:
             try:
                 re.compile(regexp)
-            except Exception, e:
+            except Exception as e:
                 irc.error(_('Invalid python regexp: %s') % (e,))
                 return
             if ircdb.users.hasUser(msg.prefix):
@@ -252,7 +252,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute(sql, (regexp,))
         results = cursor.fetchall()
         if len(results) != 0:
-            (id, locked) = map(int, results[0])
+            (id, locked) = list(map(int, results[0]))
         else:
             irc.error(_('There is no such regexp trigger.'))
             return

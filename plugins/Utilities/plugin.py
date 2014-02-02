@@ -75,7 +75,7 @@ class Utilities(callbacks.Plugin):
         nested commands to run, but only the output of the last one to be
         returned.
         """
-        args = filter(None, args)
+        args = list(filter(None, args))
         if args:
             irc.reply(args[-1])
         else:
@@ -113,7 +113,7 @@ class Utilities(callbacks.Plugin):
         try:
             samp = random.sample(things, num)
             irc.reply(' '.join(samp))
-        except ValueError, e:
+        except ValueError as e:
             irc.error('%s' % (e,))
     sample = wrap(sample, ['positiveInt', many('anything')])
 
@@ -135,7 +135,7 @@ class Utilities(callbacks.Plugin):
         args = [token and token or '""' for token in rest]
         text = ' '.join(args)
         commands = command.split()
-        commands = map(callbacks.canonicalName, commands)
+        commands = list(map(callbacks.canonicalName, commands))
         tokens = callbacks.tokenize(text)
         allTokens = commands + tokens
         self.Proxy(irc, msg, allTokens)

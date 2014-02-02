@@ -65,15 +65,15 @@ class Connection:
 
         code, text = self.getresultcode()
         if code < 200 or code >= 300:
-            raise Exception, "Got '%s' when 200-class response expected" % \
-                  line
+            raise Exception("Got '%s' when 200-class response expected" % \
+                  line)
         return [code, text]
 
     def get100block(self):
         """Used when expecting multiple lines of text -- gets the block
         part only.  Does not get any codes or anything!  Returns a string."""
         data = []
-        while 1:
+        while True:
             line = self.rfile.readline().decode('utf8').strip()
             if line == '.':
                 break
@@ -86,8 +86,8 @@ class Connection:
         finalcode]"""
         code, text = self.getresultcode()
         if code < 100 or code >= 200:
-            raise Exception, "Got '%s' when 100-class response expected" % \
-                  code
+            raise Exception("Got '%s' when 100-class response expected" % \
+                  code)
 
         bodylines = self.get100block().split("\n")
 
@@ -149,7 +149,7 @@ class Connection:
         if not hasattr(self, 'dbobjs'):
             self.dbobjs = {}
 
-        if self.dbobjs.has_key(dbname):
+        if dbname in self.dbobjs:
             return self.dbobjs[dbname]
 
         # We use self.dbdescs explicitly since we don't want to
@@ -157,7 +157,7 @@ class Connection:
 
         if dbname != '*' and dbname != '!' and \
                not dbname in self.dbdescs.keys():
-            raise Exception, "Invalid database name '%s'" % dbname
+            raise Exception("Invalid database name '%s'" % dbname)
 
         self.dbobjs[dbname] = Database(self, dbname)
         return self.dbobjs[dbname]
@@ -181,7 +181,7 @@ class Connection:
 
         if database != '*' and database != '!' and \
            not database in self.getdbdescs():
-            raise Exception, "Invalid database '%s' specified" % database
+            raise Exception("Invalid database '%s' specified" % database)
         
         self.sendcommand("DEFINE " + enquote(database) + " " + enquote(word))
         code = self.getresultcode()[0]
@@ -192,9 +192,9 @@ class Connection:
             # No definitions.
             return []
         if code != 150:
-            raise Exception, "Unknown code %d" % code
+            raise Exception("Unknown code %d" % code)
 
-        while 1:
+        while True:
             code, text = self.getresultcode()
             if code != 151 or code is None:
                 break
@@ -217,10 +217,10 @@ class Connection:
         self.getstratdescs()            # Prime the cache
         self.getdbdescs()               # Prime the cache
         if not strategy in self.getstratdescs().keys():
-            raise Exception, "Invalid strategy '%s'" % strategy
+            raise Exception("Invalid strategy '%s'" % strategy)
         if database != '*' and database != '!' and \
                not database in self.getdbdescs().keys():
-            raise Exception, "Invalid database name '%s'" % database
+            raise Exception("Invalid database name '%s'" % database)
 
         self.sendcommand("MATCH %s %s %s" % (enquote(database),
                                              enquote(strategy),
@@ -230,7 +230,7 @@ class Connection:
             # No Matches
             return []
         if code != 152:
-            raise Exception, "Unexpected code %d" % code
+            raise Exception("Unexpected code %d" % code)
 
         retval = []
 
@@ -239,7 +239,7 @@ class Connection:
             retval.append(Definition(self, self.getdbobj(matchdict),
                                      dequote(matchword)))
         if self.getresultcode()[0] != 250:
-            raise Exception, "Unexpected end-of-list code %d" % code
+            raise Exception("Unexpected end-of-list code %d" % code)
         return retval
 
 class Database:

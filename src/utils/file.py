@@ -50,7 +50,7 @@ def open_mkdir(filename, mode='wb', *args, **kwargs):
     baz in it.
     """
     if mode not in ('w', 'wb'):
-        raise ValueError, 'utils.file.open expects to write.'
+        raise ValueError('utils.file.open expects to write.')
     (dirname, basename) = os.path.split(filename)
     os.makedirs(dirname)
     return open(filename, mode, *args, **kwargs)
@@ -105,7 +105,7 @@ def nonCommentLines(fd):
             yield line
 
 def nonEmptyLines(fd):
-    return ifilter(str.strip, fd)
+    return filter(str.strip, fd)
 
 def nonCommentNonEmptyLines(fd):
     return nonEmptyLines(nonCommentLines(fd))
@@ -137,7 +137,7 @@ class AtomicFile(object):
         if allowEmptyOverwrite is None:
             allowEmptyOverwrite = force(self.default.allowEmptyOverwrite)
         if mode not in ('w', 'wb'):
-            raise ValueError, format('Invalid mode: %q', mode)
+            raise ValueError(format('Invalid mode: %q', mode))
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
         self.makeBackupIfSmaller = makeBackupIfSmaller
@@ -219,7 +219,7 @@ class AtomicFile(object):
                 shutil.move(self.tempFilename, self.filename)
 
         else:
-            raise ValueError, 'AtomicFile.close called after rollback.'
+            raise ValueError('AtomicFile.close called after rollback.')
 
     def __del__(self):
         # We rollback because if we're deleted without being explicitly closed,

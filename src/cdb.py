@@ -80,7 +80,7 @@ def open_db(filename, mode='r', **kwargs):
         maker.finish()
         return ReaderWriter(filename, **kwargs)
     else:
-        raise ValueError, 'Invalid flag: %s' % mode
+        raise ValueError('Invalid flag: %s' % mode)
 
 def shelf(filename, *args, **kwargs):
     """Opens a new shelf database object."""
@@ -118,7 +118,7 @@ def make(dbFilename, readFilename=None):
     else:
         readfd = open(readFilename, 'rb')
     maker = Maker(dbFilename)
-    while 1:
+    while True:
         (initchar, key, value) = _readKeyValue(readfd)
         if initchar is None:
             break
@@ -257,7 +257,7 @@ class Reader(utils.IterableMap):
             try:
                 return self.default
             except AttributeError:
-                raise KeyError, key
+                raise KeyError(key)
 
     def findall(self, key):
         ret = []
@@ -318,7 +318,7 @@ class ReaderWriter(utils.IterableMap):
         adds = {}
         try:
             fd = open(self.journalName, 'r')
-            while 1:
+            while True:
                 (initchar, key, value) = _readKeyValue(fd)
                 if initchar is None:
                     break
@@ -377,7 +377,7 @@ class ReaderWriter(utils.IterableMap):
 
     def __getitem__(self, key):
         if key in self.removals:
-            raise KeyError, key
+            raise KeyError(key)
         else:
             try:
                 return self.adds[key]
@@ -386,7 +386,7 @@ class ReaderWriter(utils.IterableMap):
 
     def __delitem__(self, key):
         if key in self.removals:
-            raise KeyError, key
+            raise KeyError(key)
         else:
             if key in self.adds and key in self.cdb:
                 self._journalRemoveKey(key)
@@ -398,7 +398,7 @@ class ReaderWriter(utils.IterableMap):
             elif key in self.cdb:
                 self._journalRemoveKey(key)
             else:
-                raise KeyError, key
+                raise KeyError(key)
         self.mods += 1
         self._flushIfOverLimit()
 

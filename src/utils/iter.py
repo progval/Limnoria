@@ -36,8 +36,9 @@ from itertools import *
 
 # For old plugins
 ifilter = filter
-def ifilterfalse(p, L):
-    return ifilter(lambda x:not p(x), L)
+def filterfalse(p, L):
+    return filter(lambda x:not p(x), L)
+ifilterfalse = filterfalse
 imap = map
 
 def len(iterable):
@@ -48,7 +49,7 @@ def len(iterable):
     return i
 
 def trueCycle(iterable):
-    while 1:
+    while True:
         yielded = False
         for x in iterable:
             yield x
@@ -70,14 +71,14 @@ def partition(p, iterable):
 
 def any(p, iterable):
     """Returns true if any element in iterable satisfies predicate p."""
-    for elt in ifilter(p, iterable):
+    for elt in filter(p, iterable):
         return True
     else:
         return False
 
 def all(p, iterable):
     """Returns true if all elements in iterable satisfy predicate p."""
-    for elt in ifilterfalse(p, iterable):
+    for elt in filterfalse(p, iterable):
         return False
     else:
         return True
@@ -141,7 +142,7 @@ def startswith(long_, short):
     shortI = iter(short)
     try:
         while True:
-            if shortI.next() != longI.next():
+            if next(shortI) != next(longI):
                 return False
     except StopIteration:
         return True
@@ -151,10 +152,10 @@ def limited(iterable, limit):
     iterable = iter(iterable)
     try:
         while i:
-            yield iterable.next()
+            yield next(iterable)
             i -= 1
     except StopIteration:
-        raise ValueError, 'Expected %s elements in iterable (%r), got %s.' % \
-              (limit, iterable, limit-i)
+        raise ValueError('Expected %s elements in iterable (%r), got %s.' % \
+              (limit, iterable, limit-i))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

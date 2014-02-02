@@ -148,10 +148,17 @@ try:
                 def log_debug(self, msg, *args):
                     log.debug(msg, *args)
 
-            fixer_names = get_fixers_from_package('lib2to3.fixes')
-            fixer_names.remove('lib2to3.fixes.fix_import')
-            fixer_names += get_fixers_from_package('2to3')
-            r = DistutilsRefactoringTool(fixer_names, options=options)
+            fixer_names = ['fix_basestring',
+                    'fix_dict',
+                    'fix_imports',
+                    'fix_long',
+                    'fix_metaclass', 'fix_methodattrs',
+                    'fix_numliterals',
+                    'fix_types',
+                    'fix_unicode', 'fix_urllib', 'fix_xrange']
+            fixers = list(map(lambda x:'lib2to3.fixes.'+x, fixer_names))
+            fixers += get_fixers_from_package('2to3')
+            r = DistutilsRefactoringTool(fixers, options=options)
             r.refactor(files, write=True)
 except ImportError:
     # 2.x

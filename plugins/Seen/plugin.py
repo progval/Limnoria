@@ -369,7 +369,7 @@ class Seen(callbacks.Plugin):
         msgs = [m for m in irc.state.history[i:end]
                 if m.command == 'PRIVMSG' and ircutils.strEqual(m.args[0], channel)]
         if msgs:
-            irc.reply(format('%L', map(ircmsgs.prettyPrint, msgs)))
+            irc.reply(format('%L', list(map(ircmsgs.prettyPrint, msgs))))
         else:
             irc.reply(format(_('Either %s didn\'t leave, '
                              'or no messages were sent while %s was gone.'), nick, nick))

@@ -102,7 +102,7 @@ class Format(callbacks.Plugin):
         if len(bad) != len(good):
             irc.error(_('<chars to translate> must be the same length as '
                       '<chars to replace those with>.'), Raise=True)
-        irc.reply(utils.str.MultipleReplacer(dict(zip(bad, good)))(text))
+        irc.reply(utils.str.MultipleReplacer(dict(list(zip(bad, good))))(text))
     translate = wrap(translate, ['something', 'something', 'text'])
 
     @internationalizeDocstring
@@ -208,7 +208,7 @@ class Format(callbacks.Plugin):
         try:
             s %= tuple(args)
             irc.reply(s)
-        except TypeError, e:
+        except TypeError as e:
             self.log.debug(utils.exnToString(e))
             irc.error(_('Not enough arguments for the format string.'),
                       Raise=True)

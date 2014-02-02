@@ -67,7 +67,7 @@ def getSocket(host, socks_proxy=None):
     elif isIPV6(host):
         return socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
     else:
-        raise socket.error, 'Something wonky happened.'
+        raise socket.error('Something wonky happened.')
 
 def isIP(s):
     """Returns whether or not a given string is an IP address.

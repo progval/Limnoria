@@ -82,7 +82,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.writeCheckTime = None
         self.nextReconnectTime = None
         self.resetDelay()
-        if self.networkGroup.get('ssl').value and not globals().has_key('ssl'):
+        if self.networkGroup.get('ssl').value and 'ssl' not in globals():
             drivers.log.error('The Socket driver can not connect to SSL '
                               'servers for your Python version.  Try the '
                               'Twisted driver instead, or install a Python'
@@ -131,7 +131,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             while msgs[-1] is not None:
                 msgs.append(self.irc.takeMsg())
             del msgs[-1]
-            self.outbuffer += ''.join(imap(str, msgs))
+            self.outbuffer += ''.join(map(str, msgs))
         if self.outbuffer:
             try:
                 if sys.version_info[0] < 3:
@@ -140,7 +140,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     sent = self.conn.send(self.outbuffer.encode())
                 self.outbuffer = self.outbuffer[sent:]
                 self.eagains = 0
-            except socket.error, e:
+            except socket.error as e:
                 self._handleSocketError(e)
         if self.zombie and not self.outbuffer:
             self._reallyDie()
@@ -233,13 +233,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
-        except SSLError, e:
+        except SSLError as e:
             if e.args[0] == 'The read operation timed out':
                 pass
             else:
                 self._handleSocketError(e)
                 return
-        except socket.error, e:
+        except socket.error as e:
             self._handleSocketError(e)
             return
         if self.irc and not self.irc.zombie:
@@ -295,7 +295,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn = utils.net.getSocket(address, socks_proxy)
             vhost = conf.supybot.protocols.irc.vhost()
             self.conn.bind((vhost, 0))
-        except socket.error, e:
+        except socket.error as e:
             drivers.log.connectError(self.currentServer, e)
             self.scheduleReconnect()
             return
@@ -304,7 +304,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
         try:
             if getattr(conf.supybot.networks, self.irc.network).ssl():
-                assert globals().has_key('ssl')
+                assert 'ssl' in globals()
                 certfile = getattr(conf.supybot.networks, self.irc.network) \
                         .certfile()
                 if not certfile:
@@ -321,7 +321,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             setTimeout()
             self.connected = True
             self.resetDelay()
-        except socket.error, e:
+        except socket.error as e:
             if e.args[0] == 115:
                 now = time.time()
                 when = now + 60

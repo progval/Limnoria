@@ -58,12 +58,12 @@ class Scheduler(callbacks.Plugin):
             pkl = open(filename, 'rb')
             try:
                 eventdict = pickle.load(pkl)
-            except Exception, e:
+            except Exception as e:
                 self.log.debug('Unable to load pickled data: %s', e)
                 return
             finally:
                 pkl.close()
-        except IOError, e:
+        except IOError as e:
             self.log.debug('Unable to open pickle file: %s', e)
             return
         for name, event in eventdict.iteritems():
@@ -81,7 +81,7 @@ class Scheduler(callbacks.Plugin):
                 elif event['type'] == 'repeat': # repeating event
                     self._repeat(ircobj, event['msg'], name,
                                  event['time'], event['command'], False)
-            except AssertionError, e:
+            except AssertionError as e:
                 if str(e) == 'An event with the same name has already been scheduled.':
                     # we must be reloading the plugin, event is still scheduled
                     self.log.info('Event %s already exists, adding to dict.' % (name,))
@@ -95,11 +95,11 @@ class Scheduler(callbacks.Plugin):
             pkl = os.fdopen(pklfd, 'wb')
             try:
                 pickle.dump(self.events, pkl)
-            except Exception, e:
+            except Exception as e:
                 self.log.warning('Unable to store pickled data: %s', e)
             pkl.close()
             shutil.move(tempfn, filename)
-        except (IOError, shutil.Error), e:
+        except (IOError, shutil.Error) as e:
             self.log.warning('File error: %s', e)
 
     def die(self):

@@ -53,13 +53,18 @@ def universalImport(*names):
                     ret = getattr(ret, parts[0])
                     del parts[0]
             return ret
-    raise ImportError, ','.join(names)
+    raise ImportError(','.join(names))
 
 def changeFunctionName(f, name, doc=None):
     if doc is None:
         doc = f.__doc__
-    newf = types.FunctionType(f.func_code, f.func_globals, name,
-                              f.func_defaults, f.func_closure)
+    if hasattr(f, '__closure__'):
+        closure = f.__closure__
+    else:
+        # Pypy
+        closure = f.func_closure
+    newf = types.FunctionType(f.__code__, f.__globals__, name,
+                              f.__defaults__, closure)
     newf.__doc__ = doc
     return newf
 
@@ -86,7 +91,7 @@ class Synchronized(type):
                         f(self, *args, **kwargs)
                     finally:
                         lock.release()
-                return changeFunctionName(g, f.func_name, f.__doc__)
+                return changeFunctionName(g, f.__name__, f.__doc__)
             for attr in sync:
                 if attr in dict:
                     dict[attr] = synchronized(dict[attr])

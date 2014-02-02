@@ -65,9 +65,9 @@ class WebTestCase(ChannelPluginTestCase):
             # part of it.
             self.assertRegexp('title http://www.n-e-r-d.com/', 'N.*E.*R.*D')
             # Checks that the parser doesn't hang on invalid tags
-            print
-            print "If we have not fixed a bug with the parser, the following",
-            print "test will hang the test-suite."
+            print()
+            print("If we have not fixed a bug with the parser, the following")
+            print("test will hang the test-suite.")
             self.assertNotError(
                         'title http://www.youtube.com/watch?v=x4BtiqPN4u8')
 

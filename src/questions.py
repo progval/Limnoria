@@ -29,7 +29,7 @@
 
 """Handles interactive questions; useful for wizards and whatnot."""
 
-
+from __future__ import print_function
 
 import sys
 import textwrap
@@ -44,8 +44,8 @@ useBold = False
 def output(s, unformatted=True, fd=sys.stdout):
     if unformatted:
         s = textwrap.fill(utils.str.normalizeWhitespace(s), width=65)
-    print >>fd, s
-    print >>fd
+    print(s, file=fd)
+    print('', file=fd)
 
 def expect(prompt, possibilities, recursed=False, default=None,
            acceptEmpty=False, fd=sys.stdout):
@@ -75,10 +75,13 @@ def expect(prompt, possibilities, recursed=False, default=None,
     prompt = prompt.strip() + ' '
     if useBold:
         prompt += ansi.RESET
-        print >>fd, ansi.BOLD,
-    s = raw_input(prompt)
+        print(ansi.BOLD, end=' ', file=fd)
+    if sys.version_info[0] >= 3:
+        s = input(prompt)
+    else:
+        s = raw_input(prompt)
     s = s.strip()
-    print >>fd
+    print(file=fd)
     if possibilities:
         if s in possibilities:
             return s
@@ -140,7 +143,7 @@ def getpass(prompt=None, secondPrompt=None):
             output(_('Passwords don\'t match.'))
         else:
             break
-    print
+    print('')
     return password
 
 

@@ -125,19 +125,19 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
             request.set_proxy(httpProxy, 'http')
         fd = urllib2.urlopen(request, timeout=timeout)
         return fd
-    except socket.timeout, e:
-        raise Error, TIMED_OUT
-    except sockerrors, e:
-        raise Error, strError(e)
-    except httplib.InvalidURL, e:
-        raise Error, 'Invalid URL: %s' % e
-    except urllib2.HTTPError, e:
-        raise Error, strError(e)
-    except urllib2.URLError, e:
-        raise Error, strError(e.reason)
+    except socket.timeout as e:
+        raise Error(TIMED_OUT)
+    except sockerrors as e:
+        raise Error(strError(e))
+    except httplib.InvalidURL as e:
+        raise Error('Invalid URL: %s' % e)
+    except urllib2.HTTPError as e:
+        raise Error(strError(e))
+    except urllib2.URLError as e:
+        raise Error(strError(e.reason))
     # Raised when urllib doesn't recognize the url type
-    except ValueError, e:
-        raise Error, strError(e)
+    except ValueError as e:
+        raise Error(strError(e))
 
 def getUrl(url, size=None, headers=None, data=None):
     """getUrl(url, size=None, headers=None, data=None)
@@ -151,8 +151,8 @@ def getUrl(url, size=None, headers=None, data=None):
             text = fd.read()
         else:
             text = fd.read(size)
-    except socket.timeout, e:
-        raise Error, TIMED_OUT
+    except socket.timeout as e:
+        raise Error(TIMED_OUT)
     fd.close()
     return text
 

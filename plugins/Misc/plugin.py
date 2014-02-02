@@ -34,7 +34,7 @@ import imp
 import sys
 import json
 import time
-from itertools import ifilter
+
 
 import supybot
 
@@ -51,6 +51,15 @@ from supybot import commands
 
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
+
+if sys.version_info[0] < 3:
+    from itertools import ifilter as filter
+
+def get_suffix(file):
+    for suffix in imp.get_suffixes():
+        if file[-len(suffix[0]):] == suffix[0]:
+            return suffix
+    return None
 
 def getPluginsInDirectory(directory):
     # get modules in a given directory
@@ -275,7 +284,7 @@ class Misc(callbacks.Plugin):
         You may also want to use the 'list' command to list all available
         plugins and commands.
         """
-        command = map(callbacks.canonicalName, command)
+        command = list(map(callbacks.canonicalName, command))
         (maxL, cbs) = irc.findCallbacksForArgs(command)
         if maxL == command:
             if len(cbs) > 1:
@@ -313,7 +322,7 @@ class Misc(callbacks.Plugin):
             newest = _('The newest versions available online are %s.') % \
                     ', '.join([_('%s (in %s)') % (y,x)
                                for x,y in versions.items()])
-        except utils.web.Error, e:
+        except utils.web.Error as e:
             self.log.info('Couldn\'t get website version: %s', e)
             newest = _('I couldn\'t fetch the newest version '
                      'from the Limnoria repository.')
@@ -439,11 +448,11 @@ class Misc(callbacks.Plugin):
                 predicates.setdefault('regexp', []).append(f)
             elif option == 'nolimit':
                 nolimit = True
-        iterable = ifilter(self._validLastMsg, reversed(irc.state.history))
+        iterable = filter(self._validLastMsg, reversed(irc.state.history))
         if skipfirst:
             # Drop the first message only if our current channel is the same as
             # the channel we've been instructed to look at.
-            iterable.next()
+            next(iterable)
         predicates = list(utils.iter.flatten(predicates.itervalues()))
         # Make sure the user can't get messages from channels they aren't in
         def userInChannel(m):
