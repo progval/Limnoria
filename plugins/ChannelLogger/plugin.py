@@ -29,7 +29,10 @@
 ###
 
 import os
+import sys
 import time
+if sys.version_info[0] < 3:
+    from io import open
 from cStringIO import StringIO
 
 import supybot.conf as conf
