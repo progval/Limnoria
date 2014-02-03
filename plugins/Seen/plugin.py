@@ -263,7 +263,7 @@ class Seen(callbacks.Plugin):
         else:
             self._last(irc, channel, any=True)
     any = wrap(any, ['channel', getopts({'user': 'otherUser'}),
-                     additional('nick')])
+                     additional('something')])
 
     def _last(self, irc, channel, any=False):
         if any:
