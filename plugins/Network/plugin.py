@@ -141,6 +141,15 @@ class Network(callbacks.Plugin):
         """
         self.Proxy(otherIrc, msg, commandAndArgs)
     command = wrap(command, ['admin', ('networkIrc', True), many('something')])
+    def cmdall(self, irc, msg, args, commandAndArgs):
+        """<command> <args>...
+        
+        Perform <command> (with its associated <arg>s) on all networks.
+        """
+        ircs = world.ircs
+        for ircd in ircs:
+            #ircd.queueMsg(ircmsgs.IrcMsg(prefix="", command=commandAndArgs, args="", msg=""))
+            self.Proxy(ircd, msg, commandAndArgs)
 
     ###
     # whois command-related stuff.
