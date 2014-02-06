@@ -150,7 +150,7 @@ class Network(callbacks.Plugin):
         for ircd in ircs:
             #ircd.queueMsg(ircmsgs.IrcMsg(prefix="", command=commandAndArgs, args="", msg=""))
             self.Proxy(ircd, msg, commandAndArgs)
-
+    cmdall = wrap(cmdall, ['admin', many('something')])
     ###
     # whois command-related stuff.
     ###
