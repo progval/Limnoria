@@ -164,7 +164,7 @@ class ChannelLogger(callbacks.Plugin):
         if format:
             string = time.strftime(format) + '  '
             if sys.version_info[0] < 3:
-                string = string.decode()
+                string = string.decode('utf8', 'ignore')
             log.write(string)
 
     def normalizeChannel(self, irc, channel):
@@ -181,7 +181,7 @@ class ChannelLogger(callbacks.Plugin):
         if self.registryValue('stripFormatting', channel):
             s = ircutils.stripFormatting(s)
         if sys.version_info[0] < 3:
-            s = s.decode()
+            s = s.decode('utf8', 'ignore')
         log.write(s)
         if self.registryValue('flushImmediately'):
             log.flush()
