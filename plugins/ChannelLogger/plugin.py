@@ -180,6 +180,8 @@ class ChannelLogger(callbacks.Plugin):
             self.timestamp(log)
         if self.registryValue('stripFormatting', channel):
             s = ircutils.stripFormatting(s)
+        if sys.version_info[0] < 3:
+            s = s.decode()
         log.write(s)
         if self.registryValue('flushImmediately'):
             log.flush()
