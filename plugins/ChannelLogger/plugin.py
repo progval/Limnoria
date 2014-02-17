@@ -162,8 +162,10 @@ class ChannelLogger(callbacks.Plugin):
     def timestamp(self, log):
         format = conf.supybot.log.timestampFormat()
         if format:
-            log.write(time.strftime(format))
-            log.write('  ')
+            string = time.strftime(format) + '  '
+            if sys.version_info[0] < 3:
+                string = string.decode()
+            log.write(string)
 
     def normalizeChannel(self, irc, channel):
         return ircutils.toLower(channel)
