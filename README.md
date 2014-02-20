@@ -1,4 +1,14 @@
-[Install guide](http://supybot.fr.cr/doc/use/install.html)
+Supybot is a robust (it doesn't crash), user friendly (it's easy to
+configure) and programmer friendly (plugins are *extremely* easy to
+write) Python IRC bot.  It aims to be an adequate replacement for most
+existing IRC bots.  It includes a very flexible and powerful ACL system
+for controlling access to commands, as well as more than 50 builtin plugins
+providing around 400 actual commands.
+
+Limnoria is a project which continues development of Supybot (you can
+call it a fork) by fixing bugs and adding features (see the
+[list of added features](https://github.com/ProgVal/Limnoria/wiki/LGC) for
+more details).
 
 # Build status
 
@@ -6,23 +16,24 @@ Master branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Li
 
 Testing branch: [![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
 
-Limnoria is tested with Python 2.6, 2.7, 3.2, 3.3, and Pypy. Python 2.5 and older versions are not supported.
+Limnoria is tested with Python 2.6, 2.7, 3.2, 3.3, and Pypy. Python 2.5 and
+older versions are not supported.
 
-# EVERYONE:
+# Support
 
-Read [LICENSE].  It's a 3-clause BSD license, but you should read it
-anyway.
+## Documentation
 
-[LICENSE]:LICENSE.md
-
-# USERS:
+If this is your first install, there is an [install guide](http://supybot.aperio.fr/doc/use/install.html).
+You will probably be pointed to it if you ask on IRC how to install Limnoria.
 
 There is much documentation
-at [supybot.fr.cr] and at [Gribble wiki] for your perusal.  Please read it; we took the
+at [supybot.aperio.fr] and at [Gribble wiki] for your perusal.  Please read it; we took the
 time to write it, you should take the time to read it.
 
-[supybot.fr.cr]:http://supybot.fr.cr/doc
+[supybot.aperio.fr]:http://supybot.aperio.fr/doc
 [Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
+
+## English-speaking upport channels
 
 If you have any trouble, feel free to swing by [#supybot and #limnoria](irc://irc.freenode.net/#supybot,#limnoria) on
 [irc.freenode.net](irc://irc.freenode.net) or [#supybot](irc://irc.oftc.net/#supybot) at [irc.oftc.net](irc://irc.oftc.net) (we have a Limnoria there relaying,
@@ -33,21 +44,8 @@ understand or think you know of a better way to do something,
 
 [issue tracker]:https://github.com/ProgVal/Limnoria/issues
 
-# WINDOWS USERS:
 
-The wizards (supybot-wizard, supybot-newplugin, and
-supybot-adduser) are all installed to your Python directory's
-\Scripts.  What that *probably* means is that you'll run them like
-this: 
+## Support channels in other languages
 
-```
-C:\Python27\python C:\Python27\Scripts\supybot-wizard
-```
+Only French yet, at [#supybot-fr on freenode](irc://irc.freenode.net/#supybot-fr).
 
-If you are running a Python version that is not 2.7, replace "27" in the
-file names with your Python version, without the dot (for example "26".)
-
-# DEVELOPERS:
-
-We likewise have tons of developer documentation at
-[supybot.aperio.fr] for your learning adventures.  Have fun :)
