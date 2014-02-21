@@ -31,11 +31,11 @@ from there.
 # UNIX/Linux/BSD
 
 If you're installing Python using your distributor's packages, you may
-need a python-dev package installed, too.  If you don't have a
-'/usr/lib/python2.x/distutils' directory or
-'/usr/lib/python2.x/config/Makefile' (assuming '/usr/lib/python2.x' is
-where your Python libs are installed), then you will need a python-dev
-package.
+need a python-dev or python3-dev package installed, too.  If you don't have
+a '/usr/lib/python2.x/distutils' directory or 
+'/usr/lib/python2.x/config/Makefile' or with Python 3 
+'/usr/lib/python3.x/distutils' or '/usr/lib/python3.x/config/Makefile' (assuming '/usr/lib/python2.x' or '/usr/lib/python3.x' is where your Python 
+libs are installed), then you will need a python-dev or python3-dev package.
 
 First start by git cloning Limnoria and moving to the cloned repository.
 
@@ -54,6 +54,10 @@ Run
 python setup.py install
 ```
 
+```python``` can be replaced with ```python2``` (if your distribution 
+uses Python 3 by default) or ```python3``` if you want to use Python 3 
+version.
+
 Now you have several new programs installed where Python scripts are normally
 installed on your system ('/usr/bin' or '/usr/local/bin' are common on
 UNIX systems).  The two that might be of particular interest to you, the
@@ -69,6 +73,10 @@ Run
 ```
 python setup.py install --user
 ```
+
+```python``` can be replaced with ```python2``` (if your distribution 
+uses Python 3 by default) or ```python3``` if you want to use 
+Python 3 version.
 
 and you will have new programs installed in ~/.local/bin. The two that might be of particular interest to you, the
 new user, are 'supybot' and 'supybot-wizard'.  The former, 'supybot', is
@@ -95,6 +103,15 @@ git pull
 and then install Limnoria normally. "python setup.py install" doesn't affect config files of the bot any way.
 
 If you don't have the cloned Limnoria repository, clone it again using the installation instructions.
+
+## Upgrading to Python 3
+
+Upgrading Python3 happens the same way, but if you want to move from 2 to 3 
+or 3 to 2, you must remove the build/ directory first.
+
+```
+rm -rf build/
+```
 
 # Windows
 
