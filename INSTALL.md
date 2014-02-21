@@ -107,10 +107,14 @@ If you don't have the cloned Limnoria repository, clone it again using the insta
 ## Upgrading to Python 3
 
 Upgrading Python3 happens the same way, but if you want to move from 2 to 3 
-or 3 to 2, you must remove the build/ directory first.
+or 3 to 2, you must remove the build/ directory and the executable 
+supybot* files first. The build/ directory is on same directory as this 
+file and supybot* are usually in /usr/local/bin or ~/.local/bin
 
 ```
 rm -rf build/
+rm /usr/local/bin/supybot*
+rm ~/.local/bin/supybot*
 ```
 
 # Windows
