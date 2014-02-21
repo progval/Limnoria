@@ -501,7 +501,7 @@ def main():
             conf.registerPlugin(module.__name__, currentValue=True)
 
     plugins = getPlugins(pluginDirs + [plugin._pluginsDir])
-    for s in ('Admin', 'User', 'Channel', 'Misc', 'Config'):
+    for s in ('Admin', 'User', 'Channel', 'Misc', 'Config', 'Utilities'):
         m = loadPlugin(s)
         if m is not None:
             configurePlugin(m, advanced)
@@ -689,6 +689,7 @@ def main():
     conf.registerPlugin('Config', True)
     conf.registerPlugin('Misc', True)
     conf.registerPlugin('User', True)
+    conf.registerPlugin('Utilities', True)
 
     ###
     # Write the registry
