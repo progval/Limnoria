@@ -676,8 +676,7 @@ registerGroup(supybot.commands, 'defaultPlugins',
     commands."""))
 registerGlobalValue(supybot.commands.defaultPlugins, 'importantPlugins',
     registry.SpaceSeparatedSetOfStrings(
-        ['Admin', 'Channel', 'Config', 'Misc', 'Owner', 'Plugin', 'User',
-         'Utilities'],
+        ['Admin', 'Channel', 'Config', 'Misc', 'Owner', 'Plugin', 'User'],
         _("""Determines what plugins automatically get precedence over all
         other plugins when selecting a default plugin for a command.  By
         default, this includes the standard loaded plugins.  You probably
