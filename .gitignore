@@ -1,5 +1,5 @@
 *.mo
-*.py[co]
+*.py[cdo]
 *~
 .*.swp
 .swp
