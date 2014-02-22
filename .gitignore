@@ -1,4 +1,3 @@
-#*#
 *.mo
 *.py[co]
 *~
@@ -7,6 +6,8 @@
 MANIFEST
 backup/
 build/
+debian/compat
+debian/files
 debian/limnoria*
 debian/python-module-stampdir/
 dist/
