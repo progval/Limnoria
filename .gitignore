@@ -15,6 +15,7 @@ docs/_build/
 docs/plugins/
 limnoria.egg-info/
 merge.sh
+nano.save
 push.sh
 py3k/
 src/version.py
