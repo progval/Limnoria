@@ -1,8 +1,8 @@
 *.mo
 *.py[co]
 *~
-.*.s[a-w][a-p]
-.s[a-w][a-p]
+.*.swp
+.swp
 MANIFEST
 backup/
 build/
