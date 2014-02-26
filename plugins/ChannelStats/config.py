@@ -66,7 +66,7 @@ conf.registerChannelValue(ChannelStats, 'smileys',
     'smileys' for the purposes of stats-keeping.""")))
 conf.registerChannelValue(ChannelStats, 'frowns',
     Smileys(':| :-/ :-\\ :\\ :/ :( :-( :\'('.split(), _("""Determines what words
-    (i.e., pieces of text with no spaces in them ) are considered 'frowns' for
+    (i.e., pieces of text with no spaces in them) are considered 'frowns' for
     the purposes of stats-keeping.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
