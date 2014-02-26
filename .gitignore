@@ -1,12 +1,13 @@
-#*#
 *.mo
-*.py[co]
+*.py[cdo]
 *~
-.*.s[a-w][a-p]
-.s[a-w][a-p]
+.*.swp
+.swp
 MANIFEST
 backup/
 build/
+debian/compat
+debian/files
 debian/limnoria*
 debian/python-module-stampdir/
 dist/
@@ -14,6 +15,7 @@ docs/_build/
 docs/plugins/
 limnoria.egg-info/
 merge.sh
+nano.save
 push.sh
 py3k/
 src/version.py
