@@ -1035,7 +1035,8 @@ def _x(capability, ret):
     else:
         return ret
 
-def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
+def _checkCapabilityForUnknownUser(capability, users=users, channels=channels,
+        ignoreDefaultAllow=False):
     if isChannelCapability(capability):
         (channel, capability) = fromChannelCapability(capability)
         try:
@@ -1043,12 +1044,14 @@ def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
             if capability in c.capabilities:
                 return c._checkCapability(capability)
             else:
-                return _x(capability, c.defaultAllow)
+                return _x(capability, (not ignoreDefaultAllow) and c.defaultAllow)
         except KeyError:
             pass
     defaultCapabilities = conf.supybot.capabilities()
     if capability in defaultCapabilities:
         return defaultCapabilities.check(capability)
+    elif ignoreDefaultAllow:
+        return _x(capability, False)
     else:
         return _x(capability, conf.supybot.capabilities.default())
 
@@ -1082,12 +1085,12 @@ def checkCapability(hostmask, capability, users=users, channels=channels,
     except KeyError:
         # Raised when no hostmasks match.
         return _checkCapabilityForUnknownUser(capability, users=users,
-                                              channels=channels)
+                channels=channels, ignoreDefaultAllow=ignoreDefaultAllow)
     except ValueError as e:
         # Raised when multiple hostmasks match.
         log.warning('%s: %s', hostmask, e)
         return _checkCapabilityForUnknownUser(capability, users=users,
-                                              channels=channels)
+              channels=channels, ignoreDefaultAllow=ignoreDefaultAllow)
     if capability in u.capabilities:
         try:
             return u._checkCapability(capability, ignoreOwner)
@@ -1112,6 +1115,8 @@ def checkCapability(hostmask, capability, users=users, channels=channels,
     defaultCapabilities = conf.supybot.capabilities()
     if capability in defaultCapabilities:
         return defaultCapabilities.check(capability)
+    elif ignoreDefaultAllow:
+        return _x(capability, False)
     else:
         return _x(capability, conf.supybot.capabilities.default())
 
