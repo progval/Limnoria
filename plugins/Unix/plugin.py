@@ -210,10 +210,11 @@ class Unix(callbacks.Plugin):
                 args.append('-a')
             args.extend(self.registryValue('fortune.files'))
             try:
-                inst = subprocess.Popen(args, close_fds=True,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
-                                        stdin=open(os.devnull))
+                with open(os.devnull) as null:
+                    inst = subprocess.Popen(args,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE,
+                                            stdin=null)
             except OSError as e:
                 irc.error(_('It seems the configured fortune command was '
                           'not available.'), Raise=True)
@@ -241,10 +242,11 @@ class Unix(callbacks.Plugin):
         if wtfCmd:
             something = something.rstrip('?')
             try:
-                inst = subprocess.Popen([wtfCmd, something], close_fds=True,
-                                        stdout=subprocess.PIPE,
-                                        stderr=open(os.devnull),
-                                        stdin=open(os.devnull))
+                with open(os.devnull, 'r+') as null:
+                    inst = subprocess.Popen([wtfCmd, something],
+                                            stdout=subprocess.PIPE,
+                                            stderr=null,
+                                            stdin=null)
             except OSError:
                 irc.error(_('It seems the configured wtf command was not '
                           'available.'), Raise=True)
@@ -291,9 +293,11 @@ class Unix(callbacks.Plugin):
                 args.append('5')
             args.append(host)
             try:
-                inst = subprocess.Popen(args, stdout=subprocess.PIPE,
-                                              stderr=subprocess.PIPE,
-                                              stdin=open(os.devnull))
+                with open(os.devnull) as null:
+                    inst = subprocess.Popen(args,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE,
+                                            stdin=null)
             except OSError as e:
                 irc.error('It seems the configured ping command was '
                           'not available (%s).' % e, Raise=True)
@@ -323,10 +327,11 @@ class Unix(callbacks.Plugin):
         if uptimeCmd:
             args = [uptimeCmd]
             try:
-                inst = subprocess.Popen(args, close_fds=True,
+                with open(os.devnull) as null:
+                inst = subprocess.Popen(args, 
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE,
-                                        stdin=open(os.devnull))
+                                        stdin=null)
             except OSError as e:
                 irc.error('It seems the configured uptime command was '
                           'not available.', Raise=True)
@@ -351,10 +356,11 @@ class Unix(callbacks.Plugin):
         if unameCmd:
             args = [unameCmd, '-a']
             try:
-                inst = subprocess.Popen(args, close_fds=True,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
-                                        stdin=open(os.devnull))
+                with open(os.devnull) as null:
+                    inst = subprocess.Popen(args,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE,
+                                            stdin=null)
             except OSError as e:
                 irc.error('It seems the configured uptime command was '
                           'not available.', Raise=True)
@@ -381,9 +387,10 @@ class Unix(callbacks.Plugin):
         """
         args = shlex.split(text)
         try:
-            inst = subprocess.Popen(args, stdout=subprocess.PIPE, 
-                                          stderr=subprocess.PIPE,
-                                          stdin=open(os.devnull))
+            with open(os.devnull) as null:
+                inst = subprocess.Popen(args, stdout=subprocess.PIPE, 
+                                              stderr=subprocess.PIPE,
+                                              stdin=null)
         except OSError as e:
             irc.error('It seems the requested command was '
                       'not available (%s).' % e, Raise=True)
