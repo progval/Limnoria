@@ -33,7 +33,7 @@ time to write it, you should take the time to read it.
 [supybot.aperio.fr]:http://supybot.aperio.fr/doc
 [Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
 
-## English-speaking upport channels
+## English-speaking support channels
 
 If you have any trouble, feel free to swing by [#supybot and #limnoria](irc://irc.freenode.net/#supybot,#limnoria) on
 [irc.freenode.net](irc://irc.freenode.net) or [#supybot](irc://irc.oftc.net/#supybot) at [irc.oftc.net](irc://irc.oftc.net) (we have a Limnoria there relaying,
