@@ -406,8 +406,9 @@ class Unix(callbacks.Plugin):
 
     def shell(self, irc, msg, args, text):
         """<command to call with any arguments>
-        Calls any command available on the system using a shell, and
-        returns its output.
+        Calls any command available on the system using the shell
+        specified by the SHELL environment variable, and returns its
+        output.
         Requires owner capability.
         Note that being restricted to owner, this command does not do any
         sanity checking on input/output. So it is up to you to make sure
