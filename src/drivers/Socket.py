@@ -293,8 +293,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         drivers.log.connect(self.currentServer)
         try:
             self.conn = utils.net.getSocket(address, socks_proxy)
-            vhost = conf.supybot.protocols.irc.vhost()
-            self.conn.bind((vhost, 0))
         except socket.error as e:
             drivers.log.connectError(self.currentServer, e)
             self.scheduleReconnect()

@@ -48,7 +48,7 @@ def getAddressFromHostname(host, attempt=0):
             addresses.append(sockaddr[0])
     return addresses[attempt % len(addresses)]
 
-def getSocket(host, socks_proxy=None):
+def getSocket(host, socks_proxy=None, vhost=None, vhostv6=None):
     """Returns a socket of the correct AF_INET type (v4 or v6) in order to
     communicate with host.
     """
@@ -62,10 +62,21 @@ def getSocket(host, socks_proxy=None):
         s.setproxy(socks.PROXY_TYPE_SOCKS5, hostname, int(port),
                 rdns=True)
         return s
+    import supybot.conf as conf
     if isIPV4(host):
-        return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if not vhost:
+            vhost = conf.supybot.protocols.irc.vhost()
+        if vhost:
+            s.bind((vhost, 0))
+        return s
     elif isIPV6(host):
-        return socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+        s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+        if not vhostv6:
+            vhostv6 = conf.supybot.protocols.irc.vhostv6()
+        if vhostv6:
+            s.bind((vhostv6, 0))
+        return s
     else:
         raise socket.error('Something wonky happened.')
 
