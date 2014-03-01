@@ -290,9 +290,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 drivers.log.connectError(self.currentServer, e)
                 self.scheduleReconnect()
                 return
+        port = server[1]
         drivers.log.connect(self.currentServer)
         try:
-            self.conn = utils.net.getSocket(address, socks_proxy)
+            self.conn = utils.net.getSocket(address, port=port,
+                    socks_proxy=socks_proxy)
         except socket.error as e:
             drivers.log.connectError(self.currentServer, e)
             self.scheduleReconnect()

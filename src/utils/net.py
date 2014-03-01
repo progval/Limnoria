@@ -40,20 +40,20 @@ from .web import _ipAddr, _domain
 emailRe = re.compile(r"^(\w&.+-]+!)*[\w&.+-]+@(%s|%s)$" % (_domain, _ipAddr),
                      re.I)
 
-def getAddressFromHostname(host, attempt=0):
-    addrinfo = socket.getaddrinfo(host, None)
+def getAddressFromHostname(host, port=None, attempt=0):
+    addrinfo = socket.getaddrinfo(host, port)
     addresses = []
     for (family, socktype, proto, canonname, sockaddr) in addrinfo:
         if sockaddr[0] not in addresses:
             addresses.append(sockaddr[0])
     return addresses[attempt % len(addresses)]
 
-def getSocket(host, socks_proxy=None, vhost=None, vhostv6=None):
+def getSocket(host, port=None, socks_proxy=None, vhost=None, vhostv6=None):
     """Returns a socket of the correct AF_INET type (v4 or v6) in order to
     communicate with host.
     """
     if not socks_proxy:
-        addrinfo = socket.getaddrinfo(host, None)
+        addrinfo = socket.getaddrinfo(host, port)
         host = addrinfo[0][4][0]
     if socks_proxy:
         import socks
