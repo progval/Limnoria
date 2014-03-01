@@ -40,7 +40,7 @@ If you have any trouble, feel free to swing by [#supybot and #limnoria](irc://ir
 so either network works) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
 understand or think you know of a better way to do something,
-*please* post it on [issue tracker] so we can improve the bot!
+*please* post it on the [issue tracker] so we can improve the bot!
 
 [issue tracker]:https://github.com/ProgVal/Limnoria/issues
 
