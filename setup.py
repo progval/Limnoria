@@ -52,9 +52,8 @@ try:
         version = version.decode()
     version = version \
             .strip() \
-            .split(' +')[0] \
-            .replace(' ', 'T') \
-            .replace(':', '-')
+            .split(' ')[0] \
+            .replace('-', '.')
 except:
     pass
 if not version:
