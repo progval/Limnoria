@@ -315,7 +315,7 @@ class Misc(callbacks.Plugin):
                         .decode('utf8'))
                 version = data['commit']['committer']['date']
                 # Strip the last 'Z':
-                version = ''.join(version.rsplit('Z', 1)).replace(':', '-')
+                version = version.rsplit('T', 1)[0].replace('-', '.')
                 if sys.version_info[0] < 3 and isinstance(version, unicode):
                     version = version.encode('utf8')
                 versions[branch] = version
