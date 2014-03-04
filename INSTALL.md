@@ -22,9 +22,10 @@ extra features you may want. (Order by decreasing estimated usefulness)
 you don't actually need it)
 
 [charade]:https://pypi.python.org/pypi/charade
-[PySQLite]:https://code.google.com/p/pysqlite/
+[PySQLite]:https://pypi.python.org/pypi/pysqlite
 [pytz]:https://pypi.python.org/pypi/pytz
 [python-dateutil]:https://pypi.python.org/pypi/python-dateutil
+[python-gnupg]:https://pypi.python.org/pypi/python-gnupg
 [Twisted]:http://twistedmatrix.com/trac/
 
 For more information and help on how to use Supybot, checkout
