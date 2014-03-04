@@ -7,12 +7,24 @@ isn't any way to get around it.  You can get it from [Python homepage].
 
 # Recommended Software
 
+The following libraries are not needed for running Limnoria, but enable
+extra features you may want. (Order by decreasing estimated usefulness)
+
+[charade] -- enables better encoding handling
+
 [PySQLite] -- Version 3.x (most Python distributions include it by default)
+
+[pytz] and [python-dateutil] -- enable additional features of the `Time` plugin
+
+[python-gnupg] -- enables user authentication with GPG
 
 [Twisted] -- Version 1.2.0 or greater (unless you actually want to use Twisted,
 you don't actually need it)
 
+[charade]:https://pypi.python.org/pypi/charade
 [PySQLite]:https://code.google.com/p/pysqlite/
+[pytz]:https://pypi.python.org/pypi/pytz
+[python-dateutil]:https://pypi.python.org/pypi/python-dateutil
 [Twisted]:http://twistedmatrix.com/trac/
 
 For more information and help on how to use Supybot, checkout
