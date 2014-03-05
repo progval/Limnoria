@@ -301,7 +301,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 self.db.set('ur1', url, ur1ca)
                 return ur1ca
             else:
-                raise ShrinkError(text)
+                raise ShrinkError(response)
 
     def ur1(self, irc, msg, args, url):
         """<url>

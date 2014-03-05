@@ -408,7 +408,6 @@ class Channel(callbacks.Plugin):
             self.log.warning('%q attempted kban without %s',
                              msg.prefix, capability)
             irc.errorNoCapability(capability)
-            exact,nick,user,host
 
     @internationalizeDocstring
     def unban(self, irc, msg, args, channel, hostmask):

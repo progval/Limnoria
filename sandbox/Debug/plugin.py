@@ -150,7 +150,7 @@ class Debug(callbacks.Privmsg):
         given, sys.stdout is used.  This causes much output.
         """
         if filename:
-            fd = file(filename, 'a')
+            fd = open(filename, 'a')
         else:
             fd = sys.stdout
         sys.settrace(getTracer(fd))

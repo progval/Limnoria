@@ -35,6 +35,7 @@ Simple utility functions related to strings.
 
 import re
 import sys
+import time
 import string
 import textwrap
 

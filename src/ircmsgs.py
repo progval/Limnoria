@@ -553,7 +553,7 @@ def kicks(channels, nicks, s='', prefix='', msg=None):
     if isinstance(channels, str): # Backward compatibility
         channels = [channels]
     if conf.supybot.protocols.irc.strictRfc():
-        assert areChannels(channels), repr(channel)
+        assert areChannels(channels), repr(channels)
         assert areNicks(nicks), repr(nicks)
     if msg and not prefix:
         prefix = msg.prefix
@@ -561,11 +561,13 @@ def kicks(channels, nicks, s='', prefix='', msg=None):
         s = s.encode('utf8')
     assert isinstance(s, str)
     if s:
-        return IrcMsg(prefix=prefix, command='KICK',
-                      args=(channel, ','.join(nicks), s), msg=msg)
+        for channel in channels:
+            return IrcMsg(prefix=prefix, command='KICK',
+                          args=(channel, ','.join(nicks), s), msg=msg)
     else:
-        return IrcMsg(prefix=prefix, command='KICK',
-                      args=(channel, ','.join(nicks)), msg=msg)
+        for channel in channels:
+            return IrcMsg(prefix=prefix, command='KICK',
+                          args=(channel, ','.join(nicks)), msg=msg)
 
 def privmsg(recipient, s, prefix='', msg=None):
     """Returns a PRIVMSG to recipient with the message msg."""

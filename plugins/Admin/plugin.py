@@ -366,16 +366,6 @@ class Admin(callbacks.Plugin):
     clearq = wrap(clearq)
 
 
-    @internationalizeDocstring
-    def clearq(self, irc, msg, args):
-        """takes no arguments
-
-        Clears the current send queue for this network.
-        """
-        irc.queue.reset()
-        irc.replySuccess()
-
-
 
 Class = Admin
 

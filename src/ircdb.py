@@ -774,7 +774,7 @@ class UsersDictionary(utils.IterableMap):
         self.nextId = max(self.nextId, user.id)
         try:
             if self.getUserId(user.name) != user.id:
-                raise DuplicateHostmask(hostmask)
+                raise DuplicateHostmask(user.name)
         except KeyError:
             pass
         for hostmask in user.hostmasks:

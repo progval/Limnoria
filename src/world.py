@@ -55,7 +55,7 @@ def isMainThread():
 
 threadsSpawned = 1 # Starts at one for the initial "thread."
 
-class SupyThread(threading.Thread):
+class SupyThread(threading.Thread, object):
     def __init__(self, *args, **kwargs):
         global threadsSpawned
         threadsSpawned += 1

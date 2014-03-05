@@ -53,6 +53,8 @@ class InProgress(error.Error):
         error.Error.__init__(self, msg, e)
         
 
+class InvalidCwd(Exception):
+    pass
 class TransactionMixin(python.Object):
     JOURNAL = 'journal'
     ORIGINALS = 'originals'

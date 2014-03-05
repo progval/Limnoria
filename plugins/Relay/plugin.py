@@ -222,7 +222,7 @@ class Relay(callbacks.Plugin):
             if ops:
                 L.append(format(_('is an op on %L'), ops))
             if halfops:
-                L.append(format(_('is a halfop on %L'), halfups))
+                L.append(format(_('is a halfop on %L'), halfops))
             if voices:
                 L.append(format(_('is voiced on %L'), voices))
             if normal:

@@ -51,7 +51,7 @@ _ = PluginInternationalization('Config')
 def getWrapper(name):
     parts = registry.split(name)
     if not parts or parts[0] not in ('supybot', 'users'):
-        raise InvalidRegistryName(name)
+        raise registry.InvalidRegistryName(name)
     group = getattr(conf, parts.pop(0))
     while parts:
         try:
