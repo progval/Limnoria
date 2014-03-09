@@ -554,6 +554,13 @@ class Channel(callbacks.Plugin):
         list = wrap(list)
 
     class ban(callbacks.Commands):
+        def hostmask(self, irc, msg, args, channel, banmask):
+            """[<channel>] <banmask>
+
+            Bans the <banmask> from the <channel>."""
+            irc.queueMsg(ircmsgs.ban(channel, banmask))
+        hostmask = wrap(hostmask, ['op', ('haveHalfop+', _('ban someone')), 'text'])
+
         @internationalizeDocstring
         def add(self, irc, msg, args, channel, banmask, expires):
             """[<channel>] <nick|hostmask> [<expires>]
