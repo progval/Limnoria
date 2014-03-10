@@ -231,7 +231,8 @@ class _PluginInternationalization:
     def _addToDatabase(self, untranslated, translated):
         untranslated = self._unescape(untranslated, True)
         translated = self._unescape(translated)
-        self.translations.update({untranslated: translated})
+        if translated:
+            self.translations.update({untranslated: translated})
 
     def _unescape(self, string, removeNewline=False):
         import supybot.utils as utils
