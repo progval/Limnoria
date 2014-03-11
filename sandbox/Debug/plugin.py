@@ -47,7 +47,7 @@ except ImportError: # Python 3
     class exceptions:
         """Pseudo-module"""
         pass
-    for (key, value) in exceptions.__dict__.items():
+    for (key, value) in list(exceptions.__dict__.items()):
         if isinstance(value, type) and issubclass(value, Exception):
             exceptions[key] = value
 
@@ -62,7 +62,7 @@ def getTracer(fd):
     def tracer(frame, event, _):
         if event == 'call':
             code = frame.f_code
-            print >>fd, '%s: %s' % (code.co_filename, code.co_name)
+            fd.write('%s: %s\n' % (code.co_filename, code.co_name))
     return tracer
 
 class Debug(callbacks.Privmsg):
@@ -98,7 +98,7 @@ class Debug(callbacks.Privmsg):
             self._evalEnv['__'] = self._evalEnv['_']
             self._evalEnv['_'] = x
             irc.reply(repr(x))
-        except SyntaxError, e:
+        except SyntaxError as e:
             irc.reply(format('%s: %q', utils.exnToString(e), s))
     eval = wrap(eval, ['text'])
 
@@ -107,7 +107,7 @@ class Debug(callbacks.Privmsg):
 
         Execs <code>.  Returns success if it didn't raise any exceptions.
         """
-        exec s
+        exec(s)
         irc.replySuccess()
     _exec = wrap(_exec, ['text'])
 
@@ -118,7 +118,7 @@ class Debug(callbacks.Privmsg):
         """
         try:
             irc.reply(repr(eval(text)))
-        except Exception, e:
+        except Exception as e:
             irc.reply(utils.exnToString(e))
     simpleeval = wrap(simpleeval, ['text'])
 
@@ -131,7 +131,7 @@ class Debug(callbacks.Privmsg):
             exn = __builtins__[name]
         else:
             exn = getattr(__builtins__, name)
-        raise exn, msg.prefix
+        raise exn(msg.prefix)
     exn = wrap(exn, ['text'])
 
     def sendquote(self, irc, msg, args, text):
@@ -184,7 +184,7 @@ class Debug(callbacks.Privmsg):
         while times:
             L.append(gc.collect())
             times -= 1
-        irc.reply(format('%L', map(str, L)))
+        irc.reply(format('%L', list(map(str, L))))
     collect = wrap(collect, [additional('positiveInt', 1)])
 
     _progstats_endline_remover = utils.str.MultipleRemover('\r\n')
