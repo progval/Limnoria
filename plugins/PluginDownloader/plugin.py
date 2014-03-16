@@ -274,6 +274,10 @@ repositories = {
                                                    ),
                'nyuszika7h':       GithubRepository(
                                                    'nyuszika7h',
+                                                   'limnoria-plugins'
+                                                   ),
+               'nyuszika7h-old':   GithubRepository(
+                                                   'nyuszika7h',
                                                    'Supybot-plugins'
                                                    ),
                'resistivecorpse':  GithubRepository(
