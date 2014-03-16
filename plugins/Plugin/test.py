@@ -39,9 +39,6 @@ class PluginTestCase(PluginTestCase):
         self.assertRegexp('plugins join', '(Format.*Admin|Admin.*Format)')
         self.assertRegexp('plugins plugin', 'Plugin')
 
-    def testList(self):
-        self.assertRegexp('plugin list', 'Plugin.*Utilities')
-
     def testHelp(self):
         self.assertRegexp('plugin help plugin', 'manage their plugins')
 
