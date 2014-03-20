@@ -78,7 +78,7 @@ class Ctcp(callbacks.PluginRegexp):
         irc.reply(s, notice=True, private=True, to=msg.nick)
 
     def ctcpPing(self, irc, msg, match):
-        "^\x01PING ?(.*)\x01$"
+        "^\x01PING(?: (.+))?\x01$"
         self.log.info('Received CTCP PING from %s', msg.prefix)
         payload = match.group(1)
         if payload:
