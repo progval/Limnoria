@@ -105,6 +105,15 @@ class Utilities(callbacks.Plugin):
     shuffle = wrap(shuffle, [many('anything')])
 
     @internationalizeDocstring
+    def sort(self, irc, msg, args, things):
+        """<arg> [<arg> ...]
+
+        Sorts the arguments given.
+        """
+        irc.reply(' '.join(sorted(things)))
+    sort = wrap(sort, [many('anything')])
+
+    @internationalizeDocstring
     def sample(self, irc, msg, args, num, things):
         """<num> <arg> [<arg> ...]
 

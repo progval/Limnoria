@@ -62,6 +62,9 @@ class UtilitiesTestCase(PluginTestCase):
     def testShuffle(self):
         self.assertResponse('shuffle a', 'a')
 
+    def testSort(self):
+        self.assertResponse('sort abc cab cba bca', 'abc bca cab cba')
+
     def testSample(self):
         self.assertResponse('sample 1 a', 'a')
         self.assertError('sample moo')
