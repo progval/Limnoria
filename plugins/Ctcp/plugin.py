@@ -78,7 +78,7 @@ class Ctcp(callbacks.PluginRegexp):
         irc.reply(s, notice=True, private=True, to=msg.nick)
 
     def ctcpPing(self, irc, msg, match):
-        "\x01PING ?(.*)\x01"
+        "^\x01PING(?: (.+))?\x01$"
         self.log.info('Received CTCP PING from %s', msg.prefix)
         payload = match.group(1)
         if payload:
@@ -87,28 +87,28 @@ class Ctcp(callbacks.PluginRegexp):
             self._reply(irc, msg, 'PING')
 
     def ctcpVersion(self, irc, msg, match):
-        "\x01VERSION\x01"
+        "^\x01VERSION\x01$"
         self.log.info('Received CTCP VERSION from %s', msg.prefix)
         self._reply(irc, msg, 'VERSION Supybot %s' % conf.version)
 
     def ctcpUserinfo(self, irc, msg, match):
-        "\x01USERINFO\x01"
+        "^\x01USERINFO\x01$"
         self.log.info('Received CTCP USERINFO from %s', msg.prefix)
         self._reply(irc, msg, 'USERINFO %s' % self.registryValue('userinfo'))
 
     def ctcpTime(self, irc, msg, match):
-        "\x01TIME\x01"
+        "^\x01TIME\x01$"
         self.log.info('Received CTCP TIME from %s', msg.prefix)
         self._reply(irc, msg, 'TIME %s' % time.ctime())
 
     def ctcpFinger(self, irc, msg, match):
-        "\x01FINGER\x01"
+        "^\x01FINGER\x01$"
         self.log.info('Received CTCP FINGER from %s', msg.prefix)
         self._reply(irc, msg, 'FINGER ' + 
                     _('Supybot, the best Python IRC bot in existence!'))
 
     def ctcpSource(self, irc, msg, match):
-        "\x01SOURCE\x01"
+        "^\x01SOURCE\x01$"
         self.log.info('Received CTCP SOURCE from %s', msg.prefix)
         self._reply(irc, msg,
                     'SOURCE https://github.com/ProgVal/Limnoria')
