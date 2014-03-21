@@ -838,10 +838,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
     def reply(self, s, noLengthCheck=False, prefixNick=None,
               action=None, private=None, notice=None, to=None, msg=None):
         """
-
-        reply(s) -> replies to msg with s
-
         Keyword arguments:
+
         * `noLengthCheck=False`: True if the length shouldn't be checked
                                  (used for 'more' handling)
         * `prefixNick=True`:     False if the nick shouldn't be prefixed to the
