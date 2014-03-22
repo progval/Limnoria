@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:14+EET\n"
+"POT-Creation-Date: 2014-03-22 16:35+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 
 
 #: plugin.py:171
-msgid "Plugin is probably not compatible with your Python version (3.x) but could not be converted because 2to3 is not installed."
+msgid "Plugin is probably not compatible with your Python version (3.x) and could not be converted because 2to3 is not installed."
 msgstr ""
 
 #: plugin.py:178

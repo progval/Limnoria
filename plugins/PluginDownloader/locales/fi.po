@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 15:42+EET\n"
-"PO-Revision-Date: 2014-03-22 15:54+0200\n"
+"POT-Creation-Date: 2014-03-22 16:35+EET\n"
+"PO-Revision-Date: 2014-03-22 16:38+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -18,9 +18,8 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 
 #: plugin.py:171
-#, fuzzy
 msgid ""
-"Plugin is probably not compatible with your Python version (3.x) but could "
+"Plugin is probably not compatible with your Python version (3.x) and could "
 "not be converted because 2to3 is not installed."
 msgstr ""
 "Lisä-osa ei luultavasti ole yhteensopiva Python-versiosi (3.x) kanssa, eikä "
