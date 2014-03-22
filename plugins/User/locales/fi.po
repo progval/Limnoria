@@ -5,85 +5,94 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-10-30 17:37+EET\n"
-"PO-Revision-Date: 2012-10-30 17:40+0200\n"
-"Last-Translator: Mikaela Suomalainen <mkaysi@outlook.com>\n"
+"POT-Creation-Date: 2014-03-22 15:42+EET\n"
+"PO-Revision-Date: 2014-03-22 15:44+0200\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Plural-Forms: \n"
-"X-Generator: Gtranslator 2.91.5\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: plugin.py:49
+#: plugin.py:53
 msgid ""
 "[--capability=<capability>] [<glob>]\n"
 "\n"
-"        Returns the valid registered usernames matching <glob>.  If <glob> is\n"
+"        Returns the valid registered usernames matching <glob>.  If <glob> "
+"is\n"
 "        not given, returns all registered usernames.\n"
 "        "
 msgstr ""
 "[--capability=<valtuus>] [<glob>]\n"
 "\n"
-"        Palauttaa kelvolliset rekisteröidyt käyttäjätunnukset, jotka täsmäävät <globiin>.  Jos <glob> ei\n"
+"        Palauttaa kelvolliset rekisteröidyt käyttäjätunnukset, jotka "
+"täsmäävät <globiin>.  Jos <glob> ei\n"
 "        ole annettu, palauttaa kaikki rekisteröidyt käyttäjätunnukset.\n"
 "        "
 
-#: plugin.py:64
+#: plugin.py:68
 msgid "This is a private capability. Only admins can see who has it."
-msgstr "Tämä on yksityinen valtuus. Vain ylläpitäjät voivat nähdä keillä on se."
+msgstr ""
+"Tämä on yksityinen valtuus. Vain ylläpitäjät voivat nähdä keillä on se."
 
-#: plugin.py:89
+#: plugin.py:93
 msgid "There are no matching registered users."
 msgstr "Täsmääviä rekisteröityjä käyttäjiä ei ole."
 
-#: plugin.py:91
+#: plugin.py:95
 msgid "There are no registered users."
 msgstr "Rekisteröityneitä käyttäjiä ei ole."
 
-#: plugin.py:97
+#: plugin.py:101
 msgid ""
 "<name> <password>\n"
 "\n"
 "        Registers <name> with the given password <password> and the current\n"
-"        hostmask of the person registering.  You shouldn't register twice; if\n"
-"        you're not recognized as a user but you've already registered, use the\n"
-"        hostmask add command to add another hostmask to your already-registered\n"
+"        hostmask of the person registering.  You shouldn't register twice; "
+"if\n"
+"        you're not recognized as a user but you've already registered, use "
+"the\n"
+"        hostmask add command to add another hostmask to your already-"
+"registered\n"
 "        user, or use the identify command to identify just for a session.\n"
-"        This command (and all other commands that include a password) must be\n"
+"        This command (and all other commands that include a password) must "
+"be\n"
 "        sent to the bot privately, not in a channel.\n"
 "        "
 msgstr ""
 "<nimi> <salasana>\n"
 "\n"
-"        Rekisteröi <nimen> annetulla <salasanalla> ja rekisteröityvän henkilön nykyisellä hostmaskilla.\n"
+"        Rekisteröi <nimen> annetulla <salasanalla> ja rekisteröityvän "
+"henkilön nykyisellä hostmaskilla.\n"
 "         Sinun ei pitäisi rekisteröityä kahdesti; jos\n"
 "        sinua ei tunnisteta käyttäjäksi, käytä komentoa\n"
 "        'hostmask add' lisätäksesi hostmaskin valmiiksi rekisteröidylle\n"
-"        käyttäjällesi, tai käytä komentoa 'identify' tunnistautuaksesi vain istunnon ajaksi.\n"
-"        Tämä komento (ja kaikki muut komennot, jotka sisältävät salasanan) täytyy lähettää\n"
+"        käyttäjällesi, tai käytä komentoa 'identify' tunnistautuaksesi vain "
+"istunnon ajaksi.\n"
+"        Tämä komento (ja kaikki muut komennot, jotka sisältävät salasanan) "
+"täytyy lähettää\n"
 "        botille yksityisesti, ei kanavalla.\n"
 "        "
 
-#: plugin.py:110
+#: plugin.py:114
 msgid "That name is already assigned to someone."
 msgstr "Tuo nimi on jo liitetty johonkuhun."
 
-#: plugin.py:115
+#: plugin.py:119
 msgid "username"
 msgstr "käyttäjänimi"
 
-#: plugin.py:116
+#: plugin.py:120
 msgid "Hostmasks are not valid usernames."
 msgstr "Hostmaskit eivät ole kelvollisia käyttäjänimiä"
 
-#: plugin.py:123
+#: plugin.py:127
 msgid "Your hostmask is already registered to %s"
 msgstr "Sinun hostmaskisi on jo rekisteröity käyttäjälle %s."
 
-#: plugin.py:139
+#: plugin.py:143
 msgid ""
 "<name> [<password>]\n"
 "\n"
@@ -93,64 +102,82 @@ msgid ""
 msgstr ""
 "<nimi> [<salasana>]\n"
 "\n"
-"        Poistaa <nimen> käyttäjätietokannasta.  Mikäli käyttäjä, joka antaa tämän komennon omaa 'owner' valtuuden,\n"
+"        Poistaa <nimen> käyttäjätietokannasta.  Mikäli käyttäjä, joka antaa "
+"tämän komennon omaa 'owner' valtuuden,\n"
 "        salasana ei ole vaadittu.\n"
 "        "
 
-#: plugin.py:154
-msgid "This command has been disabled.  You'll have to ask the owner of this bot to unregister your user."
-msgstr "Tämä komento on poistettu käytöstä. Sinun täytyy pyytää tämän botin omistajaa poistaaksesi käyttäjätunnuksesi."
+#: plugin.py:158
+msgid ""
+"This command has been disabled.  You'll have to ask the owner of this bot to "
+"unregister your user."
+msgstr ""
+"Tämä komento on poistettu käytöstä. Sinun täytyy pyytää tämän botin "
+"omistajaa poistaaksesi käyttäjätunnuksesi."
 
-#: plugin.py:167
+#: plugin.py:171
 msgid ""
 "<name> <new name> [<password>]\n"
 "\n"
 "        Changes your current user database name to the new name given.\n"
-"        <password> is only necessary if the user isn't recognized by hostmask.\n"
-"        This message must be sent to the bot privately (not on a channel) since\n"
+"        <password> is only necessary if the user isn't recognized by "
+"hostmask.\n"
+"        This message must be sent to the bot privately (not on a channel) "
+"since\n"
 "        it may contain a password.\n"
 "        "
 msgstr ""
 "<nimi> <uusi nimi> [<salasana>]\n"
 "\n"
-"        Vaihtaa nykyisen nimesi käyttäjätietokannassa annetuksi <uudeksi nimeksi>.\n"
-"        <Salasana> on vaadittu vain, jos käyttäjä ei ole tunnistettu hostmaskilla.\n"
-"        Tämä viesti täytyy lähettää botille yksityisesti (ei kanavalla), koska \n"
+"        Vaihtaa nykyisen nimesi käyttäjätietokannassa annetuksi <uudeksi "
+"nimeksi>.\n"
+"        <Salasana> on vaadittu vain, jos käyttäjä ei ole tunnistettu "
+"hostmaskilla.\n"
+"        Tämä viesti täytyy lähettää botille yksityisesti (ei kanavalla), "
+"koska \n"
 "        se saattaa sisältää salasanan.\n"
 "        "
 
-#: plugin.py:176
+#: plugin.py:180
 msgid "%q is already registered."
 msgstr "%q on jo rekisteröitynyt."
 
-#: plugin.py:190
+#: plugin.py:194
 msgid ""
 "[<name>] <old password> <new password>\n"
 "\n"
 "            Sets the new password for the user specified by <name> to <new\n"
 "            password>.  Obviously this message must be sent to the bot\n"
-"            privately (not in a channel). If the requesting user is an owner\n"
-"            user (and the user whose password is being changed isn't that same\n"
+"            privately (not in a channel). If the requesting user is an "
+"owner\n"
+"            user (and the user whose password is being changed isn't that "
+"same\n"
 "            owner user), then <old password> needn't be correct.\n"
 "            "
 msgstr ""
 "[<nimi>] <vanha salasana> <uusi salasana>\n"
 "\n"
-"            Asettaa <nimen> määrittämän käyttäjätunnuksen salasanan <uudeksi\n"
-"             salasanaksi>.  Ilmiselvästi tämä viesti täytyy lähettää botille yksityisesti\n"
+"            Asettaa <nimen> määrittämän käyttäjätunnuksen salasanan "
+"<uudeksi\n"
+"             salasanaksi>.  Ilmiselvästi tämä viesti täytyy lähettää botille "
+"yksityisesti\n"
 "            (ei kanavalla). Jos pyytävä käyttäjä omaa valtuuden 'owner'\n"
 "            (ja käyttäjä, jonka salasanaa vaihdetaan ei ole sama \n"
-"            'owner' valtuuden omaava käyttäjä), silloin <vanhan salasanan> ei tarvitse olla oikein.\n"
+"            'owner' valtuuden omaava käyttäjä), silloin <vanhan salasanan> "
+"ei tarvitse olla oikein.\n"
 "            "
 
-#: plugin.py:218
+#: plugin.py:222
 msgid ""
 "<password> [<True|False>]\n"
 "\n"
-"            Sets the secure flag on the user of the person sending the message.\n"
-"            Requires that the person's hostmask be in the list of hostmasks for\n"
+"            Sets the secure flag on the user of the person sending the "
+"message.\n"
+"            Requires that the person's hostmask be in the list of hostmasks "
+"for\n"
 "            that user in addition to the password being correct.  When the\n"
-"            secure flag is set, the user *must* identify before he or she can be\n"
+"            secure flag is set, the user *must* identify before he or she "
+"can be\n"
 "            recognized.  If a specific True/False value is not given, it\n"
 "            inverts the current value.\n"
 "            "
@@ -158,88 +185,102 @@ msgstr ""
 "<salasana> [<True|False>]\n"
 "\n"
 "            Asettaa 'secure' lipun käyttäjään, joka lähettää viestin.\n"
-"           Vaatii, että henkilön hostmask on hostmaskien listassa oikean salasanan.\n"
+"           Vaatii, että henkilön hostmask on hostmaskien listassa oikean "
+"salasanan.\n"
 "             lisäksi.\n"
-"            Kun 'secure' lippu on asetettu, käyttäjän *täytyy* tunnistautua, ennen kuin hänet voidaan tunnistaa.\n"
+"            Kun 'secure' lippu on asetettu, käyttäjän *täytyy* tunnistautua, "
+"ennen kuin hänet voidaan tunnistaa.\n"
 "            Jos True/False arvoa ei ole annettu, \n"
 "            nykyinen arvo käännetään.\n"
 "            "
 
-#: plugin.py:233
+#: plugin.py:237
 msgid "Secure flag set to %s"
 msgstr "'Secure' lippu on asetettu arvoon %s"
 
-#: plugin.py:241
+#: plugin.py:245
 msgid ""
 "<hostmask|nick>\n"
 "\n"
-"        Returns the username of the user specified by <hostmask> or <nick> if\n"
+"        Returns the username of the user specified by <hostmask> or <nick> "
+"if\n"
 "        the user is registered.\n"
 "        "
 msgstr ""
 "<hostmask|nimimerkki>\n"
 "\n"
-"        Palauttaa käyttäjätunnuksen, jonka määrittää <hostmask> tai <nimimerkki>, mikäli\n"
+"        Palauttaa käyttäjätunnuksen, jonka määrittää <hostmask> tai "
+"<nimimerkki>, mikäli\n"
 "        käyttäjä on rekisteröitynyt.\n"
 "        "
 
-#: plugin.py:250
+#: plugin.py:254
 msgid "I haven't seen %s."
 msgstr "En ole nähnyt käyttäjää %s."
 
-#: plugin.py:255
+#: plugin.py:259
 msgid "I don't know who that is."
 msgstr "En tiedä kuka tuo on."
 
-#: plugin.py:261
+#: plugin.py:265
 msgid ""
 "[<nick>]\n"
 "\n"
-"            Returns the hostmask of <nick>.  If <nick> isn't given, return the\n"
+"            Returns the hostmask of <nick>.  If <nick> isn't given, return "
+"the\n"
 "            hostmask of the person giving the command.\n"
 "            "
 msgstr ""
 "[<nimimerkki>]\n"
 "\n"
-"            Palauttaa <nimimerkin> hostmaskin.  Jos <nimimerkki> ei ole annettu, palauttaa\n"
+"            Palauttaa <nimimerkin> hostmaskin.  Jos <nimimerkki> ei ole "
+"annettu, palauttaa\n"
 "            komennon antavan nimimerkin hostmaskin\n"
 "            "
 
-#: plugin.py:273
+#: plugin.py:277
 msgid ""
 "[<name>]\n"
 "\n"
-"            Returns the hostmasks of the user specified by <name>; if <name>\n"
+"            Returns the hostmasks of the user specified by <name>; if "
+"<name>\n"
 "            isn't specified, returns the hostmasks of the user calling the\n"
 "            command.\n"
 "            "
 msgstr ""
 "[<nimi>]\n"
 "\n"
-"            Palauttaa käyttäjän, jonka määrittää <nimi>, hostmaskit; jos <nimi>\n"
+"            Palauttaa käyttäjän, jonka määrittää <nimi>, hostmaskit; jos "
+"<nimi>\n"
 "            ei ole määritetty, palauttaa käyttäjän, joka antaa komennon\n"
 "            hostmaskit.\n"
 "            "
 
-#: plugin.py:285
+#: plugin.py:289
 msgid "%s has no registered hostmasks."
 msgstr "%s ei ole rekisteröinyt hostmaskeja."
 
-#: plugin.py:292
+#: plugin.py:296
 msgid "You may only retrieve your own hostmasks."
 msgstr "Voit saada vain omat hostmaskisi."
 
-#: plugin.py:308
+#: plugin.py:312
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
 "\n"
-"            Adds the hostmask <hostmask> to the user specified by <name>.  The\n"
-"            <password> may only be required if the user is not recognized by\n"
+"            Adds the hostmask <hostmask> to the user specified by <name>.  "
+"The\n"
+"            <password> may only be required if the user is not recognized "
+"by\n"
 "            hostmask.  <password> is also not required if an owner user is\n"
-"            giving the command on behalf of some other user.  If <hostmask> is\n"
-"            not given, it defaults to your current hostmask.  If <name> is not\n"
-"            given, it defaults to your currently identified name.  This message\n"
-"            must be sent to the bot privately (not on a channel) since it may\n"
+"            giving the command on behalf of some other user.  If <hostmask> "
+"is\n"
+"            not given, it defaults to your current hostmask.  If <name> is "
+"not\n"
+"            given, it defaults to your currently identified name.  This "
+"message\n"
+"            must be sent to the bot privately (not on a channel) since it "
+"may\n"
 "            contain a password.\n"
 "            "
 msgstr ""
@@ -247,58 +288,190 @@ msgstr ""
 "\n"
 "            Lisää <hostmaskin>, käyttäjälle jonka määrittää <nimi>. \n"
 "            <Salasana> on vaadittu vain, jos käyttäjää ei tunnisteta\n"
-"            hostmaskilla.  <Salasana> ei myöskään ole vaadittu, mikäli omistaja\n"
-"            käyttäjä tekee komennon toiselle käyttäjälle.  Jos <hostmaski> ei\n"
-"            ole annettu, se on oletuksena nykyinen hostmaskisi.  Jos<käyttäjänimi> ei ole\n"
-"            annettu, se on oletuksena nykyinen tunnistettu käyttäjänimesi.  Tämä komento\n"
-"            täytyy lähettää botille yksityisesti (ei kanavalla), koska se saattaa\n"
+"            hostmaskilla.  <Salasana> ei myöskään ole vaadittu, mikäli "
+"omistaja\n"
+"            käyttäjä tekee komennon toiselle käyttäjälle.  Jos <hostmaski> "
+"ei\n"
+"            ole annettu, se on oletuksena nykyinen hostmaskisi.  "
+"Jos<käyttäjänimi> ei ole\n"
+"            annettu, se on oletuksena nykyinen tunnistettu käyttäjänimesi.  "
+"Tämä komento\n"
+"            täytyy lähettää botille yksityisesti (ei kanavalla), koska se "
+"saattaa\n"
 "            sisältää salasanan.\n"
 "            "
 
-#: plugin.py:322
+#: plugin.py:326
 msgid "hostmask"
 msgstr "hostmask"
 
-#: plugin.py:323
-msgid "Make sure your hostmask includes a nick, then an exclamation point (!), then a user, then an at symbol (@), then a host.  Feel free to use wildcards (* and ?, which work just like they do on the command line) in any of these parts."
-msgstr "Varmista, että hostmaskisi sisältää nimimerkin, sitten eroitus kohdan, p(!), sitten käyttäjän, sitten ät symboolin (@), sitten isännän.  Käytä jokerimerkkejä vapaasti (* ja ?, jotka toimivat samalla tavalla, kuin komentorivillä) missä tahansa näistä osista."
+#: plugin.py:327
+msgid ""
+"Make sure your hostmask includes a nick, then an exclamation point (!), then "
+"a user, then an at symbol (@), then a host.  Feel free to use wildcards (* "
+"and ?, which work just like they do on the command line) in any of these "
+"parts."
+msgstr ""
+"Varmista, että hostmaskisi sisältää nimimerkin, sitten eroitus kohdan, p(!), "
+"sitten käyttäjän, sitten ät symboolin (@), sitten isännän.  Käytä "
+"jokerimerkkejä vapaasti (* ja ?, jotka toimivat samalla tavalla, kuin "
+"komentorivillä) missä tahansa näistä osista."
 
-#: plugin.py:333
-#: plugin.py:356
+#: plugin.py:337 plugin.py:358
 msgid "That hostmask is already registered."
 msgstr "Tuo hostmaski on jo rekisteröity."
 
-#: plugin.py:364
+#: plugin.py:368
+#, fuzzy
 msgid ""
-"<name> <hostmask> [<password>]\n"
+"[<name>] [<hostmask>] [<password>]\n"
 "\n"
 "            Removes the hostmask <hostmask> from the record of the user\n"
 "            specified by <name>.  If the hostmask given is 'all' then all\n"
-"            hostmasks will be removed.  The <password> may only be required if\n"
-"            the user is not recognized by their hostmask.  This message must be\n"
-"            sent to the bot privately (not on a channel) since it may contain a\n"
-"            password.\n"
+"            hostmasks will be removed.  The <password> may only be required "
+"if\n"
+"            the user is not recognized by their hostmask.  This message must "
+"be\n"
+"            sent to the bot privately (not on a channel) since it may "
+"contain a\n"
+"            password.  If <hostmask> is\n"
+"            not given, it defaults to your current hostmask.  If <name> is "
+"not\n"
+"            given, it defaults to your currently identified name.\n"
 "            "
 msgstr ""
-"<nimi> <hostmask> [<salasana>]\n"
+"[<nimi>] [<hostmask>] [<salasana>]\n"
 "\n"
-"            Poistaa <hostmaskin> käyttäjältä, jonka määrittää\n"
-"            <nimi>. Jos annettu hostmask on 'all' (kaikki) niin, kaikki\n"
-"            hostmaskit poistetaan.  <Salasana> on vaadittu\n"
-"            vain, jos käyttäjää ei tunnisteta hostmaskin perusteella.  Tämä viesti täytyy\n"
-"            lähettää botille yksisyisesti (ei kanavalla), koska se voi sisältää\n"
-"            salasanan.\n"
+" Poistaa <hostmaskin> <nimen> määrittämän käyttäjän tiedoista.\n"
+" Joa annettu hostmask on 'all', kaikki hostmaskit poistetaan.\n"
+" <Salasana> voidaan vaatia, mikäli käyttäjää ei ole tunnistettu hostmaskin "
+"perusteella.\n"
+" Viesti täytyy lähettää botille yksityisesti (ei kanavalla), koska se voi "
+"sisältää salasanan.\n"
+" Jos hostmaskia ei ole annettu, se on oletuksena nykyinen tunnistetu "
+"hostmask.\n"
+" Jos nimeä ei ole annettu, se on oletuksena nykyinen tunnistettu nimi.\n"
 "            "
 
-#: plugin.py:383
+#: plugin.py:391
 msgid "All hostmasks removed."
 msgstr "Kaikki hostmaskit poistettu."
 
-#: plugin.py:387
+#: plugin.py:395
 msgid "There was no such hostmask."
 msgstr "Tuollaista hostmaskia ei ollut."
 
-#: plugin.py:396
+#: plugin.py:412
+msgid "GPG features are not enabled."
+msgstr "GPG toiminnot eivät ole käytössä."
+
+#: plugin.py:421
+msgid ""
+"<key id> <key server>\n"
+"\n"
+"            Add a GPG key to your account."
+msgstr ""
+"<avain id> <avain-palvelin>\n"
+"\n"
+" Lisää GPG-avaimen tunnuksellesi."
+
+#: plugin.py:425
+msgid "This key is already associated with your account."
+msgstr "Tämä avain on jo liitetty tunnukseesi."
+
+#: plugin.py:429
+msgid "%n imported, %i unchanged, %i not imported."
+msgstr "%n tuotu, %i muuttumaton, %i ei tuotu."
+
+#: plugin.py:430
+msgid "key"
+msgstr "avain"
+
+#: plugin.py:441
+msgid "You must give a valid key id"
+msgstr "Kelvollinen avain-id vaaditaan"
+
+#: plugin.py:443
+msgid "You must give a valid key server"
+msgstr "Kelvollinen avainpalvelin vaaditaan"
+
+#: plugin.py:447
+msgid ""
+"<fingerprint>\n"
+"\n"
+"            Remove a GPG key from your account."
+msgstr ""
+"<sormenjälki>\n"
+"\n"
+" Poistaa GPG-avaimen tunnukseltasi."
+
+#: plugin.py:460
+msgid "GPG key not associated with your account."
+msgstr "GPG-avainta ei ole liitetty tunnukseesi."
+
+#: plugin.py:465
+msgid ""
+"takes no arguments\n"
+"\n"
+"            Send you a token that you'll have to sign with your key."
+msgstr ""
+"ei ota parametrejä\n"
+"\n"
+" Lähettää merkin, jonka allekirjoitat avaimellasi."
+
+#: plugin.py:472
+msgid ""
+"Your token is: %s. Please sign it with your GPG key, paste it somewhere, and "
+"call the 'auth' command with the URL to the (raw) file containing the "
+"signature."
+msgstr ""
+"Avaimesi on: %s. Allekirjoita se GPG-avaimellasi, liitä jonnekin ja käytä "
+"'auth'-komentoa URL-osoitteella (raakaan) tiedostoon, joka sisältää "
+"allekirjoituksen."
+
+#: plugin.py:486
+msgid ""
+"<url>\n"
+"\n"
+"            Check the GPG signature at the <url> and authenticates you if\n"
+"            the key used is associated to a user."
+msgstr ""
+"<URL>\n"
+"\n"
+" Tarkistaa <URL>-osoitteessa olevan GPG-allekirjoituksen ja tunnistaa sinut, "
+"jos\n"
+" avain on liitetty käyttäjään."
+
+#: plugin.py:496
+msgid "Signature or token not found."
+msgstr "Allekirjoitusta tai merkkiä ei löydy."
+
+#: plugin.py:500
+msgid "Unknown token. It may have expired before you submit it."
+msgstr "Tuntematon merkki. Se on voinut vanhentua ennen, kuin lähetit sen."
+
+#: plugin.py:503
+msgid "Your hostname/nick changed in the process. Authentication aborted."
+msgstr ""
+"Isäntänimesi/nimimerkkisi vaihtui prosessissa. Tunnistautuminen keskeytetty."
+
+#: plugin.py:514
+msgid "You are now authenticated as %s."
+msgstr "Olet nyt tunnistautunut käyttäjäksi %s."
+
+#: plugin.py:517
+msgid "Unknown GPG key."
+msgstr "Tuntematon GPG-avain."
+
+#: plugin.py:519
+msgid ""
+"Signature could not be verified. Make sure this is a valid GPG signature and "
+"the URL is valid."
+msgstr ""
+"Allekirjoitusta ei voitu varmistaa. Varmista, että tämä on kelvollinen GPG-"
+"allekirjoitus ja URL-osoite on kelvollinen."
+
+#: plugin.py:525
 msgid ""
 "[<name>]\n"
 "\n"
@@ -310,52 +483,69 @@ msgstr ""
 "[<nimi>]\n"
 "\n"
 "        Palauttaa käyttäjän, jonka määrittää <nimi> valtuudet; jos <nimi>\n"
-"        ei ole määritetty, palauttaa käyttäjän, joka kutsuu komennonn        valtuudet.\n"
+"        ei ole määritetty, palauttaa käyttäjän, joka kutsuu komennonn        "
+"valtuudet.\n"
 "        "
 
-#: plugin.py:416
+#: plugin.py:545
 msgid ""
 "<name> <password>\n"
 "\n"
 "        Identifies the user as <name>. This command (and all other\n"
-"        commands that include a password) must be sent to the bot privately,\n"
+"        commands that include a password) must be sent to the bot "
+"privately,\n"
 "        not in a channel.\n"
 "        "
 msgstr ""
 "<käyttäjä> <salasana>\n"
 "\n"
-"        Tunnistaa käyttäjän <käyttäjäksi>. Tämä komento (ja kaikki muut komennot, \n"
+"        Tunnistaa käyttäjän <käyttäjäksi>. Tämä komento (ja kaikki muut "
+"komennot, \n"
 "        jotka sisältävät salasanan) täytyy lähettää botille yksityisesti, \n"
 "        ei kanavalla.\n"
 "        "
 
-#: plugin.py:428
-msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
-msgstr "Sinun 'secure' lippusi on 'true' ja sinun hostmaskisi ei täsmää yhteenkään sinun tunnettuun hostmaskiisi."
+#: plugin.py:557
+msgid ""
+"Your secure flag is true and your hostmask doesn't match any of your known "
+"hostmasks."
+msgstr ""
+"Sinun 'secure' lippusi on 'true' ja sinun hostmaskisi ei täsmää yhteenkään "
+"sinun tunnettuun hostmaskiisi."
 
-#: plugin.py:438
+#: plugin.py:567
 msgid ""
 "takes no arguments\n"
 "\n"
 "        Un-identifies you.  Note that this may not result in the desired\n"
-"        effect of causing the bot not to recognize you anymore, since you may\n"
-"        have added hostmasks to your user that can cause the bot to continue to\n"
+"        effect of causing the bot not to recognize you anymore, since you "
+"may\n"
+"        have added hostmasks to your user that can cause the bot to continue "
+"to\n"
 "        recognize you.\n"
 "        "
 msgstr ""
 "ei ota parametrejä\n"
 "\n"
 "        Kirjaa sinut ulos.  Huomaa, ettei tällä välltämättä ole haluttua\n"
-"        vaikutusta, että botti lopettaa sinun tuntemisen, koska olet saattanut\n"
+"        vaikutusta, että botti lopettaa sinun tuntemisen, koska olet "
+"saattanut\n"
 "        lisätä hostmaskin käyttäjälle. Tämä voi aihettaa sen, että botti\n"
 "        tunnistaa sinut yhä.\n"
 "        "
 
-#: plugin.py:447
-msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
-msgstr "Jos pysyt tunnistettuna tämän komennon antamisen jälkeen, sinut tunnistetaan hostmaskin, eikä salasanan perusteella.  Sinun täytyy poistaa mikä tahansa hostmaski, joka aiheuttaa sinun tunnistamisesi, tullaksesi tunnistamattomaksi."
+#: plugin.py:576
+msgid ""
+"If you remain recognized after giving this command, you're being recognized "
+"by hostmask, rather than by password.  You must remove whatever hostmask is "
+"causing you to be recognized in order not to be recognized."
+msgstr ""
+"Jos pysyt tunnistettuna tämän komennon antamisen jälkeen, sinut tunnistetaan "
+"hostmaskin, eikä salasanan perusteella.  Sinun täytyy poistaa mikä tahansa "
+"hostmaski, joka aiheuttaa sinun tunnistamisesi, tullaksesi "
+"tunnistamattomaksi."
 
-#: plugin.py:456
+#: plugin.py:585
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -367,11 +557,11 @@ msgstr ""
 "        Palauttaa komennon antaneen käyttäjän tunnuksen.\n"
 "        "
 
-#: plugin.py:464
+#: plugin.py:593
 msgid "I don't recognize you."
 msgstr "Minä en tunnista sinua."
 
-#: plugin.py:469
+#: plugin.py:598
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -383,7 +573,35 @@ msgstr ""
 "        Palauttaa joitakin tilastotietoja käyttäjä tietokannasta.\n"
 "        "
 
-#: plugin.py:487
+#: plugin.py:616
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
-msgstr "Minulla on %s rekisteröityä käyttäjää %s rekisteröidyllä hostmaskilla; %n ja %n."
+msgstr ""
+"Minulla on %s rekisteröityä käyttäjää %s rekisteröidyllä hostmaskilla; %n ja "
+"%n."
 
+#~ msgid ""
+#~ "<name> <hostmask> [<password>]\n"
+#~ "\n"
+#~ "            Removes the hostmask <hostmask> from the record of the user\n"
+#~ "            specified by <name>.  If the hostmask given is 'all' then "
+#~ "all\n"
+#~ "            hostmasks will be removed.  The <password> may only be "
+#~ "required if\n"
+#~ "            the user is not recognized by their hostmask.  This message "
+#~ "must be\n"
+#~ "            sent to the bot privately (not on a channel) since it may "
+#~ "contain a\n"
+#~ "            password.\n"
+#~ "            "
+#~ msgstr ""
+#~ "<nimi> <hostmask> [<salasana>]\n"
+#~ "\n"
+#~ "            Poistaa <hostmaskin> käyttäjältä, jonka määrittää\n"
+#~ "            <nimi>. Jos annettu hostmask on 'all' (kaikki) niin, kaikki\n"
+#~ "            hostmaskit poistetaan.  <Salasana> on vaadittu\n"
+#~ "            vain, jos käyttäjää ei tunnisteta hostmaskin perusteella.  "
+#~ "Tämä viesti täytyy\n"
+#~ "            lähettää botille yksisyisesti (ei kanavalla), koska se voi "
+#~ "sisältää\n"
+#~ "            salasanan.\n"
+#~ "            "
