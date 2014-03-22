@@ -169,7 +169,7 @@ class GithubRepository(GitRepository):
                 import lib2to3
             except ImportError:
                 return _('Plugin is probably not compatible with your '
-                        'Python version (3.x) but could not be converted '
+                        'Python version (3.x) and could not be converted '
                         'because 2to3 is not installed.')
             import subprocess
             fixers = []
