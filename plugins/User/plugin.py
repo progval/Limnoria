@@ -374,10 +374,7 @@ class User(callbacks.Plugin):
             sent to the bot privately (not on a channel) since it may contain a
             password.  If <hostmask> is
             not given, it defaults to your current hostmask.  If <name> is not
-            given, it defaults to your currently identified name.  This message
-            must be sent to the bot privately (not on a channel) since it may
-            contain a password.
-
+            given, it defaults to your currently identified name.
             """
             if not hostmask:
                 hostmask = msg.prefix
