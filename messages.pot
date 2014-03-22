@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 12:21+EET\n"
+"POT-Creation-Date: 2014-03-22 12:04+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,18 +14,4 @@ msgstr ""
 "Content-Transfer-Encoding: ENCODING\n"
 "Generated-By: pygettext.py 1.5\n"
 
-
-#: plugin.py:38
-#, docstring
-msgid ""
-"[<channel>]\n"
-"\n"
-"        Returns a random quote from <channel>.  <channel> is only necessary if\n"
-"        the message isn't sent in the channel itself.\n"
-"        "
-msgstr ""
-
-#: plugin.py:47
-msgid "I have no quotes in my database for %s."
-msgstr ""
 
