@@ -5,42 +5,57 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-07-30 11:30+CEST\n"
-"PO-Revision-Date: 2012-08-04 15:29+0200\n"
+"POT-Creation-Date: 2014-03-22 12:41+EET\n"
+"PO-Revision-Date: 2014-03-22 15:05+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
-"Language: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: config.py:45
 msgid ""
+"Determines how many messages the bot\n"
+"    will issue when using the 'more' command."
+msgstr ""
+"Määrittää 'more'-komentoa käytettäessä annettavien\n"
+" viestien määrän."
+
+#: config.py:48
+msgid ""
 "Determines whether the bot will list private\n"
-"    plugins with the list command if given the --private switch.  If this is\n"
+"    plugins with the list command if given the --private switch.  If this "
+"is\n"
 "    disabled, non-owner users should be unable to see what private plugins\n"
 "    are loaded."
 msgstr ""
 "Määrittää luetteleeko botti yksityiset lisäosat\n"
-" \"list\" komennolla jos --private valitsin on annettu. Jos tämä on poistettu\n"
-" käytöstä, ei-omistaja käyttäjien pitäisi olla kykenemättömiä näkemään mitkä\n"
+" \"list\" komennolla jos --private valitsin on annettu. Jos tämä on "
+"poistettu\n"
+" käytöstä, ei-omistaja käyttäjien pitäisi olla kykenemättömiä näkemään "
+"mitkä\n"
 " yksityiset lisäosat ovat ladattuina."
 
-#: config.py:50
+#: config.py:53
 msgid ""
 "Determines whether the bot will list unloaded\n"
-"    plugins with the list command if given the --unloaded switch.  If this is\n"
+"    plugins with the list command if given the --unloaded switch.  If this "
+"is\n"
 "    disabled, non-owner users should be unable to see what unloaded plugins\n"
 "    are available."
 msgstr ""
 "Määrittää luetteleeko botti lataamattomat lisäosat\n"
-"    \"list\" komennolla jos --unloaded valitsin on annettu.  Jos tämä on poistettu käytöstä,\n"
-"    ei-omistaja käyttäjien pitäisi olla kykenemättömiä näkemään mitkä lisäosat eivät ole\n"
+"    \"list\" komennolla jos --unloaded valitsin on annettu.  Jos tämä on "
+"poistettu käytöstä,\n"
+"    ei-omistaja käyttäjien pitäisi olla kykenemättömiä näkemään mitkä "
+"lisäosat eivät ole\n"
 "    ladattuja."
 
-#: config.py:55
+#: config.py:58
 msgid ""
 "Determines the format string for\n"
 "    timestamps in the Misc.last command.  Refer to the Python documentation\n"
@@ -49,43 +64,53 @@ msgid ""
 msgstr ""
 "Määrittää muotoketjun\n"
 "    aikaleimoille Misc.last komennossa.  Katso Python dokumentaatioon\n"
-"    aikamoduulin kohdalle nähdäksesi mitkä aikamuodot hyväksytään. Jos asetat tämän asetuksen\n"
+"    aikamoduulin kohdalle nähdäksesi mitkä aikamuodot hyväksytään. Jos "
+"asetat tämän asetuksen\n"
 "    tyhjäksi, niin aikaleimaa ei näytetä."
 
-#: config.py:62
+#: config.py:65
 msgid ""
 "Determines whether or not\n"
-"    the timestamp will be included in the output of last when it is part of a\n"
+"    the timestamp will be included in the output of last when it is part of "
+"a\n"
 "    nested command"
 msgstr ""
 "Määrittää sisällytetäänkö\n"
 "    aikeleima \"last\" komennon ulostuloon, kun se on osa\n"
 "    sisäkkäisiä komentoja."
 
-#: config.py:66
+#: config.py:69
 msgid ""
 "Determines whether or not the\n"
 "    nick will be included in the output of last when it is part of a nested\n"
 "    command"
 msgstr ""
 "Määrittää sisällytetäänkö\n"
-"    sisällytetäänkö nimimerkki \"last\" komennon ulostuloon, kun se on osa sisäkkäisiä\n"
+"    sisällytetäänkö nimimerkki \"last\" komennon ulostuloon, kun se on osa "
+"sisäkkäisiä\n"
 "    komentoja."
 
-#: plugin.py:105
-msgid "You've given me %s invalid commands within the last minute; I'm now ignoring you for %s."
-msgstr "Olet antanut minulle %s epäkelvollista komentoa minuutin sisällä; Minä kiellän sinut nyt %s:siä."
+#: plugin.py:115
+msgid ""
+"You've given me %s invalid commands within the last %i seconds; I'm now "
+"ignoring you for %s."
+msgstr ""
+"Olet antanut minulle %s epäkelvollista komentoa minuutin sisällä; Minä jätän "
+"sinut nyt huomioitta ajaksi %s."
 
-#: plugin.py:144
-msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"list %s\" to see the commands in the %q plugin."
-msgstr "Lisäosa %q on ladattu, mutta siinä ei ole %q nimistä komentoa.  Käytä komentoa \"list %s\" mähdäksesi kaikki komennot lisäosassa %q."
+#: plugin.py:156
+msgid ""
+"The %q plugin is loaded, but there is no command named %q in it.  Try \"list "
+"%s\" to see the commands in the %q plugin."
+msgstr ""
+"Lisäosa %q on ladattu, mutta siinä ei ole %q nimistä komentoa.  Käytä "
+"komentoa \"list %s\" mähdäksesi kaikki komennot lisäosassa %q."
 
-#: plugin.py:150
-#: plugin.py:153
+#: plugin.py:162 plugin.py:165
 msgid "command"
 msgstr "komento"
 
-#: plugin.py:170
+#: plugin.py:182
 msgid ""
 "[--private] [--unloaded] [<plugin>]\n"
 "\n"
@@ -97,28 +122,37 @@ msgid ""
 msgstr ""
 "[--private] [<lisäosa>]\n"
 "\n"
-"        Luettelee kaikki komennot, jotka ovat saatavilla annetussa lisäosassa.  Jos lisäosaa ei ole annettu,\n"
+"        Luettelee kaikki komennot, jotka ovat saatavilla annetussa "
+"lisäosassa.  Jos lisäosaa ei ole annettu,\n"
 "        luettelee kaikki julkiset lisäosat.  Jos --private on annettu,\n"
 "        luettelee kaikki yksityiset lisäosat.\n"
 "        "
 
-#: plugin.py:191
+#: plugin.py:203
 msgid "--private and --unloaded are uncompatible options."
 msgstr "--private ja --unloaded ovat epäyhteensopivia asetuksia."
 
-#: plugin.py:222
+#: plugin.py:234
 msgid "There are no private plugins."
 msgstr "Yksityisiä lisäosia ei ole."
 
-#: plugin.py:224
+#: plugin.py:236
 msgid "There are no public plugins."
 msgstr "Julkisia lisäosia ei ole."
 
-#: plugin.py:231
-msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
-msgstr "Tuo lisäosa on olemassa, mutta siinä ei ole komentoja.  Tämä tarkoittaa luultavasti sitä, että sillä on joitain asetusarvoja, joita voidaan muuttaa sen käyttäytymisen muokkaamiseksi.  Käytä komentoa \"config list supybot.plugins.%s\" nähdäksesi mitä asetusarvoja sillä on."
-
 #: plugin.py:243
+msgid ""
+"That plugin exists, but has no commands.  This probably means that it has "
+"some configuration variables that can be changed in order to modify its "
+"behavior.  Try \"config list supybot.plugins.%s\" to see what configuration "
+"variables it has."
+msgstr ""
+"Tuo lisäosa on olemassa, mutta siinä ei ole komentoja.  Tämä tarkoittaa "
+"luultavasti sitä, että sillä on joitain asetusarvoja, joita voidaan muuttaa "
+"sen käyttäytymisen muokkaamiseksi.  Käytä komentoa \"config list supybot."
+"plugins.%s\" nähdäksesi mitä asetusarvoja sillä on."
+
+#: plugin.py:255
 msgid ""
 "<string>\n"
 "\n"
@@ -128,37 +162,49 @@ msgid ""
 msgstr ""
 "<merkkiketju>\n"
 "\n"
-"        Etsii <merkkiketjua> komennoista joita botti tarjoaa tällä hetkellä,\n"
+"        Etsii <merkkiketjua> komennoista joita botti tarjoaa tällä "
+"hetkellä,\n"
 "        palauttaen listan komennoista, jotka sisältävät sen merkkiketjun.\n"
 "        "
 
-#: plugin.py:262
+#: plugin.py:274
 msgid "No appropriate commands were found."
 msgstr "Sopivia komentoja ei löytynyt."
 
-#: plugin.py:267
+#: plugin.py:279
 msgid ""
 "[<plugin>] [<command>]\n"
 "\n"
 "        This command gives a useful description of what <command> does.\n"
-"        <plugin> is only necessary if the command is in more than one plugin.\n"
+"        <plugin> is only necessary if the command is in more than one "
+"plugin.\n"
+"\n"
+"        You may also want to use the 'list' command to list all available\n"
+"        plugins and commands.\n"
 "        "
 msgstr ""
 "[<lisäosa>] [<komento>]\n"
 "\n"
-"        Tämä komento antaa hyödyllisen kuvauksen mitä <komento> tekee.\n"
-"        <Lisäosa> on vaadittu vain jos komento on useammassa kuin yhdessä lisäosassa.\n"
+" Tämä komento antaa hyödyllisen kuvauksen mitä <komento> tekee.\n"
+" <Lisäosa> on vaadittu vain jos komento on useammassa kuin yhdessä "
+"lisäosassa.\n"
+" 'list'-komentoa voidaan myös käyttää kaikkien saatavilla olevien lisä-osien "
+"ja komentojen luettelointiin.\n"
 "        "
 
-#: plugin.py:277
-msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
-msgstr "Tuo komento on %L lisäosassa.  Ole hyvä ja määritä minkä komennon kanssa haluat apua."
+#: plugin.py:292
+msgid ""
+"That command exists in the %L plugins.  Please specify exactly which plugin "
+"command you want help with."
+msgstr ""
+"Tuo komento on %L lisäosassa.  Ole hyvä ja määritä minkä komennon kanssa "
+"haluat apua."
 
-#: plugin.py:284
+#: plugin.py:299
 msgid "There is no command %q."
 msgstr "Komentoa %q ei ole."
 
-#: plugin.py:290
+#: plugin.py:305
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -170,23 +216,27 @@ msgstr ""
 "        Palauttaa nykyisen botin version.\n"
 "        "
 
-#: plugin.py:306
+#: plugin.py:322
 msgid "The newest versions available online are %s."
 msgstr "Uusimmat verkossa olevat versiot ovat %s."
 
-#: plugin.py:307
+#: plugin.py:323
 msgid "%s (in %s)"
 msgstr "%s (%s:ssa)"
 
-#: plugin.py:311
+#: plugin.py:327
 msgid "I couldn't fetch the newest version from the Limnoria repository."
 msgstr "Minä en voinut tarkistaa uusinta versiota Limnorian pakettivarastosta."
 
-#: plugin.py:313
-msgid "The current (running) version of this Supybot is %s.  %s"
-msgstr "Nykyinen (päällä) oleva versio tästä Supybotista on %s.  %s"
+#: plugin.py:329
+msgid ""
+"The current (running) version of this Supybot is %s, running on Python %s.  "
+"%s"
+msgstr ""
+"Tällä hetkellä (käynnissä) oleva versio tästä Supybotista on %s, Python, "
+"jota suoritetaan Pythonin versiolla %s.  %s"
 
-#: plugin.py:320
+#: plugin.py:337
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -198,17 +248,19 @@ msgstr ""
 "        Palauttaa URL:n, joka kertoo mistä Limnorian saa.\n"
 "        "
 
-#: plugin.py:324
+#: plugin.py:341
 msgid "My source is at https://github.com/ProgVal/Limnoria"
 msgstr "Minun lähdekoodini on osoitteessa: https://github.com/ProgVal/Limnoria"
 
-#: plugin.py:329
+#: plugin.py:346
 msgid ""
 "[<nick>]\n"
 "\n"
 "        If the last command was truncated due to IRC message length\n"
-"        limitations, returns the next chunk of the result of the last command.\n"
-"        If <nick> is given, it takes the continuation of the last command from\n"
+"        limitations, returns the next chunk of the result of the last "
+"command.\n"
+"        If <nick> is given, it takes the continuation of the last command "
+"from\n"
 "        <nick> instead of the person sending this message.\n"
 "        "
 msgstr ""
@@ -220,65 +272,96 @@ msgstr ""
 "        <nimimerkiltä> komennon antaneen henkilön sijasta.\n"
 "        "
 
-#: plugin.py:343
+#: plugin.py:360
 msgid "%s has no public mores."
 msgstr "%s:llä ei ole julkista jatkoa."
 
-#: plugin.py:346
+#: plugin.py:363
 msgid "Sorry, I can't find any mores for %s"
 msgstr "Anteeksi, en voi löytää jatkoa %s:lle."
 
-#: plugin.py:353
-#, fuzzy
+#: plugin.py:371
 msgid "1 more message"
-msgstr "viesti lisää"
+msgstr "1 viesti jäljellä"
 
-#: plugin.py:355
-#, fuzzy
+#: plugin.py:373
 msgid "%i more messages"
-msgstr "%i lisää viestejä"
+msgstr "%i viestiä jäljellä"
 
-#: plugin.py:359
-msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
-msgstr "Et ole pyytänyt minulta komentoa; ehkäpä tahdoit nähdä jonkun muun jatkon.  Tehdäksesi niin, käytä tätä komentoa tuon henkilön nimimerkillä."
+#: plugin.py:377
+msgid ""
+"You haven't asked me a command; perhaps you want to see someone else's "
+"more.  To do so, call this command with that person's nick."
+msgstr ""
+"Et ole pyytänyt minulta komentoa; ehkäpä tahdoit nähdä jonkun muun jatkon.  "
+"Tehdäksesi niin, käytä tätä komentoa tuon henkilön nimimerkillä."
 
-#: plugin.py:363
+#: plugin.py:381
 msgid "That's all, there is no more."
 msgstr "Siinä kaikki, enempää ei ole."
 
-#: plugin.py:373
+#: plugin.py:391
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
 "\n"
-"        Returns the last message matching the given criteria.  --from requires\n"
-"        a nick from whom the message came; --in requires a channel the message\n"
-"        was sent to; --on requires a network the message was sent on; --with\n"
-"        requires some string that had to be in the message; --regexp requires\n"
+"        Returns the last message matching the given criteria.  --from "
+"requires\n"
+"        a nick from whom the message came; --in requires a channel the "
+"message\n"
+"        was sent to; --on requires a network the message was sent on; --"
+"with\n"
+"        requires some string that had to be in the message; --regexp "
+"requires\n"
 "        a regular expression the message must match; --nolimit returns all\n"
-"        the messages that can be found.  By default, the channel this command is\n"
+"        the messages that can be found.  By default, the channel this "
+"command is\n"
 "        given in is searched.\n"
 "        "
 msgstr ""
 "[--{from,in,on,with,without,regexp} <arvo>] [--nolimit]\n"
 "\n"
-"        Palauttaa viimeisimmän vietin, joka täsmää annettuihin kriteereihin.  --from vaatii\n"
-"        keneltä nimimerkin, jolta viesti tuli; --in vaatii kanavan, jolta viesti\n"
+"        Palauttaa viimeisimmän vietin, joka täsmää annettuihin "
+"kriteereihin.  --from vaatii\n"
+"        keneltä nimimerkin, jolta viesti tuli; --in vaatii kanavan, jolta "
+"viesti\n"
 "        lähetettiin; --on vaatii verkon, jossa viesti lähetettiin; --with\n"
-"        vaatii jonkun merkkiketjun, joka täytyy olla viestissä; --regexp vaatii\n"
-"        säännöllisen lausekkeen, johon viestin täytyy täsmätä; --nolimit palauttaa kaikki\n"
+"        vaatii jonkun merkkiketjun, joka täytyy olla viestissä; --regexp "
+"vaatii\n"
+"        säännöllisen lausekkeen, johon viestin täytyy täsmätä; --nolimit "
+"palauttaa kaikki\n"
 "        viestit, jotka löydetään.  Oletuksena etsitään kanavalta, jolla\n"
 "        komento on annettu.\n"
 "        "
 
-#: plugin.py:475
+#: plugin.py:486
 msgid "The regular expression timed out."
 msgstr "Säännöllinen lauseke aiheutti aikakatkaisun."
 
-#: plugin.py:488
-msgid "I couldn't find a message matching that criteria in my history of %s messages."
-msgstr "En voinut löytää viestiä, joka täsmää noihin kriteereihin %s:än viestin historiassa."
+#: plugin.py:499
+msgid ""
+"I couldn't find a message matching that criteria in my history of %s "
+"messages."
+msgstr ""
+"En voinut löytää viestiä, joka täsmää noihin kriteereihin %s:än viestin "
+"historiassa."
 
-#: plugin.py:503
+#: plugin.py:518
+msgid "Hey, just give the command.  No need for the tell."
+msgstr "Keikari, anna vain komento.  Ei tarvitse kertoa."
+
+#: plugin.py:523
+msgid "You just told me, why should I tell myself?"
+msgstr "Sinä kerroit juuri minulle, miksi minun pitäisi kertoa itselleni?"
+
+#: plugin.py:528
+msgid "I haven't seen %s, I'll let you do the telling."
+msgstr "En ole nähnyt %s:ää, annan sinun hoitaa kertomisen."
+
+#: plugin.py:533
+msgid "%s wants me to tell you: %s"
+msgstr "%s haluaa minun kertovan sinulle: %s"
+
+#: plugin.py:539
 msgid ""
 "<nick> <text>\n"
 "\n"
@@ -288,27 +371,27 @@ msgid ""
 msgstr ""
 "<nimimerkki> <teksti>\n"
 "\n"
-"        Kertoo <nimimerkille> ihansama mikä <teksti> on.  Käytä sisäkkäisiä komentoja\n"
+"        Kertoo <nimimerkille> ihansama mikä <teksti> on.  Käytä sisäkkäisiä "
+"komentoja\n"
 "        eduksesi tässä.\n"
 "        "
 
-#: plugin.py:513
-msgid "Hey, just give the command.  No need for the tell."
-msgstr "Keikari, anna vain komento.  Ei tarvitse kertoa."
+#: plugin.py:549
+msgid ""
+"<nick> <text>\n"
+"\n"
+"        Tells the <nick> whatever <text> is, in a notice.  Use nested\n"
+"        commands to your benefit here.\n"
+"        "
+msgstr ""
+"<nimimerkki> <teksti>\n"
+"\n"
+" Kertoo <nimimerkille> mitä tahansa mitä <teksti> on NOTICE-viestinä.  "
+"Käytä\n"
+" sisäkkäisiä komentoja hyväksesi tässä.\n"
+"        "
 
-#: plugin.py:518
-msgid "You just told me, why should I tell myself?"
-msgstr "Sinä kerroit juuri minulle, miksi minun pitäisi kertoa itselleni?"
-
-#: plugin.py:523
-msgid "I haven't seen %s, I'll let you do the telling."
-msgstr "En ole nähnyt %s:ää, annan sinun hoitaa kertomisen."
-
-#: plugin.py:528
-msgid "%s wants me to tell you: %s"
-msgstr "%s haluaa minun kertovan sinulle: %s"
-
-#: plugin.py:535
+#: plugin.py:559
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -320,15 +403,16 @@ msgstr ""
 "        Tarkistaa onko botti elossa.\n"
 "        "
 
-#: plugin.py:539
+#: plugin.py:563
 msgid "pong"
 msgstr "pong"
 
-#: plugin.py:543
+#: plugin.py:567
 msgid ""
 "[<channel>] <beginning> [--match-case]\n"
 "\n"
-"        Returns the nick of someone on the channel whose nick begins with the\n"
+"        Returns the nick of someone on the channel whose nick begins with "
+"the\n"
 "        given <beginning>.\n"
 "        <channel> defaults to the current channel."
 msgstr ""
@@ -338,11 +422,10 @@ msgstr ""
 "        annetulla <alulla>.\n"
 "        <Kanava> on oletuksena nykyinen kanava."
 
-#: plugin.py:549
+#: plugin.py:573
 msgid "I'm not even in %s."
 msgstr "En edes ole kanavalla %s."
 
-#: plugin.py:561
+#: plugin.py:585
 msgid "No such nick."
 msgstr "Tuollaista nimimerkkiä ei ole."
-
