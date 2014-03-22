@@ -165,7 +165,7 @@ class RSS(callbacks.Plugin):
                                                 pubDate))
                 else:
                     newheadlines.append(format('%s %u%s',
-                                                headline[0]
+                                                headline[0],
                                                 link,
                                                 pubDate))
             else:
