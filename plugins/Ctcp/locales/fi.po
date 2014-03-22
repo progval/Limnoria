@@ -1,12 +1,12 @@
 # Ctcp plugin in Limnoria.
-# Copyright (C) 2011 Limnoria
-# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011.
+# Copyright (C) 2011-2014 Limnoria
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011-2014
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2014-03-22 12:41+EET\n"
-"PO-Revision-Date: 2014-03-22 12:49+0200\n"
+"PO-Revision-Date: 2014-03-22 16:16+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 #: plugin.py:81
 msgid "^PING(?: (.+))?$"
-msgstr "PING ?(.*)"
+msgstr "^PING(?: (.+))?$"
 
 #: plugin.py:90
 msgid "^VERSION$"
