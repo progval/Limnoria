@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
+"POT-Creation-Date: 2014-03-22 12:23+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', 'ur1', and 'x0'."
 msgstr ""
 
-#: config.py:71
+#: config.py:70
 msgid ""
 "Determines whether the\n"
 "    shrink snarfer is enabled.  This snarfer will watch for URLs in the\n"
@@ -37,45 +37,45 @@ msgid ""
 "    supybot.plugins.ShrinkUrl.default."
 msgstr ""
 
-#: config.py:78
+#: config.py:77
 msgid ""
 "Determines whether the snarfer will show the\n"
 "    domain of the URL being snarfed along with the shrunken URL."
 msgstr ""
 
-#: config.py:81
+#: config.py:80
 msgid ""
 "The minimum length a URL must be before\n"
 "    the bot will shrink it."
 msgstr ""
 
-#: config.py:84
+#: config.py:83
 msgid ""
 "Determines what URLs are to be snarfed; URLs\n"
 "    matching the regexp given will not be snarfed.  Give the empty string if\n"
 "    you have no URLs that you'd like to exclude from being snarfed."
 msgstr ""
 
-#: config.py:88
+#: config.py:87
 msgid ""
 "Determines whether the bot will shrink the\n"
 "    URLs of outgoing messages if those URLs are longer than\n"
 "    supybot.plugins.ShrinkUrl.minimumLength."
 msgstr ""
 
-#: config.py:92
+#: config.py:91
 msgid ""
 "Determines what website the bot will use when\n"
 "    shrinking a URL."
 msgstr ""
 
-#: config.py:95
+#: config.py:94
 msgid ""
 "Determines whether this plugin will bold\n"
 "    certain portions of its replies."
 msgstr ""
 
-#: config.py:98
+#: config.py:97
 msgid ""
 "If set to a non-empty value, specifies the list of\n"
 "    services to rotate through for the shrinkSnarfer and outFilter."

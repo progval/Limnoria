@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
+"POT-Creation-Date: 2014-03-22 12:24+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -130,12 +130,12 @@ msgid ""
 "    command to determine what feeds should be announced in a given channel."
 msgstr ""
 
-#: plugin.py:325
+#: plugin.py:327
 #, docstring
 msgid "Return feed items, sorted according to sortFeedItems."
 msgstr ""
 
-#: plugin.py:378
+#: plugin.py:380
 #, docstring
 msgid ""
 "<name> <url>\n"
@@ -145,7 +145,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:389
+#: plugin.py:391
 #, docstring
 msgid ""
 "<name>\n"
@@ -155,11 +155,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:395
+#: plugin.py:397
 msgid "That's not a valid RSS feed command name."
 msgstr ""
 
-#: plugin.py:406
+#: plugin.py:408
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -169,11 +169,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:413
+#: plugin.py:415
 msgid "I am currently not announcing any feeds."
 msgstr ""
 
-#: plugin.py:418
+#: plugin.py:420
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -185,7 +185,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:436
+#: plugin.py:438
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -197,7 +197,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:454
+#: plugin.py:456
 #, docstring
 msgid ""
 "<url> [<number of headlines>]\n"
@@ -207,11 +207,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:467
+#: plugin.py:469
 msgid "Couldn't get RSS feed."
 msgstr ""
 
-#: plugin.py:482
+#: plugin.py:484
 #, docstring
 msgid ""
 "<url|feed>\n"
@@ -221,11 +221,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:495
+#: plugin.py:497
 msgid "I couldn't retrieve that RSS feed."
 msgstr ""
 
-#: plugin.py:508
+#: plugin.py:510
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr ""
 

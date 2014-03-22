@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
+"POT-Creation-Date: 2014-03-22 12:41+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,7 +185,7 @@ msgstr ""
 msgid "I'm not currently globally ignoring anyone."
 msgstr ""
 
-#: plugin.py:360 plugin.py:371
+#: plugin.py:360
 #, docstring
 msgid ""
 "takes no arguments\n"

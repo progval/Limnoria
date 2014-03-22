@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
+"POT-Creation-Date: 2014-03-22 12:24+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:58
+#: plugin.py:57
 #, docstring
 msgid ""
 "[--ssl] <network> [<host[:port]>] [<password>]\n"
@@ -28,19 +28,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:68
+#: plugin.py:67
 msgid "I'm already connected to %s."
 msgstr ""
 
-#: plugin.py:88
+#: plugin.py:87
 msgid "A server must be provided if the network is not already registered."
 msgstr ""
 
-#: plugin.py:96
+#: plugin.py:95
 msgid "Connection to %s initiated."
 msgstr ""
 
-#: plugin.py:103
+#: plugin.py:102
 #, docstring
 msgid ""
 "[<network>] [<quit message>]\n"
@@ -52,11 +52,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:115
+#: plugin.py:114
 msgid "Disconnection to %s initiated."
 msgstr ""
 
-#: plugin.py:121
+#: plugin.py:120
 #, docstring
 msgid ""
 "[<network>] [<quit message>]\n"
@@ -69,7 +69,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:138
+#: plugin.py:137
 #, docstring
 msgid ""
 "<network> <command> [<arg> ...]\n"
@@ -78,55 +78,64 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:213
-msgid "is an op on %L"
-msgstr ""
-
-#: plugin.py:215
-msgid "is a halfop on %L"
-msgstr ""
-
-#: plugin.py:217
-msgid "is voiced on %L"
-msgstr ""
-
-#: plugin.py:220
-msgid "is also on %L"
+#: plugin.py:145
+#, docstring
+msgid ""
+"<command> <args>...\n"
+"        \n"
+"        Perform <command> (with its associated <arg>s) on all networks.\n"
+"        "
 msgstr ""
 
 #: plugin.py:222
+msgid "is an op on %L"
+msgstr ""
+
+#: plugin.py:224
+msgid "is a halfop on %L"
+msgstr ""
+
+#: plugin.py:226
+msgid "is voiced on %L"
+msgstr ""
+
+#: plugin.py:229
+msgid "is also on %L"
+msgstr ""
+
+#: plugin.py:231
 msgid "is on %L"
 msgstr ""
 
-#: plugin.py:225
+#: plugin.py:234
 msgid "isn't on any non-secret channels"
 msgstr ""
 
-#: plugin.py:234 plugin.py:235 plugin.py:241
+#: plugin.py:243 plugin.py:244 plugin.py:250
 msgid "<unknown>"
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:257
 msgid " identified"
 msgstr ""
 
-#: plugin.py:254
+#: plugin.py:263
 msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
 msgstr ""
 
-#: plugin.py:258
+#: plugin.py:267
 msgid "%s (%s) has been%s on server %s and disconnect on %s."
 msgstr ""
 
-#: plugin.py:272
+#: plugin.py:281
 msgid "There is no %s on %s."
 msgstr ""
 
-#: plugin.py:274
+#: plugin.py:283
 msgid "There was no %s on %s."
 msgstr ""
 
-#: plugin.py:282 plugin.py:298
+#: plugin.py:291 plugin.py:307
 #, docstring
 msgid ""
 "[<network>] <nick>\n"
@@ -137,7 +146,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:314
+#: plugin.py:323
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -146,11 +155,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:327
+#: plugin.py:336
 msgid "%.2f seconds."
 msgstr ""
 
-#: plugin.py:331
+#: plugin.py:340
 #, docstring
 msgid ""
 "[<network>]\n"
@@ -161,11 +170,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:337
+#: plugin.py:346
 msgid "Latency check (from %s)."
 msgstr ""
 
-#: plugin.py:345
+#: plugin.py:354
 #, docstring
 msgid ""
 "[<network>]\n"
@@ -176,7 +185,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:356
+#: plugin.py:365
 #, docstring
 msgid ""
 "[<network>]\n"
@@ -185,7 +194,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:363
+#: plugin.py:372
 msgid "I've been connected to %s for %s."
 msgstr ""
 

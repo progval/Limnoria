@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
+"POT-Creation-Date: 2014-03-22 12:41+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 
 #: plugin.py:81
 #, docstring
-msgid "\001PING ?(.*)\001"
+msgid "^\001PING(?: (.+))?\001$"
 msgstr ""
 
 #: plugin.py:90
 #, docstring
-msgid "\001VERSION\001"
+msgid "^\001VERSION\001$"
 msgstr ""
 
 #: plugin.py:95
 #, docstring
-msgid "\001USERINFO\001"
+msgid "^\001USERINFO\001$"
 msgstr ""
 
 #: plugin.py:100
 #, docstring
-msgid "\001TIME\001"
+msgid "^\001TIME\001$"
 msgstr ""
 
 #: plugin.py:105
 #, docstring
-msgid "\001FINGER\001"
+msgid "^\001FINGER\001$"
 msgstr ""
 
 #: plugin.py:108
@@ -46,7 +46,7 @@ msgstr ""
 
 #: plugin.py:111
 #, docstring
-msgid "\001SOURCE\001"
+msgid "^\001SOURCE\001$"
 msgstr ""
 
 #: plugin.py:127
