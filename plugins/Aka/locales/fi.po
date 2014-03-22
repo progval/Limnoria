@@ -1,6 +1,6 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Aka plugin for Limnoria
+# Copyright (C) 2014 Limnoria
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2014.
 #
 msgid ""
 msgstr ""
