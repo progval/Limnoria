@@ -151,13 +151,21 @@ class RSS(callbacks.Plugin):
                     pubDate = ' [%s]' % (headline[2],)
             if sys.version_info[0] < 3:
                 if isinstance(headline[0], unicode):
+                    try:
+                        import charade.universaldetector
+                        u = charade.universaldetector.UniversalDetector()
+                        u.feed(headline[0])
+                        u.close()
+                        encoding = u.result['encoding']
+                    except ImportError:
+                        encoding = 'utf8'
                     newheadlines.append(format('%s %u%s',
-                                                headline[0].encode('utf-8','replace'),
+                                                headline[0].encode(encoding,'replace'),
                                                 link,
                                                 pubDate))
                 else:
                     newheadlines.append(format('%s %u%s',
-                                                headline[0].decode('utf-8','replace'),
+                                                headline[0],
                                                 link,
                                                 pubDate))
             else:
