@@ -153,7 +153,7 @@ class RSS(callbacks.Plugin):
                 try:
                     import charade.universaldetector
                     u = charade.universaldetector.UniversalDetector()
-                    u.feed(s)
+                    u.feed(headline[0])
                     u.close()
                     encoding = u.result['encoding']
                 except ImportError:
