@@ -1,13 +1,13 @@
 # ShrinkUrl plugin in Limnoria.
 # Copyright (C) 2011, 2012 Limnoria
-# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
+# Mikaela Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
 "POT-Creation-Date: 2012-10-07 18:31+EEST\n"
 "PO-Revision-Date: 2012-10-07 18:33+0200\n"
-"Last-Translator: Mika Suomalainen <mkaysi@outlook.com>\n"
+"Last-Translator: Mikaela Suomalainen <mkaysi@outlook.com>\n"
 "Language-Team: suomi <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"

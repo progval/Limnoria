@@ -1,13 +1,13 @@
 # Admin plugin in Limnoria.
 # Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Finnish translation of Admin plugin in Supybot\n"
 "POT-Creation-Date: 2011-10-30 19:20+CET\n"
 "PO-Revision-Date: 2011-10-31 16:25+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "Language: \n"
 "MIME-Version: 1.0\n"

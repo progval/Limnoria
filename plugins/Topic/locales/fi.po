@@ -1,14 +1,14 @@
 # Topic plugin in Limnoria.
 # Copyright (C) 2011
-# FIRST AUTHOR <mika.henrik.mainio@hotmail.com>, 2011.
-# Mika Suomalainen <mkaysi@outlook.com>, 2012.
+# FIRST AUTHOR <mikaela.suomalainen@outlook.com>, 2011.
+# Mikaela Suomalainen <mkaysi@outlook.com>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2012-07-29 11:54+CEST\n"
 "PO-Revision-Date: 2012-08-04 15:43+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
