@@ -399,17 +399,18 @@ class User(callbacks.Plugin):
         remove = wrap(remove, ['private', first('otherUser', 'user'),
                                optional('something'), additional('something', '')])
 
+    def callCommand(self, command, irc, msg, *args, **kwargs):
+        if command[0] != 'gpg' or \
+                (gpg.available and self.registryValue('gpg.enable')):
+            return super(User, self) \
+                    .callCommand(command, irc, msg, *args, **kwargs)
+        else:
+            irc.error(_('GPG features are not enabled.'))
+
     class gpg(callbacks.Commands):
         def __init__(self, *args):
             super(User.gpg, self).__init__(*args)
             self._tokens = {}
-
-        def callCommand(self, command, irc, msg, *args, **kwargs):
-            if gpg.available and self.registryValue('gpg.enable'):
-                return super(User.gpg, self) \
-                        .callCommand(command, irc, msg, *args, **kwargs)
-            else:
-                irc.error(_('GPG features are not enabled.'))
 
         def _expire_tokens(self):
             now = time.time()
@@ -459,6 +460,18 @@ class User(callbacks.Plugin):
             except ValueError:
                 irc.error(_('GPG key not associated with your account.'))
         remove = wrap(remove, ['user', 'somethingWithoutSpaces'])
+
+        @internationalizeDocstring
+        def list(self, irc, msg, args, user):
+            """takes no arguments
+
+            List your GPG keys."""
+            keyids = user.gpgkeys
+            if len(keyids) == 0:
+                irc.reply(_('No key is associated with your account.'))
+            else:
+                irc.reply(format('%L', keyids))
+        list = wrap(list, ['user'])
 
         @internationalizeDocstring
         def gettoken(self, irc, msg, args):
