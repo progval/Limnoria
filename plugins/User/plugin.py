@@ -514,7 +514,7 @@ class User(callbacks.Plugin):
                     'submit it.'), Raise=True)
             if self._tokens[token][0] != msg.prefix:
                 irc.error(_('Your hostname/nick changed in the process. '
-                    'Authentication aborted.'))
+                    'Authentication aborted.'), Raise=True)
             verified = gpg.keyring.verify(data)
             if verified and verified.valid:
                 keyid = verified.key_id
