@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 15:42+EET\n"
-"PO-Revision-Date: 2014-03-22 15:44+0200\n"
+"POT-Creation-Date: 2014-03-25 16:53+EET\n"
+"PO-Revision-Date: 2014-03-25 16:56+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
 "MIME-Version: 1.0\n"
@@ -361,11 +361,11 @@ msgstr "Kaikki hostmaskit poistettu."
 msgid "There was no such hostmask."
 msgstr "Tuollaista hostmaskia ei ollut."
 
-#: plugin.py:412
+#: plugin.py:408
 msgid "GPG features are not enabled."
 msgstr "GPG toiminnot eivät ole käytössä."
 
-#: plugin.py:421
+#: plugin.py:422
 msgid ""
 "<key id> <key server>\n"
 "\n"
@@ -375,27 +375,27 @@ msgstr ""
 "\n"
 " Lisää GPG-avaimen tunnuksellesi."
 
-#: plugin.py:425
+#: plugin.py:426
 msgid "This key is already associated with your account."
 msgstr "Tämä avain on jo liitetty tunnukseesi."
 
-#: plugin.py:429
+#: plugin.py:430
 msgid "%n imported, %i unchanged, %i not imported."
 msgstr "%n tuotu, %i muuttumaton, %i ei tuotu."
 
-#: plugin.py:430
+#: plugin.py:431
 msgid "key"
 msgstr "avain"
 
-#: plugin.py:441
+#: plugin.py:442
 msgid "You must give a valid key id"
 msgstr "Kelvollinen avain-id vaaditaan"
 
-#: plugin.py:443
+#: plugin.py:444
 msgid "You must give a valid key server"
 msgstr "Kelvollinen avainpalvelin vaaditaan"
 
-#: plugin.py:447
+#: plugin.py:448
 msgid ""
 "<fingerprint>\n"
 "\n"
@@ -405,11 +405,25 @@ msgstr ""
 "\n"
 " Poistaa GPG-avaimen tunnukseltasi."
 
-#: plugin.py:460
+#: plugin.py:461
 msgid "GPG key not associated with your account."
 msgstr "GPG-avainta ei ole liitetty tunnukseesi."
 
-#: plugin.py:465
+#: plugin.py:466
+msgid ""
+"takes no arguments\n"
+"\n"
+"            List your GPG keys."
+msgstr ""
+"ei ota parametrejä\n"
+"\n"
+"  Antaa luettelon GPG-avaimistasi."
+
+#: plugin.py:471
+msgid "No key is associated with your account."
+msgstr "Yhtään avainta ei ole liitetty tunnukseesi."
+
+#: plugin.py:478
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -419,7 +433,7 @@ msgstr ""
 "\n"
 " Lähettää merkin, jonka allekirjoitat avaimellasi."
 
-#: plugin.py:472
+#: plugin.py:485
 msgid ""
 "Your token is: %s. Please sign it with your GPG key, paste it somewhere, and "
 "call the 'auth' command with the URL to the (raw) file containing the "
@@ -429,7 +443,7 @@ msgstr ""
 "'auth'-komentoa URL-osoitteella (raakaan) tiedostoon, joka sisältää "
 "allekirjoituksen."
 
-#: plugin.py:486
+#: plugin.py:499
 msgid ""
 "<url>\n"
 "\n"
@@ -442,28 +456,28 @@ msgstr ""
 "jos\n"
 " avain on liitetty käyttäjään."
 
-#: plugin.py:496
+#: plugin.py:509
 msgid "Signature or token not found."
 msgstr "Allekirjoitusta tai merkkiä ei löydy."
 
-#: plugin.py:500
+#: plugin.py:513
 msgid "Unknown token. It may have expired before you submit it."
 msgstr "Tuntematon merkki. Se on voinut vanhentua ennen, kuin lähetit sen."
 
-#: plugin.py:503
+#: plugin.py:516
 msgid "Your hostname/nick changed in the process. Authentication aborted."
 msgstr ""
 "Isäntänimesi/nimimerkkisi vaihtui prosessissa. Tunnistautuminen keskeytetty."
 
-#: plugin.py:514
+#: plugin.py:527
 msgid "You are now authenticated as %s."
 msgstr "Olet nyt tunnistautunut käyttäjäksi %s."
 
-#: plugin.py:517
+#: plugin.py:530
 msgid "Unknown GPG key."
 msgstr "Tuntematon GPG-avain."
 
-#: plugin.py:519
+#: plugin.py:532
 msgid ""
 "Signature could not be verified. Make sure this is a valid GPG signature and "
 "the URL is valid."
@@ -471,7 +485,7 @@ msgstr ""
 "Allekirjoitusta ei voitu varmistaa. Varmista, että tämä on kelvollinen GPG-"
 "allekirjoitus ja URL-osoite on kelvollinen."
 
-#: plugin.py:525
+#: plugin.py:538
 msgid ""
 "[<name>]\n"
 "\n"
@@ -487,7 +501,7 @@ msgstr ""
 "valtuudet.\n"
 "        "
 
-#: plugin.py:545
+#: plugin.py:558
 msgid ""
 "<name> <password>\n"
 "\n"
@@ -505,7 +519,7 @@ msgstr ""
 "        ei kanavalla.\n"
 "        "
 
-#: plugin.py:557
+#: plugin.py:570
 msgid ""
 "Your secure flag is true and your hostmask doesn't match any of your known "
 "hostmasks."
@@ -513,7 +527,7 @@ msgstr ""
 "Sinun 'secure' lippusi on 'true' ja sinun hostmaskisi ei täsmää yhteenkään "
 "sinun tunnettuun hostmaskiisi."
 
-#: plugin.py:567
+#: plugin.py:580
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -534,7 +548,7 @@ msgstr ""
 "        tunnistaa sinut yhä.\n"
 "        "
 
-#: plugin.py:576
+#: plugin.py:589
 msgid ""
 "If you remain recognized after giving this command, you're being recognized "
 "by hostmask, rather than by password.  You must remove whatever hostmask is "
@@ -545,7 +559,7 @@ msgstr ""
 "hostmaski, joka aiheuttaa sinun tunnistamisesi, tullaksesi "
 "tunnistamattomaksi."
 
-#: plugin.py:585
+#: plugin.py:598
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -557,11 +571,11 @@ msgstr ""
 "        Palauttaa komennon antaneen käyttäjän tunnuksen.\n"
 "        "
 
-#: plugin.py:593
+#: plugin.py:606
 msgid "I don't recognize you."
 msgstr "Minä en tunnista sinua."
 
-#: plugin.py:598
+#: plugin.py:611
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -573,7 +587,7 @@ msgstr ""
 "        Palauttaa joitakin tilastotietoja käyttäjä tietokannasta.\n"
 "        "
 
-#: plugin.py:616
+#: plugin.py:629
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
 msgstr ""
 "Minulla on %s rekisteröityä käyttäjää %s rekisteröidyllä hostmaskilla; %n ja "
