@@ -105,6 +105,17 @@ class Utilities(callbacks.Plugin):
     shuffle = wrap(shuffle, [many('anything')])
 
     @internationalizeDocstring
+    def sort(self, irc, msg, args, things):
+        """<arg> [<arg> ...]
+
+        Sorts the arguments given.
+        """
+        irc.reply(' '.join(map(str, sorted(things))))
+    # Keep ints as ints, floats as floats, without comparing between numbers
+    # and strings.
+    sort = wrap(sort, [first(many(first('int', 'float')), many('anything'))])
+
+    @internationalizeDocstring
     def sample(self, irc, msg, args, num, things):
         """<num> <arg> [<arg> ...]
 
@@ -139,7 +150,7 @@ class Utilities(callbacks.Plugin):
         tokens = callbacks.tokenize(text)
         allTokens = commands + tokens
         self.Proxy(irc, msg, allTokens)
-    apply = wrap(apply, ['something', many('anything')])
+    apply = wrap(apply, ['something', many('something')])
 
 
 Class = Utilities

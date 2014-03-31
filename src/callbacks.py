@@ -837,19 +837,19 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
 
     def reply(self, s, noLengthCheck=False, prefixNick=None,
               action=None, private=None, notice=None, to=None, msg=None):
-        """reply(s) -> replies to msg with s
-
+        """
         Keyword arguments:
-          noLengthCheck=False: True if the length shouldn't be checked
-                               (used for 'more' handling)
-          prefixNick=True:     False if the nick shouldn't be prefixed to the
-                               reply.
-          action=False:        True if the reply should be an action.
-          private=False:       True if the reply should be in private.
-          notice=False:        True if the reply should be noticed when the
-                               bot is configured to do so.
-          to=<nick|channel>:   The nick or channel the reply should go to.
-                               Defaults to msg.args[0] (or msg.nick if private)
+
+        * `noLengthCheck=False`: True if the length shouldn't be checked
+                                 (used for 'more' handling)
+        * `prefixNick=True`:     False if the nick shouldn't be prefixed to the
+                                 reply.
+        * `action=False`:        True if the reply should be an action.
+        * `private=False`:       True if the reply should be in private.
+        * `notice=False`:        True if the reply should be noticed when the
+                                 bot is configured to do so.
+        * `to=<nick|channel>`:   The nick or channel the reply should go to.
+                                 Defaults to msg.args[0] (or msg.nick if private)
         """
         # These use and or or based on whether or not they default to True or
         # False.  Those that default to True use and; those that default to

@@ -1,20 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
+# Mikaela Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-07-04 19:47+CEST\n"
-"PO-Revision-Date: 2012-08-04 15:36+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"POT-Creation-Date: 2014-03-22 15:42+EET\n"
+"PO-Revision-Date: 2014-03-22 16:10+0200\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
-"Language: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: plugin.py:57
 msgid ""
@@ -23,7 +24,8 @@ msgid ""
 "        Connects to another network (which will be represented by the name\n"
 "        provided in <network>) at <host:port>.  If port is not provided, it\n"
 "        defaults to 6667, the default port for IRC.  If password is\n"
-"        provided, it will be sent to the server in a PASS command.  If --ssl is\n"
+"        provided, it will be sent to the server in a PASS command.  If --ssl "
+"is\n"
 "        provided, an SSL connection will be attempted.\n"
 "        "
 msgstr ""
@@ -62,7 +64,8 @@ msgstr ""
 "\n"
 "        Katkaisee yhteyden verkkoon, jonka määrittää <verkko>.\n"
 "        Jos <lopetus viesti> on annettu, poistuu verkosta annetulla lopetus\n"
-"        viestillä.  <Verkko> on vaadittu vain jos verkko on eri, kuin se, verkko josta\n"
+"        viestillä.  <Verkko> on vaadittu vain jos verkko on eri, kuin se, "
+"verkko josta\n"
 "        viesti on lähetetty.\n"
 "        "
 
@@ -74,17 +77,22 @@ msgstr "Yhteyden katkaisu verkosta %s aloitettu."
 msgid ""
 "[<network>] [<quit message>]\n"
 "\n"
-"        Disconnects and then reconnects to <network>.  If no network is given,\n"
-"        disconnects and then reconnects to the network the command was given\n"
+"        Disconnects and then reconnects to <network>.  If no network is "
+"given,\n"
+"        disconnects and then reconnects to the network the command was "
+"given\n"
 "        on.  If no quit message is given, uses the configured one\n"
-"        (supybot.plugins.Owner.quitMsg) or the nick of the person giving the\n"
+"        (supybot.plugins.Owner.quitMsg) or the nick of the person giving "
+"the\n"
 "        command.\n"
 "        "
 msgstr ""
 "[<verkko>] [<lopetus viesti>]\n"
 "\n"
-"        Katkaisee yhteyden ja yhdistää uudelleen <verkkoon>.  Jos verkkoa ei ole annettu,\n"
-"        katkaisee yhteyden ja yhdistää uudelleen verkkoon, jossa komento annettiin.\n"
+"        Katkaisee yhteyden ja yhdistää uudelleen <verkkoon>.  Jos verkkoa ei "
+"ole annettu,\n"
+"        katkaisee yhteyden ja yhdistää uudelleen verkkoon, jossa komento "
+"annettiin.\n"
 "        Jos lopetus viestiä ei annettu, käyttää määritettyä lopetus viestiä\n"
 "        (supybot.plugins.Owner.quitMsg) tai henkilön joka antoi komennon\n"
 "        nimimerkkiä.\n"
@@ -99,68 +107,91 @@ msgid ""
 msgstr ""
 "<verkko> <komento> [<parametrit> ...]\n"
 "\n"
-"        Antaa botille <komennon> (siihen liitetyillä <parametreillä>) <verkossa>.\n"
+"        Antaa botille <komennon> (siihen liitetyillä <parametreillä>) "
+"<verkossa>.\n"
 "        "
 
-#: plugin.py:210
+#: plugin.py:145
+msgid ""
+"<command> <args>...\n"
+"        \n"
+"        Perform <command> (with its associated <arg>s) on all networks.\n"
+"        "
+msgstr ""
+"<komento> [<parametrit> ...]\n"
+"\n"
+"        Suotrittaa <komennon> (siihen liitetyillä <parametreillä>) kaikissa "
+"verkoissa.\n"
+"        "
+
+#: plugin.py:222
 msgid "is an op on %L"
 msgstr "on kanavaoperaattori %L:llä"
 
-#: plugin.py:212
+#: plugin.py:224
 msgid "is a halfop on %L"
 msgstr "on puolioperaattori %L:llä."
 
-#: plugin.py:214
+#: plugin.py:226
 msgid "is voiced on %L"
 msgstr "on ääni %L:llä"
 
-#: plugin.py:217
+#: plugin.py:229
 msgid "is also on %L"
 msgstr "on myös %L:llä"
 
-#: plugin.py:219
+#: plugin.py:231
 msgid "is on %L"
 msgstr "on %L:llä."
 
-#: plugin.py:221
+#: plugin.py:234
 msgid "isn't on any non-secret channels"
 msgstr "Ei ole yhdelläkään ei-salaisella kanavalla."
 
-#: plugin.py:228
-#: plugin.py:229
-#: plugin.py:233
+#: plugin.py:243 plugin.py:244 plugin.py:250
 msgid "<unknown>"
 msgstr "<tuntematon>"
 
-#: plugin.py:240
+#: plugin.py:257
 msgid " identified"
 msgstr "tunnistautunut"
 
-#: plugin.py:245
+#: plugin.py:263
 msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
 msgstr "%s (%s) on ollut %s palvelimella %s %s lähtien (idlannut %s) ja %s.%s"
 
-#: plugin.py:258
+#: plugin.py:267
+msgid "%s (%s) has been%s on server %s and disconnect on %s."
+msgstr "%s (%s) on ollut %s palvelimella %s %s lähtien (jouten %s) ja %s.%s"
+
+#: plugin.py:281
 msgid "There is no %s on %s."
 msgstr "%s:ää ei ole verkossa %s."
 
-#: plugin.py:264
+#: plugin.py:283
+msgid "There was no %s on %s."
+msgstr "Nimimerkkiä %s ei ole verkossa %s."
+
+#: plugin.py:291 plugin.py:307
 msgid ""
 "[<network>] <nick>\n"
 "\n"
-"        Returns the WHOIS response <network> gives for <nick>.  <network> is\n"
-"        only necessary if the network is different than the network the command\n"
+"        Returns the WHOIS response <network> gives for <nick>.  <network> "
+"is\n"
+"        only necessary if the network is different than the network the "
+"command\n"
 "        is sent on.\n"
 "        "
 msgstr ""
 "[<verkko>] <nimimerkki>\n"
 "\n"
-"        Palauttaa WHOIS vastauksen, jonka <verkko> antaa <nimimerkille>.  <Verkko> on\n"
+"        Palauttaa WHOIS vastauksen, jonka <verkko> antaa <nimimerkille>.  "
+"<Verkko> on\n"
 "        vaadittu vain jos verkko on eri kuin se verkko, josta komento\n"
 "        lähetettiin.\n"
 "        "
 
-#: plugin.py:280
+#: plugin.py:323
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -169,50 +200,57 @@ msgid ""
 msgstr ""
 "ei ota parametrejä\n"
 "\n"
-"        Palauttaa verkot, joihin botti on tällä hetkellä muodostanut yhteyden.\n"
+"        Palauttaa verkot, joihin botti on tällä hetkellä muodostanut "
+"yhteyden.\n"
 "        "
 
-#: plugin.py:293
+#: plugin.py:336
 msgid "%.2f seconds."
 msgstr "%.2f sekuntia."
 
-#: plugin.py:297
+#: plugin.py:340
 msgid ""
 "[<network>]\n"
 "\n"
-"        Returns the current latency to <network>.  <network> is only necessary\n"
-"        if the message isn't sent on the network to which this command is to\n"
+"        Returns the current latency to <network>.  <network> is only "
+"necessary\n"
+"        if the message isn't sent on the network to which this command is "
+"to\n"
 "        apply.\n"
 "        "
 msgstr ""
 "[<verkko>]\n"
 "\n"
-"        Palauttaa nykyisen viiveen <verkolle>.  <Verkko> on vaadittu vain jos\n"
+"        Palauttaa nykyisen viiveen <verkolle>.  <Verkko> on vaadittu vain "
+"jos\n"
 "        viestiä ei lähetetä verkossa, jolle tämä komento on tarkoitettu\n"
 "        vaikuttamaan.\n"
 "        "
 
-#: plugin.py:303
+#: plugin.py:346
 msgid "Latency check (from %s)."
 msgstr "Viiveen tarkistus (%s:ltä)."
 
-#: plugin.py:311
+#: plugin.py:354
 msgid ""
 "[<network>]\n"
 "\n"
-"        Returns the current network driver for <network>.  <network> is only\n"
+"        Returns the current network driver for <network>.  <network> is "
+"only\n"
 "        necessary if the message isn't sent on the network to which this\n"
 "        command is to apply.\n"
 "        "
 msgstr ""
 "[<verkko>]\n"
 "\n"
-"        Palauttaa nykyisen verkkoajurin, joka on käytössä <verkossa>.  <Verkko> on vaadittu\n"
-"        vain jos komentoa ei lähetetä verkossa, johon tämän komennon on tarkoitus\n"
+"        Palauttaa nykyisen verkkoajurin, joka on käytössä <verkossa>.  "
+"<Verkko> on vaadittu\n"
+"        vain jos komentoa ei lähetetä verkossa, johon tämän komennon on "
+"tarkoitus\n"
 "        vaikuttaa.\n"
 "        "
 
-#: plugin.py:322
+#: plugin.py:365
 msgid ""
 "[<network>]\n"
 "        \n"
@@ -223,7 +261,6 @@ msgstr ""
 "\n"
 " Palauttaa ajan, joka on kulunut siitä, kun yhteys muodostettiin.]"
 
-#: plugin.py:329
+#: plugin.py:372
 msgid "I've been connected to %s for %s."
 msgstr "Olen ollut yhteydessä verkkoon %s ajan %s."
-

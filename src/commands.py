@@ -243,7 +243,7 @@ def _int(s):
     try:
         return int(s, base)
     except ValueError:
-        if base == 10:
+        if base == 10 and '.' not in s:
             try:
                 return int(float(s))
             except OverflowError:

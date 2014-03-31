@@ -1,13 +1,13 @@
 # BadWords plugin in Limnoria.
 # Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot BadWords\n"
 "POT-Creation-Date: 2011-02-26 09:49+CET\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "Language: \n"
 "MIME-Version: 1.0\n"

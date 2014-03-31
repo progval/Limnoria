@@ -171,7 +171,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                         thisaction = action
                         self._updateRank(channel, regexp)
                         for (i, j) in enumerate(match.groups()):
-                            thisaction = re.sub(r'\$' + str(i+1), match.group(i+1), thisaction)
+                            if match.group(i+1):
+                                thisaction = re.sub(r'\$' + str(i+1), match.group(i+1), thisaction)
                         actions.append(thisaction)
                         if max_triggers != 0 and max_triggers == len(actions):
                             break

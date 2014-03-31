@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-22 13:46+CET\n"
+"POT-Creation-Date: 2014-03-22 16:34+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,7 +32,7 @@ msgstr ""
 #: config.py:68
 msgid ""
 "Determines what words\n"
-"    (i.e., pieces of text with no spaces in them ) are considered 'frowns' for\n"
+"    (i.e., pieces of text with no spaces in them) are considered 'frowns' for\n"
 "    the purposes of stats-keeping."
 msgstr ""
 

@@ -1,22 +1,20 @@
 # AutoMode plugin in Limnoria.
 # Copyright (C) 2011, 2012 Limnoria
-# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
+# Mikaela Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot AutoMode\n"
-"POT-Creation-Date: 2012-10-07 18:54+EEST\n"
-"PO-Revision-Date: 2012-10-07 18:58+0200\n"
-"Last-Translator: Mika Suomalainen <mkaysi@outlook.com>\n"
+"POT-Creation-Date: 2014-03-22 15:42+EET\n"
+"PO-Revision-Date: 2014-03-22 16:07+0200\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
-"Language: \n"
+"Language: fi_FI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Finnish\n"
-"X-Poedit-Country: FINLAND\n"
 "Plural-Forms: \n"
-"X-Generator: Gtranslator 2.91.5\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: config.py:46
 msgid ""
@@ -29,45 +27,61 @@ msgid ""
 "Determines whether this plugin will automode\n"
 "    owners even if they don't have op/halfop/voice/whatever capability."
 msgstr ""
-"Määrittää vaihtaako botti omistajien tilaa automaattisesti, vaikka heillä ei olisi\n"
+"Määrittää vaihtaako botti omistajien tilaa automaattisesti, vaikka heillä ei "
+"olisi\n"
 " op/halfop/voice/ihansama valtuutta."
 
 #: config.py:52
+msgid ""
+"Determines whether the bot will\n"
+"    check for 'alternative capabilities' (ie. autoop, autohalfop,\n"
+"    autovoice) in addition to/instead of classic ones."
+msgstr ""
+"Määrittää tarkistaako botti 'vaihtoehtoisten valtuuksien' varalta (esim. "
+"autoop,\n"
+" autohalfop, autovoice) klassisten lisäksi/sijaan."
+
+#: config.py:56
 msgid ""
 "Determines whether the bot will \"fall\n"
 "    through\" to halfop/voicing when auto-opping is turned off but\n"
 "    auto-halfopping/voicing are turned on."
 msgstr ""
-"Määrittää  \"alentuuko\" botti halfoppaamiseen/voicen antamiseen kun automaattinen\n"
+"Määrittää  \"alentuuko\" botti halfoppaamiseen/voicen antamiseen kun "
+"automaattinen\n"
 " oprtaattori aseman antaminen on poistettu käytöstä, mutta automaattinen\n"
 " puolioperaattori aseman/äänen antaminen on käytössä."
 
-#: config.py:56
+#: config.py:60
 msgid ""
 "Determines whether the bot will automatically\n"
 "    op people with the <channel>,op capability when they join the channel.\n"
 "    "
 msgstr ""
 "Määrittää oppaako botti\n"
-" ihmiset, joilla on #<kanava>,op valtuus automaattisesti, kun he liittyvät kanavalle."
+" ihmiset, joilla on #<kanava>,op valtuus automaattisesti, kun he liittyvät "
+"kanavalle."
 
-#: config.py:60
+#: config.py:64
 msgid ""
 "Determines whether the bot will automatically\n"
 "    halfop people with the <channel>,halfop capability when they join the\n"
 "    channel."
-msgstr "Määrittää antaako botti puolioperaattorin aseman automaattisesti, kun ihmiset, joilla on #<kanava>,halfop valtuus liittyvät kanavalle."
+msgstr ""
+"Määrittää antaako botti puolioperaattorin aseman automaattisesti, kun "
+"ihmiset, joilla on #<kanava>,halfop valtuus liittyvät kanavalle."
 
-#: config.py:64
+#: config.py:68
 msgid ""
 "Determines whether the bot will automatically\n"
 "    voice people with the <channel>,voice capability when they join the\n"
 "    channel."
 msgstr ""
-"Määrittää antaako botti automaattisesti äänen ihmisille, joilla on #<kanava>,voice\n"
+"Määrittää antaako botti automaattisesti äänen ihmisille, joilla on #<kanava>,"
+"voice\n"
 " valtuus heidän liittyessään kanavalle."
 
-#: config.py:68
+#: config.py:72
 msgid ""
 "Determines whether the bot will automatically\n"
 "    ban people who join the channel and are on the banlist."
@@ -75,23 +89,25 @@ msgstr ""
 "Määrittää antaako botti porttikiellon ihmisille,\n"
 " jotka liittyvät kanavalle ja ovat porttikieltolistalla."
 
-#: config.py:71
+#: config.py:75
 msgid ""
 "Determines how many seconds the bot\n"
 "    will automatically ban a person when banning."
 msgstr ""
-"Määrittää kuinka moneksi sekuntiksi botti antaa porttikiellon henkilöle, antaessaan\n"
+"Määrittää kuinka moneksi sekuntiksi botti antaa porttikiellon henkilöle, "
+"antaessaan\n"
 " porttikieltoa automaattisesti."
 
-#: config.py:75
+#: config.py:79
 msgid ""
 "Determines how many seconds the bot will wait\n"
 "    before applying a mode. Has no effect on bans."
 msgstr ""
-"Määrittää kuinka monta sekuntia botti odottaa ennen, kuin asettaa tilan. Tällä ei ole\n"
+"Määrittää kuinka monta sekuntia botti odottaa ennen, kuin asettaa tilan. "
+"Tällä ei ole\n"
 " vaikutusta porttikieltoihin."
 
-#: config.py:79
+#: config.py:83
 msgid ""
 "Extra modes that will be\n"
 "    applied to a user. Example syntax: user1+o-v user2+v user3-v"
@@ -99,9 +115,8 @@ msgstr ""
 "Ylimääräiset tilat, jotka asetetaan käyttäjään.\n"
 " Esimerkki syntaksi: käyttäjä1+o-v käyttäjä2+v käyttäjä3-v"
 
-#: plugin.py:64
+#: plugin.py:78
 msgid ""
 "Determines whether or not a mode has already\n"
-"                            been applied."
-msgstr "Määrittää asettaako tilan vai eikö, jos tila on jo asetettu."
-
+"                        been applied."
+msgstr "Määrittää asettaako botti tilan vai eikö, jos tila se on jo asetettu."

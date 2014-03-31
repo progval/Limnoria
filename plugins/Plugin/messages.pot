@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
+"POT-Creation-Date: 2014-03-22 16:34+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,15 +41,6 @@ msgstr ""
 #: plugin.py:62
 #, docstring
 msgid ""
-"takes no arguments\n"
-"\n"
-"        Returns a list of the currently loaded plugins.\n"
-"        "
-msgstr ""
-
-#: plugin.py:73
-#, docstring
-msgid ""
 "<command>\n"
 "\n"
 "        Returns the name of the plugin that would be used to call <command>.\n"
@@ -59,23 +50,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:91
+#: plugin.py:80
 msgid "plugins"
 msgstr ""
 
-#: plugin.py:93
+#: plugin.py:82
 msgid "plugin"
 msgstr ""
 
-#: plugin.py:94
+#: plugin.py:83
 msgid "The %q command is available in the %L %s."
 msgstr ""
 
-#: plugin.py:97
+#: plugin.py:86
 msgid "There is no command %q."
 msgstr ""
 
-#: plugin.py:113
+#: plugin.py:102
 #, docstring
 msgid ""
 "<command>\n"
@@ -84,7 +75,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:134
+#: plugin.py:123
 #, docstring
 msgid ""
 "<plugin>\n"
@@ -94,15 +85,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:140
+#: plugin.py:129
 msgid "That plugin does not seem to be loaded."
 msgstr ""
 
-#: plugin.py:146
+#: plugin.py:135
 msgid "That plugin doesn't have an author that claims it."
 msgstr ""
 
-#: plugin.py:151
+#: plugin.py:140
 #, docstring
 msgid ""
 "<plugin> [<nick>]\n"
@@ -114,7 +105,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:159
+#: plugin.py:148
 #, docstring
 msgid ""
 "\n"
@@ -123,7 +114,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:165
+#: plugin.py:154
 #, docstring
 msgid ""
 "\n"
@@ -132,7 +123,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:172
+#: plugin.py:161
 #, docstring
 msgid ""
 "\n"
@@ -141,7 +132,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:182
+#: plugin.py:171
 #, docstring
 msgid ""
 "\n"
@@ -150,39 +141,39 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:186
+#: plugin.py:175
 msgid "The %s plugin"
 msgstr ""
 
-#: plugin.py:187
+#: plugin.py:176
 msgid "has not been claimed by an author"
 msgstr ""
 
-#: plugin.py:188
+#: plugin.py:177
 msgid "and"
 msgstr ""
 
-#: plugin.py:189
+#: plugin.py:178
 msgid "has no contributors listed."
 msgstr ""
 
-#: plugin.py:194
+#: plugin.py:183
 msgid "was written by %s"
 msgstr ""
 
-#: plugin.py:205
+#: plugin.py:194
 msgid "%s %h contributed to it."
 msgstr ""
 
-#: plugin.py:210
+#: plugin.py:199
 msgid "has no additional contributors listed."
 msgstr ""
 
-#: plugin.py:212
+#: plugin.py:201
 msgid "but"
 msgstr ""
 
-#: plugin.py:215
+#: plugin.py:204
 #, docstring
 msgid ""
 "\n"
@@ -191,39 +182,39 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:229
+#: plugin.py:218
 msgid "The nick specified (%s) is not a registered contributor."
 msgstr ""
 
-#: plugin.py:235
+#: plugin.py:224
 msgid "The %s plugin does not have '%s' listed as a contributor."
 msgstr ""
 
-#: plugin.py:243
+#: plugin.py:232
 msgid "command"
 msgstr ""
 
-#: plugin.py:246
+#: plugin.py:235
 msgid "the %L %s"
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:237
 msgid "the %L"
 msgstr ""
 
-#: plugin.py:251
+#: plugin.py:240
 msgid "%s wrote the %s plugin and also contributed %L."
 msgstr ""
 
-#: plugin.py:254
+#: plugin.py:243
 msgid "%s contributed %L to the %s plugin."
 msgstr ""
 
-#: plugin.py:257
+#: plugin.py:246
 msgid "%s wrote the %s plugin"
 msgstr ""
 
-#: plugin.py:260
+#: plugin.py:249
 msgid "%s has no listed contributions for the %s plugin."
 msgstr ""
 

@@ -1,24 +1,27 @@
 # RSS plugin in Limnoria.
 # Copyright (C) Limnoria 2011
-# Mika Suomalainen <mkaysi@outlook.com>, 2011, 2012.
+# Mikaela Suomalainen <mkaysi@outlook.com>, 2011, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-07-31 19:07+UTC\n"
-"PO-Revision-Date: 2012-08-04 15:07+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"POT-Creation-Date: 2014-03-22 15:42+EET\n"
+"PO-Revision-Date: 2014-03-22 16:08+0200\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
-"Language: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: config.py:49
 msgid "Valid values include 'asInFeed', 'oldestFirst', 'newestFirst'."
-msgstr "Kelvolliset arvot ovat 'asInFeed' (kuten syötteessä), 'oldestFirst' (vanhin ensin), 'newestFirst' (uusin ensin)."
+msgstr ""
+"Kelvolliset arvot ovat 'asInFeed' (kuten syötteessä), 'oldestFirst' (vanhin "
+"ensin), 'newestFirst' (uusin ensin)."
 
 #: config.py:54
 msgid ""
@@ -39,7 +42,8 @@ msgstr ""
 #: config.py:60
 msgid ""
 "Determines what\n"
-"    prefix is prepended (if any) to the new news item announcements made in the\n"
+"    prefix is prepended (if any) to the new news item announcements made in "
+"the\n"
 "    channel."
 msgstr ""
 "Määrittää mikä\n"
@@ -51,6 +55,18 @@ msgid "New news from "
 msgstr "Uusia uutisia kohteesta "
 
 #: config.py:64
+msgid ": "
+msgstr ": "
+
+#: config.py:64
+msgid ""
+"Determines what\n"
+"    suffix is appended to the feed name in a news item."
+msgstr ""
+"Määrittää mikä\n"
+" jälkiliike (jos mikään) lisätään syötteen nimeen uutis-syötteessä."
+
+#: config.py:67
 msgid ""
 "Determines which RSS feeds\n"
 "    should be announced in the channel; valid input is a list of strings\n"
@@ -58,29 +74,34 @@ msgid ""
 msgstr ""
 "Määrittää mitä RSS syötteitä kuulutetaan\n"
 "    kanavalla; kelvollinen syöte on lista merkkiketjuista\n"
-"    (joko rekisteröidyt RSS syötteet tai RSS syötteiden URL:it) välilyönneillä erotettuina."
+"    (joko rekisteröidyt RSS syötteet tai RSS syötteiden URL:it) "
+"välilyönneillä erotettuina."
 
-#: config.py:68
+#: config.py:71
 msgid ""
 "Indicates how many seconds the bot will\n"
-"    wait between retrieving RSS feeds; requests made within this period will\n"
+"    wait between retrieving RSS feeds; requests made within this period "
+"will\n"
 "    return cached results."
 msgstr ""
 "Määrittää kuinka monta sekuntia botti odottaa\n"
-"    RSS syötteiden päivittämisten välillä; pyynnöt, jotka tehdän tällä ajalla\n"
+"    RSS syötteiden päivittämisten välillä; pyynnöt, jotka tehdän tällä "
+"ajalla\n"
 "    palauttavat välimuistissa olevia tuloksia."
 
-#: config.py:72
+#: config.py:75
 msgid ""
 "Determines whether feed items should be\n"
-"    sorted by their update timestamp or kept in the same order as they appear\n"
+"    sorted by their update timestamp or kept in the same order as they "
+"appear\n"
 "    in a feed."
 msgstr ""
 "Määrittää pitäisikö syötteiden kohteiden olla järjestettyinä\n"
-" päivitysaikaleiman mukaan vai pitää samassa järjestyksessä, kuin ne ilmestyvät\n"
+" päivitysaikaleiman mukaan vai pitää samassa järjestyksessä, kuin ne "
+"ilmestyvät\n"
 " syötteessä."
 
-#: config.py:76
+#: config.py:83
 msgid ""
 "Determines what feeds should be accessible as\n"
 "    commands."
@@ -88,7 +109,7 @@ msgstr ""
 "Määrittää mitten syötteiden pitäisi olla käytettävissä\n"
 "    komentoina."
 
-#: config.py:79
+#: config.py:86
 msgid ""
 "Determines whether the bot will list the link\n"
 "    along with the title of the feed when the rss command is called.\n"
@@ -100,7 +121,7 @@ msgstr ""
 "    supybot.plugins.RSS.announce.showLinks vaikuttaa luetellaanko\n"
 "    linkit, kun syöte on kuulutettu automaattisesti."
 
-#: config.py:84
+#: config.py:97
 msgid ""
 "Indicates how many headlines an rss feed\n"
 "    will output by default, if no number is provided."
@@ -108,33 +129,37 @@ msgstr ""
 "Ilmaisee kuinka monta otsikkoa RSS-syötteen ulostulossa on oletuksena,\n"
 " jos määrää ei määritetä komennossa."
 
-#: config.py:87
+#: config.py:100
 msgid ""
 "Indicates how many headlines an rss feed\n"
 "    will output when it is first added to announce for a channel."
 msgstr ""
-"Ilmaisee kuinka monta otsikkoa RSS-syötteen ulostulossa on ensimmäisellä kerralla, kun sen kuuluttaminen\n"
+"Ilmaisee kuinka monta otsikkoa RSS-syötteen ulostulossa on ensimmäisellä "
+"kerralla, kun sen kuuluttaminen\n"
 " lisätään kanavalle."
 
-#: config.py:90
+#: config.py:103
 msgid ""
 "Space separated list of \n"
-"    strings, lets you filter headlines to those containing one or more items\n"
+"    strings, lets you filter headlines to those containing one or more "
+"items\n"
 "    in this whitelist."
 msgstr ""
-"Välilyönneillä erotettu lista merkkiketjuista, sallii otsikoiden suodattamisen\n"
+"Välilyönneillä erotettu lista merkkiketjuista, sallii otsikoiden "
+"suodattamisen\n"
 " yhteen tai useampaan kohteeseen, jotka ovat tällä valkoisella listalla."
 
-#: config.py:94
+#: config.py:107
 msgid ""
 "Space separated list of \n"
 "    strings, lets you filter headlines to those not containing any items\n"
 "    in this blacklist."
 msgstr ""
 "Välilyönneillä erotettu lista merkkiketjuista,\n"
-" tämä sallii kohteiden, jotka ovat tällä mustalla listalla, suodattamisen pois."
+" tämä sallii kohteiden, jotka ovat tällä mustalla listalla, suodattamisen "
+"pois."
 
-#: config.py:100
+#: config.py:113
 msgid ""
 "Determines whether the bot will list the link\n"
 "    along with the title of the feed when a feed is automatically\n"
@@ -144,23 +169,28 @@ msgstr ""
 "    syötteen otsikon kautta, kun syöte kuulutetaan\n"
 "    automaattisesti."
 
-#: plugin.py:62
+#: plugin.py:57
 msgid ""
 "This plugin is useful both for announcing updates to RSS feeds in a\n"
-"    channel, and for retrieving the headlines of RSS feeds via command.  Use\n"
-"    the \"add\" command to add feeds to this plugin, and use the \"announce\"\n"
+"    channel, and for retrieving the headlines of RSS feeds via command.  "
+"Use\n"
+"    the \"add\" command to add feeds to this plugin, and use the \"announce"
+"\"\n"
 "    command to determine what feeds should be announced in a given channel."
 msgstr ""
-"Tämä lisäosa on hyödyllinen kumpaankin, RSS syötteiden päivitysten kuuluttamiseen\n"
-"    kanavalla, ja hakemaan RSS syötteen uusimmat otsikot komennon kautta.  Käytä\n"
+"Tämä lisäosa on hyödyllinen kumpaankin, RSS syötteiden päivitysten "
+"kuuluttamiseen\n"
+"    kanavalla, ja hakemaan RSS syötteen uusimmat otsikot komennon kautta.  "
+"Käytä\n"
 "    \"add\" komentoa lisätäksesi syötteitä tähän lisäosaan ja \"announce\"\n"
-"    komentoa määrittämään mitkä syötteet pitäisi kuuluttaa annetulla kanavalla."
+"    komentoa määrittämään mitkä syötteet pitäisi kuuluttaa annetulla "
+"kanavalla."
 
-#: plugin.py:304
+#: plugin.py:335
 msgid "Return feed items, sorted according to sortFeedItems."
 msgstr "Palauttaa syötteen kohteet järjestettynä sortFeedItems :in mukaan."
 
-#: plugin.py:358
+#: plugin.py:388
 msgid ""
 "<name> <url>\n"
 "\n"
@@ -174,7 +204,7 @@ msgstr ""
 "        URL osoitteesta..\n"
 "        "
 
-#: plugin.py:369
+#: plugin.py:399
 msgid ""
 "<name>\n"
 "\n"
@@ -188,11 +218,11 @@ msgstr ""
 "        lisäosasta.\n"
 "        "
 
-#: plugin.py:375
+#: plugin.py:405
 msgid "That's not a valid RSS feed command name."
 msgstr "Tuo ei ole kelvollinen RSS sylte komento nimi."
 
-#: plugin.py:386
+#: plugin.py:416
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -202,20 +232,23 @@ msgid ""
 msgstr ""
 "[<kanava>]\n"
 "\n"
-"            Palauttaa listan RSS syötteistä, joita kuulutetaan <kanavalla>.  <Kanava> on\n"
+"            Palauttaa listan RSS syötteistä, joita kuulutetaan <kanavalla>.  "
+"<Kanava> on\n"
 "            vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:393
+#: plugin.py:423
 msgid "I am currently not announcing any feeds."
 msgstr "Minä en tällä hetkellä kuuluta yhtään syötettä."
 
-#: plugin.py:398
+#: plugin.py:428
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
-"            Adds the list of feeds to the current list of announced feeds in\n"
-"            <channel>.  Valid feeds include the names of registered feeds as\n"
+"            Adds the list of feeds to the current list of announced feeds "
+"in\n"
+"            <channel>.  Valid feeds include the names of registered feeds "
+"as\n"
 "            well as URLs for RSS feeds.  <channel> is only necessary if the\n"
 "            message isn't sent in the channel itself.\n"
 "            "
@@ -223,30 +256,36 @@ msgstr ""
 "[<kanava>] <nimi|url> [<nimi|url> ...]\n"
 "\n"
 "            Lisää listan syötteistä tällä hetkellä\n"
-"            <kanavalla> kuulutettaviin syötteisiin.  Kelvolliset syötteet sisältävät rekisteröityjen syötteiden nimet,\n"
-"            kuten myös RSS syötteiden URL-osoitteet.  <Kanava> on vaadittu vain, jos\n"
+"            <kanavalla> kuulutettaviin syötteisiin.  Kelvolliset syötteet "
+"sisältävät rekisteröityjen syötteiden nimet,\n"
+"            kuten myös RSS syötteiden URL-osoitteet.  <Kanava> on vaadittu "
+"vain, jos\n"
 "            viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:416
+#: plugin.py:446
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
-"            Removes the list of feeds from the current list of announced feeds\n"
-"            in <channel>.  Valid feeds include the names of registered feeds as\n"
+"            Removes the list of feeds from the current list of announced "
+"feeds\n"
+"            in <channel>.  Valid feeds include the names of registered feeds "
+"as\n"
 "            well as URLs for RSS feeds.  <channel> is only necessary if the\n"
 "            message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<kanava>] <nimi|url> [<nimi|url> ...]\n"
 "\n"
-"            Poistaa listan RSS syötteistä botin tällä hetkellä <kanavalla> kuuluttamista\n"
+"            Poistaa listan RSS syötteistä botin tällä hetkellä <kanavalla> "
+"kuuluttamista\n"
 "            syötteistä.  Kelvolliset syötteen nimet sisältävät\n"
-"            URL osoitteet, kuten myös rekisteröidyt RSS syötteet.  <Kanava> on vaadittu vain, jos viestiä\n"
+"            URL osoitteet, kuten myös rekisteröidyt RSS syötteet.  <Kanava> "
+"on vaadittu vain, jos viestiä\n"
 "            ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:434
+#: plugin.py:464
 msgid ""
 "<url> [<number of headlines>]\n"
 "\n"
@@ -257,14 +296,15 @@ msgstr ""
 "<url> [<otsikoiden lukumäärä>]\n"
 "\n"
 "        Hakee annetun RSS syötteen otsikko komponentit.\n"
-"        Jos <otsikoiden lukumäärä> on annettu, palauttaa vain niin monta otsikkoa.\n"
+"        Jos <otsikoiden lukumäärä> on annettu, palauttaa vain niin monta "
+"otsikkoa.\n"
 "        "
 
-#: plugin.py:447
+#: plugin.py:477
 msgid "Couldn't get RSS feed."
 msgstr "RSS syötettä ei pystytty hakemaan."
 
-#: plugin.py:462
+#: plugin.py:492
 msgid ""
 "<url|feed>\n"
 "\n"
@@ -278,11 +318,10 @@ msgstr ""
 "        URL, kuvauksen, ja viimeisen päivityksen, jos saatavilla.\n"
 "        "
 
-#: plugin.py:475
+#: plugin.py:505
 msgid "I couldn't retrieve that RSS feed."
 msgstr "En voinut noutaa tuota RSS syötettä."
 
-#: plugin.py:488
+#: plugin.py:518
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr "Otsikko: %s;  URL: %u;  Kuvaus: %s;  Viimeeksi päivitetty: %s."
-

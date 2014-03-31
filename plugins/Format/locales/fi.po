@@ -1,18 +1,19 @@
 # Format plugin in Limnoria.
 # Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
-"PO-Revision-Date: 2011-08-10 14:18+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"POT-Creation-Date: 2014-03-22 12:41+EET\n"
+"PO-Revision-Date: 2014-03-22 15:35+0200\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: plugin.py:43
 msgid ""
@@ -30,6 +31,16 @@ msgstr ""
 msgid ""
 "<text>\n"
 "\n"
+"        Strips bold, underline, and colors from <text>."
+msgstr ""
+"<teksti>\n"
+"\n"
+" Riisuu <tekstistä> korostuksen, alleviivauksen ja värit."
+
+#: plugin.py:59
+msgid ""
+"<text>\n"
+"\n"
 "        Returns <text> in reverse-video.\n"
 "        "
 msgstr ""
@@ -38,7 +49,7 @@ msgstr ""
 "        Palauttaa <tekstin> käänteis-videona..\n"
 "        "
 
-#: plugin.py:61
+#: plugin.py:68
 msgid ""
 "<text>\n"
 "\n"
@@ -50,11 +61,12 @@ msgstr ""
 "        Palauttaa <tekstin> alleviivattuna.\n"
 "        "
 
-#: plugin.py:70
+#: plugin.py:77
 msgid ""
 "<foreground> [<background>] <text>\n"
 "\n"
-"        Returns <text> with foreground color <foreground> and background color\n"
+"        Returns <text> with foreground color <foreground> and background "
+"color\n"
 "        <background> (if given)\n"
 "        "
 msgstr ""
@@ -64,7 +76,7 @@ msgstr ""
 "        <tausta> (jos annettu)\n"
 "        "
 
-#: plugin.py:80
+#: plugin.py:87
 msgid ""
 "<separator> <string 1> [<string> ...]\n"
 "\n"
@@ -76,31 +88,38 @@ msgstr ""
 "        Yhdistää kaikki parametrit yhteen <erottajalla>.\n"
 "        "
 
-#: plugin.py:89
+#: plugin.py:96
 msgid ""
 "<chars to translate> <chars to replace those with> <text>\n"
 "\n"
 "        Replaces <chars to translate> with <chars to replace those with> in\n"
-"        <text>.  The first and second arguments must necessarily be the same\n"
+"        <text>.  The first and second arguments must necessarily be the "
+"same\n"
 "        length.\n"
 "        "
 msgstr ""
 "<merkit käännettäväksi> <merkit jotka korvaavat ne> <teksti>\n"
 "\n"
 "        Korvaa <käännettävät merkit> <merkit, jotka korvaavat ne>\n"
-"        <tekstissä>. Ensinmäisen ja viimeisen parametrin täytyy olla täsmälleen saman\n"
+"        <tekstissä>. Ensinmäisen ja viimeisen parametrin täytyy olla "
+"täsmälleen saman\n"
 "        pituisia.\n"
 "        "
 
-#: plugin.py:96
-msgid "<chars to translate> must be the same length as <chars to replace those with>."
-msgstr "<Käännettävien merkkejen> täytyy olla saman pituisia, kuin <merkit, joilla ne korjataan>."
-
 #: plugin.py:103
+msgid ""
+"<chars to translate> must be the same length as <chars to replace those "
+"with>."
+msgstr ""
+"<Käännettävien merkkejen> täytyy olla saman pituisia, kuin <merkit, joilla "
+"ne korjataan>."
+
+#: plugin.py:110
 msgid ""
 "<substring to translate> <substring to replace it with> <text>\n"
 "\n"
-"        Replaces all non-overlapping occurrences of <substring to translate>\n"
+"        Replaces all non-overlapping occurrences of <substring to "
+"translate>\n"
 "        with <substring to replace it with> in <text>.\n"
 "        "
 msgstr ""
@@ -110,7 +129,7 @@ msgstr ""
 "        <alimerkkijonolla, joka korvaa sen> <tekstissä>.\n"
 "        "
 
-#: plugin.py:112
+#: plugin.py:119
 msgid ""
 "<text>\n"
 "\n"
@@ -122,7 +141,7 @@ msgstr ""
 "        Palauttaa <tekstin> isoilla kirjaimilla.\n"
 "        "
 
-#: plugin.py:121
+#: plugin.py:128
 msgid ""
 "<text>\n"
 "\n"
@@ -134,7 +153,7 @@ msgstr ""
 "        Palauttaa <tekstin> pienillä kirjaimilla.\n"
 "        "
 
-#: plugin.py:130
+#: plugin.py:137
 msgid ""
 "<text>\n"
 "\n"
@@ -146,7 +165,7 @@ msgstr ""
 "        Palauttaa <tekstin> aktivoituna.\n"
 "        "
 
-#: plugin.py:139
+#: plugin.py:146
 msgid ""
 "<text>\n"
 "\n"
@@ -158,7 +177,7 @@ msgstr ""
 "        Palauttaa <tekstin> otsikoituna.\n"
 "        "
 
-#: plugin.py:148
+#: plugin.py:155
 msgid ""
 "<text>\n"
 "\n"
@@ -170,69 +189,80 @@ msgstr ""
 "        Palauttaa tekstin kahden lainausmerkin sisällä.\n"
 "        "
 
-#: plugin.py:157
+#: plugin.py:164
 msgid ""
 "<string 1> <string 2>\n"
 "\n"
-"        Concatenates two strings.  Do keep in mind that this is *not* the same\n"
-"        thing as join \"\", since if <string 2> contains spaces, they won't be\n"
+"        Concatenates two strings.  Do keep in mind that this is *not* the "
+"same\n"
+"        thing as join \"\", since if <string 2> contains spaces, they won't "
+"be\n"
 "        removed by concat.\n"
 "        "
 msgstr ""
 "<merkkiketju 1> <merkkiketju 2>\n"
 "\n"
 "        Liittää merkkiketjut yhteen.  Pidä mielessä että tämä *ei* ole sama\n"
-"        asia kuin liitä \"\", koska jos <merkkiketju 2> sisältää välilyöntejä, ne eivät tule\n"
+"        asia kuin liitä \"\", koska jos <merkkiketju 2> sisältää "
+"välilyöntejä, ne eivät tule\n"
 "        liitoksen poistamiksi.\n"
 "        "
 
-#: plugin.py:168
+#: plugin.py:175
 msgid ""
 "<size> <text>\n"
 "\n"
-"        Cuts <text> down to <size> by chopping off the rightmost characters in\n"
-"        excess of <size>.  If <size> is a negative number, it chops that many\n"
+"        Cuts <text> down to <size> by chopping off the rightmost characters "
+"in\n"
+"        excess of <size>.  If <size> is a negative number, it chops that "
+"many\n"
 "        characters off the end of <text>.\n"
 "        "
 msgstr ""
 "<koko> <teksti>\n"
 "\n"
 "        Leikkaa <teksti> <kokoon> katkaisemalla oikeimmat\n"
-"        <koon> pääsyt.  Jos <koko> on negatiivinen numero, se leikkaa niin monta\n"
+"        <koon> pääsyt.  Jos <koko> on negatiivinen numero, se leikkaa niin "
+"monta\n"
 "        merkkiä <tekstin> lopusta.\n"
 "        "
 
-#: plugin.py:179
+#: plugin.py:186
 msgid ""
 "<number> <text>\n"
 "\n"
-"        Returns the <number>th space-separated field of <text>.  I.e., if text\n"
+"        Returns the <number>th space-separated field of <text>.  I.e., if "
+"text\n"
 "        is \"foo bar baz\" and <number> is 2, \"bar\" is returned.\n"
 "        "
 msgstr ""
 "<numero> <teksti>\n"
 "\n"
-"        Palauttaa <number>:nen välilyönnillä erotetut osan <tekstiät>.  Esim. jos teksti\n"
+"        Palauttaa <number>:nen välilyönnillä erotetut osan <tekstiät>.  "
+"Esim. jos teksti\n"
 "        on \"foo bar baz\" ja <numero> on 2, palauttaa \"bar\" :in.\".\n"
 "        "
 
-#: plugin.py:192
+#: plugin.py:199
 msgid ""
 "<format string> [<arg> ...]\n"
 "\n"
-"        Expands a Python-style format string using the remaining args.  Just be\n"
-"        sure always to use %s, not %d or %f or whatever, because all the args\n"
+"        Expands a Python-style format string using the remaining args.  Just "
+"be\n"
+"        sure always to use %s, not %d or %f or whatever, because all the "
+"args\n"
 "        are strings.\n"
 "        "
 msgstr ""
 "<formaatti merkkijono> [<parametrit> ...]\n"
 "\n"
-"        Laajentaa Python-tyylistä merkkiketjua käyttämällä jäljellä olevia parametrejä. Ole varma, että käytät\n"
-"        aina vain %s:ää, etkä %d:tä tai %f:ää tai mitä tahansa, koska kaikki parametrit ovat\n"
+"        Laajentaa Python-tyylistä merkkiketjua käyttämällä jäljellä olevia "
+"parametrejä. Ole varma, että käytät\n"
+"        aina vain %s:ää, etkä %d:tä tai %f:ää tai mitä tahansa, koska kaikki "
+"parametrit ovat\n"
 "        merkkiketjuja.\n"
 "        "
 
-#: plugin.py:206
+#: plugin.py:213
 msgid "Not enough arguments for the format string."
 msgstr "Ei tarpeeksi parametrejä formaatti merkkiketjulle."
-

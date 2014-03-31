@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
+"POT-Creation-Date: 2014-03-22 16:34+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,15 +179,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:218
+#: plugin.py:219
 msgid "It seems the configured fortune command was not available."
 msgstr ""
 
-#: plugin.py:227
+#: plugin.py:228
 msgid "The fortune command is not configured. If fortune is installed on this system, reconfigure the supybot.plugins.Unix.fortune.command configuration variable appropriately."
 msgstr ""
 
-#: plugin.py:234
+#: plugin.py:235
 #, docstring
 msgid ""
 "[is] <something>\n"
@@ -198,15 +198,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:249
+#: plugin.py:251
 msgid "It seems the configured wtf command was not available."
 msgstr ""
 
-#: plugin.py:258
+#: plugin.py:260
 msgid "The wtf command is not configured.  If it is installed on this system, reconfigure the supybot.plugins.Unix.wtf.command configuration variable appropriately."
 msgstr ""
 
-#: plugin.py:266
+#: plugin.py:268
 #, docstring
 msgid ""
 "[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>\n"
@@ -217,7 +217,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:318
+#: plugin.py:322
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -226,7 +226,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:346
+#: plugin.py:351
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -235,16 +235,31 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:374
+#: plugin.py:380
 #, docstring
 msgid ""
-"<command to call with any arguments> \n"
+"<command to call with any arguments>\n"
 "        Calls any command available on the system, and returns its output.\n"
 "        Requires owner capability.\n"
 "        Note that being restricted to owner, this command does not do any\n"
 "        sanity checking on input/output. So it is up to you to make sure\n"
-"        you don't run anything that will spamify your channel or that \n"
-"        will bring your machine to its knees. \n"
+"        you don't run anything that will spamify your channel or that\n"
+"        will bring your machine to its knees.\n"
+"        "
+msgstr ""
+
+#: plugin.py:408
+#, docstring
+msgid ""
+"<command to call with any arguments>\n"
+"        Calls any command available on the system using the shell\n"
+"        specified by the SHELL environment variable, and returns its\n"
+"        output.\n"
+"        Requires owner capability.\n"
+"        Note that being restricted to owner, this command does not do any\n"
+"        sanity checking on input/output. So it is up to you to make sure\n"
+"        you don't run anything that will spamify your channel or that\n"
+"        will bring your machine to its knees.\n"
 "        "
 msgstr ""
 

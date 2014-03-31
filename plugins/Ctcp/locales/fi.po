@@ -1,55 +1,57 @@
 # Ctcp plugin in Limnoria.
-# Copyright (C) 2011 Limnoria
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Copyright (C) 2011-2014 Limnoria
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011-2014
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
-"PO-Revision-Date: 2011-12-23 13:36+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"POT-Creation-Date: 2014-03-22 12:41+EET\n"
+"PO-Revision-Date: 2014-03-22 16:16+0200\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: plugin.py:77
-msgid "\001PING ?(.*)\001"
-msgstr "\001PING ?(.*)\001"
+#: plugin.py:81
+msgid "^PING(?: (.+))?$"
+msgstr "^PING(?: (.+))?$"
 
-#: plugin.py:86
-msgid "\001VERSION\001"
-msgstr "\001VERSION\001"
+#: plugin.py:90
+msgid "^VERSION$"
+msgstr "^VERSION$"
 
-#: plugin.py:91
-msgid "\001USERINFO\001"
-msgstr "\001USERINFO\001"
+#: plugin.py:95
+msgid "^USERINFO$"
+msgstr "^USERINFO$"
 
-#: plugin.py:96
-msgid "\001TIME\001"
-msgstr "\001TIME\001"
+#: plugin.py:100
+msgid "^TIME$"
+msgstr "^TIME$"
 
-#: plugin.py:101
-msgid "\001FINGER\001"
-msgstr "\001FINGER\001"
+#: plugin.py:105
+msgid "^FINGER$"
+msgstr "^FINGER$"
 
-#: plugin.py:104
+#: plugin.py:108
 msgid "Supybot, the best Python IRC bot in existence!"
-msgstr "Supybot, paras Python IRC botti, joka on olemassa!"
+msgstr "Supybot, paras Pythonilla toteutettu IRC-botti, joka on olemassa!"
 
-#: plugin.py:107
-msgid "\001SOURCE\001"
-msgstr "\001SOURCE\001"
+#: plugin.py:111
+msgid "^SOURCE$"
+msgstr "^SOURCE$"
 
-#: plugin.py:123
+#: plugin.py:127
+#, fuzzy
 msgid ""
 "[<channel>] [--nicks]\n"
 "\n"
 "        Sends a CTCP VERSION to <channel>, returning the various\n"
 "        version strings returned.  It waits for 10 seconds before returning\n"
-"        the versions received at that point.  If --nicks is given, nicks are\n"
+"        the versions received at that point.  If --nicks is given, nicks "
+"are\n"
 "        associated with the version strings; otherwise, only the version\n"
 "        strings are given.\n"
 "        "
@@ -58,8 +60,8 @@ msgstr ""
 "\n"
 "        Lähettää CTCP VERSION <kanavalle>, palauttaen \n"
 "        palaavat versioketjut.  Se odottaa 10 sekuntia ennen kuin palauttaa\n"
-"        versiot, jotka vastaanotettiin tuolloin.  Jos --nicks on annettu, nimimerkit\n"
+"        versiot, jotka vastaanotettiin tuolloin.  Jos --nicks on annettu, "
+"nimimerkit\n"
 "        liitetään versioketjuihin; muutoin vain versioketjut\n"
 "        annetaan.\n"
 "        "
-

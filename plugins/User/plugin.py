@@ -374,10 +374,7 @@ class User(callbacks.Plugin):
             sent to the bot privately (not on a channel) since it may contain a
             password.  If <hostmask> is
             not given, it defaults to your current hostmask.  If <name> is not
-            given, it defaults to your currently identified name.  This message
-            must be sent to the bot privately (not on a channel) since it may
-            contain a password.
-
+            given, it defaults to your currently identified name.
             """
             if not hostmask:
                 hostmask = msg.prefix
@@ -402,17 +399,18 @@ class User(callbacks.Plugin):
         remove = wrap(remove, ['private', first('otherUser', 'user'),
                                optional('something'), additional('something', '')])
 
+    def callCommand(self, command, irc, msg, *args, **kwargs):
+        if command[0] != 'gpg' or \
+                (gpg.available and self.registryValue('gpg.enable')):
+            return super(User, self) \
+                    .callCommand(command, irc, msg, *args, **kwargs)
+        else:
+            irc.error(_('GPG features are not enabled.'))
+
     class gpg(callbacks.Commands):
         def __init__(self, *args):
             super(User.gpg, self).__init__(*args)
             self._tokens = {}
-
-        def callCommand(self, command, irc, msg, *args, **kwargs):
-            if gpg.available and self.registryValue('gpg.enable'):
-                return super(User.gpg, self) \
-                        .callCommand(command, irc, msg, *args, **kwargs)
-            else:
-                irc.error(_('GPG features are not enabled.'))
 
         def _expire_tokens(self):
             now = time.time()
@@ -464,6 +462,18 @@ class User(callbacks.Plugin):
         remove = wrap(remove, ['user', 'somethingWithoutSpaces'])
 
         @internationalizeDocstring
+        def list(self, irc, msg, args, user):
+            """takes no arguments
+
+            List your GPG keys."""
+            keyids = user.gpgkeys
+            if len(keyids) == 0:
+                irc.reply(_('No key is associated with your account.'))
+            else:
+                irc.reply(format('%L', keyids))
+        list = wrap(list, ['user'])
+
+        @internationalizeDocstring
         def gettoken(self, irc, msg, args):
             """takes no arguments
 
@@ -504,7 +514,7 @@ class User(callbacks.Plugin):
                     'submit it.'), Raise=True)
             if self._tokens[token][0] != msg.prefix:
                 irc.error(_('Your hostname/nick changed in the process. '
-                    'Authentication aborted.'))
+                    'Authentication aborted.'), Raise=True)
             verified = gpg.keyring.verify(data)
             if verified and verified.valid:
                 keyid = verified.key_id

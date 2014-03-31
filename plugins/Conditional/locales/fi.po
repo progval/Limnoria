@@ -1,21 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR ORGANIZATION
-# Mika Suomalainen <mika.henrik.mainio@hotmail.com>, 2011.
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-06-28 19:37+CEST\n"
-"PO-Revision-Date: 2011-06-28 22:52+0200\n"
-"Last-Translator: Mika Suomalainen <mika.henrik.mainio@hotmail.com>\n"
+"POT-Creation-Date: 2014-03-22 15:42+EET\n"
+"PO-Revision-Date: 2014-03-22 15:56+0200\n"
+"Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: plugin.py:64
+#: plugin.py:57
 msgid ""
 "Add the help for \"@plugin help Conditional\" here\n"
 "    This should describe *how* to use this plugin."
@@ -23,31 +23,35 @@ msgstr ""
 "Lisää ohje \"@plugin help Conditional\" tähän.\n"
 " Tämän pitäisi kuvata *kuinka* tätä lisäosaa käytetään."
 
-#: plugin.py:71
+#: plugin.py:64
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr "Suorita komento viestistä, kuin komento olisi lähetetty IRC:stä."
 
-#: plugin.py:80
+#: plugin.py:73
 msgid ""
 "<condition> <ifcommand> <elsecommand>\n"
 "\n"
-"        Runs <ifcommand> if <condition> evaluates to true, runs <elsecommand>\n"
+"        Runs <ifcommand> if <condition> evaluates to true, runs "
+"<elsecommand>\n"
 "        if it evaluates to false.\n"
 "\n"
-"        Use other logical operators defined in this plugin and command nesting\n"
+"        Use other logical operators defined in this plugin and command "
+"nesting\n"
 "        to your advantage here.\n"
 "        "
 msgstr ""
 "<tilanne> <joskomento> <muutenkomento>\n"
 "\n"
-"        Suorittaa <joskomennon> if <tilanne> kehittyy todeksi, suorittaa <muutenkomennon>\n"
+"        Suorittaa <joskomennon> if <tilanne> kehittyy todeksi, suorittaa "
+"<muutenkomennon>\n"
 "        jos se kehittyy epätodeksi.\n"
 "\n"
-"        Käytä loogisia toimintoja, jotka on määritetty tässä laajennuksessa ja komentojen putkittamista\n"
+"        Käytä loogisia toimintoja, jotka on määritetty tässä laajennuksessa "
+"ja komentojen putkittamista\n"
 "        eduksesi tässä.\n"
 "        "
 
-#: plugin.py:97
+#: plugin.py:90
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -59,7 +63,7 @@ msgstr ""
 "Palauttaa kaikki edellytykset jotka tukevat arviotumista todeksi.\n"
 "        "
 
-#: plugin.py:109
+#: plugin.py:102
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -71,7 +75,7 @@ msgstr ""
 "        Palauttaa toden, jos yksikin edellytys tukee arvioimista todeksi.\n"
 "        "
 
-#: plugin.py:121
+#: plugin.py:114
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -83,7 +87,7 @@ msgstr ""
 "Palauttaa toden, jos vain yksi edellytys tukee arvioimista todeksi.\n"
 "        "
 
-#: plugin.py:133
+#: plugin.py:126
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -97,7 +101,7 @@ msgstr ""
 "        Palauttaa toden jos ne ovat yhtäläisia.\n"
 "        "
 
-#: plugin.py:146
+#: plugin.py:139
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -111,7 +115,7 @@ msgstr ""
 "        Palauttaa toden, jos ne eivät ole yhtäläisia.\n"
 "        "
 
-#: plugin.py:159
+#: plugin.py:152
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -125,7 +129,7 @@ msgstr ""
 "        Palauttaa toden jos <asia1> on suurempi kuin <asia2>.\n"
 "        "
 
-#: plugin.py:172
+#: plugin.py:165
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -139,7 +143,7 @@ msgstr ""
 "        Palauttaa toden jos <asia1> on suurempi tai yhtäläinen <asiaan2>.\n"
 "        "
 
-#: plugin.py:185
+#: plugin.py:178
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -153,7 +157,7 @@ msgstr ""
 "Palauttaa toden jos <asia1> on vähemmän kuin <asia2>.\n"
 "        "
 
-#: plugin.py:198
+#: plugin.py:191
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -167,18 +171,22 @@ msgstr ""
 "        Palauttaa toden jos <asia1> on vähemmän tai yhtäläinen <asiaan2>.\n"
 "        "
 
-#: plugin.py:211
+#: plugin.py:204
 msgid ""
-"<item1> <item2>\n"
+"[--case-insensitive] <item1> <item2>\n"
 "\n"
 "        Determines if <item1> is a substring of <item2>.\n"
 "        Returns true if <item1> is contained in <item2>.\n"
+"\n"
+"        Will only match case if --case-insensitive is not given.\n"
 "        "
 msgstr ""
-"<asia1> <asia2>\n"
-"        \n"
-"        Määrittää onko <asia1> <asia2:den aliketju>. \n"
-"        Palauttaa toden, jos <asia1> <asia2:teen>.\n"
+"[--case-insensitive] <kohde1> <kohde2>\n"
+"\n"
+" Selvittää onko <kohde1> osa <kohdetta2>.\n"
+" Palauttaa true, jos <kohde1> sisältyy <kohteeseen2>.\n"
+"\n"
+" Kirjainkoko merkitsee, mikäli --case-insensitive ei ole annettu.\n"
 "        "
 
 #: plugin.py:224
@@ -264,4 +272,3 @@ msgstr ""
 "        Tekee numerollisen vertailun <asiaan1> ja <asiaan2>. \n"
 "        Palauttaa toden jos <asia1> on vähemmän tai yhtäläinen <asiaan2>.\n"
 "        "
-
