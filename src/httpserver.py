@@ -363,7 +363,7 @@ class Favicon(SupyHTTPServerCallback):
         if file_path:
             response = None
             try:
-                icon = open(file_path, 'r')
+                icon = open(file_path, 'rb')
                 response = icon.read()
             except IOError:
                 pass
