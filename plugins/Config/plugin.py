@@ -240,7 +240,8 @@ class Config(callbacks.Plugin):
             if s:
                 if hasattr(group, 'value') and not group._private:
                     channel = msg.args[0]
-                    if irc.isChannel(channel):
+                    if irc.isChannel(channel) and \
+                            channel in group._children:
                         globvalue = str(group)
                         chanvalue = str(group.get(channel))
                         if chanvalue != globvalue:
