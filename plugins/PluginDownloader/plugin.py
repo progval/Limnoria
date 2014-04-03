@@ -297,6 +297,10 @@ repositories = {
                                                    'GLolol',
                                                    'SupyPlugins',
                                                    ),
+               'Iota':             GithubRepository(
+                                                   'IotaSpencer',
+                                                   'supyplugins',
+                                                   ),
                }
 
 class PluginDownloader(callbacks.Plugin):
