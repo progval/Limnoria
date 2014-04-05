@@ -97,7 +97,7 @@ conf.registerGlobalValue(RSS, 'defaultNumberOfHeadlines',
     registry.PositiveInteger(1, _("""Indicates how many headlines an rss feed
     will output by default, if no number is provided.""")))
 conf.registerChannelValue(RSS, 'initialAnnounceHeadlines',
-    registry.PositiveInteger(5, _("""Indicates how many headlines an rss feed
+    registry.Integer(5, _("""Indicates how many headlines an rss feed
     will output when it is first added to announce for a channel.""")))
 conf.registerChannelValue(RSS, 'keywordWhitelist',
     registry.SpaceSeparatedSetOfStrings([], _("""Space separated list of 
