@@ -335,7 +335,6 @@ def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
     else:
         state.args.append(irc)
 
-<<<<<<< HEAD
 def getHaveVoice(irc, msg, args, state, action=_('do that')):
     getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
