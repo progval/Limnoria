@@ -209,7 +209,10 @@ class ValidLogLevel(registry.String):
     def set(self, s):
         s = s.upper()
         try:
-            level = logging._levelNames[s]
+            try:
+                level = logging._levelNames[s]
+            except AttributeError:
+                level = logging._nameToLevel[s]
         except KeyError:
             try:
                 level = int(s)
