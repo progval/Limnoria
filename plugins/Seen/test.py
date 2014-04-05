@@ -64,6 +64,7 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         with conf.supybot.plugins.seen.showLastMessage.context(False):
             self.assertRegexp('seen any %s' % self.nick,
                         '^%s was last seen[^:]*' % self.nick)
+        self.assertNotError('config plugins.Seen.minimumNonWildcard 0')
         orig = conf.supybot.protocols.irc.strictRfc()
         try:
             for state in (True, False):
@@ -80,6 +81,7 @@ class ChannelDBTestCase(ChannelPluginTestCase):
                                          prefix=self.prefix))
         self.assertNotError('seen last')
         self.assertNotError('list')
+        self.assertNotError('config plugins.Seen.minimumNonWildcard 2')
         self.assertError('seen *')
         self.assertNotError('seen %s' % self.nick)
         m = self.assertNotError('seen %s' % self.nick.upper())
