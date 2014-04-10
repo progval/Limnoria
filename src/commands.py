@@ -336,16 +336,14 @@ def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
         state.args.append(irc)
 
 def getHaveVoice(irc, msg, args, state, action=_('do that')):
-    if not state.channel:
-        getChannel(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isVoice(irc.nick):
         state.error(_('I need to be voiced to %s.') % action, Raise=True)
 
 def getHaveVoicePlus(irc, msg, args, state, action=_('do that')):
-    if not state.channel:
-        getChannel(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isVoicePlus(irc.nick):
@@ -354,16 +352,14 @@ def getHaveVoicePlus(irc, msg, args, state, action=_('do that')):
                 Raise=True)
 
 def getHaveHalfop(irc, msg, args, state, action=_('do that')):
-    if not state.channel:
-        getChannel(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isHalfop(irc.nick):
         state.error(_('I need to be halfopped to %s.') % action, Raise=True)
 
 def getHaveHalfopPlus(irc, msg, args, state, action=_('do that')):
-    if not state.channel:
-        getChannel(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isHalfopPlus(irc.nick):
@@ -372,8 +368,7 @@ def getHaveHalfopPlus(irc, msg, args, state, action=_('do that')):
                 Raise=True)
 
 def getHaveOp(irc, msg, args, state, action=_('do that')):
-    if not state.channel:
-        getChannel(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error(_('I\'m not even in %s.') % state.channel, Raise=True)
     if not irc.state.channels[state.channel].isOp(irc.nick):
@@ -400,8 +395,7 @@ def getHostmask(irc, msg, args, state):
 
 def getBanmask(irc, msg, args, state):
     getHostmask(irc, msg, args, state)
-    if not state.channel:
-        getChannel(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
     channel = state.channel
     banmaskstyle = conf.supybot.protocols.irc.banmask
     state.args[-1] = banmaskstyle.makeBanmask(state.args[-1])
@@ -477,6 +471,8 @@ def getSeenNick(irc, msg, args, state, errmsg=None):
         state.error(errmsg, Raise=True)
 
 def getChannel(irc, msg, args, state):
+    if state.channel:
+        return
     if args and irc.isChannel(args[0]):
         channel = args.pop(0)
     elif irc.isChannel(msg.args[0]):
@@ -508,8 +504,7 @@ def getChannelDb(irc, msg, args, state, **kwargs):
             state.args.append(channel)
 
 def inChannel(irc, msg, args, state):
-    if not state.channel:
-        getChannel(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         state.error(_('I\'m not in %s.') % state.channel, Raise=True)
 
@@ -564,8 +559,7 @@ def getChannelOrGlobal(irc, msg, args, state):
     state.args.append(channel)
 
 def checkChannelCapability(irc, msg, args, state, cap):
-    if not state.channel:
-        getChannel(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
     cap = ircdb.canonicalCapability(cap)
     cap = ircdb.makeChannelCapability(state.channel, cap)
     if not ircdb.checkCapability(msg.prefix, cap):

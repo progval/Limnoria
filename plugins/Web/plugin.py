@@ -114,7 +114,6 @@ def catch_web_errors(f):
 
 class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
-    threaded = True
     regexps = ['titleSnarfer']
 
     @fetch_sandbox
