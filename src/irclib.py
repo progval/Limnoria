@@ -954,11 +954,29 @@ class Irc(IrcCommandDispatcher):
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful' % self.network)
-        self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('END',)))
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do904(self, msg):
         log.warning('%s: SASL authentication failed' % self.network)
-        self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('END',)))
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+
+    def do905(self, msg):
+        log.warning(('%s: SASL authentication failed because your username '
+                     'or password is too long.') % self.network)
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+
+    def do906(self, msg):
+        log.warning('%s: SASL authentication aborted' % self.network)
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+
+    def do907(self, msg):
+        log.warning(('%s: Attempted SASL authentication when we were already '
+                     'authenticated.') % self.network)
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+
+    def do908(self, msg):
+        log.info('%s: Supported SASL mechanisms: %s' %
+                 (self.network, msg.args[1]))
 
     def _getNextNick(self):
         if self.alternateNicks:
