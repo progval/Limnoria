@@ -954,13 +954,10 @@ class Irc(IrcCommandDispatcher):
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful' % self.network)
-        log.debug('Sending CAP END command.')
         self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('END',)))
 
     def do904(self, msg):
         log.warning('%s: SASL authentication failed' % self.network)
-        log.debug('Aborting authentication.')
-        log.debug('Sending CAP END command.')
         self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('END',)))
 
     def _getNextNick(self):
