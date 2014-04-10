@@ -239,7 +239,19 @@ class Config(callbacks.Plugin):
             s = group.help()
             if s:
                 if hasattr(group, 'value') and not group._private:
-                    s += _('  (Current value: %s)') % group
+                    channel = msg.args[0]
+                    if irc.isChannel(channel) and \
+                            channel in group._children:
+                        globvalue = str(group)
+                        chanvalue = str(group.get(channel))
+                        if chanvalue != globvalue:
+                            s += _('  (Current global value: %s;  '
+                                    'current channel value: %s)') % \
+                                            (globvalue, chanvalue)
+                        else:
+                            s += _('  (Current value: %s)') % group
+                    else:
+                        s += _('  (Current value: %s)') % group
                 irc.reply(s)
             else:
                 irc.reply(_('That configuration group exists, but seems to '

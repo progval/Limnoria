@@ -220,7 +220,7 @@ class ChannelLogger(callbacks.Plugin):
     def doNick(self, irc, msg):
         oldNick = msg.nick
         newNick = msg.args[0]
-        for (channel, c) in irc.state.channels.iteritems():
+        for (channel, c) in irc.state.channels.items():
             if newNick in c.users:
                 self.doLog(irc, channel,
                            '*** %s is now known as %s\n', oldNick, newNick)
@@ -278,7 +278,9 @@ class ChannelLogger(callbacks.Plugin):
             reason = ""
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
-        for (channel, chan) in self.lastStates[irc].channels.iteritems():
+        if irc not in self.lastStates:
+            return
+        for (channel, chan) in self.lastStates[irc].channels.items():
             if(self.registryValue('showJoinParts', channel)):
                 if msg.nick in chan.users:
                     self.doLog(irc, channel,

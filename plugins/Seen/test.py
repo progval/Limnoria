@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2013, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -63,12 +64,24 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         with conf.supybot.plugins.seen.showLastMessage.context(False):
             self.assertRegexp('seen any %s' % self.nick,
                         '^%s was last seen[^:]*' % self.nick)
+        self.assertNotError('config plugins.Seen.minimumNonWildcard 0')
+        orig = conf.supybot.protocols.irc.strictRfc()
+        try:
+            for state in (True, False):
+                conf.supybot.protocols.irc.strictRfc.setValue(state)
+                for wildcard in self.wildcardTest:
+                    self.assertRegexp('seen any %s' % wildcard,
+                                      '^%s was last seen' % self.nick)
+                self.assertRegexp('seen any bar*', '^I haven\'t seen anyone matching')
+        finally:
+            conf.supybot.protocols.irc.strictRfc.setValue(orig)
 
     def testSeen(self):
         self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,
                                          prefix=self.prefix))
         self.assertNotError('seen last')
         self.assertNotError('list')
+        self.assertNotError('config plugins.Seen.minimumNonWildcard 2')
         self.assertError('seen *')
         self.assertNotError('seen %s' % self.nick)
         m = self.assertNotError('seen %s' % self.nick.upper())
@@ -76,10 +89,16 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertRegexp('seen user %s' % self.nick,
                           '^%s was last seen' % self.nick)
         self.assertNotError('config plugins.Seen.minimumNonWildcard 0')
-        for wildcard in self.wildcardTest:
-            self.assertRegexp('seen %s' % wildcard,
-                              '^%s was last seen' % self.nick)
-        self.assertRegexp('seen bar*', '^I haven\'t seen anyone matching')
+        orig = conf.supybot.protocols.irc.strictRfc()
+        try:
+            for state in (True, False):
+                conf.supybot.protocols.irc.strictRfc.setValue(state)
+                for wildcard in self.wildcardTest:
+                    self.assertRegexp('seen %s' % wildcard,
+                                      '^%s was last seen' % self.nick)
+                self.assertRegexp('seen bar*', '^I haven\'t seen anyone matching')
+        finally:
+            conf.supybot.protocols.irc.strictRfc.setValue(orig)
 
     def testSeenNoUser(self):
         self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,

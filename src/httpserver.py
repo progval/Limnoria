@@ -361,15 +361,15 @@ class Favicon(SupyHTTPServerCallback):
         file_path = conf.supybot.servers.http.favicon()
         found = False
         if file_path:
+            response = None
             try:
-                icon = open(file_path, 'r')
-                found = True
+                icon = open(file_path, 'rb')
+                response = icon.read()
             except IOError:
                 pass
             finally:
                 icon.close()
-        if found:
-            response = icon.read()
+        if response is not None:
             filename = file_path.rsplit(os.sep, 1)[1]
             if '.' in filename:
                 ext = filename.rsplit('.', 1)[1]
