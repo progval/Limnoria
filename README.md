@@ -33,10 +33,12 @@ time to write it, you should take the time to read it.
 [supybot.aperio.fr]:http://supybot.aperio.fr/doc
 [Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
 
-## English-speaking support channels
+## IRC channels
 
-If you have any trouble, feel free to swing by [#supybot and #limnoria](irc://irc.freenode.net/#supybot,#limnoria) on
-[irc.freenode.net](irc://irc.freenode.net) or [#supybot](irc://irc.oftc.net/#supybot) at [irc.oftc.net](irc://irc.oftc.net) (we have a Limnoria there relaying,
+### In English
+
+If you have any trouble, feel free to swing by [#supybot and #limnoria](irc://chat.freenode.net/#supybot,#limnoria) on
+[irc.freenode.net](irc://chat.freenode.net) or [#supybot](irc://irc.oftc.net/#supybot) at [irc.oftc.net](irc://irc.oftc.net) (we have a Limnoria there relaying,
 so either network works) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
 understand or think you know of a better way to do something,
@@ -45,7 +47,7 @@ understand or think you know of a better way to do something,
 [issue tracker]:https://github.com/ProgVal/Limnoria/issues
 
 
-## Support channels in other languages
+### In Other languages
 
-Only French yet, at [#supybot-fr on freenode](irc://irc.freenode.net/#supybot-fr).
+Only in French at the moment, located at [#supybot-fr on freenode](irc://chat.freenode.net/#supybot-fr).
 
