@@ -939,9 +939,9 @@ class Irc(IrcCommandDispatcher):
                     ]).encode('utf-8')).decode('utf-8')
                     log.debug('Sending CAP REQ command, requesting capability \'sasl\'.')
                     self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('REQ', 'sasl')))
-                    log.debug('Sending AUTHENTICATE command, using mechanism PLAIN.')
+                    log.debug('Using SASL mechanism PLAIN.')
                     self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=('PLAIN',)))
-                    log.info('Sending AUTHENTICATE command, not logging the password.')
+                    log.info('Authenticating using SASL.')
                     self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=(auth_string,)))
             if self.password:
                 log.info('Sending PASS command, not logging the password.')
