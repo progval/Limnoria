@@ -35,7 +35,7 @@ _ = PluginInternationalization('Nickometer')
 
 def configure(advanced):
     # This will be called by setup.py to configure this module.  Advanced is
-    # a bool that specifies whether the user identified himself as an advanced
+    # a bool that specifies whether the user identified themself as an advanced
     # user or not.  You should effect your configuration by manipulating the
     # registry as appropriate.
     from supybot.questions import expect, anything, something, yn

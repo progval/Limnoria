@@ -401,7 +401,7 @@ class Channel(callbacks.Plugin):
                 self.log.warning('%s tried to ban %q, but both have %s',
                                  msg.prefix, bannedHostmask, capability)
                 irc.error(format(_('%s has %s too, you can\'t ban '
-                                 'him/her/it.'), bannedNick, capability))
+                                 'them.'), bannedNick, capability))
             else:
                 doBan()
         else:

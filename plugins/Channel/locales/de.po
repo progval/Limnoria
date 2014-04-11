@@ -286,7 +286,7 @@ msgid "I cowardly refuse to ban myself."
 msgstr "Ich bin zu feige um mich selbst zu bannen."
 
 #: plugin.py:353
-msgid "%s has %s too, you can't ban him/her/it."
+msgid "%s has %s too, you can't ban them."
 msgstr "%s hat auch %s, du kannst ihn/sie/es nicht bannen."
 
 #: plugin.py:365

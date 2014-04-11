@@ -445,7 +445,7 @@ msgid "I cowardly refuse to ban myself."
 msgstr "Minä pelkurimaisesti kieltäydyn antamasta itselleni porttikieltoa."
 
 #: plugin.py:403
-msgid "%s has %s too, you can't ban him/her/it."
+msgid "%s has %s too, you can't ban them."
 msgstr ""
 "Käyttäjälltä %s on myös valtuus %s, et voi antaa hänelle/sille porttikieltoa."
 
