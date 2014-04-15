@@ -358,10 +358,10 @@ class Favicon(SupyHTTPServerCallback):
     name = 'favicon'
     defaultResponse = _('Request not handled')
     def doGet(self, handler, path):
+        response = None
         file_path = conf.supybot.servers.http.favicon()
         found = False
         if file_path:
-            response = None
             try:
                 icon = open(file_path, 'rb')
                 response = icon.read()
