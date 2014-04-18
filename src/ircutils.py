@@ -713,6 +713,8 @@ def standardSubstitute(irc, msg, text, env=None):
         's': localtime[5], 'sec': localtime[5], 'second': localtime[5],
         'tz': time.strftime('%Z', localtime),
         })
+    if msg.reply_env:
+        vars.update(msg.reply_env)
     if env is not None:
         vars.update(env)
     t = string.Template(text)
