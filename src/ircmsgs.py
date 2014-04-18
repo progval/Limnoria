@@ -126,6 +126,10 @@ class IrcMsg(object):
                     self.args = args
                 else:
                     self.args = msg.args
+                if reply_env:
+                    self.reply_env = reply_env
+                else:
+                    self.reply_env = msg.reply_env.copy()
                 self.tags = msg.tags.copy()
             else:
                 self.prefix = prefix
