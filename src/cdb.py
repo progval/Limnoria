@@ -185,7 +185,6 @@ class Reader(utils.IterableMap):
     def __init__(self, filename):
         self.filename = filename
         import os
-        print(repr(os.getcwd()))
         self.fd = open(filename, 'rb')
         self.loop = 0
         self.khash = 0
