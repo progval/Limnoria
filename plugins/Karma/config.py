@@ -45,6 +45,12 @@ Karma = conf.registerPlugin('Karma')
 conf.registerChannelValue(Karma, 'simpleOutput',
     registry.Boolean(False, _("""Determines whether the bot will output shorter
     versions of the karma output when requesting a single thing's karma.""")))
+conf.registerChannelValue(Karma, 'incrementChars',
+    registry.SpaceSeparatedListOfStrings('++', _("""A space separated list of
+    characters to increase karma.""")))
+conf.registerChannelValue(Karma, 'decrementChars',
+    registry.SpaceSeparatedListOfStrings('--', _("""A space separated list of
+    characters to decrease karma.""")))
 conf.registerChannelValue(Karma, 'response',
     registry.Boolean(False, _("""Determines whether the bot will reply with a
     success message when something's karma is increased or decreased.""")))
