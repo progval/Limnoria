@@ -99,7 +99,7 @@ defaultHeaders = {
 proxy = None
 
 def getUrlFd(url, headers=None, data=None, timeout=None):
-    """getUrlFd(url, headers=None, data=None)
+    """getUrlFd(url, headers=None, data=None, timeout=None)
 
     Opens the given url and returns a file object.  Headers and data are
     a dict and string, respectively, as per urllib2.Request's arguments."""
@@ -136,13 +136,13 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
     except ValueError, e:
         raise Error, strError(e)
 
-def getUrl(url, size=None, headers=None, data=None):
-    """getUrl(url, size=None, headers=None, data=None)
+def getUrl(url, size=None, headers=None, data=None, timeout=None):
+    """getUrl(url, size=None, headers=None, data=None, timeout=None)
 
     Gets a page.  Returns a string that is the page gotten.  Size is an integer
     number of bytes to read from the URL.  Headers and data are dicts as per
     urllib2.Request's arguments."""
-    fd = getUrlFd(url, headers=headers, data=data)
+    fd = getUrlFd(url, headers=headers, data=data, timeout=timeout)
     try:
         if size is None:
             text = fd.read()
