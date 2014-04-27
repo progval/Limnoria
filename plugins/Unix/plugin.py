@@ -245,7 +245,7 @@ class Unix(callbacks.Plugin):
                 with open(os.devnull, 'r+') as null:
                     inst = subprocess.Popen([wtfCmd, something],
                                             stdout=subprocess.PIPE,
-                                            stderr=null,
+                                            stderr=STDOUT,
                                             stdin=null)
             except OSError:
                 irc.error(_('It seems the configured wtf command was not '
