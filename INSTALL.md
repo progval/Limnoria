@@ -21,6 +21,14 @@ extra features you may want. (Order by decreasing estimated usefulness)
 [python-dateutil]:https://pypi.python.org/pypi/python-dateutil
 [python-gnupg]:https://pypi.python.org/pypi/python-gnupg
 
+To install them, run 
+
+```pip install -r requirements.txt``` 
+
+or if you don't have or want to use root, 
+
+````pip --install-option=--prefix=$HOME/.local install -r requirements.txt```
+
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
 [CONFIGURATION] .
