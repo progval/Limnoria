@@ -12,21 +12,22 @@ extra features you may want. (Order by decreasing estimated usefulness)
 
 [charade] -- enables better encoding handling
 
-[PySQLite] -- Version 3.x (most Python distributions include it by default)
-
 [pytz] and [python-dateutil] -- enable additional features of the `Time` plugin
 
 [python-gnupg] -- enables user authentication with GPG
 
-[Twisted] -- Version 1.2.0 or greater (unless you actually want to use Twisted,
-you don't actually need it)
-
 [charade]:https://pypi.python.org/pypi/charade
-[PySQLite]:https://pypi.python.org/pypi/pysqlite
 [pytz]:https://pypi.python.org/pypi/pytz
 [python-dateutil]:https://pypi.python.org/pypi/python-dateutil
 [python-gnupg]:https://pypi.python.org/pypi/python-gnupg
-[Twisted]:http://twistedmatrix.com/trac/
+
+To install them, run 
+
+```pip install -r requirements.txt``` 
+
+or if you don't have or want to use root, 
+
+````pip --install-option=--prefix=$HOME/.local install -r requirements.txt```
 
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
