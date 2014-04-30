@@ -12,8 +12,6 @@ extra features you may want. (Order by decreasing estimated usefulness)
 
 [charade] -- enables better encoding handling
 
-[PySQLite] -- Version 3.x (most Python distributions include it by default)
-
 [pytz] and [python-dateutil] -- enable additional features of the `Time` plugin
 
 [python-gnupg] -- enables user authentication with GPG
@@ -22,7 +20,6 @@ extra features you may want. (Order by decreasing estimated usefulness)
 you don't actually need it)
 
 [charade]:https://pypi.python.org/pypi/charade
-[PySQLite]:https://pypi.python.org/pypi/pysqlite
 [pytz]:https://pypi.python.org/pypi/pytz
 [python-dateutil]:https://pypi.python.org/pypi/python-dateutil
 [python-gnupg]:https://pypi.python.org/pypi/python-gnupg
