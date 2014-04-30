@@ -1,0 +1,6 @@
+charade
+pysqlite
+pytz
+python-dateutil
+python-gnupg
+Twisted
