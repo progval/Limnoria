@@ -104,7 +104,7 @@ Run the following command to fix your PATH. We presume that you use bash
 and if you don't, you most probably know how to do this with other shell.
 
 ```
-echo '"PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+echo 'PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
