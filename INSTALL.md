@@ -100,10 +100,11 @@ registry file for your bot.
 
 By default you must run the bot with full path to the binary unless you specify $PATH.
 
-Run and add the following command to your shellrc, which is usually ~/.bashrc or ~/.zshrc , so you can run the programs without needing to write full paths to the binaries.
+Run the following command to fix your PATH. We presume that you use bash 
+and if you don't, you most probably know how to do this with other shell.
 
 ```
-PATH=$HOME/.local/bin:$PATH
+echo "PATH=$HOME/.local/bin:$PATH" >> ~/.bashrc && source ~/.bashrc
 ```
 
 # Upgrading
