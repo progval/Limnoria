@@ -296,12 +296,6 @@ class Google(callbacks.PluginRegexp):
                 (self.registryValue('baseUrl', channel), s)
         return url
 
-    def _googleUrlIG(self, s, channel):
-        s = urllib.quote_plus(s)
-        url = r'http://%s/ig/calculator?hl=en&q=%s' % \
-                (self.registryValue('baseUrl', channel), s)
-        return url
-
     _calcRe1 = re.compile(r'<span class="cwcot".*?>(.*?)</span>', re.I)
     _calcRe2 = re.compile(r'<div class="vk_ans.*?>(.*?)</div>', re.I | re.S)
     _calcRe3 = re.compile(r'<div class="side_div" id="rhs_div">.*?<input class="ucw_data".*?value="(.*?)"', re.I)
@@ -314,9 +308,9 @@ class Google(callbacks.PluginRegexp):
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             channel = None
-        urlig = self._googleUrlIG(expr, channel)
+        url = self._googleUrl(expr, channel)
         h = {"User-Agent":"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36"}
-        html = utils.web.getUrl(urlig, headers=h).decode('utf8')
+        html = utils.web.getUrl(url, headers=h).decode('utf8')
         match = self._calcRe1.search(html)
         if not match:
             match = self._calcRe2.search(html)
