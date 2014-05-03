@@ -8,7 +8,11 @@ python:
   - "pypy"
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
+    - sudo apt-get update -qq
+    - sudo apt-get -y install devscripts equivs
+    - mk-build-deps -i debian/control
     - pip install -r requirements.txt
+
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
