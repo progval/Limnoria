@@ -10,7 +10,7 @@ Package: limnoria
 Architecture: all
 Depends: python (>= 2.6), python-support (>= 0.90.0), ${misc:Depends}
 Recommends: python-simplejson, python-feedparser, python-sqlite3
-Suggests: python-twisted-core, python-twisted-names, python-dictclient, python-dateutil
+Suggests: python-twisted-core, python-twisted-names, python-dictclient, python-dateutil, python-gnupg, python-sqlalchemy
 Conflicts: supybot
 Provides: supybot
 Section: net
