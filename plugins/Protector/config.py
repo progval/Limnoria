@@ -44,7 +44,7 @@ def configure(advanced):
 
 Protector = conf.registerPlugin('Protector')
 conf.registerChannelValue(Protector, 'enable',
-    registry.Boolean(True, _("""Determines whether this plugin is enabled in a
+    registry.Boolean(False, _("""Determines whether this plugin is enabled in a
     given channel.""")))
 
 class ImmuneNicks(conf.ValidNicks):
