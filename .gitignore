@@ -8,3 +8,6 @@ test-logs
 *.pyc
 docs/_build
 docs/plugins
+# Intellij PyCharm / IDEA related files
+*.iml
+.idea
