@@ -17,7 +17,7 @@ Add an aka, trout, which expects a word as an argument
 Add an aka, lastfm, which expects a last.fm user and replies with
 their recently played items.
 
-@alias add lastfm "rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [urlquote $1] /recenttracks.rss]]"
+@aka add lastfm "rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [urlquote $1] /recenttracks.rss]]"
 
 Note that if the nested commands being aliased hadn't been quoted, then
 those commands would have been run immediately, and @lastfm would always
