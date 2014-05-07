@@ -93,7 +93,7 @@ msgid "I'm not currently in %s."
 msgstr "Je ne suis pas actuellement sur %s."
 
 #: plugin.py:61
-msgid "I can't change the topic, I'm not opped and %s is +t."
+msgid "I can't change the topic, I'm not (half)opped and %s is +t."
 msgstr "Je ne peux changer le topic, je ne suis pas halfopé, et %s a le mode +t."
 
 #: plugin.py:68
