@@ -1,13 +1,12 @@
 # Topic plugin in Limnoria.
-# Copyright (C) 2011
-# FIRST AUTHOR <mikaela.suomalainen@outlook.com>, 2011.
-# Mikaela Suomalainen <mkaysi@outlook.com>, 2012.
+# Copyright (C) 2011,2014
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
-"PO-Revision-Date: 2014-03-22 12:59+0200\n"
+"POT-Creation-Date: 2014-05-07 18:55+EEST\n"
+"PO-Revision-Date: 2014-05-07 19:16+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -21,14 +20,14 @@ msgstr ""
 #: config.py:45
 msgid ""
 "Value must include $topic, otherwise the actual topic would be left out."
-msgstr "Arvon täytyy sisältää $topic, muutoin itse aihe jätettäisiin pois."
+msgstr "Asetusarvon täytyy sisältää $topic tai muuten itse aihe jätetään pois."
 
 #: config.py:50
 msgid ""
 "Determines what separator is\n"
 "    used between individually added topics in the channel topic."
 msgstr ""
-"Määrittää mitä eroittajaa käytetään\n"
+"Määrittää mitä erotinta käytetään\n"
 "    erikseen lisättyjen aiheiden välissä kanavan aiheessa."
 
 #: config.py:53
@@ -38,9 +37,9 @@ msgid ""
 "to\n"
 "    \"$topic\" for the topic itself."
 msgstr ""
-"Määrittää mitä muotoa käytetään lisäämään\n"
-"    aiheita kanavan aiheessa.  Kaikki perus muunnokset ovat voimassa, \n"
-"    \"$topic\":n lisäksi aiheelle itselleen."
+"Määrittää mitä muotoa käytetään, kun lisätään aiheita aiheeseen. \n"
+" Kaikki peru muunnokset ovat voimassa, \n"
+"    \"$topic\" tarkoittaa aihetta itseään."
 
 #: config.py:57
 msgid ""
@@ -50,12 +49,11 @@ msgid ""
 "the\n"
 "    server anyway, so this defaults to True."
 msgstr ""
-"Määrittää tunnistaako botti\n"
-"    TOPICLEN arvon, jonka palvelin on lähettänyt sille ja näin kieltäytyy "
-"asettamasta pidempiä aiheita, \n"
-"    kuin TOPICLEN.  Nämä aiheet tulisivat muutenkin palvelimen lyhentämiksi, "
-"joten\n"
-"    tämä on oletuksena True."
+"Määrittää tunnistaako botti TOPICLEN-arvon, jonka palvelin on lähettänyt "
+"sille\n"
+" ja näin kieltäytyy asettamasta pidempiä aiheita, kuin TOPICLEN.  \n"
+" Kyseiset aiheet tulisivat muutenkin palvelimen lyhentämiksi, joten\n"
+" tämän asetusarvo on oletuksena True."
 
 #: config.py:62
 msgid ""
@@ -63,14 +61,14 @@ msgid ""
 "    is.  This is used by the default command to set this topic."
 msgstr ""
 "Määrittää mikä on oletus aihe kanavalle. \n"
-"   'Default' komento käyttää tätä."
+"   'Default' komento käyttää tätä asettaakseen aiheen."
 
 #: config.py:65
 msgid ""
 "Determines whether the bot will set the topic\n"
 "    every time it joins, or only if the topic is empty."
 msgstr ""
-"Määrittää asettaako botti aiheen aina liittyessään vai vain aiheen ollessa "
+"Määrittää asettaako botti aiheen aina liittyessään vai vain, kun aihe on "
 "tyhjä."
 
 #: config.py:69
@@ -92,20 +90,21 @@ msgid ""
 msgstr ""
 "Määrittää\n"
 "    valtuudet, jotka (jos mitkään) vaaditaan aiheen vaihtamiseen,\n"
-"    (kaikki, paitsi vain-luku komennot). Käytä valtuutta 'channel,capab' \n"
+"    (=kaikki, paitsi vain-luku komennot). Käytä valtuutta 'channel,"
+"valtuus' \n"
 "    kanava-tason valtuuksia varten.\n"
 "    Huomaa, että anti-valtuuden poissaolo tarkoittaa, että käyttäjällä on\n"
 "    valtuus."
 
 #: plugin.py:57
 msgid "I'm not currently in %s."
-msgstr "En tällä hetkellä ole kanavalla %s."
+msgstr "En juuri nyt ole kanavalla %s."
 
 #: plugin.py:61
 msgid "I can't change the topic, I'm not (half)opped and %s is +t."
 msgstr ""
-"En voi vaihtaa aihetta, koska en ole kanavapuolioperaattori ja kanavalla %s on "
-"tila +t."
+"En voi vaihtaa aihetta, koska en ole kyseisellä kanavalla puolioperaattori "
+"ja kanavalla %s on tila +t."
 
 #: plugin.py:68
 msgid "The topic must not include %q."
@@ -123,8 +122,8 @@ msgstr "Kanavalla %s ei ole aiheita."
 msgid ""
 "That topic is too long for this server (maximum length: %i; this topic: %i)."
 msgstr ""
-"Tuo aihe on liian pitkä tälle palvelimelle (maksimi pituus: %i; tämä aihe: "
-"%i)."
+"Määrittämäsi aihe on liian pitkä tälle palvelimelle (maksimi pituus on %i; "
+"tämän aiheen pituus on %i)."
 
 #: plugin.py:219
 msgid ""
@@ -160,8 +159,8 @@ msgid ""
 msgstr ""
 "[<kanava>]\n"
 "\n"
-"        Palauttaa <kanavan> aiheen.  <Kanava> on vaadittu vain, jos viestiä "
-"ei lähetetä\n"
+"        Palauttaa <kanavan> aiheen.  <Kanava> on vaadittu vain ellei viestiä "
+"lähetetä\n"
 "        kanavalla itsellään.\n"
 "        "
 
@@ -176,7 +175,8 @@ msgid ""
 msgstr ""
 "[<kanava>] <aihe>\n"
 "\n"
-"        Lisää <aiheen> <kanavan> aiheisiin.  <Kanava> on vaadittu vain, jos\n"
+"        Lisää <aiheen> <kanavan> aiheisiin.  <Kanava> on vaadittu vain, "
+"ellei\n"
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
@@ -195,7 +195,7 @@ msgstr ""
 "\n"
 "        Lisää <aiheen> <kanavan> aiheisiin.  Jos aihe on liian pitkä\n"
 "        palvelimelle, aihetta kutistetaan kunnes sille on tarpeeksi tilaa.\n"
-"        <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
+"        <Kanava> on vaadittu vain, ellei viestiä lähetetä kanavalla\n"
 "        itsellään.\n"
 "        "
 
@@ -224,8 +224,8 @@ msgstr ""
 "[<kanava>] <aihe>\n"
 "\n"
 "        Lisää <aiheen> <kanavan> aiheisiin \n"
-"        <kanavalla> sillä hetkellä olevien aiheiden alkuun.  <Kanava> on "
-"vaadittu vain, jos viestiä ei lähetetä \n"
+"        <kanavalla> silloisten aiheiden alkuun.  <Kanava> on vaadittu vain, "
+"jos viestiä ei lähetetä \n"
 "        kanavalla itsellään.\n"
 "        "
 
@@ -247,7 +247,7 @@ msgstr ""
 
 #: plugin.py:359
 msgid "I can't shuffle 1 or fewer topics."
-msgstr "En voi sekoittaa yhtä tai vähempää aihetta."
+msgstr "Yhtä tai vähempää aihetta ei voida sekoittaa."
 
 #: plugin.py:371
 msgid ""
@@ -278,7 +278,7 @@ msgstr "Kaikki numerot täytyy määrittää."
 
 #: plugin.py:388
 msgid "Duplicate topic numbers cannot be specified."
-msgstr "Kaksoiskappaleita aiheen numeroista ei voi määrittää."
+msgstr "Aiheen numeroiden kaksoiskappaleita ei voida määrittää."
 
 #: plugin.py:396
 msgid ""
@@ -305,6 +305,7 @@ msgid "%i: %s"
 msgstr "%i: %s"
 
 #: plugin.py:412
+#, fuzzy
 msgid ""
 "[<channel>] <number>\n"
 "\n"
@@ -323,6 +324,7 @@ msgstr ""
 "        "
 
 #: plugin.py:424
+#, fuzzy
 msgid ""
 "[<channel>] <number> <regexp>\n"
 "\n"
@@ -361,7 +363,7 @@ msgstr ""
 "\n"
 "        Asettaa aiheen <numero> <tekstiksi>.  Jos <numeroa> ei ole annettu, "
 "tämä\n"
-"        asettaa koko aiheen.  <Kanava> on vaadittu vain, jos viestiä ei "
+"        asettaa koko aiheen.  <Kanava> on vaadittu vain, ellei viestiä "
 "lähetetä\n"
 "        kanavalla itsellään.\n"
 "        "
@@ -381,7 +383,7 @@ msgstr ""
 "[<kanava>] <numero>\n"
 "\n"
 "        Poistaa aiheen <numero> <kanavan> aiheesta.  Aiheet on numeroitu\n"
-"        alkaen numerosta 1; voit käyttää negatiivisiä indexejä saadaksesi ne "
+"        alkaen numerosta 1; voit käyttää negatiivisia lukuja saadaksesi ne "
 "viittaamaan\n"
 "        aiheisiin, jotka alkavat lopusta.  <Kanava> on vaadittu\n"
 "        vain, jos viestiä ei lähetetä kanavalla itsellään.\n"
@@ -398,8 +400,8 @@ msgstr ""
 "[<kanava>]\n"
 "\n"
 "        Lukitsee aiheen (asettaa tilan +t) <kanavalla>.  <Kanava> on "
-"vaadittu vain, jos\n"
-"        viestiä ei lähetetä kanavalla itsellään.\n"
+"vaadittu vain, ellei\n"
+" viestiä lähetetä kanavalla itsellään.\n"
 "        "
 
 #: plugin.py:490
@@ -419,7 +421,7 @@ msgstr ""
 "\n"
 "        Avaa aiheen (asettaa tilan -t) <kanavalla>.  <Kanava> on vaadittu "
 "vain, \n"
-"        jos viestiä ei lähetetä kanavalla itsellään.\n"
+" ellei viestiä lähetetä kanavalla itsellään.\n"
 "        "
 
 #: plugin.py:504
@@ -439,7 +441,7 @@ msgstr ""
 "\n"
 "        Palauttaa aiheen viimeiseksi aiheeksi, jonka botti on asettanut.  "
 "<Kanava> on vaadittu\n"
-"        vain, jos viestiä ei lähetetä kanavalla itsellään.\n"
+"        vain, ellei viestiä lähetetä kanavalla itsellään.\n"
 "        "
 
 #: plugin.py:519
@@ -447,6 +449,7 @@ msgid "I haven't yet set the topic in %s."
 msgstr "En ole vielä asettanut aihetta kanavalla %s."
 
 #: plugin.py:527
+#, fuzzy
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -461,7 +464,7 @@ msgstr ""
 "\n"
 "        Palauttaa aiheen yhdeksi edellisistä aiheista, jotka \"last\" "
 "komento on asettanut \n"
-"        siksi.  <Kanava> on vaadittu vain, jos viestiä ei lähetetä "
+"        siksi.  <Kanava> on vaadittu vain,  ellei viestiä lähetetä "
 "kanavalla\n"
 "        itsellään.\n"
 "        "
@@ -487,8 +490,9 @@ msgstr ""
 "        "
 
 #: plugin.py:558
+#, fuzzy
 msgid "There are no redos for %s."
-msgstr "Kanavalle %s ei ole enempää kumouksia."
+msgstr "Kanavalle %s ei ole enempää uudelleentekoja."
 
 #: plugin.py:563
 msgid ""
@@ -503,8 +507,8 @@ msgid ""
 msgstr ""
 "[<kanava>] <ensimmäisen aiheen numero> <toisen aiheen numero>\n"
 "\n"
-" Vaihtaa ensimmäisen— ja toisen aiheen numeroiden paikkoja.\n"
-" <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla itsellään."
+" Vaihtaa ensimmäisen ja toisen aiheen paikat.\n"
+" <Kanava> on vaadittu vain,  ellei viestiä lähetetä kanavalla itsellään."
 
 #: plugin.py:574
 msgid "I refuse to swap the same topic with itself."
@@ -523,7 +527,7 @@ msgstr ""
 "\n"
 " Tallentaa aiheen <kanavalla>, jotta se voidaan palauttaa \"@topic default\"—"
 "komennolla\n"
-" myöhemmin. <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla "
+" myöhemmin. <Kanava> on vaadittu vain, ellei viestiä lähetetä kanavalla "
 "itsellään."
 
 #: plugin.py:603
@@ -540,7 +544,7 @@ msgstr ""
 "\n"
 " Asettaa <kanavan> aiheen <kanavan> oletusaiheeksi.  Kanavan oletusaihe "
 "voidaan\n"
-" määrittää asetuksella supybot.plugins.Topic.default.\n"
+" määrittää asetuksen supybot.plugins.Topic.default arvolla.\n"
 "        "
 
 #: plugin.py:616
@@ -557,8 +561,8 @@ msgid ""
 msgstr ""
 "[<kanava>] <eroittaja>\n"
 "\n"
-"        Asettaa <kanavan> eroittajan <eroittajaksi>, muuntaa\n"
-"        nykyisen aiheen kunnollisesti.\n"
+"  Asettaa <kanavan> erottimen <erottimeksi>, muuntaa\n"
+" nykyisen aiheen sen mukaisesti.\n"
 "        "
 
 #~ msgid ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Finnish translation of Config plugin in Supybot\n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
+"POT-Creation-Date: 2014-05-07 18:55+EEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -124,11 +124,16 @@ msgstr ""
 " Palauttaa asetusarvon kuvauksen <nimi>.\n"
 "        "
 
-#: plugin.py:242
+#: plugin.py:248
+msgid "  (Current global value: %s;  current channel value: %s)"
+msgstr ""
+"(Nykyinen globaali asetusarvo: %s; nykyinen kanavakohtainen asetusarvo: %s)"
+
+#: plugin.py:252 plugin.py:254
 msgid "  (Current value: %s)"
 msgstr "  (Nykyinen arvo: %s)"
 
-#: plugin.py:245
+#: plugin.py:257
 msgid ""
 "That configuration group exists, but seems to have no help.  Try \"config "
 "list %s\" to see if it has any children values."
@@ -136,11 +141,11 @@ msgstr ""
 "Tuo asetusryhmä on olemassa, mutta sillä ei näytä olevan ohjetta.  Käytä "
 "komentoa \"config list %s\" nähdäksesi onko sillä yhtään alempia arvoja."
 
-#: plugin.py:249
+#: plugin.py:261
 msgid "%s has no help."
 msgstr "%s:llä ei ole ohjetta."
 
-#: plugin.py:254
+#: plugin.py:266
 msgid ""
 "<name>\n"
 "\n"
@@ -152,7 +157,7 @@ msgstr ""
 "Palauttaa asetusarvon oletusarvon <nimi>.\n"
 "        "
 
-#: plugin.py:264
+#: plugin.py:276
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -166,7 +171,7 @@ msgstr ""
 " tietokanta, rekisteri, jne.).\n"
 "        "
 
-#: plugin.py:275
+#: plugin.py:287
 msgid ""
 "<filename>\n"
 "\n"
@@ -187,7 +192,7 @@ msgstr ""
 "julkisesti näyttämiseen.\n"
 "        "
 
-#: plugin.py:289
+#: plugin.py:301
 msgid ""
 "<name>\n"
 "\n"
