@@ -298,7 +298,7 @@ def main():
 
         # pluginDirs
         output("""Your bot will also need to know where to find his plugins at.
-        Of course, he already knows where the plugins that he came with are,
+        Of course, it already knows where the plugins that it came with are,
         but your own personal plugins that you write for will probably be
         somewhere else.""")
         pluginDirs = conf.supybot.directories.plugins()
@@ -406,7 +406,7 @@ def main():
     network.servers.setValue([server])
 
     # conf.supybot.nick
-    # Force the user into specifying a nick if he didn't have one already
+    # Force the user into specifying a nick if it didn't have one already
     while True:
         nick = something('What nick would you like your bot to use?',
                          default=None)
@@ -467,7 +467,7 @@ def main():
     # conf.supybot.networks.<network>.channels
     output("""Of course, having an IRC bot isn't the most useful thing in the
     world unless you can make that bot join some channels.""")
-    if yn('Do you want your bot to join some channels when he connects?',
+    if yn('Do you want your bot to join some channels when it connects?',
           default=True):
         defaultChannels = ' '.join(network.channels())
         output("""Separate channels with spaces.  If the channel is locked
