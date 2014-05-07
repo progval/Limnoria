@@ -57,7 +57,8 @@ def canChangeTopic(irc, msg, args, state):
         state.error(format(_('I\'m not currently in %s.'), state.channel),
                     Raise=True)
     c = irc.state.channels[state.channel]
-    if irc.nick not in c.ops and 't' in c.modes:
+    if 't' in c.modes and not c.isHalfopPlus(irc.nick):
+    # if irc.nick not in c.ops and 't' in c.modes:
         state.error(format(_('I can\'t change the topic, I\'m not opped '
                            'and %s is +t.'), state.channel), Raise=True)
 
