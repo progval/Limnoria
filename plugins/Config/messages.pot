@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-05-07 18:55+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,19 +96,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:242
+#: plugin.py:248
+msgid "  (Current global value: %s;  current channel value: %s)"
+msgstr ""
+
+#: plugin.py:252 plugin.py:254
 msgid "  (Current value: %s)"
 msgstr ""
 
-#: plugin.py:245
+#: plugin.py:257
 msgid "That configuration group exists, but seems to have no help.  Try \"config list %s\" to see if it has any children values."
 msgstr ""
 
-#: plugin.py:249
+#: plugin.py:261
 msgid "%s has no help."
 msgstr ""
 
-#: plugin.py:254
+#: plugin.py:266
 #, docstring
 msgid ""
 "<name>\n"
@@ -117,7 +121,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:264
+#: plugin.py:276
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -127,7 +131,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:275
+#: plugin.py:287
 #, docstring
 msgid ""
 "<filename>\n"
@@ -140,7 +144,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:289
+#: plugin.py:301
 #, docstring
 msgid ""
 "<name>\n"
