@@ -58,7 +58,7 @@ def canChangeTopic(irc, msg, args, state):
                     Raise=True)
     c = irc.state.channels[state.channel]
     if 't' in c.modes and not c.isHalfopPlus(irc.nick):
-        state.error(format(_('I can\'t change the topic, I\'m not opped '
+        state.error(format(_('I can\'t change the topic, I\'m not (half)opped '
                            'and %s is +t.'), state.channel), Raise=True)
 
 def getTopic(irc, msg, args, state, format=True):
