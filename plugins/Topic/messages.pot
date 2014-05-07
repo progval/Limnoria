@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-05-07 18:55+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,7 +74,7 @@ msgid "I'm not currently in %s."
 msgstr ""
 
 #: plugin.py:61
-msgid "I can't change the topic, I'm not opped and %s is +t."
+msgid "I can't change the topic, I'm not (half)opped and %s is +t."
 msgstr ""
 
 #: plugin.py:68
