@@ -102,9 +102,9 @@ msgid "I'm not currently in %s."
 msgstr "En tällä hetkellä ole kanavalla %s."
 
 #: plugin.py:61
-msgid "I can't change the topic, I'm not opped and %s is +t."
+msgid "I can't change the topic, I'm not (half)opped and %s is +t."
 msgstr ""
-"En voi vaihtaa aihetta, koska en ole kanavaoperaattori ja kanavalla %s on "
+"En voi vaihtaa aihetta, koska en ole kanavapuolioperaattori ja kanavalla %s on "
 "tila +t."
 
 #: plugin.py:68
