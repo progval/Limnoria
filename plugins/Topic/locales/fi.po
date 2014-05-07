@@ -1,7 +1,6 @@
 # Topic plugin in Limnoria.
-# Copyright (C) 2011
-# FIRST AUTHOR <mikaela.suomalainen@outlook.com>, 2011.
-# Mikaela Suomalainen <mkaysi@outlook.com>, 2012.
+# Copyright (C) 2011,2014
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2012.
 #
 msgid ""
 msgstr ""
