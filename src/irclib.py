@@ -895,12 +895,12 @@ class Irc(IrcCommandDispatcher):
 
     def _setNonResettingVariables(self):
         # Configuration stuff.
-        self.nick = conf.supybot.nick()
-        network_nick = conf.supybot.networks.get(self.network).nick()
-        if network_nick != '':
-            self.nick = network_nick
-        self.user = conf.supybot.user()
-        self.ident = conf.supybot.ident()
+        def get_value(name):
+            return getattr(conf.supybot.networks.get(self.network), name)() or \
+                getattr(conf.supybot, name)()
+        self.nick = get_value('nick')
+        self.user = get_value('user')
+        self.ident = get_value('ident')
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         self.password = conf.supybot.networks.get(self.network).password()
         self.sasl_username = \
