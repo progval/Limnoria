@@ -146,9 +146,19 @@ class Filter(callbacks.Plugin):
         Returns the binary representation of <text>.
         """
         L = []
-        for c in text:
+        if sys.version_info[0] >= 3:
+            print(repr(text))
+            if isinstance(text, str):
+                bytes_ = text.encode()
+            else:
+                bytes_ = text
+        else:
+            if isinstance(text, unicode):
+                text = text.encode()
+            bytes_ = map(ord, text)
+        for i in bytes_:
             LL = []
-            i = ord(c)
+            assert i<=256
             counter = 8
             while i:
                 counter -= 1
