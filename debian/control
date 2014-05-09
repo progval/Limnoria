@@ -13,6 +13,7 @@ Recommends: python-simplejson, python-feedparser, python-sqlite3
 Suggests: python-twisted-core, python-twisted-names, python-dictclient, python-dateutil, python-gnupg, python-sqlalchemy
 Conflicts: supybot
 Provides: supybot
+Replaces: supybot
 Section: net
 Priority: optional
 Homepage: https://github.com/ProgVal/Limnoria
