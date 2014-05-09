@@ -87,7 +87,7 @@ conf.registerChannelValue(ShrinkUrl, 'outFilter',
     of outgoing messages if those URLs are longer than
     supybot.plugins.ShrinkUrl.minimumLength."""))
 conf.registerChannelValue(ShrinkUrl, 'default',
-    ShrinkService('ln', """Determines what website the bot will use when
+    ShrinkService('x0', """Determines what website the bot will use when
     shrinking a URL."""))
 conf.registerGlobalValue(ShrinkUrl, 'bold',
     registry.Boolean(True, """Determines whether this plugin will bold certain
