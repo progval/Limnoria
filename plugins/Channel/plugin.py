@@ -915,7 +915,7 @@ class Channel(callbacks.Plugin):
             hostmask = irc.state.nickToHostmask(nick)
             if ircdb.checkCapability(hostmask, capability):
                 irc.reply(s, to=nick, private=True)
-        irc.replySucess()
+        irc.replySuccess()
 
     @internationalizeDocstring
     def alert(self, irc, msg, args, channel, text):
