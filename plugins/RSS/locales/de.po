@@ -12,9 +12,10 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 #: config.py:50
+#, fuzzy
 msgid ""
 "Determines whether the bot will bold the title of the feed when\n"
-"    it announces new news."
+"    it announces news."
 msgstr "Legt fest ob der Bot Titel fett schreibt, wenn er er Neuigkeiten verkündet."
 
 #: config.py:53
@@ -24,14 +25,16 @@ msgid ""
 msgstr "Gibt an welche Zeichenkette verwendet wird um Kopfzeilen neuer Feeds zu separieren."
 
 #: config.py:56
+#, fuzzy
 msgid ""
 "Determines what\n"
-"    prefix is prepended (if any) to the new news item announcements made in the\n"
+"    prefix is prepended (if any) to the news item announcements made in the\n"
 "    channel."
 msgstr "Legt fest welcher Prefix (falls überhaupt) den News vorangestellt wird, wenn neue Verkündungen in einem Kanal gemacht werden."
 
 #: config.py:56
-msgid "New news from "
+#, fuzzy
+msgid "News from "
 msgstr "Neuigkeiten von "
 
 #: config.py:60
