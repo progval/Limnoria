@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-05-11 16:57+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,8 +42,8 @@ msgstr ""
 #: config.py:65
 msgid ""
 "Determines whether the bot will relay the\n"
-"    hostmask of the person joining or parting the channel when he or she joins\n"
-"    or parts."
+"    hostmask of the person joining or parting the channel when they join\n"
+"    or part."
 msgstr ""
 
 #: config.py:69
