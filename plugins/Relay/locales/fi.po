@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2014-05-11 16:57+EEST\n"
-"PO-Revision-Date: 2014-05-11 17:50+0200\n"
+"PO-Revision-Date: 2014-05-11 18:33+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -44,15 +44,14 @@ msgstr ""
 "    aiheet kanavilla, joita se välittää kaikkiin verkkoihin."
 
 #: config.py:65
-#, fuzzy
 msgid ""
 "Determines whether the bot will relay the\n"
 "    hostmask of the person joining or parting the channel when they join\n"
 "    or part."
 msgstr ""
 "Määrittää välittääkö botti\n"
-"    liittyvän tai poistuvan henkilön hostmaskin, kun hän liittyy tai "
-"poistuu.\n"
+" liittyvän tai poistuvan henkilön hostmaskin, hänen liittyessään/"
+"poistuessaan."
 
 #: config.py:69
 msgid ""
