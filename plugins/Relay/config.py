@@ -64,7 +64,7 @@ conf.registerChannelValue(Relay, 'topicSync',
 conf.registerChannelValue(Relay, 'hostmasks',
     registry.Boolean(True, _("""Determines whether the bot will relay the
     hostmask of the person joining or parting the channel when they join
-    or parts.""")))
+    or part.""")))
 conf.registerChannelValue(Relay, 'includeNetwork',
     registry.Boolean(True, _("""Determines whether the bot will include the
     network in relayed PRIVMSGs; if you're only relaying between two networks,
