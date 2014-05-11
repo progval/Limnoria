@@ -5,6 +5,8 @@ import sys
 import glob
 import operator
 import subprocess
+from colorama import init, Fore
+init()
 
 from supybot.i18n import parse
 
@@ -43,9 +45,9 @@ def _checkCore(corePath):
         potPath = os.path.join(os.getcwd(), 'locales', translation)
         po = open(potPath)
         if checkTranslation(pot, po):
-            print('OK:      ' + potPath)
+            print(Fore.GREEN + 'OK:      ' + potPath + Fore.RESET)
         else:
-            print('ERROR:   ' + potPath)
+            print(Fore.RED + 'ERROR:   ' + potPath + Fore.RESET)
 
 
 @changedir
@@ -60,9 +62,9 @@ def checkPlugin(pluginPath):
         potPath = os.path.join(os.getcwd(), 'locales', translation)
         po = open(potPath)
         if checkTranslation(pot, po):
-            print('OK:      ' + potPath)
+            print(Fore.GREEN + 'OK:      ' + potPath + Fore.RESET)
         else:
-            print('ERROR:   ' + potPath)
+            print(Fore.RED + 'ERROR:   ' + potPath + Fore.RESET)
 
 def checkTranslation(pot, po):
     checking = False
