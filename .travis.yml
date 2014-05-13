@@ -8,11 +8,11 @@ python:
   - "pypy"
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-    - pip install -r requirements.txt
+    - pip install -r requirements.txt -v
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
-  - python setup.py install
+  - pip install -v .
   - supybot-test test --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
 after_success:
     - sandbox/check_trans.py plugins/
