@@ -736,16 +736,16 @@ class Filter(callbacks.Plugin):
                 tmp = self._uniudMap[c]
                 if not len(tmp):
                     tmp = u'\ufffd'
-                turned.insert(0, tmp)
+                turned.append(tmp)
                 tlen += 1
             elif c == '\t':
                 tablen = 8 - tlen % 8
-                turned.insert(0, ' ' * tablen)
+                turned.append(' ' * tablen)
                 tlen += tablen
             elif ord(c) >= 32:
-                turned.insert(0, c)
+                turned.append(c)
                 tlen += 1
-        s = '%s \x02 \x02' % ''.join(turned)
+        s = '%s \x02 \x02' % ''.join(reversed(turned))
         irc.reply(s)
     uniud = wrap(uniud, ['text'])
 Filter = internationalizeDocstring(Filter)
