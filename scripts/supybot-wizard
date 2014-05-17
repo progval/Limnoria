@@ -386,9 +386,17 @@ def main():
             ip = 'no network available'
 
     output("""Found %s (%s).""" % (serverString, ip))
-    output("""IRC Servers almost always accept connections on port
-    6667.  They can, however, accept connections anywhere their admins
-    feel like they wants to accept connections from.""")
+
+    if advanced:
+        # conf.supybot.networks.<network>.ssl
+        output("""Some servers allow you to use a secure connection via SSL.
+        This requires having pyOpenSSL installed.""")
+        if yn('Do you want to use an SSL connection?', default=False):
+            network.ssl.setValue(True)
+
+    output("""IRC servers almost always accept connections on port
+    6667 (or 6697 for SSL).  They can, however, accept connections
+    anywhere their admins feel like they want to accept connections from.""")
     if yn('Does this server require connection on a non-standard port?',
           default=False):
         port = 0
@@ -402,16 +410,12 @@ def main():
                 output("""That's not a valid port.""")
                 port = 0
     else:
-        port = 6667
+        if network.ssl.value:
+            port = 6697
+        else:
+            port = 6667
     server = ':'.join([serverString, str(port)])
     network.servers.setValue([server])
-
-    if advanced:
-        # conf.supybot.networks.<network>.ssl
-        output("""Some servers allow you to use a secure connection via SSL.
-        This requires having pyOpenSSL installed.""")
-        if yn('Do you want to use an SSL connection?', default=False):
-            network.ssl.setValue(True)
 
     # conf.supybot.nick
     # Force the user into specifying a nick if it didn't have one already
