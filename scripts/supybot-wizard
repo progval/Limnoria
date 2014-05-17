@@ -351,8 +351,9 @@ def main():
     while not network:
         output("""First, we need to know the name of the network you'd like to
         connect to.  Not the server host, mind you, but the name of the
-        network.  If you plan to connect to irc.freenode.net, for instance, you
-        should answer this question with 'freenode' (without the quotes).""")
+        network.  If you plan to connect to chat.freenode.net, for instance,
+        you should answer this question with 'freenode' (without the quotes).
+        """)
         network = something('What IRC network will you be connecting to?')
         if '.' in network:
             output("""There shouldn't be a '.' in the network name.  Remember,
@@ -385,9 +386,17 @@ def main():
             ip = 'no network available'
 
     output("""Found %s (%s).""" % (serverString, ip))
-    output("""IRC Servers almost always accept connections on port
-    6667.  They can, however, accept connections anywhere their admins
-    feel like they wants to accept connections from.""")
+
+    if advanced:
+        # conf.supybot.networks.<network>.ssl
+        output("""Some servers allow you to use a secure connection via SSL.
+        This requires having pyOpenSSL installed.""")
+        if yn('Do you want to use an SSL connection?', default=False):
+            network.ssl.setValue(True)
+
+    output("""IRC servers almost always accept connections on port
+    6667 (or 6697 when using SSL).  They can, however, accept connections
+    anywhere their admins feel like they want to accept connections from.""")
     if yn('Does this server require connection on a non-standard port?',
           default=False):
         port = 0
@@ -401,7 +410,10 @@ def main():
                 output("""That's not a valid port.""")
                 port = 0
     else:
-        port = 6667
+        if network.ssl.value:
+            port = 6697
+        else:
+            port = 6667
     server = ':'.join([serverString, str(port)])
     network.servers.setValue([server])
 
@@ -446,15 +458,6 @@ def main():
                 another.""")
     else:
         conf.supybot.ident.set(defaultIdent)
-
-    if advanced:
-        # conf.supybot.networks.<network>.ssl
-        output("""Some servers allow you to use a secure connection via SSL.
-        This requires having pyOpenSSL installed.  Currently, you also need
-        Twisted installed as only the Twisted drivers supports SSL
-        connections.""")
-        if yn('Do you want to use an SSL connection?', default=False):
-            network.ssl.setValue(True)
 
     # conf.supybot.networks.<network>.password
     output("""Some servers require a password to connect to them.  Most
