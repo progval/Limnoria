@@ -395,7 +395,7 @@ def main():
             network.ssl.setValue(True)
 
     output("""IRC servers almost always accept connections on port
-    6667 (or 6697 for SSL).  They can, however, accept connections
+    6667 (or 6697 when using SSL).  They can, however, accept connections
     anywhere their admins feel like they want to accept connections from.""")
     if yn('Does this server require connection on a non-standard port?',
           default=False):
