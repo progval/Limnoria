@@ -642,7 +642,7 @@ class Filter(callbacks.Plugin):
             except KeyError:
                 pass
             write(c)
-        irc.reply(out.getvalue())
+        irc.reply(out.getvalue()[1:])
     spellit = wrap(spellit, ['text'])
 
     @internationalizeDocstring
