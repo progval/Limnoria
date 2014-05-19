@@ -59,7 +59,9 @@ provides the `action` command.
 Add an aka, `lastfm`, which expects a last.fm username and replies with 
 their most recently played item.
 
-`@aka add lastfm "rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [web urlquote $1] /recenttracks.rss]]"`
+```
+@aka add lastfm "rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [web urlquote $1] /recenttracks.rss]]"
+```
 
 This `lastfm` aka requires the following plugins to be loaded: `RSS`, 
 `Format` and `Web`.
