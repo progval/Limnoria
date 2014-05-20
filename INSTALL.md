@@ -31,11 +31,12 @@ or if you don't have or want to use root,
 
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
-[CONFIGURATION] .
+[CONFIGURATION], or on [the website]
 
 [docs/]:docs/index.rst
-[GETTING_STARTED]:docs/GETTING_STARTED
-[CONFIGURATION]:docs/CONFIGURATION
+[GETTING_STARTED]:docs/GETTING_STARTED.rst
+[CONFIGURATION]:docs/CONFIGURATION.rst
+[the website]:http://supybot.aperio.fr/doc/use/index.html
 
 So what do you do?  That depends on which operating system you're
 running.  We've split this document up to address the different
