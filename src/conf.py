@@ -463,7 +463,7 @@ registerChannelValue(supybot.reply, 'withNotice',
 
 # XXX: User value.
 registerGlobalValue(supybot.reply, 'withNoticeWhenPrivate',
-    registry.Boolean(False, _("""Determines whether the bot will reply with a
+    registry.Boolean(True, _("""Determines whether the bot will reply with a
     notice when it is sending a private message, in order not to open a /query
     window in clients.  This can be overridden by individual users via the user
     configuration variable reply.withNoticeWhenPrivate.""")))
