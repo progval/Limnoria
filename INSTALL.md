@@ -45,7 +45,7 @@ from there.
 
 # UNIX/Linux/BSD
 
-If you use [Debian or Ubuntu, click here](INSTALL.md#Debian)
+If you use [Debian or Ubuntu, click here](INSTALL.md#debian)
 
 If you're installing Python using your distributor's packages, you may
 need a python-dev or python3-dev package installed, too.  If you don't have
