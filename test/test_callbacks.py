@@ -243,7 +243,7 @@ class FunctionsTestCase(SupyTestCase):
         nonChannelMsg = ircmsgs.privmsg('supybot', 'bar baz', prefix=prefix)
         self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
                          callbacks.reply(channelMsg, 'foo', private=True))
-        self.assertEqual(ircmsgs.privmsg(nonChannelMsg.nick, 'foo'),
+        self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
                          callbacks.reply(nonChannelMsg, 'foo'))
         self.assertEqual(ircmsgs.privmsg(channelMsg.args[0],
                                          '%s: foo' % channelMsg.nick),
