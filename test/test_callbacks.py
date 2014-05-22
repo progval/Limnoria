@@ -241,7 +241,7 @@ class FunctionsTestCase(SupyTestCase):
         prefix = 'foo!bar@baz'
         channelMsg = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
         nonChannelMsg = ircmsgs.privmsg('supybot', 'bar baz', prefix=prefix)
-        self.assertEqual(ircmsgs.privmsg(nonChannelMsg.nick, 'foo'),
+        self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
                          callbacks.reply(channelMsg, 'foo', private=True))
         self.assertEqual(ircmsgs.privmsg(nonChannelMsg.nick, 'foo'),
                          callbacks.reply(nonChannelMsg, 'foo'))
@@ -261,7 +261,7 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(callbacks.reply(msg, 'blah', to='blah'),
                          ircmsgs.privmsg('#foo', 'blah: blah'))
         self.assertEqual(callbacks.reply(msg, 'blah', to='blah', private=True),
-                         ircmsgs.privmsg('blah', 'blah'))
+                         ircmsgs.notice('blah', 'blah'))
 
     def testTokenize(self):
         self.assertEqual(callbacks.tokenize(''), [])
