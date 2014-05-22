@@ -505,7 +505,7 @@ class TestRequestHandler(httpserver.SupyHTTPRequestHandler):
 
 httpserver.http_servers = [httpserver.TestSupyHTTPServer()]
 
-# Partially stolen from the standart Python library :)
+# Partially stolen from the standard Python library :)
 def open_http(url, data=None):
     """Use HTTP protocol."""
     import httplib
