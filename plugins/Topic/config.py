@@ -50,7 +50,7 @@ conf.registerChannelValue(Topic, 'separator',
     registry.StringSurroundedBySpaces(' || ', _("""Determines what separator is
     used between individually added topics in the channel topic.""")))
 conf.registerChannelValue(Topic, 'format',
-    TopicFormat('$topic ($nick)', _("""Determines what format is used to add
+    TopicFormat('$topic', _("""Determines what format is used to add
     topics in the topic.  All the standard substitutes apply, in addition to
     "$topic" for the topic itself.""")))
 conf.registerChannelValue(Topic, 'recognizeTopiclen',
