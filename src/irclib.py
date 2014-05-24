@@ -930,7 +930,7 @@ class Irc(IrcCommandDispatcher):
         else:
             if self.sasl_password:
                 if not self.sasl_username:
-                    log.error('SASL username is not set, unable to identify.')
+                    log.warning('SASL username is not set, unable to identify.')
                 else:
                     auth_string = base64.b64encode('\x00'.join([
                         self.sasl_username,
@@ -941,8 +941,6 @@ class Irc(IrcCommandDispatcher):
                     self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('REQ', 'sasl')))
                     log.debug('Using SASL mechanism PLAIN.')
                     self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=('PLAIN',)))
-                    log.info('Authenticating using SASL.')
-                    self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=(auth_string,)))
             if self.password:
                 log.info('Sending PASS command, not logging the password.')
                 self.queueMsg(ircmsgs.password(self.password))
@@ -951,6 +949,12 @@ class Irc(IrcCommandDispatcher):
             log.debug('Queuing USER command, ident is %s, user is %s.',
                      self.ident, self.user)
             self.queueMsg(ircmsgs.user(self.ident, self.user))
+
+    def doAuthenticate(self, msg):
+        if msg.args[0] == '+':
+            log.info('Authenticating using SASL.')
+            self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=(auth_string,)))
+
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful' % self.network)
