@@ -930,57 +930,80 @@ class Irc(IrcCommandDispatcher):
         else:
             if self.sasl_password:
                 if not self.sasl_username:
-                    log.warning('SASL username is not set, unable to identify.')
+                    log.warning('%s: SASL username is not set, unable to '
+                                'identify.', self.network)
                 else:
-                    auth_string = base64.b64encode('\x00'.join([
-                        self.sasl_username,
-                        self.sasl_username,
-                        self.sasl_password
-                    ]).encode('utf-8')).decode('utf-8')
-                    log.debug('Sending CAP REQ command, requesting capability \'sasl\'.')
-                    self.queueMsg(ircmsgs.IrcMsg(command="CAP", args=('REQ', 'sasl')))
-                    log.debug('Using SASL mechanism PLAIN.')
-                    self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=('PLAIN',)))
+                    log.debug("%s: Requesting capability 'sasl'.",
+                              self.network)
+                    self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
             if self.password:
-                log.info('Sending PASS command, not logging the password.')
+                log.info('%s: Queuing PASS command, not logging the password.',
+                         self.network)
                 self.queueMsg(ircmsgs.password(self.password))
-            log.debug('Queuing NICK command, nick is %s.', self.nick)
+            log.debug('%s: Queuing NICK command, nick is %s.',
+                      self.network, self.nick)
             self.queueMsg(ircmsgs.nick(self.nick))
-            log.debug('Queuing USER command, ident is %s, user is %s.',
-                     self.ident, self.user)
+            log.debug('%s: Queuing USER command, ident is %s, user is %s.',
+                      self.network, self.ident, self.user)
             self.queueMsg(ircmsgs.user(self.ident, self.user))
 
     def doAuthenticate(self, msg):
         if msg.args[0] == '+':
-            log.info('Authenticating using SASL.')
-            self.queueMsg(ircmsgs.IrcMsg(command="AUTHENTICATE", args=(auth_string,)))
+            log.info('%s: Authenticating using SASL.', self.network)
 
+            authstring = base64.b64encode('\0'.join([
+                self.sasl_username,
+                self.sasl_username,
+                self.sasl_password
+            ]).encode('utf-8')).decode('utf-8')
+
+            self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
+        else:
+            log.error('%s: Unexpected response from server: %s',
+                      self.network, msg)
+            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+
+    def doCap(self, msg):
+        if msg.args[2] == 'sasl':
+            if msg.args[1] == 'ACK':
+                log.debug("%s: Server acknowledged 'sasl' capability",
+                          self.network)
+                self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
+                                             args=('PLAIN',)))
+            elif msg.args[1] == 'NAK':
+                log.warning("%s: Server refused 'sasl' capability",
+                            self.network)
+                self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+            else:
+                log.error('%s: Unexpected response from server: %s',
+                          self.network, msg)
+                self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do903(self, msg):
-        log.info('%s: SASL authentication successful' % self.network)
+        log.info('%s: SASL authentication successful', self.network)
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do904(self, msg):
-        log.warning('%s: SASL authentication failed' % self.network)
+        log.warning('%s: SASL authentication failed', self.network)
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do905(self, msg):
-        log.warning(('%s: SASL authentication failed because your username '
-                     'or password is too long.') % self.network)
+        log.warning('%s: SASL authentication failed because the username or '
+                    'password is too long.', self.network)
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do906(self, msg):
-        log.warning('%s: SASL authentication aborted' % self.network)
+        log.warning('%s: SASL authentication aborted', self.network)
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do907(self, msg):
-        log.warning(('%s: Attempted SASL authentication when we were already '
-                     'authenticated.') % self.network)
+        log.warning('%s: Attempted SASL authentication when we were already '
+                    'authenticated.', self.network)
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do908(self, msg):
-        log.info('%s: Supported SASL mechanisms: %s' %
-                 (self.network, msg.args[1]))
+        log.info('%s: Supported SASL mechanisms: %s',
+                 self.network, msg.args[1])
 
     def _getNextNick(self):
         if self.alternateNicks:
