@@ -14,7 +14,7 @@ script:
   - echo $TRAVIS_PYTHON_VERSION
   - pip install -v .
   - supybot-test test --no-network --disable-multiprocessing
-  - supybot-test --plugins-dir=./plugins/ --no-network --disable-multiprocessing --exclude=Scheduler --exclude=Filter
+  - supybot-test --plugins-dir=./build/lib*/supybot/plugins --no-network --disable-multiprocessing --exclude=Scheduler --exclude=Filter
 after_success:
     - sandbox/check_trans.py plugins/
 notifications:
