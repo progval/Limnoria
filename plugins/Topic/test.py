@@ -65,11 +65,11 @@ class TopicTestCase(ChannelPluginTestCase):
         m = self.getMsg('topic add foo')
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], self.channel)
-        self.assertEqual(m.args[1], 'foo (test)')
+        self.assertEqual(m.args[1], 'foo')
         m = self.getMsg('topic add bar')
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], self.channel)
-        self.assertEqual(m.args[1], 'foo (test) || bar (test)')
+        self.assertEqual(m.args[1], 'foo || bar')
 
     def testManageCapabilities(self):
         try:
@@ -93,9 +93,9 @@ class TopicTestCase(ChannelPluginTestCase):
 
     def testInsert(self):
         m = self.getMsg('topic add foo')
-        self.assertEqual(m.args[1], 'foo (test)')
+        self.assertEqual(m.args[1], 'foo')
         m = self.getMsg('topic insert bar')
-        self.assertEqual(m.args[1], 'bar (test) || foo (test)')
+        self.assertEqual(m.args[1], 'bar || foo')
 
     def testChange(self):
         _ = self.getMsg('topic add foo')
@@ -143,9 +143,9 @@ class TopicTestCase(ChannelPluginTestCase):
         _ = self.getMsg('topic add foo')
         self.assertRegexp('topic list', '1: foo')
         _ = self.getMsg('topic add bar')
-        self.assertRegexp('topic list', '1: foo .*2: bar')
+        self.assertRegexp('topic list', '1: foo.*2: bar')
         _ = self.getMsg('topic add baz')
-        self.assertRegexp('topic list', '1: foo .* 2: bar .* and 3: baz')
+        self.assertRegexp('topic list', '1: foo.* 2: bar.* and 3: baz')
 
     def testSet(self):
         _ = self.getMsg('topic add foo')

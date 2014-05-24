@@ -79,7 +79,7 @@ class LaterTestCase(ChannelPluginTestCase):
                                          prefix=testPrefix))
         m = self.getMsg(' ')
         self.assertEqual(str(m).strip(),
-                'PRIVMSG foo :Sent just now: <test> stuff')
+                'PRIVMSG #test :foo: Sent just now: <test> stuff')
         self.assertNotRegexp('later notes', 'foo')
         self.assertRegexp('later notes', 'bar')
 
@@ -91,7 +91,7 @@ class LaterTestCase(ChannelPluginTestCase):
                                          prefix='bar!baz@qux'))
         m = self.getMsg(' ')
         self.assertEqual(str(m).strip(),
-                'PRIVMSG bar :Sent 1 minute ago: <test> more stuff')
+                'PRIVMSG #test :bar: Sent 1 minute ago: <test> more stuff')
         time.time = real_time
         
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
