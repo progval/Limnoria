@@ -56,27 +56,27 @@ class Networks(registry.SpaceSeparatedListOf):
 
 Relay = conf.registerPlugin('Relay')
 conf.registerChannelValue(Relay, 'color',
-    registry.Boolean(False, _("""Determines whether the bot will color relayed
+    registry.Boolean(True, _("""Determines whether the bot will color relayed
     PRIVMSGs so as to make the messages easier to read.""")))
 conf.registerChannelValue(Relay, 'topicSync',
     registry.Boolean(True, _("""Determines whether the bot will synchronize
     topics between networks in the channels it relays.""")))
 conf.registerChannelValue(Relay, 'hostmasks',
-    registry.Boolean(False, _("""Determines whether the bot will relay the
-    hostmask of the person joining or parting the channel when he or she joins
-    or parts.""")))
+    registry.Boolean(True, _("""Determines whether the bot will relay the
+    hostmask of the person joining or parting the channel when they join
+    or part.""")))
 conf.registerChannelValue(Relay, 'includeNetwork',
     registry.Boolean(True, _("""Determines whether the bot will include the
     network in relayed PRIVMSGs; if you're only relaying between two networks,
     it's somewhat redundant, and you may wish to save the space.""")))
 conf.registerChannelValue(Relay, 'punishOtherRelayBots',
-    registry.Boolean(False, _("""Determines whether the bot will detect other
+    registry.Boolean(True, _("""Determines whether the bot will detect other
     bots relaying and respond by kickbanning them.""")))
 conf.registerGlobalValue(Relay, 'channels',
     conf.SpaceSeparatedSetOfChannels([], _("""Determines which channels the bot
     will relay in.""")))
 conf.registerChannelValue(Relay.channels, 'joinOnAllNetworks',
-    registry.Boolean(True, _("""Determines whether the bot
+    registry.Boolean(False, _("""Determines whether the bot
     will always join the channel(s) it relays for on all networks the bot is
     connected to.""")))
 conf.registerChannelValue(Relay, 'ignores',

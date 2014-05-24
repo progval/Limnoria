@@ -276,6 +276,9 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
         channels = []
         channels_with_key = []
         keys = []
+        old = None
+        msgs = []
+        msg = None
         for channel in self():
             key = self.key.get(channel)()
             if key:
@@ -283,8 +286,16 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
                 channels_with_key.append(channel)
             else:
                 channels.append(channel)
-        if channels_with_key or channels:
-            return ircmsgs.joins(channels_with_key + channels, keys)
+            msg = ircmsgs.joins(channels_with_key + channels, keys)
+            if len(str(msg)) > 512:
+                msgs.append(old)
+                keys = []
+                channels_with_key = []
+                channels = []
+            old = msg
+        if msg:
+            msgs.append(msg)
+            return msgs
         else:
             # Let's be explicit about it
             return None
@@ -452,7 +463,7 @@ registerChannelValue(supybot.reply, 'withNotice',
 
 # XXX: User value.
 registerGlobalValue(supybot.reply, 'withNoticeWhenPrivate',
-    registry.Boolean(False, _("""Determines whether the bot will reply with a
+    registry.Boolean(True, _("""Determines whether the bot will reply with a
     notice when it is sending a private message, in order not to open a /query
     window in clients.  This can be overridden by individual users via the user
     configuration variable reply.withNoticeWhenPrivate.""")))

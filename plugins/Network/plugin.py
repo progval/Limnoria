@@ -158,6 +158,10 @@ class Network(callbacks.Plugin):
         nick = ircutils.toLower(msg.args[1])
         if (irc, nick) not in self._whois:
             return
+        elif msg.command == '319':
+            if '319' not in self._whois[(irc, nick)][2]:
+                self._whois[(irc, nick)][2][msg.command] = []
+            self._whois[(irc, nick)][2][msg.command].append(msg)
         else:
             self._whois[(irc, nick)][2][msg.command] = msg
 
@@ -179,7 +183,9 @@ class Network(callbacks.Plugin):
         hostmask = '@'.join(d[START_CODE].args[2:4])
         user = d[START_CODE].args[-1]
         if '319' in d:
-            channels = d['319'].args[-1].split()
+            channels = []
+            for msg in d['319']:
+                channels.extend(msg.args[-1].split())
             ops = []
             voices = []
             normal = []

@@ -7,6 +7,7 @@ import operator
 import subprocess
 
 from supybot.i18n import parse
+import supybot.ansi as ansi
 
 def main():
     directory = sys.argv[1]
@@ -45,7 +46,7 @@ def _checkCore(corePath):
         if checkTranslation(pot, po):
             print('OK:      ' + potPath)
         else:
-            print('ERROR:   ' + potPath)
+            print(ansi.RED + 'ERROR:   ' + potPath + ansi.RESET)
 
 
 @changedir
@@ -62,7 +63,7 @@ def checkPlugin(pluginPath):
         if checkTranslation(pot, po):
             print('OK:      ' + potPath)
         else:
-            print('ERROR:   ' + potPath)
+            print(ansi.RED + 'ERROR:   ' + potPath + ansi.RESET)
 
 def checkTranslation(pot, po):
     checking = False
