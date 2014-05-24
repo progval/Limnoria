@@ -13,7 +13,8 @@ install:
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - pip install -v .
-  - supybot-test test --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
+  - supybot-test test --no-network --disable-multiprocessing
+  - supybot-test --plugins-dir=./plugins/ --no-network --disable-multiprocessing
 after_success:
     - sandbox/check_trans.py plugins/
 notifications:
