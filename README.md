@@ -10,7 +10,7 @@ call it a fork) by fixing bugs and adding features (see the
 [list of added features](https://github.com/ProgVal/Limnoria/wiki/LGC) for
 more details).
 
-# Build status
+# Build status
 
 Master branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=master)](https://travis-ci.org/ProgVal/Limnoria)
 
