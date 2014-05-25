@@ -47,7 +47,7 @@ class TopicFormat(registry.TemplatedString):
 
 Topic = conf.registerPlugin('Topic')
 conf.registerChannelValue(Topic, 'separator',
-    registry.StringSurroundedBySpaces(' || ', _("""Determines what separator is
+    registry.StringSurroundedBySpaces(' | ', _("""Determines what separator is
     used between individually added topics in the channel topic.""")))
 conf.registerChannelValue(Topic, 'format',
     TopicFormat('$topic ($nick)', _("""Determines what format is used to add
