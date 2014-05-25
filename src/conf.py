@@ -429,7 +429,7 @@ registerChannelValue(supybot.reply, 'whenNotCommand',
 
 registerGroup(supybot.reply, 'error')
 registerGlobalValue(supybot.reply.error, 'detailed',
-    registry.Boolean(False, _("""Determines whether error messages that result
+    registry.Boolean(True, _("""Determines whether error messages that result
     from bugs in the bot will show a detailed error message (the uncaught
     exception) or a generic error message.""")))
 registerChannelValue(supybot.reply.error, 'inPrivate',
