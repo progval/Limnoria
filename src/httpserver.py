@@ -55,10 +55,10 @@ class RequestNotHandled(Exception):
 
 DEFAULT_TEMPLATES = {
     'index.html': """\
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
- <head>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
   <title>""" + _('Supybot Web server index') + """</title>
   <link rel="stylesheet" type="text/css" href="/default.css" media="screen" />
  </head>
@@ -71,10 +71,10 @@ DEFAULT_TEMPLATES = {
  </body>
 </html>""",
     'generic/error.html': """\
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
  <head>
+  <meta charset="UTF-8" />
   <title>%(title)s</title>
   <link rel="stylesheet" href="/default.css" />
  </head>
