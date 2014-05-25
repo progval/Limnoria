@@ -183,7 +183,7 @@ class TopicTestCase(ChannelPluginTestCase):
             self.assertResponse('topic set ""', '')
             self.assertResponse('topic add foo', 'foo')
             self.assertResponse('topic add bar', 'foo | bar')
-            self.assertResponse('topic add baz', 'foo | bar || baz')
+            self.assertResponse('topic add baz', 'foo | bar | baz')
             self.assertResponse('topic undo', 'foo | bar')
             self.assertResponse('topic undo', 'foo')
             self.assertResponse('topic undo', '')
