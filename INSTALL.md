@@ -23,11 +23,11 @@ extra features you may want. (Order by decreasing estimated usefulness)
 
 To install them, run 
 
-```pip install -r requirements.txt``` 
+`pip install -r requirements.txt`
 
 or if you don't have or don't want to use root, 
 
-````pip install -r requirements.txt --install-option=--prefix=$HOME/.local```
+`pip install -r requirements.txt --install-option=--prefix=$HOME/.local`
 
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
@@ -74,8 +74,8 @@ Run
 python setup.py install
 ```
 
-```python``` can be replaced with ```python2``` (if your distribution 
-uses Python 3 by default) or ```python3``` if you want to use Python 3 
+`python` can be replaced with `python2` (if your distribution 
+uses Python 3 by default) or `python3` if you want to use Python 3 
 version.
 
 Now you have several new programs installed where Python scripts are normally
@@ -94,9 +94,9 @@ Run
 python setup.py install --user
 ```
 
-```python``` can be replaced with ```python2``` (if your distribution 
-uses Python 3 by default) or ```python3``` if you want to use 
-Python 3 version.
+`python` can be replaced with `python2` (if your distribution 
+uses Python 3 by default) or `python3` if you want to use Python 3 
+version.
 
 and you will have new programs installed in ~/.local/bin. The two that might be of particular interest to you, the
 new user, are 'supybot' and 'supybot-wizard'.  The former, 'supybot', is
