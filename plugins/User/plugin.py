@@ -555,9 +555,9 @@ class User(callbacks.Plugin):
 
     @internationalizeDocstring
     def identify(self, irc, msg, args, user, password):
-        """<name> <password>
+        """<username> <password>
 
-        Identifies the user as <name>. This command (and all other
+        Identifies the user as <username>. This command (and all other
         commands that include a password) must be sent to the bot privately,
         not in a channel.
         """
