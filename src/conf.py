@@ -1054,7 +1054,7 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         return ircutils.joinHostmask(bnick, buser, bhost)
 
 registerChannelValue(supybot.protocols.irc, 'banmask',
-    Banmask(['user', 'host'], _("""Determines what will be used as the
+    Banmask(['host'], _("""Determines what will be used as the
     default banmask style.""")))
 
 registerGlobalValue(supybot.protocols.irc, 'strictRfc',
