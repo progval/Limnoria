@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-25 16:53+EET\n"
-"PO-Revision-Date: 2014-03-25 16:56+0200\n"
+"POT-Creation-Date: 2014-05-28 19:48+EEST\n"
+"PO-Revision-Date: 2014-05-28 19:49+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
 "MIME-Version: 1.0\n"
@@ -572,8 +572,14 @@ msgstr ""
 "        "
 
 #: plugin.py:606
-msgid "I don't recognize you."
-msgstr "Minä en tunnista sinua."
+msgid ""
+"I don't recognize you. You can messsage me either of these two commands: "
+"\"user identify <username> <password>\" to log in or \"user register "
+"<username> <password>\" to register."
+msgstr ""
+"Et ole tunnistautunut. Voit lähettää minulle kumman tahansa näistä kahdesta "
+"komennoista: \"user identify <username> <password>\" kirjautuaksesi sisään "
+"tai rekisteröityäksesi \"user register <username> <password>\"."
 
 #: plugin.py:611
 msgid ""
@@ -592,6 +598,9 @@ msgid "I have %s registered users with %s registered hostmasks; %n and %n."
 msgstr ""
 "Minulla on %s rekisteröityä käyttäjää %s rekisteröidyllä hostmaskilla; %n ja "
 "%n."
+
+#~ msgid "I don't recognize you."
+#~ msgstr "Minä en tunnista sinua."
 
 #~ msgid ""
 #~ "<name> <hostmask> [<password>]\n"
