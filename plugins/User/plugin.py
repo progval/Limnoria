@@ -98,9 +98,9 @@ class User(callbacks.Plugin):
 
     @internationalizeDocstring
     def register(self, irc, msg, args, name, password):
-        """<name> <password>
+        """<username> <password>
 
-        Registers <name> with the given password <password> and the current
+        Registers <username> with the given password <password> and the current
         hostmask of the person registering.  You shouldn't register twice; if
         you're not recognized as a user but you've already registered, use the
         hostmask add command to add another hostmask to your already-registered
