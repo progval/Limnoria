@@ -603,7 +603,7 @@ class User(callbacks.Plugin):
             user = ircdb.users.getUser(msg.prefix)
             irc.reply(user.name)
         except KeyError:
-            irc.reply(_('I don\'t recognize you. You can messsage me either of these two commands: "user identify <username> <password>" to log in or "user register <username> <password>" to register.'))
+            irc.reply(_('I don\'t recognize you. You can messsage me either of these two commands in priate: "user identify <username> <password>" to log in or "user register <username> <password>" to register.'))
     whoami = wrap(whoami)
 
     @internationalizeDocstring
