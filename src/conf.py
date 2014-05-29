@@ -717,7 +717,7 @@ registerGlobalValue(supybot.abuse.flood, 'command',
 registerGlobalValue(supybot.abuse.flood.command, 'maximum',
     registry.PositiveInteger(12, _("""Determines how many commands users are
     allowed per minute.  If a user sends more than this many commands in any
-    60 second period, he or she will be ignored for
+    60 second period, they will be ignored for
     supybot.abuse.flood.command.punishment seconds.""")))
 registerGlobalValue(supybot.abuse.flood.command, 'punishment',
     registry.PositiveInteger(300, _("""Determines how many seconds the bot
@@ -729,7 +729,7 @@ registerGlobalValue(supybot.abuse.flood.command, 'invalid',
 registerGlobalValue(supybot.abuse.flood.command.invalid, 'maximum',
     registry.PositiveInteger(5, _("""Determines how many invalid commands users
     are allowed per minute.  If a user sends more than this many invalid
-    commands in any 60 second period, he or she will be ignored for
+    commands in any 60 second period, they will be ignored for
     supybot.abuse.flood.command.invalid.punishment seconds.  Typically, this
     value is lower than supybot.abuse.flood.command.maximum, since it's far
     less likely (and far more annoying) for users to flood with invalid
