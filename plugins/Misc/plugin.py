@@ -168,8 +168,8 @@ class Misc(callbacks.Plugin):
                 # echo [] will get us an empty token set, but there's no need
                 # to log this in that case anyway, it being a nested command.
                 self.log.info('Not replying to %s in %s, not a command.' %
-                    (tokens[0], "channel %s" % channel
-                    if channel != irc.nick else "private"))
+                    (tokens[0], _('channel %s') % channel
+                    if channel != irc.nick else _('private')))
             if irc.nested:
                 bracketConfig = conf.supybot.commands.nested.brackets
                 brackets = conf.get(bracketConfig, channel)
