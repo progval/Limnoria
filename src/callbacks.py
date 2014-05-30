@@ -473,7 +473,7 @@ class RichReplyMethods(object):
             joiner = joiner.join
         if oneToOne is None: # Can be True, False, or None
             if ircutils.isChannel(to):
-                oneToOne = conf.get(conf.supybot.reply.oneToOne, to)
+                oneToOne = conf.get(conf.supybot.reply.oneToOne, to)()
             else:
                 oneToOne = conf.supybot.reply.oneToOne()
         if oneToOne:
