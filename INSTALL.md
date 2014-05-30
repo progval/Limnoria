@@ -178,39 +178,3 @@ rm -rf build/
 rm /usr/local/bin/supybot*
 rm ~/.local/bin/supybot*
 ```
-
-## Windows
-
-**Note**: If you are using an IPV6 connection, you will not be able
-to run Supybot under Windows (unless Python has fixed things).  Current
-versions of Python for Windows are *not* built with IPV6 support. This
-isn't expected to be fixed until Python 2.4, at the earliest.
-
-Now that you have Python installed, open up a command prompt.  The
-easiest way to do this is to open the run dialog (Programs -> run) and
-type "cmd" (for Windows 2000/XP/2003) or "command" (for Windows 9x).  In
-order to reduce the amount of typing you need to do, I suggest adding
-Python's directory to your path.  If you installed Python using the
-default settings, you would then do the following in the command prompt
-(otherwise change the path to match your settings)::
-
-```
-set PATH=C:\Python2x\;%PATH%
-```
-
-You should now be able to type 'python' to start the Python
-interpreter.  Exit by pressing CTRL-Z and then Return.  Now that that's
-setup, you'll want to cd into the directory that was created when you
-unzipped Supybot; I'll assume you unzipped it to 'C:\Supybot' for these
-instructions.  From 'C:\Supybot', run 
-
-```
-python setup.py install
-```
-
-This will install Supybot under 'C:\Python2x\'.  You will now have several new
-programs installed in 'C:\Python2x\Scripts\'.  The two that might be of
-particular interest to you, the new user, are 'supybot' and 'supybot-wizard'.
-The former, 'supybot', is the script to run an actual bot; the latter,
-'supybot-wizard', is an in-depth wizard that provides a nice user interface for
-creating a registry file for your bot.

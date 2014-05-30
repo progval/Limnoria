@@ -272,8 +272,6 @@
 	* Fixed Alias.lock and Alias.unlock to work properly now that the
 	alias functions are no longer attributes of the Alias plugin.
 
-	* Fixed a Windows-specific NameError in log.py.
-
 	* Fixed Config.help to actually perform the string substitution of the
 	given config name.
 
@@ -973,10 +971,6 @@
 	* Fixed an exception in RSS.getHeadlines.
 
 	* Fixed a couple bugs in Poll, when retrieving the Poll id.
-
-	* Fixed a problem with trying to use socket.inet_pton under
-	Windows; Python doesn't build their Win32 port with IPV6 support,
-	so we have to brute-force IPV6 detection.
 
 	* Fixed a few bugs with how Infobot handled the SQLite db.
 
