@@ -141,9 +141,9 @@ class Ctcp(callbacks.PluginRegexp):
         def doReply():
             if self.versions:
                 L = []
-                for (reply, nicks) in self.versions.iteritems():
+                for (reply, nickslist) in self.versions.iteritems():
                     if nicks:
-                        L.append(format('%L responded with %q', nicks, reply))
+                        L.append(format('%L responded with %q', nickslist, reply))
                     else:
                         L.append(reply)
                 irc.reply(format('%L', L))
