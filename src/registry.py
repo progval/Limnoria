@@ -214,6 +214,9 @@ class Group(object):
         self.register(attr, v)
         return v
 
+    def __hasattr__(self, attr):
+        return attr in self._children
+
     def __getattr__(self, attr):
         if attr in self._children:
             return self._children[attr]

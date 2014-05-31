@@ -54,12 +54,12 @@ def getWrapper(name):
         raise registry.InvalidRegistryName(name)
     group = getattr(conf, parts.pop(0))
     while parts:
-        try:
-            group = group.get(parts.pop(0))
-        # We'll catch registry.InvalidRegistryName and re-raise it here so
-        # that we have a useful error message for the user.
-        except (registry.NonExistentRegistryEntry,
-                registry.InvalidRegistryName):
+        part = parts.pop(0)
+        if group.__hasattr__(part):
+            group = group.get(part)
+        else:
+            # We'll raise registry.InvalidRegistryName here so
+            # that we have a useful error message for the user.
             raise registry.InvalidRegistryName(name)
     return group
 
