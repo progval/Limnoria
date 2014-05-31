@@ -1084,6 +1084,7 @@ def _wrap(f, specList=[], name=None, checkDoc=True, **kw):
                                'function ;)')
                 raise
     newf2 = utils.python.changeFunctionName(newf, name, f.__doc__)
+    newf2.__module__ = f.__module__
     return internationalizeDocstring(newf2)
 
 def wrap(f, *args, **kwargs):
