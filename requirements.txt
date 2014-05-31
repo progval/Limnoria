@@ -1,7 +1,0 @@
-charade
-pytz
-python-dateutil
-python-gnupg
-feedparser
-sqlalchemy
-SocksiPy-branch

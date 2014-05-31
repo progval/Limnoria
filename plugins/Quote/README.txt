@@ -1,1 +1,0 @@
-This plugin allows you to add quotes to the database for the channel.
