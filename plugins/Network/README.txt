@@ -1,1 +1,0 @@
-Allows connecting, reconnecting, display the bot's latency between the server and other useful network-related commands.

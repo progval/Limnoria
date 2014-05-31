@@ -1,1 +1,0 @@
-This plugin allows you to create your own personal todo list on the bot.

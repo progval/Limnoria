@@ -1,1 +1,0 @@
-This plugin allows you to use different time functions.

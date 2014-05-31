@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-echo -n "Updating version... "
-perl -pi -e  "s/^version\s*=\s*['\"]([\S]+)[ '\"].*/version = '\1 ($( date -u -Iseconds ))'/" src/version.py
-git add src/version.py && echo "done"
-
-# vim: set ft=sh:
