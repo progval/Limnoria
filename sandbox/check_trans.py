@@ -17,6 +17,8 @@ def main():
         for plugin in os.listdir(directory):
             if plugin[0] not in 'AZERTYUIOPQSDFGHJKLMWXCVBN':
                 continue
+            if plugin in ('Ctcp', 'Owner'):
+                continue
             checkPlugin(os.path.join(directory, plugin))
 
 def changedir(f):
