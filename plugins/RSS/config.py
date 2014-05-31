@@ -52,13 +52,13 @@ class FeedItemSortOrder(registry.OnlySomeStrings):
 RSS = conf.registerPlugin('RSS')
 conf.registerChannelValue(RSS, 'bold', registry.Boolean(
     True, _("""Determines whether the bot will bold the title of the feed when
-    it announces new news.""")))
+    it announces news.""")))
 conf.registerChannelValue(RSS, 'headlineSeparator',
     registry.StringSurroundedBySpaces(' || ', _("""Determines what string is
     used to separate headlines in new feeds.""")))
 conf.registerChannelValue(RSS, 'announcementPrefix',
-    registry.StringWithSpaceOnRight(_('New news from '), _("""Determines what
-    prefix is prepended (if any) to the new news item announcements made in the
+    registry.StringWithSpaceOnRight(_('News from '), _("""Determines what
+    prefix is prepended (if any) to the news item announcements made in the
     channel.""")))
 conf.registerChannelValue(RSS, 'announcementSeparator',
         registry.StringWithSpaceOnRight(_(': '), _("""Determines what

@@ -17,9 +17,10 @@ msgid "Valid values include 'asInFeed', 'oldestFirst', 'newestFirst'."
 msgstr "I valori validi sono 'asInFeed', 'oldestFirst', 'newestFirst'."
 
 #: config.py:54
+#, fuzzy
 msgid ""
 "Determines whether the bot will bold the title of the feed when\n"
-"    it announces new news."
+"    it announces news."
 msgstr ""
 "Determina se il bot mostrerà il titolo del feed in grassetto quando annuncia nuove notizie."
 
@@ -31,15 +32,17 @@ msgstr ""
 "Determina quale stringa utilizzare per separare i titoli nei nuovi feed."
 
 #: config.py:60
+#, fuzzy
 msgid ""
 "Determines what\n"
-"    prefix is prepended (if any) to the new news item announcements made in the\n"
+"    prefix is prepended (if any) to the news item announcements made in the\n"
 "    channel."
 msgstr ""
 "Determina quale prefisso (eventuale) utilizzare per annunciare le notizie in canale."
 
 #: config.py:60
-msgid "New news from "
+#, fuzzy
+msgid "News from "
 msgstr "Nuove notizie da "
 
 #: config.py:64

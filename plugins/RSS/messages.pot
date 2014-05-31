@@ -23,7 +23,7 @@ msgstr ""
 #: config.py:54
 msgid ""
 "Determines whether the bot will bold the title of the feed when\n"
-"    it announces new news."
+"    it announces news."
 msgstr ""
 
 #: config.py:57
@@ -35,12 +35,12 @@ msgstr ""
 #: config.py:60
 msgid ""
 "Determines what\n"
-"    prefix is prepended (if any) to the new news item announcements made in the\n"
+"    prefix is prepended (if any) to the news item announcements made in the\n"
 "    channel."
 msgstr ""
 
 #: config.py:60
-msgid "New news from "
+msgid "News from "
 msgstr ""
 
 #: config.py:64

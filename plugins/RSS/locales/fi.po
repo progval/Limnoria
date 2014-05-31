@@ -24,9 +24,10 @@ msgstr ""
 "ensin), 'newestFirst' (uusin ensin)."
 
 #: config.py:54
+#, fuzzy
 msgid ""
 "Determines whether the bot will bold the title of the feed when\n"
-"    it announces new news."
+"    it announces news."
 msgstr ""
 "Määrittää korostaako botti otsikon, kun se kuuluttaa uusia\n"
 "    uutisia."
@@ -40,9 +41,10 @@ msgstr ""
 "    erottamaan otsikot uusissa syötteissä."
 
 #: config.py:60
+#, fuzzy
 msgid ""
 "Determines what\n"
-"    prefix is prepended (if any) to the new news item announcements made in "
+"    prefix is prepended (if any) to the news item announcements made in "
 "the\n"
 "    channel."
 msgstr ""
@@ -51,7 +53,7 @@ msgstr ""
 "    kanavalla."
 
 #: config.py:60
-msgid "New news from "
+msgid "News from "
 msgstr "Uusia uutisia kohteesta "
 
 #: config.py:64
