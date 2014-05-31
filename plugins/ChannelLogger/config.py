@@ -45,7 +45,7 @@ ChannelLogger = conf.registerPlugin('ChannelLogger')
 conf.registerChannelValue(ChannelLogger, 'enable',
     registry.Boolean(True, _("""Determines whether logging is enabled.""")))
 conf.registerGlobalValue(ChannelLogger, 'flushImmediately',
-    registry.Boolean(False, _("""Determines whether channel logfiles will be
+    registry.Boolean(True, _("""Determines whether channel logfiles will be
     flushed anytime they're written to, rather than being buffered by the
     operating system.""")))
 conf.registerChannelValue(ChannelLogger, 'showJoinParts',
