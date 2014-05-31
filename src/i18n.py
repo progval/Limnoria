@@ -128,6 +128,19 @@ def reloadLocales():
     for function in internationalizedFunctions:
         function.loadLocale()
 
+def normalize(string, removeNewline=False):
+    import supybot.utils as utils
+    string = string.replace('\\n\\n', '\n\n')
+    string = string.replace('\\n', ' ')
+    string = string.replace('\\"', '"')
+    string = string.replace("\'", "'")
+    string = utils.str.normalizeWhitespace(string, removeNewline)
+    string = string.strip(' ')
+    string = string.strip('\n')
+    string = string.strip('\t')
+    return string
+
+
 def parse(translationFile):
     step = WAITING_FOR_MSGID
     translations = set()
@@ -172,11 +185,11 @@ def parse(translationFile):
             step = WAITING_FOR_MSGID
             if translated == '':
                 translated = untranslated
-            translations |= set([(untranslated, data)])
+            translations |= set([(untranslated, translated)])
     if step is IN_MSGSTR:
         if translated == '':
             translated = untranslated
-        translations |= set([(untranslated, data)])
+        translations |= set([(untranslated, translated)])
     return translations
 
 
@@ -229,30 +242,21 @@ class _PluginInternationalization:
             self._addToDatabase(*translation)
 
     def _addToDatabase(self, untranslated, translated):
-        untranslated = self._unescape(untranslated, True)
-        translated = self._unescape(translated)
+        untranslated = normalize(untranslated, True)
+        translated = normalize(translated)
         if translated:
             self.translations.update({untranslated: translated})
-
-    def _unescape(self, string, removeNewline=False):
-        import supybot.utils as utils
-        string = string.replace('\\n\\n', '\n\n')
-        string = string.replace('\\n', ' ')
-        string = string.replace('\\"', '"')
-        string = string.replace("\'", "'")
-        string = utils.str.normalizeWhitespace(string, removeNewline)
-        return string
 
     def __call__(self, untranslated):
         """Main function.
 
         This is the function which is called when a plugin runs _()"""
         if untranslated.__class__ is InternationalizedString:
-            return untranslated._original
-        escapedUntranslated = self._unescape(untranslated, True)
-        untranslated = self._unescape(untranslated, False)
+            return untranslated
+        normalizedUntranslated = normalize(untranslated, True)
+        untranslated = normalize(untranslated, False)
         try:
-            string = self._translate(escapedUntranslated)
+            string = self._translate(normalizedUntranslated)
             return self._addTracker(string, untranslated)
         except KeyError:
             pass
@@ -360,10 +364,11 @@ def internationalizeDocstring(obj):
     Only useful for commands (commands' docstring is displayed on IRC)"""
     if obj.__doc__ == None:
         return obj
-    if '_' in sys.modules[obj.__module__].__dict__:
+    plugin_module = sys.modules[obj.__module__]
+    if '_' in plugin_module.__dict__:
         internationalizedCommands.update({hash(obj): obj})
         try:
-            obj.__doc__=sys.modules[obj.__module__]._.__call__(obj.__doc__)
+            obj.__doc__ = plugin_module._.__call__(obj.__doc__)
             # We use _.__call__() instead of _() because of a pygettext warning.
         except AttributeError:
             # attribute '__doc__' of 'type' objects is not writable
