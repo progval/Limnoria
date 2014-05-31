@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 15:42+EET\n"
-"PO-Revision-Date: 2014-03-22 16:08+0200\n"
+"POT-Creation-Date: 2014-05-31 15:04+EEST\n"
+"PO-Revision-Date: 2014-05-31 15:10+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -24,13 +24,10 @@ msgstr ""
 "ensin), 'newestFirst' (uusin ensin)."
 
 #: config.py:54
-#, fuzzy
 msgid ""
 "Determines whether the bot will bold the title of the feed when\n"
 "    it announces news."
-msgstr ""
-"Määrittää korostaako botti otsikon, kun se kuuluttaa uusia\n"
-"    uutisia."
+msgstr "Määrittää korostetaanko syötteen otsikko uutisia kuuluttaessa."
 
 #: config.py:57
 msgid ""
@@ -41,20 +38,17 @@ msgstr ""
 "    erottamaan otsikot uusissa syötteissä."
 
 #: config.py:60
-#, fuzzy
 msgid ""
 "Determines what\n"
-"    prefix is prepended (if any) to the news item announcements made in "
-"the\n"
+"    prefix is prepended (if any) to the news item announcements made in the\n"
 "    channel."
 msgstr ""
-"Määrittää mikä\n"
-"    etuliite (jos mikään) lisätään kuulutuksiin, jotka on tehty\n"
-"    kanavalla."
+"Määrittää kanavalla tehtyihin uutiskuulutuksiin liitettävän etuliitteen (jos "
+"mikään)."
 
 #: config.py:60
 msgid "News from "
-msgstr "Uusia uutisia kohteesta "
+msgstr "Uutisia kohteesta "
 
 #: config.py:64
 msgid ": "
@@ -64,9 +58,7 @@ msgstr ": "
 msgid ""
 "Determines what\n"
 "    suffix is appended to the feed name in a news item."
-msgstr ""
-"Määrittää mikä\n"
-" jälkiliike (jos mikään) lisätään syötteen nimeen uutis-syötteessä."
+msgstr "Määrittää uutissyötteen nimeen liitettävän jälkiliitteen."
 
 #: config.py:67
 msgid ""
@@ -74,10 +66,10 @@ msgid ""
 "    should be announced in the channel; valid input is a list of strings\n"
 "    (either registered RSS feeds or RSS feed URLs) separated by spaces."
 msgstr ""
-"Määrittää mitä RSS syötteitä kuulutetaan\n"
-"    kanavalla; kelvollinen syöte on lista merkkiketjuista\n"
-"    (joko rekisteröidyt RSS syötteet tai RSS syötteiden URL:it) "
-"välilyönneillä erotettuina."
+"Määrittää kanavalla kuulutettavat RSS-syötteet. Kelvollinen asetusarvo\n"
+" on merkkiketju luettelo (joka sisältää rekisteröityjä RSS-syötteitä tai "
+"syöte\n"
+"-osoitteita) välilyönneillä erotettuina."
 
 #: config.py:71
 msgid ""
