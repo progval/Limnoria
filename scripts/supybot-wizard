@@ -688,6 +688,7 @@ def main():
 
     # Let's make sure that src/ plugins are loaded.
     conf.registerPlugin('Admin', True)
+    conf.registerPlugin('AutoMode', True)
     conf.registerPlugin('Channel', True)
     conf.registerPlugin('Config', True)
     conf.registerPlugin('Misc', True)
