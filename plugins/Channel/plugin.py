@@ -320,13 +320,11 @@ class Channel(callbacks.Plugin):
         """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>]
 
         If you have the #channel,op capability, this will ban <nick> for
-        as many seconds as you specify, or else (if you specify 0 seconds or
+        as many seconds as you specify, otherwise (if you specify 0 seconds or
         don't specify a number of seconds) it will ban the person indefinitely.
-        --exact bans only the exact hostmask; --nick bans just the nick;
-        --user bans just the user, and --host bans just the host.  You can
-        combine these options as you choose.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
+        --exact can be used to specify an exact hostmask. You can combine the
+        exact, nick, user, and host options as you choose. <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
         self._ban(irc, msg, args,
                 channel, optlist, bannedNick, expiry, None, False)
