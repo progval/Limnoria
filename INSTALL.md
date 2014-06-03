@@ -27,7 +27,7 @@ To install them, run
 
 or if you don't have or don't want to use root, 
 
-`pip install -r requirements.txt --install-option=--prefix=$HOME/.local`
+`pip install -r requirements.txt --user`
 
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
@@ -130,6 +130,12 @@ To install with pip run
 
 ```
 sudo pip install limnoria
+```
+
+or without root if you don't have it or don't want to use it.
+
+```
+pip install limnoria --user
 ```
 
 If you wish to use Python 3 or 2 instead of default of your distribution 
