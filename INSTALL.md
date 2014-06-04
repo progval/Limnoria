@@ -129,13 +129,13 @@ sudo dpkg -i limnoria-master-HEAD.deb
 To install with pip run
 
 ```
-sudo pip install limnoria
+sudo pip install git+https://github.com/ProgVal/Limnoria.git@master
 ```
 
 or without root if you don't have it or don't want to use it.
 
 ```
-pip install limnoria --user
+pip install git+https://github.com/ProgVal/Limnoria.git@testing --user
 ```
 
 If you wish to use Python 3 or 2 instead of default of your distribution 
@@ -164,13 +164,9 @@ wget http://builds.progval.net/limnoria/limnoria-master-HEAD.deb
 sudo dpkg -i limnoria-master-HEAD.deb
 ```
 
-### Pip
+### Pip 
 
-To update with pip, add `--upgrade` to the end of the command:
-
-```
-pip install limnoria --upgrade
-```
+Run the install command again.
 
 ## Upgrading to Python 3
 
