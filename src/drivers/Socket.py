@@ -308,6 +308,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 certfile = getattr(conf.supybot.networks, self.irc.network) \
                         .certfile()
                 if not certfile:
+                    certfile = conf.supybot.protocols.irc.certfile()
+                if not certfile:
                     certfile = None
                 elif not os.path.isfile(certfile):
                     drivers.log.warning('Could not find cert file %s.' %
