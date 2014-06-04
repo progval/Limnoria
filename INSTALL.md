@@ -60,7 +60,7 @@ libs are installed), then you will need a python-dev or python3-dev package.
 First start by git cloning Limnoria and moving to the cloned repository.
 
 ```
-git clone git://github.com/ProgVal/Limnoria.git
+git clone https://github.com/ProgVal/Limnoria.git
 cd Limnoria
 ```
 
