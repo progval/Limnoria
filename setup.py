@@ -32,6 +32,8 @@
 
 import os
 import sys
+import time
+import datetime
 import tempfile
 import subprocess
 
@@ -47,13 +49,20 @@ version = None
 try:
     proc = subprocess.Popen('git show HEAD --format=%ci', shell=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    version = proc.stdout.readline()
+    date = proc.stdout.readline()
     if sys.version_info[0] >= 3:
-        version = version.decode()
-    version = version \
-            .strip() \
-            .split(' ')[0] \
-            .replace('-', '.')
+        date = date.decode()
+        date = time.strptime(date.strip(), '%Y-%m-%d %H:%M:%S %z')
+        utc_date = time.gmtime(time.mktime(date))
+        version = time.strftime('%Y.%m.%d', utc_date)
+    else:
+        (date, timezone) = date.strip().rsplit(' ', 1)
+        date = datetime.datetime.strptime(date.strip(), '%Y-%m-%d %H:%M:%S')
+        offset = time.strptime(timezone[1:], '%H%M')
+        offset = datetime.timedelta(hours=offset.tm_hour,
+                                    minutes=offset.tm_min)
+        utc_date = date - offset
+        version = utc_date.strftime('%Y.%m.%d')
 except:
     pass
 if not version:

@@ -745,7 +745,7 @@ class Filter(callbacks.Plugin):
             elif ord(c) >= 32:
                 turned.append(c)
                 tlen += 1
-        s = '%s \x02 \x02' % ''.join(reversed(turned))
+        s = u'%s \x02 \x02' % u''.join(reversed(turned))
         irc.reply(s)
     uniud = wrap(uniud, ['text'])
 Filter = internationalizeDocstring(Filter)
