@@ -135,7 +135,7 @@ sudo pip install git+https://github.com/ProgVal/Limnoria.git@master
 or without root if you don't have it or don't want to use it.
 
 ```
-pip install git+https://github.com/ProgVal/Limnoria.git@testing --user
+pip install git+https://github.com/ProgVal/Limnoria.git@master --user
 ```
 
 If you wish to use Python 3 or 2 instead of default of your distribution 
