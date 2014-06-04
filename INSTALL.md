@@ -27,7 +27,7 @@ To install them, run
 
 or if you don't have or don't want to use root, 
 
-`pip install -r requirements.txt --install-option=--prefix=$HOME/.local`
+`pip install -r requirements.txt --user`
 
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
@@ -60,7 +60,7 @@ libs are installed), then you will need a python-dev or python3-dev package.
 First start by git cloning Limnoria and moving to the cloned repository.
 
 ```
-git clone git://github.com/ProgVal/Limnoria.git
+git clone https://github.com/ProgVal/Limnoria.git
 cd Limnoria
 ```
 
@@ -129,7 +129,13 @@ sudo dpkg -i limnoria-master-HEAD.deb
 To install with pip run
 
 ```
-sudo pip install limnoria
+sudo pip install git+https://github.com/ProgVal/Limnoria.git@master
+```
+
+or without root if you don't have it or don't want to use it.
+
+```
+pip install git+https://github.com/ProgVal/Limnoria.git@master --user
 ```
 
 If you wish to use Python 3 or 2 instead of default of your distribution 
@@ -158,13 +164,9 @@ wget http://builds.progval.net/limnoria/limnoria-master-HEAD.deb
 sudo dpkg -i limnoria-master-HEAD.deb
 ```
 
-### Pip
+### Pip 
 
-To update with pip, add `--upgrade` to the end of the command:
-
-```
-pip install limnoria --upgrade
-```
+Run the install command again.
 
 ## Upgrading to Python 3
 
