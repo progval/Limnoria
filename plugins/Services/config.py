@@ -85,11 +85,11 @@ conf.registerGlobalValue(Services, 'ghostDelay',
     registry.PositiveInteger(60, _("""Determines how many seconds the bot will
     wait between successive GHOST attempts.""")))
 conf.registerGlobalValue(Services, 'NickServ',
-    ValidNickOrEmptyString('', _("""Determines what nick the 'NickServ' service
+    ValidNickOrEmptyString('NickServ', _("""Determines what nick the 'NickServ' service
     has.""")))
 conf.registerGroup(Services.NickServ, 'password')
 conf.registerGlobalValue(Services, 'ChanServ',
-    ValidNickOrEmptyString('', _("""Determines what nick the 'ChanServ' service
+    ValidNickOrEmptyString('ChanServ', _("""Determines what nick the 'ChanServ' service
     has.""")))
 conf.registerChannelValue(Services.ChanServ, 'password',
     registry.String('', _("""Determines what password the bot will use with
