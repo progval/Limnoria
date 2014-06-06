@@ -417,9 +417,9 @@ registerChannelValue(supybot.reply.mores, 'instant',
 
 registerChannelValue(supybot.reply, 'oneToOne',
     registry.Boolean(True, _("""Determines whether the bot will send
-    multi-message replies in a single message or in multiple messages.  For
-    safety purposes (so the bot is less likely to flood) it will normally send
-    everything in a single message, using mores if necessary.""")))
+    multi-message replies in a single message. This defaults to True 
+    in order to prevent the bot from flooding. If this is set to False
+    the bot will send multi-message replies on multiple lines.""")))
 
 registerChannelValue(supybot.reply, 'whenNotCommand',
     registry.Boolean(True, _("""Determines whether the bot will reply with an
