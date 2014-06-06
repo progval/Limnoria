@@ -37,18 +37,18 @@ class FactoidsTestCase(ChannelPluginTestCase):
     plugins = ('Factoids',)
     def testRandomfactoid(self):
         self.assertError('random')
-        self.assertNotError('learn jemfinch as my primary author')
+        self.assertNotError('learn jemfinch is my primary author')
         self.assertRegexp('random', 'primary author')
 
     def testLearn(self):
-        self.assertError('learn as my primary author')
-        self.assertError('learn jemfinch as')
-        self.assertNotError('learn jemfinch as my primary author')
+        self.assertError('learn is my primary author')
+        self.assertError('learn jemfinch is')
+        self.assertNotError('learn jemfinch is my primary author')
         self.assertNotError('info jemfinch')
         self.assertRegexp('whatis jemfinch', 'my primary author')
         self.assertRegexp('whatis JEMFINCH', 'my primary author')
         self.assertRegexp('whatis JEMFINCH 1', 'my primary author')
-        self.assertNotError('learn jemfinch as a bad assembly programmer')
+        self.assertNotError('learn jemfinch is a bad assembly programmer')
         self.assertRegexp('whatis jemfinch 2', 'bad assembly')
         self.assertNotRegexp('whatis jemfinch 2', 'primary author')
         self.assertRegexp('whatis jemfinch', r'.*primary author.*assembly')
@@ -60,10 +60,10 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertError('whatis jemfinch')
         self.assertError('info jemfinch')
 
-        self.assertNotError('learn foo bar as baz')
+        self.assertNotError('learn foo bar is baz')
         self.assertNotError('info foo bar')
         self.assertRegexp('whatis foo bar', 'baz')
-        self.assertNotError('learn foo bar as quux')
+        self.assertNotError('learn foo bar is quux')
         self.assertRegexp('whatis foo bar', '.*baz.*quux')
         self.assertError('forget foo bar')
         self.assertNotError('forget foo bar 2')
@@ -71,28 +71,28 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertError('whatis foo bar')
         self.assertError('info foo bar')
 
-        self.assertError('learn foo bar baz') # No 'as'
-        self.assertError('learn foo bar') # No 'as'
+        self.assertError('learn foo bar baz') # No 'is'
+        self.assertError('learn foo bar') # No 'is'
 
         with conf.supybot.plugins.Factoids.requireVoice.context(True):
-            self.assertError('learn jemfinch as my primary author')
+            self.assertError('learn jemfinch is my primary author')
             self.irc.feedMsg(ircmsgs.mode(self.channel,
                 args=('+h', self.nick)))
-            self.assertNotError('learn jemfinch as my primary author')
+            self.assertNotError('learn jemfinch is my primary author')
 
     def testChangeFactoid(self):
-        self.assertNotError('learn foo as bar')
+        self.assertNotError('learn foo is bar')
         self.assertNotError('change foo 1 s/bar/baz/')
         self.assertRegexp('whatis foo', 'baz')
         self.assertError('change foo 2 s/bar/baz/')
         self.assertError('change foo 0 s/bar/baz/')
 
     def testSearchFactoids(self):
-        self.assertNotError('learn jemfinch as my primary author')
-        self.assertNotError('learn strike as a cool guy working on me')
-        self.assertNotError('learn inkedmn as another of my developers')
-        self.assertNotError('learn jamessan as a developer of much python')
-        self.assertNotError('learn bwp as author of my weather command')
+        self.assertNotError('learn jemfinch is my primary author')
+        self.assertNotError('learn strike is a cool person working on me')
+        self.assertNotError('learn inkedmn is another of my developers')
+        self.assertNotError('learn jamessan is jamessan is a developer of much python')
+        self.assertNotError('learn bwp is bwp is author of my weather command')
         self.assertRegexp('factoids search --regexp /.w./', 'bwp')
         self.assertRegexp('factoids search --regexp /^.+i/',
                           'jemfinch.*strike')
@@ -114,36 +114,36 @@ class FactoidsTestCase(ChannelPluginTestCase):
                           'my primary author')
 
     def testWhatisOnNumbers(self):
-        self.assertNotError('learn 911 as emergency number')
+        self.assertNotError('learn 911 is emergency number')
         self.assertRegexp('whatis 911', 'emergency number')
 
     def testNotZeroIndexed(self):
-        self.assertNotError('learn foo as bar')
+        self.assertNotError('learn foo is bar')
         self.assertNotRegexp('info foo', '#0')
         self.assertNotRegexp('whatis foo', '#0')
-        self.assertNotError('learn foo as baz')
+        self.assertNotError('learn foo is baz')
         self.assertNotRegexp('info foo', '#0')
         self.assertNotRegexp('whatis foo', '#0')
 
     def testInfoReturnsRightNumber(self):
-        self.assertNotError('learn foo as bar')
+        self.assertNotError('learn foo is bar')
         self.assertNotRegexp('info foo', '2 factoids')
 
     def testInfoUsageCount(self):
-        self.assertNotError('learn moo as cow')
+        self.assertNotError('learn moo is cow')
         self.assertRegexp('info moo', 'recalled 0 times')
         self.assertNotError('whatis moo')
         self.assertRegexp('info moo', 'recalled 1 time')
 
     def testLearnSeparator(self):
-        self.assertError('learn foo is bar')
-        self.assertNotError('learn foo as bar')
+        self.assertError('learn foo as bar')
+        self.assertNotError('learn foo is bar')
         self.assertRegexp('whatis foo', 'bar')
         orig = conf.supybot.plugins.Factoids.learnSeparator()
         try:
-            conf.supybot.plugins.Factoids.learnSeparator.setValue('is')
-            self.assertError('learn bar as baz')
-            self.assertNotError('learn bar is baz')
+            conf.supybot.plugins.Factoids.learnSeparator.setValue('as')
+            self.assertError('learn bar is baz')
+            self.assertNotError('learn bar as baz')
             self.assertRegexp('whatis bar', 'baz')
         finally:
             conf.supybot.plugins.Factoids.learnSeparator.setValue(orig)
@@ -161,44 +161,44 @@ class FactoidsTestCase(ChannelPluginTestCase):
                 showFactoidIfOnlyOneMatch.setValue(orig)
 
     def testInvalidCommand(self):
-        self.assertNotError('learn foo as bar')
+        self.assertNotError('learn foo is bar')
         self.assertRegexp('foo', 'bar')
-        self.assertNotError('learn mooz as cowz')
+        self.assertNotError('learn mooz is cowz')
         self.assertRegexp('moo', 'mooz')
         self.assertRegexp('mzo', 'mooz')
         self.assertRegexp('moz', 'mooz')
-        self.assertNotError('learn moped as pretty fast')
+        self.assertNotError('learn moped is pretty fast')
         self.assertRegexp('moe', 'mooz.*moped')
         self.assertError('nosuchthing')
     
     def testWhatis(self):
-        self.assertNotError('learn foo as bar')
+        self.assertNotError('learn foo is bar')
         self.assertRegexp('whatis foo', 'bar')
         self.assertRegexp('whatis foob', 'foo')
-        self.assertNotError('learn foob as barb')
+        self.assertNotError('learn foob is barb')
         self.assertRegexp('whatis foom', 'foo.*foob')
     
     def testStandardSubstitute(self):
-        self.assertNotError('learn foo as this is $channel, and hour is $hour')
+        self.assertNotError('learn foo is this is $channel, and hour is $hour')
         self.assertRegexp('whatis foo', 'this is #test, and hour is \d{1,2}')
         self.assertRegexp('whatis --raw foo', 'this is \$channel, and hour is \$hour')
-        self.assertNotError('learn bar as this is $$channel escaped')
+        self.assertNotError('learn bar is this is $$channel escaped')
         self.assertRegexp('whatis bar', 'this is \$channel')
-        self.assertNotError('learn bar as this is $minute')
+        self.assertNotError('learn bar is this is $minute')
         self.assertRegexp('whatis bar', '\$channel.*\d{1,2}')
         
     def testAlias(self):
-        self.assertNotError('learn foo as bar')
+        self.assertNotError('learn foo is bar')
         self.assertNotError('alias foo zoog')
         self.assertRegexp('whatis zoog', 'bar')
-        self.assertNotError('learn foo as snorp')
+        self.assertNotError('learn foo is snorp')
         self.assertError('alias foo gnoop')
         self.assertNotError('alias foo gnoop 2')
         self.assertRegexp('whatis gnoop', 'snorp')
     
     def testRank(self):
-        self.assertNotError('learn foo as bar')
-        self.assertNotError('learn moo as cow')
+        self.assertNotError('learn foo is bar')
+        self.assertNotError('learn moo is cow')
         self.assertRegexp('factoids rank', '#1 foo \(0\), #2 moo \(0\)')
         self.assertRegexp('whatis moo', '.*cow.*')
         self.assertRegexp('factoids rank', '#1 moo \(1\), #2 foo \(0\)')
@@ -209,11 +209,11 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertResponse('factoids rank --plain 1', 'moo')
     
     def testQuoteHandling(self):
-        self.assertNotError('learn foo as "\\"bar\\""')
+        self.assertNotError('learn foo is "\\"bar\\""')
         self.assertRegexp('whatis foo', r'"bar"')
 
     def testLock(self):
-        self.assertNotError('learn foo as bar')
+        self.assertNotError('learn foo is bar')
         self.assertNotError('lock foo')
         self.assertNotError('unlock foo')
 
