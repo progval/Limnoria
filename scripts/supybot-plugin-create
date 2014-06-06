@@ -204,7 +204,8 @@ class %sTestCase(PluginTestCase):
 '''.lstrip()
 
 readmeTemplate = '''
-Insert a description of your plugin here, with any notes, etc. about using it.
+Insert a description of your plugin here, with any notes, etc. about 
+using it.
 '''.lstrip()
 
 def main():
@@ -288,7 +289,7 @@ def main():
                                              name))
     writeFile('__init__.py', __init__Template % (copyright, name))
     writeFile('test.py', testTemplate % (copyright, name, name))
-    writeFile('README.txt', readmeTemplate)
+    writeFile('README.md', readmeTemplate)
 
     pathname = os.path.join(pathname, 'local')
     os.mkdir(pathname)
