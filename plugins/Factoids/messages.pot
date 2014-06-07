@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-06-07 22:36+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,9 +42,9 @@ msgstr ""
 
 #: config.py:62
 msgid ""
-"Determines what separator must be used in the\n"
-"    learn command.  Defaults to 'as' -- learn <key> as <value>.  Users might\n"
-"    feel more comfortable with 'is' or something else, so it's\n"
+"Determines what separator must be used in \n"
+"    the learn command.  Defaults to 'is' -- learn <key> is <value>.  \n"
+"    Users might want to change this to something else, so it's\n"
 "    configurable."
 msgstr ""
 
@@ -71,7 +71,7 @@ msgid ""
 msgstr ""
 
 #: config.py:80
-msgid "$key could be $value."
+msgid "$value"
 msgstr ""
 
 #: config.py:80

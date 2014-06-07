@@ -1,12 +1,12 @@
 # Factoids plugin in Limnoria
-# Copyright (C) 2011, 2012 Limnoria
-# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011, 2012.
+# Copyright (C) 2011-2014 Limnoria
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011-2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 15:42+EET\n"
-"PO-Revision-Date: 2014-03-22 15:50+0200\n"
+"POT-Creation-Date: 2014-06-07 22:36+EEST\n"
+"PO-Revision-Date: 2014-06-07 22:47+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -45,18 +45,15 @@ msgstr ""
 
 #: config.py:62
 msgid ""
-"Determines what separator must be used in the\n"
-"    learn command.  Defaults to 'as' -- learn <key> as <value>.  Users "
-"might\n"
-"    feel more comfortable with 'is' or something else, so it's\n"
+"Determines what separator must be used in \n"
+"    the learn command.  Defaults to 'is' -- learn <key> is <value>.  \n"
+"    Users might want to change this to something else, so it's\n"
 "    configurable."
 msgstr ""
-"Määrittää mitä sanaa käytetään eroittajana\n"
-" \"learn\" komennossa. Oletuksena 'as' -- learn <avain> as <arvo>.  "
-"Käyttäjistä saattaa\n"
-" kuitenkin olla mukavampaa käyttää 'is'iä tai jotakin muuta eroittajaa, "
-"joten se on\n"
-" säädettävissä."
+"Määrittää sanan, jota käytetään erottimenä \"learn\"-komennossa. Tämä on\n"
+" oletuksena 'is\" -- \"learn <key> is <value>.\" Käyttäjät voivat haluta "
+"vaihtaa tämän\n"
+" joksikin muuksi, joten se on määritettävissä."
 
 #: config.py:67
 #, fuzzy
@@ -97,8 +94,8 @@ msgstr ""
 " palauttaa listan täsmäävistä avaimista ennen luovuttamistaan."
 
 #: config.py:80
-msgid "$key could be $value."
-msgstr "$key voisi olla $value."
+msgid "$value"
+msgstr "$arvo"
 
 #: config.py:80
 msgid ""
@@ -115,9 +112,8 @@ msgstr ""
 " \"$value\" factoidin arvolle."
 
 #: plugin.py:108
-#, fuzzy
 msgid "key"
-msgstr "avaimen id"
+msgstr "avain"
 
 #: plugin.py:109
 msgid "id"
@@ -452,3 +448,6 @@ msgstr "Yksikään avain ei täsmännyt hakuun."
 #: plugin.py:834 plugin.py:843
 msgid "More than 100 keys matched that query; please narrow your query."
 msgstr "Yli 100 avainta täsmäsi tuohon hakuun; ole hyvä ja kavenna hakuasi."
+
+#~ msgid "$key could be $value."
+#~ msgstr "$key voisi olla $value."
