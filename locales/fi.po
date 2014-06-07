@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-04-17 12:51+EEST\n"
-"PO-Revision-Date: 2012-04-17 13:40+0300\n"
+"POT-Creation-Date: 2014-06-07 22:03+EEST\n"
+"PO-Revision-Date: 2014-06-07 22:33+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,16 +15,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: src/callbacks.py:184
+#: src/callbacks.py:189
 msgid "Error: "
 msgstr "Virhe: "
 
-#: src/callbacks.py:198
+#: src/callbacks.py:203
 msgid "Error: I tried to send you an empty message."
 msgstr "Virhe: Yritin lähettää sinulle tyhjän viestin."
 
-#: src/callbacks.py:288
+#: src/callbacks.py:318
 msgid ""
 "Missing \"%s\".  You may want to quote your arguments with double quotes in "
 "order to prevent extra brackets from being evaluated as nested commands."
@@ -33,7 +34,7 @@ msgstr ""
 "estääksesi ylimääräisiä hakasulkuja tulemasta tulkituiksi sisäkkäisiksi "
 "komennoiksi."
 
-#: src/callbacks.py:318
+#: src/callbacks.py:348
 msgid ""
 "\"|\" with nothing preceding.  I obviously can't do a pipe with nothing "
 "before the |."
@@ -41,7 +42,7 @@ msgstr ""
 "\"|\" ennen mitään.  En ilmiselvästi voi putkittaa tyhjyyttä ilman mitään "
 "ennen |-merkkiä."
 
-#: src/callbacks.py:326
+#: src/callbacks.py:356
 msgid ""
 "Spurious \"%s\".  You may want to quote your arguments with double quotes in "
 "order to prevent extra brackets from being evaluated as nested commands."
@@ -50,7 +51,7 @@ msgstr ""
 "estääksesiylimääräisiä hakasulkuja tulemasta tulkituiksi sisäkkäisiksi "
 "komennoiksi."
 
-#: src/callbacks.py:335
+#: src/callbacks.py:365
 msgid ""
 "\"|\" with nothing following.  I obviously can't do a pipe with nothing "
 "after the |."
@@ -58,21 +59,21 @@ msgstr ""
 "\"|\" ilman mitään sen perässä. En ilmeisesti voi putkittaa tyhjyyttä |:n "
 "jälkeen."
 
-#: src/callbacks.py:519
+#: src/callbacks.py:563
 msgid "%s is not a valid %s."
 msgstr "%s ei ole kelvollinen %s."
 
-#: src/callbacks.py:521
+#: src/callbacks.py:565
 msgid "That's not a valid %s."
 msgstr "Tuo ei ole kelvollinen %s."
 
-#: src/callbacks.py:599
+#: src/callbacks.py:643
 msgid "You've attempted more nesting than is currently allowed on this bot."
 msgstr ""
 "Yritit enempiä sisäkkäisiä komentoja, kuin on tällä hetkellä sallittu tässä "
 "botissa."
 
-#: src/callbacks.py:778
+#: src/callbacks.py:822
 msgid ""
 "The command %q is available in the %L plugins.  Please specify the plugin "
 "whose command you wish to call by using its name as a command before %q."
@@ -80,19 +81,19 @@ msgstr ""
 "Komento %q on saatavilla %L lisäosissa. Ole hyvä ja määritä minkä lisäosan "
 "komentoa tahdot kutsua laittamalla sen nimi komentoon ennen %q:ta."
 
-#: src/callbacks.py:864 src/callbacks.py:877
+#: src/callbacks.py:908 src/callbacks.py:921
 msgid "(XX more messages)"
 msgstr "(XX viestiä jatkoa)"
 
-#: src/callbacks.py:909
+#: src/callbacks.py:954
 msgid "more message"
 msgstr "viesti jatkoa"
 
-#: src/callbacks.py:911
+#: src/callbacks.py:956
 msgid "more messages"
 msgstr "viestejä jatkoa"
 
-#: src/callbacks.py:1028
+#: src/callbacks.py:1073
 msgid ""
 "Determines what commands are currently disabled.  Such\n"
 "    commands will not appear in command lists, etc.  They will appear not "
@@ -103,145 +104,171 @@ msgstr ""
 "     komennot eivät ilmesty komento listoissa, jne.  Ne eivät näytä edes\n"
 "    olevan olemassa."
 
-#: src/callbacks.py:1224
+#: src/callbacks.py:1277
 msgid "Invalid arguments for %s."
 msgstr "Virheelliset parametrit kohteelle %s."
 
-#: src/callbacks.py:1250
+#: src/callbacks.py:1303
 msgid "The %q command has no help."
 msgstr "Komennolla %q ei ole ohjetta."
 
-#: src/commands.py:228
+#: src/commands.py:254
 msgid "integer"
 msgstr "kokonaisluku"
 
-#: src/commands.py:239
+#: src/commands.py:265
 msgid "non-integer value"
 msgstr "ei-kokonaisluku arvo"
 
-#: src/commands.py:250
+#: src/commands.py:276
 msgid "floating point number"
 msgstr "liukuluku numero"
 
-#: src/commands.py:259
+#: src/commands.py:285
 msgid "positive integer"
 msgstr "positiivinen kokonaisluku"
 
-#: src/commands.py:263
+#: src/commands.py:289
 msgid "non-negative integer"
 msgstr "ei-negatiivinen kokonaisluku"
 
-#: src/commands.py:266
+#: src/commands.py:292
 msgid "index"
 msgstr "indeksi"
 
-#: src/commands.py:291
+#: src/commands.py:317
 msgid "number of seconds"
 msgstr "määrä sekunteja"
 
-#: src/commands.py:298
+#: src/commands.py:324
 msgid "boolean"
 msgstr "boolean"
 
-#: src/commands.py:312 src/commands.py:320 src/commands.py:328
-#: src/commands.py:336
+#: src/commands.py:338 src/commands.py:345 src/commands.py:354
+#: src/commands.py:361 src/commands.py:370
 msgid "do that"
 msgstr "tee se"
 
-#: src/commands.py:316 src/commands.py:324 src/commands.py:332
-#: src/commands.py:340
+#: src/commands.py:341 src/commands.py:348 src/commands.py:357
+#: src/commands.py:364 src/commands.py:373
 msgid "I'm not even in %s."
 msgstr "En edes ole kanavalla %s."
 
-#: src/commands.py:318
+#: src/commands.py:343
 msgid "I need to be voiced to %s."
 msgstr "Minulla täytyy olla ääni tehdäkseni %s."
 
-#: src/commands.py:326
+#: src/commands.py:351
+#, fuzzy
+msgid "I need to be at least voiced to %s."
+msgstr "Minulla täytyy olla voice, jotta voin %s"
+
+#: src/commands.py:359
 msgid "I need to be halfopped to %s."
 msgstr ""
 "Minulla täytyy olla puolikanavaoperaattorin valtuudet voidakseni tehdä %s."
 
-#: src/commands.py:334
-msgid "I need to be opped to %s."
-msgstr "Minun täytyy olla opattuna, jotta voin %s."
-
-#: src/commands.py:344
+#: src/commands.py:367
 msgid "I need to be at least halfopped to %s."
 msgstr ""
 "Minulla täytyy olla vähintään puolioperaattorin oikeudet voidakseni tehdä %s"
 
-#: src/commands.py:362
-msgid "nick or hostmask"
-msgstr "nimimerkki tai hostmask"
+#: src/commands.py:375
+msgid "I need to be opped to %s."
+msgstr "Minun täytyy olla opattuna, jotta voin %s."
 
-#: src/commands.py:414 src/commands.py:417
-msgid "regular expression"
-msgstr "säännöllinen lauseke"
-
-#: src/commands.py:428
-msgid "That nick is too long for this server."
-msgstr "Tuo nimimerkki on liian pitkä tälle palvelimelle."
-
-#: src/commands.py:477 src/commands.py:496
-msgid "I'm not in %s."
-msgstr "En ole kanavalla %s."
-
-#: src/commands.py:481
-msgid "This command may only be given in a channel that I am in."
-msgstr "Tämä komento voidaan antaa vain kanavalla, jolla minä olen."
-
-#: src/commands.py:494
-msgid "You must be in %s."
-msgstr "Sinun täytyy olla kanavalla %s."
-
-#: src/commands.py:498
+#: src/commands.py:381 src/commands.py:530
 msgid "channel"
 msgstr "kanava"
 
-#: src/commands.py:505
+#: src/commands.py:394
+msgid "nick or hostmask"
+msgstr "nimimerkki tai hostmask"
+
+#: src/commands.py:445 src/commands.py:448
+msgid "regular expression"
+msgstr "säännöllinen lauseke"
+
+#: src/commands.py:458 src/commands.py:462
+msgid "nick"
+msgstr "nimimerkki"
+
+#: src/commands.py:459
+msgid "That nick is too long for this server."
+msgstr "Tuo nimimerkki on liian pitkä tälle palvelimelle."
+
+#: src/commands.py:470
+msgid "I haven't seen %s."
+msgstr "En ole nähnyt käyttäjää %s."
+
+#: src/commands.py:509 src/commands.py:528
+msgid "I'm not in %s."
+msgstr "En ole kanavalla %s."
+
+#: src/commands.py:513
+msgid "This command may only be given in a channel that I am in."
+msgstr "Tämä komento voidaan antaa vain kanavalla, jolla minä olen."
+
+#: src/commands.py:526
+msgid "You must be in %s."
+msgstr "Sinun täytyy olla kanavalla %s."
+
+#: src/commands.py:537
 msgid "%s is not in %s."
 msgstr "%s ei ole kanavalla %s."
 
-#: src/commands.py:539
+#: src/commands.py:585
 msgid "You must not give the empty string as an argument."
 msgstr "Et voi antaa tyhjää merkkiketjua parametriksi."
 
-#: src/commands.py:556
+#: src/commands.py:593
+#, fuzzy
+msgid "You must not give a string containing spaces as an argument."
+msgstr "Et voi antaa välilyöntejä sisältävää merkkiketjua parametriksi."
+
+#: src/commands.py:603
 msgid "This message must be sent in a channel."
 msgstr "Tämä viesti täytyy lähettää kanavalla."
 
-#: src/commands.py:602
+#: src/commands.py:635
+msgid "url"
+msgstr "url"
+
+#: src/commands.py:641
+msgid "email"
+msgstr "sähköposti"
+
+#: src/commands.py:649
 msgid "http url"
 msgstr "http URL-osoite"
 
-#: src/commands.py:609
+#: src/commands.py:656
 msgid "command name"
 msgstr "komennon nimi"
 
-#: src/commands.py:617
+#: src/commands.py:664
 msgid "ip"
 msgstr "IP"
 
-#: src/commands.py:623
+#: src/commands.py:670
 msgid "letter"
 msgstr "kirjain"
 
-#: src/commands.py:655
+#: src/commands.py:702
 msgid "plugin"
 msgstr "lisä-osa"
 
-#: src/commands.py:663
+#: src/commands.py:710
 msgid "irc color"
 msgstr "irc väri"
 
-#: src/conf.py:104
+#: src/conf.py:98
 msgid ""
 "Determines whether this plugin is loaded\n"
 "         by default."
 msgstr "Määrittää ladataanko tämä lisäosa oletuksena."
 
-#: src/conf.py:108
+#: src/conf.py:102
 msgid ""
 "Determines whether this plugin is\n"
 "        publicly visible."
@@ -249,11 +276,11 @@ msgstr ""
 "Määrittää onko tämä lisäosa\n"
 "        julkisesti näkyvillä."
 
-#: src/conf.py:202
+#: src/conf.py:196
 msgid "Determines the bot's default nick."
 msgstr "Määrittää botin oletus nimimerkin."
 
-#: src/conf.py:205
+#: src/conf.py:199
 msgid ""
 "Determines what alternative\n"
 "   nicks will be used if the primary nick (supybot.nick) isn't available.  "
@@ -272,7 +299,7 @@ msgstr ""
 "tehdään levottomaksi, \n"
 "   kunnes käyttämätön nimimerkki löydetään."
 
-#: src/conf.py:212
+#: src/conf.py:206
 msgid ""
 "Determines the bot's ident string, if the server\n"
 "    doesn't provide one by default."
@@ -280,7 +307,7 @@ msgstr ""
 "Määrittää botin ident merkkiketjun, mikäli käyttäjä\n"
 "    ei tarjoa yhtä oletuksena."
 
-#: src/conf.py:223
+#: src/conf.py:217
 msgid ""
 "Determines the user the bot sends to the server.\n"
 "    A standard user using the current version of the bot will be generated "
@@ -291,11 +318,11 @@ msgstr ""
 "    Perus user-merkkiketju luodaan botin nykyisestä versiosta, mikäli\n"
 "    tämä on jätetty tyhjäksi."
 
-#: src/conf.py:231
+#: src/conf.py:225
 msgid "Determines what networks the bot will connect to."
 msgstr "Määrittää mihin verkkoihin botti muodostaa yhdeyden."
 
-#: src/conf.py:273
+#: src/conf.py:307
 msgid ""
 "Determines what password will be used on %s.  Yes, we know that\n"
 "        technically passwords are server-specific and not network-specific,\n"
@@ -305,11 +332,13 @@ msgstr ""
 "        tietyille palvelimille, eivätkä tietyille verkoille, mutta\n"
 "        tämä on paras johon pystymme juuri nyt."
 
-#: src/conf.py:277
+#: src/conf.py:311
+#, fuzzy
 msgid ""
-"Determines what servers the bot will connect to for %s.  Each will\n"
-"        be tried in order, wrapping back to the first when the cycle is\n"
-"        completed."
+"Space-separated list of servers the bot will connect to for %s.\n"
+"        Each will be tried in order, wrapping back to the first when the "
+"cycle\n"
+"        is completed."
 msgstr ""
 "Määrittää mille palvelimille botti muodostaa yhteyden yhdistääkseen verkkoon "
 "%s.  Jokaista \n"
@@ -317,11 +346,12 @@ msgstr ""
 "on\n"
 "        suoritettu."
 
-#: src/conf.py:281
-msgid "Determines what channels the bot will join only on %s."
+#: src/conf.py:315
+#, fuzzy
+msgid "Space-separated list of channels the bot will join only on %s."
 msgstr "Määrittää mille kanaville botti liittyy vain verkossa %s."
 
-#: src/conf.py:284
+#: src/conf.py:318
 msgid ""
 "Determines whether the bot will attempt to connect with SSL\n"
 "        sockets to %s."
@@ -329,7 +359,15 @@ msgstr ""
 "Määrittää yrittääkö botti yhdistää SSL\n"
 "        solmuilla verkkoon %s."
 
-#: src/conf.py:287
+#: src/conf.py:321
+msgid ""
+"Determines what certificate file (if any) the bot will use to\n"
+"        connect with SSL sockets to %s."
+msgstr ""
+"Määrittää mitä SSL-varmennetta (jos mitään) botti käyttää yhdistäessään\n"
+" verkkoon %s käyttäen SSL-solmuja."
+
+#: src/conf.py:324
 msgid ""
 "Determines what key (if any) will be used to join the\n"
 "        channel."
@@ -337,7 +375,7 @@ msgstr ""
 "Määrittää mitä salasanaa (jos mitään) käytetään kanavalle\n"
 "        liittymisessä."
 
-#: src/conf.py:289
+#: src/conf.py:326
 msgid ""
 "Determines\n"
 "        what nick the bot will use on this network. If empty, defaults to\n"
@@ -347,7 +385,40 @@ msgstr ""
 "niin se on\n"
 " oletuksena supybot.nick"
 
-#: src/conf.py:294
+#: src/conf.py:329
+#, fuzzy
+msgid ""
+"Determines\n"
+"        the bot's ident string, if the server doesn't provide one by "
+"default.\n"
+"        If empty, defaults to supybot.ident."
+msgstr ""
+"Määrittää botin ident-merkkiketjun, ellei palvelin määrää sitä valmiiksi.\n"
+" Ollessaan tyhjä, tämä on oletuksena supybot.ident."
+
+#: src/conf.py:332
+#, fuzzy
+msgid ""
+"Determines\n"
+"        the username the bot sends to the server. If empty, defaults to\n"
+"        supybot.user"
+msgstr ""
+"Määrittää käyttäjätunnuksen, jonka botti lähettää palvelimelle. Ollessaan "
+"tyhjä\n"
+" tämä on supybot.user."
+
+#: src/conf.py:336
+#, fuzzy
+msgid ""
+"Determines what user modes the bot will request\n"
+"        from the server when it first connects. If empty, defaults to\n"
+"        supybot.protocols.irc.umodes"
+msgstr ""
+"Määrittää mitä umodeja botti pyytää palvelimelta yhdistäessään. Jos tämä on "
+"tyhjä\n"
+" oletusasetus on supybot.protocols.irc.umodes."
+
+#: src/conf.py:341
 msgid ""
 "Determines what SASL username will be used on %s. This should\n"
 "        be the bot's account name. Due to the way SASL works, you can't use\n"
@@ -359,11 +430,23 @@ msgstr ""
 "nimimerkkiä ei\n"
 " voida käyttää."
 
-#: src/conf.py:298
+#: src/conf.py:345
 msgid "Determines what SASL password will be used on %s."
 msgstr "Määrittää mitä SASL salasanaa käytetään verkossa %s."
 
-#: src/conf.py:318
+#: src/conf.py:348
+msgid ""
+"If not empty, determines the hostname of the socks proxy that\n"
+"        will be used to connect to this network."
+msgstr ""
+"Ollessaan täytetty, määrittää sen socks-välityspalvelimen isäntämimen, jota "
+"käytetään tähän verkkoon yhdistettäessä."
+
+#: src/conf.py:368
+msgid "Determines how urls should be formatted."
+msgstr "Määrittää kuinka URL:t muotoillaan."
+
+#: src/conf.py:370
 msgid ""
 "Determines how timestamps\n"
 "    printed for human reading should be formatted. Refer to the Python\n"
@@ -376,7 +459,7 @@ msgstr ""
 "    aika moduulille nähdäksesi kelvolliset muotoilumerkit \n"
 "    ajan muodoille."
 
-#: src/conf.py:332
+#: src/conf.py:384
 msgid ""
 "Determines whether elapsed times will be given\n"
 "    as \"1 day, 2 hours, 3 minutes, and 15 seconds\" or as \"1d 2h 3m 15s\"."
@@ -384,7 +467,7 @@ msgstr ""
 "Määrittää näytetäänkö kulunut aika muodossa\n"
 "    \"1 päivä, 2 tuntia, 3 minuuttia, ja 15 sekuntia\" vai \"1d 2h 3m 15s\"."
 
-#: src/conf.py:342
+#: src/conf.py:394
 msgid ""
 "Determines the absolute maximum length of\n"
 "    the bot's reply -- no reply will be passed through the bot with a "
@@ -395,7 +478,7 @@ msgstr ""
 "    -- yksikään vastaus, joka on suurempi, kuin tämä\n"
 "    ei mene botin läpi."
 
-#: src/conf.py:347
+#: src/conf.py:399
 msgid ""
 "Determines whether the bot will break up long\n"
 "    messages into chunks and allow users to use  the 'more' command to get "
@@ -406,7 +489,7 @@ msgstr ""
 "    paloihin ja sallii käyttäjien käyttää 'more' komentoa\n"
 "    saadakseen jäljelläolevat palat."
 
-#: src/conf.py:352
+#: src/conf.py:404
 msgid ""
 "Determines what the maximum number of\n"
 "    chunks (for use with the 'more' command) will be."
@@ -414,7 +497,7 @@ msgstr ""
 "Määrittää maksimimäärän\n"
 "    paloja (käytettäväksi 'more' komennon) kanssa."
 
-#: src/conf.py:356
+#: src/conf.py:408
 msgid ""
 "Determines how long individual chunks\n"
 "    will be.  If set to 0, uses our super-tweaked,\n"
@@ -424,7 +507,7 @@ msgstr ""
 "    olemaan.  Jos tämä on asetettu arvoon 0, tämä käyttää meidän\n"
 "    super-muokattua-saa-suurin-osa-ulos-yksittäisestä-viestistä oletusta."
 
-#: src/conf.py:361
+#: src/conf.py:413
 msgid ""
 "Determines how many mores will be sent\n"
 "    instantly (i.e., without the use of the more command, immediately when\n"
@@ -439,21 +522,20 @@ msgstr ""
 "kaikille muille, paitsi\n"
 "    ensinmäiselle palalle."
 
-#: src/conf.py:367
+#: src/conf.py:419
 msgid ""
 "Determines whether the bot will send\n"
-"    multi-message replies in a single message or in multiple messages.  For\n"
-"    safety purposes (so the bot is less likely to flood) it will normally "
-"send\n"
-"    everything in a single message, using mores if necessary."
+"    multi-message replies in a single message. This defaults to True \n"
+"    in order to prevent the bot from flooding. If this is set to False\n"
+"    the bot will send multi-message replies on multiple lines."
 msgstr ""
-"Määrittää lähettääkö botti monen viestin vastaukset yhdessä viestissä vai "
-"monissa viesteissä. \n"
-"    Turvallisuus syistä (jotta botti tulvii epätodennäköisemmin) \n"
-"    se yleensä lähettää kaikki yhdessä viestissä, käyttäen \n"
-"    \"more\"ja, jos tarpeen."
+"Määrittää lähettääkö botti monen viestin vastaukset yhdessä viestissä. Tämä "
+"on\n"
+" oletuksena \"True\", ettei botti floodaa. Jos tämä asetetaan arvoon \"False"
+"\", botti\n"
+" lähettää monen viestin vastaukset usealla rivillä."
 
-#: src/conf.py:373
+#: src/conf.py:425
 msgid ""
 "Determines whether the bot will reply with an\n"
 "    error message when it is addressed but not given a valid command.  If "
@@ -467,7 +549,7 @@ msgstr ""
 "    botti pysyy hiljaisena, mikäli muita lisäosia, jotka ohittavat \n"
 "    tämän käytöksen ei ole."
 
-#: src/conf.py:380
+#: src/conf.py:432
 msgid ""
 "Determines whether error messages that result\n"
 "    from bugs in the bot will show a detailed error message (the uncaught\n"
@@ -478,7 +560,7 @@ msgstr ""
 "    (selittämätön poikkeus )\n"
 "    vai tavallisen virheilmoituksen."
 
-#: src/conf.py:384
+#: src/conf.py:436
 msgid ""
 "Determines whether the bot will send error\n"
 "    messages to users in private.  You might want to do this in order to "
@@ -492,7 +574,7 @@ msgstr ""
 "    Tämä voidaan yhdistää asetusarvon \n"
 "    supybot.reply.error.withNotice kanssa."
 
-#: src/conf.py:389
+#: src/conf.py:441
 msgid ""
 "Determines whether the bot will send error\n"
 "    messages to users via NOTICE instead of PRIVMSG.  You might want to do "
@@ -513,7 +595,7 @@ msgstr ""
 "yksityiskeskustelu ikkunaa \n"
 "    enimmissä IRC-asiakasohjelmissa."
 
-#: src/conf.py:396
+#: src/conf.py:448
 msgid ""
 "Determines whether the bot will send an error\n"
 "    message to users who attempt to call a command for which they do not "
@@ -530,17 +612,18 @@ msgstr ""
 "suorittamasta \n"
 "    tiettyjä komentoja."
 
-#: src/conf.py:403
+#: src/conf.py:455
 msgid ""
 "Determines whether the bot will reply\n"
-"     privately when replying in a channel, rather than replying to the whole\n"
+"     privately when replying in a channel, rather than replying to the "
+"whole\n"
 "     channel."
 msgstr ""
 "Määrittää vastaako botti yksityisesti, kun vastaa \n"
 "     kanavalla mielummin, kuin vastaa koko \n"
 "     kanavalle."
 
-#: src/conf.py:408
+#: src/conf.py:460
 msgid ""
 "Determines whether the bot will reply with a\n"
 "    notice when replying in a channel, rather than replying with a privmsg "
@@ -551,7 +634,7 @@ msgstr ""
 "    mielummin kuin PRIVMSG:llä, jolla se vastaa \n"
 "    tavallisesti."
 
-#: src/conf.py:414
+#: src/conf.py:466
 msgid ""
 "Determines whether the bot will reply with a\n"
 "    notice when it is sending a private message, in order not to open a /"
@@ -565,15 +648,16 @@ msgstr ""
 "    Yksittäiset käyttäjät voivat ohittaa tämän asetusarvolla \n"
 "    reply.withNoticeWhenPrivate."
 
-#: src/conf.py:420
+#: src/conf.py:472
+#, fuzzy
 msgid ""
 "Determines whether the bot will always prefix\n"
-"     theuser's nick to its reply to that user's command."
+"     the user's nick to its reply to that user's command."
 msgstr ""
 "Määrittää aloittaako botti rivin sen käyttäjän nimimerkillä, joka antoi \n"
 "     komennon."
 
-#: src/conf.py:424
+#: src/conf.py:476
 msgid ""
 "Determines whether the bot should attempt to\n"
 "    reply to all messages even if they don't address it (either via its "
@@ -588,7 +672,7 @@ msgstr ""
 "    sen etuliitemerkillä. Jos tämä asetetaan arvoon True,\n"
 "    supybot.reply.whenNotCommand tahdotaan asettaa Falseksi."
 
-#: src/conf.py:430
+#: src/conf.py:482
 msgid ""
 "Determines whether the bot will allow you to\n"
 "    send channel-related commands outside of that channel.  Sometimes "
@@ -604,7 +688,7 @@ msgstr ""
 "    käyttäytymistä kanavalla, mutta komento lähetettiin kanavan itsensä \n"
 "    ulkopuolella."
 
-#: src/conf.py:437
+#: src/conf.py:489
 msgid ""
 "Determines whether the bot will unidentify\n"
 "    someone when that person changes his or her nick.  Setting this to True\n"
@@ -617,21 +701,22 @@ msgstr ""
 "mmuutoksia. Se\n"
 "    on oletuksena False hiukan paremman turvallisuuden vuoksi."
 
-#: src/conf.py:443
+#: src/conf.py:495
+#, fuzzy
 msgid ""
 "Determines whether the bot will always join a\n"
 "    channel when it's invited.  If this value is False, the bot will only "
 "join\n"
 "    a channel if the user inviting it has the 'admin' capability (or if "
 "it's\n"
-"    explicitly told to join the channel using the Admin.join command)"
+"    explicitly told to join the channel using the Admin.join command)."
 msgstr ""
 "Määrittää liittyykö botti aina kanavalle, kun se kutsutaan.\n"
 "    Jos tämä arvo on False, botti liittyy kanavalle vain, jos käyttäjällä, "
 "joka kutsuu sen on 'admin' valtuus (tai jos se on käsketty liittymään "
 "kanavalle käyttämällä Admin.join komentoa)."
 
-#: src/conf.py:449
+#: src/conf.py:501
 msgid ""
 "Supybot normally replies with the full help\n"
 "    whenever a user misuses a command.  If this value is set to True, the "
@@ -644,7 +729,7 @@ msgstr ""
 "vastaa vain komennon syntaksilla (ensinmäinen rivi ohjetekstiä) ennemmin, "
 "kuin täydellä ohjetekstillä."
 
-#: src/conf.py:463
+#: src/conf.py:515
 msgid ""
 "Determines what prefix characters the bot will\n"
 "    reply to.  A prefix character is a single character that the bot will "
@@ -665,7 +750,7 @@ msgstr ""
 "niistä käyetään etuliitemerkkinä, botti olettaa, että viesti on osoitettu "
 "sille."
 
-#: src/conf.py:472
+#: src/conf.py:524
 msgid ""
 "Determines what strings the\n"
 "    bot will reply to when they are at the beginning of the message.  "
@@ -683,7 +768,7 @@ msgstr ""
 "joksikin, kuten '@@ ??' ja botti vastaa, kun viestissä on etuliiteenä joko "
 "@@ tai ??."
 
-#: src/conf.py:479
+#: src/conf.py:531
 msgid ""
 "Determines whether the bot will reply when\n"
 "    people address it by its nick, rather than with a prefix character."
@@ -691,7 +776,7 @@ msgstr ""
 "Määrittää vastaako botti, kun ihmiset osoittavat sitä \n"
 "    nimimerkillä, mielummin kuin aloitusmerkillä."
 
-#: src/conf.py:482
+#: src/conf.py:534
 msgid ""
 "Determines whether the bot will reply when\n"
 "    people address it by its nick at the end of the message, rather than at\n"
@@ -702,7 +787,7 @@ msgstr ""
 "eikä \n"
 "    alussa."
 
-#: src/conf.py:486
+#: src/conf.py:538
 msgid ""
 "Determines what extra nicks\n"
 "    the bot will always respond to when addressed by, even if its current "
@@ -713,11 +798,11 @@ msgstr ""
 "    vastaa aina, jopa jos sen nykyinen nimimerkki on jokin \n"
 "    muu."
 
-#: src/conf.py:496
+#: src/conf.py:548
 msgid "The operation succeeded."
 msgstr "Tehtävä suoritettu onnistuneesti."
 
-#: src/conf.py:497
+#: src/conf.py:549
 msgid ""
 "Determines what message the bot replies with when a command succeeded.\n"
 "    If this configuration variable is empty, no success message will be\n"
@@ -726,7 +811,7 @@ msgstr ""
 "Määrittää millä viestillä botti vastaa, kun komento on onnistunut.\n"
 "    Jos tämä asetusarvo on tyhjä, onnistumisviestejä ei lähetetä."
 
-#: src/conf.py:502
+#: src/conf.py:554
 msgid ""
 "An error has occurred and has been logged.\n"
 "    Please contact this bot's administrator for more information."
@@ -735,7 +820,7 @@ msgstr ""
 "    Ole hyvä ja ota yhteyttä tämän botin ylläpitäjään saadaksesi lisätietoja."
 
 # Google Kääntäjän mukaan "ambiguos" tarkoittaa epäselvää, mutta miksi botti haluaisi olla epäselvä?
-#: src/conf.py:503
+#: src/conf.py:555
 #, fuzzy
 msgid ""
 "\n"
@@ -746,7 +831,7 @@ msgstr ""
 "    Määrittää, minkä virheilmoituksen botti antaa, kun se tahtoo olla "
 "epäselvä."
 
-#: src/conf.py:508
+#: src/conf.py:560
 msgid ""
 "An error has occurred and has been logged.\n"
 "    Check the logs for more informations."
@@ -755,7 +840,7 @@ msgstr ""
 "    Tarkista lokit saadaksesi lisätietoja."
 
 # Miksi botti tahtoisi olevansa epäselvä? Google Kääntäjä...
-#: src/conf.py:509
+#: src/conf.py:561
 #, fuzzy
 msgid ""
 "Determines what error\n"
@@ -765,13 +850,13 @@ msgstr ""
 "epäselvä."
 
 # Pitäisikö "hostmask" kääntää "isäntänaamioksi" vai pitää kuten se on?
-#: src/conf.py:513
+#: src/conf.py:565
 msgid ""
 "Your hostmask doesn't match or your password\n"
 "    is wrong."
 msgstr "Hostmask ei täsmää tai salasana on väärä."
 
-#: src/conf.py:514
+#: src/conf.py:566
 msgid ""
 "Determines what message the bot replies with when\n"
 "     someone tries to use a command that requires being identified or having "
@@ -781,7 +866,7 @@ msgstr ""
 "Määrittää millä viestillä botti vastaa, kun joku yrittää antaa komennon, "
 "joka vaatii tunnistautumista, ja kumpikaan vaatimus ei ole täytetty."
 
-#: src/conf.py:520
+#: src/conf.py:572
 msgid ""
 "I can't find %s in my user\n"
 "    database.  If you didn't give a user name, then I might not know what "
@@ -794,7 +879,7 @@ msgstr ""
 "kuin tämä\n"
 " komento saattaa toimia."
 
-#: src/conf.py:523
+#: src/conf.py:575
 msgid ""
 "Determines what error message the bot replies with when someone tries\n"
 "    to accessing some information on a user the bot doesn't know about."
@@ -802,7 +887,7 @@ msgstr ""
 "Määrittää millä virheilmoituksella botti vastaa, kun joku yrittää päästä "
 "tietoihin käyttäjästä, jota ei ole olemassakaan."
 
-#: src/conf.py:527
+#: src/conf.py:579
 msgid ""
 "You must be registered to use this command.\n"
 "    If you are already registered, you must either identify (using the "
@@ -816,7 +901,7 @@ msgstr ""
 " hostmask, joka täsmää nykyiseen hostmaskiisi (käyttämällä \"hostmask add\" "
 "komentoa)."
 
-#: src/conf.py:530
+#: src/conf.py:582
 msgid ""
 "Determines what error message the bot\n"
 "    replies with when someone tries to do something that requires them to "
@@ -830,7 +915,7 @@ msgstr ""
 " tunnistettu."
 
 # Tämän pitäisi mahdollisesti olla passiivissa, mutta en ole varma miten tämä pitäisi olla passiivissa. Merkitsen sen epäselväksi.
-#: src/conf.py:535
+#: src/conf.py:587
 #, fuzzy
 msgid ""
 "You don't have the %s capability.  If you\n"
@@ -845,7 +930,7 @@ msgstr ""
 "'whoami' voi\n"
 " kertoa sinulle oletko tunnistautunut."
 
-#: src/conf.py:538
+#: src/conf.py:590
 msgid ""
 "Determines what error message is given when the bot\n"
 "    is telling someone they aren't cool enough to use the command they tried "
@@ -856,7 +941,7 @@ msgstr ""
 "ole\n"
 " riittävän kuuli käyttääkseen komentoa, jota hän yritti käyttää."
 
-#: src/conf.py:543
+#: src/conf.py:595
 msgid ""
 "You're missing some capability you need.\n"
 "    This could be because you actually possess the anti-capability for the\n"
@@ -879,7 +964,7 @@ msgstr ""
 "mitä tahdot\n"
 " tehdä."
 
-#: src/conf.py:551
+#: src/conf.py:603
 msgid ""
 "Determines what generic error message is given when the bot is telling\n"
 "    someone that they aren't cool enough to use the command they tried to "
@@ -894,13 +979,13 @@ msgstr ""
 " kutsuu errorNoCapability koodin ei tarjonnut tarkkaa valtuutta ihansama "
 "mistä syystä."
 
-#: src/conf.py:557
+#: src/conf.py:609
 msgid ""
 "That operation cannot be done in a\n"
 "    channel."
 msgstr "Tätä tehtävää ei voida suorittaa kanavalla."
 
-#: src/conf.py:558
+#: src/conf.py:610
 msgid ""
 "Determines what error messages the bot sends to people\n"
 "    who try to do things in a channel that really should be done in\n"
@@ -910,7 +995,7 @@ msgstr ""
 "tehdä\n"
 " asioita, jotka todella pitäisi tehdä yksityisesti, kanavalla."
 
-#: src/conf.py:563
+#: src/conf.py:615
 msgid ""
 "This may be a bug.  If you think it is,\n"
 "    please file a bug report at\n"
@@ -920,7 +1005,7 @@ msgstr ""
 " <https://github.com/ProgVal/Limnoria/issues>. Bugiraportit kirjoitetaan "
 "englanniksi."
 
-#: src/conf.py:566
+#: src/conf.py:618
 msgid ""
 "Determines what message the bot sends when it thinks you've\n"
 "    encountered a bug that the developers don't know about."
@@ -929,7 +1014,7 @@ msgstr ""
 "josta\n"
 " kehittäjät eivät ole tietoisia."
 
-#: src/conf.py:573
+#: src/conf.py:625
 msgid ""
 "A floating point number of seconds to throttle\n"
 "    snarfed URLs, in order to prevent loops between two bots snarfing the "
@@ -942,7 +1027,7 @@ msgstr ""
 "ulostulevassa\n"
 " kaappausviestissä."
 
-#: src/conf.py:578
+#: src/conf.py:630
 msgid ""
 "Determines the number of seconds\n"
 "    between running the upkeep function that flushes (commits) open "
@@ -955,7 +1040,7 @@ msgstr ""
 " , kerää jätteet ja tallentaa hyödyllisiä tilastotietoja debuggaus tasolle, "
 "välissä."
 
-#: src/conf.py:584
+#: src/conf.py:636
 msgid ""
 "Determines whether the bot will periodically\n"
 "    flush data and configuration files to disk.  Generally, the only time\n"
@@ -979,7 +1064,7 @@ msgstr ""
 " muokata itse."
 
 # Google Kääntäjä ei tiedä mitä "tokenized" tarkoittaa. En tiedä minäkään.
-#: src/conf.py:609
+#: src/conf.py:661
 #, fuzzy
 msgid ""
 "Determines what characters are valid for quoting\n"
@@ -990,7 +1075,7 @@ msgstr ""
 "estetään niitä\n"
 " tulemasta tokenisoiduiksi "
 
-#: src/conf.py:616
+#: src/conf.py:668
 msgid ""
 "Determines whether the bot will allow nested\n"
 "    commands, which rule.  You definitely should keep this on."
@@ -999,7 +1084,7 @@ msgstr ""
 "parhaita. Tämä\n"
 " täytyy varmasti pitää käytössä."
 
-#: src/conf.py:619
+#: src/conf.py:671
 msgid ""
 "Determines what the maximum number of\n"
 "    nested commands will be; users will receive an error if they attempt\n"
@@ -1011,7 +1096,7 @@ msgstr ""
 "komentoja,\n"
 " kuin tämä arvo sallii."
 
-#: src/conf.py:627
+#: src/conf.py:679
 msgid ""
 "Supybot allows you to specify what brackets are\n"
 "    used for your nested commands.  Valid sets of brackets include [], <>, "
@@ -1034,7 +1119,7 @@ msgstr ""
 "sallita tällä\n"
 " kanavalla."
 
-#: src/conf.py:634
+#: src/conf.py:686
 msgid ""
 "Supybot allows nested commands. Enabling this\n"
 "    option will allow nested commands with a syntax similar to UNIX pipes, "
@@ -1047,7 +1132,7 @@ msgstr ""
 "putket,\n"
 " esimerkiksi 'botti: foo | bar'."
 
-#: src/conf.py:639
+#: src/conf.py:691
 msgid ""
 "Determines what commands have default\n"
 "    plugins set, and which plugins are set to be the default for each of "
@@ -1058,7 +1143,7 @@ msgstr ""
 "on\n"
 " määritetty olemann oletuksia kaikille noille komennoille."
 
-#: src/conf.py:645
+#: src/conf.py:697
 msgid ""
 "Determines what plugins automatically get precedence over all\n"
 "        other plugins when selecting a default plugin for a command.  By\n"
@@ -1078,18 +1163,26 @@ msgstr ""
 "asetusarvossa\n"
 " kirjainkoolla on merkitystä."
 
-#: src/conf.py:660
+#: src/conf.py:712
+#, fuzzy
+msgid ""
+"Determines the interval used for\n"
+"    the history storage."
+msgstr "Määrittää historian tallennukseen käytettävän aikavälin."
+
+#: src/conf.py:715
 msgid ""
 "Determines whether the bot will defend itself\n"
 "    against command-flooding."
 msgstr "Määrittää puolustaako botti itseään komento tulvimista vastaan."
 
-#: src/conf.py:663
+#: src/conf.py:718
+#, fuzzy
 msgid ""
 "Determines how many commands users are\n"
 "    allowed per minute.  If a user sends more than this many commands in "
 "any\n"
-"    60 second period, he or she will be ignored for\n"
+"    60 second period, they will be ignored for\n"
 "    supybot.abuse.flood.command.punishment seconds."
 msgstr ""
 "Määrittää kuinka monta komentoa käyttäjien on sallittua suorittaa "
@@ -1100,7 +1193,7 @@ msgstr ""
 "asetusarvossa\n"
 " supybot.abuse.flood.command.punishment."
 
-#: src/conf.py:668
+#: src/conf.py:723
 msgid ""
 "Determines how many seconds the bot\n"
 "    will ignore users who flood it with commands."
@@ -1109,7 +1202,7 @@ msgstr ""
 "sitä\n"
 " komennoilla, botti jättää huomioimatta."
 
-#: src/conf.py:672
+#: src/conf.py:727
 msgid ""
 "Determines whether the bot will defend itself\n"
 "    against invalid command-flooding."
@@ -1117,11 +1210,12 @@ msgstr ""
 "Määrittää puolustaako botti itseään \n"
 "    viallisten komentojen tulvaa vastaan."
 
-#: src/conf.py:675
+#: src/conf.py:730
+#, fuzzy
 msgid ""
 "Determines how many invalid commands users\n"
 "    are allowed per minute.  If a user sends more than this many invalid\n"
-"    commands in any 60 second period, he or she will be ignored for\n"
+"    commands in any 60 second period, they will be ignored for\n"
 "    supybot.abuse.flood.command.invalid.punishment seconds.  Typically, "
 "this\n"
 "    value is lower than supybot.abuse.flood.command.maximum, since it's far\n"
@@ -1141,7 +1235,7 @@ msgstr ""
 "heille\n"
 " tulvia kelvollisilla komennoilla."
 
-#: src/conf.py:683
+#: src/conf.py:738
 msgid ""
 "Determines how many seconds the bot\n"
 "    will ignore users who flood it with invalid commands.  Typically, this\n"
@@ -1160,7 +1254,7 @@ msgstr ""
 "tulvia\n"
 " kelvollisilla komennoilla."
 
-#: src/conf.py:689
+#: src/conf.py:744
 msgid ""
 "Determines whether the bot will notify people\n"
 "    that they're being ignored for invalid command flooding."
@@ -1170,7 +1264,7 @@ msgstr ""
 "    heidän olemassa olostaan ei välitetä viallisten komentojen tulvan takia."
 
 # Mitäköhän tämä tarkoittaa?
-#: src/conf.py:698
+#: src/conf.py:753
 #, fuzzy
 msgid ""
 "Determines the default length of time a\n"
@@ -1178,7 +1272,7 @@ msgid ""
 msgstr ""
 "Määrittää, oletus ajanjakson, joka ajurin pitäisi estää odottaen sisääntuloa."
 
-#: src/conf.py:705
+#: src/conf.py:760
 msgid ""
 "Determines what driver module the bot\n"
 "    will use.  Socket, a simple driver based on timeout sockets, is used by\n"
@@ -1194,7 +1288,7 @@ msgstr ""
 "se on\n"
 " luultavasti paras vaihtoehto."
 
-#: src/conf.py:711
+#: src/conf.py:766
 msgid ""
 "Determines the maximum time the bot will\n"
 "    wait before attempting to reconnect to an IRC server.  The bot may, of\n"
@@ -1206,17 +1300,17 @@ msgstr ""
 "aikaisemminkin,\n"
 " mikäli se on mahdollista."
 
-#: src/conf.py:760
+#: src/conf.py:815
 msgid ""
 "Determines what directory configuration data is\n"
 "    put into."
 msgstr "Määrittää mihin hakemistoon asetustiedostot laitetaan."
 
-#: src/conf.py:763
+#: src/conf.py:818
 msgid "Determines what directory data is put into."
 msgstr "Määrittää mihin hakemistoon data laitetaan."
 
-#: src/conf.py:765
+#: src/conf.py:820
 msgid ""
 "Determines what directory backup data is put\n"
 "    into. Set it to /dev/null to disable backup (it is a special value,\n"
@@ -1229,13 +1323,22 @@ msgstr ""
 " erityisarvo, joten se toimi myös Windowsilla ja käyttöjärjestelmillä,\n"
 " joilla ei ole hakemistoa /dev/null)."
 
-#: src/conf.py:769
+#: src/conf.py:824
 msgid ""
 "Determines what directory temporary files\n"
 "    are put into."
 msgstr "Määrittää mihin hakemistoon väliaikaistiedostot laitetaan."
 
-#: src/conf.py:776
+#: src/conf.py:827
+msgid ""
+"Determines what directory files of the\n"
+"    web server (templates, custom images, ...) are put into."
+msgstr ""
+"Määrittää minne verkkopalvelimen hakemistotiedostot (pohjat, mukautetut "
+"kuvat\n"
+" jne.) laitetaan."
+
+#: src/conf.py:834
 msgid ""
 "Determines what directories\n"
 "    the bot will look for plugins in.  Accepts a comma-separated list of\n"
@@ -1254,13 +1357,13 @@ msgstr ""
 " 'config supybot.directories.plugins [config supybot.directories.plugins],\n"
 " UusiLisäosaHakemisto."
 
-#: src/conf.py:784
+#: src/conf.py:842
 msgid ""
 "Determines what plugins will\n"
 "    be loaded."
 msgstr "Määrittää mitkä lisäosat ladataan."
 
-#: src/conf.py:787
+#: src/conf.py:845
 msgid ""
 "Determines whether the bot will always load\n"
 "    important plugins (Admin, Channel, Config, Misc, Owner, and User)\n"
@@ -1281,7 +1384,7 @@ msgstr ""
 "lisäosia ovat\n"
 " tarpeeksi teräviä vaihtaakseen tätä asetusarvoa sopivasti :)"
 
-#: src/conf.py:814
+#: src/conf.py:872
 msgid ""
 "Determines what databases are available for use. If this\n"
 "    value is not configured (that is, if its value is empty) then sane "
@@ -1292,7 +1395,7 @@ msgstr ""
 "määritetty,\n"
 " (se tarkottaa, että sen arvo on tyhjä) niin järkevät oletukset tarjotaan."
 
-#: src/conf.py:820
+#: src/conf.py:878
 msgid ""
 "Determines what filename will be used\n"
 "    for the users database.  This file will go into the directory specified "
@@ -1304,7 +1407,7 @@ msgstr ""
 " tiedosto menee hakemistoon, jonka määrittää asetusarvo supybot.directories."
 "conf."
 
-#: src/conf.py:824
+#: src/conf.py:882
 msgid ""
 "Determines how long it takes identification to\n"
 "    time out.  If the value is less than or equal to zero, identification "
@@ -1315,7 +1418,7 @@ msgstr ""
 "on vähemmän\n"
 " tai yhtäsuuri kuin nolla, tunnistautuminen ei ikinä vanhene."
 
-#: src/conf.py:828
+#: src/conf.py:886
 msgid ""
 "Determines whether the bot will allow users to\n"
 "    unregister their users.  This can wreak havoc with already-existing\n"
@@ -1334,7 +1437,7 @@ msgstr ""
 "asetusarvo estä\n"
 " botin omistajaa käyttänästä \"unregister\" komentoa.)"
 
-#: src/conf.py:837
+#: src/conf.py:895
 msgid ""
 "Determines what filename will be used\n"
 "    for the ignores database.  This file will go into the directory "
@@ -1346,7 +1449,7 @@ msgstr ""
 "asetusarvo\n"
 " supybot.directories.conf."
 
-#: src/conf.py:843
+#: src/conf.py:901
 msgid ""
 "Determines what filename will be used\n"
 "    for the channels database.  This file will go into the directory "
@@ -1357,7 +1460,7 @@ msgstr ""
 "tiedosto laitetaan\n"
 " hakemistoon, joka määritetään asetusarvolla supybot.directories.conf."
 
-#: src/conf.py:873
+#: src/conf.py:931
 msgid ""
 "Determines whether database-based plugins that\n"
 "    can be channel-specific will be so.  This can be overridden by "
@@ -1382,7 +1485,7 @@ msgstr ""
 "sopivaksi,\n"
 " mikäli tietyn kanavan tietokannat, tahdotaan jakaa globaalisti."
 
-#: src/conf.py:881
+#: src/conf.py:939
 msgid ""
 "Determines what channel global\n"
 "    (non-channel-specific) databases will be considered a part of.  This is\n"
@@ -1411,7 +1514,7 @@ msgstr ""
 "lisäosat\n"
 " eivät välttämättä toimi kanavalla."
 
-#: src/conf.py:890
+#: src/conf.py:948
 msgid ""
 "Determines whether another channel's global\n"
 "    (non-channel-specific) databases will be allowed to link to this "
@@ -1430,14 +1533,14 @@ msgstr ""
 "lisäosat\n"
 " eivät välttämättä toimi kanavalla."
 
-#: src/conf.py:907
+#: src/conf.py:965
 msgid ""
 "Determines\n"
 "    whether CDB databases will be allowed as a database implementation."
 msgstr ""
 "Määrittää sallitaanko CDB tietokantojen käyttö tietokantaimplementaationa."
 
-#: src/conf.py:910
+#: src/conf.py:968
 msgid ""
 "Determines how often CDB databases will have\n"
 "    their modifications flushed to disk.  When the number of modified "
@@ -1452,13 +1555,13 @@ msgstr ""
 "yhteismäärästä,\n"
 " tietokanta tallennetaan levylle kokonaan."
 
-#: src/conf.py:998
+#: src/conf.py:1057
 msgid ""
 "Determines what will be used as the\n"
 "    default banmask style."
 msgstr "Määrittää mitä käytetään oletus porttikiellon anto tyylinä."
 
-#: src/conf.py:1002
+#: src/conf.py:1061
 msgid ""
 "Determines whether the bot will strictly follow\n"
 "    the RFC; currently this only affects what strings are considered to be\n"
@@ -1475,7 +1578,15 @@ msgstr ""
 " verkkoa, joka vaatii viestien lähetyksen nimimerkille, kuten esimerkiksi\n"
 " services@tämän.verkon.palvelin, niin tämä pitäisi asettaa arvoon \"False\"."
 
-#: src/conf.py:1009
+#: src/conf.py:1068
+msgid ""
+"Determines what certificate file (if any) the bot\n"
+"    will use connect with SSL sockets by default."
+msgstr ""
+"Määrittää mitä SSL-varmennetta (jos mitään) botti käyttää oletuksena\n"
+" yhdistäessään SSL-solmuilla."
+
+#: src/conf.py:1072
 msgid ""
 "Determines what user modes the bot will request\n"
 "    from the server when it first connects.  Many people might choose +i; "
@@ -1492,15 +1603,27 @@ msgstr ""
 "antaa\n"
 " väärennetty isäntä."
 
-#: src/conf.py:1015
+#: src/conf.py:1078
+#, fuzzy
 msgid ""
 "Determines what vhost the bot will bind to before\n"
-"    connecting to the IRC server."
+"    connecting a server (IRC, HTTP, ...) via IPv4."
 msgstr ""
-"Määrittää mihin vhostiin botti sitoutuu, ennen kuin ottaa yhdeyden IRC "
-"palvelimeen."
+"Määrittää mihin vhostiin botti sitoutuu, ennen kuin ottaa yhdeyden (IRC, "
+"HTTP\n"
+" jne.) palvelimeen käyttäen IPv4:ää."
 
-#: src/conf.py:1019
+#: src/conf.py:1082
+#, fuzzy
+msgid ""
+"Determines what vhost the bot will bind to before\n"
+"    connecting a server (IRC, HTTP, ...) via IPv6."
+msgstr ""
+"Määrittää mihin vhostiin botti sitoutuu, ennen kuin ottaa yhdeyden (IRC, "
+"HTTP\n"
+" jne.) palvelimeen käyttäen IPv6:tta."
+
+#: src/conf.py:1086
 msgid ""
 "Determines how many old messages the bot will\n"
 "    keep around in its history.  Changing this variable will not take "
@@ -1511,7 +1634,7 @@ msgstr ""
 "asetusarvon\n"
 " muuttaminen ei vaikuta ennen uudelleenkäynnistystä."
 
-#: src/conf.py:1024
+#: src/conf.py:1091
 #, fuzzy
 msgid ""
 "A floating point number of seconds to throttle\n"
@@ -1523,7 +1646,7 @@ msgstr ""
 "estää viestejä\n"
 " tulemasta lähetetyiksi nopeammin kuin kerran throttleTime sekunteja."
 
-#: src/conf.py:1029
+#: src/conf.py:1096
 msgid ""
 "Determines whether the bot will send PINGs to\n"
 "    the server it's connected to in order to keep the connection alive and\n"
@@ -1540,7 +1663,7 @@ msgstr ""
 "olla \"True\",\n"
 " mikäli et kokeile omituisia palvelinongelmia."
 
-#: src/conf.py:1036
+#: src/conf.py:1103
 msgid ""
 "Determines the number of seconds between sending\n"
 "    pings to the server, if pings are being sent to the server."
@@ -1549,7 +1672,7 @@ msgstr ""
 "pingejä\n"
 " lähetetään palvelimelle."
 
-#: src/conf.py:1041
+#: src/conf.py:1108
 msgid ""
 "Determines whether the bot will refuse\n"
 "    duplicated messages to be queued for delivery to the server.  This is a\n"
@@ -1566,7 +1689,7 @@ msgstr ""
 "merkitystä\n"
 " mikäli et ole tekemässä lisäosien hakkerointia."
 
-#: src/conf.py:1049
+#: src/conf.py:1116
 msgid ""
 "Determines how many seconds must elapse between\n"
 "    JOINs sent to the server."
@@ -1574,7 +1697,7 @@ msgstr ""
 "Määrittää, kuinka monta sekuntia täytyy kulua palvelimelle lähetettyjen \n"
 "    JOINien välissä."
 
-#: src/conf.py:1057
+#: src/conf.py:1124
 msgid ""
 "Determines how many bytes the bot will\n"
 "    'peek' at when looking through a URL for a doctype or title or "
@@ -1589,7 +1712,7 @@ msgstr ""
 "määrän bittejä,\n"
 " vaikka ei löytäisikään etsimäänsä."
 
-#: src/conf.py:1063
+#: src/conf.py:1130
 msgid ""
 "Determines what proxy all HTTP requests should go\n"
 "    through.  The value should be of the form 'host:port'."
@@ -1598,11 +1721,25 @@ msgstr ""
 "mennä. \n"
 "   Arvon pitäisi olla muodossa 'isäntä:portti'."
 
-#: src/conf.py:1083
-msgid "Determines what host the HTTP server will bind."
-msgstr "Määrittää mihin isäntään HTTP palvelin sitoutuu.."
+#: src/conf.py:1150
+#, fuzzy
+msgid ""
+"Space-separated list of IPv4 hosts the HTTP server\n"
+"    will bind."
+msgstr ""
+"Välilyönneilla erotettu lista IPv4-osoitteista, joihin HTTP-palvelin "
+"sitoutuu."
 
-#: src/conf.py:1085
+#: src/conf.py:1153
+#, fuzzy
+msgid ""
+"Space-separated list of IPv6 hosts the HTTP server will\n"
+"    bind."
+msgstr ""
+"Välilyönneilla erotettu lista IPv6-osoitteista, joihin HTTP-palvelin "
+"sitoutuu."
+
+#: src/conf.py:1156
 msgid ""
 "Determines what port the HTTP server will\n"
 "    bind."
@@ -1610,7 +1747,7 @@ msgstr ""
 "Määrittää mihin porttiin HTTP palvelin \n"
 "    sitoutuu."
 
-#: src/conf.py:1088
+#: src/conf.py:1159
 msgid ""
 "Determines whether the server will stay\n"
 "    alive if no plugin is using it. This also means that the server will\n"
@@ -1621,16 +1758,14 @@ msgstr ""
 "mikäli sitä \n"
 " ei käytetä."
 
-#: src/conf.py:1092
+#: src/conf.py:1163
+#, fuzzy
 msgid ""
-"Determines the content of the robots.txt file,\n"
-"    served on the server to search engine."
-msgstr ""
-"Määrittää robots.txt tiedoston sisällön, joka laitetaan palvelimelle "
-"annettavaksi\n"
-" hakukoneille."
+"Determines the path of the file served as\n"
+"    favicon to browsers."
+msgstr "Määrittää polun tiedostoon, joka annetaan faviconina selaimille."
 
-#: src/conf.py:1100
+#: src/conf.py:1171
 msgid ""
 "Determines whether the bot will ignore\n"
 "    unregistered users by default.  Of course, that'll make it particularly\n"
@@ -1644,7 +1779,7 @@ msgstr ""
 "hankalaksi,\n"
 " mutta se on sinun ongelmasi. "
 
-#: src/conf.py:1107
+#: src/conf.py:1178
 msgid ""
 "A string that is the external IP of the bot.  If this is the\n"
 "   empty string, the bot will attempt to find out its IP dynamically "
@@ -1656,7 +1791,7 @@ msgstr ""
 "(vaikko\n"
 "    joskus se ei toimi, siksi tämä asetusarvo)."
 
-#: src/conf.py:1121
+#: src/conf.py:1192
 msgid ""
 "Determines what the default timeout for socket\n"
 "    objects will be.  This means that *all* sockets will timeout when this "
@@ -1671,7 +1806,7 @@ msgstr ""
 "solmuja\n"
 " käyttävän koodin kirjoittaja on erikseen muokannut tätä)."
 
-#: src/conf.py:1127
+#: src/conf.py:1198
 msgid ""
 "Determines what file the bot should write its PID\n"
 "    (Process ID) to, so you can kill it more easily.  If it's left unset (as "
@@ -1687,7 +1822,7 @@ msgstr ""
 "käynnistys on vaadittu\n"
 "    tämän asetusarvon muutosten vaikutuksen aikaansaamiseksi."
 
-#: src/conf.py:1137
+#: src/conf.py:1208
 msgid ""
 "Determines whether the bot will automatically\n"
 "    thread all commands."
@@ -1695,7 +1830,7 @@ msgstr ""
 "Määrittää ketjuttaako botti kaikki\n"
 "    komennot."
 
-#: src/conf.py:1140
+#: src/conf.py:1211
 msgid ""
 "Determines whether the bot will automatically\n"
 "    flush all flushers *very* often.  Useful for debugging when you don't "
@@ -1707,7 +1842,15 @@ msgstr ""
 "et tiedä\n"
 "    mikä hajoaa ja milloin, mutta uskot, että se saattaa tallentua lokiin."
 
-#: src/httpserver.py:131
+#: src/httpserver.py:62
+msgid "Supybot Web server index"
+msgstr "Supybot verkkopalvelin indeksi."
+
+#: src/httpserver.py:67
+msgid "Here is a list of the plugins that have a Web interface:"
+msgstr "Tässä on lista lisäosista, joilla on verkko käyttöliittymä:"
+
+#: src/httpserver.py:275
 msgid ""
 "\n"
 "    This is a default response of the Supybot HTTP server. If you see this\n"
@@ -1721,7 +1864,7 @@ msgstr ""
 "tälle\n"
 " pyynnölle ole määritetty käsittelijää."
 
-#: src/httpserver.py:152
+#: src/httpserver.py:300
 msgid ""
 "\n"
 "    I am a pretty clever IRC bot, but I suck at serving Web pages, "
@@ -1738,42 +1881,127 @@ msgstr ""
 "virheen, ja minua ei ole koulutettu\n"
 "    auttamaan sinua sellaisessa tapauksessa."
 
-#: src/httpserver.py:169
+#: src/httpserver.py:321
 msgid "Request not handled."
 msgstr "Pyyntöä ei hyväksytty."
 
-#: src/httpserver.py:173
-msgid "Supybot Web server index"
-msgstr "Supybot verkkopalvelin indeksi."
-
-#: src/httpserver.py:176
-msgid "Here is a list of the plugins that have a Web interface:"
-msgstr "Tässä on lista lisäosista, joilla on verkko käyttöliittymä:"
-
-#: src/httpserver.py:185
+#: src/httpserver.py:325
 msgid "No plugins available."
 msgstr "Ei lisäosia saatavilla."
 
-#: src/httpserver.py:199
+#: src/httpserver.py:342 src/httpserver.py:359
 msgid "Request not handled"
 msgstr "Pyyntöä ei käsitelty."
 
-#: src/questions.py:60
+#: src/httpserver.py:384
+#, fuzzy
+msgid "No favicon set."
+msgstr "Faviconia ei ole asetettu."
+
+#: src/questions.py:59
 msgid "Sorry, that response was not an option."
 msgstr "Anteeksi, mutta tuo vastaus ei ollut vaihtoehto."
 
-#: src/questions.py:106
+#: src/questions.py:108
 msgid "Sorry, you must enter a value."
 msgstr "Anteeksi, mutta sinun täytyy antaa arvo."
 
-#: src/questions.py:126
+#: src/questions.py:128
 msgid "Enter password: "
 msgstr "Anna salasana: "
 
-#: src/questions.py:128
+#: src/questions.py:130
 msgid "Re-enter password: "
 msgstr "Anna salasana uudelleen: "
 
-#: src/questions.py:141
+#: src/questions.py:143
 msgid "Passwords don't match."
 msgstr "Salasanat eivät täsmää."
+
+#: src/registry.py:416
+msgid "Value must be either True or False (or On or Off), not %r."
+msgstr ""
+"Arvon täytyy olla \"True\" tai \"False (tai \"On\" tai \"Off\"), ei %r."
+
+#: src/registry.py:432
+msgid "Value must be an integer, not %r."
+msgstr "Arvon täytyy olla kokonaisluku, eikä %r."
+
+#: src/registry.py:441
+#, fuzzy
+msgid "Value must be a non-negative integer, not %r."
+msgstr "ei-negatiivinen kokonaisluku"
+
+#: src/registry.py:449
+msgid "Value must be positive (non-zero) integer, not %r."
+msgstr "Arvon täytyy olla positiivinen (muu kuin nolla) kokonaisluku eikä %r."
+
+#: src/registry.py:457
+msgid "Value must be a floating-point number, not %r."
+msgstr "Arvon täytyy olla likuluku, ei %r."
+
+#: src/registry.py:472
+msgid "Value must be a floating-point number greater than zero, not %r."
+msgstr "Arvon täytyy olla nollaa suurempi liukuluku, ei %r."
+
+#: src/registry.py:482
+#, fuzzy
+msgid "Value must be a floating point number in the range [0, 1], not %r."
+msgstr "Arvon täytyy olla likuluku alueella [0,1] eikä %r."
+
+#: src/registry.py:496
+msgid "Value is not a valid Python string, not %r."
+msgstr "Arvon täytyy olla kelvollinen Python merkkijono eikä %r."
+
+#: src/registry.py:528
+msgid "Valid values include %L."
+msgstr "Kelvolliset arvot ovat %L."
+
+#: src/registry.py:530
+msgid "Valid values include %L, not %%r."
+msgstr "Kelvolliset arvot ovat %L, eikä %%r."
+
+#: src/registry.py:601
+msgid "Value must be a valid regular expression, not %r."
+msgstr "Arvon täytyy olla kelvollinen säännöllinen lauseke, eikä %r."
+
+#: src/utils/gen.py:102
+msgid "year"
+msgstr "vuosi"
+
+#: src/utils/gen.py:105
+msgid "week"
+msgstr "viikko"
+
+#: src/utils/gen.py:108
+msgid "day"
+msgstr "päivä"
+
+#: src/utils/gen.py:111
+msgid "hour"
+msgstr "tunti"
+
+#: src/utils/gen.py:115
+msgid "minute"
+msgstr "minuutti"
+
+#: src/utils/gen.py:118
+msgid "second"
+msgstr "sekunti"
+
+#: src/utils/gen.py:127
+#, fuzzy
+msgid "%s ago"
+msgstr "%s sitten"
+
+#: src/utils/str.py:254
+msgid "and"
+msgstr "ja"
+
+#~ msgid ""
+#~ "Determines the content of the robots.txt file,\n"
+#~ "    served on the server to search engine."
+#~ msgstr ""
+#~ "Määrittää robots.txt tiedoston sisällön, joka laitetaan palvelimelle "
+#~ "annettavaksi\n"
+#~ " hakukoneille."
