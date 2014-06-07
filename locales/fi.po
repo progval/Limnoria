@@ -1,6 +1,6 @@
 # Limnoria
-# Copyright (C) 2011 Limnoria
-# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011, 2012.
+# Copyright (C) 2011-2014 Limnoria
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011-2014.
 #
 msgid ""
 msgstr ""
