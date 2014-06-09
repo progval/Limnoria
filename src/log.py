@@ -136,7 +136,13 @@ class BetterFileHandler(logging.FileHandler):
             except UnicodeError:
                 self.stream.write(msg.encode("utf8"))
                 self.stream.write(os.linesep)
-        self.flush()
+        try:
+            self.flush()
+        except OSError as e:
+            if e.args[0] == 28:
+                print('No space left on device, cannot flush log.')
+            else:
+                raise
 
 
 class ColorizedFormatter(Formatter):
