@@ -758,9 +758,9 @@ class ValidDriverModule(registry.OnlySomeStrings):
 
 registerGlobalValue(supybot.drivers, 'module',
     ValidDriverModule('default', _("""Determines what driver module the 
-        bot will use. The default is Socket which is simple and stable 
-        and supports SSL. Twisted doesn't work if the IRC server which 
-        you are connecting to has IPv6 (most of them).""")))
+    bot will use. The default is Socket which is simple and stable 
+    and supports SSL. Twisted doesn't work if the IRC server which 
+    you are connecting to has IPv6 (most of them do).""")))
 
 registerGlobalValue(supybot.drivers, 'maxReconnectWait',
     registry.PositiveFloat(300.0, _("""Determines the maximum time the bot will
