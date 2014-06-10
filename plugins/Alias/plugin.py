@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2009-2010, James McCoy
+# Copyright (c) 2014, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -78,9 +78,6 @@ def getArgs(args, required=1, optional=0, wildcard=0):
 class AliasError(Exception):
     pass
 
-class RecursiveAlias(AliasError):
-    pass
-
 dollarRe = re.compile(r'\$(\d+)')
 def findBiggestDollar(alias):
     dollars = dollarRe.findall(alias)
@@ -156,7 +153,11 @@ def makeNewAlias(name, alias):
                         return True
                 return False
             everythingReplace(tokens)
-        self.Proxy(irc, msg, tokens)
+        # Limit memory use by constraining the size of the message being passed
+        # in to the alias.  Also tracking nesting to avoid endless recursion.
+        maxLength = conf.supybot.reply.maximumLength()
+        tokens = [t[:maxLength] for t in tokens]
+        self.Proxy(irc, msg, tokens, nested=irc.nested + 1)
     flexargs = ''
     if biggestDollar and (wildcard or biggestAt):
         flexargs = ' at least'
@@ -258,11 +259,8 @@ class Alias(callbacks.Plugin):
             (currentAlias, locked, _) = self.aliases[name]
             if locked and currentAlias != alias:
                 raise AliasError, format('Alias %q is locked.', name)
-        try:
-            f = makeNewAlias(name, alias)
-            f = new.instancemethod(f, self, Alias)
-        except RecursiveAlias:
-            raise AliasError, 'You can\'t define a recursive alias.'
+        f = makeNewAlias(name, alias)
+        f = new.instancemethod(f, self, Alias)
         aliasGroup = self.registryValue('aliases', value=False)
         if name in self.aliases:
             # We gotta remove it so its value gets updated.
