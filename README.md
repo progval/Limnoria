@@ -46,10 +46,10 @@ understand or think you know of a better way to do something,
 
 [issue tracker]:https://github.com/ProgVal/Limnoria/issues
 
-[![Visit our IRC channel](https://kiwiirc.com/buttons/chat.freenode.net:+6697/limnoria.png)](https://kiwiirc.com/client/chat.freenode.net:+6697/#limnoria)
+[![Visit our IRC channel](https://kiwiirc.com/buttons/chat.freenode.net/limnoria.png)](https://kiwiirc.com/client/chat.freenode.net:+6697/#limnoria)
 
 ### In Other languages
 
 Only in French at the moment, located at [#supybot-fr on freenode](irc://chat.freenode.net/#supybot-fr).
 
-[![Visit our IRC channel](https://kiwiirc.com/buttons/chat.freenode.net:+6697/supybot-fr.png)](https://kiwiirc.com/client/chat.freenode.net:+6697/#supybot-fr)
+[![Visit our IRC channel](https://kiwiirc.com/buttons/chat.freenode.net/supybot-fr.png)](https://kiwiirc.com/client/chat.freenode.net:+6697/#supybot-fr)
