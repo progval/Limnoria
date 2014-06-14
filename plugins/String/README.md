@@ -1,1 +1,1 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+Useful commands for manipulating characters strings.

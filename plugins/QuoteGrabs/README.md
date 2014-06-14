@@ -1,1 +1,2 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+Stores and displays quotes from channels. Quotes are stored randomly
+and/or on user request.
