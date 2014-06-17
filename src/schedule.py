@@ -136,8 +136,7 @@ class Schedule(drivers.IrcDriver):
         while self.schedule and self.schedule[0][0] < time.time():
             with self.lock:
                 (t, name, args, kwargs) = heapq.heappop(self.schedule)
-                f = self.events[name]
-            del self.events[name]
+                f = self.events.pop(name)
             try:
                 f(*args, **kwargs)
             except Exception as e:
