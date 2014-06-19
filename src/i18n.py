@@ -135,7 +135,6 @@ def normalize(string, removeNewline=False):
     string = string.replace('\\"', '"')
     string = string.replace("\'", "'")
     string = utils.str.normalizeWhitespace(string, removeNewline)
-    string = string.strip(' ')
     string = string.strip('\n')
     string = string.strip('\t')
     return string
