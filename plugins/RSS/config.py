@@ -54,7 +54,7 @@ conf.registerChannelValue(RSS, 'bold', registry.Boolean(
     True, _("""Determines whether the bot will bold the title of the feed when
     it announces news.""")))
 conf.registerChannelValue(RSS, 'headlineSeparator',
-    registry.StringSurroundedBySpaces(' || ', _("""Determines what string is
+    registry.StringSurroundedBySpaces('|', _("""Determines what string is
     used to separate headlines in new feeds.""")))
 conf.registerChannelValue(RSS, 'announcementPrefix',
     registry.StringWithSpaceOnRight(_('News from '), _("""Determines what
@@ -83,7 +83,7 @@ conf.registerGlobalValue(RSS, 'feeds',
     FeedNames([], _("""Determines what feeds should be accessible as
     commands.""")))
 conf.registerChannelValue(RSS, 'showLinks',
-    registry.Boolean(False, _("""Determines whether the bot will list the link
+    registry.Boolean(True, _("""Determines whether the bot will list the link
     along with the title of the feed when the rss command is called.
     supybot.plugins.RSS.announce.showLinks affects whether links will be
     listed when a feed is automatically announced.""")))
@@ -110,7 +110,7 @@ conf.registerChannelValue(RSS, 'keywordBlacklist',
 
 conf.registerGroup(RSS, 'announce')
 conf.registerChannelValue(RSS.announce, 'showLinks',
-    registry.Boolean(False, _("""Determines whether the bot will list the link
+    registry.Boolean(True, _("""Determines whether the bot will list the link
     along with the title of the feed when a feed is automatically
     announced.""")))
 
