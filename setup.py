@@ -281,13 +281,6 @@ setup(
                 ('share/man/man1', ['docs/man/supybot-adduser.1']),
                 ('share/man/man1', ['docs/man/supybot-plugin-doc.1']),
                 ('share/man/man1', ['docs/man/supybot-plugin-create.1']),
-                ('share/man/man1', ['docs/man/limnoria.1']),
-                ('share/man/man1', ['docs/man/limnoria-test.1']),
-                ('share/man/man1', ['docs/man/limnoria-botchk.1']),
-                ('share/man/man1', ['docs/man/limnoria-wizard.1']),
-                ('share/man/man1', ['docs/man/limnoria-adduser.1']),
-                ('share/man/man1', ['docs/man/limnoria-plugin-doc.1']),
-                ('share/man/man1', ['docs/man/limnoria-plugin-create.1']),
         ]
     )
 
