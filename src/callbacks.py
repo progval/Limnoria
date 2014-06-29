@@ -587,8 +587,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         if maxNesting and self.nested > maxNesting:
             log.warning('%s attempted more than %s levels of nesting.',
                         self.msg.prefix, maxNesting)
-            return self.error('You\'ve attempted more nesting than is '
-                              'currently allowed on this bot.', Raise=True)
+            self.error('You\'ve attempted more nesting than is '
+                       'currently allowed on this bot.')
+            return
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.  There's a possibility a simple copy[:] would
         # work, but we're being careful.
