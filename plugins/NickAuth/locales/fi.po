@@ -1,12 +1,12 @@
 # NickAuth plugin in Limnoria.
-# Copyright (C) 2012 Limnoria
-# Mikaela Suomalainen <mkaysi@outlook.com>, 2012.
+# Copyright (C) 2012-2014 Limnoria
+# Mikaela Suomalainen <mkaysi@outlook.com>, 2012-2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: NickAuth plugin in Limnoria\n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
-"PO-Revision-Date: 2014-03-22 12:44+0200\n"
+"POT-Creation-Date: 2014-06-30 14:19+EEST\n"
+"PO-Revision-Date: 2014-06-30 14:22+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
 "Language: fi_FI\n"
@@ -86,11 +86,15 @@ msgstr ""
 msgid "You are not identified and <user> is not given."
 msgstr "Et ole tunnistautunut, etkä antanut <käyttäjä> parametriä."
 
-#: plugin.py:129
+#: plugin.py:130
 msgid "You have no recognized nick on this network."
 msgstr "Sinulla ei ole tunnettua nimimerkkiä tässä verkossa."
 
-#: plugin.py:136
+#: plugin.py:133
+msgid "%s has no recognized nick on this network."
+msgstr "Käyttäjällä %s ei ole tunnistettua nimimerkkiä tässä verkossa."
+
+#: plugin.py:140
 msgid ""
 "takes no argument\n"
 "\n"
@@ -104,10 +108,10 @@ msgstr ""
 " Mikäli et saa vastausta, se tarkoittaa ettet ole tunnistautunut "
 "verkkopalveluille."
 
-#: plugin.py:162
+#: plugin.py:166
 msgid "You are now authenticated as %s."
 msgstr "Olet nyt tunnistautunut käyttäjäksi %s."
 
-#: plugin.py:164
+#: plugin.py:168
 msgid "No user has this nick on this network."
 msgstr "Yhdelläkään käyttäjällä ei ole nimimerkkiä tässä verkossa."
