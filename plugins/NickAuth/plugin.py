@@ -126,8 +126,12 @@ class NickAuth(callbacks.Plugin):
                 else:
                     raise KeyError
             except KeyError:
-                irc.error(_('You have no recognized nick on this '
-                        'network.'), Raise=True)
+                if user == ircdb.users.getUser(msg.prefix):
+                    irc.error(_('You have no recognized nick on this '
+                            'network.'), Raise=True)
+                else:
+                    irc.error(_('%s has no recognized nick on this '
+                            'network.') % user, Raise=True)
         list = wrap(list, [optional('networkIrc'),
                            optional('otherUser')])
 
