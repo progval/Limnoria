@@ -8,7 +8,7 @@ python:
   - "pypy"
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-    - pip install -vr requirements.txt
+    - pip install -vr requirements.txt --upgrade
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
