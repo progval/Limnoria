@@ -14,9 +14,12 @@ script:
   - echo $TRAVIS_PYTHON_VERSION
   - python setup.py install
   - supybot-test test --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
+  - cd docs;sphinx-build -nW -b html -d _build/doctrees . _build/html;cd ..
 after_success:
     - sandbox/check_trans.py --core
     - sandbox/check_trans.py plugins/
+after_script:
+    - curl -X POST http://readthedocs.org/build/limnoria
 notifications:
     on_success: never
     on_failure: never
