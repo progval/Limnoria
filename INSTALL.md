@@ -168,7 +168,7 @@ sudo dpkg -i limnoria-master-HEAD.deb
 
 ### Pip 
 
-Run the first install commands again.
+Run the install commands again.
 
 ## Upgrading to Python 3
 
