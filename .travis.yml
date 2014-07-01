@@ -21,7 +21,7 @@ after_success:
     - sandbox/check_trans.py --core
     - sandbox/check_trans.py plugins/
 after_script:
-    - curl -X POST http://readthedocs.org/build/limnoria
+    - if [ "$TRAVIS_PYTHON_VERSION" = '3.4' ]; then curl -X POST http://readthedocs.org/build/limnoria;fi
 notifications:
     on_success: never
     on_failure: never
