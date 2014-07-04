@@ -9,6 +9,8 @@ branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 # Check translations
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
+msgcheck locales/*.po
+msgcheck plugins/*/*/*.po
 
 # Check documentation
 cd docs
