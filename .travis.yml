@@ -15,8 +15,7 @@ script:
   - python setup.py install
   - supybot-test test --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
 after_success:
-    - sandbox/check_trans.py --core
-    - sandbox/check_trans.py plugins/
+    - if [ "$TRAVIS_PYTHON_VERSION" = "3.4" ]; then bash -x .travis.runonce.bash;fi
 notifications:
     on_success: never
     on_failure: never
