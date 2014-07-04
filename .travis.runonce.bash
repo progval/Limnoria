@@ -10,20 +10,16 @@ branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 pip install sphinx --upgrade --user
 pip install msgcheck --upgrade --user
 
-# Prepare sphinx & msgcheck to be used (I hope).
-sphinxbin=$(whereis -b sphinx-build|cut -f2 -d' ')
-msgcheckbin=$(whereis -b sphinx-build|cut -f2 -d' ')
-
 # Check translations
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
-$msgcheckbin locales/*.po
-$msgcheckbin plugins/*/*/*.po
+$HOME/.local/bin/msgcheck locales/*.po
+msgcheck plugins/*/*/*.po
 
 # Check documentation
 cd docs
 # Add -W to spinx-build when the documentation doesn't error!
-$sphinxbin -n -b html -d _build/doctrees . _build/html
+$HOME/.local/bin/sphinx-build -n -b html -d _build/doctrees . _build/html
 cd ..
 
 # Do these things only on testing or master.
