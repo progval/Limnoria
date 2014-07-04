@@ -5,7 +5,6 @@
 # Set environment
 # Which branch are we on?
 branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-PATH=$HOME/.local/bin:$PATH
 
 # Install requirements required for only this file.
 pip install sphinx --upgrade --user
@@ -14,13 +13,13 @@ pip install msgcheck --upgrade --user
 # Check translations
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
-msgcheck locales/*.po
+$HOME/.local/bin/msgcheck locales/*.po
 msgcheck plugins/*/*/*.po
 
 # Check documentation
 cd docs
 # Add -W to spinx-build when the documentation doesn't error!
-sphinx-build -n -b html -d _build/doctrees . _build/html
+$HOME/.local/bin/sphinx-build -n -b html -d _build/doctrees . _build/html
 cd ..
 
 # Do these things only on testing or master.
