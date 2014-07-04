@@ -10,6 +10,12 @@ branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
 
+# Check documentation
+cd docs
+# Add -W to spinx-build when the documentation doesn't error!
+sphinx-build -n -b html -d _build/doctrees . _build/html
+cd ..
+
 # Do these things only on testing or master.
 if [[ "$branch" = "master" || "$branch" = "testing" ]]; then
     # Notify read the docs
