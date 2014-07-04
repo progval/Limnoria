@@ -5,5 +5,3 @@ python-gnupg
 feedparser
 sqlalchemy
 SocksiPy-branch
-msgcheck
-sphinx

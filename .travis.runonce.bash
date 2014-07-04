@@ -6,6 +6,10 @@
 # Which branch are we on?
 branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 
+# Install requirements required for only this file.
+pip install sphinx --upgrade --user
+pip install msgcheck --upgrade --user
+
 # Check translations
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
