@@ -1,20 +1,21 @@
-#!/usr/bin/env bash
-# This script does the things that we want Travis to do only once, not in 
-# every possible build.
-
-# Set environment
-# Which branch are we on?
-branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-
-# Check translations
-sandbox/check_trans.py plugins/
-sandbox/check_trans.py --core
-
-# Do these things only on testing or master.
-if [[ "$branch" = "master" || "$branch" = "testing" ]]; then
-    # Notify read the docs
-    curl -X POST http://readthedocs.org/build/limnoria
-    # Add other things which we want to do here, before the fi.
-else
-    echo "$branch is not master nor testing, doing nothing."
-fi
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "pypy"
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install:
+    - pip install -vr requirements.txt
+# command to run tests, e.g. python setup.py test
+script:
+  - echo $TRAVIS_PYTHON_VERSION
+  - python setup.py install
+  - supybot-test test --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
+after_success:
+    - if [ "$TRAVIS_PYTHON_VERSION" = "3.4" ]; then bash -x .travis.runonce.bash;fi
+notifications:
+    on_success: never
+    on_failure: never
