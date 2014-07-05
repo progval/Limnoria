@@ -23,11 +23,11 @@ extra features you may want. (Order by decreasing estimated usefulness)
 
 To install them, run 
 
-`pip install -r requirements.txt`
+`pip install -r requirements.txt --upgrade`
 
 or if you don't have or don't want to use root, 
 
-`pip install -r requirements.txt --user`
+`pip install -r requirements.txt --user --upgrade`
 
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
@@ -129,15 +129,15 @@ sudo dpkg -i limnoria-master-HEAD.deb
 To install with pip run
 
 ```
-sudo pip install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt
-sudo pip install git+https://github.com/ProgVal/Limnoria.git@master
+sudo pip install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt --upgrade
+sudo pip install git+https://github.com/ProgVal/Limnoria.git@master --upgrade
 ```
 
 or without root if you don't have it or don't want to use it.
 
 ```
-pip install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt --user
-pip install git+https://github.com/ProgVal/Limnoria.git@master --user
+pip install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt --user --upgrade
+pip install git+https://github.com/ProgVal/Limnoria.git@master --user --upgrade
 ```
 
 If you wish to use Python 3 or 2 instead of default of your distribution 
@@ -168,8 +168,7 @@ sudo dpkg -i limnoria-master-HEAD.deb
 
 ### Pip 
 
-Run the first install command again, but add `--upgrade` to the 
-end. Then run the second install command.
+Run the install commands again.
 
 ## Upgrading to Python 3
 
