@@ -16,8 +16,8 @@ fi
 # Check translations
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
-msgcheck locales/*.po
-msgcheck plugins/*/*/*.po
+msgcheck locales/*.po --no-lines
+msgcheck plugins/*/*/*.po --no-lines
 
 # Check documentation
 cd docs
