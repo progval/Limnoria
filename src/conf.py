@@ -330,8 +330,7 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
         the bot's ident string, if the server doesn't provide one by default.
         If empty, defaults to supybot.ident.""")))
     registerGlobalValue(network, 'user', registry.String('', _("""
-    Determines
-    the real name which the bot sends to the server. If empty, 
+    Determines the real name which the bot sends to the server. If empty, 
     defaults to supybot.user""")))
     registerGlobalValue(network, 'umodes',
         registry.String('', _("""Determines what user modes the bot will request
