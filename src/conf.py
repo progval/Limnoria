@@ -214,9 +214,9 @@ class VersionIfEmpty(registry.String):
         return ret
 
 registerGlobalValue(supybot, 'user',
-    VersionIfEmpty('', _("""Determines the real name which the bot sends to the server.
-    A standard real name using the current version of the bot will be generated if
-    this is left empty.""")))
+    VersionIfEmpty('', _("""Determines the real name which the bot sends 
+    to the server. A standard real name using the current version of the 
+    bot will be generated if this is left empty.""")))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
     List = ircutils.IrcSet
