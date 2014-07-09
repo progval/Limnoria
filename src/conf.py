@@ -214,8 +214,8 @@ class VersionIfEmpty(registry.String):
         return ret
 
 registerGlobalValue(supybot, 'user',
-    VersionIfEmpty('', _("""Determines the user the bot sends to the server.
-    A standard user using the current version of the bot will be generated if
+    VersionIfEmpty('', _("""Determines the real name which the bot sends to the server.
+    A standard real name using the current version of the bot will be generated if
     this is left empty.""")))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
@@ -330,7 +330,7 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
         the bot's ident string, if the server doesn't provide one by default.
         If empty, defaults to supybot.ident.""")))
     registerGlobalValue(network, 'user', registry.String('', _("""Determines
-        the username the bot sends to the server. If empty, defaults to
+        the real name which the bot sends to the server. If empty, defaults to
         supybot.user""")))
     registerGlobalValue(network, 'umodes',
         registry.String('', _("""Determines what user modes the bot will request
