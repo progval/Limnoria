@@ -159,17 +159,17 @@ class RSS(callbacks.Plugin):
                         encoding = u.result['encoding']
                     except ImportError:
                         encoding = 'utf8'
-                    newheadlines.append(format('%s %u%s',
+                    newheadlines.append(format('%s \00318\037%u\017%s',
                                                 headline[0].encode(encoding,'replace'),
                                                 link,
                                                 pubDate))
                 else:
-                    newheadlines.append(format('%s %u%s',
+                    newheadlines.append(format('%s \00318\037%u\017%s',
                                                 headline[0],
                                                 link,
                                                 pubDate))
             else:
-                newheadlines.append(format('%s %u%s',
+                newheadlines.append(format('%s \00318\037%u\017%s',
                                             headline[0],
                                             link,
                                             pubDate))
