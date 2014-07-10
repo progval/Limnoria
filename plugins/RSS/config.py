@@ -87,8 +87,13 @@ conf.registerChannelValue(RSS, 'showLinks',
     along with the title of the feed when the rss command is called.
     supybot.plugins.RSS.announce.showLinks affects whether links will be
     listed when a feed is automatically announced.""")))
+conf.registerChannelValue(RSS, 'styleLinks',
+    registry.Boolean(False, ("""Determines whether links will be underlined and
+    colored blue when the RSS command is called.
+    supybot.plugins.RSS.announce.styleLinks affects whether links will be styled
+    in this manner when a feed is automatically announced.""")))
 conf.registerChannelValue(RSS, 'showPubDate',
-    registry.Boolean(False, """Determines whether the bot will list the 
+    registry.Boolean(False, """Determines whether the bot will list the
     publication datetime stamp along with the title of the feed when the rss
     command is called.
     supybot.plugins.RSS.announce.showPubDate affects whether this will be
@@ -100,11 +105,11 @@ conf.registerChannelValue(RSS, 'initialAnnounceHeadlines',
     registry.Integer(5, _("""Indicates how many headlines an rss feed
     will output when it is first added to announce for a channel.""")))
 conf.registerChannelValue(RSS, 'keywordWhitelist',
-    registry.SpaceSeparatedSetOfStrings([], _("""Space separated list of 
+    registry.SpaceSeparatedSetOfStrings([], _("""Space separated list of
     strings, lets you filter headlines to those containing one or more items
     in this whitelist.""")))
 conf.registerChannelValue(RSS, 'keywordBlacklist',
-    registry.SpaceSeparatedSetOfStrings([], _("""Space separated list of 
+    registry.SpaceSeparatedSetOfStrings([], _("""Space separated list of
     strings, lets you filter headlines to those not containing any items
     in this blacklist.""")))
 
@@ -113,9 +118,12 @@ conf.registerChannelValue(RSS.announce, 'showLinks',
     registry.Boolean(True, _("""Determines whether the bot will list the link
     along with the title of the feed when a feed is automatically
     announced.""")))
+conf.registerChannelValue(RSS.announce, 'styleLinks',
+    registry.Boolean(False, ("""Determines whether links will be underlined and
+    colored blue when they are automatically announced by the bot.""")))
 
 conf.registerChannelValue(RSS.announce, 'showPubDate',
-    registry.Boolean(False, """Determines whether the bot will list the 
+    registry.Boolean(False, """Determines whether the bot will list the
     publication datetime stamp along with the title of the feed when a feed
     is automatically announced."""))
 conf.registerGlobalValue(RSS.announce, 'cachePeriod',
