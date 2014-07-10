@@ -135,7 +135,10 @@ class RSS(callbacks.Plugin):
                     self.releaseLock(url)
                     time.sleep(0.1) # So other threads can run.
 
-    def buildHeadlines(self, headlines, channel, linksconfig='announce.showLinks', dateconfig='announce.showPubDate'):
+    def buildHeadlines(self, headlines, channel,
+                       linksconfig='announce.showLinks',
+                       styleconfig='announce.styleLinks',
+                       dateconfig='announce.showPubDate'):
         newheadlines = []
         for headline in headlines:
             link = ''
@@ -146,6 +149,8 @@ class RSS(callbacks.Plugin):
                         link = re.sub('^.*http://', 'http://', headline[1])
                     else:
                         link = headline[1]
+            if self.registryValue(styleconfig, channel):
+                link = '\00318\037%s\017' % (link)
             if self.registryValue(dateconfig, channel):
                 if headline[2]:
                     pubDate = ' [%s]' % (headline[2],)
@@ -159,17 +164,17 @@ class RSS(callbacks.Plugin):
                         encoding = u.result['encoding']
                     except ImportError:
                         encoding = 'utf8'
-                    newheadlines.append(format('%s \00318\037%u\017%s',
+                    newheadlines.append(format('%s %u%s',
                                                 headline[0].encode(encoding,'replace'),
                                                 link,
                                                 pubDate))
                 else:
-                    newheadlines.append(format('%s \00318\037%u\017%s',
+                    newheadlines.append(format('%s %u%s',
                                                 headline[0],
                                                 link,
                                                 pubDate))
             else:
-                newheadlines.append(format('%s \00318\037%u\017%s',
+                newheadlines.append(format('%s %u%s',
                                             headline[0],
                                             link,
                                             pubDate))
@@ -476,7 +481,8 @@ class RSS(callbacks.Plugin):
         if not headlines:
             irc.error(_('Couldn\'t get RSS feed.'))
             return
-        headlines = self.buildHeadlines(headlines, channel, 'showLinks', 'showPubDate')
+        headlines = self.buildHeadlines(headlines, channel, 'showLinks',
+                                        'styleLinks', 'showPubDate')
         if n:
             headlines = headlines[:n]
         else:
