@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2005, Daniel DiPaolo
-# Copyright (c) 2010, James McCoy
+# Copyright (c) 2014, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,15 +34,23 @@ class AnonymousTestCase(ChannelPluginTestCase):
     plugins = ('Anonymous',)
     def testSay(self):
         self.assertError('anonymous say %s I love you!' % self.channel)
-        self.assertError('anonymous say %s I love you!' % self.nick)
         origreg = conf.supybot.plugins.Anonymous.requireRegistration()
-        origpriv = conf.supybot.plugins.Anonymous.allowPrivateTarget()
         try:
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
             m = self.assertNotError('anonymous say %s foo!' % self.channel)
             self.failUnless(m.args[1] == 'foo!')
+        finally:
+            conf.supybot.plugins.Anonymous.requireRegistration.setValue(origreg)
+
+    def testTell(self):
+        self.assertError('anonymous tell %s I love you!' % self.nick)
+        origreg = conf.supybot.plugins.Anonymous.requireRegistration()
+        origpriv = conf.supybot.plugins.Anonymous.allowPrivateTarget()
+        try:
+            conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
+            self.assertError('anonymous tell %s foo!' % self.channel)
             conf.supybot.plugins.Anonymous.allowPrivateTarget.setValue(True)
-            m = self.assertNotError('anonymous say %s foo!' % self.nick)
+            m = self.assertNotError('anonymous tell %s foo!' % self.nick)
             self.failUnless(m.args[1] == 'foo!')
         finally:
             conf.supybot.plugins.Anonymous.requireRegistration.setValue(origreg)
