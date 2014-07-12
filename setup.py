@@ -281,10 +281,6 @@ setup(
         'python-dateutil <2.0,>=1.3',
         'feedparser',
         ],
-
-    tests_require=[
-        'mock',
-    ]
     )
 
 

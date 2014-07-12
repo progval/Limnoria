@@ -27,10 +27,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
+import unittest
 from supybot import questions
 from supybot.test import SupyTestCase
 
-import mock
+if sys.version_info >= (2, 7, 0):
+    skipif = unittest.skipIf
+else:
+    skipif = lambda x, y: None
+
+try:
+    import mock
+except ImportError:
+    mock=None
 
 # so complicated construction because I want to
 # gain the string 'y' instead of the character 'y'
@@ -39,6 +49,7 @@ import mock
 # better solution is usage of '==' operator ;)
 _yes_answer = ''.join(['', 'y'])
 
+@skipif(mock is None, 'python-mock is not installed.')
 class TestYn(SupyTestCase):
     def test_default_yes_selected(self):
         questions.expect = mock.Mock(return_value=_yes_answer)
