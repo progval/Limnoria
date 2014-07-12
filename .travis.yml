@@ -19,3 +19,5 @@ after_success:
 notifications:
     on_success: never
     on_failure: never
+matrix:
+  fast_finish: true
