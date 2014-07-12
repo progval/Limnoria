@@ -341,7 +341,7 @@ class Alias(callbacks.Plugin):
             if locked and currentAlias != alias:
                 raise AliasError(format('Alias %q is locked.', name))
         f = makeNewAlias(name, alias)
-        f = new.instancemethod(f, self, Alias)
+        f = types.MethodType(f, self)
         if '.' in name or '|' in name:
             aliasGroup = self.registryValue('escapedaliases', value=False)
             confname = escapeAlias(name)
