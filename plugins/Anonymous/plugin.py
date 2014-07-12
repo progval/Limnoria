@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2005, Daniel DiPaolo
-# Copyright (c) 2010, James McCoy
+# Copyright (c) 2014, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -78,17 +78,30 @@ class Anonymous(callbacks.Plugin):
 
     @internationalizeDocstring
     def say(self, irc, msg, args, target, text):
-        """<channel|nick> <text>
+        """<channel> <text>
 
-        Sends <text> to <channel|nick>.  Can only send to <nick> if
+        Sends <text> to <channel>.  Can only send to <nick> if
         supybot.plugins.Anonymous.allowPrivateTarget is True.
         """
         self._preCheck(irc, msg, target, 'say')
-        self.log.info('Saying %q to %s due to %s.',
+        self.log.info('Saying %q in %s due to %s.',
                       text, target, msg.prefix)
-        irc.reply(text, to=target, prefixNick=False,
-                     private=not ircutils.isChannel(target))
-    say = wrap(say, [first('nick', 'inChannel'), 'text'])
+        irc.queueMsg(ircmsgs.privmsg(target, text))
+        irc.noReply()
+    say = wrap(say, ['inChannel', 'text'])
+
+    def tell(self, irc, msg, args, target, text):
+        """<nick> <text>
+
+        Sends <text> to <nick>.  Can only be used if
+        supybot.plugins.Anonymous.allowPrivateTarget is True.
+        """
+        self._preCheck(irc, msg, target, 'tell')
+        self.log.info('Telling %q to %s due to %s.',
+                      text, target, msg.prefix)
+        irc.queueMsg(ircmsgs.privmsg(target, text))
+        irc.noReply()
+    tell = wrap(tell, ['nick', 'text'])
 
     @internationalizeDocstring
     def do(self, irc, msg, args, channel, text):
