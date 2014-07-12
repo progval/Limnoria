@@ -2,6 +2,10 @@
 # This script does the things that we want Travis to do only once, not in 
 # every possible build.
 
+# Care about exit status
+set -x
+set -e
+
 # Set environment
 # Which branch are we on?
 branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
@@ -16,8 +20,12 @@ fi
 # Check translations
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
+# Temporarily don't care about exit status
+set +e
 msgcheck -flwW locales/*.po
 msgcheck -flwW plugins/*/*/*.po
+# Care about exit status again
+set -e
 
 # Check documentation
 cd docs
