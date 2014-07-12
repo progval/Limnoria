@@ -35,7 +35,7 @@ from supybot.test import SupyTestCase
 if sys.version_info >= (2, 7, 0):
     skipif = unittest.skipIf
 else:
-    skipif = lambda x, y: None
+    skipif = lambda x, y: lambda z:None
 
 try:
     import mock
