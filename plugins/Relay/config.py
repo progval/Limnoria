@@ -37,7 +37,7 @@ def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Relay', True)
     if yn(_('Would you like to relay between any channels?')):
-        channels = anything(_('What channels?  Separated them by spaces.'))
+        channels = anything(_('What channels?  Separate them by spaces.'))
         conf.supybot.plugins.Relay.channels.set(channels)
     if yn(_('Would you like to use color to distinguish between nicks?')):
         conf.supybot.plugins.Relay.color.setValue(True)
