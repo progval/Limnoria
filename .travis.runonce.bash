@@ -20,12 +20,8 @@ fi
 # Check translations
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
-# Temporarily don't care about exit status
-set +e
-msgcheck -flwW locales/*.po
-msgcheck -flwW plugins/*/*/*.po
-# Care about exit status again
-set -e
+msgcheck -flwW locales/*.po||true
+msgcheck -flwW plugins/*/*/*.po||true
 
 # Check documentation
 cd docs
