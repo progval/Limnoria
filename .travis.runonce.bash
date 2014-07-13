@@ -32,6 +32,3 @@ cd docs
 # Add -W to spinx-build when the documentation doesn't error!
 sphinx-build -n -b html -d _build/doctrees . _build/html
 cd ..
-
-# Notify read the docs
-curl -X POST http://readthedocs.org/build/limnoria
