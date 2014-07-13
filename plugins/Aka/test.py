@@ -70,6 +70,12 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertNotError('aka add nonascii echo éé')
         self.assertRegexp('help nonascii', "Alias for .*echo éé")
 
+    def testShow(self):
+        self.assertNotError('aka add foo bar')
+        self.assertResponse('show foo', 'bar $*')
+        self.assertNotError('aka add "foo bar" baz')
+        self.assertResponse('show "foo bar"', 'baz $*')
+
     def testRemove(self):
         self.assertNotError('aka add foo echo bar')
         self.assertResponse('foo', 'bar')
