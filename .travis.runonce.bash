@@ -20,8 +20,8 @@ fi
 # Check translations
 sandbox/check_trans.py plugins/
 sandbox/check_trans.py --core
-msgcheck -flwW locales/*.po||true
-msgcheck -flwW plugins/*/*/*.po||true
+msgcheck -flwW locales/*.po || true
+msgcheck -flwW plugins/*/*/*.po || true
 
 # Check documentation
 cd docs
