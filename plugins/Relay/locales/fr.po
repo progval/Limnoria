@@ -16,7 +16,7 @@ msgid "Would you like to relay between any channels?"
 msgstr "Voulez-vous relayer entre des canaux ?"
 
 #: config.py:40
-msgid "What channels?  Separated them by spaces."
+msgid "What channels?  Separate them by spaces."
 msgstr "Quels canaux ? Séparez-les par des espaces."
 
 #: config.py:42
@@ -107,10 +107,10 @@ msgid ""
 "\n"
 "        Starts relaying between the channel <channel> on all networks.  If "
 "on a\n"
-"        network the bot isn't in <channel>, he'll join.  This commands is\n"
-"        required even if the bot is in the channel on both networks; he "
+"        network the bot isn't in <channel>, it'll join.  This commands is\n"
+"        required even if the bot is in the channel on both networks; it "
 "won't\n"
-"        relay between those channels unless he's told to join both\n"
+"        relay between those channels unless it's told to join both\n"
 "        channels.  If <channel> is not given, starts relaying on the "
 "channel\n"
 "        the message was sent in.\n"

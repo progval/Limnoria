@@ -188,7 +188,7 @@ configuration and user/channel/ignore database configuration.
 
 Just edit the interesting files and then give the bot the ``config
 reload`` command and it'll work as expected.  Do note, however, that
-Supybot flushes his configuration files and database to disk every hour
+Supybot flushes its configuration files and database to disk every hour
 or so, and if this happens after you've edited your configuration files
 but before you reload your changes, you could lose the changes you made.
 To prevent this, set the `supybot.flush` value to 'Off' while editing

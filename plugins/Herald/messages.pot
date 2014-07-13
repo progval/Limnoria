@@ -37,8 +37,8 @@ msgstr ""
 #: config.py:56
 msgid ""
 "Determines the minimum number of seconds\n"
-"    after parting that the bot will not herald the person when he or she\n"
-"    rejoins."
+"    after parting that the bot will not herald the person when they\n"
+"    rejoin."
 msgstr ""
 
 #: config.py:60

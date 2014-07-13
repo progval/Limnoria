@@ -186,7 +186,7 @@ configure plugins. The wizard allows the bot owner to choose something
 different from the default plugin config values without having to do it through
 the bot (which is still not difficult, but not as easy as this). Also, note
 that the advanced argument allows you to differentiate whether or not the
-person configuring this plugin considers himself an advanced Supybot user. Our
+person configuring this plugin considers themself an advanced Supybot user. Our
 plugin has no advanced features, so we won't be using it.
 
 So, what exactly do we do in this configure function for our plugin? Well, for

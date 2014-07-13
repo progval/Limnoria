@@ -222,7 +222,7 @@ class Topic(callbacks.Plugin):
         The list of required capabilities is in requireManageCapability
         channel config.
 
-        Also allow if the user is a chanop. Since he can change the topic
+        Also allow if the user is a chanop. Since they can change the topic
         manually anyway.
         """
         c = irc.state.channels[channel]
