@@ -29,6 +29,7 @@
 ###
 
 import re
+import sys
 import time
 import json
 import urllib
@@ -266,6 +267,8 @@ class ShrinkUrl(callbacks.PluginRegexp):
             headers['content-type'] = 'application/json'
             data = json.dumps({'longUrl': url})
             text = utils.web.getUrl(self._gooApi, data=data, headers=headers)
+            if sys.version_info[0] >= 3 and isinstance(text, bytes):
+                text = text.decode()
             googl = json.loads(text)['id']
             if googl:
                 self.db.set('goo', url, googl)
