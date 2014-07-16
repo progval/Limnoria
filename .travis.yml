@@ -17,7 +17,6 @@ script:
 after_success:
     - if [ "$TRAVIS_PYTHON_VERSION" = "3.4" ]; then bash .travis.runonce.bash;fi
 notifications:
-    on_success: never
-    on_failure: never
+    email: false
 matrix:
   fast_finish: true
