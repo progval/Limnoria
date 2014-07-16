@@ -259,7 +259,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
     _gooApi = 'https://www.googleapis.com/urlshortener/v1/url'
     @retry
     def _getGooUrl(self, url):
-        url = utils.web.urlquote(url)
         try:
             return self.db.get('goo', url)
         except KeyError:
