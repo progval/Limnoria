@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-06-07 22:36+EEST\n"
-"PO-Revision-Date: 2014-06-07 22:47+0200\n"
+"POT-Creation-Date: 2014-07-17 08:56+EEST\n"
+"PO-Revision-Date: 2014-07-17 09:00+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -95,7 +95,7 @@ msgstr ""
 
 #: config.py:80
 msgid "$value"
-msgstr "$arvo"
+msgstr "$value"
 
 #: config.py:80
 msgid ""
@@ -158,11 +158,12 @@ msgid ""
 "        If that fails, use the Damerau-Levenshtein edit-distance metric.\n"
 "        "
 msgstr ""
-"Yritä typo-täsmätä mahdollisia factoideja.\n"
-"        \n"
-" Oleta, että ensinmäinen kirjain on oikein, vähentääksesi suoritusaikaa\n"
-" Ensiksi, yritä yksinkertaista jokerimerkki hakua.\n"
-" Jos se epäonnistuu, käytä Damerau-Levenshtein muokkaus-etäisyys metriä."
+"Yritetäänkö mahdollisia factoideja etsiä kirjoitusvirhekorjauksella. "
+"Oletetaan, että\n"
+" ensimmäinen kirjain on oikein, jotta käsittelyaikaa voidaan vähentää.\n"
+" Ensin yritetään yksinkertaista jokerimerkki hakua ja jos se epäonnistuu, "
+"käytetään\n"
+" Damerau-Levenshtein muokkaus-etäisyys asteikkoa."
 
 #: plugin.py:390 plugin.py:520
 msgid "That's not a valid number for that key."
@@ -349,14 +350,13 @@ msgid "Invalid factoid number."
 msgstr "Epäkelvollinen factoidin numero."
 
 #: plugin.py:689
-#, fuzzy
 msgid ""
 "%s factoids have that key.  Please specify which one to remove, or use * to "
 "designate all of them."
 msgstr ""
-"%s factoidilla on tuo avain. Poistettava avain täytyy määrittää tai käyttää "
-"merkkiä *\n"
-" poistaakseen ne kaikki."
+"%s factoidilla on tuo avain. Määritä poistettava factoidi tai käytä *-"
+"merkkiä\n"
+" poistaaksesi ne kakki."
 
 #: plugin.py:697
 #, fuzzy
