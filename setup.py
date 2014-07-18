@@ -276,11 +276,6 @@ setup(
                 ('share/man/man1', ['docs/man/supybot-plugin-create.1']),
         ],
 
-    install_requires=[
-        # Time plugin
-        'python-dateutil <2.0,>=1.3',
-        'feedparser',
-        ],
     )
 
 
