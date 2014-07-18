@@ -125,13 +125,13 @@ Style Guidelines
     doing isn't important for the user to pay attention to.  A user who likes
     to keep up with things should enjoy watching our logging at the INFO
     level; it shouldn't be too low-level, but it should give enough
-    information that it keeps him relatively interested at peak times.
+    information that it keeps them relatively interested at peak times.
 
-  * WARNING:  Appropriate to tell a user when we're doing something that he
+  * WARNING:  Appropriate to tell a user when we're doing something that they
     really ought to pay attention to.  Users should see WARNING and think,
-    "Hmm, should I tell the Supybot developers about this?"  Later, he should
+    "Hmm, should I tell the Supybot developers about this?"  Later, they should
     decide not to, but it should give the user a moment to pause and think
-    about what's actually happening with his bot.
+    about what's actually happening with their bot.
 
   * ERROR:    Appropriate to tell a user when something has gone wrong.
     Uncaught exceptions are ERRORs.  Conditions that we absolutely want to

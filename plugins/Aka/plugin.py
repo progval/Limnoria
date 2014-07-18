@@ -631,6 +631,23 @@ class Aka(callbacks.Plugin):
                                 'channel': 'somethingWithoutSpaces',
                             }), 'user', 'something'])
 
+    def show(self, irc, msg, args, optlist, name):
+        """<command>
+
+        This command shows the content of an Aka.
+        """
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
+        command = self._db.get_alias(channel, name)
+        irc.reply(command)
+    show = wrap(show, [getopts({'channel': 'somethingWithoutSpaces'}),
+        'text'])
+
     def importaliasdatabase(self, irc, msg, args):
         """takes no arguments
 

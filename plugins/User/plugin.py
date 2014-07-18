@@ -224,7 +224,7 @@ class User(callbacks.Plugin):
             Sets the secure flag on the user of the person sending the message.
             Requires that the person's hostmask be in the list of hostmasks for
             that user in addition to the password being correct.  When the
-            secure flag is set, the user *must* identify before he or she can be
+            secure flag is set, the user *must* identify before they can be
             recognized.  If a specific True/False value is not given, it
             inverts the current value.
             """

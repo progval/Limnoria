@@ -186,6 +186,3 @@ if __name__ == '__main__':
 #                   'test-data', 'test-logs', 'tmp')
 #    for fn in configFiles:
 #        os.remove(fn)
-
-# This is the part where we do our release on Freshmeat using XMLRPC and
-# <gasp> ESR's software to do it: http://freshmeat.net/p/freshmeat-submit/

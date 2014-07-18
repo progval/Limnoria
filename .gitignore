@@ -26,3 +26,7 @@ test-logs/
 src/version.py
 INSTALL
 README.txt
+
+# Intellij PyCharm / IDEA related files
+*.iml
+.idea

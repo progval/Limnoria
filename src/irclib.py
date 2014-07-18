@@ -958,10 +958,6 @@ class Irc(IrcCommandDispatcher):
             ]).encode('utf-8')).decode('utf-8')
 
             self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
-        else:
-            log.error('%s: Unexpected response from server: %s',
-                      self.network, msg)
-            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def doCap(self, msg):
         if msg.args[2] == 'sasl':
@@ -973,10 +969,6 @@ class Irc(IrcCommandDispatcher):
             elif msg.args[1] == 'NAK':
                 log.warning("%s: Server refused 'sasl' capability",
                             self.network)
-                self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
-            else:
-                log.error('%s: Unexpected response from server: %s',
-                          self.network, msg)
                 self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do903(self, msg):

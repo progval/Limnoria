@@ -37,7 +37,7 @@ bot that you just made to join your channel?  Try this in the channel::
     supybot: list
 
 Replacing 'supybot' with the actual name you picked for your bot, of course.
-Your bot should reply with a list of the plugins he currently has loaded.  At
+Your bot should reply with a list of the plugins it currently has loaded.  At
 least `Admin`, `Channel`, `Config`, `Misc`, `Owner`, and `User` should be
 there; if you used supybot-wizard to create your configuration file you may
 have many more plugins loaded.  The list command can also be used to list the

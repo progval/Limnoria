@@ -265,7 +265,7 @@ def main():
         directories we need right here in this directory.""")
 
         # conf.supybot.directories.log
-        output("""Your bot will need to put his logs somewhere.  Do you have
+        output("""Your bot will need to put its logs somewhere.  Do you have
         any specific place you'd like them?  If not, just press enter and we'll
         make a directory named "logs" right here.""")
         (logDir, basedir) = getDirectoryName('logs')
@@ -280,11 +280,11 @@ def main():
         conf.supybot.directories.data.setValue(dataDir)
 
         # conf.supybot.directories.conf
-        output("""Your bot must know where to find his configuration files.
+        output("""Your bot must know where to find its configuration files.
         It'll probably only make one or two, but it's gotta have some place to
         put them.  Where should that place be?  If you don't care, just press
         enter and we'll make a directory right here named "conf" where it'll
-        store his stuff. """)
+        store its stuff. """)
         (confDir, basedir) = getDirectoryName('conf', basedir=basedir)
         conf.supybot.directories.conf.setValue(confDir)
 
@@ -292,12 +292,12 @@ def main():
         output("""Your bot must know where to place backups of its conf and
         data files.  Where should that place be?  If you don't care, just press
         enter and we'll make a directory right here named "backup" where it'll
-        store his stuff.""")
+        store its stuff.""")
         (backupDir, basedir) = getDirectoryName('backup', basedir=basedir)
         conf.supybot.directories.backup.setValue(backupDir)
 
         # pluginDirs
-        output("""Your bot will also need to know where to find his plugins at.
+        output("""Your bot will also need to know where to find its plugins at.
         Of course, it already knows where the plugins that it came with are,
         but your own personal plugins that you write for will probably be
         somewhere else.""")

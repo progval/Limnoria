@@ -126,7 +126,6 @@ class AutoMode(callbacks.Plugin):
             do('op')
             if 'h' in irc.state.supported['prefix']:
                 do('halfop')
-            do('voice')
         except Continue:
             return
         finally:
@@ -147,6 +146,10 @@ class AutoMode(callbacks.Plugin):
             irc.queueMsg(ircmsgs.ban(channel, banmask))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
 
+        try:
+            do('voice')
+        except Continue:
+            return
 
 
 

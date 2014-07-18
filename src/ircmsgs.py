@@ -72,8 +72,8 @@ class IrcMsg(object):
     Since this class isn't to be modified, the constructor also accepts a 'msg'
     keyword argument representing a message from which to take all the
     attributes not provided otherwise as keyword arguments.  So, for instance,
-    if a programmer wanted to take a PRIVMSG he'd gotten and simply redirect it
-    to a different source, they could do this:
+    if a programmer wanted to take a PRIVMSG they'd gotten and simply redirect
+    it to a different source, they could do this:
 
     IrcMsg(prefix='', args=(newSource, otherMsg.args[1]), msg=otherMsg)
     """

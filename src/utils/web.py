@@ -108,6 +108,8 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
     a dict and string, respectively, as per urllib2.Request's arguments."""
     if headers is None:
         headers = defaultHeaders
+    if sys.version_info[0] >= 3 and isinstance(data, str):
+        data = data.encode()
     try:
         if not isinstance(url, urllib2.Request):
             (scheme, loc, path, query, frag) = urlparse.urlsplit(url)

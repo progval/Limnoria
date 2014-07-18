@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008-2010, James McCoy
+# Copyright (c) 2014, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -642,6 +642,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         self.msg.prefix, maxNesting)
             self.error(_('You\'ve attempted more nesting than is '
                               'currently allowed on this bot.'))
+            return
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.  There's a possibility a simple copy[:] would
         # work, but we're being careful.
