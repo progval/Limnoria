@@ -99,6 +99,8 @@ class OwnerTestCase(PluginTestCase):
         self.assertRegexp('help testcommand', 'Tell the bot to join')
         self.assertRegexp('join', 'not a valid command')
         self.assertHelp('testcommand')
+        self.assertNotError('unrename Admin')
+        self.assertNotRegexp('list Admin', 'testcommand')
 
     @skip('Nested commands cannot be renamed yet.')
     def testRenameNested(self):
