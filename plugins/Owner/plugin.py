@@ -66,28 +66,6 @@ def registerDefaultPlugin(command, plugin):
     # This must be set, or the quotes won't be removed.
     conf.supybot.commands.defaultPlugins.get(command).set(plugin)
 
-def registerRename(plugin, command=None, newName=None):
-    g = conf.registerGlobalValue(conf.supybot.commands.renames, plugin,
-            registry.SpaceSeparatedSetOfStrings([], """Determines what commands
-            in this plugin are to be renamed."""))
-    if command is not None:
-        g().add(command)
-        v = conf.registerGlobalValue(g, command, registry.String('', ''))
-        if newName is not None:
-            v.setValue(newName) # In case it was already registered.
-        return v
-    else:
-        return g
-
-def renameCommand(cb, name, newName):
-    assert not hasattr(cb, newName), 'Cannot rename over existing attributes.'
-    assert newName == callbacks.canonicalName(newName), \
-           'newName must already be normalized.'
-    if name != newName:
-        method = getattr(cb.__class__, name)
-        setattr(cb.__class__, newName, method)
-        delattr(cb.__class__, name)
-
 
 registerDefaultPlugin('list', 'Misc')
 registerDefaultPlugin('help', 'Misc')
@@ -574,20 +552,20 @@ class Owner(callbacks.Plugin):
             irc.error('That command wasn\'t disabled.')
     enable = wrap(enable, [optional('plugin'), 'commandName'])
 
-    def rename(self, irc, msg, args, plugin, command, newName):
+    def rename(self, irc, msg, args, command_plugin, command, newName):
         """<plugin> <command> <new name>
 
         Renames <command> in <plugin> to the <new name>.
         """
-        if not plugin.isCommand(command):
-            what = 'command in the %s plugin' % plugin.name()
+        if not command_plugin.isCommand(command):
+            what = 'command in the %s plugin' % command_plugin.name()
             irc.errorInvalid(what, command)
-        if hasattr(plugin, newName):
+        if hasattr(command_plugin, newName):
             irc.error('The %s plugin already has an attribute named %s.' %
-                      (plugin, newName))
+                      (command_plugin, newName))
             return
-        registerRename(plugin.name(), command, newName)
-        renameCommand(plugin, command, newName)
+        plugin.registerRename(command_plugin.name(), command, newName)
+        plugin.renameCommand(command_plugin, command, newName)
         irc.replySuccess()
     rename = wrap(rename, ['plugin', 'commandName', 'commandName'])
 

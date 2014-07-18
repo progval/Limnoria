@@ -81,6 +81,28 @@ def loadPluginModule(name, ignoreDeprecation=False):
     linecache.checkcache()
     return module
 
+def renameCommand(cb, name, newName):
+    assert not hasattr(cb, newName), 'Cannot rename over existing attributes.'
+    assert newName == callbacks.canonicalName(newName), \
+           'newName must already be normalized.'
+    if name != newName:
+        method = getattr(cb.__class__, name)
+        setattr(cb.__class__, newName, method)
+        delattr(cb.__class__, name)
+
+def registerRename(plugin, command=None, newName=None):
+    g = conf.registerGlobalValue(conf.supybot.commands.renames, plugin,
+            registry.SpaceSeparatedSetOfStrings([], """Determines what commands
+            in this plugin are to be renamed."""))
+    if command is not None:
+        g().add(command)
+        v = conf.registerGlobalValue(g, command, registry.String('', ''))
+        if newName is not None:
+            v.setValue(newName) # In case it was already registered.
+        return v
+    else:
+        return g
+
 def loadPluginClass(irc, module, register=None):
     """Loads the plugin Class from the given module into the given Irc."""
     try:
@@ -118,7 +140,8 @@ def loadPluginClass(irc, module, register=None):
     assert not irc.getCallback(plugin), \
            'There is already a %r plugin registered.' % plugin
     try:
-        renames = []#XXX registerRename(plugin)()
+        v = registerRename(plugin)
+        renames = conf.supybot.commands.renames.get(plugin)()
         if renames:
             for command in renames:
                 v = registerRename(plugin, command)
