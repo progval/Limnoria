@@ -175,7 +175,7 @@ class KarmaTestCase(ChannelPluginTestCase):
         self.assertNoResponse('foo++', 1)
         self.assertRegexp('karma foo', '1')
         self.assertNotError('karma clear foo')
-        self.assertRegexp('karma foo', '0')
+        self.assertRegexp('karma foo', 'neutral')
         self.assertNotRegexp('karma foo', '1')
 
 #        def testNoKarmaDunno(self):
