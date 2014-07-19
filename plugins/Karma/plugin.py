@@ -175,12 +175,15 @@ class SqliteKarmaDB(object):
         cursor.execute(sql)
         return [(name, int(i)) for (name, i) in cursor.fetchall()]
 
-    def clear(self, channel, name):
+    def clear(self, channel, name=None):
         db = self._getDb(channel)
         cursor = db.cursor()
-        normalized = name.lower()
-        cursor.execute("""UPDATE karma SET subtracted=0, added=0
-                          WHERE normalized=?""", (normalized,))
+        if name:
+            normalized = name.lower()
+            cursor.execute("""DELETE FROM karma
+                              WHERE normalized=?""", (normalized,))
+        else:
+            cursor.execute("""DELETE FROM karma""")
         db.commit()
 
     def dump(self, channel, filename):
@@ -362,13 +365,14 @@ class Karma(callbacks.Plugin):
 
     @internationalizeDocstring
     def clear(self, irc, msg, args, channel, name):
-        """[<channel>] <name>
+        """[<channel>] [<name>]
 
-        Resets the karma of <name> to 0.
+        Resets the karma of <name> to 0. If <name> is not given, resets
+        everything.
         """
-        self.db.clear(channel, name)
+        self.db.clear(channel, name or None)
         irc.replySuccess()
-    clear = wrap(clear, [('checkChannelCapability', 'op'), 'text'])
+    clear = wrap(clear, [('checkChannelCapability', 'op'), optional('text')])
 
     @internationalizeDocstring
     def dump(self, irc, msg, args, channel, filename):
