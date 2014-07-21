@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-07-21 08:35+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,13 +34,13 @@ msgstr ""
 
 #: config.py:60
 msgid ""
-"Determines what\n"
-"    prefix is prepended (if any) to the news item announcements made in the\n"
-"    channel."
 msgstr ""
 
 #: config.py:60
-msgid "News from "
+msgid ""
+"Determines what\n"
+"    prefix is prepended (if any) to the news item announcements made in the\n"
+"    channel."
 msgstr ""
 
 #: config.py:64

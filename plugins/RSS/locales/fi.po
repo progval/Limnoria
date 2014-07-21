@@ -1,12 +1,12 @@
 # RSS plugin in Limnoria.
-# Copyright (C) Limnoria 2011
-# Mikaela Suomalainen <mkaysi@outlook.com>, 2011, 2012.
+# Copyright (C) Limnoria 2011-2014
+# Mikaela Suomalainen <mkaysi@outlook.com>, 2011-2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-05-31 15:04+EEST\n"
-"PO-Revision-Date: 2014-05-31 15:10+0200\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2014-07-21 08:36+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -45,10 +45,6 @@ msgid ""
 msgstr ""
 "Määrittää kanavalla tehtyihin uutiskuulutuksiin liitettävän etuliitteen (jos "
 "mikään)."
-
-#: config.py:60
-msgid "News from "
-msgstr "Uutisia kohteesta "
 
 #: config.py:64
 msgid ": "
@@ -319,3 +315,6 @@ msgstr "En voinut noutaa tuota RSS syötettä."
 #: plugin.py:518
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr "Otsikko: %s;  URL: %u;  Kuvaus: %s;  Viimeeksi päivitetty: %s."
+
+#~ msgid "News from "
+#~ msgstr "Uutisia kohteesta "
