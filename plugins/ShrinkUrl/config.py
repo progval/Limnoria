@@ -84,7 +84,7 @@ conf.registerChannelValue(ShrinkUrl, 'nonSnarfingRegexp',
     matching the regexp given will not be snarfed.  Give the empty string if
     you have no URLs that you'd like to exclude from being snarfed.""")))
 conf.registerChannelValue(ShrinkUrl, 'outFilter',
-    registry.Boolean(False, _("""Determines whether the bot will shrink the
+    registry.Boolean(True, _("""Determines whether the bot will shrink the
     URLs of outgoing messages if those URLs are longer than
     supybot.plugins.ShrinkUrl.minimumLength.""")))
 conf.registerChannelValue(ShrinkUrl, 'default',
