@@ -64,7 +64,7 @@ class Internet(callbacks.Plugin):
                     if ip not in unique_ips:
                         ordered_unique_ips.append(ip)
                         unique_ips.add(ip)
-                irc.replies(ordered_unique_ips)
+                irc.reply(format('%L', ordered_unique_ips))
             except socket.error:
                 irc.reply(_('Host not found.'))
     dns = wrap(dns, ['something'])
