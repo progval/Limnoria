@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
-"PO-Revision-Date: 2014-03-22 14:50+0200\n"
+"POT-Creation-Date: 2014-07-23 18:24+EEST\n"
+"PO-Revision-Date: 2014-07-23 18:28+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -155,20 +155,22 @@ msgstr ""
 msgid ""
 "<region>/<city>\n"
 "\n"
-"        Takes a city and its region, and returns the locale time."
+"        Takes a city and its region, and returns the locale time. This \n"
+"        command uses the IANA Time Zone Database."
 msgstr ""
 "<alue>/<kaupunki>\n"
 "\n"
-"        Ottaa kaupungin ja sen alueen, ja palauttaa paikallisen ajan."
+" Näyttää kaupungin ja sen osan paikallisen ajan. Tämä komento käyttää\n"
+" IANAn aikavyöhyketietokantaa."
 
-#: plugin.py:185
+#: plugin.py:186
 msgid ""
 "Python-tz is required by the command, but is not installed on this computer."
 msgstr ""
 "Python-tz on vaadittu tämän komennon käyttämiseen, mutta se ei ole "
 "asennettuna tälle tietokoneelle."
 
-#: plugin.py:191
+#: plugin.py:192
 msgid "Unknown timezone"
 msgstr "Tuntematon aikavyöhyke"
 

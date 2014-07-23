@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-07-23 18:24+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,14 +105,15 @@ msgstr ""
 msgid ""
 "<region>/<city>\n"
 "\n"
-"        Takes a city and its region, and returns the locale time."
+"        Takes a city and its region, and returns the locale time. This \n"
+"        command uses the IANA Time Zone Database."
 msgstr ""
 
-#: plugin.py:185
+#: plugin.py:186
 msgid "Python-tz is required by the command, but is not installed on this computer."
 msgstr ""
 
-#: plugin.py:191
+#: plugin.py:192
 msgid "Unknown timezone"
 msgstr ""
 
