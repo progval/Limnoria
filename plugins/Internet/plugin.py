@@ -56,8 +56,9 @@ class Internet(callbacks.Plugin):
                 irc.reply(hostname)
         else:
             try:
-                ip = socket.getaddrinfo(host, None)[0][4][0]
-                irc.reply(ip)
+                ips = socket.getaddrinfo(host, None)
+                ips = map(lambda x:x[4][0], ips)
+                irc.replies(ips)
             except socket.error:
                 irc.reply(_('Host not found.'))
     dns = wrap(dns, ['something'])
