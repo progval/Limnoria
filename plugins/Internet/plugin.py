@@ -58,7 +58,13 @@ class Internet(callbacks.Plugin):
             try:
                 ips = socket.getaddrinfo(host, None)
                 ips = map(lambda x:x[4][0], ips)
-                irc.replies(ips)
+                ordered_unique_ips = []
+                unique_ips = set()
+                for ip in ips:
+                    if ip not in unique_ips:
+                        ordered_unique_ips.append(ip)
+                        unique_ips.add(ip)
+                irc.replies(ordered_unique_ips)
             except socket.error:
                 irc.reply(_('Host not found.'))
     dns = wrap(dns, ['something'])
