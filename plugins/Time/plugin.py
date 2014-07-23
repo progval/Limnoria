@@ -178,7 +178,8 @@ class Time(callbacks.Plugin):
     def tztime(self, irc, msg, args, timezone):
         """<region>/<city>
 
-        Takes a city and its region, and returns the locale time."""
+        Takes a city and its region, and returns the locale time. This 
+        command uses the IANA Time Zone Database."""
         try:
             import pytz
         except ImportError:
