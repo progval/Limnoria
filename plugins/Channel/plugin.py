@@ -886,6 +886,7 @@ class Channel(callbacks.Plugin):
         # Make sure we don't elicit information about private channels to
         # people or channels that shouldn't know
         if 's' in irc.state.channels[channel].modes and \
+            not ircdb.checkCapability(msg.nick, 'owner') and \
             msg.args[0] != channel and \
             (ircutils.isChannel(msg.args[0]) or \
              msg.nick not in irc.state.channels[channel].users):
