@@ -28,7 +28,27 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
+import feedparser
 from supybot.test import *
+import supybot.conf as conf
+if sys.version_info.major >= 3:
+    from io import StringIO
+else:
+    from cStringIO import StringIO
+
+xkcd_old = """<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>xkcd.com</title><link>http://xkcd.com/</link><description>xkcd.com: A webcomic of romance and math humor.</description><language>en</language><item><title>Snake Facts</title><link>http://xkcd.com/1398/</link><description>&lt;img src="http://imgs.xkcd.com/comics/snake_facts.png" title="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." alt="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." /&gt;</description><pubDate>Wed, 23 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1398/</guid></item></channel></rss>
+"""
+
+xkcd_new = """<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>xkcd.com</title><link>http://xkcd.com/</link><description>xkcd.com: A webcomic of romance and math humor.</description><language>en</language><item><title>Chaos</title><link>http://xkcd.com/1399/</link><description>&lt;img src="http://imgs.xkcd.com/comics/chaos.png" title="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" alt="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" /&gt;</description><pubDate>Fri, 25 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1399/</guid></item><item><title>Snake Facts</title><link>http://xkcd.com/1398/</link><description>&lt;img src="http://imgs.xkcd.com/comics/snake_facts.png" title="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." alt="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." /&gt;</description><pubDate>Wed, 23 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1398/</guid></item></channel></rss>
+"""
+
+def constant(content):
+    def f(*args, **kwargs):
+        return StringIO(content)
+    return f
 
 url = 'http://www.advogato.org/rss/articles.xml'
 class RSSTestCase(ChannelPluginTestCase):
@@ -42,6 +62,25 @@ class RSSTestCase(ChannelPluginTestCase):
     def testCantRemoveMethodThatIsntFeed(self):
         self.assertError('rss remove rss')
 
+    def testAnnounce(self):
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_old)
+        try:
+            self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+            self.assertNotError('rss announce add xkcd')
+            self.assertNotError(' ')
+            with conf.supybot.plugins.RSS.waitPeriod.context(1):
+                time.sleep(1.1)
+                self.assertNoResponse(' ')
+                feedparser._open_resource = constant(xkcd_new)
+                self.assertNoResponse(' ')
+                time.sleep(1.1)
+                self.assertRegexp(' ', 'Chaos')
+        finally:
+            self._feedMsg('rss announce remove xkcd')
+            self._feedMsg('rss remove xkcd')
+            feedparser._open_resource = old_open
+
     if network:
         def testRssinfo(self):
             self.assertNotError('rss info %s' % url)
@@ -54,7 +93,7 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotRegexp('rss info http://slashdot.org/slashdot.rss',
                                  '-1 years')
 
-        def testAnnounce(self):
+        def testAnnounceAdd(self):
             self.assertNotError('rss add advogato %s' % url)
             self.assertNotError('rss announce add advogato')
             self.assertNotRegexp('rss announce', r'ValueError')
