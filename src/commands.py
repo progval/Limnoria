@@ -103,7 +103,7 @@ def process(f, *args, **kwargs):
                 '\tsudo rmdir /dev/shm\n'
                 '\tsudo ln -Tsf /{run,dev}/shm\n'
                 '(See https://github.com/travis-ci/travis-core/issues/187\n'
-                'for more informations about this bug.)\n')
+                'for more information about this bug.)\n')
         raise
     def newf(f, q, *args, **kwargs):
         if resource:

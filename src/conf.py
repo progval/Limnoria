@@ -558,7 +558,7 @@ registerChannelValue(supybot.replies, 'error',
 
 registerChannelValue(supybot.replies, 'errorOwner',
     registry.NormalizedString(_("""An error has occurred and has been logged.
-    Check the logs for more informations."""), _("""Determines what error
+    Check the logs for more information."""), _("""Determines what error
     message the bot gives to the owner when it wants to be ambiguous.""")))
 
 registerChannelValue(supybot.replies, 'incorrectAuthentication',
