@@ -63,6 +63,7 @@ announced_headlines_filename = \
 
 class Feed:
     __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
+            'etag', 'modified',
             'lock', 'announced_entries')
     def __init__(self, name, url, plugin_is_loading=False, announced=None):
         assert name, name
@@ -76,6 +77,8 @@ class Feed:
         # loaded (the bot could be starting, and thus already busy)
         self.last_update = time.time() if plugin_is_loading else 0
         self.entries = []
+        self.etag = None
+        self.modified = None
         self.lock = threading.Lock()
         self.announced_entries = announced or \
                 utils.structures.TruncatableSet()
@@ -240,10 +243,16 @@ class RSS(callbacks.Plugin):
 
     def update_feed(self, feed):
         with feed.lock:
-            d = feedparser.parse(feed.url)
-            feed.data = d.feed
-            feed.entries = d.entries
-            feed.last_update = time.time()
+            d = feedparser.parse(feed.url, etag=feed.etag,
+                    modified=feed.modified)
+            if 'status' not in d or d.status != 304: # Not modified
+                if 'etag' in d:
+                    feed.etag = d.etag
+                if 'modified' in d:
+                    feed.modified = d.modified
+                feed.data = d.feed
+                feed.entries = d.entries
+                feed.last_update = time.time()
         self.announce_feed(feed)
 
     def update_feed_in_thread(self, feed):
