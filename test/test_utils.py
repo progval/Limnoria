@@ -1153,6 +1153,12 @@ class TestTruncatableSet(SupyTestCase):
         s.truncate(3)
         self.assertEqual(s, {'bar', 'baz', 'qux'})
 
+    def testTruncateUnion(self):
+        s = TruncatableSet(['bar', 'foo'])
+        s |= {'baz', 'qux'}
+        s.truncate(3)
+        self.assertEqual(s, {'foo', 'baz', 'qux'})
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
