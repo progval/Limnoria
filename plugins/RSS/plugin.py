@@ -29,13 +29,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
+import os
+import sys
+import json
 import time
 import types
 import string
 import socket
 import threading
-import re
-import sys
 import feedparser
 
 import supybot.conf as conf
@@ -56,10 +58,13 @@ def get_feedName(irc, msg, args, state):
     state.args.append(callbacks.canonicalName(args.pop(0)))
 addConverter('feedName', get_feedName)
 
+announced_headlines_filename = \
+        conf.supybot.directories.data.dirize('RSS_announced.flat')
+
 class Feed:
     __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
             'lock', 'announced_entries')
-    def __init__(self, name, url, plugin_is_loading=False):
+    def __init__(self, name, url, plugin_is_loading=False, announced=None):
         assert name, name
         if not url:
             assert utils.web.httpUrlRe.match(name), name
@@ -72,7 +77,12 @@ class Feed:
         self.last_update = time.time() if plugin_is_loading else 0
         self.entries = []
         self.lock = threading.Lock()
-        self.announced_entries = utils.structures.TruncatableSet()
+        self.announced_entries = announced or \
+                utils.structures.TruncatableSet()
+
+    def __repr__(self):
+        return 'Feed(%r, %r, <bool>, %r)' % \
+                (self.name, self.url, self.announced_entries)
 
     def get_command(self, plugin):
         docstring = format(_("""[<number of headlines>]
@@ -105,6 +115,14 @@ def sort_feed_items(items, order):
         return items
     return sitems
 
+def load_announces_db(fd):
+    return dict((name, utils.structures.TruncatableSet(entries))
+                for (name, entries) in json.load(fd).items())
+def save_announces_db(db, fd):
+    json.dump(dict((name, list(entries)) for (name, entries) in db), fd)
+
+
+
 class RSS(callbacks.Plugin):
     """This plugin is useful both for announcing updates to RSS feeds in a
     channel, and for retrieving the headlines of RSS feeds via command.  Use
@@ -118,6 +136,11 @@ class RSS(callbacks.Plugin):
         self.feed_names = callbacks.CanonicalNameDict()
         # Scheme: {url: feed}
         self.feeds = {}
+        if os.path.isfile(announced_headlines_filename):
+            with open(announced_headlines_filename) as fd:
+                announced = load_announces_db(fd)
+        else:
+            announced = {}
         for name in self.registryValue('feeds'):
             self.assert_feed_does_not_exist(name)
             self.register_feed_config(name)
@@ -126,7 +149,20 @@ class RSS(callbacks.Plugin):
             except registry.NonExistentRegistryEntry:
                 self.log.warning('%s is not a registered feed, removing.',name)
                 continue
-            self.register_feed(name, url, True)
+            self.register_feed(name, url, True, announced.get(name, []))
+        world.flushers.append(self._flush)
+
+    def die(self):
+        self._flush()
+        world.flushers.remove(self._flush)
+        self.__parent.die()
+
+    def _flush(self):
+        l = [(f.name, f.announced_entries) for f in self.feeds.values()]
+        with utils.file.AtomicFile(announced_headlines_filename, 'wb',
+                                   backupDir='/dev/null') as fd:
+            save_announces_db(l, fd)
+
 
     ##################
     # Feed registering
@@ -141,9 +177,9 @@ class RSS(callbacks.Plugin):
         group = self.registryValue('feeds', value=False)
         conf.registerGlobalValue(group, name, registry.String(url, ''))
 
-    def register_feed(self, name, url, plugin_is_loading):
+    def register_feed(self, name, url, plugin_is_loading, announced=[]):
         self.feed_names[name] = url
-        self.feeds[url] = Feed(name, url, plugin_is_loading)
+        self.feeds[url] = Feed(name, url, plugin_is_loading, announced)
 
     def remove_feed(self, feed):
         del self.feed_names[feed.name]
