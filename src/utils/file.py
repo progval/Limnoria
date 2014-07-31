@@ -156,12 +156,18 @@ class AtomicFile(object):
         # self.__parent = super(AtomicFile, self)
         self._fd = open(self.tempFilename, mode)
 
+    def __enter__(self):
+        return self
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type:
+            self.rollback()
+        else:
+            self.close()
+
+
     @property
     def closed(self):
         return self._fd.closed
-
-    def close(self):
-        return self._fd.close()
 
     def write(self, data):
         return self._fd.write(data)
