@@ -59,6 +59,10 @@ class Feed:
     __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
             'lock', 'announced_entries')
     def __init__(self, name, url, plugin_is_loading=False):
+        assert name, name
+        if not url:
+            assert utils.web.httpUrlRe.match(name), name
+            url = name
         self.name = name
         self.url = url
         self.data = None
@@ -69,8 +73,7 @@ class Feed:
         self.lock = threading.Thread()
         self.announced_entries = utils.structures.TruncatableSet()
 
-    @property
-    def command(self):
+    def get_command(self, plugin):
         docstring = format(_("""[<number of headlines>]
 
         Reports the titles for %s at the RSS feed %u.  If
@@ -78,14 +81,11 @@ class Feed:
         RSS feeds are only looked up every supybot.plugins.RSS.waitPeriod
         seconds, which defaults to 1800 (30 minutes) since that's what most
         websites prefer."""), self.name, self.url)
-        if self.isCommandMethod(name):
-            s = format('I already have a command in this plugin named %s.',name)
-            raise callbacks.Error(s)
-        def f(self, irc, msg, args):
-            args.insert(0, url)
-            self.rss(irc, msg, args)
-        f = utils.python.changeFunctionName(f, name, docstring)
-        f = types.MethodType(f, self)
+        def f(self2, irc, msg, args):
+            args.insert(0, self.url)
+            self2.rss(irc, msg, args)
+        f = utils.python.changeFunctionName(f, self.name, docstring)
+        f = types.MethodType(f, plugin)
         return f
 
 def lock_feed(f):
@@ -130,8 +130,7 @@ class RSS(callbacks.Plugin):
             except registry.NonExistentRegistryEntry:
                 self.log.warning('%s is not a registered feed, removing.',name)
                 continue
-            self.feed_names[name] = url
-            self.feeds[url] = Feed(name, url, True)
+            self.register_feed(name, url, True)
 
     ##################
     # Feed registering
@@ -140,6 +139,13 @@ class RSS(callbacks.Plugin):
         self.registryValue('feeds').add(name)
         group = self.registryValue('feeds', value=False)
         conf.registerGlobalValue(group, name, registry.String(url, ''))
+
+    def register_feed(self, name, url, plugin_is_loading):
+        self.feed_names[name] = url
+        if self.isCommandMethod(name):
+            s = format('I already have a command in this plugin named %s.',name)
+            raise callbacks.Error(s)
+        self.feeds[url] = Feed(name, url, plugin_is_loading)
 
     def remove_feed(self, feed):
         del self.feed_names[feed.name]
@@ -163,7 +169,7 @@ class RSS(callbacks.Plugin):
         try:
             return self.__parent.getCommandMethod(command)
         except AttributeError:
-            return self.feeds[command[0]].command
+            return self.get_feed(command[0]).get_command(self)
 
     def __call__(self, irc, msg):
         self.__parent.__call__(irc, msg)
@@ -275,7 +281,7 @@ class RSS(callbacks.Plugin):
         given URL.
         """
         self.register_feed_config(name, url)
-        self.feeds[name] = Feed(name, url)
+        self.register_feed(name, url, False)
         irc.replySuccess()
     add = wrap(add, ['feedName', 'url'])
 
