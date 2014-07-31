@@ -103,7 +103,7 @@ class RSSTestCase(ChannelPluginTestCase):
         def testRss(self):
             self.assertNotError('rss %s' % url)
             m = self.assertNotError('rss %s 2' % url)
-            self.failUnless(m.args[1].count('||') == 1)
+            self.failUnless(m.args[1].count(' | ') == 1)
 
         def testRssAdd(self):
             self.assertNotError('rss add advogato %s' % url)
