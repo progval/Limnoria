@@ -50,19 +50,33 @@ class FeedItemSortOrder(registry.OnlySomeStrings):
     validStrings = ('asInFeed', 'oldestFirst', 'newestFirst')
 
 RSS = conf.registerPlugin('RSS')
-conf.registerChannelValue(RSS, 'bold', registry.Boolean(
-    True, _("""Determines whether the bot will bold the title of the feed when
-    it announces news.""")))
+
+conf.registerGlobalValue(RSS, 'feeds',
+    FeedNames([], _("""Determines what feeds should be accessible as
+    commands.""")))
+
+########
+# Format
+
 conf.registerChannelValue(RSS, 'headlineSeparator',
     registry.StringSurroundedBySpaces('|', _("""Determines what string is
     used to separate headlines in new feeds.""")))
-conf.registerChannelValue(RSS, 'announcementPrefix',
-    registry.StringWithSpaceOnRight(_('News from '), _("""Determines what
-    prefix is prepended (if any) to the news item announcements made in the
-    channel.""")))
-conf.registerChannelValue(RSS, 'announcementSeparator',
-        registry.StringWithSpaceOnRight(_(': '), _("""Determines what
-    suffix is appended to the feed name in a news item.""")))
+conf.registerChannelValue(RSS, 'format',
+    registry.String(_('$date: $title <$link>'), _("""The format the bot
+    will use for displaying headlines of a RSS feed that is triggered
+    manually. In addition to fields defined by feedparser ($published
+    (the entry date), $title, $link, $description, $id, etc.), the following
+    variables can be used: $feed_name, $date (parsed date, as defined in
+    supybot.reply.format.time)""")))
+conf.registerChannelValue(RSS, 'announceFormat',
+    registry.String(_('News from $feed_name: $title <$link>'),
+    _("""The format the bot will use for displaying headlines of a RSS feed
+    that is announced. See supybot.plugins.RSS.format for the available
+    variables.""")))
+
+###########
+# Announces
+
 conf.registerChannelValue(RSS, 'announce',
     registry.SpaceSeparatedSetOfStrings([], _("""Determines which RSS feeds
     should be announced in the channel; valid input is a list of strings
@@ -75,25 +89,10 @@ conf.registerGlobalValue(RSS, 'sortFeedItems',
     FeedItemSortOrder('asInFeed', _("""Determines whether feed items should be
     sorted by their update timestamp or kept in the same order as they appear
     in a feed.""")))
-conf.registerGlobalValue(RSS, 'stripRedirect', registry.Boolean(
-    True, """Determines whether the bot will attempt to strip url redirection
-    from headline links, by taking things after the last http://."""))
 
-conf.registerGlobalValue(RSS, 'feeds',
-    FeedNames([], _("""Determines what feeds should be accessible as
-    commands.""")))
-conf.registerChannelValue(RSS, 'showLinks',
-    registry.Boolean(True, _("""Determines whether the bot will list the link
-    along with the title of the feed when the rss command is called.
-    supybot.plugins.RSS.announce.showLinks affects whether links will be
-    listed when a feed is automatically announced.""")))
-conf.registerChannelValue(RSS, 'showPubDate',
-    registry.Boolean(False, """Determines whether the bot will list the 
-    publication datetime stamp along with the title of the feed when the rss
-    command is called.
-    supybot.plugins.RSS.announce.showPubDate affects whether this will be
-    listed when a feed is automatically announced."""))
-conf.registerGlobalValue(RSS, 'defaultNumberOfHeadlines',
+####################
+# Headlines filtering
+conf.registerChannelValue(RSS, 'defaultNumberOfHeadlines',
     registry.PositiveInteger(1, _("""Indicates how many headlines an rss feed
     will output by default, if no number is provided.""")))
 conf.registerChannelValue(RSS, 'initialAnnounceHeadlines',
@@ -107,20 +106,6 @@ conf.registerChannelValue(RSS, 'keywordBlacklist',
     registry.SpaceSeparatedSetOfStrings([], _("""Space separated list of 
     strings, lets you filter headlines to those not containing any items
     in this blacklist.""")))
-
-conf.registerGroup(RSS, 'announce')
-conf.registerChannelValue(RSS.announce, 'showLinks',
-    registry.Boolean(True, _("""Determines whether the bot will list the link
-    along with the title of the feed when a feed is automatically
-    announced.""")))
-
-conf.registerChannelValue(RSS.announce, 'showPubDate',
-    registry.Boolean(False, """Determines whether the bot will list the 
-    publication datetime stamp along with the title of the feed when a feed
-    is automatically announced."""))
-conf.registerGlobalValue(RSS.announce, 'cachePeriod',
-    registry.PositiveInteger(604800, """Maximum age of cached RSS headlines,
-    in seconds. Headline cache is used to avoid re-announcing old news."""))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
