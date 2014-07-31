@@ -1132,7 +1132,27 @@ class TestCacheDict(SupyTestCase):
             self.failUnless(len(d) <= max)
             self.failUnless(i in d)
             self.failUnless(d[i] == i)
-            
+
+class TestTruncatableSet(SupyTestCase):
+    def testBasics(self):
+        s = TruncatableSet(['foo', 'bar', 'baz', 'qux'])
+        self.assertEqual(s, {'foo', 'bar', 'baz', 'qux'})
+        self.failUnless('foo' in s)
+        self.failUnless('bar' in s)
+        self.failIf('quux' in s)
+        s.discard('baz')
+        self.failUnless('foo' in s)
+        self.failIf('baz' in s)
+        s.add('quux')
+        self.failUnless('quux' in s)
+
+    def testTruncate(self):
+        s = TruncatableSet(['foo', 'bar'])
+        s.add('baz')
+        s.add('qux')
+        s.truncate(3)
+        self.assertEqual(s, {'bar', 'baz', 'qux'})
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
