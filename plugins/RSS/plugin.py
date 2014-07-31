@@ -273,7 +273,7 @@ class RSS(callbacks.Plugin):
                     if entry.id not in feed.announced_entries]
             if not new_entries:
                 return []
-            feed.announced_entries |= {entry.id for entry in new_entries}
+            feed.announced_entries |= set(entry.id for entry in new_entries)
             # We keep a little more because we don't want to re-announce
             # oldest entries if one of the newest gets removed.
             feed.announced_entries.truncate(2*len(entries))
