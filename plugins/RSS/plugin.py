@@ -42,6 +42,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 from supybot.commands import *
+import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -269,7 +270,7 @@ class RSS(callbacks.Plugin):
 
     def announce_entry(self, irc, channel, feed, entry):
         if self.should_send_entry(channel, entry):
-            s = format_entry(channel, feed, entry, True)
+            s = self.format_entry(channel, feed, entry, True)
             irc.sendMsg(ircmsgs.privmsg(channel, s))
 
 
@@ -395,6 +396,8 @@ class RSS(callbacks.Plugin):
         except registry.NonExistentRegistryEntry:
             pass
         feed = self.get_feed(url)
+        if not feed:
+            feed = Feed(url, url)
         self.update_feed_if_needed(feed)
         info = feed.data
         if not info:
