@@ -159,7 +159,7 @@ class RSS(callbacks.Plugin):
 
     def _flush(self):
         l = [(f.name, f.announced_entries) for f in self.feeds.values()]
-        with utils.file.AtomicFile(announced_headlines_filename, 'wb',
+        with utils.file.AtomicFile(announced_headlines_filename, 'w',
                                    backupDir='/dev/null') as fd:
             save_announces_db(l, fd)
 
