@@ -124,6 +124,7 @@ class RSS(callbacks.Plugin):
         # Scheme: {url: feed}
         self.feeds = {}
         for name in self.registryValue('feeds'):
+            self.assert_feed_does_not_exist(name)
             self.register_feed_config(name)
             try:
                 url = self.registryValue(registry.join(['feeds', name]))
@@ -135,6 +136,11 @@ class RSS(callbacks.Plugin):
     ##################
     # Feed registering
 
+    def assert_feed_does_not_exist(self, name):
+        if self.isCommandMethod(name):
+            s = format('I already have a command in this plugin named %s.',name)
+            raise callbacks.Error(s)
+
     def register_feed_config(self, name, url=''):
         self.registryValue('feeds').add(name)
         group = self.registryValue('feeds', value=False)
@@ -142,16 +148,13 @@ class RSS(callbacks.Plugin):
 
     def register_feed(self, name, url, plugin_is_loading):
         self.feed_names[name] = url
-        if self.isCommandMethod(name):
-            s = format('I already have a command in this plugin named %s.',name)
-            raise callbacks.Error(s)
         self.feeds[url] = Feed(name, url, plugin_is_loading)
 
     def remove_feed(self, feed):
         del self.feed_names[feed.name]
         del self.feeds[feed.url]
-        conf.supybot.plugins.RSS.feeds().remove(name)
-        conf.supybot.plugins.RSS.feeds.unregister(name)
+        conf.supybot.plugins.RSS.feeds().remove(feed.name)
+        conf.supybot.plugins.RSS.feeds.unregister(feed.name)
 
     ##################
     # Methods handling
@@ -280,6 +283,7 @@ class RSS(callbacks.Plugin):
         Adds a command to this plugin that will look up the RSS feed at the
         given URL.
         """
+        self.assert_feed_does_not_exist(name)
         self.register_feed_config(name, url)
         self.register_feed(name, url, False)
         irc.replySuccess()
