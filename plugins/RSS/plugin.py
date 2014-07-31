@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # Copyright (c) 2008-2010, James McCoy
+# Copyright (c) 2014, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,6 +31,7 @@
 
 import time
 import types
+import string
 import socket
 import threading
 import re
@@ -46,12 +48,67 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('RSS')
 
-def getFeedName(irc, msg, args, state):
+def get_feedName(irc, msg, args, state):
     if not registry.isValidRegistryName(args[0]):
         state.errorInvalid('feed name', args[0],
                            'Feed names must not include spaces.')
     state.args.append(callbacks.canonicalName(args.pop(0)))
-addConverter('feedName', getFeedName)
+addConverter('feedName', get_feedName)
+
+class Feed:
+    __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
+            'lock', 'announced_entries')
+    def __init__(self, name, url, plugin_is_loading=False):
+        self.name = name
+        self.url = url
+        self.data = None
+        # We don't want to fetch feeds right after the plugin is
+        # loaded (the bot could be starting, and thus already busy)
+        self.last_update = time.time() if plugin_is_loading else 0
+        self.entries = None
+        self.lock = threading.Thread()
+        self.announced_entries = utils.structures.TruncatableSet()
+
+    @property
+    def command(self):
+        docstring = format(_("""[<number of headlines>]
+
+        Reports the titles for %s at the RSS feed %u.  If
+        <number of headlines> is given, returns only that many headlines.
+        RSS feeds are only looked up every supybot.plugins.RSS.waitPeriod
+        seconds, which defaults to 1800 (30 minutes) since that's what most
+        websites prefer."""), self.name, self.url)
+        if self.isCommandMethod(name):
+            s = format('I already have a command in this plugin named %s.',name)
+            raise callbacks.Error(s)
+        def f(self, irc, msg, args):
+            args.insert(0, url)
+            self.rss(irc, msg, args)
+        f = utils.python.changeFunctionName(f, name, docstring)
+        f = types.MethodType(f, self)
+        return f
+
+def lock_feed(f):
+    def newf(feed, *args, **kwargs):
+        with feed.lock:
+            return f(feed, *args, **kwargs)
+    return f
+
+def sort_feed_items(items, order):
+    """Return feed items, sorted according to sortFeedItems."""
+    if order not in ['oldestFirst', 'newestFirst']:
+        return items
+    if order == 'oldestFirst':
+        reverse = False
+    if order == 'newestFirst':
+        reverse = True
+    try:
+        sitems = sorted(items, key=lambda i: i['updated'], reverse=reverse)
+    except KeyError:
+        # feedparser normalizes required timestamp fields in ATOM and RSS
+        # to the "updated" field. Feeds missing it are unsortable by date.
+        return items
+    return sitems
 
 class RSS(callbacks.Plugin):
     """This plugin is useful both for announcing updates to RSS feeds in a
@@ -62,326 +119,153 @@ class RSS(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(RSS, self)
         self.__parent.__init__(irc)
-        # Schema is feed : [url, command]
-        self.feedNames = callbacks.CanonicalNameDict()
-        self.locks = {}
-        self.lastRequest = {}
-        self.cachedFeeds = {}
-        self.cachedHeadlines = {}
-        self.gettingLockLock = threading.Lock()
+        # Scheme: {name: url}
+        self.feed_names = callbacks.CanonicalNameDict()
+        # Scheme: {url: feed}
+        self.feeds = {}
         for name in self.registryValue('feeds'):
-            self._registerFeed(name)
+            self.register_feed_config(name)
             try:
                 url = self.registryValue(registry.join(['feeds', name]))
             except registry.NonExistentRegistryEntry:
                 self.log.warning('%s is not a registered feed, removing.',name)
                 continue
-            self.makeFeedCommand(name, url)
-            self.getFeed(url) # So announced feeds don't announce on startup.
+            self.feed_names[name] = url
+            self.feeds[url] = Feed(name, url, True)
+
+    ##################
+    # Feed registering
+
+    def register_feed_config(self, name, url=''):
+        self.registryValue('feeds').add(name)
+        group = self.registryValue('feeds', value=False)
+        conf.registerGlobalValue(group, name, registry.String(url, ''))
+
+    def remove_feed(self, feed):
+        del self.feed_names[feed.name]
+        del self.feeds[feed.url]
+        conf.supybot.plugins.RSS.feeds().remove(name)
+        conf.supybot.plugins.RSS.feeds.unregister(name)
+
+    ##################
+    # Methods handling
 
     def isCommandMethod(self, name):
         if not self.__parent.isCommandMethod(name):
-            if name in self.feedNames:
-                return True
-            else:
-                return False
+            return bool(self.get_feed(name))
         else:
             return True
 
     def listCommands(self):
-        return self.__parent.listCommands(self.feedNames.keys())
+        return self.__parent.listCommands(self.feeds.keys())
 
     def getCommandMethod(self, command):
         try:
             return self.__parent.getCommandMethod(command)
         except AttributeError:
-            return self.feedNames[command[0]][1]
-
-    def _registerFeed(self, name, url=''):
-        self.registryValue('feeds').add(name)
-        group = self.registryValue('feeds', value=False)
-        conf.registerGlobalValue(group, name, registry.String(url, ''))
+            return self.feeds[command[0]].command
 
     def __call__(self, irc, msg):
         self.__parent.__call__(irc, msg)
-        irc = callbacks.SimpleProxy(irc, msg)
-        newFeeds = {}
-        for channel in irc.state.channels:
-            feeds = self.registryValue('announce', channel)
-            for name in feeds:
-                commandName = callbacks.canonicalName(name)
-                if self.isCommandMethod(commandName):
-                    url = self.feedNames[commandName][0]
-                else:
-                    url = name
-                if self.willGetNewFeed(url):
-                    newFeeds.setdefault((url, name), []).append(channel)
-        for ((url, name), channels) in newFeeds.iteritems():
-            # We check if we can acquire the lock right here because if we
-            # don't, we'll possibly end up spawning a lot of threads to get
-            # the feed, because this thread may run for a number of bytecodes
-            # before it switches to a thread that'll get the lock in
-            # _newHeadlines.
-            if self.acquireLock(url, blocking=False):
-                try:
-                    t = threading.Thread(target=self._newHeadlines,
-                                         name=format('Fetching %u', url),
-                                         args=(irc, channels, name, url))
-                    self.log.info('Checking for announcements at %u', url)
-                    world.threadsSpawned += 1
-                    t.setDaemon(True)
-                    t.start()
-                finally:
-                    self.releaseLock(url)
-                    time.sleep(0.1) # So other threads can run.
+        self.update_feeds()
 
-    def buildHeadlines(self, headlines, channel, linksconfig='announce.showLinks', dateconfig='announce.showPubDate'):
-        newheadlines = []
-        for headline in headlines:
-            link = ''
-            pubDate = ''
-            if self.registryValue(linksconfig, channel):
-                if headline[1]:
-                    if self.registryValue('stripRedirect'):
-                        link = re.sub('^.*http://', 'http://', headline[1])
-                    else:
-                        link = headline[1]
-            if self.registryValue(dateconfig, channel):
-                if headline[2]:
-                    pubDate = ' [%s]' % (headline[2],)
-            if sys.version_info[0] < 3:
-                if isinstance(headline[0], unicode):
-                    try:
-                        import charade.universaldetector
-                        u = charade.universaldetector.UniversalDetector()
-                        u.feed(headline[0])
-                        u.close()
-                        encoding = u.result['encoding']
-                    except ImportError:
-                        encoding = 'utf8'
-                    newheadlines.append(format('%s %u%s',
-                                                headline[0].encode(encoding,'replace'),
-                                                link,
-                                                pubDate))
-                else:
-                    newheadlines.append(format('%s %u%s',
-                                                headline[0],
-                                                link,
-                                                pubDate))
-            else:
-                newheadlines.append(format('%s %u%s',
-                                            headline[0],
-                                            link,
-                                            pubDate))
-        return newheadlines
 
-    def _newHeadlines(self, irc, channels, name, url):
-        try:
-            # We acquire the lock here so there's only one announcement thread
-            # in this code at any given time.  Otherwise, several announcement
-            # threads will getFeed (all blocking, in turn); then they'll all
-            # want to send their news messages to the appropriate channels.
-            # Note that we're allowed to acquire this lock twice within the
-            # same thread because it's an RLock and not just a normal Lock.
-            self.acquireLock(url)
-            t = time.time()
-            try:
-                #oldresults = self.cachedFeeds[url]
-                #oldheadlines = self.getHeadlines(oldresults)
-                oldheadlines = self.cachedHeadlines[url]
-                oldheadlines = list(filter(lambda x: t - x[3] <
-                    self.registryValue('announce.cachePeriod'), oldheadlines))
-            except KeyError:
-                oldheadlines = []
-            newresults = self.getFeed(url)
-            newheadlines = self.getHeadlines(newresults)
-            if len(newheadlines) == 1:
-                s = newheadlines[0][0]
-                if s in ('Timeout downloading feed.',
-                         'Unable to download feed.'):
-                    self.log.debug('%s %u', s, url)
-                    return
-            def normalize(headline):
-                return (tuple(headline[0].lower().split()), headline[1])
-            oldheadlinesset = set(map(normalize, oldheadlines))
-            for (i, headline) in enumerate(newheadlines):
-                if normalize(headline) in oldheadlinesset:
-                    newheadlines[i] = None
-            newheadlines = list(filter(None, newheadlines)) # Removes Nones.
-            number_of_headlines = len(oldheadlines)
-            oldheadlines.extend(newheadlines)
-            self.cachedHeadlines[url] = oldheadlines
-            if newheadlines:
-                def filter_whitelist(headline):
-                    v = False
-                    for kw in whitelist:
-                        if kw in headline[0] or kw in headline[1]:
-                            v = True
-                            break
-                    return v
-                def filter_blacklist(headline):
-                    v = True
-                    for kw in blacklist:
-                        if kw in headline[0] or kw in headline[1]:
-                            v = False
-                            break
-                    return v
-                for channel in channels:
-                    if  number_of_headlines == 0:
-                        channelnewheadlines = newheadlines[:self.registryValue('initialAnnounceHeadlines', channel)]
-                    else:
-                        channelnewheadlines = newheadlines[:]
-                    whitelist = self.registryValue('keywordWhitelist', channel)
-                    blacklist = self.registryValue('keywordBlacklist', channel)
-                    if len(whitelist) != 0:
-                        channelnewheadlines = filter(filter_whitelist, channelnewheadlines)
-                    if len(blacklist) != 0:
-                        channelnewheadlines = filter(filter_blacklist, channelnewheadlines)
-                    channelnewheadlines = list(channelnewheadlines)
-                    if len(channelnewheadlines) == 0:
-                        return
-                    bold = self.registryValue('bold', channel)
-                    sep = self.registryValue('headlineSeparator', channel)
-                    prefix = self.registryValue('announcementPrefix', channel)
-                    suffix = self.registryValue('announcementSeparator', channel)
-                    pre = format('%s%s%s', prefix, name, suffix)
-                    if bold:
-                        pre = ircutils.bold(pre)
-                        sep = ircutils.bold(sep)
-                    headlines = self.buildHeadlines(channelnewheadlines, channel)
-                    irc.replies(headlines, prefixer=pre, joiner=sep,
-                                to=channel, prefixNick=False, private=True)
-        finally:
-            self.releaseLock(url)
+    ##################
+    # Status accessors
 
-    def willGetNewFeed(self, url):
-        now = time.time()
-        wait = self.registryValue('waitPeriod')
-        if url not in self.lastRequest or now - self.lastRequest[url] > wait:
-            return True
-        else:
-            return False
+    def get_feed(self, name):
+        return self.feeds.get(self.feed_names.get(name, name), None)
 
-    def acquireLock(self, url, blocking=True):
-        try:
-            self.gettingLockLock.acquire()
-            try:
-                lock = self.locks[url]
-            except KeyError:
-                lock = threading.RLock()
-                self.locks[url] = lock
-            return lock.acquire(blocking=blocking)
-        finally:
-            self.gettingLockLock.release()
+    def is_expired(self, feed):
+        assert feed
+        event_horizon = time.time() - self.registryValue('waitPeriod')
+        return feed.last_update < event_horizon
 
-    def releaseLock(self, url):
-        self.locks[url].release()
 
-    def getFeed(self, url):
-        def error(s):
-            return {'items': [{'title': s}]}
-        try:
-            # This is the most obvious place to acquire the lock, because a
-            # malicious user could conceivably flood the bot with rss commands
-            # and DoS the website in question.
-            self.acquireLock(url)
-            if self.willGetNewFeed(url):
-                results = {}
-                try:
-                    self.log.debug('Downloading new feed from %u', url)
-                    results = feedparser.parse(url)
-                    if 'bozo_exception' in results and not results['entries']:
-                        raise results['bozo_exception']
-                except feedparser.sgmllib.SGMLParseError:
-                    self.log.exception('Uncaught exception from feedparser:')
-                    raise callbacks.Error('Invalid (unparsable) RSS feed.')
-                except socket.timeout:
-                    return error('Timeout downloading feed.')
-                except Exception as e:
-                    # These seem mostly harmless.  We'll need reports of a
-                    # kind that isn't.
-                    self.log.debug('Allowing bozo_exception %r through.', e)
-                if results.get('feed', {}) and self.getHeadlines(results):
-                    self.cachedFeeds[url] = results
-                    self.lastRequest[url] = time.time()
-                else:
-                    self.log.debug('Not caching results; feed is empty.')
-            try:
-                return self.cachedFeeds[url]
-            except KeyError:
-                wait = self.registryValue('waitPeriod')
-                # If there's a problem retrieving the feed, we should back off
-                # for a little bit before retrying so that there is time for
-                # the error to be resolved.
-                self.lastRequest[url] = time.time() - .5 * wait
-                return error('Unable to download feed.')
-        finally:
-            self.releaseLock(url)
+    ###############
+    # Feed fetching
 
-    def _getConverter(self, feed):
-        toText = utils.web.htmlToText
-        if 'encoding' in feed:
-            def conv(s):
-                # encode() first so there implicit encoding doesn't happen in
-                # other functions when unicode and bytestring objects are used
-                # together
-                s = s.encode(feed['encoding'], 'replace')
-                s = toText(s).strip()
-                return s
-            return conv
-        else:
-            return lambda s: toText(s).strip()
-    def _sortFeedItems(self, items):
-        """Return feed items, sorted according to sortFeedItems."""
+    @lock_feed
+    def update_feed(self, feed):
+        d = feedparser.parse(feed.url)
+        feed.data = d.feed
+        feed.entries = d.entries
+        self.announce_feed(feed)
+
+    def update_feed_in_thread(self, feed):
+        feed.last_update = time.time()
+        t = world.SupyThread(target=self.update_feed,
+                             name=format('Fetching feed %u', feed.url),
+                             args=(feed,))
+        t.setDaemon(True)
+        t.start()
+
+    def update_feed_if_needed(self, feed):
+        if self.is_expired(feed):
+            self.update_feed(feed)
+
+    def update_feeds(self):
+        for name in self.registryValue('feeds'):
+            self.update_feed_if_needed(self.get_feed(name))
+
+    @lock_feed
+    def announce_feed(self, feed):
+        entries = feed.entries
+        new_entries = [entry for entry in entries
+                if entry.id not in feed.announced_entries]
+        if not new_entries:
+            return
+
         order = self.registryValue('sortFeedItems')
-        if order not in ['oldestFirst', 'newestFirst']:
-            return items
-        if order == 'oldestFirst':
-            reverse = False
-        if order == 'newestFirst':
-            reverse = True
-        try:
-            sitems = sorted(items, key=lambda i: i['updated'], reverse=reverse)
-        except KeyError:
-            # feedparser normalizes required timestamp fields in ATOM and RSS
-            # to the "updated" field. Feeds missing it are unsortable by date.
-            return items
-        return sitems
+        new_entries = sort_feed_items(new_entries, order)
+        for irc in world.ircs:
+            for channel in irc.state.channels:
+                if feed.name not in self.registryValue('announce', channel):
+                    continue
+                for entry in new_entries:
+                    self.announce_entry(irc, channel, feed, entry)
+        feed.announced_entries |= {entry.id for entry in new_entries}
+        # We keep a little more because we don't want to re-announce
+        # oldest entries if one of the newest gets removed.
+        feed.announced_entries.truncate(2*len(entries))
 
-    def getHeadlines(self, feed):
-        headlines = []
-        t = time.time()
-        conv = self._getConverter(feed)
-        for d in self._sortFeedItems(feed['items']):
-            if 'title' in d:
-                title = conv(d['title'])
-                link = d.get('link')
-                pubDate = d.get('pubDate', d.get('updated'))
-                headlines.append((title, link, pubDate, t))
-        return headlines
 
-    @internationalizeDocstring
-    def makeFeedCommand(self, name, url):
-        docstring = format("""[<number of headlines>]
+    #################
+    # Entry rendering
 
-        Reports the titles for %s at the RSS feed %u.  If
-        <number of headlines> is given, returns only that many headlines.
-        RSS feeds are only looked up every supybot.plugins.RSS.waitPeriod
-        seconds, which defaults to 1800 (30 minutes) since that's what most
-        websites prefer.
-        """, name, url)
-        if url not in self.locks:
-            self.locks[url] = threading.RLock()
-        if self.isCommandMethod(name):
-            s = format('I already have a command in this plugin named %s.',name)
-            raise callbacks.Error(s)
-        def f(self, irc, msg, args):
-            args.insert(0, url)
-            self.rss(irc, msg, args)
-        f = utils.python.changeFunctionName(f, name, docstring)
-        f = types.MethodType(f, self)
-        self.feedNames[name] = (url, f)
-        self._registerFeed(name, url)
+    def should_send_entry(self, channel, entry):
+        whitelist = self.registryValue('keywordWhitelist', channel)
+        blacklist = self.registryValue('keywordBlacklist', channel)
+        if whitelist:
+            if all(kw not in entry.title and kw not in entry.description
+                   for kw in whitelist):
+                return False
+        if blacklist:
+            if any(kw in entry.title or kw in entry.description
+                   for kw in blacklist):
+                return False
+        return True
+
+    def format_entry(self, channel, feed, entry, is_announce):
+        if is_announce:
+            template = self.registryValue('announceFormat', channel)
+        else:
+            template = self.registryValue('format', channel)
+        date = entry.get('published_parsed', entry.get('updated_parsed'))
+        date = utils.str.timestamp(date)
+        return string.Template(template).safe_substitute(template,
+                feed_name=feed.name,
+                date=date,
+                **entry)
+
+    def announce_entry(self, irc, channel, feed, entry):
+        if self.should_send_entry(channel, entry):
+            s = format_entry(channel, feed, entry, True)
+            irc.sendMsg(ircmsgs.privmsg(channel, s))
+
+
+    ##########
+    # Commands
 
     @internationalizeDocstring
     def add(self, irc, msg, args, name, url):
@@ -390,7 +274,8 @@ class RSS(callbacks.Plugin):
         Adds a command to this plugin that will look up the RSS feed at the
         given URL.
         """
-        self.makeFeedCommand(name, url)
+        self.register_feed_config(name, url)
+        self.feeds[name] = Feed(name, url)
         irc.replySuccess()
     add = wrap(add, ['feedName', 'url'])
 
@@ -401,12 +286,11 @@ class RSS(callbacks.Plugin):
         Removes the command for looking up RSS feeds at <name> from
         this plugin.
         """
-        if name not in self.feedNames:
+        feed = self.get_feed(name)
+        if not feed:
             irc.error(_('That\'s not a valid RSS feed command name.'))
             return
-        del self.feedNames[name]
-        conf.supybot.plugins.RSS.feeds().remove(name)
-        conf.supybot.plugins.RSS.feeds.unregister(name)
+        self.remove_feed(feed)
         irc.replySuccess()
     remove = wrap(remove, ['feedName'])
 
@@ -467,23 +351,25 @@ class RSS(callbacks.Plugin):
         If <number of headlines> is given, return only that many headlines.
         """
         self.log.debug('Fetching %u', url)
-        feed = self.getFeed(url)
+        feed = self.get_feed(url)
+        if not feed:
+            feed = Feed(url, url)
         if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
         else:
             channel = None
-        headlines = self.getHeadlines(feed)
-        if not headlines:
+        self.update_feed_if_needed(feed)
+        entries = feed.entries
+        if not entries:
             irc.error(_('Couldn\'t get RSS feed.'))
             return
-        headlines = self.buildHeadlines(headlines, channel, 'showLinks', 'showPubDate')
-        if n:
-            headlines = headlines[:n]
-        else:
-            headlines = headlines[:self.registryValue('defaultNumberOfHeadlines')]
+        n = n or self.registryValue('defaultNumberOfHeadlines', channel)
+        entries = list(filter(lambda e:self.should_send_entry(channel, e),
+                              feed.entries))
+        entries = entries[:n]
+        headlines = map(lambda e:self.format_entry(channel, feed, e, False),
+                        entries)
         sep = self.registryValue('headlineSeparator', channel)
-        if self.registryValue('bold', channel):
-            sep = ircutils.bold(sep)
         irc.replies(headlines, joiner=sep)
     rss = wrap(rss, ['url', additional('int')])
 
@@ -498,9 +384,9 @@ class RSS(callbacks.Plugin):
             url = self.registryValue('feeds.%s' % url)
         except registry.NonExistentRegistryEntry:
             pass
-        feed = self.getFeed(url)
-        conv = self._getConverter(feed)
-        info = feed.get('feed')
+        feed = self.get_feed(url)
+        self.update_feed_if_needed(feed)
+        info = feed.data
         if not info:
             irc.error(_('I couldn\'t retrieve that RSS feed.'))
             return
@@ -510,10 +396,10 @@ class RSS(callbacks.Plugin):
             now = time.mktime(time.gmtime())
             when = utils.timeElapsed(now - seconds) + ' ago'
         else:
-            when = 'time unavailable'
-        title = conv(info.get('title', 'unavailable'))
-        desc = conv(info.get('description', 'unavailable'))
-        link = conv(info.get('link', 'unavailable'))
+            when = _('time unavailable')
+        title = info.get('title', _('unavailable'))
+        desc = info.get('description', _('unavailable'))
+        link = info.get('link', _('unavailable'))
         # The rest of the entries are all available in the channel key
         response = format(_('Title: %s;  URL: %u;  '
                           'Description: %s;  Last updated: %s.'),
