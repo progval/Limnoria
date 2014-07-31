@@ -70,8 +70,8 @@ class Feed:
         # We don't want to fetch feeds right after the plugin is
         # loaded (the bot could be starting, and thus already busy)
         self.last_update = time.time() if plugin_is_loading else 0
-        self.entries = None
-        self.lock = threading.Thread()
+        self.entries = []
+        self.lock = threading.Lock()
         self.announced_entries = utils.structures.TruncatableSet()
 
     def get_command(self, plugin):
@@ -88,12 +88,6 @@ class Feed:
         f = utils.python.changeFunctionName(f, self.name, docstring)
         f = types.MethodType(f, plugin)
         return f
-
-def lock_feed(f):
-    def newf(feed, *args, **kwargs):
-        with feed.lock:
-            return f(feed, *args, **kwargs)
-    return f
 
 def sort_feed_items(items, order):
     """Return feed items, sorted according to sortFeedItems."""
@@ -191,15 +185,15 @@ class RSS(callbacks.Plugin):
         event_horizon = time.time() - self.registryValue('waitPeriod')
         return feed.last_update < event_horizon
 
-
     ###############
     # Feed fetching
 
-    @lock_feed
     def update_feed(self, feed):
-        d = feedparser.parse(feed.url)
-        feed.data = d.feed
-        feed.entries = d.entries
+        with feed.lock:
+            d = feedparser.parse(feed.url)
+            feed.data = d.feed
+            feed.entries = d.entries
+            feed.last_update = time.time()
         self.announce_feed(feed)
 
     def update_feed_in_thread(self, feed):
@@ -215,16 +209,28 @@ class RSS(callbacks.Plugin):
             self.update_feed(feed)
 
     def update_feeds(self):
-        for name in self.registryValue('feeds'):
+        announced_feeds = set()
+        for irc in world.ircs:
+            for channel in irc.state.channels:
+                announced_feeds |= self.registryValue('announce', channel)
+        for name in announced_feeds:
             self.update_feed_if_needed(self.get_feed(name))
 
-    @lock_feed
+    def get_new_entries(self, feed):
+        with feed.lock:
+            entries = feed.entries
+            new_entries = [entry for entry in entries
+                    if entry.id not in feed.announced_entries]
+            if not new_entries:
+                return []
+            feed.announced_entries |= {entry.id for entry in new_entries}
+            # We keep a little more because we don't want to re-announce
+            # oldest entries if one of the newest gets removed.
+            feed.announced_entries.truncate(2*len(entries))
+        return new_entries
+
     def announce_feed(self, feed):
-        entries = feed.entries
-        new_entries = [entry for entry in entries
-                if entry.id not in feed.announced_entries]
-        if not new_entries:
-            return
+        new_entries = self.get_new_entries(feed)
 
         order = self.registryValue('sortFeedItems')
         new_entries = sort_feed_items(new_entries, order)
@@ -234,10 +240,6 @@ class RSS(callbacks.Plugin):
                     continue
                 for entry in new_entries:
                     self.announce_entry(irc, channel, feed, entry)
-        feed.announced_entries |= {entry.id for entry in new_entries}
-        # We keep a little more because we don't want to re-announce
-        # oldest entries if one of the newest gets removed.
-        feed.announced_entries.truncate(2*len(entries))
 
 
     #################
@@ -329,10 +331,14 @@ class RSS(callbacks.Plugin):
             """
             announce = conf.supybot.plugins.RSS.announce
             S = announce.get(channel)()
-            for feed in feeds:
-                S.add(feed)
+            plugin = irc.getCallback('RSS')
+            for name in feeds:
+                S.add(name)
             announce.get(channel).setValue(S)
             irc.replySuccess()
+            for name in feeds:
+                feed = plugin.get_feed(name)
+                plugin.announce_feed(feed)
         add = wrap(add, [('checkChannelCapability', 'op'),
                          many(first('url', 'feedName'))])
 
