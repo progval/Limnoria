@@ -93,7 +93,7 @@ class Feed:
         seconds, which defaults to 1800 (30 minutes) since that's what most
         websites prefer."""), self.name, self.url)
         def f(self2, irc, msg, args):
-            args.insert(0, self.url)
+            args.insert(0, self.name)
             self2.rss(irc, msg, args)
         f = utils.python.changeFunctionName(f, self.name, docstring)
         f = types.MethodType(f, plugin)
@@ -176,6 +176,13 @@ class RSS(callbacks.Plugin):
         self.registryValue('feeds').add(name)
         group = self.registryValue('feeds', value=False)
         conf.registerGlobalValue(group, name, registry.String(url, ''))
+        feed_group = conf.registerGroup(group, name)
+        conf.registerChannelValue(feed_group, 'format',
+                registry.String('', """Feed-specific format. Defaults to
+                supybot.plugins.RSS.format if empty."""))
+        conf.registerChannelValue(feed_group, 'announceFormat',
+                registry.String('', """Feed-specific announce format.
+                Defaults to supybot.plugins.RSS.announceFormat if empty."""))
 
     def register_feed(self, name, url, plugin_is_loading, announced=[]):
         self.feed_names[name] = url
@@ -295,10 +302,13 @@ class RSS(callbacks.Plugin):
         return True
 
     def format_entry(self, channel, feed, entry, is_announce):
-        if is_announce:
-            template = self.registryValue('announceFormat', channel)
+        key_name = 'announceFormat' if is_announce else 'format'
+        if feed.name in self.registryValue('feeds'):
+            specific_key_name = registry.join(['feeds', feed.name, key_name])
+            template = self.registryValue(specific_key_name, channel) or \
+                    self.registryValue(key_name, channel)
         else:
-            template = self.registryValue('format', channel)
+            template = self.registryValue(key_name, channel)
         date = entry.get('published_parsed', entry.get('updated_parsed'))
         date = utils.str.timestamp(date)
         return string.Template(template).safe_substitute(template,
@@ -398,7 +408,7 @@ class RSS(callbacks.Plugin):
 
     @internationalizeDocstring
     def rss(self, irc, msg, args, url, n):
-        """<url> [<number of headlines>]
+        """<name|url> [<number of headlines>]
 
         Gets the title components of the given RSS feed.
         If <number of headlines> is given, return only that many headlines.
@@ -424,7 +434,7 @@ class RSS(callbacks.Plugin):
                         entries)
         sep = self.registryValue('headlineSeparator', channel)
         irc.replies(headlines, joiner=sep)
-    rss = wrap(rss, ['url', additional('int')])
+    rss = wrap(rss, [first('url', 'feedName'), additional('int')])
 
     @internationalizeDocstring
     def info(self, irc, msg, args, url):

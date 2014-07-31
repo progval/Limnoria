@@ -98,6 +98,21 @@ class RSSTestCase(ChannelPluginTestCase):
             self._feedMsg('rss remove xkcd')
             feedparser._open_resource = old_open
 
+    def testFeedSpecificFormat(self):
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_old)
+        try:
+            self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+            self.assertNotError('rss add xkcdsec https://xkcd.com/rss.xml')
+            self.assertNotError('config plugins.RSS.feeds.xkcd.format foo')
+            self.assertRegexp('config plugins.RSS.feeds.xkcd.format', 'foo')
+            self.assertRegexp('xkcd', 'foo')
+            self.assertNotRegexp('xkcdsec', 'foo')
+        finally:
+            self._feedMsg('rss remove xkcd')
+            self._feedMsg('rss remove xkcdsec')
+            feedparser._open_resource = old_open
+
     if network:
         def testRssinfo(self):
             self.assertNotError('rss info %s' % url)
