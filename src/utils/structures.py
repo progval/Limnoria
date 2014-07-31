@@ -457,7 +457,7 @@ class CacheDict(collections.MutableMapping):
 class TruncatableSet(collections.MutableSet):
     """A set that keeps track of the order of inserted elements so
     the oldest can be removed."""
-    def __init__(self, iterable):
+    def __init__(self, iterable=[]):
         self._ordered_items = list(iterable)
         self._items = set(self._ordered_items)
     def __contains__(self, item):
