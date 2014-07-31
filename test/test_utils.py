@@ -1136,7 +1136,7 @@ class TestCacheDict(SupyTestCase):
 class TestTruncatableSet(SupyTestCase):
     def testBasics(self):
         s = TruncatableSet(['foo', 'bar', 'baz', 'qux'])
-        self.assertEqual(s, {'foo', 'bar', 'baz', 'qux'})
+        self.assertEqual(s, set(['foo', 'bar', 'baz', 'qux']))
         self.failUnless('foo' in s)
         self.failUnless('bar' in s)
         self.failIf('quux' in s)
@@ -1151,13 +1151,13 @@ class TestTruncatableSet(SupyTestCase):
         s.add('baz')
         s.add('qux')
         s.truncate(3)
-        self.assertEqual(s, {'bar', 'baz', 'qux'})
+        self.assertEqual(s, set(['bar', 'baz', 'qux']))
 
     def testTruncateUnion(self):
         s = TruncatableSet(['bar', 'foo'])
-        s |= {'baz', 'qux'}
+        s |= set(['baz', 'qux'])
         s.truncate(3)
-        self.assertEqual(s, {'foo', 'baz', 'qux'})
+        self.assertEqual(s, set(['foo', 'baz', 'qux']))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
