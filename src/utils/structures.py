@@ -460,6 +460,8 @@ class TruncatableSet(collections.MutableSet):
     def __init__(self, iterable=[]):
         self._ordered_items = list(iterable)
         self._items = set(self._ordered_items)
+    def __repr__(self):
+        return 'TruncatableSet({%r})' % self._items
     def __contains__(self, item):
         return item in self._items
     def __iter__(self):
