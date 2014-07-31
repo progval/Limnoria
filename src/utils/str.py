@@ -448,7 +448,7 @@ def format(s, *args, **kwargs):
     # to add the character to the _formatRe regexp or it will be ignored
     # (and hard to debug if you don't know the trick).
     # Of course, you should also document it in the docstring above.
-    if sys.version_info.major < 3:
+    if sys.version_info[0] < 3:
         def pred(s):
             if isinstance(s, unicode):
                 return s.encode('utf8')

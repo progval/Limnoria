@@ -32,7 +32,7 @@ import sys
 import feedparser
 from supybot.test import *
 import supybot.conf as conf
-if sys.version_info.major >= 3:
+if sys.version_info[0] >= 3:
     from io import StringIO
 else:
     from cStringIO import StringIO
