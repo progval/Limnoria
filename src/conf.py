@@ -374,7 +374,7 @@ registerChannelValue(supybot.reply.format, 'time',
 def timestamp(t):
     if t is None:
         t = time.time()
-    elif isinstance(t, int):
+    elif isinstance(t, float):
         t = time.localtime(t)
     format = get(supybot.reply.format.time, dynamic.channel)
     return time.strftime(format, t)
