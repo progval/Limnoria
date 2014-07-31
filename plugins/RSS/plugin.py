@@ -167,10 +167,17 @@ class RSS(callbacks.Plugin):
     ##################
     # Feed registering
 
-    def assert_feed_does_not_exist(self, name):
+    def assert_feed_does_not_exist(self, name, url=None):
         if self.isCommandMethod(name):
-            s = format('I already have a command in this plugin named %s.',name)
+            s = format(_('I already have a command in this plugin named %s.'),
+                    name)
             raise callbacks.Error(s)
+        if url:
+            feed = self.feeds.get(url)
+            if feed and feed.name != feed.url:
+                s = format(_('I already have a feed with that URL named %s.'),
+                        feed.name)
+                raise callbacks.Error(s)
 
     def register_feed_config(self, name, url=''):
         self.registryValue('feeds').add(name)
@@ -332,7 +339,7 @@ class RSS(callbacks.Plugin):
         Adds a command to this plugin that will look up the RSS feed at the
         given URL.
         """
-        self.assert_feed_does_not_exist(name)
+        self.assert_feed_does_not_exist(name, url)
         self.register_feed_config(name, url)
         self.register_feed(name, url, False)
         irc.replySuccess()

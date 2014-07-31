@@ -62,6 +62,13 @@ class RSSTestCase(ChannelPluginTestCase):
     def testCantRemoveMethodThatIsntFeed(self):
         self.assertError('rss remove rss')
 
+    def testCantAddDuplicatedFeed(self):
+        self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+        try:
+            self.assertError('rss add xkcddup http://xkcd.com/rss.xml')
+        finally:
+            self.assertNotError('rss remove xkcd')
+
     def testAnnounce(self):
         old_open = feedparser._open_resource
         feedparser._open_resource = constant(xkcd_old)
