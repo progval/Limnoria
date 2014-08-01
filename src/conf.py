@@ -1170,9 +1170,9 @@ registerGlobalValue(supybot.servers.http, 'favicon',
 ###
 registerGlobalValue(supybot, 'defaultIgnore',
     registry.Boolean(False, _("""Determines whether the bot will ignore
-    unregistered users by default.  Of course, that'll make it particularly
-    hard for those users to register or identify with the bot, but that's your
-    problem to solve.""")))
+    unidentified users by default.  Of course, that'll make it
+    particularly hard for those users to register or identify with the bot
+    without adding their hostmasks, but that's your problem to solve.""")))
 
 
 registerGlobalValue(supybot, 'externalIP',
