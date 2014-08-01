@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,15 +51,15 @@ msgid ""
 "    increase/decrease karma without being addressed."
 msgstr ""
 
-#: plugin.py:234
+#: plugin.py:237
 msgid "%(thing)s's karma is now %(karma)i"
 msgstr ""
 
-#: plugin.py:245 plugin.py:254
+#: plugin.py:248 plugin.py:257
 msgid "You're not allowed to adjust your own karma."
 msgstr ""
 
-#: plugin.py:284
+#: plugin.py:287
 #, docstring
 msgid ""
 "[<channel>] [<thing> ...]\n"
@@ -73,35 +73,35 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:297
+#: plugin.py:300
 msgid "%s has neutral karma."
 msgstr ""
 
-#: plugin.py:304
+#: plugin.py:307
 msgid "Karma for %q has been increased %n and decreased %n for a total karma of %s."
 msgstr ""
 
-#: plugin.py:306 plugin.py:307
+#: plugin.py:309 plugin.py:310
 msgid "time"
 msgstr ""
 
-#: plugin.py:320
+#: plugin.py:323
 msgid "I didn't know the karma for any of those things."
 msgstr ""
 
-#: plugin.py:330 plugin.py:359
+#: plugin.py:333 plugin.py:362
 msgid "I have no karma for this channel."
 msgstr ""
 
-#: plugin.py:335
+#: plugin.py:338
 msgid "  You (%s) are ranked %i out of %i."
 msgstr ""
 
-#: plugin.py:339
+#: plugin.py:342
 msgid "Highest karma: %L.  Lowest karma: %L.%s"
 msgstr ""
 
-#: plugin.py:347
+#: plugin.py:350
 #, docstring
 msgid ""
 "[<channel>] {increased,decreased,active}\n"
@@ -112,16 +112,17 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:365
+#: plugin.py:368
 #, docstring
 msgid ""
-"[<channel>] <name>\n"
+"[<channel>] [<name>]\n"
 "\n"
-"        Resets the karma of <name> to 0.\n"
+"        Resets the karma of <name> to 0. If <name> is not given, resets\n"
+"        everything.\n"
 "        "
 msgstr ""
 
-#: plugin.py:375
+#: plugin.py:379
 #, docstring
 msgid ""
 "[<channel>] <filename>\n"
@@ -132,7 +133,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:387
+#: plugin.py:391
 #, docstring
 msgid ""
 "[<channel>] <filename>\n"

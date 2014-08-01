@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,7 +104,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:539 plugin.py:565 plugin.py:597 plugin.py:620
+#: plugin.py:539 plugin.py:565 plugin.py:597 plugin.py:620 plugin.py:643
 msgid "%r is not a valid channel."
 msgstr ""
 
@@ -145,16 +145,25 @@ msgstr ""
 #: plugin.py:635
 #, docstring
 msgid ""
+"<command>\n"
+"\n"
+"        This command shows the content of an Aka.\n"
+"        "
+msgstr ""
+
+#: plugin.py:652
+#, docstring
+msgid ""
 "takes no arguments\n"
 "\n"
 "        Imports the Alias database into Aka's, and clean the former."
 msgstr ""
 
-#: plugin.py:640
+#: plugin.py:657
 msgid "Alias plugin is not loaded."
 msgstr ""
 
-#: plugin.py:650
+#: plugin.py:667
 msgid "Error occured when importing the %n: %L"
 msgstr ""
 

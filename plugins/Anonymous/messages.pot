@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,14 +77,24 @@ msgstr ""
 #: plugin.py:81
 #, docstring
 msgid ""
-"<channel|nick> <text>\n"
+"<channel> <text>\n"
 "\n"
-"        Sends <text> to <channel|nick>.  Can only send to <nick> if\n"
+"        Sends <text> to <channel>.  Can only send to <nick> if\n"
 "        supybot.plugins.Anonymous.allowPrivateTarget is True.\n"
 "        "
 msgstr ""
 
-#: plugin.py:95
+#: plugin.py:94
+#, docstring
+msgid ""
+"<nick> <text>\n"
+"\n"
+"        Sends <text> to <nick>.  Can only be used if\n"
+"        supybot.plugins.Anonymous.allowPrivateTarget is True.\n"
+"        "
+msgstr ""
+
+#: plugin.py:108
 #, docstring
 msgid ""
 "<channel> <action>\n"

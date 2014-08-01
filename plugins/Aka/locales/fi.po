@@ -5,16 +5,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Aka plugin for Limnoria\n"
-"POT-Creation-Date: 2014-03-22 12:24+EET\n"
-"PO-Revision-Date: 2014-03-22 12:39+0200\n"
+"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
+"PO-Revision-Date: 2014-08-01 20:05+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
+"Language: Finnish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 1.5.4\n"
-"Language: Finnish\n"
 
 #: config.py:55
 msgid ""
@@ -131,7 +131,7 @@ msgstr ""
 "parametrit.\n"
 "        "
 
-#: plugin.py:539 plugin.py:565 plugin.py:597 plugin.py:620
+#: plugin.py:539 plugin.py:565 plugin.py:597 plugin.py:620 plugin.py:643
 msgid "%r is not a valid channel."
 msgstr "%r ei ole kelvollinen kanava."
 
@@ -181,6 +181,17 @@ msgstr ""
 
 #: plugin.py:635
 msgid ""
+"<command>\n"
+"\n"
+"        This command shows the content of an Aka.\n"
+"        "
+msgstr ""
+"<komento>\n"
+"\n"
+" Tämä komento näyttää Akan sisällön."
+
+#: plugin.py:652
+msgid ""
 "takes no arguments\n"
 "\n"
 "        Imports the Alias database into Aka's, and clean the former."
@@ -189,10 +200,10 @@ msgstr ""
 "\n"
 " Tuo Aliaksen tietokannan Akaan ja tyhjentää aiemman."
 
-#: plugin.py:640
+#: plugin.py:657
 msgid "Alias plugin is not loaded."
 msgstr "Alias lisä-osa ei ole ladattu."
 
-#: plugin.py:650
+#: plugin.py:667
 msgid "Error occured when importing the %n: %L"
 msgstr "Virhe komennon %n tuomisessa: %L"
