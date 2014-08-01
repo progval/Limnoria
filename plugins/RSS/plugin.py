@@ -214,7 +214,7 @@ class RSS(callbacks.Plugin):
             return True
 
     def listCommands(self):
-        return self.__parent.listCommands(self.feeds.keys())
+        return self.__parent.listCommands(self.feed_names.keys())
 
     def getCommandMethod(self, command):
         try:
