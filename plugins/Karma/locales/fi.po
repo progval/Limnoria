@@ -1,12 +1,12 @@
 # Karma plugin in Limnoria.
-# Copyright (C) 2011 Limnoria
-# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011.
+# Copyright (C) 2011-2014 Limnoria
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011-2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 15:42+EET\n"
-"PO-Revision-Date: 2014-03-22 16:11+0200\n"
+"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
+"PO-Revision-Date: 2014-08-01 20:07+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -63,15 +63,15 @@ msgstr ""
 "Määrittää nostaako/vähentääkö botti karmaa\n"
 "    ilman, että sille tarkoitetaan viestejä."
 
-#: plugin.py:234
+#: plugin.py:237
 msgid "%(thing)s's karma is now %(karma)i"
 msgstr "%(thing)in karma on nyt %(karma)i"
 
-#: plugin.py:245 plugin.py:254
+#: plugin.py:248 plugin.py:257
 msgid "You're not allowed to adjust your own karma."
 msgstr "Sinä et saa määrittää omaa karmaasi."
 
-#: plugin.py:284
+#: plugin.py:287
 msgid ""
 "[<channel>] [<thing> ...]\n"
 "\n"
@@ -99,36 +99,36 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:297
+#: plugin.py:300
 msgid "%s has neutral karma."
 msgstr "%s:llä on neutraali karma."
 
-#: plugin.py:304
+#: plugin.py:307
 msgid ""
 "Karma for %q has been increased %n and decreased %n for a total karma of %s."
 msgstr "Karma %q:lle on noussut %n ja laskenut %n yhteiskarmalle %s."
 
-#: plugin.py:306 plugin.py:307
+#: plugin.py:309 plugin.py:310
 msgid "time"
 msgstr "aika"
 
-#: plugin.py:320
+#: plugin.py:323
 msgid "I didn't know the karma for any of those things."
 msgstr "Minä en tiennyt yhtäkään noiden asioiden karmoista."
 
-#: plugin.py:330 plugin.py:359
+#: plugin.py:333 plugin.py:362
 msgid "I have no karma for this channel."
 msgstr "Minulla ei ole karmaa tälle kanavalle."
 
-#: plugin.py:335
+#: plugin.py:338
 msgid "  You (%s) are ranked %i out of %i."
 msgstr "Sinä olet rankingissa (%s) %i %i:stä."
 
-#: plugin.py:339
+#: plugin.py:342
 msgid "Highest karma: %L.  Lowest karma: %L.%s"
 msgstr "Korkein karma: %L.  Alhaisin karma: %L.%s"
 
-#: plugin.py:347
+#: plugin.py:350
 msgid ""
 "[<channel>] {increased,decreased,active}\n"
 "\n"
@@ -147,19 +147,21 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:365
+#: plugin.py:368
 msgid ""
-"[<channel>] <name>\n"
+"[<channel>] [<name>]\n"
 "\n"
-"        Resets the karma of <name> to 0.\n"
+"        Resets the karma of <name> to 0. If <name> is not given, resets\n"
+"        everything.\n"
 "        "
 msgstr ""
 "[<kanava>] <nimi>\n"
 "\n"
-"        Nollaa <nimen> karman.\n"
-"        "
+" Asettaa <nimen> karman arvoksi 0. Jos <nimeä> ei ole annettu, asettaa "
+"kaiken\n"
+" arvoksi 0."
 
-#: plugin.py:375
+#: plugin.py:379
 msgid ""
 "[<channel>] <filename>\n"
 "\n"
@@ -177,7 +179,7 @@ msgstr ""
 "         kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:387
+#: plugin.py:391
 msgid ""
 "[<channel>] <filename>\n"
 "\n"
