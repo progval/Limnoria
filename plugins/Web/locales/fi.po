@@ -1,12 +1,12 @@
 # Web plugin in Limnoria.
 # Copyright (C) 2011 Limnoria
-# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011.
+# Mikaela Suomalainen <mikaela.suomalainen@outlook.com>, 2011-2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
-"PO-Revision-Date: 2014-03-22 13:05+0200\n"
+"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
+"PO-Revision-Date: 2014-08-01 19:50+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -74,14 +74,14 @@ msgstr ""
 "vastaukset."
 
 #: plugin.py:98
-msgid "Page is too big."
-msgstr "Sivu on liian suuri."
+msgid "Page is too big or the server took too much time to answer the request."
+msgstr "Sivu on liian suuri tai palvelin vastasi pyyntöön liian hitaasti."
 
-#: plugin.py:106
+#: plugin.py:107
 msgid "Display a nice error instead of \"An error has occurred\"."
 msgstr "Näytä kiva virheilmoitus ilmoitukset \"Virhe on tapahtunut\" sijaan."
 
-#: plugin.py:116
+#: plugin.py:117
 msgid "Add the help for \"@help Web\" here."
 msgstr "Lisää ohje komennolle \"@help Web\" tähän."
 
@@ -224,6 +224,9 @@ msgid ""
 msgstr ""
 "Tämä komento on poistettu käytöstä (supybot.plugins.Web.fetch.maximum on "
 "asetettu arvoon 0)."
+
+#~ msgid "Page is too big."
+#~ msgstr "Sivu on liian suuri."
 
 #~ msgid ""
 #~ "<url>\n"

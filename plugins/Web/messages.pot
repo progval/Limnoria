@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,15 +55,15 @@ msgid ""
 msgstr ""
 
 #: plugin.py:98
-msgid "Page is too big."
+msgid "Page is too big or the server took too much time to answer the request."
 msgstr ""
 
-#: plugin.py:106
+#: plugin.py:107
 #, docstring
 msgid "Display a nice error instead of \"An error has occurred\"."
 msgstr ""
 
-#: plugin.py:116
+#: plugin.py:117
 #, docstring
 msgid "Add the help for \"@help Web\" here."
 msgstr ""
