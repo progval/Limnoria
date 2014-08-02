@@ -931,20 +931,7 @@ class Irc(IrcCommandDispatcher):
 
             return
 
-        caps = ['account-notify', 'extended-join']
-
-        if self.sasl_password:
-            if not self.sasl_username:
-                log.warning('%s: SASL username is not set, unable to '
-                            'identify.', self.network)
-            else:
-                caps.append('sasl')
-
-        log.debug('%s: Requesting capabilities: %s',
-                  self.network, ' '.join(caps))
-
-        for cap in caps:
-            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('LS',)))
 
         if self.password:
             log.info('%s: Queuing PASS command, not logging the password.',
@@ -975,16 +962,28 @@ class Irc(IrcCommandDispatcher):
             self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
     def doCap(self, msg):
+        caps = ['account-notify', 'extended-join']
+
+        if self.sasl_password:
+            if self.sasl_username:
+                caps.append('sasl')
+            else:
+                log.warning('%s: SASL username is not set, unable to '
+                            'identify.', self.network)
+
         for cap in msg.args[2].split(' '):
-            if msg.args[1] == 'ACK':
-                log.info('%s: Server acknowledged %r capability',
+            if msg.args[1] == 'LS' and cap in caps:
+                log.debug('%s: Requesting capability %r', cap)
+                self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
+            elif msg.args[1] == 'ACK':
+                log.info('%s: Server acknowledged capability %r',
                          self.network, cap)
 
                 if cap == 'sasl':
                     self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
                                                  args=('PLAIN',)))
             elif msg.args[1] == 'NAK':
-                log.warning('%s: Server refused %r capability',
+                log.warning('%s: Server refused capability %r',
                             self.network, cap)
 
                 if cap == 'sasl':
