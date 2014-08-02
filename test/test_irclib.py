@@ -382,7 +382,7 @@ class IrcTestCase(SupyTestCase):
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected NICK, got %r.' % m)
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
 
