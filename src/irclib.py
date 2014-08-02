@@ -481,9 +481,10 @@ class IrcState(IrcCommandDispatcher):
             else:
                 self.supported[arg] = None
 
-    def do352(self, irc, msg):
+    def do354(self, irc, msg):
         # WHO reply.
-        (nick, user, host) = (msg.args[5], msg.args[2], msg.args[3])
+
+        (_, user, host, nick, __) = msg.args
         hostmask = '%s!%s@%s' % (nick, user, host)
         self.nicksToHostmasks[nick] = hostmask
 
@@ -927,25 +928,39 @@ class Irc(IrcCommandDispatcher):
         if self.zombie:
             self.driver.die()
             self._reallyDie()
-        else:
-            if self.sasl_password:
-                if not self.sasl_username:
-                    log.warning('%s: SASL username is not set, unable to '
-                                'identify.', self.network)
-                else:
-                    log.debug("%s: Requesting capability 'sasl'.",
-                              self.network)
-                    self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
-            if self.password:
-                log.info('%s: Queuing PASS command, not logging the password.',
-                         self.network)
-                self.queueMsg(ircmsgs.password(self.password))
-            log.debug('%s: Queuing NICK command, nick is %s.',
-                      self.network, self.nick)
-            self.queueMsg(ircmsgs.nick(self.nick))
-            log.debug('%s: Queuing USER command, ident is %s, user is %s.',
-                      self.network, self.ident, self.user)
-            self.queueMsg(ircmsgs.user(self.ident, self.user))
+
+            return
+
+        caps = ['account-notify', 'extended-join']
+
+        if self.sasl_password:
+            if not self.sasl_username:
+                log.warning('%s: SASL username is not set, unable to '
+                            'identify.', self.network)
+            else:
+                caps.append('sasl')
+
+        log.debug('%s: Requesting capabilities: %s',
+                  self.network, ' '.join(caps))
+
+        for cap in caps:
+            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
+
+        if self.password:
+            log.info('%s: Queuing PASS command, not logging the password.',
+                     self.network)
+
+            self.queueMsg(ircmsgs.password(self.password))
+
+        log.debug('%s: Queuing NICK command, nick is %s.',
+                  self.network, self.nick)
+
+        self.queueMsg(ircmsgs.nick(self.nick))
+
+        log.debug('%s: Queuing USER command, ident is %s, user is %s.',
+                  self.network, self.ident, self.user)
+
+        self.queueMsg(ircmsgs.user(self.ident, self.user))
 
     def doAuthenticate(self, msg):
         if msg.args[0] == '+':
@@ -960,16 +975,20 @@ class Irc(IrcCommandDispatcher):
             self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
     def doCap(self, msg):
-        if msg.args[2] == 'sasl':
+        for cap in msg.args[2].split(' '):
             if msg.args[1] == 'ACK':
-                log.debug("%s: Server acknowledged 'sasl' capability",
-                          self.network)
-                self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
-                                             args=('PLAIN',)))
+                log.info('%s: Server acknowledged %r capability',
+                         self.network, cap)
+
+                if cap == 'sasl':
+                    self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
+                                                 args=('PLAIN',)))
             elif msg.args[1] == 'NAK':
-                log.warning("%s: Server refused 'sasl' capability",
-                            self.network)
-                self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+                log.warning('%s: Server refused %r capability',
+                            self.network, cap)
+
+                if cap == 'sasl':
+                    self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful', self.network)
@@ -1068,7 +1087,7 @@ class Irc(IrcCommandDispatcher):
     def doJoin(self, msg):
         if msg.nick == self.nick:
             channel = msg.args[0]
-            self.queueMsg(ircmsgs.who(channel)) # Ends with 315.
+            self.queueMsg(ircmsgs.who(channel, args=('%uhna',))) # Ends with 315.
             self.queueMsg(ircmsgs.mode(channel)) # Ends with 329.
             for channel in msg.args[0].split(','):
                 self.queueMsg(ircmsgs.mode(channel, '+b'))
