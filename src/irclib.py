@@ -973,7 +973,7 @@ class Irc(IrcCommandDispatcher):
 
         for cap in msg.args[2].split(' '):
             if msg.args[1] == 'LS' and cap in caps:
-                log.debug('%s: Requesting capability %r', cap)
+                log.debug('%s: Requesting capability %r', self.network, cap)
                 self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
             elif msg.args[1] == 'ACK':
                 log.info('%s: Server acknowledged capability %r',
