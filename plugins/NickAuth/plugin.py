@@ -200,9 +200,7 @@ class NickAuth(callbacks.Plugin):
                 user = None
 
         if user:
-            if account == '*':
-                user.clearAuth()
-            else:
+            if account != '*':
                 user.addAuth(msg.prefix)
                 ircdb.users.setUser(user, flush=False)
 
