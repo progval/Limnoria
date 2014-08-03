@@ -12,9 +12,9 @@ branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 
 # Install requirements required for only this file.
 if [[ $TRAVIS == "true" ]]; then
-    sudo pip install sphinx msgcheck --upgrade
+    CFLAGS="-j$(nproc)" sudo pip install sphinx msgcheck --upgrade
 else
-    pip install sphinx msgcheck --upgrade --user
+    CFLAGS="-j$(nproc)" pip install sphinx msgcheck --upgrade --user
 fi
 
 # Check translations
