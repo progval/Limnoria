@@ -481,16 +481,23 @@ class IrcState(IrcCommandDispatcher):
             else:
                 self.supported[arg] = None
 
-    def do354(self, irc, msg):
+    def do352(self, irc, msg):
         # WHO reply.
 
-        (_, user, host, nick, __) = msg.args
+        (nick, user, host) = (msg.args[5], msg.args[2], msg.args[3])
+        hostmask = '%s!%s@%s' % (nick, user, host)
+        self.nicksToHostmasks[nick] = hostmask
+
+    def do354(self, irc, msg):
+        # WHOX reply.
+
+        (__, user, host, nick, ___) = msg.args
         hostmask = '%s!%s@%s' % (nick, user, host)
         self.nicksToHostmasks[nick] = hostmask
 
     def do353(self, irc, msg):
         # NAMES reply.
-        (_, type, channel, names) = msg.args
+        (__, type, channel, names) = msg.args
         if channel not in self.channels:
             self.channels[channel] = ChannelState()
         c = self.channels[channel]
