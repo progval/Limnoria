@@ -186,7 +186,6 @@ class NickAuth(callbacks.Plugin):
 
 
     def doJoin(self, irc, msg):
-        # extended-join is not supported
         if len(msg.args) < 2:
             return
 
@@ -207,7 +206,7 @@ class NickAuth(callbacks.Plugin):
                 ircdb.users.setUser(user, flush=False)
 
     def do354(self, irc, msg):
-        (_, ident, host, nick, account) = msg.args
+        (__, ident, host, nick, account) = msg.args
         prefix = '%s!%s@%s' % (nick, ident, host)
         user = ircdb.users.getUserFromNick(irc.network, account)
 
@@ -218,11 +217,6 @@ class NickAuth(callbacks.Plugin):
                 user = None
 
         if user:
-            #if account == '0':
-            #    user.clearAuth()
-            #else:
-            #    user.addAuth(prefix)
-            #    ircdb.users.setUser(user, flush=False)
             if account != '0':
                 user.addAuth(prefix)
                 ircdb.users.setUser(user, flush=False)
