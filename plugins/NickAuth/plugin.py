@@ -187,6 +187,7 @@ class NickAuth(callbacks.Plugin):
 
     def doJoin(self, irc, msg):
         if len(msg.args) < 2:
+            # extended-join is not supported
             return
 
         account = msg.args[1]
