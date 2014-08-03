@@ -382,6 +382,8 @@ class IrcTestCase(SupyTestCase):
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
         m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
         self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
 
     def testPingResponse(self):
@@ -478,7 +480,9 @@ class IrcCallbackTestCase(SupyTestCase):
             conf.supybot.nick.setValue(nick)
             user = 'user any user'
             conf.supybot.user.setValue(user)
-            expected = [ircmsgs.nick(nick), ircmsgs.user('limnoria', user)]
+            expected = [ircmsgs.nick(nick),
+                        ircmsgs.IrcMsg(command='CAP', args=('LS',)),
+                        ircmsgs.user('limnoria', user)]
             irc = irclib.Irc('test')
             msgs = [irc.takeMsg()]
             while msgs[-1] != None:

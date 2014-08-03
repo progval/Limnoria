@@ -736,7 +736,7 @@ def user(ident, user, prefix='', msg=None):
     return IrcMsg(prefix=prefix, command='USER',
                   args=(ident, '0', '*', user), msg=msg)
 
-def who(hostmaskOrChannel, prefix='', msg=None):
+def who(hostmaskOrChannel, prefix='', msg=None, args=()):
     """Returns a WHO for the hostmask or channel hostmaskOrChannel."""
     if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(hostmaskOrChannel) or \
@@ -744,7 +744,7 @@ def who(hostmaskOrChannel, prefix='', msg=None):
     if msg and not prefix:
         prefix = msg.prefix
     return IrcMsg(prefix=prefix, command='WHO',
-                  args=(hostmaskOrChannel,), msg=msg)
+                  args=(hostmaskOrChannel,) + args, msg=msg)
 
 def _whois(COMMAND, nick, mask='', prefix='', msg=None):
     """Returns a WHOIS for nick."""
