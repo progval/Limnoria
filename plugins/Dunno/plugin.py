@@ -49,6 +49,8 @@ class Dunno(plugins.ChannelIdDatabasePlugin):
                 dunno = dunno.text
                 prefixNick = self.registryValue('prefixNick', channel)
                 env = {'command': tokens[0]}
+                self.log.info('Issuing "dunno" answer, %s is not a command.' %
+                        tokens[0])
                 dunno = ircutils.standardSubstitute(irc, msg, dunno, env=env)
                 irc.reply(dunno, prefixNick=prefixNick)
 Dunno = internationalizeDocstring(Dunno)
