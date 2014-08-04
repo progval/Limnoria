@@ -273,7 +273,12 @@ class RSS(callbacks.Plugin):
             for channel in irc.state.channels:
                 announced_feeds |= self.registryValue('announce', channel)
         for name in announced_feeds:
-            self.update_feed_if_needed(self.get_feed(name))
+            feed = self.get_feed(name)
+            if not feed:
+                self.log.warning('Feed %s is announced but does not exist.' %
+                        name)
+                continue
+            self.update_feed_if_needed(feed)
 
     def get_new_entries(self, feed):
         with feed.lock:
