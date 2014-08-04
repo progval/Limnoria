@@ -289,7 +289,8 @@ class IrcStateTestCase(SupyTestCase):
     def testSupportedUmodes(self):
         state = irclib.IrcState()
         state.addMsg(self.irc, ircmsgs.IrcMsg(':coulomb.oftc.net 004 testnick coulomb.oftc.net hybrid-7.2.2+oftc1.6.8 CDGPRSabcdfgiklnorsuwxyz biklmnopstveI bkloveI'))
-        self.assertEqual(state.supported['umodes'], 'CDGPRSabcdfgiklnorsuwxyz')
+        self.assertEqual(state.supported['umodes'],
+                frozenset('CDGPRSabcdfgiklnorsuwxyz'))
         self.assertEqual(state.supported['chanmodes'],
                          'biklmnopstveI')
 
