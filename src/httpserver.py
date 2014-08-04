@@ -277,6 +277,15 @@ class SupyHTTPServerCallback(object):
     message, it probably means you are developing a plugin, and you have
     neither overriden this message or defined an handler for this query.""")
 
+    if sys.version_info[0] >= 3:
+        def write(self, b):
+            if isinstance(b, str):
+                b = b.encode()
+            self.wfile.write(b)
+    else:
+        def write(self, s):
+            self.wfile.write(s)
+
     def doGet(self, handler, path, *args, **kwargs):
         handler.send_response(400)
         self.send_header('Content-Type', 'text/plain; charset=utf-8; charset=utf-8')

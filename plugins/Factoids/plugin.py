@@ -124,14 +124,14 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
             self.send_response(200)
             self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
-            self.wfile.write(httpserver.get_template('factoids/index.html'))
+            self.write(httpserver.get_template('factoids/index.html'))
         elif len(parts) == 2:
             channel = urllib.unquote(parts[0])
             if not ircutils.isChannel(channel):
                 self.send_response(404)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(httpserver.get_template('generic/error.html')%
+                self.write(httpserver.get_template('generic/error.html')%
                     {'title': 'Factoids - not a channel',
                      'error': 'This is not a channel'})
                 return
@@ -139,7 +139,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
                 self.send_response(403)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
                 self.end_headers()
-                self.wfile.write(httpserver.get_template('generic/error.html')%
+                self.write(httpserver.get_template('generic/error.html')%
                     {'title': 'Factoids - unavailable',
                      'error': 'This channel does not exist or its factoids '
                               'are not available here.'})
@@ -172,7 +172,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
             self.send_response(200)
             self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
-            self.wfile.write(httpserver.get_template('factoids/channel.html')%
+            self.write(httpserver.get_template('factoids/channel.html')%
                     {'channel': channel, 'rows': content})
     def doPost(self, handler, path, form):
         if 'chan' in form:
@@ -184,7 +184,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
             self.send_response(400)
             self.send_header('Content-type', 'text/plain; charset=utf-8')
             self.end_headers()
-            self.wfile.write('Missing field \'chan\'.')
+            self.write('Missing field \'chan\'.')
 
 class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def __init__(self, irc):
