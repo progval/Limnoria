@@ -654,7 +654,7 @@ class Irc(IrcCommandDispatcher):
         self._setNonResettingVariables()
         self._queueConnectMessages()
         self.startedSync = ircutils.IrcDict()
-        self.caps =  ['account-notify', 'extended-join']
+        self.caps =  set(['account-notify', 'extended-join'])
 
     def isChannel(self, s):
         """Helper function to check whether a given string is a channel on
