@@ -654,6 +654,7 @@ class Irc(IrcCommandDispatcher):
         self._setNonResettingVariables()
         self._queueConnectMessages()
         self.startedSync = ircutils.IrcDict()
+        self.caps =  set(['account-notify', 'extended-join'])
 
     def isChannel(self, s):
         """Helper function to check whether a given string is a channel on
@@ -969,17 +970,15 @@ class Irc(IrcCommandDispatcher):
             self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
     def doCap(self, msg):
-        caps = ['account-notify', 'extended-join']
-
         if self.sasl_password:
             if self.sasl_username:
-                caps.append('sasl')
+                self.caps.append('sasl')
             else:
                 log.warning('%s: SASL username is not set, unable to '
                             'identify.', self.network)
 
         for cap in msg.args[2].split(' '):
-            if msg.args[1] == 'LS' and cap in caps:
+            if msg.args[1] == 'LS' and cap in self.caps:
                 log.debug('%s: Requesting capability %r', self.network, cap)
                 self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
             elif msg.args[1] == 'ACK':
