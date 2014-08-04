@@ -410,8 +410,8 @@ class IrcState(IrcCommandDispatcher):
         # msg.args = [nick, server, ircd-version, umodes, modes,
         #             modes that require arguments? (non-standard)]
         self.ircd = msg.args[2]
-        self.supported['umodes'] = msg.args[3]
-        self.supported['chanmodes'] = msg.args[4]
+        self.supported['umodes'] = frozenset(msg.args[3])
+        self.supported['chanmodes'] = frozenset(msg.args[4])
 
     _005converters = utils.InsensitivePreservingDict({
         'modes': int,
@@ -1068,13 +1068,10 @@ class Irc(IrcCommandDispatcher):
         if umodes == '':
             umodes = conf.supybot.protocols.irc.umodes()
         supported = self.state.supported.get('umodes')
+        if supported:
+            acceptedchars = supported.union('+-')
+            umodes = ''.join([m for m in umodes if m in acceptedchars])
         if umodes:
-            addSub = '+'
-            if umodes[0] in '+-':
-                (addSub, umodes) = (umodes[0], umodes[1:])
-            if supported:
-                umodes = ''.join([m for m in umodes if m in supported])
-            umodes = ''.join([addSub, umodes])
             log.info('Sending user modes to %s: %s', self.network, umodes)
             self.sendMsg(ircmsgs.mode(self.nick, umodes))
     do377 = do422 = do376
