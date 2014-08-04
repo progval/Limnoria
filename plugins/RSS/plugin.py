@@ -111,10 +111,10 @@ def sort_feed_items(items, order):
     if order == 'newestFirst':
         reverse = True
     try:
-        sitems = sorted(items, key=lambda i: i['updated'], reverse=reverse)
+        sitems = sorted(items, key=lambda i: i['published'], reverse=reverse)
     except KeyError:
         # feedparser normalizes required timestamp fields in ATOM and RSS
-        # to the "updated" field. Feeds missing it are unsortable by date.
+        # to the "published" field. Feeds missing it are unsortable by date.
         return items
     return sitems
 
@@ -325,7 +325,7 @@ class RSS(callbacks.Plugin):
                     self.registryValue(key_name, channel)
         else:
             template = self.registryValue(key_name, channel)
-        date = entry.get('published_parsed', entry.get('updated_parsed'))
+        date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
         return string.Template(template).safe_substitute(template,
                 feed_name=feed.name,
