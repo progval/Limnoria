@@ -292,7 +292,7 @@ class IrcStateTestCase(SupyTestCase):
         self.assertEqual(state.supported['umodes'],
                 frozenset('CDGPRSabcdfgiklnorsuwxyz'))
         self.assertEqual(state.supported['chanmodes'],
-                         'biklmnopstveI')
+                         frozenset('biklmnopstveI'))
 
     def testEmptyTopic(self):
         state = irclib.IrcState()
