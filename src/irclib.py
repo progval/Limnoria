@@ -491,7 +491,10 @@ class IrcState(IrcCommandDispatcher):
     def do354(self, irc, msg):
         # WHOX reply.
 
-        (__, user, host, nick, ___) = msg.args
+        if len(msg.args) != 6 or msg.args[1] != '1':
+            return
+
+        (__, ___, user, host, nick, ___) = msg.args
         hostmask = '%s!%s@%s' % (nick, user, host)
         self.nicksToHostmasks[nick] = hostmask
 
@@ -1085,7 +1088,7 @@ class Irc(IrcCommandDispatcher):
     def doJoin(self, msg):
         if msg.nick == self.nick:
             channel = msg.args[0]
-            self.queueMsg(ircmsgs.who(channel, args=('%uhna',))) # Ends with 315.
+            self.queueMsg(ircmsgs.who(channel, args=('%tuhna,1',))) # Ends with 315.
             self.queueMsg(ircmsgs.mode(channel)) # Ends with 329.
             for channel in msg.args[0].split(','):
                 self.queueMsg(ircmsgs.mode(channel, '+b'))
