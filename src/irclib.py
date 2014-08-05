@@ -654,7 +654,6 @@ class Irc(IrcCommandDispatcher):
         self._setNonResettingVariables()
         self._queueConnectMessages()
         self.startedSync = ircutils.IrcDict()
-        self.caps =  set(['account-notify', 'extended-join'])
 
     def isChannel(self, s):
         """Helper function to check whether a given string is a channel on
@@ -939,7 +938,16 @@ class Irc(IrcCommandDispatcher):
 
             return
 
-        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('LS',)))
+        sasl = self.sasl_username and self.sasl_password
+
+        if sasl:
+            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
+
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-notify')))
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'extended-join')))
+
+        if not sasl:
+            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
         if self.password:
             log.info('%s: Queuing PASS command, not logging the password.',
@@ -958,7 +966,7 @@ class Irc(IrcCommandDispatcher):
         self.queueMsg(ircmsgs.user(self.ident, self.user))
 
     def doAuthenticate(self, msg):
-        if msg.args[0] == '+':
+        if len(msg.args) == 1 and msg.args[0] == '+':
             log.info('%s: Authenticating using SASL.', self.network)
 
             authstring = base64.b64encode('\0'.join([
@@ -970,30 +978,18 @@ class Irc(IrcCommandDispatcher):
             self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
     def doCap(self, msg):
-        if self.sasl_password:
-            if self.sasl_username:
-                self.caps.append('sasl')
-            else:
-                log.warning('%s: SASL username is not set, unable to '
-                            'identify.', self.network)
+        if len(msg.args) == 3:
+            for cap in msg.args[2].split(' '):
+                if msg.args[1] == 'ACK':
+                    log.info('%s: Server acknowledged capability %r',
+                             self.network, cap)
 
-        for cap in msg.args[2].split(' '):
-            if msg.args[1] == 'LS' and cap in self.caps:
-                log.debug('%s: Requesting capability %r', self.network, cap)
-                self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
-            elif msg.args[1] == 'ACK':
-                log.info('%s: Server acknowledged capability %r',
-                         self.network, cap)
-
-                if cap == 'sasl':
-                    self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
-                                                 args=('PLAIN',)))
-            elif msg.args[1] == 'NAK':
-                log.warning('%s: Server refused capability %r',
-                            self.network, cap)
-
-                if cap == 'sasl':
-                    self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+                    if cap == 'sasl':
+                        self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
+                                                     args=('PLAIN',)))
+                elif msg.args[1] == 'NAK':
+                    log.warning('%s: Server refused capability %r',
+                                self.network, cap)
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful', self.network)
