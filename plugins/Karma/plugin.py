@@ -29,6 +29,7 @@
 ###
 
 import os
+import sys
 import csv
 
 import supybot.conf as conf
@@ -58,10 +59,13 @@ class SqliteKarmaDB(object):
             return self.dbs[filename]
         if os.path.exists(filename):
             db = sqlite3.connect(filename, check_same_thread=False)
-            db.text_factory = str
+            if sys.version_info[0] < 3:
+                db.text_factory = str
             self.dbs[filename] = db
             return db
         db = sqlite3.connect(filename, check_same_thread=False)
+        if sys.version_info[0] < 3:
+            db.text_factory = str
         self.dbs[filename] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE karma (

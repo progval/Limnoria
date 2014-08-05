@@ -39,6 +39,7 @@ import supybot.ircdb as ircdb
 
 import re
 import os
+import sys
 import time
 
 try:
@@ -80,10 +81,12 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         """Create the database and connect to it."""
         if os.path.exists(filename):
             db = sqlite3.connect(filename)
-            db.text_factory = str
+            if sys.version_info[0] < 3:
+                db.text_factory = str
             return db
         db = sqlite3.connect(filename)
-        db.text_factory = str
+        if sys.version_info[0] < 3:
+            db.text_factory = str
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE triggers (
                           id INTEGER PRIMARY KEY,
