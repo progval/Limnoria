@@ -82,10 +82,12 @@ class SqliteQuoteGrabsDB(object):
             return self.dbs[filename]
         if os.path.exists(filename):
             db = sqlite3.connect(filename)
+            db.text_factory = str
             db.create_function('nickeq', 2, p)
             self.dbs[filename] = db
             return db
         db = sqlite3.connect(filename)
+        db.text_factory = str
         db.create_function('nickeq', 2, p)
         self.dbs[filename] = db
         cursor = db.cursor()
