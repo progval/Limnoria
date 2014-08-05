@@ -217,10 +217,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def makeDb(self, filename):
         if os.path.exists(filename):
             db = sqlite3.connect(filename)
-            db.text_factory = str
             return db
         db = sqlite3.connect(filename)
-        db.text_factory = str
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE keys (
                           id INTEGER PRIMARY KEY,

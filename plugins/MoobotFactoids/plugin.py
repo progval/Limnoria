@@ -106,11 +106,9 @@ class SqliteMoobotDB(object):
         
         if os.path.exists(filename):
             db = sqlite3.connect(filename, check_same_thread=False)
-            db.text_factory = str
             self.dbs[channel] = db
             return db
         db = sqlite3.connect(filename, check_same_thread=False)
-        db.text_factory = str
         self.dbs[channel] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE factoids (
