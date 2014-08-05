@@ -62,7 +62,6 @@ class SqliteKarmaDB(object):
             self.dbs[filename] = db
             return db
         db = sqlite3.connect(filename, check_same_thread=False)
-        db.text_factory = str
         self.dbs[filename] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE karma (
