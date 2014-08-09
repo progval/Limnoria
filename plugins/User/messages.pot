@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-05-28 19:48+EEST\n"
+"POT-Creation-Date: 2014-08-09 18:36+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -381,7 +381,7 @@ msgid ""
 msgstr ""
 
 #: plugin.py:606
-msgid "I don't recognize you. You can messsage me either of these two commands: \"user identify <username> <password>\" to log in or \"user register <username> <password>\" to register."
+msgid "I don't recognize you. You can message me either of these two commands: \"user identify <username> <password>\" to log in or \"user register <username> <password>\" to register."
 msgstr ""
 
 #: plugin.py:611

@@ -1,12 +1,12 @@
 # User plugin in Limnoria.
-# Copyright (C) 2011, 2012 Limnoria
-# Mikaela Suomalainen <mkaysi@outlook.com>, 2011, 2012.
+# Copyright (C) 2011- 2014 Limnoria
+# Mikaela Suomalainen <mkaysi@outlook.com>, 2011-2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-05-28 19:48+EEST\n"
-"PO-Revision-Date: 2014-05-28 19:49+0200\n"
+"POT-Creation-Date: 2014-08-09 18:36+EEST\n"
+"PO-Revision-Date: 2014-08-09 18:37+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
 "MIME-Version: 1.0\n"
@@ -176,8 +176,7 @@ msgid ""
 "            Requires that the person's hostmask be in the list of hostmasks "
 "for\n"
 "            that user in addition to the password being correct.  When the\n"
-"            secure flag is set, the user *must* identify before they "
-"can be\n"
+"            secure flag is set, the user *must* identify before they can be\n"
 "            recognized.  If a specific True/False value is not given, it\n"
 "            inverts the current value.\n"
 "            "
@@ -572,8 +571,9 @@ msgstr ""
 "        "
 
 #: plugin.py:606
+#, fuzzy
 msgid ""
-"I don't recognize you. You can messsage me either of these two commands: "
+"I don't recognize you. You can message me either of these two commands: "
 "\"user identify <username> <password>\" to log in or \"user register "
 "<username> <password>\" to register."
 msgstr ""
