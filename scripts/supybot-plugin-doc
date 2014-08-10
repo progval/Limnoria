@@ -36,6 +36,9 @@ import shutil
 
 import supybot
 
+if sys.version_info[0] >= 3:
+    basestring = str
+
 def error(s):
     sys.stderr.write('%s\n' % s)
     sys.exit(-1)
