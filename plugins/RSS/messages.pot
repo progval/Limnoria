@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
+"POT-Creation-Date: 2014-08-10 18:56+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,7 +137,19 @@ msgstr ""
 msgid "I already have a feed with that URL named %s."
 msgstr ""
 
-#: plugin.py:346
+#: plugin.py:191
+msgid ""
+"Feed-specific format. Defaults to\n"
+"                supybot.plugins.RSS.format if empty."
+msgstr ""
+
+#: plugin.py:194
+msgid ""
+"Feed-specific announce format.\n"
+"                Defaults to supybot.plugins.RSS.announceFormat if empty."
+msgstr ""
+
+#: plugin.py:351
 #, docstring
 msgid ""
 "<name> <url>\n"
@@ -147,7 +159,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:359
+#: plugin.py:364
 #, docstring
 msgid ""
 "<name>\n"
@@ -157,11 +169,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:366
+#: plugin.py:371
 msgid "That's not a valid RSS feed command name."
 msgstr ""
 
-#: plugin.py:375
+#: plugin.py:380
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -171,11 +183,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:382
+#: plugin.py:387
 msgid "I am currently not announcing any feeds."
 msgstr ""
 
-#: plugin.py:387
+#: plugin.py:392
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -187,7 +199,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:409
+#: plugin.py:414
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -199,7 +211,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:427
+#: plugin.py:432
 #, docstring
 msgid ""
 "<name|url> [<number of headlines>]\n"
@@ -209,11 +221,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:443
+#: plugin.py:448
 msgid "Couldn't get RSS feed."
 msgstr ""
 
-#: plugin.py:457
+#: plugin.py:462
 #, docstring
 msgid ""
 "<url|feed>\n"
@@ -223,19 +235,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:472
+#: plugin.py:477
 msgid "I couldn't retrieve that RSS feed."
 msgstr ""
 
-#: plugin.py:480
+#: plugin.py:485
 msgid "time unavailable"
 msgstr ""
 
-#: plugin.py:481 plugin.py:482 plugin.py:483
+#: plugin.py:486 plugin.py:487 plugin.py:488
 msgid "unavailable"
 msgstr ""
 
-#: plugin.py:485
+#: plugin.py:490
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr ""
 
