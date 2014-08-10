@@ -689,6 +689,13 @@ class CommaSeparatedListOfStrings(SeparatedListOf):
         return re.split(r'\s*,\s*', s)
     joiner = ', '.join
 
+class CommaSeparatedSetOfStrings(SeparatedListOf):
+    List = set
+    Value = String
+    def splitter(self, s):
+        return re.split(r'\s*,\s*', s)
+    joiner = ', '.join
+
 class TemplatedString(String):
     requiredTemplates = []
     def __init__(self, *args, **kwargs):
