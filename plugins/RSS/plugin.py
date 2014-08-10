@@ -188,11 +188,11 @@ class RSS(callbacks.Plugin):
         conf.registerGlobalValue(group, name, registry.String(url, ''))
         feed_group = conf.registerGroup(group, name)
         conf.registerChannelValue(feed_group, 'format',
-                registry.String('', """Feed-specific format. Defaults to
-                supybot.plugins.RSS.format if empty."""))
+                registry.String('', _("""Feed-specific format. Defaults to
+                supybot.plugins.RSS.format if empty.""")))
         conf.registerChannelValue(feed_group, 'announceFormat',
-                registry.String('', """Feed-specific announce format.
-                Defaults to supybot.plugins.RSS.announceFormat if empty."""))
+                registry.String('', _("""Feed-specific announce format.
+                Defaults to supybot.plugins.RSS.announceFormat if empty.""")))
 
     def register_feed(self, name, url, plugin_is_loading, announced=[]):
         self.feed_names[name] = url
