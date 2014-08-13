@@ -72,6 +72,19 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self.assertNotError('rss remove xkcd')
 
+    def testInitialAnnounce(self):
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_old)
+        try:
+            with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(0):
+                self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+                self.assertNotError('rss announce add xkcd')
+                self.assertNoResponse(' ')
+        finally:
+            self._feedMsg('rss announce remove xkcd')
+            self._feedMsg('rss remove xkcd')
+            feedparser._open_resource = old_open
+
     def testAnnounce(self):
         old_open = feedparser._open_resource
         feedparser._open_resource = constant(xkcd_old)

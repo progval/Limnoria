@@ -63,15 +63,17 @@ announced_headlines_filename = \
 
 class Feed:
     __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
-            'etag', 'modified',
+            'etag', 'modified', 'initial'
             'lock', 'announced_entries')
-    def __init__(self, name, url, plugin_is_loading=False, announced=None):
+    def __init__(self, name, url, initial,
+            plugin_is_loading=False, announced=None):
         assert name, name
         if not url:
             assert utils.web.httpUrlRe.match(name), name
             url = name
         self.name = name
         self.url = url
+        self.initial = initial
         self.data = None
         # We don't want to fetch feeds right after the plugin is
         # loaded (the bot could be starting, and thus already busy)
@@ -84,8 +86,8 @@ class Feed:
                 utils.structures.TruncatableSet()
 
     def __repr__(self):
-        return 'Feed(%r, %r, <bool>, %r)' % \
-                (self.name, self.url, self.announced_entries)
+        return 'Feed(%r, %r, %b, <bool>, %r)' % \
+                (self.name, self.url, self.initial, self.announced_entries)
 
     def get_command(self, plugin):
         docstring = format(_("""[<number of headlines>]
@@ -152,7 +154,7 @@ class RSS(callbacks.Plugin):
             except registry.NonExistentRegistryEntry:
                 self.log.warning('%s is not a registered feed, removing.',name)
                 continue
-            self.register_feed(name, url, True, announced.get(name, []))
+            self.register_feed(name, url, True, True, announced.get(name, []))
         world.flushers.append(self._flush)
 
     def die(self):
@@ -194,9 +196,11 @@ class RSS(callbacks.Plugin):
                 registry.String('', _("""Feed-specific announce format.
                 Defaults to supybot.plugins.RSS.announceFormat if empty.""")))
 
-    def register_feed(self, name, url, plugin_is_loading, announced=[]):
+    def register_feed(self, name, url, initial,
+            plugin_is_loading, announced=[]):
         self.feed_names[name] = url
-        self.feeds[url] = Feed(name, url, plugin_is_loading, announced)
+        self.feeds[url] = Feed(name, url, initial,
+                plugin_is_loading, announced)
 
     def remove_feed(self, feed):
         del self.feed_names[feed.name]
@@ -253,7 +257,8 @@ class RSS(callbacks.Plugin):
                 feed.data = d.feed
                 feed.entries = d.entries
                 feed.last_update = time.time()
-        self.announce_feed(feed)
+            (initial, feed.initial) = (feed.initial, False)
+        self.announce_feed(feed, initial)
 
     def update_feed_in_thread(self, feed):
         feed.last_update = time.time()
@@ -293,7 +298,7 @@ class RSS(callbacks.Plugin):
             feed.announced_entries.truncate(2*len(entries))
         return new_entries
 
-    def announce_feed(self, feed):
+    def announce_feed(self, feed, initial):
         new_entries = self.get_new_entries(feed)
 
         order = self.registryValue('sortFeedItems')
@@ -302,7 +307,15 @@ class RSS(callbacks.Plugin):
             for channel in irc.state.channels:
                 if feed.name not in self.registryValue('announce', channel):
                     continue
-                for entry in new_entries:
+                if initial:
+                    n = self.registryValue('initialAnnounceHeadlines', channel)
+                    if n:
+                        announced_entries = new_entries[-n:]
+                    else:
+                        announced_entries = []
+                else:
+                    announced_entries = new_entries
+                for entry in announced_entries:
                     self.announce_entry(irc, channel, feed, entry)
 
 
@@ -355,7 +368,7 @@ class RSS(callbacks.Plugin):
         """
         self.assert_feed_does_not_exist(name, url)
         self.register_feed_config(name, url)
-        self.register_feed(name, url, False)
+        self.register_feed(name, url, True, False)
         irc.replySuccess()
     add = wrap(add, ['feedName', 'url'])
 
@@ -405,7 +418,7 @@ class RSS(callbacks.Plugin):
             irc.replySuccess()
             for name in feeds:
                 feed = plugin.get_feed(name)
-                plugin.announce_feed(feed)
+                plugin.announce_feed(feed, True)
         add = wrap(add, [('checkChannelCapability', 'op'),
                          many(first('url', 'feedName'))])
 
@@ -437,7 +450,7 @@ class RSS(callbacks.Plugin):
         self.log.debug('Fetching %u', url)
         feed = self.get_feed(url)
         if not feed:
-            feed = Feed(url, url)
+            feed = Feed(url, url, True)
         if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
         else:
@@ -470,7 +483,7 @@ class RSS(callbacks.Plugin):
             pass
         feed = self.get_feed(url)
         if not feed:
-            feed = Feed(url, url)
+            feed = Feed(url, url, True)
         self.update_feed_if_needed(feed)
         info = feed.data
         if not info:
