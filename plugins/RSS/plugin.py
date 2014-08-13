@@ -63,7 +63,7 @@ announced_headlines_filename = \
 
 class Feed:
     __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
-            'etag', 'modified', 'initial'
+            'etag', 'modified', 'initial',
             'lock', 'announced_entries')
     def __init__(self, name, url, initial,
             plugin_is_loading=False, announced=None):
