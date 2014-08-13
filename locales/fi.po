@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-08-01 20:08+EEST\n"
-"PO-Revision-Date: 2014-08-01 20:16+0200\n"
+"POT-Creation-Date: 2014-08-13 21:40+EEST\n"
+"PO-Revision-Date: 2014-08-13 21:43+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -1095,26 +1095,21 @@ msgstr ""
 
 #: src/conf.py:680
 msgid ""
-"Supybot allows you to specify what brackets are\n"
-"    used for your nested commands.  Valid sets of brackets include [], <>, "
-"and\n"
-"    {} ().  [] has strong historical motivation, as well as being the "
-"brackets\n"
-"    that don't require shift.  <> or () might be slightly superior because "
-"they\n"
-"    cannot occur in a nick.  If this string is empty, nested commands will\n"
-"    not be allowed in this channel."
+"Supybot allows you to specify what brackets\n"
+"    are used for your nested commands.  Valid sets of brackets include\n"
+"    [], <>, and {} ().  [] has strong historical motivation, but  <> or\n"
+"    () might be slightly superior because they cannot occur in a nick.\n"
+"    If this string is empty, nested commands will not be allowed in this\n"
+"    channel."
 msgstr ""
 "Supybot sallii sinun määrittää millaisia sulkuja käytetään sisäkkäisille "
 "komennoille.\n"
-" Kelvollinen sarja sulkuja sisältää merkit [], <> ja {} (). []:lla on vahva\n"
-" historiallinen motivaatio, kuten myös suluilla, jotka eivät vaadi \"vaihto"
-"\"-näppäimen\n"
-" käyttöä. <> tai () voivat olla huomattavasti parempia, koska ne eivät voi "
-"olla\n"
-" nimimerkeissä. Jos tämä merkkiketju on tyhjä, sisäkkäisiä komentoja ei "
-"sallita tällä\n"
-" kanavalla."
+" Kelvolliset sulkusarjat ovat [], <> ja {} (). []:lla on vahva\n"
+" historiallinen motivaatio mutta <> tai () voi olla huomattavasti parempi, "
+"koska se\n"
+" ei voi olla nimimerkissä. Mikäli tämä asetusarvo on tyhjä, sisäkkäiset "
+"komennot\n"
+" eivät ole sallittuja kanavalla."
 
 #: src/conf.py:687
 msgid ""
@@ -1856,7 +1851,7 @@ msgstr ""
 "tälle\n"
 " pyynnölle ole määritetty käsittelijää."
 
-#: src/httpserver.py:300
+#: src/httpserver.py:309
 msgid ""
 "\n"
 "    I am a pretty clever IRC bot, but I suck at serving Web pages, "
@@ -1873,19 +1868,19 @@ msgstr ""
 "virheen, ja minua ei ole koulutettu\n"
 "    auttamaan sinua sellaisessa tapauksessa."
 
-#: src/httpserver.py:321
+#: src/httpserver.py:330
 msgid "Request not handled."
 msgstr "Pyyntöä ei hyväksytty."
 
-#: src/httpserver.py:325
+#: src/httpserver.py:334
 msgid "No plugins available."
 msgstr "Ei lisäosia saatavilla."
 
-#: src/httpserver.py:342 src/httpserver.py:359
+#: src/httpserver.py:351 src/httpserver.py:368
 msgid "Request not handled"
 msgstr "Pyyntöä ei käsitelty."
 
-#: src/httpserver.py:384
+#: src/httpserver.py:393
 #, fuzzy
 msgid "No favicon set."
 msgstr "Faviconia ei ole asetettu."

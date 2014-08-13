@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-01 20:08+EEST\n"
+"POT-Creation-Date: 2014-08-13 21:40+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -750,12 +750,12 @@ msgstr ""
 
 #: src/conf.py:680
 msgid ""
-"Supybot allows you to specify what brackets are\n"
-"    used for your nested commands.  Valid sets of brackets include [], <>, and\n"
-"    {} ().  [] has strong historical motivation, as well as being the brackets\n"
-"    that don't require shift.  <> or () might be slightly superior because they\n"
-"    cannot occur in a nick.  If this string is empty, nested commands will\n"
-"    not be allowed in this channel."
+"Supybot allows you to specify what brackets\n"
+"    are used for your nested commands.  Valid sets of brackets include\n"
+"    [], <>, and {} ().  [] has strong historical motivation, but  <> or\n"
+"    () might be slightly superior because they cannot occur in a nick.\n"
+"    If this string is empty, nested commands will not be allowed in this\n"
+"    channel."
 msgstr ""
 
 #: src/conf.py:687
@@ -1197,7 +1197,7 @@ msgid ""
 "    neither overriden this message or defined an handler for this query."
 msgstr ""
 
-#: src/httpserver.py:300
+#: src/httpserver.py:309
 msgid ""
 "\n"
 "    I am a pretty clever IRC bot, but I suck at serving Web pages, particulary\n"
@@ -1206,19 +1206,19 @@ msgid ""
 "    trained to help you in such a case."
 msgstr ""
 
-#: src/httpserver.py:321
+#: src/httpserver.py:330
 msgid "Request not handled."
 msgstr ""
 
-#: src/httpserver.py:325
+#: src/httpserver.py:334
 msgid "No plugins available."
 msgstr ""
 
-#: src/httpserver.py:342 src/httpserver.py:359
+#: src/httpserver.py:351 src/httpserver.py:368
 msgid "Request not handled"
 msgstr ""
 
-#: src/httpserver.py:384
+#: src/httpserver.py:393
 msgid "No favicon set."
 msgstr ""
 
