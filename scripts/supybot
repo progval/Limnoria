@@ -168,6 +168,10 @@ if __name__ == '__main__':
     parser.add_option('', '--debug', action='store_true', dest='debug',
                       help='Determines whether some extra debugging stuff '
                       'will be logged in this script.')
+    parser.add_option('', '--disable-multiprocessing', action='store_true',
+                      dest='disableMultiprocessing',
+                      help='Disables multiprocessing stuff. May lead to '
+                      'to vulnerabilities.')
 
     (options, args) = parser.parse_args()
 
@@ -310,7 +314,7 @@ if __name__ == '__main__':
             sys.exit(-1)
 
     conf.allowDefaultOwner = options.allowDefaultOwner
-    conf.disableMultiprocessing = False
+    conf.disableMultiprocessing = options.disableMultiprocessing
 
     if not os.path.exists(conf.supybot.directories.log()):
         os.mkdir(conf.supybot.directories.log())
