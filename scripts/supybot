@@ -171,7 +171,7 @@ if __name__ == '__main__':
     parser.add_option('', '--disable-multiprocessing', action='store_true',
                       dest='disableMultiprocessing',
                       help='Disables multiprocessing stuff. May lead to '
-                      'to vulnerabilities.')
+                      'vulnerabilities.')
 
     (options, args) = parser.parse_args()
 
