@@ -679,7 +679,7 @@ class ValidBrackets(registry.OnlySomeStrings):
 registerChannelValue(supybot.commands.nested, 'brackets',
     ValidBrackets('[]', _("""Supybot allows you to specify what brackets
     are used for your nested commands.  Valid sets of brackets include
-    [], <>, and {} ().  [] has strong historical motivation, but  <> or
+    [], <>, {}, and ().  [] has strong historical motivation, but <> or
     () might be slightly superior because they cannot occur in a nick.
     If this string is empty, nested commands will not be allowed in this
     channel.""")))
