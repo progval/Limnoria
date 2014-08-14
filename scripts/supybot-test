@@ -152,7 +152,7 @@ if __name__ == '__main__':
                       help='Disables multiprocessing stuff.')
     (options, args) = parser.parse_args()
 
-    conf.disableMultiprocessing = options.disableMultiprocessing
+    world.disableMultiprocessing = options.disableMultiprocessing
 
     # This must go before checking for args, of course.
     for pluginDir in options.pluginsDirs:

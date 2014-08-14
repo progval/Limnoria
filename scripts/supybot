@@ -314,7 +314,7 @@ if __name__ == '__main__':
             sys.exit(-1)
 
     conf.allowDefaultOwner = options.allowDefaultOwner
-    conf.disableMultiprocessing = options.disableMultiprocessing
+    world.disableMultiprocessing = options.disableMultiprocessing
 
     if not os.path.exists(conf.supybot.directories.log()):
         os.mkdir(conf.supybot.directories.log())

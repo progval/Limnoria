@@ -86,7 +86,7 @@ def process(f, *args, **kwargs):
     if resource and heap_size is None:
         heap_size = resource.RLIM_INFINITY
 
-    if conf.disableMultiprocessing:
+    if world.disableMultiprocessing:
         pn = kwargs.pop('pn', 'Unknown')
         cn = kwargs.pop('cn', 'unknown')
         try:
