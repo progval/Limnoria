@@ -121,11 +121,14 @@ def process(f, *args, **kwargs):
     p.join(timeout)
     if p.is_alive():
         p.terminate()
+        q.close()
         raise ProcessTimeoutError("%s aborted due to timeout." % (p.name,))
     try:
         v = q.get(block=False)
     except Queue.Empty:
         return None
+    finally:
+        q.close()
     if isinstance(v, Exception):
         raise v
     else:
