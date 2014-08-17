@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
-"POT-Creation-Date: 2014-08-17 13:28+CEST\n"
+"POT-Creation-Date: 2014-08-17 13:46+CEST\n"
 "PO-Revision-Date: 2011-10-31 13:37+0100\n"
 "Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
@@ -82,14 +82,15 @@ msgid "Someone else is already using that nick."
 msgstr "Jemand anderes benutzt diesen Nick schon."
 
 #: plugin.py:195
-msgid "That nick is currently banned."
-msgstr "Dieser Nick ist momentan gebannt."
+#, fuzzy
+msgid "I can't change nick, I'm currently banned in %s."
+msgstr "Ich kann meinen Nick nicht ändern, der Server sagte %q."
 
-#: plugin.py:202
+#: plugin.py:203
 msgid "I can't change nicks, the server said %q."
 msgstr "Ich kann meinen Nick nicht ändern, der Server sagte %q."
 
-#: plugin.py:216
+#: plugin.py:217
 #, fuzzy
 msgid ""
 "[<nick>] [<network>]\n"
@@ -103,7 +104,7 @@ msgstr ""
 "Ändert den Nick des Bots zu <Nick>. Falls <Nick> nicht angegeben wird, wird "
 "der momentane Botnick zurückgegeben."
 
-#: plugin.py:233
+#: plugin.py:234
 msgid ""
 "[<channel>] [<reason>]\n"
 "\n"
@@ -121,11 +122,11 @@ msgstr ""
 "soll. Falls <Grund> angegeben wird, wird dies als Verlassensnachricht "
 "verwendet."
 
-#: plugin.py:251
+#: plugin.py:252
 msgid "I'm not in %s."
 msgstr "Ich bin nicht in %s."
 
-#: plugin.py:263
+#: plugin.py:264
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
@@ -139,7 +140,7 @@ msgstr ""
 "Gibt dem angebenen Benutzer <Name> (oder dem auf den die <Hostmaske> "
 "zutrifft) die angegebene Fähigkeit."
 
-#: plugin.py:283
+#: plugin.py:284
 msgid ""
 "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser "
 "program (or edit the users.conf file yourself) to add an owner capability."
@@ -148,11 +149,11 @@ msgstr ""
 "das supybot-adduser Programm (oder verändere users.conf per Hand) um die "
 "Besitzer Fähigkeit hinzuzufügen."
 
-#: plugin.py:294
+#: plugin.py:295
 msgid "You can't add capabilities you don't have."
 msgstr "Du kannst keine Fähigkeiten hinzufügen, die du nicht hast."
 
-#: plugin.py:299
+#: plugin.py:300
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
@@ -166,15 +167,15 @@ msgstr ""
 "Nimmt dem Benutzer der durch <Name> (oder dem Benutzer auf den momentan "
 "<Hostmaske> zeigt) angeben wird die angegeben Fähigkeit <Fähigkeit>."
 
-#: plugin.py:311
+#: plugin.py:312
 msgid "That user doesn't have that capability."
 msgstr "Der Benutzer hat diese Fähigkeit nicht."
 
-#: plugin.py:313
+#: plugin.py:314
 msgid "You can't remove capabilities you don't have."
 msgstr "Du kannst keine Fähigkeiten entfernen, die du nicht hast."
 
-#: plugin.py:321
+#: plugin.py:322
 msgid ""
 "<hostmask|nick> [<expires>]\n"
 "\n"
@@ -193,7 +194,7 @@ msgstr ""
 "optional, das legt fest wann die Ignorierung abläuft;falls dies nicht "
 "angegeben wird, wird die Ignorierung niemals ablaufen."
 
-#: plugin.py:334
+#: plugin.py:335
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -206,11 +207,11 @@ msgstr ""
 "Wird die beständige Ignorierung, von <Hostmaske> oder der Hostmaske die "
 "momentan mit dem <Nick> verbunden wird, aufheben."
 
-#: plugin.py:343
+#: plugin.py:344
 msgid "%s wasn't in the ignores database."
 msgstr "%s war nicht in der Datenbank für Ignorierungen."
 
-#: plugin.py:348
+#: plugin.py:349
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -221,11 +222,11 @@ msgstr ""
 "\n"
 "Listet die Hostmasken auf, die der Bot ignoriert."
 
-#: plugin.py:356
+#: plugin.py:357
 msgid "I'm not currently globally ignoring anyone."
 msgstr "Momentan ignoriere ich niemanden global."
 
-#: plugin.py:360
+#: plugin.py:361
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -235,3 +236,6 @@ msgstr ""
 "hat keine Argumente\n"
 "\n"
 "Leert die momentane Sendenwarteschlange für dieses Netzwerk."
+
+#~ msgid "That nick is currently banned."
+#~ msgstr "Dieser Nick ist momentan gebannt."

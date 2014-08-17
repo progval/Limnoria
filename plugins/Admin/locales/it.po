@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-08-17 13:28+CEST\n"
+"POT-Creation-Date: 2014-08-17 13:46+CEST\n"
 "PO-Revision-Date: 2012-03-15 20:25+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -83,14 +83,15 @@ msgid "Someone else is already using that nick."
 msgstr "Qualcun altro sta utilizzando questo nick."
 
 #: plugin.py:195
-msgid "That nick is currently banned."
-msgstr "Il nick è attualmente bannato."
+#, fuzzy
+msgid "I can't change nick, I'm currently banned in %s."
+msgstr "Non posso cambiare nick, il server ha detto %q."
 
-#: plugin.py:202
+#: plugin.py:203
 msgid "I can't change nicks, the server said %q."
 msgstr "Non posso cambiare nick, il server ha detto %q."
 
-#: plugin.py:216
+#: plugin.py:217
 #, fuzzy
 msgid ""
 "[<nick>] [<network>]\n"
@@ -106,7 +107,7 @@ msgstr ""
 "        quello attuale.\n"
 "        "
 
-#: plugin.py:233
+#: plugin.py:234
 msgid ""
 "[<channel>] [<reason>]\n"
 "\n"
@@ -127,11 +128,11 @@ msgstr ""
 "uscita.\n"
 "        "
 
-#: plugin.py:251
+#: plugin.py:252
 msgid "I'm not in %s."
 msgstr "Non sono in %s."
 
-#: plugin.py:263
+#: plugin.py:264
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
@@ -146,7 +147,7 @@ msgstr ""
 "            <hostmask> attualmente) la <capacità> specificata.\n"
 "            "
 
-#: plugin.py:283
+#: plugin.py:284
 msgid ""
 "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser "
 "program (or edit the users.conf file yourself) to add an owner capability."
@@ -154,11 +155,11 @@ msgstr ""
 "La capacità \"owner\" non può essere aggiunta al bot. Utilizzare il "
 "programma supybot-adduser (o modificare il file users.conf) per aggiungerla."
 
-#: plugin.py:294
+#: plugin.py:295
 msgid "You can't add capabilities you don't have."
 msgstr "Non puoi aggiungere capacità che non hai."
 
-#: plugin.py:299
+#: plugin.py:300
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
@@ -174,15 +175,15 @@ msgstr ""
 "            <hostmask> attualmente) la <capacità> specificata\n"
 "            "
 
-#: plugin.py:311
+#: plugin.py:312
 msgid "That user doesn't have that capability."
 msgstr "Questo utente non ha tale capacità."
 
-#: plugin.py:313
+#: plugin.py:314
 msgid "You can't remove capabilities you don't have."
 msgstr "Non puoi rimuovere capacità che non hai."
 
-#: plugin.py:321
+#: plugin.py:322
 msgid ""
 "<hostmask|nick> [<expires>]\n"
 "\n"
@@ -205,7 +206,7 @@ msgstr ""
 "            questo non scadrà mai.\n"
 "            "
 
-#: plugin.py:334
+#: plugin.py:335
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -219,11 +220,11 @@ msgstr ""
 "associata a <nick>.\n"
 "            "
 
-#: plugin.py:343
+#: plugin.py:344
 msgid "%s wasn't in the ignores database."
 msgstr "%s non è nel mio database degli ignorati."
 
-#: plugin.py:348
+#: plugin.py:349
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -235,11 +236,11 @@ msgstr ""
 "            Elenca le hostmask che il bot sta ignorando.\n"
 "            "
 
-#: plugin.py:356
+#: plugin.py:357
 msgid "I'm not currently globally ignoring anyone."
 msgstr "Al momento non sto ignorando nessuno."
 
-#: plugin.py:360
+#: plugin.py:361
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -251,3 +252,6 @@ msgstr ""
 "        Pulisce l'attuale coda dei messaggi da inviare (interrompe il flood) "
 "per questa rete.\n"
 "        "
+
+#~ msgid "That nick is currently banned."
+#~ msgstr "Il nick è attualmente bannato."
