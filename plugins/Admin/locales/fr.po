@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-01-22 13:38+CET\n"
+"POT-Creation-Date: 2014-08-17 13:28+CEST\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: ProgVal <progval@gmail.com>\n"
@@ -223,7 +223,7 @@ msgstr ""
 msgid "I'm not currently globally ignoring anyone."
 msgstr "Je n'ignore actuellement personne globalement."
 
-#: plugin.py:360 plugin.py:371
+#: plugin.py:360
 msgid ""
 "takes no arguments\n"
 "\n"
