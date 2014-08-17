@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2014-08-17 13:28+CEST\n"
 "PO-Revision-Date: 2012-03-15 20:25+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,9 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
 #: plugin.py:54
-#, docstring
 msgid "Nick/channel temporarily unavailable."
 msgstr "Nick/canale temporaneamente non disponibile."
 
@@ -37,17 +35,18 @@ msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr "Non posso entrare in %s, non sono identificato con NickServ."
 
 #: plugin.py:143
-#, docstring
 msgid ""
 "<channel> [<key>]\n"
 "\n"
-"        Tell the bot to join the given channel.  If <key> is given, it is used\n"
+"        Tell the bot to join the given channel.  If <key> is given, it is "
+"used\n"
 "        when attempting to join the channel.\n"
 "        "
 msgstr ""
 "<canale> [<password>]\n"
 "\n"
-"        Dice al bot di entrare nel canale specificato. Se <password> è fornita,\n"
+"        Dice al bot di entrare nel canale specificato. Se <password> è "
+"fornita,\n"
 "        viene usata quando si tenta di entrare nel canale.\n"
 "        "
 
@@ -56,17 +55,18 @@ msgid "I'm already too close to maximum number of channels for this network."
 msgstr "Sono già troppo vicino al numero massimo di canali per questa rete."
 
 #: plugin.py:165
-#, docstring
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns the channels the bot is on.  Must be given in private, in order\n"
+"        Returns the channels the bot is on.  Must be given in private, in "
+"order\n"
 "        to protect the secrecy of secret channels.\n"
 "        "
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Restituisce i canali dove è presente il bot. Deve essere richiesto in\n"
+"        Restituisce i canali dove è presente il bot. Deve essere richiesto "
+"in\n"
 "        privato per preservare la segretezza dei canali privati.\n"
 "        "
 
@@ -91,9 +91,9 @@ msgid "I can't change nicks, the server said %q."
 msgstr "Non posso cambiare nick, il server ha detto %q."
 
 #: plugin.py:216
-#, docstring
+#, fuzzy
 msgid ""
-"[<nick>]\n"
+"[<nick>] [<network>]\n"
 "\n"
 "        Changes the bot's nick to <nick>.  If no nick is given, returns the\n"
 "        bot's current nick.\n"
@@ -101,16 +101,17 @@ msgid ""
 msgstr ""
 "[<nick>]\n"
 "\n"
-"        Cambia il nick del bot in <nick>. Se non ne viene fornito uno, restituisce\n"
+"        Cambia il nick del bot in <nick>. Se non ne viene fornito uno, "
+"restituisce\n"
 "        quello attuale.\n"
 "        "
 
-#: plugin.py:231
-#, docstring
+#: plugin.py:233
 msgid ""
 "[<channel>] [<reason>]\n"
 "\n"
-"        Tells the bot to part the list of channels you give it.  <channel> is\n"
+"        Tells the bot to part the list of channels you give it.  <channel> "
+"is\n"
 "        only necessary if you want the bot to part a channel other than the\n"
 "        current channel.  If <reason> is specified, use it as the part\n"
 "        message.\n"
@@ -118,21 +119,24 @@ msgid ""
 msgstr ""
 "[<canale>] [<motivo>]\n"
 "\n"
-"        Fornisce al bot l'elenco dei canali da cui uscire. <canale> è necessario\n"
-"        solo se si vuole far uscire il bot da un canale diverso da quello attuale.\n"
-"        Se <motivo> viene specificato, verrà usato come messaggio di uscita.\n"
+"        Fornisce al bot l'elenco dei canali da cui uscire. <canale> è "
+"necessario\n"
+"        solo se si vuole far uscire il bot da un canale diverso da quello "
+"attuale.\n"
+"        Se <motivo> viene specificato, verrà usato come messaggio di "
+"uscita.\n"
 "        "
 
-#: plugin.py:249
+#: plugin.py:251
 msgid "I'm not in %s."
 msgstr "Non sono in %s."
 
-#: plugin.py:261
-#, docstring
+#: plugin.py:263
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
-"            Gives the user specified by <name> (or the user to whom <hostmask>\n"
+"            Gives the user specified by <name> (or the user to whom "
+"<hostmask>\n"
 "            currently maps) the specified capability <capability>\n"
 "            "
 msgstr ""
@@ -142,58 +146,66 @@ msgstr ""
 "            <hostmask> attualmente) la <capacità> specificata.\n"
 "            "
 
-#: plugin.py:281
-msgid "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser program (or edit the users.conf file yourself) to add an owner capability."
-msgstr "La capacità \"owner\" non può essere aggiunta al bot. Utilizzare il programma supybot-adduser (o modificare il file users.conf) per aggiungerla."
+#: plugin.py:283
+msgid ""
+"The \"owner\" capability can't be added in the bot.  Use the supybot-adduser "
+"program (or edit the users.conf file yourself) to add an owner capability."
+msgstr ""
+"La capacità \"owner\" non può essere aggiunta al bot. Utilizzare il "
+"programma supybot-adduser (o modificare il file users.conf) per aggiungerla."
 
-#: plugin.py:292
+#: plugin.py:294
 msgid "You can't add capabilities you don't have."
 msgstr "Non puoi aggiungere capacità che non hai."
 
-#: plugin.py:297
-#, docstring
+#: plugin.py:299
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
 "            Takes from the user specified by <name> (or the user to whom\n"
-"            <hostmask> currently maps) the specified capability <capability>\n"
+"            <hostmask> currently maps) the specified capability "
+"<capability>\n"
 "            "
 msgstr ""
 "<nome|hostmask> <capacità>\n"
 "\n"
-"            Rimuove l'utente specificato da <nome> (o quello a cui corrisponde\n"
+"            Rimuove l'utente specificato da <nome> (o quello a cui "
+"corrisponde\n"
 "            <hostmask> attualmente) la <capacità> specificata\n"
 "            "
 
-#: plugin.py:309
+#: plugin.py:311
 msgid "That user doesn't have that capability."
 msgstr "Questo utente non ha tale capacità."
 
-#: plugin.py:311
+#: plugin.py:313
 msgid "You can't remove capabilities you don't have."
 msgstr "Non puoi rimuovere capacità che non hai."
 
-#: plugin.py:319
-#, docstring
+#: plugin.py:321
 msgid ""
 "<hostmask|nick> [<expires>]\n"
 "\n"
 "            This will set a persistent ignore on <hostmask> or the hostmask\n"
-"            currently associated with <nick>. <expires> is an optional argument\n"
-"            specifying when (in \"seconds from now\") the ignore will expire; if\n"
+"            currently associated with <nick>. <expires> is an optional "
+"argument\n"
+"            specifying when (in \"seconds from now\") the ignore will "
+"expire; if\n"
 "            it isn't given, the ignore will never automatically expire.\n"
 "            "
 msgstr ""
 "<hostmask|nick> [<scadenza>]\n"
 "\n"
-"            Imposta un ignore permanente su <hostmask> o l'hostmask attualmente\n"
-"            associata a <nick>. <scadenza> è un argomento opzionale per specificare\n"
-"            quando (in \"secondi a partire da subito\") scadrà l'ignore; se non fornito,\n"
+"            Imposta un ignore permanente su <hostmask> o l'hostmask "
+"attualmente\n"
+"            associata a <nick>. <scadenza> è un argomento opzionale per "
+"specificare\n"
+"            quando (in \"secondi a partire da subito\") scadrà l'ignore; se "
+"non fornito,\n"
 "            questo non scadrà mai.\n"
 "            "
 
-#: plugin.py:332
-#, docstring
+#: plugin.py:334
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -203,15 +215,15 @@ msgid ""
 msgstr ""
 "<hostmask|nick>\n"
 "\n"
-"            Rimuove l'ignore persistente su <hostmask> o l'attuale hostmask associata a <nick>.\n"
+"            Rimuove l'ignore persistente su <hostmask> o l'attuale hostmask "
+"associata a <nick>.\n"
 "            "
 
-#: plugin.py:341
+#: plugin.py:343
 msgid "%s wasn't in the ignores database."
 msgstr "%s non è nel mio database degli ignorati."
 
-#: plugin.py:346
-#, docstring
+#: plugin.py:348
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -223,12 +235,11 @@ msgstr ""
 "            Elenca le hostmask che il bot sta ignorando.\n"
 "            "
 
-#: plugin.py:354
+#: plugin.py:356
 msgid "I'm not currently globally ignoring anyone."
 msgstr "Al momento non sto ignorando nessuno."
 
 #: plugin.py:360
-#, docstring
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -237,6 +248,6 @@ msgid ""
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Pulisce l'attuale coda dei messaggi da inviare (interrompe il flood) per questa rete.\n"
+"        Pulisce l'attuale coda dei messaggi da inviare (interrompe il flood) "
+"per questa rete.\n"
 "        "
-
