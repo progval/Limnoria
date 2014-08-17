@@ -192,8 +192,7 @@ class Admin(callbacks.Plugin):
     def do435(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
-            irc.error(_('I can\'t change nick, I\'m currently banned in %s.') %
-                      msg.args[2])
+            irc.error(_('That nick is currently banned.'))
         else:
             self.log.debug('Got 435 without Admin.nick being called.')
 
