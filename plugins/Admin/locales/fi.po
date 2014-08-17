@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Finnish translation of Admin plugin in Supybot\n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
+"POT-Creation-Date: 2014-08-17 11:32+CEST\n"
 "PO-Revision-Date: 2014-03-22 12:46+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -15,6 +15,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 1.5.4\n"
+
+#: __init__.py:30
+msgid ""
+"\n"
+"These are commands useful for administrating the bot; they all require "
+"their\n"
+"caller to have the 'admin' capability.  This plugin is loaded by default.\n"
+msgstr ""
 
 #: plugin.py:54
 msgid "Nick/channel temporarily unavailable."
@@ -89,14 +97,15 @@ msgid "Someone else is already using that nick."
 msgstr "Joku muu käyttää jo tuota nimimerkkiä."
 
 #: plugin.py:195
-msgid "That nick is currently banned."
+#, fuzzy
+msgid "I can't change nick, I'm currently banned in %s."
 msgstr "Tuolla nimimerkillä on tällähetkellä porttikielto."
 
-#: plugin.py:202
+#: plugin.py:203
 msgid "I can't change nicks, the server said %q."
 msgstr "Minä en voi vaihtaa nimimerkkiä, koska palvelin sanoi %q"
 
-#: plugin.py:216
+#: plugin.py:217
 msgid ""
 "[<nick>] [<network>]\n"
 "\n"
@@ -111,7 +120,7 @@ msgstr ""
 " nimimerkki palautetaan.\n"
 "        "
 
-#: plugin.py:233
+#: plugin.py:234
 msgid ""
 "[<channel>] [<reason>]\n"
 "\n"
@@ -130,11 +139,11 @@ msgstr ""
 "     poistumisviestissä.\n"
 "        "
 
-#: plugin.py:251
+#: plugin.py:252
 msgid "I'm not in %s."
 msgstr "Minä en ole kanavalla %s."
 
-#: plugin.py:263
+#: plugin.py:264
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
@@ -150,7 +159,7 @@ msgstr ""
 "          ilmoittaa) määritetyn valtuuden <valtuus>\n"
 "            "
 
-#: plugin.py:283
+#: plugin.py:284
 msgid ""
 "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser "
 "program (or edit the users.conf file yourself) to add an owner capability."
@@ -158,11 +167,11 @@ msgstr ""
 "\"Owner\" valtuutta ei voi lisätä botissa. Käytä supybot-adduser ohjelmaa "
 "(tai muokkaa users.conf tiedostoa itse) lisätäksesi owner valtuuden."
 
-#: plugin.py:294
+#: plugin.py:295
 msgid "You can't add capabilities you don't have."
 msgstr "Et voi lisätä valtuuksia, joita sinulla ei ole."
 
-#: plugin.py:299
+#: plugin.py:300
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
@@ -178,15 +187,15 @@ msgstr ""
 "               <hostmask> sopii) määritetyn valtuuden <valtuus>\n"
 "            "
 
-#: plugin.py:311
+#: plugin.py:312
 msgid "That user doesn't have that capability."
 msgstr "Tuolla käyttäjällä ei tuota valtuutta."
 
-#: plugin.py:313
+#: plugin.py:314
 msgid "You can't remove capabilities you don't have."
 msgstr "Sinä et voi poistaa valtuuksia, joita sinulla ei ole."
 
-#: plugin.py:321
+#: plugin.py:322
 msgid ""
 "<hostmask|nick> [<expires>]\n"
 "\n"
@@ -210,7 +219,7 @@ msgstr ""
 "automaattisesti.\n"
 "            "
 
-#: plugin.py:334
+#: plugin.py:335
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -224,11 +233,11 @@ msgstr ""
 "     hostmaskista joka on tällä hetkellä yhdistetty <nimimerkkiin>.\n"
 "            "
 
-#: plugin.py:343
+#: plugin.py:344
 msgid "%s wasn't in the ignores database."
 msgstr "%s ei ollut huomiotta jätettävien tietokannassa."
 
-#: plugin.py:348
+#: plugin.py:349
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -240,11 +249,11 @@ msgstr ""
 "     Luetteloi hostmaskit jotka ovat botin huomiotta jättämis listalla.\n"
 "            "
 
-#: plugin.py:356
+#: plugin.py:357
 msgid "I'm not currently globally ignoring anyone."
 msgstr "En tällä hetkellä jätä ketään huomioitta globaalisti."
 
-#: plugin.py:360
+#: plugin.py:361
 msgid ""
 "takes no arguments\n"
 "\n"
