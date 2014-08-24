@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-08-24 17:43+EEST\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -217,7 +217,18 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:322
+#: plugin.py:324
+#, docstring
+msgid ""
+"[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>\n"
+"        Sends an ICMP echo request to the specified host.\n"
+"        The arguments correspond with those listed in ping6(8). --c is\n"
+"        limited to 10 packets or less (default is 5). --i is limited to 5\n"
+"        or less. --W is limited to 10 or less.\n"
+"        "
+msgstr ""
+
+#: plugin.py:378
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -226,7 +237,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:351
+#: plugin.py:407
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -235,7 +246,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:380
+#: plugin.py:436
 #, docstring
 msgid ""
 "<command to call with any arguments>\n"
@@ -248,7 +259,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:408
+#: plugin.py:464
 #, docstring
 msgid ""
 "<command to call with any arguments>\n"
