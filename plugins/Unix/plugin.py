@@ -44,6 +44,7 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Unix')
@@ -263,116 +264,64 @@ class Unix(callbacks.Plugin):
                       'variable appropriately.'))
     wtf = thread(wrap(wtf, [optional(('literal', ['is'])), 'something']))
 
-    @internationalizeDocstring
-    def ping(self, irc, msg, args, optlist, host):
-        """[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>
-        Sends an ICMP echo request to the specified host.
-        The arguments correspond with those listed in ping(8). --c is
-        limited to 10 packets or less (default is 5). --i is limited to 5
-        or less. --W is limited to 10 or less.
-        """
-        pingCmd = self.registryValue('ping.command')
-        if not pingCmd:
-           irc.error('The ping command is not configured.  If one '
-                     'is installed, reconfigure '
-                     'supybot.plugins.Unix.ping.command appropriately.',
-                     Raise=True)
-        else:
-            try: host = host.group(0)
-            except AttributeError: pass
-
-            args = [pingCmd]
-            for opt, val in optlist:
-                if opt == 'c' and val > 10: val = 10
-                if opt == 'i' and val >  5: val = 5
-                if opt == 'W' and val > 10: val = 10
-                args.append('-%s' % opt)
-                args.append(str(val))
-            if '-c' not in args:
-                args.append('-c')
-                args.append('5')
-            args.append(host)
-            try:
-                with open(os.devnull) as null:
-                    inst = subprocess.Popen(args,
-                                            stdout=subprocess.PIPE,
-                                            stderr=subprocess.PIPE,
-                                            stdin=null)
-            except OSError as e:
-                irc.error('It seems the configured ping command was '
-                          'not available (%s).' % e, Raise=True)
-            result = inst.communicate()
-            if result[1]: # stderr
-                irc.error(' '.join(result[1].decode('utf8').split()))
+    def _make_ping(command):
+        def f(self, irc, msg, args, optlist, host):
+            """[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>
+            Sends an ICMP echo request to the specified host.
+            The arguments correspond with those listed in ping(8). --c is
+            limited to 10 packets or less (default is 5). --i is limited to 5
+            or less. --W is limited to 10 or less.
+            """
+            pingCmd = self.registryValue(registry.join([command, 'command']))
+            if not pingCmd:
+               irc.error('The ping command is not configured.  If one '
+                         'is installed, reconfigure '
+                         'supybot.plugins.Unix.%s.command appropriately.' %
+                         command, Raise=True)
             else:
-                response = result[0].decode('utf8').split("\n");
-                if response[1]:
-                    irc.reply(' '.join(response[1].split()[3:5]).split(':')[0]
-                              + ': ' + ' '.join(response[-3:]))
+                try: host = host.group(0)
+                except AttributeError: pass
+
+                args = [pingCmd]
+                for opt, val in optlist:
+                    if opt == 'c' and val > 10: val = 10
+                    if opt == 'i' and val >  5: val = 5
+                    if opt == 'W' and val > 10: val = 10
+                    args.append('-%s' % opt)
+                    args.append(str(val))
+                if '-c' not in args:
+                    args.append('-c')
+                    args.append('5')
+                args.append(host)
+                try:
+                    with open(os.devnull) as null:
+                        inst = subprocess.Popen(args,
+                                                stdout=subprocess.PIPE,
+                                                stderr=subprocess.PIPE,
+                                                stdin=null)
+                except OSError as e:
+                    irc.error('It seems the configured ping command was '
+                              'not available (%s).' % e, Raise=True)
+                result = inst.communicate()
+                if result[1]: # stderr
+                    irc.error(' '.join(result[1].decode('utf8').split()))
                 else:
-                    irc.reply(' '.join(response[0].split()[1:3])
-                              + ': ' + ' '.join(response[-3:]))
+                    response = result[0].decode('utf8').split("\n");
+                    if response[1]:
+                        irc.reply(' '.join(response[1].split()[3:5]).split(':')[0]
+                                  + ': ' + ' '.join(response[-3:]))
+                    else:
+                        irc.reply(' '.join(response[0].split()[1:3])
+                                  + ': ' + ' '.join(response[-3:]))
 
-    _hostExpr = re.compile(r'^[a-z0-9][a-z0-9\.-]*[a-z0-9]$', re.I)
-    ping = thread(wrap(ping, [getopts({'c':'positiveInt','i':'float',
-                                't':'positiveInt','W':'positiveInt'}),
-                       first('ip', ('matches', _hostExpr, 'Invalid hostname'))]))
+        f.__name__ = command
+        _hostExpr = re.compile(r'^[a-z0-9][a-z0-9\.-]*[a-z0-9]$', re.I)
+        return thread(wrap(f, [getopts({'c':'positiveInt','i':'float',
+                                        't':'positiveInt','W':'positiveInt'}),
+                           first('ip', ('matches', _hostExpr, 'Invalid hostname'))]))
 
-
-    @internationalizeDocstring
-    def ping6(self, irc, msg, args, optlist, host):
-        """[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>
-        Sends an ICMP echo request to the specified host.
-        The arguments correspond with those listed in ping6(8). --c is
-        limited to 10 packets or less (default is 5). --i is limited to 5
-        or less. --W is limited to 10 or less.
-        """
-        ping6Cmd = self.registryValue('ping6.command')
-        if not ping6Cmd:
-           irc.error('The ping6 command is not configured.  If one '
-                     'is installed, reconfigure '
-                     'supybot.plugins.Unix.ping6.command appropriately.',
-                     Raise=True)
-        else:
-            try: host = host.group(0)
-            except AttributeError: pass
-
-            args = [ping6Cmd]
-            for opt, val in optlist:
-                if opt == 'c' and val > 10: val = 10
-                if opt == 'i' and val >  5: val = 5
-                if opt == 'W' and val > 10: val = 10
-                args.append('-%s' % opt)
-                args.append(str(val))
-            if '-c' not in args:
-                args.append('-c')
-                args.append('5')
-            args.append(host)
-            try:
-                with open(os.devnull) as null:
-                    inst = subprocess.Popen(args,
-                                            stdout=subprocess.PIPE,
-                                            stderr=subprocess.PIPE,
-                                            stdin=null)
-            except OSError as e:
-                irc.error('It seems the configured ping6 command was '
-                          'not available (%s).' % e, Raise=True)
-            result = inst.communicate()
-            if result[1]: # stderr
-                irc.error(' '.join(result[1].decode('utf8').split()))
-            else:
-                response = result[0].decode('utf8').split("\n");
-                if response[1]:
-                    irc.reply(' '.join(response[1].split()[3:5]).split(':')[0]
-                              + ': ' + ' '.join(response[-3:]))
-                else:
-                    irc.reply(' '.join(response[0].split()[1:3])
-                              + ': ' + ' '.join(response[-3:]))
-
-    _hostExpr = re.compile(r'^[a-z0-9][a-z0-9\.-]*[a-z0-9]$', re.I)
-    ping6 = thread(wrap(ping6, [getopts({'c':'positiveInt','i':'float',
-                                't':'positiveInt','W':'positiveInt'}),
-                       first('ip', ('matches', _hostExpr, 'Invalid hostname'))]))
+    ping = _make_ping('ping')
+    ping6 = _make_ping('ping6')
 
     def sysuptime(self, irc, msg, args):
         """takes no arguments
