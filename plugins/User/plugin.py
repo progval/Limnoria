@@ -522,7 +522,12 @@ class User(callbacks.Plugin):
                 found = False
                 for (id, user) in ircdb.users.items():
                     if keyid in [x[-len(keyid):] for x in user.gpgkeys]:
-                        user.addAuth(msg.prefix)
+                        try:
+                            user.addAuth(msg.prefix)
+                        except ValueError:
+                            irc.error(_('Your secure flag is true and your '
+                                      'hostmask doesn\'t match any of your '
+                                      'known hostmasks.'), Raise=True)
                         ircdb.users.setUser(user, flush=False)
                         irc.reply(_('You are now authenticated as %s.') %
                                 user.name)
