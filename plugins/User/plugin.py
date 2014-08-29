@@ -454,7 +454,10 @@ class User(callbacks.Plugin):
                 if len(keyids) == 0:
                     raise ValueError
                 for keyid in keyids:
-                    user.gpgkeys.remove(keyid)
+                    try:
+                        user.gpgkeys.remove(keyid)
+                    except ValueError:
+                        user.gpgkeys.remove('0x' + keyid)
                 gpg.keyring.delete_keys(fingerprint)
                 irc.replySuccess()
             except ValueError:
