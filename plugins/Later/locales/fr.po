@@ -93,7 +93,7 @@ msgid ""
 msgstr ""
 "<nick> <texte>\n"
 "\n"
-"Dit le <texte> à <nick> la prochaine fois qu'il est vu. <nick> peut contenir "
+"Dit le <texte> à <nick> la prochaine fois qu'iel est vu-e. <nick> peut contenir "
 "des jokers, et le premier nick correspondant recevra la note."
 
 #: plugin.py:159
