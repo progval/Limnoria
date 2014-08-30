@@ -1011,8 +1011,7 @@ class Irc(IrcCommandDispatcher):
     def do904(self, msg):
         if (self.sasl == 'external' and self.sasl_username and
                 self.sasl_password):
-            self.log.info('%s: SASL EXTERNAL failed, trying PLAIN.',
-                          self.network)
+            log.info('%s: SASL EXTERNAL failed, trying PLAIN.', self.network)
 
             self.sasl = 'plain'
 
