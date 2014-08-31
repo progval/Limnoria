@@ -91,7 +91,7 @@ class Utilities(callbacks.Plugin):
         handled appropriately.
         """
         text = ircutils.standardSubstitute(irc, msg, text)
-        irc.reply(text, prefixNick=False)
+        irc.reply(text)
     echo = wrap(echo, ['text'])
 
     @internationalizeDocstring
