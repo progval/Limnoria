@@ -317,7 +317,8 @@ def main():
         basedir = something("""Where would you like to create these
                             directories?""", default=os.curdir)
         # conf.supybot.directories.log
-        (logDir, basedir) = getDirectoryName('logs', prompt=False)
+        (logDir, basedir) = getDirectoryName('logs',
+                                             basedir=basedir, prompt=False)
         conf.supybot.directories.log.setValue(logDir)
         # conf.supybot.directories.data
         (dataDir, basedir) = getDirectoryName('data',
