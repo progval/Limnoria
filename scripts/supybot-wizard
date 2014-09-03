@@ -173,6 +173,11 @@ def main():
                       dest='network',
                       help='Determines whether the wizard will be allowed to '
                            'run without a network connection.')
+    parser.add_option('', '--output', action='store',
+                      dest='outputFile',
+                      help='Sets the conf file that the bot is saved to. '
+                           'The default is the nick of the bot in '
+                           'the current directory.')
     (options, args) = parser.parse_args()
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
@@ -192,7 +197,12 @@ def main():
         print('+------------------------------------------------------------+')
         print('')
 
-    filename = ''
+    if options.outputFile:
+        filename = options.outputFile
+        if not filename.endswith('.conf'):
+            filename += '.conf'
+    else:
+        filename = ''
     if args:
         parser.error('This program takes no non-option arguments.')
     output("""This is a wizard to help you start running supybot.  What it
