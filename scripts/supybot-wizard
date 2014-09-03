@@ -192,7 +192,6 @@ def main():
         print('+------------------------------------------------------------+')
         print('')
 
-    filename = ''
     if args:
         parser.error('This program takes no non-option arguments.')
     output("""This is a wizard to help you start running supybot.  What it
@@ -703,9 +702,11 @@ def main():
     # We're going to need to do a darcs predist thing here.
     #conf.supybot.debug.generated.setValue('...')
 
-    if not filename:
-        filename = '%s.conf' % nick
-    registry.close(conf.supybot, filename)
+    filename = something("""In which file would you like to save
+                         this config?""", default='%s.conf' % nick)
+    if not filename.endswith('.conf'):
+        filename += '.conf'
+    registry.close(conf.supybot, os.path.expanduser(filename))
 
     # Done!
     output("""All done!  Your new bot configuration is %s.  If you're running
