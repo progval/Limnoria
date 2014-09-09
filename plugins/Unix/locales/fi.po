@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 12:07+EET\n"
-"PO-Revision-Date: 2014-03-22 12:20+0200\n"
+"POT-Creation-Date: 2014-08-24 17:43+EEST\n"
+"PO-Revision-Date: 2014-08-24 17:45+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -311,7 +311,26 @@ msgstr ""
 "        tai vähempään. --W on rajoitettu kymmeneen tai vähempään.\n"
 "        "
 
-#: plugin.py:322
+#: plugin.py:324
+msgid ""
+"[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>\n"
+"        Sends an ICMP echo request to the specified host.\n"
+"        The arguments correspond with those listed in ping6(8). --c is\n"
+"        limited to 10 packets or less (default is 5). --i is limited to 5\n"
+"        or less. --W is limited to 10 or less.\n"
+"        "
+msgstr ""
+"[--c <määrä>] [--i <kesto>] [--t <ttl>] [--W <aikakatkaisu>] <isäntä tai "
+"ip>\n"
+"        Lähettää ICMP kaiutuspyynnön määritettyyn isäntään.\n"
+"        Parametrin täsmäävät niihin, jotka on määritetty ohjekirjasivulla "
+"ping(8). --c on\n"
+"        rajoitettu kymmeneen tai vähempään (oletus on 5). --i on rajoitettu "
+"viiteen\n"
+"        tai vähempään. --W on rajoitettu kymmeneen tai vähempään.\n"
+"        "
+
+#: plugin.py:378
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -322,7 +341,7 @@ msgstr ""
 "        Palauttaa järjestelmän, jolla botti on ylläoloajan.\n"
 "        "
 
-#: plugin.py:351
+#: plugin.py:407
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -335,7 +354,7 @@ msgstr ""
 "on.\n"
 "        "
 
-#: plugin.py:380
+#: plugin.py:436
 msgid ""
 "<command to call with any arguments>\n"
 "        Calls any command available on the system, and returns its output.\n"
@@ -357,7 +376,7 @@ msgstr ""
 "laittaa koneesi polvilleen. \n"
 "        "
 
-#: plugin.py:408
+#: plugin.py:464
 msgid ""
 "<command to call with any arguments>\n"
 "        Calls any command available on the system using the shell\n"

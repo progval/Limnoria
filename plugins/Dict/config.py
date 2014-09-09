@@ -45,8 +45,8 @@ conf.registerGlobalValue(Dict, 'server',
     registry.String('dict.org', _("""Determines what server the bot will
     retrieve definitions from.""")))
 conf.registerChannelValue(Dict, 'default',
-    registry.String('', _("""Determines the default dictionary the bot will
-    ask for definitions in.  If this value is '*' (without the quotes) the bot
-    will use all dictionaries to define words.""")))
+    registry.String('*', _("""Determines the default dictionary the bot
+    will ask for definitions in.  If this value is '*' (without the quotes)
+    the bot will use all dictionaries to define words.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -1,5 +1,7 @@
 # Common
 
+**Note: there is easier [installation guide in documentation!](http://doc.supybot.aperio.fr/en/latest/use/install.html)**
+
 First things first: Supybot *requires* at least Python 2.6.  There
 isn't any way to get around it.  You can get it from [Python homepage].
 
@@ -45,7 +47,7 @@ from there.
 
 # UNIX/Linux/BSD
 
-If you use [Debian or Ubuntu, click here](INSTALL.md#debian)
+If you use [Debian or Ubuntu, click here](INSTALL.md#debian) or [Fedora, click here.](INSTALL.md#fedora)
 
 If you're installing Python using your distributor's packages, you may
 need a python-dev or python3-dev package installed, too.  If you don't have
@@ -53,7 +55,6 @@ a '/usr/lib/python2.x/distutils' directory or
 '/usr/lib/python2.x/config/Makefile' or with Python 3 
 '/usr/lib/python3.x/distutils' or '/usr/lib/python3.x/config/Makefile' (assuming '/usr/lib/python2.x' or '/usr/lib/python3.x' is where your Python 
 libs are installed), then you will need a python-dev or python3-dev package.
-
 
 ## git
 
@@ -116,12 +117,25 @@ source ~/.bashrc
 
 ## Debian
 
-For Debian and other distributions based on it (Ubuntu etc.), there are 
-packages. You can install them with
+*Debian packages are automatically build nightly at 00:00Z.*
+
+For Debian and other distributions based on it (Ubuntu etc.), there are
+packages which you can install with
 
 ```
-wget http://builds.progval.net/limnoria/limnoria-master-HEAD.deb
+wget http://builds.progval.net/limnoria/debian/python2/limnoria-master-HEAD.deb
 sudo dpkg -i limnoria-master-HEAD.deb
+```
+
+## Fedora
+
+*Fedora packages are automatically build nightly at 00:00Z.*
+
+For Fedora and other distributions using rpm (RHEL, CentOS etc.), there are
+packages which you can install with
+
+```
+yum install http://builds.progval.net/limnoria/fedora/python2/limnoria-master-HEAD.noarch.rpm
 ```
 
 ## Pip
@@ -143,6 +157,9 @@ pip install git+https://github.com/ProgVal/Limnoria.git@master --user
 If you wish to use Python 3 or 2 instead of default of your distribution 
 run `pipX` where X is either 2 or 3 instead of `pip`.
 
+If pip gives error immediately instead of doing anything and you have git$ installd, try upgrading pip with `sudo pip install pip --upgrade` or without
+root, `pip install pip --upgrade --user`.
+
 ### Upgrading
 
 #### git
@@ -157,16 +174,12 @@ and then install Limnoria normally. "python setup.py install" doesn't affect con
 
 If you don't have the cloned Limnoria repository, clone it again using the installation instructions.
 
-### Debian
+### Debian/Fedora
 
-Simply do the same as before:
+Run the same commands as before on [Debian](INSTALL.md#debian) or 
+[Fedora](INSTALL.md#fedora) section of this file.
 
-```
-wget http://builds.progval.net/limnoria/limnoria-master-HEAD.deb
-sudo dpkg -i limnoria-master-HEAD.deb
-```
-
-### Pip 
+### Pip
 
 Run the first install command again, but add `--upgrade` to the 
 end. Then run the second install command.

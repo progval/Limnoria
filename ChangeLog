@@ -1395,7 +1395,7 @@
 
 	* Changed User.setpassword not to require the <old password> to
 	be correct if the requesting user has the owner capability (and
-	isn't the owner themself).
+	isn't the owner themselves).
 
 	* Added ircutils.strip{Bold,Reverse,Underline,Formatting}, which
 	will remove the specified formatting or all forms of formatting

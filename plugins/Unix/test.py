@@ -88,6 +88,29 @@ if os.name == 'posix':
                 self.assertNotError('unix ping --W 1 --c 1 127.0.0.1')
                 self.assertError('unix ping --W a --c 1 127.0.0.1')
 
+        if utils.findBinaryInPath('ping6') is not None:
+            def testPing6(self):
+                self.assertNotError('unix ping6 ::1')
+                self.assertError('unix ping6')
+                self.assertError('unix ping6 -localhost')
+                self.assertError('unix ping6 local%host')
+            def testPing6Count(self):
+                self.assertNotError('unix ping6 --c 1 ::1')
+                self.assertError('unix ping6 --c a ::1')
+                self.assertRegexp('unix ping6 --c 11 ::1','10 packets')
+                self.assertRegexp('unix ping6 ::1','5 packets')
+            def testPing6Interval(self):
+                self.assertNotError('unix ping6 --i 1 --c 1 ::1')
+                self.assertError('unix ping6 --i a --c 1 ::1')
+                # Super-user privileged interval setting
+                self.assertError('unix ping6 --i 0.1 --c 1 ::1') 
+            def testPing6Ttl(self):
+                self.assertNotError('unix ping6 --t 64 --c 1 ::1')
+                self.assertError('unix ping6 --t a --c 1 ::1')
+            def testPing6Wait(self):
+                self.assertNotError('unix ping6 --W 1 --c 1 ::1')
+                self.assertError('unix ping6 --W a --c 1 ::1')
+
         def testCall(self):
             self.assertNotError('unix call /bin/ping -c 1 localhost')
             self.assertRegexp('unix call /bin/ping -c 1 localhost', 'ping statistics')

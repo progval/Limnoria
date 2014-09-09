@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
 import sys
 import types
 import codecs
@@ -205,6 +206,8 @@ class String(callbacks.Plugin):
                 irc.reply(v)
             except commands.ProcessTimeoutError as e:
                 irc.error("ProcessTimeoutError: %s" % (e,))
+            except re.error as e:
+                irc.error(e.args[0])
     re = thread(wrap(re, [first('regexpMatcher', 'regexpReplacer'),
                    'text']))
 

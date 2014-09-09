@@ -39,7 +39,7 @@ progstats = plugin.progstats
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
-    # a bool that specifies whether the user identified themself as an advanced
+    # a bool that specifies whether the user identified themselves as an advanced
     # user or not.  You should effect your configuration by manipulating the
     # registry as appropriate.
     from supybot.questions import output, expect, anything, something, yn
@@ -94,6 +94,11 @@ conf.registerGroup(Unix, 'ping')
 conf.registerGlobalValue(Unix.ping, 'command', 
     registry.String(utils.findBinaryInPath('ping') or '', """Determines what 
     command will be called for the ping command."""))
+
+conf.registerGroup(Unix, 'ping6')
+conf.registerGlobalValue(Unix.ping6, 'command', 
+    registry.String(utils.findBinaryInPath('ping6') or '', """Determines what 
+    command will be called for the ping6 command."""))
 
 conf.registerGroup(Unix, 'sysuptime')
 conf.registerGlobalValue(Unix.sysuptime, 'command',
