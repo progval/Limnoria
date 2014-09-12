@@ -295,7 +295,7 @@ class RSS(callbacks.Plugin):
             feed.announced_entries |= set(entry.id for entry in new_entries)
             # We keep a little more because we don't want to re-announce
             # oldest entries if one of the newest gets removed.
-            feed.announced_entries.truncate(2*len(entries))
+            feed.announced_entries.truncate(10*len(entries))
         return new_entries
 
     def announce_feed(self, feed, initial):
