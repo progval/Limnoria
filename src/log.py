@@ -281,7 +281,7 @@ conf.registerGlobalValue(conf.supybot.log.stdout, 'colorized',
     BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs
     to stdout (if enabled) will be colorized with ANSI color."""))
 conf.registerGlobalValue(conf.supybot.log.stdout, 'wrap',
-    registry.Boolean(True, """Determines whether the bot will wrap its logs
+    registry.Boolean(False, """Determines whether the bot will wrap its logs
     when they're output to stdout."""))
 conf.registerGlobalValue(conf.supybot.log.stdout, 'format',
     registry.String('%(levelname)s %(asctime)s %(message)s',
