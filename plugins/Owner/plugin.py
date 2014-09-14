@@ -190,10 +190,11 @@ class Owner(callbacks.Plugin):
                         except callbacks.Error as e:
                             # This is just an error message.
                             log.warning(str(e))
-                        except (plugins.NoSuitableDatabase, ImportError) as e:
-                            s = 'Failed to load %s: %s' % (name, e)
-                            if not s.endswith('.'):
-                                s += '.'
+                        except plugins.NoSuitableDatabase as e:
+                            s = 'Failed to load %s: no suitable database(%s).' % (name, e)
+                            log.warning(s)
+                        except ImportError as e:
+                            s = 'Failed to load %s: import error (%s).' % (name, e)
                             log.warning(s)
                         except Exception as e:
                             log.exception('Failed to load %s:', name)
