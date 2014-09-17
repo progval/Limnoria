@@ -326,7 +326,7 @@ class PluginDownloader(callbacks.Plugin):
 
         global repositories
         if repository is None:
-            irc.reply(_(', ').join([x for x in repositories]))
+            irc.reply(_(', ').join(sorted(x for x in repositories)))
         elif repository not in repositories:
             irc.error(_(
                        'This repository does not exist or is not known by '
