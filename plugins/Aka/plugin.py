@@ -553,6 +553,43 @@ class Aka(callbacks.Plugin):
                                 'channel': 'somethingWithoutSpaces',
                             }), 'something', 'text'])
 
+    def set(self, irc, msg, args, optlist, name, alias):
+        """[--channel <#channel>] <name> <command>
+
+        Overwrites an existing alias <name> to execute <command> instead.  The
+        <command> should be in the standard "command argument [nestedcommand
+        argument]" arguments to the alias; they'll be filled with the first,
+        second, etc. arguments.  $1, $2, etc. can be used for required
+        arguments.  @1, @2, etc. can be used for optional arguments.  $* simply
+        means "all arguments that have not replaced $1, $2, etc.", ie. it will
+        also include optional arguments.
+        """
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
+        try:
+            self._remove_aka(channel, name)
+        except AkaError as e:
+            irc.error(str(e), Raise=True)
+
+        if ' ' not in alias:
+            # If it's a single word, they probably want $*.
+            alias += ' $*'
+        try:
+            self._add_aka(channel, name, alias)
+            self.log.info('Setting Aka %r to %r (from %s)',
+                          name, alias, msg.prefix)
+            irc.replySuccess()
+        except AkaError as e:
+            irc.error(str(e))
+    set = wrap(set, [getopts({
+                                'channel': 'somethingWithoutSpaces',
+                            }), 'something', 'text'])
+
     def remove(self, irc, msg, args, optlist, name):
         """[--channel <#channel>] <name>
 
