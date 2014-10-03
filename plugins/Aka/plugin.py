@@ -644,7 +644,10 @@ class Aka(callbacks.Plugin):
                             Raise=True)
                 channel = arg
         command = self._db.get_alias(channel, name)
-        irc.reply(command)
+        if command:
+            irc.reply(command)
+        else:
+            irc.error(_('This Aka does not exist'))
     show = wrap(show, [getopts({'channel': 'somethingWithoutSpaces'}),
         'text'])
 
