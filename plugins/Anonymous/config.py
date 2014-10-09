@@ -56,9 +56,9 @@ conf.registerChannelValue(conf.supybot.plugins.Anonymous, 'requireCapability',
     registry.String('', _("""Determines what capability (if any) the bot should
     require people trying to use this plugin to have.""")))
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'allowPrivateTarget',
-    registry.Boolean(False, _("""Determines whether the bot will allow
-    "tell" command to be used. If this is true, the bot will allow people
-    "tell" command to send private messages to other users.""")))
+    registry.Boolean(False, _("""Determines whether the bot will allow the
+    "tell" command to be used. If true, the bot will allow the "tell"
+    command to send private messages to other users.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
