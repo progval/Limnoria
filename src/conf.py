@@ -1059,11 +1059,11 @@ registerChannelValue(supybot.protocols.irc, 'banmask',
     default banmask style.""")))
 
 registerGlobalValue(supybot.protocols.irc, 'strictRfc',
-    registry.Boolean(True, _("""Determines whether the bot will strictly follow
-    the RFC; currently this only affects what strings are considered to be
-    nicks. If you're using a server or a network that requires you to message
-    a nick such as services@this.network.server then you you should set this to
-    False.""")))
+    registry.Boolean(False, _("""Determines whether the bot will strictly
+    follow the RFC; currently this only affects what strings are
+    considered to be nicks. If you're using a server or a network that
+    requires you to message a nick such as services@this.network.server
+    then you you should set this to False.""")))
 
 registerGlobalValue(supybot.protocols.irc, 'certfile',
     registry.String('', _("""Determines what certificate file (if any) the bot

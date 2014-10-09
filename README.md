@@ -23,29 +23,28 @@ older versions are not supported.
 
 ## Documentation
 
-If this is your first install, there is an [install guide](http://supybot.aperio.fr/doc/use/install.html).
+If this is your first install, there is an [install guide](http://doc.supybot.aperio.fr/en/latest/use/install.html).
 You will probably be pointed to it if you ask on IRC how to install Limnoria.
 
 There is much documentation
 at [supybot.aperio.fr] and at [Gribble wiki] for your perusal.  Please read it; we took the
 time to write it, you should take the time to read it.
 
-[supybot.aperio.fr]:http://supybot.aperio.fr/doc
+[supybot.aperio.fr]:http://doc.supybot.aperio.fr/
 [Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
 
 ## IRC channels
 
 ### In English
 
-If you have any trouble, feel free to swing by [#supybot and #limnoria](irc://chat.freenode.net/#supybot,#limnoria) on
-[irc.freenode.net](irc://chat.freenode.net) or [#supybot](irc://irc.oftc.net/#supybot) at [irc.oftc.net](irc://irc.oftc.net) (we have a Limnoria there relaying,
+If you have any trouble, feel free to swing by [#supybot and #limnoria](ircs://chat.freenode.net:6697/#supybot,#limnoria) on
+[freenode](https://freenode.net/) or [#supybot](ircs://irc.oftc.net:6697/#supybot) at [OFTC](http://oftc.net/) (we have a Limnoria there relaying,
 so either network works) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
 understand or think you know of a better way to do something,
 *please* post it on the [issue tracker] so we can improve the bot!
 
 [issue tracker]:https://github.com/ProgVal/Limnoria/issues
-
 
 ### In Other languages
 

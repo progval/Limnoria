@@ -941,15 +941,21 @@ class Irc(IrcCommandDispatcher):
 
             return
 
-        sasl = self.sasl_username and self.sasl_password
+        self.sasl = None
 
-        if sasl:
+        if (conf.supybot.networks.get(self.network).certfile() or
+                conf.supybot.protocols.irc.certfile()):
+            self.sasl = 'external'
+        elif self.sasl_username and self.sasl_password:
+            self.sasl = 'plain'
+
+        if self.sasl:
             self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
 
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-notify')))
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'extended-join')))
 
-        if not sasl:
+        if not self.sasl:
             self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
         if self.password:
@@ -972,11 +978,14 @@ class Irc(IrcCommandDispatcher):
         if len(msg.args) == 1 and msg.args[0] == '+':
             log.info('%s: Authenticating using SASL.', self.network)
 
-            authstring = base64.b64encode('\0'.join([
-                self.sasl_username,
-                self.sasl_username,
-                self.sasl_password
-            ]).encode('utf-8')).decode('utf-8')
+            if self.sasl == 'external':
+                authstring = '+'
+            elif self.sasl == 'plain':
+                authstring = base64.b64encode('\0'.join([
+                    self.sasl_username,
+                    self.sasl_username,
+                    self.sasl_password
+                ]).encode('utf-8')).decode('utf-8')
 
             self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
@@ -988,8 +997,9 @@ class Irc(IrcCommandDispatcher):
                              self.network, cap)
 
                     if cap == 'sasl':
-                        self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
-                                                     args=('PLAIN',)))
+                        self.queueMsg(ircmsgs.IrcMsg(
+                            command='AUTHENTICATE',
+                            args=(self.sasl.upper(),)))
                 elif msg.args[1] == 'NAK':
                     log.warning('%s: Server refused capability %r',
                                 self.network, cap)
@@ -999,8 +1009,17 @@ class Irc(IrcCommandDispatcher):
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do904(self, msg):
-        log.warning('%s: SASL authentication failed', self.network)
-        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+        if (self.sasl == 'external' and self.sasl_username and
+                self.sasl_password):
+            log.info('%s: SASL EXTERNAL failed, trying PLAIN.', self.network)
+
+            self.sasl = 'plain'
+
+            self.queueMsg(ircmsgs.IrcMsg(
+                command='AUTHENTICATE', args=(self.sasl.upper(),)))
+        else:
+            log.warning('%s: SASL authentication failed', self.network)
+            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do905(self, msg):
         log.warning('%s: SASL authentication failed because the username or '

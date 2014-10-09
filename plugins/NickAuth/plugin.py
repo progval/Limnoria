@@ -161,7 +161,12 @@ class NickAuth(callbacks.Plugin):
         if not user:
             user = ircdb.users.getUserFromNick(irc.network, theirnick)
         if user:
-            user.addAuth(prefix)
+            try:
+                user.addAuth(prefix)
+            except ValueError:
+                irc.error(_('Your secure flag is true and your hostmask '
+                          'doesn\'t match any of your known hostmasks.'),
+                          Raise=True)
             ircdb.users.setUser(user, flush=False)
             irc.reply(_('You are now authenticated as %s.') % user.name)
         else:

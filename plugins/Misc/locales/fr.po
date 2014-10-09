@@ -170,7 +170,7 @@ msgstr ""
 "\n"
 "Cette commande donne une description utile de ce que fait la <commande>. "
 "<plugin> n'est nécessaire que si la commande est présente dans plus d'un "
-"plugin.Il se peut que vous vouliez utiliser la commande « list » pour lister "
+"plugin. Il se peut que vous vouliez utiliser la commande « list » pour lister "
 "tous les plugins et commandes disponibles."
 
 #: plugin.py:290

@@ -95,6 +95,11 @@ conf.registerGlobalValue(Unix.ping, 'command',
     registry.String(utils.findBinaryInPath('ping') or '', """Determines what 
     command will be called for the ping command."""))
 
+conf.registerGroup(Unix, 'ping6')
+conf.registerGlobalValue(Unix.ping6, 'command', 
+    registry.String(utils.findBinaryInPath('ping6') or '', """Determines what 
+    command will be called for the ping6 command."""))
+
 conf.registerGroup(Unix, 'sysuptime')
 conf.registerGlobalValue(Unix.sysuptime, 'command',
     registry.String(utils.findBinaryInPath('uptime') or '', """Determines what

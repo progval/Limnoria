@@ -59,7 +59,7 @@ class Anonymous(callbacks.Plugin):
         if capability:
             if not ircdb.checkCapability(msg.prefix, capability):
                 irc.errorNoCapability(capability, Raise=True)
-        if irc.isChannel(target):
+        if action != 'tell':
             if self.registryValue('requirePresenceInChannel', target) and \
                msg.nick not in irc.state.channels[target].users:
                 irc.error(format(_('You must be in %s to %q in there.'),
@@ -71,7 +71,7 @@ class Anonymous(callbacks.Plugin):
             if not c._checkCapability(self.name()):
                 irc.error(_('That channel has set its capabilities so as to '
                           'disallow the use of this plugin.'), Raise=True)
-        elif action == 'say' and not self.registryValue('allowPrivateTarget'):
+        elif not self.registryValue('allowPrivateTarget'):
             irc.error(format(_('%q cannot be used to send private messages.'),
                              action),
                       Raise=True)
@@ -80,8 +80,7 @@ class Anonymous(callbacks.Plugin):
     def say(self, irc, msg, args, target, text):
         """<channel> <text>
 
-        Sends <text> to <channel>.  Can only send to <nick> if
-        supybot.plugins.Anonymous.allowPrivateTarget is True.
+        Sends <text> to <channel>.
         """
         self._preCheck(irc, msg, target, 'say')
         self.log.info('Saying %q in %s due to %s.',

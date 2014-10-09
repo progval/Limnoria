@@ -286,7 +286,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             try:
                 address = utils.net.getAddressFromHostname(server[0],
                         attempt=self._attempt)
-            except socket.gaierror as e:
+            except (socket.gaierror, socket.error) as e:
                 drivers.log.connectError(self.currentServer, e)
                 self.scheduleReconnect()
                 return
