@@ -885,8 +885,11 @@ class Channel(callbacks.Plugin):
         """
         # Make sure we don't elicit information about private channels to
         # people or channels that shouldn't know
+        capability = ircdb.makeChannelCapability(channel, 'op')
+        hostmask = irc.state.nickToHostmask(nick)
         if 's' in irc.state.channels[channel].modes and \
             msg.args[0] != channel and \
+            not ircdb.checkCapability(hostmask, capability) and \
             (ircutils.isChannel(msg.args[0]) or \
              msg.nick not in irc.state.channels[channel].users):
             irc.error(_('You don\'t have access to that information.'),
