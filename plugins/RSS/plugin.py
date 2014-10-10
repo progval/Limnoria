@@ -52,6 +52,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('RSS')
 
 def get_feedName(irc, msg, args, state):
+    if ircutils.isChannel(args[0]):
+        state.errorInvalid('feed name', args[0], 'must not be channel names.')
     if not registry.isValidRegistryName(args[0]):
         state.errorInvalid('feed name', args[0],
                            'Feed names must not include spaces.')
@@ -413,9 +415,13 @@ class RSS(callbacks.Plugin):
             well as URLs for RSS feeds.  <channel> is only necessary if the
             message isn't sent in the channel itself.
             """
+            plugin = irc.getCallback('RSS')
+            invalid_feeds = [x for x in feeds if not plugin.get_feed(x)]
+            if invalid_feeds:
+                irc.error(format(_('These feeds are unknown: %L'),
+                    invalid_feeds), Raise=True)
             announce = conf.supybot.plugins.RSS.announce
             S = announce.get(channel)()
-            plugin = irc.getCallback('RSS')
             for name in feeds:
                 S.add(name)
             announce.get(channel).setValue(S)

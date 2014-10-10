@@ -89,6 +89,7 @@ class RSSTestCase(ChannelPluginTestCase):
         old_open = feedparser._open_resource
         feedparser._open_resource = constant(xkcd_old)
         try:
+            self.assertError('rss announce add xkcd')
             self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
             self.assertNotError('rss announce add xkcd')
             self.assertNotError(' ')
