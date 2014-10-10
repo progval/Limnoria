@@ -243,8 +243,11 @@ class Karma(callbacks.Plugin):
             irc.noReply()
 
     def _doKarma(self, irc, channel, thing):
-        assert thing[-2:] in ('++', '--')
-        if thing.endswith('++'):
+        inc = self.registryValue('incrementChars', channel) 
+        dec = self.registryValue('decrementChars', channel)
+        idchars = inc + dec
+        assert thing[-2:] in idchars
+        if thing.endswith(tuple(inc)):
             thing = thing[:-2]
             if ircutils.strEqual(thing, irc.msg.nick) and \
                not self.registryValue('allowSelfRating', channel):
@@ -267,7 +270,10 @@ class Karma(callbacks.Plugin):
         channel = msg.args[0]
         if not irc.isChannel(channel) or not tokens:
             return
-        if tokens[-1][-2:] in ('++', '--'):
+        inc = self.registryValue('incrementChars', channel)
+        dec = self.registryValue('decrementChars', channel)
+        idchars = inc + dec
+        if tokens[-1][-2:] in (idchars):
             thing = ' '.join(tokens)
             self._doKarma(irc, channel, thing)
 
@@ -282,7 +288,10 @@ class Karma(callbacks.Plugin):
                self.registryValue('allowUnaddressedKarma', channel):
                 irc = callbacks.SimpleProxy(irc, msg)
                 thing = msg.args[1].rstrip()
-                if thing[-2:] in ('++', '--'):
+                inc = self.registryValue('incrementChars', channel)
+                dec = self.registryValue('decrementChars', channel)
+                idchars = inc + dec
+                if thing[-2:] in (idchars):
                     self._doKarma(irc, channel, thing)
 
     @internationalizeDocstring
