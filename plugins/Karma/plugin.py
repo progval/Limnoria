@@ -242,34 +242,31 @@ class Karma(callbacks.Plugin):
         else:
             irc.noReply()
 
-    def _doKarma(self, irc, channel, thing):
-        assert thing[-2:] in ('++', '--')
-        if thing.endswith('++'):
-            thing = thing[:-2]
-            if ircutils.strEqual(thing, irc.msg.nick) and \
-               not self.registryValue('allowSelfRating', channel):
-                irc.error(_('You\'re not allowed to adjust your own karma.'))
-            elif thing:
-                self.db.increment(channel, self._normalizeThing(thing))
-                karma = self.db.get(channel, self._normalizeThing(thing))
-                self._respond(irc, channel, thing, karma[0]-karma[1])
-        else:
-            thing = thing[:-2]
-            if ircutils.strEqual(thing, irc.msg.nick) and \
-               not self.registryValue('allowSelfRating', channel):
-                irc.error(_('You\'re not allowed to adjust your own karma.'))
-            elif thing:
-                self.db.decrement(channel, self._normalizeThing(thing))
-                karma = self.db.get(channel, self._normalizeThing(thing))
-                self._respond(irc, channel, thing, karma[0]-karma[1])
+    def _doKarma(self, irc, msg, channel, thing):
+        inc = self.registryValue('incrementChars', channel) 
+        dec = self.registryValue('decrementChars', channel)
+        if thing.endswith(tuple(inc + dec)):
+            if ircutils.strEqual(thing, msg.nick) and \
+                not self.registryValue('allowSelfRating', channel):
+                irc.error(_('You\'re not allowed to adjust your own karma.'),
+                    Raise=True)
+            for s in inc:
+                if thing.endswith(s):
+                    thing = thing[:-len(s)]
+                    self.db.increment(channel, self._normalizeThing(thing))
+                    karma = self.db.get(channel, self._normalizeThing(thing))
+            for s in dec:
+                if thing.endswith(s):
+                    thing = thing[:-len(s)]
+                    self.db.decrement(channel, self._normalizeThing(thing))
+                    karma = self.db.get(channel, self._normalizeThing(thing))
+            self._respond(irc, channel, thing, karma[0]-karma[1])
 
     def invalidCommand(self, irc, msg, tokens):
         channel = msg.args[0]
-        if not irc.isChannel(channel) or not tokens:
-            return
-        if tokens[-1][-2:] in ('++', '--'):
+        if irc.isChannel(channel) and tokens:
             thing = ' '.join(tokens)
-            self._doKarma(irc, channel, thing)
+            self._doKarma(irc, msg, channel, thing)
 
     def doPrivmsg(self, irc, msg):
         # We don't handle this if we've been addressed because invalidCommand
@@ -282,8 +279,7 @@ class Karma(callbacks.Plugin):
                self.registryValue('allowUnaddressedKarma', channel):
                 irc = callbacks.SimpleProxy(irc, msg)
                 thing = msg.args[1].rstrip()
-                if thing[-2:] in ('++', '--'):
-                    self._doKarma(irc, channel, thing)
+                self._doKarma(irc, msg, channel, thing)
 
     @internationalizeDocstring
     def karma(self, irc, msg, args, channel, things):
