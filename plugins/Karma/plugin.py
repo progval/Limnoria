@@ -246,18 +246,22 @@ class Karma(callbacks.Plugin):
         inc = self.registryValue('incrementChars', channel) 
         dec = self.registryValue('decrementChars', channel)
         if thing.endswith(tuple(inc + dec)):
-            if ircutils.strEqual(thing, msg.nick) and \
-                not self.registryValue('allowSelfRating', channel):
-                irc.error(_('You\'re not allowed to adjust your own karma.'),
-                    Raise=True)
             for s in inc:
                 if thing.endswith(s):
                     thing = thing[:-len(s)]
+                    if ircutils.strEqual(thing, msg.nick) and \
+                        not self.registryValue('allowSelfRating', channel):
+                        irc.error(_('You\'re not allowed to adjust your own karma.'))
+                        return
                     self.db.increment(channel, self._normalizeThing(thing))
                     karma = self.db.get(channel, self._normalizeThing(thing))
             for s in dec:
                 if thing.endswith(s):
                     thing = thing[:-len(s)]
+                    if ircutils.strEqual(thing, msg.nick) and \
+                        not self.registryValue('allowSelfRating', channel):
+                        irc.error(_('You\'re not allowed to adjust your own karma.'))
+                        return
                     self.db.decrement(channel, self._normalizeThing(thing))
                     karma = self.db.get(channel, self._normalizeThing(thing))
             self._respond(irc, channel, thing, karma[0]-karma[1])

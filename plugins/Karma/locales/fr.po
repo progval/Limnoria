@@ -62,7 +62,7 @@ msgstr ""
 msgid "%(thing)s's karma is now %(karma)i"
 msgstr "Le karma de %(thing)s est maintenant %(karma)i"
 
-#: plugin.py:251
+#: plugin.py:254 plugin.py:263
 msgid "You're not allowed to adjust your own karma."
 msgstr "Vous n'êtes pas autorisé à modifier votre propre karma."
 
