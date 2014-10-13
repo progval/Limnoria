@@ -270,9 +270,12 @@ class Web(callbacks.PluginRegexp):
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')
-        except:
+        except UnicodeDecodeError:
             pass
         parser = Title()
+        if sys.version_info[0] >= 3 and isinstance(text, bytes):
+            irc.error(_('Could not guess the page\'s encoding. (Try '
+                    'installing python-charade'), Raise=True)
         try:
             parser.feed(text)
         except HTMLParser.HTMLParseError:
