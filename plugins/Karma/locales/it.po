@@ -55,7 +55,7 @@ msgid ""
 msgstr ""
 "Determina se il bot aumenterà o diminuirà il karma senza essere richiamato."
 
-#: plugin.py:247 plugin.py:255
+#: plugin.py:254 plugin.py:263
 msgid "You're not allowed to adjust your own karma."
 msgstr "Non ti è permesso di modificare il tuo karma."
 

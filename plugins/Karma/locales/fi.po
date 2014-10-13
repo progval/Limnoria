@@ -67,7 +67,7 @@ msgstr ""
 msgid "%(thing)s's karma is now %(karma)i"
 msgstr "%(thing)in karma on nyt %(karma)i"
 
-#: plugin.py:248 plugin.py:257
+#: plugin.py:254 plugin.py:263
 msgid "You're not allowed to adjust your own karma."
 msgstr "Sinä et saa määrittää omaa karmaasi."
 
