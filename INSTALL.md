@@ -25,11 +25,11 @@ extra features you may want. (Order by decreasing estimated usefulness)
 
 To install them, run 
 
-`pip install -r requirements.txt`
+`pip3 install -r requirements.txt`
 
 or if you don't have or don't want to use root, 
 
-`pip install -r requirements.txt --user`
+`pip3 install -r requirements.txt --user`
 
 For more information and help on how to use Supybot, checkout
 the documents under [docs/], especially [GETTING_STARTED] and
@@ -72,11 +72,11 @@ The rest depends on do you have root access and do you want to perform global or
 Run
 
 ```
-python setup.py install
+python3 setup.py install
 ```
 
-`python` can be replaced with `python2` (if your distribution 
-uses Python 3 by default) or `python3` if you want to use Python 3 
+`python3` can be replaced with `python2` (if your distribution 
+uses Python 3 by default) or `python2` if you want to use Python 2
 version.
 
 Now you have several new programs installed where Python scripts are normally
@@ -92,11 +92,11 @@ registry file for your bot.
 Run
 
 ```
-python setup.py install --user
+python3 setup.py install --user
 ```
 
-`python` can be replaced with `python2` (if your distribution 
-uses Python 3 by default) or `python3` if you want to use Python 3 
+`python3` can be replaced with `python2` (if your distribution 
+uses Python 3 by default) or `python2` if you want to use Python 2 
 version.
 
 and you will have new programs installed in ~/.local/bin. The two that might be of particular interest to you, the
@@ -143,22 +143,20 @@ yum install http://builds.progval.net/limnoria/fedora/python2/limnoria-master-HE
 To install with pip run
 
 ```
-sudo pip install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt
-sudo pip install git+https://github.com/ProgVal/Limnoria.git@master
+sudo pip3 install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt
+sudo pip3 install git+https://github.com/ProgVal/Limnoria.git@master
 ```
 
 or without root if you don't have it or don't want to use it.
 
 ```
-pip install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt --user
-pip install git+https://github.com/ProgVal/Limnoria.git@master --user
+pip3 install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt --user
+pip3 install git+https://github.com/ProgVal/Limnoria.git@master --user
 ```
 
-If you wish to use Python 3 or 2 instead of default of your distribution 
-run `pipX` where X is either 2 or 3 instead of `pip`.
-
-If pip gives error immediately instead of doing anything and you have git$ installd, try upgrading pip with `sudo pip install pip --upgrade` or without
-root, `pip install pip --upgrade --user`.
+If pip gives error immediately instead of doing anything and you have git
+installd, try upgrading pip with `sudo pip3 install pip --upgrade` or
+without root, `pip3 install pip --upgrade --user`.
 
 ### Upgrading
 
