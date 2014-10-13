@@ -80,7 +80,7 @@ uses Python 3 by default) or `python3` if you want to use the Python 3
 version of the bot.
 
 Now you have several new programs installed where Python scripts are normally
-installed on your system (`/usr/bin' or `/usr/local/bin` are common on
+installed on your system (`/usr/bin` or `/usr/local/bin` are common on
 UNIX systems).  The two that might be of particular interest to you as a
 new user are 'supybot' and 'supybot-wizard'.  The former, 'supybot', is
 the script to run an actual bot; the latter, 'supybot-wizard', is an
@@ -140,7 +140,7 @@ yum install http://builds.progval.net/limnoria/fedora/python2/limnoria-master-HE
 
 ## Pip
 
-To install with pip run:
+To install with pip, run:
 
 ```
 sudo pip install -r https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt
