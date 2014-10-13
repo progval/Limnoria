@@ -28,7 +28,8 @@
 ###
 
 """
-Allows aliases for other commands.
+Allows aliases for other commands. NOTE THAT IT'S RECOMMENDED TO USE Aka
+PLUGIN INSTEAD!
 """
 
 import supybot
