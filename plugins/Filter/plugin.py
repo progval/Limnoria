@@ -80,7 +80,7 @@ class Filter(callbacks.Plugin):
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
-                       'hebrew', 'undup', 'gnu', 'shrink', 'azn', 'uniud']
+                       'hebrew', 'undup', 'gnu', 'shrink', 'uniud']
     @internationalizeDocstring
     def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
@@ -672,16 +672,6 @@ class Filter(callbacks.Plugin):
         irc.reply(text)
     shrink = wrap(shrink, ['text'])
 
-    _azn_trans = utils.str.MultipleReplacer(dict(list(zip('rlRL', 'lrLR'))))
-    @internationalizeDocstring
-    def azn(self, irc, msg, args, text):
-        """<text>
-
-        Returns <text> with the l's made into r's and r's made into l's.
-        """
-        text = self._azn_trans(text)
-        irc.reply(text)
-    azn = wrap(azn, ['text'])
 
     # TODO: 2,4,;
     # XXX suckiest: B,K,P,Q,T
