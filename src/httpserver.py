@@ -242,12 +242,15 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if 'Content-Type' not in self.headers:
             self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={'REQUEST_METHOD':'POST',
-                     'CONTENT_TYPE':self.headers['Content-Type'],
-                     })
+        if self.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+            form = cgi.FieldStorage(
+                fp=self.rfile,
+                headers=self.headers,
+                environ={'REQUEST_METHOD':'POST',
+                         'CONTENT_TYPE':self.headers['Content-Type'],
+                         })
+        else:
+            form = self.rfile.read()
         self.do_X('doPost', form=form)
 
     def do_HEAD(self):

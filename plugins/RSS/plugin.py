@@ -63,6 +63,18 @@ addConverter('feedName', get_feedName)
 announced_headlines_filename = \
         conf.supybot.directories.data.dirize('RSS_announced.flat')
 
+def only_one_at_once(f):
+    lock = [False]
+    def newf(*args, **kwargs):
+        if lock[0]:
+            return
+        lock[0] = True
+        try:
+            f(*args, **kwargs)
+        finally:
+            lock[0] = False
+    return newf
+
 class Feed:
     __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
             'etag', 'modified', 'initial',
@@ -127,7 +139,6 @@ def load_announces_db(fd):
                 for (name, entries) in json.load(fd).items())
 def save_announces_db(db, fd):
     json.dump(dict((name, list(entries)) for (name, entries) in db), fd)
-
 
 
 class RSS(callbacks.Plugin):
@@ -230,7 +241,7 @@ class RSS(callbacks.Plugin):
 
     def __call__(self, irc, msg):
         self.__parent.__call__(irc, msg)
-        self.update_feeds()
+        threading.Thread(target=self.update_feeds).start()
 
 
     ##################
@@ -274,6 +285,7 @@ class RSS(callbacks.Plugin):
         if self.is_expired(feed):
             self.update_feed(feed)
 
+    @only_one_at_once
     def update_feeds(self):
         announced_feeds = set()
         for irc in world.ircs:
