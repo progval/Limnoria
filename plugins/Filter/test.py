@@ -59,6 +59,10 @@ class FilterTest(ChannelPluginTestCase):
             except KeyError:
                 pass
 
+    def testHebrew(self):
+        self.assertResponse('hebrew The quick brown fox '
+                            'jumps over the lazy dog.',
+                            'Th qck brwn fx jmps vr th lzy dg.')
     def testJeffk(self):
         for i in range(100):
             self.assertNotError('jeffk the quick brown fox is ghetto')
