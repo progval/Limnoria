@@ -41,7 +41,6 @@ class FilterTest(ChannelPluginTestCase):
     def testNoErrors(self):
         self.assertNotError('leet foobar')
         self.assertNotError('supa1337 foobar')
-        self.assertNotError('lithp meghan sweeney')
         self.assertNotError('aol I\'m too legit to quit.')
 
     def testDisabledCommandsCannotFilter(self):
@@ -74,10 +73,6 @@ class FilterTest(ChannelPluginTestCase):
     def testUndup(self):
         self.assertResponse('undup foo bar baz quux', 'fo bar baz qux')
         self.assertResponse('undup aaaaaaaaaa', 'a')
-
-    def testLithp(self):
-        self.assertResponse('lithp jamessan', 'jamethan')
-        self.assertResponse('lithp Shame', 'Thame')
 
     def testMorse(self):
         self.assertResponse('unmorse [morse jemfinch]', 'JEMFINCH')
