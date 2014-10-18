@@ -287,7 +287,7 @@ def main():
                                              name, threaded, name))
     writeFile('config.py', configTemplate % (copyright, name, name, name, name,
                                              name))
-    writeFile('__init__.py', __init__Template % (copyright, name))
+    writeFile('__init__.py', __init__Template % copyright)
     writeFile('test.py', testTemplate % (copyright, name, name))
     writeFile('README.md', readmeTemplate)
 
