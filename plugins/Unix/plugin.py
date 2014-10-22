@@ -221,8 +221,12 @@ class Unix(callbacks.Plugin):
                           'not available.'), Raise=True)
             (out, err) = inst.communicate()
             inst.wait()
-            lines = out.splitlines()
-            lines = list(map(str.rstrip, lines))
+            if sys.version_info[0] > 2:
+                lines = [i.decode('utf-8').rstrip() for i in out.splitlines()]
+                lines = list(map(str, lines))
+            else:
+                lines = out.splitlines()
+                lines = list(map(str.rstrip, lines))
             lines = filter(None, lines)
             irc.replies(lines, joiner=' ')
         else:
