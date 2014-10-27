@@ -26,9 +26,8 @@ older versions are not supported.
 If this is your first install, there is an [install guide](http://doc.supybot.aperio.fr/en/latest/use/install.html).
 You will probably be pointed to it if you ask on IRC how to install Limnoria.
 
-There is much documentation
-at [supybot.aperio.fr] and at [Gribble wiki] for your perusal.  Please read it; we took the
-time to write it, you should take the time to read it.
+There is extensive documentation at [supybot.aperio.fr] and at [Gribble wiki].
+We took the time to write it; you should take the time to read it.
 
 [supybot.aperio.fr]:http://doc.supybot.aperio.fr/
 [Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
