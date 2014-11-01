@@ -196,7 +196,8 @@ class Owner(callbacks.Plugin):
                         except ImportError as e:
                             e = str(e)
                             if e.endswith(name):
-                                s = 'No plugin named %s exists.' % utils.str.dqrepr(name)
+                                s = 'Failed to load {0}: No plugin named {0} exists.'.format(
+                                    utils.str.dqrepr(name))
                             elif "No module named 'config'" in e:
                                 s = ("Failed to load %s: This plugin is incompatible "
                                 "with your current Python version. If this error is appearing "
