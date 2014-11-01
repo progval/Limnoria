@@ -199,7 +199,7 @@ class Owner(callbacks.Plugin):
                                 s = 'Failed to load {0}: No plugin named {0} exists.'.format(
                                     utils.str.dqrepr(name))
                             elif "No module named 'config'" in e:
-                                s = ("Failed to load %s: This plugin is incompatible "
+                                s = ("Failed to load %s: This plugin may be incompatible "
                                 "with your current Python version. If this error is appearing "
                                 "with stock Supybot plugins, remove the stock plugins directory "
                                 "(usually ~/Limnoria/plugins) from 'config directories.plugins'." % name)
@@ -429,7 +429,7 @@ class Owner(callbacks.Plugin):
             if str(e).endswith(name):
                 irc.error('No plugin named %s exists.' % utils.str.dqrepr(name))
             elif "No module named 'config'" in str(e):
-                 irc.error('This plugin is incompatible with your current Python '
+                 irc.error('This plugin may be incompatible with your current Python '
                            'version. Try running 2to3 on it.')
             else:
                 irc.error(str(e))
