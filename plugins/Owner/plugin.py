@@ -446,6 +446,9 @@ class Owner(callbacks.Plugin):
         Unloads and subsequently reloads the plugin by name; use the 'list'
         command to see a list of the currently loaded plugins.
         """
+        if ircutils.strEqual(name, self.name()):
+            irc.error('You can\'t reload the %s plugin.' % name)
+            return
         callbacks = irc.removeCallback(name)
         if callbacks:
             module = sys.modules[callbacks[0].__module__]
