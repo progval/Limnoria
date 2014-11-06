@@ -34,6 +34,7 @@ as well as some other useful commands.
 
 import supybot
 import supybot.world as world
+from sys import version_info
 
 __version__ = "%%VERSION%%"
 
@@ -45,6 +46,8 @@ __contributors__ = {}
 
 from . import config
 from . import plugin
+if version_info[0] >= 3:
+    from imp import reload
 reload(plugin) # In case we're being reloaded.
 
 if world.testing:
