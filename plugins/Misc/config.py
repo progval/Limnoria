@@ -45,12 +45,12 @@ conf.registerChannelValue(Misc, 'mores',
     registry.PositiveInteger(1, _("""Determines how many messages the bot
     will issue when using the 'more' command.""")))
 conf.registerGlobalValue(Misc, 'listPrivatePlugins',
-    registry.Boolean(True, _("""Determines whether the bot will list private
+    registry.Boolean(False, _("""Determines whether the bot will list private
     plugins with the list command if given the --private switch.  If this is
     disabled, non-owner users should be unable to see what private plugins
     are loaded.""")))
 conf.registerGlobalValue(Misc, 'listUnloadedPlugins',
-    registry.Boolean(True, _("""Determines whether the bot will list unloaded
+    registry.Boolean(False, _("""Determines whether the bot will list unloaded
     plugins with the list command if given the --unloaded switch.  If this is
     disabled, non-owner users should be unable to see what unloaded plugins
     are available.""")))
