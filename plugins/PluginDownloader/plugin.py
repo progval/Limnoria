@@ -177,7 +177,7 @@ class GithubRepository(GitRepository):
                     .wait()
             return _('Plugin was designed for Python 2, but an attempt to '
                     'convert it to Python 3 has been made. There is no '
-                    'garantee it will work, though.')
+                    'guarantee it will work, though.')
         else:
             return _('Plugin successfully installed.')
 
@@ -381,7 +381,7 @@ class PluginDownloader(callbacks.Plugin):
         else:
             info = repositories[repository].getInfo(plugin)
             if info is None:
-                irc.error(_('No README found for this plugin'))
+                irc.error(_('No README found for this plugin.'))
             else:
                 if info.startswith('Insert a description of your plugin here'):
                     irc.error(_('This plugin has no description.'))

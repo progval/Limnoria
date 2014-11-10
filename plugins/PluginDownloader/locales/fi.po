@@ -28,7 +28,7 @@ msgstr ""
 #: plugin.py:178
 msgid ""
 "Plugin was designed for Python 2, but an attempt to convert it to Python 3 "
-"has been made. There is no garantee it will work, though."
+"has been made. There is no guarantee it will work, though."
 msgstr ""
 "Lisä-osa suunniteltiin Python 2:lle, mutta yritys muuntaa se Python 3:lle on "
 "tehty. Ei kuitenkaan ole takuuta, että se toimisi."
@@ -110,7 +110,7 @@ msgstr ""
 " Näyttää tietoja <lisäosasta> <ohjelmistolähteessä>."
 
 #: plugin.py:380
-msgid "No README found for this plugin"
+msgid "No README found for this plugin."
 msgstr "Tämän lisäosan README-tiedostoa ei löydy."
 
 #: plugin.py:383
