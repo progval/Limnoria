@@ -29,7 +29,7 @@ msgstr ""
 #: plugin.py:178
 msgid ""
 "Plugin was designed for Python 2, but an attempt to convert it to Python 3 "
-"has been made. There is no garantee it will work, though."
+"has been made. There is no guarantee it will work, though."
 msgstr ""
 "Ce plugin a été conçu pour Python 2, mais une tentative de conversion à "
 "Python 3 a été faite. Cependant, il n’y a pas de garantie que le plugin "
@@ -105,7 +105,7 @@ msgstr ""
 "Affiche des informations sur <plugin> depuis le <dépôt>."
 
 #: plugin.py:372
-msgid "No README found for this plugin"
+msgid "No README found for this plugin."
 msgstr "Aucun README trouvé pour ce plugin."
 
 #: plugin.py:375
