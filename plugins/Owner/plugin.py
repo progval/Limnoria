@@ -466,7 +466,7 @@ class Owner(callbacks.Plugin):
             except ImportError:
                 for callback in callbacks:
                     irc.addCallback(callback)
-                irc.error('No plugin %s exists.' % name)
+                irc.error('No plugin named %s exists.' % name)
         else:
             irc.error('There was no plugin %s.' % name)
     reload = wrap(reload, ['something'])
