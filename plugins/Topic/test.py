@@ -162,6 +162,20 @@ class TopicTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.plugins.Topic.format.setValue(orig)
 
+    def testRestore(self):
+        self.getMsg('topic set foo')
+        self.assertResponse('topic restore', 'foo')
+        self.getMsg('topic remove 1')
+        restoreError = 'Error: I haven\'t yet set the topic in #test.'
+        self.assertResponse('topic restore', restoreError)
+
+    def testRefresh(self):
+        self.getMsg('topic set foo')
+        self.assertResponse('topic refresh', 'foo')
+        self.getMsg('topic remove 1')
+        refreshError = 'Error: I haven\'t yet set the topic in #test.'
+        self.assertResponse('topic refresh', refreshError)
+
     def testUndo(self):
         try:
             original = conf.supybot.plugins.Topic.format()

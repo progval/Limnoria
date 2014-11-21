@@ -515,6 +515,8 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         try:
             topics = self.lastTopics[channel]
+            if not topics:
+                raise KeyError
         except KeyError:
             irc.error(format(_('I haven\'t yet set the topic in %s.'),
                              channel))
@@ -535,9 +537,17 @@ class Topic(callbacks.Plugin):
         topic = irc.state.channels[channel].topic
         if topic:
             self._sendTopics(irc, channel, topic)
-        else:
-            self.restore(irc, msg, args, channel)
-    set = wrap(refresh, ['canChangetopic'])
+            return
+        try:
+            topics = self.lastTopics[channel]
+            if not topics:
+                raise KeyError
+        except KeyError:
+                irc.error(format(_('I haven\'t yet set the topic in %s.'),
+                    channel))
+                return
+        self._sendTopics(irc, channel, topics)
+    refresh = wrap(refresh, ['canChangeTopic'])
 
     @internationalizeDocstring
     def undo(self, irc, msg, args, channel):
