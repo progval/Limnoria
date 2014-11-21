@@ -531,13 +531,13 @@ class Topic(callbacks.Plugin):
         """
         if not self._checkManageCapabilities(irc, msg, channel):
             capabilities = self.registryValue('requireManageCapability')
-            irc.errorNoCapability(capabilities, raise=True)
+            irc.errorNoCapability(capabilities, Raise=True)
         topic = irc.state.channels[channel].topic
         if topic:
             self._sendTopics(irc, channel, topic)
         else:
-            self.restore(self, irc, msg, args, channel)
-    set = wrap(refresh, ['canChangeTopic'])
+            self.restore(irc, msg, args, channel)
+    set = wrap(refresh, ['canChangetopic'])
 
     @internationalizeDocstring
     def undo(self, irc, msg, args, channel):
