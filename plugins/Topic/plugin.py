@@ -515,12 +515,39 @@ class Topic(callbacks.Plugin):
             irc.errorNoCapability(capabilities, Raise=True)
         try:
             topics = self.lastTopics[channel]
+            if not topics:
+                raise KeyError
         except KeyError:
             irc.error(format(_('I haven\'t yet set the topic in %s.'),
                              channel))
             return
         self._sendTopics(irc, channel, topics)
     restore = wrap(restore, ['canChangeTopic'])
+
+    @internationalizeDocstring
+    def refresh(self, irc, msg, args, channel):
+        """[<channel>]
+        Refreshes current topic set by anyone. Restores topic if empty.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        if not self._checkManageCapabilities(irc, msg, channel):
+            capabilities = self.registryValue('requireManageCapability')
+            irc.errorNoCapability(capabilities, Raise=True)
+        topic = irc.state.channels[channel].topic
+        if topic:
+            self._sendTopics(irc, channel, topic)
+            return
+        try:
+            topics = self.lastTopics[channel]
+            if not topics:
+                raise KeyError
+        except KeyError:
+                irc.error(format(_('I haven\'t yet set the topic in %s.'),
+                    channel))
+                return
+        self._sendTopics(irc, channel, topics)
+    refresh = wrap(refresh, ['canChangeTopic'])
 
     @internationalizeDocstring
     def undo(self, irc, msg, args, channel):
