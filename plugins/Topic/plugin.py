@@ -523,6 +523,23 @@ class Topic(callbacks.Plugin):
     restore = wrap(restore, ['canChangeTopic'])
 
     @internationalizeDocstring
+    def refresh(self, irc, msg, args, channel):
+        """[<channel>]
+        Refreshes current topic set by anyone. Restores topic if empty.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        if not self._checkManageCapabilities(irc, msg, channel):
+            capabilities = self.registryValue('requireManageCapability')
+            irc.errorNoCapability(capabilities, raise=True)
+        topic = irc.state.channels[channel].topic
+        if topic:
+            self._sendTopics(irc, channel, topic)
+        else:
+            self.restore(self, irc, msg, args, channel)
+    set = wrap(refresh, ['canChangeTopic'])
+
+    @internationalizeDocstring
     def undo(self, irc, msg, args, channel):
         """[<channel>]
 
