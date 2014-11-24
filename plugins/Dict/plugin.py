@@ -130,7 +130,7 @@ class Dict(callbacks.Plugin):
     def synonym(self, irc, msg, args, words):
         """<word> [<word> ...]
 
-        Gets a random synonym from the Moby Thesaurus (moby-thes) database.
+        Gets a random synonym from the Moby Thesaurus (moby-thesaurus) database.
 
         If given many words, gets a random synonym for each of them.
 
@@ -142,7 +142,7 @@ class Dict(callbacks.Plugin):
         except socket.error as e:
             irc.error(utils.web.strError(e), Raise=True)
 
-        dictionary = 'moby-thes'
+        dictionary = 'moby-thesaurus'
         response = []
         for word in words:
             definitions = conn.define(dictionary, word)
