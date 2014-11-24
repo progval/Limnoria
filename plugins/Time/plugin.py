@@ -58,6 +58,11 @@ try:
 except ImportError:
     parse = None
 
+try:
+    from dateutil.tz import tzlocal
+except ImportError:
+    tzlocal = None
+
 class Time(callbacks.Plugin):
     @internationalizeDocstring
     def seconds(self, irc, msg, args):
@@ -160,7 +165,13 @@ class Time(callbacks.Plugin):
                 format = self.registryValue('format', channel)
             else:
                 format = self.registryValue('format')
-        irc.reply(time.strftime(format, time.localtime(seconds)))
+        if tzlocal:
+            irc.reply(datetime.fromtimestamp(seconds, tzlocal()).strftime(format))
+        else:
+            # NOTE: This has erroneous behavior on some older Python versions,
+            # including at least up to 2.7.5 and 3.2.3. Install dateutil if you
+            # can't upgrade Python.
+            irc.reply(time.strftime(format, time.localtime(seconds)))
     time = wrap(time, [optional('channel'), optional('nonInt'),
                        additional('float', TIME.time)])
 
