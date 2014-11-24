@@ -29,6 +29,7 @@
 ###
 
 import sys
+import fnmatch
 
 import supybot.conf as conf
 import supybot.ircdb as ircdb
@@ -597,27 +598,32 @@ class Channel(callbacks.Plugin):
         remove = wrap(remove, ['op', 'hostmask'])
 
         @internationalizeDocstring
-        def list(self, irc, msg, args, channel):
-            """[<channel>]
+        def list(self, irc, msg, args, channel, mask):
+            """[<channel>] [<mask>]
 
             If you have the #channel,op capability, this will show you the
             current persistent bans on the <channel>.
             """
-            c = ircdb.channels.getChannel(channel)
-            if c.bans:
+            all_bans = ircdb.channels.getChannel(channel).bans
+            if mask:
+                mask = mask.replace(r'\*', '[*]')
+                filtered_bans = fnmatch.filter(all_bans, mask)
+            else:
+                filtered_bans = all_bans
+            if filtered_bans:
                 bans = []
-                for ban in c.bans:
-                    if c.bans[ban]:
+                for ban in filtered_bans:
+                    if all_bans[ban]:
                         bans.append(format(_('%q (expires %t)'),
-                                           ban, c.bans[ban]))
+                                           ban, all_bans[ban]))
                     else:
                         bans.append(format(_('%q (never expires)'),
-                                           ban, c.bans[ban]))
+                                           ban, all_bans[ban]))
                 irc.reply(format('%L', bans))
             else:
                 irc.reply(format(_('There are no persistent bans on %s.'),
                                  channel))
-        list = wrap(list, ['op'])
+        list = wrap(list, ['op', optional('somethingWithoutSpaces')])
 
     class ignore(callbacks.Commands):
         @internationalizeDocstring
