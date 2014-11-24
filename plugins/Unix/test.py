@@ -97,7 +97,8 @@ if os.name == 'posix':
             def testPing6Count(self):
                 self.assertNotError('unix ping6 --c 1 ::1')
                 self.assertError('unix ping6 --c a ::1')
-                self.assertRegexp('unix ping6 --c 11 ::1','10 packets')
+                self.assertRegexp('unix ping6 --c 11 ::1','10 packets',
+                        timeout=12)
                 self.assertRegexp('unix ping6 ::1','5 packets')
             def testPing6Interval(self):
                 self.assertNotError('unix ping6 --i 1 --c 1 ::1')
