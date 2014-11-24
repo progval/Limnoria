@@ -602,7 +602,10 @@ class Channel(callbacks.Plugin):
             """[<channel>] [<mask>]
 
             If you have the #channel,op capability, this will show you the
-            current persistent bans on the <channel>.
+            current persistent bans on the <channel> that match the given
+            mask, if any (returns all of them otherwise).
+            Note that you can use * as a wildcard on masks and \* to match
+            actual * in masks
             """
             all_bans = ircdb.channels.getChannel(channel).bans
             if mask:
