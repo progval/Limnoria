@@ -151,8 +151,7 @@ __init__Template = '''
 %s
 
 """
-Add a description of the plugin (to be presented to the user inside the wizard)
-here.  This should describe *what* the plugin does.
+%s: %s
 """
 
 import supybot
@@ -204,7 +203,9 @@ class %sTestCase(PluginTestCase):
 '''.lstrip()
 
 readmeTemplate = '''
-Insert a description of your plugin here, with any notes, etc. about 
+%s: %s
+
+Insert a detailed description of your plugin here, with any notes, etc. about 
 using it.
 '''.lstrip()
 
@@ -216,62 +217,52 @@ def main():
     parser.add_option('-n', '--name', action='store', dest='name',
                       help='sets the name for the plugin.')
     parser.add_option('-t', '--thread', action='store_true', dest='threaded',
-                      help='makes the plugin threaded.')
+                      help='makes the plugin threaded.', default=False)
     parser.add_option('', '--real-name', action='store', dest='realName',
                       help='Determines what real name the copyright is '
                       'assigned to.')
+    parser.add_option('', '--desc', action='store', dest='desc',
+                      help='Short description of plugin.')
     (options, args) = parser.parse_args()
-    if options.name:
-        name = options.name
-        if options.threaded:
-            threaded = True
+
+    while not options.name or options.name[0].islower():
+        if not options.name:
+            prompt = 'What should the name of the plugin be?'
         else:
-            threaded = False
-        if options.realName:
-            realName = options.realName
-    else:
-        name = something('What should the name of the plugin be?')
-        if name.endswith('.py'):
-            name = name[:-3]
-        while name[0].islower():
-            print('Plugin names must begin with a capital letter.')
-            name = something('What should the name of the plugin be?')
-            if name.endswith('.py'):
-                name = name[:-3]
-
-        if os.path.exists(name):
+            prompt = 'Plugin name must begin with a capital letter.'
+        options.name = something(prompt)
+        if options.name and os.path.exists(options.name):
             error('A file or directory named %s already exists; remove or '
-                  'rename it and run this program again.' % name)
+                  'rename it and run this program again.' % options.name)
 
-        print(textwrap.fill(textwrap.dedent("""
+    if not options.realName:
+        options.realName = something(textwrap.dedent("""
+            What is your real name, so I can fill in the copyright and license  
+            appropriately?
+            """).strip())
+    if not options.desc:
+        options.desc = something(textwrap.dedent("""
+            Please provide a short description of the plugin.
+            """).strip())
+
+    print(textwrap.fill(textwrap.dedent("""
         Sometimes you'll want a callback to be threaded.  If its methods
         (command or regexp-based, either one) will take a significant amount
         of time to run, you'll want to thread them so they don't block the
-        entire bot.""").strip()))
-        print()
-        threaded = yn('Does your plugin need to be threaded?')
+        entire bot.\n""").strip()))
+    options.threaded = yn('Does your plugin need to be threaded?')
+        
+    if not yn('Do you wish to use Supybot\'s license for your plugin?'):
+        license = '#'
 
-        realName = something(textwrap.dedent("""
-        What is your real name, so I can fill in the copyright and license  
-        appropriately?
-        """).strip())
-
-        if not yn('Do you wish to use Supybot\'s license for your plugin?'):
-            license = '#'
-
-    if threaded:
+    if options.threaded:
         threaded = 'threaded = True'
     else:
         threaded = 'pass'
-    if name.endswith('.py'):
-        name = name[:-3]
-    while name[0].islower():
-        print('Plugin names must begin with a capital.')
-        name = something('What should the name of the plugin be?')
-        if name.endswith('.py'):
-            name = name[:-3]
-    copyright %= (realName, license)
-    pathname = name
+
+
+    copyright %= (options.realName, license)
+    pathname = options.name
 
     # Make the directory.
     os.mkdir(pathname)
@@ -283,27 +274,27 @@ def main():
         finally:
             fd.close()
 
-    writeFile('plugin.py', pluginTemplate % (copyright, name, name,
-                                             name, threaded, name))
-    writeFile('config.py', configTemplate % (copyright, name, name, name, name,
-                                             name))
-    writeFile('__init__.py', __init__Template % (copyright, name))
-    writeFile('test.py', testTemplate % (copyright, name, name))
-    writeFile('README.md', readmeTemplate)
+    writeFile('plugin.py', pluginTemplate % (copyright, options.name, options.name,
+                                             options.name, threaded, options.name))
+    writeFile('config.py', configTemplate % (copyright, options.name,
+        options.name, options.name, options.name, options.name))
+    writeFile('__init__.py', __init__Template % (copyright, options.name,
+        options.desc))
+    writeFile('test.py', testTemplate % (copyright, options.name, options.name))
+    writeFile('README.md', readmeTemplate %(options.name, options.desc))
 
     pathname = os.path.join(pathname, 'local')
     os.mkdir(pathname)
     writeFile('__init__.py',
               '# Stub so local is a module, used for third-party modules\n')
 
-    print('Your new plugin template is in the %s directory.' % name)
+    print('Your new plugin template is in the %s directory.' % options.name)
 
 if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print()
-        output("""It looks like you cancelled out of this script before it was
+        output("""\nIt looks like you cancelled out of this script before it was
         finished.  Obviously, nothing was written, but just run this script
         again whenever you want to generate a template for a plugin.""")
 
