@@ -191,7 +191,7 @@ class Time(callbacks.Plugin):
         except pytz.UnknownTimeZoneError:
             irc.error(_('Unknown timezone'))
             return
-        irc.reply(str(datetime.now(timezone)))
+        irc.reply(datetime.now(timezone).strftime('%F %T%z'))
     tztime = wrap(tztime, ['text'])
 
 
