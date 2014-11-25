@@ -151,7 +151,7 @@ __init__Template = '''
 %s
 
 """
-%s
+%s: %s
 """
 
 import supybot
@@ -219,6 +219,8 @@ def main():
     parser.add_option('', '--real-name', action='store', dest='realName',
                       help='Determines what real name the copyright is '
                       'assigned to.')
+    parser.add_option('', '--desc', action='store', dest='desc',
+                      help='Short description of plugin.')
     (options, args) = parser.parse_args()
     if options.name:
         name = options.name
@@ -258,6 +260,11 @@ def main():
         if not yn('Do you wish to use Supybot\'s license for your plugin?'):
             license = '#'
 
+    if not options.desc:
+        options.desc = something(textwrap.dedent("""
+            Please provide a short description of the plugin.
+            """).strip())
+
     if threaded:
         threaded = 'threaded = True'
     else:
@@ -286,7 +293,7 @@ def main():
                                              name, threaded, name))
     writeFile('config.py', configTemplate % (copyright, name, name, name, name,
                                              name))
-    writeFile('__init__.py', __init__Template % (copyright, name))
+    writeFile('__init__.py', __init__Template % (copyright, name, options.desc))
     writeFile('test.py', testTemplate % (copyright, name, name))
     writeFile('README.md', readmeTemplate)
 
