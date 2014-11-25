@@ -151,8 +151,7 @@ __init__Template = '''
 %s
 
 """
-Add a description of the plugin (to be presented to the user inside the wizard)
-here.  This should describe *what* the plugin does.
+%s
 """
 
 import supybot
@@ -287,7 +286,7 @@ def main():
                                              name, threaded, name))
     writeFile('config.py', configTemplate % (copyright, name, name, name, name,
                                              name))
-    writeFile('__init__.py', __init__Template % copyright)
+    writeFile('__init__.py', __init__Template % (copyright, name))
     writeFile('test.py', testTemplate % (copyright, name, name))
     writeFile('README.md', readmeTemplate)
 
