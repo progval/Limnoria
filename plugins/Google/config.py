@@ -118,7 +118,7 @@ conf.registerChannelValue(Google, 'oneToOne',
     registry.Boolean(False, _("""Determines whether results are sent in
     different lines or all in the same one.""")))
 conf.registerChannelValue(Google, 'maximumResults',
-    NumSearchResults(8, _("""Determines the maximum number of results returned
+    NumSearchResults(3, _("""Determines the maximum number of results returned
     from the google command.""")))
 conf.registerChannelValue(Google, 'defaultLanguage',
     Language('lang_'+ _('en'), _("""Determines what default language is used in
