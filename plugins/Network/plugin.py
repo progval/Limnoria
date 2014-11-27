@@ -62,6 +62,10 @@ class Network(callbacks.Plugin):
         provided, it will be sent to the server in a PASS command.  If --ssl is
         provided, an SSL connection will be attempted.
         """
+        if '.' in network:
+            irc.error("Network names cannot have a '.' in them. "
+            "Remember, this is the network name, not the actual "
+            "server you plan to connect to.", Raise=True)
         try:
             otherIrc = self._getIrc(network)
             irc.error(_('I\'m already connected to %s.') % network)
