@@ -179,6 +179,10 @@ class Misc(callbacks.Plugin):
                 else:
                     pass # Let's just do nothing, I can't think of better.
 
+    def isPublic(self, cb):
+        name = cb.name()
+        return conf.supybot.plugins.get(name).public()
+
     @internationalizeDocstring
     def list(self, irc, msg, args, optlist, cb):
         """[--private] [--unloaded] [<plugin>]
@@ -222,12 +226,9 @@ class Misc(callbacks.Plugin):
                 plugins.sort()
                 irc.reply(format('%L', plugins))
             else:
-                def isPublic(cb):
-                    name = cb.name()
-                    return conf.supybot.plugins.get(name).public()
                 names = [cb.name() for cb in irc.callbacks
-                         if (private and not isPublic(cb)) or
-                            (not private and isPublic(cb))]
+                         if (private and not self.isPublic(cb)) or
+                            (not private and self.isPublic(cb))]
                 names.sort()
                 if names:
                     irc.reply(format('%L', names))
@@ -298,8 +299,15 @@ class Misc(callbacks.Plugin):
                 assert cbs, 'Odd, maxL == command, but no cbs.'
                 irc.reply(_.__call__(cbs[0].getCommandHelp(command, False)))
         else:
-            irc.error(format(_('There is no command %q.'),
-                             callbacks.formatCommand(command)))
+            plugins = [cb.name() for cb in irc.callbacks
+                       if self.isPublic(cb)]
+            s = format(_('There is no command %q.'),
+                        callbacks.formatCommand(command))
+            if command[0].lower() in map(str.lower, plugins):
+                s += (' However, "{0}" is the name of a loaded plugin, and '
+                    'you may be able to find its provided commands '
+                    'using \'list {0}\'.'.format(command[0].title()))
+            irc.error(s)
     help = wrap(help, [many('something')])
 
     @internationalizeDocstring
