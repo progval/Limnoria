@@ -270,8 +270,9 @@ class Services(callbacks.Plugin):
                 self.log.debug('Got entrymsg from ChanServ %s.', on)
         elif ircutils.isChannel(msg.args[0]):
             # Atheme uses channel-wide notices for alerting channel access
-            # changes if the FANTASY setting is on; we can suppress these
-            # 'unexpected notice' warnings since they're not really important.
+            # changes if the FANTASY or VERBOSE setting is on; we can suppress
+            # these 'unexpected notice' warnings since they're not really 
+            # important.
             pass
         else:
             self.log.warning('Got unexpected notice from ChanServ %s: %r.',
