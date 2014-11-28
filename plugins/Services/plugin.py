@@ -268,6 +268,12 @@ class Services(callbacks.Plugin):
             chanTypes = irc.state.supported['CHANTYPES']
             if re.match(r'^\[[%s]' % re.escape(chanTypes), s):
                 self.log.debug('Got entrymsg from ChanServ %s.', on)
+        elif ircutils.isChannel(msg.args[0]):
+            # Atheme uses channel-wide notices for alerting channel access
+            # changes if the FANTASY or VERBOSE setting is on; we can suppress
+            # these 'unexpected notice' warnings since they're not really 
+            # important.
+            pass
         else:
             self.log.warning('Got unexpected notice from ChanServ %s: %r.',
                              on, msg)
