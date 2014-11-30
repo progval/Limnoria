@@ -45,6 +45,8 @@ class Continue(Exception):
     pass # Used below, look in the "do" function nested in doJoin.
 
 class AutoMode(callbacks.Plugin):
+    """This plugin, when configured, allows the bot to automatically set modes
+    on users when they join."""
     def doJoin(self, irc, msg):
         channel = msg.args[0]
         if ircutils.strEqual(irc.nick, msg.nick):

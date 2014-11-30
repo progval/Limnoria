@@ -54,8 +54,9 @@ else:
     _all = __builtins__.all
 
 class Conditional(callbacks.Plugin):
-    """Add the help for "@plugin help Conditional" here
-    This should describe *how* to use this plugin."""
+    """This plugin provides logic operators and other commands that
+    enable you to run commands only if a condition is true. Useful for nested
+    commands and scripting."""
     threaded = True
     def __init__(self, irc):
         callbacks.Plugin.__init__(self, irc)

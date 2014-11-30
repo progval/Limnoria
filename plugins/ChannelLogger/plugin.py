@@ -55,6 +55,7 @@ class FakeLog(object):
         return
 
 class ChannelLogger(callbacks.Plugin):
+    """This plugin allows the bot to log channel conversations to disk."""
     noIgnore = True
     def __init__(self, irc):
         self.__parent = super(ChannelLogger, self)

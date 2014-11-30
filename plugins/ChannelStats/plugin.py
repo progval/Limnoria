@@ -164,6 +164,8 @@ class StatsDB(plugins.ChannelUserDB):
 
 filename = conf.supybot.directories.data.dirize('ChannelStats.db')
 class ChannelStats(callbacks.Plugin):
+    """This plugin keeps stats of the channel and returns them with
+    the command 'channelstats'."""
     noIgnore = True
     def __init__(self, irc):
         self.__parent = super(ChannelStats, self)

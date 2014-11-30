@@ -43,6 +43,9 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Channel')
 
 class Channel(callbacks.Plugin):
+    """This plugin provides various commands for channel management, such
+    as setting modes and channel-wide bans/ignores/capabilities. This is
+    a core Supybot plugin that should not be removed!"""
     def __init__(self, irc):
         self.__parent = super(Channel, self)
         self.__parent.__init__(irc)
