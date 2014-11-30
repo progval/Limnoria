@@ -231,6 +231,8 @@ def makeNewAlias(name, alias):
     return f
 
 class Alias(callbacks.Plugin):
+    """This plugin allows users to define aliases to commands and combinations
+    of commands (via nesting)."""
     def __init__(self, irc):
         self.__parent = super(Alias, self)
         self.__parent.__init__(irc)

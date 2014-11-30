@@ -43,6 +43,9 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Admin')
 
 class Admin(callbacks.Plugin):
+    """This plugin provides access to administrative commands, such as
+    adding capabilities, managing ignore lists, and joining channels.
+    This is a core Supybot plugin that should not be removed!"""
     def __init__(self, irc):
         self.__parent = super(Admin, self)
         self.__parent.__init__(irc)

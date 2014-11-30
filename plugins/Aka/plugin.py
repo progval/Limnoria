@@ -369,9 +369,9 @@ def findBiggestAt(alias):
 AkaDB = plugins.DB('Aka', available_db)
 
 class Aka(callbacks.Plugin):
-    """Aka is improved version of the Alias plugin. It stores akas outside
-    of the bot.conf and doesn't have risk of corrupting the bot.conf file
-    which often happens when there are Unicode issues. Aka also
+    """Aka is the improved version of the Alias plugin. It stores akas outside
+    of the bot.conf, which doesn't have risk of corrupting the bot.conf file
+    (this often happens when there are Unicode issues). Aka also
     introduces multi-worded akas."""
 
     def __init__(self, irc):

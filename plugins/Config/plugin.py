@@ -111,6 +111,8 @@ def getSettableConfigVar(irc, msg, args, state):
 addConverter('settableConfigVar', getSettableConfigVar)
 
 class Config(callbacks.Plugin):
+    """Provides access to the Supybot configuration. This is
+    a core Supybot plugin that should not be removed!"""
     def callCommand(self, command, irc, msg, *args, **kwargs):
         try:
             super(Config, self).callCommand(command, irc, msg, *args, **kwargs)

@@ -40,6 +40,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Ctcp')
 
 class Ctcp(callbacks.PluginRegexp):
+    """Provides replies to common CTCPs (version, time, etc.), and a command
+    to fetch version responses from channels."""
     public = False
     regexps = ('ctcpPing', 'ctcpVersion', 'ctcpUserinfo',
                'ctcpTime', 'ctcpFinger', 'ctcpSource')
