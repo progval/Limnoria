@@ -38,7 +38,6 @@ import supybot.plugins as plugins
 
 import gc
 import os
-import pwd
 import sys
 try:
     import exceptions
@@ -186,22 +185,6 @@ class Debug(callbacks.Privmsg):
             times -= 1
         irc.reply(format('%L', list(map(str, L))))
     collect = wrap(collect, [additional('positiveInt', 1)])
-
-    _progstats_endline_remover = utils.str.MultipleRemover('\r\n')
-    def progstats(self, irc, msg, args):
-        """takes no arguments
-
-        Returns various unix-y information on the running supybot process.
-        """
-        pw = pwd.getpwuid(os.getuid())
-        response = 'Process ID %s running as user "%s" and as group "%s" ' \
-                   'from directory "%s" with the command line "%s".  ' \
-                   'Running on Python %s.' % \
-                   (os.getpid(), pw[0], pw[3],
-                    os.getcwd(), ' '.join(sys.argv),
-                    self._progstats_endline_remover(sys.version))
-        irc.reply(response)
-    progstats = wrap(progstats)
 
     def environ(self, irc, msg, args):
         """takes no arguments
