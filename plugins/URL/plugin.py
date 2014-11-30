@@ -62,6 +62,8 @@ class DbiUrlDB(plugins.DbiChannelDB):
 URLDB = plugins.DB('URL', {'flat': DbiUrlDB})
 
 class URL(callbacks.Plugin):
+    """This plugin records how many URLs have been mentioned in
+    a channel and what the last URL was."""
     def __init__(self, irc):
         self.__parent = super(URL, self)
         self.__parent.__init__(irc)

@@ -44,7 +44,7 @@ _ = PluginInternationalization('NickAuth')
 
 @internationalizeDocstring
 class NickAuth(callbacks.Plugin):
-    """Support authentication based on nicks and network services."""
+    """Supports authentication based on nicks and network services."""
     def __init__(self, irc):
         super(NickAuth, self).__init__(irc)
         self._requests = {}

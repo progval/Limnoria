@@ -43,6 +43,7 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Relay')
 
 class Relay(callbacks.Plugin):
+    """This plugin allows you to setup a relay between networks."""
     noIgnore = True
     def __init__(self, irc):
         self.__parent = super(Relay, self)

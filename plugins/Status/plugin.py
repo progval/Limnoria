@@ -44,6 +44,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Status')
 
 class Status(callbacks.Plugin):
+    """This plugin allows you to view different bot statistics, for example,
+    uptime."""
     def __init__(self, irc):
         self.__parent = super(Status, self)
         self.__parent.__init__(irc)

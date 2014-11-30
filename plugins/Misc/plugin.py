@@ -76,6 +76,8 @@ class RegexpTimeout(Exception):
     pass
 
 class Misc(callbacks.Plugin):
+    """Miscellaneous commands to access Supybot core. This is a core Supybot
+    module that should not be removed!"""
     def __init__(self, irc):
         self.__parent = super(Misc, self)
         self.__parent.__init__(irc)

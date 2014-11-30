@@ -36,6 +36,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Protector')
 
 class Protector(callbacks.Plugin):
+    """Prevents users from doing things they are not supposed to do on a channel,
+    even if they have +o or +h."""
     def isImmune(self, irc, msg):
         if not ircutils.isUserHostmask(msg.prefix):
             self.log.debug('%q is immune, it\'s a server.', msg)

@@ -40,7 +40,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Internet')
 
 class Internet(callbacks.Plugin):
-    """Add the help for "@help Internet" here."""
+    """Provides commands to query DNS, search WHOIS databases,
+    and convert IPs to hex."""
     threaded = True
     @internationalizeDocstring
     def dns(self, irc, msg, args, host):

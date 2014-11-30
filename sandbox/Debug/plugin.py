@@ -65,6 +65,8 @@ def getTracer(fd):
     return tracer
 
 class Debug(callbacks.Privmsg):
+    """This plugin provides debugging abilities for Supybot. It
+    should not be loaded with a default installation."""
     capability = 'owner'
     def __init__(self, irc):
         # Setup exec command.

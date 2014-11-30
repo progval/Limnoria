@@ -49,6 +49,8 @@ _ = PluginInternationalization('Google')
 import json
 
 class Google(callbacks.PluginRegexp):
+    """This is a simple plugin to provide access to the Google services we
+    all know and love from our favorite IRC bot."""
     threaded = True
     callBefore = ['Web']
     regexps = ['googleSnarfer']

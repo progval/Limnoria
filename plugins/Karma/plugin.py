@@ -219,6 +219,7 @@ KarmaDB = plugins.DB('Karma',
                      {'sqlite3': SqliteKarmaDB})
 
 class Karma(callbacks.Plugin):
+    """Provides a simple tracker for setting Karma (thing++, thing--)."""
     callBefore = ('Factoids', 'MoobotFactoids', 'Infobot')
     def __init__(self, irc):
         self.__parent = super(Karma, self)
@@ -243,7 +244,7 @@ class Karma(callbacks.Plugin):
             irc.noReply()
 
     def _doKarma(self, irc, msg, channel, thing):
-        inc = self.registryValue('incrementChars', channel) 
+        inc = self.registryValue('incrementChars', channel)
         dec = self.registryValue('decrementChars', channel)
         if thing.endswith(tuple(inc + dec)):
             for s in inc:

@@ -43,6 +43,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Network')
 
 class Network(callbacks.Plugin):
+    """Provides network-related commands, such as connecting to multiple networks
+    and checking latency to the server."""
     _whois = {}
     _latency = {}
     def _getIrc(self, network):

@@ -79,6 +79,8 @@ registerDefaultPlugin('addcapability', 'Admin')
 registerDefaultPlugin('removecapability', 'Admin')
 
 class Owner(callbacks.Plugin):
+    """Owner-only commands for core Supybot. This is a core Supybot module
+    that should not be removed!"""
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
     def __init__(self, irc=None):

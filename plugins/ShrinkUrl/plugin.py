@@ -87,6 +87,8 @@ def retry(f):
     return newf
 
 class ShrinkUrl(callbacks.PluginRegexp):
+    """This plugin features commands to shorten URLs through different services,
+    like tinyurl."""
     regexps = ['shrinkSnarfer']
     def __init__(self, irc):
         self.__parent = super(ShrinkUrl, self)

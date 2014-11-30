@@ -44,6 +44,9 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('User')
 
 class User(callbacks.Plugin):
+    """Provides commands for dealing with users, such as registration and
+    authentication to the bot. This is a core Supybot module that should
+    not be removed!"""
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and irc.isChannel(msg.args[0]):
             raise callbacks.Error(conf.supybot.replies.requiresPrivacy())

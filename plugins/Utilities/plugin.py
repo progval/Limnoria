@@ -38,6 +38,7 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Utilities')
 
 class Utilities(callbacks.Plugin):
+    """Provides useful commands for bot scripting / command nesting."""
     # Yes, I really do mean "requires no arguments" below.  "takes no
     # arguments" would probably lead people to think it was a useless command.
     @internationalizeDocstring

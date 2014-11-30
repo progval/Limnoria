@@ -50,6 +50,8 @@ except ImportError:
 baseArg = ('int', 'base', lambda i: i <= 36)
 
 class Math(callbacks.Plugin):
+    """Provides commands to work with math, such as a calculator and
+    a unit converter."""
     @internationalizeDocstring
     def base(self, irc, msg, args, frm, to, number):
         """<fromBase> [<toBase>] <number>
