@@ -223,7 +223,8 @@ class SqliteQuoteGrabsDB(object):
 QuoteGrabsDB = plugins.DB('QuoteGrabs', {'sqlite3': SqliteQuoteGrabsDB})
 
 class QuoteGrabs(callbacks.Plugin):
-    """Add the help for "@help QuoteGrabs" here."""
+    """Stores and displays quotes from channels. Quotes are stored randomly
+    and/or on user request."""
     def __init__(self, irc):
         self.__parent = super(QuoteGrabs, self)
         self.__parent.__init__(irc)

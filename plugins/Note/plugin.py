@@ -122,6 +122,7 @@ class DbiNoteDB(dbi.DB):
 NoteDB = plugins.DB('Note', {'flat': DbiNoteDB})
 
 class Note(callbacks.Plugin):
+    """Allows you to send notes to other users."""
     def __init__(self, irc):
         self.__parent= super(Note, self)
         self.__parent.__init__(irc)

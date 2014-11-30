@@ -285,8 +285,8 @@ class SqliteMoobotDB(object):
 MoobotDB = plugins.DB('MoobotFactoids', {'sqlite3': SqliteMoobotDB})
 
 class MoobotFactoids(callbacks.Plugin):
-    """Add the help for "@help MoobotFactoids" here (assuming you don't implement a MoobotFactoids
-    command).  This should describe *how* to use this plugin."""
+    """An alternative to the Factoids plugin, this plugin keeps factoids in
+    your bot."""
     callBefore = ['Dunno']
     def __init__(self, irc):
         self.db = MoobotDB()

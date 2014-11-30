@@ -46,6 +46,7 @@ datadir = conf.supybot.directories.data()
 filename = conf.supybot.directories.data.dirize('Scheduler.pickle')
 
 class Scheduler(callbacks.Plugin):
+    """This plugin allows you to schedule commands to execute at a later time."""
     def __init__(self, irc):
         self.__parent = super(Scheduler, self)
         self.__parent.__init__(irc)

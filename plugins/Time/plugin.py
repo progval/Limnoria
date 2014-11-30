@@ -64,6 +64,7 @@ except ImportError:
     tzlocal = None
 
 class Time(callbacks.Plugin):
+    """This plugin allows you to use different time-related functions."""
     @internationalizeDocstring
     def seconds(self, irc, msg, args):
         """[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]

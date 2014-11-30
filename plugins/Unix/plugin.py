@@ -71,6 +71,7 @@ def pipeReadline(fd, timeout=2):
         raise TimeoutError
 
 class Unix(callbacks.Plugin):
+    """Provides Utilities for Unix-like systems."""
     threaded = True
     @internationalizeDocstring
     def errno(self, irc, msg, args, s):

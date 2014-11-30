@@ -188,6 +188,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
             self.write('Missing field \'chan\'.')
 
 class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
+    """Provides the ability to show Factoids."""
     def __init__(self, irc):
         callbacks.Plugin.__init__(self, irc)
         plugins.ChannelDBHandler.__init__(self)

@@ -119,6 +119,8 @@ class FlatTodoDb(object):
         db.set(tid, t)
 
 class Todo(callbacks.Plugin):
+    """This plugin allows you to create your own personal to-do list on
+    the bot."""
     def __init__(self, irc):
         self.__parent = super(Todo, self)
         self.__parent.__init__(irc)

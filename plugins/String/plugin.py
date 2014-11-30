@@ -48,6 +48,7 @@ _ = PluginInternationalization('String')
 import multiprocessing
 
 class String(callbacks.Plugin):
+    """Provides useful commands for manipulating characters and strings."""
     @internationalizeDocstring
     def ord(self, irc, msg, args, letter):
         """<letter>

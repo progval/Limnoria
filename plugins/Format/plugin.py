@@ -38,6 +38,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Format')
 
 class Format(callbacks.Plugin):
+    """Provides some commands for formatting text, such as making text bold or
+    capitalized."""
     @internationalizeDocstring
     def bold(self, irc, msg, args, text):
         """<text>

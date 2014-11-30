@@ -55,6 +55,8 @@ class HeraldDB(plugins.ChannelUserDB):
         return L[0]
 
 class Herald(callbacks.Plugin):
+    """This plugin allows you to set welcome messages (heralds) to people who
+    are recognized by the bot when they join a channel."""
     def __init__(self, irc):
         self.__parent = super(Herald, self)
         self.__parent.__init__(irc)

@@ -78,6 +78,7 @@ def numberShifts(s):
     return len(s)-1
 
 class Nickometer(callbacks.Plugin):
+    """Will tell you how lame a nick is by the command `@nickometer [nick]`."""
     def punish(self, damage, reason):
         self.log.debug('%s lameness points awarded: %s', damage, reason)
         return damage

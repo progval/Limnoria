@@ -111,6 +111,8 @@ datadir = conf.supybot.directories.data()
 filename = conf.supybot.directories.data.dirize('Topic.pickle')
 
 class Topic(callbacks.Plugin):
+    """This plugin allows you to use many topic-related functions,
+    such as Add, Undo, and Remove."""
     def __init__(self, irc):
         self.__parent = super(Topic, self)
         self.__parent.__init__(irc)

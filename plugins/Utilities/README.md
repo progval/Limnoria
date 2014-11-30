@@ -1,1 +1,1 @@
-Provides useful commands for bot scripting / commands nesting.
+Provides useful commands for bot scripting / command nesting.

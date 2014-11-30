@@ -1,1 +1,1 @@
-Useful commands for manipulating characters strings.
+Useful commands for manipulating characters and strings.

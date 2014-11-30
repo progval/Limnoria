@@ -93,6 +93,8 @@ filename = conf.supybot.directories.data.dirize('Seen.db')
 anyfilename = conf.supybot.directories.data.dirize('Seen.any.db')
 
 class Seen(callbacks.Plugin):
+    """This plugin allows you to see when and what someone last said and
+    what you missed since you left a channel."""
     noIgnore = True
     def __init__(self, irc):
         self.__parent = super(Seen, self)

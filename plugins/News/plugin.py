@@ -106,6 +106,7 @@ class DbiNewsDB(plugins.DbiChannelDB):
 NewsDB = plugins.DB('News', {'flat': DbiNewsDB})
 
 class News(callbacks.Plugin):
+    """This plugin provides a means of maintaining News for a channel."""
     def __init__(self, irc):
         self.__parent = super(News, self)
         self.__parent.__init__(irc)
