@@ -72,9 +72,8 @@ class Anonymous(callbacks.Plugin):
                 irc.error(_('That channel has set its capabilities so as to '
                           'disallow the use of this plugin.'), Raise=True)
         elif not self.registryValue('allowPrivateTarget'):
-            irc.error(format(_('%q cannot be used to send private messages.'),
-                             action),
-                      Raise=True)
+            irc.error(_('This command is disabled (supybot.plugins.Anonymous.'
+                      'allowPrivateTarget is False).'), Raise=True)
 
     @internationalizeDocstring
     def say(self, irc, msg, args, target, text):
