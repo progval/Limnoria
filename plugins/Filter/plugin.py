@@ -421,7 +421,7 @@ class Filter(callbacks.Plugin):
     def aol(self, irc, msg, args, text):
         """<text>
 
-        Returns <text> as if an AOLuser had said it.
+        Returns <text> as if an AOL user had said it.
         """
         text = text.replace(' you ', ' u ')
         text = text.replace(' are ', ' r ')
