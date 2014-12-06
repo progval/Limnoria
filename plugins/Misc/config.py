@@ -49,6 +49,9 @@ conf.registerGlobalValue(Misc, 'listPrivatePlugins',
     plugins with the list command if given the --private switch.  If this is
     disabled, non-owner users should be unable to see what private plugins
     are loaded.""")))
+conf.registerGlobalValue(Misc, 'customHelpString',
+    registry.String('', _("""Sets a custom help string, displayed when the 'help'
+    command is called without arguments.""")))
 conf.registerGlobalValue(Misc, 'listUnloadedPlugins',
     registry.Boolean(False, _("""Determines whether the bot will list unloaded
     plugins with the list command if given the --unloaded switch.  If this is

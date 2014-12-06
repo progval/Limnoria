@@ -47,6 +47,7 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+import supybot.registry as registry
 from supybot import commands
 
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
@@ -289,6 +290,18 @@ class Misc(callbacks.Plugin):
         You may also want to use the 'list' command to list all available
         plugins and commands.
         """
+        if not command:
+            cHelp = self.registryValue("customHelpString")
+            if cHelp:
+                irc.reply(cHelp)
+                return
+            try:
+                renames = conf.supybot.commands.renames.get("Misc")()
+                if "help" in renames:
+                    ourcmd = conf.supybot.commands.renames.get("Misc").get("help")()
+            except registry.NonExistentRegistryEntry:
+                ourcmd = "help"
+            command = ["misc", ourcmd]
         command = list(map(callbacks.canonicalName, command))
         (maxL, cbs) = irc.findCallbacksForArgs(command)
         if maxL == command:
@@ -310,7 +323,7 @@ class Misc(callbacks.Plugin):
                     'you may be able to find its provided commands '
                     'using \'list {0}\'.'.format(command[0].title()))
             irc.error(s)
-    help = wrap(help, [many('something')])
+    help = wrap(help, [any('something')])
 
     @internationalizeDocstring
     def version(self, irc, msg, args):
