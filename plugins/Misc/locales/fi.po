@@ -133,7 +133,7 @@ msgstr ""
 "        "
 
 #: plugin.py:205
-msgid "--private and --unloaded are uncompatible options."
+msgid "--private and --unloaded are incompatible options."
 msgstr "--private ja --unloaded ovat epäyhteensopivia asetuksia."
 
 #: plugin.py:236
