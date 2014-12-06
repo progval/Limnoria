@@ -114,7 +114,7 @@ msgstr ""
 "qui ne sont pas chargés."
 
 #: plugin.py:201
-msgid "--private and --unloaded are uncompatible options."
+msgid "--private and --unloaded are incompatible options."
 msgstr "--private et --unloaded ne sont pas des options compatibles."
 
 #: plugin.py:232

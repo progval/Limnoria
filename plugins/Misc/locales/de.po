@@ -75,7 +75,7 @@ msgstr ""
 "Listet die Befehl auf die das gegebene Plugin anbietet. Falls kein Plugin angegeben wird, werden alle verfügbaren öffentliche Befehle aufgelistet. Falls --private angegeben wird, werden alle privaten Plugins aufgelistet."
 
 #: plugin.py:163
-msgid "--private and --unloaded are uncompatible options."
+msgid "--private and --unloaded are incompatible options."
 msgstr ""
 
 #: plugin.py:194

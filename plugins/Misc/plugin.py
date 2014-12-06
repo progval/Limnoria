@@ -208,7 +208,7 @@ class Misc(callbacks.Plugin):
                    not ircdb.checkCapability(msg.prefix, 'owner'):
                     irc.errorNoCapability('owner')
         if unloaded and private:
-            irc.error(_('--private and --unloaded are uncompatible options.'))
+            irc.error(_('--private and --unloaded are incompatible options.'))
             return
         if not cb:
             if unloaded:

@@ -78,7 +78,7 @@ msgstr ""
 "Kiírja az elérhető parancsokat a megadott bővítményben. Ha nincs megadva bővítmény, kiírja az elérhető publikus bővítményeket. Ha --private meg van adva, kiírja a privát bővítményeket."
 
 #: plugin.py:163
-msgid "--private and --unloaded are uncompatible options."
+msgid "--private and --unloaded are incompatible options."
 msgstr ""
 
 #: plugin.py:194
