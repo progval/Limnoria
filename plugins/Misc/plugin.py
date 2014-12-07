@@ -209,7 +209,7 @@ class Misc(callbacks.Plugin):
                    not ircdb.checkCapability(msg.prefix, 'owner'):
                     irc.errorNoCapability('owner')
         if unloaded and private:
-            irc.error(_('--private and --unloaded are uncompatible options.'))
+            irc.error(_('--private and --unloaded are incompatible options.'))
             return
         if not cb:
             if unloaded:
@@ -294,14 +294,9 @@ class Misc(callbacks.Plugin):
             cHelp = self.registryValue("customHelpString")
             if cHelp:
                 irc.reply(cHelp)
-                return
-            try:
-                renames = conf.supybot.commands.renames.get("Misc")()
-                if "help" in renames:
-                    ourcmd = conf.supybot.commands.renames.get("Misc").get("help")()
-            except registry.NonExistentRegistryEntry:
-                ourcmd = "help"
-            command = ["misc", ourcmd]
+            else:
+                irc.error()
+            return
         command = list(map(callbacks.canonicalName, command))
         (maxL, cbs) = irc.findCallbacksForArgs(command)
         if maxL == command:
