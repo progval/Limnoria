@@ -470,7 +470,7 @@ rest
     conversion is unsuccessful, restores the arguments.
 
 getopts
-    Handles --option style arguments. Each option should be a key in a
+    Handles ``--option`` style arguments. Each option should be a key in a
     dictionary that maps to the name of the converter that is to be used on
     that argument. To make the option take no argument, use "" as the converter
     name in the dictionary. For no conversion, use None as the converter name
