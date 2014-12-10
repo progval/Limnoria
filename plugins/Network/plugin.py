@@ -211,13 +211,13 @@ class Network(callbacks.Plugin):
                 # The user is in a channel the bot is in, so the ircd may have
                 # responded with otherwise private data.
                 if chan:
-                    # Skip channels the callee isn't in.  This helps prevents
-                    # us leaking information when the channel is +s or the
-                    # target is +i
+                    # Skip channels the caller isn't in.  This prevents
+                    # us from leaking information when the channel is +s or the
+                    # target is +i.
                     if replyMsg.nick not in chan.users:
                         continue
                     # Skip +s channels the target is in only if the reply isn't
-                    # being sent to that channel
+                    # being sent to that channel.
                     if 's' in chan.modes and \
                        not ircutils.strEqual(replyMsg.args[0], channel):
                         continue
@@ -243,7 +243,8 @@ class Network(callbacks.Plugin):
                     L.append(format(_('is on %L'), normal))
         else:
             if command == 'whois':
-                L = [_('isn\'t on any non-secret channels or has channel list hiding umode')]
+                L = [_('isn\'t on any non-secret channels or is using a '
+                    'channel-list hiding umode.')]
             else:
                 L = []
         channels = format('%L', L)
@@ -261,7 +262,7 @@ class Network(callbacks.Plugin):
         else:
             server = _('<unknown>')
         if '301' in d:
-            away = '  %s is away: %s.' % (nick, d['301'].args[2])
+            away = ' %s is away: %s.' % (nick, d['301'].args[2])
         else:
             away = ''
         if '320' in d:
@@ -272,11 +273,11 @@ class Network(callbacks.Plugin):
         else:
             identify = ''
         if command == 'whois':
-            s = _('%s (%s) has been%s on server %s since %s (idle for %s) and '
+            s = _('%s (%s) has been%s on server %s since %s (idle for %s). %s '
                 '%s.%s') % (user, hostmask, identify, server,
-                        signon, idle, channels, away)
+                        signon, idle, nick, channels, away)
         else:
-            s = _('%s (%s) has been%s on server %s and disconnect on %s.') % \
+            s = _('%s (%s) has been%s on server %s and disconnected on %s.') % \
                     (user, hostmask, identify, server, signoff)
         replyIrc.reply(s)
         del self._whois[(irc, loweredNick)]
@@ -290,9 +291,9 @@ class Network(callbacks.Plugin):
         (replyIrc, replyMsg, d, command) = self._whois[(irc, loweredNick)]
         del self._whois[(irc, loweredNick)]
         if command == 'whois':
-            template = _('There is no %s on %s.')
+            template = _('There is no user %s on %s.')
         else:
-            template = _('There was no %s on %s.')
+            template = _('There was no user %s on %s.')
         s = template  % (nick, irc.network)
         replyIrc.reply(s)
     do401 = do402
