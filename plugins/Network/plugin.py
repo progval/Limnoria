@@ -211,7 +211,7 @@ class Network(callbacks.Plugin):
                 # The user is in a channel the bot is in, so the ircd may have
                 # responded with otherwise private data.
                 if chan:
-                    # Skip channels the callee isn't in.  This prevents
+                    # Skip channels the caller isn't in.  This prevents
                     # us from leaking information when the channel is +s or the
                     # target is +i.
                     if replyMsg.nick not in chan.users:
