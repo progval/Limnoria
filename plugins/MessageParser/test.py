@@ -133,9 +133,9 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.assertRegexp('messageparser list', 
                 'There are no regexp triggers in the database\.')
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
-        self.assertRegexp('messageparser list', '"stuff" \(1\)')
+        self.assertRegexp('messageparser list', '\(1\) "stuff"')
         self.assertNotError('messageparser add "aoeu" "echo vowels are nice!"')
-        self.assertRegexp('messageparser list', '"stuff" \(1\), "aoeu" \(2\)')
+        self.assertRegexp('messageparser list', '\(1\) "stuff", \(2\) "aoeu"')
         
     def testRemove(self):
         self.assertError('messageparser remove "stuff"')
