@@ -262,7 +262,7 @@ class Network(callbacks.Plugin):
         else:
             server = _('<unknown>')
         if '301' in d:
-            away = '  %s is away: %s.' % (nick, d['301'].args[2])
+            away = ' %s is away: %s.' % (nick, d['301'].args[2])
         else:
             away = ''
         if '320' in d:
@@ -291,9 +291,9 @@ class Network(callbacks.Plugin):
         (replyIrc, replyMsg, d, command) = self._whois[(irc, loweredNick)]
         del self._whois[(irc, loweredNick)]
         if command == 'whois':
-            template = _('There is no %s on %s.')
+            template = _('There is no user %s on %s.')
         else:
-            template = _('There was no %s on %s.')
+            template = _('There was no user %s on %s.')
         s = template  % (nick, irc.network)
         replyIrc.reply(s)
     do401 = do402
