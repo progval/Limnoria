@@ -404,7 +404,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             irc.reply(_('There are no regexp triggers in the database.'))
             return
 
-        s = [ "#%d: %s" % (regexp[1], regexp[0]) for regexp in regexps ]
+        s = [ "%s: %s" % (ircutils.bold('#'+str(regexp[1])), regexp[0]) for regexp in regexps ]
         separator = self.registryValue('listSeparator', channel)
         irc.reply(separator.join(s))
     list = wrap(list, ['channelOrGlobal'])
