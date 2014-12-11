@@ -54,7 +54,7 @@ except ImportError:
         "#installing-beautiful-soup")
 
 class DDG(callbacks.Plugin):
-    """Searches results on DuckDuckGo."""
+    """Searches for results on DuckDuckGo."""
     threaded = True
     
     def search(self, irc, msg, args, text):
@@ -74,7 +74,6 @@ class DDG(callbacks.Plugin):
         # DuckDuckGo lite uses tables for everything. Each WEB result is made 
         # up of 3 <tr> tags:
         tables = soup.find_all('table')
-        regex = re.compile('.*!(sponsored).*')
         
         webresults = tables[1].find_all('tr')
         if not webresults:
