@@ -1,0 +1,1 @@
+Searches results on DuckDuckGo.
