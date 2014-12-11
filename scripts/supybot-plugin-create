@@ -104,8 +104,7 @@ except ImportError:
     _ = lambda x:x
 
 class %s(callbacks.Plugin):
-    """Add the help for "@plugin help %s" here
-    This should describe *how* to use this plugin."""
+    """%s"""
     %s
 
 
@@ -158,7 +157,7 @@ import supybot
 import supybot.world as world
 
 # Use this for the version of this plugin.  You may wish to put a CVS keyword
-# in here if you\'re keeping the plugin in CVS or some similar system.
+# in here if you're keeping the plugin in CVS or some similar system.
 __version__ = ""
 
 # XXX Replace this with an appropriate author or supybot.Author instance.
@@ -174,11 +173,11 @@ __url__ = ''
 from . import config
 from . import plugin
 from imp import reload
-# In case we\'re being reloaded.
+# In case we're being reloaded.
 reload(config)
 reload(plugin)
 # Add more reloads here if you add third-party modules and want them to be
-# reloaded when this plugin is reloaded.  Don\'t forget to import them as well!
+# reloaded when this plugin is reloaded.  Don't forget to import them as well!
 
 if world.testing:
     from . import test
@@ -204,9 +203,6 @@ class %sTestCase(PluginTestCase):
 
 readmeTemplate = '''
 %s
-
-Insert a more detailed description of your plugin here, with any notes, etc. about 
-using it.
 '''.lstrip()
 
 def main():
@@ -264,7 +260,7 @@ def main():
 
     if not options.desc:
         options.desc = something(textwrap.dedent("""
-            Please provide a short description of the plugin.
+            Please provide a short description of the plugin:
             """).strip())
 
     if threaded:
@@ -274,7 +270,7 @@ def main():
     if name.endswith('.py'):
         name = name[:-3]
     while name[0].islower():
-        print('Plugin names must begin with a capital.')
+        print('Plugin names must begin with a capital letter.')
         name = something('What should the name of the plugin be?')
         if name.endswith('.py'):
             name = name[:-3]
@@ -292,7 +288,7 @@ def main():
             fd.close()
 
     writeFile('plugin.py', pluginTemplate % (copyright, name, name,
-                                             name, threaded, name))
+                                             options.desc, threaded, name))
     writeFile('config.py', configTemplate % (copyright, name, name, name, name,
                                              name))
     writeFile('__init__.py', __init__Template % (copyright, name, options.desc))
