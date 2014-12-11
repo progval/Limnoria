@@ -49,8 +49,6 @@ class WebTestCase(ChannelPluginTestCase):
             self.assertNotError('size http://www.slashdot.org/')
 
         def testTitle(self):
-            self.assertRegexp('title http://www.slashdot.org/',
-                              'News for nerds, stuff that matters')
             # Checks for @title not-working correctly
             self.assertResponse('title '
                 'http://www.catb.org/~esr/jargon/html/F/foo.html',
