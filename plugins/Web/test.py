@@ -65,6 +65,9 @@ class WebTestCase(ChannelPluginTestCase):
             # Checks that the parser doesn't hang on invalid tags
             self.assertNotError(
                         'title http://www.youtube.com/watch?v=x4BtiqPN4u8')
+            self.assertResponse(
+                    'title http://www.thefreedictionary.com/don%27t',
+                    "don't - definition of don't by The Free Dictionary")
 
         def testTitleSnarfer(self):
             try:

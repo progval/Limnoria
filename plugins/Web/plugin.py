@@ -70,6 +70,10 @@ class Title(HTMLParser.HTMLParser):
             if name in self.entitydefs:
                 self.title += self.entitydefs[name]
 
+    def handle_charref(self, name):
+        if self.inTitle:
+            self.title += unichr(int(name))
+
 class DelayedIrc:
     def __init__(self, irc):
         self._irc = irc
