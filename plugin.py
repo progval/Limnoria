@@ -56,7 +56,7 @@ except ImportError:
 class DDG(callbacks.Plugin):
     """Searches for results on DuckDuckGo."""
     threaded = True
-    
+
     def search(self, irc, msg, args, text):
         """<query>
         
@@ -74,14 +74,15 @@ class DDG(callbacks.Plugin):
         # DuckDuckGo lite uses tables for everything. Each WEB result is made 
         # up of 3 <tr> tags:
         tables = soup.find_all('table')
-        
-        webresults = tables[1].find_all('tr')
+
+	# Sometimes there is an extra table for page navigation
+        webresults = tables[2].find_all('tr')
         if not webresults:
-            # Sometimes there will be another table for page navigation.
-            webresults = tables[2].find_all('tr')
+            webresults = tables[1].find_all('tr')
         if webresults:
             try:
-                if 'result-sponsored' in webresults[0]["class"]:
+                while 'result-sponsored' in webresults[0]["class"]:
+                    self.log.debug("DDG: stripping 1 sponsored/ad result.")
                     webresults = webresults[4:]
             except KeyError: pass
             # 1) The link and title.
