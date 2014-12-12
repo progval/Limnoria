@@ -250,7 +250,7 @@ class Topic(callbacks.Plugin):
         # Try to restore the topic when not set yet.
         channel = msg.args[1]
         c = irc.state.channels.get(channel)
-        if c is None:
+        if c is None or not self.registryValue('setOnJoin', channel):
             return
         if irc.nick not in c.ops and 't' in c.modes:
             self.log.debug('Not trying to restore topic in %s. I\'m not opped '
