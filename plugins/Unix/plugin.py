@@ -395,8 +395,8 @@ class Unix(callbacks.Plugin):
         you don't run anything that will spamify your channel or that
         will bring your machine to its knees.
         """
-        self.log.info('Unix: running command "%s" for %s/%s' % (text, msg.nick,
-        irc.network))
+        self.log.info('Unix: running command "%s" for %s/%s', text, msg.nick,
+        irc.network)
         args = shlex.split(text)
         try:
             with open(os.devnull) as null:
@@ -427,8 +427,8 @@ class Unix(callbacks.Plugin):
         you don't run anything that will spamify your channel or that
         will bring your machine to its knees.
         """
-        self.log.info('Unix: running command "%s" for %s/%s' % (text, msg.nick,
-        irc.network))
+        self.log.info('Unix: running command "%s" for %s/%s', text, msg.nick,
+        irc.network)
         try:
             with open(os.devnull) as null:
                 inst = subprocess.Popen(text,
