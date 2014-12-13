@@ -1148,10 +1148,10 @@ class IP(registry.String):
             registry.String.setValue(self, v)
 
 registerGlobalValue(supybot.servers.http, 'hosts4',
-    IP('0.0.0.0', _("""Space-separated list of IPv4 hosts the HTTP server
+    IP('', _("""Space-separated list of IPv4 hosts the HTTP server
     will bind.""")))
 registerGlobalValue(supybot.servers.http, 'hosts6',
-    IP('', _("""Space-separated list of IPv6 hosts the HTTP server will
+    IP('::0', _("""Space-separated list of IPv6 hosts the HTTP server will
     bind.""")))
 registerGlobalValue(supybot.servers.http, 'port',
     registry.Integer(8080, _("""Determines what port the HTTP server will
