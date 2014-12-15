@@ -490,6 +490,7 @@ class RSS(callbacks.Plugin):
         entries = entries[:n]
         headlines = map(lambda e:self.format_entry(channel, feed, e, False),
                         entries)
+        headlines = [self.htmlparser.unescape(hl) for hl in headlines]
         sep = self.registryValue('headlineSeparator', channel)
         irc.replies(headlines, joiner=sep)
     rss = wrap(rss, [first('url', 'feedName'), additional('int')])
