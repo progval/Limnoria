@@ -141,7 +141,9 @@ class RSSTestCase(ChannelPluginTestCase):
             feedparser._open_resource = old_open
 
     def testHTMLParseFeed(self):
-        unescaped=u'\xe9\xe1\xed\xed\u0159\xe1\xed\u010d\xed\u0161'.encode('utf-8')
+        unescaped=u'\xe9\xe1\xed\xed\u0159\xe1\xed\u010d\xed\u0161'
+        if sys.version_info[0] < 3:
+            unescaped = unescaped.encode('utf-8')
         old_open = feedparser._open_resource
         feedparser._open_resource = constant(html_parsed.format(GUID='1'))
         try:
@@ -154,9 +156,8 @@ class RSSTestCase(ChannelPluginTestCase):
                 feedparser._open_resource = constant(html_parsed.format(GUID='2'))
                 self.assertNoResponse(' ')
                 time.sleep(1.1)
-                self.assertRegexp(' ', '^.*'+str(unescaped)+'.*$')
+                self.assertRegexp(' ', '^.*{}.*$'.format(unescaped))
         finally:
-            self._feedMsg('rss remove parse_test')
             self._feedMsg('rss remove parse_test')
             feedparser._open_resource = old_open
 
