@@ -39,6 +39,7 @@ import string
 import socket
 import threading
 import feedparser
+from HTMLParser import HTMLParser
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -154,6 +155,7 @@ class RSS(callbacks.Plugin):
         self.feed_names = callbacks.CanonicalNameDict()
         # Scheme: {url: feed}
         self.feeds = {}
+        self.htmlparser = HTMLParser()
         if os.path.isfile(announced_headlines_filename):
             with open(announced_headlines_filename) as fd:
                 announced = load_announces_db(fd)
@@ -518,7 +520,7 @@ class RSS(callbacks.Plugin):
             when = utils.timeElapsed(now - seconds) + ' ago'
         else:
             when = _('time unavailable')
-        title = info.get('title', _('unavailable'))
+        title = self.htmlparser.unescape(info.get('title', _('unavailable')))
         desc = info.get('description', _('unavailable'))
         link = info.get('link', _('unavailable'))
         # The rest of the entries are all available in the channel key
