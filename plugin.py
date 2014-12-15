@@ -76,8 +76,9 @@ class DDG(callbacks.Plugin):
         tables = soup.find_all('table')
 
 	# Sometimes there is an extra table for page navigation
-        webresults = tables[2].find_all('tr')
-        if not webresults:
+        try:
+            webresults = tables[2].find_all('tr')
+        except IndexError:
             webresults = tables[1].find_all('tr')
         if webresults:
             try:
