@@ -365,7 +365,8 @@ class RSS(callbacks.Plugin):
             template = self.registryValue(key_name, channel)
         date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
-        return self.htmlparser.unescape(string.Template(template).safe_substitute(
+        return self.htmlparser.unescape(
+                string.Template(template).safe_substitute(
                 feed_name=feed.name,
                 date=date,
                 **entry))
