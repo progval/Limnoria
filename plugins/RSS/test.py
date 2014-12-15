@@ -154,7 +154,7 @@ class RSSTestCase(ChannelPluginTestCase):
                 feedparser._open_resource = constant(html_parsed.format(GUID='2'))
                 self.assertNoResponse(' ')
                 time.sleep(1.1)
-                self.assertRegexp(' ', '^.*'+unescaped+'.*$')
+                self.assertRegexp(' ', '^.*'+str(unescaped)+'.*$')
         finally:
             self._feedMsg('rss remove parse_test')
             self._feedMsg('rss remove parse_test')
