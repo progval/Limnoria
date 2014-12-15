@@ -365,10 +365,10 @@ class RSS(callbacks.Plugin):
             template = self.registryValue(key_name, channel)
         date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
-        return string.Template(template).safe_substitute(
+        return self.htmlparser.unescape(string.Template(template).safe_substitute(
                 feed_name=feed.name,
                 date=date,
-                **entry)
+                **entry))
 
     def announce_entry(self, irc, channel, feed, entry):
         if self.should_send_entry(channel, entry):
@@ -490,7 +490,6 @@ class RSS(callbacks.Plugin):
         entries = entries[:n]
         headlines = map(lambda e:self.format_entry(channel, feed, e, False),
                         entries)
-        headlines = [self.htmlparser.unescape(hl) for hl in headlines]
         sep = self.registryValue('headlineSeparator', channel)
         irc.replies(headlines, joiner=sep)
     rss = wrap(rss, [first('url', 'feedName'), additional('int')])
