@@ -71,35 +71,22 @@ class DDG(callbacks.Plugin):
         data = re.sub('\t|\r|\n', '', data)
         data = re.sub('\s{2,}', ' ', data)
         soup = BeautifulSoup(data)
-        # DuckDuckGo lite uses tables for everything. Each WEB result is made 
-        # up of 3 <tr> tags:
-        tables = soup.find_all('table')
-
-	# Sometimes there is an extra table for page navigation
+        tds = soup.find_all('td')
+        for t in tds:
+            if "1." in t.text:
+                 res = t.next_sibling.next_sibling
+                 break
         try:
-            webresults = tables[2].find_all('tr')
-        except IndexError:
-            webresults = tables[1].find_all('tr')
-        if webresults:
-            try:
-                while 'result-sponsored' in webresults[0]["class"]:
-                    self.log.debug("DDG: stripping 1 sponsored/ad result.")
-                    webresults = webresults[4:]
-            except KeyError: pass
-            # 1) The link and title.
-            link = webresults[0].find('a').get('href')
-            # 2) A result snippet.
-            snippet = webresults[1].find("td", class_="result-snippet")
-            try:
-                snippet = snippet.text.strip()
-            except AttributeError:
-                snippet = webresults[1].td.text.strip()
-            # 3) The link-text; essentially the same as the link in 1), but with the
-            # URI (http(s)://) removed. We do not need this section.
+            # 1) Fetch the result link.
+            link = res.a.get('href')
+            # 2) Get a result snippet.
+            snippet = res.parent.next_sibling.next_sibling.find("td",
+                 class_="result-snippet")
+            snippet = snippet.text.strip()
             
             s = format("%s - %u", snippet, link)
             irc.reply(s)
-        else:
+        except AttributeError:
             irc.error("No results found.")
     search = wrap(search, ['text'])
 
