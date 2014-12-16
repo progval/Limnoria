@@ -41,7 +41,6 @@ except ImportError:
     # without the i18n module
     _ = lambda x:x
 
-import re
 try: # Python 3
     from urllib.parse import urlencode
 except ImportError: # Python 2
@@ -59,7 +58,7 @@ class DDG(callbacks.Plugin):
 
     def search(self, irc, msg, args, text):
         """<query>
-        
+
         Searches for <query> on DuckDuckGo (web search)."""
         url = "https://duckduckgo.com/lite?" + urlencode({"q":text})
         try:
@@ -67,26 +66,24 @@ class DDG(callbacks.Plugin):
         except utils.web.Error as e:
             self.log.info(url)
             irc.error(str(e), Raise=True)
-        # GRR, having to clean up our HTML for the results...
-        data = re.sub('\t|\r|\n', '', data)
-        data = re.sub('\s{2,}', ' ', data)
         soup = BeautifulSoup(data)
-        tds = soup.find_all('td')
-        for t in tds:
+        for t in soup.find_all('td'):
             if "1." in t.text:
                  res = t.next_sibling.next_sibling
-                 break
-        try:
-            # 1) Fetch the result link.
-            link = res.a.get('href')
-            # 2) Get a result snippet.
-            snippet = res.parent.next_sibling.next_sibling.find("td",
-                 class_="result-snippet")
-            snippet = snippet.text.strip()
-            
-            s = format("%s - %u", snippet, link)
-            irc.reply(s)
-        except AttributeError:
+            try:
+                # 1) Get a result snippet.
+                snippet = res.parent.next_sibling.next_sibling.find("td",
+                     class_="result-snippet")
+                # 2) Fetch the result link.
+                link = res.a.get('href')
+                snippet = snippet.text.strip()
+
+                s = format("%s - %u", snippet, link)
+                irc.reply(s)
+                return
+            except (AttributeError, UnboundLocalError):
+                continue
+        else:
             irc.error("No results found.")
     search = wrap(search, ['text'])
 
