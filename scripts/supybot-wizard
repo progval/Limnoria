@@ -694,6 +694,7 @@ def main():
     conf.registerPlugin('Channel', True)
     conf.registerPlugin('Config', True)
     conf.registerPlugin('Misc', True)
+    conf.registerPlugin('Network', True)
     conf.registerPlugin('NickAuth', True)
     conf.registerPlugin('User', True)
     conf.registerPlugin('Utilities', True)
