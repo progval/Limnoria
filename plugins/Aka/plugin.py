@@ -723,10 +723,13 @@ class Aka(callbacks.Plugin):
                             Raise=True)
                 channel = arg
         aka_list = self._db.get_aka_list(channel)
-        aka_values = [self._db.get_alias(channel, aka) for aka in aka_list]
-        s = ('{0}: "{1}"'.format(ircutils.bold(k), v) for (k, v) in
-            zip(aka_list, aka_values))
-        irc.replies(s)
+        if aka_list:
+            aka_values = [self._db.get_alias(channel, aka) for aka in aka_list]
+            s = ('{0}: "{1}"'.format(ircutils.bold(k), v) for (k, v) in
+                zip(aka_list, aka_values))
+            irc.replies(s)
+        else:
+            irc.error(_("No Akas found."))
     list = wrap(list, [getopts({'channel': 'somethingWithoutSpaces'})])
 
 
