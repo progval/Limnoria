@@ -32,7 +32,6 @@ import re
 import os
 import sys
 import datetime
-import operator
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -397,11 +396,9 @@ class Aka(callbacks.Plugin):
     isCommand = isCommandMethod
 
     def listCommands(self):
-        channel = dynamic.channel or 'global'
-        return list(set(list(map(callbacks.formatCommand,
-                            self._db.get_aka_list(channel) +
-                            self._db.get_aka_list('global'))) +
-                ['add', 'remove', 'lock', 'unlock', 'importaliasdatabase']))
+        commands = ['add', 'remove', 'lock', 'unlock', 'importaliasdatabase',
+            'show', 'list', 'set']
+        return commands
 
     def getCommand(self, args, check_other_plugins=True):
         canonicalName = callbacks.canonicalName
