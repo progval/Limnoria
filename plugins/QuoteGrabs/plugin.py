@@ -273,7 +273,7 @@ class QuoteGrabs(callbacks.Plugin):
         # opposed to channel which is used to determine which db to store the
         # quote in
         chan = msg.args[0]
-        if chan is None:
+        if chan is None or not ircutils.isChannel(chan):
             raise callbacks.ArgumentError
         if ircutils.nickEqual(nick, msg.nick):
             irc.error(_('You can\'t quote grab yourself.'), Raise=True)
