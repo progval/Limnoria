@@ -713,6 +713,25 @@ class Aka(callbacks.Plugin):
             irc.replySuccess()
     importaliasdatabase = wrap(importaliasdatabase, ['owner'])
 
+    def list(self, irc, msg, args, optlist):
+        """[--channel] <#channel>
+
+        Lists all Akas defined for <channel>. If <channel> is not specified,
+        lists all global Akas."""
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
+        aka_list = self._db.get_aka_list(channel)
+        aka_values = [self._db.get_alias(channel, aka) for aka in aka_list]
+        s = ('{0}: "{1}"'.format(ircutils.bold(k), v) for (k, v) in
+            zip(aka_list, aka_values))
+        irc.replies(s)
+    list = wrap(list, [getopts({'channel': 'somethingWithoutSpaces'})])
+
 
 Class = Aka
 
