@@ -711,7 +711,7 @@ class Aka(callbacks.Plugin):
     importaliasdatabase = wrap(importaliasdatabase, ['owner'])
 
     def list(self, irc, msg, args, optlist):
-        """[--channel] <#channel>
+        """[--channel <#channel>]
 
         Lists all Akas defined for <channel>. If <channel> is not specified,
         lists all global Akas."""
@@ -730,7 +730,7 @@ class Aka(callbacks.Plugin):
             irc.replies(s)
         else:
             irc.error(_("No Akas found."))
-    list = wrap(list, [getopts({'channel': 'somethingWithoutSpaces'})])
+    list = wrap(list, [getopts({'channel': 'channel'})])
 
 
 Class = Aka
