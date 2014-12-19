@@ -70,13 +70,12 @@ class DDG(callbacks.Plugin):
         res = ''
         for t in soup.find_all('td'):
             if "1." in t.text:
-                 res = t.next_sibling.next_sibling
+                res = t.next_sibling.next_sibling
             if not res:
                 continue
             try:
                 # 1) Get a result snippet.
-                snippet = res.parent.next_sibling.next_sibling.find("td",
-                     class_="result-snippet")
+                snippet = res.parent.next_sibling.next_sibling.find_all("td")[-1]
                 # 2) Fetch the result link.
                 link = res.a.get('href')
                 snippet = snippet.text.strip()
