@@ -67,9 +67,12 @@ class DDG(callbacks.Plugin):
             self.log.info(url)
             irc.error(str(e), Raise=True)
         soup = BeautifulSoup(data)
+        res = ''
         for t in soup.find_all('td'):
             if "1." in t.text:
                  res = t.next_sibling.next_sibling
+            if not res:
+                continue
             try:
                 # 1) Get a result snippet.
                 snippet = res.parent.next_sibling.next_sibling.find("td",
@@ -81,7 +84,7 @@ class DDG(callbacks.Plugin):
                 s = format("%s - %u", snippet, link)
                 irc.reply(s)
                 return
-            except (AttributeError, UnboundLocalError):
+            except AttributeError:
                 continue
         else:
             irc.error("No results found.")
