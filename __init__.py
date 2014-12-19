@@ -29,7 +29,7 @@
 ###
 
 """
-DDG: Searches results on DuckDuckGo.
+DDG: Searches for results on DuckDuckGo.
 """
 
 import supybot
