@@ -233,7 +233,7 @@ class Seen(callbacks.Plugin):
         saying. <channel> is only necessary if the message isn't sent on the
         channel itself. <nick> may contain * as a wildcard.
         """
-        if ircutils.strEqual(name, irc.nick):
+        if name and ircutils.strEqual(name, irc.nick):
             irc.reply(_("You've found me!"))
             return
         if msg.nick not in irc.state.channels[channel].users:
@@ -253,7 +253,7 @@ class Seen(callbacks.Plugin):
         and returns the last time user was active in <channel>.  <channel> is
         only necessary if the message isn't sent on the channel itself.
         """
-        if ircutils.strEqual(name, irc.nick):
+        if name and ircutils.strEqual(name, irc.nick):
             irc.reply(_("You've found me!"))
             return
         if msg.nick not in irc.state.channels[channel].users:
