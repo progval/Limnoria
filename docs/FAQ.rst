@@ -176,7 +176,7 @@ Why can't Supybot find the plugin I want to load?
 
 I've found a bug, what do I do?
 
-  Submit your bug on `Sourceforge`_ through our `project page`_.
+  Submit your bug on `GitHub`_ through our `project page`_.
 
 Is Python installed?
 
@@ -196,6 +196,6 @@ Is Python installed?
 .. _website: http://supybot.com/
 .. _blocks: http://freenode.net/faq.shtml#blockingmessages
 .. _tsocks: http://tsocks.sourceforge.net
-.. _Sourceforge: http://sourceforge.net/
-.. _project page: http://sourceforge.net/projects/supybot
+.. _GitHub: https://github.com/
+.. _project page: https://github.com/Supybot/Supybot
 .. _download it: http://python.org/download/

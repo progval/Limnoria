@@ -525,7 +525,7 @@ registerChannelValue(supybot.replies, 'requiresPrivacy',
 registerChannelValue(supybot.replies, 'possibleBug',
     registry.NormalizedString("""This may be a bug.  If you think it is, please
     file a bug report at
-    <http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>.""",
+    <https://github.com/Supybot/Supybot/issues>.""",
     """Determines what message the bot sends when it thinks you've encountered
     a bug that the developers don't know about."""))
 ###

@@ -9,7 +9,7 @@ Basic usage
 -----------
 
 Adding a feed
-@rss add supybot http://sourceforge.net/export/rss2_projfiles.php?group_id=58965
+@rss add supybot https://github.com/Supybot/Supybot/commits/master.atom
 
 Add announcements for a feed
 @rss announce add supybot

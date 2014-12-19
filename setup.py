@@ -78,9 +78,9 @@ setup(
     author='Jeremy Fincher',
     author_email='jemfinch@supybot.com',
     maintainer='James McCoy',
-    maintainer_email='jamessan@users.sourceforge.net',
-    url='https://sourceforge.net/projects/supybot/',
-    download_url='https://sourceforge.net/projects/supybot/files/',
+    maintainer_email='vega.james@gmail.com',
+    url='https://github.com/Supybot/Supybot',
+    download_url='https://github.com/Supybot/Supybot/releases',
     platforms=['linux', 'linux2', 'win32', 'cygwin', 'darwin'],
     description='A flexible and extensible Python IRC bot and framework.',
     long_description=normalizeWhitespace("""A robust, full-featured Python IRC
