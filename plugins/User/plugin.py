@@ -45,7 +45,7 @@ _ = PluginInternationalization('User')
 
 class User(callbacks.Plugin):
     """Provides commands for dealing with users, such as registration and
-    authentication to the bot. This is a core Supybot module that should
+    authentication to the bot. This is a core Supybot plugin that should
     not be removed!"""
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and irc.isChannel(msg.args[0]):
