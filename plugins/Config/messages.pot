@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-05-07 18:55+EEST\n"
+"POT-Creation-Date: 2014-12-20 13:30+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,14 @@ msgstr ""
 msgid "settable configuration variable"
 msgstr ""
 
-#: plugin.py:136
+#: plugin.py:114
+#, docstring
+msgid ""
+"Provides access to the Supybot configuration. This is\n"
+"    a core Supybot plugin that should not be removed!"
+msgstr ""
+
+#: plugin.py:138
 #, docstring
 msgid ""
 "<group>\n"
@@ -36,11 +43,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:150
 msgid "There don't seem to be any values in %s."
 msgstr ""
 
-#: plugin.py:154
+#: plugin.py:156
 #, docstring
 msgid ""
 "<word>\n"
@@ -49,19 +56,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:167
+#: plugin.py:169
 msgid "There were no matching configuration variables."
 msgstr ""
 
-#: plugin.py:174
+#: plugin.py:176
 msgid "Global: %s; %s: %s"
 msgstr ""
 
-#: plugin.py:185
+#: plugin.py:187
 msgid "That registry variable has no value.  Use the list command in this plugin to see what variables are available in this group."
 msgstr ""
 
-#: plugin.py:200
+#: plugin.py:202
 #, docstring
 msgid ""
 "[<channel>] <name> [<value>]\n"
@@ -72,11 +79,11 @@ msgid ""
 "        message isn't sent in the channel itself."
 msgstr ""
 
-#: plugin.py:207
+#: plugin.py:209
 msgid "That configuration variable is not a channel-specific configuration variable."
 msgstr ""
 
-#: plugin.py:220
+#: plugin.py:222
 #, docstring
 msgid ""
 "<name> [<value>]\n"
@@ -87,7 +94,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:234
+#: plugin.py:236
 #, docstring
 msgid ""
 "<name>\n"
@@ -96,23 +103,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:250
 msgid "  (Current global value: %s;  current channel value: %s)"
 msgstr ""
 
-#: plugin.py:252 plugin.py:254
+#: plugin.py:254 plugin.py:256
 msgid "  (Current value: %s)"
 msgstr ""
 
-#: plugin.py:257
+#: plugin.py:259
 msgid "That configuration group exists, but seems to have no help.  Try \"config list %s\" to see if it has any children values."
 msgstr ""
 
-#: plugin.py:261
+#: plugin.py:263
 msgid "%s has no help."
 msgstr ""
 
-#: plugin.py:266
+#: plugin.py:268
 #, docstring
 msgid ""
 "<name>\n"
@@ -121,7 +128,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:276
+#: plugin.py:278
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -131,7 +138,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:287
+#: plugin.py:289
 #, docstring
 msgid ""
 "<filename>\n"
@@ -144,7 +151,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:301
+#: plugin.py:303
 #, docstring
 msgid ""
 "<name>\n"
