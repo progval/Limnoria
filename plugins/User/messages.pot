@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-09 18:36+EEST\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,15 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:53
+#: plugin.py:47
+#, docstring
+msgid ""
+"Provides commands for dealing with users, such as registration and\n"
+"    authentication to the bot. This is a core Supybot plugin that should\n"
+"    not be removed!"
+msgstr ""
+
+#: plugin.py:56
 #, docstring
 msgid ""
 "[--capability=<capability>] [<glob>]\n"
@@ -25,19 +33,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:68
+#: plugin.py:71
 msgid "This is a private capability. Only admins can see who has it."
 msgstr ""
 
-#: plugin.py:93
+#: plugin.py:96
 msgid "There are no matching registered users."
 msgstr ""
 
-#: plugin.py:95
+#: plugin.py:98
 msgid "There are no registered users."
 msgstr ""
 
-#: plugin.py:101
+#: plugin.py:104
 #, docstring
 msgid ""
 "<name> <password>\n"
@@ -52,23 +60,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:117
 msgid "That name is already assigned to someone."
 msgstr ""
 
-#: plugin.py:119
+#: plugin.py:122
 msgid "username"
 msgstr ""
 
-#: plugin.py:120
+#: plugin.py:123
 msgid "Hostmasks are not valid usernames."
 msgstr ""
 
-#: plugin.py:127
+#: plugin.py:130
 msgid "Your hostmask is already registered to %s"
 msgstr ""
 
-#: plugin.py:143
+#: plugin.py:146
 #, docstring
 msgid ""
 "<name> [<password>]\n"
@@ -78,11 +86,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:158
+#: plugin.py:161
 msgid "This command has been disabled.  You'll have to ask the owner of this bot to unregister your user."
 msgstr ""
 
-#: plugin.py:171
+#: plugin.py:174
 #, docstring
 msgid ""
 "<name> <new name> [<password>]\n"
@@ -94,11 +102,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:180
+#: plugin.py:183
 msgid "%q is already registered."
 msgstr ""
 
-#: plugin.py:194
+#: plugin.py:197
 #, docstring
 msgid ""
 "[<name>] <old password> <new password>\n"
@@ -111,7 +119,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:222
+#: plugin.py:225
 #, docstring
 msgid ""
 "<password> [<True|False>]\n"
@@ -125,11 +133,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:237
+#: plugin.py:240
 msgid "Secure flag set to %s"
 msgstr ""
 
-#: plugin.py:245
+#: plugin.py:248
 #, docstring
 msgid ""
 "<hostmask|nick>\n"
@@ -139,15 +147,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:254
+#: plugin.py:257
 msgid "I haven't seen %s."
 msgstr ""
 
-#: plugin.py:259
+#: plugin.py:262
 msgid "I don't know who that is."
 msgstr ""
 
-#: plugin.py:265
+#: plugin.py:268
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -157,7 +165,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:277
+#: plugin.py:280
 #, docstring
 msgid ""
 "[<name>]\n"
@@ -168,15 +176,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:289
+#: plugin.py:292
 msgid "%s has no registered hostmasks."
 msgstr ""
 
-#: plugin.py:296
+#: plugin.py:299
 msgid "You may only retrieve your own hostmasks."
 msgstr ""
 
-#: plugin.py:312
+#: plugin.py:315
 #, docstring
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
@@ -192,19 +200,19 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:326
+#: plugin.py:329
 msgid "hostmask"
 msgstr ""
 
-#: plugin.py:327
+#: plugin.py:330
 msgid "Make sure your hostmask includes a nick, then an exclamation point (!), then a user, then an at symbol (@), then a host.  Feel free to use wildcards (* and ?, which work just like they do on the command line) in any of these parts."
 msgstr ""
 
-#: plugin.py:337 plugin.py:358
+#: plugin.py:340 plugin.py:361
 msgid "That hostmask is already registered."
 msgstr ""
 
-#: plugin.py:368
+#: plugin.py:371
 #, docstring
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
@@ -220,19 +228,19 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:391
+#: plugin.py:394
 msgid "All hostmasks removed."
 msgstr ""
 
-#: plugin.py:395
+#: plugin.py:398
 msgid "There was no such hostmask."
 msgstr ""
 
-#: plugin.py:408
+#: plugin.py:411
 msgid "GPG features are not enabled."
 msgstr ""
 
-#: plugin.py:422
+#: plugin.py:425
 #, docstring
 msgid ""
 "<key id> <key server>\n"
@@ -240,27 +248,27 @@ msgid ""
 "            Add a GPG key to your account."
 msgstr ""
 
-#: plugin.py:426
+#: plugin.py:429
 msgid "This key is already associated with your account."
 msgstr ""
 
-#: plugin.py:430
+#: plugin.py:433
 msgid "%n imported, %i unchanged, %i not imported."
 msgstr ""
 
-#: plugin.py:431
+#: plugin.py:434
 msgid "key"
 msgstr ""
 
-#: plugin.py:442
+#: plugin.py:445
 msgid "You must give a valid key id"
 msgstr ""
 
-#: plugin.py:444
+#: plugin.py:447
 msgid "You must give a valid key server"
 msgstr ""
 
-#: plugin.py:448
+#: plugin.py:451
 #, docstring
 msgid ""
 "<fingerprint>\n"
@@ -268,11 +276,11 @@ msgid ""
 "            Remove a GPG key from your account."
 msgstr ""
 
-#: plugin.py:461
+#: plugin.py:467
 msgid "GPG key not associated with your account."
 msgstr ""
 
-#: plugin.py:466
+#: plugin.py:472
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -280,11 +288,11 @@ msgid ""
 "            List your GPG keys."
 msgstr ""
 
-#: plugin.py:471
+#: plugin.py:477
 msgid "No key is associated with your account."
 msgstr ""
 
-#: plugin.py:478
+#: plugin.py:484
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -292,11 +300,11 @@ msgid ""
 "            Send you a token that you'll have to sign with your key."
 msgstr ""
 
-#: plugin.py:485
+#: plugin.py:491
 msgid "Your token is: %s. Please sign it with your GPG key, paste it somewhere, and call the 'auth' command with the URL to the (raw) file containing the signature."
 msgstr ""
 
-#: plugin.py:499
+#: plugin.py:505
 #, docstring
 msgid ""
 "<url>\n"
@@ -305,31 +313,35 @@ msgid ""
 "            the key used is associated to a user."
 msgstr ""
 
-#: plugin.py:509
+#: plugin.py:515
 msgid "Signature or token not found."
 msgstr ""
 
-#: plugin.py:513
+#: plugin.py:519
 msgid "Unknown token. It may have expired before you submit it."
 msgstr ""
 
-#: plugin.py:516
+#: plugin.py:522
 msgid "Your hostname/nick changed in the process. Authentication aborted."
 msgstr ""
 
-#: plugin.py:527
-msgid "You are now authenticated as %s."
-msgstr ""
-
-#: plugin.py:530
-msgid "Unknown GPG key."
-msgstr ""
-
-#: plugin.py:532
-msgid "Signature could not be verified. Make sure this is a valid GPG signature and the URL is valid."
+#: plugin.py:534 plugin.py:581
+msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
 msgstr ""
 
 #: plugin.py:538
+msgid "You are now authenticated as %s."
+msgstr ""
+
+#: plugin.py:541
+msgid "Unknown GPG key."
+msgstr ""
+
+#: plugin.py:543
+msgid "Signature could not be verified. Make sure this is a valid GPG signature and the URL is valid."
+msgstr ""
+
+#: plugin.py:549
 #, docstring
 msgid ""
 "[<name>]\n"
@@ -340,7 +352,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:558
+#: plugin.py:569
 #, docstring
 msgid ""
 "<name> <password>\n"
@@ -351,11 +363,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:570
-msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
-msgstr ""
-
-#: plugin.py:580
+#: plugin.py:591
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -367,11 +375,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:589
+#: plugin.py:600
 msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
 msgstr ""
 
-#: plugin.py:598
+#: plugin.py:609
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -380,11 +388,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:606
+#: plugin.py:617
 msgid "I don't recognize you. You can message me either of these two commands: \"user identify <username> <password>\" to log in or \"user register <username> <password>\" to register."
 msgstr ""
 
-#: plugin.py:611
+#: plugin.py:622
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -393,7 +401,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:629
+#: plugin.py:640
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
 msgstr ""
 
