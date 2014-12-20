@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,12 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:182
+#: plugin.py:125
+#, docstring
+msgid "Allows you to send notes to other users."
+msgstr ""
+
+#: plugin.py:183
 #, docstring
 msgid ""
 "<recipient>,[<recipient>,[...]] <text>\n"
@@ -25,7 +30,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:198
+#: plugin.py:199
 #, docstring
 msgid ""
 "<id> <text>\n"
@@ -34,7 +39,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:222
+#: plugin.py:223
 #, docstring
 msgid ""
 "<id>\n"
@@ -44,7 +49,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:254
+#: plugin.py:255
 #, docstring
 msgid ""
 "<id>\n"
@@ -54,7 +59,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:284
+#: plugin.py:285
 #, docstring
 msgid ""
 "[--{regexp} <value>] [--sent] [<glob>]\n"
@@ -65,7 +70,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:326
+#: plugin.py:327
 #, docstring
 msgid ""
 "[--{old,sent}] [--{from,to} <user>]\n"
@@ -77,7 +82,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:367
+#: plugin.py:368
 #, docstring
 msgid ""
 "takes no arguments\n"
