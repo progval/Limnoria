@@ -32,7 +32,7 @@
 DDG: Searches for results on DuckDuckGo.
 """
 
-iimport supybot
+import supybot
 import supybot.world as world
 
 # Use this for the version of this plugin.  You may wish to put a CVS keyword
