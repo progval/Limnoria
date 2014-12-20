@@ -4,16 +4,18 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2014-07-23 18:24+EEST\n"
-"PO-Revision-Date: 2014-07-23 18:28+0200\n"
+"Project-Id-Version: Time plugin for Limnoria\n"
+"POT-Creation-Date: 2014-12-20 13:29+EET\n"
+"PO-Revision-Date: 2014-12-20 13:43+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: config.py:45
 msgid ""
@@ -30,7 +32,11 @@ msgstr ""
 "tämän tyhjäksi\n"
 "    merkkiketjuksi, aikaleimaa ei näytetä."
 
-#: plugin.py:64
+#: plugin.py:67
+msgid "This plugin allows you to use different time-related functions."
+msgstr "Tämä plugini sallii erilaisten aikaan liittyvien funktioiden käytön."
+
+#: plugin.py:70
 msgid ""
 "[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
 "\n"
@@ -54,7 +60,7 @@ msgstr ""
 "        tulevaisuudessa.\n"
 "        "
 
-#: plugin.py:99
+#: plugin.py:105
 #, fuzzy
 msgid ""
 "[<time string>]\n"
@@ -75,7 +81,7 @@ msgstr ""
 "        ja katso toimiiko se.\n"
 "        "
 
-#: plugin.py:110 plugin.py:127
+#: plugin.py:116 plugin.py:133
 msgid ""
 "This command is not available on this bot, ask the owner to install the "
 "python-dateutil library."
@@ -83,11 +89,11 @@ msgstr ""
 "Tämä komento ei ole saatavilla tällä botilla. Pyydä omistajaa asentamaan "
 "python-dateutil sovelluskirjasto."
 
-#: plugin.py:117 plugin.py:136
+#: plugin.py:123 plugin.py:142
 msgid "That's right now!"
 msgstr "Se on juuri nyt!"
 
-#: plugin.py:122
+#: plugin.py:128
 msgid ""
 "<time string>\n"
 "\n"
@@ -99,7 +105,7 @@ msgstr ""
 "        Palauttaa sekuntien määrän <aika merkkiketjuun>.\n"
 "        "
 
-#: plugin.py:141
+#: plugin.py:147
 msgid ""
 "[<seconds since epoch>]\n"
 "\n"
@@ -115,11 +121,11 @@ msgstr ""
 "        <sekunteja ajanlaskun alkamisen jälkeen> on annettu.\n"
 "        "
 
-#: plugin.py:147
+#: plugin.py:153
 msgid "number of seconds since epoch"
 msgstr "sekuntien määrä ajanlaskun alkamisen jälkeen"
 
-#: plugin.py:152
+#: plugin.py:158
 msgid ""
 "[<format>] [<seconds since epoch>]\n"
 "\n"
@@ -137,7 +143,7 @@ msgstr ""
 "nykyistä aikaa.\n"
 "        "
 
-#: plugin.py:169
+#: plugin.py:181
 msgid ""
 "<seconds>\n"
 "\n"
@@ -151,7 +157,7 @@ msgstr ""
 "        esitetty.\n"
 "        "
 
-#: plugin.py:179
+#: plugin.py:191
 msgid ""
 "<region>/<city>\n"
 "\n"
@@ -163,14 +169,14 @@ msgstr ""
 " Näyttää kaupungin ja sen osan paikallisen ajan. Tämä komento käyttää\n"
 " IANAn aikavyöhyketietokantaa."
 
-#: plugin.py:186
+#: plugin.py:198
 msgid ""
 "Python-tz is required by the command, but is not installed on this computer."
 msgstr ""
 "Python-tz on vaadittu tämän komennon käyttämiseen, mutta se ei ole "
 "asennettuna tälle tietokoneelle."
 
-#: plugin.py:192
+#: plugin.py:204
 msgid "Unknown timezone"
 msgstr "Tuntematon aikavyöhyke"
 

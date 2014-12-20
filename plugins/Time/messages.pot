@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-07-23 18:24+EEST\n"
+"POT-Creation-Date: 2014-12-20 13:29+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,12 @@ msgid ""
 "    the empty string, the timestamp will not be shown."
 msgstr ""
 
-#: plugin.py:64
+#: plugin.py:67
+#, docstring
+msgid "This plugin allows you to use different time-related functions."
+msgstr ""
+
+#: plugin.py:70
 #, docstring
 msgid ""
 "[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
@@ -36,7 +41,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:99
+#: plugin.py:105
 #, docstring
 msgid ""
 "[<time string>]\n"
@@ -48,15 +53,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:110 plugin.py:127
+#: plugin.py:116 plugin.py:133
 msgid "This command is not available on this bot, ask the owner to install the python-dateutil library."
 msgstr ""
 
-#: plugin.py:117 plugin.py:136
+#: plugin.py:123 plugin.py:142
 msgid "That's right now!"
 msgstr ""
 
-#: plugin.py:122
+#: plugin.py:128
 #, docstring
 msgid ""
 "<time string>\n"
@@ -65,7 +70,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:141
+#: plugin.py:147
 #, docstring
 msgid ""
 "[<seconds since epoch>]\n"
@@ -75,11 +80,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:147
+#: plugin.py:153
 msgid "number of seconds since epoch"
 msgstr ""
 
-#: plugin.py:152
+#: plugin.py:158
 #, docstring
 msgid ""
 "[<format>] [<seconds since epoch>]\n"
@@ -90,7 +95,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:169
+#: plugin.py:181
 #, docstring
 msgid ""
 "<seconds>\n"
@@ -100,7 +105,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:179
+#: plugin.py:191
 #, docstring
 msgid ""
 "<region>/<city>\n"
@@ -109,11 +114,11 @@ msgid ""
 "        command uses the IANA Time Zone Database."
 msgstr ""
 
-#: plugin.py:186
+#: plugin.py:198
 msgid "Python-tz is required by the command, but is not installed on this computer."
 msgstr ""
 
-#: plugin.py:192
+#: plugin.py:204
 msgid "Unknown timezone"
 msgstr ""
 
