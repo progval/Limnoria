@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 13:30+EET\n"
+"POT-Creation-Date: 2014-12-20 14:51+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,8 +68,8 @@ msgstr ""
 #: plugin.py:80
 #, docstring
 msgid ""
-"Miscellaneous commands to access Supybot core. This is a core Supybot\n"
-"    module that should not be removed!"
+"Miscellaneous commands to access Supybot core. This is a core\n"
+"    Supybot plugin that should not be removed!"
 msgstr ""
 
 #: plugin.py:118
