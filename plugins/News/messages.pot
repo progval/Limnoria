@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:29+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,12 @@ msgstr ""
 msgid "%s (Subject: %q, added by %s on %s, expires at %s)"
 msgstr ""
 
-#: plugin.py:120
+#: plugin.py:109
+#, docstring
+msgid "This plugin provides a means of maintaining News for a channel."
+msgstr ""
+
+#: plugin.py:121
 #, docstring
 msgid ""
 "[<channel>] <expires> <subject>: <text>\n"
@@ -35,11 +40,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:132
+#: plugin.py:133
 msgid "(News item #%i added)"
 msgstr ""
 
-#: plugin.py:137
+#: plugin.py:138
 #, docstring
 msgid ""
 "[<channel>] [<id>]\n"
@@ -51,19 +56,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:149
 msgid "News for %s: %s"
 msgstr ""
 
-#: plugin.py:151
+#: plugin.py:152
 msgid "No news for %s."
 msgstr ""
 
-#: plugin.py:157 plugin.py:171 plugin.py:187 plugin.py:203
+#: plugin.py:158 plugin.py:172 plugin.py:188 plugin.py:204
 msgid "news item id"
 msgstr ""
 
-#: plugin.py:162
+#: plugin.py:163
 #, docstring
 msgid ""
 "[<channel>] <id>\n"
@@ -73,7 +78,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:176
+#: plugin.py:177
 #, docstring
 msgid ""
 "[<channel>] <id> <regexp>\n"
@@ -85,7 +90,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:192
+#: plugin.py:193
 #, docstring
 msgid ""
 "[<channel>] [<id>]\n"
@@ -96,11 +101,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:208
+#: plugin.py:209
 msgid "Old news for %s: %s"
 msgstr ""
 
-#: plugin.py:211
+#: plugin.py:212
 msgid "No old news for %s."
 msgstr ""
 
