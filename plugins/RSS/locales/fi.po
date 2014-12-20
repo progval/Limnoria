@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2014-08-10 18:56+EEST\n"
-"PO-Revision-Date: 2014-08-10 18:59+0200\n"
+"Project-Id-Version: RSS plugin for Limnoria\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"PO-Revision-Date: 2014-12-20 12:12+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -14,8 +14,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: config.py:49
 msgid "Valid values include 'asInFeed', 'oldestFirst', 'newestFirst'."
@@ -149,7 +149,7 @@ msgstr ""
 " tämä sallii kohteiden, jotka ovat tällä mustalla listalla, suodattamisen "
 "pois."
 
-#: plugin.py:91
+#: plugin.py:107
 msgid ""
 "[<number of headlines>]\n"
 "\n"
@@ -168,11 +168,11 @@ msgstr ""
 " oletuksena 1800 (30 minuuttia), koska se on useimpien verkkosivujen suosima "
 "aika."
 
-#: plugin.py:106
+#: plugin.py:122
 msgid "Return feed items, sorted according to sortFeedItems."
 msgstr "Palauttaa syötteen kohteet järjestettynä sortFeedItems :in mukaan."
 
-#: plugin.py:130
+#: plugin.py:145
 msgid ""
 "This plugin is useful both for announcing updates to RSS feeds in a\n"
 "    channel, and for retrieving the headlines of RSS feeds via command.  "
@@ -189,28 +189,28 @@ msgstr ""
 "    komentoa määrittämään mitkä syötteet pitäisi kuuluttaa annetulla "
 "kanavalla."
 
-#: plugin.py:175
+#: plugin.py:190
 msgid "I already have a command in this plugin named %s."
 msgstr "Minulla on jo komento %s tässä lisä-osassa."
 
-#: plugin.py:181
+#: plugin.py:196
 msgid "I already have a feed with that URL named %s."
 msgstr "Minulla on jo syöte nimeltä %s."
 
-#: plugin.py:191
+#: plugin.py:206
 msgid ""
 "Feed-specific format. Defaults to\n"
 "                supybot.plugins.RSS.format if empty."
 msgstr "Syötekohtainen muoto. Oletuksena supybot.plugins.RSS.format."
 
-#: plugin.py:194
+#: plugin.py:209
 msgid ""
 "Feed-specific announce format.\n"
 "                Defaults to supybot.plugins.RSS.announceFormat if empty."
 msgstr ""
 "Syötekohtainen kuulutusmuoto. Oletuksena supybot.plugins.RSS.announceFormat."
 
-#: plugin.py:351
+#: plugin.py:382
 msgid ""
 "<name> <url>\n"
 "\n"
@@ -224,7 +224,7 @@ msgstr ""
 "        URL osoitteesta..\n"
 "        "
 
-#: plugin.py:364
+#: plugin.py:395
 msgid ""
 "<name>\n"
 "\n"
@@ -238,11 +238,11 @@ msgstr ""
 "        lisäosasta.\n"
 "        "
 
-#: plugin.py:371
+#: plugin.py:402
 msgid "That's not a valid RSS feed command name."
 msgstr "Tuo ei ole kelvollinen RSS sylte komento nimi."
 
-#: plugin.py:380
+#: plugin.py:411
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -257,11 +257,11 @@ msgstr ""
 "            vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:387
+#: plugin.py:418
 msgid "I am currently not announcing any feeds."
 msgstr "Minä en tällä hetkellä kuuluta yhtään syötettä."
 
-#: plugin.py:392
+#: plugin.py:423
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -283,7 +283,12 @@ msgstr ""
 "            viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:414
+#: plugin.py:433
+#, fuzzy
+msgid "These feeds are unknown: %L"
+msgstr "Nämä syötteet ovat tuntemattomia: %L"
+
+#: plugin.py:449
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -305,7 +310,7 @@ msgstr ""
 "            ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:432
+#: plugin.py:467
 #, fuzzy
 msgid ""
 "<name|url> [<number of headlines>]\n"
@@ -321,11 +326,11 @@ msgstr ""
 "otsikkoa.\n"
 "        "
 
-#: plugin.py:448
+#: plugin.py:483
 msgid "Couldn't get RSS feed."
 msgstr "RSS syötettä ei pystytty hakemaan."
 
-#: plugin.py:462
+#: plugin.py:497
 msgid ""
 "<url|feed>\n"
 "\n"
@@ -339,20 +344,20 @@ msgstr ""
 "        URL, kuvauksen, ja viimeisen päivityksen, jos saatavilla.\n"
 "        "
 
-#: plugin.py:477
+#: plugin.py:512
 msgid "I couldn't retrieve that RSS feed."
 msgstr "En voinut noutaa tuota RSS syötettä."
 
-#: plugin.py:485
+#: plugin.py:520
 #, fuzzy
 msgid "time unavailable"
 msgstr "aika ei ole saatavilla"
 
-#: plugin.py:486 plugin.py:487 plugin.py:488
+#: plugin.py:521 plugin.py:522 plugin.py:523
 msgid "unavailable"
 msgstr "ei saatavilla"
 
-#: plugin.py:490
+#: plugin.py:525
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr "Otsikko: %s;  URL: %u;  Kuvaus: %s;  Viimeeksi päivitetty: %s."
 
