@@ -5,16 +5,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Aka plugin for Limnoria\n"
-"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
-"PO-Revision-Date: 2014-08-01 20:05+0200\n"
+"POT-Creation-Date: 2014-12-20 13:30+EET\n"
+"PO-Revision-Date: 2014-12-20 13:57+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
-"Language: Finnish\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: config.py:55
 msgid ""
@@ -26,14 +26,14 @@ msgstr ""
 " Korkean arvon asettaminen tähän voi hidastaa bottiasi pitkien komentojen "
 "kanssa."
 
-#: plugin.py:140 plugin.py:264 plugin.py:505
+#: plugin.py:140 plugin.py:264 plugin.py:507
 msgid "This Aka already exists."
 msgstr "Tämä Aka on jo olemassa."
 
 #: plugin.py:169 plugin.py:181 plugin.py:195 plugin.py:291 plugin.py:308
 #: plugin.py:325
-msgid "This Aka does not exist."
-msgstr "Tätä Akaa ei ole olemassakaan."
+msgid "This Aka does not exist"
+msgstr "Tätä Akaa ei ole olemassa."
 
 #: plugin.py:293
 msgid "This Aka is already locked."
@@ -45,27 +45,33 @@ msgstr "Tämä Aka on jo avattu."
 
 #: plugin.py:372
 msgid ""
-"Add the help for \"@plugin help Aka\" here\n"
-"    This should describe *how* to use this plugin."
+"Aka is the improved version of the Alias plugin. It stores akas outside\n"
+"    of the bot.conf, which doesn't have risk of corrupting the bot.conf "
+"file\n"
+"    (this often happens when there are Unicode issues). Aka also\n"
+"    introduces multi-worded akas."
 msgstr ""
-"Lisää ohje komentoa \"@plugin help Aka\" varten tähän.\n"
-"  Tämän pitäisi kuvata *kuinka* tätä lisä-osaa käytetään."
+"Aka on paranneltu versio Alias pluginista. Se tallentaa akat bot.conf-"
+"tiedoston ulkopuolelle, jollla ei ole\n"
+" riskiä korruptoida bot.conf tiedostoa (joka tapahtuu usein Unicode-"
+"ongelmien kanssa). Aka\n"
+" tukee myös useamman akan pituisia akoja."
 
-#: plugin.py:479
+#: plugin.py:481
 msgid "You've attempted more nesting than is currently allowed on this bot."
 msgstr ""
 "Olet yrittänyt sisällyttää enemmän komentoja, kuin tässä botti sallii juuri "
 "nyt."
 
-#: plugin.py:483
+#: plugin.py:485
 msgid " at least"
 msgstr "ainakin"
 
-#: plugin.py:492
+#: plugin.py:494
 msgid "Locked by %s at %s"
 msgstr "Lukinnut %s aikaan %s"
 
-#: plugin.py:495
+#: plugin.py:497
 msgid ""
 "<an alias,%s %n>\n"
 "\n"
@@ -75,32 +81,32 @@ msgstr ""
 "\n"
 "Alias komennolle %q.%s"
 
-#: plugin.py:496
+#: plugin.py:498
 msgid "argument"
 msgstr "parametri"
 
-#: plugin.py:502
+#: plugin.py:504
 msgid "You can't overwrite commands in this plugin."
 msgstr "Et voi ylikirjoittaa tämän lisä-osan komentoja."
 
-#: plugin.py:507
+#: plugin.py:509
 msgid "This Aka has too many spaces in its name."
 msgstr "Tämän Akan nimessä on liian monta välilyöntiä."
 
-#: plugin.py:512
+#: plugin.py:514
 msgid "Can't mix $* and optional args (@1, etc.)"
 msgstr ""
 "$*:ä ja vapaaehtoisia parametrejä (@1, jne.) ei voida sekoittaa keskenään"
 
-#: plugin.py:514
+#: plugin.py:516
 msgid "There can be only one $* in an alias."
 msgstr "Aliaksessa voi olla vain yksi $*."
 
-#: plugin.py:521
+#: plugin.py:523
 msgid "This Aka is locked."
 msgstr "Tämä Aka on lukittu."
 
-#: plugin.py:525
+#: plugin.py:527
 #, fuzzy
 msgid ""
 "[--channel <#channel>] <name> <command>\n"
@@ -131,11 +137,42 @@ msgstr ""
 "parametrit.\n"
 "        "
 
-#: plugin.py:539 plugin.py:565 plugin.py:597 plugin.py:620 plugin.py:643
+#: plugin.py:541 plugin.py:573 plugin.py:604 plugin.py:636 plugin.py:659
+#: plugin.py:682
 msgid "%r is not a valid channel."
 msgstr "%r ei ole kelvollinen kanava."
 
-#: plugin.py:557
+#: plugin.py:559
+#, fuzzy
+msgid ""
+"[--channel <#channel>] <name> <command>\n"
+"\n"
+"        Overwrites an existing alias <name> to execute <command> instead.  "
+"The\n"
+"        <command> should be in the standard \"command argument "
+"[nestedcommand\n"
+"        argument]\" arguments to the alias; they'll be filled with the "
+"first,\n"
+"        second, etc. arguments.  $1, $2, etc. can be used for required\n"
+"        arguments.  @1, @2, etc. can be used for optional arguments.  $* "
+"simply\n"
+"        means \"all arguments that have not replaced $1, $2, etc.\", ie. it "
+"will\n"
+"        also include optional arguments.\n"
+"        "
+msgstr ""
+"[--kanava <#kanava>] <nimi> <komento>\n"
+" Ylikirjoittaa olemassa olevan aliaksen <nimi> suorittamaan <komennon> "
+"sensijaan. <Komennon>\n"
+" pitäisi olla standardissa \"komento parametri [sisäkkäinen komento\" "
+"parametreinä aliakselle; ne täytetään\n"
+" ensimmäisillä, toisilla jne. parametreillä. $1, $2, jne. voidaan käyttää "
+"vaadittuihin parametreihin. $*\n"
+" yksinkertaisesti tarkoittaa \"kaikki parametrin, joita ei ole korvattu $1, "
+"$2 jne.\", esimerkiksi. se sisällyttää\n"
+" myös kaikki vapaaehtoiset parametrit."
+
+#: plugin.py:596
 msgid ""
 "[--channel <#channel>] <name>\n"
 "\n"
@@ -147,7 +184,7 @@ msgstr ""
 " Poistaa annetun aliaksen, ellei se ole lukittu.\n"
 "        "
 
-#: plugin.py:579
+#: plugin.py:618
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
@@ -155,7 +192,7 @@ msgstr ""
 "Tarkistaa onko käyttäjällä vaadittu valtuus säännöllisten lausekkeiden\n"
 " tietokannan hallintaan."
 
-#: plugin.py:589
+#: plugin.py:628
 msgid ""
 "[--channel <#channel>] <alias>\n"
 "\n"
@@ -167,7 +204,7 @@ msgstr ""
 "        Lukitsee aliaksen estäen muita muokkaamasta sitä.\n"
 "        "
 
-#: plugin.py:612
+#: plugin.py:651
 msgid ""
 "[--channel <#channel>] <alias>\n"
 "\n"
@@ -179,18 +216,22 @@ msgstr ""
 " Avaa aliaksen, jotta kaikki voivat määrittää uusia aliaksia sen päälle.\n"
 "        "
 
-#: plugin.py:635
+#: plugin.py:674
 msgid ""
-"<command>\n"
+"[--channel <#channel>] <alias>\n"
 "\n"
 "        This command shows the content of an Aka.\n"
 "        "
 msgstr ""
-"<komento>\n"
+"<komento> <#kanava> <alias>\n"
 "\n"
 " Tämä komento näyttää Akan sisällön."
 
-#: plugin.py:652
+#: plugin.py:689
+msgid "This Aka does not exist."
+msgstr "Tätä Akaa ei ole olemassakaan."
+
+#: plugin.py:694
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -200,10 +241,17 @@ msgstr ""
 "\n"
 " Tuo Aliaksen tietokannan Akaan ja tyhjentää aiemman."
 
-#: plugin.py:657
+#: plugin.py:699
 msgid "Alias plugin is not loaded."
 msgstr "Alias lisä-osa ei ole ladattu."
 
-#: plugin.py:667
+#: plugin.py:709
 msgid "Error occured when importing the %n: %L"
 msgstr "Virhe komennon %n tuomisessa: %L"
+
+#~ msgid ""
+#~ "Add the help for \"@plugin help Aka\" here\n"
+#~ "    This should describe *how* to use this plugin."
+#~ msgstr ""
+#~ "Lisää ohje komentoa \"@plugin help Aka\" varten tähän.\n"
+#~ "  Tämän pitäisi kuvata *kuinka* tätä lisä-osaa käytetään."

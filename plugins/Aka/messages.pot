@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
+"POT-Creation-Date: 2014-12-20 13:30+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid ""
 "    on long commands."
 msgstr ""
 
-#: plugin.py:140 plugin.py:264 plugin.py:505
+#: plugin.py:140 plugin.py:264 plugin.py:507
 msgid "This Aka already exists."
 msgstr ""
 
@@ -42,54 +42,56 @@ msgstr ""
 #: plugin.py:372
 #, docstring
 msgid ""
-"Add the help for \"@plugin help Aka\" here\n"
-"    This should describe *how* to use this plugin."
+"Aka is the improved version of the Alias plugin. It stores akas outside\n"
+"    of the bot.conf, which doesn't have risk of corrupting the bot.conf file\n"
+"    (this often happens when there are Unicode issues). Aka also\n"
+"    introduces multi-worded akas."
 msgstr ""
 
-#: plugin.py:479
+#: plugin.py:481
 msgid "You've attempted more nesting than is currently allowed on this bot."
 msgstr ""
 
-#: plugin.py:483
+#: plugin.py:485
 msgid " at least"
 msgstr ""
 
-#: plugin.py:492
+#: plugin.py:494
 msgid "Locked by %s at %s"
 msgstr ""
 
-#: plugin.py:495
+#: plugin.py:497
 msgid ""
 "<an alias,%s %n>\n"
 "\n"
 "Alias for %q.%s"
 msgstr ""
 
-#: plugin.py:496
+#: plugin.py:498
 msgid "argument"
 msgstr ""
 
-#: plugin.py:502
+#: plugin.py:504
 msgid "You can't overwrite commands in this plugin."
 msgstr ""
 
-#: plugin.py:507
+#: plugin.py:509
 msgid "This Aka has too many spaces in its name."
 msgstr ""
 
-#: plugin.py:512
+#: plugin.py:514
 msgid "Can't mix $* and optional args (@1, etc.)"
 msgstr ""
 
-#: plugin.py:514
+#: plugin.py:516
 msgid "There can be only one $* in an alias."
 msgstr ""
 
-#: plugin.py:521
+#: plugin.py:523
 msgid "This Aka is locked."
 msgstr ""
 
-#: plugin.py:525
+#: plugin.py:527
 #, docstring
 msgid ""
 "[--channel <#channel>] <name> <command>\n"
@@ -104,11 +106,27 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:539 plugin.py:565 plugin.py:597 plugin.py:620 plugin.py:643
+#: plugin.py:541 plugin.py:573 plugin.py:604 plugin.py:636 plugin.py:659
+#: plugin.py:682
 msgid "%r is not a valid channel."
 msgstr ""
 
-#: plugin.py:557
+#: plugin.py:559
+#, docstring
+msgid ""
+"[--channel <#channel>] <name> <command>\n"
+"\n"
+"        Overwrites an existing alias <name> to execute <command> instead.  The\n"
+"        <command> should be in the standard \"command argument [nestedcommand\n"
+"        argument]\" arguments to the alias; they'll be filled with the first,\n"
+"        second, etc. arguments.  $1, $2, etc. can be used for required\n"
+"        arguments.  @1, @2, etc. can be used for optional arguments.  $* simply\n"
+"        means \"all arguments that have not replaced $1, $2, etc.\", ie. it will\n"
+"        also include optional arguments.\n"
+"        "
+msgstr ""
+
+#: plugin.py:596
 #, docstring
 msgid ""
 "[--channel <#channel>] <name>\n"
@@ -117,14 +135,14 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:579
+#: plugin.py:618
 #, docstring
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
 msgstr ""
 
-#: plugin.py:589
+#: plugin.py:628
 #, docstring
 msgid ""
 "[--channel <#channel>] <alias>\n"
@@ -133,7 +151,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:612
+#: plugin.py:651
 #, docstring
 msgid ""
 "[--channel <#channel>] <alias>\n"
@@ -142,16 +160,20 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:635
+#: plugin.py:674
 #, docstring
 msgid ""
-"<command>\n"
+"[--channel <#channel>] <alias>\n"
 "\n"
 "        This command shows the content of an Aka.\n"
 "        "
 msgstr ""
 
-#: plugin.py:652
+#: plugin.py:689
+msgid "This Aka does not exist."
+msgstr ""
+
+#: plugin.py:694
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -159,11 +181,11 @@ msgid ""
 "        Imports the Alias database into Aka's, and clean the former."
 msgstr ""
 
-#: plugin.py:657
+#: plugin.py:699
 msgid "Alias plugin is not loaded."
 msgstr ""
 
-#: plugin.py:667
+#: plugin.py:709
 msgid "Error occured when importing the %n: %L"
 msgstr ""
 
