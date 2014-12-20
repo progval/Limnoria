@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-05-11 16:57+EEST\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,7 +85,12 @@ msgid ""
 "    nicks, quits, modes, etc.)"
 msgstr ""
 
-#: plugin.py:99
+#: plugin.py:46
+#, docstring
+msgid "This plugin allows you to setup a relay between networks."
+msgstr ""
+
+#: plugin.py:100
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -99,7 +104,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:118
+#: plugin.py:119
 #, docstring
 msgid ""
 "<channel>\n"
@@ -110,7 +115,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:133
+#: plugin.py:134
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -121,95 +126,95 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:223
+#: plugin.py:224
 msgid "is an op on %L"
 msgstr ""
 
-#: plugin.py:225
+#: plugin.py:226
 msgid "is a halfop on %L"
 msgstr ""
 
-#: plugin.py:227
+#: plugin.py:228
 msgid "is voiced on %L"
 msgstr ""
 
-#: plugin.py:230
+#: plugin.py:231
 msgid "is also on %L"
 msgstr ""
 
-#: plugin.py:232
+#: plugin.py:233
 msgid "is on %L"
 msgstr ""
 
-#: plugin.py:234
+#: plugin.py:235
 msgid "isn't on any non-secret channels"
 msgstr ""
 
-#: plugin.py:241 plugin.py:242 plugin.py:246
+#: plugin.py:242 plugin.py:243 plugin.py:247
 msgid "<unknown>"
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:249
 msgid "  %s is away: %s."
 msgstr ""
 
-#: plugin.py:253
+#: plugin.py:254
 msgid " identified"
 msgstr ""
 
-#: plugin.py:258
+#: plugin.py:259
 msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
 msgstr ""
 
-#: plugin.py:273
+#: plugin.py:274
 msgid "There is no %s on %s."
 msgstr ""
 
-#: plugin.py:342
+#: plugin.py:343
 msgid "You seem to be relaying, punk."
 msgstr ""
 
-#: plugin.py:395
+#: plugin.py:396
 msgid "%s%s has joined on %s"
 msgstr ""
 
-#: plugin.py:410
+#: plugin.py:411
 msgid "%s%s has left on %s (%s)"
 msgstr ""
 
-#: plugin.py:413
+#: plugin.py:414
 msgid "%s%s has left on %s"
 msgstr ""
 
-#: plugin.py:423
+#: plugin.py:424
 msgid "mode change by %s on %s: %s"
 msgstr ""
 
-#: plugin.py:435
+#: plugin.py:436
 msgid "%s was kicked by %s on %s (%s)"
 msgstr ""
 
-#: plugin.py:438
+#: plugin.py:439
 msgid "%s was kicked by %s on %s"
 msgstr ""
 
-#: plugin.py:447
+#: plugin.py:448
 msgid "nick change by %s to %s on %s"
 msgstr ""
 
-#: plugin.py:477
+#: plugin.py:478
 msgid "topic change by %s on %s: %s"
 msgstr ""
 
-#: plugin.py:486
+#: plugin.py:487
 msgid "%s has quit %s (%s)"
 msgstr ""
 
-#: plugin.py:488
+#: plugin.py:489
 msgid "%s has quit %s."
 msgstr ""
 
-#: plugin.py:498
+#: plugin.py:499
 msgid "disconnected from %s: %s"
 msgstr ""
 
