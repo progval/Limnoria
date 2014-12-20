@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 13:29+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,12 +15,17 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:111
+#: plugin.py:49
+#, docstring
+msgid "This plugin allows you to schedule commands to execute at a later time."
+msgstr ""
+
+#: plugin.py:112
 #, docstring
 msgid "Makes a function suitable for scheduling from command."
 msgstr ""
 
-#: plugin.py:131
+#: plugin.py:132
 #, docstring
 msgid ""
 "<seconds> <command>\n"
@@ -33,11 +38,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:141
+#: plugin.py:142
 msgid "Event #%i added."
 msgstr ""
 
-#: plugin.py:146
+#: plugin.py:147
 #, docstring
 msgid ""
 "<id>\n"
@@ -46,11 +51,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:160 plugin.py:162
+#: plugin.py:161 plugin.py:163
 msgid "Invalid event id."
 msgstr ""
 
-#: plugin.py:176
+#: plugin.py:177
 #, docstring
 msgid ""
 "<name> <seconds> <command>\n"
@@ -62,11 +67,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:185
+#: plugin.py:186
 msgid "There is already an event with that name, please choose another name."
 msgstr ""
 
-#: plugin.py:195
+#: plugin.py:196
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -75,7 +80,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:206
+#: plugin.py:207
 msgid "There are currently no scheduled commands."
 msgstr ""
 
