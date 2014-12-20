@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-17 13:46+CEST\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,32 +15,40 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:54
+#: plugin.py:46
+#, docstring
+msgid ""
+"This plugin provides access to administrative commands, such as\n"
+"    adding capabilities, managing ignore lists, and joining channels.\n"
+"    This is a core Supybot plugin that should not be removed!"
+msgstr ""
+
+#: plugin.py:57
 #, docstring
 msgid "Nick/channel temporarily unavailable."
 msgstr ""
 
-#: plugin.py:72
+#: plugin.py:75
 msgid "Cannot join %s, it's full."
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:83
 msgid "Cannot join %s, I was not invited."
 msgstr ""
 
-#: plugin.py:88
+#: plugin.py:91
 msgid "Cannot join %s, I am banned."
 msgstr ""
 
-#: plugin.py:96
+#: plugin.py:99
 msgid "Cannot join %s, my keyword was wrong."
 msgstr ""
 
-#: plugin.py:104 plugin.py:113
+#: plugin.py:107 plugin.py:116
 msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr ""
 
-#: plugin.py:143
+#: plugin.py:146
 #, docstring
 msgid ""
 "<channel> [<key>]\n"
@@ -50,11 +58,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:156
+#: plugin.py:159
 msgid "I'm already too close to maximum number of channels for this network."
 msgstr ""
 
-#: plugin.py:165
+#: plugin.py:168
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -64,27 +72,27 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:175
+#: plugin.py:178
 msgid "I'm not currently in any channels."
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:184
 msgid "My connection is restricted, I can't change nicks."
 msgstr ""
 
-#: plugin.py:188
+#: plugin.py:191
 msgid "Someone else is already using that nick."
 msgstr ""
 
-#: plugin.py:195
+#: plugin.py:198
 msgid "I can't change nick, I'm currently banned in %s."
 msgstr ""
 
-#: plugin.py:203
+#: plugin.py:206
 msgid "I can't change nicks, the server said %q."
 msgstr ""
 
-#: plugin.py:217
+#: plugin.py:220
 #, docstring
 msgid ""
 "[<nick>] [<network>]\n"
@@ -94,7 +102,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:234
+#: plugin.py:237
 #, docstring
 msgid ""
 "[<channel>] [<reason>]\n"
@@ -106,11 +114,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:252
+#: plugin.py:255
 msgid "I'm not in %s."
 msgstr ""
 
-#: plugin.py:264
+#: plugin.py:267
 #, docstring
 msgid ""
 "<name|hostmask> <capability>\n"
@@ -120,15 +128,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:284
+#: plugin.py:287
 msgid "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser program (or edit the users.conf file yourself) to add an owner capability."
 msgstr ""
 
-#: plugin.py:295
+#: plugin.py:298
 msgid "You can't add capabilities you don't have."
 msgstr ""
 
-#: plugin.py:300
+#: plugin.py:303
 #, docstring
 msgid ""
 "<name|hostmask> <capability>\n"
@@ -138,15 +146,15 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:312
+#: plugin.py:315
 msgid "That user doesn't have that capability."
 msgstr ""
 
-#: plugin.py:314
+#: plugin.py:317
 msgid "You can't remove capabilities you don't have."
 msgstr ""
 
-#: plugin.py:322
+#: plugin.py:325
 #, docstring
 msgid ""
 "<hostmask|nick> [<expires>]\n"
@@ -158,7 +166,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:335
+#: plugin.py:338
 #, docstring
 msgid ""
 "<hostmask|nick>\n"
@@ -168,11 +176,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:344
+#: plugin.py:347
 msgid "%s wasn't in the ignores database."
 msgstr ""
 
-#: plugin.py:349
+#: plugin.py:352
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -181,11 +189,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:357
+#: plugin.py:360
 msgid "I'm not currently globally ignoring anyone."
 msgstr ""
 
-#: plugin.py:361
+#: plugin.py:364
 #, docstring
 msgid ""
 "takes no arguments\n"
