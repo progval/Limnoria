@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,14 @@ msgid ""
 "    todo-list of another user."
 msgstr ""
 
-#: plugin.py:136
+#: plugin.py:122
+#, docstring
+msgid ""
+"This plugin allows you to create your own personal to-do list on\n"
+"    the bot."
+msgstr ""
+
+#: plugin.py:138
 #, docstring
 msgid ""
 "[<username>] [<task id>]\n"
@@ -32,47 +39,47 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:147
+#: plugin.py:149
 msgid "You are not allowed to see other users todo-list."
 msgstr ""
 
-#: plugin.py:154
+#: plugin.py:156
 msgid "#%i: %s"
 msgstr ""
 
-#: plugin.py:159
+#: plugin.py:161
 msgid "%s for %s: %L"
 msgstr ""
 
-#: plugin.py:163
+#: plugin.py:165
 msgid "That user has no tasks in their todo list."
 msgstr ""
 
-#: plugin.py:165
+#: plugin.py:167
 msgid "You have no tasks in your todo list."
 msgstr ""
 
-#: plugin.py:172
+#: plugin.py:174
 msgid "Active"
 msgstr ""
 
-#: plugin.py:174
+#: plugin.py:176
 msgid "Inactive"
 msgstr ""
 
-#: plugin.py:176
+#: plugin.py:178
 msgid ", priority: %i"
 msgstr ""
 
-#: plugin.py:179
+#: plugin.py:181
 msgid "%s todo for %s: %s (Added at %s)"
 msgstr ""
 
-#: plugin.py:183 plugin.py:267 plugin.py:281
+#: plugin.py:185 plugin.py:269 plugin.py:283
 msgid "task id"
 msgstr ""
 
-#: plugin.py:188
+#: plugin.py:190
 #, docstring
 msgid ""
 "[--priority=<num>] <text>\n"
@@ -83,11 +90,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:199
+#: plugin.py:201
 msgid "(Todo #%i added)"
 msgstr ""
 
-#: plugin.py:205
+#: plugin.py:207
 #, docstring
 msgid ""
 "<task id> [<task id> ...]\n"
@@ -96,15 +103,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:216
+#: plugin.py:218
 msgid "Task %i could not be removed either because that id doesn't exist or it has been removed already."
 msgstr ""
 
-#: plugin.py:220
+#: plugin.py:222
 msgid "No tasks were removed because the following tasks could not be removed: %L."
 msgstr ""
 
-#: plugin.py:230
+#: plugin.py:232
 #, docstring
 msgid ""
 "[--{regexp} <value>] [<glob> <glob> ...]\n"
@@ -115,11 +122,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:253
+#: plugin.py:255
 msgid "No tasks matched that query."
 msgstr ""
 
-#: plugin.py:259
+#: plugin.py:261
 #, docstring
 msgid ""
 "<id> <priority>\n"
@@ -128,7 +135,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:273
+#: plugin.py:275
 #, docstring
 msgid ""
 "<task id> <regexp>\n"

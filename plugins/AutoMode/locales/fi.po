@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot AutoMode\n"
-"POT-Creation-Date: 2014-03-22 15:42+EET\n"
-"PO-Revision-Date: 2014-03-22 16:07+0200\n"
+"POT-Creation-Date: 2014-12-20 11:29+EET\n"
+"PO-Revision-Date: 2014-12-20 11:38+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
 "Language: fi_FI\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: config.py:46
 msgid ""
@@ -115,7 +115,16 @@ msgstr ""
 "Ylimääräiset tilat, jotka asetetaan käyttäjään.\n"
 " Esimerkki syntaksi: käyttäjä1+o-v käyttäjä2+v käyttäjä3-v"
 
-#: plugin.py:78
+#: plugin.py:48
+#, fuzzy
+msgid ""
+"This plugin, when configured, allows the bot to automatically set modes\n"
+"    on users when they join."
+msgstr ""
+"Määritettynä tämä plugin voi asettaa tiloja kanavalle liittyjiin "
+"automaattisesti."
+
+#: plugin.py:80
 msgid ""
 "Determines whether or not a mode has already\n"
 "                        been applied."

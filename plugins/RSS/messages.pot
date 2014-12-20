@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-10 18:56+EEST\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,7 +104,7 @@ msgid ""
 "    in this blacklist."
 msgstr ""
 
-#: plugin.py:91
+#: plugin.py:107
 msgid ""
 "[<number of headlines>]\n"
 "\n"
@@ -115,12 +115,12 @@ msgid ""
 "        websites prefer."
 msgstr ""
 
-#: plugin.py:106
+#: plugin.py:122
 #, docstring
 msgid "Return feed items, sorted according to sortFeedItems."
 msgstr ""
 
-#: plugin.py:130
+#: plugin.py:145
 #, docstring
 msgid ""
 "This plugin is useful both for announcing updates to RSS feeds in a\n"
@@ -129,27 +129,27 @@ msgid ""
 "    command to determine what feeds should be announced in a given channel."
 msgstr ""
 
-#: plugin.py:175
+#: plugin.py:190
 msgid "I already have a command in this plugin named %s."
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:196
 msgid "I already have a feed with that URL named %s."
 msgstr ""
 
-#: plugin.py:191
+#: plugin.py:206
 msgid ""
 "Feed-specific format. Defaults to\n"
 "                supybot.plugins.RSS.format if empty."
 msgstr ""
 
-#: plugin.py:194
+#: plugin.py:209
 msgid ""
 "Feed-specific announce format.\n"
 "                Defaults to supybot.plugins.RSS.announceFormat if empty."
 msgstr ""
 
-#: plugin.py:351
+#: plugin.py:382
 #, docstring
 msgid ""
 "<name> <url>\n"
@@ -159,7 +159,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:364
+#: plugin.py:395
 #, docstring
 msgid ""
 "<name>\n"
@@ -169,11 +169,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:371
+#: plugin.py:402
 msgid "That's not a valid RSS feed command name."
 msgstr ""
 
-#: plugin.py:380
+#: plugin.py:411
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -183,11 +183,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:387
+#: plugin.py:418
 msgid "I am currently not announcing any feeds."
 msgstr ""
 
-#: plugin.py:392
+#: plugin.py:423
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -199,7 +199,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:414
+#: plugin.py:433
+msgid "These feeds are unknown: %L"
+msgstr ""
+
+#: plugin.py:449
 #, docstring
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
@@ -211,7 +215,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:432
+#: plugin.py:467
 #, docstring
 msgid ""
 "<name|url> [<number of headlines>]\n"
@@ -221,11 +225,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:448
+#: plugin.py:483
 msgid "Couldn't get RSS feed."
 msgstr ""
 
-#: plugin.py:462
+#: plugin.py:497
 #, docstring
 msgid ""
 "<url|feed>\n"
@@ -235,19 +239,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:477
+#: plugin.py:512
 msgid "I couldn't retrieve that RSS feed."
 msgstr ""
 
-#: plugin.py:485
+#: plugin.py:520
 msgid "time unavailable"
 msgstr ""
 
-#: plugin.py:486 plugin.py:487 plugin.py:488
+#: plugin.py:521 plugin.py:522 plugin.py:523
 msgid "unavailable"
 msgstr ""
 
-#: plugin.py:490
+#: plugin.py:525
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr ""
 

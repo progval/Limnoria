@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,14 @@ msgid ""
 "    to exclude from being snarfed."
 msgstr ""
 
-#: plugin.py:89
+#: plugin.py:65
+#, docstring
+msgid ""
+"This plugin records how many URLs have been mentioned in\n"
+"    a channel and what the last URL was."
+msgstr ""
+
+#: plugin.py:91
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -33,11 +40,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:96
+#: plugin.py:98
 msgid "I have %n in my database."
 msgstr ""
 
-#: plugin.py:101
+#: plugin.py:103
 #, docstring
 msgid ""
 "[<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]\n"
@@ -52,7 +59,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:143
+#: plugin.py:145
 msgid "No URLs matched that criteria."
 msgstr ""
 

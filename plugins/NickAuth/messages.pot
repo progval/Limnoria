@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-06-30 14:19+EEST\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 #: plugin.py:47
 #, docstring
-msgid "Support authentication based on nicks and network services."
+msgid "Supports authentication based on nicks and network services."
 msgstr ""
 
 #: plugin.py:54 plugin.py:59
@@ -91,11 +91,15 @@ msgid ""
 "        network services."
 msgstr ""
 
-#: plugin.py:166
+#: plugin.py:167
+msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
+msgstr ""
+
+#: plugin.py:171
 msgid "You are now authenticated as %s."
 msgstr ""
 
-#: plugin.py:168
+#: plugin.py:173
 msgid "No user has this nick on this network."
 msgstr ""
 

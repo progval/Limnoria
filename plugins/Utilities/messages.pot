@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 13:30+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,12 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:45
+#: plugin.py:41
+#, docstring
+msgid "Provides useful commands for bot scripting / command nesting."
+msgstr ""
+
+#: plugin.py:46
 #, docstring
 msgid ""
 "requires no arguments\n"
@@ -25,7 +30,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:59
+#: plugin.py:60
 #, docstring
 msgid ""
 "[<text>]\n"
@@ -38,7 +43,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:72
+#: plugin.py:73
 #, docstring
 msgid ""
 "<text> [<text> ...]\n"
@@ -49,7 +54,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:86
+#: plugin.py:87
 #, docstring
 msgid ""
 "<text>\n"
@@ -61,7 +66,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:99
+#: plugin.py:100
 #, docstring
 msgid ""
 "<arg> [<arg> ...]\n"
@@ -70,7 +75,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:109
+#: plugin.py:110
 #, docstring
 msgid ""
 "<arg> [<arg> ...]\n"
@@ -79,7 +84,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:120
+#: plugin.py:121
 #, docstring
 msgid ""
 "<num> <arg> [<arg> ...]\n"
@@ -88,7 +93,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:133
+#: plugin.py:134
 #, docstring
 msgid ""
 "<arg> [<arg> ...]\n"
@@ -97,7 +102,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:142
+#: plugin.py:143
 #, docstring
 msgid ""
 "<command> <text>\n"

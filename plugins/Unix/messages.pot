@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-24 17:43+EEST\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,7 +80,12 @@ msgid ""
 "    command will be called for the wtf command."
 msgstr ""
 
-#: plugin.py:76
+#: plugin.py:74
+#, docstring
+msgid "Provides Utilities for Unix-like systems."
+msgstr ""
+
+#: plugin.py:78
 #, docstring
 msgid ""
 "<error number or code>\n"
@@ -89,19 +94,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:88
+#: plugin.py:90
 msgid "I can't find the errno number for that code."
 msgstr ""
 
-#: plugin.py:91
+#: plugin.py:93
 msgid "(unknown)"
 msgstr ""
 
-#: plugin.py:92
+#: plugin.py:94
 msgid "%s (#%i): %s"
 msgstr ""
 
-#: plugin.py:97
+#: plugin.py:99
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -110,7 +115,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:105
+#: plugin.py:107
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -119,7 +124,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:115
+#: plugin.py:117
 #, docstring
 msgid ""
 "<password> [<salt>]\n"
@@ -131,7 +136,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:134
+#: plugin.py:136
 #, docstring
 msgid ""
 "<word>\n"
@@ -142,35 +147,35 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:143
+#: plugin.py:145
 msgid "The spell checking command is not configured.  If one is installed, reconfigure supybot.plugins.Unix.spell.command appropriately."
 msgstr ""
 
-#: plugin.py:149
+#: plugin.py:151
 msgid "<word> must begin with an alphabet character."
 msgstr ""
 
-#: plugin.py:171
+#: plugin.py:173
 msgid "No results found."
 msgstr ""
 
-#: plugin.py:182
+#: plugin.py:184
 msgid "%q may be spelled correctly."
 msgstr ""
 
-#: plugin.py:184
+#: plugin.py:186
 msgid "I could not find an alternate spelling for %q"
 msgstr ""
 
-#: plugin.py:188
+#: plugin.py:190
 msgid "Possible spellings for %q: %L."
 msgstr ""
 
-#: plugin.py:191
+#: plugin.py:193
 msgid "Something unexpected was seen in the [ai]spell output."
 msgstr ""
 
-#: plugin.py:197
+#: plugin.py:199
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -179,15 +184,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:219
+#: plugin.py:221
 msgid "It seems the configured fortune command was not available."
 msgstr ""
 
-#: plugin.py:228
+#: plugin.py:234
 msgid "The fortune command is not configured. If fortune is installed on this system, reconfigure the supybot.plugins.Unix.fortune.command configuration variable appropriately."
 msgstr ""
 
-#: plugin.py:235
+#: plugin.py:241
 #, docstring
 msgid ""
 "[is] <something>\n"
@@ -198,37 +203,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:251
+#: plugin.py:257
 msgid "It seems the configured wtf command was not available."
 msgstr ""
 
-#: plugin.py:260
+#: plugin.py:266
 msgid "The wtf command is not configured.  If it is installed on this system, reconfigure the supybot.plugins.Unix.wtf.command configuration variable appropriately."
 msgstr ""
 
-#: plugin.py:268
-#, docstring
-msgid ""
-"[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>\n"
-"        Sends an ICMP echo request to the specified host.\n"
-"        The arguments correspond with those listed in ping(8). --c is\n"
-"        limited to 10 packets or less (default is 5). --i is limited to 5\n"
-"        or less. --W is limited to 10 or less.\n"
-"        "
-msgstr ""
-
-#: plugin.py:324
-#, docstring
-msgid ""
-"[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>\n"
-"        Sends an ICMP echo request to the specified host.\n"
-"        The arguments correspond with those listed in ping6(8). --c is\n"
-"        limited to 10 packets or less (default is 5). --i is limited to 5\n"
-"        or less. --W is limited to 10 or less.\n"
-"        "
-msgstr ""
-
-#: plugin.py:378
+#: plugin.py:332
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -237,7 +220,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:407
+#: plugin.py:361
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -246,7 +229,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:436
+#: plugin.py:390
 #, docstring
 msgid ""
 "<command to call with any arguments>\n"
@@ -259,7 +242,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:464
+#: plugin.py:420
 #, docstring
 msgid ""
 "<command to call with any arguments>\n"

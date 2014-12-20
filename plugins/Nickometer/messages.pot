@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,12 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:87
+#: plugin.py:81
+#, docstring
+msgid "Will tell you how lame a nick is by the command `@nickometer [nick]`."
+msgstr ""
+
+#: plugin.py:88
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -25,7 +30,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:230
+#: plugin.py:231
 msgid "The \"lame nick-o-meter\" reading for \"%s\" is %s%%."
 msgstr ""
 

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:29+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,14 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:57
+#: plugin.py:46
+#, docstring
+msgid ""
+"Provides network-related commands, such as connecting to multiple networks\n"
+"    and checking latency to the server."
+msgstr ""
+
+#: plugin.py:59
 #, docstring
 msgid ""
 "[--ssl] <network> [<host[:port]>] [<password>]\n"
@@ -28,19 +35,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:67
+#: plugin.py:73
 msgid "I'm already connected to %s."
 msgstr ""
 
-#: plugin.py:87
+#: plugin.py:93
 msgid "A server must be provided if the network is not already registered."
 msgstr ""
 
-#: plugin.py:95
+#: plugin.py:101
 msgid "Connection to %s initiated."
 msgstr ""
 
-#: plugin.py:102
+#: plugin.py:108
 #, docstring
 msgid ""
 "[<network>] [<quit message>]\n"
@@ -52,11 +59,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:120
 msgid "Disconnection to %s initiated."
 msgstr ""
 
-#: plugin.py:120
+#: plugin.py:126
 #, docstring
 msgid ""
 "[<network>] [<quit message>]\n"
@@ -69,7 +76,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:137
+#: plugin.py:143
 #, docstring
 msgid ""
 "<network> <command> [<arg> ...]\n"
@@ -78,7 +85,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:145
+#: plugin.py:151
 #, docstring
 msgid ""
 "<command> <args>...\n"
@@ -87,55 +94,55 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:222
+#: plugin.py:234
 msgid "is an op on %L"
 msgstr ""
 
-#: plugin.py:224
+#: plugin.py:236
 msgid "is a halfop on %L"
 msgstr ""
 
-#: plugin.py:226
+#: plugin.py:238
 msgid "is voiced on %L"
 msgstr ""
 
-#: plugin.py:229
+#: plugin.py:241
 msgid "is also on %L"
 msgstr ""
 
-#: plugin.py:231
+#: plugin.py:243
 msgid "is on %L"
 msgstr ""
 
-#: plugin.py:234
-msgid "isn't on any non-secret channels"
+#: plugin.py:246
+msgid "isn't on any non-secret channels or is using a channel-list hiding umode."
 msgstr ""
 
-#: plugin.py:243 plugin.py:244 plugin.py:250
+#: plugin.py:256 plugin.py:257 plugin.py:263
 msgid "<unknown>"
 msgstr ""
 
-#: plugin.py:257
+#: plugin.py:270
 msgid " identified"
 msgstr ""
 
-#: plugin.py:263
-msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
+#: plugin.py:276
+msgid "%s (%s) has been%s on server %s since %s (idle for %s). %s %s.%s"
 msgstr ""
 
-#: plugin.py:267
-msgid "%s (%s) has been%s on server %s and disconnect on %s."
+#: plugin.py:280
+msgid "%s (%s) has been%s on server %s and disconnected on %s."
 msgstr ""
 
-#: plugin.py:281
-msgid "There is no %s on %s."
+#: plugin.py:294
+msgid "There is no user %s on %s."
 msgstr ""
 
-#: plugin.py:283
-msgid "There was no %s on %s."
+#: plugin.py:296
+msgid "There was no user %s on %s."
 msgstr ""
 
-#: plugin.py:291 plugin.py:307
+#: plugin.py:304 plugin.py:320
 #, docstring
 msgid ""
 "[<network>] <nick>\n"
@@ -146,20 +153,26 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:323
+#: plugin.py:336
 #, docstring
 msgid ""
-"takes no arguments\n"
+"[--all]\n"
 "\n"
 "        Returns the networks to which the bot is currently connected.\n"
+"        If --all is given, also includes networks known by the bot,\n"
+"        but not connected to.\n"
 "        "
 msgstr ""
 
-#: plugin.py:336
+#: plugin.py:347
+msgid "disconnected"
+msgstr ""
+
+#: plugin.py:356
 msgid "%.2f seconds."
 msgstr ""
 
-#: plugin.py:340
+#: plugin.py:360
 #, docstring
 msgid ""
 "[<network>]\n"
@@ -170,11 +183,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:346
+#: plugin.py:366
 msgid "Latency check (from %s)."
 msgstr ""
 
-#: plugin.py:354
+#: plugin.py:374
 #, docstring
 msgid ""
 "[<network>]\n"
@@ -185,7 +198,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:365
+#: plugin.py:385
 #, docstring
 msgid ""
 "[<network>]\n"
@@ -194,7 +207,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:372
+#: plugin.py:392
 msgid "I've been connected to %s for %s."
 msgstr ""
 

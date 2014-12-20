@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot ChannelStats\n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: config.py:60
 msgid ""
@@ -43,7 +43,15 @@ msgstr ""
 "    (esim. paloja tekstiä ilman välilyöntiä välissä ) lasketaan 'surioiksi'\n"
 "tilastojen pitämistä varten."
 
-#: plugin.py:246
+#: plugin.py:167
+msgid ""
+"This plugin keeps stats of the channel and returns them with\n"
+"    the command 'channelstats'."
+msgstr ""
+"Tämä plugini säilyttää tilastoja kanavasta ja palauttaa ne komennolla\n"
+" 'channelstats'."
+
+#: plugin.py:248
 msgid ""
 "[<channel>] [<name>]\n"
 "\n"
@@ -60,11 +68,11 @@ msgstr ""
 " ei ole annettu, se on oletuksena viestin lähettänyt henkilö.\n"
 "        "
 
-#: plugin.py:262
+#: plugin.py:264
 msgid "I couldn't find you in my user database."
 msgstr "Minä en voi löytää sinua käyttäjä tietokannastani."
 
-#: plugin.py:275
+#: plugin.py:277
 #, fuzzy
 msgid ""
 "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s "
@@ -75,40 +83,40 @@ msgstr ""
 "on liittynyt %n, poistunut kanavalta %n, sulkenut %n, potkinut jonkun %n, "
 "ollut potkittu %n, vaihtanut aihetta %n, vaihtanut tilaa %n."
 
-#: plugin.py:282
+#: plugin.py:284
 msgid "character"
 msgstr "merkki"
 
-#: plugin.py:283 plugin.py:377
+#: plugin.py:285 plugin.py:379
 msgid "word"
 msgstr "sana"
 
-#: plugin.py:284 plugin.py:378
+#: plugin.py:286 plugin.py:380
 msgid "smiley"
 msgstr "hymiö"
 
-#: plugin.py:285 plugin.py:379
+#: plugin.py:287 plugin.py:381
 msgid "frown"
 msgstr "surio"
 
-#: plugin.py:287 plugin.py:380
+#: plugin.py:289 plugin.py:382
 msgid "was an ACTION"
 msgstr "oli TOIMINTO"
 
-#: plugin.py:288 plugin.py:381
+#: plugin.py:290 plugin.py:383
 msgid "were ACTIONs"
 msgstr "olivat TOIMINTOja"
 
-#: plugin.py:290 plugin.py:291 plugin.py:292 plugin.py:293 plugin.py:294
-#: plugin.py:295 plugin.py:296
+#: plugin.py:292 plugin.py:293 plugin.py:294 plugin.py:295 plugin.py:296
+#: plugin.py:297 plugin.py:298
 msgid "time"
 msgstr "aika"
 
-#: plugin.py:299
+#: plugin.py:301
 msgid "I have no stats for that %s in %s."
 msgstr "Minulla ei ole tilastoja %s:stä %s:ään."
 
-#: plugin.py:308
+#: plugin.py:310
 msgid ""
 "[<channel>] <stat expression>\n"
 "\n"
@@ -131,7 +139,7 @@ msgstr ""
 " lauseke sisältäen nämä arvot on sallittu.\n"
 "        "
 
-#: plugin.py:322
+#: plugin.py:324
 msgid ""
 "There's really no reason why you should have underscores or brackets in your "
 "mathematical expression.  Please remove them."
@@ -139,16 +147,16 @@ msgstr ""
 "Ei ole mitään syytä miksi haluaisit alaviivoja tai sulkuja matemaattisessa "
 "lausekkeessa.  Ole hyvä ja poista ne."
 
-#: plugin.py:326
+#: plugin.py:328
 #, fuzzy
 msgid "You can't use lambda in this command."
 msgstr "Et voi käyttää lambdaa tässä komennossa."
 
-#: plugin.py:340
+#: plugin.py:342
 msgid "stat variable"
 msgstr "aloita muuttuja"
 
-#: plugin.py:356
+#: plugin.py:358
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -164,15 +172,15 @@ msgstr ""
 "kanavalla itsessään.\n"
 "        "
 
-#: plugin.py:362
+#: plugin.py:364
 msgid "I am not in %s."
 msgstr "En ole kanavalla %s."
 
-#: plugin.py:364
+#: plugin.py:366
 msgid "You must be in %s to use this command."
 msgstr "Sinun on oltava kanavalla %s käyttääksesi tätä komentoa."
 
-#: plugin.py:371
+#: plugin.py:373
 #, fuzzy
 msgid ""
 "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; "
@@ -183,38 +191,38 @@ msgstr ""
 "noista viesteistä %s.  On ollut %n, %n, %n, %n, %n, ja %n.   %b tällä "
 "hetkellä %n kanavalla on huipulla %n."
 
-#: plugin.py:382
+#: plugin.py:384
 msgid "join"
 msgstr "liity"
 
-#: plugin.py:383
+#: plugin.py:385
 msgid "part"
 msgstr "poistu"
 
-#: plugin.py:384
+#: plugin.py:386
 msgid "quit"
 msgstr "poistu"
 
-#: plugin.py:385
+#: plugin.py:387
 msgid "kick"
 msgstr "potki"
 
-#: plugin.py:386
+#: plugin.py:388
 msgid "mode"
 msgstr "tila"
 
-#: plugin.py:386 plugin.py:387
+#: plugin.py:388 plugin.py:389
 msgid "change"
 msgstr "vaihdos"
 
-#: plugin.py:387
+#: plugin.py:389
 msgid "topic"
 msgstr "aihe"
 
-#: plugin.py:389 plugin.py:390
+#: plugin.py:391 plugin.py:392
 msgid "user"
 msgstr "käyttäjä"
 
-#: plugin.py:393
+#: plugin.py:395
 msgid "I've never been on %s."
 msgstr "En ole ikinä ollut %s:llä."

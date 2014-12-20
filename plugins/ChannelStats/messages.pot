@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,14 @@ msgid ""
 "    the purposes of stats-keeping."
 msgstr ""
 
-#: plugin.py:246
+#: plugin.py:167
+#, docstring
+msgid ""
+"This plugin keeps stats of the channel and returns them with\n"
+"    the command 'channelstats'."
+msgstr ""
+
+#: plugin.py:248
 #, docstring
 msgid ""
 "[<channel>] [<name>]\n"
@@ -47,48 +54,48 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:262
+#: plugin.py:264
 msgid "I couldn't find you in my user database."
 msgstr ""
 
-#: plugin.py:275
+#: plugin.py:277
 msgid "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s has joined %n, parted %n, quit %n, kicked someone %n, been kicked %n, changed the topic %n, and changed the mode %n."
 msgstr ""
 
-#: plugin.py:282
+#: plugin.py:284
 msgid "character"
 msgstr ""
 
-#: plugin.py:283 plugin.py:377
+#: plugin.py:285 plugin.py:379
 msgid "word"
 msgstr ""
 
-#: plugin.py:284 plugin.py:378
+#: plugin.py:286 plugin.py:380
 msgid "smiley"
 msgstr ""
 
-#: plugin.py:285 plugin.py:379
+#: plugin.py:287 plugin.py:381
 msgid "frown"
 msgstr ""
 
-#: plugin.py:287 plugin.py:380
+#: plugin.py:289 plugin.py:382
 msgid "was an ACTION"
 msgstr ""
 
-#: plugin.py:288 plugin.py:381
+#: plugin.py:290 plugin.py:383
 msgid "were ACTIONs"
 msgstr ""
 
-#: plugin.py:290 plugin.py:291 plugin.py:292 plugin.py:293 plugin.py:294
-#: plugin.py:295 plugin.py:296
+#: plugin.py:292 plugin.py:293 plugin.py:294 plugin.py:295 plugin.py:296
+#: plugin.py:297 plugin.py:298
 msgid "time"
 msgstr ""
 
-#: plugin.py:299
+#: plugin.py:301
 msgid "I have no stats for that %s in %s."
 msgstr ""
 
-#: plugin.py:308
+#: plugin.py:310
 #, docstring
 msgid ""
 "[<channel>] <stat expression>\n"
@@ -101,19 +108,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:322
+#: plugin.py:324
 msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
 msgstr ""
 
-#: plugin.py:326
+#: plugin.py:328
 msgid "You can't use lambda in this command."
 msgstr ""
 
-#: plugin.py:340
+#: plugin.py:342
 msgid "stat variable"
 msgstr ""
 
-#: plugin.py:356
+#: plugin.py:358
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -123,51 +130,51 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:362
+#: plugin.py:364
 msgid "I am not in %s."
 msgstr ""
 
-#: plugin.py:364
+#: plugin.py:366
 msgid "You must be in %s to use this command."
 msgstr ""
 
-#: plugin.py:371
+#: plugin.py:373
 msgid "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; %i of those messages %s.  There have been %n, %n, %n, %n, %n, and %n.  There %b currently %n and the channel has peaked at %n."
 msgstr ""
 
-#: plugin.py:382
+#: plugin.py:384
 msgid "join"
 msgstr ""
 
-#: plugin.py:383
+#: plugin.py:385
 msgid "part"
 msgstr ""
 
-#: plugin.py:384
+#: plugin.py:386
 msgid "quit"
 msgstr ""
 
-#: plugin.py:385
+#: plugin.py:387
 msgid "kick"
 msgstr ""
 
-#: plugin.py:386
+#: plugin.py:388
 msgid "mode"
 msgstr ""
 
-#: plugin.py:386 plugin.py:387
+#: plugin.py:388 plugin.py:389
 msgid "change"
 msgstr ""
 
-#: plugin.py:387
+#: plugin.py:389
 msgid "topic"
 msgstr ""
 
-#: plugin.py:389 plugin.py:390
+#: plugin.py:391 plugin.py:392
 msgid "user"
 msgstr ""
 
-#: plugin.py:393
+#: plugin.py:395
 msgid "I've never been on %s."
 msgstr ""
 

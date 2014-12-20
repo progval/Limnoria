@@ -4,16 +4,18 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
-"PO-Revision-Date: 2014-03-22 15:30+0200\n"
+"Project-Id-Version: MoobotFactoids plugin for Limnoria\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"PO-Revision-Date: 2014-12-20 13:02+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: config.py:46
 msgid ""
@@ -34,41 +36,38 @@ msgstr ""
 "Määrittää montako asiaa näytetään\n"
 "    kun 'most' komentoa kutsutaan."
 
-#: plugin.py:285
+#: plugin.py:288
 msgid ""
-"Add the help for \"@help MoobotFactoids\" here (assuming you don't implement "
-"a MoobotFactoids\n"
-"    command).  This should describe *how* to use this plugin."
+"An alternative to the Factoids plugin, this plugin keeps factoids in\n"
+"    your bot."
 msgstr ""
-"Lisää ohje \"@help MoobotFactoids\":lle tähän (olettaen ettet luo "
-"MoobotFactoids\n"
-"    komentoa).  Tämän pitäisi kertoa *kuinka* tätä laajennusta käytetään."
+"Vaihtoehto Factoids-pluginille, tämä plugin säilyttää factoideja botissasi."
 
-#: plugin.py:342
+#: plugin.py:345
 msgid "%s is %s"
 msgstr "%s on %s"
 
-#: plugin.py:361
+#: plugin.py:364
 msgid "Factoid %q is locked."
 msgstr "Factoidi %q on lukittu."
 
-#: plugin.py:368
+#: plugin.py:371
 msgid "Factoid %q not found."
 msgstr "Factoidia %q ei löytynyt."
 
-#: plugin.py:378
+#: plugin.py:381
 msgid "Missing an 'is' or '_is_'."
 msgstr "Puuttuva 'is' tai '_is_'."
 
-#: plugin.py:394
+#: plugin.py:397
 msgid "Factoid %q already exists."
 msgstr "Factoidi %q on jo olemassa."
 
-#: plugin.py:428
+#: plugin.py:431
 msgid "%s, or %s"
 msgstr "%s, tai %s"
 
-#: plugin.py:449
+#: plugin.py:452
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
@@ -88,7 +87,7 @@ msgstr ""
 "        kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:462
+#: plugin.py:465
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
@@ -105,39 +104,39 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:473 plugin.py:513
+#: plugin.py:476 plugin.py:516
 msgid "No such factoid: %q"
 msgstr "Ei sellaista factoidia: %q"
 
-#: plugin.py:482
+#: plugin.py:485
 msgid "Created by %s on %s."
 msgstr "luonut %s kello %s."
 
-#: plugin.py:488
+#: plugin.py:491
 msgid " Last modified by %s on %s."
 msgstr "Viimeeksi muokattu %s kello  %s."
 
-#: plugin.py:496
+#: plugin.py:499
 msgid " Last requested by %s on %s, requested %n."
 msgstr "Viimeeksi pyytänyt %s kello %s, pyytänyt %n."
 
-#: plugin.py:503
+#: plugin.py:506
 msgid " Locked by %s on %s."
 msgstr "%s:än lukitsema %s:llä."
 
-#: plugin.py:518
+#: plugin.py:521
 msgid "Factoid %q is already locked."
 msgstr "Factoidi %q on jo lukittu."
 
-#: plugin.py:521
+#: plugin.py:524
 msgid "Factoid %q is not locked."
 msgstr "Factoidi %q is not locked."
 
-#: plugin.py:531
+#: plugin.py:534
 msgid "Cannot %s someone else's factoid unless you are an admin."
 msgstr "Et voi %s jonkun muun factoidia paitsi, jos olet admin."
 
-#: plugin.py:543
+#: plugin.py:546
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
@@ -156,7 +155,7 @@ msgstr ""
 "        vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:554
+#: plugin.py:557
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
@@ -172,7 +171,7 @@ msgstr ""
 "        vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:565
+#: plugin.py:568
 msgid ""
 "[<channel>] {popular|authored|recent}\n"
 "\n"
@@ -198,51 +197,51 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:587
+#: plugin.py:590
 msgid "author"
 msgstr "kirjoittaja"
 
-#: plugin.py:589
+#: plugin.py:592
 msgid "authors"
 msgstr "kirjoittajat"
 
-#: plugin.py:590
+#: plugin.py:593
 msgid "Most prolific %s: %L"
 msgstr "Tuottoisimmat %s: %L"
 
-#: plugin.py:592 plugin.py:604
+#: plugin.py:595 plugin.py:607
 msgid "There are no factoids in my database."
 msgstr "Tietokannassani ei ole factoideja."
 
-#: plugin.py:599
+#: plugin.py:602
 msgid "latest factoid"
 msgstr "viimeisin factoidi"
 
-#: plugin.py:601
+#: plugin.py:604
 msgid "latest factoids"
 msgstr "viimeisimmät factoidit"
 
-#: plugin.py:602
+#: plugin.py:605
 msgid "%i %s: %L"
 msgstr "%i %s: %L"
 
-#: plugin.py:611
+#: plugin.py:614
 msgid "requested factoid"
 msgstr "pyydetty factoidi"
 
-#: plugin.py:613
+#: plugin.py:616
 msgid "requested factoids"
 msgstr "pyydetyt factoidit"
 
-#: plugin.py:614
+#: plugin.py:617
 msgid "Top %i %s: %L"
 msgstr "Huippu %i %s: %L"
 
-#: plugin.py:616
+#: plugin.py:619
 msgid "No factoids have been requested from my database."
 msgstr "Factoideja ei ole pyydetty tietokannastani."
 
-#: plugin.py:620
+#: plugin.py:623
 msgid ""
 "[<channel>] <author name>\n"
 "\n"
@@ -265,15 +264,15 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:633
+#: plugin.py:636
 msgid "No factoids by %q found."
 msgstr "%q:n kirjoittamia factoideja ei löytynyt."
 
-#: plugin.py:636
+#: plugin.py:639
 msgid "Author search for %q (%i found): %L"
 msgstr "Kirjoittaja haku %q:lle (%i löytynyt): %L"
 
-#: plugin.py:643
+#: plugin.py:646
 msgid ""
 "[<channel>] <text>\n"
 "\n"
@@ -291,15 +290,15 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:651
+#: plugin.py:654
 msgid "No keys matching %q found."
 msgstr "Avaimia, jotka täsmäävät %q:un ei löytynyt."
 
-#: plugin.py:658
+#: plugin.py:661
 msgid "Key search for %q (%i found): %L"
 msgstr "Avain haku %q:lle (%i löytynyt): %L"
 
-#: plugin.py:665
+#: plugin.py:668
 msgid ""
 "[<channel>] <text>\n"
 "\n"
@@ -317,15 +316,15 @@ msgstr ""
 "        kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:673
+#: plugin.py:676
 msgid "No values matching %q found."
 msgstr "%q:un täsmääviä avaimia ei löytynyt."
 
-#: plugin.py:676
+#: plugin.py:679
 msgid "Value search for %q (%i found): %L"
 msgstr "Arvo haku %q:lle (%i löytynyt): %L"
 
-#: plugin.py:683
+#: plugin.py:686
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
@@ -341,7 +340,7 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:696
+#: plugin.py:699
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -358,6 +357,15 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:704
+#: plugin.py:707
 msgid "No factoids in the database."
 msgstr "Tietokannassa ei ole factoideja."
+
+#~ msgid ""
+#~ "Add the help for \"@help MoobotFactoids\" here (assuming you don't "
+#~ "implement a MoobotFactoids\n"
+#~ "    command).  This should describe *how* to use this plugin."
+#~ msgstr ""
+#~ "Lisää ohje \"@help MoobotFactoids\":lle tähän (olettaen ettet luo "
+#~ "MoobotFactoids\n"
+#~ "    komentoa).  Tämän pitäisi kertoa *kuinka* tätä laajennusta käytetään."
