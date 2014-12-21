@@ -212,6 +212,12 @@ for plugin in plugins:
     if os.path.exists(locales_path):
         package_data.update({locales_name: ['locales/'+s for s in os.listdir(locales_path)]})
 
+
+try:
+    shutil.rmtree('2to3/__pycache__')
+except OSError:
+    pass
+
 setup(
     # Metadata
     name='limnoria',
