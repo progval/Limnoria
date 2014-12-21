@@ -80,7 +80,7 @@ class Filter(callbacks.Plugin):
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
-                       'hebrew', 'undup', 'gnu', 'shrink', 'uniud']
+                       'hebrew', 'undup', 'gnu', 'shrink', 'uniud', 'trans']
     @internationalizeDocstring
     def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
@@ -715,6 +715,19 @@ class Filter(callbacks.Plugin):
         s = u'%s \x02 \x02' % u''.join(reversed(turned))
         irc.reply(s)
     uniud = wrap(uniud, ['text'])
+
+    def trans(self, irc, msg, args, text):
+        """<text>
+
+        Returns <text> colored with the trans flag."""
+        if sys.version_info[0] < 3:
+            text = text.decode('utf-8')
+        colors = utils.iter.cycle(['11', '13', '00', '13', '11'])
+        L = [self._color(c, fg=next(colors)) for c in text]
+        if sys.version_info[0] < 3:
+            L = [c.encode('utf-8') for c in L]
+        irc.reply(''.join(L) + '\x03')
+    trans = wrap(trans, ['text'])
 Filter = internationalizeDocstring(Filter)
 
 Class = Filter
