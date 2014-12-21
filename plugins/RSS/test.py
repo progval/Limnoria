@@ -93,13 +93,14 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
             self.assertNotError('rss announce add xkcd')
             self.assertNotError(' ')
-            with conf.supybot.plugins.RSS.waitPeriod.context(1):
-                time.sleep(1.1)
-                self.assertNoResponse(' ')
-                feedparser._open_resource = constant(xkcd_new)
-                self.assertNoResponse(' ')
-                time.sleep(1.1)
-                self.assertRegexp(' ', 'Chaos')
+            if network:
+                with conf.supybot.plugins.RSS.waitPeriod.context(1):
+                    time.sleep(1.1)
+                    self.assertNoResponse(' ')
+                    feedparser._open_resource = constant(xkcd_new)
+                    self.assertNoResponse(' ')
+                    time.sleep(1.1)
+                    self.assertRegexp(' ', 'Chaos')
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
