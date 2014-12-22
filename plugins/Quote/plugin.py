@@ -48,6 +48,21 @@ class Quote(plugins.ChannelIdDatabasePlugin):
             irc.error(_('I have no quotes in my database for %s.') % channel)
     random = wrap(random, ['channeldb'])
 
+    def replace(self, irc, msg, args, user, channel, id, text):
+        """[<channel>] <id> <text>
+        Replace quote <id> with <text>. <channel> is only necessary if
+        the message isn't sent in the channel itself.
+        """
+        try:
+            record = self.db.get(channel, id)
+            self.checkChangeAllowed(irc, msg, channel, user, record)
+            record.text = text
+            self.db.set(channel, id, record)
+            irc.replySuccess()
+        except KeyError:
+            self.noSuchRecord(irc, channel, id)
+    replace = wrap(replace, ['user', 'channeldb', 'id', 'text'])
+
 Class = Quote
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
