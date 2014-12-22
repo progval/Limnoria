@@ -320,7 +320,6 @@ class Google(callbacks.PluginRegexp):
                 match = self._calcRe3.search(html)
                 if not match:
                     irc.reply("I could not find an output from Google Calc for: %s" % expr)
-                    self.log.info("HTML: {0}".format(html))
                     return
                 else:
                     s = match.group(1)
