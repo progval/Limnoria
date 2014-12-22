@@ -30,12 +30,8 @@
 
 import gc
 import os
-import re
 import csv
-import sys
-import math
 import time
-import random
 import fnmatch
 import os.path
 import threading
@@ -43,16 +39,6 @@ import collections
 
 from .. import callbacks, conf, dbi, ircdb, ircutils, log, utils, world
 from ..commands import *
-
-try:
-    import sqlite3
-except ImportError:
-    raise ImportError('Cannot find sqlite3 module. If you are seeing this '
-            'message, it means you are running a non-standard Python '
-            'distribution that has not been compiled with sqlite3 support. '
-            'Please recompile it with sqlite3 support or report a bug to '
-            'the maintainer of the python package of your distribution.')
-
 
 class NoSuitableDatabase(Exception):
     def __init__(self, suitable):
