@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,7 +66,14 @@ msgid ""
 "    sent publicly."
 msgstr ""
 
-#: plugin.py:143
+#: plugin.py:58
+#, docstring
+msgid ""
+"This plugin allows you to set welcome messages (heralds) to people who\n"
+"    are recognized by the bot when they join a channel."
+msgstr ""
+
+#: plugin.py:145
 #, docstring
 msgid ""
 "[<channel>] [--remove|<msg>]\n"
@@ -78,11 +85,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:162
+#: plugin.py:164
 msgid "I do not have a default herald set for %s."
 msgstr ""
 
-#: plugin.py:170
+#: plugin.py:172
 #, docstring
 msgid ""
 "[<channel>] [<user|nick>]\n"
@@ -94,11 +101,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:183
 msgid "I have no herald for %s."
 msgstr ""
 
-#: plugin.py:201
+#: plugin.py:203
 #, docstring
 msgid ""
 "[<channel>] <user|nick> <msg>\n"
@@ -109,7 +116,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:214
+#: plugin.py:216
 #, docstring
 msgid ""
 "[<channel>] [<user|nick>]\n"
@@ -122,11 +129,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:227
+#: plugin.py:229
 msgid "I have no herald for that user."
 msgstr ""
 
-#: plugin.py:232
+#: plugin.py:234
 #, docstring
 msgid ""
 "[<channel>] [<user|nick>] <regexp>\n"

@@ -332,15 +332,22 @@ class Network(callbacks.Plugin):
     whowas = wrap(whowas, ['networkIrc', 'nick'])
 
     @internationalizeDocstring
-    def networks(self, irc, msg, args):
-        """takes no arguments
+    def networks(self, irc, msg, args, opts):
+        """[--all]
 
         Returns the networks to which the bot is currently connected.
+        If --all is given, also includes networks known by the bot,
+        but not connected to.
         """
+        opts = dict(opts)
         L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
+        if 'all' in opts:
+           for net in conf.supybot.networks._children.keys():
+               if net not in [ircd.network for ircd in world.ircs]:
+                   L.append('%s: (%s)' % (net, _('disconnected')))
         utils.sortBy(str.lower, L)
         irc.reply(format('%L', L))
-    networks = wrap(networks)
+    networks = wrap(networks, [getopts({'all': ''})])
 
     def doPong(self, irc, msg):
         now = time.time()

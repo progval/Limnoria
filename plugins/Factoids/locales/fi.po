@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2014-07-17 08:56+EEST\n"
-"PO-Revision-Date: 2014-07-17 09:00+0200\n"
+"Project-Id-Version: Factoids plugin for Limnoria\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"PO-Revision-Date: 2014-12-20 14:33+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -14,8 +14,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: config.py:45
 msgid ""
@@ -111,23 +111,27 @@ msgstr ""
 " Kaikki peruskorvaukset ovat voimassa, \"$key\" factoidin avaimelle ja\n"
 " \"$value\" factoidin arvolle."
 
-#: plugin.py:108
+#: plugin.py:109
 msgid "key"
 msgstr "avain"
 
-#: plugin.py:109
+#: plugin.py:110
 msgid "id"
 msgstr "id"
 
-#: plugin.py:110
+#: plugin.py:111
 msgid "fact"
 msgstr "facta"
 
-#: plugin.py:275
+#: plugin.py:191
+msgid "Provides the ability to show Factoids."
+msgstr "Tarjoaa kyvyn näyttää Factoideja."
+
+#: plugin.py:279
 msgid "You have to be at least voiced to teach factoids."
 msgstr "Sinulla täytyy olla vähintään ääni opettaaksesi factoideja."
 
-#: plugin.py:312
+#: plugin.py:316
 msgid ""
 "[<channel>] <key> %s <value>\n"
 "\n"
@@ -148,7 +152,7 @@ msgstr ""
 "voidaan\n"
 " vaihtaa toiseksi sanaksi rekisteriarvolla plugins.Factoids.learnSeparator."
 
-#: plugin.py:332
+#: plugin.py:336
 #, fuzzy
 msgid ""
 "Try to typo-match input to possible factoids.\n"
@@ -165,15 +169,15 @@ msgstr ""
 "käytetään\n"
 " Damerau-Levenshtein muokkaus-etäisyys asteikkoa."
 
-#: plugin.py:390 plugin.py:520
+#: plugin.py:394 plugin.py:524
 msgid "That's not a valid number for that key."
 msgstr "Tuo ei ole kelvollinen numero tuolle avaimelle."
 
-#: plugin.py:412 plugin.py:506 plugin.py:735
+#: plugin.py:416 plugin.py:510 plugin.py:739
 msgid "No factoid matches that key."
 msgstr "Mikään factoidi ei täsmää tuota avainta."
 
-#: plugin.py:438
+#: plugin.py:442
 msgid ""
 "[<channel>] [--raw] <key> [<number>]\n"
 "\n"
@@ -193,12 +197,12 @@ msgstr ""
 " <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
 " itsellään."
 
-#: plugin.py:455 plugin.py:660
+#: plugin.py:459 plugin.py:664
 msgid "key id"
 msgstr "avaimen id"
 
 # (verbatim) ?
-#: plugin.py:468
+#: plugin.py:472
 #, fuzzy
 msgid ""
 "[<channel>] <oldkey> <newkey> [<number>]\n"
@@ -223,11 +227,11 @@ msgstr ""
 " uusi avain tulee olemassa olamassa olevan (verbatim) factoidin sisällön "
 "kautta."
 
-#: plugin.py:515 plugin.py:532
+#: plugin.py:519 plugin.py:536
 msgid "This key-factoid relationship already exists."
 msgstr "Tämä avain-factoidi suhde on jo olemassa."
 
-#: plugin.py:523
+#: plugin.py:527
 msgid ""
 "This key has more than one factoid associated with it, but you have not "
 "provided a number."
@@ -235,7 +239,7 @@ msgstr ""
 "Tähän avaimeen on liitetty useampi, kuin yksi factoidi, mutta numeroa ei ole "
 "annettu."
 
-#: plugin.py:537
+#: plugin.py:541
 msgid ""
 "[<channel>] [--plain] [--alpha] [<number>]\n"
 "\n"
@@ -273,7 +277,7 @@ msgstr ""
 " <Kanava> on vaadittu vain jos viestiä ei lähetetä kanavalla\n"
 " itsellään."
 
-#: plugin.py:582
+#: plugin.py:586
 msgid ""
 "[<channel>] <key>\n"
 "\n"
@@ -289,7 +293,7 @@ msgstr ""
 " poistaa, eikä lisätä.  <Kanava> on vaadittu vain, jos viestiä ei lähetetä\n"
 " kanavalla itsellään."
 
-#: plugin.py:600
+#: plugin.py:604
 msgid ""
 "[<channel>] <key>\n"
 "\n"
@@ -306,7 +310,7 @@ msgstr ""
 "kanavalla\n"
 " itsellään."
 
-#: plugin.py:639
+#: plugin.py:643
 msgid ""
 "[<channel>] <key> [<number>|*]\n"
 "\n"
@@ -337,19 +341,19 @@ msgstr ""
 "\n"
 " <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla itsellään."
 
-#: plugin.py:654
+#: plugin.py:658
 msgid "You have to be at least voiced to remove factoids."
 msgstr "Sinulla täytyy olla ainakin ääni poistaaksesi factoideja."
 
-#: plugin.py:674
+#: plugin.py:678
 msgid "There is no such factoid."
 msgstr "Tuollaista factoidia ei ole."
 
-#: plugin.py:684
+#: plugin.py:688
 msgid "Invalid factoid number."
 msgstr "Epäkelvollinen factoidin numero."
 
-#: plugin.py:689
+#: plugin.py:693
 msgid ""
 "%s factoids have that key.  Please specify which one to remove, or use * to "
 "designate all of them."
@@ -358,7 +362,7 @@ msgstr ""
 "merkkiä\n"
 " poistaaksesi ne kakki."
 
-#: plugin.py:697
+#: plugin.py:701
 #, fuzzy
 msgid ""
 "[<channel>]\n"
@@ -373,11 +377,11 @@ msgstr ""
 "vaadittu vain\n"
 " jos viestiä ei lähetetä kanavalla itsellään."
 
-#: plugin.py:719
+#: plugin.py:723
 msgid "I couldn't find a factoid."
 msgstr "En voinut löytää factoidia."
 
-#: plugin.py:724
+#: plugin.py:728
 msgid ""
 "[<channel>] <key>\n"
 "\n"
@@ -393,15 +397,15 @@ msgstr ""
 " <Kanava> on vaadittu vain, jos viestiä ei lähetetä kanavalla\n"
 " itsellään."
 
-#: plugin.py:750
+#: plugin.py:754
 msgid "#%i was added by %s at %s, and has been recalled %n"
 msgstr "#Factoidin %i lisäsi %s %s, ja sitä on kutsuttu %n"
 
-#: plugin.py:753
+#: plugin.py:757
 msgid "time"
 msgstr "kerta"
 
-#: plugin.py:763
+#: plugin.py:767
 msgid ""
 "[<channel>] <key> <number> <regexp>\n"
 "\n"
@@ -414,11 +418,11 @@ msgstr ""
 " Vaihtaa factoidin #<numeroa>, joka on liitetty <avaimeen> \n"
 " <säännöllisen lausekkeen> mukaan."
 
-#: plugin.py:777
+#: plugin.py:781
 msgid "I couldn't find any key %q"
 msgstr "En voinut löytää yhtään avainta %q"
 
-#: plugin.py:792
+#: plugin.py:796
 msgid ""
 "[<channel>] [--values] [--{regexp} <value>] [<glob> ...]\n"
 "\n"
@@ -441,11 +445,11 @@ msgstr ""
 " sijaan.\n"
 "        "
 
-#: plugin.py:829 plugin.py:838
+#: plugin.py:833 plugin.py:842
 msgid "No keys matched that query."
 msgstr "Yksikään avain ei täsmännyt hakuun."
 
-#: plugin.py:834 plugin.py:843
+#: plugin.py:838 plugin.py:847
 msgid "More than 100 keys matched that query; please narrow your query."
 msgstr "Yli 100 avainta täsmäsi tuohon hakuun; ole hyvä ja kavenna hakuasi."
 

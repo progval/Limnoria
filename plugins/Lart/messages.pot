@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,11 +21,18 @@ msgid ""
 "    of a lart when the lart is given."
 msgstr ""
 
-#: plugin.py:48
+#: plugin.py:39
+#, docstring
+msgid ""
+"Provides an implementation of the Luser Attitude Readjustment Tool\n"
+"    for users."
+msgstr ""
+
+#: plugin.py:50
 msgid "Larts must contain $who."
 msgstr ""
 
-#: plugin.py:52
+#: plugin.py:54
 #, docstring
 msgid ""
 "[<channel>] [<id>] <who|what> [for <reason>]\n"
@@ -36,19 +43,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:66
+#: plugin.py:68
 msgid "There is no lart with id #%i."
 msgstr ""
 
-#: plugin.py:71
+#: plugin.py:73
 msgid "There are no larts in my database for %s."
 msgstr ""
 
-#: plugin.py:77
+#: plugin.py:79
 msgid "trying to dis me"
 msgstr ""
 
-#: plugin.py:85
+#: plugin.py:87
 msgid " for "
 msgstr ""
 

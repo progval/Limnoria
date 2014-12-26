@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: NickAuth plugin in Limnoria\n"
-"POT-Creation-Date: 2014-06-30 14:19+EEST\n"
-"PO-Revision-Date: 2014-06-30 14:22+0200\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"PO-Revision-Date: 2014-12-20 14:16+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
 "Language: fi_FI\n"
@@ -15,12 +15,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Plural-Forms: \n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
 
+# I added explaining on what this does to brackets as the explanation was a little unclear.
 #: plugin.py:47
-msgid "Support authentication based on nicks and network services."
+msgid "Supports authentication based on nicks and network services."
 msgstr ""
-"Supybotille tunnistautuminen perustuen nimimerkkeihin ja verkkopalveluihin."
+"Tukee tunnistautumista käyttäen nimimerkkejä ja verkkopalveluita.\n"
+" (Kirjautuessasi sisään NickServille botti tunnistaa sinut, mikäli olet \n"
+" kertonut botille nimimerkkisi)."
 
 #: plugin.py:54 plugin.py:59
 msgid "You are not authenticated."
@@ -108,10 +111,18 @@ msgstr ""
 " Mikäli et saa vastausta, se tarkoittaa ettet ole tunnistautunut "
 "verkkopalveluille."
 
-#: plugin.py:166
+#: plugin.py:167
+msgid ""
+"Your secure flag is true and your hostmask doesn't match any of your known "
+"hostmasks."
+msgstr ""
+"Secure-asetuksesi on true ja hostmaskisi ei täsmää yhteenkään\n"
+" tunnettuun hostmaskiisi."
+
+#: plugin.py:171
 msgid "You are now authenticated as %s."
 msgstr "Olet nyt tunnistautunut käyttäjäksi %s."
 
-#: plugin.py:168
+#: plugin.py:173
 msgid "No user has this nick on this network."
 msgstr "Yhdelläkään käyttäjällä ei ole nimimerkkiä tässä verkossa."

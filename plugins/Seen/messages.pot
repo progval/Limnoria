@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,39 +29,46 @@ msgid ""
 "    private."
 msgstr ""
 
-#: plugin.py:198
+#: plugin.py:96
+#, docstring
+msgid ""
+"This plugin allows you to see when and what someone last said and\n"
+"    what you missed since you left a channel."
+msgstr ""
+
+#: plugin.py:200
 msgid "Not enough non-wildcard characters."
 msgstr ""
 
-#: plugin.py:206 plugin.py:303
+#: plugin.py:208 plugin.py:311
 msgid "%s was last seen in %s %s ago"
 msgstr ""
 
-#: plugin.py:212 plugin.py:278 plugin.py:307
+#: plugin.py:214 plugin.py:286 plugin.py:315
 msgid "%s: %s"
 msgstr ""
 
-#: plugin.py:218
+#: plugin.py:220
 msgid "%s (%s ago)"
 msgstr ""
 
-#: plugin.py:220
+#: plugin.py:222
 msgid "%s could be %L"
 msgstr ""
 
-#: plugin.py:220
+#: plugin.py:222
 msgid "or"
 msgstr ""
 
-#: plugin.py:222
+#: plugin.py:224
 msgid "I haven't seen anyone matching %s."
 msgstr ""
 
-#: plugin.py:224 plugin.py:310
+#: plugin.py:226 plugin.py:318
 msgid "I have not seen %s."
 msgstr ""
 
-#: plugin.py:228
+#: plugin.py:230
 #, docstring
 msgid ""
 "[<channel>] <nick>\n"
@@ -72,7 +79,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:242
+#: plugin.py:237 plugin.py:257
+msgid "You've found me!"
+msgstr ""
+
+#: plugin.py:247
 #, docstring
 msgid ""
 "[<channel>] [--user <name>] [<nick>]\n"
@@ -86,15 +97,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:275
+#: plugin.py:283
 msgid "Someone was last seen in %s %s ago"
 msgstr ""
 
-#: plugin.py:281
+#: plugin.py:289
 msgid "I have never seen anyone."
 msgstr ""
 
-#: plugin.py:285
+#: plugin.py:293
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -104,7 +115,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:314
+#: plugin.py:322
 #, docstring
 msgid ""
 "[<channel>] <name>\n"
@@ -117,7 +128,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:330
+#: plugin.py:338
 #, docstring
 msgid ""
 "[<channel>] [<nick>]\n"
@@ -128,19 +139,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:339
+#: plugin.py:347
 msgid "I am not in %s."
 msgstr ""
 
-#: plugin.py:342
+#: plugin.py:350
 msgid "%s must be in %s to use this command."
 msgstr ""
 
-#: plugin.py:365
+#: plugin.py:373
 msgid "I couldn't find in my history of %s messages where %r last left %s"
 msgstr ""
 
-#: plugin.py:374
+#: plugin.py:382
 msgid "Either %s didn't leave, or no messages were sent while %s was gone."
 msgstr ""
 

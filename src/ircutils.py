@@ -663,6 +663,7 @@ for (k, v) in mircColors.items():
     if k is not None: # Ignore empty string for None.
         sv = str(v)
         mircColors[sv] = sv
+        mircColors[sv.zfill(2)] = sv
 
 def standardSubstitute(irc, msg, text, env=None):
     """Do the standard set of substitutions on text, and return it"""

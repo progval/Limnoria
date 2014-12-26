@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,12 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:38
+#: plugin.py:36
+#, docstring
+msgid "This plugin allows you to add quotes to the database for a channel."
+msgstr ""
+
+#: plugin.py:39
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -25,7 +30,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:47
+#: plugin.py:48
 msgid "I have no quotes in my database for %s."
 msgstr ""
 

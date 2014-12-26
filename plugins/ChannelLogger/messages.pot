@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,5 +97,10 @@ msgid ""
 "Determines what timestamp format will be used in\n"
 "    the directory structure for channel logs if\n"
 "    supybot.plugins.ChannelLogger.directories.timestamp is True."
+msgstr ""
+
+#: plugin.py:58
+#, docstring
+msgid "This plugin allows the bot to log channel conversations to disk."
 msgstr ""
 

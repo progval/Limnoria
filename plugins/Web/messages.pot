@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
+"POT-Creation-Date: 2014-12-20 14:42+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,32 +47,32 @@ msgid ""
 "    bytes the bot will download via the 'fetch' command in this plugin."
 msgstr ""
 
-#: plugin.py:86
+#: plugin.py:90
 #, docstring
 msgid ""
 "Runs a command in a forked process with limited memory resources\n"
 "    to prevent memory bomb caused by specially crafted http responses."
 msgstr ""
 
-#: plugin.py:98
+#: plugin.py:102
 msgid "Page is too big or the server took too much time to answer the request."
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:111
 #, docstring
 msgid "Display a nice error instead of \"An error has occurred\"."
 msgstr ""
 
-#: plugin.py:117
+#: plugin.py:121
 #, docstring
 msgid "Add the help for \"@help Web\" here."
 msgstr ""
 
-#: plugin.py:162
+#: plugin.py:166
 msgid "Title: %s (at %s)"
 msgstr ""
 
-#: plugin.py:184
+#: plugin.py:188
 #, docstring
 msgid ""
 "<url>\n"
@@ -82,11 +82,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:194
+#: plugin.py:198
 msgid "%s: %s"
 msgstr ""
 
-#: plugin.py:206
+#: plugin.py:210
 #, docstring
 msgid ""
 "<url>\n"
@@ -96,11 +96,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:222
+#: plugin.py:226
 msgid "That URL has no specified doctype."
 msgstr ""
 
-#: plugin.py:229
+#: plugin.py:233
 #, docstring
 msgid ""
 "<url>\n"
@@ -110,15 +110,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:241 plugin.py:246
+#: plugin.py:245 plugin.py:250
 msgid "%u is %S long."
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:252
 msgid "The server didn't tell me how long %u is but it's longer than %S."
 msgstr ""
 
-#: plugin.py:259
+#: plugin.py:263
 #, docstring
 msgid ""
 "[--no-filter] <url>\n"
@@ -129,15 +129,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:288
+#: plugin.py:281
+msgid "Could not guess the page's encoding. (Try installing python-charade.)"
+msgstr ""
+
+#: plugin.py:295
 msgid "That URL appears to have no HTML title."
 msgstr ""
 
-#: plugin.py:290
+#: plugin.py:297
 msgid "That URL appears to have no HTML title within the first %S."
 msgstr ""
 
-#: plugin.py:296
+#: plugin.py:303
 #, docstring
 msgid ""
 "<text>\n"
@@ -146,7 +150,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:305
+#: plugin.py:312
 #, docstring
 msgid ""
 "<text>\n"
@@ -155,7 +159,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:317
+#: plugin.py:324
 #, docstring
 msgid ""
 "<url>\n"
@@ -166,7 +170,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:328
+#: plugin.py:335
 msgid "This command is disabled (supybot.plugins.Web.fetch.maximum is set to 0)."
 msgstr ""
 

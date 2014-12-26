@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,5 +27,12 @@ msgid ""
 "    be immune from enforcement.  These nicks will not even have their actions\n"
 "    watched by this plugin.  In general, only the ChanServ for this network\n"
 "    will be in this list."
+msgstr ""
+
+#: plugin.py:39
+#, docstring
+msgid ""
+"Prevents users from doing things they are not supposed to do on a channel,\n"
+"    even if they have +o or +h."
 msgstr ""
 

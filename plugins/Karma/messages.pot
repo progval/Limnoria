@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-08-01 19:48+EEST\n"
+"POT-Creation-Date: 2014-12-20 13:30+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,43 +23,60 @@ msgstr ""
 
 #: config.py:49
 msgid ""
+"A space separated list of\n"
+"    characters to increase karma."
+msgstr ""
+
+#: config.py:52
+msgid ""
+"A space separated list of\n"
+"    characters to decrease karma."
+msgstr ""
+
+#: config.py:55
+msgid ""
 "Determines whether the bot will reply with a\n"
 "    success message when something's karma is increased or decreased."
 msgstr ""
 
-#: config.py:52
+#: config.py:58
 msgid ""
 "Determines how many highest/lowest karma things\n"
 "    are shown when karma is called with no arguments."
 msgstr ""
 
-#: config.py:55
+#: config.py:61
 msgid ""
 "Determines how many karma things are shown when\n"
 "    the most command is called."
 msgstr ""
 
-#: config.py:58
+#: config.py:64
 msgid ""
 "Determines whether users can adjust the karma\n"
 "    of their nick."
 msgstr ""
 
-#: config.py:61
+#: config.py:67
 msgid ""
 "Determines whether the bot will\n"
 "    increase/decrease karma without being addressed."
 msgstr ""
 
-#: plugin.py:237
+#: plugin.py:222
+#, docstring
+msgid "Provides a simple tracker for setting Karma (thing++, thing--)."
+msgstr ""
+
+#: plugin.py:241
 msgid "%(thing)s's karma is now %(karma)i"
 msgstr ""
 
-#: plugin.py:248 plugin.py:257
+#: plugin.py:255 plugin.py:264
 msgid "You're not allowed to adjust your own karma."
 msgstr ""
 
-#: plugin.py:287
+#: plugin.py:291
 #, docstring
 msgid ""
 "[<channel>] [<thing> ...]\n"
@@ -73,35 +90,35 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:300
+#: plugin.py:304
 msgid "%s has neutral karma."
 msgstr ""
 
-#: plugin.py:307
+#: plugin.py:311
 msgid "Karma for %q has been increased %n and decreased %n for a total karma of %s."
 msgstr ""
 
-#: plugin.py:309 plugin.py:310
+#: plugin.py:313 plugin.py:314
 msgid "time"
 msgstr ""
 
-#: plugin.py:323
+#: plugin.py:327
 msgid "I didn't know the karma for any of those things."
 msgstr ""
 
-#: plugin.py:333 plugin.py:362
+#: plugin.py:337 plugin.py:366
 msgid "I have no karma for this channel."
 msgstr ""
 
-#: plugin.py:338
+#: plugin.py:342
 msgid "  You (%s) are ranked %i out of %i."
 msgstr ""
 
-#: plugin.py:342
+#: plugin.py:346
 msgid "Highest karma: %L.  Lowest karma: %L.%s"
 msgstr ""
 
-#: plugin.py:350
+#: plugin.py:354
 #, docstring
 msgid ""
 "[<channel>] {increased,decreased,active}\n"
@@ -112,7 +129,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:368
+#: plugin.py:372
 #, docstring
 msgid ""
 "[<channel>] [<name>]\n"
@@ -122,7 +139,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:379
+#: plugin.py:383
 #, docstring
 msgid ""
 "[<channel>] <filename>\n"
@@ -133,7 +150,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:391
+#: plugin.py:395
 #, docstring
 msgid ""
 "[<channel>] <filename>\n"

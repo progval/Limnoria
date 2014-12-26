@@ -668,7 +668,7 @@ class Aka(callbacks.Plugin):
                             }), 'user', 'something'])
 
     def show(self, irc, msg, args, optlist, name):
-        """<command>
+        """[--channel <#channel>] <alias>
 
         This command shows the content of an Aka.
         """

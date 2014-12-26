@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:29+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -86,7 +86,14 @@ msgid ""
 "    applied to a user. Example syntax: user1+o-v user2+v user3-v"
 msgstr ""
 
-#: plugin.py:78
+#: plugin.py:48
+#, docstring
+msgid ""
+"This plugin, when configured, allows the bot to automatically set modes\n"
+"    on users when they join."
+msgstr ""
+
+#: plugin.py:80
 #, docstring
 msgid ""
 "Determines whether or not a mode has already\n"

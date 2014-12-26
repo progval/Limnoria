@@ -4,30 +4,38 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 15:42+EET\n"
-"PO-Revision-Date: 2014-03-22 15:56+0200\n"
+"Project-Id-Version: Conditional plugin for Limnoria\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"PO-Revision-Date: 2014-12-20 14:32+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: plugin.py:57
+#, fuzzy
 msgid ""
-"Add the help for \"@plugin help Conditional\" here\n"
-"    This should describe *how* to use this plugin."
+"This plugin provides logic operators and other commands that\n"
+"    enable you to run commands only if a condition is true. Useful for "
+"nested\n"
+"    commands and scripting."
 msgstr ""
-"Lisää ohje \"@plugin help Conditional\" tähän.\n"
-" Tämän pitäisi kuvata *kuinka* tätä lisäosaa käytetään."
+"Tämä plugini tarjoaa loogiset operaattorit ja muita komentoja, jotka "
+"sallivat\n"
+" sinun suorittaa komentoja vain ehdon ollessa true. Hyödyllinen "
+"sisäkkäisille\n"
+" komennoille ja skriptaukselle."
 
-#: plugin.py:64
+#: plugin.py:65
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr "Suorita komento viestistä, kuin komento olisi lähetetty IRC:stä."
 
-#: plugin.py:73
+#: plugin.py:74
 msgid ""
 "<condition> <ifcommand> <elsecommand>\n"
 "\n"
@@ -51,7 +59,7 @@ msgstr ""
 "        eduksesi tässä.\n"
 "        "
 
-#: plugin.py:90
+#: plugin.py:91
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -63,7 +71,7 @@ msgstr ""
 "Palauttaa kaikki edellytykset jotka tukevat arviotumista todeksi.\n"
 "        "
 
-#: plugin.py:102
+#: plugin.py:103
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -75,7 +83,7 @@ msgstr ""
 "        Palauttaa toden, jos yksikin edellytys tukee arvioimista todeksi.\n"
 "        "
 
-#: plugin.py:114
+#: plugin.py:115
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -87,7 +95,7 @@ msgstr ""
 "Palauttaa toden, jos vain yksi edellytys tukee arvioimista todeksi.\n"
 "        "
 
-#: plugin.py:126
+#: plugin.py:127
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -101,7 +109,7 @@ msgstr ""
 "        Palauttaa toden jos ne ovat yhtäläisia.\n"
 "        "
 
-#: plugin.py:139
+#: plugin.py:140
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -115,7 +123,7 @@ msgstr ""
 "        Palauttaa toden, jos ne eivät ole yhtäläisia.\n"
 "        "
 
-#: plugin.py:152
+#: plugin.py:153
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -129,7 +137,7 @@ msgstr ""
 "        Palauttaa toden jos <asia1> on suurempi kuin <asia2>.\n"
 "        "
 
-#: plugin.py:165
+#: plugin.py:166
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -143,7 +151,7 @@ msgstr ""
 "        Palauttaa toden jos <asia1> on suurempi tai yhtäläinen <asiaan2>.\n"
 "        "
 
-#: plugin.py:178
+#: plugin.py:179
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -157,7 +165,7 @@ msgstr ""
 "Palauttaa toden jos <asia1> on vähemmän kuin <asia2>.\n"
 "        "
 
-#: plugin.py:191
+#: plugin.py:192
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -171,7 +179,7 @@ msgstr ""
 "        Palauttaa toden jos <asia1> on vähemmän tai yhtäläinen <asiaan2>.\n"
 "        "
 
-#: plugin.py:204
+#: plugin.py:205
 msgid ""
 "[--case-insensitive] <item1> <item2>\n"
 "\n"
@@ -189,7 +197,7 @@ msgstr ""
 " Kirjainkoko merkitsee, mikäli --case-insensitive ei ole annettu.\n"
 "        "
 
-#: plugin.py:224
+#: plugin.py:225
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -203,7 +211,7 @@ msgstr ""
 "Palauttaa toden, jos ne ovat yhtäläisiä.\n"
 "        "
 
-#: plugin.py:237
+#: plugin.py:238
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -217,7 +225,7 @@ msgstr ""
 "         Palauttaa toden, jos ne eivät ole yhtäläisiä.\n"
 "        "
 
-#: plugin.py:250
+#: plugin.py:251
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -231,7 +239,7 @@ msgstr ""
 "        Palauttaa toden jos <asia1> on suurempi kuin <asia2>.\n"
 "        "
 
-#: plugin.py:263
+#: plugin.py:264
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -245,7 +253,7 @@ msgstr ""
 "        Palauttaa toden, jos <asia1> on suurempi tai yhtäläinen <asiaan2>.\n"
 "        "
 
-#: plugin.py:276
+#: plugin.py:277
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -259,7 +267,7 @@ msgstr ""
 "        Palauttaa toden jos <asia1> on vähemmän kuin <asia2>.\n"
 "        "
 
-#: plugin.py:289
+#: plugin.py:290
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -272,3 +280,10 @@ msgstr ""
 "        Tekee numerollisen vertailun <asiaan1> ja <asiaan2>. \n"
 "        Palauttaa toden jos <asia1> on vähemmän tai yhtäläinen <asiaan2>.\n"
 "        "
+
+#~ msgid ""
+#~ "Add the help for \"@plugin help Conditional\" here\n"
+#~ "    This should describe *how* to use this plugin."
+#~ msgstr ""
+#~ "Lisää ohje \"@plugin help Conditional\" tähän.\n"
+#~ " Tämän pitäisi kuvata *kuinka* tätä lisäosaa käytetään."

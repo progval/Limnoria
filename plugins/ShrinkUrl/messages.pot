@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 11:59+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,7 +81,14 @@ msgid ""
 "    services to rotate through for the shrinkSnarfer and outFilter."
 msgstr ""
 
-#: plugin.py:189
+#: plugin.py:90
+#, docstring
+msgid ""
+"This plugin features commands to shorten URLs through different services,\n"
+"    like tinyurl."
+msgstr ""
+
+#: plugin.py:192
 #, docstring
 msgid ""
 "<url>\n"
@@ -90,7 +97,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:216
+#: plugin.py:219
 #, docstring
 msgid ""
 "<url>\n"
@@ -99,7 +106,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:245
+#: plugin.py:248
 #, docstring
 msgid ""
 "<url>\n"
@@ -108,7 +115,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:277
+#: plugin.py:281
 #, docstring
 msgid ""
 "<url>\n"
@@ -117,7 +124,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:307
+#: plugin.py:311
 #, docstring
 msgid ""
 "<url>\n"
@@ -126,7 +133,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:334
+#: plugin.py:338
 #, docstring
 msgid ""
 "<url>\n"
@@ -135,7 +142,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:361
+#: plugin.py:365
 #, docstring
 msgid ""
 "<url>\n"

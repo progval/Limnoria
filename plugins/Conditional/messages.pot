@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2014-12-20 14:04+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,16 +18,17 @@ msgstr ""
 #: plugin.py:57
 #, docstring
 msgid ""
-"Add the help for \"@plugin help Conditional\" here\n"
-"    This should describe *how* to use this plugin."
+"This plugin provides logic operators and other commands that\n"
+"    enable you to run commands only if a condition is true. Useful for nested\n"
+"    commands and scripting."
 msgstr ""
 
-#: plugin.py:64
+#: plugin.py:65
 #, docstring
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr ""
 
-#: plugin.py:73
+#: plugin.py:74
 #, docstring
 msgid ""
 "<condition> <ifcommand> <elsecommand>\n"
@@ -40,7 +41,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:90
+#: plugin.py:91
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -49,7 +50,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:102
+#: plugin.py:103
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -58,7 +59,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:115
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -67,7 +68,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:126
+#: plugin.py:127
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -77,7 +78,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:139
+#: plugin.py:140
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -87,7 +88,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:152
+#: plugin.py:153
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -97,7 +98,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:165
+#: plugin.py:166
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -107,7 +108,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:178
+#: plugin.py:179
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -117,7 +118,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:191
+#: plugin.py:192
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -127,7 +128,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:204
+#: plugin.py:205
 #, docstring
 msgid ""
 "[--case-insensitive] <item1> <item2>\n"
@@ -139,7 +140,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:224
+#: plugin.py:225
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -149,7 +150,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:237
+#: plugin.py:238
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -159,7 +160,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:250
+#: plugin.py:251
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -169,7 +170,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:263
+#: plugin.py:264
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -179,7 +180,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:276
+#: plugin.py:277
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -189,7 +190,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:289
+#: plugin.py:290
 #, docstring
 msgid ""
 "<item1> <item2>\n"
