@@ -549,7 +549,7 @@ class Aka(callbacks.Plugin):
         except AkaError as e:
             irc.error(str(e))
     add = wrap(add, [getopts({
-                                'channel': 'channel',
+                                'channel': 'somethingWithoutSpaces',
                             }), 'something', 'text'])
 
     def set(self, irc, msg, args, optlist, name, alias):
@@ -586,7 +586,7 @@ class Aka(callbacks.Plugin):
         except AkaError as e:
             irc.error(str(e))
     set = wrap(set, [getopts({
-                                'channel': 'channel',
+                                'channel': 'somethingWithoutSpaces',
                             }), 'something', 'text'])
 
     def remove(self, irc, msg, args, optlist, name):
@@ -608,7 +608,7 @@ class Aka(callbacks.Plugin):
         except AkaError as e:
             irc.error(str(e))
     remove = wrap(remove, [getopts({
-                                'channel': 'channel',
+                                'channel': 'somethingWithoutSpaces',
                             }), 'something'])
 
     def _checkManageCapabilities(self, irc, msg, channel):
@@ -641,7 +641,7 @@ class Aka(callbacks.Plugin):
         else:
             irc.replySuccess()
     lock = wrap(lock, [getopts({
-                                'channel': 'channel',
+                                'channel': 'somethingWithoutSpaces',
                             }), 'user', 'something'])
 
     def unlock(self, irc, msg, args, optlist, user, name):
@@ -664,7 +664,7 @@ class Aka(callbacks.Plugin):
         else:
             irc.replySuccess()
     unlock = wrap(unlock, [getopts({
-                                'channel': 'channel',
+                                'channel': 'somethingWithoutSpaces',
                             }), 'user', 'something'])
 
     def show(self, irc, msg, args, optlist, name):
@@ -683,8 +683,8 @@ class Aka(callbacks.Plugin):
         if command:
             irc.reply(command)
         else:
-            irc.error(_('This Aka does not exist.'))
-    show = wrap(show, [getopts({'channel': 'channel'}),
+            irc.error(_('This Aka does not exist'))
+    show = wrap(show, [getopts({'channel': 'somethingWithoutSpaces'}),
         'text'])
 
     def importaliasdatabase(self, irc, msg, args):
