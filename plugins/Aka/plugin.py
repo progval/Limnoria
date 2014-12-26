@@ -32,7 +32,6 @@ import re
 import os
 import sys
 import datetime
-import operator
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -166,7 +165,7 @@ if sqlite3:
                     SET locked=1, locked_at=?, locked_by=? WHERE name = ?""",
                     (datetime.datetime.now(), by, name))
             if cursor.rowcount == 0:
-                raise AkaError(_('This Aka does not exist'))
+                raise AkaError(_('This Aka does not exist.'))
             db.commit()
 
         def unlock_aka(self, channel, name, by):
@@ -178,7 +177,7 @@ if sqlite3:
             cursor.execute("""UPDATE aliases SET locked=0, locked_at=?
                               WHERE name = ?""", (datetime.datetime.now(), name))
             if cursor.rowcount == 0:
-                raise AkaError(_('This Aka does not exist'))
+                raise AkaError(_('This Aka does not exist.'))
             db.commit()
 
         def get_aka_lock(self, channel, name):
@@ -192,7 +191,7 @@ if sqlite3:
             if r:
                 return (bool(r[0]), r[1], r[2])
             else:
-                raise AkaError(_('This Aka does not exist'))
+                raise AkaError(_('This Aka does not exist.'))
     available_db.update({'sqlite3': SQLiteAkaDB})
 elif sqlalchemy:
     Base = sqlalchemy.ext.declarative.declarative_base()
@@ -288,7 +287,7 @@ elif sqlalchemy:
                 aka = db.query(SQLAlchemyAlias) \
                         .filter(SQLAlchemyAlias.name == name).one()
             except sqlalchemy.orm.exc.NoResultFound:
-                raise AkaError(_('This Aka does not exist'))
+                raise AkaError(_('This Aka does not exist.'))
             if aka.locked:
                 raise AkaError(_('This Aka is already locked.'))
             aka.locked = True
@@ -305,7 +304,7 @@ elif sqlalchemy:
                 aka = db.query(SQLAlchemyAlias) \
                         .filter(SQLAlchemyAlias.name == name).one()
             except sqlalchemy.orm.exc.NoResultFound:
-                raise AkaError(_('This Aka does not exist'))
+                raise AkaError(_('This Aka does not exist.'))
             if not aka.locked:
                 raise AkaError(_('This Aka is already unlocked.'))
             aka.locked = False
@@ -322,7 +321,7 @@ elif sqlalchemy:
                         .query(SQLAlchemyAlias.locked, SQLAlchemyAlias.locked_by, SQLAlchemyAlias.locked_at)\
                         .filter(SQLAlchemyAlias.name == name).one()
             except sqlalchemy.orm.exc.NoResultFound:
-                raise AkaError(_('This Aka does not exist'))
+                raise AkaError(_('This Aka does not exist.'))
 
     available_db.update({'sqlalchemy': SqlAlchemyAkaDB})
 
@@ -397,11 +396,9 @@ class Aka(callbacks.Plugin):
     isCommand = isCommandMethod
 
     def listCommands(self):
-        channel = dynamic.channel or 'global'
-        return list(set(list(map(callbacks.formatCommand,
-                            self._db.get_aka_list(channel) +
-                            self._db.get_aka_list('global'))) +
-                ['add', 'remove', 'lock', 'unlock', 'importaliasdatabase']))
+        commands = ['add', 'remove', 'lock', 'unlock', 'importaliasdatabase',
+            'show', 'list', 'set']
+        return commands
 
     def getCommand(self, args, check_other_plugins=True):
         canonicalName = callbacks.canonicalName
@@ -712,6 +709,28 @@ class Aka(callbacks.Plugin):
         else:
             irc.replySuccess()
     importaliasdatabase = wrap(importaliasdatabase, ['owner'])
+
+    def list(self, irc, msg, args, optlist):
+        """[--channel <#channel>]
+
+        Lists all Akas defined for <channel>. If <channel> is not specified,
+        lists all global Akas."""
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
+        aka_list = self._db.get_aka_list(channel)
+        if aka_list:
+            aka_values = [self._db.get_alias(channel, aka) for aka in aka_list]
+            s = ('{0}: "{1}"'.format(ircutils.bold(k), v) for (k, v) in
+                zip(aka_list, aka_values))
+            irc.replies(s)
+        else:
+            irc.error(_("No Akas found."))
+    list = wrap(list, [getopts({'channel': 'channel'})])
 
 
 Class = Aka

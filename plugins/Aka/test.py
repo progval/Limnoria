@@ -112,10 +112,10 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         cb._add_aka('global', 'foobar', 'echo sbbone')
         cb._db.lock_aka('global', 'foobar', 'evil_admin')
         self.assertResponse('foobar', 'sbbone')
-        self.assertRegexp('list Aka', 'foobar')
+        self.assertRegexp('aka list', 'foobar')
         self.assertRaises(Aka.AkaError, cb._remove_aka, 'global', 'foobar')
         cb._remove_aka('global', 'foobar', evenIfLocked=True)
-        self.assertNotRegexp('list Aka', 'foobar')
+        self.assertNotRegexp('aka list', 'foobar')
         self.assertError('foobar')
 
     def testOptionalArgs(self):
@@ -226,5 +226,10 @@ class AkaTestCase(PluginTestCase):
         self.assertRegexp('alias spam', 'there is no command named')
         self.assertResponse('aka spam', 'egg')
 
+    def testList(self):
+        self.assertNotError('aka add foo bar')
+        self.assertRegexp('aka list', 'foo.*?bar \$\*')
+        self.assertNotError('aka add "foo bar" baz')
+        self.assertRegexp('aka list', 'foo.*?bar \$\*.*?foo bar.*?baz \$\*')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

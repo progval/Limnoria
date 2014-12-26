@@ -32,7 +32,7 @@ msgstr "Tämä Aka on jo olemassa."
 
 #: plugin.py:169 plugin.py:181 plugin.py:195 plugin.py:291 plugin.py:308
 #: plugin.py:325
-msgid "This Aka does not exist"
+msgid "This Aka does not exist."
 msgstr "Tätä Akaa ei ole olemassa."
 
 #: plugin.py:293
