@@ -462,7 +462,7 @@ class Topic(callbacks.Plugin):
 
     @internationalizeDocstring
     def remove(self, irc, msg, args, channel, numbers):
-        """[<channel>] <comma separated list of numbers>
+        """[<channel>] <number1> [<number2> <number3>...]
 
         Removes topics <numbers> from the topic for <channel>  Topics are
         numbered starting from 1; you can also use negative indexes to refer
@@ -481,7 +481,7 @@ class Topic(callbacks.Plugin):
             topics[n] = ''
         topics = [topic for topic in topics if topic != '']
         self._sendTopics(irc, channel, topics)
-    remove = wrap(remove, ['canChangeTopic', commalist('topicNumber')])
+    remove = wrap(remove, ['canChangeTopic', many('topicNumber')])
 
     @internationalizeDocstring
     def lock(self, irc, msg, args, channel):
