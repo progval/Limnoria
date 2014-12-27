@@ -33,6 +33,12 @@ import time
 import random
 import base64
 
+try:
+    from ecdsa import SigningKey, BadDigestError
+    ecdsa = True
+except ImportError:
+    ecdsa = False
+
 from . import conf, ircdb, ircmsgs, ircutils, log, utils, world
 from .utils.str import rsplit
 from .utils.iter import imap, chain, cycle
@@ -924,6 +930,11 @@ class Irc(IrcCommandDispatcher):
         # TODO Find a better way to fix this
         if hasattr(self.sasl_password, 'decode'):
             self.sasl_password = self.sasl_password.decode('utf-8')
+        self.sasl_ecdsa_key = \
+                conf.supybot.networks.get(self.network).sasl.ecdsa_key()
+        # TODO Find a better way to fix this
+        if hasattr(self.sasl_ecdsa_key, 'decode'):
+            self.sasl_ecdsa_key = self.sasl_ecdsa_key.decode('utf-8')
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         # The rest.
         self.lastTake = 0
@@ -943,7 +954,9 @@ class Irc(IrcCommandDispatcher):
 
         self.sasl = None
 
-        if (conf.supybot.networks.get(self.network).certfile() or
+        if ecdsa and self.sasl_username and self.sasl_ecdsa_key:
+            self.sasl = 'ecdsa-nist256p-challenge'
+        elif (conf.supybot.networks.get(self.network).certfile() or
                 conf.supybot.protocols.irc.certfile()):
             self.sasl = 'external'
         elif self.sasl_username and self.sasl_password:
@@ -980,12 +993,26 @@ class Irc(IrcCommandDispatcher):
 
             if self.sasl == 'external':
                 authstring = '+'
+            elif self.sasl == 'ecdsa-nist256p-challenge':
+                authstring = base64.b64encode(
+                    self.sasl_username.encode('utf-8')).decode('utf-8')
             elif self.sasl == 'plain':
                 authstring = base64.b64encode('\0'.join([
                     self.sasl_username,
                     self.sasl_username,
                     self.sasl_password
                 ]).encode('utf-8')).decode('utf-8')
+
+            self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
+        elif (len(msg.args) == 1 and msg.args[0] != '+' and
+                self.sasl == 'ecdsa-nist256p-challenge'):
+            try:
+                private_key = SigningKey.from_pem(open(self.sasl_ecdsa_key).
+                    read())
+                authstring = base64.b64encode(
+                    private_key.sign(base64.b64decode(msg.args[0]))).decode('utf-8')
+            except (BadDigestError, OSError, ValueError) as e:
+                authstring = "*"
 
             self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
@@ -1009,9 +1036,10 @@ class Irc(IrcCommandDispatcher):
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
     def do904(self, msg):
-        if (self.sasl == 'external' and self.sasl_username and
+        if (self.sasl != 'plain' and self.sasl_username and
                 self.sasl_password):
-            log.info('%s: SASL EXTERNAL failed, trying PLAIN.', self.network)
+            log.info('%s: SASL %s failed, trying PLAIN.', self.network,
+                self.sasl.upper())
 
             self.sasl = 'plain'
 
