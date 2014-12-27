@@ -42,6 +42,17 @@ class TopicTestCase(ChannelPluginTestCase):
         self.assertNotError('topic remove 1')
         self.assertError('topic remove 1')
 
+    def testRemoveMultiple(self):
+        self.assertError('topic remove 1 2')
+        _ = self.getMsg('topic add foo')
+        _ = self.getMsg('topic add bar')
+        _ = self.getMsg('topic add baz')
+        _ = self.getMsg('topic add derp')
+        _ = self.getMsg('topic add cheese')
+        self.assertNotError('topic remove 1 2')
+        self.assertNotError('topic remove -1 1')
+        self.assertError('topic remove -99 1')
+
     def testReplace(self):
         _ = self.getMsg('topic add foo')
         _ = self.getMsg('topic add bar')

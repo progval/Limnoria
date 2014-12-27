@@ -460,10 +460,10 @@ class Topic(callbacks.Plugin):
                      rest(('topic', False))])
 
     @internationalizeDocstring
-    def remove(self, irc, msg, args, channel, number):
-        """[<channel>] <number>
+    def remove(self, irc, msg, args, channel, numbers):
+        """[<channel>] <number1> [<number2> <number3>...]
 
-        Removes topic <number> from the topic for <channel>  Topics are
+        Removes topics <numbers> from the topic for <channel>  Topics are
         numbered starting from 1; you can also use negative indexes to refer
         to topics starting the from the end of the topic.  <channel> is only
         necessary if the message isn't sent in the channel itself.
@@ -472,9 +472,15 @@ class Topic(callbacks.Plugin):
             capabilities = self.registryValue('requireManageCapability')
             irc.errorNoCapability(capabilities, Raise=True)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
-        topic = topics.pop(number)
+        numbers = set(numbers)
+        for n in numbers:
+            # Equivalent of marking the topic for deletion; there's no
+            # simple, easy way of removing multiple items from a list.
+            # pop() will shift the indices after every run.
+            topics[n] = ''
+        topics = [topic for topic in topics if topic != '']
         self._sendTopics(irc, channel, topics)
-    remove = wrap(remove, ['canChangeTopic', 'topicNumber'])
+    remove = wrap(remove, ['canChangeTopic', many('topicNumber')])
 
     @internationalizeDocstring
     def lock(self, irc, msg, args, channel):
