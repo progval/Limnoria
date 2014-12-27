@@ -48,6 +48,7 @@ _ = PluginInternationalization('Topic')
 
 import supybot.ircdb as ircdb
 
+
 def canChangeTopic(irc, msg, args, state):
     assert not state.channel
     callConverter('channel', irc, msg, args, state)
@@ -58,11 +59,13 @@ def canChangeTopic(irc, msg, args, state):
     c = irc.state.channels[state.channel]
     if 't' in c.modes and not c.isHalfopPlus(irc.nick):
         state.error(format(_('I can\'t change the topic, I\'m not (half)opped '
-                           'and %s is +t.'), state.channel), Raise=True)
+                             'and %s is +t.'), state.channel), Raise=True)
+
 
 def getTopic(irc, msg, args, state, format=True):
     separator = state.cb.registryValue('separator', state.channel)
-    if separator in args[0]:
+    if separator in args[0] and not \
+            state.cb.registryValue('allowSeparatorinTopics', state.channel):
         state.errorInvalid('topic', args[0],
                            format(_('The topic must not include %q.'),
                                   separator))
@@ -72,6 +75,7 @@ def getTopic(irc, msg, args, state, format=True):
         formatter = state.cb.registryValue('format', state.channel)
         topic = ircutils.standardSubstitute(irc, msg, formatter, env)
     state.args.append(topic)
+
 
 def getTopicNumber(irc, msg, args, state):
     def error(s):
@@ -103,15 +107,19 @@ addConverter('topic', getTopic)
 addConverter('topicNumber', getTopicNumber)
 addConverter('canChangeTopic', canChangeTopic)
 
+
 def splitTopic(topic, separator):
     return list(filter(None, topic.split(separator)))
 
 datadir = conf.supybot.directories.data()
 filename = conf.supybot.directories.data.dirize('Topic.pickle')
 
+
 class Topic(callbacks.Plugin):
+
     """This plugin allows you to use many topic-related functions,
     such as Add, Undo, and Remove."""
+
     def __init__(self, irc):
         self.__parent = super(Topic, self)
         self.__parent.__init__(irc)
@@ -165,13 +173,13 @@ class Topic(callbacks.Plugin):
         stack = self.undos.setdefault(channel, [])
         stack.append(topics)
         maxLen = self.registryValue('undo.max', channel)
-        del stack[:len(stack)-maxLen]
+        del stack[:len(stack) - maxLen]
 
     def _addRedo(self, channel, topics):
         stack = self.redos.setdefault(channel, [])
         stack.append(topics)
         maxLen = self.registryValue('undo.max', channel)
-        del stack[:len(stack)-maxLen]
+        del stack[:len(stack) - maxLen]
 
     def _getUndo(self, channel):
         try:
@@ -199,8 +207,8 @@ class Topic(callbacks.Plugin):
             elif len(newTopic) > maxLen:
                 if self.registryValue('recognizeTopiclen', channel):
                     irc.error(format(_('That topic is too long for this '
-                                     'server (maximum length: %i; this topic: '
-                                     '%i).'), maxLen, len(newTopic)),
+                                       'server (maximum length: %i; this topic: '
+                                       '%i).'), maxLen, len(newTopic)),
                               Raise=True)
         except KeyError:
             pass
@@ -233,7 +241,8 @@ class Topic(callbacks.Plugin):
         if capabilities:
             for capability in re.split(r'\s*;\s*', capabilities):
                 if capability.startswith('channel,'):
-                    capability = ircdb.makeChannelCapability(channel, capability[8:])
+                    capability = ircdb.makeChannelCapability(
+                        channel, capability[8:])
                 if capability and ircdb.checkCapability(msg.prefix, capability):
                     return True
             return False
@@ -253,7 +262,7 @@ class Topic(callbacks.Plugin):
             return
         if irc.nick not in c.ops and 't' in c.modes:
             self.log.debug('Not trying to restore topic in %s. I\'m not opped '
-                               'and %s is +t.', channel, channel)
+                           'and %s is +t.', channel, channel)
             return
         try:
             topics = self.lastTopics[channel]
@@ -262,7 +271,7 @@ class Topic(callbacks.Plugin):
         else:
             newTopic = self._formatTopics(irc, channel, topics)
             if c.topic == '' or (c.topic != newTopic and
-                    self.registryValue('alwaysSetOnJoin', channel)):
+                                 self.registryValue('alwaysSetOnJoin', channel)):
                 self._sendTopics(irc, channel, newTopic)
 
     def do332(self, irc, msg):
@@ -403,7 +412,7 @@ class Topic(callbacks.Plugin):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         L = []
         for (i, t) in enumerate(topics):
-            L.append(format(_('%i: %s'), i+1, utils.str.ellipsisify(t, 30)))
+            L.append(format(_('%i: %s'), i + 1, utils.str.ellipsisify(t, 30)))
         s = utils.str.commaAndify(L)
         irc.reply(s)
     list = wrap(list, ['inChannel'])
@@ -550,9 +559,9 @@ class Topic(callbacks.Plugin):
             if not topics:
                 raise KeyError
         except KeyError:
-                irc.error(format(_('I haven\'t yet set the topic in %s.'),
-                    channel))
-                return
+            irc.error(format(_('I haven\'t yet set the topic in %s.'),
+                             channel))
+            return
         self._sendTopics(irc, channel, topics)
     refresh = wrap(refresh, ['canChangeTopic'])
 
@@ -567,8 +576,8 @@ class Topic(callbacks.Plugin):
         if not self._checkManageCapabilities(irc, msg, channel):
             capabilities = self.registryValue('requireManageCapability')
             irc.errorNoCapability(capabilities, Raise=True)
-        self._addRedo(channel, self._getUndo(channel)) # current topic.
-        topics = self._getUndo(channel) # This is the topic list we want.
+        self._addRedo(channel, self._getUndo(channel))  # current topic.
+        topics = self._getUndo(channel)  # This is the topic list we want.
         if topics is not None:
             self._sendTopics(irc, channel, topics, isDo=True)
         else:

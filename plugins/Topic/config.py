@@ -79,6 +79,11 @@ conf.registerChannelValue(Topic, 'requireManageCapability',
     channel-level capabilities.
     Note that absence of an explicit anticapability means user has
     capability.""")))
+conf.registerChannelValue(Topic, 'allowSeparatorinTopics',
+    registry.Boolean(True, _("""Determines whether the bot will allow
+    topics containing the defined separator to be used. You may want
+    to disable this if you are signing all topics by nick (see the 'format'
+    option for ways to adjust this).""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
