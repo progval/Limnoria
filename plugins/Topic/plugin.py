@@ -63,7 +63,8 @@ def canChangeTopic(irc, msg, args, state):
 
 def getTopic(irc, msg, args, state, format=True):
     separator = state.cb.registryValue('separator', state.channel)
-    if separator in args[0]:
+    if separator in args[0] and not \
+        state.cb.registryValue('allowSeparatorinTopics', state.channel):
         state.errorInvalid('topic', args[0],
                            format(_('The topic must not include %q.'),
                                   separator))
