@@ -29,8 +29,15 @@
 
 from supybot.test import *
 
-class QuoteTestCase(PluginTestCase):
-    plugins = ('Quote',)
+class QuoteTestCase(ChannelPluginTestCase):
+    plugins = ('Quote', 'User')
 
+    def testReplace(self):
+        self.feedMsg('register testuser moo', to=self.nick, frm=self.prefix)
+        _ = self.getMsg(' ')
+        self.assertNotError("quote add hello")
+        self.assertNotError("quote replace 1 goodbye")
+        self.assertRegexp("quote get 1", "goodbye")
+        self.assertError("quote replace 5 afsdafas") # non-existant
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
