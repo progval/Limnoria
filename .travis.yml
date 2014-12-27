@@ -15,8 +15,6 @@ script:
   - echo $TRAVIS_PYTHON_VERSION
   - python setup.py install
   - supybot-test test --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
-after_success:
-    - if [ "$TRAVIS_PYTHON_VERSION" = "3.4" ]; then bash .travis.runonce.bash;fi
 notifications:
     email: false
 matrix:
