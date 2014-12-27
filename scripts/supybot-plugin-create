@@ -101,7 +101,8 @@ try:
 except ImportError:
     # Placeholder that allows to run the plugin on a bot
     # without the i18n module
-    _ = lambda x:x
+    _ = lambda x: x
+
 
 class %s(callbacks.Plugin):
     """%s"""
@@ -125,7 +126,8 @@ try:
 except:
     # Placeholder that allows to run the plugin on a bot
     # without the i18n module
-    _ = lambda x:x
+    _ = lambda x: x
+
 
 def configure(advanced):
     # This will be called by supybot to configure this module.  advanced is
@@ -193,6 +195,7 @@ testTemplate = '''
 %s
 
 from supybot.test import *
+
 
 class %sTestCase(PluginTestCase):
     plugins = (%r,)
