@@ -39,18 +39,20 @@ try:
 except ImportError:
     # Placeholder that allows to run the plugin on a bot
     # without the i18n module
-    _ = lambda x:x
+    _ = lambda x: x
 
-try: # Python 3
+
+try:  # Python 3
     from urllib.parse import urlencode
-except ImportError: # Python 2
+except ImportError:  # Python 2
     from urllib import urlencode
 try:
     from bs4 import BeautifulSoup
 except ImportError:
     raise ImportError("Beautiful Soup 4 is required for this plugin: get it"
-        " at http://www.crummy.com/software/BeautifulSoup/bs4/doc/"
-        "#installing-beautiful-soup")
+                      " at http://www.crummy.com/software/BeautifulSoup/bs4"
+                      "/doc/#installing-beautiful-soup")
+
 
 class DDG(callbacks.Plugin):
     """Searches for results on DuckDuckGo."""
@@ -60,7 +62,7 @@ class DDG(callbacks.Plugin):
         """<query>
 
         Searches for <query> on DuckDuckGo (web search)."""
-        url = "https://duckduckgo.com/lite?" + urlencode({"q":text})
+        url = "https://duckduckgo.com/lite?" + urlencode({"q": text})
         try:
             data = utils.web.getUrl(url).decode("utf-8")
         except utils.web.Error as e:
@@ -75,7 +77,8 @@ class DDG(callbacks.Plugin):
                 continue
             try:
                 # 1) Get a result snippet.
-                snippet = res.parent.next_sibling.next_sibling.find_all("td")[-1]
+                snippet = res.parent.next_sibling.next_sibling.\
+                    find_all("td")[-1]
                 # 2) Fetch the result link.
                 link = res.a.get('href')
                 snippet = snippet.text.strip()
