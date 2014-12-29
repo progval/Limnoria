@@ -225,6 +225,12 @@ class MiscTestCase(ChannelPluginTestCase):
             self.assertIsNot(m, None)
             self.assertNotIn('more', m.args[1])
 
+    def testClearMores(self):
+        self.assertRegexp('echo %s' % ('abc'*700), 'more')
+        self.assertRegexp('more', 'more')
+        self.assertNotError('clearmores')
+        self.assertError('more')
+
     def testInvalidCommand(self):
         self.assertError('echo []')
 

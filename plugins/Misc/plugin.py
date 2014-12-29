@@ -606,6 +606,15 @@ class Misc(callbacks.Plugin):
     completenick = wrap(completenick, ['channel', 'something',
                                        getopts({'match-case':''})])
 
+    @internationalizeDocstring
+    def clearmores(self, irc, msg, args):
+        """takes no arguments
+
+        Clears all mores for the current network."""
+        irc._mores.clear()
+        irc.replySuccess()
+    clearmores = wrap(clearmores, ['admin'])
+
 Class = Misc
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
