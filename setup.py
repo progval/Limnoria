@@ -120,7 +120,7 @@ setup(
 
     install_requires=[
         # Time plugin
-        'python-dateutil <2.0,>=1.3',
+        'python-dateutil !=2.0,>=1.3',
         'feedparser',
         ],
 
