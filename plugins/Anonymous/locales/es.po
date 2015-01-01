@@ -1,0 +1,155 @@
+# Spanish translation for limnoria
+# Copyright (c) 2015 Limnoria contributors 2015
+# This file is distributed under the same license as the Limnoria package.
+# Aaron Farias <timido@ubuntu.com>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: limnoria\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-12-24 15:42+0000\n"
+"PO-Revision-Date: 2015-01-01 16:56+0000\n"
+"Last-Translator: Aaron Farias <Unknown>\n"
+"Language-Team: Spanish <es@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2015-01-01 17:04+0000\n"
+"X-Generator: Launchpad (build 17286)\n"
+
+#: config.py:49
+msgid ""
+"Determines whether\n"
+"    the bot should require people trying to use this plugin to be in the\n"
+"    channel they wish to anonymously send to."
+msgstr ""
+"Determina si\n"
+"el robot debe requerir la gente tratando de utilizar este plugin para poder "
+"estar en el\n"
+"canal que desean enviar anónimamente."
+
+#: config.py:53
+msgid ""
+"Determines whether the bot should require\n"
+"    people trying to use this plugin to be registered."
+msgstr ""
+"Determina si el bot debe exigir\n"
+"personas que tratan de utilizar este plugin para ser registrados."
+
+#: config.py:56
+msgid ""
+"Determines what capability (if any) the bot should\n"
+"    require people trying to use this plugin to have."
+msgstr ""
+"Determina lo que la capacidad (si lo hay) que el bot debe\n"
+"requieren que las personas tratando de usar este plugin para poder tener."
+
+#: config.py:59
+msgid ""
+"Determines whether the bot will allow the\n"
+"    \"tell\" command to be used. If true, the bot will allow the \"tell\"\n"
+"    command to send private messages to other users."
+msgstr ""
+"Determina si el bot permitirá al\n"
+"Comando \"decirle\" a utilizar. De ser cierto, el bot le permitirá al "
+"\"decir\"\n"
+"comando para enviar mensajes privados a otros usuarios."
+
+#: plugin.py:41
+#, docstring
+msgid ""
+"This plugin allows users to act through the bot anonymously.  The 'do'\n"
+"    command has the bot perform an anonymous action in a given channel, and\n"
+"    the 'say' command allows other people to speak through the bot.  Since\n"
+"    this can be fairly well abused, you might want to set\n"
+"    supybot.plugins.Anonymous.requireCapability so only users with that\n"
+"    capability can use this plugin.  For extra security, you can require "
+"that\n"
+"    the user be *in* the channel they are trying to address anonymously "
+"with\n"
+"    supybot.plugins.Anonymous.requirePresenceInChannel, or you can require\n"
+"    that the user be registered by setting\n"
+"    supybot.plugins.Anonymous.requireRegistration.\n"
+"    "
+msgstr ""
+"Este plugin permite a los usuarios actúan a través de la bot anónima. El "
+"\"hacer\"\n"
+"comando tiene el robot realice una acción anónimo en un canal determinado, "
+"y\n"
+"el 'dicen' comando permite que otras personas hablan a través de la bot. "
+"Desde\n"
+"esto puede ser bastante maltratado, es posible que desee establecer\n"
+"supybot.plugins.Anonymous.requireCapability tan sólo los usuarios con que\n"
+"capacidad puede utilizar este plugin. Para mayor seguridad, se puede "
+"requerir que\n"
+"el usuario ser * en * el canal que están tratando de hacer frente de forma "
+"anónima con\n"
+"supybot.plugins.Anonymous.requirePresenceInChannel, o puede requerir\n"
+"que el usuario se ha registrado mediante el establecimiento de\n"
+"supybot.plugins.Anonymous.requireRegistration.\n"
+"    "
+
+#: plugin.py:65
+msgid "You must be in %s to %q in there."
+msgstr "Usted debe estar en% s para% q allí."
+
+#: plugin.py:69
+msgid "I'm lobotomized in %s."
+msgstr "Estoy lobotomizado en%s."
+
+#: plugin.py:72
+msgid ""
+"That channel has set its capabilities so as to disallow the use of this "
+"plugin."
+msgstr ""
+"Ese canal ha puesto sus capacidades a fin de no permitir el uso de este "
+"plugin."
+
+#: plugin.py:75
+msgid ""
+"This command is disabled (supybot.plugins.Anonymous.allowPrivateTarget is "
+"False)."
+msgstr ""
+"Este comando está desactivado (supybot.plugins.Anonymous.allowPrivateTarget "
+"es falso)."
+
+#: plugin.py:80
+#, docstring
+msgid ""
+"<channel> <text>\n"
+"\n"
+"        Sends <text> to <channel>.\n"
+"        "
+msgstr ""
+"<Canal> <texto>\n"
+"\n"
+"Envía <texto> al <canal>.\n"
+"        "
+
+#: plugin.py:92
+#, docstring
+msgid ""
+"<nick> <text>\n"
+"\n"
+"        Sends <text> to <nick>.  Can only be used if\n"
+"        supybot.plugins.Anonymous.allowPrivateTarget is True.\n"
+"        "
+msgstr ""
+"<Nick> <texto>\n"
+"\n"
+"Envía <texto> a <nick>. Sólo puede utilizarse si\n"
+"supybot.plugins.Anonymous.allowPrivateTarget es True.\n"
+"        "
+
+#: plugin.py:106
+#, docstring
+msgid ""
+"<channel> <action>\n"
+"\n"
+"        Performs <action> in <channel>.\n"
+"        "
+msgstr ""
+"<Canal> <acción>\n"
+"\n"
+"Realiza <action> en <channel>.\n"
+"        "

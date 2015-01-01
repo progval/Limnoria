@@ -1,7 +1,7 @@
 # Spanish translation for limnoria
-# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
-# This file is distributed under the same license as the limnoria package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# Copyright (c) 2015 Limnoria Contributors 2015
+# This file is distributed under the same license as the Limnoria package.
+# Aaron Farias <timido@ubuntu.com>, 2015.
 #
 msgid ""
 msgstr ""
