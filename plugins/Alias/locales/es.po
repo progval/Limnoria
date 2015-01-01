@@ -1,0 +1,150 @@
+# Spanish translation for limnoria
+# Copyright (c) 2015 Limnoria contributors 2015
+# This file is distributed under the same license as the Limnoria package.
+# Aaron Farias <timido@ubuntu.com>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: limnoria\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-12-24 15:42+0000\n"
+"PO-Revision-Date: 2015-01-01 16:43+0000\n"
+"Last-Translator: Aaron Farias <Unknown>\n"
+"Language-Team: Spanish <es@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2015-01-01 17:00+0000\n"
+"X-Generator: Launchpad (build 17286)\n"
+
+#: plugin.py:46
+#, docstring
+msgid ""
+"Returns the channel the msg came over or the channel given in args.\n"
+"\n"
+"    If the channel was given in args, args is modified (the channel is\n"
+"    removed).\n"
+"    "
+msgstr ""
+"Devuelve el  msg del canal vino o el canal dado en args.\n"
+"\n"
+"Si el canal se le dio en args, args es modificado (el canal está\n"
+"eliminado).\n"
+"    "
+
+#: plugin.py:105
+#, docstring
+msgid ""
+"Encodes [a-z0-9.]+ into [a-z][a-z0-9].\n"
+"    Format: a<number of escaped chars>a(<index>d)+<word without dots>."
+msgstr ""
+"Codifica [a-z0-9.] + En [az] [a-z0-9].\n"
+"Formato: un <número de caracteres escapados> a (<índice> d) + <palabra sin "
+"puntos>."
+
+#: plugin.py:221
+msgid " at least"
+msgstr " al menos"
+
+#: plugin.py:223 plugin.py:228
+msgid ""
+"<an alias,%s %n>\n"
+"\n"
+"Alias for %q."
+msgstr ""
+"<Un alias,%s %n>\n"
+"\n"
+"Alias ​​para %q."
+
+#: plugin.py:224 plugin.py:229
+msgid "argument"
+msgstr "argumento"
+
+#: plugin.py:234
+#, docstring
+msgid ""
+"This plugin allows users to define aliases to commands and combinations\n"
+"    of commands (via nesting)."
+msgstr ""
+"Este plugin permite a los usuarios definir los alias de comandos y "
+"combinaciones\n"
+"de comandos (a través de anidación)."
+
+#: plugin.py:299
+#, docstring
+msgid ""
+"<alias>\n"
+"\n"
+"        Locks an alias so that no one else can change it.\n"
+"        "
+msgstr ""
+"<Alias>\n"
+"\n"
+"Bloquea un alias para que nadie más puede cambiarlo.\n"
+"\t\tHay saltos de línea aquí. Cada uno\n"
+"        "
+
+#: plugin.py:308 plugin.py:322
+msgid "There is no such alias."
+msgstr "No hay tal alias."
+
+#: plugin.py:313
+#, docstring
+msgid ""
+"<alias>\n"
+"\n"
+"        Unlocks an alias so that people can define new aliases over it.\n"
+"        "
+msgstr ""
+"<Alias>\n"
+"\n"
+"Desbloquea un alias para que las personas puedan definir nuevos alias sobre "
+"él.\n"
+"        "
+
+#: plugin.py:334
+msgid "That name isn't valid.  Try %q instead."
+msgstr "Ese nombre no es válido. Trate% q en vez."
+
+#: plugin.py:379
+#, docstring
+msgid ""
+"<name> <command>\n"
+"\n"
+"        Defines an alias <name> that executes <command>.  The <command>\n"
+"        should be in the standard \"command argument [nestedcommand "
+"argument]\"\n"
+"        arguments to the alias; they'll be filled with the first, second, "
+"etc.\n"
+"        arguments.  $1, $2, etc. can be used for required arguments.  @1, "
+"@2,\n"
+"        etc. can be used for optional arguments.  $* simply means \"all\n"
+"        remaining arguments,\" and cannot be combined with optional "
+"arguments.\n"
+"        "
+msgstr ""
+"<Nombre> <comando>\n"
+"\n"
+"Define un alias <nombre> que ejecuta <command>. El <comando>\n"
+"debe estar en el estándar \"argumento de comando [argumento "
+"nestedcommand]\"\n"
+"argumentos al alias; que van a ser llenados con el primero, segundo, etc.\n"
+"argumentos. $ 1, $ 2, etc. puede ser usado para los argumentos necesarios. @ "
+"1, @ 2,\n"
+"etc. puede ser utilizado para argumentos opcionales. $ * Simplemente "
+"significa \"todo\n"
+"restantes argumentos, \"y no puede ser combinado con argumentos opcionales.\n"
+"        "
+
+#: plugin.py:402
+#, docstring
+msgid ""
+"<name>\n"
+"\n"
+"        Removes the given alias, if unlocked.\n"
+"        "
+msgstr ""
+"<Nombre>\n"
+"\n"
+"Elimina los alias dados, si desbloqueado.\n"
+"        "
