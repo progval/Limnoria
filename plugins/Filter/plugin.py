@@ -79,7 +79,7 @@ class Filter(callbacks.Plugin):
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
-                       'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
+                       'supa1337', 'stripcolor', 'aol', 'rainbow', 'spellit',
                        'hebrew', 'undup', 'gnu', 'shrink', 'uniud']
     @internationalizeDocstring
     def outfilter(self, irc, msg, args, channel, command):
