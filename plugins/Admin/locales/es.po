@@ -1,0 +1,275 @@
+# Spanish translation for limnoria
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the limnoria package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: limnoria\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-12-24 15:42+0000\n"
+"PO-Revision-Date: 2015-01-01 16:35+0000\n"
+"Last-Translator: Aaron Farias <Unknown>\n"
+"Language-Team: Spanish <es@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2015-01-01 16:48+0000\n"
+"X-Generator: Launchpad (build 17286)\n"
+
+#: plugin.py:46
+#, docstring
+msgid ""
+"This plugin provides access to administrative commands, such as\n"
+"    adding capabilities, managing ignore lists, and joining channels.\n"
+"    This is a core Supybot plugin that should not be removed!"
+msgstr ""
+"Este plugin proporciona acceso a los comandos de administración, tales como\n"
+"la adición de capacidades, la gestión ignoran listas y canales de unión.\n"
+"Se trata de un complemento del núcleo Supybot que no se debe quitar!"
+
+#: plugin.py:57
+#, docstring
+msgid "Nick/channel temporarily unavailable."
+msgstr "Nick/canal disponible temporalmente."
+
+#: plugin.py:75
+msgid "Cannot join %s, it's full."
+msgstr "No puede unirse a %s, está lleno."
+
+#: plugin.py:83
+msgid "Cannot join %s, I was not invited."
+msgstr "No puede unirse a %s, no me invitaron."
+
+#: plugin.py:91
+msgid "Cannot join %s, I am banned."
+msgstr "No pudo unirse a %s, estoy baneado."
+
+#: plugin.py:99
+msgid "Cannot join %s, my keyword was wrong."
+msgstr "No puede unirse a %s, mi palabra estaba mal."
+
+#: plugin.py:107 plugin.py:116
+msgid "Cannot join %s, I'm not identified with NickServ."
+msgstr "No puede unirse a %s, yo no estoy identificado con NickServ."
+
+#: plugin.py:146
+#, docstring
+msgid ""
+"<channel> [<key>]\n"
+"\n"
+"        Tell the bot to join the given channel.  If <key> is given, it is "
+"used\n"
+"        when attempting to join the channel.\n"
+"        "
+msgstr ""
+"<Canal> [<key>]\n"
+"\n"
+"Dígale al bot para unirse al canal dado. Si <key> se da, que se utiliza\n"
+"al intentar entrar al canal.\n"
+"        "
+
+#: plugin.py:159
+msgid "I'm already too close to maximum number of channels for this network."
+msgstr "Ya estoy demasiado cerca de número máximo de canales para esta red."
+
+#: plugin.py:168
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the channels the bot is on.  Must be given in private, in "
+"order\n"
+"        to protect the secrecy of secret channels.\n"
+"        "
+msgstr ""
+"no tiene argumentos\n"
+"\n"
+"Devuelve los canales del bot está encendido. Debe ser dado en privado, con "
+"el fin\n"
+"para proteger el secreto de canales secretos.\n"
+"        "
+
+#: plugin.py:178
+msgid "I'm not currently in any channels."
+msgstr "No estoy actualmente en ningún canal."
+
+#: plugin.py:184
+msgid "My connection is restricted, I can't change nicks."
+msgstr "Mi conexión es restringida, no puedo cambiar nicks."
+
+#: plugin.py:191
+msgid "Someone else is already using that nick."
+msgstr "Alguien más ya está utilizando ese nick."
+
+#: plugin.py:198
+msgid "I can't change nick, I'm currently banned in %s."
+msgstr "No puedo cambiar de nick, actualmente Estoy prohibido en %s."
+
+#: plugin.py:206
+msgid "I can't change nicks, the server said %q."
+msgstr "No puedo cambiar de nicks, dijo el servidor %q."
+
+#: plugin.py:220
+#, docstring
+msgid ""
+"[<nick>] [<network>]\n"
+"\n"
+"        Changes the bot's nick to <nick>.  If no nick is given, returns the\n"
+"        bot's current nick.\n"
+"        "
+msgstr ""
+"[<nick>] [<red>]\n"
+"\n"
+"Cambia el nick del bot a <nick>. Si no se da nick, devuelve el\n"
+"actual nick del bot.\n"
+"        "
+
+#: plugin.py:237
+#, docstring
+msgid ""
+"[<channel>] [<reason>]\n"
+"\n"
+"        Tells the bot to part the list of channels you give it.  <channel> "
+"is\n"
+"        only necessary if you want the bot to part a channel other than the\n"
+"        current channel.  If <reason> is specified, use it as the part\n"
+"        message.\n"
+"        "
+msgstr ""
+"[<canal>] [<razón>]\n"
+"\n"
+"Le dice al bot a parte de la lista de canales que le des. <canal> es\n"
+"sólo es necesario si desea que el bot a desprenderse de un canal que no sea "
+"el\n"
+"canal actual. Si <razón> se especifica, lo utilizan como parte\n"
+"mensaje.\n"
+"        "
+
+#: plugin.py:255
+msgid "I'm not in %s."
+msgstr "No estoy en %s."
+
+#: plugin.py:267
+#, docstring
+msgid ""
+"<name|hostmask> <capability>\n"
+"\n"
+"            Gives the user specified by <name> (or the user to whom "
+"<hostmask>\n"
+"            currently maps) the specified capability <capability>\n"
+"            "
+msgstr ""
+"<nombre | hostmask> <capacidad>\n"
+"\n"
+"Le da al usuario especificado por <nombre> (o el usuario a quien <hostmask>\n"
+"Actualmente los mapas) la capacidad especificada <capacidad>\n"
+"            "
+
+#: plugin.py:287
+msgid ""
+"The \"owner\" capability can't be added in the bot.  Use the supybot-adduser "
+"program (or edit the users.conf file yourself) to add an owner capability."
+msgstr ""
+"La capacidad de \"propietario\" no se puede añadir en el bot. Utilice el "
+"programa de usuario Supybot-add (o editar el users.conf archivo usted mismo) "
+"para añadir una capacidad de propietario."
+
+#: plugin.py:298
+msgid "You can't add capabilities you don't have."
+msgstr "No se puede agregar capacidades que usted no tiene."
+
+#: plugin.py:303
+#, docstring
+msgid ""
+"<name|hostmask> <capability>\n"
+"\n"
+"            Takes from the user specified by <name> (or the user to whom\n"
+"            <hostmask> currently maps) the specified capability "
+"<capability>\n"
+"            "
+msgstr ""
+"<Nombre | hostmask> <capacidad>\n"
+"\n"
+"Toma del usuario especificado por <nombre> (o el usuario a quien\n"
+"<Hostmask> Actualmente los mapas) la capacidad especificada <capacidad>\n"
+"            "
+
+#: plugin.py:315
+msgid "That user doesn't have that capability."
+msgstr "Ese usuario no tiene esa capacidad."
+
+#: plugin.py:317
+msgid "You can't remove capabilities you don't have."
+msgstr "No se puede quitar capacidades que usted no tiene."
+
+#: plugin.py:325
+#, docstring
+msgid ""
+"<hostmask|nick> [<expires>]\n"
+"\n"
+"            This will set a persistent ignore on <hostmask> or the hostmask\n"
+"            currently associated with <nick>. <expires> is an optional "
+"argument\n"
+"            specifying when (in \"seconds from now\") the ignore will "
+"expire; if\n"
+"            it isn't given, the ignore will never automatically expire.\n"
+"            "
+msgstr ""
+"<Hostmask | nick> [<expira>]\n"
+"\n"
+"Esto establecerá una persistente ignoran en <hostmask> o la hostmask\n"
+"actualmente asociados con <nick>. <Expira> es un argumento opcional\n"
+"especificar cuándo (en \"segundo a partir de ahora\") expirará el ignorar; "
+"si\n"
+"no se le da, el ignorar nunca expirará automáticamente.\n"
+"            "
+
+#: plugin.py:338
+#, docstring
+msgid ""
+"<hostmask|nick>\n"
+"\n"
+"            This will remove the persistent ignore on <hostmask> or the\n"
+"            hostmask currently associated with <nick>.\n"
+"            "
+msgstr ""
+"<Hostmask | nick>\n"
+"\n"
+"Esto eliminará la persistente ignoran en <hostmask> o la\n"
+"hostmask actualmente asociada con <nick>.\n"
+"            "
+
+#: plugin.py:347
+msgid "%s wasn't in the ignores database."
+msgstr "%S no estaba en la base de datos ignorados."
+
+#: plugin.py:352
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"            Lists the hostmasks that the bot is ignoring.\n"
+"            "
+msgstr ""
+"no tiene argumentos\n"
+"\n"
+"Enumera los sus hosts que el bot está ignorando.\n"
+"            "
+
+#: plugin.py:360
+msgid "I'm not currently globally ignoring anyone."
+msgstr "No estoy actualmente haciendo caso omiso a nivel mundial a nadie."
+
+#: plugin.py:364
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Clears the current send queue for this network.\n"
+"        "
+msgstr ""
+"no tiene argumentos\n"
+"\n"
+"Borra la cola de envío actual de esta red.\n"
+"        "
