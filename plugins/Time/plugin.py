@@ -159,15 +159,16 @@ class Time(callbacks.Plugin):
                                     TIME.time)])
 
     @internationalizeDocstring
-    def time(self, irc, msg, args, format, seconds):
-        """[<format>] [<seconds since epoch>]
+    def time(self, irc, msg, args, channel, format, seconds):
+        """[<channel>] [<format>] [<seconds since epoch>]
 
         Returns the current time in <format> format, or, if <format> is not
         given, uses the configurable format for the current channel.  If no
-        <seconds since epoch> time is given, the current time is used.
+        <seconds since epoch> time is given, the current time is used. If
+        <channel> is given without <format>, uses the format for <channel>.
         """
         if not format:
-            format = self.registryValue('format', msg.args[0])
+            format = self.registryValue('format', channel or msg.args[0])
         if tzlocal:
             irc.reply(datetime.fromtimestamp(seconds, tzlocal()).strftime(format))
         else:
@@ -175,7 +176,8 @@ class Time(callbacks.Plugin):
             # including at least up to 2.7.5 and 3.2.3. Install dateutil if you
             # can't upgrade Python.
             irc.reply(time.strftime(format, time.localtime(seconds)))
-    time = wrap(time, [optional('nonInt'), additional('float', TIME.time)])
+    time = wrap(time, [optional('channel'), optional('nonInt'),
+                       additional('float', TIME.time)])
 
     @internationalizeDocstring
     def elapsed(self, irc, msg, args, seconds):
