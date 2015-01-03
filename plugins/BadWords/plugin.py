@@ -83,8 +83,8 @@ class BadWords(callbacks.Privmsg):
                         if c.isHalfopPlus(msg.nick) or \
                                 ircdb.checkCapability(msg.prefix, cap):
                             self.log.debug("Not kicking %s from %s, because "
-                                           "they are immune.", msg.nick,
-                                           channel)
+                                           "they are halfop+ or can't be "
+                                           "kicked.", msg.nick, channel)
                         else:
                             message = self.registryValue('kick.message', channel)
                             irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
