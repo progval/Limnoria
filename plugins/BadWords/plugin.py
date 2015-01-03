@@ -29,7 +29,6 @@
 ###
 
 import re
-import math
 import time
 
 import supybot.conf as conf
@@ -77,11 +76,18 @@ class BadWords(callbacks.Privmsg):
             self.updateRegexp(channel)
             s = ircutils.stripFormatting(msg.args[1])
             if ircutils.isChannel(channel) and self.registryValue('kick', channel):
-                if self.regexp.search(s):
-                    if irc.nick in irc.state.channels[channel].ops or \
-                            irc.nick in irc.state.channels[channel].halfops:
-                        message = self.registryValue('kick.message', channel)
-                        irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
+                if self.words and self.regexp.search(s):
+                    c = irc.state.channels[channel]
+                    cap = ircdb.makeChannelCapability(channel, 'op')
+                    if c.isHalfopPlus(irc.nick):
+                        if c.isHalfopPlus(msg.nick) or \
+                                ircdb.checkCapability(msg.prefix, cap):
+                            self.log.debug("Not kicking %s from %s, because "
+                                           "they are immune.", msg.nick,
+                                           channel)
+                        else:
+                            message = self.registryValue('kick.message', channel)
+                            irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
                     else:
                         self.log.warning('Should kick %s from %s, but not opped.',
                                          msg.nick, channel)
