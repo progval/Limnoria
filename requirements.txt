@@ -6,3 +6,4 @@ feedparser
 sqlalchemy
 SocksiPy-branch
 mock
+ecdsa

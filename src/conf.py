@@ -344,6 +344,10 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
     registerGlobalValue(sasl, 'password', registry.String(sasl_password,
         _("""Determines what SASL password will be used on %s.""") \
         % name, private=True))
+    registerGlobalValue(sasl, 'ecdsa_key', registry.String('',
+        _("""Determines what SASL ECDSA key (if any) will be used on %s.
+        The public key must be registered with NickServ for SASL
+        ECDSA-NIST256P-CHALLENGE to work.""") % name, private=False))
     registerGlobalValue(network, 'socksproxy', registry.String('',
         _("""If not empty, determines the hostname of the socks proxy that
         will be used to connect to this network.""")))
