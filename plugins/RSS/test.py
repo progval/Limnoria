@@ -96,6 +96,7 @@ class RSSTestCase(ChannelPluginTestCase):
             with conf.supybot.plugins.RSS.waitPeriod.context(1):
                 time.sleep(1.1)
                 self.assertNoResponse(' ')
+                self.assertNoResponse(' ')
                 feedparser._open_resource = constant(xkcd_new)
                 self.assertNoResponse(' ')
                 time.sleep(1.1)
