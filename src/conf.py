@@ -371,7 +371,7 @@ registerGroup(supybot.reply, 'format')
 registerChannelValue(supybot.reply.format, 'url',
     registry.String('<%s>', _("""Determines how urls should be formatted.""")))
 registerChannelValue(supybot.reply.format, 'time',
-    registry.String('%Y-%m-%d %H:%M:%S%z', _("""Determines how timestamps
+    registry.String('%Y-%m-%dT%H:%M:%S%z', _("""Determines how timestamps
     printed for human reading should be formatted. Refer to the Python
     documentation for the time module to see valid formatting characters for
     time formats.""")))
