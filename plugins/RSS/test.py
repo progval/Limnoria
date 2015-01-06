@@ -45,6 +45,9 @@ xkcd_new = """<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0"><channel><title>xkcd.com</title><link>http://xkcd.com/</link><description>xkcd.com: A webcomic of romance and math humor.</description><language>en</language><item><title>Chaos</title><link>http://xkcd.com/1399/</link><description>&lt;img src="http://imgs.xkcd.com/comics/chaos.png" title="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" alt="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" /&gt;</description><pubDate>Fri, 25 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1399/</guid></item><item><title>Snake Facts</title><link>http://xkcd.com/1398/</link><description>&lt;img src="http://imgs.xkcd.com/comics/snake_facts.png" title="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." alt="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." /&gt;</description><pubDate>Wed, 23 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1398/</guid></item></channel></rss>
 """
 
+html_parsed = """<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>parse.test</title><link>http://parse.test/</link><description>parse.test</description><language>en-US</language><item><title>&#xe9;&#xe1;&#xed;&#xed;&#x159;&#xe1;&#xed;&#x10d;&#xed;&#x161;</title><link>http://parse.test/{GUID}</link><description>&#xe9;&#xe1;&#xed;&#xed;&#x159;&#xe1;&#xed;&#x10d;&#xed;&#x161;</description><guid>http://parse.test/{GUID}</guid></item></channel></rss>
+"""
 
 def constant(content):
     if sys.version_info[0] >= 3:
@@ -136,6 +139,27 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss remove xkcd')
             self._feedMsg('rss remove xkcdsec')
+            feedparser._open_resource = old_open
+
+    def testHTMLParseFeed(self):
+        unescaped=u'\xe9\xe1\xed\xed\u0159\xe1\xed\u010d\xed\u0161'
+        if sys.version_info[0] < 3:
+            unescaped = unescaped.encode('utf-8')
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(html_parsed.format(GUID='1'))
+        try:
+            self.assertNotError('rss add parse_test http://parse.test/')
+            self.assertNotError('rss announce add parse_test')
+            self.assertNotError(' ')
+            with conf.supybot.plugins.RSS.waitPeriod.context(1):
+                time.sleep(1.1)
+                self.assertNoResponse(' ')
+                feedparser._open_resource = constant(html_parsed.format(GUID='2'))
+                self.assertNoResponse(' ')
+                time.sleep(1.1)
+                self.assertRegexp(' ', '^.*{0}.*$'.format(unescaped))
+        finally:
+            self._feedMsg('rss remove parse_test')
             feedparser._open_resource = old_open
 
     if network:
