@@ -1,0 +1,136 @@
+# Spanish translation for Limnoria
+# Copyright (c) 2015 Limnoria 2015
+# This file is distributed under the same license as the Limnoria package.
+# Aaron Farias <timido@ubuntu.com>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: limnoria\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-12-24 15:43+0000\n"
+"PO-Revision-Date: 2015-01-02 18:47+0000\n"
+"Last-Translator: Aaron Farias <Unknown>\n"
+"Language-Team: Spanish <es@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2015-01-02 18:48+0000\n"
+"X-Generator: Launchpad (build 17286)\n"
+
+#: config.py:46
+msgid ""
+"Determines whether this plugin is enabled.\n"
+"    "
+msgstr ""
+"Determina si este plugin está habilitado.\n"
+"    "
+
+#: config.py:49
+msgid ""
+"Determines whether this plugin will automode\n"
+"    owners even if they don't have op/halfop/voice/whatever capability."
+msgstr ""
+"Determina si este plugin AutoMode\n"
+"propietarios incluso si no tienen  lo que sea la capacidad op/halfop/voz."
+
+#: config.py:52
+msgid ""
+"Determines whether the bot will\n"
+"    check for 'alternative capabilities' (ie. autoop, autohalfop,\n"
+"    autovoice) in addition to/instead of classic ones."
+msgstr ""
+"Determina si el bot\n"
+"comprobar 'capacidades alternativas \"(es decir. autoop, autohalfop,\n"
+"autovoz) además de/en lugar de los clásicos."
+
+#: config.py:56
+msgid ""
+"Determines whether the bot will \"fall\n"
+"    through\" to halfop/voicing when auto-opping is turned off but\n"
+"    auto-halfopping/voicing are turned on."
+msgstr ""
+"Determina si el bot \"caerá\n"
+"a través \"de HALFOP / sonoridad cuando auto-Op está apagado pero\n"
+"auto-halfop a si mismos / sonido están activados."
+
+#: config.py:60
+msgid ""
+"Determines whether the bot will automatically\n"
+"    op people with the <channel>,op capability when they join the channel.\n"
+"    "
+msgstr ""
+"Determina si el bot automáticamente\n"
+"dar  op con el <channel>, capacidad de op cuando se unen al canal.\n"
+"    "
+
+#: config.py:64
+msgid ""
+"Determines whether the bot will automatically\n"
+"    halfop people with the <channel>,halfop capability when they join the\n"
+"    channel."
+msgstr ""
+"Determina si el bot automáticamente\n"
+"personas HALFOP con el <channel>, capacidad halfop cuando se unen a la\n"
+"canal."
+
+#: config.py:68
+msgid ""
+"Determines whether the bot will automatically\n"
+"    voice people with the <channel>,voice capability when they join the\n"
+"    channel."
+msgstr ""
+"Determina si el bot automáticamente\n"
+"gente de voz con el <channel>, capacidad de voz cuando se unen a la\n"
+"canal."
+
+#: config.py:72
+msgid ""
+"Determines whether the bot will automatically\n"
+"    ban people who join the channel and are on the banlist."
+msgstr ""
+"Determina si el bot automáticamente\n"
+"prohibir a la gente que se unen al canal y están en la lista de ban."
+
+#: config.py:75
+msgid ""
+"Determines how many seconds the bot\n"
+"    will automatically ban a person when banning."
+msgstr ""
+"Determina cuántos segundos el bot\n"
+"prohibirá automáticamente a una persona cuando la prohibición."
+
+#: config.py:79
+msgid ""
+"Determines how many seconds the bot will wait\n"
+"    before applying a mode. Has no effect on bans."
+msgstr ""
+"Determina cuántos segundos esperará el bot\n"
+"antes de aplicar un modo. No tiene ningún efecto sobre las prohibiciones."
+
+#: config.py:83
+msgid ""
+"Extra modes that will be\n"
+"    applied to a user. Example syntax: user1+o-v user2+v user3-v"
+msgstr ""
+"Modos adicionales que serán\n"
+"    se aplica a un usuario. Ejemplo de sintaxis: usuario1 + o-v + v usuario2 "
+"usuario3-v"
+
+#: plugin.py:48
+#, docstring
+msgid ""
+"This plugin, when configured, allows the bot to automatically set modes\n"
+"    on users when they join."
+msgstr ""
+"Este plugin, cuando se configura, permite al bot para establecer "
+"automáticamente los modos\n"
+"en los usuarios cuando se unen."
+
+#: plugin.py:80
+#, docstring
+msgid ""
+"Determines whether or not a mode has already\n"
+"                        been applied."
+msgstr ""
+"Determina si un modo ya tiene o \n"
+"ha aplicado."
