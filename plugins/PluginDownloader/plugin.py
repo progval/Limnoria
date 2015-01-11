@@ -34,7 +34,6 @@ import sys
 import json
 import shutil
 import urllib
-import urllib2
 import tarfile
 from cStringIO import StringIO
 
@@ -241,10 +240,6 @@ repositories = {
                                                    'SpiderDave',
                                                    'spidey-supybot-plugins',
                                                    'Plugins',
-                                                   ),
-               'Antibody':         GithubRepository(
-                                                   'Antibody',
-                                                   'supybot-plugins',
                                                    ),
                'doorbot':          GithubRepository(
                                                    'hacklab',
