@@ -131,7 +131,7 @@ class NickAuth(callbacks.Plugin):
                             'network.'), Raise=True)
                 else:
                     irc.error(_('%s has no recognized nick on this '
-                            'network.') % user, Raise=True)
+                            'network.') % user.name, Raise=True)
         list = wrap(list, [optional('networkIrc'),
                            optional('otherUser')])
 
