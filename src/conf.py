@@ -776,14 +776,10 @@ registerGlobalValue(supybot.drivers, 'maxReconnectWait',
 # supybot.directories, for stuff relating to directories.
 ###
 
-# XXX This shouldn't make directories willy-nilly.  As it is now, if it's
-#     configured, it'll still make the default directories, I think.
 class Directory(registry.String):
     def __call__(self):
         # ??? Should we perhaps always return an absolute path here?
         v = super(Directory, self).__call__()
-        if not os.path.exists(v):
-            os.mkdir(v)
         return v
 
     def dirize(self, filename):

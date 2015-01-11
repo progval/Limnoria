@@ -124,7 +124,26 @@ class StdoutStreamHandler(logging.StreamHandler):
 
 
 class BetterFileHandler(logging.FileHandler):
+    def __init__(self, filename):
+        logging.FileHandler.__init__(self, filename, delay=True)
+
+    def _open(self):
+        try:
+            parent_dir = os.path.dirname(self.baseFilename)
+            if not os.path.exists(parent_dir):
+                os.makedirs(parent_dir, 0755)
+
+            return logging.FileHandler._open(self)
+        except (IOError, OSError):
+            raise SystemExit('Error opening messages logfile (%s).  ' \
+              'Generally, this is because you are running Supybot in a directory ' \
+              'you don\'t have permissions to add files in, or you\'re running ' \
+              'Supybot as a different user than you normal do.', self.baseFilename)
+
     def emit(self, record):
+        if self.stream is None:
+            self.stream = self._open()
+
         msg = self.format(record)
         if not hasattr(types, "UnicodeType"): #if no unicode support...
             self.stream.write(msg)
@@ -181,23 +200,10 @@ conf.registerGlobalValue(conf.supybot.directories, 'log',
     logfiles in."""))
 
 _logDir = conf.supybot.directories.log()
-if not os.path.exists(_logDir):
-    os.mkdir(_logDir, 0755)
-
 pluginLogDir = os.path.join(_logDir, 'plugins')
 
-if not os.path.exists(pluginLogDir):
-    os.mkdir(pluginLogDir, 0755)
-
-try:
-    messagesLogFilename = os.path.join(_logDir, 'messages.log')
-    _handler = BetterFileHandler(messagesLogFilename)
-except EnvironmentError as e:
-    raise SystemExit('Error opening messages logfile (%s).  ' \
-          'Generally, this is because you are running Supybot in a directory ' \
-          'you don\'t have permissions to add files in, or you\'re running ' \
-          'Supybot as a different user than you normal do.  The original ' \
-          'error was: %s' % (messagesLogFilename, utils.gen.exnToString(e)))
+messagesLogFilename = os.path.join(_logDir, 'messages.log')
+_handler = BetterFileHandler(messagesLogFilename)
 
 # These are public.
 formatter = Formatter('NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
@@ -328,6 +334,8 @@ def getPluginLogger(name):
         return _logger
     log = logging.getLogger('supybot.plugins.%s' % name)
     if not log.handlers:
+        if not os.path.exists(pluginLogDir):
+            os.makedirs(pluginLogDir, 0755)
         filename = os.path.join(pluginLogDir, '%s.log' % name)
         handler = BetterFileHandler(filename)
         handler.setLevel(-1)

@@ -247,6 +247,7 @@ def main():
     i18n.reloadLocales()
     import supybot.log as log
     log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
+    log._handler.setLevel(100)
     import supybot.conf as conf
     i18n.import_conf() # It imports the real conf module
     import supybot.plugin as plugin
