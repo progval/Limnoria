@@ -250,6 +250,10 @@ class Karma(callbacks.Plugin):
             for s in inc:
                 if thing.endswith(s):
                     thing = thing[:-len(s)]
+                    # Don't reply if the target isn't a nick
+                    if thing.lower() not in map(ircutils.toLower,
+                            irc.state.channels[channel].users):
+                        return
                     if ircutils.strEqual(thing, msg.nick) and \
                         not self.registryValue('allowSelfRating', channel):
                         irc.error(_('You\'re not allowed to adjust your own karma.'))
@@ -259,6 +263,9 @@ class Karma(callbacks.Plugin):
             for s in dec:
                 if thing.endswith(s):
                     thing = thing[:-len(s)]
+                    if thing.lower() not in map(ircutils.toLower,
+                            irc.state.channels[channel].users):
+                        return
                     if ircutils.strEqual(thing, msg.nick) and \
                         not self.registryValue('allowSelfRating', channel):
                         irc.error(_('You\'re not allowed to adjust your own karma.'))
