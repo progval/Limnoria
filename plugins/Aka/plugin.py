@@ -711,10 +711,11 @@ class Aka(callbacks.Plugin):
     importaliasdatabase = wrap(importaliasdatabase, ['owner'])
 
     def list(self, irc, msg, args, optlist):
-        """[--channel <#channel>]
+        """[--channel <#channel>] [--keys]
 
         Lists all Akas defined for <channel>. If <channel> is not specified,
-        lists all global Akas."""
+        lists all global Akas. If --keys is given, lists only the Aka names
+        and not their commands."""
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
@@ -724,13 +725,18 @@ class Aka(callbacks.Plugin):
                 channel = arg
         aka_list = self._db.get_aka_list(channel)
         if aka_list:
-            aka_values = [self._db.get_alias(channel, aka) for aka in aka_list]
-            s = ('{0}: "{1}"'.format(ircutils.bold(k), v) for (k, v) in
-                zip(aka_list, aka_values))
+            if 'keys' in dict(optlist):
+                # Strange, aka_list is a list of one length tuples
+                s = [k[0] for k in aka_list]
+            else:
+                aka_values = [self._db.get_alias(channel, aka) for aka in
+                              aka_list]
+                s = ('{0}: "{1}"'.format(ircutils.bold(k), v) for (k, v) in
+                    zip(aka_list, aka_values))
             irc.replies(s)
         else:
             irc.error(_("No Akas found."))
-    list = wrap(list, [getopts({'channel': 'channel'})])
+    list = wrap(list, [getopts({'channel': 'channel', 'keys': ''})])
 
 
 Class = Aka
