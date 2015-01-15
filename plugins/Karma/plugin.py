@@ -246,12 +246,13 @@ class Karma(callbacks.Plugin):
     def _doKarma(self, irc, msg, channel, thing):
         inc = self.registryValue('incrementChars', channel)
         dec = self.registryValue('decrementChars', channel)
+        onlynicks = self.registryValue('onlyNicks', channel)
         karma = ''
         for s in inc:
             if thing.endswith(s):
                 thing = thing[:-len(s)]
                 # Don't reply if the target isn't a nick
-                if thing.lower() not in map(ircutils.toLower,
+                if onlynicks and thing.lower() not in map(ircutils.toLower,
                         irc.state.channels[channel].users):
                     return
                 if ircutils.strEqual(thing, msg.nick) and \
@@ -263,7 +264,7 @@ class Karma(callbacks.Plugin):
         for s in dec:
             if thing.endswith(s):
                 thing = thing[:-len(s)]
-                if thing.lower() not in map(ircutils.toLower,
+                if onlynicks and thing.lower() not in map(ircutils.toLower,
                         irc.state.channels[channel].users):
                     return
                 if ircutils.strEqual(thing, msg.nick) and \
