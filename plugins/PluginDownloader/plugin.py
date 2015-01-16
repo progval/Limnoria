@@ -200,7 +200,7 @@ class GithubRepository(GitRepository):
 
 
 repositories = {
-               'ProgVal':          GithubRepository(
+               'progval':          GithubRepository(
                                                    'ProgVal',
                                                    'Supybot-plugins'
                                                    ),
@@ -236,7 +236,7 @@ repositories = {
                                                    'mtughan',
                                                    'Supybot-Weather',
                                                    ),
-               'SpiderDave':       GithubRepository(
+               'spiderdave':       GithubRepository(
                                                    'SpiderDave',
                                                    'spidey-supybot-plugins',
                                                    'Plugins',
@@ -263,7 +263,7 @@ repositories = {
                                                    'amscanne',
                                                    'supybot-scrum',
                                                    ),
-               'Hoaas':            GithubRepository(
+               'hoaas':            GithubRepository(
                                                    'Hoaas',
                                                    'Supybot-plugins'
                                                    ),
@@ -292,11 +292,11 @@ repositories = {
                                                    'skgsergio',
                                                    'Limnoria-plugins',
                                                    ),
-               'GLolol':           GithubRepository(
+               'glolol':           GithubRepository(
                                                    'GLolol',
                                                    'SupyPlugins',
                                                    ),
-               'Iota':             GithubRepository(
+               'iota':             GithubRepository(
                                                    'IotaSpencer',
                                                    'supyplugins',
                                                    ),
@@ -322,7 +322,9 @@ class PluginDownloader(callbacks.Plugin):
         global repositories
         if repository is None:
             irc.reply(_(', ').join(sorted(x for x in repositories)))
-        elif repository not in repositories:
+            return
+        repository = repository.lower()
+        if repository not in repositories:
             irc.error(_(
                        'This repository does not exist or is not known by '
                        'this bot.'
@@ -341,6 +343,7 @@ class PluginDownloader(callbacks.Plugin):
 
         Downloads and installs the <plugin> from the <repository>."""
         global repositories
+        repository = repository.lower()
         if repository not in repositories:
             irc.error(_(
                        'This repository does not exist or is not known by '
@@ -366,6 +369,7 @@ class PluginDownloader(callbacks.Plugin):
 
         Displays informations on the <plugin> in the <repository>."""
         global repositories
+        repository = repository.lower()
         if repository not in repositories:
             irc.error(_(
                        'This repository does not exist or is not known by '
