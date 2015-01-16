@@ -199,7 +199,7 @@ class GithubRepository(GitRepository):
         return None
 
 
-repositories = {
+repositories = utils.InsensitivePreservingDict({
                'ProgVal':          GithubRepository(
                                                    'ProgVal',
                                                    'Supybot-plugins'
@@ -300,7 +300,7 @@ repositories = {
                                                    'IotaSpencer',
                                                    'supyplugins',
                                                    ),
-               }
+               })
 
 class PluginDownloader(callbacks.Plugin):
     """This plugin allows you to install unofficial plugins from
