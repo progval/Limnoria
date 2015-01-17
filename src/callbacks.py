@@ -836,12 +836,12 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             else:
                 cb._callCommand(command, self, self.msg, args)
 
-    def reply(self, s, queue=None, noLengthCheck=False, prefixNick=None,
+    def reply(self, s, usequeueMsg=True, noLengthCheck=False, prefixNick=None,
               action=None, private=None, notice=None, to=None, msg=None):
         """
         Keyword arguments:
 
-        * `queue=True`:          False if we should use sendMsg instead
+        * `usequeueMsg=True`:          False if we should use sendMsg instead
                                  of queueMsg
         * `noLengthCheck=False`: True if the length shouldn't be checked
                                  (used for 'more' handling)
@@ -860,7 +860,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         self.repliedTo = True
-        if queue is None:
+        if usequeueMsg:
             sendMsg = self.irc.queueMsg
         else:
             sendMsg = self.irc.sendMsg
