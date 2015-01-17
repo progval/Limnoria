@@ -836,21 +836,24 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             else:
                 cb._callCommand(command, self, self.msg, args)
 
-    def reply(self, s, noLengthCheck=False, prefixNick=None,
-              action=None, private=None, notice=None, to=None, msg=None):
+    def reply(self, s, noLengthCheck=False, prefixNick=None, action=None,
+              private=None, notice=None, to=None, msg=None, sendImmediately=False):
         """
         Keyword arguments:
 
-        * `noLengthCheck=False`: True if the length shouldn't be checked
-                                 (used for 'more' handling)
-        * `prefixNick=True`:     False if the nick shouldn't be prefixed to the
-                                 reply.
-        * `action=False`:        True if the reply should be an action.
-        * `private=False`:       True if the reply should be in private.
-        * `notice=False`:        True if the reply should be noticed when the
-                                 bot is configured to do so.
-        * `to=<nick|channel>`:   The nick or channel the reply should go to.
-                                 Defaults to msg.args[0] (or msg.nick if private)
+        * `noLengthCheck=False`:   True if the length shouldn't be checked
+                                   (used for 'more' handling)
+        * `prefixNick=True`:       False if the nick shouldn't be prefixed to the
+                                   reply.
+        * `action=False`:          True if the reply should be an action.
+        * `private=False`:         True if the reply should be in private.
+        * `notice=False`:          True if the reply should be noticed when the
+                                   bot is configured to do so.
+        * `to=<nick|channel>`:     The nick or channel the reply should go to.
+                                   Defaults to msg.args[0] (or msg.nick if private)
+        * `sendImmediately=False`: True if the reply should use sendMsg() which
+                                   bypasses conf.supybot.protocols.irc.throttleTime
+                                   and gets sent before any queued messages
         """
         # These use and or or based on whether or not they default to True or
         # False.  Those that default to True use and; those that default to
@@ -858,6 +861,10 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         self.repliedTo = True
+        if sendImmediately:
+            sendMsg = self.irc.sendMsg
+        else:
+            sendMsg = self.irc.queueMsg
         if msg is None:
             msg = self.msg
         if prefixNick is not None:
@@ -895,7 +902,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                               action=self.action,
                               private=self.private,
                               prefixNick=self.prefixNick)
-                    self.irc.queueMsg(m)
+                    sendMsg(m)
                     return m
                 else:
                     s = ircutils.safeArgument(s)
@@ -928,7 +935,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                   notice=self.notice,
                                   private=self.private,
                                   prefixNick=self.prefixNick)
-                        self.irc.queueMsg(m)
+                        sendMsg(m)
                         return m
                     msgs = ircutils.wrap(s, allowedLength,
                             break_long_words=True)
@@ -941,7 +948,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                   notice=self.notice,
                                   private=self.private,
                                   prefixNick=self.prefixNick)
-                        self.irc.queueMsg(m)
+                        sendMsg(m)
                         # XXX We should somehow allow these to be returned, but
                         #     until someone complains, we'll be fine :)  We
                         #     can't return from here, though, for obvious
@@ -974,7 +981,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                             notice=self.notice,
                                             private=self.private,
                                             prefixNick=self.prefixNick)
-                    self.irc.queueMsg(m)
+                    sendMsg(m)
                     return m
             finally:
                 self._resetReplyAttributes()
