@@ -49,9 +49,13 @@ def configure(advanced):
 
 
 DDG = conf.registerPlugin('DDG')
-# This is where your configuration variables (if any) should go.  For example:
-# conf.registerGlobalValue(DDG, 'someConfigVariableName',
-#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
+conf.registerChannelValue(DDG, 'maxResults',
+    registry.PositiveInteger(4, _("""Determines the maximum number of
+    results the bot will respond with.""")))
+conf.registerChannelValue(DDG, 'showSnippet',
+    registry.Boolean(True, _("""Determines whether the bot will show a
+    snippet of each resulting link. If False, it will show the title
+    of the link instead.""")))
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

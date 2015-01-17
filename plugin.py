@@ -69,27 +69,37 @@ class DDG(callbacks.Plugin):
             self.log.info(url)
             irc.error(str(e), Raise=True)
         soup = BeautifulSoup(data)
-        res = ''
+        replies = []
+        channel = msg.args[0]
         for t in soup.find_all('td'):
-            if "1." in t.text:
-                res = t.next_sibling.next_sibling
-            if not res:
-                continue
-            try:
-                # 1) Get a result snippet.
-                snippet = res.parent.next_sibling.next_sibling.\
-                    find_all("td")[-1]
-                # 2) Fetch the result link.
-                link = res.a.get('href')
-                snippet = snippet.text.strip()
-
-                s = format("%s - %u", snippet, link)
-                irc.reply(s)
-                return
-            except AttributeError:
-                continue
+            maxr = self.registryValue("maxResults", channel)
+            for n in range(1, maxr):
+                res = ''
+                if ("%s." % n) in t.text:
+                    res = t.next_sibling.next_sibling
+                if not res:
+                    continue
+                try:
+                    snippet = ''
+                    # 1) Get a result snippet.
+                    if self.registryValue("showsnippet", channel):
+                        snippet = res.parent.next_sibling.next_sibling.\
+                            find_all("td")[-1]
+                        snippet = snippet.text.strip()
+                    # 2) Fetch the link title.
+                    title = res.a.text.strip()
+                    # 3) Fetch the result link.
+                    link = res.a.get('href')
+                    s = format("%s - %s %u", ircutils.bold(title), snippet,
+                               link)
+                    replies.append(s)
+                except AttributeError:
+                    continue
         else:
-            irc.error("No results found.")
+            if not replies:
+                irc.error("No results found.")
+            else:
+                irc.reply(', '.join(replies))
     search = wrap(search, ['text'])
 
 Class = DDG
