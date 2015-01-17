@@ -836,11 +836,13 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             else:
                 cb._callCommand(command, self, self.msg, args)
 
-    def reply(self, s, noLengthCheck=False, prefixNick=None,
+    def reply(self, s, usequeueMsg=True, noLengthCheck=False, prefixNick=None,
               action=None, private=None, notice=None, to=None, msg=None):
         """
         Keyword arguments:
 
+        * `usequeueMsg=True`:          False if we should use sendMsg instead
+                                 of queueMsg
         * `noLengthCheck=False`: True if the length shouldn't be checked
                                  (used for 'more' handling)
         * `prefixNick=True`:     False if the nick shouldn't be prefixed to the
@@ -858,6 +860,10 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         self.repliedTo = True
+        if usequeueMsg:
+            sendMsg = self.irc.queueMsg
+        else:
+            sendMsg = self.irc.sendMsg
         if msg is None:
             msg = self.msg
         if prefixNick is not None:
@@ -895,7 +901,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                               action=self.action,
                               private=self.private,
                               prefixNick=self.prefixNick)
-                    self.irc.queueMsg(m)
+                    sendMsg(m)
                     return m
                 else:
                     s = ircutils.safeArgument(s)
@@ -928,7 +934,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                   notice=self.notice,
                                   private=self.private,
                                   prefixNick=self.prefixNick)
-                        self.irc.queueMsg(m)
+                        sendMsg(m)
                         return m
                     msgs = ircutils.wrap(s, allowedLength,
                             break_long_words=True)
@@ -941,7 +947,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                   notice=self.notice,
                                   private=self.private,
                                   prefixNick=self.prefixNick)
-                        self.irc.queueMsg(m)
+                        sendMsg(m)
                         # XXX We should somehow allow these to be returned, but
                         #     until someone complains, we'll be fine :)  We
                         #     can't return from here, though, for obvious
@@ -974,7 +980,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                             notice=self.notice,
                                             private=self.private,
                                             prefixNick=self.prefixNick)
-                    self.irc.queueMsg(m)
+                    sendMsg(m)
                     return m
             finally:
                 self._resetReplyAttributes()
