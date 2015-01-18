@@ -4,38 +4,6 @@ messages in query too.
 
 ## Usage examples
 
-### Identifying to NickServ
-
-One usage example is to identify the bot with NickServ if it fails to 
-identify for some reason.
-
-However this isn't recommended unless you don't use CertFP.
-
-#### SASL
-
-```
-@config networks.<network>.sasl.username NSACCOUNTNAME
-@config networks.<network>.sasl.password NSPASSWORD
-```
-
-Next time when your bot connects it should identify before connecting with 
-SASL.
-
-#### CertFP
-
-For help with generating the certificate [please see this page.](https://mkaysi.github.io/pages/external/identifying.html#certfp)
-
-When you have generated the certificate tell the bot to use it by either 
-of thse two commands (or both). The first tells the bot to use the 
-certificate everywhere and the second only on one network. If you run 
-the first, the second isn't necressary unless you have multiple 
-certificates.
-
-```
-@config protocols.irc.certfile /home/username/bot/bot.pem
-@config networks.<network>.certfile /home/username/bot/bot.pem
-```
-
 ### Proving that you are the owner.
 
 When you ask for cloak/vhost for your bot, the network operators will 
