@@ -962,8 +962,8 @@ class Irc(IrcCommandDispatcher):
         elif self.sasl_username and self.sasl_password:
             self.sasl = 'plain'
 
-        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-notify')))
-        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'extended-join')))
+        self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ',
+            'account-notify extended-join multi-prefix')))
 
         if self.sasl:
             self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
