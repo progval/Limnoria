@@ -962,13 +962,12 @@ class Irc(IrcCommandDispatcher):
         elif self.sasl_username and self.sasl_password:
             self.sasl = 'plain'
 
-        if self.sasl:
-            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
-
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-notify')))
         self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'extended-join')))
 
-        if not self.sasl:
+        if self.sasl:
+            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
+        else:
             self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
         if self.password:
@@ -1030,6 +1029,11 @@ class Irc(IrcCommandDispatcher):
                 elif msg.args[1] == 'NAK':
                     log.warning('%s: Server refused capability %r',
                                 self.network, cap)
+
+                    if cap == 'sasl':
+                        self.queueMsg(ircmsgs.IrcMsg(
+                            command='CAP',
+                            args=('END',)))
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful', self.network)
