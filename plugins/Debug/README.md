@@ -1,1 +1,2 @@
-Insert a description of your plugin here, with any notes, etc. about using it.
+This plugin provides debugging abilities for Supybot. It should not be
+loaded with a default installation.
