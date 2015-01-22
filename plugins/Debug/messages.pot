@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2015-01-22 18:54+EET\n"
+"POT-Creation-Date: 2015-01-23 08:27+EET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 #, docstring
 msgid ""
 "\n"
-"This is for debugging purpouses and you shouldn't load this plugin unless\n"
-"Supybot developer requests you to do so for debugging some issue.\n"
+"This is for debugging purposes only and you shouldn't load this it unless\n"
+"a Supybot developer requests you to debug some issue.\n"
 msgstr ""
 
 #: plugin.py:47

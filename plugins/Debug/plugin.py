@@ -30,8 +30,8 @@
 ###
 
 """
-This is for debugging purpouses and you shouldn't load this plugin unless
-Supybot developer requests you to do so for debugging some issue.
+This is for debugging purposes only and you shouldn't load this it unless
+a Supybot developer requests you to debug some issue.
 """
 
 import supybot.plugins as plugins
