@@ -30,8 +30,8 @@
 ###
 
 """
-This is for jemfinch's debugging only.  If this somehow gets added and
-committed, remove it immediately.  It must not be released with Supybot.
+This is for debugging purposes only and you shouldn't load this it unless
+a Supybot developer requests you to debug some issue.
 """
 
 import supybot.plugins as plugins

@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2015-01-23 08:27+EET\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: plugin.py:32
+#, docstring
+msgid ""
+"\n"
+"This is for debugging purposes only and you shouldn't load this it unless\n"
+"a Supybot developer requests you to debug some issue.\n"
+msgstr ""
+
+#: plugin.py:47
+#, docstring
+msgid "Pseudo-module"
+msgstr ""
+
+#: plugin.py:68
+#, docstring
+msgid ""
+"This plugin provides debugging abilities for Supybot. It\n"
+"    should not be loaded with a default installation."
+msgstr ""
+
+#: plugin.py:89
+#, docstring
+msgid ""
+"<expression>\n"
+"\n"
+"        Evaluates <expression> (which should be a Python expression) and\n"
+"        returns its value.  If an exception is raised, reports the\n"
+"        exception (and logs the traceback to the bot's logfile).\n"
+"        "
+msgstr ""
+
+#: plugin.py:107
+#, docstring
+msgid ""
+"<statement>\n"
+"\n"
+"        Execs <code>.  Returns success if it didn't raise any exceptions.\n"
+"        "
+msgstr ""
+
+#: plugin.py:116
+#, docstring
+msgid ""
+"<expression>\n"
+"\n"
+"        Evaluates the given expression.\n"
+"        "
+msgstr ""
+
+#: plugin.py:127
+#, docstring
+msgid ""
+"<exception name>\n"
+"\n"
+"        Raises the exception matching <exception name>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:139
+#, docstring
+msgid ""
+"<raw IRC message>\n"
+"\n"
+"        Sends (not queues) the raw IRC message given.\n"
+"        "
+msgstr ""
+
+#: plugin.py:148
+#, docstring
+msgid ""
+"[<filename>]\n"
+"\n"
+"        Starts tracing function calls to <filename>.  If <filename> is not\n"
+"        given, sys.stdout is used.  This causes much output.\n"
+"        "
+msgstr ""
+
+#: plugin.py:162
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Stops tracing function calls on stdout.\n"
+"        "
+msgstr ""
+
+#: plugin.py:171
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the result of the channeldb converter.\n"
+"        "
+msgstr ""
+
+#: plugin.py:179
+#, docstring
+msgid ""
+"[<times>]\n"
+"\n"
+"        Does <times> gc collections, returning the number of objects collected\n"
+"        each time.  <times> defaults to 1.\n"
+"        "
+msgstr ""
+
+#: plugin.py:192
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the environment of the supybot process.\n"
+"        "
+msgstr ""
+
