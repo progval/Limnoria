@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
-"PO-Revision-Date: \n"
+"POT-Creation-Date: 2015-01-24 19:31+CET\n"
+"PO-Revision-Date: 2015-01-24 19:32+0100\n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
 "Language: \n"
@@ -23,9 +23,9 @@ msgstr ""
 "snarfer ?"
 
 #: config.py:45 config.py:49
-msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', 'ur1', and 'x0'."
+msgid "Valid values include 'ln', 'tiny', 'goo', 'ur1', and 'x0'."
 msgstr ""
-"Les valeurs valides incluent 'ln', 'tiny', 'xrl', 'goo', 'ur1', et 'x0'."
+"Les valeurs valides incluent 'ln', 'tiny', 'goo', 'ur1', et 'x0'."
 
 #: config.py:70
 msgid ""
@@ -125,18 +125,7 @@ msgstr ""
 "\n"
 "Retourne une version de TinyURL.com de l'<url>."
 
-#: plugin.py:248
-msgid ""
-"<url>\n"
-"\n"
-"        Returns an xrl.us version of <url>.\n"
-"        "
-msgstr ""
-"<url>\n"
-"\n"
-"Retourne une version de xrl.us de l'<url>."
-
-#: plugin.py:281
+#: plugin.py:252
 msgid ""
 "<url>\n"
 "\n"
@@ -147,7 +136,7 @@ msgstr ""
 "\n"
 "Retourne une version de goo.gl de l'<url>."
 
-#: plugin.py:311
+#: plugin.py:282
 msgid ""
 "<url>\n"
 "\n"
@@ -158,7 +147,7 @@ msgstr ""
 "\n"
 "Retourne une version de ur1 de l'<url>."
 
-#: plugin.py:338
+#: plugin.py:309
 msgid ""
 "<url>\n"
 "\n"
@@ -169,7 +158,7 @@ msgstr ""
 "\n"
 "Retourne une version de x0.no de l'<url>."
 
-#: plugin.py:365
+#: plugin.py:336
 msgid ""
 "<url>\n"
 "\n"
@@ -179,6 +168,16 @@ msgstr ""
 "<url>\n"
 "\n"
 "Retourne la version large de l'<url>."
+
+#~ msgid ""
+#~ "<url>\n"
+#~ "\n"
+#~ "        Returns an xrl.us version of <url>.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<url>\n"
+#~ "\n"
+#~ "Retourne une version de xrl.us de l'<url>."
 
 #~ msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
 #~ msgstr "Les valeurs valides incluent 'ln', 'tiny', 'xrl', 'goo', et 'x0'."

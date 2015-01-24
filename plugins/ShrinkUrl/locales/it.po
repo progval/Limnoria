@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2015-01-24 19:31+CET\n"
 "PO-Revision-Date: 2015-01-24 11:45+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -21,9 +21,9 @@ msgstr ""
 
 #: config.py:45 config.py:49
 #, fuzzy
-msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', 'ur1', and 'x0'."
+msgid "Valid values include 'ln', 'tiny', 'goo', 'ur1', and 'x0'."
 msgstr ""
-"I valori validi comprendono \"ln\", \"tiny\", \"xrl\", \"goo\" e \"x0\"."
+"I valori validi comprendono \"ln\", \"tiny\", \"goo\" e \"x0\"."
 
 #: config.py:70
 msgid ""
@@ -132,19 +132,7 @@ msgstr ""
 "        Restituisce una versione di TinyURL.com di <url>\n"
 "        "
 
-#: plugin.py:248
-msgid ""
-"<url>\n"
-"\n"
-"        Returns an xrl.us version of <url>.\n"
-"        "
-msgstr ""
-"<url>\n"
-"\n"
-"        Restituisce una versione di xrl.us di <url>.\n"
-"        "
-
-#: plugin.py:281
+#: plugin.py:252
 msgid ""
 "<url>\n"
 "\n"
@@ -156,7 +144,7 @@ msgstr ""
 "        Restituisce una versione di goo.gl di <url>.\n"
 "        "
 
-#: plugin.py:311
+#: plugin.py:282
 #, fuzzy
 msgid ""
 "<url>\n"
@@ -169,7 +157,7 @@ msgstr ""
 "        Restituisce una versione di xrl.us di <url>.\n"
 "        "
 
-#: plugin.py:338
+#: plugin.py:309
 msgid ""
 "<url>\n"
 "\n"
@@ -181,7 +169,7 @@ msgstr ""
 "        Restituisce una versione di x0.no di <url>.\n"
 "        "
 
-#: plugin.py:365
+#: plugin.py:336
 #, fuzzy
 msgid ""
 "<url>\n"
@@ -193,3 +181,14 @@ msgstr ""
 "\n"
 "        Restituisce una versione di x0.no di <url>.\n"
 "        "
+
+#~ msgid ""
+#~ "<url>\n"
+#~ "\n"
+#~ "        Returns an xrl.us version of <url>.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<url>\n"
+#~ "\n"
+#~ "        Restituisce una versione di xrl.us di <url>.\n"
+#~ "        "
