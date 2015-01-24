@@ -1009,7 +1009,7 @@ class Irc(IrcCommandDispatcher):
                 private_key = SigningKey.from_pem(open(self.sasl_ecdsa_key).
                     read())
                 authstring = base64.b64encode(
-                    private_key.sign(base64.b64decode(msg.args[0]))).decode('utf-8')
+                    private_key.sign(base64.b64decode(msg.args[0].encode()))).decode('utf-8')
             except (BadDigestError, OSError, ValueError) as e:
                 authstring = "*"
 
