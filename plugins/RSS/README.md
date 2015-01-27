@@ -11,14 +11,18 @@ patch: http://code.google.com/p/feedparser/issues/detail?id=403
 Basic usage
 -----------
 
-Adding a feed
-`@rss add supybot http://sourceforge.net/export/rss2_projfiles.php?group_id=58965`
+1. Add a feed using
+`@rss add limnoria https://github.com/ProgVal/Limnoria/tags.atom`.
+    * This is RSS feed of Limnoria's stable releases.
+    * You can now check the latest news from the feed with `@limnoria`.
+2. To have new news automatically announced on the channel, use
+`@rss announce add Limnoria`.
 
-Add announcements for a feed
-`@rss announce add supybot`
+To add another feed, simply replace limnoria and the address using name
+of the feed and address of the feed. For example, YLE News:
 
-Stop announcements for a feed
-`@rss announce remove supybot`
+1. `@rss add yle http://yle.fi/uutiset/rss/uutiset.rss?osasto=news`
+2. `@rss announce add yle`
 
 News on their own lines
 -----------------------
