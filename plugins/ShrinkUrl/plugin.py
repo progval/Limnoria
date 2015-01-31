@@ -200,7 +200,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 m.tag('shrunken')
         except ShrinkError as e:
             irc.error(str(e))
-    ln = thread(wrap(ln, ['url']))
+    ln = thread(wrap(ln, ['httpUrl']))
 
     @retry
     def _getTinyUrl(self, url):
@@ -227,7 +227,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 m.tag('shrunken')
         except ShrinkError as e:
             irc.errorPossibleBug(str(e))
-    tiny = thread(wrap(tiny, ['url']))
+    tiny = thread(wrap(tiny, ['httpUrl']))
 
     _xrlApi = 'http://metamark.net/api/rest/simple'
     @retry
@@ -256,7 +256,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 m.tag('shrunken')
         except ShrinkError as e:
             irc.error(str(e))
-    xrl = thread(wrap(xrl, ['url']))
+    xrl = thread(wrap(xrl, ['httpUrl']))
 
     _gooApi = 'https://www.googleapis.com/urlshortener/v1/url'
     @retry
@@ -289,7 +289,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 m.tag('shrunken')
         except ShrinkError as e:
             irc.error(str(e))
-    goo = thread(wrap(goo, ['url']))
+    goo = thread(wrap(goo, ['httpUrl']))
 
     _ur1Api = 'http://ur1.ca/'
     _ur1Regexp = re.compile(r'<a href="(?P<url>[^"]+)">')
@@ -319,7 +319,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 m.tag('shrunken')
         except ShrinkError as e:
             irc.error(str(e))
-    ur1 = thread(wrap(ur1, ['url']))
+    ur1 = thread(wrap(ur1, ['httpUrl']))
 
     _x0Api = 'http://api.x0.no/?%s'
     @retry
@@ -346,7 +346,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 m.tag('shrunken')
         except ShrinkError as e:
             irc.error(str(e))
-    x0 = thread(wrap(x0, ['url']))
+    x0 = thread(wrap(x0, ['httpUrl']))
 
     @retry
     def _getExpandUrl(self, url):
@@ -373,7 +373,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
                 m.tag('shrunken')
         except ShrinkError as e:
             irc.error(str(e))
-    expand = thread(wrap(expand, ['url']))
+    expand = thread(wrap(expand, ['httpUrl']))
 
 Class = ShrinkUrl
 
