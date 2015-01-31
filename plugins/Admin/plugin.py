@@ -167,16 +167,15 @@ class Admin(callbacks.Plugin):
     def channels(self, irc, msg, args):
         """takes no arguments
 
-        Returns the channels the bot is on.  Must be given in private, in order
-        to protect the secrecy of secret channels.
+        Returns the channels the bot is on.
         """
         L = irc.state.channels.keys()
         if L:
             utils.sortBy(ircutils.toLower, L)
-            irc.reply(format('%L', L))
+            irc.reply(format('%L', L), private=True)
         else:
             irc.reply(_('I\'m not currently in any channels.'))
-    channels = wrap(channels, ['private'])
+    channels = wrap(channels)
 
     def do484(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
