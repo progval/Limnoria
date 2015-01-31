@@ -122,7 +122,8 @@ class Google(callbacks.PluginRegexp):
                                 headers=headers).decode('utf8')
         data = json.loads(text)
         if data['responseStatus'] != 200:
-            raise callbacks.Error(_('We broke The Google!'))
+            self.log.info("Google: unhandled error message: ", text)
+            raise callbacks.Error(data['responseDetails'])
         return data
 
     def formatData(self, data, bold=True, max=0, onetoone=False):
@@ -187,9 +188,6 @@ class Google(callbacks.PluginRegexp):
            conf.supybot.plugins.Google.safesearch.validStrings:
             irc.errorInvalid('language')
         data = self.search(text, msg.args[0], dict(optlist))
-        if data['responseStatus'] != 200:
-            irc.reply(_('We broke The Google!'))
-            return
         bold = self.registryValue('bold', msg.args[0])
         max = self.registryValue('maximumResults', msg.args[0])
         # We don't use supybot.reply.oneToOne here, because you generally
