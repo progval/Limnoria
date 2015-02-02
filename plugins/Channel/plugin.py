@@ -910,7 +910,8 @@ class Channel(callbacks.Plugin):
         keys = [option for (option, arg) in optlist]
         if 'count' not in keys:
             utils.sortBy(str.lower, L)
-            irc.reply(utils.str.commaAndify(L))
+            private = self.registryValue("nicksInPrivate", channel)
+            irc.reply(utils.str.commaAndify(L), private=private)
         else:
             irc.reply(str(len(L)))
     nicks = wrap(nicks, ['inChannel',
