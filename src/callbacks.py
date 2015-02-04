@@ -926,7 +926,13 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         # In case we're truncating, we add 20 to allowedLength,
                         # because our allowedLength is shortened for the
                         # "(XX more messages)" trailer.
-                        s = s[:allowedLength+len(_('(XX more messages)'))]
+                        if sys.version_info[0] >= 3:
+                            appended = _('(XX more messages)').encode()
+                            s = s.encode()[:allowedLength+len(appended)]
+                            s = s.decode('utf8', 'ignore')
+                        else:
+                            appended = _('(XX more messages)')
+                            s = s[:allowedLength+len(appended)]
                         # There's no need for action=self.action here because
                         # action implies noLengthCheck, which has already been
                         # handled.  Let's stick an assert in here just in case.
