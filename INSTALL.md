@@ -32,13 +32,12 @@ or for a local install (if you don't have or don't want to use root),
 `pip install -r requirements.txt --user`
 
 For more information and help on how to use Supybot, check out
-the documents under [docs/], especially [GETTING_STARTED] and
-[CONFIGURATION], or on [the website].
+the [documentation], especially [GETTING_STARTED] and
+[CONFIGURATION].
 
-[docs/]:docs/index.rst
-[GETTING_STARTED]:docs/GETTING_STARTED.rst
-[CONFIGURATION]:docs/CONFIGURATION.rst
-[the website]:http://supybot.aperio.fr/doc/use/index.html
+[documentation]:http://doc.supybot.aperio.fr/en/latest/use/index.html
+[GETTING_STARTED]:http://doc.supybot.aperio.fr/en/latest/use/getting_started.html
+[CONFIGURATION]:http://doc.supybot.aperio.fr/en/latest/use/configuration.html
 
 So what do you do?  That depends on which operating system you're
 running.  We've split this document up to address the different installation
