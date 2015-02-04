@@ -24,10 +24,29 @@ older versions are not supported.
 ## Documentation
 
 If this is your first install, there is an [install guide](http://doc.supybot.aperio.fr/en/latest/use/install.html).
-You will probably be pointed to it if you ask on IRC how to install Limnoria.
+You will probably be pointed to it if you ask on IRC how to install
+Limnoria.
 
-There is extensive documentation at [supybot.aperio.fr] and at [Gribble wiki].
-We took the time to write it; you should take the time to read it.
+There is extensive documentation at [supybot.aperio.fr] and at
+[Gribble wiki]. We took the time to write it; you should take the time to
+read it.
+
+## Installing from cloned repo
+
+*If you haven't cloned this repository, please see the previous two
+paragraphs for easier installation methods.*
+
+```
+sudo pip install -r requirements.txt
+sudo python setup.py install --user
+```
+
+alternatively without root
+
+```
+pip install -r requirements.txt --user
+python setup.py install --user
+```
 
 [supybot.aperio.fr]:http://doc.supybot.aperio.fr/
 [Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
