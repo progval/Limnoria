@@ -32,13 +32,12 @@ or for a local install (if you don't have or don't want to use root),
 `pip install -r requirements.txt --user`
 
 For more information and help on how to use Supybot, check out
-the documents under [docs/], especially [GETTING_STARTED] and
-[CONFIGURATION], or on [the website].
+the [documentation], especially [GETTING_STARTED] and
+[CONFIGURATION].
 
-[docs/]:docs/index.rst
-[GETTING_STARTED]:docs/GETTING_STARTED.rst
-[CONFIGURATION]:docs/CONFIGURATION.rst
-[the website]:http://supybot.aperio.fr/doc/use/index.html
+[documentation]:http://doc.supybot.aperio.fr/en/latest/use/index.html
+[GETTING_STARTED]:http://doc.supybot.aperio.fr/en/latest/use/getting_started.html
+[CONFIGURATION]:http://doc.supybot.aperio.fr/en/latest/use/configuration.html
 
 So what do you do?  That depends on which operating system you're
 running.  We've split this document up to address the different installation
@@ -46,8 +45,6 @@ methods, so find the section for your operating system and continue
 from there.
 
 # UNIX/Linux/BSD
-
-If you use [Debian or Ubuntu, click here](INSTALL.md#debian). If you use [Fedora, click here.](INSTALL.md#fedora)
 
 If you're installing Python using your distributor's packages, you may
 need a python-dev or python3-dev package installed, too.  If you don't have
@@ -115,29 +112,6 @@ echo 'PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## Debian
-
-*Debian packages are automatically built nightly at 00:00Z.*
-
-For Debian and other distributions based on it (Ubuntu, etc.), there are
-pre-built packages which you can install with:
-
-```
-wget http://builds.progval.net/limnoria/debian/python2/limnoria-master-HEAD.deb
-sudo dpkg -i limnoria-master-HEAD.deb
-```
-
-## Fedora
-
-*Fedora packages are automatically built nightly at 00:00Z.*
-
-For Fedora and other distributions using rpm (RHEL, CentOS etc.), there are
-pre-built packages which you can install with:
-
-```
-yum install http://builds.progval.net/limnoria/fedora/python2/limnoria-master-HEAD.noarch.rpm
-```
-
 ## Pip
 
 To install with pip, run:
@@ -173,11 +147,6 @@ and then install Limnoria normally. "python setup.py install" doesn't affect con
 
 If you don't have the cloned Limnoria repository, clone it again using the installation instructions.
 
-### Debian/Fedora
-
-Run the same commands as before on the [Debian](INSTALL.md#debian) or 
-[Fedora](INSTALL.md#fedora) sections of this file.
-
 ### Pip
 
 Run the first install command again, but add `--upgrade` to the 
@@ -185,49 +154,14 @@ end. Then run the second install command.
 
 ## Upgrading to Python 3
 
-Upgrading to Python 3 happens the same way, but if you want to move from 2 to 3 
-or 3 to 2, you must remove the `build/` directory and the executable 
-`supybot*` files first. `The build/` directory is in same directory as this 
-file and the `supybot*` executables are usually in `/usr/local/bin` or `~/.local/bin`.
+Upgrading to Python 3 happens the same way, but if you want to move from 2
+to 3 or 3 to 2, you must remove the `build/` directory and the executable
+`supybot*` files first. `The build/` directory is in same directory as
+this file and the `supybot*` executables are usually in `/usr/local/bin`
+or `~/.local/bin`.
 
 ```
 rm -rf build/
 rm /usr/local/bin/supybot*
 rm ~/.local/bin/supybot*
 ```
-
-## Windows
-
-**Note**: If you are using an IPV6 connection, you will not be able
-to run Supybot under Windows (unless Python has fixed things).  Current
-versions of Python for Windows are *not* built with IPV6 support. This
-isn't expected to be fixed until Python 2.4, at the earliest.
-
-Now that you have Python installed, open up a command prompt.  The
-easiest way to do this is to open the run dialog (Programs -> Run) and
-type "cmd" (for Windows 2000/XP/2003+) or "command" (for Windows 9x).  In
-order to reduce the amount of typing you need to do, I suggest adding
-Python's directory to your path.  If you installed Python using the
-default settings, you would then do the following in the command prompt
-(otherwise change the path to match your settings):
-
-```
-set PATH=C:\Python2x\;%PATH%
-```
-
-You should now be able to type 'python' to start the Python
-interpreter.  Exit by pressing CTRL-Z and then Return.  Now that that's
-setup, you'll want to cd into the directory that was created when you
-unzipped Supybot; I'll assume you unzipped it to `C:\Supybot` for these
-instructions.  From `C:\Supybot`, run 
-
-```
-python setup.py install
-```
-
-This will install Supybot under `C:\Python2x\`.  You will now have several new
-programs installed in `C:\Python2x\Scripts\`.  The two that might be of
-particular interest to you as a new user are 'supybot' and 'supybot-wizard'.
-The former, 'supybot', is the script to run an actual bot; the latter,
-'supybot-wizard', is an in-depth wizard that provides a nice user interface for
-creating a registry file for your bot.

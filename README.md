@@ -47,5 +47,5 @@ understand or think you know of a better way to do something,
 
 ### In Other languages
 
-Only in French at the moment, located at [#supybot-fr on freenode](irc://chat.freenode.net/#supybot-fr).
+Only in French at the moment, located at [#supybot-fr on freenode](ircs://chat.freenode.net:6697/#supybot-fr).
 
