@@ -344,9 +344,11 @@ class Owner(callbacks.Plugin):
 
         Exits the bot with the QUIT message <text>.  If <text> is not given,
         the default quit message (supybot.plugins.Owner.quitMsg) will be used.
-        If there is no default quitMsg set, your nick will be used.
+        If there is no default quitMsg set, your nick will be used. %version%
+        is automatically expanded to the bot's current version.
         """
         text = text or self.registryValue('quitMsg') or msg.nick
+        text = text.replace("%version%", "Supybot %s" % conf.version)
         irc.noReply()
         m = ircmsgs.quit(text)
         world.upkeep()
