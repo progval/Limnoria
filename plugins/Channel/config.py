@@ -47,6 +47,10 @@ Channel = conf.registerPlugin('Channel')
 conf.registerChannelValue(Channel, 'alwaysRejoin',
     registry.Boolean(True, _("""Determines whether the bot will always try to
     rejoin a channel whenever it's kicked from the channel.""")))
+conf.registerChannelValue(Channel, 'nicksInPrivate',
+    registry.Boolean(True, _("""Determines whether the output of 'nicks' will
+    be sent in private. This prevents mass-highlights of a channel's users,
+    accidental or on purpose.""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
