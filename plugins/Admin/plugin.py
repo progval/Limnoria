@@ -238,7 +238,9 @@ class Admin(callbacks.Plugin):
         Tells the bot to part the list of channels you give it.  <channel> is
         only necessary if you want the bot to part a channel other than the
         current channel.  If <reason> is specified, use it as the part
-        message.
+        message.  Otherwise, the default part message specified in
+        supybot.plugins.Admin.partMsg will be used. No part message will be
+        used if no default is configured.
         """
         if channel is None:
             if irc.isChannel(msg.args[0]):
@@ -252,7 +254,9 @@ class Admin(callbacks.Plugin):
             pass
         if channel not in irc.state.channels:
             irc.error(_('I\'m not in %s.') % channel, Raise=True)
-        irc.queueMsg(ircmsgs.part(channel, reason or msg.nick))
+        reason = (reason or self.registryValue("partMsg", channel))
+        reason = reason.replace("%version%", "Supybot %s" % conf.version)
+        irc.queueMsg(ircmsgs.part(channel, reason))
         if msg.nick in irc.state.channels[channel].users:
             irc.noReply()
         else:
