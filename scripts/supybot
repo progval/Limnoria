@@ -69,6 +69,7 @@ import supybot.i18n as i18n
 import supybot.utils as utils
 import supybot.registry as registry
 import supybot.questions as questions
+import supybot.ircutils as ircutils
 
 from supybot.version import version
 
@@ -104,6 +105,8 @@ def main():
                 for irc in world.ircs:
                     quitmsg = conf.supybot.plugins.Owner.quitMsg() or \
                               'Ctrl-C at console.'
+                    msg = ircmsgs.ping('Ctrl-C at console.')
+                    quitmsg = ircutils.standardSubstitute(irc, msg, quitmsg)
                     irc.queueMsg(ircmsgs.quit(quitmsg))
                     irc.die()
         except SystemExit as e:
