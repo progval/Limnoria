@@ -500,6 +500,7 @@ class User(callbacks.Plugin):
                 r'-----BEGIN PGP SIGNATURE-----\r?\n.*'
                 r'\r?\n-----END PGP SIGNATURE-----',
                 re.S)
+        
         @internationalizeDocstring
         def auth(self, irc, msg, args, url):
             """<url>
@@ -524,20 +525,55 @@ class User(callbacks.Plugin):
             verified = gpg.keyring.verify(data)
             if verified and verified.valid:
                 keyid = verified.key_id
+                fprint = verified.pubkey_fingerprint
+                kprint = fprint[-16:]
                 prefix, expiry = self._tokens.pop(token)
                 found = False
-                for (id, user) in ircdb.users.items():
-                    if keyid in [x[-len(keyid):] for x in user.gpgkeys]:
-                        try:
-                            user.addAuth(msg.prefix)
-                        except ValueError:
-                            irc.error(_('Your secure flag is true and your '
-                                      'hostmask doesn\'t match any of your '
-                                      'known hostmasks.'), Raise=True)
+                pkeys = gpg.list_keys(False)
+                pnum = len(pkeys)
+                for x in range(pnum):
+                    if keyid or kprint in pkeys[x]["keyid"] and keyid in user.gpgkeys and if keyid is kprint:
+                        user.addAuth(msg.prefix)
                         ircdb.users.setUser(user, flush=False)
-                        irc.reply(_('You are now authenticated as %s.') %
-                                user.name)
+                        irc.reply(_('You are now authenticated as %s with %s.')
+                                  % (user.name, keyid))
                         return
+                    elif keyid or kprint in pkeys[x]["keyid"] and keyid not in user.gpgkeys and kprint is in user.gpgkeys and keyid is not kprint:
+                        user.addAuth(msg.prefix)
+                        ircdb.users.setUser(user, flush=False)
+                        irc.reply(_('You are now authenticated as %s with %s using the %s subkey.')
+                                  % (user.name, keyid, kprint))
+                        return
+                    elif keyid or kprint in pkeys[x]["keyid"] and keyid is kprint and keyid not in user.gpgkeys:
+                        irc.error(_('I have a record of key %s, but it is not associated with the %s account.') % (keyid, user.name))
+                        return
+                    elif keyid or kprint in pkeys[x]["keyid"] and keyid is not kprint and keyid not in user.gpgkeys and kprint not in user.gpgkeys:
+                        irc.error(_('I have a record of key %s, but it is not associated with any account.') % (keyid))
+                        return
+                    elif keyid is kprint and keyid not in pkeys[x]["keyid"] and keyid in user.gpgkeys:
+                        irc.error(_('The %s key is registered to the %s account, but not currently available to me.  Please add the key again') % (keyid, user.name))
+                        # Possibly replace this with key retrieval attempt.
+                        # try:
+                        #     code to retrieve key from server
+                        # except AnErrorOfSomeKind:
+                        #     the current error message.
+                        return
+                        elif keyid and kprint not in pkeys[x]["keyid"] and keyid is not kprint and keyid not in user.gpgkeys and kprint not in user.gpgkeys:
+                        irc.error(_('Unknown GPG key.'), Raise=True)
+                        return
+                #for (id, user) in ircdb.users.items():
+                #    if keyid in [x[-len(keyid):] for x in user.gpgkeys]:
+                #        user.addAuth(msg.prefix)
+                #        try:
+                #            user.addAuth(msg.prefix)
+                #        except ValueError:
+                #            irc.error(_('Your secure flag is true and your '
+                #                      'hostmask doesn\'t match any of your '
+                #                      'known hostmasks.'), Raise=True)
+                #        ircdb.users.setUser(user, flush=False)
+                #        irc.reply(_('You are now authenticated as %s.') %
+                #                user.name)
+                #        return
                 irc.error(_('Unknown GPG key.'), Raise=True)
             else:
                 irc.error(_('Signature could not be verified. Make sure '
