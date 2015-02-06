@@ -524,15 +524,9 @@ class User(callbacks.Plugin):
                     'Authentication aborted.'), Raise=True)
             verified = gpg.keyring.verify(data)
             if verified and verified.valid:
-                keyid0 = verified.key_id
-                fprint = verified.pubkey_fingerprint
-                kprint = fprint[-16:]
+                keyid = verified.pubkey_fingerprint[-16:]
                 prefix, expiry = self._tokens.pop(token)
                 found = False
-                if keyid0 == kprint:
-                    keyid = keyid0
-                else:
-                    keyid = kprint
                 for (id, user) in ircdb.users.items():
                     if keyid in [x[-len(keyid):] for x in user.gpgkeys]:
                         try:
