@@ -535,7 +535,6 @@ class User(callbacks.Plugin):
                     keyid = kprint
                 for (id, user) in ircdb.users.items():
                     if keyid in [x[-len(keyid):] for x in user.gpgkeys]:
-                        user.addAuth(msg.prefix)
                         try:
                             user.addAuth(msg.prefix)
                         except ValueError:
