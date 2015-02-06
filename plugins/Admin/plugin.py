@@ -255,7 +255,7 @@ class Admin(callbacks.Plugin):
         if channel not in irc.state.channels:
             irc.error(_('I\'m not in %s.') % channel, Raise=True)
         reason = (reason or self.registryValue("partMsg", channel))
-        reason = reason.replace("%version%", "Supybot %s" % conf.version)
+        reason = ircutils.standardSubstitute(irc, msg, reason)
         irc.queueMsg(ircmsgs.part(channel, reason))
         if msg.nick in irc.state.channels[channel].users:
             irc.noReply()

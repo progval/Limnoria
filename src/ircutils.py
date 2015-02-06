@@ -49,7 +49,7 @@ from cStringIO import StringIO as sio
 
 from . import utils
 from . import minisix
-
+from .version import version
 
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
@@ -713,6 +713,7 @@ def standardSubstitute(irc, msg, text, env=None):
         'm': localtime[4], 'min': localtime[4], 'minute': localtime[4],
         's': localtime[5], 'sec': localtime[5], 'second': localtime[5],
         'tz': time.strftime('%Z', localtime),
+        'version': 'Supybot %s' % version,
         })
     if msg.reply_env:
         vars.update(msg.reply_env)
