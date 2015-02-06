@@ -46,10 +46,10 @@ conf.registerGlobalValue(Owner, 'public',
     registry.Boolean(True, """Determines whether this plugin is publicly
     visible."""))
 conf.registerGlobalValue(Owner, 'quitMsg',
-    registry.String('', """Determines what quit message will be used by default.
+    registry.String('%version%', """Determines what quit message will be used by default.
     If the quit command is called without a quit message, this will be used.  If
     this value is empty, the nick of the person giving the quit command will be
-    used."""))
+    used.  %version% is automatically expanded to the bot's current version."""))
 
 conf.registerGroup(conf.supybot.commands, 'renames', orderAlphabetically=True)
 
