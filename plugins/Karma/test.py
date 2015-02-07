@@ -204,4 +204,21 @@ class KarmaTestCase(ChannelPluginTestCase):
             karma.response.setValue(resp)
             karma.allowUnaddressedKarma.setValue(unaddressed)
 
+    def testOnlyNicks(self):
+        # We use this to join a dummy user to test upon
+        msg = ircmsgs.join(self.channel, prefix='hello!foo@bar')
+        self.irc.feedMsg(msg)
+        karma = conf.supybot.plugins.Karma
+        resp = karma.response()
+        onlynicks = karma.onlyNicks()
+        try:
+            karma.onlynicks.setValue(True)
+            karma.response.setValue(True)
+            self.assertSnarfNoResponse('abcd++')
+            self.assertSnarfRegexp('hello--', 'is now')
+            self.assertSnarfNoResponse('abcd--')
+            self.assertSnarfRegexp('hello++', 'is now')
+        finally:
+            karma.onlynicks.setValue(onlynicks)
+            karma.response.setValue(resp)
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -66,5 +66,8 @@ conf.registerChannelValue(Karma, 'allowSelfRating',
 conf.registerChannelValue(Karma, 'allowUnaddressedKarma',
     registry.Boolean(True, _("""Determines whether the bot will
     increase/decrease karma without being addressed.""")))
+conf.registerChannelValue(Karma, 'onlyNicks',
+    registry.Boolean(False, _("""Determines whether the bot will
+    only increase/decrease karma for nicks in the current channel.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
