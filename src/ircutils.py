@@ -667,40 +667,17 @@ for (k, v) in mircColors.items():
 
 def standardSubstitute(irc, msg, text, env=None):
     """Do the standard set of substitutions on text, and return it"""
-    if isChannel(msg.args[0]):
-        channel = msg.args[0]
-    else:
-        channel = 'somewhere'
     def randInt():
         return str(random.randint(-1000, 1000))
     def randDate():
         t = pow(2,30)*random.random()+time.time()/4.0
         return time.ctime(t)
-    def randNick():
-        if channel != 'somewhere':
-            L = list(irc.state.channels[channel].users)
-            if len(L) > 1:
-                n = msg.nick
-                while n == msg.nick:
-                    n = utils.iter.choice(L)
-                return n
-            else:
-                return msg.nick
-        else:
-            return 'someone'
     ctime = time.strftime("%a %b %d %H:%M:%S %Y")
     localtime = time.localtime()
     gmtime = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime())
     vars = CallableValueIrcDict({
-        'who': msg.nick,
-        'nick': msg.nick,
-        'user': msg.user,
-        'host': msg.host,
-        'channel': channel,
-        'botnick': irc.nick,
         'now': ctime, 'ctime': ctime,
         'utc': gmtime, 'gmt': gmtime,
-        'randnick': randNick, 'randomnick': randNick,
         'randdate': randDate, 'randomdate': randDate,
         'rand': randInt, 'randint': randInt, 'randomint': randInt,
         'today': time.strftime('%d %b %Y', localtime),
@@ -714,8 +691,48 @@ def standardSubstitute(irc, msg, text, env=None):
         's': localtime[5], 'sec': localtime[5], 'second': localtime[5],
         'tz': time.strftime('%Z', localtime),
         })
-    if msg.reply_env:
-        vars.update(msg.reply_env)
+    if irc:
+        vars.update({
+            'botnick': irc.nick,
+            })
+
+    if msg:
+        vars.update({
+            'who': msg.nick,
+            'nick': msg.nick,
+            'user': msg.user,
+            'host': msg.host,
+            })
+        if msg.reply_env:
+            vars.update(msg.reply_env)
+
+    if irc and msg:
+        if isChannel(msg.args[0]):
+            channel = msg.args[0]
+        else:
+            channel = 'somewhere'
+        def randNick():
+            if channel != 'somewhere':
+                L = list(irc.state.channels[channel].users)
+                if len(L) > 1:
+                    n = msg.nick
+                    while n == msg.nick:
+                        n = utils.iter.choice(L)
+                    return n
+                else:
+                    return msg.nick
+            else:
+                return 'someone'
+        vars.update({
+            'randnick': randNick, 'randomnick': randNick,
+            'channel': channel,
+            })
+    else:
+        vars.update({
+            'channel': 'somewhere',
+            'randnick': 'someone', 'randomnick': 'someone',
+            })
+
     if env is not None:
         vars.update(env)
     t = string.Template(text)
