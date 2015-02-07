@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
-"PO-Revision-Date: 2014-12-20 12:21+0200\n"
+"POT-Creation-Date: 2015-01-24 19:31+CET\n"
+"PO-Revision-Date: 2015-01-24 19:31+0100\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
 "Language: fi\n"
@@ -28,8 +28,8 @@ msgstr ""
 " tämän kaappaajan olevan käytössä?"
 
 #: config.py:45 config.py:49
-msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', 'ur1', and 'x0'."
-msgstr "Kelvolliset arvot ovat 'ln', 'tiny', 'xrl', 'goo', 'ur1' ja 'x0' ."
+msgid "Valid values include 'ln', 'tiny', 'goo', 'ur1', and 'x0'."
+msgstr "Kelvolliset arvot ovat 'ln', 'tiny', 'goo', 'ur1' ja 'x0' ."
 
 #: config.py:70
 msgid ""
@@ -145,19 +145,7 @@ msgstr ""
 "osoitteesta>.\n"
 "        "
 
-#: plugin.py:248
-msgid ""
-"<url>\n"
-"\n"
-"        Returns an xrl.us version of <url>.\n"
-"        "
-msgstr ""
-"<URL-osoite>\n"
-"\n"
-"        Palauttaa xrl.us palvelun lyhentämän version <URL-osoitteesta>.\n"
-"        "
-
-#: plugin.py:281
+#: plugin.py:252
 msgid ""
 "<url>\n"
 "\n"
@@ -168,7 +156,7 @@ msgstr ""
 "\n"
 " Palauttaa goo.gl-palvelun lyhentämän version <URL-osoitteesta>."
 
-#: plugin.py:311
+#: plugin.py:282
 msgid ""
 "<url>\n"
 "\n"
@@ -179,7 +167,7 @@ msgstr ""
 " Palauttaa ur1-version <url:stä>.\n"
 "        "
 
-#: plugin.py:338
+#: plugin.py:309
 msgid ""
 "<url>\n"
 "\n"
@@ -191,7 +179,7 @@ msgstr ""
 "        Palauttaa x0.no palvelun lyhentämän version <URL-osoitteesta>.\n"
 "        "
 
-#: plugin.py:365
+#: plugin.py:336
 msgid ""
 "<url>\n"
 "\n"
@@ -201,6 +189,17 @@ msgstr ""
 "<url>\n"
 " Palauttaa laajennetun version <url-osoitteesta>.\n"
 "        "
+
+#~ msgid ""
+#~ "<url>\n"
+#~ "\n"
+#~ "        Returns an xrl.us version of <url>.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<URL-osoite>\n"
+#~ "\n"
+#~ "        Palauttaa xrl.us palvelun lyhentämän version <URL-osoitteesta>.\n"
+#~ "        "
 
 #~ msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', and 'x0'."
 #~ msgstr "Kelvolliset arvot ovat 'ln', 'tiny', 'xrl', 'goo' ja 'x0' ."
