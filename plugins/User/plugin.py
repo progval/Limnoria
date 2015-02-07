@@ -500,6 +500,7 @@ class User(callbacks.Plugin):
                 r'-----BEGIN PGP SIGNATURE-----\r?\n.*'
                 r'\r?\n-----END PGP SIGNATURE-----',
                 re.S)
+        
         @internationalizeDocstring
         def auth(self, irc, msg, args, url):
             """<url>
@@ -523,7 +524,7 @@ class User(callbacks.Plugin):
                     'Authentication aborted.'), Raise=True)
             verified = gpg.keyring.verify(data)
             if verified and verified.valid:
-                keyid = verified.key_id
+                keyid = verified.pubkey_fingerprint[-16:]
                 prefix, expiry = self._tokens.pop(token)
                 found = False
                 for (id, user) in ircdb.users.items():

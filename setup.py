@@ -36,6 +36,7 @@ import time
 import datetime
 import tempfile
 import subprocess
+from math import ceil
 
 debug = '--debug' in sys.argv
 
@@ -142,7 +143,7 @@ try:
                     if self._total_files//10 != 0 and \
                             self._refactored_files % (self._total_files//10) == 0:
                         print('Refactoring files: %i%% (%i on %i).' %
-                                (self._refactored_files/(self._total_files//10)*10,
+                                (ceil(self._refactored_files*100./self._total_files),
                                  self._refactored_files, self._total_files))
                     self._refactored_files += 1
                     return super(DistutilsRefactoringTool, self).refactor_file(

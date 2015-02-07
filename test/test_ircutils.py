@@ -216,6 +216,9 @@ class FunctionsTestCase(SupyTestCase):
         vars = {'foo': 'bar', 'b': 'c', 'i': 100,
                 'f': lambda: 'called'}
         self.assertEqual(f(irc, msg, '$foo', vars), 'bar')
+        self.assertEqual(f(irc, None, '$foo', vars), 'bar')
+        self.assertEqual(f(None, None, '$foo', vars), 'bar')
+        self.assertEqual(f(None, msg, '$foo', vars), 'bar')
         self.assertEqual(f(irc, msg, '${foo}', vars), 'bar')
         self.assertEqual(f(irc, msg, '$b', vars), 'c')
         self.assertEqual(f(irc, msg, '${b}', vars), 'c')

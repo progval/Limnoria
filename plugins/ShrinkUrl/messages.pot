@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2015-01-24 19:31+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,7 @@ msgstr ""
 
 #: config.py:45 config.py:49
 #, docstring
-msgid "Valid values include 'ln', 'tiny', 'xrl', 'goo', 'ur1', and 'x0'."
+msgid "Valid values include 'ln', 'tiny', 'goo', 'ur1', and 'x0'."
 msgstr ""
 
 #: config.py:70
@@ -106,16 +106,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:248
-#, docstring
-msgid ""
-"<url>\n"
-"\n"
-"        Returns an xrl.us version of <url>.\n"
-"        "
-msgstr ""
-
-#: plugin.py:281
+#: plugin.py:252
 #, docstring
 msgid ""
 "<url>\n"
@@ -124,7 +115,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:311
+#: plugin.py:282
 #, docstring
 msgid ""
 "<url>\n"
@@ -133,7 +124,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:338
+#: plugin.py:309
 #, docstring
 msgid ""
 "<url>\n"
@@ -142,7 +133,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:365
+#: plugin.py:336
 #, docstring
 msgid ""
 "<url>\n"
