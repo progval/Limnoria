@@ -70,7 +70,7 @@ def import_conf():
     conf = __import__('supybot.conf').conf
     conf.registerGlobalValue(conf.supybot, 'language',
         conf.registry.String(currentLocale, """Determines the bot's default
-        language if translations exist. Currently supported are 'en', 'de',
+        language if translations exist. Currently supported are 'de', 'en',
         'es', 'fi', 'fr' and 'it'."""))
     conf.supybot.language.addCallback(reloadLocalesIfRequired)
 
