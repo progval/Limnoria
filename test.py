@@ -37,6 +37,8 @@ class DDGTestCase(PluginTestCase):
     def testSearch(self):
         self.assertRegexp(
             'ddg search wikipedia', 'Wikipedia.*? - .*?https?\:\/\/')
-
+    def testZeroclick(self):
+        self.assertRegexp(
+            'zeroclick 2^3', '8')
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

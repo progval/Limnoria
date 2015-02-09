@@ -58,23 +58,34 @@ class DDG(callbacks.Plugin):
     """Searches for results on DuckDuckGo."""
     threaded = True
 
-    def search(self, irc, msg, args, text):
-        """<query>
-
-        Searches for <query> on DuckDuckGo (web search)."""
+    def _ddgurl(self, text):
+        # DuckDuckGo has a 'lite' site free of unparseable JavaScript
+        # elements, so we'll use that to our advantage!
         url = "https://duckduckgo.com/lite?" + urlencode({"q": text})
         try:
             data = utils.web.getUrl(url).decode("utf-8")
         except utils.web.Error as e:
-            self.log.info(url)
             irc.error(str(e), Raise=True)
         soup = BeautifulSoup(data)
+        return soup.find_all('td')
+
+    def search(self, irc, msg, args, text):
+        """<text>
+
+        Searches for <text> on DuckDuckGo's web search."""
         replies = []
         channel = msg.args[0]
-        for t in soup.find_all('td'):
+        # In a nutshell, the 'lite' site puts all of its usable content
+        # into tables. This means that headings, result snippets and
+        # everything else are all using the same tag (<td>), which makes
+        # parsing somewhat difficult.
+        for t in self._ddgurl(text):
             maxr = self.registryValue("maxResults", channel)
+            # Hence we run a for loop to extract meaningful content:
             for n in range(1, maxr):
                 res = ''
+                # Each valid result has a preceding heading in the format
+                # '<td valign="top">1.&nbsp;</td>', etc.
                 if ("%s." % n) in t.text:
                     res = t.next_sibling.next_sibling
                 if not res:
@@ -102,6 +113,43 @@ class DDG(callbacks.Plugin):
                 irc.reply(', '.join(replies))
     search = wrap(search, ['text'])
 
+    @wrap(['text'])
+    def zeroclick(self, irc, msg, args, text):
+        """<text>
+
+        Looks up <text> on DuckDuckGo's zero-click engine."""
+        # Zero-click can give multiple replies for things if the
+        # query is ambiguous, sort of like an encyclopedia.
+
+        # For example, looking up "2^3" will give both:
+        # Zero-click info: 8 (number)
+        # Zero-click info: 8
+        replies = {}
+        for td in self._ddgurl(text):
+            if td.text.startswith("Zero-click info:"):
+                # Make a dictionary of things
+                item = td.text.split("Zero-click info:", 1)[1].strip()
+                td = td.parent.next_sibling.next_sibling.\
+                            find("td")
+                # Condense newlines (<br> tags)
+                for br in td.find_all('br'):
+                    br.replace_with(' - ')
+                res = td.text.strip().split("\n")[0]
+                try:
+                    # Some zero-click results have an attached link to them.
+                    link = td.a.get('href')
+                    # Others have a piece of meaningless JavaScript...
+                    if link != "javascript:;":
+                        res += format(" %u", link)
+                except AttributeError:
+                    pass
+                replies[item] = res
+        else:
+            if not replies:
+                irc.error("No zero-click info could be found for '%s'." %
+                          text, Raise=True)
+            s = ["%s - %s" % (ircutils.bold(k), v) for k, v in replies.items()]
+            irc.reply("; ".join(s))
 Class = DDG
 
 
