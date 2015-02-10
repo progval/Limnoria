@@ -236,6 +236,8 @@ class Seen(callbacks.Plugin):
         if name and ircutils.strEqual(name, irc.nick):
             irc.reply(_("You've found me!"))
             return
+        if channel not in irc.state.channels:
+            irc.error(_("I'm not in %s." % channel), Raise=True)
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
@@ -256,6 +258,8 @@ class Seen(callbacks.Plugin):
         if name and ircutils.strEqual(name, irc.nick):
             irc.reply(_("You've found me!"))
             return
+        if channel not in irc.state.channels:
+            irc.error(_("I'm not in %s." % channel), Raise=True)
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
@@ -295,6 +299,8 @@ class Seen(callbacks.Plugin):
         Returns the last thing said in <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
+        if channel not in irc.state.channels:
+            irc.error(_("I'm not in %s." % channel), Raise=True)
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
@@ -327,6 +333,8 @@ class Seen(callbacks.Plugin):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        if channel not in irc.state.channels:
+            irc.error(_("I'm not in %s." % channel), Raise=True)
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
