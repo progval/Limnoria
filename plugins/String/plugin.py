@@ -101,6 +101,9 @@ class String(callbacks.Plugin):
         elif sys.version_info[0] >= 3 and isinstance(text, bytes):
             text = text.decode()
 
+        if encoding in ('base64', 'base64_codec'):
+            text = text.replace('\n', '')
+
         # Reply
         irc.reply(text.rstrip('\n'))
     encode = wrap(encode, ['something', 'text'])
