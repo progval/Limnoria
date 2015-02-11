@@ -143,7 +143,10 @@ class String(callbacks.Plugin):
         if sys.version_info[0] < 3 and isinstance(text, unicode):
             text = text.encode('utf-8')
         elif sys.version_info[0] >= 3 and isinstance(text, bytes):
-            text = text.decode()
+            try:
+                text = text.decode()
+            except UnicodeDecodeError:
+                pass
 
         # Reply
         irc.reply(text)
