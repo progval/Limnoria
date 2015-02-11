@@ -55,6 +55,8 @@ conf.registerGlobalValue(Aka, 'maximumWordsInName',
     registry.Integer(5, _("""The maximum number of words allowed in a
     command name. Setting this to an high value may slow down your bot
     on long commands.""")))
-
-
+conf.registerGlobalValue(Aka, 'recursionLimit',
+    registry.NonNegativeInteger(8, _("""Determines the maximum level of Aka recursion
+    (Akas calling other Akas) allowed. This can help effectively stop DDoS attempts that
+    call one or more Akas in a loop. If set to zero, this check is disabled.""")))
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
