@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2015, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -180,6 +181,10 @@ class FirstTestCase(CommandsTestCase):
     def testFirstConverterFailsAndNotErroredState(self):
         self.assertStateErrored([first('int', 'something')], ['words'],
                                 errored=False)
+
+    def testLongRegexp(self):
+        spec = [first('regexpMatcher', 'regexpReplacer'), 'text']
+        self.assertStateErrored(spec, ['s/foo/bar/', 'x' * 512], errored=False)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

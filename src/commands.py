@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009-2010, James McCoy
+# Copyright (c) 2009-2010,2015, James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -375,8 +375,8 @@ def _getRe(f):
                 else:
                     state.args.append(s)
             else:
-                state.errorInvalid('regular expression', s)
-        except IndexError:
+                raise ValueError
+        except (ValueError, IndexError):
             args[:] = original
             state.errorInvalid('regular expression', s)
     return get
