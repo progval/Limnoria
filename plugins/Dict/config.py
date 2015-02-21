@@ -48,5 +48,8 @@ conf.registerChannelValue(Dict, 'default',
     registry.String('*', _("""Determines the default dictionary the bot
     will ask for definitions in.  If this value is '*' (without the quotes)
     the bot will use all dictionaries to define words.""")))
+conf.registerChannelValue(Dict, 'inPrivate',
+    registry.Boolean(False, _("""Determines whether the output of the 'dict'
+    command will be sent in private in order to reduce flooding.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
