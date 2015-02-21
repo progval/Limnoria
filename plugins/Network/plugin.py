@@ -243,7 +243,7 @@ class Network(callbacks.Plugin):
                     L.append(format(_('is on %L'), normal))
         else:
             if command == 'whois':
-                L = [_('isn\'t on any publically visible channels')]
+                L = [_('isn\'t on any publicly visible channels')]
             else:
                 L = []
         channels = format('%L', L)
