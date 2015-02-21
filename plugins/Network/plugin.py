@@ -243,8 +243,7 @@ class Network(callbacks.Plugin):
                     L.append(format(_('is on %L'), normal))
         else:
             if command == 'whois':
-                L = [_('isn\'t on any non-secret channels or is using a '
-                    'channel-list hiding umode.')]
+                L = [_('isn\'t on any publically visible channels')]
             else:
                 L = []
         channels = format('%L', L)
