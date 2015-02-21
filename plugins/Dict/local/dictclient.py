@@ -165,7 +165,7 @@ class Connection:
     def sendcommand(self, command):
         """Takes a command, without a newline character, and sends it to
         the server."""
-        self.wfile.write(command.encode('ascii') + b"\n")
+        self.wfile.write(command.encode('utf-8') + b"\n")
 
     def define(self, database, word):
         """Returns a list of Definition objects for each matching
