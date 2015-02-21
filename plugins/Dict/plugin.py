@@ -126,7 +126,8 @@ class Dict(callbacks.Plugin):
             s = format(_('%L responded: %s'), list(dbs), '; '.join(L))
         else:
             s = '; '.join(L)
-        irc.reply(s)
+        private = self.registryValue('inPrivate', msg.args[0])
+        irc.reply(s, private=private)
     dict = wrap(dict, [many('something')])
 
     def synonym(self, irc, msg, args, words):
