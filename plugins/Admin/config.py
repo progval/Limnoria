@@ -43,8 +43,12 @@ def configure(advanced):
 
 
 Admin = conf.registerPlugin('Admin')
-# This is where your configuration variables (if any) should go.  For example:
-# conf.registerGlobalValue(Admin, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+
+conf.registerChannelValue(Admin, 'partMsg',
+    registry.String('$version', _("""Determines what part message should be
+        used by default. If the part command is called without a part message,
+        this will be used. If this value is empty, then no part message will
+        be used (they are optional in the IRC protocol). The standard
+        substitutions ($version, $nick, etc.) are all handled appropriately.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
