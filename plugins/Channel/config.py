@@ -51,6 +51,10 @@ conf.registerChannelValue(Channel, 'nicksInPrivate',
     registry.Boolean(True, _("""Determines whether the output of 'nicks' will
     be sent in private. This prevents mass-highlights of a channel's users,
     accidental or on purpose.""")))
+conf.registerChannelValue(Channel, 'rejoinDelay',
+    registry.NonNegativeInteger(0, _("""Determines how many seconds the bot will wait
+    before rejoining a channel if kicked and
+    supybot.plugins.Channel.alwaysRejoin is on.""")))
 conf.registerChannelValue(Channel, 'partMsg',
     registry.String('$version', _("""Determines what part message should be
         used by default. If the part command is called without a part message,

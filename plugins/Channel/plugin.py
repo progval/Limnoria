@@ -30,6 +30,7 @@
 
 import sys
 import fnmatch
+import time
 
 import supybot.conf as conf
 import supybot.ircdb as ircdb
@@ -46,6 +47,7 @@ class Channel(callbacks.Plugin):
     """This plugin provides various commands for channel management, such
     as setting modes and channel-wide bans/ignores/capabilities. This is
     a core Supybot plugin that should not be removed!"""
+
     def __init__(self, irc):
         self.__parent = super(Channel, self)
         self.__parent.__init__(irc)
@@ -55,10 +57,18 @@ class Channel(callbacks.Plugin):
         channel = msg.args[0]
         if msg.args[1] == irc.nick:
             if self.registryValue('alwaysRejoin', channel):
-                self.log.info('Kicked from %s by %s. Rejoining.' %
-                        (channel, msg.prefix))
+                delay = self.registryValue('rejoinDelay', channel)
                 networkGroup = conf.supybot.networks.get(irc.network)
-                irc.sendMsg(networkGroup.channels.join(channel))
+                if delay:
+                    def f():
+                        irc.sendMsg(networkGroup.channels.join(channel))
+                    schedule.addEvent(f, time.time() + delay)
+                    self.log.info('Kicked from %s by %s. Rejoining after %s '
+                                  'seconds.', channel, msg.prefix, delay)
+                else:
+                    self.log.info('Kicked from %s by %s. Rejoining.',
+                                  channel, msg.prefix)
+                    irc.sendMsg(networkGroup.channels.join(channel))
             else:
                 self.log.info('Kicked from %s by %s. Not auto-rejoining.' %
                         (channel, msg.prefix))
