@@ -41,10 +41,6 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Admin', True)
 
-
 Admin = conf.registerPlugin('Admin')
-# This is where your configuration variables (if any) should go.  For example:
-# conf.registerGlobalValue(Admin, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

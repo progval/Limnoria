@@ -55,5 +55,11 @@ conf.registerChannelValue(Channel, 'rejoinDelay',
     registry.NonNegativeInteger(0, _("""Determines how many seconds the bot will wait
     before rejoining a channel if kicked and
     supybot.plugins.Channel.alwaysRejoin is on.""")))
+conf.registerChannelValue(Channel, 'partMsg',
+    registry.String('$version', _("""Determines what part message should be
+        used by default. If the part command is called without a part message,
+        this will be used. If this value is empty, then no part message will
+        be used (they are optional in the IRC protocol). The standard
+        substitutions ($version, $nick, etc.) are all handled appropriately.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
