@@ -231,38 +231,6 @@ class Admin(callbacks.Plugin):
             irc.reply(irc.nick)
     nick = wrap(nick, [additional('nick'), additional('something')])
 
-    @internationalizeDocstring
-    def part(self, irc, msg, args, channel, reason):
-        """[<channel>] [<reason>]
-
-        Tells the bot to part the list of channels you give it.  <channel> is
-        only necessary if you want the bot to part a channel other than the
-        current channel.  If <reason> is specified, use it as the part
-        message.  Otherwise, the default part message specified in
-        supybot.plugins.Admin.partMsg will be used. No part message will be
-        used if no default is configured.
-        """
-        if channel is None:
-            if irc.isChannel(msg.args[0]):
-                channel = msg.args[0]
-            else:
-                irc.error(Raise=True)
-        try:
-            network = conf.supybot.networks.get(irc.network)
-            network.channels().remove(channel)
-        except KeyError:
-            pass
-        if channel not in irc.state.channels:
-            irc.error(_('I\'m not in %s.') % channel, Raise=True)
-        reason = (reason or self.registryValue("partMsg", channel))
-        reason = ircutils.standardSubstitute(irc, msg, reason)
-        irc.queueMsg(ircmsgs.part(channel, reason))
-        if msg.nick in irc.state.channels[channel].users:
-            irc.noReply()
-        else:
-            irc.replySuccess()
-    part = wrap(part, [optional('validChannel'), additional('text')])
-
     class capability(callbacks.Commands):
 
         @internationalizeDocstring

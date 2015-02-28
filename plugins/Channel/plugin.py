@@ -258,17 +258,22 @@ class Channel(callbacks.Plugin):
                              any('nickInChannel')])
 
     @internationalizeDocstring
-    def cycle(self, irc, msg, args, channel):
+    def cycle(self, irc, msg, args, channel, reason):
         """[<channel>]
 
         If you have the #channel,op capability, this will cause the bot to
         "cycle", or PART and then JOIN the channel. <channel> is only necessary
-        if the message isn't sent in the channel itself.
+        if the message isn't sent in the channel itself. If <reason> is not
+        specified, the default part message specified in
+        supybot.plugins.Channel.partMsg will be used. No part message will be
+        used if neither a cycle reason nor a default part message is given.
         """
-        self._sendMsg(irc, ircmsgs.part(channel, msg.nick))
+        reason = (reason or self.registryValue("partMsg", channel))
+        reason = ircutils.standardSubstitute(irc, msg, reason)
+        self._sendMsg(irc, ircmsgs.part(channel, reason))
         networkGroup = conf.supybot.networks.get(irc.network)
         self._sendMsg(irc, networkGroup.channels.join(channel))
-    cycle = wrap(cycle, ['op'])
+    cycle = wrap(cycle, ['op', additional('text')])
 
     @internationalizeDocstring
     def kick(self, irc, msg, args, channel, nicks, reason):
@@ -941,6 +946,41 @@ class Channel(callbacks.Plugin):
         self.alertOps(irc, channel, text, frm=msg.nick)
     alert = wrap(alert, ['inChannel', 'text'])
 
+    @internationalizeDocstring
+    def part(self, irc, msg, args, channel, reason):
+        """[<channel>] [<reason>]
+
+        Tells the bot to part the list of channels you give it.  <channel> is
+        only necessary if you want the bot to part a channel other than the
+        current channel.  If <reason> is specified, use it as the part
+        message.  Otherwise, the default part message specified in
+        supybot.plugins.Channel.partMsg will be used. No part message will be
+        used if no default is configured.
+        """
+        if channel is None:
+            if irc.isChannel(msg.args[0]):
+                channel = msg.args[0]
+            else:
+                irc.error(Raise=True)
+        capability = ircdb.makeChannelCapability(channel, 'op')
+        hostmask = irc.state.nickToHostmask(msg.nick)
+        if not ircdb.checkCapability(hostmask, capability):
+            irc.errorNoCapability(capability, Raise=True)
+        try:
+            network = conf.supybot.networks.get(irc.network)
+            network.channels().remove(channel)
+        except KeyError:
+            pass
+        if channel not in irc.state.channels:
+            irc.error(_('I\'m not in %s.') % channel, Raise=True)
+        reason = (reason or self.registryValue("partMsg", channel))
+        reason = ircutils.standardSubstitute(irc, msg, reason)
+        irc.queueMsg(ircmsgs.part(channel, reason))
+        if msg.nick in irc.state.channels[channel].users:
+            irc.noReply()
+        else:
+            irc.replySuccess()
+    part = wrap(part, [optional('validChannel'), additional('text')])
 
 Class = Channel
 
