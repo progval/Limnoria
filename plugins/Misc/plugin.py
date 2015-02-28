@@ -160,12 +160,20 @@ class Misc(callbacks.Plugin):
                                      'no command named %q in it.  Try "list '
                                      '%s" to see the commands in the %q '
                                      'plugin.'), plugin, tokens[1],
-                                     plugin, plugin))
+                                     plugin, plugin), Raise=True)
                 else:
-                    irc.errorInvalid(_('command'), tokens[0], repr=False)
+                    command = tokens[0]
             else:
                 command = tokens and tokens[0] or ''
-                irc.errorInvalid(_('command'), command, repr=False)
+            plugins = [cb.name() for cb in irc.callbacks
+                       if self.isPublic(cb)]
+            s = format(_('%q is not a valid command.'), command)
+            if command.lower() in map(str.lower, plugins):
+                s += format(_(' However, %q is the name of a loaded plugin, '
+                             'and you may be able to find its provided '
+                             'commands using "list %s".'), command.title(),
+                             command.title())
+            irc.error(s)
         else:
             if tokens:
                 # echo [] will get us an empty token set, but there's no need
