@@ -231,7 +231,6 @@ class Admin(callbacks.Plugin):
             irc.reply(irc.nick)
     nick = wrap(nick, [additional('nick'), additional('something')])
 
-    @internationalizeDocstring
     class capability(callbacks.Commands):
 
         @internationalizeDocstring
