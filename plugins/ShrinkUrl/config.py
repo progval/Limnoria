@@ -40,8 +40,8 @@ def configure(advanced):
         conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
 
 class ShrinkService(registry.OnlySomeStrings):
-    """Valid values include 'ln', 'tiny', 'goo', 'ur1', and 'x0'."""
-    validStrings = ('ln', 'tiny', 'goo', 'ur1', 'x0')
+    """Valid values include 'tiny', 'goo', 'ur1', and 'x0'."""
+    validStrings = ('tiny', 'goo', 'ur1', 'x0')
 
 class ShrinkCycle(registry.SpaceSeparatedListOfStrings):
     """Valid values include 'ln', 'tiny', 'goo', 'ur1', and 'x0'."""
@@ -70,7 +70,7 @@ conf.registerChannelValue(ShrinkUrl, 'shrinkSnarfer',
     shrink snarfer is enabled.  This snarfer will watch for URLs in the
     channel, and if they're sufficiently long (as determined by
     supybot.plugins.ShrinkUrl.minimumLength) it will post a
-    smaller URL from either ln-s.net or tinyurl.com, as denoted in
+    smaller URL from the service denoted in
     supybot.plugins.ShrinkUrl.default."""))
 conf.registerChannelValue(ShrinkUrl.shrinkSnarfer, 'showDomain',
     registry.Boolean(True, """Determines whether the snarfer will show the

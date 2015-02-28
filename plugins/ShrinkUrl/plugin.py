@@ -149,34 +149,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
     shrinkSnarfer.__doc__ = utils.web._httpUrlRe
 
-    def _getLnUrl(self, url):
-        url = utils.web.urlquote(url)
-        try:
-            return self.db.get('ln', url)
-        except KeyError:
-            text = utils.web.getUrl('http://ln-s.net/home/api.jsp?url=' + url)
-            (code, text) = text.split(None, 1)
-            text = text.strip()
-            if code == '200':
-                self.db.set('ln', url, text)
-                return text
-            else:
-                raise ShrinkError, text
-
-    def ln(self, irc, msg, args, url):
-        """<url>
-
-        Returns an ln-s.net version of <url>.
-        """
-        try:
-            lnurl = self._getLnUrl(url)
-            m = irc.reply(lnurl)
-            if m is not None:
-                m.tag('shrunken')
-        except ShrinkError, e:
-            irc.error(str(e))
-    ln = thread(wrap(ln, ['url']))
-
     def _getTinyUrl(self, url):
         try:
             return self.db.get('tiny', url)
