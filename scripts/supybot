@@ -132,7 +132,7 @@ def main():
     seconds = now - world.startedAt
     log.info('Total uptime: %s.', utils.gen.timeElapsed(seconds))
     (user, system, _, _, _) = os.times()
-    log.info('Total CPU time taken: %s seconds.', user+system)
+    log.info('Total CPU time taken: %s seconds.', round(user+system, 2))
     log.info('No more Irc objects, exiting.')
 
 if __name__ == '__main__':
