@@ -61,8 +61,11 @@ class QuoteGrabsRecord(dbi.Record):
 
     def __str__(self):
         grabber = plugins.getUserName(self.grabber)
-        return format(_('%s (Said by: %s; grabbed by %s at %t)'),
-                      self.text, self.hostmask, grabber, self.at)
+        if self.at:
+            return format(_('%s (Said by: %s; grabbed by %s at %t)'),
+                          self.text, self.hostmask, grabber, self.at)
+        else:
+            return format('%s', self.text)
 
 class SqliteQuoteGrabsDB(object):
     def __init__(self, filename):
@@ -105,7 +108,7 @@ class SqliteQuoteGrabsDB(object):
         db.commit()
         return db
 
-    def get(self, channel, id):
+    def get(self, channel, id, quoteonly = 0):
         db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, nick, quote, hostmask, added_at, added_by
@@ -114,8 +117,11 @@ class SqliteQuoteGrabsDB(object):
         if len(results) == 0:
             raise dbi.NoRecordError
         (id, by, quote, hostmask, at, grabber) = results[0]
-        return QuoteGrabsRecord(id, by=by, text=quote, hostmask=hostmask,
-                                at=int(at), grabber=grabber)
+        if quoteonly is 0:
+            return QuoteGrabsRecord(id, by=by, text=quote, hostmask=hostmask,
+                                    at=int(at), grabber=grabber)
+        else:
+            return QuoteGrabsRecord(id, text=quote)
 
     def random(self, channel, nick):
         db = self._getDb(channel)
@@ -358,6 +364,20 @@ class QuoteGrabs(callbacks.Plugin):
                 irc.error(_('Couldn\'t get a random quote.  Are there any '
                           'grabbed quotes in the database?'))
     random = wrap(random, ['channeldb', additional('nick')])
+
+    @internationalizeDocstring
+    def say(self, irc, msg, args, channel, id):
+        """[<channel>] <id>
+
+        Return the quotegrab with the given <id>.  <channel> is only necessary
+        if the message isn't sent in the channel itself.
+        """
+        try:
+            irc.reply(self.db.get(channel, id, 1))
+        except dbi.NoRecordError:
+            irc.error(_('No quotegrab for id %s') % utils.str.quoted(id),
+                      Raise=True)
+    say = wrap(say, ['channeldb', 'id'])
 
     @internationalizeDocstring
     def get(self, irc, msg, args, channel, id):

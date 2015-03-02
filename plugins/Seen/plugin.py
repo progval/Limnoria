@@ -225,6 +225,17 @@ class Seen(callbacks.Plugin):
         except KeyError:
             irc.reply(format(_('I have not seen %s.'), name))
 
+    def _checkChannelPresence(self, irc, channel, target, you):
+        if channel not in irc.state.channels:
+            irc.error(_("I'm not in %s." % channel), Raise=True)
+        if target not in irc.state.channels[channel].users:
+            if you:
+                msg = format(_('You must be in %s to use this command.'), channel)
+            else:
+                msg = format(_('%s must be in %s to use this command.'),
+                        target, channel)
+            irc.error(msg, Raise=True)
+
     @internationalizeDocstring
     def seen(self, irc, msg, args, channel, name):
         """[<channel>] <nick>
@@ -236,9 +247,7 @@ class Seen(callbacks.Plugin):
         if name and ircutils.strEqual(name, irc.nick):
             irc.reply(_("You've found me!"))
             return
-        if msg.nick not in irc.state.channels[channel].users:
-            irc.error(format('You must be in %s to use this command.', channel))
-            return
+        self._checkChannelPresence(irc, channel, msg.nick, True)
         self._seen(irc, channel, name)
     seen = wrap(seen, ['channel', 'something'])
 
@@ -256,9 +265,7 @@ class Seen(callbacks.Plugin):
         if name and ircutils.strEqual(name, irc.nick):
             irc.reply(_("You've found me!"))
             return
-        if msg.nick not in irc.state.channels[channel].users:
-            irc.error(format('You must be in %s to use this command.', channel))
-            return
+        self._checkChannelPresence(irc, channel, msg.nick, True)
         if name and optlist:
             raise callbacks.ArgumentError
         elif name:
@@ -295,9 +302,7 @@ class Seen(callbacks.Plugin):
         Returns the last thing said in <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        if msg.nick not in irc.state.channels[channel].users:
-            irc.error(format('You must be in %s to use this command.', channel))
-            return
+        self._checkChannelPresence(irc, channel, msg.nick, True)
         self._last(irc, channel)
     last = wrap(last, ['channel'])
 
@@ -327,9 +332,7 @@ class Seen(callbacks.Plugin):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        if msg.nick not in irc.state.channels[channel].users:
-            irc.error(format('You must be in %s to use this command.', channel))
-            return
+        self._checkChannelPresence(irc, channel, msg.nick, True)
         self._user(irc, channel, user)
     user = wrap(user, ['channel', 'otherUser'])
 
@@ -343,13 +346,10 @@ class Seen(callbacks.Plugin):
         """
         if nick is None:
             nick = msg.nick
-        if channel not in irc.state.channels:
-            irc.error(_('I am not in %s.') % channel)
-            return
-        if nick not in irc.state.channels[channel].users:
-            irc.error(format(_('%s must be in %s to use this command.'),
-                ('You' if nick == msg.nick else nick), channel))
-            return
+            you = True
+        else:
+            you = False
+        self._checkChannelPresence(irc, channel, nick, you)
         if nick is None:
             nick = msg.nick
         end = None # By default, up until the most recent message.

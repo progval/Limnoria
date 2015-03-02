@@ -94,27 +94,6 @@ class AdminTestCase(PluginTestCase):
         self.assertEqual(m.args[0], '#foo')
         self.assertEqual(m.args[1], 'key')
 
-    def testPart(self):
-        def getAfterJoinMessages():
-            m = self.irc.takeMsg()
-            self.assertEqual(m.command, 'MODE')
-            m = self.irc.takeMsg()
-            self.assertEqual(m.command, 'MODE')
-            m = self.irc.takeMsg()
-            self.assertEqual(m.command, 'WHO')
-        self.assertError('part #foo')
-        self.assertRegexp('part #foo', 'not in')
-        self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
-        getAfterJoinMessages()
-        m = self.getMsg('part #foo')
-        self.assertEqual(m.command, 'PART')
-        self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
-        getAfterJoinMessages()
-        m = self.getMsg('part #foo reason')
-        self.assertEqual(m.command, 'PART')
-        self.assertEqual(m.args[0], '#foo')
-        self.assertEqual(m.args[1], 'reason')
-
     def testNick(self):
         original = conf.supybot.nick()
         try:
