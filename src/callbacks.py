@@ -1288,7 +1288,7 @@ class Commands(BasePlugin):
                            utils.exnToString(e))
             help = self.getCommandHelp(command)
             if help.endswith('command has no help.'):
-                irc.error(_('Invalid arguments for %s.') % method.__name__)
+                irc.error(_('Invalid arguments for %s.') % ' '.join(command))
             else:
                 irc.reply(help)
         except (SyntaxError, Error) as e:

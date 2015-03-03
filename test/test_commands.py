@@ -28,6 +28,7 @@
 ###
 
 import sys
+import getopt
 
 from supybot.test import *
 
@@ -119,6 +120,17 @@ class GeneralContextTestCase(CommandsTestCase):
                          ['12', '--foo', 'baz', '--bar', '13', '15'],
                          [12, [('foo', 'baz'), ('bar', 13)], 15])
 
+    def testGetoptsShort(self):
+        spec = ['int', getopts({'foo': None, 'bar': 'int'}), 'int']
+        self.assertState(spec,
+                         ['12', '--f', 'baz', '--ba', '13', '15'],
+                         [12, [('foo', 'baz'), ('bar', 13)], 15])
+
+    def testGetoptsConflict(self):
+        spec = ['int', getopts({'foo': None, 'fbar': 'int'}), 'int']
+        self.assertRaises(getopt.GetoptError, self.assertStateErrored,
+                         spec, ['12', '--f', 'baz', '--ba', '13', '15'])
+
     def testAny(self):
         self.assertState([any('int')], ['1', '2', '3'], [[1, 2, 3]])
         self.assertState([None, any('int')], ['1', '2', '3'], ['1', [2, 3]])
@@ -183,6 +195,22 @@ class FirstTestCase(CommandsTestCase):
     def testFirstConverterFailsAndNotErroredState(self):
         self.assertStateErrored([first('int', 'something')], ['words'],
                                 errored=False)
+
+class GetoptTestCase(PluginTestCase):
+    plugins = ('Misc',) # We put something so it does not complain
+    class Foo(callbacks.Plugin):
+        def bar(self, irc, msg, args, optlist):
+            irc.reply(' '.join(sorted(['%s:%d'%x for x in optlist])))
+        bar = wrap(bar, [getopts({'foo': 'int', 'fbar': 'int'})],
+                   checkDoc=False)
+
+    def testGetoptsExact(self):
+        self.irc.addCallback(self.Foo(self.irc))
+        self.assertResponse('bar --foo 3 --fbar 4', 'fbar:4 foo:3')
+        self.assertResponse('bar --fo 3 --fb 4', 'fbar:4 foo:3')
+        self.assertResponse('bar --f 3 --fb 5',
+                'Error: Invalid arguments for bar.')
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
