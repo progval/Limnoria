@@ -118,7 +118,7 @@ def flush():
     for (i, f) in enumerate(flushers):
         try:
             f()
-        except Exception as e:
+        except Exception:
             log.exception('Uncaught exception in flusher #%s (%s):', i, f)
 
 def debugFlush(s=''):

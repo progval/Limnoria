@@ -34,11 +34,8 @@ Supybot internationalisation and localisation managment.
 __all__ = ['PluginInternationalization', 'internationalizeDocstring']
 
 import os
-import re
 import sys
-import time
 import weakref
-import threading
 conf = None
 # Don't import conf here ; because conf needs this module
 

@@ -34,12 +34,10 @@ Includes wrappers for commands.
 
 import time
 import Queue
-import types
 import getopt
 import inspect
 import threading
 import multiprocessing #python2.6 or later!
-import Queue
 
 try:
     import resource

@@ -35,12 +35,8 @@ import os
 import sys
 import cgi
 import socket
-from threading import Event, Thread
-from cStringIO import StringIO
-from SocketServer import ThreadingMixIn
+from threading import Thread
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-# For testing purposes
-from SocketServer import StreamRequestHandler
 
 import supybot.log as log
 import supybot.conf as conf

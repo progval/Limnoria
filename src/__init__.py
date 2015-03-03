@@ -28,8 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import sys
-import os.path
 import dynamicScope
 
 from . import utils

@@ -184,7 +184,6 @@ class Reader(utils.IterableMap):
     """Class for reading from a CDB database."""
     def __init__(self, filename):
         self.filename = filename
-        import os
         self.fd = open(filename, 'rb')
         self.loop = 0
         self.khash = 0

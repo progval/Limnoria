@@ -41,7 +41,6 @@ import shlex
 import codecs
 import getopt
 import inspect
-import operator
 
 if sys.version_info[0] < 3:
     # cStringIO is buggy with Python 2.6 (

@@ -34,7 +34,6 @@ import time
 import operator
 
 from . import conf, ircutils, log, registry, unpreserve, utils, world
-from .utils.iter import imap, ilen, ifilter
 
 def isCapability(capability):
     return len(capability.split(None, 1)) == 1

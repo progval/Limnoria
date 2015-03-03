@@ -144,7 +144,7 @@ def close(registry, filename, private=True):
                 else:
                     s = 'CENSORED'
                 fd.write('%s: %s\n' % (name, s))
-            except Exception as e:
+            except Exception:
                 exception('Exception printing value:')
     fd.close()
 

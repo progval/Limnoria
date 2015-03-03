@@ -508,7 +508,6 @@ httpserver.http_servers = [httpserver.TestSupyHTTPServer()]
 # Partially stolen from the standard Python library :)
 def open_http(url, data=None):
     """Use HTTP protocol."""
-    import httplib
     user_passwd = None
     proxy_passwd= None
     if isinstance(url, str):

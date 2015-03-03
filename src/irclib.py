@@ -41,7 +41,7 @@ except ImportError:
 
 from . import conf, ircdb, ircmsgs, ircutils, log, utils, world
 from .utils.str import rsplit
-from .utils.iter import imap, chain, cycle
+from .utils.iter import chain
 from .utils.structures import queue, smallqueue, RingBuffer
 
 ###
@@ -481,7 +481,7 @@ class IrcState(IrcCommandDispatcher):
                 converter = self._005converters.get(name, lambda x: x)
                 try:
                     self.supported[name] = converter(value)
-                except Exception as e:
+                except Exception:
                     log.exception('Uncaught exception in 005 converter:')
                     log.error('Name: %s, Converter: %s', name, converter)
             else:
