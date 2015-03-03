@@ -1206,7 +1206,7 @@ class Commands(BasePlugin):
             self.log.debug('Got %s, giving argument error.',
                            utils.exnToString(e))
             help = self.getCommandHelp(command)
-            if help.endswith('command has no help.'):
+            if 'command has no help.' in help:
                 irc.error('Invalid arguments for %s.' % formatCommand(command))
             else:
                 irc.reply(help)
