@@ -974,7 +974,7 @@ class Channel(callbacks.Plugin):
                 irc.error(Raise=True)
         capability = ircdb.makeChannelCapability(channel, 'op')
         hostmask = irc.state.nickToHostmask(msg.nick)
-        if not ircdb.checkCapability(hostmask, capability):
+        if not ircdb.checkCapabilities(hostmask, [capability, 'admin']):
             irc.errorNoCapability(capability, Raise=True)
         try:
             network = conf.supybot.networks.get(irc.network)
