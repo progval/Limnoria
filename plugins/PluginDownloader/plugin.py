@@ -297,7 +297,7 @@ repositories = utils.InsensitivePreservingDict({
                                                    'SupyPlugins',
                                                    ),
                'Iota':             GithubRepository(
-                                                   'IotaSpencer',
+                                                   'ZeeCrazyAtheist',
                                                    'supyplugins',
                                                    ),
                })
