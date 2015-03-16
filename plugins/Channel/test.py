@@ -103,9 +103,13 @@ class ChannelTestCase(ChannelPluginTestCase):
             self.irc.feedMsg(ircmsgs.deop(self.channel, self.nick))
 
     def testWontDeItself(self):
-        for s in 'deop dehalfop devoice'.split():
+        for s in 'deop dehalfop'.split():
             self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
             self.assertError('%s %s' % (s, self.nick))
+            
+    def testCanDevoiceSelf(self):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('devoice %s' % self.nick)
 
     def testOp(self):
         self.assertError('op')

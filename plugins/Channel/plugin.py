@@ -259,10 +259,6 @@ class Channel(callbacks.Plugin):
         the nicks given.  If no nicks are given, removes voice from the person
         sending the message.
         """
-        if irc.nick in nicks:
-            irc.error(_('I cowardly refuse to devoice myself.  If you really '
-                      'want me devoiced, tell me to op you and then devoice '
-                      'me yourself.'), Raise=True)
         self._voice(irc, msg, args, channel, nicks, ircmsgs.devoices)
     devoice = wrap(devoice, ['channel', ('haveOp', 'devoice someone'),
                              any('nickInChannel')])
