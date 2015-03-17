@@ -123,7 +123,7 @@ class Dict(callbacks.Plugin):
             L.append('%s: %s' % (db, s))
         utils.sortBy(len, L)
         if dictionary == '*' and len(dbs) > 1 and \
-                self.registryValue("showWhichResponded", msg.args[0]):
+                self.registryValue("showDictName", msg.args[0]):
             s = format(_('%L responded: %s'), list(dbs), '; '.join(L))
         else:
             s = '; '.join(L)

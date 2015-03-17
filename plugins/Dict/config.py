@@ -48,7 +48,7 @@ conf.registerChannelValue(Dict, 'default',
     registry.String('*', _("""Determines the default dictionary the bot
     will ask for definitions in.  If this value is '*' (without the quotes)
     the bot will use all dictionaries to define words.""")))
-conf.registerChannelValue(Dict, 'showWhichResponded',
+conf.registerChannelValue(Dict, 'showDictName',
     registry.Boolean(True, _("""Determines whether the bot will show which
     dictionaries responded to a query, if the selected dictionary is '*'.
     """)))
