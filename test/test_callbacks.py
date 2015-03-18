@@ -526,7 +526,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             original = str(conf.supybot.reply.whenNotCommand)
             conf.supybot.reply.whenNotCommand.set('True')
             self.irc.addCallback(self.BadInvalidCommand(self.irc))
-            self.assertRegexp('asdfjkl', 'not a valid command')
+            self.assertRegexp('asdfjkl', 'not a valid command', timeout=12)
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
 
