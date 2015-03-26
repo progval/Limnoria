@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2010, James McCoy
+# Copyright (c) 2010,2015 James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -158,87 +158,9 @@ class Network(callbacks.Plugin):
         if (irc, loweredNick) not in self._whois:
             return
         (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
-        hostmask = '@'.join(d['311'].args[2:4])
-        user = d['311'].args[-1]
-        if '319' in d:
-            channels = d['319'].args[-1].split()
-            ops = []
-            voices = []
-            normal = []
-            halfops = []
-            for channel in channels:
-                origchan = channel
-                channel = channel.lstrip('@%+~!')
-                # UnrealIRCd uses & for user modes and disallows it as a
-                # channel-prefix, flying in the face of the RFC.  Have to
-                # handle this specially when processing WHOIS response.
-                testchan = channel.lstrip('&')
-                if testchan != channel and irc.isChannel(testchan):
-                    channel = testchan
-                diff = len(channel) - len(origchan)
-                modes = origchan[:diff]
-                chan = irc.state.channels.get(channel)
-                # The user is in a channel the bot is in, so the ircd may have
-                # responded with otherwise private data.
-                if chan:
-                    # Skip channels the callee isn't in.  This helps prevents
-                    # us leaking information when the channel is +s or the
-                    # target is +i
-                    if replyMsg.nick not in chan.users:
-                        continue
-                    # Skip +s channels the target is in only if the reply isn't
-                    # being sent to that channel
-                    if 's' in chan.modes and \
-                       not ircutils.strEqual(replyMsg.args[0], channel):
-                        continue
-                if not modes:
-                    normal.append(channel)
-                elif utils.iter.any(lambda c: c in modes,('@', '&', '~', '!')):
-                    ops.append(channel[1:])
-                elif utils.iter.any(lambda c: c in modes, ('%',)):
-                    halfops.append(channel[1:])
-                elif utils.iter.any(lambda c: c in modes, ('+',)):
-                    voices.append(channel[1:])
-            L = []
-            if ops:
-                L.append(format('is an op on %L', ops))
-            if halfops:
-                L.append(format('is a halfop on %L', halfops))
-            if voices:
-                L.append(format('is voiced on %L', voices))
-            if normal:
-                if L:
-                    L.append(format('is also on %L', normal))
-                else:
-                    L.append(format('is on %L', normal))
-        else:
-            L = ['isn\'t on any non-secret channels']
-        channels = format('%L', L)
-        if '317' in d:
-            idle = utils.timeElapsed(d['317'].args[2])
-            signon = time.strftime(conf.supybot.reply.format.time(),
-                                   time.localtime(float(d['317'].args[3])))
-        else:
-            idle = '<unknown>'
-            signon = '<unknown>'
-        if '312' in d:
-            server = d['312'].args[2]
-        else:
-            server = '<unknown>'
-        if '301' in d:
-            away = '  %s is away: %s.' % (nick, d['301'].args[2])
-        else:
-            away = ''
-        if '320' in d:
-            if d['320'].args[2]:
-                identify = ' identified'
-            else:
-                identify = ''
-        else:
-            identify = ''
-        s = '%s (%s) has been%s on server %s since %s (idle for %s) and ' \
-            '%s.%s' % (user, hostmask, identify, server, signon, idle,
-                       channels, away)
+        d['318'] = msg
+        s = ircutils.formatWhois(irc, d, caller=replyMsg.nick,
+                                 channel=replyMsg.args[0])
         replyIrc.reply(s)
         del self._whois[(irc, loweredNick)]
 

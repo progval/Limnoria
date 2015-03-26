@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2010, James McCoy
+# Copyright (c) 2010,2015 James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -196,64 +196,9 @@ class Relay(callbacks.Plugin):
         if (irc, loweredNick) not in self._whois:
             return
         (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
-        hostmask = '@'.join(d['311'].args[2:4])
-        user = d['311'].args[-1]
-        if '319' in d:
-            channels = d['319'].args[-1].split()
-            ops = []
-            voices = []
-            normal = []
-            halfops = []
-            for channel in channels:
-                if channel.startswith('@'):
-                    ops.append(channel[1:])
-                elif channel.startswith('%'):
-                    halfops.append(channel[1:])
-                elif channel.startswith('+'):
-                    voices.append(channel[1:])
-                else:
-                    normal.append(channel)
-            L = []
-            if ops:
-                L.append(format('is an op on %L', ops))
-            if halfops:
-                L.append(format('is a halfop on %L', halfups))
-            if voices:
-                L.append(format('is voiced on %L', voices))
-            if normal:
-                if L:
-                    L.append(format('is also on %L', normal))
-                else:
-                    L.append(format('is on %L', normal))
-        else:
-            L = ['isn\'t on any non-secret channels']
-        channels = format('%L', L)
-        if '317' in d:
-            idle = utils.timeElapsed(d['317'].args[2])
-            signon = time.strftime(conf.supybot.reply.format.time(),
-                                   time.localtime(float(d['317'].args[3])))
-        else:
-            idle = '<unknown>'
-            signon = '<unknown>'
-        if '312' in d:
-            server = d['312'].args[2]
-        else:
-            server = '<unknown>'
-        if '301' in d:
-            away = format('  %s is away: %s.', nick, d['301'].args[2])
-        else:
-            away = ''
-        if '320' in d:
-            if d['320'].args[2]:
-                identify = ' identified'
-            else:
-                identify = ''
-        else:
-            identify = ''
-        s = format('%s (%s) has been%s on server %s since %s (idle for %s) '
-                   'and %s.%s',
-                   user, hostmask, identify, server, signon, idle,
-                   channels, away)
+        d['318'] = msg
+        s = ircutils.formatWhois(irc, d, caller=replyMsg.nick,
+                                 channel=replyMsg.args[0])
         replyIrc.reply(s)
         del self._whois[(irc, loweredNick)]
 
