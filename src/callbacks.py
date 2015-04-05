@@ -1358,7 +1358,8 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
             if ircutils.isChannel(channel):
                 group = group.get(channel)
             else:
-                self.log.debug('registryValue got channel=%r', channel)
+                self.log.debug('%s: registryValue got channel=%r', plugin,
+                               channel)
         if value:
             return group()
         else:
