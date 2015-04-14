@@ -240,45 +240,6 @@ class Google(callbacks.PluginRegexp):
         s = ', '.join([format('%s: %i', bold(s), i) for (i, s) in results])
         irc.reply(s)
 
-    @internationalizeDocstring
-    def translate(self, irc, msg, args, sourceLang, targetLang, text):
-        """<source language> [to] <target language> <text>
-
-        Returns <text> translated from <source language> into <target
-        language>.
-        """
-
-        channel = msg.args[0]
-
-        headers = dict(utils.web.defaultHeaders)
-        headers['User-Agent'] = ('Mozilla/5.0 (X11; U; Linux i686) '
-                                 'Gecko/20071127 Firefox/2.0.0.11')
-
-        sourceLang = urllib.quote(sourceLang)
-        targetLang = urllib.quote(targetLang)
-
-        text = urllib.quote(text)
-
-        result = utils.web.getUrlFd('http://translate.google.com/translate_a/t'
-                                    '?client=t&hl=en&sl=%s&tl=%s&multires=1'
-                                    '&otf=1&ssel=0&tsel=0&uptl=en&sc=1&text='
-                                    '%s' % (sourceLang, targetLang, text),
-                                    headers).read().decode('utf8')
-
-        while ',,' in result:
-            result = result.replace(',,', ',null,')
-        while '[,' in result:
-            result = result.replace('[,', '[')
-        data = json.loads(result)
-
-        try:
-            language = data[2]
-        except:
-            language = 'unknown'
-
-        irc.reply(''.join(x[0] for x in data[0]), language)
-    translate = wrap(translate, ['something', 'to', 'something', 'text'])
-
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
         if not self.registryValue('searchSnarfer', msg.args[0]):
