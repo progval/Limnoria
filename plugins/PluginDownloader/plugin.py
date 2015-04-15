@@ -300,6 +300,10 @@ repositories = utils.InsensitivePreservingDict({
                                                    'ZeeCrazyAtheist',
                                                    'supyplugins',
                                                    ),
+               'waratte':          GithubRepository(
+                                                   'waratte',
+                                                   'supybot',
+                                                   ),
                })
 
 class PluginDownloader(callbacks.Plugin):
