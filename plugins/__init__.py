@@ -330,7 +330,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
                   (self.name(), id, channel))
 
     def checkChangeAllowed(self, irc, msg, channel, user, record):
-        if user.id == record.by:
+        if (hasattr(user, 'id') and user.id == record.by) or user == record.by:
             return True
         cap = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, cap):
@@ -341,27 +341,38 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         """This should irc.error or raise an exception if text is invalid."""
         pass
 
-    def add(self, irc, msg, args, user, channel, text):
+    def getUserId(self, irc, prefix):
+        try:
+            user = ircdb.users.getUser(prefix)
+            return user.id
+        except KeyError:
+            if conf.supybot.databases.plugins.requireRegistration():
+                irc.errorNotRegistered(Raise=True)
+            return
+
+    def add(self, irc, msg, args, channel, text):
         """[<channel>] <text>
 
         Adds <text> to the $type database for <channel>.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        user = self.getUserId(irc, msg.prefix) or msg.prefix
         at = time.time()
         self.addValidator(irc, text)
         if text is not None:
-            id = self.db.add(channel, at, user.id, text)
+            id = self.db.add(channel, at, user, text)
             irc.replySuccess('%s #%s added.' % (self.name(), id))
-    add = wrap(add, ['user', 'channeldb', 'text'])
+    add = wrap(add, ['channeldb', 'text'])
 
-    def remove(self, irc, msg, args, user, channel, id):
+    def remove(self, irc, msg, args, channel, id):
         """[<channel>] <id>
 
         Removes the $type with id <id> from the $type database for <channel>.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        user = self.getUserId(irc, msg.prefix) or msg.prefix
         try:
             record = self.db.get(channel, id)
             self.checkChangeAllowed(irc, msg, channel, user, record)
@@ -369,7 +380,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             irc.replySuccess()
         except KeyError:
             self.noSuchRecord(irc, channel, id)
-    remove = wrap(remove, ['user', 'channeldb', 'id'])
+    remove = wrap(remove, ['channeldb', 'id'])
 
     def searchSerializeRecord(self, record):
         text = utils.str.ellipsisify(record.text, 50)
@@ -430,13 +441,14 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             self.noSuchRecord(irc, channel, id)
     get = wrap(get, ['channeldb', 'id'])
 
-    def change(self, irc, msg, args, user, channel, id, replacer):
+    def change(self, irc, msg, args, channel, id, replacer):
         """[<channel>] <id> <regexp>
 
         Changes the $type with id <id> according to the regular expression
         <regexp>.  <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
+        user = self.getUserId(irc, msg.prefix) or msg.prefix
         try:
             record = self.db.get(channel, id)
             self.checkChangeAllowed(irc, msg, channel, user, record)
@@ -445,7 +457,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             irc.replySuccess()
         except KeyError:
             self.noSuchRecord(irc, channel, id)
-    change = wrap(change, ['user', 'channeldb', 'id', 'regexpReplacer'])
+    change = wrap(change, ['channeldb', 'id', 'regexpReplacer'])
 
     def stats(self, irc, msg, args, channel):
         """[<channel>]
