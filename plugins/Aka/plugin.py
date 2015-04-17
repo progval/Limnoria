@@ -377,6 +377,7 @@ class Aka(callbacks.Plugin):
         self.__parent = super(Aka, self)
         self.__parent.__init__(irc)
         self._db = AkaDB()
+        self.akasUsed = []
 
     def isCommandMethod(self, name):
         args = name.split(' ')
@@ -477,7 +478,29 @@ class Aka(callbacks.Plugin):
             if maxNesting and irc.nested+1 > maxNesting:
                 irc.error(_('You\'ve attempted more nesting than is '
                       'currently allowed on this bot.'), Raise=True)
+            # This clause blocks aka loops where: aka1 calls aka2, aka2
+            # calls aka1, etc.
+            if tokens in self.akasUsed:
+                self.log.warning("Blocking recursive Aka in command '%s'!",
+                                 original)
+                irc.error(_("You've attempted to call a recursive Aka."), Raise=True)
+            # We will create a list of all the command arguments we've taken,
+            # in order to prevent DDoS attacks with $1$1$1$1$* recursive Akas.
+            self.akasUsed.append(tokens)
+
+            recursionLimit = self.registryValue('recursionLimit')
+            if recursionLimit and len(self.akasUsed) > recursionLimit:
+                self.log.warning("Blocking recursive Aka (over recursion limit"
+                                 " of %s Akas) in command '%s'!",
+                                 recursionLimit, original)
+                s = _("You've attempted to call an Aka with too much "
+                      "recursion between Akas (max is %s)." % recursionLimit)
+                if ircdb.checkCapability(msg.prefix, 'owner'):
+                    s += _(" To change this limit, configure the variable "
+                           "supybot.plugins.Aka.recursionLimit accordingly.")
+                irc.error(s, Raise=True)
             self.Proxy(irc, msg, tokens)
+            self.akasUsed = []
         if biggestDollar and (wildcard or biggestAt):
             flexargs = _(' at least')
         else:

@@ -175,7 +175,7 @@ class AkaChannelTestCase(ChannelPluginTestCase):
                 r'"cif [nceq $1 0] \"echo 1\" '
                 r'\"calc $1 * [fact [calc $1 - 1]]\""')
         self.assertResponse('fact 4', '24')
-        self.assertRegexp('fact 50', 'more nesting')
+        self.assertRegexp('fact 50', 'more nesting|too much recursion')
 
     def testDollarStarNesting(self):
         self.assertNotError('aka add alias aka $*')
