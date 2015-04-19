@@ -198,39 +198,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.errorPossibleBug(str(e))
     tiny = thread(wrap(tiny, ['httpUrl']))
 
-    _gooApi = 'https://www.googleapis.com/urlshortener/v1/url'
-    @retry
-    def _getGooUrl(self, url):
-        try:
-            return self.db.get('goo', url)
-        except KeyError:
-            headers = utils.web.defaultHeaders.copy()
-            headers['content-type'] = 'application/json'
-            data = json.dumps({'longUrl': url})
-            text = utils.web.getUrl(self._gooApi, data=data, headers=headers)
-            if sys.version_info[0] >= 3 and isinstance(text, bytes):
-                text = text.decode()
-            googl = json.loads(text)['id']
-            if googl:
-                self.db.set('goo', url, googl)
-                return googl
-            else:
-                raise ShrinkError(text)
-
-    def goo(self, irc, msg, args, url):
-        """<url>
-
-        Returns an goo.gl version of <url>.
-        """
-        try:
-            goourl = self._getGooUrl(url)
-            m = irc.reply(goourl)
-            if m is not None:
-                m.tag('shrunken')
-        except ShrinkError as e:
-            irc.error(str(e))
-    goo = thread(wrap(goo, ['httpUrl']))
-
     _ur1Api = 'http://ur1.ca/'
     _ur1Regexp = re.compile(r'<a href="(?P<url>[^"]+)">')
     @retry

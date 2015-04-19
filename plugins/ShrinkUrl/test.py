@@ -39,11 +39,9 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
             'term=all+your+base+are+belong+to+us'
     tests = {'tiny': [(sfUrl, r'http://tinyurl.com/b7wyvfz'),
                       (udUrl, r'http://tinyurl.com/u479')],
-             'goo': [(sfUrl, r'http://goo.gl/3c59N'),
-                     (udUrl, r'http://goo.gl/ocTga')],
-             'ur1': [(sfUrl, r'http://ur1.ca/9xl25'),
+             'ur1': [(sfUrl, r'http://ur1.ca/ceqh8'),
                      (udUrl, r'http://ur1.ca/9xl9k')],
-             'x0': [(sfUrl, r'http://x0.no/0l2j'),
+             'x0': [(sfUrl, r'http://x0.no/a53s'),
                     (udUrl, r'http://x0.no/0l2k')]
             }
     if network:
@@ -60,12 +58,12 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
             origsnarfer = snarfer()
             try:
                 self.assertNotError(
-                    'config plugins.ShrinkUrl.serviceRotation goo x0')
+                    'config plugins.ShrinkUrl.serviceRotation tiny x0')
                 self.assertError(
-                    'config plugins.ShrinkUrl.serviceRotation goo x1')
+                    'config plugins.ShrinkUrl.serviceRotation tiny x1')
                 snarfer.setValue(True)
                 self.assertSnarfRegexp(self.udUrl, r'.*%s.* \(at' %
-                                       self.tests['goo'][1][1])
+                                       self.tests['tiny'][1][1])
                 self.assertSnarfRegexp(self.udUrl, r'.*%s.* \(at' %
                                        self.tests['x0'][1][1])
             finally:
@@ -88,9 +86,6 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
 
         def testTinysnarf(self):
             self._snarf('tiny')
-
-        def testGoosnarf(self):
-            self._snarf('goo')
 
         def testUr1snarf(self):
             self._snarf('ur1')
