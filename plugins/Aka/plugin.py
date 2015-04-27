@@ -397,7 +397,7 @@ class Aka(callbacks.Plugin):
 
     def listCommands(self):
         commands = ['add', 'remove', 'lock', 'unlock', 'importaliasdatabase',
-            'show', 'list', 'set']
+            'show', 'list', 'set', 'search']
         return commands
 
     def getCommand(self, args, check_other_plugins=True):
@@ -738,6 +738,26 @@ class Aka(callbacks.Plugin):
             irc.error(_("No Akas found."))
     list = wrap(list, [getopts({'channel': 'channel', 'keys': ''})])
 
+    def search(self, irc, msg, args, optlist, query):
+        """[--channel <#channel>] <query>
+
+        Searches Akas defined for <channel>. If <channel> is not specified,
+        searches all global Akas."""
+        channel = 'global'
+        for (option, arg) in optlist:
+            if option == 'channel':
+                if not ircutils.isChannel(arg):
+                    irc.error(_('%r is not a valid channel.') % arg,
+                            Raise=True)
+                channel = arg
+        aka_list = self._db.get_aka_list(channel)
+        aka_list = [k[0] for k in aka_list]
+        if aka_list:
+            matching = [aka for aka in aka_list if query in aka]
+            irc.replies(matching)
+        else:
+            irc.error(_("No matching Akas found."))
+    search = wrap(search, [getopts({'channel': 'channel'}), 'text'])
 
 Class = Aka
 
