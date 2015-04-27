@@ -38,9 +38,12 @@ else:
     skipif = lambda x, y: lambda z:None
 
 try:
-    import mock
+    from unittest import mock  # Python 3.3+
 except ImportError:
-    mock=None
+    try:
+        import mock  # Everything else, an external 'mock' library
+    except ImportError:
+        mock = None
 
 # so complicated construction because I want to
 # gain the string 'y' instead of the character 'y'
