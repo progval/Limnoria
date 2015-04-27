@@ -11,6 +11,9 @@ affect the meaning of the string (typo fix, etc.), please update the
 `msgid` entry in localization file. It helps preserve the translation
 without the translator having to review it.
 
+Last rule: you shouldn't add a mandatory dependency. Limnoria does not
+come with any (besides Python), so please try to keep all dependencies
+optional.
 
 [Style Guidelines]:http://supybot.aperio.fr/doc/develop/style.html
 
