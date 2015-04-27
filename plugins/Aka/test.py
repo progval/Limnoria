@@ -232,4 +232,11 @@ class AkaTestCase(PluginTestCase):
         self.assertNotError('aka add "foo bar" baz')
         self.assertRegexp('aka list', 'foo.*?bar \$\*.*?foo bar.*?baz \$\*')
 
+    def testSearch(self):
+        self.assertNotError('aka add foo bar')
+        self.assertNotError('aka add "many words" "much command"')
+        self.assertRegexp('aka search f', 'foo')
+        self.assertError('aka search abcdefghijklmnop')
+        self.assertRegexp('aka search many', 'many words')
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
