@@ -95,7 +95,15 @@ if sys.version_info[0:3] == (3, 3, 1) and hasattr(select, 'poll'):
 
 commandsProcessed = 0
 
-ircs = [] # A list of all the IRCs.
+#ircs = [] # A list of all the IRCs.
+class Foo(list):
+    def remove(self, item):
+        print('--'*100)
+        print('Removing %r' % item)
+        import traceback
+        traceback.print_stack()
+        super().remove(item)
+ircs = Foo()
 
 def getIrc(network):
     network = network.lower()
