@@ -1,4 +1,4 @@
-chardet
+charade
 pytz
 python-dateutil
 python-gnupg
