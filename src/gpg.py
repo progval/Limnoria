@@ -72,7 +72,7 @@ for path in os.environ["PATH"].split(":"):
 
 gpgcheck0 = subprocess.Popen([gpgbin, "--version"],
                              stdout=subprocess.PIPE).communicate()
-gpgcheck1 = gpgcheck[0].decode("utf-8")
+gpgcheck1 = gpgcheck0[0].decode("utf-8")
 gpgcheck2 = gpgcheck1.split()[2].split(".")
 
 if gpgcheck2[0] == "1" and gpgcheck2[1] == "4":
