@@ -28,6 +28,8 @@
 ###
 
 import os
+import os.path
+import subprocess
 
 import supybot.log as log
 import supybot.conf as conf
@@ -49,6 +51,42 @@ except TypeError:
 
 available = (gnupg is not None)
 
+# Check for different versions of GPG as the behaviour differs
+# slightly.  Assuming gpg executable is in the path, may expand later
+# to check gor both gpg and gpg2.  Try to find GPG 1.4 first as it
+# will generally work more consistently on servers and is ideal for a
+# bot.
+for path in os.environ["PATH"].split(":"):
+    if os.path.exists(path + "/" + "gpg"):
+        gpgbin = path + "/" + "gpg"
+    elif os.path.exists(path + "/" + "gpg2"):
+        gpgbin = path + "/" + "gpg2"
+    elif os.path.exists(path + "/" + "gpg.exe"):
+        gpgbin = path + "/" + "gpg.exe"
+    elif os.path.exists(path + "/" + "gpg2.exe"):
+        gpgbin = path + "/" + "gpg2.exe"
+    else:
+        gpgbin = "gpg"  # if it reaches this point, expect failures.
+
+gpgcheck0 = subprocess.Popen([gpgbin, "--version"],
+                             stdout=subprocess.PIPE).communicate()
+gpgcheck1 = gpgcheck[0].decode("utf-8")
+gpgcheck2 = gpgcheck1.split()[2].split(".")
+
+if gpgcheck2[0] == "1" and gpgcheck2[1] == "4":
+    pubring = "pubring.gpg"
+    secring = "secring.gpg"
+    agent = "False"
+elif gpgcheck2[0] == "2" and gpgcheck2[1] == "0":
+    pubring = "pubring.gpg"
+    secring = "secring.gpg"
+    agent = "True"
+elif gpgcheck2[0] == "2" and gpgcheck2[1] == "1":
+    pubbox = "pubring.kbx"
+    pubring = []  # GPG 2.1.x now hands the keyrings over to gpg-agent
+    secring = []
+    agent = "True"
+
 def fallback(default_return=None):
     """Decorator.
     Does nothing if gnupg is loaded. Otherwise, returns the supplied
@@ -65,13 +103,14 @@ def fallback(default_return=None):
 
 @fallback()
 def loadKeyring():
-    global keyring
+    global keyring  # this could be a problem since keyring is a gnupg parameter
     path = os.path.abspath(conf.supybot.directories.data.dirize('GPGkeyring'))
     if not os.path.isdir(path):
         log.info('Creating directory %s' % path)
         os.mkdir(path, 0700)
     assert os.path.isdir(path)
-    keyring = gnupg.GPG(gnupghome=path)
+    keyring = gnupg.GPG(gnupghome=path, use_agent=agent, keyring=pubring,
+                        secret_keyring=secring, gpgbinary=gpgbin)
 loadKeyring()
 
 # Reload the keyring if path changed
