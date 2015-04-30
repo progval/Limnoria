@@ -55,7 +55,9 @@ available = (gnupg is not None)
 # slightly.  Assuming gpg executable is in the path, may expand later
 # to check gor both gpg and gpg2.  Try to find GPG 1.4 first as it
 # will generally work more consistently on servers and is ideal for a
-# bot.
+# bot.  There may be unexpected results from setting "keyring" as a
+# global, but initial tests indicate it works - this cannot be
+# guaranteed, however.
 for path in os.environ["PATH"].split(":"):
     if os.path.exists(path + "/" + "gpg"):
         gpgbin = path + "/" + "gpg"
@@ -103,7 +105,7 @@ def fallback(default_return=None):
 
 @fallback()
 def loadKeyring():
-    global keyring  # this could be a problem since keyring is a gnupg parameter
+    global keyring
     path = os.path.abspath(conf.supybot.directories.data.dirize('GPGkeyring'))
     if not os.path.isdir(path):
         log.info('Creating directory %s' % path)
