@@ -30,6 +30,7 @@
 import os
 import os.path
 import subprocess
+import sys
 
 import supybot.log as log
 import supybot.conf as conf
@@ -49,31 +50,70 @@ except TypeError:
     # This is the 'gnupg' library, not 'python-gnupg'.
     gnupg = None
 
-available = (gnupg is not None)
 
 # Check for different versions of GPG as the behaviour differs
-# slightly.  Assuming gpg executable is in the path, may expand later
-# to check gor both gpg and gpg2.  Try to find GPG 1.4 first as it
-# will generally work more consistently on servers and is ideal for a
-# bot.  There may be unexpected results from setting "keyring" as a
-# global, but initial tests indicate it works - this cannot be
-# guaranteed, however.
-for path in os.environ["PATH"].split(":"):
-    if os.path.exists(path + "/" + "gpg"):
-        gpgbin = path + "/" + "gpg"
-    elif os.path.exists(path + "/" + "gpg2"):
-        gpgbin = path + "/" + "gpg2"
-    elif os.path.exists(path + "/" + "gpg.exe"):
-        gpgbin = path + "/" + "gpg.exe"
-    elif os.path.exists(path + "/" + "gpg2.exe"):
-        gpgbin = path + "/" + "gpg2.exe"
+# slightly.  Use shutil.which in Python 3.3 and above, otherwise use
+# distutils.spawn.find_executable.  If the binary is installed
+# somewhereweird and not in the $PATH then a bot owner may need to
+# hard-code gpgbin to the full path to their GPG installation.  Tries
+# to use GPG 1.4 primarily, except on Windows because gpg4win is the
+# most popular version and it uses GPG 2.0.
+#
+# An alternative method would utilise os.path.walk to traverse the
+# entire directory structure to look for the GPG binary.  This,
+# however, would result in a significant delay in loading times
+# (depending on the size of the filesystem) and, ideally should be
+# avoided where possible.  It can be added later if there is demand.
+if float(sys.version.split()[0][0:3]) >= 3.3:
+    import shutil
+    if sys.platform == "win32":
+        gpg1bin = shutil.which("gpg.exe")
+        gpg2bin = shutil.which("gpg2.exe")
     else:
-        gpgbin = "gpg"  # if it reaches this point, expect failures.
+        gpg1bin = shutil.which("gpg")
+        gpg2bin = shutil.which("gpg2")
+    if os.path.exists(gpg1bin):
+        gpgbin = gpg1bin
+    elif os.path.exists(gpg2bin):
+        gpgbin = gpg2bin
+    else:
+        try:
+            if sys.platform == "win32":
+                gpgbin = "gpg2.exe"
+            else:
+                gpgbin = "gpg"
+        except:
+            gpgbin = None
+else:
+    import distutils.spawn
+    if sys.platform == "win32":
+        gpg1bin = distutils.spawn.find_executable("gpg.exe")
+        gpg2bin = distutils.spawn.find_executable("gpg2.exe")
+    else:
+        gpg1bin = distutils.spawn.find_executable("gpg")
+        gpg2bin = distutils.spawn.find_executable("gpg2")
+    if os.path.exists(gpg1bin):
+        gpgbin = gpg1bin
+    elif os.path.exists(gpg2bin):
+        gpgbin = gpg2bin
+    else:
+        try:
+            if sys.platform == "win32":
+                gpgbin = "gpg2.exe"
+            else:
+                gpgbin = "gpg"
+            except:
+                gpgbin = None
 
+
+# It's not enough to just check for python-gnupg, it needs a backend:
+available = (gnupg is not None and gpgbin is not None)
+
+# Once the GPG binary has been located, check the version and set
+# relevant variables accordingly.
 gpgcheck0 = subprocess.Popen([gpgbin, "--version"],
                              stdout=subprocess.PIPE).communicate()[0]
-gpgcheck1 = gpgcheck0.decode("utf-8")
-gpgcheck = gpgcheck1.split()[2]
+gpgcheck = gpgcheck0.decode("utf-8").split()[2]
 
 if gpgcheck.startswith("1.4"):
     pubring = "pubring.gpg"
@@ -85,7 +125,7 @@ elif gpgcheck.startswith("2.0"):
     agent = "True"
 elif gpgcheck.startswith("2.1"):
     pubbox = "pubring.kbx"
-    pubring = []  # GPG 2.1.x now hands the keyrings over to gpg-agent
+    pubring = []
     secring = []
     agent = "True"
 
