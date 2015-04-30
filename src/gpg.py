@@ -71,19 +71,19 @@ for path in os.environ["PATH"].split(":"):
         gpgbin = "gpg"  # if it reaches this point, expect failures.
 
 gpgcheck0 = subprocess.Popen([gpgbin, "--version"],
-                             stdout=subprocess.PIPE).communicate()
-gpgcheck1 = gpgcheck0[0].decode("utf-8")
-gpgcheck2 = gpgcheck1.split()[2].split(".")
+                             stdout=subprocess.PIPE).communicate()[0]
+gpgcheck1 = gpgcheck0.decode("utf-8")
+gpgcheck = gpgcheck1.split()[2]
 
-if gpgcheck2[0] == "1" and gpgcheck2[1] == "4":
+if gpgcheck.startswith("1.4"):
     pubring = "pubring.gpg"
     secring = "secring.gpg"
     agent = "False"
-elif gpgcheck2[0] == "2" and gpgcheck2[1] == "0":
+elif gpgcheck.startswith("2.0"):
     pubring = "pubring.gpg"
     secring = "secring.gpg"
     agent = "True"
-elif gpgcheck2[0] == "2" and gpgcheck2[1] == "1":
+elif gpgcheck.startswith("2.1"):
     pubbox = "pubring.kbx"
     pubring = []  # GPG 2.1.x now hands the keyrings over to gpg-agent
     secring = []
