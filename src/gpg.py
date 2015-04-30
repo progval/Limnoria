@@ -102,8 +102,8 @@ else:
                 gpgbin = "gpg2.exe"
             else:
                 gpgbin = "gpg"
-            except:
-                gpgbin = None
+        except:
+            gpgbin = None
 
 
 # It's not enough to just check for python-gnupg, it needs a backend:
