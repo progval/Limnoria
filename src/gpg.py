@@ -129,6 +129,7 @@ elif gpgcheck.startswith("2.1"):
     secring = []
     agent = "True"
 
+
 def fallback(default_return=None):
     """Decorator.
     Does nothing if gnupg is loaded. Otherwise, returns the supplied
@@ -142,6 +143,7 @@ def fallback(default_return=None):
                 return default_return
         return newf
     return decorator
+
 
 @fallback()
 def loadKeyring():
