@@ -69,14 +69,14 @@ if float(sys.version.split()[0][0:3]) >= 3.3:
     which = shutil.which
 else:
     import distutils.spawn
-    distutils.spawn.find_executable
+    which = distutils.spawn.find_executable
 
 if sys.platform == "win32":
     gpg1bin = which("gpg.exe")
     gpg2bin = which("gpg2.exe")
 else:
-    gpg1bin = shutil.which("gpg")
-    gpg2bin = shutil.which("gpg2")
+    gpg1bin = which("gpg")
+    gpg2bin = which("gpg2")
 
 if os.path.exists(gpg1bin):
     gpgbin = gpg1bin
