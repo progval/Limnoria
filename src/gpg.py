@@ -66,44 +66,30 @@ except TypeError:
 # avoided where possible.  It can be added later if there is demand.
 if float(sys.version.split()[0][0:3]) >= 3.3:
     import shutil
-    if sys.platform == "win32":
-        gpg1bin = shutil.which("gpg.exe")
-        gpg2bin = shutil.which("gpg2.exe")
-    else:
-        gpg1bin = shutil.which("gpg")
-        gpg2bin = shutil.which("gpg2")
-    if os.path.exists(gpg1bin):
-        gpgbin = gpg1bin
-    elif os.path.exists(gpg2bin):
-        gpgbin = gpg2bin
-    else:
-        try:
-            if sys.platform == "win32":
-                gpgbin = "gpg2.exe"
-            else:
-                gpgbin = "gpg"
-        except:
-            gpgbin = None
+    which = shutil.which
 else:
     import distutils.spawn
-    if sys.platform == "win32":
-        gpg1bin = distutils.spawn.find_executable("gpg.exe")
-        gpg2bin = distutils.spawn.find_executable("gpg2.exe")
-    else:
-        gpg1bin = distutils.spawn.find_executable("gpg")
-        gpg2bin = distutils.spawn.find_executable("gpg2")
-    if os.path.exists(gpg1bin):
-        gpgbin = gpg1bin
-    elif os.path.exists(gpg2bin):
-        gpgbin = gpg2bin
-    else:
-        try:
-            if sys.platform == "win32":
-                gpgbin = "gpg2.exe"
-            else:
-                gpgbin = "gpg"
-        except:
-            gpgbin = None
+    distutils.spawn.find_executable
+
+if sys.platform == "win32":
+    gpg1bin = which("gpg.exe")
+    gpg2bin = which("gpg2.exe")
+else:
+    gpg1bin = shutil.which("gpg")
+    gpg2bin = shutil.which("gpg2")
+
+if os.path.exists(gpg1bin):
+    gpgbin = gpg1bin
+elif os.path.exists(gpg2bin):
+    gpgbin = gpg2bin
+else:
+    try:
+        if sys.platform == "win32":
+            gpgbin = "gpg2.exe"
+        else:
+            gpgbin = "gpg"
+    except:
+        gpgbin = None
 
 
 # It's not enough to just check for python-gnupg, it needs a backend:
