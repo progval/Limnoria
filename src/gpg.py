@@ -64,7 +64,9 @@ except TypeError:
 # however, would result in a significant delay in loading times
 # (depending on the size of the filesystem) and, ideally should be
 # avoided where possible.  It can be added later if there is demand.
-if float(sys.version.split()[0][0:3]) >= 3.3:
+svi = sys.version_info
+
+if float("{0}.{1}".format(svi[0], svi[1])) >= 3.3:
     import shutil
     which = shutil.which
 else:
