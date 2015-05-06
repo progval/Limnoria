@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2015, Ben McGinnes
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import os
+import sys
 
-import gen
-
-class Error(Exception):
-    def __init__(self, msg, e=None):
-        self.msg = msg
-        self.e = e
-
-    def __str__(self):
-        if self.e is not None:
-            return os.linesep.join([self.msg, gen.exnToString(self.e)])
-        else:
-            return self.msg
-
-# vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:
+if sys.version_info[0] <= 2:
+    from error2 import *
+else:
+    from error3 import *

@@ -1,6 +1,5 @@
 ###
-# Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008, James McCoy
+# Copyright (c) 2015, Ben McGinnes
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,35 +29,7 @@
 
 import sys
 
-###
-# csv.{join,split} -- useful functions that should exist.
-###
-import csv
-import cStringIO as StringIO
-def join(L):
-    fd = StringIO.StringIO()
-    writer = csv.writer(fd)
-    writer.writerow(L)
-    return fd.getvalue().rstrip('\r\n')
-
-def split(s):
-    fd = StringIO.StringIO(s)
-    reader = csv.reader(fd)
-    return next(reader)
-csv.join = join
-csv.split = split
-
-# We use this often enough that we're going to stick it in builtins.
-def force(x):
-    if callable(x):
-        return x()
-    else:
-        return x
-(__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['force'] = force
-
-# These imports need to happen below the block above, so things get put into
-# __builtins__ appropriately.
-from .gen import *
-from . import crypt, error, file, iter, net, python, seq, str, transaction, web
-
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+if sys.version_info[0] <= 2:
+    from __init__2 import *
+else:
+    from __init__3 import *
