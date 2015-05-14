@@ -478,15 +478,14 @@ def format(s, *args, **kwargs):
             return has(args.pop())
         elif char == 'L':
             t = args.pop()
-            if isinstance(t, list) or (sys.version_info[0] >= 3 and
-                    (isinstance(t, map) or isinstance(t, filter))):
-                return commaAndify(t)
-            elif isinstance(t, tuple) and len(t) == 2:
+            if isinstance(t, tuple) and len(t) == 2:
                 if not isinstance(t[0], list):
                     raise ValueError('Invalid list for %%L in format: %s' % t)
                 if not isinstance(t[1], basestring):
                     raise ValueError('Invalid string for %%L in format: %s' % t)
                 return commaAndify(t[0], And=t[1])
+            elif hasattr(t, '__iter__'):
+                return commaAndify(t)
             else:
                 raise ValueError('Invalid value for %%L in format: %s' % t)
         elif char == 'p':

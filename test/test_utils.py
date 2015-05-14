@@ -539,6 +539,18 @@ class FormatTestCase(SupyTestCase):
                          'I have 3 kinds of fruit: '
                          'apples, oranges, and watermelon.')
 
+    def testPercentL(self):
+        self.assertIn(format('%L', {'apples', 'oranges', 'watermelon'}), {
+                         'apples, oranges, and watermelon',
+                         'oranges, apples, and watermelon',
+                         'apples, watermelon, and oranges',
+                         'oranges, watermelon, and apples',
+                         'watermelon, apples, and oranges',
+                         'watermelon, oranges, and apples'})
+
+        self.assertEqual(format('%L',
+            (['apples', 'oranges', 'watermelon'], 'or')),
+            'apples, oranges, or watermelon')
 class RingBufferTestCase(SupyTestCase):
     def testInit(self):
         self.assertRaises(ValueError, RingBuffer, -1)
