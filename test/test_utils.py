@@ -540,7 +540,7 @@ class FormatTestCase(SupyTestCase):
                          'apples, oranges, and watermelon.')
 
     def testPercentL(self):
-        self.assertIn(format('%L', set(('apples', 'oranges', 'watermelon'])), [
+        self.assertIn(format('%L', set(['apples', 'oranges', 'watermelon'])), [
                          'apples, oranges, and watermelon',
                          'oranges, apples, and watermelon',
                          'apples, watermelon, and oranges',
