@@ -349,7 +349,8 @@ class IrcState(IrcCommandDispatcher):
     __metaclass__ = log.MetaFirewall
     __firewalled__ = {'addMsg': None}
     def __init__(self, history=None, supported=None,
-                 nicksToHostmasks=None, channels=None):
+                 nicksToHostmasks=None, channels=None,
+                 capabilities_ack=None, capabilities_nak=None):
         if history is None:
             history = RingBuffer(conf.supybot.protocols.irc.maxHistoryLength())
         if supported is None:
@@ -358,6 +359,8 @@ class IrcState(IrcCommandDispatcher):
             nicksToHostmasks = ircutils.IrcDict()
         if channels is None:
             channels = ircutils.IrcDict()
+        self.capabilities_ack = capabilities_ack or set()
+        self.capabilities_nak = capabilities_nak or set()
         self.ircd = None
         self.supported = supported
         self.history = history
@@ -1016,24 +1019,27 @@ class Irc(IrcCommandDispatcher):
             self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
     def doCap(self, msg):
-        if len(msg.args) == 3:
-            for cap in msg.args[2].split(' '):
-                if msg.args[1] == 'ACK':
-                    log.info('%s: Server acknowledged capability %r',
-                             self.network, cap)
+        if len(msg.args) != 3:
+            return
+        for cap in msg.args[2].split(' '):
+            if msg.args[1] == 'ACK':
+                log.info('%s: Server acknowledged capability %r',
+                         self.network, cap)
+                self.state.capabilities_ack.add(cap)
 
-                    if cap == 'sasl':
-                        self.queueMsg(ircmsgs.IrcMsg(
-                            command='AUTHENTICATE',
-                            args=(self.sasl.upper(),)))
-                elif msg.args[1] == 'NAK':
-                    log.warning('%s: Server refused capability %r',
-                                self.network, cap)
+                if cap == 'sasl':
+                    self.queueMsg(ircmsgs.IrcMsg(
+                        command='AUTHENTICATE',
+                        args=(self.sasl.upper(),)))
+            elif msg.args[1] == 'NAK':
+                self.state.capabilities_nak.add(cap)
+                log.warning('%s: Server refused capability %r',
+                            self.network, cap)
 
-                    if cap == 'sasl':
-                        self.queueMsg(ircmsgs.IrcMsg(
-                            command='CAP',
-                            args=('END',)))
+                if cap == 'sasl':
+                    self.queueMsg(ircmsgs.IrcMsg(
+                        command='CAP',
+                        args=('END',)))
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful', self.network)
