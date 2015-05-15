@@ -35,45 +35,8 @@ import sys
 import time
 import datetime
 import tempfile
-import functools
 import subprocess
 from math import ceil
-
-try:
-    from multiprocessing import Pool
-except ImportError:
-    class Pool:
-        def imap(self, pred, L):
-            return map(pred, L)
-
-if sys.version_info[0] >= 3:
-    from distutils import log
-    from lib2to3.refactor import RefactoringTool, get_fixers_from_package
-    class DistutilsRefactoringTool(RefactoringTool):
-        def refactor(self, files, *args, **kwargs):
-            self._filenames = []
-            super(DistutilsRefactoringTool, self).refactor(files,
-                    *args, **kwargs)
-            pred = functools.partial(
-                    super(DistutilsRefactoringTool, self).refactor_file,
-                        write=True)
-            p = Pool()
-            n = len(self._filenames)
-            for (i, _) in enumerate(p.imap(pred, self._filenames)):
-                if n//10 != 0 and i % (n//10) == 0:
-                    print('Refactoring files: %i%% (%i on %i).' %
-                            (ceil(i*100./n), i, n))
-            del self._filenames
-        def refactor_file(self, filename, *args, **kwargs):
-            self._filenames.append(filename)
-        def log_error(self, msg, *args, **kw):
-            log.error(msg, *args)
-
-        def log_message(self, msg, *args):
-            log.info(msg, *args)
-
-        def log_debug(self, msg, *args):
-            log.debug(msg, *args)
 
 debug = '--debug' in sys.argv
 
@@ -161,9 +124,38 @@ try:
     from distutils.command.build_py import build_py_2to3
     class build_py(build_py_2to3):
         def run_2to3(self, files, options=None):
+            from distutils import log
+            from lib2to3.refactor import RefactoringTool, get_fixers_from_package
             if not files:
                 return
 
+            # Make this class local, to delay import of 2to3
+            from lib2to3.refactor import RefactoringTool, get_fixers_from_package
+            class DistutilsRefactoringTool(RefactoringTool):
+                def refactor(self, files, *args, **kwargs):
+                    self._total_files = len(files)
+                    self._refactored_files = 0
+                    super(DistutilsRefactoringTool, self).refactor(files,
+                            *args, **kwargs)
+                    del self._total_files
+                    del self._refactored_files
+                def refactor_file(self, filename, *args, **kwargs):
+                    if self._total_files//10 != 0 and \
+                            self._refactored_files % (self._total_files//10) == 0:
+                        print('Refactoring files: %i%% (%i on %i).' %
+                                (ceil(self._refactored_files*100./self._total_files),
+                                 self._refactored_files, self._total_files))
+                    self._refactored_files += 1
+                    return super(DistutilsRefactoringTool, self).refactor_file(
+                            filename, *args, **kwargs)
+                def log_error(self, msg, *args, **kw):
+                    log.error(msg, *args)
+
+                def log_message(self, msg, *args):
+                    log.info(msg, *args)
+
+                def log_debug(self, msg, *args):
+                    log.debug(msg, *args)
 
             fixer_names = ['fix_basestring',
                     'fix_dict',
