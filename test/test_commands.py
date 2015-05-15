@@ -197,24 +197,17 @@ class FirstTestCase(CommandsTestCase):
         self.assertStateErrored([first('int', 'something')], ['words'],
                                 errored=False)
 
-<<<<<<< HEAD
-=======
     def testLongRegexp(self):
         spec = [first('regexpMatcher', 'regexpReplacer'), 'text']
         self.assertStateErrored(spec, ['s/foo/bar/', 'x' * 512], errored=False)
 
->>>>>>> supybot/master
 class GetoptTestCase(PluginTestCase):
     plugins = ('Misc',) # We put something so it does not complain
     class Foo(callbacks.Plugin):
         def bar(self, irc, msg, args, optlist):
             irc.reply(' '.join(sorted(['%s:%d'%x for x in optlist])))
-<<<<<<< HEAD
         bar = wrap(bar, [getopts({'foo': 'int', 'fbar': 'int'})],
                    checkDoc=False)
-=======
-        bar = wrap(bar, [getopts({'foo': 'int', 'fbar': 'int'})])
->>>>>>> supybot/master
 
     def testGetoptsExact(self):
         self.irc.addCallback(self.Foo(self.irc))
@@ -223,9 +216,5 @@ class GetoptTestCase(PluginTestCase):
         self.assertResponse('bar --f 3 --fb 5',
                 'Error: Invalid arguments for bar.')
 
-<<<<<<< HEAD
-
-=======
->>>>>>> supybot/master
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
