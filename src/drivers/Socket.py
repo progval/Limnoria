@@ -43,14 +43,7 @@ import socket
 
 from .. import (conf, drivers, log, schedule, utils, world)
 from ..utils.iter import imap
-try:
-    from charade.universaldetector import UniversalDetector
-    charadeLoaded = True
-except:
-    drivers.log.debug('charade module not available, '
-                      'cannot guess character encoding if'
-                      'using Python3')
-    charadeLoaded = False
+from ..utils.str import decode_raw_line
 
 try:
     import ssl
@@ -201,32 +194,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             lines = self.inbuffer.split(b'\n')
             self.inbuffer = lines.pop()
             for line in lines:
-                if sys.version_info[0] >= 3:
-                    #first, try to decode using utf-8
-                    try:
-                        line = line.decode('utf8', 'strict')
-                    except UnicodeError:
-                        # if this fails and charade is loaded, try to guess the correct encoding
-                        if charadeLoaded:
-                            u = UniversalDetector()
-                            u.feed(line)
-                            u.close()
-                            if u.result['encoding']:
-                                # try to use the guessed encoding
-                                try:
-                                    line = line.decode(u.result['encoding'],
-                                        'strict')
-                                # on error, give up and replace the offending characters
-                                except UnicodeError:
-                                    line = line.decode(errors='replace')
-                            else:
-                                # if no encoding could be guessed, fall back to utf-8 and
-                                # replace offending characters
-                                line = line.decode('utf8', 'replace')
-                        # if charade is not loaded, try to decode using utf-8 and replace any
-                        # offending characters
-                        else:
-                            line = line.decode('utf8', 'replace')
+                line = decode_raw_line(line)
 
                 msg = drivers.parseMsg(line)
                 if msg is not None and self.irc is not None:

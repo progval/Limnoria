@@ -46,6 +46,44 @@ from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()
 internationalizeFunction = _.internationalizeFunction
 
+try:
+    from charade.universaldetector import UniversalDetector
+    charadeLoaded = True
+except ImportError:
+    charadeLoaded = False
+
+if sys.version_info[0] >= 3:
+    def decode_raw_line(line):
+        #first, try to decode using utf-8
+        try:
+            line = line.decode('utf8', 'strict')
+        except UnicodeError:
+            # if this fails and charade is loaded, try to guess the correct encoding
+            if charadeLoaded:
+                u = UniversalDetector()
+                u.feed(line)
+                u.close()
+                if u.result['encoding']:
+                    # try to use the guessed encoding
+                    try:
+                        line = line.decode(u.result['encoding'],
+                            'strict')
+                    # on error, give up and replace the offending characters
+                    except UnicodeError:
+                        line = line.decode(errors='replace')
+                else:
+                    # if no encoding could be guessed, fall back to utf-8 and
+                    # replace offending characters
+                    line = line.decode('utf8', 'replace')
+            # if charade is not loaded, try to decode using utf-8 and replace any
+            # offending characters
+            else:
+                line = line.decode('utf8', 'replace')
+        return line
+else:
+    def decode_raw_line(line):
+        return line
+
 def rsplit(s, sep=None, maxsplit=-1):
     """Equivalent to str.split, except splitting from the right."""
     return s.rsplit(sep, maxsplit)
