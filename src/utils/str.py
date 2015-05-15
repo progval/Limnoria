@@ -170,7 +170,7 @@ def _getSep(s, allowBraces=False):
               '"%s"' % braces)
     return separator
 
-def perlReToPythonRe(s):
+def perlReToPythonRe(s, allowG=False):
     """Converts a string representation of a Perl regular expression (i.e.,
     m/^foo$/i or /foo|bar/) to a Python regular expression.
     """
@@ -188,15 +188,34 @@ def perlReToPythonRe(s):
     if opener != closer:
         regexp = regexp.replace('\\'+closer, closer)
     flag = 0
+    g = False
     try:
         for c in flags.upper():
+            if c == 'G' and allowG:
+                g = True
+                continue
             flag |= getattr(re, c)
     except AttributeError:
         raise ValueError('Invalid flag: %s' % c)
     try:
-        return re.compile(regexp, flag)
+        r = re.compile(regexp, flag)
     except re.error as e:
         raise ValueError(str(e))
+    if allowG:
+        return (r, g)
+    else:
+        return r
+
+def perlReToFindall(s):
+    """Converts a string representation of a Perl regular expression (i.e.,
+    m/^foo$/i or /foo|bar/) to a Python regular expression, with support for
+    G flag
+    """
+    (r, g) = perlReToPythonRe(s, allowG=True)
+    if g:
+        return lambda s: r.findall(s)
+    else:
+        return lambda s: r.search(s) and r.search(s).group(0) or ''
 
 def perlReToReplacer(s):
     """Converts a string representation of a Perl regular expression (i.e.,

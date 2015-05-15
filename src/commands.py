@@ -450,6 +450,7 @@ def _getRe(f):
     return get
 
 getMatcher = _getRe(utils.str.perlReToPythonRe)
+getMatcherMany = _getRe(utils.str.perlReToFindall)
 getReplacer = _getRe(utils.str.perlReToReplacer)
 
 def getNick(irc, msg, args, state):
@@ -772,6 +773,7 @@ wrappers = ircutils.IrcDict({
     'private': private,
     'public': public,
     'regexpMatcher': getMatcher,
+    'regexpMatcherMany': getMatcherMany,
     'regexpReplacer': getReplacer,
     'seenNick': getSeenNick,
     'something': getSomething,
