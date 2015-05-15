@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2010, James McCoy
+# Copyright (c) 2010,2015 James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -185,99 +185,10 @@ class Network(callbacks.Plugin):
         if (irc, loweredNick) not in self._whois:
             return
         (replyIrc, replyMsg, d, command) = self._whois[(irc, loweredNick)]
-        START_CODE = '311' if command == 'whois' else '314'
-        hostmask = '@'.join(d[START_CODE].args[2:4])
-        user = d[START_CODE].args[-1]
-        if '319' in d:
-            channels = []
-            for msg in d['319']:
-                channels.extend(msg.args[-1].split())
-            ops = []
-            voices = []
-            normal = []
-            halfops = []
-            for channel in channels:
-                origchan = channel
-                channel = channel.lstrip('@%+~!')
-                # UnrealIRCd uses & for user modes and disallows it as a
-                # channel-prefix, flying in the face of the RFC.  Have to
-                # handle this specially when processing WHOIS response.
-                testchan = channel.lstrip('&')
-                if testchan != channel and irc.isChannel(testchan):
-                    channel = testchan
-                diff = len(channel) - len(origchan)
-                modes = origchan[:diff]
-                chan = irc.state.channels.get(channel)
-                # The user is in a channel the bot is in, so the ircd may have
-                # responded with otherwise private data.
-                if chan:
-                    # Skip channels the caller isn't in.  This prevents
-                    # us from leaking information when the channel is +s or the
-                    # target is +i.
-                    if replyMsg.nick not in chan.users:
-                        continue
-                    # Skip +s channels the target is in only if the reply isn't
-                    # being sent to that channel.
-                    if 's' in chan.modes and \
-                       not ircutils.strEqual(replyMsg.args[0], channel):
-                        continue
-                if not modes:
-                    normal.append(channel)
-                elif utils.iter.any(lambda c: c in modes,('@', '&', '~', '!')):
-                    ops.append(channel)
-                elif utils.iter.any(lambda c: c in modes, ('%',)):
-                    halfops.append(channel)
-                elif utils.iter.any(lambda c: c in modes, ('+',)):
-                    voices.append(channel)
-            L = []
-            if ops:
-                L.append(format(_('is an op on %L'), ops))
-            if halfops:
-                L.append(format(_('is a halfop on %L'), halfops))
-            if voices:
-                L.append(format(_('is voiced on %L'), voices))
-            if normal:
-                if L:
-                    L.append(format(_('is also on %L'), normal))
-                else:
-                    L.append(format(_('is on %L'), normal))
-        else:
-            if command == 'whois':
-                L = [_('isn\'t on any publicly visible channels')]
-            else:
-                L = []
-        channels = format('%L', L)
-        if '317' in d:
-            idle = utils.timeElapsed(d['317'].args[2])
-            signon = time.strftime(conf.supybot.reply.format.time(),
-                                   time.localtime(float(d['317'].args[3])))
-        else:
-            idle = _('<unknown>')
-            signon = _('<unknown>')
-        if '312' in d:
-            server = d['312'].args[2]
-            if len(d['312']) > 3:
-                signoff = d['312'].args[3]
-        else:
-            server = _('<unknown>')
-        if '301' in d:
-            away = ' %s is away: %s.' % (nick, d['301'].args[2])
-        else:
-            away = ''
-        if '320' in d:
-            if d['320'].args[2]:
-                identify = _(' identified')
-            else:
-                identify = ''
-        else:
-            identify = ''
-        if command == 'whois':
-            s = _('%s (%s) has been%s on server %s since %s (idle for %s). %s '
-                '%s.%s') % (user, hostmask, identify, server,
-                        signon, idle, nick, channels, away)
-        else:
-            s = _('%s (%s) has been%s on server %s and disconnected on %s.') % \
-                    (user, hostmask, identify, server, signoff)
+        d['318'] = msg
+        s = ircutils.formatWhois(irc, d, caller=replyMsg.nick,
+                                 channel=replyMsg.args[0],
+                                 command=command)
         replyIrc.reply(s)
         del self._whois[(irc, loweredNick)]
     do369 = do318

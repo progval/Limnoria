@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2009,2011, James McCoy
+# Copyright (c) 2009,2011,2015 James McCoy
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -374,6 +374,123 @@ def stripFormatting(s):
     s = stripReverse(s)
     s = stripUnderline(s)
     return s.replace('\x0f', '').replace('\x0F', '')
+
+_containsFormattingRe = re.compile(r'[\x02\x03\x16\x1f]')
+def formatWhois(irc, replies, caller='', channel='', command='whois'):
+    """Returns a string describing the target of a WHOIS command.
+
+    Arguments are:
+    * irc: the irclib.Irc object on which the replies was received
+
+    * replies: a dict mapping the reply codes ('311', '312', etc.) to their
+      corresponding ircmsg.IrcMsg
+
+    * caller: an optional nick specifying who requested the whois information
+
+    * channel: an optional channel specifying where the reply will be sent
+
+    If provided, caller and channel will be used to avoid leaking information
+    that the caller/channel shouldn't be privy to.
+    """
+    hostmask = '@'.join(replies['311'].args[2:4])
+    nick = replies['318'].args[1]
+    user = replies['311'].args[-1]
+    (replyIrc, replyMsg, d, command) = self._whois[(irc, loweredNick)]
+    START_CODE = '311' if command == 'whois' else '314'
+    hostmask = '@'.join(d[START_CODE].args[2:4])
+    user = d[START_CODE].args[-1]
+    if _containsFormattingRe.search(user) and user[-1] != '\x0f':
+        # For good measure, disable any formatting
+        user = '%s\x0f' % user
+    if '319' in replies:
+        channels = replies['319'].args[-1].split()
+        ops = []
+        voices = []
+        normal = []
+        halfops = []
+        for chan in channels:
+            origchan = chan
+            chan = chan.lstrip('@%+~!')
+            # UnrealIRCd uses & for user modes and disallows it as a
+            # channel-prefix, flying in the face of the RFC.  Have to
+            # handle this specially when processing WHOIS response.
+            testchan = chan.lstrip('&')
+            if testchan != chan and irc.isChannel(testchan):
+                chan = testchan
+            diff = len(chan) - len(origchan)
+            modes = origchan[:diff]
+            chanState = irc.state.channels.get(chan)
+            # The user is in a channel the bot is in, so the ircd may have
+            # responded with otherwise private data.
+            if chanState:
+                # Skip channels the callee isn't in.  This helps prevents
+                # us leaking information when the channel is +s or the
+                # target is +i
+                if caller not in chanState.users:
+                    continue
+                # Skip +s channels the target is in only if the reply isn't
+                # being sent to that channel
+                if 's' in chanState.modes and \
+                   not ircutils.strEqual(channel or '', chan):
+                    continue
+            if not modes:
+                normal.append(chan)
+            elif utils.iter.any(lambda c: c in modes,('@', '&', '~', '!')):
+                ops.append(chan[1:])
+            elif utils.iter.any(lambda c: c in modes, ('%',)):
+                halfops.append(chan[1:])
+            elif utils.iter.any(lambda c: c in modes, ('+',)):
+                voices.append(chan[1:])
+        L = []
+        if ops:
+            L.append(format(_('is an op on %L'), ops))
+        if halfops:
+            L.append(format(_('is a halfop on %L'), halfops))
+        if voices:
+            L.append(format(_('is voiced on %L'), voices))
+        if normal:
+            if L:
+                L.append(format(_('is also on %L'), normal))
+            else:
+                L.append(format(_('is on %L'), normal))
+    else:
+        if command == 'whois':
+            L = [_('isn\'t on any non-secret channels')]
+        else:
+            L = []
+    channels = format('%L', L)
+    if '317' in replies:
+        idle = utils.timeElapsed(replies['317'].args[2])
+        signon = utils.str.timestamp(float(replies['317'].args[3]))
+    else:
+        idle = '<unknown>'
+        signon = '<unknown>'
+    if '312' in replies:
+        server = replies['312'].args[2]
+        if len(d['312']) > 3:
+            signoff = d['312'].args[3]
+    else:
+        server = '<unknown>'
+    if '301' in replies:
+        away = '  %s is away: %s.' % (nick, replies['301'].args[2])
+    else:
+        away = ''
+    if '320' in replies:
+        if replies['320'].args[2]:
+            identify = ' identified'
+        else:
+            identify = ''
+    else:
+        identify = ''
+    if command == 'whois':
+        s = _('%s (%s) has been%s on server %s since %s (idle for %s) and '
+            '%s.%s').decode('utf8') % (user, hostmask, identify, server,
+                    signon, idle, channels, away)
+    else:
+        s = _('%s (%s) has been%s on server %s and disconnect on %s.') \
+                .decode('utf8') % \
+                (user, hostmask, identify, server, signoff)
+    return s
 
 class FormatContext(object):
     def __init__(self):

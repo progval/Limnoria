@@ -71,7 +71,7 @@ conf.registerChannelValue(ShrinkUrl, 'shrinkSnarfer',
     shrink snarfer is enabled.  This snarfer will watch for URLs in the
     channel, and if they're sufficiently long (as determined by
     supybot.plugins.ShrinkUrl.minimumLength) it will post a
-    smaller URL from tinyurl.com, as denoted in
+    smaller URL from the service as denoted in
     supybot.plugins.ShrinkUrl.default.""")))
 conf.registerChannelValue(ShrinkUrl.shrinkSnarfer, 'showDomain',
     registry.Boolean(True, _("""Determines whether the snarfer will show the

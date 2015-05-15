@@ -1289,7 +1289,7 @@ class Commands(BasePlugin):
             if 'command has no help.' in help:
                 # Note: this case will never happen, unless 'checkDoc' is set
                 # to False.
-                irc.error(_('Invalid arguments for %s.') % ' '.join(command))
+                irc.error(_('Invalid arguments for %s.') % formatCommand(command))
             else:
                 irc.reply(help)
         except (SyntaxError, Error) as e:

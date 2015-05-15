@@ -1135,8 +1135,11 @@ class Irc(IrcCommandDispatcher):
         if not self.afterConnect:
             newNick = self._getNextNick()
             assert newNick != self.nick
-            log.info('Got 433: %s %s.  Trying %s.',self.nick, problem, newNick)
+            log.info('Got %s: %s %s.  Trying %s.',
+                     msg.command, self.nick, problem, newNick)
             self.sendMsg(ircmsgs.nick(newNick))
+    def do437(self, msg):
+        self.do43x(msg, 'is temporarily unavailable')
     def do433(self, msg):
         self.do43x(msg, 'is in use')
     def do432(self, msg):

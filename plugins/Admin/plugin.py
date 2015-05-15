@@ -56,8 +56,8 @@ class Admin(callbacks.Plugin):
     def do437(self, irc, msg):
         """Nick/channel temporarily unavailable."""
         target = msg.args[0]
+        t = time.time() + 30
         if irc.isChannel(target): # We don't care about nicks.
-            t = time.time() + 30
             # Let's schedule a rejoin.
             networkGroup = conf.supybot.networks.get(irc.network)
             def rejoin():
@@ -67,6 +67,16 @@ class Admin(callbacks.Plugin):
             schedule.addEvent(rejoin, t)
             self.log.info('Scheduling a rejoin to %s at %s; '
                           'Channel temporarily unavailable.', target, t)
+        else:
+            irc = self.pendingNickChanges.get(irc, None)
+            if irc is not None:
+                def nick():
+                    irc.queueMsg(ircmsgs.nick(target))
+                schedule.addEvent(nick, t)
+                self.log.info('Scheduling a nick change to %s at %s; '
+                              'Nick temporarily unavailable.', target, t)
+            else:
+                self.log.debug('Got 437 without Admin.nick being called.')
 
     def do471(self, irc, msg):
         try:
