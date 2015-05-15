@@ -855,6 +855,19 @@ def ison(nick, prefix='', msg=None):
         prefix = msg.prefix
     return IrcMsg(prefix=prefix, command='ISON', args=(nick,), msg=msg)
 
+def monitor(subcommand, nicks=None, prefix='', msg=None):
+    if conf.supybot.protocols.irc.strictRfc():
+        assert isNick(nick), repr(nick)
+        assert subcommand in '+-CLS'
+        if subcommand in 'CLS':
+            assert nicks is None
+    if msg and not prefix:
+        prefix = msg.prefix
+    if not isinstance(nicks, str):
+        nicks = ','.join(nicks)
+    return IrcMsg(prefix=prefix, command='MONITOR', args=(subcommand, nicks),
+            msg=msg)
+
 def error(s, msg=None):
     return IrcMsg(command='ERROR', args=(s,), msg=msg)
 

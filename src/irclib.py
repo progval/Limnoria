@@ -666,6 +666,7 @@ class Irc(IrcCommandDispatcher):
         self._setNonResettingVariables()
         self._queueConnectMessages()
         self.startedSync = ircutils.IrcDict()
+        self.monitoring = ircutils.IrcDict()
 
     def isChannel(self, s):
         """Helper function to check whether a given string is a channel on
@@ -1040,6 +1041,38 @@ class Irc(IrcCommandDispatcher):
                     self.queueMsg(ircmsgs.IrcMsg(
                         command='CAP',
                         args=('END',)))
+
+    def monitor(self, targets):
+        """Increment a counter of how many callbacks monitor each target;
+        and send a MONITOR + to the server if the target is not yet
+        monitored."""
+        if isinstance(targets, str):
+            targets = [targets]
+        not_yet_monitored = set()
+        for target in targets:
+            if target in self.monitoring:
+                self.monitoring[target] += 1
+            else:
+                not_yet_monitored.add(target)
+                self.monitoring[target] = 1
+        if not_yet_monitored:
+            self.queueMsg(ircmsgs.monitor('+', not_yet_monitored))
+        return not_yet_monitored
+
+    def unmonitor(self, targets):
+        """Decrements a counter of how many callbacks monitor each target;
+        and send a MONITOR - to the server if the counter drops to 0."""
+        if isinstance(targets, str):
+            targets = [targets]
+        should_be_unmonitored = set()
+        for target in targets:
+            self.monitoring[target] -= 1
+            if self.monitoring[target] == 0:
+                del self.monitoring[target]
+                should_be_unmonitored.add(target)
+        if should_be_unmonitored:
+            self.queueMsg(ircmsgs.monitor('-', should_be_unmonitored))
+        return should_be_unmonitored
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful', self.network)

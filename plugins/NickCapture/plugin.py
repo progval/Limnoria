@@ -45,6 +45,12 @@ class NickCapture(callbacks.Plugin):
         self.__parent = super(NickCapture, self)
         self.__parent.__init__(irc)
         self.lastIson = 0
+        self.monitoring = []
+
+    def die(self):
+        for irc in self.monitoring:
+            nick = self._getNick(irc.network)
+            irc.unmonitor(nick)
         
     def _getNick(self, network):
         network_nick = conf.supybot.networks.get(network).nick()
@@ -60,10 +66,16 @@ class NickCapture(callbacks.Plugin):
                 # We used to check this, but nicksToHostmasks is never cleared
                 # except on reconnects, which can cause trouble.
                 # if nick not in irc.state.nicksToHostmasks:
-                self._ison(irc, nick)
+                if 'monitor' in irc.state.supported:
+                    if irc not in self.monitoring:
+                        irc.monitor(nick)
+                        self.monitoring.append(irc)
+                else:
+                    self._ison(irc, nick)
                 self.__parent.__call__(irc, msg)
 
     def _ison(self, irc, nick):
+        assert 'monitor' not in irc.state.supported
         if self.registryValue('ison'):
             now = time.time()
             if now - self.lastIson > self.registryValue('ison.period'):
@@ -95,6 +107,16 @@ class NickCapture(callbacks.Plugin):
             nick = self._getNick(irc.network)
             if nick:
                 self._sendNick(irc, nick)
+
+    def do731(self, irc, msg):
+        """This is sent by the MONITOR when a nick goes offline."""
+        nick = self._getNick(irc.network)
+        for target in msg.args[1].split(','):
+            if nick == target:
+                self._sendNick(irc, nick)
+                self.monitoring.remove(irc)
+                irc.unmonitor(nick)
+                break
 NickCapture = internationalizeDocstring(NickCapture)
 
 Class = NickCapture
