@@ -966,7 +966,8 @@ class Irc(IrcCommandDispatcher):
         elif self.sasl_username and self.sasl_password:
             self.sasl = 'plain'
 
-        for cap in ('account-notify', 'extended-join', 'multi-prefix'):
+        for cap in ('account-notify', 'extended-join', 'multi-prefix',
+                'metadata-notify'):
             self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
 
         if self.sasl:
