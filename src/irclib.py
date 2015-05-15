@@ -967,7 +967,7 @@ class Irc(IrcCommandDispatcher):
             self.sasl = 'plain'
 
         for cap in ('account-notify', 'extended-join', 'multi-prefix',
-                'metadata-notify'):
+                'metadata-notify', 'account-tag'):
             self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
 
         if self.sasl:

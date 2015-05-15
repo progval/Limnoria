@@ -147,6 +147,13 @@ class NickAuth(callbacks.Plugin):
         irc.queueMsg(ircmsgs.whois(nick, nick))
     auth = wrap(auth, [])
 
+    def inFilter(self, irc, msg):
+        """If the messages has a server tag with account name, tries to
+        authenticate it."""
+        if msg.server_tags and 'account' in msg.server_tags:
+            self._auth(irc, msg.prefix, msg.server_tags['account'])
+        return msg
+
     def do330(self, irc, msg):
         mynick, theirnick, theiraccount, garbage = msg.args
         # I would like to use a dict comprehension, but we have to support
@@ -176,18 +183,8 @@ class NickAuth(callbacks.Plugin):
         account = msg.args[0]
         user = ircdb.users.getUserFromNick(irc.network, account)
 
-        if not user:
-            try:
-                user = ircdb.users.getUser(msg.prefix)
-            except KeyError:
-                user = None
-
-        if user:
-            if account == '*':
-                user.clearAuth()
-            else:
-                user.addAuth(msg.prefix)
-                ircdb.users.setUser(user, flush=False)
+        if account != '*':
+            self._auth(irc, msg.prefix, account)
 
 
     def doJoin(self, irc, msg):
@@ -196,18 +193,8 @@ class NickAuth(callbacks.Plugin):
             return
 
         account = msg.args[1]
-        user = ircdb.users.getUserFromNick(irc.network, account)
-
-        if not user:
-            try:
-                user = ircdb.users.getUser(msg.prefix)
-            except KeyError:
-                user = None
-
-        if user:
-            if account != '*':
-                user.addAuth(msg.prefix)
-                ircdb.users.setUser(user, flush=False)
+        if account != '*':
+            self._auth(irc, msg.prefix, account)
 
     def do354(self, irc, msg):
         if len(msg.args) != 6 or msg.args[1] != '1':
@@ -217,6 +204,12 @@ class NickAuth(callbacks.Plugin):
         prefix = '%s!%s@%s' % (nick, ident, host)
         user = ircdb.users.getUserFromNick(irc.network, account)
 
+        if account != '0':
+            self._auth(irc, prefix, account)
+
+    def _auth(self, irc, prefix, account):
+        user = ircdb.users.getUserFromNick(irc.network, account)
+
         if not user:
             try:
                 user = ircdb.users.getUser(prefix)
@@ -224,7 +217,6 @@ class NickAuth(callbacks.Plugin):
                 user = None
 
         if user:
-            if account != '0':
                 user.addAuth(prefix)
                 ircdb.users.setUser(user, flush=False)
 
