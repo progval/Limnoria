@@ -128,6 +128,19 @@ class IrcMsgTestCase(SupyTestCase):
         m.tag('repliedTo', 12)
         self.assertEqual(m.repliedTo, 12)
 
+    def testServerTags(self):
+        s = '@aaa=b\\:bb;ccc;example.com/ddd=ee\\\\se ' \
+            ':nick!ident@host.com PRIVMSG me :Hello'
+        m = ircmsgs.IrcMsg(s)
+        self.assertEqual(m.server_tags, {
+            'aaa': 'b;bb',
+            'ccc': None,
+            'example.com/ddd': 'ee\\se'})
+        self.assertEqual(m.prefix, 'nick!ident@host.com')
+        self.assertEqual(m.command, 'PRIVMSG')
+        self.assertEqual(m.args, ('me', 'Hello'))
+        self.assertEqual(str(m), s + '\n')
+
 class FunctionsTestCase(SupyTestCase):
     def testIsAction(self):
         L = [':jemfinch!~jfincher@ts26-2.homenet.ohio-state.edu PRIVMSG'

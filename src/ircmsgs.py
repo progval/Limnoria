@@ -50,6 +50,37 @@ from .utils.iter import all
 class MalformedIrcMsg(ValueError):
     pass
 
+# http://ircv3.net/specs/core/message-tags-3.2.html#escaping-values
+SERVER_TAG_ESCAPE = [
+    ('\\', '\\\\'), # \ -> \\
+    (' ', r'\s'),
+    (';', r'\:'),
+    ('\r', r'\r'),
+    ('\n', r'\n'),
+    ]
+escape_server_tag_value = utils.str.MultipleReplacer(
+        dict(SERVER_TAG_ESCAPE))
+unescape_server_tag_value = utils.str.MultipleReplacer(
+        dict(map(lambda x:(x[1],x[0]), SERVER_TAG_ESCAPE)))
+
+def parse_server_tags(s):
+    server_tags = {}
+    for tag in s.split(';'):
+        if '=' not in tag:
+            server_tags[tag] = None
+        else:
+            (key, value) = tag.split('=', 1)
+            server_tags[key] = unescape_server_tag_value(value)
+    return server_tags
+def format_server_tags(server_tags):
+    parts = []
+    for (key, value) in server_tags.items():
+        if value is None:
+            parts.append(key)
+        else:
+            parts.append('%s=%s' % (key, escape_server_tag_value(value)))
+    return '@' + ';'.join(parts)
+
 class IrcMsg(object):
     """Class to represent an IRC message.
 
@@ -81,7 +112,8 @@ class IrcMsg(object):
     # data.  Goodbye, __slots__.
     # On second thought, let's use methods for tagging.
     __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
-                 '_hash', '_str', '_repr', '_len', 'tags', 'reply_env')
+                 '_hash', '_str', '_repr', '_len', 'tags', 'reply_env',
+                 'server_tags')
     def __init__(self, s='', command='', args=(), prefix='', msg=None,
             reply_env=None):
         assert not (msg and s), 'IrcMsg.__init__ cannot accept both s and msg'
@@ -99,6 +131,11 @@ class IrcMsg(object):
                 if not s.endswith('\n'):
                     s += '\n'
                 self._str = s
+                if s[0] == '@':
+                    (server_tags, s) = s.split(' ', 1)
+                    self.server_tags = parse_server_tags(server_tags[1:])
+                else:
+                    self.server_tags = {}
                 if s[0] == ':':
                     self.prefix, s = s[1:].split(None, 1)
                 else:
@@ -817,6 +854,19 @@ def ison(nick, prefix='', msg=None):
     if msg and not prefix:
         prefix = msg.prefix
     return IrcMsg(prefix=prefix, command='ISON', args=(nick,), msg=msg)
+
+def monitor(subcommand, nicks=None, prefix='', msg=None):
+    if conf.supybot.protocols.irc.strictRfc():
+        assert isNick(nick), repr(nick)
+        assert subcommand in '+-CLS'
+        if subcommand in 'CLS':
+            assert nicks is None
+    if msg and not prefix:
+        prefix = msg.prefix
+    if not isinstance(nicks, str):
+        nicks = ','.join(nicks)
+    return IrcMsg(prefix=prefix, command='MONITOR', args=(subcommand, nicks),
+            msg=msg)
 
 def error(s, msg=None):
     return IrcMsg(command='ERROR', args=(s,), msg=msg)

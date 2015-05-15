@@ -391,6 +391,10 @@ class IrcTestCase(SupyTestCase):
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
         self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
 
     def testPingResponse(self):
@@ -492,6 +496,8 @@ class IrcCallbackTestCase(SupyTestCase):
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-notify')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'extended-join')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'multi-prefix')),
+                ircmsgs.IrcMsg(command='CAP', args=('REQ', 'metadata-notify')),
+                ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-tag')),
                 ircmsgs.IrcMsg(command='CAP', args=('END',)),
                 ircmsgs.user('limnoria', user)
             ]
