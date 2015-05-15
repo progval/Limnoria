@@ -389,11 +389,11 @@ class IrcChannel(object):
                 self.capabilities, self.lobotomized,
                 self.defaultAllow, self.silences, self.exceptions)
 
-    def addBan(self, hostmask, expiration=0):
+    def addBan(self, hostmask, expiration=0, description=None):
         """Adds a ban to the channel banlist."""
         assert not conf.supybot.protocols.irc.strictRfc() or \
                 ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
-        self.bans[hostmask] = int(expiration)
+        self.bans[hostmask] = (int(expiration), description)
 
     def removeBan(self, hostmask):
         """Removes a ban from the channel banlist."""
@@ -405,7 +405,7 @@ class IrcChannel(object):
         """Checks whether a given hostmask is banned by the channel banlist."""
         assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
         now = time.time()
-        for (pattern, expiration) in self.bans.items():
+        for (pattern, (expiration, description)) in self.bans.items():
             if now < expiration or not expiration:
                 if ircutils.hostmaskPatternEqual(pattern, hostmask):
                     return True
@@ -478,9 +478,9 @@ class IrcChannel(object):
         for capability in self.capabilities:
             write('capability ' + capability)
         bans = self.bans.items()
-        utils.sortBy(operator.itemgetter(1), bans)
-        for (ban, expiration) in bans:
-            write('ban %s %d' % (ban, expiration))
+        utils.sortBy(lambda x:x[1][0], bans)
+        for (ban, (expiration, description)) in bans:
+            write('ban %s %d %s' % (ban, expiration, description))
         ignores = self.ignores.items()
         utils.sortBy(operator.itemgetter(1), ignores)
         for (ignore, expiration) in ignores:
