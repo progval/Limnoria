@@ -121,6 +121,9 @@ class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
     regexps = ['titleSnarfer']
 
+    def noIgnore(self, irc, msg):
+        return not self.registryValue('checkIgnored', msg.args[0])
+
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
         channel = msg.args[0]

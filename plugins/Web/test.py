@@ -30,7 +30,7 @@
 from supybot.test import *
 
 class WebTestCase(ChannelPluginTestCase):
-    plugins = ('Web',)
+    plugins = ('Web', 'Admin',)
     timeout = 10
     if network:
         def testHeaders(self):
@@ -91,6 +91,34 @@ class WebTestCase(ChannelPluginTestCase):
                     conf.supybot.plugins.Web.titleSnarfer.setValue(title)
             finally:
                 conf.supybot.plugins.Web.nonSnarfingRegexp.setValue(snarf)
+
+        def testSnarferIgnore(self):
+            conf.supybot.plugins.Web.titleSnarfer.setValue(True)
+            (oldprefix, self.prefix) = (self.prefix, 'foo!bar@baz')
+            try:
+                self.assertSnarfRegexp('http://google.com/', 'Google')
+                self.assertNotError('admin ignore add %s' % self.prefix)
+                self.assertSnarfNoResponse('http://google.com/')
+                self.assertNoResponse('title http://www.google.com/')
+            finally:
+                conf.supybot.plugins.Web.titleSnarfer.setValue(False)
+                (self.prefix, oldprefix) = (oldprefix, self.prefix)
+                self.assertNotError('admin ignore remove %s' % oldprefix)
+
+        def testSnarferNotIgnore(self):
+            conf.supybot.plugins.Web.titleSnarfer.setValue(True)
+            conf.supybot.plugins.Web.checkIgnored.setValue(False)
+            (oldprefix, self.prefix) = (self.prefix, 'foo!bar@baz')
+            try:
+                self.assertSnarfRegexp('https://google.com/', 'Google')
+                self.assertNotError('admin ignore add %s' % self.prefix)
+                self.assertSnarfRegexp('https://www.google.com/', 'Google')
+                self.assertNoResponse('title http://www.google.com/')
+            finally:
+                conf.supybot.plugins.Web.titleSnarfer.setValue(False)
+                conf.supybot.plugins.Web.checkIgnored.setValue(True)
+                (self.prefix, oldprefix) = (oldprefix, self.prefix)
+                self.assertNotError('admin ignore remove %s' % oldprefix)
 
         def testWhitelist(self):
             fm = conf.supybot.plugins.Web.fetch.maximum()

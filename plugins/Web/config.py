@@ -60,6 +60,9 @@ conf.registerChannelValue(Web, 'nonSnarfingRegexp',
     registry.Regexp(None, _("""Determines what URLs matching the given regexp
     will not be snarfed.  Give the empty string if you have no URLs that you'd
     like to exclude from being snarfed.""")))
+conf.registerChannelValue(Web, 'checkIgnored',
+    registry.Boolean(True, _("""Determines whether the title snarfer checks
+    if the author of a message is ignored.""")))
 
 conf.registerGlobalValue(Web, 'urlWhitelist',
     registry.SpaceSeparatedListOfStrings([], """If set, bot will only fetch data
