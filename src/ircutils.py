@@ -51,6 +51,9 @@ from . import utils
 from . import minisix
 from .version import version
 
+from .i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization()
+
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
     print('***', s % args)
@@ -395,15 +398,16 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
     hostmask = '@'.join(replies['311'].args[2:4])
     nick = replies['318'].args[1]
     user = replies['311'].args[-1]
-    (replyIrc, replyMsg, d, command) = self._whois[(irc, loweredNick)]
     START_CODE = '311' if command == 'whois' else '314'
-    hostmask = '@'.join(d[START_CODE].args[2:4])
-    user = d[START_CODE].args[-1]
+    hostmask = '@'.join(replies[START_CODE].args[2:4])
+    user = replies[START_CODE].args[-1]
     if _containsFormattingRe.search(user) and user[-1] != '\x0f':
         # For good measure, disable any formatting
         user = '%s\x0f' % user
     if '319' in replies:
-        channels = replies['319'].args[-1].split()
+        channels = []
+        for msg in replies['319']:
+            channels.extend(msg.args[-1].split())
         ops = []
         voices = []
         normal = []
@@ -467,8 +471,8 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
         signon = '<unknown>'
     if '312' in replies:
         server = replies['312'].args[2]
-        if len(d['312']) > 3:
-            signoff = d['312'].args[3]
+        if len(replies['312']) > 3:
+            signoff = replies['312'].args[3]
     else:
         server = '<unknown>'
     if '301' in replies:
@@ -484,11 +488,10 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
         identify = ''
     if command == 'whois':
         s = _('%s (%s) has been%s on server %s since %s (idle for %s) and '
-            '%s.%s').decode('utf8') % (user, hostmask, identify, server,
+            '%s.%s') % (user, hostmask, identify, server,
                     signon, idle, channels, away)
     else:
-        s = _('%s (%s) has been%s on server %s and disconnect on %s.') \
-                .decode('utf8') % \
+        s = _('%s (%s) has been%s on server %s and disconnect on %s.') % \
                 (user, hostmask, identify, server, signoff)
     return s
 
