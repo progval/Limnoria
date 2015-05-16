@@ -478,6 +478,8 @@ class IrcChannel(object):
         for capability in self.capabilities:
             write('capability ' + capability)
         bans = self.bans.items()
+        bans = [(x, (y, None) if isinstance(y, int) else y)
+                for (x, y) in bans]
         utils.sortBy(lambda x:x[1][0], bans)
         for (ban, (expiration, description)) in bans:
             write('ban %s %d %s' % (ban, expiration, description))
