@@ -440,11 +440,11 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
             if not modes:
                 normal.append(chan)
             elif utils.iter.any(lambda c: c in modes,('@', '&', '~', '!')):
-                ops.append(chan[1:])
+                ops.append(chan)
             elif utils.iter.any(lambda c: c in modes, ('%',)):
-                halfops.append(chan[1:])
+                halfops.append(chan)
             elif utils.iter.any(lambda c: c in modes, ('+',)):
-                voices.append(chan[1:])
+                voices.append(chan)
         L = []
         if ops:
             L.append(format(_('is an op on %L'), ops))
