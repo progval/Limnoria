@@ -427,24 +427,24 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
             # The user is in a channel the bot is in, so the ircd may have
             # responded with otherwise private data.
             if chanState:
-                # Skip channels the callee isn't in.  This helps prevents
-                # us leaking information when the channel is +s or the
-                # target is +i
+                # Skip channels the caller isn't in.  This prevents
+                # us from leaking information when the channel is +s or the
+                # target is +i.
                 if caller not in chanState.users:
                     continue
                 # Skip +s channels the target is in only if the reply isn't
-                # being sent to that channel
+                # being sent to that channel.
                 if 's' in chanState.modes and \
-                   not ircutils.strEqual(channel or '', chan):
+                   not strEqual(channel or '', chan):
                     continue
             if not modes:
                 normal.append(chan)
             elif utils.iter.any(lambda c: c in modes,('@', '&', '~', '!')):
-                ops.append(chan[1:])
+                ops.append(chan)
             elif utils.iter.any(lambda c: c in modes, ('%',)):
-                halfops.append(chan[1:])
+                halfops.append(chan)
             elif utils.iter.any(lambda c: c in modes, ('+',)):
-                voices.append(chan[1:])
+                voices.append(chan)
         L = []
         if ops:
             L.append(format(_('is an op on %L'), ops))
@@ -459,7 +459,7 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
                 L.append(format(_('is on %L'), normal))
     else:
         if command == 'whois':
-            L = [_('isn\'t on any non-secret channels')]
+            L = [_('isn\'t on any publicly visible channels')]
         else:
             L = []
     channels = format('%L', L)
@@ -476,7 +476,7 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
     else:
         server = '<unknown>'
     if '301' in replies:
-        away = '  %s is away: %s.' % (nick, replies['301'].args[2])
+        away = ' %s is away: %s.' % (nick, replies['301'].args[2])
     else:
         away = ''
     if '320' in replies:
@@ -487,11 +487,11 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
     else:
         identify = ''
     if command == 'whois':
-        s = _('%s (%s) has been%s on server %s since %s (idle for %s) and '
-            '%s.%s') % (user, hostmask, identify, server,
-                    signon, idle, channels, away)
+        s = _('%s (%s) has been%s on server %s since %s (idle for %s). %s '
+              '%s.%s') % (user, hostmask, identify, server,
+                          signon, idle, nick, channels, away)
     else:
-        s = _('%s (%s) has been%s on server %s and disconnect on %s.') % \
+        s = _('%s (%s) has been%s on server %s and disconnected on %s.') % \
                 (user, hostmask, identify, server, signoff)
     return s
 
