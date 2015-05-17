@@ -956,6 +956,22 @@ class Irc(IrcCommandDispatcher):
 
             return
 
+        if self.password:
+            log.info('%s: Queuing PASS command, not logging the password.',
+                     self.network)
+
+            self.sendMsg(ircmsgs.password(self.password))
+
+        log.debug('%s: Sending NICK command, nick is %s.',
+                  self.network, self.nick)
+
+        self.sendMsg(ircmsgs.nick(self.nick))
+
+        log.debug('%s: Sending USER command, ident is %s, user is %s.',
+                  self.network, self.ident, self.user)
+
+        self.sendMsg(ircmsgs.user(self.ident, self.user))
+
         self.sasl = None
 
         if ecdsa and self.sasl_username and self.sasl_ecdsa_key:
@@ -979,22 +995,6 @@ class Irc(IrcCommandDispatcher):
             self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
         else:
             self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
-
-        if self.password:
-            log.info('%s: Queuing PASS command, not logging the password.',
-                     self.network)
-
-            self.sendMsg(ircmsgs.password(self.password))
-
-        log.debug('%s: Queuing NICK command, nick is %s.',
-                  self.network, self.nick)
-
-        self.sendMsg(ircmsgs.nick(self.nick))
-
-        log.debug('%s: Queuing USER command, ident is %s, user is %s.',
-                  self.network, self.ident, self.user)
-
-        self.sendMsg(ircmsgs.user(self.ident, self.user))
 
     def doAuthenticate(self, msg):
         if len(msg.args) == 1 and msg.args[0] == '+':
