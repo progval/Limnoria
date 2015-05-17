@@ -966,30 +966,35 @@ class Irc(IrcCommandDispatcher):
         elif self.sasl_username and self.sasl_password:
             self.sasl = 'plain'
 
+        # Notes:
+        # * not sending caps at once, because the server has no granularity
+        #   in telling between ACK and NAK
+        # * using sendMsg instead of queueMsg because these messages cannot
+        #   be throttled.
         for cap in ('account-notify', 'extended-join', 'multi-prefix',
                 'metadata-notify', 'account-tag'):
-            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
+            self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
 
         if self.sasl:
-            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
+            self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
         else:
-            self.queueMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+            self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
         if self.password:
             log.info('%s: Queuing PASS command, not logging the password.',
                      self.network)
 
-            self.queueMsg(ircmsgs.password(self.password))
+            self.sendMsg(ircmsgs.password(self.password))
 
         log.debug('%s: Queuing NICK command, nick is %s.',
                   self.network, self.nick)
 
-        self.queueMsg(ircmsgs.nick(self.nick))
+        self.sendMsg(ircmsgs.nick(self.nick))
 
         log.debug('%s: Queuing USER command, ident is %s, user is %s.',
                   self.network, self.ident, self.user)
 
-        self.queueMsg(ircmsgs.user(self.ident, self.user))
+        self.sendMsg(ircmsgs.user(self.ident, self.user))
 
     def doAuthenticate(self, msg):
         if len(msg.args) == 1 and msg.args[0] == '+':
@@ -1007,7 +1012,7 @@ class Irc(IrcCommandDispatcher):
                     self.sasl_password
                 ]).encode('utf-8')).decode('utf-8')
 
-            self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
+            self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
         elif (len(msg.args) == 1 and msg.args[0] != '+' and
                 self.sasl == 'ecdsa-nist256p-challenge'):
             try:
@@ -1018,7 +1023,7 @@ class Irc(IrcCommandDispatcher):
             except (BadDigestError, OSError, ValueError) as e:
                 authstring = "*"
 
-            self.queueMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
+            self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
     def doCap(self, msg):
         if len(msg.args) != 3:
@@ -1030,7 +1035,7 @@ class Irc(IrcCommandDispatcher):
                 self.state.capabilities_ack.add(cap)
 
                 if cap == 'sasl':
-                    self.queueMsg(ircmsgs.IrcMsg(
+                    self.sendMsg(ircmsgs.IrcMsg(
                         command='AUTHENTICATE',
                         args=(self.sasl.upper(),)))
             elif msg.args[1] == 'NAK':
@@ -1039,7 +1044,7 @@ class Irc(IrcCommandDispatcher):
                             self.network, cap)
 
                 if cap == 'sasl':
-                    self.queueMsg(ircmsgs.IrcMsg(
+                    self.sendMsg(ircmsgs.IrcMsg(
                         command='CAP',
                         args=('END',)))
 
