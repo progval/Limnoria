@@ -28,6 +28,7 @@
 ###
 
 import os
+import traceback
 
 import supybot.log as log
 import supybot.conf as conf
@@ -46,6 +47,11 @@ try:
 except TypeError:
     # This is the 'gnupg' library, not 'python-gnupg'.
     gnupg = None
+except OSError: # WindowsError?
+    gnupg = None
+    log.error('Cannot use GPG. python-gnupg is installed but cannot '
+              'find the gnupg executable.')
+
 
 available = (gnupg is not None)
 
