@@ -304,6 +304,10 @@ repositories = utils.InsensitivePreservingDict({
                                                    'waratte',
                                                    'supybot',
                                                    ),
+               't3chguy':          GithubRepository(
+                                                   't3chguy',
+                                                   'Limnoria-Plugins',
+                                                   ),
                })
 
 class PluginDownloader(callbacks.Plugin):
