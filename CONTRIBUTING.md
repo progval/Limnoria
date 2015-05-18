@@ -27,6 +27,9 @@ Don't fear that you spam Limnoria by sending many pull requests. According
 to @ProgVal, it's easier for them to accept pull requests than to 
 cherry-pick everything manually.
 
+Having at least one test case in any non-trivial pull-request
+is very appreciated.
+
 See also [Contributing to Limnoria] at [Limnoria documentation].
 
 [Contributing to Limnoria]:http://supybot.aperio.fr/doc/contribute/index.html#contributing-to-limnoria
