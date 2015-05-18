@@ -53,5 +53,15 @@ GPG = conf.registerPlugin('GPG')
 # conf.registerGlobalValue(GPG, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
 
+conf.registerGroup(GPG, 'auth')
+conf.registerGroup(GPG.auth, 'sign')
+
+conf.registerGlobalValue(GPG.auth.sign, 'enable',
+    registry.Boolean(True, """Determines whether or not users are
+    allowed to use GPG signing for authentication."""))
+conf.registerGlobalValue(GPG.auth.sign, 'TokenTimeout',
+    registry.PositiveInteger(60*10, """Determines the lifetime of a GPG
+    signature authentication token (in seconds)."""))
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

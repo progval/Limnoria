@@ -29,8 +29,14 @@
 ###
 
 import re
+import sys
+import time
+import uuid
 
+import supybot.gpg as gpg
+import supybot.conf as conf
 import supybot.utils as utils
+import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -103,9 +109,9 @@ class GPG(callbacks.Plugin):
                 irc.reply(format('%L', keyids))
         list = wrap(list, ['user'])
 
-    class sign(callbacks.Commands):
+    class signing(callbacks.Commands):
         def __init__(self, *args):
-            super(User.gpg, self).__init__(*args)
+            super(GPG.signing, self).__init__(*args)
             self._tokens = {}
 
         def _expire_tokens(self):
@@ -119,7 +125,7 @@ class GPG(callbacks.Plugin):
             Send you a token that you'll have to sign with your key."""
             self._expire_tokens()
             token = '{%s}' % str(uuid.uuid4())
-            lifetime = conf.supybot.plugins.User.gpg.TokenTimeout()
+            lifetime = conf.supybot.plugins.GPG.auth.sign.TokenTimeout()
             self._tokens.update({token: (msg.prefix, time.time()+lifetime)})
             irc.reply(_('Your token is: %s. Please sign it with your '
                 'GPG key, paste it somewhere, and call the \'auth\' '

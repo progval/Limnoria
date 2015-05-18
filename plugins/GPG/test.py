@@ -28,6 +28,8 @@
 
 ###
 
+from cStringIO import StringIO
+
 from supybot.test import *
 
 import supybot.gpg as gpg
@@ -75,7 +77,7 @@ FINGERPRINT = '2CF3E41500218D30F0B654F5C9D3323C20AF012B'
 
 
 class GPGTestCase(PluginTestCase):
-    plugins = ('GPG',)
+    plugins = ('GPG', 'User')
 
     def setUp(self):
         super(GPGTestCase, self).setUp()
@@ -100,7 +102,7 @@ class GPGTestCase(PluginTestCase):
             gpg.keyring.import_keys(PRIVATE_KEY).__dict__
             (id, user) = ircdb.users.items()[0]
             user.gpgkeys.append(FINGERPRINT)
-            msg = self.getMsg('gpg gettoken').args[-1]
+            msg = self.getMsg('gpg signing gettoken').args[-1]
             match = re.search('is: ({.*}).', msg)
             assert match, repr(msg)
             token = match.group(1)
@@ -112,25 +114,25 @@ class GPGTestCase(PluginTestCase):
             fd = StringIO()
             fd.write('foo')
             fd.seek(0)
-            self.assertResponse('gpg sign auth http://foo.bar/baz.gpg',
+            self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Signature or token not found.')
 
             fd = StringIO()
             fd.write(token)
             fd.seek(0)
-            self.assertResponse('gpg sign auth http://foo.bar/baz.gpg',
+            self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Signature or token not found.')
 
             fd = StringIO()
             fd.write(WRONG_TOKEN_SIGNATURE)
             fd.seek(0)
-            self.assertRegexp('gpg sign auth http://foo.bar/baz.gpg',
+            self.assertRegexp('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Unknown token.*')
 
             fd = StringIO()
             fd.write(str(gpg.keyring.sign(token)))
             fd.seek(0)
-            self.assertResponse('gpg sign auth http://foo.bar/baz.gpg',
+            self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',
                     'You are now authenticated as spam.')
 
             utils.web.getUrlFd = realGetUrlFd

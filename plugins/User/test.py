@@ -28,7 +28,6 @@
 ###
 
 import re
-from cStringIO import StringIO
 
 from supybot.test import PluginTestCase, network
 
