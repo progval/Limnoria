@@ -238,5 +238,7 @@ class AkaTestCase(PluginTestCase):
         self.assertRegexp('aka search f', 'foo')
         self.assertError('aka search abcdefghijklmnop')
         self.assertRegexp('aka search many', 'many words')
+        # This should be case insensitive too.
+        self.assertRegexp('aka search MaNY', 'many words')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

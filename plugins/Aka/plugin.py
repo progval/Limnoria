@@ -743,6 +743,7 @@ class Aka(callbacks.Plugin):
 
         Searches Akas defined for <channel>. If <channel> is not specified,
         searches all global Akas."""
+        query = callbacks.canonicalName(query, preserve_spaces=True)
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
@@ -751,12 +752,13 @@ class Aka(callbacks.Plugin):
                             Raise=True)
                 channel = arg
         aka_list = self._db.get_aka_list(channel)
-        aka_list = [k[0] for k in aka_list]
-        if aka_list:
-            matching = [aka for aka in aka_list if query in aka]
+        aka_list = [callbacks.canonicalName(k[0], preserve_spaces=True)
+                    for k in aka_list]
+        matching = [aka for aka in aka_list if query in aka]
+        if matching:
             irc.replies(matching)
         else:
-            irc.error(_("No matching Akas found."))
+            irc.error(_("No matching Akas were found."))
     search = wrap(search, [getopts({'channel': 'channel'}), 'text'])
 
 Class = Aka
