@@ -241,12 +241,14 @@ class Later(callbacks.Plugin):
             for removal in removals:
                 self.wildcards.remove(removal)
         if notes:
+            old_repliedto = msg.repliedTo
             irc = callbacks.SimpleProxy(irc, msg)
             private = self.registryValue('private')
             for (when, whence, note) in notes:
                 s = self._formatNote(when, whence, note)
                 irc.reply(s, private=private, prefixNick=not private)
             self._flushNotes()
+            msg.repliedTo = old_repliedto
 
     def _formatNote(self, when, whence, note):
         return _('Sent %s: <%s> %s') % (self._timestamp(when), whence, note)
