@@ -308,6 +308,10 @@ repositories = utils.InsensitivePreservingDict({
                                                    't3chguy',
                                                    'Limnoria-Plugins',
                                                    ),
+                'prgmrbill':       GithubRepository(
+                                                   'prgmrbill',
+                                                   'limnoria-plugins',
+                                                   ),
                })
 
 class PluginDownloader(callbacks.Plugin):
