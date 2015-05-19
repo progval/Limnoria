@@ -398,7 +398,8 @@ class Owner(callbacks.Plugin):
             L.append(format('linecache line cache flushed: %n cleared.',
                             (len(linecache.cache), 'line')))
             linecache.clearcache()
-            sys.exc_clear()
+            if sys.version_info[0] < 3:
+                sys.exc_clear()
         collected = world.upkeep()
         if gc.garbage:
             L.append('Garbage!  %r.' % gc.garbage)
