@@ -47,7 +47,7 @@ try:
 except TypeError:
     # This is the 'gnupg' library, not 'python-gnupg'.
     gnupg = None
-except OSError: # WindowsError?
+except OSError:
     gnupg = None
     log.error('Cannot use GPG. python-gnupg is installed but cannot '
               'find the gnupg executable.')
