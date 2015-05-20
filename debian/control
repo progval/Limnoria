@@ -2,9 +2,9 @@ Source: limnoria
 Section: net
 Priority: optional
 Maintainer: Valentin Lorentz <progval@progval.net>
-Build-Depends: debhelper (>=3.9.2), dh-python, cdbs (>= 0.4.90~), python (>=2.6.6-3~), python-setuptools
+Build-Depends: debhelper (>=3.9.2), dh-python, python (>=2.6.6-3~), python-setuptools
 XS-Python-Version: >=2.6
-Standards-Version: 3.9.2
+Standards-Version: 3.9.6
 
 Package: limnoria
 Architecture: all
