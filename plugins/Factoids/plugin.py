@@ -439,7 +439,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
 
     @internationalizeDocstring
     def whatis(self, irc, msg, args, channel, optlist, words):
-        """[<channel>] [--raw] <key> [<number>]
+        """[<channel>] [--raw] [--silentError] <key> [<number>]
 
         Looks up the value of <key> in the factoid database.  If given a
         number, will return only that exact factoid. If '--raw' option is
@@ -448,9 +448,12 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         itself.
         """
         raw = False
+        error = True
         for (option, arg) in optlist:
             if option == 'raw':
                 raw = True
+            elif option == 'silentError'
+                error = False
         number = None
         if len(words) > 1:
             if words[-1].isdigit():
@@ -460,11 +463,11 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         key = ' '.join(words)
         factoids = self._lookupFactoid(channel, key)
         if factoids:
-            self._replyFactoids(irc, msg, key, channel, factoids, number, raw=raw)
+            self._replyFactoids(irc, msg, key, channel, factoids, number, error=error, raw=raw)
         else:
-            self._replyApproximateFactoids(irc, msg, channel, key)
+            self._replyApproximateFactoids(irc, msg, channel, key, error=error)
     whatis = wrap(whatis, ['channel',
-                            getopts({'raw': '',}),
+                            getopts({'raw': '', 'silentError': ''}),
                             many('something')])
 
     @internationalizeDocstring
