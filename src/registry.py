@@ -108,9 +108,24 @@ def open_registry(filename, clear=False):
     _lastModified = time.time()
     _fd.close()
 
+CONF_FILE_HEADER = """
+######
+# Althrough it is technically possible to do so, we do not recommend that
+# you edit this file with a text editor.
+# Whenever possible, do it on IRC using the Config plugin, which
+# checks values you set are valid before writing them to the
+# configuration.
+# Moreover, if you edit this file while the bot is running, your
+# changes may be lost.
+######
+
+
+"""
+
 def close(registry, filename, private=True):
     first = True
     fd = utils.file.AtomicFile(filename)
+    fd.write(CONF_FILE_HEADER)
     for (name, value) in registry.getValues(getChildren=True):
         help = value.help()
         if help:
