@@ -182,21 +182,6 @@ def newDriver(irc, moduleName=None):
     if moduleName is None:
         moduleName = conf.supybot.drivers.module()
     if moduleName == 'default':
-        # XXX Twisted has been causing problems lately, so we're going to use
-        # the Socket driver by default, now.  Leaving behind the code for using
-        # Twisted by default in case someone steps up and fixes the Twisted
-        # driver.
-        '''
-        try:
-            import supybot.drivers.Twisted
-            moduleName = 'supybot.drivers.Twisted'
-        except ImportError:
-            # We formerly used 'del' here, but 2.4 fixes the bug that we added
-            # the 'del' for, so we need to make sure we don't complain if the
-            # module is cleaned up already.
-            sys.modules.pop('supybot.drivers.Twisted', None)
-            moduleName = 'supybot.drivers.Socket'
-        '''
         moduleName = 'supybot.drivers.Socket'
     elif not moduleName.startswith('supybot.drivers.'):
         moduleName = 'supybot.drivers.' + moduleName

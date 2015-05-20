@@ -112,6 +112,9 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
     maxDelay = property(lambda self: conf.supybot.drivers.maxReconnectWait())
     protocol = SupyIrcProtocol
     def __init__(self, irc):
+        drivers.log.warning('Twisted driver is deprecated. You should '
+                            'consider switching to Socket (set '
+                            'supybot.drivers.module to Socket).')
         self.irc = irc
         drivers.ServersMixin.__init__(self, irc)
         (server, port) = self._getNextServer()
