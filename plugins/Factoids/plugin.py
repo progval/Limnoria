@@ -452,7 +452,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         for (option, arg) in optlist:
             if option == 'raw':
                 raw = True
-            elif option == 'silentError'
+            elif option == 'silentError':
                 error = False
         number = None
         if len(words) > 1:
