@@ -137,7 +137,7 @@ msgstr ""
 #: plugin.py:442
 #, docstring
 msgid ""
-"[<channel>] [--raw] <key> [<number>]\n"
+"[<channel>] [--raw] [--silentError] <key> [<number>]\n"
 "\n"
 "        Looks up the value of <key> in the factoid database.  If given a\n"
 "        number, will return only that exact factoid. If '--raw' option is\n"

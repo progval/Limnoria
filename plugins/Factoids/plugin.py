@@ -272,12 +272,12 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         cursor.execute("SELECT id FROM factoids WHERE fact=?", (factoid,))
         factresults = cursor.fetchall()
         return (keyresults, factresults,)
-    
+
     def learn(self, irc, msg, args, channel, key, factoid):
         if self.registryValue('requireVoice', channel) and \
                 not irc.state.channels[channel].isVoicePlus(msg.nick):
             irc.error(_('You have to be at least voiced to teach factoids.'))
-        
+
         # if neither key nor factoid exist, add them.
         # if key exists but factoid doesn't, add factoid, link it to existing key
         # if factoid exists but key doesn't, add key, link it to existing factoid
@@ -285,7 +285,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         (keyid, factid) = self._getKeyAndFactId(channel, key, factoid)
-        
+
         if len(keyid) == 0:
             cursor.execute("""INSERT INTO keys VALUES (NULL, ?)""", (key,))
             db.commit()
@@ -299,19 +299,19 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                            (name, int(time.time()), factoid, 0))
             db.commit()
         (keyid, factid) = self._getKeyAndFactId(channel, key, factoid)
-        
+
         cursor.execute("""SELECT id, key_id, fact_id from relations
-                            WHERE key_id=? AND fact_id=?""", 
+                            WHERE key_id=? AND fact_id=?""",
                             (keyid[0][0], factid[0][0],))
         existingrelation = cursor.fetchall()
         if len(existingrelation) == 0:
-            cursor.execute("""INSERT INTO relations VALUES (NULL, ?, ?, ?)""", 
+            cursor.execute("""INSERT INTO relations VALUES (NULL, ?, ?, ?)""",
                     (keyid[0][0],factid[0][0],0,))
             db.commit()
             irc.replySuccess()
         else:
             irc.error("This key-factoid relationship already exists.")
-        
+
     learn = wrap(learn, ['factoid'], checkDoc=False)
     learn._fake__doc__ = _("""[<channel>] <key> %s <value>
 
@@ -331,25 +331,25 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           ORDER BY factoids.id
                           LIMIT 20""", (key,))
         return cursor.fetchall()
-    
+
     def _searchFactoid(self, channel, key):
         """Try to typo-match input to possible factoids.
-        
-        Assume first letter is correct, to reduce processing time.        
+
+        Assume first letter is correct, to reduce processing time.
         First, try a simple wildcard search.
         If that fails, use the Damerau-Levenshtein edit-distance metric.
         """
         # if you made a typo in a two-character key, boo on you.
         if len(key) < 3:
             return []
-            
+
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT key FROM keys WHERE key LIKE ?""", ('%' + key + '%',))
         wildcardkeys = cursor.fetchall()
         if len(wildcardkeys) > 0:
             return [line[0] for line in wildcardkeys]
-        
+
         cursor.execute("""SELECT key FROM keys WHERE key LIKE ?""", (key[0] + '%',))
         flkeys = cursor.fetchall()
         if len(flkeys) == 0:
@@ -361,9 +361,9 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             return [key for key,item in dict_metrics.iteritems() if item <= 2]
         if min(dl_metrics) <= 3:
             return [key for key,item in dict_metrics.iteritems() if item <= 3]
-        
+
         return []
-                
+
     def _updateRank(self, channel, factoids):
         if self.registryValue('keepRankInfo', channel):
             db = self.getDb(channel)
@@ -373,10 +373,10 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                           FROM relations
                           WHERE relations.id=?""", (relationid,))
                 old_count = cursor.fetchall()[0][0]
-                cursor.execute("UPDATE relations SET usage_count=? WHERE id=?", 
+                cursor.execute("UPDATE relations SET usage_count=? WHERE id=?",
                             (old_count + 1, relationid,))
                 db.commit()
-        
+
     def _replyFactoids(self, irc, msg, key, channel, factoids,
                        number=0, error=True, raw=False):
         def format_fact(text):
@@ -384,7 +384,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 return text
             else:
                 return ircutils.standardSubstitute(irc, msg, text)
-        
+
         if factoids:
             if number:
                 try:
@@ -406,7 +406,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                     factoidsS = []
                     counter = 1
                     for factoid in factoids:
-                        factoidsS.append(format('(#%i) %s', counter, 
+                        factoidsS.append(format('(#%i) %s', counter,
                                 format_fact(factoid[0])))
                         counter += 1
                     irc.replies(factoidsS, prefixer=prefixer,
@@ -577,8 +577,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         else:
             s = [ "#%d %s (%d)" % (i+1, key[0], key[1]) for i, key in enumerate(factkeys) ]
         irc.reply(", ".join(s))
-    rank = wrap(rank, ['channel', 
-                        getopts({'plain': '', 'alpha': '',}), 
+    rank = wrap(rank, ['channel',
+                        getopts({'plain': '', 'alpha': '',}),
                         optional('int')])
 
     @internationalizeDocstring
