@@ -383,19 +383,19 @@ class IrcTestCase(SupyTestCase):
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
         m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
         self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
 
     def testPingResponse(self):
         self.irc.feedMsg(ircmsgs.ping('123'))
@@ -435,6 +435,7 @@ class IrcTestCase(SupyTestCase):
             except:
                 pass
         self.irc.reset()
+        self.failIf(self.irc.fastqueue)
         self.failIf(self.irc.state.history)
         self.failIf(self.irc.state.channels)
         self.failIf(self.irc.outstandingPing)
@@ -492,13 +493,13 @@ class IrcCallbackTestCase(SupyTestCase):
             conf.supybot.user.setValue(user)
             expected = [
                 ircmsgs.nick(nick),
-                ircmsgs.user('limnoria', user),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-notify')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'extended-join')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'multi-prefix')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'metadata-notify')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-tag')),
                 ircmsgs.IrcMsg(command='CAP', args=('END',)),
+                ircmsgs.user('limnoria', user)
             ]
             irc = irclib.Irc('test')
             msgs = [irc.takeMsg()]
