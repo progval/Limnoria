@@ -86,7 +86,7 @@ class Feed:
             plugin_is_loading=False, announced=None):
         assert name, name
         if not url:
-            if not utils.web.httpUrlRe.match(name)
+            if not utils.web.httpUrlRe.match(name):
                 raise InvalidFeedUrl(name)
             url = name
         self.name = name
