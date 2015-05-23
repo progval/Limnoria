@@ -592,7 +592,7 @@ class IrcChannelCreator(Creator):
 
     def ban(self, rest, lineno):
         self._checkId()
-        parts = rest.split(maxsplit=2)
+        parts = rest.split(None, 2)
         if len(parts) == 2: # Old format
             (pattern, expiration) = parts
         else:
