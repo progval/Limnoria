@@ -592,7 +592,11 @@ class IrcChannelCreator(Creator):
 
     def ban(self, rest, lineno):
         self._checkId()
-        (pattern, expiration) = rest.split()
+        parts = rest.split(maxsplit=2)
+        if len(parts) == 2: # Old format
+            (pattern, expiration) = parts
+        else:
+            (pattern, expiration, description) = parts
         self.c.bans[pattern] = int(float(expiration))
 
     def ignore(self, rest, lineno):
