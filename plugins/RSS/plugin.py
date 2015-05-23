@@ -75,6 +75,9 @@ def only_one_at_once(f):
             lock[0] = False
     return newf
 
+class InvalidFeedUrl(ValueError):
+    pass
+
 class Feed:
     __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
             'etag', 'modified', 'initial',
@@ -83,7 +86,8 @@ class Feed:
             plugin_is_loading=False, announced=None):
         assert name, name
         if not url:
-            assert utils.web.httpUrlRe.match(name), name
+            if not utils.web.httpUrlRe.match(name)
+                raise InvalidFeedUrl(name)
             url = name
         self.name = name
         self.url = url
@@ -167,7 +171,11 @@ class RSS(callbacks.Plugin):
             except registry.NonExistentRegistryEntry:
                 self.log.warning('%s is not a registered feed, removing.',name)
                 continue
-            self.register_feed(name, url, True, True, announced.get(name, []))
+            try:
+                self.register_feed(name, url, True, True, announced.get(name, []))
+            except InvalidFeedUrl:
+                self.log.error('%s is not a valid feed, removing.', name)
+                continue
         world.flushers.append(self._flush)
 
     def die(self):
