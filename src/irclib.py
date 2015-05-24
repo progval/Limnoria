@@ -951,8 +951,8 @@ class Irc(IrcCommandDispatcher):
         self.outstandingPing = False
 
 
-    REQUEST_CAPABILITIES = {'account-notify', 'extended-join', 'multi-prefix',
-            'metadata-notify', 'account-tag'}
+    REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
+        'multi-prefix', 'metadata-notify', 'account-tag'])
 
     def _queueConnectMessages(self):
         if self.zombie:
