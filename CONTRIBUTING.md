@@ -20,7 +20,7 @@ optional.
 ## Sending patches
 
 When you send a pull request, **send it to the testing branch**. 
-It will be merged to master when it's considered to be enough stable to be 
+It will be merged to master when it's considered to be stable enough to be 
 supported.
 
 Don't fear that you spam Limnoria by sending many pull requests. According 
