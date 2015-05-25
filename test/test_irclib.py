@@ -400,7 +400,7 @@ class IrcTestCase(SupyTestCase):
         self.assertEqual(m.args[0], 'REQ', m)
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        self.assertEqual(m.args, ('REQ', 'extended-join'), m)
+        self.assertEqual(m.args[0], 'REQ', m)
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args, ('END',), m)
