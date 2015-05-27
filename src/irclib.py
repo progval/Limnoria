@@ -350,7 +350,8 @@ class IrcState(IrcCommandDispatcher):
     __firewalled__ = {'addMsg': None}
     def __init__(self, history=None, supported=None,
                  nicksToHostmasks=None, channels=None,
-                 capabilities_ack=None, capabilities_nak=None):
+                 capabilities_ack=None, capabilities_nak=None,
+                 capabilities_ls=None):
         if history is None:
             history = RingBuffer(conf.supybot.protocols.irc.maxHistoryLength())
         if supported is None:
@@ -361,6 +362,7 @@ class IrcState(IrcCommandDispatcher):
             channels = ircutils.IrcDict()
         self.capabilities_ack = capabilities_ack or set()
         self.capabilities_nak = capabilities_nak or set()
+        self.capabilities_ls = capabilities_ls or {}
         self.ircd = None
         self.supported = supported
         self.history = history
@@ -949,6 +951,9 @@ class Irc(IrcCommandDispatcher):
         self.outstandingPing = False
 
 
+    REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
+        'multi-prefix', 'metadata-notify', 'account-tag'])
+
     def _queueConnectMessages(self):
         if self.zombie:
             self.driver.die()
@@ -971,14 +976,7 @@ class Irc(IrcCommandDispatcher):
         #   in telling between ACK and NAK
         # * using sendMsg instead of queueMsg because these messages cannot
         #   be throttled.
-        for cap in ('account-notify', 'extended-join', 'multi-prefix',
-                'metadata-notify', 'account-tag'):
-            self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
-
-        if self.sasl:
-            self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
-        else:
-            self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+        self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('LS', '302')))
 
         if self.password:
             log.info('%s: Queuing PASS command, not logging the password.',
@@ -1026,27 +1024,69 @@ class Irc(IrcCommandDispatcher):
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
     def doCap(self, msg):
+        if msg.args[1] == 'ACK':
+            self.doCapAck(msg)
+        elif msg.args[1] == 'NAK':
+            self.doCapNak(msg)
+        elif msg.args[1] == 'LS':
+            self.doCapLs(msg)
+    def doCapAck(self, msg):
         if len(msg.args) != 3:
+            log.warning('Bad CAP ACK from server: %r', msg)
             return
         for cap in msg.args[2].split(' '):
-            if msg.args[1] == 'ACK':
-                log.info('%s: Server acknowledged capability %r',
-                         self.network, cap)
-                self.state.capabilities_ack.add(cap)
+            log.info('%s: Server acknowledged capability %r',
+                     self.network, cap)
+            self.state.capabilities_ack.add(cap)
 
-                if cap == 'sasl':
-                    self.sendMsg(ircmsgs.IrcMsg(
-                        command='AUTHENTICATE',
-                        args=(self.sasl.upper(),)))
-            elif msg.args[1] == 'NAK':
-                self.state.capabilities_nak.add(cap)
-                log.warning('%s: Server refused capability %r',
-                            self.network, cap)
+            if cap == 'sasl':
+                self.sendMsg(ircmsgs.IrcMsg(
+                    command='AUTHENTICATE',
+                    args=(self.sasl.upper(),)))
+    def doCapNak(self, msg):
+        if len(msg.args) != 3:
+            log.warning('Bad CAP NAK from server: %r', msg)
+            return
+        for cap in msg.args[2].split(' '):
+            self.state.capabilities_nak.add(cap)
+            log.warning('%s: Server refused capability %r',
+                        self.network, cap)
 
-                if cap == 'sasl':
-                    self.sendMsg(ircmsgs.IrcMsg(
-                        command='CAP',
-                        args=('END',)))
+            if cap == 'sasl':
+                self.sendMsg(ircmsgs.IrcMsg(
+                    command='CAP',
+                    args=('END',)))
+    def _addCapabilities(self, capstring):
+        for item in capstring.split():
+            while item.startswith(('=', '~')):
+                item = item[1:]
+            if '=' in item:
+                (cap, value) = item.split('=', 1)
+                self.state.capabilities_ls[cap] = value
+            else:
+                self.state.capabilities_ls[item] = None
+    def doCapLs(self, msg):
+        if len(msg.args) == 4:
+            # Multi-line LS
+            if msg.args[2] != '*':
+                log.warning('Bad CAP LS from server: %r', msg)
+                return
+            self._addCapabilities(msg.args[3])
+        elif len(msg.args) == 3: # End of LS
+            self._addCapabilities(msg.args[2])
+            common_supported_capabilities = set(self.state.capabilities_ls) & \
+                    self.REQUEST_CAPABILITIES
+            for cap in common_supported_capabilities:
+                self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
+
+            if 'sasl' in self.state.capabilities_ls and self.sasl:
+                # TODO: use the value of self.state.capabilities_ls['sasl']
+                self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
+            else:
+                self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+        else:
+            log.warning('Bad CAP LS from server: %r', msg)
+            return
 
     def monitor(self, targets):
         """Increment a counter of how many callbacks monitor each target;

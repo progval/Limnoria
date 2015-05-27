@@ -575,8 +575,8 @@ class Channel(callbacks.Plugin):
         hostmask = wrap(hostmask, ['op', ('haveHalfop+', _('ban someone')), 'text'])
 
         @internationalizeDocstring
-        def add(self, irc, msg, args, channel, banmask, expires, description):
-            """[<channel>] <nick|hostmask> [<expires>] [<description>]
+        def add(self, irc, msg, args, channel, banmask, expires):
+            """[<channel>] <nick|hostmask> [<expires>]
 
             If you have the #channel,op capability, this will effect a
             persistent ban from interacting with the bot on the given
@@ -589,11 +589,10 @@ class Channel(callbacks.Plugin):
             channel itself.
             """
             c = ircdb.channels.getChannel(channel)
-            c.addBan(banmask, expires or 0, description)
+            c.addBan(banmask, expires)
             ircdb.channels.setChannel(channel, c)
             irc.replySuccess()
-        add = wrap(add, ['op', first('hostmask', 'banmask'),
-            optional('expiry'), optional('text')])
+        add = wrap(add, ['op', first('hostmask', 'banmask'), additional('expiry', 0)])
 
         @internationalizeDocstring
         def remove(self, irc, msg, args, channel, banmask):
@@ -631,16 +630,12 @@ class Channel(callbacks.Plugin):
             if filtered_bans:
                 bans = []
                 for ban in filtered_bans:
-                    (expiration, description) = all_bans[ban]
-                    if expiration:
-                        bans.append(format(_('%q (%s, expires %t)'),
-                                           ban,
-                                           description or _('no description'),
-                                           expiration))
+                    if all_bans[ban]:
+                        bans.append(format(_('%q (expires %t)'),
+                                           ban, all_bans[ban]))
                     else:
-                        bans.append(format(_('%q (%s, never expires)'),
-                                           ban,
-                                           description or _('no description')))
+                        bans.append(format(_('%q (never expires)'),
+                                           ban, all_bans[ban]))
                 irc.reply(format('%L', bans))
             else:
                 irc.reply(format(_('There are no persistent bans on %s.'),

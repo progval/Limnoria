@@ -234,15 +234,7 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertRegexp('ban list foobar!*@baz', r'.*foobar!\*@baz.*')
         self.assertRegexp('ban list foobar!*@baz', r'.*foobar!qux@baz.*')
         self.assertResponse('ban list foobar!\*@baz',
-                '"foobar!*@baz" (no description, never expires)')
-
-        self.assertNotError('ban add foobarbaz!qux@baz foo')
-        self.assertResponse('ban list foobarbaz!*@baz',
-                '"foobarbaz!qux@baz" (foo, never expires)')
-
-        self.assertNotError('ban add foobarbazqux!qux@baz 5 bar')
-        self.assertRegexp('ban list foobarbazqux!*@baz',
-                r'"foobarbazqux!qux@baz" \(bar, expires [^ ]+\)')
+                '"foobar!*@baz" (never expires)')
 
     def testIgnore(self):
         orig = conf.supybot.protocols.irc.banmask()

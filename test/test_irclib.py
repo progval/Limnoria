@@ -381,21 +381,29 @@ class IrcTestCase(SupyTestCase):
         #m = self.irc.takeMsg()
         #self.failUnless(m.command == 'PASS', 'Expected PASS, got %r.' % m)
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        m = self.irc.takeMsg()
         self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        # TODO
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', '*', 'account-tag multi-prefix')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'extended-join')))
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        m = self.irc.takeMsg()
+        self.assertEqual(m.args, ('END',), m)
 
     def testPingResponse(self):
         self.irc.feedMsg(ircmsgs.ping('123'))
@@ -490,19 +498,20 @@ class IrcCallbackTestCase(SupyTestCase):
             conf.supybot.nick.setValue(nick)
             user = 'user any user'
             conf.supybot.user.setValue(user)
+            self.maxDiff = None
             expected = [
+                ircmsgs.nick(nick),
+                ircmsgs.user('limnoria', user),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-notify')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'extended-join')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'multi-prefix')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'metadata-notify')),
                 ircmsgs.IrcMsg(command='CAP', args=('REQ', 'account-tag')),
                 ircmsgs.IrcMsg(command='CAP', args=('END',)),
-                ircmsgs.nick(nick),
-                ircmsgs.user('limnoria', user),
             ]
             irc = irclib.Irc('test')
             msgs = [irc.takeMsg()]
-            while msgs[-1] != None:
+            while msgs[-1] is not None:
                 msgs.append(irc.takeMsg())
             msgs.pop()
             self.assertEqual(msgs, expected)
@@ -510,7 +519,7 @@ class IrcCallbackTestCase(SupyTestCase):
             conf.supybot.networks.test.password.setValue(password)
             irc = irclib.Irc('test')
             msgs = [irc.takeMsg()]
-            while msgs[-1] != None:
+            while msgs[-1] is not None:
                 msgs.append(irc.takeMsg())
             msgs.pop()
             expected.insert(0, ircmsgs.password(password))
