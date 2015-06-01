@@ -361,6 +361,8 @@ class RSS(callbacks.Plugin):
                 return False
         return True
 
+    _normalize_entry = utils.str.multipleReplacer(
+            {'\r': ' ', '\n': ' ', '\x00': ''})
     def format_entry(self, channel, feed, entry, is_announce):
         key_name = 'announceFormat' if is_announce else 'format'
         if feed.name in self.registryValue('feeds'):
@@ -371,10 +373,11 @@ class RSS(callbacks.Plugin):
             template = self.registryValue(key_name, channel)
         date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
-        return string.Template(template).safe_substitute(
+        s = string.Template(template).safe_substitute(
                 feed_name=feed.name,
                 date=date,
                 **entry)
+        return self._normalize_entry(s)
 
     def announce_entry(self, irc, channel, feed, entry):
         if self.should_send_entry(channel, entry):
