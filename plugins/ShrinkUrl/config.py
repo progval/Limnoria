@@ -42,11 +42,11 @@ def configure(advanced):
         conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
 
 class ShrinkService(registry.OnlySomeStrings):
-    """Valid values include 'tiny', 'ur1', and 'x0'."""
-    validStrings = ('tiny', 'ur1', 'x0')
+    """Valid values include 'tiny', 'ur1', 'x0', and 'bitly'."""
+    validStrings = ('tiny', 'ur1', 'x0', 'bitly')
 
 class ShrinkCycle(registry.SpaceSeparatedListOfStrings):
-    """Valid values include 'ln', 'tiny', 'ur1', and 'x0'."""
+    """Valid values include 'ln', 'tiny', 'ur1', 'x0', and 'bitly'."""
     Value = ShrinkService
 
     def __init__(self, *args, **kwargs):
@@ -96,5 +96,14 @@ conf.registerGlobalValue(ShrinkUrl, 'bold',
 conf.registerChannelValue(ShrinkUrl, 'serviceRotation',
     ShrinkCycle([], _("""If set to a non-empty value, specifies the list of
     services to rotate through for the shrinkSnarfer and outFilter.""")))
+
+conf.registerGroup(ShrinkUrl, 'bitly')
+conf.registerGlobalValue(ShrinkUrl.bitly, 'login',
+    registry.String('', _("""Determines the API Login string used for
+    shortening using the Bit.ly service."""), private=True))
+conf.registerGlobalValue(ShrinkUrl.bitly, 'apiKey',
+    registry.String('', _("""Determines the API Key string used for
+    shortening using the Bit.ly service."""), private=True))
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

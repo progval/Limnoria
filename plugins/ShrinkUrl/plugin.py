@@ -255,6 +255,39 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.error(str(e))
     x0 = thread(wrap(x0, ['httpUrl']))
 
+    _bitlyApi = 'http://api.bit.ly/shorten?format=txt&login=%s&apiKey=%s&longUrl=%s'
+    @retry
+    def _getbitlyUrl(self, url):
+        try:
+            return self.db.get('bitly', url)
+        except KeyError:
+            text = utils.web.getUrl(self._bitlyApi %
+                                    (self.registryValue('bitly.login'),
+                                    self.registryValue('bitly.apiKey'),
+                                    url)).decode()
+            if not text.startswith('http'):
+                raise ShrinkError(text)
+            self.db.set('bitly', url, text)
+            return text
+
+    @internationalizeDocstring
+    def bitly(self, irc, msg, args, url):
+        """<url>
+
+        Returns an bitly version of <url>.
+        """
+        if not (self.registryValue('bitly.login') or
+                self.registryValue('bitly.apiKey')):
+            irc.error(_("""Bit.ly Requested but login and apiKey are empty."""))
+        try:
+            bitlyurl = self._getbitlyUrl(url)
+            m = irc.reply(bitlyurl)
+            if m is not None:
+                m.tag('shrunken')
+        except ShrinkError as e:
+            irc.error(str(e))
+    bitly = thread(wrap(bitly, ['httpUrl']))
+
     @retry
     def _getExpandUrl(self, url):
         url = utils.web.urlquote(url)
