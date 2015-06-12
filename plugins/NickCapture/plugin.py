@@ -117,6 +117,14 @@ class NickCapture(callbacks.Plugin):
                 self.monitoring.remove(irc)
                 irc.unmonitor(nick)
                 break
+
+    def do437(self, irc, msg):
+        """Nick/channel is temporarily unavailable"""
+        if ircutils.isChannel(msg.args[1]):
+            return
+        self.log.info('Nick %s is unavailable; attempting NickServ release '
+                      'on %s.' % (msg.args[1], irc.network))
+        irc.sendMsg(ircmsgs.privmsg('NickServ', 'release %s' % msg.args[1]))
 NickCapture = internationalizeDocstring(NickCapture)
 
 Class = NickCapture
