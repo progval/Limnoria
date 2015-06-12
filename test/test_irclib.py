@@ -378,32 +378,40 @@ class IrcStateTestCase(SupyTestCase):
 class IrcTestCase(SupyTestCase):
     def setUp(self):
         self.irc = irclib.Irc('test')
+
         #m = self.irc.takeMsg()
         #self.failUnless(m.command == 'PASS', 'Expected PASS, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+
         # TODO
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
             args=('*', 'LS', '*', 'account-tag multi-prefix')))
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
             args=('*', 'LS', 'extended-join')))
+
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args[0], 'REQ', m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        self.assertEqual(m.args[0], 'REQ', m)
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        self.assertEqual(m.args[0], 'REQ', m)
+        # NOTE: Capabilities are requested in alphabetic order, because
+        # sets are unordered, and their "order" is nondeterministic.
+        self.assertEqual(m.args[1], 'account-tag extended-join multi-prefix')
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'ACK', 'account-tag multi-prefix extended-join')))
+
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args, ('END',), m)
+
         m = self.irc.takeMsg()
         self.failUnless(m is None, m)
 
@@ -501,9 +509,9 @@ class IrcCallbackTestCase(SupyTestCase):
             user = 'user any user'
             conf.supybot.user.setValue(user)
             expected = [
+                ircmsgs.IrcMsg(command='CAP', args=('LS', '302')),
                 ircmsgs.nick(nick),
                 ircmsgs.user('limnoria', user),
-                ircmsgs.IrcMsg(command='CAP', args=('LS', '302')),
             ]
             irc = irclib.Irc('test')
             msgs = [irc.takeMsg()]
@@ -518,7 +526,7 @@ class IrcCallbackTestCase(SupyTestCase):
             while msgs[-1] is not None:
                 msgs.append(irc.takeMsg())
             msgs.pop()
-            expected.insert(0, ircmsgs.password(password))
+            expected.insert(1, ircmsgs.password(password))
             self.assertEqual(msgs, expected)
         finally:
             conf.supybot.nick.setValue(originalNick)

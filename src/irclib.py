@@ -961,6 +961,11 @@ class Irc(IrcCommandDispatcher):
 
             return
 
+        # Notes:
+        # * using sendMsg instead of queueMsg because these messages cannot
+        #   be throttled.
+        self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('LS', '302')))
+
         if self.password:
             log.info('%s: Queuing PASS command, not logging the password.',
                      self.network)
@@ -987,12 +992,8 @@ class Irc(IrcCommandDispatcher):
         elif self.sasl_username and self.sasl_password:
             self.sasl = 'plain'
 
-        # Notes:
-        # * not sending caps at once, because the server has no granularity
-        #   in telling between ACK and NAK
-        # * using sendMsg instead of queueMsg because these messages cannot
-        #   be throttled.
-        self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('LS', '302')))
+        if self.sasl:
+            self.REQUEST_CAPABILITIES.add('sasl')
 
     def doAuthenticate(self, msg):
         if len(msg.args) == 1 and msg.args[0] == '+':
@@ -1034,28 +1035,24 @@ class Irc(IrcCommandDispatcher):
         if len(msg.args) != 3:
             log.warning('Bad CAP ACK from server: %r', msg)
             return
-        for cap in msg.args[2].split(' '):
-            log.info('%s: Server acknowledged capability %r',
-                     self.network, cap)
-            self.state.capabilities_ack.add(cap)
+        caps = msg.args[2]
+        log.info('%s: Server acknowledged capabilities: %s',
+                 self.network, caps)
+        self.state.capabilities_ack.update(caps)
 
-            if cap == 'sasl':
-                self.sendMsg(ircmsgs.IrcMsg(
-                    command='AUTHENTICATE',
-                    args=(self.sasl.upper(),)))
+        if 'sasl' in caps:
+            self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(self.sasl.upper(),)))
+        else:
+            self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
     def doCapNak(self, msg):
         if len(msg.args) != 3:
             log.warning('Bad CAP NAK from server: %r', msg)
             return
-        for cap in msg.args[2].split(' '):
-            self.state.capabilities_nak.add(cap)
-            log.warning('%s: Server refused capability %r',
-                        self.network, cap)
-
-            if cap == 'sasl':
-                self.sendMsg(ircmsgs.IrcMsg(
-                    command='CAP',
-                    args=('END',)))
+        caps = msg.args[2]
+        self.state.capabilities_nak.update(caps)
+        log.warning('%s: Server refused capabilities: %s',
+                    self.network, caps)
+        self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
     def _addCapabilities(self, capstring):
         for item in capstring.split():
             while item.startswith(('=', '~')):
@@ -1076,14 +1073,11 @@ class Irc(IrcCommandDispatcher):
             self._addCapabilities(msg.args[2])
             common_supported_capabilities = set(self.state.capabilities_ls) & \
                     self.REQUEST_CAPABILITIES
-            for cap in common_supported_capabilities:
-                self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', cap)))
-
-            if 'sasl' in self.state.capabilities_ls and self.sasl:
-                # TODO: use the value of self.state.capabilities_ls['sasl']
-                self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('REQ', 'sasl')))
-            else:
-                self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
+            # NOTE: Capabilities are requested in alphabetic order, because
+            # sets are unordered, and their "order" is nondeterministic.
+            # This is needed for the tests.
+            self.sendMsg(ircmsgs.IrcMsg(command='CAP',
+                args=('REQ', ' '.join(sorted(common_supported_capabilities)))))
         else:
             log.warning('Bad CAP LS from server: %r', msg)
             return
