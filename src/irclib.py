@@ -1040,7 +1040,7 @@ class Irc(IrcCommandDispatcher):
                  self.network, caps)
         self.state.capabilities_ack.update(caps)
 
-        if 'sasl' in caps:
+        if 'sasl' in caps and self.sasl:
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(self.sasl.upper(),)))
         else:
             self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
