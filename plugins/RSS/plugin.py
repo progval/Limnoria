@@ -371,6 +371,8 @@ class RSS(callbacks.Plugin):
             template = self.registryValue(key_name, channel)
         date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
+        if entry and entry.title: # for single line msg
+            entry['title'] = entry.title.replace("\n"," ");
         return string.Template(template).safe_substitute(
                 feed_name=feed.name,
                 date=date,
