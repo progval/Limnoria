@@ -1125,7 +1125,7 @@ registerGlobalValue(supybot.protocols.irc.queuing.rateLimit, 'join',
 ###
 registerGroup(supybot.protocols, 'http')
 registerGlobalValue(supybot.protocols.http, 'peekSize',
-    registry.PositiveInteger(4096, _("""Determines how many bytes the bot will
+    registry.PositiveInteger(8192, _("""Determines how many bytes the bot will
     'peek' at when looking through a URL for a doctype or title or something
     similar.  It'll give up after it reads this many bytes, even if it hasn't
     found what it was looking for.""")))
