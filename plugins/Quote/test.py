@@ -40,4 +40,16 @@ class QuoteTestCase(ChannelPluginTestCase):
         self.assertRegexp("quote get 1", "goodbye")
         self.assertError("quote replace 5 afsdafas") # non-existant
 
+    def testUnauthenticatedAdd(self):
+        # This should fail because the user isn't registered
+        self.assertError('quote add hello world!')
+        original_value = conf.supybot.databases.plugins.requireRegistration()
+        conf.supybot.databases.plugins.requireRegistration.setValue(False)
+        try:
+            self.assertNotError('quote add hello world!')
+            self.assertRegexp('quote get 1', 'hello')
+            self.assertNotError('quote remove 1')
+        finally:
+            conf.supybot.databases.plugins.requireRegistration.setValue(original_value)
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
