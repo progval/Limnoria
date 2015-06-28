@@ -330,6 +330,8 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
                   (self.name(), id, channel))
 
     def checkChangeAllowed(self, irc, msg, channel, user, record):
+        # Checks and returns True if either the user ID (integer)
+        # or the hostmask of the caller match.
         if (hasattr(user, 'id') and user.id == record.by) or user == record.by:
             return True
         cap = ircdb.makeChannelCapability(channel, 'op')
@@ -341,12 +343,12 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         """This should irc.error or raise an exception if text is invalid."""
         pass
 
-    def getUserId(self, irc, prefix):
+    def getUserId(self, irc, prefix, channel=None):
         try:
             user = ircdb.users.getUser(prefix)
             return user.id
         except KeyError:
-            if conf.supybot.databases.plugins.requireRegistration():
+            if conf.get(conf.supybot.databases.plugins.requireRegistration, channel):
                 irc.errorNotRegistered(Raise=True)
             return
 
@@ -357,7 +359,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        user = self.getUserId(irc, msg.prefix) or msg.prefix
+        user = self.getUserId(irc, msg.prefix, channel) or msg.prefix
         at = time.time()
         self.addValidator(irc, text)
         if text is not None:
@@ -372,7 +374,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        user = self.getUserId(irc, msg.prefix) or msg.prefix
+        user = self.getUserId(irc, msg.prefix, channel) or msg.prefix
         try:
             record = self.db.get(channel, id)
             self.checkChangeAllowed(irc, msg, channel, user, record)
@@ -448,7 +450,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         <regexp>.  <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
-        user = self.getUserId(irc, msg.prefix) or msg.prefix
+        user = self.getUserId(irc, msg.prefix, channel) or msg.prefix
         try:
             record = self.db.get(channel, id)
             self.checkChangeAllowed(irc, msg, channel, user, record)

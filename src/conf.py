@@ -932,7 +932,7 @@ class ChannelSpecific(registry.Boolean):
 
 registerGroup(supybot.databases, 'plugins')
 
-registerGlobalValue(supybot.databases.plugins, 'requireRegistration',
+registerChannelValue(supybot.databases.plugins, 'requireRegistration',
     registry.Boolean(True, _("""Determines whether the bot will require user
     registration to use 'add' commands in database-based Supybot
     plugins.""")))
