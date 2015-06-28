@@ -29,7 +29,7 @@
 
 from supybot.test import *
 
-class PraiseTestCase(PluginTestCase):
+class PraiseTestCase(ChannelPluginTestCase):
     plugins = ('Praise',)
     
     def testAdd(self):

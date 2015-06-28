@@ -931,6 +931,11 @@ class ChannelSpecific(registry.Boolean):
         return lchannel
 
 registerGroup(supybot.databases, 'plugins')
+
+registerChannelValue(supybot.databases.plugins, 'requireRegistration',
+    registry.Boolean(True, _("""Determines whether the bot will require user
+    registration to use 'add' commands in database-based Supybot
+    plugins.""")))
 registerChannelValue(supybot.databases.plugins, 'channelSpecific',
     ChannelSpecific(True, _("""Determines whether database-based plugins that
     can be channel-specific will be so.  This can be overridden by individual
