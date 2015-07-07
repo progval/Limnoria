@@ -77,8 +77,8 @@ conf.registerGlobalValue(Relay, 'channels',
     will relay in.""")))
 conf.registerChannelValue(Relay.channels, 'joinOnAllNetworks',
     registry.Boolean(False, _("""Determines whether the bot
-    will always join the channel(s) it relays for on all networks the bot is
-    connected to.""")))
+    will always join the channel(s) it relays when connecting to any network.
+    """)))
 conf.registerChannelValue(Relay, 'ignores',
     Ignores([], _("""Determines what hostmasks will not be relayed on a
     channel.""")))
