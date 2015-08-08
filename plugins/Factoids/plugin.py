@@ -39,6 +39,7 @@ import supybot.ircdb as ircdb
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
+import supybot.minisix as minisix
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 import supybot.httpserver as httpserver
@@ -219,11 +220,11 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def makeDb(self, filename):
         if os.path.exists(filename):
             db = sqlite3.connect(filename)
-            if sys.version_info[0] < 3:
+            if minisix.PY2:
                 db.text_factory = str
             return db
         db = sqlite3.connect(filename)
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             db.text_factory = str
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE keys (

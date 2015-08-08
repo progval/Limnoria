@@ -44,6 +44,7 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
+import supybot.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -53,7 +54,7 @@ from supybot import commands
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
 
-if sys.version_info[0] < 3:
+if minisix.PY2:
     from itertools import ifilter as filter
 
 def get_suffix(file):
@@ -336,7 +337,7 @@ class Misc(callbacks.Plugin):
                 version = data['commit']['committer']['date']
                 # Strip the last 'Z':
                 version = version.rsplit('T', 1)[0].replace('-', '.')
-                if sys.version_info[0] < 3 and isinstance(version, unicode):
+                if minisix.PY2 and isinstance(version, unicode):
                     version = version.encode('utf8')
                 versions[branch] = version
             newest = _('The newest versions available online are %s.') % \

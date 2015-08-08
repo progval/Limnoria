@@ -46,6 +46,7 @@ except AttributeError:
     pass
 
 from .str import normalizeWhitespace
+from .. import minisix
 
 Request = urllib2.Request
 urlquote = urllib.quote
@@ -108,7 +109,7 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
     a dict and string, respectively, as per urllib2.Request's arguments."""
     if headers is None:
         headers = defaultHeaders
-    if sys.version_info[0] >= 3 and isinstance(data, str):
+    if minisix.PY3 and isinstance(data, str):
         data = data.encode()
     try:
         if not isinstance(url, urllib2.Request):
@@ -203,9 +204,9 @@ class HtmlToText(HTMLParser, object):
     def handle_entityref(self, data):
         if data in htmlentitydefs.name2codepoint:
             self.data.append(unichr(htmlentitydefs.name2codepoint[data]))
-        elif sys.version_info[0] >= 3 and isinstance(data, bytes):
+        elif minisix.PY3 and isinstance(data, bytes):
             self.data.append(data.decode())
-        elif sys.version_info[0] < 3 and isinstance(data, str):
+        elif minisix.PY2 and isinstance(data, str):
             self.data.append(data.decode('utf8', errors='replace'))
         else:
             self.data.append(data)
@@ -222,7 +223,7 @@ def htmlToText(s, tagReplace=' '):
         s = s.decode(encoding)
     else:
         try:
-            if sys.version_info[0] < 3 or isinstance(s, bytes):
+            if minisix.PY2 or isinstance(s, bytes):
                 s = s.decode('utf8')
         except:
             pass

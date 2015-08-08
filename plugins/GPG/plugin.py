@@ -38,6 +38,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -147,7 +148,7 @@ class GPG(callbacks.Plugin):
             the key used is associated to a user."""
             self._expire_tokens()
             content = utils.web.getUrl(url)
-            if sys.version_info[0] >= 3 and isinstance(content, bytes):
+            if minisix.PY3 and isinstance(content, bytes):
                 content = content.decode()
             match = self._auth_re.search(content)
             if not match:

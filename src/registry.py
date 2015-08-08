@@ -37,7 +37,7 @@ import codecs
 import string
 import textwrap
 
-from . import utils, i18n
+from . import utils, i18n, minisix
 _ = i18n.PluginInternationalization()
 
 def error(s):
@@ -66,7 +66,7 @@ class NonExistentRegistryEntry(RegistryException, AttributeError):
     # raise an AttributeError if a registry entry does not exist.
     pass
 
-ENCODING = 'string_escape' if sys.version_info[0] < 3 else 'unicode_escape'
+ENCODING = 'string_escape' if minisix.PY2 else 'unicode_escape'
 decoder = codecs.getdecoder(ENCODING)
 encoder = codecs.getencoder(ENCODING)
 

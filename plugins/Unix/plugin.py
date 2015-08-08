@@ -42,6 +42,7 @@ import shlex
 
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.registry as registry
@@ -222,7 +223,7 @@ class Unix(callbacks.Plugin):
                           'not available.'), Raise=True)
             (out, err) = inst.communicate()
             inst.wait()
-            if sys.version_info[0] > 2:
+            if minisix.PY3:
                 lines = [i.decode('utf-8').rstrip() for i in out.splitlines()]
                 lines = list(map(str, lines))
             else:

@@ -608,10 +608,10 @@ def isValidArgument(s):
 
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
-    if sys.version_info[0] < 3 and isinstance(s, unicode):
+    if minisix.PY2 and isinstance(s, unicode):
         s = s.encode('utf-8')
-    elif (sys.version_info[0] < 3 and not isinstance(s, basestring)) or \
-            (sys.version_info[0] >= 3 and not isinstance(s, str)):
+    elif (minisix.PY2 and not isinstance(s, basestring)) or \
+            (minisix.PY3 and not isinstance(s, str)):
         debug('Got a non-string in safeArgument: %r', s)
         s = str(s)
     if isValidArgument(s):

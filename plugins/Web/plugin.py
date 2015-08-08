@@ -37,6 +37,7 @@ import htmlentitydefs
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.plugins as plugins
 import supybot.commands as commands
 import supybot.ircutils as ircutils
@@ -163,7 +164,7 @@ class Web(callbacks.PluginRegexp):
                         if self.registryValue('snarferShowTargetDomain', channel)
                         else url)
                 title = utils.web.htmlToText(parser.title.strip())
-                if sys.version_info[0] < 3:
+                if minisix.PY2:
                     if isinstance(title, unicode):
                         title = title.encode('utf8', 'replace')
                 s = format(_('Title: %s (at %s)'), title, domain)
@@ -280,7 +281,7 @@ class Web(callbacks.PluginRegexp):
         except UnicodeDecodeError:
             pass
         parser = Title()
-        if sys.version_info[0] >= 3 and isinstance(text, bytes):
+        if minisix.PY3 and isinstance(text, bytes):
             irc.error(_('Could not guess the page\'s encoding. (Try '
                     'installing python-charade.)'), Raise=True)
         try:

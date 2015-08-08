@@ -40,6 +40,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -136,7 +137,7 @@ class Google(callbacks.PluginRegexp):
             title = utils.web.htmlToText(result['titleNoFormatting']\
                                          .encode('utf-8'))
             url = result['unescapedUrl']
-            if sys.version_info[0] < 3:
+            if minisix.PY2:
                 url = url.encode('utf-8')
             if title:
                 if bold:
@@ -144,7 +145,7 @@ class Google(callbacks.PluginRegexp):
                 results.append(format('%s: %u', title, url))
             else:
                 results.append(url)
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             repl = lambda x:x if isinstance(x, unicode) else unicode(x, 'utf8')
             results = list(map(repl, results))
         if not results:

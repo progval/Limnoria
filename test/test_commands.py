@@ -37,6 +37,7 @@ from supybot.commands import *
 import supybot.conf as conf
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
+import supybot.minisix as minisix
 import supybot.callbacks as callbacks
 
 
@@ -88,7 +89,7 @@ class GeneralContextTestCase(CommandsTestCase):
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(strict)
 
-    if sys.version_info[0] < 3:
+    if minisix.PY2:
         def testSpecLong(self):
             self.assertState(['long'], ['1'], [long(1)])
             self.assertState(['long', 'long', 'long'], ['1', '2', '3'],

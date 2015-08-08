@@ -33,6 +33,7 @@ from supybot.test import *
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
+import supybot.minisix as minisix
 import supybot.callbacks as callbacks
 
 tokenize = callbacks.tokenize
@@ -76,7 +77,7 @@ class TokenizerTestCase(SupyTestCase):
 def testUnicode(self):
     self.assertEqual(tokenize(u'好'), [u'好'])
     self.assertEqual(tokenize(u'"好"'), [u'好'])"""
-    if sys.version_info[0] >= 3:
+    if minisix.PY3:
         _testUnicode = _testUnicode.replace("u'", "'")
     exec(_testUnicode)
 

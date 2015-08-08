@@ -31,20 +31,22 @@
 import os
 import sys
 import time
-if sys.version_info[0] < 3:
-    from io import open
 from cStringIO import StringIO
 
 import supybot.conf as conf
 import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
+import supybot.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('ChannelLogger')
+
+if minisix.PY2:
+    from io import open
 
 class FakeLog(object):
     def flush(self):
@@ -164,7 +166,7 @@ class ChannelLogger(callbacks.Plugin):
         format = conf.supybot.log.timestampFormat()
         if format:
             string = time.strftime(format) + '  '
-            if sys.version_info[0] < 3:
+            if minisix.PY2:
                 string = string.decode('utf8', 'ignore')
             log.write(string)
 
@@ -181,7 +183,7 @@ class ChannelLogger(callbacks.Plugin):
             self.timestamp(log)
         if self.registryValue('stripFormatting', channel):
             s = ircutils.stripFormatting(s)
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             s = s.decode('utf8', 'ignore')
         log.write(s)
         if self.registryValue('flushImmediately'):

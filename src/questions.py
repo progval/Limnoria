@@ -35,7 +35,7 @@ import sys
 import textwrap
 from getpass import getpass as getPass
 
-from . import ansi, utils
+from . import ansi, minisix, utils
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 
@@ -76,7 +76,7 @@ def expect(prompt, possibilities, recursed=False, default=None,
     if useBold:
         prompt += ansi.RESET
         print(ansi.BOLD, end=' ', file=fd)
-    if sys.version_info[0] >= 3:
+    if minisix.PY3:
         s = input(prompt)
     else:
         s = raw_input(prompt)

@@ -32,7 +32,8 @@ import sys
 import feedparser
 from supybot.test import *
 import supybot.conf as conf
-if sys.version_info[0] >= 3:
+import supybot.minisix as minisix
+if minisix.PY3:
     from io import BytesIO
 else:
     from cStringIO import StringIO as BytesIO
@@ -47,7 +48,7 @@ xkcd_new = """<?xml version="1.0" encoding="utf-8"?>
 
 
 def constant(content):
-    if sys.version_info[0] >= 3:
+    if minisix.PY3:
         content = content.encode()
     def f(*args, **kwargs):
         return BytesIO(content)

@@ -33,6 +33,7 @@ import sys
 import shutil
 
 from supybot.test import *
+import supybot.minisix as minisix
 
 pluginsPath = '%s/test-plugins' % os.getcwd()
 
@@ -98,7 +99,7 @@ class PluginDownloaderTestCase(PluginTestCase):
                 'Advanced Twitter plugin for Supybot, with capabilities '
                 'handling, and per-channel user account.')
 
-    if sys.version_info[0] >= 3:
+    if minisix.PY3:
         def test_2to3(self):
             self.assertRegexp('plugindownloader install SpiderDave Pastebin',
                     'convert')

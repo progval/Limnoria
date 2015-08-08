@@ -37,7 +37,7 @@ import binascii
 
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.commands as commands
+import supybot.minisix as minisix
 import supybot.plugins as plugins
 import supybot.commands as commands
 import supybot.ircutils as ircutils
@@ -96,9 +96,9 @@ class String(callbacks.Plugin):
             text = codecs.getencoder('base64_codec')(text)[0].decode()
 
         # Change result into a string
-        if sys.version_info[0] < 3 and isinstance(text, unicode):
+        if minisix.PY2 and isinstance(text, unicode):
             text = text.encode('utf-8')
-        elif sys.version_info[0] >= 3 and isinstance(text, bytes):
+        elif minisix.PY3 and isinstance(text, bytes):
             text = text.decode()
 
         if encoding in ('base64', 'base64_codec'):
@@ -129,7 +129,7 @@ class String(callbacks.Plugin):
             decoder = codecs.getdecoder(encoding)
         except LookupError:
             irc.errorInvalid(_('encoding'), encoding)
-        if sys.version_info[0] >= 3 and not isinstance(text, bytes):
+        if minisix.PY3 and not isinstance(text, bytes):
             text = text.encode()
         try:
             text = decoder(text)[0]
@@ -140,9 +140,9 @@ class String(callbacks.Plugin):
             return
 
         # Change result into a string
-        if sys.version_info[0] < 3 and isinstance(text, unicode):
+        if minisix.PY2 and isinstance(text, unicode):
             text = text.encode('utf-8')
-        elif sys.version_info[0] >= 3 and isinstance(text, bytes):
+        elif minisix.PY3 and isinstance(text, bytes):
             try:
                 text = text.decode()
             except UnicodeDecodeError:

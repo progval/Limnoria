@@ -37,16 +37,17 @@ import urllib
 import tarfile
 from cStringIO import StringIO
 
-BytesIO = StringIO if sys.version_info[0] < 3 else io.BytesIO
-
 import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
+
+BytesIO = StringIO if minisix.PY2 else io.BytesIO
 
 _ = PluginInternationalization('PluginDownloader')
 
@@ -104,7 +105,7 @@ class GithubRepository(GitRepository):
     def _download(self, plugin):
         try:
             response = utils.web.getUrlFd(self._downloadUrl)
-            if sys.version_info[0] < 3:
+            if minisix.PY2:
                 assert response.getcode() == 200, response.getcode()
             else:
                 assert response.status == 200, response.status
@@ -127,7 +128,7 @@ class GithubRepository(GitRepository):
             assert archive.getmember(prefix + dirname).isdir(), \
                 'This is not a valid plugin (it is a file, not a directory).'
 
-            run_2to3 = sys.version_info[0] >= 3
+            run_2to3 = minisix.PY3
             for file in archive.getmembers():
                 if file.name.startswith(prefix + dirname):
                     extractedFile = archive.extractfile(file)
@@ -144,7 +145,7 @@ class GithubRepository(GitRepository):
                         with open(newFileName, 'ab') as fd:
                             reload_imported = False
                             for line in extractedFile.readlines():
-                                if sys.version_info[0] >= 3:
+                                if minisix.PY3:
                                     if 'import reload' in line.decode():
                                         reload_imported = True
                                     elif not reload_imported and \
@@ -188,7 +189,7 @@ class GithubRepository(GitRepository):
             if file.name.startswith(prefix + dirname + '/README'):
                 extractedFile = archive.extractfile(file)
                 content = extractedFile.read()
-                if sys.version_info[0] >= 3:
+                if minisix.PY3:
                     content = content.decode()
                 return content
 

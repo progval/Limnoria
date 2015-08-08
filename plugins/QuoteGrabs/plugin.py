@@ -37,6 +37,7 @@ import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -86,13 +87,13 @@ class SqliteQuoteGrabsDB(object):
             return self.dbs[filename]
         if os.path.exists(filename):
             db = sqlite3.connect(filename)
-            if sys.version_info[0] < 3:
+            if minisix.PY2:
                 db.text_factory = str
             db.create_function('nickeq', 2, p)
             self.dbs[filename] = db
             return db
         db = sqlite3.connect(filename)
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             db.text_factory = str
         db.create_function('nickeq', 2, p)
         self.dbs[filename] = db

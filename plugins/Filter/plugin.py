@@ -38,6 +38,7 @@ from cStringIO import StringIO
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -146,7 +147,7 @@ class Filter(callbacks.Plugin):
         Returns the binary representation of <text>.
         """
         L = []
-        if sys.version_info[0] >= 3:
+        if minisix.PY3:
             if isinstance(text, str):
                 bytes_ = text.encode()
             else:
@@ -221,7 +222,7 @@ class Filter(callbacks.Plugin):
         commonly used for text that simply needs to be hidden from inadvertent
         reading by roaming eyes, since it's easily reversible.
         """
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             text = text.decode('utf8')
         irc.reply(self._rot13_encoder(text)[0])
     rot13 = wrap(rot13, ['text'])
@@ -398,12 +399,12 @@ class Filter(callbacks.Plugin):
 
         Returns <text> colorized like a rainbow.
         """
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             text = text.decode('utf-8')
         colors = utils.iter.cycle(['05', '04', '07', '08', '09', '03', '11',
                                    '10', '12', '02', '06', '13'])
         L = [self._color(c, fg=next(colors)) for c in text]
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             L = [c.encode('utf-8') for c in L]
         irc.reply(''.join(L) + '\x03')
     rainbow = wrap(rainbow, ['text'])

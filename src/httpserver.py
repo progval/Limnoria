@@ -41,6 +41,7 @@ from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 import supybot.log as log
 import supybot.conf as conf
 import supybot.world as world
+import supybot.minisix as minisix
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()
 
@@ -276,7 +277,7 @@ class SupyHTTPServerCallback(object):
     message, it probably means you are developing a plugin, and you have
     neither overriden this message or defined an handler for this query.""")
 
-    if sys.version_info[0] >= 3:
+    if minisix.PY3:
         def write(self, b):
             if isinstance(b, str):
                 b = b.encode()
@@ -316,7 +317,7 @@ class Supy404(SupyHTTPServerCallback):
         self.send_header('Content-Length', len(self.response))
         self.end_headers()
         response = self.response
-        if sys.version_info[0] >= 3:
+        if minisix.PY3:
             response = response.encode()
         self.wfile.write(response)
 
@@ -339,7 +340,7 @@ class SupyIndex(SupyHTTPServerCallback):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', len(response))
         self.end_headers()
-        if sys.version_info[0] >= 3:
+        if minisix.PY3:
             response = response.encode()
         self.wfile.write(response)
 
@@ -357,7 +358,7 @@ class Static(SupyHTTPServerCallback):
         self.send_header('Content-type', self._mimetype)
         self.send_header('Content-Length', len(response))
         self.end_headers()
-        if sys.version_info[0] >= 3:
+        if minisix.PY3:
             response = response.encode()
         self.wfile.write(response)
 
@@ -394,7 +395,7 @@ class Favicon(SupyHTTPServerCallback):
             self.send_header('Content-type', 'text/plain; charset=utf-8')
             self.send_header('Content-Length', len(response))
             self.end_headers()
-            if sys.version_info[0] >= 3:
+            if minisix.PY3:
                 response = response.encode()
             self.wfile.write(response)
 

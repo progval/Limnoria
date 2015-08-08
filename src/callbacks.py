@@ -42,19 +42,19 @@ import codecs
 import getopt
 import inspect
 
-if sys.version_info[0] < 3:
+from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, minisix, registry,
+        utils, world)
+from .utils.iter import any, all
+from .i18n import PluginInternationalization, internationalizeDocstring
+_ = PluginInternationalization()
+
+if minisix.PY2:
     # cStringIO is buggy with Python 2.6 (
     # see http://paste.progval.net/show/227/ )
     # and it does not handle unicode objects in Python  2.x
     from StringIO import StringIO
 else:
     from cStringIO import StringIO
-
-from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry, utils,
-        world)
-from .utils.iter import any, all
-from .i18n import PluginInternationalization, internationalizeDocstring
-_ = PluginInternationalization()
 
 def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
@@ -151,9 +151,9 @@ def canonicalName(command, preserve_spaces=False):
     Currently, this makes everything lowercase and removes all dashes and
     underscores.
     """
-    if sys.version_info[0] < 3 and isinstance(command, unicode):
+    if minisix.PY2 and isinstance(command, unicode):
         command = command.encode('utf-8')
-    elif sys.version_info[0] >= 3 and isinstance(command, bytes):
+    elif minisix.PY3 and isinstance(command, bytes):
         command = command.decode()
     special = '\t-_'
     if not preserve_spaces:
@@ -294,7 +294,7 @@ class Tokenizer(object):
             # Whoever you are, if you make a single modification to this
             # code, TEST the code with Python 2 & 3, both with the unit
             # tests and on IRC with this: @echo "好"
-            if sys.version_info[0] < 3:
+            if minisix.PY2:
                 try:
                     token = token.encode('utf8').decode('string_escape')
                     token = token.decode('utf8')
@@ -925,7 +925,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         # In case we're truncating, we add 20 to allowedLength,
                         # because our allowedLength is shortened for the
                         # "(XX more messages)" trailer.
-                        if sys.version_info[0] >= 3:
+                        if minisix.PY3:
                             appended = _('(XX more messages)').encode()
                             s = s.encode()[:allowedLength+len(appended)]
                             s = s.decode('utf8', 'ignore')

@@ -46,6 +46,7 @@ from . import crypt
 from .str import format
 from .file import mktemp
 from .iter import imap
+from .. import minisix
 
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()
@@ -168,7 +169,7 @@ def saltHash(password, salt=None, hash='sha'):
         hasher = crypt.md5
     return '|'.join([salt, hasher((salt + password).encode('utf8')).hexdigest()])
 
-_astStr2 = ast.Str if sys.version_info[0] < 3 else ast.Bytes
+_astStr2 = ast.Str if minisix.PY2 else ast.Bytes
 def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
     without unsafely using eval()."""
@@ -223,7 +224,7 @@ class IterableMap(object):
     """Define .items() in a class and subclass this to get the other iters.
     """
     def items(self):
-        if sys.version_info[0] >= 3 and hasattr(self, 'items'):
+        if minisix.PY3 and hasattr(self, 'items'):
             # For old plugins
             return getattr(self, 'items')() # avoid 2to3
         else:

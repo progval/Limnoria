@@ -53,7 +53,7 @@ try:
 except ImportError:
     charadeLoaded = False
 
-if sys.version_info[0] >= 3:
+if minisix.PY3:
     def decode_raw_line(line):
         #first, try to decode using utf-8
         try:
@@ -182,8 +182,8 @@ def dqrepr(s):
     """Returns a repr() of s guaranteed to be in double quotes."""
     # The wankers-that-be decided not to use double-quotes anymore in 2.3.
     # return '"' + repr("'\x00" + s)[6:]
-    encoding = 'string_escape' if sys.version_info[0] < 3 else 'unicode_escape'
-    if sys.version_info[0] < 3 and isinstance(s, unicode):
+    encoding = 'string_escape' if minisix.PY2 else 'unicode_escape'
+    if minisix.PY2 and isinstance(s, unicode):
         s = s.encode('utf8', 'replace')
     return '"%s"' % s.encode(encoding).decode().replace('"', '\\"')
 
@@ -506,7 +506,7 @@ def format(s, *args, **kwargs):
     # to add the character to the _formatRe regexp or it will be ignored
     # (and hard to debug if you don't know the trick).
     # Of course, you should also document it in the docstring above.
-    if sys.version_info[0] < 3:
+    if minisix.PY2:
         def pred(s):
             if isinstance(s, unicode):
                 return s.encode('utf8')
@@ -521,7 +521,7 @@ def format(s, *args, **kwargs):
             token = args.pop()
             if isinstance(token, str):
                 return token
-            elif sys.version_info[0] < 3 and isinstance(token, unicode):
+            elif minisix.PY2 and isinstance(token, unicode):
                 return token.encode('utf8', 'replace')
             else:
                 return str(token)

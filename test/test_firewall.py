@@ -29,6 +29,7 @@
 
 from supybot.test import *
 from supybot import log
+import supybot.minisix as minisix
 
 class FirewallTestCase(SupyTestCase):
     def setUp(self):
@@ -46,7 +47,7 @@ class C(%s
         pass
     def foo(self):
         raise self.MyException()""" %
-        ('metaclass=log.MetaFirewall):\n' if sys.version_info[0] >= 3 else
+        ('metaclass=log.MetaFirewall):\n' if minisix.PY3 else
             'object):\n    __metaclass__ = log.MetaFirewall'))
 
     def testCFooDoesNotRaise(self):

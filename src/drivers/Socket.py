@@ -41,7 +41,7 @@ import errno
 import select
 import socket
 
-from .. import (conf, drivers, log, schedule, utils, world)
+from .. import (conf, drivers, log, minisix, schedule, utils, world)
 from ..utils.iter import imap
 from ..utils.str import decode_raw_line
 
@@ -127,7 +127,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.outbuffer += ''.join(map(str, msgs))
         if self.outbuffer:
             try:
-                if sys.version_info[0] < 3:
+                if minisix.PY2:
                     sent = self.conn.send(self.outbuffer)
                 else:
                     sent = self.conn.send(self.outbuffer.encode())
@@ -148,8 +148,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 # Do not use a list comprehension here, we have to edit the list
                 # and not to reassign it.
                 if not inst.connected or \
-                        (sys.version_info[0] == 3 and inst.conn._closed) or \
-                        (sys.version_info[0] == 2 and
+                        (minisix.PY3 and inst.conn._closed) or \
+                        (minisix.PY2 and
                             inst.conn._sock.__class__ is socket._closedsocket):
                     cls._instances.remove(inst)
                 elif inst.conn.fileno() == -1:

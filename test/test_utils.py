@@ -35,6 +35,7 @@ import time
 import pickle
 import supybot.utils as utils
 from supybot.utils.structures import *
+import supybot.minisix as minisix
 
 if sys.version_info[0] >= 0:
     xrange = range
@@ -130,7 +131,7 @@ class GenTest(SupyTestCase):
         self.assertEqual(list(AL.items()), [(1, 2), (2, 3), (3, 4)])
         self.assertEqual(list(AL.items()), [(1, 2), (2, 3), (3, 4)])
         self.assertEqual(list(AL.keys()), [1, 2, 3])
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             self.assertEqual(list(AL.keys()), [1, 2, 3])
             self.assertEqual(AL.values(), [2, 3, 4])
             self.assertEqual(list(AL.values()), [2, 3, 4])

@@ -40,7 +40,7 @@ import unittest
 import threading
 
 from . import (callbacks, conf, drivers, httpserver, i18n, ircdb, irclib,
-        ircmsgs, ircutils, log, plugin, registry, utils, world)
+        ircmsgs, ircutils, log, minisix, plugin, registry, utils, world)
 
 i18n.import_conf()
 network = True
@@ -242,7 +242,7 @@ class PluginTestCase(SupyTestCase):
         prefixChars = conf.supybot.reply.whenAddressedBy.chars()
         if not usePrefixChar and query[0] in prefixChars:
             query = query[1:]
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             query = query.encode('utf8') # unicode->str
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:
@@ -437,7 +437,7 @@ class ChannelPluginTestCase(PluginTestCase):
         prefixChars = conf.supybot.reply.whenAddressedBy.chars()
         if query[0] not in prefixChars and usePrefixChar:
             query = prefixChars[0] + query
-        if sys.version_info[0] < 3 and isinstance(query, unicode):
+        if minisix.PY2 and isinstance(query, unicode):
             query = query.encode('utf8') # unicode->str
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:

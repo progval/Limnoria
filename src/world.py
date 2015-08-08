@@ -173,7 +173,7 @@ def upkeep():
         #if registryFilename is not None:
         #    registry.open(registryFilename)
     if not dying:
-        if sys.version_info[0] < 3:
+        if minisix.PY2:
             log.debug('Regexp cache size: %s', len(re._cache))
         log.debug('Pattern cache size: %s', len(ircutils._patternCache))
         log.debug('HostmaskPatternEqual cache size: %s',
