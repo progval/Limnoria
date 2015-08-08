@@ -131,7 +131,7 @@ class GenTest(SupyTestCase):
         self.assertEqual(list(AL.items()), [(1, 2), (2, 3), (3, 4)])
         self.assertEqual(list(AL.keys()), [1, 2, 3])
         if sys.version_info[0] < 3:
-            self.assertEqual(list(AL.iterkeys()), [1, 2, 3])
+            self.assertEqual(list(AL.keys()), [1, 2, 3])
             self.assertEqual(AL.values(), [2, 3, 4])
             self.assertEqual(list(AL.values()), [2, 3, 4])
         self.assertEqual(len(AL), 3)
