@@ -779,7 +779,7 @@ mircColors = IrcDict({
 })
 
 # We'll map integers to their string form so mircColor is simpler.
-for (k, v) in mircColors.items():
+for (k, v) in list(mircColors.items()):
     if k is not None: # Ignore empty string for None.
         sv = str(v)
         mircColors[sv] = sv

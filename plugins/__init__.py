@@ -128,7 +128,7 @@ class ChannelDBHandler(object):
         return db
 
     def die(self):
-        for db in self.dbCache.itervalues():
+        for db in self.dbCache.values():
             try:
                 db.commit()
             except AttributeError: # In case it's not an SQLite database.
@@ -158,11 +158,11 @@ class DbiChannelDB(object):
         return db
 
     def close(self):
-        for db in self.dbs.itervalues():
+        for db in self.dbs.values():
             db.close()
 
     def flush(self):
-        for db in self.dbs.itervalues():
+        for db in self.dbs.values():
             db.flush()
 
     def __getattr__(self, attr):
@@ -200,14 +200,14 @@ class ChannelUserDictionary(collections.MutableMapping):
     def __len__(self):
         return sum([len(x) for x in self.channels])
 
-    def iteritems(self):
-        for (channel, ids) in self.channels.iteritems():
-            for (id, v) in ids.iteritems():
+    def items(self):
+        for (channel, ids) in self.channels.items():
+            for (id, v) in ids.items():
                 yield ((channel, id), v)
 
     def keys(self):
         L = []
-        for (k, _) in self.iteritems():
+        for (k, _) in self.items():
             L.append(k)
         return L
 
@@ -252,7 +252,7 @@ class ChannelUserDB(ChannelUserDictionary):
     def flush(self):
         fd = utils.file.AtomicFile(self.filename, makeBackupIfSmaller=False)
         writer = csv.writer(fd)
-        items = self.items()
+        items = list(self.items())
         if not items:
             log.debug('%s: Refusing to write blank file.',
                       self.__class__.__name__)

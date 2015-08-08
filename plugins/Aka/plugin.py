@@ -695,7 +695,8 @@ class Aka(callbacks.Plugin):
         if alias_plugin is None:
             irc.error(_('Alias plugin is not loaded.'), Raise=True)
         errors = {}
-        for (name, (command, locked, func)) in alias_plugin.aliases.items():
+        for (name, (command, locked, func)) in \
+                list(alias_plugin.aliases.items()):
             try:
                 self._add_aka('global', name, command)
             except AkaError as e:

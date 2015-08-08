@@ -255,7 +255,7 @@ class Group(object):
             #print '***>', _cache[name]
             self.set(_cache[name])
         if self._supplyDefault:
-            for (k, v) in _cache.iteritems():
+            for (k, v) in _cache.items():
                 if k.startswith(self._name):
                     rest = k[len(self._name)+1:] # +1 is for .
                     parts = split(rest)
@@ -382,7 +382,7 @@ class Value(Group):
         self._lastModified = time.time()
         self.value = v
         if self._supplyDefault:
-            for (name, v) in self._children.items():
+            for (name, v) in list(self._children.items()):
                 if v.__class__ is self.X:
                     self.unregister(name)
         # We call the callback once everything is clean

@@ -50,7 +50,7 @@ class SqliteKarmaDB(object):
         self.filename = filename
 
     def close(self):
-        for db in self.dbs.itervalues():
+        for db in self.dbs.values():
             db.close()
 
     def _getDb(self, channel):
@@ -100,11 +100,11 @@ class SqliteKarmaDB(object):
         criteria = ' OR '.join(['normalized=?'] * len(normalizedThings))
         sql = """SELECT name, added-subtracted FROM karma
                  WHERE %s ORDER BY added-subtracted DESC""" % criteria
-        cursor.execute(sql, normalizedThings.keys())
+        cursor.execute(sql, list(normalizedThings.keys()))
         L = [(name, int(karma)) for (name, karma) in cursor.fetchall()]
         for (name, _) in L:
             del normalizedThings[name.lower()]
-        neutrals = normalizedThings.values()
+        neutrals = list(normalizedThings.values())
         neutrals.sort()
         return (L, neutrals)
 

@@ -599,7 +599,7 @@ class IrcState(IrcCommandDispatcher):
                 chan.removeUser(user)
 
     def doQuit(self, irc, msg):
-        for channel in self.channels.itervalues():
+        for channel in self.channels.values():
             channel.removeUser(msg.nick)
         if msg.nick in self.nicksToHostmasks:
             # If we're quitting, it may not be.
@@ -630,7 +630,7 @@ class IrcState(IrcCommandDispatcher):
             del self.nicksToHostmasks[oldNick]
         except KeyError:
             pass
-        for channel in self.channels.itervalues():
+        for channel in self.channels.values():
             channel.replaceUser(oldNick, newNick)
 
 

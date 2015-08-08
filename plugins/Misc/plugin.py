@@ -270,7 +270,7 @@ class Misc(callbacks.Plugin):
                 for command in cb.listCommands():
                     if s in command:
                         commands.setdefault(command, []).append(cb.name())
-        for (key, names) in commands.iteritems():
+        for (key, names) in commands.items():
             for name in names:
                 L.append('%s %s' % (name, key))
         if L:
@@ -473,7 +473,7 @@ class Misc(callbacks.Plugin):
             # Drop the first message only if our current channel is the same as
             # the channel we've been instructed to look at.
             next(iterable)
-        predicates = list(utils.iter.flatten(predicates.itervalues()))
+        predicates = list(utils.iter.flatten(predicates.values()))
         # Make sure the user can't get messages from channels they aren't in
         def userInChannel(m):
             return m.args[0] in irc.state.channels \

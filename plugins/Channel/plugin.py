@@ -549,7 +549,7 @@ class Channel(callbacks.Plugin):
             Returns the channels in which this bot is lobotomized.
             """
             L = []
-            for (channel, c) in ircdb.channels.iteritems():
+            for (channel, c) in ircdb.channels.items():
                 if c.lobotomized:
                     chancap = ircdb.makeChannelCapability(channel, 'op')
                     if ircdb.checkCapability(msg.prefix, 'admin') or \

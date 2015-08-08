@@ -310,7 +310,7 @@ class CdbMapping(MappingInterface):
         del self.db[str(id)]
 
     def __iter__(self):
-        for (id, s) in self.db.iteritems():
+        for (id, s) in self.db.items():
             if id != 'nextId':
                 yield (int(id), s)
 
@@ -412,7 +412,7 @@ class Record(object):
             self.defaults[name] = default
             self.converters[name] = converter
         seen = set()
-        for (name, value) in kwargs.iteritems():
+        for (name, value) in kwargs.items():
             assert name in self.fields, 'name must be a record value.'
             seen.add(name)
             setattr(self, name, value)

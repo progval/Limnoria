@@ -93,8 +93,8 @@ class ChannelLogger(callbacks.Plugin):
         self.lastStates.clear()
 
     def _logs(self):
-        for logs in self.logs.itervalues():
-            for log in logs.itervalues():
+        for logs in self.logs.values():
+            for log in logs.values():
                 yield log
 
     def flush(self):

@@ -1083,7 +1083,7 @@ class UnitData(dict):
         for unit in units:
             self[unit.name.replace(' ', '')] = unit
             typeUnits[unit.typeName].append(unit.name)
-        self.sortedKeys = self.keys()
+        self.sortedKeys = list(self.keys())
         self.sortedKeys.sort()
 
         if len(self.sortedKeys) < len(units):

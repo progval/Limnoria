@@ -147,7 +147,6 @@ class Filter(callbacks.Plugin):
         """
         L = []
         if sys.version_info[0] >= 3:
-            print(repr(text))
             if isinstance(text, str):
                 bytes_ = text.encode()
             else:
@@ -509,7 +508,7 @@ class Filter(callbacks.Plugin):
             r'\blike\b': 'liek',
             r'[^e]ing\b': 'eing',
             }
-        for (r, s) in alwaysInsertions.iteritems():
+        for (r, s) in alwaysInsertions.items():
             text = re.sub(r, s, text)
         randomInsertions = {
             r'i': 'ui',
@@ -527,7 +526,7 @@ class Filter(callbacks.Plugin):
             r'\btheir\b': 'there',
             r'[^e]y': 'ey',
             }
-        for (r, s) in randomInsertions.iteritems():
+        for (r, s) in randomInsertions.items():
             text = re.sub(r, randomlyReplace(s), text)
         text = re.sub(r'(\w)\'(\w)', quoteOrNothing, text)
         text = re.sub(r'\.(\s+|$)', randomExclaims, text)
@@ -551,7 +550,7 @@ class Filter(callbacks.Plugin):
         'v': _('vee'), 'w': _('double-you'), 'x': _('ecks'), 'y': _('why'),
         'z': _('zee')
     }
-    for (k, v) in _spellLetters.items():
+    for (k, v) in list(_spellLetters.items()):
         _spellLetters[k.upper()] = v
     _spellPunctuation = {
         '!': _('exclamation point'),
@@ -607,7 +606,7 @@ class Filter(callbacks.Plugin):
             d.update(self._spellPunctuation)
 # A bug in unicode on OSX prevents me from testing this.
 ##         dd = {}
-##         for (c, v) in d.iteritems():
+##         for (c, v) in d.items():
 ##             dd[ord(c)] = unicode(v + ' ')
 ##         irc.reply(unicode(text).translate(dd))
         out = StringIO()

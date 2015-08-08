@@ -67,7 +67,7 @@ class Scheduler(callbacks.Plugin):
         except IOError as e:
             self.log.debug('Unable to open pickle file: %s', e)
             return
-        for name, event in eventdict.iteritems():
+        for name, event in eventdict.items():
             ircobj = callbacks.ReplyIrcProxy(irc, event['msg'])
             try:
                 if event['type'] == 'single': # non-repeating event
@@ -197,7 +197,7 @@ class Scheduler(callbacks.Plugin):
 
         Lists the currently scheduled events.
         """
-        L = self.events.items()
+        L = list(self.events.items())
         if L:
             L.sort()
             for (i, (name, command)) in enumerate(L):

@@ -358,9 +358,9 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         dl_metrics = [dameraulevenshtein(key, sourcekey) for sourcekey in flkeys]
         dict_metrics = dict(list(zip(flkeys, dl_metrics)))
         if min(dl_metrics) <= 2:
-            return [key for key,item in dict_metrics.iteritems() if item <= 2]
+            return [key for key,item in dict_metrics.items() if item <= 2]
         if min(dl_metrics) <= 3:
-            return [key for key,item in dict_metrics.iteritems() if item <= 3]
+            return [key for key,item in dict_metrics.items() if item <= 3]
         
         return []
                 

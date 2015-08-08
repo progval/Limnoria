@@ -36,6 +36,8 @@ import ast
 import time
 import types
 import textwrap
+import warnings
+import functools
 import traceback
 import collections
 
@@ -47,6 +49,18 @@ from .iter import imap
 
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()
+
+def warn_non_constant_time(f):
+    @functools.wraps(f)
+    def newf(*args, **kwargs):
+        # This method takes linear time whereas the subclass could probably
+        # do it in constant time.
+        warnings.warn('subclass of IterableMap does provide an efficient '
+                      'implementation of %s' % f.__name__,
+                      DeprecationWarning)
+        return f(*args, **kwargs)
+    return newf
+
 
 def abbrev(strings, d=None):
     """Returns a dictionary mapping unambiguous abbreviations to full forms."""
@@ -206,46 +220,35 @@ def exnToString(e):
         return e.__class__.__name__
 
 class IterableMap(object):
-    """Define .iteritems() in a class and subclass this to get the other iters.
+    """Define .items() in a class and subclass this to get the other iters.
     """
-    def iteritems(self):
-        if sys.version_info[0] >= 3 and hasattr(self, 'iteritems'):
+    def items(self):
+        if sys.version_info[0] >= 3 and hasattr(self, 'items'):
             # For old plugins
-            return getattr(self, 'iteritems')() # avoid 2to3
+            return getattr(self, 'items')() # avoid 2to3
         else:
             raise NotImplementedError()
+    __iter__ = items
 
-    def iterkeys(self):
-        for (key, _) in self.iteritems():
+    def keys(self):
+        for (key, _) in self.items():
             yield key
 
-    def itervalues(self):
-        for (_, value) in self.iteritems():
+    def values(self):
+        for (_, value) in self.items():
             yield value
 
-    if sys.version_info[0] < 3:
-        # Our 2to3 fixers automatically rename iteritems/iterkeys/itervalues
-        # to items/keys/values
-        def items(self):
-            return list(self.iteritems())
 
-        def keys(self):
-            return list(self.iterkeys())
-
-        def values(self):
-            return list(self.itervalues())
-        __iter__ = iterkeys
-    else:
-        __iter__ = items
-
+    @warn_non_constant_time
     def __len__(self):
         ret = 0
-        for _ in self.iteritems():
+        for _ in self.items():
             ret += 1
         return ret
 
+    @warn_non_constant_time
     def __bool__(self):
-        for _ in self.iteritems():
+        for _ in self.items():
             return True
         return False
     __nonzero__ = __bool__
@@ -290,12 +293,15 @@ class InsensitivePreservingDict(collections.MutableMapping):
     def __len__(self):
         return len(self.data)
 
-    def iteritems(self):
-        return self.data.itervalues()
+    def items(self):
+        return self.data.values()
+
+    def items(self):
+        return self.data.values()
 
     def keys(self):
         L = []
-        for (k, _) in self.iteritems():
+        for (k, _) in self.items():
             L.append(k)
         return L
 

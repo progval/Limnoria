@@ -121,7 +121,7 @@ def reloadLocalesIfRequired():
 def reloadLocales():
     for pluginClass in i18nClasses.values():
         pluginClass.loadLocale()
-    for command in internationalizedCommands.values():
+    for command in list(internationalizedCommands.values()):
         internationalizeDocstring(command)
     for function in internationalizedFunctions:
         function.loadLocale()

@@ -121,7 +121,7 @@ class Config(callbacks.Plugin):
 
     def _list(self, group):
         L = []
-        for (vname, v) in group._children.iteritems():
+        for (vname, v) in group._children.items():
             if hasattr(group, 'channelValue') and group.channelValue and \
                ircutils.isChannel(vname) and not v._children:
                 continue

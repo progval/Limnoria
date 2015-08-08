@@ -378,7 +378,7 @@ class MetaFirewall(type):
             if hasattr(base, '__firewalled__'):
                 cls.updateFirewalled(firewalled, base.__firewalled__)
         cls.updateFirewalled(firewalled, classdict.get('__firewalled__', []))
-        for (attr, errorHandler) in firewalled.iteritems():
+        for (attr, errorHandler) in firewalled.items():
             if attr in classdict:
                 classdict[attr] = firewall(classdict[attr], errorHandler)
         return super(MetaFirewall, cls).__new__(cls, name, bases, classdict)

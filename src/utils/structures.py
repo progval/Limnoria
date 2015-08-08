@@ -381,14 +381,14 @@ class MaxLengthQueue(queue):
 class TwoWayDictionary(dict):
     __slots__ = ()
     def __init__(self, seq=(), **kwargs):
-        if hasattr(seq, 'iteritems'):
-            seq = seq.iteritems()
+        if hasattr(seq, 'items'):
+            seq = seq.items()
         elif hasattr(seq, 'items'):
             seq = seq.items()
         for (key, value) in seq:
             self[key] = value
             self[value] = key
-        for (key, value) in kwargs.iteritems():
+        for (key, value) in kwargs.items():
             self[key] = value
             self[value] = key
 
@@ -445,8 +445,8 @@ class CacheDict(collections.MutableMapping):
     def keys(self):
         return self.d.keys()
     
-    def iteritems(self):
-        return self.d.iteritems()
+    def items(self):
+        return self.d.items()
 
     def __iter__(self):
         return iter(self.d)

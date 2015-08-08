@@ -100,7 +100,7 @@ class GPGTestCase(PluginTestCase):
         def testGpgAuth(self):
             self.assertNotError('register spam egg')
             gpg.keyring.import_keys(PRIVATE_KEY).__dict__
-            (id, user) = ircdb.users.items()[0]
+            (id, user) = list(ircdb.users.items())[0]
             user.gpgkeys.append(FINGERPRINT)
             msg = self.getMsg('gpg signing gettoken').args[-1]
             match = re.search('is: ({.*}).', msg)

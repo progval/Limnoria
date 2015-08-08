@@ -192,7 +192,7 @@ def upkeep():
 def makeDriversDie():
     """Kills drivers."""
     log.info('Killing Driver objects.')
-    for driver in drivers._drivers.itervalues():
+    for driver in drivers._drivers.values():
         driver.die()
 
 def makeIrcsDie():

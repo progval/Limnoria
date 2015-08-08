@@ -118,7 +118,7 @@ class GenTest(SupyTestCase):
             def __setitem__(self, key, value):
                 self.L.append((key, value))
 
-            def iteritems(self):
+            def items(self):
                 for (k, v) in self.L:
                     yield (k, v)
         AL = alist()
@@ -128,12 +128,12 @@ class GenTest(SupyTestCase):
         AL[3] = 4
         self.failUnless(AL)
         self.assertEqual(list(AL.items()), [(1, 2), (2, 3), (3, 4)])
-        self.assertEqual(list(AL.iteritems()), [(1, 2), (2, 3), (3, 4)])
+        self.assertEqual(list(AL.items()), [(1, 2), (2, 3), (3, 4)])
         self.assertEqual(list(AL.keys()), [1, 2, 3])
         if sys.version_info[0] < 3:
             self.assertEqual(list(AL.iterkeys()), [1, 2, 3])
             self.assertEqual(AL.values(), [2, 3, 4])
-            self.assertEqual(list(AL.itervalues()), [2, 3, 4])
+            self.assertEqual(list(AL.values()), [2, 3, 4])
         self.assertEqual(len(AL), 3)
 
     def testSortBy(self):

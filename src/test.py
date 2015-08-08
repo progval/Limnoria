@@ -206,7 +206,7 @@ class PluginTestCase(SupyTestCase):
                                                      ignoreDeprecation=True)
                     cb = plugin.loadPluginClass(self.irc, module)
         self.irc.addCallback(TestInstance)
-        for (name, value) in self.config.iteritems():
+        for (name, value) in self.config.items():
             group = conf.supybot
             parts = registry.split(name)
             if parts[0] == 'supybot':
@@ -220,7 +220,7 @@ class PluginTestCase(SupyTestCase):
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
             # Necessary because there's a test in here that shouldn\'t run.
             return
-        for (group, original) in self.originals.iteritems():
+        for (group, original) in self.originals.items():
             group.setValue(original)
         ircdb.users.close()
         ircdb.ignores.close()

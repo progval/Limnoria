@@ -241,7 +241,7 @@ class Alias(callbacks.Plugin):
         # XXX This should go.  aliases should be a space separate list, etc.
         group = conf.supybot.plugins.Alias.aliases
         group2 = conf.supybot.plugins.Alias.escapedaliases
-        for (name, alias) in registry._cache.iteritems():
+        for (name, alias) in registry._cache.items():
             name = name.lower()
             if name.startswith('supybot.plugins.alias.aliases.'):
                 name = name[len('supybot.plugins.alias.aliases.'):]

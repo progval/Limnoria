@@ -61,7 +61,7 @@ class Later(callbacks.Plugin):
     def _flushNotes(self):
         fd = utils.file.AtomicFile(self.filename)
         writer = csv.writer(fd)
-        for (nick, notes) in self._notes.iteritems():
+        for (nick, notes) in self._notes.items():
             for (time, whence, text) in notes:
                 writer.writerow([nick, time, whence, text])
         fd.close()
@@ -125,7 +125,7 @@ class Later(callbacks.Plugin):
         expiry = self.registryValue('messageExpiry')
         curtime = time.time()
         nickremovals=[]
-        for (nick, notes) in self._notes.iteritems():
+        for (nick, notes) in self._notes.items():
             removals = []
             for (notetime, whence, text) in notes:
                 td = datetime.timedelta(seconds=(curtime - notetime))

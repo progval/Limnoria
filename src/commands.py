@@ -965,7 +965,7 @@ class getopts(context):
         self.getopts = {}
         self.getoptL = []
         self.getoptLs = ''
-        for (name, spec) in getopts.iteritems():
+        for (name, spec) in getopts.items():
             if spec == '':
                 if len(name) == 1:
                     self.getoptLs += name
@@ -1025,7 +1025,7 @@ class State(object):
 
     def essence(self):
         st = State(self.types)
-        for (attr, value) in self.__dict__.iteritems():
+        for (attr, value) in self.__dict__.items():
             if attr not in ('args', 'kwargs'):
                 setattr(st, attr, value)
         return st

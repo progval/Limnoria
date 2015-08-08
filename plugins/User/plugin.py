@@ -80,7 +80,7 @@ class User(callbacks.Plugin):
                 return r.match(u.name) is not None
             predicates.append(p)
         users = []
-        for u in ircdb.users.itervalues():
+        for u in ircdb.users.values():
             for predicate in predicates:
                 if not predicate(u):
                     break
@@ -492,7 +492,7 @@ class User(callbacks.Plugin):
         owners = 0
         admins = 0
         hostmasks = 0
-        for user in ircdb.users.itervalues():
+        for user in ircdb.users.values():
             users += 1
             hostmasks += len(user.hostmasks)
             try:

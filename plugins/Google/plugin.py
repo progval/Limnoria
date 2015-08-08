@@ -99,7 +99,7 @@ class Google(callbacks.PluginRegexp):
         headers = dict(utils.web.defaultHeaders)
         headers['Referer'] = ref
         opts = {'q': query, 'v': '1.0'}
-        for (k, v) in options.iteritems():
+        for (k, v) in options.items():
             if k == 'smallsearch':
                 if v:
                     opts['rsz'] = 'small'

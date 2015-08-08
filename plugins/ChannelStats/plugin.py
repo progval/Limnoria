@@ -222,7 +222,7 @@ class ChannelStats(callbacks.Plugin):
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             id = None
-        for (channel, c) in self.laststate.channels.iteritems():
+        for (channel, c) in self.laststate.channels.items():
             if msg.nick in c.users:
                 if (channel, 'channelStats') not in self.db:
                     self.db[channel, 'channelStats'] = ChannelStat()

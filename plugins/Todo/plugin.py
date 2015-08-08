@@ -69,7 +69,7 @@ class FlatTodoDb(object):
         return self.dbs[uid]
 
     def close(self):
-        for db in self.dbs.itervalues():
+        for db in self.dbs.values():
             db.close()
 
     def get(self, uid, tid):

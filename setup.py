@@ -158,7 +158,6 @@ try:
                     log.debug(msg, *args)
 
             fixer_names = ['fix_basestring',
-                    'fix_dict',
                     'fix_imports',
                     'fix_long',
                     'fix_metaclass', 'fix_methodattrs',

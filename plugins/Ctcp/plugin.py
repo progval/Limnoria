@@ -143,7 +143,7 @@ class Ctcp(callbacks.PluginRegexp):
         def doReply():
             if self.versions:
                 L = []
-                for (reply, nickslist) in self.versions.iteritems():
+                for (reply, nickslist) in self.versions.items():
                     if nicks:
                         L.append(format('%L responded with %q', nickslist, reply))
                     else:

@@ -477,11 +477,11 @@ class IrcChannel(object):
         write('defaultAllow %s' % self.defaultAllow)
         for capability in self.capabilities:
             write('capability ' + capability)
-        bans = self.bans.items()
+        bans = list(self.bans.items())
         utils.sortBy(operator.itemgetter(1), bans)
         for (ban, expiration) in bans:
             write('ban %s %d' % (ban, expiration))
-        ignores = self.ignores.items()
+        ignores = list(self.ignores.items())
         utils.sortBy(operator.itemgetter(1), ignores)
         for (ignore, expiration) in ignores:
             write('ignore %s %d' % (ignore, expiration))
@@ -653,7 +653,7 @@ class UsersDictionary(utils.IterableMap):
         """Flushes the database to its file."""
         if not self.noFlush:
             if self.filename is not None:
-                L = self.users.items()
+                L = list(self.users.items())
                 L.sort()
                 fd = utils.file.AtomicFile(self.filename)
                 for (id, u) in L:
@@ -672,8 +672,8 @@ class UsersDictionary(utils.IterableMap):
             world.flushers.remove(self.flush)
         self.users.clear()
 
-    def iteritems(self):
-        return self.users.iteritems()
+    def items(self):
+        return self.users.items()
 
     def getUserId(self, s):
         """Returns the user ID of a given name or hostmask."""
@@ -682,12 +682,12 @@ class UsersDictionary(utils.IterableMap):
                 return self._hostmaskCache[s]
             except KeyError:
                 ids = {}
-                for (id, user) in self.users.iteritems():
+                for (id, user) in self.users.items():
                     x = user.checkHostmask(s)
                     if x:
                         ids[id] = x
                 if len(ids) == 1:
-                    id = ids.keys()[0]
+                    id = list(ids.keys())[0]
                     self._hostmaskCache[s] = id
                     try:
                         self._hostmaskCache[id].add(s)
@@ -699,7 +699,7 @@ class UsersDictionary(utils.IterableMap):
                 else:
                     log.error('Multiple matches found in user database.  '
                               'Removing the offending hostmasks.')
-                    for (id, hostmask) in ids.iteritems():
+                    for (id, hostmask) in ids.items():
                         log.error('Removing %q from user %s.', hostmask, id)
                         self.users[id].removeHostmask(hostmask)
                     raise DuplicateHostmask('Ids %r matched.' % ids)
@@ -777,7 +777,7 @@ class UsersDictionary(utils.IterableMap):
         except KeyError:
             pass
         for hostmask in user.hostmasks:
-            for (i, u) in self.iteritems():
+            for (i, u) in self.items():
                 if i == user.id:
                     continue
                 elif u.checkHostmask(hostmask):
@@ -847,7 +847,7 @@ class ChannelsDictionary(utils.IterableMap):
         if not self.noFlush:
             if self.filename is not None:
                 fd = utils.file.AtomicFile(self.filename)
-                for (channel, c) in self.channels.iteritems():
+                for (channel, c) in self.channels.items():
                     fd.write('channel %s' % channel)
                     fd.write(os.linesep)
                     c.preserve(fd, indent='  ')
@@ -890,8 +890,8 @@ class ChannelsDictionary(utils.IterableMap):
         self.channels[channel] = ircChannel
         self.flush()
 
-    def iteritems(self):
-        return self.channels.iteritems()
+    def items(self):
+        return self.channels.items()
 
 
 class IgnoresDB(object):
