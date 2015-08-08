@@ -432,9 +432,9 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
                 # target is +i.
                 if caller not in chanState.users:
                     continue
-                # Skip +s channels the target is in only if the reply isn't
+                # Skip +s/+p channels the target is in only if the reply isn't
                 # being sent to that channel.
-                if 's' in chanState.modes and \
+                if set(('p', 's')) & set(chanState.modes.keys()) and \
                    not strEqual(channel or '', chan):
                     continue
             if not modes:
