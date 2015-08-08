@@ -159,7 +159,6 @@ try:
 
             fixer_names = ['fix_basestring',
                     'fix_imports',
-                    'fix_long',
                     'fix_metaclass', 'fix_methodattrs',
                     'fix_numliterals',
                     'fix_types',

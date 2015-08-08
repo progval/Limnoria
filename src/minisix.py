@@ -32,9 +32,17 @@
 import sys
 
 if sys.version_info[0] >= 3:
+    PY2 = False
+    PY3 = True
     intern = sys.intern
+    integer_types = (int,)
+    long = int
 else:
+    PY2 = True
+    PY3 = False
     if isinstance(__builtins__, dict):
         intern = __builtins__['intern']
     else:
         intern = __builtins__.intern
+    integer_types = (int, long)
+    long = long

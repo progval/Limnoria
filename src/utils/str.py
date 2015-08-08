@@ -39,6 +39,7 @@ import time
 import string
 import textwrap
 
+from .. import minisix
 from .iter import all, any
 from .structures import TwoWayDictionary
 
@@ -411,7 +412,7 @@ def nItems(n, item, between=None):
     >>> nItems(10, 'clock', between='grandfather')
     '10 grandfather clocks'
     """
-    assert isinstance(n, int) or isinstance(n, long), \
+    assert isinstance(n, minisix.integer_types), \
            'The order of the arguments to nItems changed again, sorry.'
     if item == '<empty>':
         if between is None:
@@ -563,7 +564,7 @@ def format(s, *args, **kwargs):
                 raise ValueError('Invalid value for %%n in format: %s' % t)
         elif char == 'S':
             t = args.pop()
-            if not isinstance(t, (int, long)):
+            if not isinstance(t, minisix.integer_types):
                 raise ValueError('Invalid value for %%S in format: %s' % t)
             for suffix in ['B','KB','MB','GB','TB']:
                 if t < 1024:

@@ -44,7 +44,8 @@ try:
 except ImportError: # Windows!
     resource = None
 
-from . import callbacks, conf, ircdb, ircmsgs, ircutils, log, utils, world
+from . import callbacks, conf, ircdb, ircmsgs, ircutils, log, minisix, \
+        utils, world
 from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 
@@ -272,7 +273,7 @@ def getNonInt(irc, msg, args, state, type=_('non-integer value')):
 
 def getLong(irc, msg, args, state, type='long'):
     getInt(irc, msg, args, state, type)
-    state.args[-1] = long(state.args[-1])
+    state.args[-1] = minisix.long(state.args[-1])
 
 def getFloat(irc, msg, args, state, type=_('floating point number')):
     try:

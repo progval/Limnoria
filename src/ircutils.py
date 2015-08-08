@@ -639,7 +639,7 @@ def dccIP(ip):
 
 def unDccIP(i):
     """Takes an integer DCC IP and return a normal string IP."""
-    assert isinstance(i, (int, long)), '%r is not an number.' % i
+    assert isinstance(i, minisix.integer_types), '%r is not an number.' % i
     L = []
     while len(L) < 4:
         L.append(i % 256)

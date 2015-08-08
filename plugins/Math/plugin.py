@@ -38,6 +38,7 @@ import string
 
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Math')
@@ -94,7 +95,7 @@ class Math(callbacks.Plugin):
     def _convertBaseToBase(self, number, toBase, fromBase):
         """Convert a number from any base, 2 through 36, to any other
         base, 2 through 36. Returns a string."""
-        number = long(str(number), fromBase)
+        number = minisix.long(str(number), fromBase)
         if toBase == 10:
             return str(number)
         return self._convertDecimalToBase(number, toBase)
