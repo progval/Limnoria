@@ -51,7 +51,7 @@ try:
     proc = subprocess.Popen('git show HEAD --format=%ci', shell=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     date = proc.stdout.readline()
-    if minisix.PY3:
+    if sys.version_info[0] >= 3:
         date = date.decode()
         date = time.strptime(date.strip(), '%Y-%m-%d %H:%M:%S %z')
         utc_date = time.gmtime(time.mktime(date))
