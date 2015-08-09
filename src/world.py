@@ -42,7 +42,7 @@ import multiprocessing
 
 import re
 
-from . import conf, drivers, ircutils, log, registry
+from . import conf, drivers, ircutils, log, minisix, registry
 
 startedAt = time.time() # Just in case it doesn't get set later.
 

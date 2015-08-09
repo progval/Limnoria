@@ -133,7 +133,7 @@ class GenTest(SupyTestCase):
         self.assertEqual(list(AL.keys()), [1, 2, 3])
         if minisix.PY2:
             self.assertEqual(list(AL.keys()), [1, 2, 3])
-            self.assertEqual(AL.values(), [2, 3, 4])
+            self.assertEqual(list(AL.values()), [2, 3, 4])
             self.assertEqual(list(AL.values()), [2, 3, 4])
         self.assertEqual(len(AL), 3)
 
