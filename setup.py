@@ -157,7 +157,7 @@ try:
                 def log_debug(self, msg, *args):
                     log.debug(msg, *args)
 
-            fixer_names = ['fix_basestring',
+            fixer_names = [
                     'fix_metaclass',
                     'fix_numliterals',
                     ]

@@ -32,6 +32,7 @@ import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.minisix as minisix
 import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
@@ -114,7 +115,7 @@ class URL(callbacks.Plugin):
         f = None
         nolimit = False
         for (option, arg) in optlist:
-            if isinstance(arg, basestring):
+            if isinstance(arg, minisix.string_types):
                 arg = arg.lower()
             if option == 'nolimit':
                 nolimit = True

@@ -35,7 +35,7 @@ import os
 import csv
 import math
 
-from . import cdb, utils
+from . import cdb, minisix, utils
 from .utils.iter import ilen
 
 class Error(Exception):
@@ -329,7 +329,7 @@ class DB(object):
             self.Record = Record
         if Mapping is not None:
             self.Mapping = Mapping
-        if isinstance(self.Mapping, basestring):
+        if isinstance(self.Mapping, minisix.string_types):
             self.Mapping = Mappings[self.Mapping]
         self.map = self.Mapping(filename)
 

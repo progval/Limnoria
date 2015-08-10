@@ -809,7 +809,7 @@ def names(channel=None, prefix='', msg=None):
 def mode(channel, args=(), prefix='', msg=None):
     if msg and not prefix:
         prefix = msg.prefix
-    if isinstance(args, basestring):
+    if isinstance(args, minisix.string_types):
         args = (args,)
     else:
         args = tuple(map(str, args))

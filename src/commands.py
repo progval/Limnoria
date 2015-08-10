@@ -681,7 +681,7 @@ def getMatch(irc, msg, args, state, regexp, errmsg):
 
 def getLiteral(irc, msg, args, state, literals, errmsg=None):
     # ??? Should we allow abbreviations?
-    if isinstance(literals, basestring):
+    if isinstance(literals, minisix.string_types):
         literals = (literals,)
     abbrevs = utils.abbrev(literals)
     if args[0] in abbrevs:
@@ -827,7 +827,7 @@ class context(object):
             self.converter = getConverter(spec[0])
         elif spec is None:
             self.converter = getConverter('anything')
-        elif isinstance(spec, basestring):
+        elif isinstance(spec, minisix.string_types):
             self.args = ()
             self.converter = getConverter(spec)
         else:

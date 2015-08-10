@@ -26,7 +26,7 @@ def error(s):
 
 def system(sh, errmsg=None, **kwargs):
     if errmsg is None:
-        if isinstance(sh, basestring):
+        if isinstance(sh, minisix.string_types):
             errmsg = repr(sh)
         else:
             errmsg = repr(' '.join(sh))

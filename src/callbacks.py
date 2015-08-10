@@ -382,7 +382,7 @@ def formatCommand(command):
     return ' '.join(command)
 
 def checkCommandCapability(msg, cb, commandName):
-    assert isinstance(commandName, basestring), commandName
+    assert isinstance(commandName, minisix.string_types), commandName
     plugin = cb.name().lower()
     pluginCommand = '%s.%s' % (plugin, commandName)
     def checkCapability(capability):
@@ -458,9 +458,9 @@ class RichReplyMethods(object):
             prefixer = ''
         if joiner is None:
             joiner = utils.str.commaAndify
-        if isinstance(prefixer, basestring):
+        if isinstance(prefixer, minisix.string_types):
             prefixer = prefixer.__add__
-        if isinstance(joiner, basestring):
+        if isinstance(joiner, minisix.string_types):
             joiner = joiner.join
         if oneToOne is None: # Can be True, False, or None
             if ircutils.isChannel(to):
@@ -495,7 +495,7 @@ class RichReplyMethods(object):
     def errorNoCapability(self, capability, s='', **kwargs):
         if 'Raise' not in kwargs:
             kwargs['Raise'] = True
-        if isinstance(capability, basestring): # checkCommandCapability!
+        if isinstance(capability, minisix.string_types): # checkCommandCapability!
             log.warning('Denying %s for lacking %q capability.',
                         self.msg.prefix, capability)
             # noCapability means "don't send a specific capability error
@@ -669,7 +669,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
     def evalArgs(self):
         while self.counter < len(self.args):
             self.repliedTo = False
-            if isinstance(self.args[self.counter], basestring):
+            if isinstance(self.args[self.counter], minisix.string_types):
                 # If it's a string, just go to the next arg.  There is no
                 # evaluation to be done for strings.  If, at some point,
                 # we decided to, say, convert every string using
@@ -692,7 +692,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 return
         # Once all the list args are evaluated, we then evaluate our own
         # list of args, since we're assured that they're all strings now.
-        assert all(lambda x: isinstance(x, basestring), self.args)
+        assert all(lambda x: isinstance(x, minisix.string_types), self.args)
         self.finalEval()
 
     def _callInvalidCommands(self):
@@ -873,7 +873,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         # action=True implies noLengthCheck=True and prefixNick=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         target = self.private and self.to or self.msg.args[0]
-        if not isinstance(s, basestring): # avoid trying to str() unicode
+        if not isinstance(s, minisix.string_types): # avoid trying to str() unicode
             s = str(s) # Allow non-string esses.
         if self.finalEvaled:
             try:
@@ -1184,7 +1184,7 @@ class Commands(BasePlugin):
 
     def isCommand(self, command):
         """Convenience, backwards-compatibility, semi-deprecated."""
-        if isinstance(command, basestring):
+        if isinstance(command, minisix.string_types):
             return self.isCommandMethod(command)
         else:
             # Since we're doing a little type dispatching here, let's not be
@@ -1210,7 +1210,7 @@ class Commands(BasePlugin):
     def getCommandMethod(self, command):
         """Gets the given command from this plugin."""
         #print '*** %s.getCommandMethod(%r)' % (self.name(), command)
-        assert not isinstance(command, basestring)
+        assert not isinstance(command, minisix.string_types)
         assert command == list(map(canonicalName, command))
         assert self.getCommand(command) == command
         for cb in self.cbs:

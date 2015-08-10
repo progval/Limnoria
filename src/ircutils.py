@@ -115,8 +115,8 @@ def toLower(s, casemapping=None):
 def strEqual(nick1, nick2):
     """s1, s2 => bool
     Returns True if nick1 == nick2 according to IRC case rules."""
-    assert isinstance(nick1, basestring)
-    assert isinstance(nick2, basestring)
+    assert isinstance(nick1, minisix.string_types)
+    assert isinstance(nick2, minisix.string_types)
     return toLower(nick1) == toLower(nick2)
 
 nickEqual = strEqual
@@ -609,7 +609,7 @@ def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
     if minisix.PY2 and isinstance(s, unicode):
         s = s.encode('utf-8')
-    elif (minisix.PY2 and not isinstance(s, basestring)) or \
+    elif (minisix.PY2 and not isinstance(s, minisix.string_types)) or \
             (minisix.PY3 and not isinstance(s, str)):
         debug('Got a non-string in safeArgument: %r', s)
         s = str(s)

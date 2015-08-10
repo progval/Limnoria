@@ -36,6 +36,7 @@ if sys.version_info[0] >= 3:
     PY3 = True
     intern = sys.intern
     integer_types = (int,)
+    string_types = (str,)
     long = int
 
     import io
@@ -51,6 +52,7 @@ else:
     else:
         intern = __builtins__.intern
     integer_types = (int, long)
+    string_types = (basestring,)
     long = long
 
     class io:

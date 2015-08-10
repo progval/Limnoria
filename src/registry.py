@@ -517,7 +517,7 @@ class String(Value):
             v = repr(v)
         try:
             v = utils.safeEval(v)
-            if not isinstance(v, basestring):
+            if not isinstance(v, minisix.string_types):
                 raise ValueError
             self.setValue(v)
         except ValueError: # This catches utils.safeEval(s) errors too.

@@ -34,6 +34,8 @@ import random
 
 from itertools import *
 
+from .. import minisix
+
 # For old plugins
 ifilter = filter
 def filterfalse(p, L):
@@ -102,7 +104,7 @@ def flatten(iterable, strings=False):
     """Flattens a list of lists into a single list.  See the test for examples.
     """
     for elt in iterable:
-        if not strings and isinstance(elt, basestring):
+        if not strings and isinstance(elt, minisix.string_types):
             yield elt
         else:
             try:
@@ -115,7 +117,7 @@ def split(isSeparator, iterable, maxsplit=-1, yieldEmpty=False):
     """split(isSeparator, iterable, maxsplit=-1, yieldEmpty=False)
 
     Splits an iterator based on a predicate isSeparator."""
-    if isinstance(isSeparator, basestring):
+    if isinstance(isSeparator, minisix.string_types):
         f = lambda s: s == isSeparator
     else:
         f = isSeparator

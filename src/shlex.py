@@ -7,6 +7,8 @@
 import os.path
 import sys
 
+from . import minisix
+
 __all__ = ["shlex"]
 
 class shlex:
@@ -190,7 +192,7 @@ class shlex:
         if newfile[0] == '"':
             newfile = newfile[1:-1]
         # This implements cpp-like semantics for relative-path inclusion.
-        if isinstance(self.infile, basestring) and not os.path.isabs(newfile):
+        if isinstance(self.infile, minisix.string_types) and not os.path.isabs(newfile):
             newfile = os.path.join(os.path.dirname(self.infile), newfile)
         return (newfile, open(newfile, "r"))
 

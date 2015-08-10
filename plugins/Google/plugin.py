@@ -127,7 +127,7 @@ class Google(callbacks.PluginRegexp):
         return data
 
     def formatData(self, data, bold=True, max=0, onetoone=False):
-        if isinstance(data, basestring):
+        if isinstance(data, minisix.string_types):
             return data
         results = []
         if max:

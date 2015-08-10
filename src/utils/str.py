@@ -539,7 +539,7 @@ def format(s, *args, **kwargs):
             if isinstance(t, tuple) and len(t) == 2:
                 if not isinstance(t[0], list):
                     raise ValueError('Invalid list for %%L in format: %s' % t)
-                if not isinstance(t[1], basestring):
+                if not isinstance(t[1], minisix.string_types):
                     raise ValueError('Invalid string for %%L in format: %s' % t)
                 return commaAndify(t[0], And=t[1])
             elif hasattr(t, '__iter__'):

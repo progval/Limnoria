@@ -99,7 +99,7 @@ class FilterTest(ChannelPluginTestCase):
             self.assertResponse('rot13 [rot13 %s]' % s, s)
 
     def testRot13HandlesNonAsciiStuff(self):
-        self.assertNotError(u('rot13 é'))
+        self.assertNotError('rot13 é')
 
     def testHexlifyUnhexlify(self):
         for s in map(str, range(1000, 1010)):

@@ -36,7 +36,7 @@ import sys
 import time
 import socket
 
-from .. import conf, ircmsgs, log as supylog, utils
+from .. import conf, ircmsgs, log as supylog, minisix, utils
 
 _drivers = {}
 _deadDrivers = []
@@ -154,7 +154,7 @@ class Log(object):
     def reconnect(self, network, when=None):
         s = 'Reconnecting to %s' % network
         if when is not None:
-            if not isinstance(when, basestring):
+            if not isinstance(when, minisix.string_types):
                 when = self.timestamp(when)
             s += ' at %s.' % when
         else:
