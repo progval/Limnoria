@@ -386,7 +386,7 @@ class Misc(callbacks.Plugin):
         try:
             L = irc._mores[userHostmask]
             number = self.registryValue('mores', msg.args[0])
-            chunks = [L.pop() for x in xrange(0, number)]
+            chunks = [L.pop() for x in range(0, number)]
             if L:
                 if len(L) < 2:
                     more = _('1 more message')

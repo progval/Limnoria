@@ -34,7 +34,7 @@ def window(L, size):
     assert not isinstance(L, int), 'Argument order swapped: window(L, size)'
     if size < 1:
         raise ValueError('size <= 0 disallowed.')
-    for i in xrange(len(L) - (size-1)):
+    for i in range(len(L) - (size-1)):
         yield L[i:i+size]
 
 def mapinto(f, L):
@@ -42,7 +42,7 @@ def mapinto(f, L):
         L[i] = f(x)
 
 def renumerate(L):
-    for i in xrange(len(L)-1, -1, -1):
+    for i in range(len(L)-1, -1, -1):
         yield (i, L[i])
 
 def dameraulevenshtein(seq1, seq2):
@@ -74,13 +74,13 @@ def dameraulevenshtein(seq1, seq2):
     # so we only store those.
     # Sourced from http://mwh.geek.nz/2009/04/26/python-damerau-levenshtein-distance/
     oneago = None
-    thisrow = range(1, len(seq2) + 1) + [0]
-    for x in xrange(len(seq1)):
+    thisrow = list(range(1, len(seq2) + 1)) + [0]
+    for x in range(len(seq1)):
         # Python lists wrap around for negative indices, so put the
         # leftmost column at the *end* of the list. This matches with
         # the zero-indexed strings and saves extra calculation.
         twoago, oneago, thisrow = oneago, thisrow, [0] * len(seq2) + [x + 1]
-        for y in xrange(len(seq2)):
+        for y in range(len(seq2)):
             delcost = oneago[y] + 1
             addcost = thisrow[y - 1] + 1
             subcost = oneago[y - 1] + (seq1[x] != seq2[y])

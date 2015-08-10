@@ -183,7 +183,7 @@ class Filter(callbacks.Plugin):
         Assumes ASCII, 8 digits per character.
         """
         try:
-            L = [chr(int(text[i:(i+8)], 2)) for i in xrange(0, len(text), 8)]
+            L = [chr(int(text[i:(i+8)], 2)) for i in range(0, len(text), 8)]
             irc.reply(''.join(L))
         except ValueError:
             irc.errorInvalid('binary string', text)

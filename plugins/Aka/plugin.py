@@ -414,7 +414,7 @@ class Aka(callbacks.Plugin):
             if ret:
                 return [first] + ret
         max_length = self.registryValue('maximumWordsInName')
-        for i in xrange(1, min(len(args)+1, max_length)):
+        for i in range(1, min(len(args)+1, max_length)):
             if self.isCommandMethod(callbacks.formatCommand(args[0:i])):
                 return args[0:i]
         return []

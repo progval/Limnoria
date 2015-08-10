@@ -35,7 +35,7 @@ class GamesTestCase(ChannelPluginTestCase):
     def testRoulette(self):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
         sawKick = False
-        for i in xrange(100):
+        for i in range(100):
             m = self.getMsg('roulette', frm='someoneElse')
             if m.command == 'PRIVMSG':
                 self.failUnless(self._nonKickRe.search(m.args[1]),

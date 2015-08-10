@@ -378,7 +378,7 @@ class Topic(callbacks.Plugin):
             irc.error(_('I cannot reorder 1 or fewer topics.'), Raise=True)
         if len(numbers) != num:
             irc.error(_('All topic numbers must be specified.'), Raise=True)
-        if sorted(numbers) != range(num):
+        if sorted(numbers) != list(range(num)):
             irc.error(_('Duplicate topic numbers cannot be specified.'))
             return
         newtopics = [topics[i] for i in numbers]

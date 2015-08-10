@@ -136,7 +136,7 @@ class Maker(object):
         self.hashPointers = [(0, 0)] * 256
         #self.hashes = [[]] * 256 # Can't use this, [] stays the same...
         self.hashes = []
-        for _ in xrange(256):
+        for _ in range(256):
             self.hashes.append([])
 
     def add(self, key, data):
@@ -154,7 +154,7 @@ class Maker(object):
 
         Writes the remainder of the database to disk.
         """
-        for i in xrange(256):
+        for i in range(256):
             hash = self.hashes[i]
             self.hashPointers[i] = (self.fd.tell(), self._serializeHash(hash))
         self._serializeHashPointers()

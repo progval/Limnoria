@@ -160,7 +160,7 @@ try:
             fixer_names = ['fix_basestring',
                     'fix_metaclass',
                     'fix_numliterals',
-                    'fix_xrange']
+                    ]
             fixers = list(map(lambda x:'lib2to3.fixes.'+x, fixer_names))
             fixers += get_fixers_from_package('2to3')
             r = DistutilsRefactoringTool(fixers, options=options)

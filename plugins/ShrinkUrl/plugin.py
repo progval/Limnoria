@@ -76,7 +76,7 @@ class ShrinkError(Exception):
 
 def retry(f):
     def newf(*args, **kwargs):
-        for x in xrange(0, 3):
+        for x in range(0, 3):
             try:
                 return f(*args, **kwargs)
             except Exception:

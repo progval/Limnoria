@@ -73,7 +73,7 @@ class Games(callbacks.Plugin):
             irc.error(_('Dice can\'t have fewer than 3 sides.'))
         else:
             L = [0] * dice
-            for i in xrange(dice):
+            for i in range(dice):
                 L[i] = random.randrange(1, sides+1)
             irc.reply(format('%L', [str(x) for x in L]))
     _dicere = re.compile(r'^(\d+)d(\d+)$')

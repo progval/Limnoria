@@ -114,15 +114,15 @@ def distance(s, t):
     elif m == 0:
         return n
     d = []
-    for i in xrange(n+1):
+    for i in range(n+1):
         d.append([])
-        for j in xrange(m+1):
+        for j in range(m+1):
             d[i].append(0)
             d[0][j] = j
         d[i][0] = i
-    for i in xrange(1, n+1):
+    for i in range(1, n+1):
         cs = s[i-1]
-        for j in xrange(1, m+1):
+        for j in range(1, m+1):
             ct = t[j-1]
             cost = int(cs != ct)
             d[i][j] = min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost)
@@ -271,7 +271,7 @@ def perlReToReplacer(s):
         raise ValueError('Must be of the form s/.../.../')
     regexp = regexp.replace('\x08', r'\b')
     replace = replace.replace('\\'+sep, sep)
-    for i in xrange(10):
+    for i in range(10):
         replace = replace.replace(chr(i), r'\%s' % i)
     g = False
     if 'g' in flags:

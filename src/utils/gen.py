@@ -66,7 +66,7 @@ def warn_non_constant_time(f):
 def abbrev(strings, d=None):
     """Returns a dictionary mapping unambiguous abbreviations to full forms."""
     def eachSubstring(s):
-        for i in xrange(1, len(s)+1):
+        for i in range(1, len(s)+1):
             yield s[:i]
     if len(strings) != len(set(strings)):
         raise ValueError(
