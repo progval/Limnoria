@@ -44,10 +44,10 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Web')
 
 if minisix.PY3:
-    from html.parser import HTMLParser, HTMLParseError
+    from html.parser import HTMLParser
     from html.entities import entitydefs
 else:
-    from HTMLParser import HTMLParser, HTMLParseError
+    from HTMLParser import HTMLParser
     from htmlentitydefs import entitydefs
 
 class Title(HTMLParser):
@@ -159,11 +159,7 @@ class Web(callbacks.PluginRegexp):
             except:
                 pass
             parser = Title()
-            try:
-                parser.feed(text)
-            except HTMLParseError:
-                self.log.debug('Encountered a problem parsing %u.  Title may '
-                               'already be set, though', url)
+            parser.feed(text)
             if parser.title:
                 domain = utils.web.getDomain(fd.geturl()
                         if self.registryValue('snarferShowTargetDomain', channel)
@@ -289,11 +285,7 @@ class Web(callbacks.PluginRegexp):
         if minisix.PY3 and isinstance(text, bytes):
             irc.error(_('Could not guess the page\'s encoding. (Try '
                     'installing python-charade.)'), Raise=True)
-        try:
-            parser.feed(text)
-        except HTMLParseError:
-            self.log.debug('Encountered a problem parsing %u.  Title may '
-                           'already be set, though', url)
+        parser.feed(text)
         if parser.title:
             title = utils.web.htmlToText(parser.title.strip())
             if not [y for x,y in optlist if x == 'no-filter']:
