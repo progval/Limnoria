@@ -33,6 +33,7 @@ import time
 from supybot.test import *
 #import supybot.plugin as plugin
 import supybot.ircutils as ircutils
+from supybot.minisix import u
 
 try:
     import sqlite
@@ -267,10 +268,11 @@ class FactoidsTestCase(ChannelPluginTestCase):
                                 'Key search for "foo" '
                                 '(2 found): "foo" and "foo\'"')
             # Check unicode stuff
-            self.assertResponse(u'listkeys Б', 'No keys matching "Б" found.')
-            self.assertNotError(u'АБВГДЕЖ is foo')
-            self.assertNotError(u'АБВГДЕЖЗИ is foo')
-            self.assertResponse(u'listkeys Б',
+            self.assertResponse(u('listkeys Б'),
+                    'No keys matching "Б" found.')
+            self.assertNotError(u('АБВГДЕЖ is foo'))
+            self.assertNotError(u('АБВГДЕЖЗИ is foo'))
+            self.assertResponse(u('listkeys Б'),
                                 'Key search for "Б" '
                                 '(2 found): "АБВГДЕЖ" and "АБВГДЕЖЗИ"')
         finally:
