@@ -33,9 +33,7 @@ import io
 import sys
 import json
 import shutil
-import urllib
 import tarfile
-from cStringIO import StringIO
 
 import supybot.log as log
 import supybot.conf as conf
@@ -46,8 +44,6 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
-
-BytesIO = StringIO if minisix.PY2 else io.BytesIO
 
 _ = PluginInternationalization('PluginDownloader')
 
@@ -81,7 +77,7 @@ class GithubRepository(GitRepository):
     def _query(self, type_, uri_end, args={}):
         args = dict([(x,y) for x,y in args.items() if y is not None])
         url = '%s/%s/%s?%s' % (self._apiUrl, type_, uri_end,
-                               urllib.urlencode(args))
+                               utils.web.urlencode(args))
         return json.loads(utils.web.getUrl(url).decode('utf8'))
 
     def getPluginList(self):
@@ -109,7 +105,7 @@ class GithubRepository(GitRepository):
                 assert response.getcode() == 200, response.getcode()
             else:
                 assert response.status == 200, response.status
-            fileObject = BytesIO()
+            fileObject = minisix.io.BytesIO()
             fileObject.write(response.read())
         finally: # urllib does not handle 'with' statements :(
             response.close()

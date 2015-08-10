@@ -38,9 +38,8 @@ import os
 import sys
 import struct
 import os.path
-import cPickle as pickle
 
-from . import utils
+from . import utils, minisix
 
 def hash(s):
     """DJB's hash function for CDB."""
@@ -447,14 +446,14 @@ class ReaderWriter(utils.IterableMap):
 class Shelf(ReaderWriter):
     """Uses pickle to mimic the shelf module."""
     def __getitem__(self, key):
-        return pickle.loads(ReaderWriter.__getitem__(self, key))
+        return minisix.pickle.loads(ReaderWriter.__getitem__(self, key))
 
     def __setitem__(self, key, value):
-        ReaderWriter.__setitem__(self, key, pickle.dumps(value, True))
+        ReaderWriter.__setitem__(self, key, minisix.pickle.dumps(value, True))
 
     def items(self):
         for (key, value) in ReaderWriter.items(self):
-            yield (key, pickle.loads(value))
+            yield (key, minisix.pickle.loads(value))
 
 
 if __name__ == '__main__':

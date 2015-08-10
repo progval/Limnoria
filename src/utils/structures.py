@@ -101,7 +101,7 @@ class RingBuffer(object):
     def __getitem__(self, idx):
         if self.full:
             oidx = idx
-            if isinstance(oidx, types.SliceType):
+            if isinstance(oidx, slice):
                 L = []
                 for i in xrange(*slice.indices(oidx, len(self))):
                     L.append(self[i])
@@ -113,7 +113,7 @@ class RingBuffer(object):
                 idx = (idx + self.i) % len(self.L)
                 return self.L[idx]
         else:
-            if isinstance(idx, types.SliceType):
+            if isinstance(idx, slice):
                 L = []
                 for i in xrange(*slice.indices(idx, len(self))):
                     L.append(self[i])
@@ -124,7 +124,7 @@ class RingBuffer(object):
     def __setitem__(self, idx, elt):
         if self.full:
             oidx = idx
-            if isinstance(oidx, types.SliceType):
+            if isinstance(oidx, slice):
                 range_ = xrange(*slice.indices(oidx, len(self)))
                 if len(range_) != len(elt):
                     raise ValueError('seq must be the same length as slice.')
@@ -138,7 +138,7 @@ class RingBuffer(object):
                 idx = (idx + self.i) % len(self.L)
                 self.L[idx] = elt
         else:
-            if isinstance(idx, types.SliceType):
+            if isinstance(idx, slice):
                 range_ = xrange(*slice.indices(idx, len(self)))
                 if len(range_) != len(elt):
                     raise ValueError('seq must be the same length as slice.')
@@ -228,7 +228,7 @@ class queue(object):
     def __getitem__(self, oidx):
         if len(self) == 0:
             raise IndexError('queue index out of range')
-        if isinstance(oidx, types.SliceType):
+        if isinstance(oidx, slice):
             L = []
             for i in xrange(*slice.indices(oidx, len(self))):
                 L.append(self[i])
@@ -245,7 +245,7 @@ class queue(object):
     def __setitem__(self, oidx, value):
         if len(self) == 0:
             raise IndexError('queue index out of range')
-        if isinstance(oidx, types.SliceType):
+        if isinstance(oidx, slice):
             range_ = xrange(*slice.indices(oidx, len(self)))
             if len(range_) != len(value):
                 raise ValueError('seq must be the same length as slice.')
@@ -266,7 +266,7 @@ class queue(object):
                 self.back[idx-len(self.front)] = value
 
     def __delitem__(self, oidx):
-        if isinstance(oidx, types.SliceType):
+        if isinstance(oidx, slice):
             range_ = xrange(*slice.indices(oidx, len(self)))
             for i in range_:
                 del self[i]

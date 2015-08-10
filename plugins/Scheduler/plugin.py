@@ -31,7 +31,6 @@ import time
 import os
 import shutil
 import tempfile
-import cPickle as pickle
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -41,6 +40,9 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Scheduler')
 import supybot.world as world
+
+import supybot.minisix as minisix
+pickle = minisix.pickle
 
 datadir = conf.supybot.directories.data()
 filename = conf.supybot.directories.data.dirize('Scheduler.pickle')

@@ -45,7 +45,6 @@ import random
 import string
 import textwrap
 import functools
-from cStringIO import StringIO as sio
 
 from . import utils
 from . import minisix
@@ -174,7 +173,7 @@ def _hostmaskPatternEqual(pattern, hostmask):
     except KeyError:
         # We make our own regexps, rather than use fnmatch, because fnmatch's
         # case-insensitivity is not IRC's case-insensitity.
-        fd = sio()
+        fd = minisix.io.StringIO()
         for c in pattern:
             if c == '*':
                 fd.write('.*')
@@ -528,7 +527,7 @@ class FormatContext(object):
 
 class FormatParser(object):
     def __init__(self, s):
-        self.fd = sio(s)
+        self.fd = minisix.io.StringIO(s)
         self.last = None
 
     def getChar(self):

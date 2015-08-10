@@ -48,14 +48,6 @@ from .utils.iter import any, all
 from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 
-if minisix.PY2:
-    # cStringIO is buggy with Python 2.6 (
-    # see http://paste.progval.net/show/227/ )
-    # and it does not handle unicode objects in Python  2.x
-    from StringIO import StringIO
-else:
-    from cStringIO import StringIO
-
 def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
               whenAddressedByNickAtEnd=None):
@@ -329,7 +321,7 @@ class Tokenizer(object):
         return ret
 
     def tokenize(self, s):
-        lexer = shlex.shlex(StringIO(s))
+        lexer = shlex.shlex(minisix.io.StringIO(s))
         lexer.commenters = ''
         lexer.quotes = self.quotes
         lexer.separators = self.separators

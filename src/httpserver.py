@@ -36,7 +36,6 @@ import sys
 import cgi
 import socket
 from threading import Thread
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 
 import supybot.log as log
 import supybot.conf as conf
@@ -44,6 +43,11 @@ import supybot.world as world
 import supybot.minisix as minisix
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()
+
+if minisix.PY2:
+    from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+else:
+    from http.server import HTTPServer, BaseHTTPRequestHandler
 
 configGroup = conf.supybot.servers.http
 

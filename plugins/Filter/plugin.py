@@ -33,7 +33,6 @@ import sys
 import codecs
 import string
 import random
-from cStringIO import StringIO
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -610,7 +609,7 @@ class Filter(callbacks.Plugin):
 ##         for (c, v) in d.items():
 ##             dd[ord(c)] = unicode(v + ' ')
 ##         irc.reply(unicode(text).translate(dd))
-        out = StringIO()
+        out = minisix.io.StringIO()
         write = out.write
         for c in text:
             try:

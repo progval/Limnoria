@@ -10,9 +10,10 @@
 #
 #****************************************************************************
 
-import re, copy, sys, os.path, StringIO
+import re, copy, sys, os.path
 
 import supybot.conf as conf
+import supybot.minisix as minisix
 import supybot.registry as registry
 
 unitData = \
@@ -1059,7 +1060,7 @@ class UnitData(dict):
         types = []
         typeUnits = {}
         try:
-            f = StringIO.StringIO(unitData)
+            f = minisix.io.StringIO(unitData)
             lines = f.readlines()
             f.close()
         except IOError:

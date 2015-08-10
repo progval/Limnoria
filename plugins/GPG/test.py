@@ -28,9 +28,8 @@
 
 ###
 
-from cStringIO import StringIO
-
 from supybot.test import *
+import supybot.minisix as minisix
 
 import supybot.gpg as gpg
 
@@ -111,25 +110,25 @@ class GPGTestCase(PluginTestCase):
                 return fd
             (utils.web.getUrlFd, realGetUrlFd) = (fakeGetUrlFd, utils.web.getUrlFd)
 
-            fd = StringIO()
+            fd = minisix.io.StringIO()
             fd.write('foo')
             fd.seek(0)
             self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Signature or token not found.')
 
-            fd = StringIO()
+            fd = minisix.io.StringIO()
             fd.write(token)
             fd.seek(0)
             self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Signature or token not found.')
 
-            fd = StringIO()
+            fd = minisix.io.StringIO()
             fd.write(WRONG_TOKEN_SIGNATURE)
             fd.seek(0)
             self.assertRegexp('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Unknown token.*')
 
-            fd = StringIO()
+            fd = minisix.io.StringIO()
             fd.write(str(gpg.keyring.sign(token)))
             fd.seek(0)
             self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',

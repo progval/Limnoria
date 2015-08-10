@@ -32,12 +32,6 @@ import re
 import sys
 import base64
 import socket
-import urllib
-import urllib2
-import httplib
-import urlparse
-import htmlentitydefs
-from HTMLParser import HTMLParser
 
 sockerrors = (socket.error,)
 try:
@@ -48,12 +42,37 @@ except AttributeError:
 from .str import normalizeWhitespace
 from .. import minisix
 
-Request = urllib2.Request
-urlquote = urllib.quote
-urlunquote = urllib.unquote
-
-def urlencode(*args, **kwargs):
-    return urllib.urlencode(*args, **kwargs).encode()
+if minisix.PY2:
+    import urllib
+    import urllib2
+    from httplib import InvalidURL
+    from urlparse import urlsplit, urlunsplit, urlparse
+    from htmlentitydefs import entitydefs, name2codepoint
+    from HTMLParser import HTMLParser
+    Request = urllib2.Request
+    urlquote = urllib.quote
+    urlquote_plus = urllib.quote_plus
+    urlunquote = urllib.unquote
+    urlopen = urllib2.urlopen
+    def urlencode(*args, **kwargs):
+        return urllib.urlencode(*args, **kwargs).encode()
+    from urllib2 import HTTPError, URLError
+    from urllib import splithost, splituser
+else:
+    from http.client import InvalidURL
+    from urllib.parse import urlsplit, urlunsplit, urlparse
+    from html.entities import entitydefs, name2codepoint
+    from html.parser import HTMLParser
+    import urllib.request, urllib.parse, urllib.error
+    Request = urllib.request.Request
+    urlquote = urllib.parse.quote
+    urlquote_plus = urllib.parse.quote_plus
+    urlunquote = urllib.parse.unquote
+    urlopen = urllib.request.urlopen
+    def urlencode(*args, **kwargs):
+        return urllib.parse.urlencode(*args, **kwargs).encode()
+    from urllib.error import HTTPError, URLError
+    from urllib.parse import splithost, splituser
 
 class Error(Exception):
     pass
@@ -106,17 +125,18 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
     """getUrlFd(url, headers=None, data=None, timeout=None)
 
     Opens the given url and returns a file object.  Headers and data are
-    a dict and string, respectively, as per urllib2.Request's arguments."""
+    a dict and string, respectively, as per urllib.request.Request's
+    arguments."""
     if headers is None:
         headers = defaultHeaders
     if minisix.PY3 and isinstance(data, str):
         data = data.encode()
     try:
-        if not isinstance(url, urllib2.Request):
-            (scheme, loc, path, query, frag) = urlparse.urlsplit(url)
-            (user, host) = urllib.splituser(loc)
-            url = urlparse.urlunsplit((scheme, host, path, query, ''))
-            request = urllib2.Request(url, headers=headers, data=data)
+        if not isinstance(url, Request):
+            (scheme, loc, path, query, frag) = urlsplit(url)
+            (user, host) = splituser(loc)
+            url = urlunsplit((scheme, host, path, query, ''))
+            request = Request(url, headers=headers, data=data)
             if user:
                 request.add_header('Authorization',
                                    'Basic %s' % base64.b64encode(user))
@@ -126,17 +146,17 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
         httpProxy = force(proxy)
         if httpProxy:
             request.set_proxy(httpProxy, 'http')
-        fd = urllib2.urlopen(request, timeout=timeout)
+        fd = urlopen(request, timeout=timeout)
         return fd
     except socket.timeout as e:
         raise Error(TIMED_OUT)
     except sockerrors as e:
         raise Error(strError(e))
-    except httplib.InvalidURL as e:
+    except InvalidURL as e:
         raise Error('Invalid URL: %s' % e)
-    except urllib2.HTTPError as e:
+    except HTTPError as e:
         raise Error(strError(e))
-    except urllib2.URLError as e:
+    except URLError as e:
         raise Error(strError(e.reason))
     # Raised when urllib doesn't recognize the url type
     except ValueError as e:
@@ -147,7 +167,7 @@ def getUrl(url, size=None, headers=None, data=None, timeout=None):
 
     Gets a page.  Returns a string that is the page gotten.  Size is an integer
     number of bytes to read from the URL.  Headers and data are dicts as per
-    urllib2.Request's arguments."""
+    urllib.request.Request's arguments."""
     fd = getUrlFd(url, headers=headers, data=data, timeout=timeout)
     try:
         if size is None:
@@ -160,7 +180,7 @@ def getUrl(url, size=None, headers=None, data=None, timeout=None):
     return text
 
 def getDomain(url):
-    return urlparse.urlparse(url)[1]
+    return urlparse(url)[1]
 
 _charset_re = ('<meta[^a-z<>]+charset='
     """(?P<charset>("[^"]+"|'[^']+'))""")
@@ -185,7 +205,7 @@ def getEncoding(s):
 
 class HtmlToText(HTMLParser, object):
     """Taken from some eff-bot code on c.l.p."""
-    entitydefs = htmlentitydefs.entitydefs.copy()
+    entitydefs = entitydefs.copy()
     entitydefs['nbsp'] = ' '
     def __init__(self, tagReplace=' '):
         self.data = []
@@ -202,8 +222,8 @@ class HtmlToText(HTMLParser, object):
         self.data.append(data)
 
     def handle_entityref(self, data):
-        if data in htmlentitydefs.name2codepoint:
-            self.data.append(unichr(htmlentitydefs.name2codepoint[data]))
+        if data in name2codepoint:
+            self.data.append(unichr(name2codepoint[data]))
         elif minisix.PY3 and isinstance(data, bytes):
             self.data.append(data.decode())
         elif minisix.PY2 and isinstance(data, str):

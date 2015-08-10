@@ -33,7 +33,6 @@ Includes wrappers for commands.
 """
 
 import time
-import Queue
 import getopt
 import inspect
 import threading
@@ -124,7 +123,7 @@ def process(f, *args, **kwargs):
         raise ProcessTimeoutError("%s aborted due to timeout." % (p.name,))
     try:
         v = q.get(block=False)
-    except Queue.Empty:
+    except minisix.queue.Empty:
         return None
     finally:
         q.close()

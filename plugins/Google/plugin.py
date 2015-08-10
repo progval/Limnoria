@@ -34,7 +34,6 @@ import cgi
 import json
 import time
 import socket
-import urllib
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -119,7 +118,7 @@ class Google(callbacks.PluginRegexp):
             opts['rsz'] = 'large'
 
         text = utils.web.getUrl('%s?%s' % (self._gsearchUrl,
-                                           urllib.urlencode(opts)),
+                                           utils.web.urlencode(opts)),
                                 headers=headers).decode('utf8')
         data = json.loads(text)
         if data['responseStatus'] != 200:
@@ -255,10 +254,10 @@ class Google(callbacks.PluginRegexp):
         headers['User-Agent'] = ('Mozilla/5.0 (X11; U; Linux i686) '
                                  'Gecko/20071127 Firefox/2.0.0.11')
 
-        sourceLang = urllib.quote(sourceLang)
-        targetLang = urllib.quote(targetLang)
+        sourceLang = utils.web.urlquote(sourceLang)
+        targetLang = utils.web.urlquote(targetLang)
 
-        text = urllib.quote(text)
+        text = utils.web.urlquote(text)
 
         result = utils.web.getUrlFd('http://translate.googleapis.com/translate_a/single'
                                     '?client=gtx&dt=t&sl=%s&tl=%s&q='
@@ -291,7 +290,7 @@ class Google(callbacks.PluginRegexp):
     googleSnarfer = urlSnarfer(googleSnarfer)
 
     def _googleUrl(self, s, channel):
-        s = urllib.quote_plus(s)
+        s = utils.web.urlquote_plus(s)
         url = r'http://%s/search?q=%s' % \
                 (self.registryValue('baseUrl', channel), s)
         return url

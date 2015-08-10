@@ -32,7 +32,6 @@ import os
 import sys
 import time
 import string
-import urllib
 
 import supybot.conf as conf
 import supybot.ircdb as ircdb
@@ -128,7 +127,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
             self.end_headers()
             self.write(httpserver.get_template('factoids/index.html'))
         elif len(parts) == 2:
-            channel = urllib.unquote(parts[0])
+            channel = utils.web.unquote(parts[0])
             if not ircutils.isChannel(channel):
                 self.send_response(404)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
@@ -180,7 +179,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
         if 'chan' in form:
             self.send_response(303)
             self.send_header('Location',
-                    './%s/' % urllib.quote(form['chan'].value))
+                    './%s/' % utils.web.quote(form['chan'].value))
             self.end_headers()
         else:
             self.send_response(400)

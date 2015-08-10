@@ -35,12 +35,20 @@ import sys
 import time
 import shutil
 import urllib
-import httplib
 import unittest
 import threading
 
 from . import (callbacks, conf, drivers, httpserver, i18n, ircdb, irclib,
         ircmsgs, ircutils, log, minisix, plugin, registry, utils, world)
+
+if minisix.PY2:
+    from httplib import HTTPConnection
+    from urllib import splithost, splituser
+    from urllib import URLopener
+else:
+    from http.client import HTTPConnection
+    from urllib.parse import splithost, splituser
+    from urllib.request import URLopener
 
 i18n.import_conf()
 network = True
@@ -511,15 +519,15 @@ def open_http(url, data=None):
     user_passwd = None
     proxy_passwd= None
     if isinstance(url, str):
-        host, selector = urllib.splithost(url)
+        host, selector = splithost(url)
         if host:
-            user_passwd, host = urllib.splituser(host)
+            user_passwd, host = splituser(host)
             host = urllib.unquote(host)
         realhost = host
     else:
         host, selector = url
         # check whether the proxy contains authorization information
-        proxy_passwd, host = urllib.splituser(host)
+        proxy_passwd, host = splituser(host)
         # now we proceed with the url we want to obtain
         urltype, rest = urllib.splittype(selector)
         url = rest
@@ -527,9 +535,9 @@ def open_http(url, data=None):
         if urltype.lower() != 'http':
             realhost = None
         else:
-            realhost, rest = urllib.splithost(rest)
+            realhost, rest = splithost(rest)
             if realhost:
-                user_passwd, realhost = urllib.splituser(realhost)
+                user_passwd, realhost = splituser(realhost)
             if user_passwd:
                 selector = "%s://%s%s" % (urltype, realhost, rest)
             if urllib.proxy_bypass(realhost):
@@ -559,15 +567,15 @@ def open_http(url, data=None):
     if proxy_auth: c.putheader('Proxy-Authorization', 'Basic %s' % proxy_auth)
     if auth: c.putheader('Authorization', 'Basic %s' % auth)
     if realhost: c.putheader('Host', realhost)
-    for args in urllib.URLopener().addheaders: c.putheader(*args)
+    for args in URLopener().addheaders: c.putheader(*args)
     c.endheaders()
     return c
 
-class FakeHTTPConnection(httplib.HTTPConnection):
+class FakeHTTPConnection(HTTPConnection):
     _data = ''
     _headers = {}
     def __init__(self, rfile, wfile):
-        httplib.HTTPConnection.__init__(self, 'localhost')
+        HTTPConnection.__init__(self, 'localhost')
         self.rfile = rfile
         self.wfile = wfile
     def send(self, data):
@@ -585,12 +593,8 @@ class HTTPPluginTestCase(PluginTestCase):
 
     def request(self, url, method='GET', read=True, data={}):
         assert url.startswith('/')
-        try:
-            from io import BytesIO as StringIO
-        except ImportError:
-            from StringIO import StringIO
-        wfile = StringIO()
-        rfile = StringIO()
+        wfile = minisix.io.StringIO()
+        rfile = minisix.io.StringIO()
         connection = FakeHTTPConnection(wfile, rfile)
         connection.putrequest(method, url)
         connection.endheaders()

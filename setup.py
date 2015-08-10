@@ -158,11 +158,9 @@ try:
                     log.debug(msg, *args)
 
             fixer_names = ['fix_basestring',
-                    'fix_imports',
                     'fix_metaclass', 'fix_methodattrs',
                     'fix_numliterals',
-                    'fix_types',
-                    'fix_unicode', 'fix_urllib', 'fix_xrange']
+                    'fix_unicode', 'fix_xrange']
             fixers = list(map(lambda x:'lib2to3.fixes.'+x, fixer_names))
             fixers += get_fixers_from_package('2to3')
             r = DistutilsRefactoringTool(fixers, options=options)

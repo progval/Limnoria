@@ -37,6 +37,10 @@ if sys.version_info[0] >= 3:
     intern = sys.intern
     integer_types = (int,)
     long = int
+
+    import io
+    import pickle
+    import queue
 else:
     PY2 = True
     PY3 = False
@@ -46,3 +50,12 @@ else:
         intern = __builtins__.intern
     integer_types = (int, long)
     long = long
+
+    class io:
+        # cStringIO is buggy with Python 2.6 (
+        # see http://paste.progval.net/show/227/ )
+        # and it does not handle unicode objects in Python  2.x
+        from StringIO import StringIO
+        from cStringIO import StringIO as BytesIO
+    import cPickle as pickle
+    import Queue as queue

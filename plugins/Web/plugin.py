@@ -31,8 +31,6 @@
 import re
 import sys
 import socket
-import HTMLParser
-import htmlentitydefs
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -45,14 +43,21 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Web')
 
-class Title(HTMLParser.HTMLParser):
-    entitydefs = htmlentitydefs.entitydefs.copy()
+if minisix.PY3:
+    from html.parser import HTMLParser, HTMLParseError
+    from html.entities import entitydefs
+else:
+    from HTMLParser import HTMLParser, HTMLParseError
+    from htmlentitydefs import entitydefs
+
+class Title(HTMLParser):
+    entitydefs = entitydefs.copy()
     entitydefs['nbsp'] = ' '
     entitydefs['apos'] = '\''
     def __init__(self):
         self.inTitle = False
         self.title = ''
-        HTMLParser.HTMLParser.__init__(self)
+        HTMLParser.__init__(self)
 
     def handle_starttag(self, tag, attrs):
         if tag == 'title':
@@ -156,7 +161,7 @@ class Web(callbacks.PluginRegexp):
             parser = Title()
             try:
                 parser.feed(text)
-            except HTMLParser.HTMLParseError:
+            except HTMLParseError:
                 self.log.debug('Encountered a problem parsing %u.  Title may '
                                'already be set, though', url)
             if parser.title:
@@ -286,7 +291,7 @@ class Web(callbacks.PluginRegexp):
                     'installing python-charade.)'), Raise=True)
         try:
             parser.feed(text)
-        except HTMLParser.HTMLParseError:
+        except HTMLParseError:
             self.log.debug('Encountered a problem parsing %u.  Title may '
                            'already be set, though', url)
         if parser.title:

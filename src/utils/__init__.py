@@ -29,20 +29,20 @@
 ###
 
 import sys
+from .. import minisix
 
 ###
 # csv.{join,split} -- useful functions that should exist.
 ###
 import csv
-import cStringIO as StringIO
 def join(L):
-    fd = StringIO.StringIO()
+    fd = minisix.io.StringIO()
     writer = csv.writer(fd)
     writer.writerow(L)
     return fd.getvalue().rstrip('\r\n')
 
 def split(s):
-    fd = StringIO.StringIO(s)
+    fd = minisix.io.StringIO(s)
     reader = csv.reader(fd)
     return next(reader)
 csv.join = join

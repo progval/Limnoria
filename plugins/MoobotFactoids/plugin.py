@@ -32,8 +32,6 @@ import sys
 import time
 import string
 
-from cStringIO import StringIO
-
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
@@ -70,7 +68,7 @@ class OptionList(object):
                 ret.append(token)
 
     def tokenize(self, s):
-        lexer = shlex.shlex(StringIO(s))
+        lexer = shlex.shlex(minisix.io.StringIO(s))
         lexer.commenters = ''
         lexer.quotes = ''
         lexer.whitespace = ''
