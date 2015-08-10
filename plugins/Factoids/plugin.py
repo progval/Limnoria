@@ -248,7 +248,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
 
     def getCommandHelp(self, command, simpleSyntax=None):
         method = self.getCommandMethod(command)
-        if method.im_func.__name__ == 'learn':
+        if method.__func__.__name__ == 'learn':
             chan = None
             if dynamic.msg is not None:
                 chan = dynamic.msg.args[0]
