@@ -33,6 +33,7 @@ from supybot.test import *
 import supybot.conf as conf
 import supybot.plugin as plugin
 import supybot.registry as registry
+from supybot.minisix import u
 
 import plugin as Aka
 
@@ -147,8 +148,8 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertResponse('egg', 'baz')
 
     def testComplicatedNames(self):
-        self.assertNotError(u'aka add café "echo coffee"')
-        self.assertResponse(u'café', 'coffee')
+        self.assertNotError(u('aka add café "echo coffee"'))
+        self.assertResponse(u('café'), 'coffee')
 
         self.assertNotError('aka add "foo bar" "echo spam"')
         self.assertResponse('foo bar', 'spam')
@@ -201,7 +202,7 @@ class AkaTestCase(PluginTestCase):
 
     def testAliasImport(self):
         self.assertNotError('alias add foo "echo bar"')
-        self.assertNotError(u'alias add baz "echo café"')
+        self.assertNotError(u('alias add baz "echo café"'))
         self.assertNotError('aka add qux "echo quux"')
         self.assertResponse('alias foo', 'bar')
         self.assertResponse('alias baz', 'café')

@@ -222,14 +222,20 @@ class HtmlToText(HTMLParser, object):
         self.data.append(data)
 
     def handle_entityref(self, data):
-        if data in name2codepoint:
-            self.data.append(unichr(name2codepoint[data]))
-        elif minisix.PY3 and isinstance(data, bytes):
-            self.data.append(data.decode())
-        elif minisix.PY2 and isinstance(data, str):
-            self.data.append(data.decode('utf8', errors='replace'))
+        if minisix.PY3:
+            if data in name2codepoint:
+                self.data.append(chr(name2codepoint[data]))
+            elif isinstance(data, bytes):
+                self.data.append(data.decode())
+            else:
+                self.data.append(data)
         else:
-            self.data.append(data)
+            if data in name2codepoint:
+                self.data.append(unichr(name2codepoint[data]))
+            elif isinstance(data, str):
+                self.data.append(data.decode('utf8', errors='replace'))
+            else:
+                self.data.append(data)
 
     def getText(self):
         text = ''.join(self.data).strip()

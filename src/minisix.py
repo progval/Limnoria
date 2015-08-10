@@ -41,6 +41,8 @@ if sys.version_info[0] >= 3:
     import io
     import pickle
     import queue
+
+    u = lambda x:x
 else:
     PY2 = True
     PY3 = False
@@ -59,3 +61,5 @@ else:
         from cStringIO import StringIO as BytesIO
     import cPickle as pickle
     import Queue as queue
+
+    u = lambda x:x.decode('utf8')

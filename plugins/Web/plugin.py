@@ -78,7 +78,7 @@ class Title(HTMLParser):
 
     def handle_charref(self, name):
         if self.inTitle:
-            self.title += unichr(int(name))
+            self.title += (unichr if minisix.PY2 else chr)(int(name))
 
 class DelayedIrc:
     def __init__(self, irc):
