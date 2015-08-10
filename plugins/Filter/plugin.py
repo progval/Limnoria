@@ -703,7 +703,7 @@ class Filter(callbacks.Plugin):
             if c in self._uniudMap:
                 tmp = self._uniudMap[c]
                 if not len(tmp):
-                    tmp = u'\ufffd'
+                    tmp = '\ufffd'
                 turned.append(tmp)
                 tlen += 1
             elif c == '\t':
@@ -713,7 +713,7 @@ class Filter(callbacks.Plugin):
             elif ord(c) >= 32:
                 turned.append(c)
                 tlen += 1
-        s = u'%s \x02 \x02' % u''.join(reversed(turned))
+        s = '%s \x02 \x02' % ''.join(reversed(turned))
         irc.reply(s)
     uniud = wrap(uniud, ['text'])
 Filter = internationalizeDocstring(Filter)

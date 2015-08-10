@@ -152,7 +152,7 @@ class Google(callbacks.PluginRegexp):
         elif onetoone:
             return results
         else:
-            return [u'; '.join(results)]
+            return [minisix.u('; ').join(results)]
 
     @internationalizeDocstring
     def lucky(self, irc, msg, args, opts, text):
