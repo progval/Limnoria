@@ -33,7 +33,7 @@ from supybot.test import *
 import supybot.conf as conf
 import supybot.plugin as plugin
 import supybot.registry as registry
-from supybot.minisix import u
+from supybot.utils.minisix import u
 
 from . import plugin as Aka
 

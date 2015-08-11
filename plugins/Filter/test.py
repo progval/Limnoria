@@ -37,7 +37,7 @@ import codecs
 
 import supybot.utils as utils
 import supybot.callbacks as callbacks
-from supybot.minisix import u
+from supybot.utils.minisix import u
 
 class FilterTest(ChannelPluginTestCase):
     plugins = ('Filter', 'Utilities', 'Reply')

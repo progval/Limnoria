@@ -33,7 +33,7 @@ import time
 from supybot.test import *
 #import supybot.plugin as plugin
 import supybot.ircutils as ircutils
-from supybot.minisix import u
+from supybot.utils.minisix import u
 
 try:
     import sqlite

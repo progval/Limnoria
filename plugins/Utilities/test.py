@@ -29,7 +29,7 @@
 ###
 
 
-from supybot.minisix import u
+from supybot.utils.minisix import u
 from supybot.test import *
 
 class UtilitiesTestCase(PluginTestCase):
