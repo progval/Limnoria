@@ -7,7 +7,7 @@
 import os.path
 import sys
 
-from . import minisix
+from .utils import minisix
 
 __all__ = ["shlex"]
 

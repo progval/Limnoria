@@ -43,8 +43,9 @@ try:
 except ImportError: # Windows!
     resource = None
 
-from . import callbacks, conf, ircdb, ircmsgs, ircutils, log, minisix, \
+from . import callbacks, conf, ircdb, ircmsgs, ircutils, log, \
         utils, world
+from .utils import minisix
 from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 

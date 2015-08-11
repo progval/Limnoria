@@ -28,7 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import dynamicScope
+from . import dynamicScope
 
 from . import utils
 

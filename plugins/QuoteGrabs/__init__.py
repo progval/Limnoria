@@ -49,12 +49,13 @@ __author__ = supybot.authors.strike
 # contributions.
 __contributors__ = {}
 
-import config
-import plugin
+from . import config
+from . import plugin
+from imp import reload
 reload(plugin) # In case we're being reloaded.
 
 if world.testing:
-    import test
+    from . import test
     
 Class = plugin.Class
 configure = config.configure

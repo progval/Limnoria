@@ -33,7 +33,8 @@ import os
 import time
 import operator
 
-from . import conf, ircutils, log, minisix, registry, unpreserve, utils, world
+from . import conf, ircutils, log, registry, unpreserve, utils, world
+from .utils import minisix
 
 def isCapability(capability):
     return len(capability.split(None, 1)) == 1

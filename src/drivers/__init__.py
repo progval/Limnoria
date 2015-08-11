@@ -36,7 +36,8 @@ import sys
 import time
 import socket
 
-from .. import conf, ircmsgs, log as supylog, minisix, utils
+from .. import conf, ircmsgs, log as supylog, utils
+from ..utils import minisix
 
 _drivers = {}
 _deadDrivers = []

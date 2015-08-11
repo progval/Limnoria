@@ -37,7 +37,7 @@ import binascii
 
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.plugins as plugins
 import supybot.commands as commands
 import supybot.ircutils as ircutils

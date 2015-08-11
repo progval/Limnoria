@@ -38,7 +38,7 @@ import supybot.ircdb as ircdb
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 import supybot.httpserver as httpserver

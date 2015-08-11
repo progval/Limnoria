@@ -44,12 +44,13 @@ __author__ = supybot.authors.jemfinch
 # contributions.
 __contributors__ = {supybot.Author('Keith Jones', 'kmj', ''): ['convert']}
 
-import config
-import plugin
+from . import config
+from . import plugin
+from imp import reload
 reload(plugin) # In case we're being reloaded.
 
 if world.testing:
-    import test
+    from . import test
 
 Class = plugin.Class
 configure = config.configure

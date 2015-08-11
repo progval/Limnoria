@@ -40,7 +40,7 @@ _ = PluginInternationalization('Dict')
 
 import random
 
-from local import dictclient
+from .local import dictclient
 
 class Dict(callbacks.Plugin):
     """This plugin provides a function to look up words from different

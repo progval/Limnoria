@@ -36,7 +36,7 @@ import supybot.conf as conf
 import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry

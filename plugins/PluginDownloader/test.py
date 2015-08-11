@@ -33,7 +33,7 @@ import sys
 import shutil
 
 from supybot.test import *
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 
 pluginsPath = '%s/test-plugins' % os.getcwd()
 

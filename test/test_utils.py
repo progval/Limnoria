@@ -35,7 +35,7 @@ import time
 import pickle
 import supybot.utils as utils
 from supybot.utils.structures import *
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 
 if sys.version_info[0] >= 0:
     xrange = range

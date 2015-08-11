@@ -54,6 +54,7 @@ import math
 import string
 
 import supybot.utils as utils
+import supybot.utils.minisix as minisix
 import supybot.callbacks as callbacks
 from supybot.commands import wrap, additional
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
@@ -90,7 +91,7 @@ class Nickometer(callbacks.Plugin):
         Tells you how lame said nick is.  If <nick> is not given, uses the
         nick of the person giving the command.
         """
-        score = 0L
+        score = minisix.L(0)
         if not nick:
             nick = msg.nick
         originalNick = nick

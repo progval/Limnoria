@@ -33,7 +33,7 @@ from supybot.test import *
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.callbacks as callbacks
 
 tokenize = callbacks.tokenize

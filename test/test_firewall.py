@@ -29,7 +29,7 @@
 
 from supybot.test import *
 from supybot import log
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 
 class FirewallTestCase(SupyTestCase):
     def setUp(self):

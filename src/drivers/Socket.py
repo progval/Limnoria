@@ -41,7 +41,8 @@ import errno
 import select
 import socket
 
-from .. import (conf, drivers, log, minisix, schedule, utils, world)
+from .. import (conf, drivers, log, schedule, utils, world)
+from ..utils import minisix
 from ..utils.iter import imap
 from ..utils.str import decode_raw_line
 

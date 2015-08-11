@@ -44,7 +44,7 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks

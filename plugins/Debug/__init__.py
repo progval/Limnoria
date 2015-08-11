@@ -46,6 +46,7 @@ __contributors__ = {}
 
 from . import config
 from . import plugin
+from imp import reload
 if version_info[0] >= 3:
     from imp import reload
 reload(plugin) # In case we're being reloaded.

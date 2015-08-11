@@ -39,7 +39,7 @@ import time
 import string
 import textwrap
 
-from .. import minisix
+from . import minisix
 from .iter import all, any
 from .structures import TwoWayDictionary
 
@@ -574,7 +574,7 @@ def format(s, *args, **kwargs):
         elif char == 't':
             return timestamp(args.pop())
         elif char == 'T':
-            from gen import timeElapsed
+            from .gen import timeElapsed
             return timeElapsed(args.pop())
         elif char == 'u':
             import supybot.conf as conf

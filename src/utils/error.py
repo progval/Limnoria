@@ -29,7 +29,7 @@
 
 import os
 
-import gen
+from . import gen
 
 class Error(Exception):
     def __init__(self, msg, e=None):

@@ -34,7 +34,7 @@ import supybot.conf as conf
 import supybot.plugin as plugin
 import supybot.registry as registry
 
-import plugin as Alias
+from . import plugin as Alias
 
 class FunctionsTest(SupyTestCase):
     def testFindBiggestDollar(self):

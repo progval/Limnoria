@@ -44,6 +44,7 @@ if sys.version_info[0] >= 3:
     import queue
 
     u = lambda x:x
+    L = lambda x:x
 else:
     PY2 = True
     PY3 = False
@@ -65,3 +66,4 @@ else:
     import Queue as queue
 
     u = lambda x:x.decode('utf8')
+    L = lambda x:long(x)

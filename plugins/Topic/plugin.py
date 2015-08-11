@@ -47,7 +47,7 @@ _ = PluginInternationalization('Topic')
 
 import supybot.ircdb as ircdb
 
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 pickle = minisix.pickle
 
 def canChangeTopic(irc, msg, args, state):

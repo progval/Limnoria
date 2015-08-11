@@ -72,20 +72,20 @@ class Object(object):
     def __ne__(self, other):
         return not self == other
 
-class Synchronized(type):
+class MetaSynchronized(type):
     METHODS = '__synchronized__'
-    LOCK = '_Synchronized_rlock'
+    LOCK = '_MetaSynchronized_rlock'
     def __new__(cls, name, bases, dict):
         sync = set()
         for base in bases:
-            if hasattr(base, Synchronized.METHODS):
-                sync.update(getattr(base, Synchronized.METHODS))
-        if Synchronized.METHODS in dict:
-            sync.update(dict[Synchronized.METHODS])
+            if hasattr(base, MetaSynchronized.METHODS):
+                sync.update(getattr(base, MetaSynchronized.METHODS))
+        if MetaSynchronized.METHODS in dict:
+            sync.update(dict[MetaSynchronized.METHODS])
         if sync:
             def synchronized(f):
                 def g(self, *args, **kwargs):
-                    lock = getattr(self, Synchronized.LOCK)
+                    lock = getattr(self, MetaSynchronized.LOCK)
                     lock.acquire()
                     try:
                         f(self, *args, **kwargs)
@@ -97,16 +97,17 @@ class Synchronized(type):
                     dict[attr] = synchronized(dict[attr])
             original__init__ = dict.get('__init__')
             def __init__(self, *args, **kwargs):
-                if not hasattr(self, Synchronized.LOCK):
-                    setattr(self, Synchronized.LOCK, threading.RLock())
+                if not hasattr(self, MetaSynchronized.LOCK):
+                    setattr(self, MetaSynchronized.LOCK, threading.RLock())
                 if original__init__:
                     original__init__(self, *args, **kwargs)
                 else:
                     # newclass is defined below.
                     super(newclass, self).__init__(*args, **kwargs)
             dict['__init__'] = __init__
-        newclass = super(Synchronized, cls).__new__(cls, name, bases, dict)
+        newclass = super(MetaSynchronized, cls).__new__(cls, name, bases, dict)
         return newclass
+Synchronized = MetaSynchronized('Synchronized', (), {})
 
 # Translate glob to regular expression, trimming the "match EOL" portion of
 # the regular expression.

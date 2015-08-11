@@ -39,13 +39,14 @@ import sys
 import struct
 import os.path
 
-from . import utils, minisix
+from . import utils
+from .utils import minisix
 
 def hash(s):
     """DJB's hash function for CDB."""
     h = 5381
     for c in s:
-        h = ((h + (h << 5)) ^ ord(c)) & 0xFFFFFFFFL
+        h = ((h + (h << 5)) ^ ord(c)) & minisix.L(0xFFFFFFFF)
     return h
 
 def unpack2Ints(s):

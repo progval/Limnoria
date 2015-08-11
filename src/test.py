@@ -39,7 +39,8 @@ import unittest
 import threading
 
 from . import (callbacks, conf, drivers, httpserver, i18n, ircdb, irclib,
-        ircmsgs, ircutils, log, minisix, plugin, registry, utils, world)
+        ircmsgs, ircutils, log, plugin, registry, utils, world)
+from .utils import minisix
 
 if minisix.PY2:
     from httplib import HTTPConnection

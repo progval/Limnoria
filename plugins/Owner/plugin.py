@@ -48,7 +48,7 @@ import supybot.irclib as irclib
 import supybot.plugin as plugin
 import supybot.plugins as plugins
 import supybot.drivers as drivers
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
@@ -465,6 +465,7 @@ class Owner(callbacks.Plugin):
                 if hasattr(module, 'reload') and 'x' in locals():
                     module.reload(x)
                 if hasattr(module, 'config'):
+                    from imp import reload
                     reload(module.config)
                 for callback in callbacks:
                     callback.die()

@@ -60,7 +60,7 @@ class IrcCommandDispatcher(object):
         return getattr(self, 'do' + command.capitalize(), None)
 
 
-class IrcCallback(IrcCommandDispatcher):
+class IrcCallback(IrcCommandDispatcher, log.Firewalled):
     """Base class for standard callbacks.
 
     Callbacks derived from this class should have methods of the form
@@ -69,7 +69,6 @@ class IrcCallback(IrcCommandDispatcher):
     """
     callAfter = ()
     callBefore = ()
-    __metaclass__ = log.MetaFirewall
     __firewalled__ = {'die': None,
                       'reset': None,
                       '__call__': None,
@@ -343,10 +342,9 @@ class ChannelState(utils.python.Object):
         return ret
 
 
-class IrcState(IrcCommandDispatcher):
+class IrcState(IrcCommandDispatcher, log.Firewalled):
     """Maintains state of the Irc connection.  Should also become smarter.
     """
-    __metaclass__ = log.MetaFirewall
     __firewalled__ = {'addMsg': None}
     def __init__(self, history=None, supported=None,
                  nicksToHostmasks=None, channels=None,
@@ -641,12 +639,11 @@ class IrcState(IrcCommandDispatcher):
 # 'queue', and 'state', in addition to the standard nick/user/ident attributes.
 ###
 _callbacks = []
-class Irc(IrcCommandDispatcher):
+class Irc(IrcCommandDispatcher, log.Firewalled):
     """The base class for an IRC connection.
 
     Handles PING commands already.
     """
-    __metaclass__ = log.MetaFirewall
     __firewalled__ = {'die': None,
                       'feedMsg': None,
                       'takeMsg': None,}

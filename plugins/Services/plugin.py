@@ -31,7 +31,7 @@
 import re
 import time
 
-import config
+from . import config
 
 import supybot.conf as conf
 import supybot.utils as utils

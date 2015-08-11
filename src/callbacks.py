@@ -37,13 +37,14 @@ import re
 import sys
 import copy
 import time
-import shlex
+from . import shlex
 import codecs
 import getopt
 import inspect
 
-from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, minisix, registry,
+from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry,
         utils, world)
+from .utils import minisix
 from .utils.iter import any, all
 from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
@@ -1132,11 +1133,12 @@ class BasePlugin(object):
                 cb.log = log.getPluginLogger('%s.%s' % (self.name(),cb.name()))
         super(BasePlugin, self).__init__()
 
-class SynchronizedAndFirewalled(log.MetaFirewall, utils.python.Synchronized):
-    pass # Necessary for the metaclass compatibility issue.
+class MetaSynchronizedAndFirewalled(log.MetaFirewall, utils.python.MetaSynchronized):
+    pass
+SynchronizedAndFirewalled = MetaSynchronizedAndFirewalled(
+        'SynchronizedAndFirewalled', (), {})
 
-class Commands(BasePlugin):
-    __metaclass__ = SynchronizedAndFirewalled
+class Commands(BasePlugin, SynchronizedAndFirewalled):
     __synchronized__ = (
         '__call__',
         'callCommand',

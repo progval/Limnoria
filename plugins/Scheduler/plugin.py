@@ -41,7 +41,7 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Scheduler')
 import supybot.world as world
 
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 pickle = minisix.pickle
 
 datadir = conf.supybot.directories.data()

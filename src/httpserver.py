@@ -40,7 +40,7 @@ from threading import Thread
 import supybot.log as log
 import supybot.conf as conf
 import supybot.world as world
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()
 
@@ -262,10 +262,9 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         log.info('HTTP request: %s - %s' %
                 (self.address_string(), format % args))
 
-class SupyHTTPServerCallback(object):
+class SupyHTTPServerCallback(log.Firewalled):
     """This is a base class that should be overriden by any plugin that want
     to have a Web interface."""
-    __metaclass__ = log.MetaFirewall
     __firewalled__ = {'doGet': None,
                       'doPost': None,
                       'doHead': None,

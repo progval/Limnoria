@@ -46,14 +46,15 @@ __contributors__ = {'tztime': supybot.Author('Valentin Lorentz', 'ProgVal',
                                             'progval@gmail.com')}
 
 
-import config
-import plugin
+from . import config
+from . import plugin
+from imp import reload
 reload(plugin) # In case we're being reloaded.
 # Add more reloads here if you add third-party modules and want them to be
 # reloaded when this plugin is reloaded.  Don't forget to import them as well!
 
 if world.testing:
-    import test
+    from . import test
 
 Class = plugin.Class
 configure = config.configure

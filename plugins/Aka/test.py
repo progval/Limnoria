@@ -35,7 +35,7 @@ import supybot.plugin as plugin
 import supybot.registry as registry
 from supybot.minisix import u
 
-import plugin as Aka
+from . import plugin as Aka
 
 class FunctionsTest(SupyTestCase):
     def testFindBiggestDollar(self):

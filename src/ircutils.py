@@ -47,7 +47,7 @@ import textwrap
 import functools
 
 from . import utils
-from . import minisix
+from .utils import minisix
 from .version import version
 
 from .i18n import PluginInternationalization, internationalizeDocstring

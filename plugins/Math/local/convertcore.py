@@ -13,7 +13,7 @@
 import re, copy, sys, os.path
 
 import supybot.conf as conf
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.registry as registry
 
 unitData = \

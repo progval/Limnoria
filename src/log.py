@@ -37,7 +37,8 @@ import operator
 import textwrap
 import traceback
 
-from . import ansi, conf, ircutils, minisix, registry, utils
+from . import ansi, conf, ircutils, registry, utils
+from .utils import minisix
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
 
@@ -182,12 +183,12 @@ conf.registerGlobalValue(conf.supybot.directories, 'log',
 
 _logDir = conf.supybot.directories.log()
 if not os.path.exists(_logDir):
-    os.mkdir(_logDir, 0755)
+    os.mkdir(_logDir, 0o755)
 
 pluginLogDir = os.path.join(_logDir, 'plugins')
 
 if not os.path.exists(pluginLogDir):
-    os.mkdir(pluginLogDir, 0755)
+    os.mkdir(pluginLogDir, 0o755)
 
 try:
     messagesLogFilename = os.path.join(_logDir, 'messages.log')
@@ -394,6 +395,7 @@ class MetaFirewall(type):
         for attr in __firewalled__:
             firewalled[attr] = cls.getErrorHandler(__firewalled__, attr)
     updateFirewalled = classmethod(updateFirewalled)
+Firewalled = MetaFirewall('Firewalled', (), {})
 
 
 class PluginLogFilter(logging.Filter):

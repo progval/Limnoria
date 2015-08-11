@@ -38,13 +38,13 @@ import string
 
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Math')
 
 try:
-    from local import convertcore
+    from .local import convertcore
 except ImportError:
     from .local import convertcore
 

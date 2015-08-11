@@ -29,7 +29,7 @@
 ###
 
 from supybot.test import *
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 
 import supybot.gpg as gpg
 

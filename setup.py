@@ -120,54 +120,6 @@ except ImportError as e:
     sys.stderr.write(textwrap.fill(s))
     sys.stderr.write(os.linesep*2)
     sys.exit(-1)
-try:
-    from distutils.command.build_py import build_py_2to3
-    class build_py(build_py_2to3):
-        def run_2to3(self, files, options=None):
-            from distutils import log
-            from lib2to3.refactor import RefactoringTool, get_fixers_from_package
-            if not files:
-                return
-
-            # Make this class local, to delay import of 2to3
-            from lib2to3.refactor import RefactoringTool, get_fixers_from_package
-            class DistutilsRefactoringTool(RefactoringTool):
-                def refactor(self, files, *args, **kwargs):
-                    self._total_files = len(files)
-                    self._refactored_files = 0
-                    super(DistutilsRefactoringTool, self).refactor(files,
-                            *args, **kwargs)
-                    del self._total_files
-                    del self._refactored_files
-                def refactor_file(self, filename, *args, **kwargs):
-                    if self._total_files//10 != 0 and \
-                            self._refactored_files % (self._total_files//10) == 0:
-                        print('Refactoring files: %i%% (%i on %i).' %
-                                (ceil(self._refactored_files*100./self._total_files),
-                                 self._refactored_files, self._total_files))
-                    self._refactored_files += 1
-                    return super(DistutilsRefactoringTool, self).refactor_file(
-                            filename, *args, **kwargs)
-                def log_error(self, msg, *args, **kw):
-                    log.error(msg, *args)
-
-                def log_message(self, msg, *args):
-                    log.info(msg, *args)
-
-                def log_debug(self, msg, *args):
-                    log.debug(msg, *args)
-
-            fixer_names = [
-                    'fix_metaclass',
-                    'fix_numliterals',
-                    ]
-            fixers = list(map(lambda x:'lib2to3.fixes.'+x, fixer_names))
-            fixers += get_fixers_from_package('2to3')
-            r = DistutilsRefactoringTool(fixers, options=options)
-            r.refactor(files, write=True)
-except ImportError:
-    # 2.x
-    from distutils.command.build_py import build_py
 
 
 if clean:
@@ -209,12 +161,6 @@ for plugin in plugins:
     if os.path.exists(locales_path):
         package_data.update({locales_name: ['locales/'+s for s in os.listdir(locales_path)]})
 
-
-try:
-    shutil.rmtree('2to3/__pycache__')
-except OSError:
-    pass
-
 setup(
     # Metadata
     name='limnoria',
@@ -253,7 +199,6 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         ],
-    cmdclass = {'build_py': build_py},
 
     # Installation data
     packages=packages,

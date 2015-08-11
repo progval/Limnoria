@@ -34,7 +34,7 @@ import random
 
 from itertools import *
 
-from .. import minisix
+from . import minisix
 
 # For old plugins
 ifilter = filter

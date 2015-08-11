@@ -35,7 +35,8 @@ import sys
 import textwrap
 from getpass import getpass as getPass
 
-from . import ansi, minisix, utils
+from . import ansi, utils
+from .utils import minisix
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 

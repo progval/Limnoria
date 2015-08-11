@@ -35,7 +35,7 @@ import types
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.minisix as minisix
+import supybot.utils.minisix as minisix
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks

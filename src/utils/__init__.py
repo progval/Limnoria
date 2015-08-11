@@ -29,7 +29,7 @@
 ###
 
 import sys
-from .. import minisix
+from . import minisix
 
 ###
 # csv.{join,split} -- useful functions that should exist.

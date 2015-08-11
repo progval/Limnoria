@@ -33,7 +33,7 @@ import supybot.registry as registry
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Unix')
 
-import plugin
+from . import plugin
 
 progstats = plugin.progstats
 

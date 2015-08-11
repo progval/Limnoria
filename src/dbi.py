@@ -35,7 +35,8 @@ import os
 import csv
 import math
 
-from . import cdb, minisix, utils
+from . import cdb, utils
+from .utils import minisix
 from .utils.iter import ilen
 
 class Error(Exception):

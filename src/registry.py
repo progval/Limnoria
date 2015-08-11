@@ -37,7 +37,8 @@ import codecs
 import string
 import textwrap
 
-from . import utils, i18n, minisix
+from . import utils, i18n
+from .utils import minisix
 _ = i18n.PluginInternationalization()
 
 def error(s):

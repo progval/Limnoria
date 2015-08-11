@@ -40,7 +40,7 @@ try:
 except ImportError:
     sqlite = None
 
-import plugin
+from . import plugin
 MFconf = conf.supybot.plugins.MoobotFactoids
 
 class OptionListTestCase(SupyTestCase):
