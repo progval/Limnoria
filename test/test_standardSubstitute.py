@@ -42,6 +42,7 @@ class FunctionsTestCase(SupyTestCase):
             channels = {'#foo': holder()}
         nick = 'foobar'
 
+    @retry()
     def testStandardSubstitute(self):
         f = ircutils.standardSubstitute
         msg = ircmsgs.privmsg('#foo', 'filler', prefix='biff!quux@xyzzy')

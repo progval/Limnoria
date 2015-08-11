@@ -58,6 +58,7 @@ class I18nTestCase(SupyTestCase):
         multiline = '%s\n\n%s' % (msg_en, msg_en)
         self.assertEqual(_(multiline), multiline)
 
+    @retry()
     def testDocstring(self):
         self.assertEqual(foo.__doc__, msg_en)
         self.assertEqual(bar.__doc__, msg_en)

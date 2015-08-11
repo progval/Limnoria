@@ -36,6 +36,7 @@ import time
 import shutil
 import urllib
 import unittest
+import functools
 import threading
 
 from . import (callbacks, conf, drivers, httpserver, i18n, ircdb, irclib,
@@ -66,6 +67,28 @@ def cachingGetHelp(method, name=None, doc=None):
     lastGetHelp = originalCallbacksGetHelp(method, name, doc)
     return lastGetHelp
 callbacks.getHelp = cachingGetHelp
+
+def retry(tries=3):
+    assert tries > 0
+    def decorator(f):
+        @functools.wraps(f)
+        def newf(self):
+            try:
+                f(self)
+            except AssertionError as e:
+                first_exception = e
+            for _ in range(1, tries):
+                try:
+                    f(self)
+                except AssertionError as e:
+                    pass
+                else:
+                    break
+            else:
+                # All failed
+                raise first_exception
+        return newf
+    return decorator
 
 def getTestIrc():
     irc = irclib.Irc('test')
