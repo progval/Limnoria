@@ -139,6 +139,8 @@ class Web(callbacks.PluginRegexp):
             return
         if self.registryValue('titleSnarfer', channel):
             url = match.group(0)
+            if not self._checkURLWhitelist(url):
+                return
             r = self.registryValue('nonSnarfingRegexp', channel)
             if r and r.search(url):
                 self.log.debug('Not titleSnarfing %q.', url)
