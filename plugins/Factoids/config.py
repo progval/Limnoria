@@ -57,7 +57,7 @@ conf.registerChannelValue(Factoids.web, 'channel',
 
 conf.registerChannelValue(Factoids, 'requireVoice',
     registry.Boolean(False, _("""Only allows a user with voice or above on a
-    channel to use the command.""")))
+    channel to use the 'learn' and 'forget' commands.""")))
 conf.registerChannelValue(Factoids, 'learnSeparator',
     registry.String('is', _("""Determines what separator must be used in 
     the learn command.  Defaults to 'is' -- learn <key> is <value>.  
