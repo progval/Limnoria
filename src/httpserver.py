@@ -246,7 +246,8 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
                          'CONTENT_TYPE':self.headers['Content-Type'],
                          })
         else:
-            form = self.rfile.read()
+            content_length = int(self.headers.get('Content-Length', '0'))
+            form = self.rfile.read(content_length)
         self.do_X('doPost', form=form)
 
     def do_HEAD(self):
