@@ -44,6 +44,6 @@ Alias = conf.registerPlugin('Alias')
 conf.registerGroup(Alias, 'aliases')
 conf.registerGroup(Alias, 'escapedaliases')
 conf.registerGlobalValue(Alias, 'validName',
-    registry.String(r'^[a-z.|!?][a-z0-9.|!]*$', _("""Regex which alias names must match in order to be valid""")))
+    registry.String(r'^[^\x00-\x20]+$', _("""Regex which alias names must match in order to be valid""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

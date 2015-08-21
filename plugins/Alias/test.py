@@ -127,6 +127,13 @@ class AliasTestCase(ChannelPluginTestCase):
         self.assertNotError('alias add myre "echo s/$1/$2/g"')
         self.assertResponse('myre foo bar', 's/foo/bar/g')
 
+    def testUnicode(self):
+        self.assertNotError(u'alias add \u200b echo foo')
+        self.assertResponse(u'\u200b', 'foo')
+
+        self.assertNotError(u'alias add café echo bar')
+        self.assertResponse(u'café', 'bar')
+
     def testSimpleAliasWithoutArgsImpliesDollarStar(self):
         self.assertNotError('alias add exo echo')
         self.assertResponse('exo foo bar baz', 'foo bar baz')
