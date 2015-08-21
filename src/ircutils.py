@@ -299,6 +299,10 @@ def bold(s):
     """Returns the string s, bolded."""
     return '\x02%s\x02' % s
 
+def italic(s):
+    """Returns the string s, italicised."""
+    return '\x1D%s\x1D' % s
+
 def reverse(s):
     """Returns the string s, reverse-videoed."""
     return '\x16%s\x16' % s
@@ -355,6 +359,10 @@ def stripBold(s):
     """Returns the string s, with bold removed."""
     return s.replace('\x02', '')
 
+def stripItalic(s):
+    """Returns the string s, with italics removed."""
+    return s.replace('\x1d', '')
+
 _stripColorRe = re.compile(r'\x03(?:\d{1,2},\d{1,2}|\d{1,2}|,\d{1,2}|)')
 def stripColor(s):
     """Returns the string s, with color removed."""
@@ -375,6 +383,7 @@ def stripFormatting(s):
     s = stripBold(s)
     s = stripReverse(s)
     s = stripUnderline(s)
+    s = stripItalic(s)
     return s.replace('\x0f', '').replace('\x0F', '')
 
 _containsFormattingRe = re.compile(r'[\x02\x03\x16\x1f]')

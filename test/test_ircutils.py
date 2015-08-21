@@ -92,6 +92,11 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(s[0], '\x02')
         self.assertEqual(s[-1], '\x02')
 
+    def testItalic(self):
+        s = ircutils.italic('foo')
+        self.assertEqual(s[0], '\x1d')
+        self.assertEqual(s[-1], '\x1d')
+
     def testUnderline(self):
         s = ircutils.underline('foo')
         self.assertEqual(s[0], '\x1f')
@@ -126,6 +131,9 @@ class FunctionsTestCase(SupyTestCase):
     def testStripBold(self):
         self.assertEqual(ircutils.stripBold(ircutils.bold('foo')), 'foo')
 
+    def testStripItalic(self):
+        self.assertEqual(ircutils.stripItalic(ircutils.italic('foo')), 'foo')
+
     def testStripColor(self):
         self.assertEqual(ircutils.stripColor('\x02bold\x0302,04foo\x03bar\x0f'),
                          '\x02boldfoobar\x0f')
@@ -149,6 +157,7 @@ class FunctionsTestCase(SupyTestCase):
 
     def testStripFormatting(self):
         self.assertEqual(ircutils.stripFormatting(ircutils.bold('foo')), 'foo')
+        self.assertEqual(ircutils.stripFormatting(ircutils.italic('foo')), 'foo')
         self.assertEqual(ircutils.stripFormatting(ircutils.reverse('foo')),
                          'foo')
         self.assertEqual(ircutils.stripFormatting(ircutils.underline('foo')),
