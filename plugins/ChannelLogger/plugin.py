@@ -226,6 +226,13 @@ class ChannelLogger(callbacks.Plugin):
             if newNick in c.users:
                 self.doLog(irc, channel,
                            '*** %s is now known as %s\n', oldNick, newNick)
+
+    def doInvite(self, irc, msg):
+        (target, channel) = msg.args
+        self.doLog(irc, channel,
+                   '*** %s <%s> invited %s to %s\n',
+                   msg.nick, msg.prefix, target, channel)
+
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
             if(self.registryValue('showJoinParts', channel)):
