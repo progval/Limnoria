@@ -38,6 +38,7 @@ object (which, as you'll read later, is quite...full-featured :))
 import re
 import sys
 import time
+import datetime
 import functools
 
 from . import conf, ircutils, utils
@@ -148,7 +149,13 @@ class IrcMsg(object):
                 else:
                     self.args = s.split()
                 self.command = self.args.pop(0)
-                self.time = time.time()
+                if 'time' in self.server_tags:
+                    s = self.server_tags['time']
+                    date = datetime.datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
+                    print(repr(date))
+                    self.time = date.timestamp()
+                else:
+                    self.time = time.time()
             except (IndexError, ValueError):
                 raise MalformedIrcMsg(repr(originalString))
         else:

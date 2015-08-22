@@ -955,7 +955,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
     REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
         'multi-prefix', 'metadata-notify', 'account-tag',
-        'userhost-in-names', 'invite-notify'])
+        'userhost-in-names', 'invite-notify', 'server-time'])
 
     def _queueConnectMessages(self):
         if self.zombie:
