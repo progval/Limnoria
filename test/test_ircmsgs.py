@@ -29,6 +29,7 @@
 
 from supybot.test import *
 
+import time
 import copy
 import pickle
 
@@ -94,6 +95,11 @@ class IrcMsgTestCase(SupyTestCase):
                           ircmsgs.IrcMsg,
                           args=('foo', 'bar'),
                           prefix='foo!bar@baz')
+        m = ircmsgs.IrcMsg(prefix='foo!bar@baz', args=('foo', 'bar'),
+                            command='CMD')
+        self.assertIs(m.time, None)
+        m.time = 24
+        self.assertEqual(ircmsgs.IrcMsg(msg=m).time, 24)
 
     def testPickleCopy(self):
         for msg in msgs:
@@ -140,6 +146,12 @@ class IrcMsgTestCase(SupyTestCase):
         self.assertEqual(m.command, 'PRIVMSG')
         self.assertEqual(m.args, ('me', 'Hello'))
         self.assertEqual(str(m), s + '\n')
+
+    def testTime(self):
+        before = time.time()
+        msg = ircmsgs.IrcMsg('PRIVMSG #foo :foo')
+        after = time.time()
+        self.assertTrue(before <= msg.time <= after)
 
 class FunctionsTestCase(SupyTestCase):
     def testIsAction(self):
