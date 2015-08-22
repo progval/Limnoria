@@ -262,7 +262,11 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         s = super(SupyHTTPRequestHandler, self).address_string()
 
         # Strip IPv4-mapped IPv6 addresses such as ::ffff:127.0.0.1
-        return s.lstrip('::ffff:')
+        prefix = '::ffff:'
+        if s.startswith(prefix):
+            s = s[len(prefix):]
+
+        return s
 
     def log_message(self, format, *args):
         log.info('HTTP request: %s - %s' %
