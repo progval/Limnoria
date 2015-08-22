@@ -1028,12 +1028,15 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
 
     def doCap(self, msg):
-        if msg.args[1] == 'ACK':
+        subcommand = msg.args[1]
+        if subcommand == 'ACK':
             self.doCapAck(msg)
-        elif msg.args[1] == 'NAK':
+        elif subcommand == 'NAK':
             self.doCapNak(msg)
-        elif msg.args[1] == 'LS':
+        elif subcommand == 'LS':
             self.doCapLs(msg)
+        elif subcommand == 'DEL':
+            self.doCapDel(msg)
     def doCapAck(self, msg):
         if len(msg.args) != 3:
             log.warning('Bad CAP ACK from server: %r', msg)
@@ -1086,6 +1089,24 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         else:
             log.warning('Bad CAP LS from server: %r', msg)
             return
+    def doCapDel(self, msg):
+        if len(msg.args) != 3:
+            log.warning('Bad CAP DEL from server: %r', msg)
+            return
+        caps = msg.args[2].split()
+        assert caps, 'Empty list of capabilities'
+        for cap in caps:
+            # The spec says "If capability negotiation 3.2 was used, extensions
+            # listed MAY contain values." for CAP NEW and CAP DEL
+            cap = cap.split('=')[0]
+            try:
+                del self.state.capabilities_ls[cap]
+            except KeyError:
+                pass
+            try:
+                del self.state.capabilities_ack[cap]
+            except KeyError:
+                pass
 
     def monitor(self, targets):
         """Increment a counter of how many callbacks monitor each target;
