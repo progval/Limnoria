@@ -102,9 +102,12 @@ def findBiggestAt(alias):
     else:
         return 0
 
+def needsEscaping(alias):
+    return '.' in alias or '|' in alias
+
 def escapeAlias(alias):
-    """Encodes [a-z0-9.]+ into [a-z][a-z0-9].
-    Format: a<number of escaped chars>a(<index>d)+<word without dots>."""
+    """Encodes dots and pipes
+    Format: a<number of escaped chars>a(<index>(d|p))+<word without dots or pipes>."""
     prefix = ''
     new_alias = ''
     prefixes = 0
@@ -242,19 +245,19 @@ class Alias(callbacks.Plugin):
         # XXX This should go.  aliases should be a space separate list, etc.
         group = conf.supybot.plugins.Alias.aliases
         group2 = conf.supybot.plugins.Alias.escapedaliases
+        prefixLen = len(registry.split('supybot.plugins.alias.aliases'))
         for (name, alias) in registry._cache.items():
             name = name.lower()
+            nameSplit = registry.split(name)
+            if len(nameSplit) > prefixLen+1:
+                continue
             if name.startswith('supybot.plugins.alias.aliases.'):
-                name = name[len('supybot.plugins.alias.aliases.'):]
-                if '.' in name:
-                    continue
+                name = nameSplit[-1]
                 conf.registerGlobalValue(group, name, registry.String('', ''))
                 conf.registerGlobalValue(group.get(name), 'locked',
                                          registry.Boolean(False, ''))
             elif name.startswith('supybot.plugins.alias.escapedaliases.'):
-                name = name[len('supybot.plugins.alias.escapedaliases.'):]
-                if '.' in name:
-                    continue
+                name = nameSplit[-1]
                 conf.registerGlobalValue(group2, name,
                         registry.String('', ''))
                 conf.registerGlobalValue(group2.get(name),
@@ -355,7 +358,7 @@ class Alias(callbacks.Plugin):
                 raise AliasError(format('Alias %q is locked.', name))
         f = makeNewAlias(name, alias)
         f = types.MethodType(f, self)
-        if '.' in name or '|' in name:
+        if needsEscaping(name):
             aliasGroup = self.registryValue('escapedaliases', value=False)
             confname = escapeAlias(name)
         else:
@@ -375,7 +378,7 @@ class Alias(callbacks.Plugin):
         if name in self.aliases and self.isCommandMethod(name):
             if evenIfLocked or not self.aliases[name][1]:
                 del self.aliases[name]
-                if '.' in name or '|' in name:
+                if needsEscaping(name):
                     conf.supybot.plugins.Alias.escapedaliases.unregister(
                             escapeAlias(name))
                 else:
