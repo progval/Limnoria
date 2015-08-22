@@ -272,7 +272,7 @@ class Alias(callbacks.Plugin):
             command = value()
             locked = value.locked()
             self.aliases[unescapeAlias(name)] = [command, locked, None]
-        for (alias, (command, locked, _)) in self.aliases.items():
+        for (alias, (command, locked, _)) in self.aliases.copy().items():
             try:
                 self.addAlias(irc, alias, command, locked)
             except Exception as e:
