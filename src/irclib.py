@@ -515,7 +515,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         c = self.channels[channel]
         for item in items.split():
             if ircutils.isUserHostmask(item):
-                name = ircutils.nickFromHostmask()
+                name = ircutils.nickFromHostmask(item)
                 self.nicksToHostmasks[name] = name
             else:
                 name = item
