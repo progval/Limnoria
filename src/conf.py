@@ -1155,8 +1155,12 @@ class IP(registry.String):
         else:
             registry.String.setValue(self, v)
 
+registerGlobalValue(supybot.servers.http, 'singleStack',
+    registry.Boolean(True, _("""If true, uses IPV6_V6ONLY to disable
+    forwaring of IPv4 traffic to IPv6 sockets. On *nix, has the same
+    effect as setting kernel variable net.ipv6.bindv6only to 1.""")))
 registerGlobalValue(supybot.servers.http, 'hosts4',
-    IP('', _("""Space-separated list of IPv4 hosts the HTTP server
+    IP('0.0.0.0', _("""Space-separated list of IPv4 hosts the HTTP server
     will bind.""")))
 registerGlobalValue(supybot.servers.http, 'hosts6',
     IP('::0', _("""Space-separated list of IPv6 hosts the HTTP server will

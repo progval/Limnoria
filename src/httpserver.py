@@ -171,6 +171,7 @@ class RealSupyHTTPServer(HTTPServer):
     running = False
 
     def __init__(self, address, protocol, callback):
+        self.protocol = protocol
         if protocol == 4:
             self.address_family = socket.AF_INET
         elif protocol == 6:
@@ -179,6 +180,12 @@ class RealSupyHTTPServer(HTTPServer):
             raise AssertionError(protocol)
         HTTPServer.__init__(self, address, callback)
         self.callbacks = {}
+
+    def server_bind(self):
+        if self.protocol == 6:
+            v = conf.supybot.servers.http.singleStack()
+            self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, v)
+        HTTPServer.server_bind(self)
 
     def hook(self, subdir, callback):
         if subdir in self.callbacks:
