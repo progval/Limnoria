@@ -102,9 +102,12 @@ def findBiggestAt(alias):
     else:
         return 0
 
+def needsEscaping(alias):
+    return '.' in alias or '|' in alias
+
 def escapeAlias(alias):
-    """Encodes [a-z0-9.]+ into [a-z][a-z0-9].
-    Format: a<number of escaped chars>a(<index>d)+<word without dots>."""
+    """Encodes dots and pipes
+    Format: a<number of escaped chars>a(<index>(d|p))+<word without dots or pipes>."""
     prefix = ''
     new_alias = ''
     prefixes = 0
@@ -242,19 +245,19 @@ class Alias(callbacks.Plugin):
         # XXX This should go.  aliases should be a space separate list, etc.
         group = conf.supybot.plugins.Alias.aliases
         group2 = conf.supybot.plugins.Alias.escapedaliases
+        prefixLen = len(registry.split('supybot.plugins.alias.aliases'))
         for (name, alias) in registry._cache.items():
             name = name.lower()
+            nameSplit = registry.split(name)
+            if len(nameSplit) > prefixLen+1:
+                continue
             if name.startswith('supybot.plugins.alias.aliases.'):
-                name = name[len('supybot.plugins.alias.aliases.'):]
-                if '.' in name:
-                    continue
+                name = nameSplit[-1]
                 conf.registerGlobalValue(group, name, registry.String('', ''))
                 conf.registerGlobalValue(group.get(name), 'locked',
                                          registry.Boolean(False, ''))
             elif name.startswith('supybot.plugins.alias.escapedaliases.'):
-                name = name[len('supybot.plugins.alias.escapedaliases.'):]
-                if '.' in name:
-                    continue
+                name = nameSplit[-1]
                 conf.registerGlobalValue(group2, name,
                         registry.String('', ''))
                 conf.registerGlobalValue(group2.get(name),
@@ -269,7 +272,7 @@ class Alias(callbacks.Plugin):
             command = value()
             locked = value.locked()
             self.aliases[unescapeAlias(name)] = [command, locked, None]
-        for (alias, (command, locked, _)) in self.aliases.items():
+        for (alias, (command, locked, _)) in self.aliases.copy().items():
             try:
                 self.addAlias(irc, alias, command, locked)
             except Exception as e:
@@ -295,6 +298,38 @@ class Alias(callbacks.Plugin):
         except AttributeError:
             return self.aliases[command[0]][2]
 
+    def aliasRegistryGroup(self, name):
+        if needsEscaping(name):
+            return self.registryValue('escapedaliases', value=False)
+        else:
+            return self.registryValue('aliases', value=False)
+
+    def aliasRegistryNode(self, name):
+        group = self.aliasRegistryGroup(name)
+        if needsEscaping(name):
+            return group.get(escapeAlias(name))
+        else:
+            return group.get(name)
+
+    def aliasRegistryRemove(self, name):
+        group = self.aliasRegistryGroup(name)
+        if needsEscaping(name):
+            group.unregister(escapeAlias(name))
+        else:
+            group.unregister(name)
+
+
+    def setLocked(self, name, value):
+        self.aliases[name][1] = value
+        self.aliasRegistryNode(name).locked.setValue(value)
+
+    def isValidName(self, name):
+        if not re.search(self.registryValue('validName'), name):
+            return False
+        if not registry.isValidRegistryName(name):
+            return False
+        return True
+
     @internationalizeDocstring
     def lock(self, irc, msg, args, name):
         """<alias>
@@ -302,8 +337,7 @@ class Alias(callbacks.Plugin):
         Locks an alias so that no one else can change it.
         """
         if name in self.aliases and self.isCommandMethod(name):
-            self.aliases[name][1] = True
-            conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(True)
+            self.setLocked(name, True)
             irc.replySuccess()
         else:
             irc.error(_('There is no such alias.'))
@@ -316,20 +350,15 @@ class Alias(callbacks.Plugin):
         Unlocks an alias so that people can define new aliases over it.
         """
         if name in self.aliases and self.isCommandMethod(name):
-            self.aliases[name][1] = False
-            conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(False)
+            self.setLocked(name, False)
             irc.replySuccess()
         else:
             irc.error(_('There is no such alias.'))
     unlock = wrap(unlock, [('checkCapability', 'admin'), 'commandName'])
 
-    _validNameRe = re.compile(r'^[a-z.|!?][a-z0-9.|!]*$')
     def addAlias(self, irc, name, alias, lock=False):
-        if not self._validNameRe.search(name):
-            raise AliasError('Names can only contain alphanumerical '
-                    'characters, dots, pipes, and '
-                    'exclamation/interrogatin marks '
-                    '(and the first character cannot be a number).')
+        if not self.isValidName(name):
+            raise AliasError('Invalid alias name.')
         realName = callbacks.canonicalName(name)
         if name != realName:
             s = format(_('That name isn\'t valid.  Try %q instead.'), realName)
@@ -345,15 +374,14 @@ class Alias(callbacks.Plugin):
                 raise AliasError(format('Alias %q is locked.', name))
         f = makeNewAlias(name, alias)
         f = types.MethodType(f, self)
-        if '.' in name or '|' in name:
-            aliasGroup = self.registryValue('escapedaliases', value=False)
-            confname = escapeAlias(name)
-        else:
-            aliasGroup = self.registryValue('aliases', value=False)
-            confname = name
         if name in self.aliases:
             # We gotta remove it so its value gets updated.
-            aliasGroup.unregister(confname)
+            self.aliasRegistryRemove(name)
+        aliasGroup = self.aliasRegistryGroup(name)
+        if needsEscaping(name):
+            confname = escapeAlias(name)
+        else:
+            confname = name
         conf.registerGlobalValue(aliasGroup, confname,
                                  registry.String(alias, ''))
         conf.registerGlobalValue(aliasGroup.get(confname), 'locked',
@@ -365,11 +393,7 @@ class Alias(callbacks.Plugin):
         if name in self.aliases and self.isCommandMethod(name):
             if evenIfLocked or not self.aliases[name][1]:
                 del self.aliases[name]
-                if '.' in name or '|' in name:
-                    conf.supybot.plugins.Alias.escapedaliases.unregister(
-                            escapeAlias(name))
-                else:
-                    conf.supybot.plugins.Alias.aliases.unregister(name)
+                self.aliasRegistryRemove(name)
             else:
                 raise AliasError('That alias is locked.')
         else:
@@ -411,6 +435,36 @@ class Alias(callbacks.Plugin):
         except AliasError as e:
             irc.error(str(e))
     remove = wrap(remove, ['commandName'])
+
+    @internationalizeDocstring
+    def list(self, irc, msg, args, optlist):
+        """[--locked|--unlocked]
+
+        Lists alias names of a particular type, defaults to all aliases if no
+        --locked or --unlocked option is given.
+        """
+        optlist = dict(optlist)
+        if len(optlist)>1:
+            irc.error(_('Cannot specify --locked and --unlocked simultaneously'))
+            return
+        aliases = []
+        for name in self.aliases.keys():
+            if self.isCommandMethod(name):
+                if 'locked' in optlist:
+                    if self.aliases[name][1]: aliases.append(name)
+                elif 'unlocked' in optlist:
+                    if not self.aliases[name][1]: aliases.append(name)
+                else:
+                    aliases.append(name)
+        if aliases:
+            aliases.sort()
+            irc.reply(format('%L', aliases))
+        else:
+            if len(optlist):
+                irc.reply(_('There are no aliases of that type.'))
+            else:
+                irc.reply(_('There are no aliases.'))
+    list = wrap(list, [getopts({'locked':'', 'unlocked':''})])
 
 
 Class = Alias

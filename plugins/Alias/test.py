@@ -33,6 +33,7 @@ from supybot.test import *
 import supybot.conf as conf
 import supybot.plugin as plugin
 import supybot.registry as registry
+from supybot.utils.minisix import u
 
 from . import plugin as Alias
 
@@ -112,8 +113,7 @@ class AliasTestCase(ChannelPluginTestCase):
         self.failIf('foobar' in cb.aliases)
         self.assertError('foobar')
 
-        self.assertRegexp('alias add café ignore', 'Error.*can only contain')
-        self.assertRegexp('alias add 1abc ignore', 'Error.*can only contain')
+        self.assertRegexp('alias add abc\x07 ignore', 'Error.*Invalid')
 
     def testOptionalArgs(self):
         self.assertNotError('alias add myrepr "repr @1"')
@@ -127,6 +127,13 @@ class AliasTestCase(ChannelPluginTestCase):
     def testNoExtraQuotes(self):
         self.assertNotError('alias add myre "echo s/$1/$2/g"')
         self.assertResponse('myre foo bar', 's/foo/bar/g')
+
+    def testUnicode(self):
+        self.assertNotError(u('alias add \u200b echo foo'))
+        self.assertResponse(u('\u200b'), 'foo')
+
+        self.assertNotError('alias add café echo bar')
+        self.assertResponse('café', 'bar')
 
     def testSimpleAliasWithoutArgsImpliesDollarStar(self):
         self.assertNotError('alias add exo echo')
