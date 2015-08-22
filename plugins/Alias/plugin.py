@@ -425,6 +425,36 @@ class Alias(callbacks.Plugin):
             irc.error(str(e))
     remove = wrap(remove, ['commandName'])
 
+    @internationalizeDocstring
+    def list(self, irc, msg, args, optlist):
+        """[--{locked,unlocked}]
+
+        Lists alias names of a particular type, defaults to all aliases if no
+        --locked or --unlocked option is given.
+        """
+        optlist = dict(optlist)
+        if len(optlist)>1:
+            irc.error(_('Cannot specify --locked and --unlocked simultaneously'))
+            return
+        aliases = []
+        for name in self.aliases.keys():
+            if self.isCommandMethod(name):
+                if 'locked' in optlist:
+                    if self.aliases[name][1]: aliases.append(name)
+                elif 'unlocked' in optlist:
+                    if not self.aliases[name][1]: aliases.append(name)
+                else:
+                    aliases.append(name)
+        if aliases:
+            aliases.sort()
+            irc.reply(format('%L', aliases))
+        else:
+            if len(optlist):
+                irc.reply(_('There are no aliases of that type.'))
+            else:
+                irc.reply(_('There are no aliases.'))
+    list = wrap(list, [getopts({'locked':'', 'unlocked':''})])
+
 
 Class = Alias
 
