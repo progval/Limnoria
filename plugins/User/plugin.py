@@ -88,7 +88,8 @@ class User(callbacks.Plugin):
                 users.append(u.name)
         if users:
             utils.sortBy(str.lower, users)
-            irc.reply(format('%L', users))
+            private = self.registryValue("listInPrivate")
+            irc.reply(format('%L', users), private=private)
         else:
             if predicates:
                 irc.reply(_('There are no matching registered users.'))

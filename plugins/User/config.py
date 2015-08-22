@@ -43,8 +43,9 @@ def configure(advanced):
 
 
 User = conf.registerPlugin('User')
-# This is where your configuration variables (if any) should go.  For example:
-# conf.registerGlobalValue(User, 'someConfigVariableName',
-#     registry.Boolean(False, """Help for someConfigVariableName."""))
+conf.registerGlobalValue(User, 'listInPrivate',
+    registry.Boolean(True, _("""Determines whether the output of 'user list'
+    will be sent in private. This prevents mass-highlights of people who use
+    their nick as their bot username.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
