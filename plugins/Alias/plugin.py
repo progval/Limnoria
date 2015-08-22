@@ -431,7 +431,7 @@ class Alias(callbacks.Plugin):
 
     @internationalizeDocstring
     def list(self, irc, msg, args, optlist):
-        """[--{locked,unlocked}]
+        """[--locked|--unlocked]
 
         Lists alias names of a particular type, defaults to all aliases if no
         --locked or --unlocked option is given.
