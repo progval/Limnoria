@@ -1032,8 +1032,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         if len(msg.args) != 3:
             log.warning('Bad CAP ACK from server: %r', msg)
             return
-        caps = msg.args[2]
-        log.info('%s: Server acknowledged capabilities: %s',
+        caps = msg.args[2].split()
+        assert caps, 'Empty list of capabilities'
+        log.info('%s: Server acknowledged capabilities: %L',
                  self.network, caps)
         self.state.capabilities_ack.update(caps)
 
@@ -1045,9 +1046,10 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         if len(msg.args) != 3:
             log.warning('Bad CAP NAK from server: %r', msg)
             return
-        caps = msg.args[2]
+        caps = msg.args[2].split()
+        assert caps, 'Empty list of capabilities'
         self.state.capabilities_nak.update(caps)
-        log.warning('%s: Server refused capabilities: %s',
+        log.warning('%s: Server refused capabilities: %L',
                     self.network, caps)
         self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
     def _addCapabilities(self, capstring):
