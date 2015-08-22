@@ -298,6 +298,31 @@ class Alias(callbacks.Plugin):
         except AttributeError:
             return self.aliases[command[0]][2]
 
+    def aliasRegistryGroup(self, name):
+        if needsEscaping(name):
+            return self.registryValue('escapedaliases', value=False)
+        else:
+            return self.registryValue('aliases', value=False)
+
+    def aliasRegistryNode(self, name):
+        group = self.aliasRegistryGroup(name)
+        if needsEscaping(name):
+            return group.get(escapeAlias(name))
+        else:
+            return group.get(name)
+
+    def aliasRegistryRemove(self, name):
+        group = self.aliasRegistryGroup(name)
+        if needsEscaping(name):
+            group.unregister(escapeAlias(name))
+        else:
+            group.unregister(name)
+
+
+    def setLocked(name, value):
+        self.aliases[name][1] = value
+        self.aliasRegistryNode(name).locked.setValue(value)
+
     @internationalizeDocstring
     def lock(self, irc, msg, args, name):
         """<alias>
@@ -305,13 +330,7 @@ class Alias(callbacks.Plugin):
         Locks an alias so that no one else can change it.
         """
         if name in self.aliases and self.isCommandMethod(name):
-            self.aliases[name][1] = True
-            if (needsEscaping(name)):
-                group = conf.supybot.plugins.Alias.escapedaliases
-                name = escapeAlias(name)
-            else:
-                group = conf.supybot.plugins.Alias.aliases
-            group.get(name).locked.setValue(True)
+            self.setLocked(name, True)
             irc.replySuccess()
         else:
             irc.error(_('There is no such alias.'))
@@ -324,13 +343,7 @@ class Alias(callbacks.Plugin):
         Unlocks an alias so that people can define new aliases over it.
         """
         if name in self.aliases and self.isCommandMethod(name):
-            self.aliases[name][1] = False
-            if (needsEscaping(name)):
-                group = conf.supybot.plugins.Alias.escapedaliases
-                name = escapeAlias(name)
-            else:
-                group = conf.supybot.plugins.Alias.aliases
-            group.get(name).locked.setValue(False)
+            self.setLocked(name, False)
             irc.replySuccess()
         else:
             irc.error(_('There is no such alias.'))
@@ -354,15 +367,14 @@ class Alias(callbacks.Plugin):
                 raise AliasError(format('Alias %q is locked.', name))
         f = makeNewAlias(name, alias)
         f = types.MethodType(f, self)
-        if needsEscaping(name):
-            aliasGroup = self.registryValue('escapedaliases', value=False)
-            confname = escapeAlias(name)
-        else:
-            aliasGroup = self.registryValue('aliases', value=False)
-            confname = name
         if name in self.aliases:
             # We gotta remove it so its value gets updated.
-            aliasGroup.unregister(confname)
+            self.aliasRegistryRemove(name)
+        aliasGroup = self.aliasRegistryGroup(name)
+        if needsEscaping(name):
+            confname = escapeAlias(name)
+        else:
+            confname = name
         conf.registerGlobalValue(aliasGroup, confname,
                                  registry.String(alias, ''))
         conf.registerGlobalValue(aliasGroup.get(confname), 'locked',
@@ -374,11 +386,7 @@ class Alias(callbacks.Plugin):
         if name in self.aliases and self.isCommandMethod(name):
             if evenIfLocked or not self.aliases[name][1]:
                 del self.aliases[name]
-                if needsEscaping(name):
-                    conf.supybot.plugins.Alias.escapedaliases.unregister(
-                            escapeAlias(name))
-                else:
-                    conf.supybot.plugins.Alias.aliases.unregister(name)
+                self.aliasRegistryRemove(name)
             else:
                 raise AliasError('That alias is locked.')
         else:
