@@ -303,7 +303,12 @@ class Alias(callbacks.Plugin):
         """
         if name in self.aliases and self.isCommandMethod(name):
             self.aliases[name][1] = True
-            conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(True)
+            if (needsEscaping(name)):
+                group = conf.supybot.plugins.Alias.escapedaliases
+                name = escapeAlias(name)
+            else:
+                group = conf.supybot.plugins.Alias.aliases
+            group.get(name).locked.setValue(True)
             irc.replySuccess()
         else:
             irc.error(_('There is no such alias.'))
@@ -317,7 +322,12 @@ class Alias(callbacks.Plugin):
         """
         if name in self.aliases and self.isCommandMethod(name):
             self.aliases[name][1] = False
-            conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(False)
+            if (needsEscaping(name)):
+                group = conf.supybot.plugins.Alias.escapedaliases
+                name = escapeAlias(name)
+            else:
+                group = conf.supybot.plugins.Alias.aliases
+            group.get(name).locked.setValue(False)
             irc.replySuccess()
         else:
             irc.error(_('There is no such alias.'))
