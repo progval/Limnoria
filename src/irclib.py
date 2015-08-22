@@ -523,6 +523,12 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         if type == '@':
             c.modes['s'] = None
 
+    def doChghost(self, irc, msg):
+        (user, host) = msg.args
+        nick = msg.nick
+        hostmask = '%s!%s@%s' % (nick, user, host)
+        self.nicksToHostmasks[nick] = hostmask
+
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
             if channel in self.channels:
@@ -955,7 +961,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
     REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
         'multi-prefix', 'metadata-notify', 'account-tag',
-        'userhost-in-names', 'invite-notify', 'server-time'])
+        'userhost-in-names', 'invite-notify', 'server-time',
+        'chghost'])
 
     def _queueConnectMessages(self):
         if self.zombie:
