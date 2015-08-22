@@ -155,7 +155,7 @@ class IrcMsgTestCase(SupyTestCase):
 
         msg = ircmsgs.IrcMsg('@time=2011-10-19T16:40:51.620Z '
                              ':Angel!angel@example.org PRIVMSG Wiz :Hello')
-        self.assertEqual(msg.time, 1319035251.62)
+        self.assertEqual(msg.time, 1319042451.62)
 
 class FunctionsTestCase(SupyTestCase):
     def testIsAction(self):

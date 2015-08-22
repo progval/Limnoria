@@ -152,7 +152,7 @@ class IrcMsg(object):
                 if 'time' in self.server_tags:
                     s = self.server_tags['time']
                     date = datetime.datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
-                    print(repr(date))
+                    date = date.replace(tzinfo=datetime.timezone.utc)
                     self.time = date.timestamp()
                 else:
                     self.time = time.time()
