@@ -319,9 +319,16 @@ class Alias(callbacks.Plugin):
             group.unregister(name)
 
 
-    def setLocked(name, value):
+    def setLocked(self, name, value):
         self.aliases[name][1] = value
         self.aliasRegistryNode(name).locked.setValue(value)
+
+    def isValidName(self, name):
+        if not re.search(self.registryValue('validName'), name):
+            return False
+        if not registry.isValidRegistryName(name):
+            return False
+        return True
 
     @internationalizeDocstring
     def lock(self, irc, msg, args, name):
@@ -350,7 +357,7 @@ class Alias(callbacks.Plugin):
     unlock = wrap(unlock, [('checkCapability', 'admin'), 'commandName'])
 
     def addAlias(self, irc, name, alias, lock=False):
-        if not re.search(self.registryValue('validName'), name):
+        if not self.isValidName(name):
             raise AliasError('Invalid alias name.')
         realName = callbacks.canonicalName(name)
         if name != realName:
