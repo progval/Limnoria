@@ -509,11 +509,16 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
     def do353(self, irc, msg):
         # NAMES reply.
-        (__, type, channel, names) = msg.args
+        (__, type, channel, items) = msg.args
         if channel not in self.channels:
             self.channels[channel] = ChannelState()
         c = self.channels[channel]
-        for name in names.split():
+        for item in items.split():
+            if ircutils.isUserHostmask(item):
+                name = ircutils.nickFromHostmask()
+                self.nicksToHostmasks[name] = name
+            else:
+                name = item
             c.addUser(name)
         if type == '@':
             c.modes['s'] = None
@@ -949,7 +954,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
 
     REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
-        'multi-prefix', 'metadata-notify', 'account-tag'])
+        'multi-prefix', 'metadata-notify', 'account-tag',
+        'userhost-in-names'])
 
     def _queueConnectMessages(self):
         if self.zombie:
