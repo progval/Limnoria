@@ -67,7 +67,8 @@ class DDG(callbacks.Plugin):
         except utils.web.Error as e:
             irc.error(str(e), Raise=True)
         soup = BeautifulSoup(data)
-        return soup.find_all('td')
+        # Remove "sponsored link" results
+        return [td for td in soup.find_all('td') if 'result-sponsored' not in str(td.parent.get('class'))]
 
     def search(self, irc, msg, args, text):
         """<text>
