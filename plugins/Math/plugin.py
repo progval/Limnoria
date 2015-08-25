@@ -110,13 +110,18 @@ class Math(callbacks.Plugin):
             return math.sqrt(x)
     def _cbrt(x):
         return math.pow(x, 1.0/3)
+    def _factorial(x):
+        if x<=10000:
+            return math.factorial(x)
+        else:
+            raise Exception('factorial argument too large')
     _mathEnv['sqrt'] = _sqrt
     _mathEnv['cbrt'] = _cbrt
     _mathEnv['abs'] = abs
     _mathEnv['max'] = max
     _mathEnv['min'] = min
-    _mathSafeEnv = dict([(x,y) for x,y in _mathEnv.items()
-        if x not in ['factorial']])
+    _mathSafeEnv = dict([(x,y) for x,y in _mathEnv.items()])
+    _mathSafeEnv['factorial'] = _factorial
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d)])-)?'
                          r'(?:0x[A-Fa-f\d]+|'
                          r'0[0-7]+|'
