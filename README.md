@@ -16,9 +16,8 @@ Master branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Li
 
 Testing branch: [![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
 
-Limnoria runs best with CPython 3.3 and newer.
-Limnoria also supports CPython 2.6, 2.7, 3.2, 3.3, 3.4, 3.5, nightly;
-and Pypy 2 and 3.
+Limnoria supports CPython 2.6, 2.7, 3.2, 3.3, 3.4, 3.5, nightly;
+and Pypy 2 and 3. It works best with CPython 3.3 and higher.
 Python 2.5 and older versions are not supported.
 
 # Support
