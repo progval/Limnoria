@@ -29,6 +29,35 @@
 
 from supybot.test import *
 
+try:
+    import pytz
+except ImportError:
+    has_pytz = False
+else:
+    has_pytz = True
+
+try:
+    import dateutil
+except ImportError:
+    has_dateutil = False
+else:
+    has_dateutil = True
+
+try:
+    from unittest import skipIf
+except ImportError: # Python 2.6
+    def skipIf(cond, reason):
+        if cond:
+            print('Skipped: %s' % reason)
+            def decorator(f):
+                return None
+        else:
+            def decorator(f):
+                return f
+        return decorator
+
+
+
 class TimeTestCase(PluginTestCase):
     plugins = ('Time','Utilities')
     def testSeconds(self):
@@ -50,15 +79,18 @@ class TimeTestCase(PluginTestCase):
     def testNoErrors(self):
         self.assertNotError('ctime')
         self.assertNotError('time %Y')
-        self.assertNotError('tztime Europe/Paris')
 
-    def testNoNestedErrors(self):
+    @skipIf(not has_pytz, 'pytz is missing')
+    def testTztime(self):
+        self.assertNotError('tztime Europe/Paris')
+        self.assertError('tztime Europe/Gniarf')
+
+    @skipIf(not has_dateutil, 'python-dateutil is missing')
+    def testUntil(self):
         self.assertNotError('echo [until 4:00]')
         self.assertNotError('echo [at now]')
+    def testNoNestedErrors(self):
         self.assertNotError('echo [seconds 4m]')
-
-    def testErrors(self):
-        self.assertError('tztime Europe/Gniarf')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
