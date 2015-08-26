@@ -65,11 +65,23 @@ import textwrap
 started = time.time()
 
 import supybot
-import supybot.i18n as i18n
 import supybot.utils as utils
 import supybot.registry as registry
 import supybot.questions as questions
 import supybot.ircutils as ircutils
+try:
+    import supybot.i18n as i18n
+except ImportError:
+    sys.stderr.write("""Error:
+    You are running a mix of Limnoria and stock Supybot code. Although you run
+    one of Limnoria\'s executables are installed, Python tries to load stock
+    Supybot\'s library. To fix this issue, uninstall Supybot
+    ("%s -m pip uninstall supybot" should do the job)
+    and install Limnoria again.
+    For your information, Supybot's libraries are installed here:
+    %s\n""" %
+    (sys.argv[0], '\n    '.join(supybot.__path__)))
+    exit(-1)
 
 from supybot.version import version
 
