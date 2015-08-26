@@ -152,8 +152,8 @@ class IrcMsg(object):
                 if 'time' in self.server_tags:
                     s = self.server_tags['time']
                     date = datetime.datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
-                    date = date.replace(tzinfo=datetime.timezone.utc)
-                    self.time = date.timestamp()
+                    date = minisix.make_datetime_utc(date)
+                    self.time = minisix.datetime__timestamp(date)
                 else:
                     self.time = time.time()
             except (IndexError, ValueError):

@@ -45,6 +45,17 @@ if sys.version_info[0] >= 3:
 
     u = lambda x:x
     L = lambda x:x
+
+    def make_datetime_utc(dt):
+        import datetime
+        return dt.replace(tzinfo=datetime.timezone.utc)
+    if sys.version_info >= (3, 3):
+        def datetime__timestamp(dt):
+            return dt.timestamp()
+    else:
+        def datetime__timestamp(dt):
+            import datetime
+            return (dt - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)).total_seconds()
 else:
     PY2 = True
     PY3 = False
@@ -67,3 +78,17 @@ else:
 
     u = lambda x:x.decode('utf8')
     L = lambda x:long(x)
+
+    def make_datetime_utc(dt):
+        from .. import log
+        log.warning('Timezones are not available on this version of '
+                    'Python and may lead to incorrect results. You should '
+                    'consider upgrading to Python 3.')
+        return dt.replace(tzinfo=None)
+    def datetime__timestamp(dt):
+        from .. import log
+        import datetime
+        log.warning('Timezones are not available on this version of '
+                    'Python and may lead to incorrect results. You should '
+                    'consider upgrading to Python 3.')
+        return (dt - datetime.datetime(1970, 1, 1)).total_seconds()
