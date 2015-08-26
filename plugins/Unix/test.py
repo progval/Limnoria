@@ -31,25 +31,49 @@ import os
 
 from supybot.test import *
 
+try:
+    from unittest import skipIf
+except ImportError:
+    def skipUnlessSpell(f):
+        return None
+    def skipUnlessFortune(f):
+        return None
+    def skipUnlessPing(f):
+        return None
+    def skipUnlessPing6(f):
+        return None
+else:
+    skipUnlessSpell = skipIf(utils.findBinaryInPath('aspell') is None and \
+            utils.findBinaryInPath('ispell') is None,
+            'aspell/ispell not available.')
+    skipUnlessFortune = skipIf(utils.findBinaryInPath('fortune') is None,
+            'fortune not available.')
+    skipUnlessPing = skipIf(utils.findBinaryInPath('ping') is None,
+            'ping not available.')
+    skipUnlessPing6 = skipIf(utils.findBinaryInPath('ping6') is None,
+            'ping6 not available.')
+
+
+
 if os.name == 'posix':
     class UnixTestCase(PluginTestCase):
         plugins = ('Unix',)
-        if utils.findBinaryInPath('aspell') is not None or \
-           utils.findBinaryInPath('ispell') is not None:
-            def testSpell(self):
-                self.assertRegexp('spell Strike',
-                                  '(correctly|Possible spellings)')
-                # ispell won't find any results.  aspell will make some
-                # suggestions.
-                self.assertRegexp('spell z0opadfnaf83nflafl230kasdf023hflasdf',
-                                  'not find|Possible spellings')
-                self.assertNotError('spell Strizzike')
-                self.assertError('spell foo bar baz')
-                self.assertError('spell -')
-                self.assertError('spell .')
-                self.assertError('spell ?')
-                self.assertNotError('spell whereever')
-                self.assertNotRegexp('spell foo', 'whatever')
+
+        @skipUnlessSpell
+        def testSpell(self):
+            self.assertRegexp('spell Strike',
+                              '(correctly|Possible spellings)')
+            # ispell won't find any results.  aspell will make some
+            # suggestions.
+            self.assertRegexp('spell z0opadfnaf83nflafl230kasdf023hflasdf',
+                              'not find|Possible spellings')
+            self.assertNotError('spell Strizzike')
+            self.assertError('spell foo bar baz')
+            self.assertError('spell -')
+            self.assertError('spell .')
+            self.assertError('spell ?')
+            self.assertNotError('spell whereever')
+            self.assertNotRegexp('spell foo', 'whatever')
 
         def testErrno(self):
             self.assertRegexp('errno 12', '^ENOMEM')
@@ -61,60 +85,68 @@ if os.name == 'posix':
         def testCrypt(self):
             self.assertNotError('crypt jemfinch')
 
-        if utils.findBinaryInPath('fortune') is not None:
-            def testFortune(self):
-                self.assertNotError('fortune')
+        @skipUnlessFortune
+        def testFortune(self):
+            self.assertNotError('fortune')
 
-        if utils.findBinaryInPath('ping') is not None:
-            def testPing(self):
-                self.assertNotError('unix ping 127.0.0.1')
-                self.assertError('unix ping')
-                self.assertError('unix ping -localhost')
-                self.assertError('unix ping local%host')
-            def testPingCount(self):
-                self.assertNotError('unix ping --c 1 127.0.0.1')
-                self.assertError('unix ping --c a 127.0.0.1')
-                self.assertRegexp('unix ping --c 11 127.0.0.1','10 packets')
-                self.assertRegexp('unix ping 127.0.0.1','5 packets')
-            def testPingInterval(self):
-                self.assertNotError('unix ping --i 1 --c 1 127.0.0.1')
-                self.assertError('unix ping --i a --c 1 127.0.0.1')
-                # Super-user privileged interval setting
-                self.assertError('unix ping --i 0.1 --c 1 127.0.0.1') 
-            def testPingTtl(self):
-                self.assertNotError('unix ping --t 64 --c 1 127.0.0.1')
-                self.assertError('unix ping --t a --c 1 127.0.0.1')
-            def testPingWait(self):
-                self.assertNotError('unix ping --W 1 --c 1 127.0.0.1')
-                self.assertError('unix ping --W a --c 1 127.0.0.1')
+        @skipUnlessPing
+        def testPing(self):
+            self.assertNotError('unix ping 127.0.0.1')
+            self.assertError('unix ping')
+            self.assertError('unix ping -localhost')
+            self.assertError('unix ping local%host')
+        @skipUnlessPing
+        def testPingCount(self):
+            self.assertNotError('unix ping --c 1 127.0.0.1')
+            self.assertError('unix ping --c a 127.0.0.1')
+            self.assertRegexp('unix ping --c 11 127.0.0.1','10 packets')
+            self.assertRegexp('unix ping 127.0.0.1','5 packets')
+        @skipUnlessPing
+        def testPingInterval(self):
+            self.assertNotError('unix ping --i 1 --c 1 127.0.0.1')
+            self.assertError('unix ping --i a --c 1 127.0.0.1')
+            # Super-user privileged interval setting
+            self.assertError('unix ping --i 0.1 --c 1 127.0.0.1')
+        @skipUnlessPing
+        def testPingTtl(self):
+            self.assertNotError('unix ping --t 64 --c 1 127.0.0.1')
+            self.assertError('unix ping --t a --c 1 127.0.0.1')
+        @skipUnlessPing
+        def testPingWait(self):
+            self.assertNotError('unix ping --W 1 --c 1 127.0.0.1')
+            self.assertError('unix ping --W a --c 1 127.0.0.1')
 
-        if utils.findBinaryInPath('ping6') is not None:
-            def testPing6(self):
-                self.assertNotError('unix ping6 ::1')
-                self.assertError('unix ping6')
-                self.assertError('unix ping6 -localhost')
-                self.assertError('unix ping6 local%host')
-            def testPing6Count(self):
-                self.assertNotError('unix ping6 --c 1 ::1')
-                self.assertError('unix ping6 --c a ::1')
-                self.assertRegexp('unix ping6 --c 11 ::1','10 packets',
-                        timeout=12)
-                self.assertRegexp('unix ping6 ::1','5 packets')
-            def testPing6Interval(self):
-                self.assertNotError('unix ping6 --i 1 --c 1 ::1')
-                self.assertError('unix ping6 --i a --c 1 ::1')
-                # Super-user privileged interval setting
-                self.assertError('unix ping6 --i 0.1 --c 1 ::1') 
-            def testPing6Ttl(self):
-                self.assertNotError('unix ping6 --t 64 --c 1 ::1')
-                self.assertError('unix ping6 --t a --c 1 ::1')
-            def testPing6Wait(self):
-                self.assertNotError('unix ping6 --W 1 --c 1 ::1')
-                self.assertError('unix ping6 --W a --c 1 ::1')
+        @skipUnlessPing6
+        def testPing6(self):
+            self.assertNotError('unix ping6 ::1')
+            self.assertError('unix ping6')
+            self.assertError('unix ping6 -localhost')
+            self.assertError('unix ping6 local%host')
+        @skipUnlessPing6
+        def testPing6Count(self):
+            self.assertNotError('unix ping6 --c 1 ::1')
+            self.assertError('unix ping6 --c a ::1')
+            self.assertRegexp('unix ping6 --c 11 ::1','10 packets',
+                    timeout=12)
+            self.assertRegexp('unix ping6 ::1','5 packets')
+        @skipUnlessPing6
+        def testPing6Interval(self):
+            self.assertNotError('unix ping6 --i 1 --c 1 ::1')
+            self.assertError('unix ping6 --i a --c 1 ::1')
+            # Super-user privileged interval setting
+            self.assertError('unix ping6 --i 0.1 --c 1 ::1')
+        @skipUnlessPing6
+        def testPing6Ttl(self):
+            self.assertNotError('unix ping6 --t 64 --c 1 ::1')
+            self.assertError('unix ping6 --t a --c 1 ::1')
+        @skipUnlessPing6
+        def testPing6Wait(self):
+            self.assertNotError('unix ping6 --W 1 --c 1 ::1')
+            self.assertError('unix ping6 --W a --c 1 ::1')
 
         def testCall(self):
-            self.assertNotError('unix call /bin/ping -c 1 localhost')
-            self.assertRegexp('unix call /bin/ping -c 1 localhost', 'ping statistics')
+            self.assertNotError('unix call /bin/ls .')
+            self.assertRegexp('unix call /bin/ls .', 'src,')
             self.assertError('unix call /usr/bin/nosuchcommandaoeuaoeu')
 
         def testUptime(self):
