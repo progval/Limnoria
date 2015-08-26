@@ -9,9 +9,11 @@ python:
   - "nightly"
   - "pypy"
   - "pypy3"
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+env:
+  - WITH_OPT_DEPS=true
+  - WITH_OPT_DEPS=false
 install:
-    - pip install -vr requirements.txt
+    - if [ "$WITH_OPT_DEPS" = "true" ] ; then pip install -vr requirements.txt; fi
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
@@ -23,3 +25,18 @@ matrix:
   fast_finish: true
   allow_failures:
     - python: "nightly"
+  exclude:
+    - python: "2.6"
+      env: WITH_OPT_DEPS=false
+    - python: "3.2"
+      env: WITH_OPT_DEPS=false
+    - python: "3.3"
+      env: WITH_OPT_DEPS=false
+    - python: "3.5-dev"
+      env: WITH_OPT_DEPS=false
+    - python: "nightly"
+      env: WITH_OPT_DEPS=false
+    - python: "pypy"
+      env: WITH_OPT_DEPS=false
+    - python: "pypy3"
+      env: WITH_OPT_DEPS=false
