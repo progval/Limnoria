@@ -29,6 +29,8 @@
 
 """Restricted equivalent to six."""
 
+from __future__ import division
+
 import sys
 
 if sys.version_info[0] >= 3:
@@ -49,13 +51,16 @@ if sys.version_info[0] >= 3:
     def make_datetime_utc(dt):
         import datetime
         return dt.replace(tzinfo=datetime.timezone.utc)
+    def timedelta__totalseconds(td):
+        return td.total_seconds()
     if sys.version_info >= (3, 3):
         def datetime__timestamp(dt):
             return dt.timestamp()
     else:
         def datetime__timestamp(dt):
             import datetime
-            return (dt - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)).total_seconds()
+            td = dt - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+            return timedelta__totalseconds(td)
 else:
     PY2 = True
     PY3 = False
@@ -85,10 +90,17 @@ else:
                     'Python and may lead to incorrect results. You should '
                     'consider upgrading to Python 3.')
         return dt.replace(tzinfo=None)
+    if sys.version_info >= (2, 7):
+        def timedelta__totalseconds(td):
+            return td.total_seconds()
+    else:
+        def timedelta__totalseconds(td):
+            return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+
     def datetime__timestamp(dt):
         from .. import log
         import datetime
         log.warning('Timezones are not available on this version of '
                     'Python and may lead to incorrect results. You should '
                     'consider upgrading to Python 3.')
-        return (dt - datetime.datetime(1970, 1, 1)).total_seconds()
+        return timedelta__totalseconds(dt - datetime.datetime(1970, 1, 1))
