@@ -19,7 +19,7 @@ install:
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - python setup.py install
-  - supybot-test test --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
+  - supybot-test test -v --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
 notifications:
     email: false
 matrix:
