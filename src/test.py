@@ -52,6 +52,11 @@ else:
     from urllib.parse import splithost, splituser
     from urllib.request import URLopener
 
+class verbosity:
+    NONE = 0
+    EXCEPTIONS = 1
+    MESSAGES = 2
+
 i18n.import_conf()
 network = True
 
@@ -262,14 +267,14 @@ class PluginTestCase(SupyTestCase):
         gc.collect()
 
     def _feedMsg(self, query, timeout=None, to=None, frm=None,
-                 usePrefixChar=True):
+                 usePrefixChar=True, expectException=False):
         if to is None:
             to = self.irc.nick
         if frm is None:
             frm = self.prefix
         if timeout is None:
             timeout = self.timeout
-        if self.myVerbose:
+        if self.myVerbose >= verbosity.MESSAGES:
             print('') # Extra newline, so it's pretty.
         prefixChars = conf.supybot.reply.whenAddressedBy.chars()
         if not usePrefixChar and query[0] in prefixChars:
@@ -277,8 +282,10 @@ class PluginTestCase(SupyTestCase):
         if minisix.PY2:
             query = query.encode('utf8') # unicode->str
         msg = ircmsgs.privmsg(to, query, prefix=frm)
-        if self.myVerbose:
+        if self.myVerbose >= verbosity.MESSAGES:
             print('Feeding: %r' % msg)
+        if not expectException and self.myVerbose >= verbosity.EXCEPTIONS:
+            conf.supybot.log.stdout.setValue(True)
         self.irc.feedMsg(msg)
         fed = time.time()
         response = self.irc.takeMsg()
@@ -286,8 +293,10 @@ class PluginTestCase(SupyTestCase):
             time.sleep(0.1) # So it doesn't suck up 100% cpu.
             drivers.run()
             response = self.irc.takeMsg()
-        if self.myVerbose:
+        if self.myVerbose >= verbosity.MESSAGES:
             print('Response: %r' % response)
+        if not expectException and self.myVerbose >= verbosity.EXCEPTIONS:
+            conf.supybot.log.stdout.setValue(False)
         return response
 
     def getMsg(self, query, **kwargs):
@@ -306,7 +315,7 @@ class PluginTestCase(SupyTestCase):
     # But that would be hard, so I don't bother.  When this breaks, it'll get
     # fixed, but not until then.
     def assertError(self, query, **kwargs):
-        m = self._feedMsg(query, **kwargs)
+        m = self._feedMsg(query, expectException=True, **kwargs)
         if m is None:
             raise TimeoutError(query)
         if lastGetHelp not in m.args[1]:
@@ -454,7 +463,7 @@ class ChannelPluginTestCase(PluginTestCase):
         self.assertEqual(m.command, 'WHO')
 
     def _feedMsg(self, query, timeout=None, to=None, frm=None, private=False,
-                 usePrefixChar=True):
+                 usePrefixChar=True, expectException=False):
         if to is None:
             if private:
                 to = self.irc.nick
@@ -464,15 +473,17 @@ class ChannelPluginTestCase(PluginTestCase):
             frm = self.prefix
         if timeout is None:
             timeout = self.timeout
-        if self.myVerbose:
+        if self.myVerbose >= verbosity.MESSAGES:
             print('') # Newline, just like PluginTestCase.
         prefixChars = conf.supybot.reply.whenAddressedBy.chars()
         if query[0] not in prefixChars and usePrefixChar:
             query = prefixChars[0] + query
         if minisix.PY2 and isinstance(query, unicode):
             query = query.encode('utf8') # unicode->str
+        if not expectException and self.myVerbose >= verbosity.EXCEPTIONS:
+            conf.supybot.log.stdout.setValue(True)
         msg = ircmsgs.privmsg(to, query, prefix=frm)
-        if self.myVerbose:
+        if self.myVerbose >= verbosity.MESSAGES:
             print('Feeding: %r' % msg)
         self.irc.feedMsg(msg)
         fed = time.time()
@@ -497,8 +508,10 @@ class ChannelPluginTestCase(PluginTestCase):
                 ret = response
         else:
             ret = None
-        if self.myVerbose:
+        if self.myVerbose >= verbosity.MESSAGES:
             print('Returning: %r' % ret)
+        if not expectException and self.myVerbose >= verbosity.EXCEPTIONS:
+            conf.supybot.log.stdout.setValue(False)
         return ret
 
     def feedMsg(self, query, to=None, frm=None, private=False):

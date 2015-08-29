@@ -52,6 +52,7 @@ supybot.directories.conf: test-conf
 supybot.directories.log: test-logs
 supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
+supybot.log.stdout.level: ERROR
 supybot.log.level: DEBUG
 supybot.log.format: %(levelname)s %(message)s
 supybot.log.plugins.individualLogfiles: False
@@ -129,8 +130,8 @@ if __name__ == '__main__':
                       dest='timeout',
                       help='Sets the timeout, in seconds, for tests to return '
                       'responses.')
-    parser.add_option('-v', '--verbose', action='store_true', default=False,
-                      help='Sets the verbose flag, logging extra information '
+    parser.add_option('-v', '--verbose', action='count', default=0,
+                      help='Increase verbosity, logging extra information '
                            'about each test that runs.')
     parser.add_option('', '--no-network', action='store_true', default=False,
                       dest='nonetwork', help='Causes the network-based tests '
@@ -150,6 +151,9 @@ if __name__ == '__main__':
     parser.add_option('', '--disable-multiprocessing', action='store_true',
                       dest='disableMultiprocessing',
                       help='Disables multiprocessing stuff.')
+    parser.add_option('', '--verbose-unexcepted-errors', action='store_true',
+                      dest='verboseUnexceptectedErros',
+                      help='Show the full traceback of unexpected errors.')
     (options, args) = parser.parse_args()
 
     world.disableMultiprocessing = options.disableMultiprocessing
@@ -177,10 +181,7 @@ if __name__ == '__main__':
         atexit.register(fd.close)
         atexit.register(lambda : sys.settrace(None))
 
-    if options.verbose:
-        world.myVerbose = True
-    else:
-        world.myVerbose = False
+    world.myVerbose = options.verbose
 
     if options.nonetwork:
         test.network = False
