@@ -279,8 +279,8 @@ class Math(callbacks.Plugin):
                     x = abs(x)
                 stack.append(x)
             except ValueError: # Not a float.
-                if arg in self._mathEnv:
-                    f = self._mathEnv[arg]
+                if arg in self._mathSafeEnv:
+                    f = self._mathSafeEnv[arg]
                     if callable(f):
                         called = False
                         arguments = []
@@ -303,7 +303,7 @@ class Math(callbacks.Plugin):
                     arg1 = stack.pop()
                     s = '%s%s%s' % (arg1, arg, arg2)
                     try:
-                        stack.append(eval(s, self._mathEnv, self._mathEnv))
+                        stack.append(eval(s, self._mathSafeEnv, self._mathSafeEnv))
                     except SyntaxError:
                         irc.error(format(_('%q is not a defined function.'),
                                          arg))
