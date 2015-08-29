@@ -114,7 +114,7 @@ class MathTestCase(PluginTestCase):
         self.assertNotError('calc (1600 * 1200) - 2*(1024*1280)')
         self.assertNotError('calc 3-2*4')
         self.assertNotError('calc (1600 * 1200)-2*(1024*1280)')
-        self.assertError('calc factorial(99)')
+        self.assertError('calc factorial(20000)')
 
     def testCalcNoNameError(self):
         self.assertNotRegexp('calc foobar(x)', 'NameError')
@@ -139,7 +139,7 @@ class MathTestCase(PluginTestCase):
         self.assertResponse('icalc 1^1', '0')
         self.assertResponse('icalc 10**24', '1' + '0'*24)
         self.assertRegexp('icalc 49/6', '8.16')
-        self.assertNotError('icalc factorial(99)')
+        self.assertNotError('icalc factorial(20000)')
 
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')
