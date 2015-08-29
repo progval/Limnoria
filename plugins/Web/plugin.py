@@ -130,6 +130,24 @@ class Web(callbacks.PluginRegexp):
     def noIgnore(self, irc, msg):
         return not self.registryValue('checkIgnored', msg.args[0])
 
+    def getTitle(self, url):
+        size = conf.supybot.protocols.http.peekSize()
+        text = utils.web.getUrl(url, size=size)
+        try:
+            text = text.decode(utils.web.getEncoding(text) or 'utf8',
+                    'replace')
+        except UnicodeDecodeError:
+            pass
+        parser = Title()
+        if minisix.PY3 and isinstance(text, bytes):
+            irc.error(_('Could not guess the page\'s encoding. (Try '
+                    'installing python-charade.)'), Raise=True)
+        parser.feed(text)
+        title = parser.title
+        if title:
+            title = utils.web.htmlToText(parser.title.strip())
+        return parser.title
+
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
         channel = msg.args[0]
@@ -145,31 +163,11 @@ class Web(callbacks.PluginRegexp):
             if r and r.search(url):
                 self.log.debug('Not titleSnarfing %q.', url)
                 return
-            try:
-                size = conf.supybot.protocols.http.peekSize()
-                fd = utils.web.getUrlFd(url)
-                text = fd.read(size)
-                fd.close()
-            except socket.timeout as e:
-                self.log.info('Couldn\'t snarf title of %u: %s.', url, e)
-                if self.registryValue('snarferReportIOExceptions', channel):
-                     irc.reply(url+" : "+utils.web.TIMED_OUT, prefixNick=False)
-                return
-            try:
-                text = text.decode(utils.web.getEncoding(text) or 'utf8',
-                        'replace')
-            except:
-                pass
-            parser = Title()
-            parser.feed(text)
-            if parser.title:
+            title = self.getTitle(url)
+            if title:
                 domain = utils.web.getDomain(fd.geturl()
                         if self.registryValue('snarferShowTargetDomain', channel)
                         else url)
-                title = utils.web.htmlToText(parser.title.strip())
-                if minisix.PY2:
-                    if isinstance(title, unicode):
-                        title = title.encode('utf8', 'replace')
                 s = format(_('Title: %s (at %s)'), title, domain)
                 irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
@@ -276,20 +274,8 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(url):
             irc.error("This url is not on the whitelist.")
             return
-        size = conf.supybot.protocols.http.peekSize()
-        text = utils.web.getUrl(url, size=size)
-        try:
-            text = text.decode(utils.web.getEncoding(text) or 'utf8',
-                    'replace')
-        except UnicodeDecodeError:
-            pass
-        parser = Title()
-        if minisix.PY3 and isinstance(text, bytes):
-            irc.error(_('Could not guess the page\'s encoding. (Try '
-                    'installing python-charade.)'), Raise=True)
-        parser.feed(text)
-        if parser.title:
-            title = utils.web.htmlToText(parser.title.strip())
+        title = self.getTitle(url)
+        if title:
             if not [y for x,y in optlist if x == 'no-filter']:
                 for i in range(1, 4):
                     title = title.replace(chr(i), '')
