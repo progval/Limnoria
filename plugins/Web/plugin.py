@@ -56,28 +56,37 @@ class Title(HTMLParser):
     entitydefs['apos'] = '\''
     def __init__(self):
         self.inTitle = False
+        self.inSvg = False
         self.title = ''
         HTMLParser.__init__(self)
+
+    @property
+    def inHtmlTitle(self):
+        return self.inTitle and not self.inSvg
 
     def handle_starttag(self, tag, attrs):
         if tag == 'title':
             self.inTitle = True
+        elif tag == 'svg':
+            self.inSvg = True
 
     def handle_endtag(self, tag):
         if tag == 'title':
             self.inTitle = False
+        elif tag == 'svg':
+            self.inSvg = False
 
     def handle_data(self, data):
-        if self.inTitle:
+        if self.inHtmlTitle:
             self.title += data
 
     def handle_entityref(self, name):
-        if self.inTitle:
+        if self.inHtmlTitle:
             if name in self.entitydefs:
                 self.title += self.entitydefs[name]
 
     def handle_charref(self, name):
-        if self.inTitle:
+        if self.inHtmlTitle:
             self.title += (unichr if minisix.PY2 else chr)(int(name))
 
 class DelayedIrc:
