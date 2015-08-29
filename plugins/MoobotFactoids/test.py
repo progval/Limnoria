@@ -327,7 +327,7 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.failIf(m)
 
     def testAddFactoidNotCalledWithBadNestingSyntax(self):
-        self.assertError('re s/Error:.*/jbm is a tard/ ]')
+        self.assertError('re s/Error:.*/foo/ ]')
         self.assertNoResponse(' ', 3)
 
     def testConfigShowFactoidIfOnlyOneMatch(self):

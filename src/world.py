@@ -143,7 +143,7 @@ def upkeep():
             msvcrt.heapmin()
         except ImportError:
             pass
-        except IOError: # Win98 sux0rs!
+        except IOError: # Win98
             pass
     if conf.daemonized:
         # If we're daemonized, sys.stdout has been replaced with a StringIO
