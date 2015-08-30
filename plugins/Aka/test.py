@@ -103,7 +103,7 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertNotError('aka add spam "echo [echo $*]"')
         self.assertResponse('spam egg', 'egg')
         self.assertResponse('spam egg bacon', 'egg bacon')
-    
+
     def testChannel(self):
         self.assertNotError('aka add channel echo $channel')
         self.assertResponse('aka channel', self.channel)
@@ -232,6 +232,19 @@ class AkaTestCase(PluginTestCase):
         self.assertRegexp('aka list', 'foo.*?bar \$\*')
         self.assertNotError('aka add "foo bar" baz')
         self.assertRegexp('aka list', 'foo.*?bar \$\*.*?foo bar.*?baz \$\*')
+
+    def testListLockedUnlocked(self):
+        self.assertNotError('register tacocat hunter2')
+
+        self.assertNotError('aka add foo bar')
+        self.assertNotError('aka add abcd echo hi')
+        self.assertNotError('aka lock foo')
+        self.assertRegexp('aka list --locked', 'foo')
+        self.assertNotRegexp('aka list --locked', 'abcd')
+        self.assertNotRegexp('aka list --unlocked', 'foo')
+        self.assertRegexp('aka list --unlocked', 'abcd')
+        # Can't look up both.
+        self.assertError('aka list --locked --unlocked abcd')
 
     def testSearch(self):
         self.assertNotError('aka add foo bar')
