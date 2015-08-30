@@ -93,10 +93,11 @@ def normalizeWhitespace(s, removeNewline=True):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
     if not s:
         return str(s) # not the same reference
-    starts_with_space = (s[0] in ' \n\t')
-    ends_with_space = (s[-1] in ' \n\t')
+    starts_with_space = (s[0] in ' \n\t\r')
+    ends_with_space = (s[-1] in ' \n\t\r')
     if removeNewline:
-        s = ' '.join(filter(bool, s.split('\n')))
+        newline_re = re.compile('[\r\n]+')
+        s = ' '.join(filter(bool, newline_re.split(s)))
     s = ' '.join(filter(bool, s.split('\t')))
     s = ' '.join(filter(bool, s.split(' ')))
     if starts_with_space:

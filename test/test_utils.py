@@ -369,6 +369,7 @@ class StrTest(SupyTestCase):
         self.assertEqual(f('foo   bar'), 'foo bar')
         self.assertEqual(f('foo\nbar'), 'foo bar')
         self.assertEqual(f('foo\tbar'), 'foo bar')
+        self.assertEqual(f('foo\rbar'), 'foo bar')
 
     def testNItems(self):
         nItems = utils.str.nItems
