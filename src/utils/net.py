@@ -62,18 +62,13 @@ def getSocket(host, port=None, socks_proxy=None, vhost=None, vhostv6=None):
         s.setproxy(socks.PROXY_TYPE_SOCKS5, hostname, int(port),
                 rdns=True)
         return s
-    import supybot.conf as conf
     if isIPV4(host):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if not vhost:
-            vhost = conf.supybot.protocols.irc.vhost()
         if vhost:
             s.bind((vhost, 0))
         return s
     elif isIPV6(host):
         s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-        if not vhostv6:
-            vhostv6 = conf.supybot.protocols.irc.vhostv6()
         if vhostv6:
             s.bind((vhostv6, 0))
         return s

@@ -43,8 +43,7 @@ from . import minisix
 from .iter import all, any
 from .structures import TwoWayDictionary
 
-from supybot.i18n import PluginInternationalization
-_ = PluginInternationalization()
+from . import internationalization as _
 internationalizeFunction = _.internationalizeFunction
 
 try:
@@ -480,6 +479,8 @@ def timestamp(t):
     if t is None:
         t = time.time()
     return time.ctime(t)
+def url(url):
+    return url
 
 _formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrsStTuv%])')
 def format(s, *args, **kwargs):
@@ -578,12 +579,7 @@ def format(s, *args, **kwargs):
             from .gen import timeElapsed
             return timeElapsed(args.pop())
         elif char == 'u':
-            import supybot.conf as conf
-            url = args.pop()
-            if url:
-                return conf.supybot.reply.format.url() % url
-            else:
-                return ''
+            return url(args.pop())
         elif char == 'v':
             args.pop()
             return ''

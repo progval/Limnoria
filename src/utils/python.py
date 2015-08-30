@@ -116,6 +116,8 @@ def glob2re(g):
     return fnmatch.translate(g)[:-7]
 
 
+_debug_software_name = 'Limnoria'
+_debug_software_version = None
 # From http://code.activestate.com/recipes/52215-get-more-information-from-tracebacks/
 def collect_extra_debug_data():
     """
@@ -133,11 +135,11 @@ def collect_extra_debug_data():
     finally:
         del tb
 
-    try:
-        from supybot.version import version
-        data += 'Supybot version: %s\n\n' % version
-    except:
-        data += '(Cannot get Supybot version.)\n\n'
+    if _debug_software_version:
+        data += '%s version: %s\n\n' % \
+                (_debug_software_name, _debug_software_version)
+    else:
+        data += '(Cannot get %s version.)\n\n' % _debug_software_name
 
     data += 'Locals by frame, innermost last:\n'
     for frame in stack:

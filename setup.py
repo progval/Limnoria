@@ -74,7 +74,9 @@ try:
 except OSError: # Does not exist
     pass
 fd = open(os.path.join('src', 'version.py'), 'a')
+fd.write('import supybot.utils.python\n')
 fd.write("version = '0.83.4.1+limnoria %s'\n" % version)
+fd.write('supybot.utils.python._debug_software_version = version\n')
 fd.close()
 
 if sys.version_info < (2, 6, 0):

@@ -32,6 +32,7 @@ import time
 import socket
 import telnetlib
 
+import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 from supybot.utils.iter import any
@@ -88,7 +89,10 @@ class Internet(callbacks.Plugin):
             irc.errorInvalid(_('domain'))
             return
         try:
-            sock = utils.net.getSocket('%s.whois-servers.net' % usertld)
+            sock = utils.net.getSocket('%s.whois-servers.net' % usertld,
+                    vhost=conf.supybot.protocols.irc.vhost(),
+                    vhostv6=conf.supybot.protocols.irc.vhostv6(),
+                    )
             sock.connect(('%s.whois-servers.net' % usertld, 43))
         except socket.error as e:
             irc.error(str(e))

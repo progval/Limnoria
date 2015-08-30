@@ -32,6 +32,7 @@
 from __future__ import division
 
 import sys
+import warnings
 
 if sys.version_info[0] >= 3:
     PY2 = False
@@ -85,10 +86,9 @@ else:
     L = lambda x:long(x)
 
     def make_datetime_utc(dt):
-        from .. import log
-        log.warning('Timezones are not available on this version of '
-                    'Python and may lead to incorrect results. You should '
-                    'consider upgrading to Python 3.')
+        warnings.warn('Timezones are not available on this version of '
+                     'Python and may lead to incorrect results. You should '
+                     'consider upgrading to Python 3.')
         return dt.replace(tzinfo=None)
     if sys.version_info >= (2, 7):
         def timedelta__totalseconds(td):
@@ -98,9 +98,8 @@ else:
             return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
 
     def datetime__timestamp(dt):
-        from .. import log
         import datetime
-        log.warning('Timezones are not available on this version of '
-                    'Python and may lead to incorrect results. You should '
-                    'consider upgrading to Python 3.')
+        warnings.warn('Timezones are not available on this version of '
+                     'Python and may lead to incorrect results. You should '
+                     'consider upgrading to Python 3.')
         return timedelta__totalseconds(dt - datetime.datetime(1970, 1, 1))

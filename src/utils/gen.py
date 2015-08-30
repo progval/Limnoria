@@ -47,9 +47,7 @@ from .str import format
 from .file import mktemp
 from .iter import imap
 from . import minisix
-
-from supybot.i18n import PluginInternationalization
-_ = PluginInternationalization()
+from . import internationalization as _
 
 def warn_non_constant_time(f):
     @functools.wraps(f)
