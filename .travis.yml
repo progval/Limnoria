@@ -26,6 +26,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - python: "nightly"
+    - python: "pypy3" # https://bitbucket.org/pypy/pypy/issues/2129/local-variable-val-referenced-before
   exclude:
     - python: "2.6"
       env: WITH_OPT_DEPS=false
