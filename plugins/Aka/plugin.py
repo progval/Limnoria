@@ -713,19 +713,32 @@ class Aka(callbacks.Plugin):
     importaliasdatabase = wrap(importaliasdatabase, ['owner'])
 
     def list(self, irc, msg, args, optlist):
-        """[--channel <#channel>] [--keys]
+        """[--channel <#channel>] [--keys] [--unlocked|--locked]
 
         Lists all Akas defined for <channel>. If <channel> is not specified,
         lists all global Akas. If --keys is given, lists only the Aka names
         and not their commands."""
         channel = 'global'
+        filterlocked = filterunlocked = False
         for (option, arg) in optlist:
             if option == 'channel':
                 if not ircutils.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
+            if option == 'locked':
+                filterlocked = True
+            if option == 'unlocked':
+                filterunlocked = True
         aka_list = self._db.get_aka_list(channel)
+        if filterlocked and filterunlocked:
+            irc.error(_('--locked and --unlocked are incompatible options.'), Raise=True)
+        elif filterlocked:
+            aka_list = [aka for aka in aka_list if
+                        self._db.get_aka_lock(channel, aka)[0]]
+        elif filterunlocked:
+            aka_list = [aka for aka in aka_list if not
+                        self._db.get_aka_lock(channel, aka)[0]]
         if aka_list:
             if 'keys' in dict(optlist):
                 # Strange, aka_list is a list of one length tuples
@@ -738,7 +751,8 @@ class Aka(callbacks.Plugin):
             irc.replies(s)
         else:
             irc.error(_("No Akas found."))
-    list = wrap(list, [getopts({'channel': 'channel', 'keys': ''})])
+    list = wrap(list, [getopts({'channel': 'channel', 'keys': '', 'locked': '',
+                                'unlocked': ''})])
 
     def search(self, irc, msg, args, optlist, query):
         """[--channel <#channel>] <query>
