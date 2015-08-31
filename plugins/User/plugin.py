@@ -88,7 +88,7 @@ class User(callbacks.Plugin):
                 users.append(u.name)
         if users:
             utils.sortBy(str.lower, users)
-            private = self.registryValue("listInPrivate")
+            private = self.registryValue("listInPrivate", msg.args[0])
             irc.reply(format('%L', users), private=private)
         else:
             if predicates:

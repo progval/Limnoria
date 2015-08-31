@@ -43,7 +43,7 @@ def configure(advanced):
 
 
 User = conf.registerPlugin('User')
-conf.registerGlobalValue(User, 'listInPrivate',
+conf.registerChannelValue(User, 'listInPrivate',
     registry.Boolean(True, _("""Determines whether the output of 'user list'
     will be sent in private. This prevents mass-highlights of people who use
     their nick as their bot username.""")))
