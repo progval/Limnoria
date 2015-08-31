@@ -35,7 +35,6 @@ import shutil
 import os.path
 
 from . import crypt
-from .iter import ifilter
 
 def contents(filename):
     with open(filename) as fd:

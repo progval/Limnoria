@@ -231,9 +231,9 @@ class PluginTestCase(SupyTestCase):
         MiscModule = plugin.loadPluginModule('Misc')
         OwnerModule = plugin.loadPluginModule('Owner')
         ConfigModule = plugin.loadPluginModule('Config')
-        _ = plugin.loadPluginClass(self.irc, MiscModule)
-        _ = plugin.loadPluginClass(self.irc, OwnerModule)
-        _ = plugin.loadPluginClass(self.irc, ConfigModule)
+        plugin.loadPluginClass(self.irc, MiscModule)
+        plugin.loadPluginClass(self.irc, OwnerModule)
+        plugin.loadPluginClass(self.irc, ConfigModule)
         if isinstance(self.plugins, str):
             self.plugins = [self.plugins]
         else:
@@ -241,7 +241,7 @@ class PluginTestCase(SupyTestCase):
                 if name not in ('Owner', 'Misc', 'Config'):
                     module = plugin.loadPluginModule(name,
                                                      ignoreDeprecation=True)
-                    cb = plugin.loadPluginClass(self.irc, module)
+                    plugin.loadPluginClass(self.irc, module)
         self.irc.addCallback(TestInstance)
         for (name, value) in self.config.items():
             group = conf.supybot

@@ -34,13 +34,12 @@ Simple utility functions related to strings.
 """
 
 import re
-import sys
 import time
 import string
 import textwrap
 
 from . import minisix
-from .iter import all, any
+from .iter import any
 from .structures import TwoWayDictionary
 
 from . import internationalization as _

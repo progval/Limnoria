@@ -32,7 +32,6 @@ import sys
 import types
 import fnmatch
 import threading
-import traceback
 
 def universalImport(*names):
     """Attempt to import the given modules, in order, returning the first

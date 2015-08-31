@@ -32,7 +32,6 @@ An embedded and centralized HTTP server for Supybot's plugins.
 """
 
 import os
-import sys
 import cgi
 import socket
 from threading import Thread
@@ -389,7 +388,6 @@ class Favicon(SupyHTTPServerCallback):
     def doGet(self, handler, path):
         response = None
         file_path = conf.supybot.servers.http.favicon()
-        found = False
         if file_path:
             try:
                 icon = open(file_path, 'rb')
@@ -399,12 +397,12 @@ class Favicon(SupyHTTPServerCallback):
             finally:
                 icon.close()
         if response is not None:
-            filename = file_path.rsplit(os.sep, 1)[1]
-            if '.' in filename:
-                ext = filename.rsplit('.', 1)[1]
-            else:
-                ext = 'ico'
             # I have no idea why, but this headers are already sent.
+            # filename = file_path.rsplit(os.sep, 1)[1]
+            # if '.' in filename:
+            #     ext = filename.rsplit('.', 1)[1]
+            # else:
+            #     ext = 'ico'
             # self.send_header('Content-Length', len(response))
             # self.send_header('Content-type', 'image/' + ext)
             # self.end_headers()
@@ -461,7 +459,7 @@ def unhook(subdir):
     global http_servers
     assert isinstance(http_servers, list)
     for server in http_servers:
-        callback = server.unhook(subdir)
+        server.unhook(subdir)
         if len(server.callbacks) <= 0 and not configGroup.keepAlive():
             server.shutdown()
             http_servers.remove(server)

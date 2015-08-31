@@ -42,7 +42,7 @@ except ImportError:
 from . import conf, ircdb, ircmsgs, ircutils, log, utils, world
 from .utils.str import rsplit
 from .utils.iter import chain
-from .utils.structures import queue, smallqueue, RingBuffer
+from .utils.structures import smallqueue, RingBuffer
 
 ###
 # The base class for a callback to be registered with an Irc object.  Shows
@@ -1029,7 +1029,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     read())
                 authstring = base64.b64encode(
                     private_key.sign(base64.b64decode(msg.args[0].encode()))).decode('utf-8')
-            except (BadDigestError, OSError, ValueError) as e:
+            except (BadDigestError, OSError, ValueError):
                 authstring = "*"
 
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))

@@ -28,7 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import sys
 from . import minisix
 
 ###

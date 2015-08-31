@@ -33,8 +33,6 @@ from __future__ import print_function
 import os
 import sys
 import ast
-import time
-import types
 import textwrap
 import warnings
 import functools
@@ -45,7 +43,6 @@ import collections
 from . import crypt
 from .str import format
 from .file import mktemp
-from .iter import imap
 from . import minisix
 from . import internationalization as _
 
@@ -230,24 +227,24 @@ class IterableMap(object):
     __iter__ = items
 
     def keys(self):
-        for (key, _) in self.items():
+        for (key, __) in self.items():
             yield key
 
     def values(self):
-        for (_, value) in self.items():
+        for (__, value) in self.items():
             yield value
 
 
     @warn_non_constant_time
     def __len__(self):
         ret = 0
-        for _ in self.items():
+        for __ in self.items():
             ret += 1
         return ret
 
     @warn_non_constant_time
     def __bool__(self):
-        for _ in self.items():
+        for __ in self.items():
             return True
         return False
     __nonzero__ = __bool__
@@ -300,7 +297,7 @@ class InsensitivePreservingDict(collections.MutableMapping):
 
     def keys(self):
         L = []
-        for (k, _) in self.items():
+        for (k, __) in self.items():
             L.append(k)
         return L
 
@@ -347,7 +344,7 @@ def stackTrace(frame=None, compact=True):
 def callTracer(fd=None, basename=True):
     if fd is None:
         fd = sys.stdout
-    def tracer(frame, event, _):
+    def tracer(frame, event, __):
         if event == 'call':
             code = frame.f_code
             lineno = frame.f_lineno

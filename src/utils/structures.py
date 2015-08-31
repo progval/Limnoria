@@ -32,7 +32,6 @@ Data structures for Python.
 """
 
 import time
-import types
 import collections
 
 

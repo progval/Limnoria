@@ -35,15 +35,13 @@ Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 from __future__ import division
 
 import os
-import sys
 import time
 import errno
 import select
 import socket
 
-from .. import (conf, drivers, log, schedule, utils, world)
+from .. import (conf, drivers, log, utils, world)
 from ..utils import minisix
-from ..utils.iter import imap
 from ..utils.str import decode_raw_line
 
 try:
@@ -241,7 +239,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         server = self._getNextServer()
         socks_proxy = getattr(conf.supybot.networks, self.irc.network) \
                 .socksproxy()
-        resolver = None
         try:
             if socks_proxy:
                 import socks

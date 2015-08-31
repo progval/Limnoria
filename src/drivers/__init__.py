@@ -32,8 +32,6 @@
 Contains various drivers (network, file, and otherwise) for using IRC objects.
 """
 
-import sys
-import time
 import socket
 
 from .. import conf, ircmsgs, log as supylog, utils

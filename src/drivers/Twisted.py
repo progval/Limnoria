@@ -28,7 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from .. import conf, drivers, ircmsgs, log
+from .. import conf, drivers
 
 from twisted.names import client
 from twisted.internet import reactor, error

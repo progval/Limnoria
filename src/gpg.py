@@ -28,11 +28,9 @@
 ###
 
 import os
-import traceback
 
 import supybot.log as log
 import supybot.conf as conf
-import supybot.world as world
 
 try:
     import gnupg

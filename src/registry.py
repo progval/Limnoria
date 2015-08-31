@@ -30,7 +30,6 @@
 
 import re
 import os
-import sys
 import time
 import json
 import codecs
@@ -148,7 +147,7 @@ def close(registry, filename, private=True):
                                   value._name)
                     try:
                         lines.append('# Default value: %s\n' % x)
-                    except Exception as e:
+                    except Exception:
                         exception('Exception printing default value of %s:' %
                                   value._name)
             lines.append('###\n')

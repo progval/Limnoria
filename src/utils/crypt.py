@@ -27,8 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import sys
-
 from hashlib import md5
 from hashlib import sha1 as sha
 

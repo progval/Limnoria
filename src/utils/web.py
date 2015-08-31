@@ -29,7 +29,6 @@
 ###
 
 import re
-import sys
 import base64
 import socket
 
@@ -174,7 +173,7 @@ def getUrl(url, size=None, headers=None, data=None, timeout=None):
             text = fd.read()
         else:
             text = fd.read(size)
-    except socket.timeout as e:
+    except socket.timeout:
         raise Error(TIMED_OUT)
     fd.close()
     return text

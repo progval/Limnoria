@@ -37,7 +37,7 @@ from getpass import getpass as getPass
 
 from . import ansi, utils
 from .utils import minisix
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()
 
 useBold = False

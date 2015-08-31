@@ -34,7 +34,6 @@ This module contains the basic callbacks for handling PRIVMSGs.
 """
 
 import re
-import sys
 import copy
 import time
 from . import shlex
@@ -46,7 +45,7 @@ from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry,
         utils, world)
 from .utils import minisix
 from .utils.iter import any, all
-from .i18n import PluginInternationalization, internationalizeDocstring
+from .i18n import PluginInternationalization
 _ = PluginInternationalization()
 
 def _addressed(nick, msg, prefixChars=None, nicks=None,
@@ -318,7 +317,6 @@ class Tokenizer(object):
                 ret.append(self._insideBrackets(lexer))
             else:
                 ret.append(self._handleToken(token))
-            firstToken = False
         return ret
 
     def tokenize(self, s):
@@ -372,7 +370,6 @@ def tokenize(s, channel=None):
         if conf.get(nested.pipeSyntax, channel): # No nesting, no pipe.
             pipe = True
     quotes = conf.get(conf.supybot.commands.quotes, channel)
-    start = time.time()
     try:
         ret = Tokenizer(brackets=brackets,pipe=pipe,quotes=quotes).tokenize(s)
         return ret

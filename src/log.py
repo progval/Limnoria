@@ -109,7 +109,7 @@ class StdoutStreamHandler(logging.StreamHandler):
         if conf.supybot.log.stdout() and not conf.daemonized:
             try:
                 logging.StreamHandler.emit(self, record)
-            except ValueError as e: # Raised if sys.stdout is closed.
+            except ValueError: # Raised if sys.stdout is closed.
                 self.disable()
                 error('Error logging to stdout.  Removing stdout handler.')
                 exception('Uncaught exception in StdoutStreamHandler:')
@@ -360,14 +360,14 @@ def firewall(f, errorHandler=None):
     def m(self, *args, **kwargs):
         try:
             return f(self, *args, **kwargs)
-        except Exception as e:
+        except Exception:
             if testing:
                 raise
             logException(self)
             if errorHandler is not None:
                 try:
                     return errorHandler(self, *args, **kwargs)
-                except Exception as e:
+                except Exception:
                     logException(self, 'Uncaught exception in errorHandler')
     m = utils.python.changeFunctionName(m, f.__name__, f.__doc__)
     return m

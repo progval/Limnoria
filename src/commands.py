@@ -266,7 +266,7 @@ def getInt(irc, msg, args, state, type=_('integer'), p=None):
 
 def getNonInt(irc, msg, args, state, type=_('non-integer value')):
     try:
-        i = _int(args[0])
+        _int(args[0])
         state.errorInvalid(type, args[0])
     except ValueError:
         state.args.append(args.pop(0))
@@ -303,7 +303,7 @@ def getId(irc, msg, args, state, kind=None):
     try:
         args[0] = args[0].lstrip('#')
         getInt(irc, msg, args, state, type=type)
-    except Exception as e:
+    except Exception:
         args[0] = original
         raise
 
@@ -398,9 +398,9 @@ def getHostmask(irc, msg, args, state):
 def getBanmask(irc, msg, args, state):
     getHostmask(irc, msg, args, state)
     getChannel(irc, msg, args, state)
-    channel = state.channel
     banmaskstyle = conf.supybot.protocols.irc.banmask
-    state.args[-1] = banmaskstyle.makeBanmask(state.args[-1])
+    state.args[-1] = banmaskstyle.makeBanmask(state.args[-1],
+            channel=state.channel)
 
 def getUser(irc, msg, args, state):
     try:
@@ -431,7 +431,7 @@ def _getRe(f):
         s = args.pop(0)
         def isRe(s):
             try:
-                foo = f(s)
+                f(s)
                 return True
             except ValueError:
                 return False
@@ -466,7 +466,7 @@ def getNick(irc, msg, args, state):
 
 def getSeenNick(irc, msg, args, state, errmsg=None):
     try:
-        foo = irc.state.nickToHostmask(args[0])
+        irc.state.nickToHostmask(args[0])
         state.args.append(args.pop(0))
     except KeyError:
         if errmsg is None:
@@ -850,7 +850,7 @@ class rest(context):
             args[:] = [' '.join(args)]
             try:
                 super(rest, self).__call__(irc, msg, args, state)
-            except Exception as e:
+            except Exception:
                 args[:] = original
         else:
             raise IndexError
@@ -954,7 +954,7 @@ class commalist(context):
                     if part: # trailing commas
                         super(commalist, self).__call__(irc, msg, [part], st)
             state.args.append(st.args)
-        except Exception as e:
+        except Exception:
             args[:] = original
             raise
 

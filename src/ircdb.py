@@ -913,7 +913,7 @@ class IgnoresDB(object):
                 else:
                     expiration = 0
                 self.add(hostmask, expiration)
-            except Exception as e:
+            except Exception:
                 log.error('Invalid line in ignores database: %q', line)
         fd.close()
 

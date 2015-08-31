@@ -50,7 +50,7 @@ from . import utils
 from .utils import minisix
 from .version import version
 
-from .i18n import PluginInternationalization, internationalizeDocstring
+from .i18n import PluginInternationalization
 _ = PluginInternationalization()
 
 def debug(s, *args):

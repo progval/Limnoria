@@ -139,7 +139,7 @@ class Schedule(drivers.IrcDriver):
                 f = self.events.pop(name)
             try:
                 f(*args, **kwargs)
-            except Exception as e:
+            except Exception:
                 log.exception('Uncaught exception in scheduled function:')
 
 

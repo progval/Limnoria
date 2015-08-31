@@ -142,7 +142,7 @@ class DirMapping(MappingInterface):
     def remove(self, id):
         try:
             os.remove(self._makeFilename(id))
-        except EnvironmentError as e:
+        except EnvironmentError:
             raise NoRecordError(id)
 
 class FlatfileMapping(MappingInterface):
