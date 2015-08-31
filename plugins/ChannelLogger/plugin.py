@@ -134,7 +134,7 @@ class ChannelLogger(callbacks.Plugin):
 
     def checkLogNames(self):
         for (irc, logs) in self.logs.items():
-            for (channel, log) in logs.items():
+            for (channel, log) in list(logs.items()):
                 if self.registryValue('rotateLogs', channel):
                     name = self.getLogName(channel)
                     if name != os.path.basename(log.name):
