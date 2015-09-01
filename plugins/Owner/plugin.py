@@ -247,7 +247,8 @@ class Owner(callbacks.Plugin):
                and self.commands.len(msg) > maximum \
                and not ircdb.checkCapability(msg.prefix, 'trusted'):
                 punishment = conf.supybot.abuse.flood.command.punishment()
-                banmask = ircutils.banmask(msg.prefix)
+                banmask = conf.supybot.protocols.irc.banmask \
+                        .makeBanmask(msg.prefix)
                 self.log.info('Ignoring %s for %s seconds due to an apparent '
                               'command flood.', banmask, punishment)
                 ircdb.ignores.add(banmask, time.time() + punishment)
