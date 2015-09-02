@@ -47,7 +47,8 @@ class FeedNames(registry.SpaceSeparatedListOfStrings):
 
 class FeedItemSortOrder(registry.OnlySomeStrings):
     """Valid values include 'asInFeed', 'oldestFirst', 'newestFirst'."""
-    validStrings = ('asInFeed', 'oldestFirst', 'newestFirst')
+    validStrings = ('asInFeed', 'oldestFirst', 'newestFirst', 'outdatedFirst',
+            'updatedFirst')
 
 RSS = conf.registerPlugin('RSS')
 
@@ -87,8 +88,8 @@ conf.registerGlobalValue(RSS, 'waitPeriod',
     return cached results.""")))
 conf.registerGlobalValue(RSS, 'sortFeedItems',
     FeedItemSortOrder('asInFeed', _("""Determines whether feed items should be
-    sorted by their update timestamp or kept in the same order as they appear
-    in a feed.""")))
+    sorted by their publication/update timestamp or kept in the same order as
+    they appear in a feed.""")))
 
 ####################
 # Headlines filtering

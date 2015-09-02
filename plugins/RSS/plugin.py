@@ -123,19 +123,31 @@ class Feed:
         f = types.MethodType(f, plugin)
         return f
 
+_sort_parameters = {
+        'oldestFirst':   (('published_parsed', 'updated_parsed'), False),
+        'newestFirst':   (('published_parsed', 'updated_parsed'), True),
+        'outdatedFirst': (('updated_parsed', 'published_parsed'), False),
+        'updatedFirst':  (('updated_parsed', 'published_parsed'), True),
+        }
+def _sort_arguments(order):
+    (fields, reverse) = _sort_parameters[order]
+    def key(entry):
+        for field in fields:
+            if field in entry:
+                return entry[field]
+        raise KeyError('No date field in entry.')
+    return (key, reverse)
+
 def sort_feed_items(items, order):
     """Return feed items, sorted according to sortFeedItems."""
-    if order not in ['oldestFirst', 'newestFirst']:
+    if order == 'asInFeed':
         return items
-    if order == 'oldestFirst':
-        reverse = False
-    if order == 'newestFirst':
-        reverse = True
+    (key, reverse) = _sort_arguments(order)
     try:
-        sitems = sorted(items, key=lambda i: i['published_parsed'], reverse=reverse)
+        sitems = sorted(items, key=key, reverse=reverse)
     except KeyError:
         # feedparser normalizes required timestamp fields in ATOM and RSS
-        # to the "published" field. Feeds missing it are unsortable by date.
+        # to the "published"/"updated" fields. Feeds missing it are unsortable by date.
         return items
     return sitems
 
