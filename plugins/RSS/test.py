@@ -69,7 +69,35 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self.assertNotError('rss remove xkcd')
 
-    def testInitialAnnounce(self):
+    def testInitialAnnounceNewest(self):
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_new)
+        try:
+            with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(1):
+                with conf.supybot.plugins.RSS.sortFeedItems.context('newestFirst'):
+                    self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+                    self.assertNotError('rss announce add xkcd')
+                    self.assertRegexp(' ', 'Snake Facts')
+        finally:
+            self._feedMsg('rss announce remove xkcd')
+            self._feedMsg('rss remove xkcd')
+            feedparser._open_resource = old_open
+
+    def testInitialAnnounceOldest(self):
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_new)
+        try:
+            with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(1):
+                with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
+                    self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+                    self.assertNotError('rss announce add xkcd')
+                    self.assertRegexp(' ', 'Chaos')
+        finally:
+            self._feedMsg('rss announce remove xkcd')
+            self._feedMsg('rss remove xkcd')
+            feedparser._open_resource = old_open
+
+    def testNoInitialAnnounce(self):
         old_open = feedparser._open_resource
         feedparser._open_resource = constant(xkcd_old)
         try:

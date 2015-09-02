@@ -132,7 +132,7 @@ def sort_feed_items(items, order):
     if order == 'newestFirst':
         reverse = True
     try:
-        sitems = sorted(items, key=lambda i: i['published'], reverse=reverse)
+        sitems = sorted(items, key=lambda i: i['published_parsed'], reverse=reverse)
     except KeyError:
         # feedparser normalizes required timestamp fields in ATOM and RSS
         # to the "published" field. Feeds missing it are unsortable by date.
