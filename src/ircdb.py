@@ -406,7 +406,7 @@ class IrcChannel(object):
         """Checks whether a given hostmask is banned by the channel banlist."""
         assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
         now = time.time()
-        for (pattern, expiration) in self.bans.items():
+        for (pattern, expiration) in list(self.bans.items()):
             if now < expiration or not expiration:
                 if ircutils.hostmaskPatternEqual(pattern, hostmask):
                     return True
@@ -460,7 +460,7 @@ class IrcChannel(object):
         if self.checkBan(hostmask):
             return True
         now = time.time()
-        for (pattern, expiration) in self.ignores.items():
+        for (pattern, expiration) in list(self.ignores.items()):
             if now < expiration or not expiration:
                 if ircutils.hostmaskPatternEqual(pattern, hostmask):
                     return True
@@ -803,7 +803,7 @@ class UsersDictionary(utils.IterableMap):
             del self._nameCache[self._nameCache[id]]
             del self._nameCache[id]
         if id in self._hostmaskCache:
-            for hostmask in self._hostmaskCache[id]:
+            for hostmask in list(self._hostmaskCache[id]):
                 del self._hostmaskCache[hostmask]
             del self._hostmaskCache[id]
         self.flush()
@@ -950,7 +950,7 @@ class IgnoresDB(object):
 
     def checkIgnored(self, prefix):
         now = time.time()
-        for (hostmask, expiration) in self.hostmasks.items():
+        for (hostmask, expiration) in list(self.hostmasks.items()):
             if expiration and now > expiration:
                 del self.hostmasks[hostmask]
             else:
