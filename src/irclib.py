@@ -1091,8 +1091,10 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             # NOTE: Capabilities are requested in alphabetic order, because
             # sets are unordered, and their "order" is nondeterministic.
             # This is needed for the tests.
-            self.sendMsg(ircmsgs.IrcMsg(command='CAP',
-                args=('REQ', ' '.join(sorted(common_supported_capabilities)))))
+            if common_supported_capabilities:
+                caps = ' '.join(sorted(common_supported_capabilities))
+                self.sendMsg(ircmsgs.IrcMsg(command='CAP',
+                    args=('REQ', caps)))
         else:
             log.warning('Bad CAP LS from server: %r', msg)
             return
