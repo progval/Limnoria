@@ -1095,6 +1095,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 caps = ' '.join(sorted(common_supported_capabilities))
                 self.sendMsg(ircmsgs.IrcMsg(command='CAP',
                     args=('REQ', caps)))
+            else:
+                self.sendMsg(ircmsgs.IrcMsg(command='CAP',
+                    args=('END',)))
         else:
             log.warning('Bad CAP LS from server: %r', msg)
             return
