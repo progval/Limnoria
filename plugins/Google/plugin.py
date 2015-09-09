@@ -240,16 +240,8 @@ class Google(callbacks.PluginRegexp):
         s = ', '.join([format('%s: %i', bold(s), i) for (i, s) in results])
         irc.reply(s)
 
-    @internationalizeDocstring
-    def translate(self, irc, msg, args, sourceLang, targetLang, text):
-        """<source language> [to] <target language> <text>
 
-        Returns <text> translated from <source language> into <target
-        language>.
-        """
-
-        channel = msg.args[0]
-
+    def _translate(self, sourceLang, targetLang, text):
         headers = dict(utils.web.defaultHeaders)
         headers['User-Agent'] = ('Mozilla/5.0 (X11; U; Linux i686) '
                                  'Gecko/20071127 Firefox/2.0.0.11')
@@ -275,7 +267,18 @@ class Google(callbacks.PluginRegexp):
         except:
             language = 'unknown'
 
-        irc.reply(''.join(x[0] for x in data[0]), language)
+        return (''.join(x[0] for x in data[0]), language)
+
+    @internationalizeDocstring
+    def translate(self, irc, msg, args, sourceLang, targetLang, text):
+        """<source language> [to] <target language> <text>
+
+        Returns <text> translated from <source language> into <target
+        language>.
+        """
+        channel = msg.args[0]
+        (text, language) = self._translate(sourceLang, targetLang, text)
+        irc.reply(text, language)
     translate = wrap(translate, ['something', 'to', 'something', 'text'])
 
     def googleSnarfer(self, irc, msg, match):
