@@ -69,7 +69,7 @@ else:
     urlunquote = urllib.parse.unquote
     urlopen = urllib.request.urlopen
     def urlencode(*args, **kwargs):
-        return urllib.parse.urlencode(*args, **kwargs).encode()
+        return urllib.parse.urlencode(*args, **kwargs)
     from urllib.error import HTTPError, URLError
     from urllib.parse import splithost, splituser
 
