@@ -118,14 +118,16 @@ class Filter(callbacks.Plugin):
         irc.reply(self._hebrew_remover(text))
     hebrew = wrap(hebrew, ['text'])
 
+    def _squish(self, text):
+        return text.replace(' ', '')
+
     @internationalizeDocstring
     def squish(self, irc, msg, args, text):
         """<text>
 
         Removes all the spaces from <text>.
         """
-        text = ''.join(text.split())
-        irc.reply(text)
+        irc.reply(self._squish(text))
     squish = wrap(squish, ['text'])
 
     @internationalizeDocstring
@@ -182,6 +184,7 @@ class Filter(callbacks.Plugin):
         Returns the character representation of binary <text>.
         Assumes ASCII, 8 digits per character.
         """
+        text = self._squish(text)  # Strip spaces.
         try:
             L = [chr(int(text[i:(i+8)], 2)) for i in range(0, len(text), 8)]
             irc.reply(''.join(L))
