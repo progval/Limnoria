@@ -119,7 +119,7 @@ class Filter(callbacks.Plugin):
     hebrew = wrap(hebrew, ['text'])
 
     def _squish(self, text):
-        return ''.join(text.split())
+        return text.replace(' ', '')
 
     @internationalizeDocstring
     def squish(self, irc, msg, args, text):
