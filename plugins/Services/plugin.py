@@ -132,6 +132,8 @@ class Services(callbacks.Plugin):
         nickserv = self.registryValue('NickServ')
         password = self._getNickServPassword(nick)
         ghostDelay = self.registryValue('ghostDelay')
+        if not ghostDelay:
+            return
         if not nickserv or not password:
             s = 'Tried to ghost without a NickServ or password set.'
             self.log.warning(s)
@@ -160,6 +162,8 @@ class Services(callbacks.Plugin):
         nickserv = self.registryValue('NickServ')
         password = self._getNickServPassword(nick)
         ghostDelay = self.registryValue('ghostDelay')
+        if not ghostDelay:
+            return
         if nick and nickserv and password and \
            not ircutils.strEqual(nick, irc.nick):
             if irc.afterConnect and (self.sentGhost is None or
