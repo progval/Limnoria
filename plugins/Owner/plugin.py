@@ -252,11 +252,12 @@ class Owner(callbacks.Plugin):
                 self.log.info('Ignoring %s for %s seconds due to an apparent '
                               'command flood.', banmask, punishment)
                 ircdb.ignores.add(banmask, time.time() + punishment)
-                irc.reply('You\'ve given me %s commands within the last '
-                          '%i seconds; I\'m now ignoring you for %s.' %
-                          (maximum,
-                           conf.supybot.abuse.flood.interval(),
-                           utils.timeElapsed(punishment, seconds=False)))
+                if conf.supybot.abuse.flood.command.notify():
+                    irc.reply('You\'ve given me %s commands within the last '
+                              '%i seconds; I\'m now ignoring you for %s.' %
+                              (maximum,
+                               conf.supybot.abuse.flood.interval(),
+                               utils.timeElapsed(punishment, seconds=False)))
                 return
             try:
                 tokens = callbacks.tokenize(s, channel=msg.args[0])

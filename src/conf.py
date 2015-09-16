@@ -732,6 +732,9 @@ registerGlobalValue(supybot.abuse.flood.command, 'maximum',
 registerGlobalValue(supybot.abuse.flood.command, 'punishment',
     registry.PositiveInteger(300, _("""Determines how many seconds the bot
     will ignore users who flood it with commands.""")))
+registerGlobalValue(supybot.abuse.flood.command, 'notify',
+    registry.Boolean(True, _("""Determines whether the bot will notify people
+    that they're being ignored for command flooding.""")))
 
 registerGlobalValue(supybot.abuse.flood.command, 'invalid',
     registry.Boolean(True, _("""Determines whether the bot will defend itself
