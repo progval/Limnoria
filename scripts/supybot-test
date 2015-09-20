@@ -47,21 +47,21 @@ if not os.path.exists('test-conf'):
 registryFilename = os.path.join('test-conf', 'test.conf')
 fd = open(registryFilename, 'w')
 fd.write("""
-supybot.directories.data: test-data
-supybot.directories.conf: test-conf
-supybot.directories.log: test-logs
+supybot.directories.data: %(base_dir)s/test-data
+supybot.directories.conf: %(base_dir)s/test-conf
+supybot.directories.log: %(base_dir)s/test-logs
 supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
 supybot.log.stdout.level: ERROR
 supybot.log.level: DEBUG
-supybot.log.format: %(levelname)s %(message)s
+supybot.log.format: %%(levelname)s %%(message)s
 supybot.log.plugins.individualLogfiles: False
 supybot.protocols.irc.throttleTime: 0
 supybot.reply.whenAddressedBy.chars: @
 supybot.networks.test.server: should.not.need.this
 supybot.nick: test
 supybot.databases.users.allowUnregistration: True
-""")
+""" % {'base_dir': os.getcwd()})
 fd.close()
 
 import supybot.registry as registry
