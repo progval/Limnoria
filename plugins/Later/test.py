@@ -72,7 +72,7 @@ class LaterTestCase(ChannelPluginTestCase):
 
     def testNoteSend(self):
         self.assertNotError('later tell foo stuff')
-        self.assertNotError('later tell bar more stuff')
+        self.assertNotError('later tell bar,baz more stuff')
         self.assertRegexp('later notes', 'bar.*foo')
         testPrefix = 'foo!bar@baz'
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
@@ -82,6 +82,12 @@ class LaterTestCase(ChannelPluginTestCase):
                 'PRIVMSG #test :foo: Sent just now: <test> stuff')
         self.assertNotRegexp('later notes', 'foo')
         self.assertRegexp('later notes', 'bar')
+
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix='baz!baz@qux'))
+        m = self.getMsg(' ')
+        self.assertEqual(str(m).strip(),
+                'PRIVMSG #test :baz: Sent just now: <test> more stuff')
 
         real_time = time.time
         def fake_time():

@@ -147,27 +147,38 @@ class Later(callbacks.Plugin):
     ## adding new ones.
 
     @internationalizeDocstring
-    def tell(self, irc, msg, args, nick, text):
-        """<nick> <text>
+    def tell(self, irc, msg, args, nicks, text):
+        """<nick1[,nick2[,...]]> <text>
 
-        Tells <nick> <text> the next time <nick> is seen.  <nick> can
+        Tells each <nickX> <text> the next time <nickX> is seen.  <nickX> can
         contain wildcard characters, and the first matching nick will be
         given the note.
         """
         self._deleteExpired()
-        if ircutils.strEqual(nick, irc.nick):
-            irc.error(_('I can\'t send notes to myself.'))
-            return
-        validnick = self._validateNick(irc, nick)
-        if validnick is False:
-            irc.error('That is an invalid IRC nick. Please check your input.')
-            return
-        try:
-            self._addNote(validnick, msg.nick, text)
+        validnicks = []
+        for nick in nicks:
+            if ircutils.strEqual(nick, irc.nick):
+                irc.error(_('I can\'t send notes to myself.'))
+                return
+            validnick = self._validateNick(irc, nick)
+            if validnick is False:
+                irc.error(_('%s is an invalid IRC nick. Please check your '
+                    'input.' % nick))
+                return
+            validnicks.append(validnick)
+        full_queues = []
+        for validnick in validnicks:
+            try:
+                self._addNote(validnick, msg.nick, text)
+            except ValueError:
+                full_queues.append(validnick)
+        if full_queues:
+            irc.error(format(
+                _('These recipients\' message queue are already full: %L'),
+                full_queues))
+        else:
             irc.replySuccess()
-        except ValueError:
-            irc.error(_('That person\'s message queue is already full.'))
-    tell = wrap(tell, ['something', 'text'])
+    tell = wrap(tell, [commalist('somethingWithoutSpaces'), 'text'])
 
     @internationalizeDocstring
     def notes(self, irc, msg, args, nick):
