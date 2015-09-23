@@ -163,6 +163,34 @@ class RSSTestCase(ChannelPluginTestCase):
             self._feedMsg('rss remove xkcdsec')
             feedparser._open_resource = old_open
 
+    def testFeedSpecificWaitPeriod(self):
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_old)
+        try:
+            self.assertNotError('rss add xkcd1 http://xkcd.com/rss.xml')
+            self.assertNotError('rss announce add xkcd1')
+            self.assertNotError('rss add xkcd2 http://xkcd.com/rss.xml&foo')
+            self.assertNotError('rss announce add xkcd2')
+            self.assertNotError(' ')
+            self.assertNotError(' ')
+            with conf.supybot.plugins.RSS.feeds.xkcd1.waitPeriod.context(1):
+                time.sleep(1.1)
+                self.assertNoResponse(' ')
+                self.assertNoResponse(' ')
+                feedparser._open_resource = constant(xkcd_new)
+                self.assertNoResponse(' ')
+                time.sleep(1.1)
+                self.assertRegexp(' ', 'xkcd1.*Chaos')
+                self.assertNoResponse(' ')
+                time.sleep(1.1)
+                self.assertNoResponse(' ')
+        finally:
+            self._feedMsg('rss announce remove xkcd1')
+            self._feedMsg('rss remove xkcd1')
+            self._feedMsg('rss announce remove xkcd2')
+            self._feedMsg('rss remove xkcd2')
+            feedparser._open_resource = old_open
+
     if network:
         def testRssinfo(self):
             self.assertNotError('rss info %s' % url)

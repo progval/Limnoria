@@ -229,6 +229,10 @@ class RSS(callbacks.Plugin):
         conf.registerChannelValue(feed_group, 'announceFormat',
                 registry.String('', _("""Feed-specific announce format.
                 Defaults to supybot.plugins.RSS.announceFormat if empty.""")))
+        conf.registerGlobalValue(feed_group, 'waitPeriod',
+                registry.NonNegativeInteger(0, _("""If set to a non-zero
+                value, overrides supybot.plugins.RSS.waitPeriod for this
+                particular feed.""")))
 
     def register_feed(self, name, url, initial,
             plugin_is_loading, announced=[]):
@@ -273,7 +277,12 @@ class RSS(callbacks.Plugin):
 
     def is_expired(self, feed):
         assert feed
-        event_horizon = time.time() - self.registryValue('waitPeriod')
+        period = self.registryValue('waitPeriod')
+        if feed.name != feed.url: # Named feed
+            specific_period = self.registryValue('feeds.%s.waitPeriod' % feed.name)
+            if specific_period:
+                period = specific_period
+        event_horizon = time.time() - period
         return feed.last_update < event_horizon
 
     ###############
