@@ -380,7 +380,8 @@ def formatCommand(command):
     return ' '.join(command)
 
 def checkCommandCapability(msg, cb, commandName):
-    assert isinstance(commandName, minisix.string_types), commandName
+    if not isinstance(commandName, minisix.string_types):
+        commandName = '.'.join(commandName)
     plugin = cb.name().lower()
     pluginCommand = '%s.%s' % (plugin, commandName)
     def checkCapability(capability):
@@ -493,29 +494,23 @@ class RichReplyMethods(object):
     def errorNoCapability(self, capability, s='', **kwargs):
         if 'Raise' not in kwargs:
             kwargs['Raise'] = True
-        if isinstance(capability, minisix.string_types): # checkCommandCapability!
-            log.warning('Denying %s for lacking %q capability.',
-                        self.msg.prefix, capability)
-            # noCapability means "don't send a specific capability error
-            # message" not "don't send a capability error message at all", like
-            # one would think
-            if self._getConfig(conf.supybot.reply.error.noCapability) or \
-                capability in conf.supybot.capabilities.private():
-                v = self._getConfig(conf.supybot.replies.genericNoCapability)
-            else:
-                v = self._getConfig(conf.supybot.replies.noCapability)
-                try:
-                    v %= capability
-                except TypeError: # No %s in string
-                    pass
-            s = self.__makeReply(v, s)
-            if s:
-                return self._error(s, **kwargs)
-        else:
-            log.warning('Denying %s for some unspecified capability '
-                        '(or a default).', self.msg.prefix)
+        log.warning('Denying %s for lacking %q capability.',
+                    self.msg.prefix, capability)
+        # noCapability means "don't send a specific capability error
+        # message" not "don't send a capability error message at all", like
+        # one would think
+        if self._getConfig(conf.supybot.reply.error.noCapability) or \
+            capability in conf.supybot.capabilities.private():
             v = self._getConfig(conf.supybot.replies.genericNoCapability)
-            return self._error(self.__makeReply(v, s), **kwargs)
+        else:
+            v = self._getConfig(conf.supybot.replies.noCapability)
+            try:
+                v %= capability
+            except TypeError: # No %s in string
+                pass
+        s = self.__makeReply(v, s)
+        if s:
+            return self._error(s, **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.possibleBug)
@@ -1261,6 +1256,10 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
         # XXX I'm being extra-special-careful here, but we need to refactor
         #     this.
         try:
+            cap = checkCommandCapability(msg, self, command)
+            if cap:
+                irc.errorNoCapability(cap)
+                return
             for name in command:
                 cap = checkCommandCapability(msg, self, name)
                 if cap:
