@@ -404,7 +404,11 @@ class RSS(callbacks.Plugin):
     def announce_entry(self, irc, channel, feed, entry):
         if self.should_send_entry(channel, entry):
             s = self.format_entry(channel, feed, entry, True)
-            irc.queueMsg(ircmsgs.privmsg(channel, s))
+            if self.registryValue('notice', channel):
+                m = ircmsgs.notice(channel, s)
+            else:
+                m = ircmsgs.privmsg(channel, s)
+            irc.queueMsg(m)
 
 
     ##########

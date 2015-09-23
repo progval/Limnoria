@@ -90,6 +90,9 @@ conf.registerGlobalValue(RSS, 'sortFeedItems',
     FeedItemSortOrder('asInFeed', _("""Determines whether feed items should be
     sorted by their publication/update timestamp or kept in the same order as
     they appear in a feed.""")))
+conf.registerChannelValue(RSS, 'notice',
+    registry.Boolean(False, _("""Determines whether announces will be sent
+    as notices instead of privmsgs.""")))
 
 ####################
 # Headlines filtering
