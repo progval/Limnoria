@@ -265,7 +265,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         self.do_X('doHead')
 
     def address_string(self):
-        s = super(SupyHTTPRequestHandler, self).address_string()
+        s = BaseHTTPRequestHandler.address_string(self)
 
         # Strip IPv4-mapped IPv6 addresses such as ::ffff:127.0.0.1
         prefix = '::ffff:'
