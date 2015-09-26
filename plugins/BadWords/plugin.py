@@ -71,12 +71,12 @@ class BadWords(callbacks.Privmsg):
         self.filtering = True
         # We need to check for bad words here rather than in doPrivmsg because
         # messages don't get to doPrivmsg if the user is ignored.
-        if msg.command == 'PRIVMSG':
+        if msg.command == 'PRIVMSG' and self.words():
             channel = msg.args[0]
             self.updateRegexp(channel)
             s = ircutils.stripFormatting(msg.args[1])
             if ircutils.isChannel(channel) and self.registryValue('kick', channel):
-                if self.words and self.regexp.search(s):
+                if self.regexp.search(s):
                     c = irc.state.channels[channel]
                     cap = ircdb.makeChannelCapability(channel, 'op')
                     if c.isHalfopPlus(irc.nick):
