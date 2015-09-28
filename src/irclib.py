@@ -1278,7 +1278,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         """Handles ERROR messages."""
         log.warning('Error message from %s: %s', self.network, msg.args[0])
         if not self.zombie:
-           if msg.args[0].startswith('Closing Link'):
+           if msg.args[0].lower().startswith('closing link'):
               self.driver.reconnect()
            elif 'too fast' in msg.args[0]: # Connecting too fast.
               self.driver.reconnect(wait=True)
