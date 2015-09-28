@@ -189,6 +189,8 @@ class Math(callbacks.Plugin):
                             "Please remove them."))
             return
         if self._calc_match_forbidden_chars.match(text):
+            # Note: this is important to keep this to forbid usage of
+            # __builtins__
             irc.error(_('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.'))
@@ -243,6 +245,8 @@ class Math(callbacks.Plugin):
         the 'trusted' capability to use.
         """
         if self._calc_match_forbidden_chars.match(text):
+            # Note: this is important to keep this to forbid usage of
+            # __builtins__
             irc.error(_('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.'))
