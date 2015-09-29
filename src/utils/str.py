@@ -296,7 +296,7 @@ def perlVariableSubstitute(vars, text):
             else:
                 try:
                     return str(x)
-                except UnicodeEncodeError: # Python 2
+                except UnicodeEncodeError: # Python 2
                     return str(x).encode('utf8')
         except KeyError:
             if braced:
