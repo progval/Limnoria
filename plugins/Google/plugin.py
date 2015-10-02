@@ -267,7 +267,10 @@ class Google(callbacks.PluginRegexp):
         except:
             language = 'unknown'
 
-        return (''.join(x[0] for x in data[0]), language)
+        if data[0]:
+            return (''.join(x[0] for x in data[0]), language)
+        else:
+            return (_('No translations found.'), language)
 
     @internationalizeDocstring
     def translate(self, irc, msg, args, sourceLang, targetLang, text):
