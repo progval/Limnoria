@@ -455,7 +455,7 @@ class Misc(callbacks.Plugin):
                     def f1(s, arg):
                         """Since we can't enqueue match objects into the multiprocessing queue,
                         we'll just wrap the function to return bools."""
-                        if arg.search(s) is not None:
+                        if process(arg.search, s, timeout=0.1) is not None:
                             return True
                         else:
                             return False
