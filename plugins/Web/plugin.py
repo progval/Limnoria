@@ -155,7 +155,7 @@ class Web(callbacks.PluginRegexp):
         title = parser.title
         if title:
             title = utils.web.htmlToText(parser.title.strip())
-        return parser.title
+        return title
 
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
