@@ -139,7 +139,7 @@ class Web(callbacks.PluginRegexp):
     def noIgnore(self, irc, msg):
         return not self.registryValue('checkIgnored', msg.args[0])
 
-    def getTitle(self, url):
+    def getTitle(self, url, raiseErrors):
         size = conf.supybot.protocols.http.peekSize()
         text = utils.web.getUrl(url, size=size)
         try:
@@ -149,12 +149,21 @@ class Web(callbacks.PluginRegexp):
             pass
         parser = Title()
         if minisix.PY3 and isinstance(text, bytes):
-            irc.error(_('Could not guess the page\'s encoding. (Try '
-                    'installing python-charade.)'), Raise=True)
+            if raiseErrors:
+                irc.error(_('Could not guess the page\'s encoding. (Try '
+                        'installing python-charade.)'), Raise=True)
+            else:
+                return None
         parser.feed(text)
         title = parser.title
         if title:
             title = utils.web.htmlToText(parser.title.strip())
+        elif raiseErrors:
+            if len(text) < size:
+                irc.reply(_('That URL appears to have no HTML title.'))
+            else:
+                irc.reply(format(_('That URL appears to have no HTML title '
+                                 'within the first %S.'), size))
         return title
 
     @fetch_sandbox
@@ -172,7 +181,7 @@ class Web(callbacks.PluginRegexp):
             if r and r.search(url):
                 self.log.debug('Not titleSnarfing %q.', url)
                 return
-            title = self.getTitle(url)
+            title = self.getTitle(url, False)
             if title:
                 domain = utils.web.getDomain(fd.geturl()
                         if self.registryValue('snarferShowTargetDomain', channel)
@@ -283,17 +292,12 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(url):
             irc.error("This url is not on the whitelist.")
             return
-        title = self.getTitle(url)
+        title = self.getTitle(url, True)
         if title:
             if not [y for x,y in optlist if x == 'no-filter']:
                 for i in range(1, 4):
                     title = title.replace(chr(i), '')
             irc.reply(title)
-        elif len(text) < size:
-            irc.reply(_('That URL appears to have no HTML title.'))
-        else:
-            irc.reply(format(_('That URL appears to have no HTML title '
-                             'within the first %S.'), size))
     title = wrap(title, [getopts({'no-filter': ''}), 'httpUrl'])
 
     @internationalizeDocstring
