@@ -155,9 +155,10 @@ class Web(callbacks.PluginRegexp):
             else:
                 return None
         parser.feed(text)
+        parser.close()
         title = parser.title
         if title:
-            title = utils.web.htmlToText(parser.title.strip())
+            title = utils.web.htmlToText(title.strip())
         elif raiseErrors:
             if len(text) < size:
                 irc.reply(_('That URL appears to have no HTML title.'))
