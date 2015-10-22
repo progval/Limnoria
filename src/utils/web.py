@@ -254,6 +254,7 @@ def htmlToText(s, tagReplace=' '):
             pass
     x = HtmlToText(tagReplace)
     x.feed(s)
+    x.close()
     return x.getText()
 
 def mungeEmail(s):

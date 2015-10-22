@@ -155,6 +155,7 @@ class Web(callbacks.PluginRegexp):
             else:
                 return None
         parser.feed(text)
+        parser.close()
         title = parser.title
         if title:
             title = utils.web.htmlToText(parser.title.strip())
