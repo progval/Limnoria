@@ -68,6 +68,12 @@ class WebTestCase(ChannelPluginTestCase):
             self.assertResponse(
                     'title http://www.thefreedictionary.com/don%27t',
                     "Don't - definition of don't by The Free Dictionary")
+            self.assertRegexp(
+                    'title '
+                    'https://twitter.com/rlbarnes/status/656554266744586240',
+                    '"PSA: In Firefox 44 Nightly, "http:" pages with '
+                    '<input type="password"> are now marked insecure. '
+                    'https://t.co/qS9LxuRPdm"$')
 
         def testTitleSnarfer(self):
             try:

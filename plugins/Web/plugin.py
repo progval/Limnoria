@@ -50,15 +50,13 @@ else:
     from HTMLParser import HTMLParser
     from htmlentitydefs import entitydefs
 
-class Title(HTMLParser):
+class Title(utils.web.HtmlToText):
     entitydefs = entitydefs.copy()
     entitydefs['nbsp'] = ' '
-    entitydefs['apos'] = '\''
     def __init__(self):
         self.inTitle = False
         self.inSvg = False
-        self.title = ''
-        HTMLParser.__init__(self)
+        utils.web.HtmlToText.__init__(self)
 
     @property
     def inHtmlTitle(self):
@@ -76,18 +74,9 @@ class Title(HTMLParser):
         elif tag == 'svg':
             self.inSvg = False
 
-    def handle_data(self, data):
+    def append(self, data):
         if self.inHtmlTitle:
-            self.title += data
-
-    def handle_entityref(self, name):
-        if self.inHtmlTitle:
-            if name in self.entitydefs:
-                self.title += self.entitydefs[name]
-
-    def handle_charref(self, name):
-        if self.inHtmlTitle:
-            self.title += (unichr if minisix.PY2 else chr)(int(name))
+            super(Title, self).append(data)
 
 class DelayedIrc:
     def __init__(self, irc):
@@ -156,16 +145,15 @@ class Web(callbacks.PluginRegexp):
                 return None
         parser.feed(text)
         parser.close()
-        title = parser.title
+        title = ''.join(parser.data).strip()
         if title:
-            title = utils.web.htmlToText(title.strip())
+            return title
         elif raiseErrors:
             if len(text) < size:
                 irc.reply(_('That URL appears to have no HTML title.'))
             else:
                 irc.reply(format(_('That URL appears to have no HTML title '
                                  'within the first %S.'), size))
-        return title
 
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):

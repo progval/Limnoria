@@ -206,39 +206,46 @@ class HtmlToText(HTMLParser, object):
     """Taken from some eff-bot code on c.l.p."""
     entitydefs = entitydefs.copy()
     entitydefs['nbsp'] = ' '
+    entitydefs['apos'] = '\''
     def __init__(self, tagReplace=' '):
         self.data = []
         self.tagReplace = tagReplace
         super(HtmlToText, self).__init__()
 
+    def append(self, data):
+        self.data.append(data)
+
     def handle_starttag(self, tag, attr):
-        self.data.append(self.tagReplace)
+        self.append(self.tagReplace)
 
     def handle_endtag(self, tag):
-        self.data.append(self.tagReplace)
+        self.append(self.tagReplace)
 
     def handle_data(self, data):
-        self.data.append(data)
+        self.append(data)
 
     def handle_entityref(self, data):
         if minisix.PY3:
             if data in name2codepoint:
-                self.data.append(chr(name2codepoint[data]))
+                self.append(chr(name2codepoint[data]))
             elif isinstance(data, bytes):
-                self.data.append(data.decode())
+                self.append(data.decode())
             else:
-                self.data.append(data)
+                self.append(data)
         else:
             if data in name2codepoint:
-                self.data.append(unichr(name2codepoint[data]))
+                self.append(unichr(name2codepoint[data]))
             elif isinstance(data, str):
-                self.data.append(data.decode('utf8', errors='replace'))
+                self.append(data.decode('utf8', errors='replace'))
             else:
-                self.data.append(data)
+                self.append(data)
 
     def getText(self):
         text = ''.join(self.data).strip()
         return normalizeWhitespace(text)
+
+    def handle_charref(self, name):
+        self.append((unichr if minisix.PY2 else chr)(int(name)))
 
 def htmlToText(s, tagReplace=' '):
     """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
