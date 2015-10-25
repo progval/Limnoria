@@ -130,7 +130,7 @@ class Web(callbacks.PluginRegexp):
 
     def getTitle(self, url, raiseErrors):
         size = conf.supybot.protocols.http.peekSize()
-        text = utils.web.getUrl(url, size=size)
+        (target, text) = utils.web.getUrlTargetAndContent(url, size=size)
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')
@@ -147,7 +147,7 @@ class Web(callbacks.PluginRegexp):
         parser.close()
         title = ''.join(parser.data).strip()
         if title:
-            return title
+            return (target, title)
         elif raiseErrors:
             if len(text) < size:
                 irc.reply(_('That URL appears to have no HTML title.'))
@@ -170,9 +170,9 @@ class Web(callbacks.PluginRegexp):
             if r and r.search(url):
                 self.log.debug('Not titleSnarfing %q.', url)
                 return
-            title = self.getTitle(url, False)
+            (target, title) = self.getTitle(url, False)
             if title:
-                domain = utils.web.getDomain(fd.geturl()
+                domain = utils.web.getDomain(target
                         if self.registryValue('snarferShowTargetDomain', channel)
                         else url)
                 s = format(_('Title: %s (at %s)'), title, domain)
@@ -281,7 +281,7 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(url):
             irc.error("This url is not on the whitelist.")
             return
-        title = self.getTitle(url, True)
+        (target, title) = self.getTitle(url, True)
         if title:
             if not [y for x,y in optlist if x == 'no-filter']:
                 for i in range(1, 4):
