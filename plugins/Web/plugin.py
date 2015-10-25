@@ -174,6 +174,7 @@ class Web(callbacks.PluginRegexp):
                 return
             title = self.getTitle(url)
             if title:
+                fd = utils.web.getUrlFd(url)
                 domain = utils.web.getDomain(fd.geturl()
                         if self.registryValue('snarferShowTargetDomain', channel)
                         else url)
