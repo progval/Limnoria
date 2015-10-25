@@ -107,6 +107,7 @@ class GPGTestCase(PluginTestCase):
             token = match.group(1)
 
             def fakeGetUrlFd(*args, **kwargs):
+                fd.geturl = lambda :None
                 return fd
             (utils.web.getUrlFd, realGetUrlFd) = (fakeGetUrlFd, utils.web.getUrlFd)
 
