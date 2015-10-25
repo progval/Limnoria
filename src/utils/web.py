@@ -161,10 +161,11 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
     except ValueError as e:
         raise Error(strError(e))
 
-def getUrl(url, size=None, headers=None, data=None, timeout=None):
-    """getUrl(url, size=None, headers=None, data=None, timeout=None)
+def getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None):
+    """getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None)
 
-    Gets a page.  Returns a string that is the page gotten.  Size is an integer
+    Gets a page.  Returns two strings that are the page gotten and the
+    target URL (ie. after redirections).  Size is an integer
     number of bytes to read from the URL.  Headers and data are dicts as per
     urllib.request.Request's arguments."""
     fd = getUrlFd(url, headers=headers, data=data, timeout=timeout)
@@ -175,8 +176,22 @@ def getUrl(url, size=None, headers=None, data=None, timeout=None):
             text = fd.read(size)
     except socket.timeout:
         raise Error(TIMED_OUT)
+    target = fd.geturl()
     fd.close()
+    return (target, text)
+
+def getUrlContent(*args, **kwargs):
+    """getUrlContent(url, size=None, headers=None, data=None, timeout=None)
+
+    Gets a page.  Returns a string that is the page gotten.  Size is an integer
+    number of bytes to read from the URL.  Headers and data are dicts as per
+    urllib.request.Request's arguments."""
+    (target, text) = getUrlTargetAndContent(*args, **kwargs)
     return text
+
+def getUrl(*args, **kwargs):
+    """Alias for getUrlContent."""
+    return getUrlContent(*args, **kwargs)
 
 def getDomain(url):
     return urlparse(url)[1]
