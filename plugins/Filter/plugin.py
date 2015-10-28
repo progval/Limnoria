@@ -82,7 +82,8 @@ class Filter(callbacks.Plugin):
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'stripcolor', 'aol', 'rainbow', 'spellit',
-                       'hebrew', 'undup', 'gnu', 'shrink', 'uniud']
+                       'hebrew', 'undup', 'gnu', 'shrink', 'uniud', 'capwords',
+                       'caps', 'vowelrot']
     @internationalizeDocstring
     def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
@@ -725,6 +726,33 @@ class Filter(callbacks.Plugin):
         s = '%s \x02 \x02' % ''.join(reversed(turned))
         irc.reply(s)
     uniud = wrap(uniud, ['text'])
+
+    def capwords(self, irc, msg, args, text):
+        """<text>
+
+        Capitalises the first letter of each word.
+        """
+        text = string.capwords(text)
+        irc.reply(text)
+    capwords = wrap(capwords, ['text'])
+
+    def caps(self, irc, msg, args, text):
+        """<text>
+
+        EVERYONE LOVES CAPS LOCK.
+        """
+        irc.reply(text.upper())
+    caps = wrap(caps, ['text'])
+
+    _vowelrottrans = utils.str.MultipleReplacer(dict(list(zip('aeiouAEIOU', 'eiouaEIOUA'))))
+    def vowelrot(self, irc, msg, args, text):
+        """<text>
+
+        Returns <text> with vowels rotated
+        """
+        text = self._vowelrottrans(text)
+        irc.reply(text)
+    vowelrot = wrap(vowelrot, ['text'])
 Filter = internationalizeDocstring(Filter)
 
 Class = Filter
