@@ -62,10 +62,7 @@ class DDG(callbacks.Plugin):
         # DuckDuckGo has a 'lite' site free of unparseable JavaScript
         # elements, so we'll use that to our advantage!
         url = "https://duckduckgo.com/lite?" + urlencode({"q": text})
-        try:
-            data = utils.web.getUrl(url).decode("utf-8")
-        except utils.web.Error as e:
-            irc.error(str(e), Raise=True)
+        data = utils.web.getUrl(url).decode("utf-8")
         soup = BeautifulSoup(data)
         # Remove "sponsored link" results
         return [td for td in soup.find_all('td') if 'result-sponsored' not in str(td.parent.get('class'))]
