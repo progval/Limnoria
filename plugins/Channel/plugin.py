@@ -70,8 +70,8 @@ class Channel(callbacks.Plugin):
                                   channel, msg.prefix)
                     irc.sendMsg(networkGroup.channels.join(channel))
             else:
-                self.log.info('Kicked from %s by %s. Not auto-rejoining.' %
-                        (channel, msg.prefix))
+                self.log.info('Kicked from %s by %s. Not auto-rejoining.',
+                        channel, msg.prefix)
 
     def _sendMsg(self, irc, msg):
         irc.queueMsg(msg)

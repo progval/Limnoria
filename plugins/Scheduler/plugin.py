@@ -87,7 +87,7 @@ class Scheduler(callbacks.Plugin):
             except AssertionError as e:
                 if str(e) == 'An event with the same name has already been scheduled.':
                     # we must be reloading the plugin, event is still scheduled
-                    self.log.info('Event %s already exists, adding to dict.' % (name,))
+                    self.log.info('Event %s already exists, adding to dict.', name)
                     self.events[name] = event
                 else:
                     raise

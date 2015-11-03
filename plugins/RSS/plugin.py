@@ -324,7 +324,7 @@ class RSS(callbacks.Plugin):
         for name in announced_feeds:
             feed = self.get_feed(name)
             if not feed:
-                self.log.warning('Feed %s is announced but does not exist.' %
+                self.log.warning('Feed %s is announced but does not exist.',
                         name)
                 continue
             self.update_feed_if_needed(feed)
