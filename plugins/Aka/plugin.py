@@ -366,7 +366,15 @@ def findBiggestAt(alias):
     else:
         return 0
 
-AkaDB = plugins.DB('Aka', available_db)
+if 'sqlite3' in conf.supybot.databases() and 'sqlite3' in available_db:
+    AkaDB = SQLiteAkaDB
+elif 'sqlalchemy' in conf.supybot.databases() and 'sqlalchemy' in available_db:
+    log.warning('Aka\'s only enabled database engine is SQLAlchemy, which '
+            'is deprecated. Please consider adding \'sqlite3\' to '
+            'supybot.databases (and/or install sqlite3).')
+    AkaDB = SqlAlchemyAkaDB
+else:
+    raise plugins.NoSuitableDatabase(['sqlite3', 'sqlalchemy'])
 
 class Aka(callbacks.Plugin):
     """Aka is the improved version of the Alias plugin. It stores akas outside
@@ -377,7 +385,8 @@ class Aka(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Aka, self)
         self.__parent.__init__(irc)
-        self._db = AkaDB()
+        filename = conf.supybot.directories.data.dirize('Aka')
+        self._db = AkaDB(filename)
 
     def isCommandMethod(self, name):
         args = name.split(' ')
