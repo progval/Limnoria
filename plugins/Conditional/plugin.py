@@ -53,6 +53,8 @@ else:
     _any = __builtins__.any
     _all = __builtins__.all
 
+boolean_or_int = first('int', 'boolean')
+
 class Conditional(callbacks.Plugin):
     """This plugin provides logic operators and other commands that
     enable you to run commands only if a condition is true. Useful for nested
@@ -84,7 +86,7 @@ class Conditional(callbacks.Plugin):
         else:
             self._runCommandFunction(irc, msg, elsecommand)
         irc.noReply()
-    cif = wrap(cif, ['boolean', 'something', 'something'])
+    cif = wrap(cif, [boolean_or_int, 'something', 'something'])
 
     @internationalizeDocstring
     def cand(self, irc, msg, args, conds):
@@ -96,7 +98,7 @@ class Conditional(callbacks.Plugin):
             irc.reply("true")
         else:
             irc.reply("false")
-    cand = wrap(cand, [many('boolean'),])
+    cand = wrap(cand, [many(boolean_or_int),])
 
     @internationalizeDocstring
     def cor(self, irc, msg, args, conds):
@@ -108,7 +110,7 @@ class Conditional(callbacks.Plugin):
             irc.reply("true")
         else:
             irc.reply("false")
-    cor = wrap(cor, [many('boolean'),])
+    cor = wrap(cor, [many(boolean_or_int),])
 
     @internationalizeDocstring
     def cxor(self, irc, msg, args, conds):
@@ -120,7 +122,7 @@ class Conditional(callbacks.Plugin):
             irc.reply("true")
         else:
             irc.reply("false")
-    cxor = wrap(cxor, [many('boolean'),])
+    cxor = wrap(cxor, [many(boolean_or_int),])
 
     @internationalizeDocstring
     def ceq(self, irc, msg, args, item1, item2):

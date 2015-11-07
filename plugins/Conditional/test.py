@@ -39,6 +39,10 @@ class ConditionalTestCase(PluginTestCase):
         self.assertRegexp('cif [ceq bla bar] "echo moo" "echo foo"', 'foo')
         self.assertRegexp('cif [cand [ceq bla bla] [ne soo boo]] "echo moo" "echo foo"', 'moo')
         self.assertRegexp('cif [ceq [echo $nick] "test"] "echo yay" "echo nay"', 'yay')
+        self.assertRegexp('cif 0 "echo nay" "echo yay"', 'yay')
+        self.assertRegexp('cif 1 "echo yay" "echo nay"', 'yay')
+        self.assertRegexp('cif 4 "echo yay" "echo nay"', 'yay')
+        self.assertRegexp('cif -1 "echo yay" "echo nay"', 'yay')
         
     def testCand(self):
         self.assertRegexp('cand true true', 'true')
