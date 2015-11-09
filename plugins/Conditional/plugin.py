@@ -29,8 +29,8 @@
 ###
 
 import supybot.utils as utils
-from supybot.commands import *
 import supybot.plugins as plugins
+import supybot.commands as commands
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
@@ -46,12 +46,10 @@ except:
     _ = lambda x:x
     internationalizeDocstring = lambda x:x
 
-if isinstance(__builtins__, dict):
-    _any = __builtins__['any']
-    _all = __builtins__['all']
-else:
-    _any = __builtins__.any
-    _all = __builtins__.all
+first = commands.first
+many = commands.many
+wrap = commands.wrap
+getopts = commands.getopts
 
 boolean_or_int = first('int', 'boolean')
 
@@ -94,7 +92,7 @@ class Conditional(callbacks.Plugin):
 
         Returns true if all conditions supplied evaluate to true.
         """
-        if _all(conds):
+        if all(conds):
             irc.reply("true")
         else:
             irc.reply("false")
@@ -106,7 +104,7 @@ class Conditional(callbacks.Plugin):
 
         Returns true if any one of conditions supplied evaluates to true.
         """
-        if _any(conds):
+        if any(conds):
             irc.reply("true")
         else:
             irc.reply("false")
