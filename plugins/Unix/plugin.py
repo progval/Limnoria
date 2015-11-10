@@ -297,7 +297,7 @@ class Unix(callbacks.Plugin):
                     args.append(str(val))
                 if '-c' not in args:
                     args.append('-c')
-                    args.append('5')
+                    args.append('10')
                 args.append(host)
                 try:
                     with open(os.devnull) as null:
