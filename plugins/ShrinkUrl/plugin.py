@@ -124,8 +124,10 @@ class ShrinkUrl(callbacks.PluginRegexp):
         irc.queueMsg(newMsg)
 
     def outFilter(self, irc, msg):
+        if msg.command != 'PRIVMSG':
+            return
         channel = msg.args[0]
-        if msg.command == 'PRIVMSG' and irc.isChannel(channel):
+        if irc.isChannel(channel):
             if not msg.shrunken:
                 if self.registryValue('outFilter', channel):
                     if utils.web.httpUrlRe.search(msg.args[1]):
