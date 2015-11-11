@@ -125,7 +125,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
 
     def outFilter(self, irc, msg):
         if msg.command != 'PRIVMSG':
-            return
+            return msg
         channel = msg.args[0]
         if irc.isChannel(channel):
             if not msg.shrunken:
