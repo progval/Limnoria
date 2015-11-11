@@ -180,13 +180,12 @@ setup(
     granularity.  Batteries are included in the form of numerous plugins
     already written."""),
     classifiers = [
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Environment :: No Input/Output (Daemon)',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
-        'Topic :: Communications :: Chat :: Internet Relay Chat',
         'Natural Language :: English',
         'Natural Language :: Finnish',
         'Natural Language :: French',
@@ -200,6 +199,8 @@ setup(
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Topic :: Communications :: Chat :: Internet Relay Chat',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         ],
 
     # Installation data
