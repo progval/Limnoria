@@ -659,7 +659,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         else:
             self.prefixNick = conf.supybot.reply.withNickPrefix()
 
-    def evalArgs(self):
+    def evalArgs(self, withClass=None):
         while self.counter < len(self.args):
             self.repliedTo = False
             if isinstance(self.args[self.counter], minisix.string_types):
@@ -676,8 +676,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 # evaluating its args, it will call our reply method, which
                 # will subsequently call this function again, and we'll
                 # pick up where we left off via self.counter.
-                self.__class__(self, self.msg,
-                               self.args[self.counter], nested=self.nested+1)
+                cls = withClass or self.__class__
+                cls(self, self.msg, self.args[self.counter],
+                        nested=self.nested+1)
                 # We have to return here because the new NestedCommandsIrcProxy
                 # might not have called our reply method instantly, since
                 # its command might be threaded.  So (obviously) we can't

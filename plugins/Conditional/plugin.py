@@ -35,6 +35,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 import re
+import collections
 
 try:
     from supybot.i18n import PluginInternationalization
@@ -297,6 +298,45 @@ class Conditional(callbacks.Plugin):
         else:
             irc.reply('false')
     nle = wrap(nle, ['float', 'float'])
+
+    def iferror(self, irc, msg, args, testcommand, ifcommand, elsecommand):
+        """<testcommand> <ifcommand> <elsecommand>
+
+        Runs <ifcommand> if <testcommand> raises an error, runs <elsecommand>
+        otherwise.
+        """
+        tokens = callbacks.tokenize(testcommand)
+        InvalidCommand = collections.namedtuple('InvalidCommand',
+                'command')
+        replies = []
+        errors = []
+        class ErrorReportingProxy(self.Proxy):
+            def reply(self2, s, *args, **kwargs):
+                replies.append(s)
+            def error(self2, s, Raise=False, *args, **kwargs):
+                errors.append(s)
+                if Raise:
+                    raise ArgumentError
+            def _callInvalidCommands(self2):
+                errors.append(InvalidCommand(self2.args))
+            def evalArgs(self2):
+                # We don't want the replies in the nested command to
+                # be stored here.
+                super(ErrorReportingProxy, self2).evalArgs(withClass=self.Proxy)
+
+        try:
+            ErrorReportingProxy(irc.irc, msg, tokens)
+        except callbacks.ArgumentError as e:
+            pass
+        # TODO: do something with the results
+        if errors:
+            tokens = callbacks.tokenize(ifcommand)
+            self.Proxy(irc, msg, tokens)
+        else:
+            tokens = callbacks.tokenize(elsecommand)
+            self.Proxy(irc, msg, tokens)
+    iferror = wrap(iferror, ['something', 'something', 'something'])
+
 Condition = internationalizeDocstring(Conditional)
 
 Class = Conditional
