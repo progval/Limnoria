@@ -299,11 +299,11 @@ class Conditional(callbacks.Plugin):
             irc.reply('false')
     nle = wrap(nle, ['float', 'float'])
 
-    def iferror(self, irc, msg, args, testcommand, ifcommand, elsecommand):
-        """<testcommand> <ifcommand> <elsecommand>
+    def cerror(self, irc, msg, args, testcommand):
+        """<testcommand>
 
-        Runs <ifcommand> if <testcommand> raises an error, runs <elsecommand>
-        otherwise.
+        Runs <testcommand> and returns true if it raises an error;
+        false otherwise.
         """
         tokens = callbacks.tokenize(testcommand)
         InvalidCommand = collections.namedtuple('InvalidCommand',
@@ -330,12 +330,10 @@ class Conditional(callbacks.Plugin):
             pass
         # TODO: do something with the results
         if errors:
-            tokens = callbacks.tokenize(ifcommand)
-            self.Proxy(irc, msg, tokens)
+            irc.reply('true')
         else:
-            tokens = callbacks.tokenize(elsecommand)
-            self.Proxy(irc, msg, tokens)
-    iferror = wrap(iferror, ['something', 'something', 'something'])
+            irc.reply('false')
+    cerror = wrap(cerror, ['something'])
 
 Condition = internationalizeDocstring(Conditional)
 

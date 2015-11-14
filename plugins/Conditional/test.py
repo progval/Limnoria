@@ -147,26 +147,9 @@ class ConditionalTestCase(PluginTestCase):
         self.assertError('nle 1 bla')
 
     def testIferror(self):
-        self.assertResponse(
-                'iferror "echo hi" "foo" "bar"',
-                'Error: "bar" is not a valid command.')
-        self.assertResponse(
-                'iferror "echo hi" "echo 1 error" "echo 0 errors"',
-                '0 errors')
-        self.assertResponse(
-                'iferror "foobarbaz" "echo 1 error" "echo 0 errors"',
-                '1 error')
-        self.assertResponse(
-                'iferror "help foobarbaz" "echo 1 error" "echo 0 errors"',
-                '1 error')
-        self.assertResponse(
-                r'iferror "iferror \"help foobarbaz\" \"echo hi\" \"foobarbaz\"" '
-                r'"foo" "bar"',
-                'Error: "bar" is not a valid command.')
-        self.assertResponse(
-                r'iferror "iferror \"help foobarbaz\" \"echo hi\" \"foobarbaz\"" '
-                r'"echo 0 errors" "echo 1 error"',
-                '1 error')
+        self.assertResponse('cerror "echo hi"', 'false')
+        self.assertResponse('cerror "foobarbaz"', 'true')
+        self.assertResponse('cerror "help foobarbaz"', 'true')
 
         
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
