@@ -112,7 +112,10 @@ class Network(callbacks.Plugin):
         message.  <network> is only necessary if the network is different
         from the network the command is sent on.
         """
-        quitMsg = quitMsg or conf.supybot.plugins.Owner.quitMsg() or msg.nick
+        standard_msg = conf.supybot.plugins.Owner.quitMsg()
+        if standard_msg:
+            standard_msg = ircutils.standardSubstitute(irc, msg, standard_msg)
+        quitMsg = quitMsg or standard_msg or msg.nick
         otherIrc.queueMsg(ircmsgs.quit(quitMsg))
         otherIrc.die()
         conf.supybot.networks().discard(otherIrc.network)
@@ -131,7 +134,10 @@ class Network(callbacks.Plugin):
         (supybot.plugins.Owner.quitMsg) or the nick of the person giving the
         command.
         """
-        quitMsg = quitMsg or conf.supybot.plugins.Owner.quitMsg() or msg.nick
+        standard_msg = conf.supybot.plugins.Owner.quitMsg()
+        if standard_msg:
+            standard_msg = ircutils.standardSubstitute(irc, msg, standard_msg)
+        quitMsg = quitMsg or standard_msg or msg.nick
         otherIrc.queueMsg(ircmsgs.quit(quitMsg))
         if otherIrc != irc:
             # No need to reply if we're reconnecting ourselves.
