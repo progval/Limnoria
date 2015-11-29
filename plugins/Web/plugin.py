@@ -128,7 +128,7 @@ class Web(callbacks.PluginRegexp):
     def noIgnore(self, irc, msg):
         return not self.registryValue('checkIgnored', msg.args[0])
 
-    def getTitle(self, url, raiseErrors):
+    def getTitle(self, irc, url, raiseErrors):
         size = conf.supybot.protocols.http.peekSize()
         (target, text) = utils.web.getUrlTargetAndContent(url, size=size)
         try:
@@ -150,10 +150,11 @@ class Web(callbacks.PluginRegexp):
             return (target, title)
         elif raiseErrors:
             if len(text) < size:
-                irc.reply(_('That URL appears to have no HTML title.'))
+                irc.error(_('That URL appears to have no HTML title.'),
+                        Raise=True)
             else:
-                irc.reply(format(_('That URL appears to have no HTML title '
-                                 'within the first %S.'), size))
+                irc.error(format(_('That URL appears to have no HTML title '
+                                 'within the first %S.'), size), Raise=True)
 
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
@@ -170,7 +171,10 @@ class Web(callbacks.PluginRegexp):
             if r and r.search(url):
                 self.log.debug('Not titleSnarfing %q.', url)
                 return
-            (target, title) = self.getTitle(url, False)
+            r = self.getTitle(irc, url, False)
+            if not r:
+                return
+            (target, title) = r
             if title:
                 domain = utils.web.getDomain(target
                         if self.registryValue('snarferShowTargetDomain', channel)
@@ -281,7 +285,10 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(url):
             irc.error("This url is not on the whitelist.")
             return
-        (target, title) = self.getTitle(url, True)
+        r = self.getTitle(irc, url, True)
+        if not r:
+            return
+        (target, title) = r
         if title:
             if not [y for x,y in optlist if x == 'no-filter']:
                 for i in range(1, 4):
