@@ -34,10 +34,11 @@ read it.
 
 ## Installing from cloned repo
 
-*If you haven't cloned this repository, please see the previous two
+*If you don't want to clone the repo, please see the previous two
 paragraphs for easier installation methods.*
 
 ```
+git clone https://github.com/ProgVal/Limnoria.git
 sudo pip install -r requirements.txt
 sudo python setup.py install --user
 ```
@@ -45,6 +46,7 @@ sudo python setup.py install --user
 alternatively without root
 
 ```
+git clone https://github.com/ProgVal/Limnoria.git
 pip install -r requirements.txt --user
 python setup.py install --user
 ```
