@@ -385,7 +385,7 @@ class Aka(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Aka, self)
         self.__parent.__init__(irc)
-        # “sqlalchemy” is only for backward compatibility
+        # "sqlalchemy" is only for backward compatibility
         filename = conf.supybot.directories.data.dirize('Aka.sqlalchemy.db')
         self._db = AkaDB(filename)
 
