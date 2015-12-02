@@ -306,6 +306,7 @@ class smallqueue(list):
 
 
 class TimeoutQueue(object):
+    __slots__ = ('queue', 'timeout')
     def __init__(self, timeout, queue=None):
         if queue is None:
             queue = smallqueue()
@@ -402,6 +403,7 @@ class TwoWayDictionary(dict):
 
 
 class MultiSet(object):
+    __slots__ = ('d',)
     def __init__(self, seq=()):
         self.d = {}
         for elt in seq:
@@ -426,6 +428,7 @@ class MultiSet(object):
 
 
 class CacheDict(collections.MutableMapping):
+    __slots__ = ('d', 'max')
     def __init__(self, max, **kwargs):
         self.d = dict(**kwargs)
         self.max = max
@@ -456,6 +459,7 @@ class CacheDict(collections.MutableMapping):
 class TruncatableSet(collections.MutableSet):
     """A set that keeps track of the order of inserted elements so
     the oldest can be removed."""
+    __slots__ = ('_ordered_items', '_items')
     def __init__(self, iterable=[]):
         self._ordered_items = list(iterable)
         self._items = set(self._ordered_items)
