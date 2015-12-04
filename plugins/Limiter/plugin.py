@@ -67,7 +67,7 @@ class Limiter(callbacks.Plugin):
     doKick = doJoin
 
     def doQuit(self, irc, msg):
-        for channel in msg.tagged('channels')
+        for channel in msg.tagged('channels'):
             self._enforceLimit(irc, channel)
 Limiter = internationalizeDocstring(Limiter)
 
