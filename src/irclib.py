@@ -608,8 +608,13 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
                 chan.removeUser(user)
 
     def doQuit(self, irc, msg):
-        for channel in self.channels.values():
-            channel.removeUser(msg.nick)
+        channel_names = ircutils.IrcSet()
+        for (name, channel) in self.channels.items():
+            if msg.nick in channel.users:
+                channel_names.add(name)
+                channel.removeUser(msg.nick)
+        # Remember which channels the user was on
+        msg.tag('channels', channel_names)
         if msg.nick in self.nicksToHostmasks:
             # If we're quitting, it may not be.
             del self.nicksToHostmasks[msg.nick]

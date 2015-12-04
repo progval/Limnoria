@@ -466,6 +466,25 @@ class IrcTestCase(SupyTestCase):
         self.irc.feedMsg(msg2)
         self.assertEqual(list(self.irc.state.history), [msg1, msg2])
 
+    def testQuit(self):
+        self.irc.reset()
+        self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #foo'))
+        self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #bar'))
+        class Callback(irclib.IrcCallback):
+            channels_set = None
+            def name(self):
+                return 'testcallback'
+            def doQuit(self2, irc, msg):
+                self2.channels_set = msg.tagged('channels')
+        c = Callback()
+        self.irc.addCallback(c)
+        try:
+            self.irc.feedMsg(ircmsgs.IrcMsg(':someuser QUIT'))
+        finally:
+            self.irc.removeCallback(c.name())
+        self.assertEqual(c.channels_set, ircutils.IrcSet({'#foo', '#bar'}))
+
+
 
 class IrcCallbackTestCase(SupyTestCase):
     class FakeIrc:
