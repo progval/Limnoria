@@ -655,8 +655,12 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             del self.nicksToHostmasks[oldNick]
         except KeyError:
             pass
-        for channel in self.channels.values():
+        channel_names = ircutils.IrcSet()
+        for (name, channel) in self.channels.items():
+            if msg.nick in channel.users:
+                channel_names.add(name)
             channel.replaceUser(oldNick, newNick)
+        msg.tag('channels', channel_names)
 
     def doBatch(self, irc, msg):
         batch_name = msg.args[0][1:]

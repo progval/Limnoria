@@ -470,6 +470,7 @@ class IrcTestCase(SupyTestCase):
         self.irc.reset()
         self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #foo'))
         self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #bar'))
+        self.irc.feedMsg(ircmsgs.IrcMsg(':someuser2 JOIN #bar2'))
         class Callback(irclib.IrcCallback):
             channels_set = None
             def name(self):
@@ -480,6 +481,25 @@ class IrcTestCase(SupyTestCase):
         self.irc.addCallback(c)
         try:
             self.irc.feedMsg(ircmsgs.IrcMsg(':someuser QUIT'))
+        finally:
+            self.irc.removeCallback(c.name())
+        self.assertEqual(c.channels_set, ircutils.IrcSet(['#foo', '#bar']))
+
+    def testNick(self):
+        self.irc.reset()
+        self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #foo'))
+        self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #bar'))
+        self.irc.feedMsg(ircmsgs.IrcMsg(':someuser2 JOIN #bar2'))
+        class Callback(irclib.IrcCallback):
+            channels_set = None
+            def name(self):
+                return 'testcallback'
+            def doNick(self2, irc, msg):
+                self2.channels_set = msg.tagged('channels')
+        c = Callback()
+        self.irc.addCallback(c)
+        try:
+            self.irc.feedMsg(ircmsgs.IrcMsg(':someuser NICK newuser'))
         finally:
             self.irc.removeCallback(c.name())
         self.assertEqual(c.channels_set, ircutils.IrcSet(['#foo', '#bar']))
