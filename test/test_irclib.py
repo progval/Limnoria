@@ -482,7 +482,31 @@ class IrcTestCase(SupyTestCase):
             self.irc.feedMsg(ircmsgs.IrcMsg(':someuser QUIT'))
         finally:
             self.irc.removeCallback(c.name())
-        self.assertEqual(c.channels_set, ircutils.IrcSet({'#foo', '#bar'}))
+        self.assertEqual(c.channels_set, ircutils.IrcSet(['#foo', '#bar']))
+
+    def testBatch(self):
+        self.irc.reset()
+        self.irc.feedMsg(ircmsgs.IrcMsg(':someuser1 JOIN #foo'))
+        self.irc.feedMsg(ircmsgs.IrcMsg(':host BATCH +name netjoin'))
+        m1 = ircmsgs.IrcMsg('@batch=name :someuser2 JOIN #foo')
+        self.irc.feedMsg(m1)
+        self.irc.feedMsg(ircmsgs.IrcMsg(':someuser3 JOIN #foo'))
+        m2 = ircmsgs.IrcMsg('@batch=name :someuser4 JOIN #foo')
+        self.irc.feedMsg(m2)
+        class Callback(irclib.IrcCallback):
+            batch = None
+            def name(self):
+                return 'testcallback'
+            def doBatch(self2, irc, msg):
+                self2.batch = msg.tagged('batch')
+        c = Callback()
+        self.irc.addCallback(c)
+        try:
+            self.irc.feedMsg(ircmsgs.IrcMsg(':host BATCH -name'))
+        finally:
+            self.irc.removeCallback(c.name())
+        self.assertEqual(c.batch, irclib.Batch('netjoin', (), [m1, m2]))
+
 
 
 

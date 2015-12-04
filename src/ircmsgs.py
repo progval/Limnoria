@@ -186,6 +186,7 @@ class IrcMsg(object):
                 assert all(ircutils.isValidArgument, args), args
                 self.args = args
                 self.time = None
+                self.server_tags = {}
         self.args = tuple(self.args)
         if isUserHostmask(self.prefix):
             (self.nick,self.user,self.host)=ircutils.splitHostmask(self.prefix)
