@@ -49,20 +49,8 @@ class Relay(callbacks.Plugin):
         self.__parent = super(Relay, self)
         self.__parent.__init__(irc)
         self._whois = {}
-        self.lastmsg = {}
-        self.ircstates = {}
         self.queuedTopics = MultiSet()
         self.lastRelayMsgs = ircutils.IrcDict()
-
-    def __call__(self, irc, msg):
-        try:
-            irc = self._getRealIrc(irc)
-            if irc not in self.ircstates:
-                self._addIrc(irc)
-            self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
-        finally:
-            self.lastmsg[irc] = msg
-        self.__parent.__call__(irc, msg)
 
     def do376(self, irc, msg):
         networkGroup = conf.supybot.networks.get(irc.network)
@@ -81,19 +69,6 @@ class Relay(callbacks.Plugin):
     def _getIrcName(self, irc):
         # We should allow abbreviations at some point.
         return irc.network
-
-    def _addIrc(self, irc):
-        # Let's just be extra-special-careful here.
-        if irc not in self.ircstates:
-            self.ircstates[irc] = irclib.IrcState()
-        if irc not in self.lastmsg:
-            self.lastmsg[irc] = ircmsgs.ping('this is just a fake message')
-        if irc.afterConnect:
-            # We've probably been reloaded.  Let's send some messages to get
-            # our IrcState objects up to current.
-            for channel in self.registryValue('channels'):
-                irc.queueMsg(ircmsgs.who(channel))
-                irc.queueMsg(ircmsgs.names(channel))
 
     @internationalizeDocstring
     def join(self, irc, msg, args, channel):
@@ -392,10 +367,8 @@ class Relay(callbacks.Plugin):
         network = self._getIrcName(irc)
         s = format(_('nick change by %s to %s on %s'), msg.nick,newNick,network)
         for channel in self.registryValue('channels'):
-            if channel in irc.state.channels:
-                if newNick in irc.state.channels[channel].users:
-                    m = self._msgmaker(channel, s)
-                    self._sendToOthers(irc, m)
+            m = self._msgmaker(channel, s)
+            self._sendToOthers(irc, m)
 
     def doTopic(self, irc, msg):
         irc = self._getRealIrc(irc)
@@ -433,10 +406,8 @@ class Relay(callbacks.Plugin):
         else:
             s = format(_('%s has quit %s.'), msg.nick, network)
         for channel in self.registryValue('channels'):
-            if channel in self.ircstates[irc].channels:
-                if msg.nick in self.ircstates[irc].channels[channel].users:
-                    m = self._msgmaker(channel, s)
-                    self._sendToOthers(irc, m)
+            m = self._msgmaker(channel, s)
+            self._sendToOthers(irc, m)
 
     def doError(self, irc, msg):
         irc = self._getRealIrc(irc)

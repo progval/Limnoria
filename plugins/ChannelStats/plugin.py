@@ -170,8 +170,6 @@ class ChannelStats(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(ChannelStats, self)
         self.__parent.__init__(irc)
-        self.lastmsg = None
-        self.laststate = None
         self.outFiltering = False
         self.db = StatsDB(filename)
         self._flush = self.db.flush
@@ -183,13 +181,6 @@ class ChannelStats(callbacks.Plugin):
         self.__parent.die()
 
     def __call__(self, irc, msg):
-        try:
-            if self.lastmsg:
-                self.laststate.addMsg(irc, self.lastmsg)
-            else:
-                self.laststate = irc.state.copy()
-        finally:
-            self.lastmsg = msg
         self.db.addMsg(msg)
         super(ChannelStats, self).__call__(irc, msg)
 
@@ -222,15 +213,14 @@ class ChannelStats(callbacks.Plugin):
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             id = None
-        for (channel, c) in self.laststate.channels.items():
-            if msg.nick in c.users:
-                if (channel, 'channelStats') not in self.db:
-                    self.db[channel, 'channelStats'] = ChannelStat()
-                self.db[channel, 'channelStats'].quits += 1
-                if id is not None:
-                    if (channel, id) not in self.db:
-                        self.db[channel, id] = UserStat()
-                    self.db[channel, id].quits += 1
+        for channel in msg.tagged('channels'):
+            if (channel, 'channelStats') not in self.db:
+                self.db[channel, 'channelStats'] = ChannelStat()
+            self.db[channel, 'channelStats'].quits += 1
+            if id is not None:
+                if (channel, id) not in self.db:
+                    self.db[channel, id] = UserStat()
+                self.db[channel, id].quits += 1
 
     def doKick(self, irc, msg):
         (channel, nick, _) = msg.args

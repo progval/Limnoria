@@ -61,8 +61,6 @@ class ChannelLogger(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(ChannelLogger, self)
         self.__parent.__init__(irc)
-        self.lastMsgs = {}
-        self.lastStates = {}
         self.logs = {}
         self.flusher = self.flush
         world.flushers.append(self.flusher)
@@ -72,26 +70,10 @@ class ChannelLogger(callbacks.Plugin):
             log.close()
         world.flushers = [x for x in world.flushers if x is not self.flusher]
 
-    def __call__(self, irc, msg):
-        try:
-            # I don't know why I put this in, but it doesn't work, because it
-            # doesn't call doNick or doQuit.
-            # if msg.args and irc.isChannel(msg.args[0]):
-            self.__parent.__call__(irc, msg)
-            if irc in self.lastMsgs:
-                if irc not in self.lastStates:
-                    self.lastStates[irc] = irc.state.copy()
-                self.lastStates[irc].addMsg(irc, self.lastMsgs[irc])
-        finally:
-            # We must make sure this always gets updated.
-            self.lastMsgs[irc] = msg
-
     def reset(self):
         for log in self._logs():
             log.close()
         self.logs.clear()
-        self.lastMsgs.clear()
-        self.lastStates.clear()
 
     def _logs(self):
         for logs in self.logs.values():
@@ -222,10 +204,9 @@ class ChannelLogger(callbacks.Plugin):
     def doNick(self, irc, msg):
         oldNick = msg.nick
         newNick = msg.args[0]
-        for (channel, c) in irc.state.channels.items():
-            if newNick in c.users:
-                self.doLog(irc, channel,
-                           '*** %s is now known as %s\n', oldNick, newNick)
+        for channel in msg.tagged('channels'):
+            self.doLog(irc, channel,
+                       '*** %s is now known as %s\n', oldNick, newNick)
 
     def doInvite(self, irc, msg):
         (target, channel) = msg.args
@@ -285,16 +266,11 @@ class ChannelLogger(callbacks.Plugin):
             reason = " (%s)" % msg.args[0]
         else:
             reason = ""
-        if not isinstance(irc, irclib.Irc):
-            irc = irc.getRealIrc()
-        if irc not in self.lastStates:
-            return
-        for (channel, chan) in self.lastStates[irc].channels.items():
+        for channel in msg.tagged('channels'):
             if(self.registryValue('showJoinParts', channel)):
-                if msg.nick in chan.users:
-                    self.doLog(irc, channel,
-                               '*** %s <%s> has quit IRC%s\n',
-                               msg.nick, msg.prefix, reason)
+                self.doLog(irc, channel,
+                           '*** %s <%s> has quit IRC%s\n',
+                           msg.nick, msg.prefix, reason)
 
     def outFilter(self, irc, msg):
         # Gotta catch my own messages *somehow* :)

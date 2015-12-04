@@ -103,7 +103,6 @@ class Seen(callbacks.Plugin):
         self.db = SeenDB(filename)
         self.anydb = SeenDB(anyfilename)
         self.lastmsg = {}
-        self.ircstates = {}
         world.flushers.append(self.db.flush)
         world.flushers.append(self.anydb.flush)
 
@@ -121,24 +120,7 @@ class Seen(callbacks.Plugin):
         self.__parent.die()
 
     def __call__(self, irc, msg):
-        try:
-            if irc not in self.ircstates:
-                self._addIrc(irc)
-            self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
-        finally:
-            self.lastmsg[irc] = msg
         self.__parent.__call__(irc, msg)
-
-    def _addIrc(self, irc):
-        # Let's just be extra-special-careful here.
-        if irc not in self.ircstates:
-            self.ircstates[irc] = irclib.IrcState()
-        if irc not in self.lastmsg:
-            self.lastmsg[irc] = ircmsgs.ping('this is just a fake message')
-        if not world.testing:
-            for channel in irc.state.channels:
-                irc.queueMsg(ircmsgs.who(channel))
-                irc.queueMsg(ircmsgs.names(channel))
 
     def doPrivmsg(self, irc, msg):
         if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
@@ -169,17 +151,14 @@ class Seen(callbacks.Plugin):
 
     def doQuit(self, irc, msg):
         said = ircmsgs.prettyPrint(msg)
-        if irc not in self.ircstates:
-            return
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             id = None # Not in the database.
-        for channel in self.ircstates[irc].channels:
-            if msg.nick in self.ircstates[irc].channels[channel].users:
-                self.anydb.update(channel, msg.nick, said)
-                if id is not None:
-                    self.anydb.update(channel, id, said)
+        for channel in msg.tagged('channels'):
+            self.anydb.update(channel, msg.nick, said)
+            if id is not None:
+                self.anydb.update(channel, id, said)
     doNick = doQuit
 
     def doMode(self, irc, msg):
