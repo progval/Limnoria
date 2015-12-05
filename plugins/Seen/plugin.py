@@ -164,7 +164,15 @@ class Seen(callbacks.Plugin):
     def doMode(self, irc, msg):
         # Filter out messages from network Services
         if msg.nick:
-            self.doQuit(irc, msg)
+            try:
+                id = ircdb.users.getUserId(msg.prefix)
+            except KeyError:
+                id = None # Not in the database.
+            channel = msg.args[0]
+            said = ircmsgs.prettyPrint(msg)
+            self.anydb.update(channel, msg.nick, said)
+            if id is not None:
+                self.anydb.update(channel, id, said)
     doTopic = doMode
 
     def _seen(self, irc, channel, name, any=False):
