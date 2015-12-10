@@ -968,19 +968,11 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.password = conf.supybot.networks.get(self.network).password()
         self.sasl_username = \
                 conf.supybot.networks.get(self.network).sasl.username()
-        # TODO Find a better way to fix this
-        if hasattr(self.sasl_username, 'decode'):
-            self.sasl_username = self.sasl_username.decode('utf-8')
         self.sasl_password = \
                 conf.supybot.networks.get(self.network).sasl.password()
-        # TODO Find a better way to fix this
-        if hasattr(self.sasl_password, 'decode'):
-            self.sasl_password = self.sasl_password.decode('utf-8')
         self.sasl_ecdsa_key = \
                 conf.supybot.networks.get(self.network).sasl.ecdsa_key()
-        # TODO Find a better way to fix this
-        if hasattr(self.sasl_ecdsa_key, 'decode'):
-            self.sasl_ecdsa_key = self.sasl_ecdsa_key.decode('utf-8')
+        self.authenticate_decoder = None
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         # The rest.
         self.lastTake = 0
@@ -1038,33 +1030,41 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self.REQUEST_CAPABILITIES.add('sasl')
 
     def doAuthenticate(self, msg):
-        if len(msg.args) == 1 and msg.args[0] == '+':
+        if not self.authenticate_decoder:
+            self.authenticate_decoder = ircutils.AuthenticateDecoder()
+        self.authenticate_decoder.feed(msg)
+        if not self.authenticate_decoder.ready:
+            return # Waiting for other messages
+        string = self.authenticate_decoder.get()
+        self.authenticate_decoder = None
+        if string == b'':
             log.info('%s: Authenticating using SASL.', self.network)
 
             if self.sasl == 'external':
-                authstring = '+'
+                authstring = b''
             elif self.sasl == 'ecdsa-nist256p-challenge':
-                authstring = base64.b64encode(
-                    self.sasl_username.encode('utf-8')).decode('utf-8')
+                authstring = self.sasl_username.encode('utf-8')
             elif self.sasl == 'plain':
-                authstring = base64.b64encode('\0'.join([
-                    self.sasl_username,
-                    self.sasl_username,
-                    self.sasl_password
-                ]).encode('utf-8')).decode('utf-8')
+                authstring = b'\0'.join([
+                    self.sasl_username.encode('utf-8'),
+                    self.sasl_username.encode('utf-8'),
+                    self.sasl_password.encode('utf-8'),
+                ])
 
-            self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
-        elif (len(msg.args) == 1 and msg.args[0] != '+' and
-                self.sasl == 'ecdsa-nist256p-challenge'):
+            for chunk in ircutils.authenticate_generator(authstring):
+                self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
+                    args=(chunk,)))
+        elif (string != b'' and self.sasl == 'ecdsa-nist256p-challenge'):
             try:
-                private_key = SigningKey.from_pem(open(self.sasl_ecdsa_key).
-                    read())
-                authstring = base64.b64encode(
-                    private_key.sign(base64.b64decode(msg.args[0].encode()))).decode('utf-8')
+                with open(self.sasl_ecdsa_key) as fd:
+                    private_key = SigningKey.from_pem(fd.read())
+                authstring = private_key.sign(base64.b64decode(msg.args[0].encode()))
+                chunks = ircutils.authenticate_generator(authstring)
             except (BadDigestError, OSError, ValueError):
-                authstring = "*"
-
-            self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=(authstring,)))
+                chunks = ['*']
+            for chunk in chunks:
+                self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
+                    args=(chunk,)))
 
     def doCap(self, msg):
         subcommand = msg.args[1]

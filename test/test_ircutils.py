@@ -391,6 +391,41 @@ class IrcStringTestCase(SupyTestCase):
         self.failUnless(s1 == s2)
         self.failIf(s1 != s2)
 
+class AuthenticateTestCase(SupyTestCase):
+    PAIRS = [
+            (b'', ['+']),
+            (b'foo'*150, [
+                'Zm9v'*100,
+                'Zm9v'*50
+                ]),
+            (b'foo'*200, [
+                'Zm9v'*100,
+                'Zm9v'*100,
+                '+'])
+            ]
+    def assertMessages(self, got, should):
+        got = list(got)
+        for (s1, s2) in zip(got, should):
+            self.assertEqual(s1, s2, (got, should))
+
+    def testGenerator(self):
+        for (decoded, encoded) in self.PAIRS:
+            self.assertMessages(
+                    ircutils.authenticate_generator(decoded),
+                    encoded)
+
+    def testDecoder(self):
+        for (decoded, encoded) in self.PAIRS:
+            decoder = ircutils.AuthenticateDecoder()
+            for chunk in encoded:
+                self.assertFalse(decoder.ready, (decoded, encoded))
+                decoder.feed(ircmsgs.IrcMsg(command='AUTHENTICATE',
+                    args=(chunk,)))
+            self.assertTrue(decoder.ready)
+            self.assertEqual(decoder.get(), decoded)
+
+
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

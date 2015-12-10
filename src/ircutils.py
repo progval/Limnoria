@@ -41,6 +41,7 @@ from __future__ import print_function
 import re
 import sys
 import time
+import base64
 import random
 import string
 import textwrap
@@ -867,6 +868,38 @@ def standardSubstitute(irc, msg, text, env=None):
     t = string.Template(text)
     t.idpattern = '[a-zA-Z][a-zA-Z0-9]*'
     return t.safe_substitute(vars)
+
+
+
+AUTHENTICATE_CHUNK_SIZE = 400
+def authenticate_generator(authstring, base64ify=True):
+    if base64ify:
+        authstring = base64.b64encode(authstring)
+        if minisix.PY3:
+            authstring = authstring.decode()
+    # +1 so we get an empty string at the end if len(authstring) is a multiple
+    # of AUTHENTICATE_CHUNK_SIZE (including 0)
+    for n in range(0, len(authstring)+1, AUTHENTICATE_CHUNK_SIZE):
+        chunk = authstring[n:n+AUTHENTICATE_CHUNK_SIZE] or '+'
+        yield chunk
+
+class AuthenticateDecoder(object):
+    def __init__(self):
+        self.chunks = []
+        self.ready = False
+    def feed(self, msg):
+        assert msg.command == 'AUTHENTICATE'
+        chunk = msg.args[0]
+        if chunk == '+' or len(chunk) != AUTHENTICATE_CHUNK_SIZE:
+            self.ready = True
+        if chunk != '+':
+            if minisix.PY3:
+                chunk = chunk.encode()
+            self.chunks.append(chunk)
+    def get(self):
+        assert self.ready
+        return base64.b64decode(b''.join(self.chunks))
+
 
 numerics = {
     # <= 2.10

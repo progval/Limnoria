@@ -37,6 +37,7 @@ object (which, as you'll read later, is quite...full-featured :))
 
 import re
 import time
+import base64
 import datetime
 import functools
 
@@ -879,6 +880,7 @@ def monitor(subcommand, nicks=None, prefix='', msg=None):
         nicks = ','.join(nicks)
     return IrcMsg(prefix=prefix, command='MONITOR', args=(subcommand, nicks),
             msg=msg)
+
 
 def error(s, msg=None):
     return IrcMsg(command='ERROR', args=(s,), msg=msg)
