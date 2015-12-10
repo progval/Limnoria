@@ -456,7 +456,7 @@ registerChannelValue(supybot.reply.error, 'withNotice',
     supybot.reply.errorInPrivate so private errors don't open a query window
     in most IRC clients.""")))
 registerChannelValue(supybot.reply.error, 'noCapability',
-    registry.Boolean(False, _("""Determines whether the bot will send an error
+    registry.Boolean(False, _("""Determines whether the bot will *not* send an error
     message to users who attempt to call a command for which they do not have
     the necessary capability.  You may wish to make this True if you don't want
     users to understand the underlying security system preventing them from
