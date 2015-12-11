@@ -966,13 +966,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.ident = get_value('ident')
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         self.password = conf.supybot.networks.get(self.network).password()
-        self.sasl_username = \
-                conf.supybot.networks.get(self.network).sasl.username()
-        self.sasl_password = \
-                conf.supybot.networks.get(self.network).sasl.password()
-        self.sasl_ecdsa_key = \
-                conf.supybot.networks.get(self.network).sasl.ecdsa_key()
-        self.authenticate_decoder = None
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         # The rest.
         self.lastTake = 0
@@ -981,8 +974,14 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.startedAt = time.time()
         self.lastping = time.time()
         self.outstandingPing = False
+        self.resetSasl()
 
+    def resetSasl(self):
         network_config = conf.supybot.networks.get(self.network)
+        self.sasl_username = network_config.sasl.username()
+        self.sasl_password = network_config.sasl.password()
+        self.sasl_ecdsa_key = network_config.sasl.ecdsa_key()
+        self.authenticate_decoder = None
         self.sasl_next_mechanisms = []
         self.sasl_current_mechanism = None
 
@@ -1049,6 +1048,11 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self.sasl_current_mechanism = None
             self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('END',)))
 
+    def filterSaslMechanisms(self, available):
+        self.sasl_next_mechanisms = [
+                x for x in self.sasl_next_mechanisms
+                if x in available]
+
     def doAuthenticate(self, msg):
         if not self.authenticate_decoder:
             self.authenticate_decoder = ircutils.AuthenticateDecoder()
@@ -1107,7 +1111,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     def do908(self, msg):
         log.info('%s: Supported SASL mechanisms: %s',
                  self.network, msg.args[1])
-        # TODO: filter self.sasl_next_mechanisms
+        self.filterSaslMechanisms(set(msg.args[1].split(',')))
 
     def doCap(self, msg):
         subcommand = msg.args[1]
@@ -1153,7 +1157,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             else:
                 self.state.capabilities_ls[item] = None
     def doCapLs(self, msg):
-        # TODO: filter self.sasl_next_mechanisms
         if len(msg.args) == 4:
             # Multi-line LS
             if msg.args[2] != '*':
@@ -1164,6 +1167,10 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self._addCapabilities(msg.args[2])
             common_supported_capabilities = set(self.state.capabilities_ls) & \
                     self.REQUEST_CAPABILITIES
+            if 'sasl' in self.state.capabilities_ls:
+                s = self.state.capabilities_ls['sasl']
+                if s is not None:
+                    self.filterSaslMechanisms(set(s.split(',')))
             # NOTE: Capabilities are requested in alphabetic order, because
             # sets are unordered, and their "order" is nondeterministic.
             # This is needed for the tests.
