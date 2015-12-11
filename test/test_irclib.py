@@ -531,7 +531,7 @@ class SaslTestCase(SupyTestCase):
     def setUp(self):
         pass
 
-    def startCapNegociation(self, sasl_attributes=None):
+    def startCapNegociation(self, caps='sasl'):
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
@@ -542,20 +542,17 @@ class SaslTestCase(SupyTestCase):
         m = self.irc.takeMsg()
         self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
 
-        if sasl_attributes:
-            self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-                args=('*', 'LS', 'sasl=%s' % sasl_attributes)))
-        else:
-            self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-                args=('*', 'LS', 'sasl')))
-
-        m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        self.assertEqual(m.args[0], 'REQ', m)
-        self.assertEqual(m.args[1], 'sasl')
-
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-            args=('*', 'ACK', 'sasl')))
+            args=('*', 'LS', caps)))
+
+        if caps:
+            m = self.irc.takeMsg()
+            self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+            self.assertEqual(m.args[0], 'REQ', m)
+            self.assertEqual(m.args[1], 'sasl')
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+                args=('*', 'ACK', 'sasl')))
 
     def endCapNegociation(self):
         m = self.irc.takeMsg()
@@ -642,7 +639,7 @@ class SaslTestCase(SupyTestCase):
         self.assertEqual(self.irc.sasl_next_mechanisms,
                 ['external', 'plain'])
 
-        self.startCapNegociation(sasl_attributes='foo,plain,bar')
+        self.startCapNegociation(caps='sasl=foo,plain,bar')
 
         m = self.irc.takeMsg()
         self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
@@ -658,6 +655,61 @@ class SaslTestCase(SupyTestCase):
         self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
 
         self.endCapNegociation()
+
+    def testReauthenticate(self):
+        try:
+            conf.supybot.networks.test.sasl.username.setValue('jilles')
+            conf.supybot.networks.test.sasl.password.setValue('sesame')
+            self.irc = irclib.Irc('test')
+        finally:
+            conf.supybot.networks.test.sasl.username.setValue('')
+            conf.supybot.networks.test.sasl.password.setValue('')
+        self.assertEqual(self.irc.sasl_current_mechanism, None)
+        self.assertEqual(self.irc.sasl_next_mechanisms, ['plain'])
+
+        self.startCapNegociation(caps='')
+
+        self.endCapNegociation()
+
+        while self.irc.takeMsg():
+            pass
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+                args=('*', 'NEW', 'sasl=EXTERNAL')))
+
+        self.irc.takeMsg() # None. But even if it was CAP REQ sasl, it would be ok
+        self.assertEqual(self.irc.takeMsg(), None)
+
+        try:
+            conf.supybot.networks.test.sasl.username.setValue('jilles')
+            conf.supybot.networks.test.sasl.password.setValue('sesame')
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+                    args=('*', 'DEL', 'sasl')))
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+                    args=('*', 'NEW', 'sasl=PLAIN')))
+        finally:
+            conf.supybot.networks.test.sasl.username.setValue('')
+            conf.supybot.networks.test.sasl.password.setValue('')
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        self.assertEqual(m.args[1], 'sasl')
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'ACK', 'sasl')))
+
+        m = self.irc.takeMsg()
+        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+            args=('PLAIN',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
+
+        m = self.irc.takeMsg()
+        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+            args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
 
 
 
