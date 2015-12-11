@@ -527,6 +527,102 @@ class IrcTestCase(SupyTestCase):
             self.irc.removeCallback(c.name())
         self.assertEqual(c.batch, irclib.Batch('netjoin', (), [m1, m2]))
 
+class SaslTestCase(SupyTestCase):
+    def setUp(self):
+        pass
+
+    def startCapNegociation(self):
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+        # TODO
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'sasl')))
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        self.assertEqual(m.args[1], 'sasl')
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'ACK', 'sasl')))
+
+    def endCapNegociation(self):
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args, ('END',), m)
+
+    def testPlain(self):
+        try:
+            conf.supybot.networks.test.sasl.username.setValue('jilles')
+            conf.supybot.networks.test.sasl.password.setValue('sesame')
+            self.irc = irclib.Irc('test')
+        finally:
+            conf.supybot.networks.test.sasl.username.setValue('')
+            conf.supybot.networks.test.sasl.password.setValue('')
+        self.assertEqual(self.irc.sasl_current_mechanism, None)
+        self.assertEqual(self.irc.sasl_next_mechanisms, ['plain'])
+
+        self.startCapNegociation()
+
+        m = self.irc.takeMsg()
+        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+            args=('PLAIN',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
+
+        m = self.irc.takeMsg()
+        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+            args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
+
+        self.endCapNegociation()
+
+    def testEcdsaFallbackToPlain(self):
+        try:
+            conf.supybot.networks.test.sasl.username.setValue('jilles')
+            conf.supybot.networks.test.sasl.password.setValue('sesame')
+            conf.supybot.networks.test.sasl.ecdsa_key.setValue('foo')
+            self.irc = irclib.Irc('test')
+        finally:
+            conf.supybot.networks.test.sasl.username.setValue('')
+            conf.supybot.networks.test.sasl.password.setValue('')
+            conf.supybot.networks.test.sasl.ecdsa_key.setValue('')
+        self.assertEqual(self.irc.sasl_current_mechanism, None)
+        self.assertEqual(self.irc.sasl_next_mechanisms,
+                ['ecdsa-nist256p-challenge', 'plain'])
+
+        self.startCapNegociation()
+
+        m = self.irc.takeMsg()
+        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+            args=('ECDSA-NIST256P-CHALLENGE',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
+            args=('mechanism not available',)))
+
+        m = self.irc.takeMsg()
+        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+            args=('PLAIN',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
+
+        m = self.irc.takeMsg()
+        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+            args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
+
+        self.endCapNegociation()
 
 
 

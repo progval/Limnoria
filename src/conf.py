@@ -300,6 +300,12 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
             # Let's be explicit about it
             return None
 
+class ValidSaslMechanism(registry.OnlySomeStrings):
+    validStrings = ('ecdsa-nist256p-challenge', 'external', 'plain')
+
+class SpaceSeparatedListOfSaslMechanisms(registry.SpaceSeparatedListOf):
+    Value = ValidSaslMechanism
+
 def registerNetwork(name, password='', ssl=False, sasl_username='',
         sasl_password=''):
     network = registerGroup(supybot.networks, name)
@@ -348,6 +354,9 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
         _("""Determines what SASL ECDSA key (if any) will be used on %s.
         The public key must be registered with NickServ for SASL
         ECDSA-NIST256P-CHALLENGE to work.""") % name, private=False))
+    registerGlobalValue(sasl, 'mechanisms', SpaceSeparatedListOfSaslMechanisms(
+        ['ecdsa-nist256p-challenge', 'external', 'plain'], _("""Determines
+        what SASL mechanisms will be tried and in which order.""")))
     registerGlobalValue(network, 'socksproxy', registry.String('',
         _("""If not empty, determines the hostname of the socks proxy that
         will be used to connect to this network.""")))
