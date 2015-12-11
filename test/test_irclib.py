@@ -586,25 +586,25 @@ class SaslTestCase(SupyTestCase):
 
         self.endCapNegociation()
 
-    def testEcdsaFallbackToPlain(self):
+    def testExternalFallbackToPlain(self):
         try:
             conf.supybot.networks.test.sasl.username.setValue('jilles')
             conf.supybot.networks.test.sasl.password.setValue('sesame')
-            conf.supybot.networks.test.sasl.ecdsa_key.setValue('foo')
+            conf.supybot.networks.test.certfile.setValue('foo')
             self.irc = irclib.Irc('test')
         finally:
             conf.supybot.networks.test.sasl.username.setValue('')
             conf.supybot.networks.test.sasl.password.setValue('')
-            conf.supybot.networks.test.sasl.ecdsa_key.setValue('')
+            conf.supybot.networks.test.certfile.setValue('')
         self.assertEqual(self.irc.sasl_current_mechanism, None)
         self.assertEqual(self.irc.sasl_next_mechanisms,
-                ['ecdsa-nist256p-challenge', 'plain'])
+                ['external', 'plain'])
 
         self.startCapNegociation()
 
         m = self.irc.takeMsg()
         self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('ECDSA-NIST256P-CHALLENGE',)))
+            args=('EXTERNAL',)))
 
         self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
             args=('mechanism not available',)))
