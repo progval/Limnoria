@@ -958,14 +958,15 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
     def _setNonResettingVariables(self):
         # Configuration stuff.
+        network_config = conf.supybot.networks.get(self.network)
         def get_value(name):
-            return getattr(conf.supybot.networks.get(self.network), name)() or \
+            return getattr(network_config, name)() or \
                 getattr(conf.supybot, name)()
         self.nick = get_value('nick')
         self.user = get_value('user')
         self.ident = get_value('ident')
         self.alternateNicks = conf.supybot.nick.alternates()[:]
-        self.password = conf.supybot.networks.get(self.network).password()
+        self.password = network_config.password()
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         # The rest.
         self.lastTake = 0
@@ -975,6 +976,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.lastping = time.time()
         self.outstandingPing = False
         self.capNegociationEnded = False
+        self.requireStarttls = not network_config.ssl() and \
+                network_config.requireStarttls()
         self.resetSasl()
 
     def resetSasl(self):
@@ -999,6 +1002,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     self.sasl_username and self.sasl_password:
                 self.sasl_next_mechanisms.append(mechanism)
 
+        if self.sasl_next_mechanisms:
+            self.REQUEST_CAPABILITIES.add('sasl')
+
 
     REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
         'multi-prefix', 'metadata-notify', 'account-tag',
@@ -1012,15 +1018,33 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
             return
 
+        self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('LS', '302')))
+
+        if self.requireStarttls:
+            self.sendMsg(ircmsgs.IrcMsg(command='STARTTLS'))
+        else:
+            self.sendAuthenticationMessages()
+
+    def do670(self, irc, msg):
+        """STARTTLS accepted."""
+        log.info('%s: Starting TLS session.', self.network)
+        self.requireStarttls = False
+        self.driver.starttls()
+        self.sendAuthenticationMessages()
+    def do691(self, irc, msg):
+        """STARTTLS refused."""
+        log.error('%s: Server refused STARTTLS: %s', self.network, msg.args[0])
+        self.feedMsg(ircmsgs.error('STARTTLS upgrade refused by the server'))
+        self.driver.reconnect()
+
+    def sendAuthenticationMessages(self):
         # Notes:
         # * using sendMsg instead of queueMsg because these messages cannot
         #   be throttled.
-        self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('LS', '302')))
 
         if self.password:
             log.info('%s: Queuing PASS command, not logging the password.',
                      self.network)
-
             self.sendMsg(ircmsgs.password(self.password))
 
         log.debug('%s: Sending NICK command, nick is %s.',
@@ -1032,9 +1056,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                   self.network, self.ident, self.user)
 
         self.sendMsg(ircmsgs.user(self.ident, self.user))
-
-        if self.sasl_next_mechanisms:
-            self.REQUEST_CAPABILITIES.add('sasl')
 
     def endCapabilityNegociation(self):
         if not self.capNegociationEnded:
@@ -1182,6 +1203,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 s = self.state.capabilities_ls['sasl']
                 if s is not None:
                     self.filterSaslMechanisms(set(s.split(',')))
+            if 'starttls' not in self.state.capabilities_ls and \
+                    self.requireStarttls:
+                log.error('%s: Server does not support STARTTLS.', self.network)
+                self.feedMsg(ircmsgs.error('STARTTLS upgrade not supported '
+                    'by the server'))
+                self.die()
+                return
             # NOTE: Capabilities are requested in alphabetic order, because
             # sets are unordered, and their "order" is nondeterministic.
             # This is needed for the tests.

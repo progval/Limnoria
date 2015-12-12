@@ -323,6 +323,10 @@ def registerNetwork(name, password='', ssl=False, sasl_username='',
     registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         _("""Determines whether the bot will attempt to connect with SSL
         sockets to %s.""") % name))
+    registerGlobalValue(network, 'requireStarttls', registry.Boolean(False,
+        _("""Determines whether the bot will connect in plain text to %s
+        but require STARTTLS before authentication. This is ignored if the
+        connection already uses SSL.""") % name))
     registerGlobalValue(network, 'certfile', registry.String('',
         _("""Determines what certificate file (if any) the bot will use to
         connect with SSL sockets to %s.""") % name))

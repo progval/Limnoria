@@ -79,7 +79,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                               'servers for your Python version.  Try the '
                               'Twisted driver instead, or install a Python'
                               'version that supports SSL (2.6 and greater).')
+            self.ssl = False
         else:
+            self.ssl = self.networkGroup.get('ssl').value
             self.connect()
 
     def getDelay(self):
@@ -273,18 +275,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
         try:
             if getattr(conf.supybot.networks, self.irc.network).ssl():
-                assert 'ssl' in globals()
-                certfile = getattr(conf.supybot.networks, self.irc.network) \
-                        .certfile()
-                if not certfile:
-                    certfile = conf.supybot.protocols.irc.certfile()
-                if not certfile:
-                    certfile = None
-                elif not os.path.isfile(certfile):
-                    drivers.log.warning('Could not find cert file %s.' %
-                            certfile)
-                    certfile = None
-                self.conn = ssl.wrap_socket(self.conn, certfile=certfile)
+                self.starttls()
             self.conn.connect((address, server[1]))
             def setTimeout():
                 self.conn.settimeout(conf.supybot.drivers.poll())
@@ -347,6 +338,20 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     def name(self):
         return '%s(%s)' % (self.__class__.__name__, self.irc)
+
+    def starttls(self):
+        assert 'ssl' in globals()
+        certfile = getattr(conf.supybot.networks, self.irc.network) \
+                .certfile()
+        if not certfile:
+            certfile = conf.supybot.protocols.irc.certfile()
+        if not certfile:
+            certfile = None
+        elif not os.path.isfile(certfile):
+            drivers.log.warning('Could not find cert file %s.' %
+                    certfile)
+            certfile = None
+        self.conn = ssl.wrap_socket(self.conn, certfile=certfile)
 
 
 Driver = SocketDriver
