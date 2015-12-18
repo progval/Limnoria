@@ -142,7 +142,7 @@ class StatsDB(plugins.ChannelUserDB):
             return UserStat(*L)
 
     def addMsg(self, msg, id=None):
-        if ircutils.isChannel(msg.args[0]):
+        if msg.args and ircutils.isChannel(msg.args[0]):
             channel = plugins.getChannel(msg.args[0])
             if (channel, 'channelStats') not in self:
                 self[channel, 'channelStats'] = ChannelStat()
