@@ -274,9 +274,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         # At least 10 seconds.
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
         try:
+            # Connect before SSL, otherwise SSL is disabled if we use SOCKS.
+            # See http://stackoverflow.com/q/16136916/539465
+            self.conn.connect((address, server[1]))
             if getattr(conf.supybot.networks, self.irc.network).ssl():
                 self.starttls()
-            self.conn.connect((address, server[1]))
             def setTimeout():
                 self.conn.settimeout(conf.supybot.drivers.poll())
             conf.supybot.drivers.poll.addCallback(setTimeout)
