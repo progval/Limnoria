@@ -265,7 +265,7 @@ class Channel(callbacks.Plugin):
 
     @internationalizeDocstring
     def cycle(self, irc, msg, args, channel, reason):
-        """[<channel>]
+        """[<channel>] [<reason>]
 
         If you have the #channel,op capability, this will cause the bot to
         "cycle", or PART and then JOIN the channel. <channel> is only necessary
