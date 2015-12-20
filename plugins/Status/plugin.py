@@ -78,8 +78,7 @@ class Status(callbacks.Plugin):
         networks = {}
         for Irc in world.ircs:
             networks.setdefault(Irc.network, []).append(Irc.nick)
-        networks = networks.items()
-        networks.sort()
+        networks = sorted(networks.items())
         networks = [format(_('%s as %L'), net, nicks) for (net,nicks) in networks]
         L = [format(_('I am connected to %L.'), networks)]
         if world.profiling:
