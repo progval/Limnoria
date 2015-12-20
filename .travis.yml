@@ -20,6 +20,8 @@ script:
   - echo $TRAVIS_PYTHON_VERSION
   - python setup.py install
   - supybot-test test -v --plugins-dir=./build/lib*/supybot/plugins/ --no-network --disable-multiprocessing --exclude=./build/lib*/supybot/plugins/Scheduler --exclude=./build/lib*/supybot/plugins/Filter
+  - if [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then pip install -v git+https://github.com/ProgVal/irctest.git; fi
+  - if [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then python -m irctest irctest.controllers.limnoria; fi
 notifications:
     email: false
 matrix:
