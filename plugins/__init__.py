@@ -32,6 +32,7 @@ import gc
 import os
 import csv
 import time
+import codecs
 import fnmatch
 import os.path
 import threading
@@ -221,7 +222,7 @@ class ChannelUserDB(ChannelUserDictionary):
         ChannelUserDictionary.__init__(self)
         self.filename = filename
         try:
-            fd = open(self.filename)
+            fd = codecs.open(self.filename, encoding='utf8')
         except EnvironmentError as e:
             log.warning('Couldn\'t open %s: %s.', self.filename, e)
             return

@@ -30,6 +30,7 @@
 
 import os
 import time
+import codecs
 import random
 import shutil
 import os.path
@@ -126,7 +127,8 @@ class AtomicFile(object):
         makeBackupIfSmaller = True
         allowEmptyOverwrite = True
     def __init__(self, filename, mode='w', allowEmptyOverwrite=None,
-                 makeBackupIfSmaller=None, tmpDir=None, backupDir=None):
+                 makeBackupIfSmaller=None, tmpDir=None, backupDir=None,
+                 encoding=None):
         if tmpDir is None:
             tmpDir = force(self.default.tmpDir)
         if backupDir is None:
@@ -135,6 +137,8 @@ class AtomicFile(object):
             makeBackupIfSmaller = force(self.default.makeBackupIfSmaller)
         if allowEmptyOverwrite is None:
             allowEmptyOverwrite = force(self.default.allowEmptyOverwrite)
+        if encoding is None and 'b' not in mode:
+            encoding = 'utf8'
         if mode not in ('w', 'wb'):
             raise ValueError(format('Invalid mode: %q', mode))
         self.rolledback = False
@@ -153,7 +157,7 @@ class AtomicFile(object):
             self.tempFilename = os.path.join(tmpDir, tempFilename)
         # This doesn't work because of the uncollectable garbage effect.
         # self.__parent = super(AtomicFile, self)
-        self._fd = open(self.tempFilename, mode)
+        self._fd = codecs.open(self.tempFilename, mode, encoding=encoding)
 
     def __enter__(self):
         return self
