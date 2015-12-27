@@ -52,6 +52,20 @@ def configure(advanced):
           default=True):
         conf.supybot.commands.disabled().add('Unix.progstats')
 
+class NonOptionString(registry.String):
+    errormsg = _('Value must be a string not starting with a dash (-), not %r.')
+    def __init__(self, *args, **kwargs):
+        self.__parent = super(NonOptionString, self)
+        self.__parent.__init__(*args, **kwargs)
+    def setValue(self, v):
+        if v.startswith('-'):
+            self.error(v)
+        else:
+            self.__parent.setValue(v)
+
+class SpaceSeparatedListOfNonOptionStrings(registry.SpaceSeparatedListOfStrings):
+    Value = NonOptionString
+
 
 Unix = conf.registerPlugin('Unix')
 conf.registerGroup(Unix, 'fortune')
@@ -70,8 +84,8 @@ conf.registerChannelValue(Unix.fortune, 'offensive',
     registry.Boolean(False, _("""Determines whether fortune will retrieve
     offensive fortunes along with the normal fortunes.  This sends the -a
     option to the fortune program.""")))
-conf.registerGlobalValue(Unix.fortune, 'files',
-    registry.SpaceSeparatedListOfStrings([], _("""Determines what specific file
+conf.registerChannelValue(Unix.fortune, 'files',
+    SpaceSeparatedListOfNonOptionStrings([], _("""Determines what specific file
     (if any) will be used with the fortune command; if none is given, the
     system-wide default will be used.  Do note that this fortune file must be
     placed with the rest of your system's fortune files.""")))

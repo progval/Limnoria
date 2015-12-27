@@ -53,6 +53,15 @@ else:
     skipUnlessPing6 = skipIf(utils.findBinaryInPath('ping6') is None,
             'ping6 not available.')
 
+class UnixConfigTestCase(ChannelPluginTestCase):
+    plugins = ('Unix',)
+    def testFortuneFiles(self):
+        self.assertNotError('config channel plugins.Unix.fortune.files '
+                'foo bar')
+        self.assertRegexp('config channel plugins.Unix.fortune.files '
+                '"-foo bar"',
+                'Error:.*dash.*not \'-foo\'')
+        self.assertNotError('config channel plugins.Unix.fortune.files ""')
 
 
 if os.name == 'posix':
