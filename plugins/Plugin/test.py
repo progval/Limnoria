@@ -38,6 +38,8 @@ class PluginTestCase(PluginTestCase):
     def testPlugins(self):
         self.assertRegexp('plugins join', '(Format.*Admin|Admin.*Format)')
         self.assertRegexp('plugins plugin', 'Plugin')
+        self.assertNotRegexp('plugins ignore add', 'Utilities')
+        self.assertNotRegexp('plugins ignore', 'Admin')
 
     def testHelp(self):
         self.assertRegexp('plugin help plugin', 'manage their plugins')

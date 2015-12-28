@@ -92,8 +92,9 @@ class Plugin(callbacks.Plugin):
         for cb in irc.callbacks:
             if not hasattr(cb, 'getCommand'):
                 continue
-            commandlist = cb.getCommand(command)
-            if commandlist:
+            longest_matching_command = cb.getCommand(command)
+            if len(longest_matching_command) >= len(command):
+                # Actually, this is equivalent to use ==
                 plugin_list.append(cb.name())
         return plugin_list
 
