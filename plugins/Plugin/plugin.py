@@ -113,7 +113,7 @@ class Plugin(callbacks.Plugin):
                     plugin = 'plugins'
                 else:
                     plugin = 'plugin'
-                irc.reply(format('The %q command is available in the %L %s.',
+                irc.reply(format(_('The %q command is available in the %L %s.'),
                                  command, L, plugin))
         else:
             irc.error(format('There is no command %q.', command))
