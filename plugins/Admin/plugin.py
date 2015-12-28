@@ -159,7 +159,7 @@ class Admin(callbacks.Plugin):
         when attempting to join the channel.
         """
         if not irc.isChannel(channel):
-            irc.errorInvalid('channel', channel, Raise=True)
+            irc.errorInvalid(_('channel'), channel, Raise=True)
         networkGroup = conf.supybot.networks.get(irc.network)
         networkGroup.channels().add(channel)
         if key:
