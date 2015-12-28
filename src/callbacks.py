@@ -549,7 +549,9 @@ class RichReplyMethods(object):
             v = _('That\'s not a valid %s.') % what
         if 'Raise' not in kwargs:
             kwargs['Raise'] = True
-        return self._error(self.__makeReply(v, s), **kwargs)
+        if s:
+            v += ' ' + s
+        return self._error(v, **kwargs)
 
 _repr = repr
 
