@@ -33,7 +33,7 @@ from supybot.utils.minisix import u
 from supybot.test import *
 
 class UtilitiesTestCase(PluginTestCase):
-    plugins = ('Utilities', 'String')
+    plugins = ('Math', 'Utilities', 'String')
     def testIgnore(self):
         self.assertNoResponse('utilities ignore foo bar baz', 1)
         self.assertError('utilities ignore [re m/foo bar]')
@@ -79,5 +79,13 @@ class UtilitiesTestCase(PluginTestCase):
         self.assertResponse('countargs a b c', '3')
         self.assertResponse('countargs a "b c"', '2')
         self.assertResponse('countargs', '0')
+
+    def testLet(self):
+        self.assertResponse('let x = 42 in echo foo $x bar', 'foo 42 bar')
+        self.assertResponse(
+                'let y = 21 in "'
+                    'let x = [math calc 2*[echo $y]] in '
+                        'echo foo $x bar"',
+                'foo 42 bar')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -32,6 +32,7 @@ import types
 import random
 
 from supybot.commands import *
+import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
@@ -152,6 +153,29 @@ class Utilities(callbacks.Plugin):
         allTokens = commands + tokens
         self.Proxy(irc, msg, allTokens)
     apply = wrap(apply, ['something', many('something')])
+
+    def let(self, irc, msg, args, var_name, _, value, __, command):
+        """<variable> = <value> in <command>
+
+        Defines <variable> to be equal to <value> in the <command>
+        and runs the <command>.
+        '=' and 'in' can be omitted."""
+        if msg.reply_env and var_name in msg.reply_env:
+            # For security reason (eg. a Sudo-like plugin), we don't want
+            # to make it possible to override stuff like $nick.
+            irc.error(_('Cannot set a variable that already exists.'),
+                    Raise=True)
+
+        fake_msg = ircmsgs.IrcMsg(msg=msg)
+        if fake_msg.reply_env is None:
+            fake_msg.reply_env = {}
+        fake_msg.reply_env[var_name] = value
+        tokens = callbacks.tokenize(command)
+        self.Proxy(irc, fake_msg, tokens)
+
+    let = wrap(let, [
+            'something', optional(('literal', ['='])), 'something',
+            optional(('literal', ['in'])), 'text'])
 
 
 Class = Utilities
