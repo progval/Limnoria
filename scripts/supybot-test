@@ -133,6 +133,8 @@ if __name__ == '__main__':
     parser.add_option('-v', '--verbose', action='count', default=0,
                       help='Increase verbosity, logging extra information '
                            'about each test that runs.')
+    parser.add_option('', '--fail-fast', action='store_true', default=False,
+                      help='Stop at first failed test.')
     parser.add_option('', '--no-network', action='store_true', default=False,
                       dest='nonetwork', help='Causes the network-based tests '
                                              'not to run.')
@@ -209,7 +211,8 @@ if __name__ == '__main__':
             test.suites.append(load(pluginModule.test))
 
     suite = unittest.TestSuite(test.suites)
-    runner = unittest.TextTestRunner(verbosity=2)
+    runner = unittest.TextTestRunner(verbosity=2,
+            failfast=options.fail_fast)
     print('Testing began at %s (pid %s)' % (time.ctime(), os.getpid()))
     if options.clean:
         shutil.rmtree(conf.supybot.directories.log())
