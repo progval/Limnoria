@@ -145,7 +145,7 @@ class Web(callbacks.PluginRegexp):
                 return None
         parser.feed(text)
         parser.close()
-        title = ''.join(parser.data).strip()
+        title = utils.str.normalizeWhitespace(''.join(parser.data).strip())
         if title:
             return (target, title)
         elif raiseErrors:
