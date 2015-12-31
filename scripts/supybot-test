@@ -153,9 +153,6 @@ if __name__ == '__main__':
     parser.add_option('', '--disable-multiprocessing', action='store_true',
                       dest='disableMultiprocessing',
                       help='Disables multiprocessing stuff.')
-    parser.add_option('', '--verbose-unexcepted-errors', action='store_true',
-                      dest='verboseUnexceptectedErros',
-                      help='Show the full traceback of unexpected errors.')
     (options, args) = parser.parse_args()
 
     world.disableMultiprocessing = options.disableMultiprocessing
