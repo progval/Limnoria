@@ -119,7 +119,7 @@ httpserver.set_default_templates(DEFAULT_TEMPLATES)
 class FactoidsCallback(httpserver.SupyHTTPServerCallback):
     name = 'Factoids web interface'
 
-    def doGet(self, handler, path):
+    def doGetOrHead(self, handler, path, write_content):
         parts = path.split('/')[1:]
         if path == '/':
             self.send_response(200)
@@ -132,18 +132,20 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
                 self.send_response(404)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
                 self.end_headers()
-                self.write(httpserver.get_template('generic/error.html')%
-                    {'title': 'Factoids - not a channel',
-                     'error': 'This is not a channel'})
+                if write_content:
+                    self.write(httpserver.get_template('generic/error.html')%
+                        {'title': 'Factoids - not a channel',
+                         'error': 'This is not a channel'})
                 return
             if not self._plugin.registryValue('web.channel', channel):
                 self.send_response(403)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
                 self.end_headers()
-                self.write(httpserver.get_template('generic/error.html')%
-                    {'title': 'Factoids - unavailable',
-                     'error': 'This channel does not exist or its factoids '
-                              'are not available here.'})
+                if write_content:
+                    self.write(httpserver.get_template('generic/error.html')%
+                        {'title': 'Factoids - unavailable',
+                         'error': 'This channel does not exist or its factoids '
+                                  'are not available here.'})
                 return
             db = self._plugin.getDb(channel)
             cursor = db.cursor()
@@ -173,8 +175,9 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
             self.send_response(200)
             self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
-            self.write(httpserver.get_template('factoids/channel.html')%
-                    {'channel': channel, 'rows': content})
+            if write_content:
+                self.write(httpserver.get_template('factoids/channel.html')%
+                        {'channel': channel, 'rows': content})
     def doPost(self, handler, path, form):
         if 'chan' in form:
             self.send_response(303)

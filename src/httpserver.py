@@ -305,15 +305,21 @@ class SupyHTTPServerCallback(log.Firewalled):
         def write(self, s):
             self.wfile.write(s)
 
-    def doGet(self, handler, path, *args, **kwargs):
+    def doGetOrHead(self, handler, path, write_content):
         response = self.defaultResponse.encode()
         handler.send_response(405)
         self.send_header('Content-Type', 'text/plain; charset=utf-8; charset=utf-8')
         self.send_header('Content-Length', len(response))
         self.end_headers()
-        self.wfile.write(response)
+        if write_content:
+            self.wfile.write(response)
 
-    doPost = doHead = doGet
+    def doGet(self, handler, path):
+        self.doGetOrHead(handler, path, write_content=True)
+    def doHead(self, handler, path):
+        self.doGetOrHead(handler, path, write_content=False)
+
+    doPost = doGet
 
     def doHook(self, handler, subdir):
         """Method called when hooking this callback."""
@@ -331,7 +337,7 @@ class Supy404(SupyHTTPServerCallback):
     if I don't know what to serve.
     What I'm saying is you just triggered a 404 Not Found, and I am not
     trained to help you in such a case.""")
-    def doGet(self, handler, path, *args, **kwargs):
+    def doGetOrHead(self, handler, path, write_content):
         response = self.response
         if minisix.PY3:
             response = response.encode()
@@ -339,16 +345,15 @@ class Supy404(SupyHTTPServerCallback):
         self.send_header('Content-Type', 'text/plain; charset=utf-8; charset=utf-8')
         self.send_header('Content-Length', len(self.response))
         self.end_headers()
-        self.wfile.write(response)
-
-    doPost = doHead = doGet
+        if write_content:
+            self.wfile.write(response)
 
 class SupyIndex(SupyHTTPServerCallback):
     """Displays the index of available plugins."""
     name = "index"
     fullpath = True
     defaultResponse = _("Request not handled.")
-    def doGet(self, handler, path):
+    def doGetOrHead(self, handler, path, write_content):
         plugins = [x for x in handler.server.callbacks.items()]
         if plugins == []:
             plugins = _('No plugins available.')
@@ -362,7 +367,8 @@ class SupyIndex(SupyHTTPServerCallback):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', len(response))
         self.end_headers()
-        self.wfile.write(response)
+        if write_content:
+            self.wfile.write(response)
 
 class Static(SupyHTTPServerCallback):
     """Serves static files."""
@@ -372,7 +378,7 @@ class Static(SupyHTTPServerCallback):
     def __init__(self, mimetype='text/plain; charset=utf-8'):
         super(Static, self).__init__()
         self._mimetype = mimetype
-    def doGet(self, handler, path):
+    def doGetOrHead(self, handler, path, write_content):
         response = get_template(path)
         if minisix.PY3:
             response = response.encode()
@@ -380,13 +386,14 @@ class Static(SupyHTTPServerCallback):
         self.send_header('Content-type', self._mimetype)
         self.send_header('Content-Length', len(response))
         self.end_headers()
-        self.wfile.write(response)
+        if write_content:
+            self.wfile.write(response)
 
 class Favicon(SupyHTTPServerCallback):
     """Services the favicon.ico file to browsers."""
     name = 'favicon'
     defaultResponse = _('Request not handled')
-    def doGet(self, handler, path):
+    def doGetOrHead(self, handler, path, write_content):
         response = None
         file_path = conf.supybot.servers.http.favicon()
         if file_path:
@@ -407,7 +414,8 @@ class Favicon(SupyHTTPServerCallback):
             # self.send_header('Content-Length', len(response))
             # self.send_header('Content-type', 'image/' + ext)
             # self.end_headers()
-            self.wfile.write(response)
+            if write_content:
+                self.wfile.write(response)
         else:
             response = _('No favicon set.')
             if minisix.PY3:
@@ -416,7 +424,8 @@ class Favicon(SupyHTTPServerCallback):
             self.send_header('Content-type', 'text/plain; charset=utf-8')
             self.send_header('Content-Length', len(response))
             self.end_headers()
-            self.wfile.write(response)
+            if write_content:
+                self.wfile.write(response)
 
 http_servers = []
 
