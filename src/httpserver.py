@@ -306,11 +306,12 @@ class SupyHTTPServerCallback(log.Firewalled):
             self.wfile.write(s)
 
     def doGet(self, handler, path, *args, **kwargs):
+        response = self.defaultResponse.encode()
         handler.send_response(405)
         self.send_header('Content-Type', 'text/plain; charset=utf-8; charset=utf-8')
-        self.send_header('Content-Length', len(self.defaultResponse))
+        self.send_header('Content-Length', len(response))
         self.end_headers()
-        self.wfile.write(self.defaultResponse.encode())
+        self.wfile.write(response)
 
     doPost = doHead = doGet
 
@@ -331,13 +332,13 @@ class Supy404(SupyHTTPServerCallback):
     What I'm saying is you just triggered a 404 Not Found, and I am not
     trained to help you in such a case.""")
     def doGet(self, handler, path, *args, **kwargs):
+        response = self.response
+        if minisix.PY3:
+            response = response.encode()
         handler.send_response(404)
         self.send_header('Content-Type', 'text/plain; charset=utf-8; charset=utf-8')
         self.send_header('Content-Length', len(self.response))
         self.end_headers()
-        response = self.response
-        if minisix.PY3:
-            response = response.encode()
         self.wfile.write(response)
 
     doPost = doHead = doGet
@@ -355,12 +356,12 @@ class SupyIndex(SupyHTTPServerCallback):
             plugins = '<ul class="plugins"><li>%s</li></ul>' % '</li><li>'.join(
                     ['<a href="/%s/">%s</a>' % (x,y.name) for x,y in plugins])
         response = get_template('index.html') % {'list': plugins}
+        if minisix.PY3:
+            response = response.encode()
         handler.send_response(200)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', len(response))
         self.end_headers()
-        if minisix.PY3:
-            response = response.encode()
         self.wfile.write(response)
 
 class Static(SupyHTTPServerCallback):
@@ -373,12 +374,12 @@ class Static(SupyHTTPServerCallback):
         self._mimetype = mimetype
     def doGet(self, handler, path):
         response = get_template(path)
+        if minisix.PY3:
+            response = response.encode()
         handler.send_response(200)
         self.send_header('Content-type', self._mimetype)
         self.send_header('Content-Length', len(response))
         self.end_headers()
-        if minisix.PY3:
-            response = response.encode()
         self.wfile.write(response)
 
 class Favicon(SupyHTTPServerCallback):
@@ -409,12 +410,12 @@ class Favicon(SupyHTTPServerCallback):
             self.wfile.write(response)
         else:
             response = _('No favicon set.')
+            if minisix.PY3:
+                response = response.encode()
             handler.send_response(404)
             self.send_header('Content-type', 'text/plain; charset=utf-8')
             self.send_header('Content-Length', len(response))
             self.end_headers()
-            if minisix.PY3:
-                response = response.encode()
             self.wfile.write(response)
 
 http_servers = []
