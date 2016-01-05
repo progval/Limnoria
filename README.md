@@ -28,7 +28,7 @@ If this is your first install, there is an [install guide](http://doc.supybot.ap
 You will probably be pointed to it if you ask on IRC how to install
 Limnoria.
 
-There is extensive documentation at [supybot.aperio.fr] and at
+There is extensive documentation at [doc.supybot.aperio.fr] and at
 [Gribble wiki]. We took the time to write it; you should take the time to
 read it.
 
@@ -40,7 +40,7 @@ paragraphs for easier installation methods.*
 ```
 git clone https://github.com/ProgVal/Limnoria.git
 sudo pip install -r requirements.txt
-sudo python setup.py install --user
+sudo python setup.py install
 ```
 
 alternatively without root
@@ -51,8 +51,8 @@ pip install -r requirements.txt --user
 python setup.py install --user
 ```
 
-[supybot.aperio.fr]:http://doc.supybot.aperio.fr/
-[Gribble wiki]:https://sourceforge.net/apps/mediawiki/gribble/index.php?title=Main_Page
+[doc.supybot.aperio.fr]:http://doc.supybot.aperio.fr/
+[Gribble wiki]:https://sourceforge.net/p/gribble/wiki/Main_Page/
 
 ## IRC channels
 
