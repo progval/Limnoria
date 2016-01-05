@@ -306,7 +306,7 @@ class SupyHTTPServerCallback(log.Firewalled):
             self.wfile.write(s)
 
     def doGet(self, handler, path, *args, **kwargs):
-        handler.send_response(400)
+        handler.send_response(405)
         self.send_header('Content-Type', 'text/plain; charset=utf-8; charset=utf-8')
         self.send_header('Content-Length', len(self.defaultResponse))
         self.end_headers()
