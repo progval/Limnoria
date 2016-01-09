@@ -870,7 +870,8 @@ def ison(nick, prefix='', msg=None):
 
 def monitor(subcommand, nicks=None, prefix='', msg=None):
     if conf.supybot.protocols.irc.strictRfc():
-        assert isNick(nick), repr(nick)
+        for nick in nicks:
+            assert isNick(nick), repr(nick)
         assert subcommand in '+-CLS'
         if subcommand in 'CLS':
             assert nicks is None
