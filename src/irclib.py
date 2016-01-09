@@ -675,6 +675,13 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         else:
             assert False, msg.args[0]
 
+    def doAway(self, irc, msg):
+        channel_names = ircutils.IrcSet()
+        for (name, channel) in self.channels.items():
+            if msg.nick in channel.users:
+                channel_names.add(name)
+        msg.tag('channels', channel_names)
+
 
 ###
 # The basic class for handling a connection to an IRC server.  Accepts
