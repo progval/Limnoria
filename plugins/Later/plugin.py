@@ -259,7 +259,7 @@ class Later(callbacks.Plugin):
                 s = self._formatNote(when, whence, note)
                 irc.reply(s, private=private, prefixNick=not private)
             self._flushNotes()
-            msg.repliedTo = old_repliedto
+            msg.tag('repliedTo', old_repliedto)
 
     def _formatNote(self, when, whence, note):
         return _('Sent %s: <%s> %s') % (self._timestamp(when), whence, note)
