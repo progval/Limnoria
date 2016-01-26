@@ -8,7 +8,7 @@ Basic usage
 
 1. google
  
- Searchs for a string and gives you 3 results from google search
+ Searches for a string and gives you 3 results from google search
  >!google something
  
 2. lucky
@@ -18,7 +18,7 @@ Basic usage
 
 3. calc
  
- Does mathmatic calculations
+ Does mathematic calculations
  >!calc 5+4
 
 4. translate
