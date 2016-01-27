@@ -29,8 +29,9 @@
 ###
 
 """
-Add a description of the plugin (to be presented to the user inside the wizard)
-here.  This should describe *what* the plugin does.
+This plugin allows the user to create various aliases (known as "Akas", since 
+Alias is the name of another plugin Aka is based on) to other commands or 
+combinations of other commands (via nested commands).
 """
 
 import supybot
