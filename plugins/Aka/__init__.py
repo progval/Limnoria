@@ -29,8 +29,8 @@
 ###
 
 """
-This plugin allows the user to create various aliases (known as "Akas", since 
-Alias is the name of another plugin Aka is based on) to other commands or 
+This plugin allows the user to create various aliases (known as "Akas", since
+Alias is the name of another plugin Aka is based on) to other commands or
 combinations of other commands (via nested commands).
 """
 
