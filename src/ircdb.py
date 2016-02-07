@@ -352,8 +352,9 @@ class IrcUser(object):
         write('name %s' % self.name)
         write('ignore %s' % self.ignore)
         write('secure %s' % self.secure)
-        write('hashed %s' % self.hashed)
-        write('password %s' % self.password)
+        if self.password:
+            write('hashed %s' % self.hashed)
+            write('password %s' % self.password)
         for capability in self.capabilities:
             write('capability %s' % capability)
         for hostmask in self.hostmasks:
