@@ -26,4 +26,4 @@ Basic usage
  Translates a string
  >!translate en ar test
  
- Supported langage codes: https://cloud.google.com/translate/v2/using_rest#language-params
+ Supported language codes: https://cloud.google.com/translate/v2/using_rest#language-params
