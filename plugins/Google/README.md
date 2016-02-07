@@ -8,12 +8,12 @@ Basic usage
 
 1. google
  
- Searches for a string and gives you 3 results from google search
+ Searches for a string and gives you 3 results from Google search
  >!google something
  
 2. lucky
  
- Return the first result (Google lucky search)
+ Return the first result (Google's "I'm Feeling Lucky" search)
  >!lucky something
 
 3. calc
@@ -25,3 +25,5 @@ Basic usage
 
  Translates a string
  >!translate en ar test
+ 
+ Supported langage codes: https://cloud.google.com/translate/v2/using_rest#language-params
