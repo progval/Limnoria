@@ -126,7 +126,7 @@ class User(callbacks.Plugin):
             if u._checkCapability('owner'):
                 addHostmask = False
             else:
-                irc.error(_('Your hostmask is already registered to %s') % 
+                irc.error(_('Your hostmask is already registered to %s') %
                           u.name)
                 return
         except KeyError:
@@ -196,10 +196,9 @@ class User(callbacks.Plugin):
             """[<name>] <old password> <new password>
 
             Sets the new password for the user specified by <name> to <new
-            password>.  Obviously this message must be sent to the bot
+            password>. Obviously this message must be sent to the bot
             privately (not in a channel). If the requesting user is an owner
-            user (and the user whose password is being changed isn't that same
-            owner user), then <old password> needn't be correct.
+            user, then <old password> needn't be correct.
             """
             try:
                 u = ircdb.users.getUser(msg.prefix)
@@ -210,7 +209,7 @@ class User(callbacks.Plugin):
                     irc.errorNotRegistered(Raise=True)
                 user = u
             if user.checkPassword(password) or \
-               (u and u._checkCapability('owner') and not u == user):
+               (u and u._checkCapability('owner')):
                 user.setPassword(newpassword)
                 ircdb.users.setUser(user)
                 irc.replySuccess()
