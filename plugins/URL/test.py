@@ -80,6 +80,10 @@ class URLTestCase(ChannelPluginTestCase):
         self.feedMsg(urls[0])
         self.assertResponse('url last', urls[0])
 
+    def testStripsColors(self):
+        self.feedMsg('\x031foo \x034' + urls[0])
+        self.assertResponse('url last', urls[0])
+
     def testAction(self):
         self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
         self.assertNotRegexp('url last', '\\x01')

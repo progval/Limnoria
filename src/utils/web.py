@@ -80,9 +80,10 @@ _octet = r'(?:2(?:[0-4]\d|5[0-5])|1\d\d|\d{1,2})'
 _ipAddr = r'%s(?:\.%s){3}' % (_octet, _octet)
 # Base domain regex off RFC 1034 and 1738
 _label = r'[0-9a-z][-0-9a-z]*[0-9a-z]?'
+_scheme = r'[a-z][a-z0-9+.-]*'
 _domain = r'%s(?:\.%s)*\.[0-9a-z][-0-9a-z]+' % (_label, _label)
-_urlRe = r'(\w+://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (_domain,
-                                                                   _ipAddr)
+_urlRe = r'(%s://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (
+        _scheme, _domain, _ipAddr)
 urlRe = re.compile(_urlRe, re.I)
 _httpUrlRe = r'(https?://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % \
              (_domain, _ipAddr)
