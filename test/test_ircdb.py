@@ -562,6 +562,55 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         finally:
             conf.supybot.capabilities.default.set(str(originalConfDefaultAllow))
 
+class PersistanceTestCase(IrcdbTestCase):
+    filename = os.path.join(conf.supybot.directories.conf(),
+                            'PersistanceTestCase.conf')
+    def setUp(self):
+        IrcdbTestCase.setUp(self)
+        try:
+            os.remove(self.filename)
+        except OSError:
+            pass
+        super(PersistanceTestCase, self).setUp()
+
+    def testAddUser(self):
+        db = ircdb.UsersDictionary()
+        db.filename = self.filename
+        u = db.newUser()
+        u.name = 'foouser'
+        u.addCapability('foocapa')
+        u.addHostmask('*!fooident@foohost')
+        db.setUser(u)
+        db.flush()
+        db2 = ircdb.UsersDictionary()
+        db2.open(self.filename)
+        self.assertEqual(list(db2.users), [1])
+        self.assertEqual(db2.users[1].name, 'foouser')
+        db.reload()
+        self.assertEqual(list(db.users), [1])
+        self.assertEqual(db.users[1].name, 'foouser')
+
+    def testAddRemoveUser(self):
+        db = ircdb.UsersDictionary()
+        db.filename = self.filename
+        u = db.newUser()
+        u.name = 'foouser'
+        u.addCapability('foocapa')
+        u.addHostmask('*!fooident@foohost')
+        db.setUser(u)
+
+        db2 = ircdb.UsersDictionary()
+        db2.open(self.filename)
+        self.assertEqual(list(db2.users), [1])
+        self.assertEqual(db2.users[1].name, 'foouser')
+
+        db.delUser(1)
+        self.assertEqual(list(db.users), [])
+
+        db2 = ircdb.UsersDictionary()
+        db2.open(self.filename)
+        self.assertEqual(list(db.users), [])
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
