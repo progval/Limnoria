@@ -38,7 +38,7 @@ from .. import conf, ircmsgs, log as supylog, utils
 from ..utils import minisix
 
 _drivers = {}
-_deadDrivers = []
+_deadDrivers = set()
 _newDrivers = []
 
 class IrcDriver(object):
@@ -94,7 +94,7 @@ def add(name, driver):
 
 def remove(name):
     """Removes the driver with the given name from the loop."""
-    _deadDrivers.append(name)
+    _deadDrivers.add(name)
 
 def run():
     """Runs the whole driver loop."""
@@ -104,7 +104,7 @@ def run():
                 driver.run()
         except:
             log.exception('Uncaught exception in in drivers.run:')
-            _deadDrivers.append(name)
+            _deadDrivers.add(name)
     for name in _deadDrivers:
         try:
             driver = _drivers[name]
@@ -119,6 +119,7 @@ def run():
     while _newDrivers:
         (name, driver) = _newDrivers.pop()
         log.debug('Adding new driver %s.', name)
+        _deadDrivers.discard(name)
         if name in _drivers:
             log.warning('Driver %s already added, killing it.', name)
             _drivers[name].die()
