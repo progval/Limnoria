@@ -127,16 +127,14 @@ class StdoutStreamHandler(logging.StreamHandler):
 class BetterFileHandler(logging.FileHandler):
     def emit(self, record):
         msg = self.format(record)
-        if not hasattr(types, "UnicodeType"): #if no unicode support...
+        try:
             self.stream.write(msg)
-            self.stream.write(os.linesep)
-        else:
+        except (UnicodeError, TypeError):
             try:
-                self.stream.write(msg)
-                self.stream.write(os.linesep)
-            except UnicodeError:
                 self.stream.write(msg.encode("utf8"))
-                self.stream.write(os.linesep)
+            except (UnicodeError, TypeError):
+                self.stream.write(msg.encode("utf8").decode('ascii', 'replace'))
+        self.stream.write(os.linesep)
         try:
             self.flush()
         except OSError as e:
