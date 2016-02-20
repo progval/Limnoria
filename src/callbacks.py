@@ -991,6 +991,14 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 self.args[self.counter] = s
             self.evalArgs()
 
+    def replies(self, L, prefixer=None, joiner=None,
+                onlyPrefixFirst=False, to=None,
+                oneToOne=None, **kwargs):
+        if not self.finalEvaled and oneToOne is None:
+            oneToOne = True
+        return super(NestedCommandsIrcProxy, self).replies(L,
+                prefixer, joiner, onlyPrefixFirst, to, oneToOne, **kwargs)
+
     def error(self, s='', Raise=False, **kwargs):
         self.repliedTo = True
         if Raise:
