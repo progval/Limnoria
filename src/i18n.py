@@ -353,7 +353,7 @@ class InternationalizedFunction:
 class InternationalizedString(str):
     """Simple subclass to str, that allow to add attributes. Also used to
     know if a string is already localized"""
-    pass
+    __slots__ = ('_original', '_internationalizer')
 
 def internationalizeDocstring(obj):
     """Decorates functions and internationalize their docstring.
