@@ -350,10 +350,19 @@ class InternationalizedFunction:
     def __call__(self, *args, **kwargs):
         return self._origin(*args, **kwargs)
 
-class InternationalizedString(str):
-    """Simple subclass to str, that allow to add attributes. Also used to
-    know if a string is already localized"""
-    __slots__ = ('_original', '_internationalizer')
+try:
+    class InternationalizedString(str):
+        """Simple subclass to str, that allow to add attributes. Also used to
+        know if a string is already localized"""
+        __slots__ = ('_original', '_internationalizer')
+except TypeError:
+    # Fallback for CPython 2.x:
+    # TypeError: Error when calling the metaclass bases
+    #     nonempty __slots__ not supported for subtype of 'str'
+    class InternationalizedString(str):
+        """Simple subclass to str, that allow to add attributes. Also used to
+        know if a string is already localized"""
+        pass
 
 def internationalizeDocstring(obj):
     """Decorates functions and internationalize their docstring.
