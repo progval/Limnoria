@@ -157,7 +157,7 @@ class Owner(callbacks.Plugin):
             conf.supybot.networks.get(network).servers.append(serverS)
             assert conf.supybot.networks.get(network).servers(), \
                    'No servers are set for the %s network.' % network
-        self.log.info('Creating new Irc for %s.', network)
+        self.log.debug('Creating new Irc for %s.', network)
         newIrc = irclib.Irc(network)
         for irc in world.ircs:
             if irc != newIrc:
@@ -167,7 +167,7 @@ class Owner(callbacks.Plugin):
         return newIrc
 
     def _loadPlugins(self, irc):
-        self.log.info('Loading plugins (connecting to %s).', irc.network)
+        self.log.debug('Loading plugins (connecting to %s).', irc.network)
         alwaysLoadImportant = conf.supybot.plugins.alwaysLoadImportant()
         important = conf.supybot.commands.defaultPlugins.importantPlugins()
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
