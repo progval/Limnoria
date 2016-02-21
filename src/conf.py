@@ -306,7 +306,7 @@ class ValidSaslMechanism(registry.OnlySomeStrings):
 class SpaceSeparatedListOfSaslMechanisms(registry.SpaceSeparatedListOf):
     Value = ValidSaslMechanism
 
-def registerNetwork(name, password='', ssl=False, sasl_username='',
+def registerNetwork(name, password='', ssl=True, sasl_username='',
         sasl_password=''):
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,

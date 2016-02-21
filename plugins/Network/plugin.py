@@ -56,13 +56,14 @@ class Network(callbacks.Plugin):
 
     @internationalizeDocstring
     def connect(self, irc, msg, args, opts, network, server, password):
-        """[--ssl] <network> [<host[:port]>] [<password>]
+        """[--nossl] <network> [<host[:port]>] [<password>]
 
         Connects to another network (which will be represented by the name
         provided in <network>) at <host:port>.  If port is not provided, it
-        defaults to 6667, the default port for IRC.  If password is
-        provided, it will be sent to the server in a PASS command.  If --ssl is
-        provided, an SSL connection will be attempted.
+        defaults to 6697, the default port for IRC with SSL.  If password is
+        provided, it will be sent to the server in a PASS command.  If --nossl is
+        provided, an SSL connection will not be attempted, and the port will
+        default to 6667.
         """
         if '.' in network:
             irc.error("Network names cannot have a '.' in them. "
@@ -75,14 +76,16 @@ class Network(callbacks.Plugin):
                    # quite sure what to do about it.
         except callbacks.Error:
             pass
-        ssl = False
+        ssl = True
         for (opt, arg) in opts:
-            if opt == 'ssl':
-                ssl = True
+            if opt == 'nossl':
+                ssl = False
         if server:
             if ':' in server:
                 (server, port) = server.split(':')
                 port = int(port)
+            elif ssl:
+                port = 6697
             else:
                 port = 6667
             serverPort = (server, port)

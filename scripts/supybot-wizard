@@ -389,15 +389,15 @@ def main():
 
     output("""Found %s (%s).""" % (serverString, ip))
 
-    if advanced:
-        # conf.supybot.networks.<network>.ssl
-        output("""Some servers allow you to use a secure connection via SSL.
-        This requires having pyOpenSSL installed.""")
-        if yn('Do you want to use an SSL connection?', default=False):
-            network.ssl.setValue(True)
+    # conf.supybot.networks.<network>.ssl
+    output("""Most networks allow you to use a secure connection via SSL.
+    If you are not sure whether this network supports SSL or not, check
+    its website.""")
+    if yn('Do you want to use an SSL connection?', default=True):
+        network.ssl.setValue(True)
 
     output("""IRC servers almost always accept connections on port
-    6667 (or 6697 when using SSL).  They can, however, accept connections
+    6697 (or 6667 when not using SSL).  They can, however, accept connections
     anywhere their admins feel like they want to accept connections from.""")
     if yn('Does this server require connection on a non-standard port?',
           default=False):
