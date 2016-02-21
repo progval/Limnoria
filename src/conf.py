@@ -1175,7 +1175,7 @@ utils.web.proxy = supybot.protocols.http.proxy
 ###
 registerGroup(supybot.protocols, 'ssl')
 registerGlobalValue(supybot.protocols.ssl, 'verifyCertificates',
-    registry.Boolean(True, _("""Determines whether server certificates
+    registry.Boolean(False, _("""Determines whether server certificates
     will be verified. Valid values are "required", "optional", and "none".
     The default and recommended setting is "required", which checks the
     server certificate is signed by a known Certificate Authority, and
