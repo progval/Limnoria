@@ -365,6 +365,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn = utils.net.ssl_wrap_socket(self.conn,
                     logger=drivers.log, hostname=self.server[0],
                     certfile=certfile,
+                    verify=conf.supybot.protocols.ssl.verifyCertificates(),
                     trusted_fingerprints=network_config.ssl.serverFingerprints(),
                     )
         except ssl.CertificateError as e:

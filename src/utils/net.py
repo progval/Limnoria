@@ -144,21 +144,22 @@ def check_certificate_fingerprint(conn, trusted_fingerprints):
 
 if hasattr(ssl, 'create_default_context'):
     def ssl_wrap_socket(conn, hostname, logger, certfile=None,
-            trusted_fingerprints=None,
+            trusted_fingerprints=None, verify=True,
             **kwargs):
         context = ssl.create_default_context(**kwargs)
-        if trusted_fingerprints:
+        if trusted_fingerprints or not verify:
             # Do not use Certification Authorities
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
         if certfile:
             context.load_cert_chain(certfile)
         conn = context.wrap_socket(conn, server_hostname=hostname)
-        if trusted_fingerprints:
+        if verify and trusted_fingerprints:
             check_certificate_fingerprint(conn, trusted_fingerprints)
         return conn
 else:
-    def ssl_wrap_socket(conn, hostname, logger, certfile=None,
+    def ssl_wrap_socket(conn, hostname, logger, verify=True,
+            certfile=None,
             ca_certs=None, trusted_fingerprints=None):
         # TLSv1.0 is the only TLS version Python < 2.7.9 supports
         # (besides SSLv2 and v3, which are known to be insecure)
@@ -166,7 +167,7 @@ else:
                 ssl_version=ssl.ssl.PROTOCOL_TLSv1, verify_mode=ssl.CERT_NONE)
         if trusted_fingerprints:
             check_certificate_fingerprint(conn, trusted_fingerprints)
-        else:
+        elif verify:
             logger.critical('This Python version does not support SSL/TLS '
                     'certification authority verification, which makes your '
                     'connection vulnerable to man-in-the-middle attacks.'
