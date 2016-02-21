@@ -33,6 +33,7 @@ Simple utility modules.
 """
 
 import re
+import ssl
 import socket
 
 from .web import _ipAddr, _domain
@@ -127,5 +128,27 @@ def isIPV6(s):
             # We gotta fake it.
             return bruteIsIPV6(s)
         return False
+
+if hasattr(ssl, 'create_default_context'):
+    def ssl_wrap_socket(conn, hostname, logger, certfile=None,
+            verify_mode=ssl.CERT_REQUIRED, **kwargs):
+        context = ssl.create_default_context(**kwargs)
+        context.verify_mode = verify_mode
+        if certfile:
+            context.load_cert_chain(certfile)
+        return context.wrap_socket(conn, server_hostname=hostname)
+else:
+    def ssl_wrap_socket(conn, hostname, logger, certfile=None, ca_certs=None,
+            verify_mode=ssl.CERT_REQUIRED):
+        logger.critical('This Python version does not support SSL contexts, '
+                'which makes your connection vulnerable to man-in-the-middle '
+                'attacks. You should consider upgrading to Python 3 '
+                '(or at least 2.7.9).')
+        # TLSv1.0 is the only TLS version Python < 2.7.9 supports
+        # (besides SSLv2 and v3, which are known to be insecure)
+        return ssl.wrap_socket(conn, certfile=certfile, ca_certs=ca_certs,
+                ssl_version=ssl.ssl.PROTOCOL_TLSv1, verify_mode=verify_mode)
+
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

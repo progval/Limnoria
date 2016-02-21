@@ -238,9 +238,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         if wait:
             self.scheduleReconnect()
             return
-        server = self._getNextServer()
-        socks_proxy = getattr(conf.supybot.networks, self.irc.network) \
-                .socksproxy()
+        self.server = self._getNextServer()
+        network_config = getattr(conf.supybot.networks, self.irc.network)
+        socks_proxy = network_config.socksproxy()
         try:
             if socks_proxy:
                 import socks
@@ -249,16 +249,16 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     'using direct connection instead.')
             socks_proxy = ''
         if socks_proxy:
-            address = server[0]
+            address = self.server[0]
         else:
             try:
-                address = utils.net.getAddressFromHostname(server[0],
+                address = utils.net.getAddressFromHostname(self.server[0],
                         attempt=self._attempt)
             except (socket.gaierror, socket.error) as e:
                 drivers.log.connectError(self.currentServer, e)
                 self.scheduleReconnect()
                 return
-        port = server[1]
+        port = self.server[1]
         drivers.log.connect(self.currentServer)
         try:
             self.conn = utils.net.getSocket(address, port=port,
@@ -276,9 +276,17 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         try:
             # Connect before SSL, otherwise SSL is disabled if we use SOCKS.
             # See http://stackoverflow.com/q/16136916/539465
-            self.conn.connect((address, server[1]))
-            if getattr(conf.supybot.networks, self.irc.network).ssl():
+            self.conn.connect((address, port))
+            if network_config.ssl():
                 self.starttls()
+            elif not network_config.requireStarttls():
+                drivers.log.critical(('Connection to network %s'
+                    'does not use SSL/TLS, which makes it vulnerable to '
+                    'man-in-the-middle attacks and passive eavesdropping. '
+                    'You should consider upgrading your connection to SSL/TLS '
+                    '<http://doc.supybot.aperio.fr/en/latest/use/faq.html#how-to-make-a-connection-secure>')
+                    % self.irc.network)
+
             def setTimeout():
                 self.conn.settimeout(conf.supybot.drivers.poll())
             conf.supybot.drivers.poll.addCallback(setTimeout)
@@ -353,7 +361,29 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             drivers.log.warning('Could not find cert file %s.' %
                     certfile)
             certfile = None
-        self.conn = ssl.wrap_socket(self.conn, certfile=certfile)
+        try:
+            self.conn = utils.net.ssl_wrap_socket(self.conn,
+                    logger=drivers.log, hostname=self.server[0],
+                    certfile=certfile,
+                    verify_mode=conf.supybot.protocols.ssl.verifyMode())
+        except ssl.CertificateError as e:
+            drivers.log.critical(('Certificate validation failed when '
+                'connecting to %s: %s\n'
+                'This means someone is doing a man-in-the-middle attack '
+                'on your connection.')
+                % (self.irc.network, e.args[0]))
+            raise ssl.SSLError('Aborting because of failed certificate '
+                    'verification.')
+        except ssl.SSLError as e:
+            drivers.log.critical(('Certificate validation failed when '
+                'connecting to %s: %s\n'
+                'This means someone is doing a man-in-the-middle attack '
+                'on your connection, or because the server\'s '
+                'certificate is not trusted.')
+                % (self.irc.network, e.args[1]))
+            raise ssl.SSLError('Aborting because of failed certificate '
+                    'verification.')
+
 
 
 Driver = SocketDriver

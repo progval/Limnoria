@@ -1163,6 +1163,23 @@ registerGlobalValue(supybot.protocols.http, 'proxy',
     through.  The value should be of the form 'host:port'.""")))
 utils.web.proxy = supybot.protocols.http.proxy
 
+###
+# supybot.protocols.ssl
+###
+registerGroup(supybot.protocols, 'ssl')
+class SSLVerifyMode(registry.OnlySomeStrings):
+    validStrings = ('required', 'optional', 'none')
+    def __call__(self):
+        import ssl
+        value = super(SSLVerifyMode, self).__call__()
+        return getattr(ssl, 'CERT_' + value.upper())
+registerGlobalValue(supybot.protocols.ssl, 'verifyMode',
+    SSLVerifyMode('required', _("""Determines whether server certificates '
+    'will be verified. Valid values are "required", "optional", and "none". '
+    'The default and recommended setting is "required", which checks the '
+    'server certificate is signed by a known Certificate Authority, and '
+    'aborts the connection if it is not.""")))
+
 
 ###
 # HTTP server
