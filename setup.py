@@ -46,6 +46,7 @@ if debug:
 if path:
     os.chdir(path)
 
+VERSION_FILE = os.path.join('src', 'version.py')
 version = None
 try:
     proc = subprocess.Popen('git show HEAD --format=%ci', shell=True,
@@ -65,19 +66,24 @@ try:
         utc_date = date - offset
         version = utc_date.strftime('%Y.%m.%d')
 except:
-    pass
-if not version:
-    from time import gmtime, strftime
-    version = 'installed on ' + strftime("%Y-%m-%dT%H-%M-%S", gmtime())
+    if os.path.isfile(VERSION_FILE):
+        from src.version import version
+    else:
+        from time import gmtime, strftime
+        version = 'installed on ' + strftime("%Y-%m-%dT%H-%M-%S", gmtime())
 try:
-    os.unlink(os.path.join('src', 'version.py'))
+    os.unlink(VERSION_FILE)
 except OSError: # Does not exist
     pass
-fd = open(os.path.join('src', 'version.py'), 'a')
-fd.write('import supybot.utils.python\n')
-fd.write("version = '0.83.4.1+limnoria %s'\n" % version)
-fd.write('supybot.utils.python._debug_software_version = version\n')
-fd.close()
+if version:
+    fd = open(os.path.join('src', 'version.py'), 'a')
+    fd.write("version = '%s'\n" % version)
+    fd.write('try: # For import from setup.py\n')
+    fd.write('    import supybot.utils.python\n')
+    fd.write('    supybot.utils.python._debug_software_version = version\n')
+    fd.write('except ImportError:\n')
+    fd.write('    pass\n')
+    fd.close()
 
 if sys.version_info < (2, 6, 0):
     sys.stderr.write("Supybot requires Python 2.6 or newer.")
