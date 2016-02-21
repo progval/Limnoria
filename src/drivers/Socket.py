@@ -351,8 +351,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     def starttls(self):
         assert 'ssl' in globals()
-        certfile = getattr(conf.supybot.networks, self.irc.network) \
-                .certfile()
+        network_config = getattr(conf.supybot.networks, self.irc.network)
+        certfile = network_config.certfile()
         if not certfile:
             certfile = conf.supybot.protocols.irc.certfile()
         if not certfile:
@@ -365,12 +365,14 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn = utils.net.ssl_wrap_socket(self.conn,
                     logger=drivers.log, hostname=self.server[0],
                     certfile=certfile,
-                    verify_mode=conf.supybot.protocols.ssl.verifyMode())
+                    trusted_fingerprints=network_config.ssl.serverFingerprints(),
+                    )
         except ssl.CertificateError as e:
             drivers.log.critical(('Certificate validation failed when '
                 'connecting to %s: %s\n'
                 'This means someone is doing a man-in-the-middle attack '
-                'on your connection.')
+                'on your connection, or the server\'s certificate is '
+                'not in your trusted fingerprints list.')
                 % (self.irc.network, e.args[0]))
             raise ssl.SSLError('Aborting because of failed certificate '
                     'verification.')

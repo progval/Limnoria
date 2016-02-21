@@ -35,6 +35,7 @@ Simple utility modules.
 import re
 import ssl
 import socket
+import hashlib
 
 from .web import _ipAddr, _domain
 
@@ -129,26 +130,47 @@ def isIPV6(s):
             return bruteIsIPV6(s)
         return False
 
+
+FINGERPRINT_ALGORITHMS = ('md5', 'sha1', 'sha224', 'sha256', 'sha384',
+        'sha512')
+def check_certificate_fingerprint(conn, trusted_fingerprints):
+    cert = conn.getpeercert(binary_form=True)
+    for algorithm in FINGERPRINT_ALGORITHMS:
+        h = hashlib.new(algorithm)
+        h.update(cert)
+        if h.hexdigest() in trusted_fingerprints:
+            return
+    raise ssl.CertificateError('No matching fingerprint.')
+
 if hasattr(ssl, 'create_default_context'):
     def ssl_wrap_socket(conn, hostname, logger, certfile=None,
-            verify_mode=ssl.CERT_REQUIRED, **kwargs):
+            trusted_fingerprints=None,
+            **kwargs):
         context = ssl.create_default_context(**kwargs)
-        context.verify_mode = verify_mode
+        if trusted_fingerprints:
+            # Do not use Certification Authorities
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
         if certfile:
             context.load_cert_chain(certfile)
-        return context.wrap_socket(conn, server_hostname=hostname)
+        conn = context.wrap_socket(conn, server_hostname=hostname)
+        if trusted_fingerprints:
+            check_certificate_fingerprint(conn, trusted_fingerprints)
+        return conn
 else:
-    def ssl_wrap_socket(conn, hostname, logger, certfile=None, ca_certs=None,
-            verify_mode=ssl.CERT_REQUIRED):
-        logger.critical('This Python version does not support SSL contexts, '
-                'which makes your connection vulnerable to man-in-the-middle '
-                'attacks. You should consider upgrading to Python 3 '
-                '(or at least 2.7.9).')
+    def ssl_wrap_socket(conn, hostname, logger, certfile=None,
+            ca_certs=None, trusted_fingerprints=None):
         # TLSv1.0 is the only TLS version Python < 2.7.9 supports
         # (besides SSLv2 and v3, which are known to be insecure)
-        return ssl.wrap_socket(conn, certfile=certfile, ca_certs=ca_certs,
-                ssl_version=ssl.ssl.PROTOCOL_TLSv1, verify_mode=verify_mode)
-
-
-
+        conn = ssl.wrap_socket(conn, certfile=certfile, ca_certs=ca_certs,
+                ssl_version=ssl.ssl.PROTOCOL_TLSv1, verify_mode=ssl.CERT_NONE)
+        if trusted_fingerprints:
+            check_certificate_fingerprint(conn, trusted_fingerprints)
+        else:
+            logger.critical('This Python version does not support SSL/TLS '
+                    'certification authority verification, which makes your '
+                    'connection vulnerable to man-in-the-middle attacks.'
+                    'You should consider upgrading to Python 3 '
+                    '(or at least 2.7.9).')
+        return conn
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

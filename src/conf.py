@@ -320,13 +320,20 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
     registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
         _("""Space-separated list of channels the bot will join only on %s.""")
         % name, private=True))
+
     registerGlobalValue(network, 'ssl', registry.Boolean(ssl,
         _("""Determines whether the bot will attempt to connect with SSL
         sockets to %s.""") % name))
+    registerGlobalValue(network.ssl, 'serverFingerprints',
+        registry.SpaceSeparatedSetOfStrings([], _("""Space-separated list
+        of fingerprints of trusted certificates for this network.
+        If non-empty, Certification Authority signatures will not be used to
+        verify certificates.""")))
     registerGlobalValue(network, 'requireStarttls', registry.Boolean(False,
         _("""Determines whether the bot will connect in plain text to %s
         but require STARTTLS before authentication. This is ignored if the
         connection already uses SSL.""") % name))
+
     registerGlobalValue(network, 'certfile', registry.String('',
         _("""Determines what certificate file (if any) the bot will use to
         connect with SSL sockets to %s.""") % name))
