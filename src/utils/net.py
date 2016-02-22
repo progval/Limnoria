@@ -171,7 +171,6 @@ else:
             logger.critical('This Python version does not support SSL/TLS '
                     'certification authority verification, which makes your '
                     'connection vulnerable to man-in-the-middle attacks.'
-                    'You should consider upgrading to Python 3 '
-                    '(or at least 2.7.9).')
+                    'You should consider upgrading to Python 3.4 or newer.')
         return conn
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
