@@ -280,7 +280,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             if network_config.ssl():
                 self.starttls()
             elif not network_config.requireStarttls():
-                drivers.log.critical(('Connection to network %s'
+                drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
                     'man-in-the-middle attacks and passive eavesdropping. '
                     'You should consider upgrading your connection to SSL/TLS '
@@ -375,7 +375,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     trusted_fingerprints=network_config.ssl.serverFingerprints(),
                     )
         except ssl.CertificateError as e:
-            drivers.log.critical(('Certificate validation failed when '
+            drivers.log.error(('Certificate validation failed when '
                 'connecting to %s: %s\n'
                 'This means someone is doing a man-in-the-middle attack '
                 'on your connection, or the server\'s certificate is '
@@ -384,7 +384,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             raise ssl.SSLError('Aborting because of failed certificate '
                     'verification.')
         except ssl.SSLError as e:
-            drivers.log.critical(('Certificate validation failed when '
+            drivers.log.error(('Certificate validation failed when '
                 'connecting to %s: %s\n'
                 'This means someone is doing a man-in-the-middle attack '
                 'on your connection, or because the server\'s '
