@@ -171,6 +171,7 @@ else:
             logger.critical('This Python version does not support SSL/TLS '
                     'certification authority verification, which makes your '
                     'connection vulnerable to man-in-the-middle attacks.'
-                    'You should consider upgrading to Python 3.4 or newer.')
+                    'You should consider upgrading to Python 3.4 or newer. '
+                    'See <http://doc.supybot.aperio.fr/en/latest/use/faq.html#how-to-make-limnoria-use-python-3-instead-of-python-2>')
         return conn
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
