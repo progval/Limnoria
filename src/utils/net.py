@@ -144,13 +144,15 @@ def check_certificate_fingerprint(conn, trusted_fingerprints):
 
 if hasattr(ssl, 'create_default_context'):
     def ssl_wrap_socket(conn, hostname, logger, certfile=None,
-            trusted_fingerprints=None, verify=True,
+            trusted_fingerprints=None, verify=True, ca_file=None,
             **kwargs):
         context = ssl.create_default_context(**kwargs)
         if trusted_fingerprints or not verify:
             # Do not use Certification Authorities
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
+        if ca_file:
+            context.load_verify_locations(cafile=ca_file)
         if certfile:
             context.load_cert_chain(certfile)
         conn = context.wrap_socket(conn, server_hostname=hostname)
@@ -160,10 +162,10 @@ if hasattr(ssl, 'create_default_context'):
 else:
     def ssl_wrap_socket(conn, hostname, logger, verify=True,
             certfile=None,
-            ca_certs=None, trusted_fingerprints=None):
+            ca_file=None, trusted_fingerprints=None):
         # TLSv1.0 is the only TLS version Python < 2.7.9 supports
         # (besides SSLv2 and v3, which are known to be insecure)
-        conn = ssl.wrap_socket(conn, certfile=certfile, ca_certs=ca_certs,
+        conn = ssl.wrap_socket(conn, certfile=certfile, ca_certs=ca_file,
                 ssl_version=ssl.ssl.PROTOCOL_TLSv1, verify_mode=ssl.CERT_NONE)
         if trusted_fingerprints:
             check_certificate_fingerprint(conn, trusted_fingerprints)

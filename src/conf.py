@@ -329,6 +329,9 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         of fingerprints of trusted certificates for this network.
         If non-empty, Certification Authority signatures will not be used to
         verify certificates.""")))
+    registerGlobalValue(network.ssl, 'authorityCertificate',
+        registry.String('', _("""A certificate that is trusted to verify
+        certificates of this network (aka. Certificate Authority).""")))
     registerGlobalValue(network, 'requireStarttls', registry.Boolean(False,
         _("""Determines whether the bot will connect in plain text to %s
         but require STARTTLS before authentication. This is ignored if the

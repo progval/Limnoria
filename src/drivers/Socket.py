@@ -373,6 +373,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     certfile=certfile,
                     verify=verifyCertificates,
                     trusted_fingerprints=network_config.ssl.serverFingerprints(),
+                    ca_file=network_config.ssl.authorityCertificate(),
                     )
         except getattr(ssl, 'CertificateError', None) as e:
             # Default to None for old Python version, which do not have
@@ -389,7 +390,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             drivers.log.critical(('Certificate validation failed when '
                 'connecting to %s: %s\n'
                 'This means someone is doing a man-in-the-middle attack '
-                'on your connection, or because the server\'s '
+                'on your connection, or that the server\'s '
                 'certificate is not trusted.')
                 % (self.irc.network, e.args[1]))
             raise ssl.SSLError('Aborting because of failed certificate '
