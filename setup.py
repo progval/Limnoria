@@ -236,7 +236,7 @@ setup(
 
     )
 
-if sys.version_info < (2, 7, 9) or True:
+if sys.version_info < (2, 7, 9):
     sys.stderr.write('+-----------------------------------------------------+\n')
     sys.stderr.write('| Running Limnoria on Python versions older than      |\n')
     sys.stderr.write('| 2.7.9 is deprecated.                                |\n')
