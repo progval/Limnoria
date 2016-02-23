@@ -210,7 +210,7 @@ class VersionIfEmpty(registry.String):
     def __call__(self):
         ret = registry.String.__call__(self)
         if not ret:
-            ret = 'Supybot %s' % version
+            ret = 'Limnoria %s' % version
         return ret
 
 registerGlobalValue(supybot, 'user',
