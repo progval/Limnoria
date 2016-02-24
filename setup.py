@@ -33,10 +33,13 @@
 import os
 import sys
 import time
+import warnings
 import datetime
 import tempfile
 import subprocess
 from math import ceil
+
+warnings.filterwarnings('always', category=DeprecationWarning)
 
 debug = '--debug' in sys.argv
 
@@ -237,13 +240,18 @@ setup(
     )
 
 if sys.version_info < (2, 7, 9):
-    sys.stderr.write('+-----------------------------------------------------+\n')
-    sys.stderr.write('| Running Limnoria on Python versions older than      |\n')
-    sys.stderr.write('| 2.7.9 is deprecated.                                |\n')
-    sys.stderr.write('| Please consider upgrading to Python 3.4 or greater. |\n')
-    sys.stderr.write('+-----------------------------------------------------+\n')
-    sys.stderr.write('\n')
-    sys.stderr.write('See <http://doc.supybot.aperio.fr/en/latest/use/faq.html#how-to-make-limnoria-use-python-3-instead-of-python-2>\n')
-    sys.stderr.write('\n')
+    warnings.warn('Running Limnoria on Python older than 2.7.9 is not '
+            'recommended because it does not support SSL '
+            'certificate verification. For more informations, see: '
+            '<http://doc.supybot.aperio.fr/en/latest/use/security.html#ssl-python-versions>',
+            DeprecationWarning)
+elif sys.version_info < (3, 0):
+    pass # fine, for the moment
+elif sys.version_info < (3, 4):
+    warnings.warn('Running Limnoria on Python 3.2 or 3.3 is not '
+            'recommended because these versions do not support SSL '
+            'certificate verification. For more informations, see: '
+            '<http://doc.supybot.aperio.fr/en/latest/use/security.html#ssl-python-versions>',
+            DeprecationWarning)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
