@@ -373,8 +373,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     certfile=certfile,
                     verify=verifyCertificates,
                     trusted_fingerprints=network_config.ssl.serverFingerprints(),
+                    ca_file=network_config.ssl.authorityCertificate(),
                     )
-        except ssl.CertificateError as e:
+        except getattr(ssl, 'CertificateError', None) as e:
+            # Default to None for old Python version, which do not have
+            # CertificateError
             drivers.log.error(('Certificate validation failed when '
                 'connecting to %s: %s\n'
                 'This means either someone is doing a man-in-the-middle '

@@ -237,10 +237,13 @@ setup(
     )
 
 if sys.version_info < (2, 7, 9):
-    sys.stderr.write('+------------------------------------------------+\n')
-    sys.stderr.write('| Running Limnoria on Python versions older than |\n')
-    sys.stderr.write('| 2.7.9 is deprecated.                           |\n')
-    sys.stderr.write('| Please consider upgrading to Python 3.x.       |\n')
-    sys.stderr.write('+------------------------------------------------+\n')
+    sys.stderr.write('+-----------------------------------------------------+\n')
+    sys.stderr.write('| Running Limnoria on Python versions older than      |\n')
+    sys.stderr.write('| 2.7.9 is deprecated.                                |\n')
+    sys.stderr.write('| Please consider upgrading to Python 3.4 or greater. |\n')
+    sys.stderr.write('+-----------------------------------------------------+\n')
+    sys.stderr.write('\n')
+    sys.stderr.write('See <http://doc.supybot.aperio.fr/en/latest/use/faq.html#how-to-make-limnoria-use-python-3-instead-of-python-2>\n')
+    sys.stderr.write('\n')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

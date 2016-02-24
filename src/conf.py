@@ -210,7 +210,7 @@ class VersionIfEmpty(registry.String):
     def __call__(self):
         ret = registry.String.__call__(self)
         if not ret:
-            ret = 'Supybot %s' % version
+            ret = 'Limnoria %s' % version
         return ret
 
 registerGlobalValue(supybot, 'user',
@@ -329,6 +329,9 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         of fingerprints of trusted certificates for this network.
         If non-empty, Certification Authority signatures will not be used to
         verify certificates.""")))
+    registerGlobalValue(network.ssl, 'authorityCertificate',
+        registry.String('', _("""A certificate that is trusted to verify
+        certificates of this network (aka. Certificate Authority).""")))
     registerGlobalValue(network, 'requireStarttls', registry.Boolean(False,
         _("""Determines whether the bot will connect in plain text to %s
         but require STARTTLS before authentication. This is ignored if the
@@ -1176,10 +1179,8 @@ utils.web.proxy = supybot.protocols.http.proxy
 registerGroup(supybot.protocols, 'ssl')
 registerGlobalValue(supybot.protocols.ssl, 'verifyCertificates',
     registry.Boolean(False, _("""Determines whether server certificates
-    will be verified. Valid values are "required", "optional", and "none".
-    The default and recommended setting is "required", which checks the
-    server certificate is signed by a known Certificate Authority, and
-    aborts the connection if it is not.""")))
+    will be verified, which checks whether the server certificate is signed
+    by a known certificate authority, and aborts the connection if it is not.""")))
 
 
 ###

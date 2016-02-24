@@ -663,7 +663,7 @@ class Channel(callbacks.Plugin):
 
         @internationalizeDocstring
         def remove(self, irc, msg, args, channel, banmask):
-            """[<channel>] <hostmask>
+            """[<channel>] <nick|hostmask>
 
             If you have the #channel,op capability, this will remove the
             persistent ignore on <hostmask> in the channel. <channel> is only
@@ -676,7 +676,7 @@ class Channel(callbacks.Plugin):
                 irc.replySuccess()
             except KeyError:
                 irc.error(_('There are no ignores for that hostmask.'))
-        remove = wrap(remove, ['op', 'hostmask'])
+        remove = wrap(remove, ['op', 'banmask'])
 
         @internationalizeDocstring
         def list(self, irc, msg, args, channel):
