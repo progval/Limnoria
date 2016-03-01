@@ -207,11 +207,11 @@ class Unix(callbacks.Plugin):
             args = [fortuneCmd]
             if self.registryValue('fortune.short', channel):
                 args.append('-s')
-            if self.registryValue('fortune.equal'):
+            if self.registryValue('fortune.equal', channel):
                 args.append('-e')
             if self.registryValue('fortune.offensive', channel):
                 args.append('-a')
-            args.extend(self.registryValue('fortune.files'))
+            args.extend(self.registryValue('fortune.files', channel))
             try:
                 with open(os.devnull) as null:
                     inst = subprocess.Popen(args,

@@ -75,7 +75,7 @@ conf.registerGlobalValue(Unix.fortune, 'command',
 conf.registerChannelValue(Unix.fortune, 'short',
     registry.Boolean(True, _("""Determines whether only short fortunes will be
     used if possible.  This sends the -s option to the fortune program.""")))
-conf.registerGlobalValue(Unix.fortune, 'equal',
+conf.registerChannelValue(Unix.fortune, 'equal',
     registry.Boolean(True, _("""Determines whether fortune will give equal
     weight to the different fortune databases.  If false, then larger
     databases will be given more weight.  This sends the -e option to the
