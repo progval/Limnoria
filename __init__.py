@@ -41,7 +41,7 @@ __version__ = ""
 
 # XXX Replace this with an appropriate author or supybot.Author instance.
 __author__ = supybot.Author('James Lu', 'GLolol',
-                            'GLolol@overdrive.pw')
+                            'GLolol@overdrivenetworks.com')
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
