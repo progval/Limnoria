@@ -114,7 +114,7 @@ class Time(callbacks.Plugin):
         and see if it will work.
         If the <time string> is not given, defaults to now.
         """
-        if not s:
+        if not s or s == 'now':
             irc.reply(str(int(time.time())))
             return
         if not parse:
