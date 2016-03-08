@@ -261,7 +261,7 @@ class HtmlToText(HTMLParser, object):
         return normalizeWhitespace(text)
 
     def handle_charref(self, name):
-        self.append((unichr if minisix.PY2 else chr)(int(name)))
+        self.append(self.unescape('&#%s;' % name))
 
 def htmlToText(s, tagReplace=' '):
     """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
