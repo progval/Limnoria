@@ -272,11 +272,14 @@ class Unix(callbacks.Plugin):
 
     def _make_ping(command):
         def f(self, irc, msg, args, optlist, host):
-            """[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] <host or ip>
+            """[--c <count>] [--i <interval>] [--t <ttl>] [--W <timeout>] [--4|--6] <host or ip>
+
             Sends an ICMP echo request to the specified host.
             The arguments correspond with those listed in ping(8). --c is
             limited to 10 packets or less (default is 5). --i is limited to 5
             or less. --W is limited to 10 or less.
+            --4 and --6 can be used if and only if the system has a unified
+            ping command.
             """
             pingCmd = self.registryValue(registry.join([command, 'command']))
             if not pingCmd:
@@ -294,7 +297,8 @@ class Unix(callbacks.Plugin):
                     if opt == 'i' and val >  5: val = 5
                     if opt == 'W' and val > 10: val = 10
                     args.append('-%s' % opt)
-                    args.append(str(val))
+                    if opt not in ('4', '6'):
+                        args.append(str(val))
                 if '-c' not in args:
                     args.append('-c')
                     args.append('5')
@@ -323,7 +327,8 @@ class Unix(callbacks.Plugin):
         f.__name__ = command
         _hostExpr = re.compile(r'^[a-z0-9][a-z0-9\.-]*[a-z0-9]$', re.I)
         return thread(wrap(f, [getopts({'c':'positiveInt','i':'float',
-                                        't':'positiveInt','W':'positiveInt'}),
+                                        't':'positiveInt','W':'positiveInt',
+                                        '4':'', '6':''}),
                            first('ip', ('matches', _hostExpr, 'Invalid hostname'))]))
 
     ping = _make_ping('ping')
