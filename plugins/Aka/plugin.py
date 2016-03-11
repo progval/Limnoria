@@ -753,12 +753,14 @@ class Aka(callbacks.Plugin):
             if 'keys' in dict(optlist):
                 # Strange, aka_list is a list of one length tuples
                 s = [k[0] for k in aka_list]
+                oneToOne = True
             else:
                 aka_values = [self._db.get_alias(channel, aka) for aka in
                               aka_list]
                 s = ('{0}: "{1}"'.format(ircutils.bold(k), v) for (k, v) in
                     zip(aka_list, aka_values))
-            irc.replies(s)
+                oneToOne = None
+            irc.replies(s, oneToOne=oneToOne)
         else:
             irc.error(_("No Akas found."))
     list = wrap(list, [getopts({'channel': 'channel', 'keys': '', 'locked': '',
