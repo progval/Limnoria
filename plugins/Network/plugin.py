@@ -102,7 +102,7 @@ class Network(callbacks.Plugin):
         conf.supybot.networks().add(network)
         assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
         irc.replySuccess(_('Connection to %s initiated.') % network)
-    connect = wrap(connect, ['owner', getopts({'ssl': ''}), 'something',
+    connect = wrap(connect, ['owner', getopts({'nossl': ''}), 'something',
                              additional('something'),
                              additional('something', '')])
 
