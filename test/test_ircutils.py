@@ -219,6 +219,8 @@ class FunctionsTestCase(SupyTestCase):
         msg = ircmsgs.IrcMsg(':%s PRIVMSG #channel :stuff' % self.hostmask)
         class Irc(object):
             nick = 'bob'
+            network = 'testnet'
+
         irc = Irc()
 
         f = ircutils.standardSubstitute
