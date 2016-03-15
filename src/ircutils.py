@@ -824,6 +824,7 @@ def standardSubstitute(irc, msg, text, env=None):
     if irc:
         vars.update({
             'botnick': irc.nick,
+            'network': irc.network,
             })
 
     if msg:
