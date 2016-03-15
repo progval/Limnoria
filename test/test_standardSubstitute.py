@@ -41,6 +41,7 @@ class FunctionsTestCase(SupyTestCase):
         class state:
             channels = {'#foo': holder()}
         nick = 'foobar'
+        network = 'testnet'
 
     @retry()
     def testStandardSubstitute(self):
@@ -81,6 +82,9 @@ class FunctionsTestCase(SupyTestCase):
         self.failIf(all(L[0].__eq__, L), 'all $randomnicks were the same')
         c = f(self.irc, msg, '$channel')
         self.assertEqual(c, msg.args[0])
+
+        net = f(self.irc, msg, '$network')
+        self.assertEqual(net, self.irc.network)
 
 
 
