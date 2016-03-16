@@ -58,7 +58,6 @@ class Conditional(callbacks.Plugin):
     """This plugin provides logic operators and other commands that
     enable you to run commands only if a condition is true. Useful for nested
     commands and scripting."""
-    threaded = True
     def __init__(self, irc):
         callbacks.Plugin.__init__(self, irc)
 
