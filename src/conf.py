@@ -325,10 +325,11 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         _("""Determines whether the bot will attempt to connect with SSL
         sockets to %s.""") % name))
     registerGlobalValue(network.ssl, 'serverFingerprints',
-        registry.SpaceSeparatedSetOfStrings([], _("""Space-separated list
+        registry.SpaceSeparatedSetOfStrings([], format(_("""Space-separated list
         of fingerprints of trusted certificates for this network.
+        Supported hash algorithms are: %L.
         If non-empty, Certification Authority signatures will not be used to
-        verify certificates.""")))
+        verify certificates."""), utils.net.FINGERPRINT_ALGORITHMS)))
     registerGlobalValue(network.ssl, 'authorityCertificate',
         registry.String('', _("""A certificate that is trusted to verify
         certificates of this network (aka. Certificate Authority).""")))
