@@ -133,7 +133,10 @@ class BetterFileHandler(logging.FileHandler):
             try:
                 self.stream.write(msg.encode("utf8"))
             except (UnicodeError, TypeError):
-                self.stream.write(msg.encode("utf8").decode('ascii', 'replace'))
+                try:
+                    self.stream.write(msg.encode("utf8").decode('ascii', 'replace'))
+                except (UnicodeError, TypeError):
+                    self.stream.write(repr(msg))
         self.stream.write(os.linesep)
         try:
             self.flush()
