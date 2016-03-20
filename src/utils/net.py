@@ -131,9 +131,13 @@ def isIPV6(s):
         return False
 
 
+normalize_fingerprint = lambda fp: fp.replace(':', '').lower()
+
 FINGERPRINT_ALGORITHMS = ('md5', 'sha1', 'sha224', 'sha256', 'sha384',
         'sha512')
 def check_certificate_fingerprint(conn, trusted_fingerprints):
+    trusted_fingerprints = set(normalize_fingerprint(fp)
+            for fp in trusted_fingerprints)
     cert = conn.getpeercert(binary_form=True)
     for algorithm in FINGERPRINT_ALGORITHMS:
         h = hashlib.new(algorithm)
