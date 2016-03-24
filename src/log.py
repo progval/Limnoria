@@ -193,7 +193,7 @@ if not os.path.exists(pluginLogDir):
 
 try:
     messagesLogFilename = os.path.join(_logDir, 'messages.log')
-    _handler = BetterFileHandler(messagesLogFilename)
+    _handler = BetterFileHandler(messagesLogFilename, encoding='utf8')
 except EnvironmentError as e:
     raise SystemExit('Error opening messages logfile (%s).  ' \
           'Generally, this is because you are running Supybot in a directory ' \
