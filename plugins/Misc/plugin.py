@@ -347,7 +347,7 @@ class Misc(callbacks.Plugin):
             self.log.info('Couldn\'t get website version: %s', e)
             newest = _('I couldn\'t fetch the newest version '
                      'from the Limnoria repository.')
-        s = _('The current (running) version of this Supybot is %s, '
+        s = _('The current (running) version of this Limnoria is %s, '
               'running on Python %s.  %s') % \
             (conf.version, sys.version.replace('\n', ' '), newest)
         irc.reply(s)
