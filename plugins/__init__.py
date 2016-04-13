@@ -251,7 +251,8 @@ class ChannelUserDB(ChannelUserDictionary):
             log.debug('Exception: %s', utils.exnToString(e))
 
     def flush(self):
-        fd = utils.file.AtomicFile(self.filename, makeBackupIfSmaller=False)
+        mode = 'wb' if utils.minisix.PY2 else 'w'
+        fd = utils.file.AtomicFile(self.filename, mode, makeBackupIfSmaller=False)
         writer = csv.writer(fd)
         items = list(self.items())
         if not items:
