@@ -157,7 +157,8 @@ def canonicalName(command, preserve_spaces=False):
     return ''.join([x for x in command if x not in special]).lower() + reAppend
 
 def reply(msg, s, prefixNick=None, private=None,
-          notice=None, to=None, action=None, error=False):
+          notice=None, to=None, action=None, error=False,
+          stripCtcp=True):
     msg.tag('repliedTo')
     # Ok, let's make the target:
     # XXX This isn't entirely right.  Consider to=#foo, private=True.
@@ -188,6 +189,8 @@ def reply(msg, s, prefixNick=None, private=None,
         prefixNick = False
     if to is None:
         to = msg.nick
+    if stripCtcp:
+        s = s.strip('\x01')
     # Ok, now let's make the payload:
     s = ircutils.safeArgument(s)
     if not s and not action:
@@ -824,7 +827,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 cb._callCommand(command, self, self.msg, args)
 
     def reply(self, s, noLengthCheck=False, prefixNick=None, action=None,
-              private=None, notice=None, to=None, msg=None, sendImmediately=False):
+              private=None, notice=None, to=None, msg=None,
+              sendImmediately=False, stripCtcp=True):
         """
         Keyword arguments:
 
@@ -880,7 +884,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                           action=self.action,
                                           private=self.private,
                                           prefixNick=self.prefixNick,
-                                          noLengthCheck=self.noLengthCheck)
+                                          noLengthCheck=self.noLengthCheck,
+                                          stripCtcp=stripCtcp)
                 elif self.noLengthCheck:
                     # noLengthCheck only matters to NestedCommandsIrcProxy, so
                     # it's not used here.  Just in case you were wondering.
@@ -888,7 +893,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                               notice=self.notice,
                               action=self.action,
                               private=self.private,
-                              prefixNick=self.prefixNick)
+                              prefixNick=self.prefixNick,
+                              stripCtcp=stripCtcp)
                     sendMsg(m)
                     return m
                 else:
@@ -917,11 +923,11 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         # "(XX more messages)" trailer.
                         if minisix.PY3:
                             appended = _('(XX more messages)').encode()
-                            s = s.encode()[:allowedLength+len(appended)]
+                            s = s.encode()[:allowedLength-len(appended)]
                             s = s.decode('utf8', 'ignore')
                         else:
                             appended = _('(XX more messages)')
-                            s = s[:allowedLength+len(appended)]
+                            s = s[:allowedLength-len(appended)]
                         # There's no need for action=self.action here because
                         # action implies noLengthCheck, which has already been
                         # handled.  Let's stick an assert in here just in case.
@@ -929,7 +935,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         m = reply(msg, s, to=self.to,
                                   notice=self.notice,
                                   private=self.private,
-                                  prefixNick=self.prefixNick)
+                                  prefixNick=self.prefixNick,
+                                  stripCtcp=stripCtcp)
                         sendMsg(m)
                         return m
                     msgs = ircutils.wrap(s, allowedLength,
@@ -942,7 +949,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         m = reply(msg, response, to=self.to,
                                   notice=self.notice,
                                   private=self.private,
-                                  prefixNick=self.prefixNick)
+                                  prefixNick=self.prefixNick,
+                                  stripCtcp=stripCtcp)
                         sendMsg(m)
                         # XXX We should somehow allow these to be returned, but
                         #     until someone complains, we'll be fine :)  We
@@ -975,7 +983,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                             action=self.action,
                                             notice=self.notice,
                                             private=self.private,
-                                            prefixNick=self.prefixNick)
+                                            prefixNick=self.prefixNick,
+                                            stripCtcp=stripCtcp)
                     sendMsg(m)
                     return m
             finally:

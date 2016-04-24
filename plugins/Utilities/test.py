@@ -57,6 +57,9 @@ class UtilitiesTestCase(PluginTestCase):
     def testEchoStandardSubstitute(self):
         self.assertNotRegexp('echo $nick', r'\$')
 
+    def testEchoStripCtcp(self):
+        self.assertResponse('echo \x01ACTION foo\x01', "ACTION foo")
+
     def testApply(self):
         self.assertResponse('apply "utilities last" a', 'a')
         self.assertResponse('apply "utilities last" a b', 'b')

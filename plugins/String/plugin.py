@@ -65,7 +65,7 @@ class String(callbacks.Plugin):
         Returns the character associated with the 8-bit value <number>
         """
         try:
-            irc.reply(chr(i))
+            irc.reply(chr(i), stripCtcp=False)
         except ValueError:
             irc.error(_('That number doesn\'t map to an 8-bit character.'))
     chr = wrap(chr, ['int'])
