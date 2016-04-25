@@ -38,6 +38,10 @@ from .utils import minisix
 from .version import version
 from .i18n import PluginInternationalization
 _ = PluginInternationalization()
+if minisix.PY2:
+    from urllib2 import build_opener, install_opener, ProxyHandler
+else:
+    from urllib.request import build_opener, install_opener, ProxyHandler
 
 ###
 # *** The following variables are affected by command-line options.  They are
@@ -1171,25 +1175,21 @@ registerGlobalValue(supybot.protocols.http, 'peekSize',
     found what it was looking for.""")))
 
 class HttpProxy(registry.String):
-  """Value must be a valid hostname:port string."""
-  def setValue(self, v):
-    if minisix.PY2:
-      from urllib2 import build_opener, install_opener, ProxyHandler
-    else:
-      from urllib.request import build_opener, install_opener, ProxyHandler
-    proxies = {}
-    if v != "":
-      # TODO: improve checks
-      if ':' not in v:
-        self.error()
-      try:
-        int(v.rsplit(':', 1)[1])
-      except ValueError:
-        self.error()
-      proxies = {
-        'http': v,
-        'https': v
-        }
+    """Value must be a valid hostname:port string."""
+    def setValue(self, v):
+        proxies = {}
+        if v != "":
+            # TODO: improve checks
+            if ':' not in v:
+                self.error()
+            try:
+                int(v.rsplit(':', 1)[1])
+            except ValueError:
+                self.error()
+            proxies = {
+                'http': v,
+                'https': v
+                }
     proxyHandler = ProxyHandler(proxies)
     proxyOpenerDirector = build_opener(proxyHandler)
     install_opener(proxyOpenerDirector)
