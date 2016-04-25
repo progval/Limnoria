@@ -1190,10 +1190,10 @@ class HttpProxy(registry.String):
                 'http': v,
                 'https': v
                 }
-    proxyHandler = ProxyHandler(proxies)
-    proxyOpenerDirector = build_opener(proxyHandler)
-    install_opener(proxyOpenerDirector)
-    super(HttpProxy, self).setValue(v)
+        proxyHandler = ProxyHandler(proxies)
+        proxyOpenerDirector = build_opener(proxyHandler)
+        install_opener(proxyOpenerDirector)
+        super(HttpProxy, self).setValue(v)
 
 registerGlobalValue(supybot.protocols.http, 'proxy',
     HttpProxy('', _("""Determines what proxy all HTTP requests should go
