@@ -57,7 +57,6 @@ if minisix.PY2:
         return urllib.urlencode(*args, **kwargs).encode()
     from urllib2 import HTTPError, URLError
     from urllib import splithost, splituser
-    from urllib2 import build_opener, install_opener, ProxyHandler
 else:
     from http.client import InvalidURL
     from urllib.parse import urlsplit, urlunsplit, urlparse
@@ -73,7 +72,6 @@ else:
         return urllib.parse.urlencode(*args, **kwargs)
     from urllib.error import HTTPError, URLError
     from urllib.parse import splithost, splituser
-    from urllib.request import build_opener, install_opener, ProxyHandler
 
 class Error(Exception):
     pass
@@ -145,14 +143,6 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
         else:
             request = url
             request.add_data(data)
-        httpProxy = force(proxy)
-        if httpProxy:
-            proxyHandler = ProxyHandler({
-                'http': httpProxy,
-                'https': httpProxy
-                })
-            proxyOpener = build_opener(proxyHandler)
-            install_opener(proxyOpener)
         fd = urlopen(request, timeout=timeout)
         return fd
     except socket.timeout as e:
