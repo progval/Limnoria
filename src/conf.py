@@ -35,6 +35,7 @@ import socket
 
 from . import ircutils, registry, utils
 from .utils import minisix
+from .utils.net import isSocketAddress
 from .version import version
 from .i18n import PluginInternationalization
 _ = PluginInternationalization()
@@ -1179,17 +1180,13 @@ class HttpProxy(registry.String):
     def setValue(self, v):
         proxies = {}
         if v != "":
-            # TODO: improve checks
-            if ':' not in v:
+            if isSocketAddress(v):
+                proxies = {
+                    'http': v,
+                    'https': v
+                    }
+            else:
                 self.error()
-            try:
-                int(v.rsplit(':', 1)[1])
-            except ValueError:
-                self.error()
-            proxies = {
-                'http': v,
-                'https': v
-                }
         proxyHandler = ProxyHandler(proxies)
         proxyOpenerDirector = build_opener(proxyHandler)
         install_opener(proxyOpenerDirector)
