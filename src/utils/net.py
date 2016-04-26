@@ -77,6 +77,17 @@ def getSocket(host, port=None, socks_proxy=None, vhost=None, vhostv6=None):
     else:
         raise socket.error('Something wonky happened.')
 
+def isSocketAddress(s):
+    if ':' in s:
+        host, port = s.rsplit(':', 1)
+        try:
+            int(port)
+            sock = getSocket(host, port)
+            return True
+        except (ValueError, socket.error):
+            pass
+    return False
+
 def isIP(s):
     """Returns whether or not a given string is an IP address.
 
