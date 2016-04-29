@@ -143,9 +143,6 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
         else:
             request = url
             request.add_data(data)
-        httpProxy = force(proxy)
-        if httpProxy:
-            request.set_proxy(httpProxy, 'http')
         fd = urlopen(request, timeout=timeout)
         return fd
     except socket.timeout as e:

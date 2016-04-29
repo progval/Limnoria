@@ -34,9 +34,15 @@ import time
 import socket
 
 from . import ircutils, registry, utils
+from .utils import minisix
+from .utils.net import isSocketAddress
 from .version import version
 from .i18n import PluginInternationalization
 _ = PluginInternationalization()
+if minisix.PY2:
+    from urllib2 import build_opener, install_opener, ProxyHandler
+else:
+    from urllib.request import build_opener, install_opener, ProxyHandler
 
 ###
 # *** The following variables are affected by command-line options.  They are
@@ -1169,8 +1175,25 @@ registerGlobalValue(supybot.protocols.http, 'peekSize',
     similar.  It'll give up after it reads this many bytes, even if it hasn't
     found what it was looking for.""")))
 
+class HttpProxy(registry.String):
+    """Value must be a valid hostname:port string."""
+    def setValue(self, v):
+        proxies = {}
+        if v != "":
+            if isSocketAddress(v):
+                proxies = {
+                    'http': v,
+                    'https': v
+                    }
+            else:
+                self.error()
+        proxyHandler = ProxyHandler(proxies)
+        proxyOpenerDirector = build_opener(proxyHandler)
+        install_opener(proxyOpenerDirector)
+        super(HttpProxy, self).setValue(v)
+
 registerGlobalValue(supybot.protocols.http, 'proxy',
-    registry.String('', _("""Determines what proxy all HTTP requests should go
+    HttpProxy('', _("""Determines what proxy all HTTP requests should go
     through.  The value should be of the form 'host:port'.""")))
 utils.web.proxy = supybot.protocols.http.proxy
 
