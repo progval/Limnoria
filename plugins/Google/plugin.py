@@ -92,7 +92,7 @@ class Google(callbacks.PluginRegexp):
         return results
 
 
-    _gsearchUrl = 'https://www.google.fr/search?gbv=1'
+    _gsearchUrl = 'https://www.google.com/search?gbv=1'
     @internationalizeDocstring
     def search(self, query, channel, options={}):
         """Perform a search using Google's AJAX API.
