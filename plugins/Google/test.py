@@ -55,10 +55,10 @@ class GoogleTestCase(ChannelPluginTestCase):
             self.assertNotError('google ae')
 
         def testSearchFormat(self):
-            self.assertRegexp('google foo', '<http://.*>')
+            self.assertRegexp('google foo', '<https?://.*>')
             self.assertNotError('config reply.format.url %s')
-            self.assertRegexp('google foo', 'http://.*')
-            self.assertNotRegexp('google foo', '<http://.*>')
+            self.assertRegexp('google foo', 'https?://.*')
+            self.assertNotRegexp('google foo', '<https?://.*>')
 
         def testSearchOneToOne(self):
             self.assertRegexp('google dupa', ';')

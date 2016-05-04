@@ -80,7 +80,19 @@ class Google(callbacks.PluginRegexp):
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
 
-    _gsearchUrl = 'http://ajax.googleapis.com/ajax/services/search/web'
+    _decode_re = re.compile(r'<h3 class="r"><a href="/url\?q=(?P<url>[^"]+)&[^"]+">(?P<title>.*?)</a></h3>.*?<a class="[^"]+" href="/url\?q=(?P<cacheUrl>http://webcache[^"]+)">.*?<span class="st">(?P<content>.*?)</span>', re.DOTALL | re.MULTILINE)
+    @classmethod
+    def decode(cls, text):
+        matches = cls._decode_re.findall(text)
+        results = []
+        for match in matches:
+            r = dict(zip(('url', 'title', 'cacheUrl', 'content'), match))
+            r['url'] = utils.web.htmlToText(r['url'].split('&amp;')[0])
+            results.append(r)
+        return results
+
+
+    _gsearchUrl = 'https://www.google.fr/search?gbv=1'
     @internationalizeDocstring
     def search(self, query, channel, options={}):
         """Perform a search using Google's AJAX API.
@@ -120,22 +132,17 @@ class Google(callbacks.PluginRegexp):
         text = utils.web.getUrl('%s?%s' % (self._gsearchUrl,
                                            utils.web.urlencode(opts)),
                                 headers=headers).decode('utf8')
-        data = json.loads(text)
-        if data['responseStatus'] != 200:
-            self.log.info("Google: unhandled error message: ", text)
-            raise callbacks.Error(data['responseDetails'])
-        return data
+        return text
 
     def formatData(self, data, bold=True, max=0, onetoone=False):
-        if isinstance(data, minisix.string_types):
-            return data
+        data = self.decode(data)
         results = []
         if max:
             data = data[:max]
         for result in data:
-            title = utils.web.htmlToText(result['titleNoFormatting']\
+            title = utils.web.htmlToText(result['title']\
                                          .encode('utf-8'))
-            url = result['unescapedUrl']
+            url = result['url']
             if minisix.PY2:
                 url = url.encode('utf-8')
             if title:
@@ -163,10 +170,10 @@ class Google(callbacks.PluginRegexp):
         """
         opts = dict(opts)
         data = self.search(text, msg.args[0], {'smallsearch': True})
-        if data['responseData']['results']:
-            url = data['responseData']['results'][0]['unescapedUrl']
+        if data:
+            url = data['url']
             if 'snippet' in opts:
-                snippet = data['responseData']['results'][0]['content']
+                snippet = data['content']
                 snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
             else:
                 snippet = ""
@@ -194,7 +201,7 @@ class Google(callbacks.PluginRegexp):
         # do not want @google to echo ~20 lines of results, even if you
         # have reply.oneToOne enabled.
         onetoone = self.registryValue('oneToOne', msg.args[0])
-        for result in self.formatData(data['responseData']['results'],
+        for result in self.formatData(data,
                                   bold=bold, max=max, onetoone=onetoone):
             irc.reply(result)
     google = wrap(google, [getopts({'language':'something',
@@ -208,8 +215,8 @@ class Google(callbacks.PluginRegexp):
         Returns a link to the cached version of <url> if it is available.
         """
         data = self.search(url, msg.args[0], {'smallsearch': True})
-        if data['responseData']['results']:
-            m = data['responseData']['results'][0]
+        if data:
+            m = data[0]
             if m['cacheUrl']:
                 url = m['cacheUrl'].encode('utf-8')
                 irc.reply(url)
@@ -217,6 +224,7 @@ class Google(callbacks.PluginRegexp):
         irc.error(_('Google seems to have no cache for that site.'))
     cache = wrap(cache, ['url'])
 
+    _fight_re = re.compile(r'id="resultStats"[^>]*>(?P<stats>[^<]*)')
     @internationalizeDocstring
     def fight(self, irc, msg, args):
         """<search string> <search string> [<search string> ...]
@@ -227,9 +235,13 @@ class Google(callbacks.PluginRegexp):
         channel = msg.args[0]
         results = []
         for arg in args:
-            data = self.search(arg, channel, {'smallsearch': True})
-            count = data['responseData']['cursor'].get('estimatedResultCount',
-                                                       0)
+            text = self.search(arg, channel, {'smallsearch': True})
+            i = text.find('id="resultStats"')
+            stats = utils.web.htmlToText(self._fight_re.search(text).group('stats'))
+            if stats == '':
+                results.append((0, args))
+                continue
+            count = ''.join(filter('0123456789'.__contains__, stats))
             results.append((int(count), arg))
         results.sort()
         results.reverse()
