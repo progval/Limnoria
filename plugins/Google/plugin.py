@@ -93,7 +93,6 @@ class Google(callbacks.PluginRegexp):
 
 
     _gsearchUrl = 'https://www.google.com/search'
-    @internationalizeDocstring
     def search(self, query, channel, options={}):
         """Perform a search using Google's AJAX API.
         search("search phrase", options={})
@@ -170,10 +169,11 @@ class Google(callbacks.PluginRegexp):
         """
         opts = dict(opts)
         data = self.search(text, msg.args[0], {'smallsearch': True})
+        data = self.decode(data)
         if data:
-            url = data['url']
+            url = data[0]['url']
             if 'snippet' in opts:
-                snippet = data['content']
+                snippet = data[0]['content']
                 snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
             else:
                 snippet = ""

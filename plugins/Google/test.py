@@ -54,6 +54,10 @@ class GoogleTestCase(ChannelPluginTestCase):
             # Unicode check
             self.assertNotError('google ae')
 
+        def testLucky(self):
+            self.assertResponse('lucky Hacker News',
+                    'https://news.ycombinator.com/')
+
         def testSearchFormat(self):
             self.assertRegexp('google foo', '<https?://.*>')
             self.assertNotError('config reply.format.url %s')
