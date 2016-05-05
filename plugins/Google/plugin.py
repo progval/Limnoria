@@ -92,7 +92,7 @@ class Google(callbacks.PluginRegexp):
         return results
 
 
-    _gsearchUrl = 'https://www.google.com/search?gbv=1'
+    _gsearchUrl = 'https://www.google.com/search?gbv=2'
     @internationalizeDocstring
     def search(self, query, channel, options={}):
         """Perform a search using Google's AJAX API.
@@ -110,7 +110,7 @@ class Google(callbacks.PluginRegexp):
                                     dynamic.irc.nick)
         headers = dict(utils.web.defaultHeaders)
         headers['Referer'] = ref
-        opts = {'q': query, 'v': '1.0'}
+        opts = {'q': query}
         for (k, v) in options.items():
             if k == 'smallsearch':
                 if v:
@@ -120,10 +120,10 @@ class Google(callbacks.PluginRegexp):
             elif k == 'filter':
                 opts['safe'] = v
             elif k == 'language':
-                opts['lr'] = v
+                opts['hl'] = v
         defLang = self.registryValue('defaultLanguage', channel)
-        if 'lr' not in opts and defLang:
-            opts['lr'] = defLang
+        if 'hl' not in opts and defLang:
+            opts['hl'] = defLang.strip('lang_')
         if 'safe' not in opts:
             opts['safe'] = self.registryValue('searchFilter', dynamic.channel)
         if 'rsz' not in opts:
