@@ -34,7 +34,7 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Google')
 
 def configure(advanced):
-    from supybot.questions import output, yn
+    from supybot.questions import output, yn, something
     conf.registerPlugin('Google', True)
     output(_("""The Google plugin has the functionality to watch for URLs
               that match a specific pattern. (We call this a snarfer)
@@ -42,6 +42,12 @@ def configure(advanced):
               for information and reply with the results."""))
     if yn(_('Do you want the Google search snarfer enabled by default?')):
         conf.supybot.plugins.Google.searchSnarfer.setValue(True)
+    api_key = something(_('Enter your Google API Key please.'), default='')
+    conf.supybot.plugins.Google.apiKey.setValue(api_key)
+    cse_id = something(_('Enter your Custom Search Engine ID please.'),
+                       default='')
+    conf.supybot.plugins.Google.cseId.setValue(cse_id)
+
 
 class Language(registry.OnlySomeStrings):
     transLangs = {'Afrikaans': 'af', 'Albanian': 'sq', 'Amharic': 'am',
@@ -93,7 +99,7 @@ class NumSearchResults(registry.PositiveInteger):
         super(self.__class__, self).setValue(v)
 
 class SafeSearch(registry.OnlySomeStrings):
-    validStrings = ['active', 'moderate', 'off']
+    validStrings = ['high', 'medium', 'off']
 
 Google = conf.registerPlugin('Google')
 conf.registerGlobalValue(Google, 'referer',
@@ -101,6 +107,10 @@ conf.registerGlobalValue(Google, 'referer',
     the Referer field of the search requests.  If this value is empty, a
     Referer will be generated in the following format:
     http://$server/$botName""")))
+conf.registerGlobalValue(Google, 'apiKey',
+    registry.String('',_("""Google API Key.""")))
+conf.registerGlobalValue(Google, 'cseId',
+    registry.String('',_("""Custom Search Engine ID.""")))
 conf.registerChannelValue(Google, 'baseUrl',
     registry.String('google.com', _("""Determines the base URL used for
     requests.""")))
@@ -118,14 +128,14 @@ conf.registerChannelValue(Google, 'oneToOne',
     registry.Boolean(False, _("""Determines whether results are sent in
     different lines or all in the same one.""")))
 conf.registerChannelValue(Google, 'maximumResults',
-    NumSearchResults(3, _("""Determines the maximum number of results returned
+    NumSearchResults(4, _("""Determines the maximum number of results returned
     from the google command.""")))
 conf.registerChannelValue(Google, 'defaultLanguage',
     Language('lang_'+ _('en'), _("""Determines what default language is used in
     searches.  If left empty, no specific language will be requested.""")))
 conf.registerChannelValue(Google, 'searchFilter',
-    SafeSearch('moderate', _("""Determines what level of search filtering to use
-    by default.  'active' - most filtering, 'moderate' - default filtering,
+    SafeSearch('medium', _("""Determines what level of search filtering to use
+    by default.  'high' - most filtering, 'medium' - default filtering,
     'off' - no filtering""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -29,9 +29,12 @@
 ###
 
 from supybot.test import *
+from os import environ
 
 class GoogleTestCase(ChannelPluginTestCase):
     plugins = ('Google', 'Config')
+    config = {'supybot.plugins.Google.apiKey': environ['API_KEY'],
+              'supybot.plugins.Google.cseId': environ['CSE_ID']}
     if network:
         def testCalcHandlesMultiplicationSymbol(self):
             self.assertNotRegexp('google calc seconds in a century', r'215')
@@ -55,10 +58,10 @@ class GoogleTestCase(ChannelPluginTestCase):
             self.assertNotError('google ae')
 
         def testSearchFormat(self):
-            self.assertRegexp('google foo', '<http://.*>')
+            self.assertRegexp('google foo', '<https?://.*>')
             self.assertNotError('config reply.format.url %s')
-            self.assertRegexp('google foo', 'http://.*')
-            self.assertNotRegexp('google foo', '<http://.*>')
+            self.assertRegexp('google foo', 'https?://.*')
+            self.assertNotRegexp('google foo', '<https?://.*>')
 
         def testSearchOneToOne(self):
             self.assertRegexp('google dupa', ';')

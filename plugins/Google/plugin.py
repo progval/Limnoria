@@ -80,7 +80,7 @@ class Google(callbacks.PluginRegexp):
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
 
-    _gsearchUrl = 'http://ajax.googleapis.com/ajax/services/search/web'
+    _gsearchUrl = 'https://www.googleapis.com/customsearch/v1'
     @internationalizeDocstring
     def search(self, query, channel, options={}):
         """Perform a search using Google's AJAX API.
@@ -102,9 +102,9 @@ class Google(callbacks.PluginRegexp):
         for (k, v) in options.items():
             if k == 'smallsearch':
                 if v:
-                    opts['rsz'] = 'small'
+                    opts['num'] = 1
                 else:
-                    opts['rsz'] = 'large'
+                    opts['num'] = self.registryValue('maximumResults')
             elif k == 'filter':
                 opts['safe'] = v
             elif k == 'language':
@@ -112,18 +112,19 @@ class Google(callbacks.PluginRegexp):
         defLang = self.registryValue('defaultLanguage', channel)
         if 'lr' not in opts and defLang:
             opts['lr'] = defLang
+        if 'key' not in opts:
+            opts['key'] = self.registryValue('apiKey')
+        if 'cx' not in opts:
+            opts['cx'] = self.registryValue('cseId')
         if 'safe' not in opts:
             opts['safe'] = self.registryValue('searchFilter', dynamic.channel)
-        if 'rsz' not in opts:
-            opts['rsz'] = 'large'
-
-        text = utils.web.getUrl('%s?%s' % (self._gsearchUrl,
-                                           utils.web.urlencode(opts)),
-                                headers=headers).decode('utf8')
+        if 'num' not in opts:
+            opts['num'] = 8
+        url = '%s?%s' % (self._gsearchUrl,
+                         utils.web.urlencode(opts))
+        text = utils.web.getUrl(url, headers=headers).decode('utf8')
         data = json.loads(text)
-        if data['responseStatus'] != 200:
-            self.log.info("Google: unhandled error message: ", text)
-            raise callbacks.Error(data['responseDetails'])
+
         return data
 
     def formatData(self, data, bold=True, max=0, onetoone=False):
@@ -133,9 +134,8 @@ class Google(callbacks.PluginRegexp):
         if max:
             data = data[:max]
         for result in data:
-            title = utils.web.htmlToText(result['titleNoFormatting']\
-                                         .encode('utf-8'))
-            url = result['unescapedUrl']
+            title = result['title']
+            url = result['link']
             if minisix.PY2:
                 url = url.encode('utf-8')
             if title:
@@ -163,11 +163,10 @@ class Google(callbacks.PluginRegexp):
         """
         opts = dict(opts)
         data = self.search(text, msg.args[0], {'smallsearch': True})
-        if data['responseData']['results']:
-            url = data['responseData']['results'][0]['unescapedUrl']
+        if data['items']:
+            url = data['items'][0]['link']
             if 'snippet' in opts:
-                snippet = data['responseData']['results'][0]['content']
-                snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
+                snippet = data['items'][0]['snippet']
             else:
                 snippet = ""
             result = url + snippet
@@ -194,7 +193,7 @@ class Google(callbacks.PluginRegexp):
         # do not want @google to echo ~20 lines of results, even if you
         # have reply.oneToOne enabled.
         onetoone = self.registryValue('oneToOne', msg.args[0])
-        for result in self.formatData(data['responseData']['results'],
+        for result in self.formatData(data['items'],
                                   bold=bold, max=max, onetoone=onetoone):
             irc.reply(result)
     google = wrap(google, [getopts({'language':'something',
@@ -208,12 +207,11 @@ class Google(callbacks.PluginRegexp):
         Returns a link to the cached version of <url> if it is available.
         """
         data = self.search(url, msg.args[0], {'smallsearch': True})
-        if data['responseData']['results']:
-            m = data['responseData']['results'][0]
-            if m['cacheUrl']:
-                url = m['cacheUrl'].encode('utf-8')
-                irc.reply(url)
-                return
+        if data['items']:
+            m = data['items'][0]
+            url = 'http://webcache.googleusercontent.com/search?q=cache:%s' % m['link']
+            irc.reply(url)
+            return
         irc.error(_('Google seems to have no cache for that site.'))
     cache = wrap(cache, ['url'])
 
@@ -228,8 +226,7 @@ class Google(callbacks.PluginRegexp):
         results = []
         for arg in args:
             data = self.search(arg, channel, {'smallsearch': True})
-            count = data['responseData']['cursor'].get('estimatedResultCount',
-                                                       0)
+            count = data['searchInformation']["totalResults"]
             results.append((int(count), arg))
         results.sort()
         results.reverse()
@@ -290,8 +287,8 @@ class Google(callbacks.PluginRegexp):
             return
         searchString = match.group(1)
         data = self.search(searchString, msg.args[0], {'smallsearch': True})
-        if data['responseData']['results']:
-            url = data['responseData']['results'][0]['unescapedUrl']
+        if data['items']:
+            url = data['items'][0]['link']
             irc.reply(url, prefixNick=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
 
