@@ -94,8 +94,7 @@ class Google(callbacks.PluginRegexp):
 
     _gsearchUrl = 'https://www.google.com/search'
     def search(self, query, channel, options={}):
-        """Perform a search using Google's AJAX API.
-        search("search phrase", options={})
+        """search("search phrase", options={})
 
         Valid options are:
             smallsearch - True/False (Default: False)
@@ -103,6 +102,12 @@ class Google(callbacks.PluginRegexp):
             language - Restrict search to documents in the given language
                        (Default: "lang_en")
         """
+        self.log.warning('The Google plugin search is deprecated since '
+                'Google closed their public API and will be removed in a '
+                'future release. Please consider switching to an other '
+                'plugin for your searches, like '
+                '<https://github.com/Hoaas/Supybot-plugins/tree/master/DuckDuckGo>, '
+                'or <https://github.com/joulez/GoogleCSE>.')
         ref = self.registryValue('referer')
         if not ref:
             ref = 'http://%s/%s' % (dynamic.irc.server,
