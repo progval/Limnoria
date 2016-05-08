@@ -229,7 +229,7 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.error(str(e))
     ur1 = thread(wrap(ur1, ['httpUrl']))
 
-    _x0Api = 'http://api.x0.no/?%s'
+    _x0Api = 'https://x0.no/api/?%s'
     @retry
     def _getX0Url(self, url):
         try:
