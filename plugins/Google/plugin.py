@@ -30,10 +30,7 @@
 
 import re
 import sys
-import cgi
 import json
-import time
-import socket
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -45,8 +42,6 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Google')
-
-import json
 
 class Google(callbacks.PluginRegexp):
     """This is a simple plugin to provide access to the Google services we
