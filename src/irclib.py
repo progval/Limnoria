@@ -970,7 +970,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             return getattr(network_config, name)() or \
                 getattr(conf.supybot, name)()
         self.nick = get_value('nick')
-        self.user = get_value('user')
+        # Expand variables like $version in realname.
+        self.user = ircutils.standardSubstitute(self, None, get_value('user'))
         self.ident = get_value('ident')
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         self.password = network_config.password()
