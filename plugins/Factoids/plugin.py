@@ -159,8 +159,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
                     factoids[key] = {}
                 factoids[key][id_] = fact
             content = ''
-            keys = factoids.keys()
-            keys.sort()
+            keys = sorted(factoids.keys())
             for key in keys:
                 facts = factoids[key]
                 content += '<tr>'
