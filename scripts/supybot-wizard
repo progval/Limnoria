@@ -393,7 +393,7 @@ def main():
     output("""Most networks allow you to use a secure connection via SSL.
     If you are not sure whether this network supports SSL or not, check
     its website.""")
-    use_ssl = yn('Do you want to use an SSL connection?', default=True):
+    use_ssl = yn('Do you want to use an SSL connection?', default=True)
     network.ssl.setValue(use_ssl)
 
     output("""IRC servers almost always accept connections on port
