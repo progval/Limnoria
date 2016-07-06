@@ -105,7 +105,7 @@ class Misc(callbacks.Plugin):
         self.invalidCommands.enqueue(msg)
         if self.invalidCommands.len(msg) > maximum and \
            conf.supybot.abuse.flood.command.invalid() and \
-           not ircdb.checkCapability(msg.prefix, 'owner'):
+           not ircdb.checkCapability(msg.prefix, 'trusted'):
             punishment = conf.supybot.abuse.flood.command.invalid.punishment()
             banmask = '*!%s@%s' % (msg.user, msg.host)
             self.log.info('Ignoring %s for %s seconds due to an apparent '
@@ -133,7 +133,7 @@ class Misc(callbacks.Plugin):
             maximum = conf.supybot.abuse.flood.command.invalid.maximum()
             banmasker = conf.supybot.protocols.irc.banmask.makeBanmask
             if self.invalidCommands.len(msg) > maximum and \
-               not ircdb.checkCapability(msg.prefix, 'owner') and \
+               not ircdb.checkCapability(msg.prefix, 'trusted') and \
                msg.prefix != irc.prefix and \
                ircutils.isUserHostmask(msg.prefix):
                 penalty = conf.supybot.abuse.flood.command.invalid.punishment()
