@@ -290,7 +290,9 @@ class Google(callbacks.PluginRegexp):
         """<source language> [to] <target language> <text>
 
         Returns <text> translated from <source language> into <target
-        language>.
+        language>. <source language> and <target language> take language
+        codes (not language names), which are listed here:
+        https://cloud.google.com/translate/v2/translate-reference#supported_languages
         """
         channel = msg.args[0]
         (text, language) = self._translate(sourceLang, targetLang, text)
