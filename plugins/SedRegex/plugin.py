@@ -44,9 +44,11 @@ try:
 except ImportError:
     _ = lambda x: x
 
-
+# Note: {0,2} is used for matching the flags instead of "*" to work around a Python bug in versions
+# lower than 2.7.6: see https://stackoverflow.com/questions/3675144/regex-error-nothing-to-repeat
+# and https://bugs.python.org/issue18647
 SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>.*?)(?P=delim)"
-                       r"(?P<replacement>.*?)(?:(?P=delim)(?P<flags>[gi]*))?$")
+                       r"(?P<replacement>.*?)(?:(?P=delim)(?P<flags>[gi]{0,2}))?$")
 
 class SedRegex(callbacks.PluginRegexp):
     """History replacer using sed-style regex syntax."""
