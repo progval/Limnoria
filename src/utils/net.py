@@ -180,8 +180,15 @@ else:
             ca_file=None, trusted_fingerprints=None):
         # TLSv1.0 is the only TLS version Python < 2.7.9 supports
         # (besides SSLv2 and v3, which are known to be insecure)
-        conn = ssl.wrap_socket(conn, certfile=certfile, ca_certs=ca_file,
-                ssl_version=ssl.PROTOCOL_TLSv1)
+        try:
+            conn = ssl.wrap_socket(conn,
+                    server_hostname=hostname,
+                    certfile=certfile, ca_certs=ca_file,
+                    ssl_version=ssl.PROTOCOL_TLSv1)
+        except TypeError: # server_hostname is not supported
+            conn = ssl.wrap_socket(conn,
+                    certfile=certfile, ca_certs=ca_file,
+                    ssl_version=ssl.PROTOCOL_TLSv1)
         if trusted_fingerprints:
             check_certificate_fingerprint(conn, trusted_fingerprints)
         elif verify:
