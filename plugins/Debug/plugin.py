@@ -34,6 +34,8 @@ This is for debugging purposes only and you shouldn't load this it unless
 a Supybot developer requests you to debug some issue.
 """
 
+# Import supybot for easier access to the module namespace
+import supybot
 import supybot.plugins as plugins
 
 import gc
