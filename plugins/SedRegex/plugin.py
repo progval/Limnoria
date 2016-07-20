@@ -116,7 +116,7 @@ class SedRegex(callbacks.PluginRegexp):
         next(iterable)
         for m in iterable:
             if m.command in ('PRIVMSG', 'NOTICE') and \
-                    m.args[0] == msg.args[0]:
+                    m.args[0] == msg.args[0] and m.tagged('receivedBy') == irc:
                 target = regex.group('nick')
                 if not ircutils.isNick(str(target), strictRfc=True):
                     return
