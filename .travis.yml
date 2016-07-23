@@ -6,7 +6,8 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-  - "3.5-dev"
+  - "3.5"
+  - "3.6-dev"
   - "nightly"
   - "pypy"
   - "pypy3"
@@ -35,7 +36,7 @@ matrix:
       env: WITH_OPT_DEPS=false
     - python: "3.3"
       env: WITH_OPT_DEPS=false
-    - python: "3.5-dev"
+    - python: "3.6-dev"
       env: WITH_OPT_DEPS=false
     - python: "nightly"
       env: WITH_OPT_DEPS=false
