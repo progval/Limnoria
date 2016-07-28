@@ -74,6 +74,7 @@ def check_gpg_available(f):
 class GPG(callbacks.Plugin):
     """Provides authentication based on GPG keys."""
     class key(callbacks.Commands):
+        @check_gpg_available
         def add(self, irc, msg, args, user, keyid, keyserver):
             """<key id> <key server>
 
@@ -99,6 +100,7 @@ class GPG(callbacks.Plugin):
                          ('somethingWithoutSpaces',
                              _('You must give a valid key server'))])
 
+        @check_gpg_available
         def remove(self, irc, msg, args, user, fingerprint):
             """<fingerprint>
 
@@ -119,6 +121,7 @@ class GPG(callbacks.Plugin):
                 irc.error(_('GPG key not associated with your account.'))
         remove = wrap(remove, ['user', 'somethingWithoutSpaces'])
 
+        @check_gpg_available
         def list(self, irc, msg, args, user):
             """takes no arguments
 
@@ -140,6 +143,7 @@ class GPG(callbacks.Plugin):
             self._tokens = dict(filter(lambda x_y: x_y[1][1]>now,
                 self._tokens.items()))
 
+        @check_gpg_available
         def gettoken(self, irc, msg, args):
             """takes no arguments
 
@@ -161,6 +165,7 @@ class GPG(callbacks.Plugin):
                 r'\r?\n-----END PGP SIGNATURE-----',
                 re.S)
         
+        @check_gpg_available
         def auth(self, irc, msg, args, url):
             """<url>
 
