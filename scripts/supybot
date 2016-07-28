@@ -149,7 +149,7 @@ def main():
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(usage='Usage: %prog [options] configFile',
-                                   version='Supybot %s running on Python%s' %
+                                   version='Limnoria %s running on Python %s' %
                                    (version, sys.version))
     parser.add_option('-P', '--profile', action='store_true', dest='profile',
                       help='enables profiling')
