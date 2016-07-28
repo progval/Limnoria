@@ -32,6 +32,7 @@ import re
 import sys
 import time
 import uuid
+import functools
 
 import supybot.gpg as gpg
 import supybot.conf as conf
@@ -50,6 +51,25 @@ except ImportError:
     # without the i18n module
     _ = lambda x: x
 
+def check_gpg_available(f):
+    if gpg.available:
+        return f
+    else:
+        if not gpg.found_gnupg_lib:
+            def newf(self, irc, *args):
+                irc.error(_('gnupg features are not available because '
+                    'the python-gnupg library is not installed.'))
+        elif not gpg.found_gnupg_bin:
+            def newf(self, irc, *args):
+                irc.error(_('gnupg features are not available because '
+                    'the gnupg executable is not installed.'))
+        else:
+            # This case should never happen.
+            def newf(self, irc, *args):
+                irc.error(_('gnupg features are not available.'))
+        newf.__doc__ = f.__doc__
+        newf.__name__ = f.__name__
+        return newf
 
 class GPG(callbacks.Plugin):
     """Provides authentication based on GPG keys."""

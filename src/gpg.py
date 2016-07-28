@@ -32,6 +32,8 @@ import os
 import supybot.log as log
 import supybot.conf as conf
 
+found_gnupg_lib = False
+found_gnupg_bin = False
 try:
     import gnupg
 except ImportError:
@@ -42,11 +44,16 @@ except ImportError:
 try:
     if gnupg:
         gnupg.GPG(gnupghome=None)
+        found_gnupg_lib = found_gnupg_bin = True
 except TypeError:
     # This is the 'gnupg' library, not 'python-gnupg'.
     gnupg = None
+    log.error('Cannot use GPG. gnupg (a Python package) is installed, '
+              'but python-gnupg (an other Python package) should be '
+              'installed instead.')
 except OSError:
     gnupg = None
+    found_gnupg_lib = True
     log.error('Cannot use GPG. python-gnupg is installed but cannot '
               'find the gnupg executable.')
 
