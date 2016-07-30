@@ -295,6 +295,12 @@ class ChannelStats(callbacks.Plugin):
     _calc_match_forbidden_chars = re.compile('[_[\]]')
     _env = {'__builtins__': types.ModuleType('__builtins__')}
     _env.update(math.__dict__)
+    def _factorial(x):
+        if x<=10000:
+            return math.factorial(x)
+        else:
+            raise Exception('factorial argument too large')
+    _env['factorial'] = _factorial
     @internationalizeDocstring
     def rank(self, irc, msg, args, channel, expr):
         """[<channel>] <stat expression>
