@@ -142,12 +142,11 @@ class GithubRepository(GitRepository):
                             reload_imported = False
                             for line in extractedFile.readlines():
                                 if minisix.PY3:
-                                    if 'import reload' in line.decode():
+                                    if b'import reload' in line:
                                         reload_imported = True
                                     elif not reload_imported and \
-                                            'reload(' in line.decode():
-                                        fd.write('from imp import reload\n' \
-                                                .encode())
+                                            b'reload(' in line:
+                                        fd.write(b'from imp import reload\n')
                                         reload_imported = True
                                 fd.write(line)
                     if newFileName.endswith('__init__.py'):
