@@ -94,6 +94,10 @@ class PluginDownloaderTestCase(PluginTestCase):
         self.assertNotError('plugindownloader install SpiderDave Pastebin')
         self._testPluginInstalled('Pastebin')
 
+    def testInstallNonAsciiInit(self):
+        self.assertNotError('plugindownloader install Hoaas DuckDuckGo')
+        self._testPluginInstalled('DuckDuckGo')
+
     def testInfo(self):
         self.assertResponse('plugindownloader info ProgVal Twitter',
                 'Advanced Twitter plugin for Supybot, with capabilities '
