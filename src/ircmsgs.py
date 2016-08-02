@@ -39,6 +39,7 @@ import re
 import time
 import base64
 import datetime
+import warnings
 import functools
 
 from . import conf, ircutils, utils
@@ -262,7 +263,17 @@ class IrcMsg(object):
         return self.tags.get(tag) # Returns None if it's not there.
 
     def __getattr__(self, attr):
-        return self.tagged(attr)
+        if attr.startswith('__'): # Since PEP 487, Python calls __set_name__
+            raise AttributeError("'%s' object has no attribute '%s'" %
+                    (self.__class__.__name__, attr))
+        if attr in self.tags:
+            warnings.warn("msg.<tagname> is deprecated. Use "
+                    "msg.tagged('<tagname>') or msg.tags['<tagname>']"
+                    "instead.", DeprecationWarning)
+            return self.tags[attr]
+        else:
+            # TODO: make this raise AttributeError
+            return None
 
 
 def isCtcp(msg):
