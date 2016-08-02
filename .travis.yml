@@ -17,6 +17,7 @@ env:
 install:
   - if [ "$WITH_OPT_DEPS" = "true" ] ; then pip install -vr requirements.txt; fi
   - if [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then pip install -v git+https://github.com/ProgVal/irctest.git; fi
+  - pip uninstall limnoria || true
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
