@@ -40,7 +40,7 @@ paragraphs for easier installation methods.*
 ```
 git clone https://github.com/ProgVal/Limnoria.git
 sudo pip install -r requirements.txt
-sudo python setup.py install
+sudo python3 setup.py install
 ```
 
 alternatively without root
@@ -48,7 +48,7 @@ alternatively without root
 ```
 git clone https://github.com/ProgVal/Limnoria.git
 pip install -r requirements.txt --user
-python setup.py install --user
+python3 setup.py install --user
 ```
 
 [doc.supybot.aperio.fr]:http://doc.supybot.aperio.fr/
