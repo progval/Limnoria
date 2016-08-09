@@ -52,6 +52,9 @@ conf.registerChannelValue(Web, 'titleSnarfer',
 conf.registerChannelValue(Web, 'snarferReportIOExceptions',
     registry.Boolean(False, _("""Determines whether the bot will notfiy the user
     about network exceptions like hostnotfound, timeout ....""")))
+conf.registerChannelValue(Web, 'snarferShowDomain',
+    registry.Boolean(True, _("""Determines whether domain names should be
+    displayed by the title snarfer.""")))
 conf.registerChannelValue(Web, 'snarferShowTargetDomain',
     registry.Boolean(False, _("""Determines whether the domain name displayed
     by the snarfer will be the original one (posted on IRC) or the target one

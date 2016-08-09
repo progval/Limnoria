@@ -179,7 +179,9 @@ class Web(callbacks.PluginRegexp):
                 domain = utils.web.getDomain(target
                         if self.registryValue('snarferShowTargetDomain', channel)
                         else url)
-                s = format(_('Title: %s (at %s)'), title, domain)
+                s = format(_('Title: %s'), title)
+                if self.registryValue('snarferShowDomain', channel):
+                    s += format(_(' (at %s)'), domain)
                 irc.reply(s, prefixNick=False)
     titleSnarfer = urlSnarfer(titleSnarfer)
     titleSnarfer.__doc__ = utils.web._httpUrlRe
