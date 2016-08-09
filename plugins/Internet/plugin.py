@@ -72,10 +72,13 @@ class Internet(callbacks.Plugin):
     dns = wrap(dns, ['something'])
 
     _domain = ['Domain Name', 'Server Name', 'domain']
+    _netrange = ['NetRange', 'inetnum']
     _registrar = ['Sponsoring Registrar', 'Registrar', 'source']
+    _netname = ['NetName', 'inetname']
     _updated = ['Last Updated On', 'Domain Last Updated Date', 'Updated Date',
-                'Last Modified', 'changed']
-    _created = ['Created On', 'Domain Registration Date', 'Creation Date']
+                'Last Modified', 'changed', 'last-modified']
+    _created = ['Created On', 'Domain Registration Date', 'Creation Date',
+                'created', 'RegDate']
     _expires = ['Expiration Date', 'Domain Expiration Date']
     _status = ['Status', 'Domain Status', 'status']
     @internationalizeDocstring
@@ -84,22 +87,29 @@ class Internet(callbacks.Plugin):
 
         Returns WHOIS information on the registration of <domain>.
         """
-        usertld = domain.split('.')[-1]
-        if '.' not in domain:
-            irc.errorInvalid(_('domain'))
-            return
+        if utils.net.isIP(domain):
+            whois_server = 'whois.arin.net'
+            usertld = 'ipaddress'
+        elif '.' in domain:
+            usertld = domain.split('.')[-1]
+            whois_server = '%s.whois-servers.net' % usertld
+        else:
+            usertld = None
+            whois_server = 'whois.iana.org'
         try:
-            sock = utils.net.getSocket('%s.whois-servers.net' % usertld,
+            sock = utils.net.getSocket(whois_server,
                     vhost=conf.supybot.protocols.irc.vhost(),
                     vhostv6=conf.supybot.protocols.irc.vhostv6(),
                     )
-            sock.connect(('%s.whois-servers.net' % usertld, 43))
+            sock.connect((whois_server, 43))
         except socket.error as e:
             irc.error(str(e))
             return
         sock.settimeout(5)
         if usertld == 'com':
             sock.send(b'=')
+        elif usertld == 'ipaddress':
+            sock.send(b'n + ')
         sock.send(domain.encode('ascii'))
         sock.send(b'\r\n')
 
@@ -107,12 +117,17 @@ class Internet(callbacks.Plugin):
         end_time = time.time() + 5
         try:
             while end_time>time.time():
+                time.sleep(0.1)
                 s += sock.recv(4096)
         except socket.error:
             pass
-        server = registrar = updated = created = expires = status = ''
+        sock.close()
+        print(s)
+        server = netrange = netname = registrar = updated = created = expires = status = ''
         for line in s.splitlines():
             line = line.decode('utf8').strip()
+            print(line)
+            print(self._netrange)
             if not line or ':' not in line:
                 continue
             if not server and any(line.startswith, self._domain):
@@ -123,10 +138,14 @@ class Internet(callbacks.Plugin):
                 if server != domain:
                     server = ''
                     continue
-            if not server:
+            if not netrange and any(line.startswith, self._netrange):
+                netrange = ':'.join(line.split(':')[1:]).strip()
+            if not server and not netrange:
                 continue
             if not registrar and any(line.startswith, self._registrar):
                 registrar = ':'.join(line.split(':')[1:]).strip()
+            elif not netname and any(line.startswith, self._netname):
+                netname = ':'.join(line.split(':')[1:]).strip()
             elif not updated and any(line.startswith, self._updated):
                 s = ':'.join(line.split(':')[1:]).strip()
                 updated = _('updated %s') % s
@@ -160,9 +179,11 @@ class Internet(callbacks.Plugin):
                 url = _(' <registered by %s>') % line.split(':')[1].strip()
             elif line == 'Not a valid ID pattern':
                 url = ''
-        if server and status:
+        if (server or netrange) and status:
+            entity = server or 'Net range %s%s' % \
+                    (netrange, ' (%s)' % netname if netname else '')
             info = filter(None, [status, created, updated, expires])
-            s = format(_('%s%s is %L.'), server, url, info)
+            s = format(_('%s%s is %L.'), entity, url, info)
             irc.reply(s)
         else:
             irc.error(_('I couldn\'t find such a domain.'))

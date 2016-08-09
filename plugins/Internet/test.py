@@ -43,6 +43,8 @@ class InternetTestCase(PluginTestCase):
             self.assertNotError('internet whois microsoft.com')
             self.assertNotError('internet whois inria.fr')
             self.assertNotError('internet whois slime.com.au')
+            self.assertNotError('internet whois 8.8.8.8')
+            self.assertNotError('internet whois net')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
