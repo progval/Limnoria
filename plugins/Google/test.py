@@ -54,6 +54,12 @@ class GoogleTestCase(ChannelPluginTestCase):
             # Unicode check
             self.assertNotError('google ae')
 
+        def testUrlDecode(self):
+            self.assertRegexp(
+                    'google site:http://www.urbandictionary.com carajo land',
+                    '\x02Urban Dictionary: carajo land\x02: '
+                    'https?://www.urbandictionary.com/define.php\?term=carajo%20land')
+
         def testLucky(self):
             self.assertResponse('lucky Hacker News',
                     'https://news.ycombinator.com/')

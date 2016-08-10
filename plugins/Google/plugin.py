@@ -82,7 +82,7 @@ class Google(callbacks.PluginRegexp):
         results = []
         for match in matches:
             r = dict(zip(('url', 'title', 'cacheUrl', 'content'), match))
-            r['url'] = utils.web.htmlToText(r['url'].split('&amp;')[0])
+            r['url'] = utils.web.urlunquote(utils.web.htmlToText(r['url'].split('&amp;')[0]))
             results.append(r)
         return results
 
