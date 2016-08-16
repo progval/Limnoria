@@ -212,15 +212,8 @@ registerGlobalValue(supybot, 'ident',
     ValidNick('limnoria', _("""Determines the bot's ident string, if the server
     doesn't provide one by default.""")))
 
-class VersionIfEmpty(registry.String):
-    def __call__(self):
-        ret = registry.String.__call__(self)
-        if not ret:
-            ret = 'Limnoria %s' % version
-        return ret
-
 registerGlobalValue(supybot, 'user',
-    VersionIfEmpty('', _("""Determines the real name which the bot sends to
+    registry.String('Limnoria $version', _("""Determines the real name which the bot sends to
     the server. A standard real name using the current version of the bot
     will be generated if this is left empty.""")))
 
