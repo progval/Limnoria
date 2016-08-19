@@ -157,6 +157,9 @@ class Later(callbacks.Plugin):
         contain wildcard characters, and the first matching nick will be
         given the note.
         """
+        # strip duplicates
+        nicks = list(set(nicks))
+        
         self._deleteExpired()
         validnicks = []
         for nick in nicks:
