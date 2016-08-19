@@ -31,6 +31,7 @@
 import csv
 import time
 import datetime
+import collections
 
 import supybot.log as log
 import supybot.conf as conf
@@ -157,12 +158,9 @@ class Later(callbacks.Plugin):
         contain wildcard characters, and the first matching nick will be
         given the note.
         """
-        # strip duplicates
-        nicks = list(set(nicks))
-        
         self._deleteExpired()
         validnicks = []
-        for nick in nicks:
+        for nick in list(collections.OrderedDict.fromkeys(nicks)): # Ignore duplicates
             if ircutils.strEqual(nick, irc.nick):
                 irc.error(_('I can\'t send notes to myself.'))
                 return
