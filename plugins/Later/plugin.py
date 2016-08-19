@@ -159,7 +159,7 @@ class Later(callbacks.Plugin):
         """
         self._deleteExpired()
         validnicks = []
-        for nick in nicks:
+        for nick in set(nicks): # Ignore duplicates
             if ircutils.strEqual(nick, irc.nick):
                 irc.error(_('I can\'t send notes to myself.'))
                 return
