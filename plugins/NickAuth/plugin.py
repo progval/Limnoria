@@ -217,8 +217,8 @@ class NickAuth(callbacks.Plugin):
                 user = None
 
         if user:
-                user.addAuth(prefix)
-                ircdb.users.setUser(user, flush=False)
+            user.addAuth(prefix)
+            ircdb.users.setUser(user, flush=False)
 
 
 Class = NickAuth
