@@ -210,6 +210,16 @@ class RSSTestCase(ChannelPluginTestCase):
             self._feedMsg('rss remove xkcd2')
             feedparser._open_resource = old_open
 
+    def testDescription(self):
+        with conf.supybot.plugins.RSS.format.context('$description'):
+            old_open = feedparser._open_resource
+            feedparser._open_resource = constant(xkcd_new)
+            try:
+                self.assertRegexp('rss http://xkcd.com/rss.xml',
+                        'Although the oral exam for the doctorate was')
+            finally:
+                feedparser._open_resource = old_open
+
     if network:
         def testRssinfo(self):
             self.assertNotError('rss info %s' % url)
@@ -246,6 +256,7 @@ class RSSTestCase(ChannelPluginTestCase):
         def testNonAsciiFeeds(self):
             self.assertNotError('rss http://www.heise.de/newsticker/heise.rdf')
             self.assertNotError('rss info http://br-linux.org/main/index.xml')
+
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
