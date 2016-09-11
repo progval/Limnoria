@@ -35,6 +35,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.callbacks as callbacks
 import supybot.ircutils as ircutils
 import supybot.ircdb as ircdb
+import supybot.utils as utils
 
 import re
 
@@ -49,6 +50,9 @@ except ImportError:
 # and https://bugs.python.org/issue18647
 SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>.*?)(?P=delim)"
                        r"(?P<replacement>.*?)(?:(?P=delim)(?P<flags>[gi]{0,2}))?$")
+
+# Replace newlines and friends with things like literal "\n" (backslash and "n")
+axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
 
 class SedRegex(callbacks.PluginRegexp):
     """History replacer using sed-style regex syntax."""
@@ -148,6 +152,9 @@ class SedRegex(callbacks.PluginRegexp):
                                 text, count, timeout=0.05)
                     if action:  # If the message was an ACTION, prepend the nick back.
                         subst = '* %s %s' % (m.nick, subst)
+
+                    subst = axe_spaces(subst)
+
                     irc.reply(_("%s meant to say: %s") %
                               (messageprefix, subst), prefixNick=False)
                     return
