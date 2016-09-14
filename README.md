@@ -38,7 +38,7 @@ read it.
 paragraphs for easier installation methods.*
 
 ```
-git clone https://github.com/ProgVal/Limnoria.git
+wget https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt
 sudo pip install -r requirements.txt
 sudo python3 setup.py install
 ```
@@ -46,7 +46,7 @@ sudo python3 setup.py install
 alternatively without root
 
 ```
-git clone https://github.com/ProgVal/Limnoria.git
+wget https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt
 pip install -r requirements.txt --user
 python3 setup.py install --user
 ```
