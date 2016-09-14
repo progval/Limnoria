@@ -108,11 +108,21 @@ class MetaSynchronized(type):
         return newclass
 Synchronized = MetaSynchronized('Synchronized', (), {})
 
-# Translate glob to regular expression, trimming the "match EOL" portion of
-# the regular expression.
-# Post-2.6 uses \Z(?ms) per http://issues.python.org/6665
 def glob2re(g):
-    return fnmatch.translate(g)[:-7]
+    pattern = fnmatch.translate(g)
+    if pattern.startswith('(?s:') and pattern.endswith(')\\Z'):
+        # Python >= 3.6
+        return pattern[4:-3] + '\\Z'
+    elif pattern.endswith('\\Z(?ms)'):
+        # Python >= 2.6 and < 3.6
+        #
+        # Translate glob to regular expression, trimming the "match EOL"
+        # portion of the regular expression.
+        # Some Python versions use \Z(?ms) per
+        # https://bugs.python.org/issue6665
+        return pattern[:-7]
+    else:
+        assert False, 'Python < 2.6, or unknown behavior of fnmatch.translate.'
 
 
 _debug_software_name = 'Limnoria'
