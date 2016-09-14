@@ -356,6 +356,7 @@ class User(callbacks.Plugin):
             try:
                 ircdb.users.setUser(user)
             except ircdb.DuplicateHostmask:
+                user.removeHostmask(hostmask)
                 irc.error(_('That hostmask is already registered.'),
                           Raise=True)
             except ValueError as e:
