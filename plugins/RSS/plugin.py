@@ -384,6 +384,11 @@ class RSS(callbacks.Plugin):
     def should_send_entry(self, channel, entry):
         whitelist = self.registryValue('keywordWhitelist', channel)
         blacklist = self.registryValue('keywordBlacklist', channel)
+
+        # fix shadowing by “from supybot.commands import *”
+        all = __builtins__.all
+        any = __builtins__.any
+
         if whitelist:
             if all(kw not in entry.title and kw not in entry.description
                    for kw in whitelist):
