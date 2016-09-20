@@ -385,7 +385,7 @@ class RSS(callbacks.Plugin):
         whitelist = self.registryValue('keywordWhitelist', channel)
         blacklist = self.registryValue('keywordBlacklist', channel)
 
-        # fix shadowing by “from supybot.commands import *”
+        # fix shadowing by "from supybot.commands import *"
         try:
             all = __builtins__.all
             any = __builtins__.any
