@@ -453,8 +453,20 @@ class RichReplyMethods(object):
         s = self.__makeReply(v, s)
         return self.reply(s, **kwargs)
 
+    def _getTarget(self, to=None):
+        """Compute the target according to self.to, the provided to,
+        and self.private, and return it. Mainly used by reply methods."""
+        # FIXME: Don't set self.to.
+        # I still set it to be sure I don't introduce a regression,
+        # but it does not make sense for .reply() and .replies() to
+        # change the state of this Irc object.
+        if to is not None:
+            self.to = self.to or to
+        target = self.private and self.to or self.msg.args[0]
+        return target
+
     def replies(self, L, prefixer=None, joiner=None,
-                onlyPrefixFirst=False, to=None,
+                onlyPrefixFirst=False,
                 oneToOne=None, **kwargs):
         if prefixer is None:
             prefixer = ''
@@ -464,13 +476,14 @@ class RichReplyMethods(object):
             prefixer = prefixer.__add__
         if isinstance(joiner, minisix.string_types):
             joiner = joiner.join
+        to = self._getTarget(kwargs.get('to'))
         if oneToOne is None: # Can be True, False, or None
             if ircutils.isChannel(to):
                 oneToOne = conf.get(conf.supybot.reply.oneToOne, to)
             else:
                 oneToOne = conf.supybot.reply.oneToOne()
         if oneToOne:
-            return self.reply(prefixer(joiner(L)), to=to, **kwargs)
+            return self.reply(prefixer(joiner(L)), **kwargs)
         else:
             msg = None
             first = True
@@ -478,11 +491,11 @@ class RichReplyMethods(object):
                 if onlyPrefixFirst:
                     if first:
                         first = False
-                        msg = self.reply(prefixer(s), to=to, **kwargs)
+                        msg = self.reply(prefixer(s), **kwargs)
                     else:
-                        msg = self.reply(s, to=to, **kwargs)
+                        msg = self.reply(s, **kwargs)
                 else:
-                    msg = self.reply(prefixer(s), to=to, **kwargs)
+                    msg = self.reply(prefixer(s), **kwargs)
             return msg
 
     def noReply(self):
@@ -868,11 +881,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             self.notice = self.notice or notice
         if private is not None:
             self.private = self.private or private
-        if to is not None:
-            self.to = self.to or to
+        target = self._getTarget(to)
         # action=True implies noLengthCheck=True and prefixNick=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
-        target = self.private and self.to or self.msg.args[0]
         if not isinstance(s, minisix.string_types): # avoid trying to str() unicode
             s = str(s) # Allow non-string esses.
         if self.finalEvaled:
@@ -1006,7 +1017,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         if not self.finalEvaled and oneToOne is None:
             oneToOne = True
         return super(NestedCommandsIrcProxy, self).replies(L,
-                prefixer, joiner, onlyPrefixFirst, to, oneToOne, **kwargs)
+                prefixer=prefixer, joiner=joiner,
+                onlyPrefixFirst=onlyPrefixFirst, to=to,
+                oneToOne=oneToOne, **kwargs)
 
     def error(self, s='', Raise=False, **kwargs):
         self.repliedTo = True
