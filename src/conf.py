@@ -213,9 +213,8 @@ registerGlobalValue(supybot, 'ident',
     doesn't provide one by default.""")))
 
 registerGlobalValue(supybot, 'user',
-    registry.String('Limnoria $version', _("""Determines the real name which the bot sends to
-    the server. A standard real name using the current version of the bot
-    will be generated if this is left empty.""")))
+    registry.String('$version', _("""Determines the real name which the bot sends to
+    the server.""")))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
     List = ircutils.IrcSet
