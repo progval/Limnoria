@@ -212,8 +212,20 @@ registerGlobalValue(supybot, 'ident',
     ValidNick('limnoria', _("""Determines the bot's ident string, if the server
     doesn't provide one by default.""")))
 
+# Although empty version strings are theoretically allowed by the RFC,
+# popular IRCds do not.
+# So, we keep replacing the empty string by the current version for
+# bots which are migrated from Supybot or an old version of Limnoria
+# (whose default value of supybot.user is the empty string).
+class VersionIfEmpty(registry.String):
+    def __call__(self):
+        ret = registry.String.__call__(self)
+        if not ret:
+            ret = 'Limnoria $version'
+        return ret
+
 registerGlobalValue(supybot, 'user',
-    registry.String('Limnoria $version', _("""Determines the real name which the bot sends to
+    VersionIfEmpty('Limnoria $version', _("""Determines the real name which the bot sends to
     the server. A standard real name using the current version of the bot
     will be generated if this is left empty.""")))
 
