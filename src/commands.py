@@ -79,7 +79,9 @@ def process(f, *args, **kwargs):
     <pn>, the pluginname, and <cn>, the command name, are strings used to
     create the process name, for identification purposes.
     <timeout>, if supplied, limits the length of execution of target 
-    function to <timeout> seconds."""
+    function to <timeout> seconds.
+    <heap_size>, if supplied, limits the memory used by the target
+    function."""
     timeout = kwargs.pop('timeout', None)
     heap_size = kwargs.pop('heap_size', None)
     if resource and heap_size is None:
