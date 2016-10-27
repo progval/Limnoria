@@ -38,6 +38,8 @@ from . import minisix
 # For old plugins
 ifilter = filter
 def filterfalse(p, L):
+    if p is None:
+        p = lambda x:x
     return filter(lambda x:not p(x), L)
 ifilterfalse = filterfalse
 imap = map
