@@ -165,8 +165,6 @@ class NickAuth(callbacks.Plugin):
         except KeyError:
             return
         user = ircdb.users.getUserFromNick(irc.network, theiraccount)
-        if not user:
-            user = ircdb.users.getUserFromNick(irc.network, theirnick)
         if user:
             try:
                 user.addAuth(prefix)
