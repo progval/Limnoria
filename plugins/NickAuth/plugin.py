@@ -175,7 +175,7 @@ class NickAuth(callbacks.Plugin):
             ircdb.users.setUser(user, flush=False)
             irc.reply(_('You are now authenticated as %s.') % user.name)
         else:
-            irc.error(_('No user of claimed the nick %s on this network. '
+            irc.error(_('No user claimed the nick %s on this network. '
                         'If this is you, you should connect with an other '
                         'method and use the "nickauth nick add" command, '
                         'or ask the owner of the bot to do it.')
