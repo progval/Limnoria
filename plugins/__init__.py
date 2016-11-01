@@ -43,7 +43,7 @@ from ..commands import *
 
 class NoSuitableDatabase(Exception):
     def __init__(self, suitable):
-        self.suitable = suitable
+        self.suitable = list(suitable)
         self.suitable.sort()
 
     def __str__(self):
