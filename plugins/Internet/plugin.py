@@ -122,12 +122,9 @@ class Internet(callbacks.Plugin):
         except socket.error:
             pass
         sock.close()
-        print(s)
         server = netrange = netname = registrar = updated = created = expires = status = ''
         for line in s.splitlines():
             line = line.decode('utf8').strip()
-            print(line)
-            print(self._netrange)
             if not line or ':' not in line:
                 continue
             if not server and any(line.startswith, self._domain):
