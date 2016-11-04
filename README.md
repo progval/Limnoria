@@ -34,20 +34,22 @@ read it.
 
 ## Installing from cloned repo
 
-*If you don't want to clone the repo, please see the previous two
+*If you don't need to clone the repo, please see the previous two
 paragraphs for easier installation methods.*
 
 ```
-wget https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt
-sudo pip install -r requirements.txt
+git clone https://github.com/ProgVal/Limnoria.git
+cd Limnoria
+sudo python3 -m pip install -r requirements.txt
 sudo python3 setup.py install
 ```
 
 alternatively without root
 
 ```
-wget https://raw.githubusercontent.com/ProgVal/Limnoria/master/requirements.txt
-pip install -r requirements.txt --user
+git clone https://github.com/ProgVal/Limnoria.git
+cd Limnoria
+python3 -m pip install -r requirements.txt --user
 python3 setup.py install --user
 ```
 
