@@ -219,9 +219,9 @@ class IterableMap(object):
     """Define .items() in a class and subclass this to get the other iters.
     """
     def items(self):
-        if minisix.PY3 and hasattr(self, 'items'):
+        if minisix.PY3 and hasattr(self, 'iteritems'):
             # For old plugins
-            return getattr(self, 'items')() # avoid 2to3
+            return self.iteritems() # avoid 2to3
         else:
             raise NotImplementedError()
     __iter__ = items

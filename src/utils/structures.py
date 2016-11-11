@@ -381,8 +381,8 @@ class MaxLengthQueue(queue):
 class TwoWayDictionary(dict):
     __slots__ = ()
     def __init__(self, seq=(), **kwargs):
-        if hasattr(seq, 'items'):
-            seq = seq.items()
+        if hasattr(seq, 'iteritems'):
+            seq = seq.iteritems()
         elif hasattr(seq, 'items'):
             seq = seq.items()
         for (key, value) in seq:
