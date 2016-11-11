@@ -46,9 +46,11 @@ _ = PluginInternationalization('Web')
 if minisix.PY3:
     from html.parser import HTMLParser
     from html.entities import entitydefs
+    import http.client as http_client
 else:
     from HTMLParser import HTMLParser
     from htmlentitydefs import entitydefs
+    import httplib as http_client
 
 class Title(utils.web.HtmlToText):
     entitydefs = entitydefs.copy()
@@ -90,26 +92,41 @@ class DelayedIrc:
         assert name not in ('reply', 'error', '_irc', '_msg', '_replies')
         return getattr(self._irc, name)
 
-def fetch_sandbox(f):
-    """Runs a command in a forked process with limited memory resources
-    to prevent memory bomb caused by specially crafted http responses."""
-    def process(self, irc, msg, *args, **kwargs):
-        delayed_irc = DelayedIrc(irc)
-        f(self, delayed_irc, msg, *args, **kwargs)
-        return delayed_irc._replies
-    def newf(self, irc, *args):
-        try:
-            replies = commands.process(process, self, irc, *args,
-                    timeout=10, heap_size=10*1024*1024,
-                    pn=self.name(), cn=f.__name__)
-        except (commands.ProcessTimeoutError, MemoryError):
-            raise utils.web.Error(_('Page is too big or the server took '
-                    'too much time to answer the request.'))
-        else:
-            for (method, args, kwargs) in replies:
-                getattr(irc, method)(*args, **kwargs)
-    newf.__doc__ = f.__doc__
-    return newf
+if hasattr(http_client, '_MAXHEADERS'):
+    def fetch_sandbox(f):
+        """Runs a command in a forked process with limited memory resources
+        to prevent memory bomb caused by specially crafted http responses.
+
+        On CPython versions with support for limiting the number of headers,
+        this is the identity function"""
+        return f
+else:
+    # For the following CPython versions (as well as the matching Pypy
+    # versions):
+    # * 2.6 before 2.6.9
+    # * 2.7 before 2.7.9
+    # * 3.2 before 3.2.6
+    # * 3.3 before 3.3.3
+    def fetch_sandbox(f):
+        """Runs a command in a forked process with limited memory resources
+        to prevent memory bomb caused by specially crafted http responses."""
+        def process(self, irc, msg, *args, **kwargs):
+            delayed_irc = DelayedIrc(irc)
+            f(self, delayed_irc, msg, *args, **kwargs)
+            return delayed_irc._replies
+        def newf(self, irc, *args):
+            try:
+                replies = commands.process(process, self, irc, *args,
+                        timeout=10, heap_size=10*1024*1024,
+                        pn=self.name(), cn=f.__name__)
+            except (commands.ProcessTimeoutError, MemoryError):
+                raise utils.web.Error(_('Page is too big or the server took '
+                        'too much time to answer the request.'))
+            else:
+                for (method, args, kwargs) in replies:
+                    getattr(irc, method)(*args, **kwargs)
+        newf.__doc__ = f.__doc__
+        return newf
 
 def catch_web_errors(f):
     """Display a nice error instead of "An error has occurred"."""
