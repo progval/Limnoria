@@ -85,7 +85,7 @@ class Logger(logging.Logger):
         # self.error('Exception string: %s', eStrId)
 
     def _log(self, level, msg, args, exc_info=None, extra=None):
-        msg = format(msg, *args)
+        msg = msg % tuple(args)
         logging.Logger._log(self, level, msg, (), exc_info=exc_info, 
                             extra=extra)
 
