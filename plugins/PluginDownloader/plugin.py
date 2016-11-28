@@ -308,7 +308,7 @@ repositories = utils.InsensitivePreservingDict({
                                                    'prgmrbill',
                                                    'limnoria-plugins',
                                                    ),
-		'fudster':       GithubRepository(
+		'fudster':         GithubRepository('fudster',
                                                    'supybot-plugins',
                                                    ),
 
