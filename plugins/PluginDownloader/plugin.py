@@ -309,7 +309,7 @@ repositories = utils.InsensitivePreservingDict({
                                                    'limnoria-plugins',
                                                    ),
 		'fudster':         GithubRepository('fudster',
-                                                   'supybot-plugins',
+                                                    'supybot-plugins',
                                                    ),
 
                })
