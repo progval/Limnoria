@@ -480,7 +480,7 @@ class User(callbacks.Plugin):
             user = ircdb.users.getUser(msg.prefix)
             irc.reply(user.name)
         except KeyError:
-            irc.reply(self.registryValue('customWhoamiError'))
+            irc.reply(self.registryValue('whoamiError'))
     whoami = wrap(whoami)
 
     @internationalizeDocstring
