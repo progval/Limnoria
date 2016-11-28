@@ -480,7 +480,9 @@ class User(callbacks.Plugin):
             user = ircdb.users.getUser(msg.prefix)
             irc.reply(user.name)
         except KeyError:
-            irc.reply(_('I don\'t recognize you. You can message me either of these two commands: "user identify <username> <password>" to log in or "user register <username> <password>" to register.'))
+            error = self.registryValue('customWhoamiError') or \
+                    _('I don\'t recognize you. You can message me either of these two commands: "user identify <username> <password>" to log in or "user register <username> <password>" to register.')
+            irc.reply(error)
     whoami = wrap(whoami)
 
     @internationalizeDocstring

@@ -47,5 +47,7 @@ conf.registerChannelValue(User, 'listInPrivate',
     registry.Boolean(True, _("""Determines whether the output of 'user list'
     will be sent in private. This prevents mass-highlights of people who use
     their nick as their bot username.""")))
-
+conf.registerGlobalValue(User, 'customWhoamiError',
+    registry.String("", _("""Determines what message the bot sends
+    when a user isn't identified or recognized.""")))
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
