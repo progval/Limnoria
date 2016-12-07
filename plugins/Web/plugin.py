@@ -216,9 +216,9 @@ class Web(callbacks.PluginRegexp):
                 break
         return passed
 
+    @wrap(['httpUrl'])
     @catch_web_errors
     @fetch_sandbox
-    @internationalizeDocstring
     def headers(self, irc, msg, args, url):
         """<url>
 
@@ -235,12 +235,11 @@ class Web(callbacks.PluginRegexp):
             irc.reply(s)
         finally:
             fd.close()
-    headers = wrap(headers, ['httpUrl'])
 
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
+    @wrap(['httpUrl'])
     @catch_web_errors
     @fetch_sandbox
-    @internationalizeDocstring
     def doctype(self, irc, msg, args, url):
         """<url>
 
@@ -259,11 +258,10 @@ class Web(callbacks.PluginRegexp):
             irc.reply(s)
         else:
             irc.reply(_('That URL has no specified doctype.'))
-    doctype = wrap(doctype, ['httpUrl'])
 
+    @wrap(['httpUrl'])
     @catch_web_errors
     @fetch_sandbox
-    @internationalizeDocstring
     def size(self, irc, msg, args, url):
         """<url>
 
@@ -289,11 +287,10 @@ class Web(callbacks.PluginRegexp):
                                      url, size))
         finally:
             fd.close()
-    size = wrap(size, ['httpUrl'])
 
+    @wrap([getopts({'no-filter': ''}), 'httpUrl'])
     @catch_web_errors
     @fetch_sandbox
-    @internationalizeDocstring
     def title(self, irc, msg, args, optlist, url):
         """[--no-filter] <url>
 
@@ -313,18 +310,16 @@ class Web(callbacks.PluginRegexp):
                 for i in range(1, 4):
                     title = title.replace(chr(i), '')
             irc.reply(title)
-    title = wrap(title, [getopts({'no-filter': ''}), 'httpUrl'])
 
-    @internationalizeDocstring
+    @wrap(['text'])
     def urlquote(self, irc, msg, args, text):
         """<text>
 
         Returns the URL quoted form of the text.
         """
         irc.reply(utils.web.urlquote(text))
-    urlquote = wrap(urlquote, ['text'])
 
-    @internationalizeDocstring
+    @wrap(['text'])
     def urlunquote(self, irc, msg, args, text):
         """<text>
 
@@ -332,11 +327,10 @@ class Web(callbacks.PluginRegexp):
         """
         s = utils.web.urlunquote(text)
         irc.reply(s)
-    urlunquote = wrap(urlunquote, ['text'])
 
+    @wrap(['url'])
     @catch_web_errors
     @fetch_sandbox
-    @internationalizeDocstring
     def fetch(self, irc, msg, args, url):
         """<url>
 
@@ -355,7 +349,6 @@ class Web(callbacks.PluginRegexp):
         fd = utils.web.getUrl(url, size=max) \
                         .decode('utf8')
         irc.reply(fd)
-    fetch = wrap(fetch, ['url'])
 
 Class = Web
 
