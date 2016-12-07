@@ -135,8 +135,7 @@ def catch_web_errors(f):
             f(self, irc, *args, **kwargs)
         except utils.web.Error as e:
             irc.reply(str(e))
-    newf.__doc__ = f.__doc__
-    return newf
+    return utils.python.changeFunctionName(newf, f.__name__, f.__doc__)
 
 class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
