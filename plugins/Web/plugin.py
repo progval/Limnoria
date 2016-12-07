@@ -140,6 +140,7 @@ def catch_web_errors(f):
 class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
     regexps = ['titleSnarfer']
+    threaded = True
 
     def noIgnore(self, irc, msg):
         return not self.registryValue('checkIgnored', msg.args[0])
@@ -227,7 +228,8 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(url):
             irc.error("This url is not on the whitelist.")
             return
-        fd = utils.web.getUrlFd(url)
+        timeout = self.registryValue('timeout')
+        fd = utils.web.getUrlFd(url, timeout=timeout)
         try:
             s = ', '.join([format(_('%s: %s'), k, v)
                            for (k, v) in fd.headers.items()])
@@ -249,8 +251,8 @@ class Web(callbacks.PluginRegexp):
             irc.error("This url is not on the whitelist.")
             return
         size = conf.supybot.protocols.http.peekSize()
-        s = utils.web.getUrl(url, size=size) \
-                        .decode('utf8')
+        timeout = self.registryValue('timeout')
+        s = utils.web.getUrl(url, size=size, timeout=timeout).decode('utf8')
         m = self._doctypeRe.search(s)
         if m:
             s = utils.str.normalizeWhitespace(m.group(0))
@@ -270,7 +272,8 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(url):
             irc.error("This url is not on the whitelist.")
             return
-        fd = utils.web.getUrlFd(url)
+        timeout = self.registryValue('timeout')
+        fd = utils.web.getUrlFd(url, timeout=timeout)
         try:
             try:
                 size = fd.headers['Content-Length']
@@ -341,12 +344,12 @@ class Web(callbacks.PluginRegexp):
             irc.error("This url is not on the whitelist.")
             return
         max = self.registryValue('fetch.maximum')
+        timeout = self.registryValue('fetch.timeout')
         if not max:
             irc.error(_('This command is disabled '
                       '(supybot.plugins.Web.fetch.maximum is set to 0).'),
                       Raise=True)
-        fd = utils.web.getUrl(url, size=max) \
-                        .decode('utf8')
+        fd = utils.web.getUrl(url, size=max, timeout=timeout).decode('utf8')
         irc.reply(fd)
 
 Class = Web

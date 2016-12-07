@@ -73,6 +73,11 @@ conf.registerGlobalValue(Web, 'urlWhitelist',
     apply to all commands that retrieve data from user-supplied URLs,
     including fetch, headers, title, doctype."""))
 
+conf.registerGlobalValue(Web, 'timeout',
+    registry.NonNegativeInteger(5, """Determines the maximum number of
+    seconds the bot will wait for the site to respond, when using a command
+    in this plugin other than 'fetch'. If 0, will use socket.defaulttimeout"""))
+
 conf.registerGroup(Web, 'fetch')
 conf.registerGlobalValue(Web.fetch, 'maximum',
     registry.NonNegativeInteger(0, _("""Determines the maximum number of
