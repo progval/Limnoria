@@ -147,7 +147,9 @@ class Web(callbacks.PluginRegexp):
 
     def getTitle(self, irc, url, raiseErrors):
         size = conf.supybot.protocols.http.peekSize()
-        (target, text) = utils.web.getUrlTargetAndContent(url, size=size)
+        timeout = self.registryValue('timeout')
+        (target, text) = utils.web.getUrlTargetAndContent(url, size=size,
+                timeout=timeout)
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')
