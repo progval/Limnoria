@@ -118,18 +118,23 @@ class SedRegex(callbacks.PluginRegexp):
             return
 
         next(iterable)
+        if 's' in flags:  # Special 's' flag lets the bot only look at self messages
+            target = msg.nick
+        else:
+            target = regex.group('nick')
+        if not ircutils.isNick(str(target), strictRfc=True):
+            return
+
         for m in iterable:
             if m.command in ('PRIVMSG', 'NOTICE') and \
                     m.args[0] == msg.args[0] and m.tagged('receivedBy') == irc:
-                target = regex.group('nick')
-                if not ircutils.isNick(str(target), strictRfc=True):
-                    return
                 if target and m.nick != target:
                     continue
                 # Don't snarf ignored users' messages unless specifically
                 # told to.
                 if ircdb.checkIgnored(m.prefix) and not target:
                     continue
+
                 # When running substitutions, ignore the "* nick" part of any actions.
                 action = ircmsgs.isAction(m)
                 if action:
