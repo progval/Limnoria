@@ -909,10 +909,9 @@ class Channel(callbacks.Plugin):
         # Make sure we don't elicit information about private channels to
         # people or channels that shouldn't know
         capability = ircdb.makeChannelCapability(channel, 'op')
-        hostmask = irc.state.nickToHostmask(msg.nick)
         if 's' in irc.state.channels[channel].modes and \
             msg.args[0] != channel and \
-            not ircdb.checkCapability(hostmask, capability) and \
+            not ircdb.checkCapability(msg.prefix, capability) and \
             (ircutils.isChannel(msg.args[0]) or \
              msg.nick not in irc.state.channels[channel].users):
             irc.error(_('You don\'t have access to that information.'),
@@ -937,8 +936,7 @@ class Channel(callbacks.Plugin):
         if frm is not None:
             s += format(_(' (from %s)'), frm)
         for nick in irc.state.channels[channel].users:
-            hostmask = irc.state.nickToHostmask(nick)
-            if ircdb.checkCapability(hostmask, capability):
+            if ircdb.checkCapability(msg.prefix, capability):
                 irc.reply(s, to=nick, private=True)
         irc.replySuccess()
 
@@ -969,8 +967,7 @@ class Channel(callbacks.Plugin):
             else:
                 irc.error(Raise=True)
         capability = ircdb.makeChannelCapability(channel, 'op')
-        hostmask = irc.state.nickToHostmask(msg.nick)
-        if not ircdb.checkCapabilities(hostmask, [capability, 'admin']):
+        if not ircdb.checkCapabilities(msg.prefix, [capability, 'admin']):
             irc.errorNoCapability(capability, Raise=True)
         try:
             network = conf.supybot.networks.get(irc.network)
