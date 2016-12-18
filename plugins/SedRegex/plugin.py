@@ -49,7 +49,7 @@ except ImportError:
 # lower than 2.7.6: see https://stackoverflow.com/questions/3675144/regex-error-nothing-to-repeat
 # and https://bugs.python.org/issue18647
 SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>.*?)(?P=delim)"
-                       r"(?P<replacement>.*?)(?:(?P=delim)(?P<flags>[gi]{0,2}))?$")
+                       r"(?P<replacement>.*?)(?:(?P=delim)(?P<flags>[a-z]+))?$")
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
@@ -101,7 +101,7 @@ class SedRegex(callbacks.PluginRegexp):
 
         pattern = re.compile(pattern, flags)
 
-        return (pattern, replacement, count)
+        return (pattern, replacement, count, raw_flags)
 
     def replacer(self, irc, msg, regex):
         if not self.registryValue('enable', msg.args[0]):
@@ -110,7 +110,7 @@ class SedRegex(callbacks.PluginRegexp):
         msg.tag('Replacer')
 
         try:
-            (pattern, replacement, count) = self._unpack_sed(msg.args[1])
+            (pattern, replacement, count, flags) = self._unpack_sed(msg.args[1])
         except (ValueError, re.error) as e:
             self.log.warning(_("SedRegex error: %s"), e)
             if self.registryValue('displayErrors', msg.args[0]):
