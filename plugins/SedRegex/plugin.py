@@ -45,11 +45,11 @@ try:
 except ImportError:
     _ = lambda x: x
 
-# Note: {0,2} is used for matching the flags instead of "*" to work around a Python bug in versions
+# Note: {0,3} is used for matching the flags instead of "*" to work around a Python bug in versions
 # lower than 2.7.6: see https://stackoverflow.com/questions/3675144/regex-error-nothing-to-repeat
 # and https://bugs.python.org/issue18647
 SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>.*?)(?P=delim)"
-                       r"(?P<replacement>.*?)(?:(?P=delim)(?P<flags>[a-z]*))?$")
+                       r"(?P<replacement>.*?)(?:(?P=delim)(?P<flags>[a-z]{0,3}))?$")
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
