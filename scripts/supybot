@@ -208,7 +208,7 @@ if __name__ == '__main__':
             # The registry *MUST* be opened before importing log or conf.
             i18n.getLocaleFromRegistryFilename(registryFilename)
             registry.open_registry(registryFilename)
-            shutil.copy(registryFilename, registryFilename + '.bak')
+            shutil.copyfile(registryFilename, registryFilename + '.bak')
         except registry.InvalidRegistryFile as e:
             s = '%s in %s.  Please fix this error and start supybot again.' % \
                 (e, registryFilename)
