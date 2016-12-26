@@ -114,7 +114,7 @@ class SedRegex(callbacks.PluginRegexp):
         except (ValueError, re.error) as e:
             self.log.warning(_("SedRegex error: %s"), e)
             if self.registryValue('displayErrors', msg.args[0]):
-                irc.error(_("SedRegex error: %s" % e), Raise=True)
+                irc.error('%s.%s: %s' % (e.__class__.__module__, e.__class__.__name__, e))
             return
 
         next(iterable)
