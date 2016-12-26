@@ -149,19 +149,24 @@ class SedRegex(callbacks.PluginRegexp):
                     messageprefix = msg.nick
                 else:
                     messageprefix = '%s thinks %s' % (msg.nick, m.nick)
-                if regexp_wrapper(text, pattern, timeout=0.05, plugin_name=self.name(),
-                                  fcn_name='replacer'):
-                    if self.registryValue('boldReplacementText', msg.args[0]):
-                        replacement = ircutils.bold(replacement)
-                    subst = process(pattern.sub, replacement,
-                                text, count, timeout=0.05)
-                    if action:  # If the message was an ACTION, prepend the nick back.
-                        subst = '* %s %s' % (m.nick, subst)
+                try:
+                    if regexp_wrapper(text, pattern, timeout=0.05, plugin_name=self.name(),
+                                      fcn_name='replacer'):
+                        if self.registryValue('boldReplacementText', msg.args[0]):
+                            replacement = ircutils.bold(replacement)
+                        subst = process(pattern.sub, replacement,
+                                        text, count, timeout=0.05)
+                        if action:  # If the message was an ACTION, prepend the nick back.
+                            subst = '* %s %s' % (m.nick, subst)
 
-                    subst = axe_spaces(subst)
+                        subst = axe_spaces(subst)
 
-                    irc.reply(_("%s meant to say: %s") %
-                              (messageprefix, subst), prefixNick=False)
+                        irc.reply(_("%s meant to say: %s") %
+                                    (messageprefix, subst), prefixNick=False)
+                        return
+                except (ValueError, re.error) as e:
+                    if self.registryValue('displayErrors', msg.args[0]):
+                        irc.error('%s.%s: %s' % (e.__class__.__module__, e.__class__.__name__, e))
                     return
 
         self.log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
