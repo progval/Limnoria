@@ -1142,7 +1142,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         try:
             with open(self.sasl_ecdsa_key) as fd:
                 private_key = ecdsa.SigningKey.from_pem(fd.read())
-            authstring = private_key.sign(base64.b64decode(msg.args[0].encode()))
+            authstring = private_key.sign(string)
             self.sendSaslString(authstring)
         except (ecdsa.BadDigestError, OSError, ValueError):
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
