@@ -48,9 +48,11 @@ else:
             'aspell/ispell not available.')
     skipUnlessFortune = skipIf(utils.findBinaryInPath('fortune') is None,
             'fortune not available.')
-    skipUnlessPing = skipIf(utils.findBinaryInPath('ping') is None,
+    skipUnlessPing = skipIf(
+            utils.findBinaryInPath('ping') is None or not setuid,
             'ping not available.')
-    skipUnlessPing6 = skipIf(utils.findBinaryInPath('ping6') is None,
+    skipUnlessPing6 = skipIf(
+            utils.findBinaryInPath('ping6') is None or not setuid,
             'ping6 not available.')
 
 class UnixConfigTestCase(ChannelPluginTestCase):

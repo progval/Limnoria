@@ -59,6 +59,7 @@ class verbosity:
 
 i18n.import_conf()
 network = True
+setuid = True
 
 # This is the global list of suites that are to be run.
 suites = []
