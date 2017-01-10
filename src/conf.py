@@ -312,7 +312,8 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
             return None
 
 class ValidSaslMechanism(registry.OnlySomeStrings):
-    validStrings = ('ecdsa-nist256p-challenge', 'external', 'plain')
+    validStrings = ('ecdsa-nist256p-challenge', 'external', 'plain',
+            'scram-sha-256')
 
 class SpaceSeparatedListOfSaslMechanisms(registry.SpaceSeparatedListOf):
     Value = ValidSaslMechanism
