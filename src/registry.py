@@ -508,7 +508,7 @@ class Probability(Float):
 
 class String(Value):
     """Value is not a valid Python string."""
-    errormsg = _('Value is not a valid Python string, not %r.')
+    errormsg = _('Value should be a valid Python string, not %r.')
     def set(self, s):
         v = s
         if not v:

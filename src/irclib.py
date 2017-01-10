@@ -1116,10 +1116,16 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             step = self.sasl_scram_state['step']
             try:
                 if step == 'uninitialized':
-                    self.doAuthenticateScramFirst()
+                    log.debug('%s: starting SCRAM.',
+                            self.network)
+                    self.doAuthenticateScramFirst(mechanism)
                 elif step == 'first-sent':
+                    log.debug('%s: received SCRAM challenge.',
+                            self.network)
                     self.doAuthenticateScramChallenge(string)
                 elif step == 'final-sent':
+                    log.debug('%s: finishing SCRAM.',
+                            self.network)
                     self.doAuthenticateScramFinish(string)
                 else:
                     assert False
@@ -1149,11 +1155,17 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 args=('*',)))
             self.tryNextSaslMechanism()
 
-    def doAuthenticateScramFirst(self):
+    def doAuthenticateScramFirst(self, mechanism):
         """Handle sending the client-first message of SCRAM auth."""
         hash_name = mechanism[len('scram-'):]
         if hash_name.endswith('-plus'):
             hash_name = hash_name[:-len('-plus')]
+        hash_name = hash_name.upper()
+        if hash_name not in scram.HASH_FACTORIES:
+            log.debug('%s: SCRAM hash %r not supported, aborting.',
+                    self.network, hash_name)
+            self.tryNextSaslMechanism()
+            return
         authenticator = scram.SCRAMClientAuthenticator(hash_name,
                 channel_binding=False)
         self.sasl_scram_state['authenticator'] = authenticator
@@ -1167,13 +1179,19 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     def doAuthenticateScramChallenge(self, challenge):
         client_final = self.sasl_scram_state['authenticator'] \
                 .challenge(challenge)
+        self.sendSaslString(client_final)
         self.sasl_scram_state['step'] = 'final-sent'
 
     def doAuthenticateScramFinish(self, data):
-        # TODO: do something with BadSuccessException
-        res = self.sasl_scram_state['authenticator'] \
-                .finish(data)
-        self.sasl_scram_state['step'] = 'authenticated'
+        try:
+            res = self.sasl_scram_state['authenticator'] \
+                    .finish(data)
+        except scram.BadSuccessException as e:
+            log.warning('%s: SASL authentication failed with SCRAM error: %e',
+                    self.network, e)
+            self.tryNextSaslMechanism()
+        else:
+            self.sasl_scram_state['step'] = 'authenticated'
 
     def do903(self, msg):
         log.info('%s: SASL authentication successful', self.network)
