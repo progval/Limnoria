@@ -299,14 +299,14 @@ class User(callbacks.Plugin):
                     else:
                         try:
                             user = ircdb.users.getUser(name)
-                            irc.reply(getHostmasks(user))
+                            irc.reply(getHostmasks(user), private=True)
                         except KeyError:
                             irc.errorNoUser()
                 else:
-                    irc.reply(getHostmasks(user))
+                    irc.reply(getHostmasks(user), private=True)
             except KeyError:
                 irc.errorNotRegistered()
-        list = wrap(list, ['private', additional('something')])
+        list = wrap(list, [additional('something')])
 
         @internationalizeDocstring
         def add(self, irc, msg, args, user, hostmask, password):
