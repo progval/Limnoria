@@ -43,9 +43,10 @@ except ImportError:
 
 
 try:  # Python 3
-    from urllib.parse import urlencode
+    from urllib.parse import urlencode, parse_qs
 except ImportError:  # Python 2
     from urllib import urlencode
+    from urlparse import parse_qs
 try:
     from bs4 import BeautifulSoup
 except ImportError:
@@ -99,7 +100,20 @@ class DDG(callbacks.Plugin):
                     # 2) Fetch the link title.
                     title = res.a.text.strip()
                     # 3) Fetch the result link.
-                    link = res.a.get('href')
+                    origlink = link = res.a.get('href')
+
+                    # As of 2017-01-20, some links on DuckDuckGo's site are shown going through
+                    # a redirect service. The links are in the format "/l/?kh=-1&uddg=https%3A%2F%2Fduckduckgo.com%2F"
+                    # instead of simply being "https://duckduckgo.com". So, we decode these links here.
+                    if link.startswith('/l/'):
+                        linkparse = utils.web.urlparse(link)
+                        try:
+                            link = parse_qs(linkparse.query)['uddg'][0]
+                        except (IndexError, KeyError):
+                            self.log.exception("DDG: failed to expand redirected result URL %s", origlink)
+                        else:
+                            self.log.debug("DDG: expanded result URL from %s to %s", origlink, link)
+
                     s = format("%s - %s %u", ircutils.bold(title), snippet,
                                link)
                     replies.append(s)
