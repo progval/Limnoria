@@ -65,11 +65,17 @@ class DDG(callbacks.Plugin):
         # DuckDuckGo has a 'lite' site free of unparseable JavaScript
         # elements, so we'll use that to our advantage!
         url = "https://duckduckgo.com/lite?" + urlencode({"q": text})
+
         log.debug("DDG: Using URL %s for search %s", url, text)
-        data = utils.web.getUrl(url).decode("utf-8")
+
+        real_url, data = utils.web.getUrlTargetAndContent(url)
+        data = data.decode("utf-8")
         soup = BeautifulSoup(data)
+
         # Remove "sponsored link" results
-        return [td for td in soup.find_all('td') if 'result-sponsored' not in str(td.parent.get('class'))]
+        return (url, real_url, [td for td in soup.find_all('td') if 'result-sponsored' not in 
+                                str(td.parent.get('class'))])
+
 
     def search_core(self, text, channel_context=None, max_results=None, show_snippet=None):
         """
@@ -84,12 +90,13 @@ class DDG(callbacks.Plugin):
         self.log.debug('DDG: got %s for max results', maxr)
 
         # In a nutshell, the 'lite' site puts all of its usable content
-        # into tables. This means that headings, result snippets and
-        # everything else are all using the same tag (<td>), which still makes
-        # parsing somewhat tricky.
+        # into tables. This does mean that headings, result snippets and
+        # everything else are all using the same tag (<td>), so parsing is
+        # still somewhat tricky.
         results = []
 
-        raw_results = self._ddgurl(text)
+        url, real_url, raw_results = self._ddgurl(text)
+
         for t in raw_results:
             res = ''
             # Each valid result has a preceding heading in the format
@@ -158,7 +165,7 @@ class DDG(callbacks.Plugin):
         # Zero-click info: 8 (number)
         # Zero-click info: 8
         replies = {}
-        for td in self._ddgurl(text):
+        for td in self._ddgurl(text)[-1]:
             if td.text.startswith("Zero-click info:"):
                 # Make a dictionary of things
                 item = td.text.split("Zero-click info:", 1)[1].strip()
