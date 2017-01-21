@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2014-2015, James Lu
+# Copyright (c) 2014-2017, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -71,19 +71,25 @@ class DDG(callbacks.Plugin):
         # Remove "sponsored link" results
         return [td for td in soup.find_all('td') if 'result-sponsored' not in str(td.parent.get('class'))]
 
-    def search(self, irc, msg, args, text):
-        """<text>
+    def search_core(self, text, channel_context=None, max_results=None, show_snippet=None):
+        """
+        Core results fetcher for the DDG plugin. Other plugins can call this as well via
+        irc.getCallback('DDG').search_core(...)
+        """
+        if show_snippet is None:
+            # Note: don't use ternary there, or the registry value will override any False
+            # settings given to the function directly.
+            show_snippet = self.registryValue("showSnippet", channel_context)
+        maxr = max_results or self.registryValue("maxResults", channel_context)
 
-        Searches for <text> on DuckDuckGo's web search."""
-        replies = []
-        channel = msg.args[0]
         # In a nutshell, the 'lite' site puts all of its usable content
         # into tables. This means that headings, result snippets and
-        # everything else are all using the same tag (<td>), which makes
-        # parsing somewhat difficult.
+        # everything else are all using the same tag (<td>), which still makes
+        # parsing somewhat tricky.
+        results = []
+
         for t in self._ddgurl(text):
-            maxr = self.registryValue("maxResults", channel)
-            # Hence we run a for loop to extract meaningful content:
+            # We run a for loop here to extract meaningful content:
             for n in range(1, maxr):
                 res = ''
                 # Each valid result has a preceding heading in the format
@@ -95,7 +101,8 @@ class DDG(callbacks.Plugin):
                 try:
                     snippet = ''
                     # 1) Get a result snippet.
-                    if self.registryValue("showsnippet", channel):
+
+                    if self.registryValue("showsnippet", channel_context):
                         snippet = res.parent.next_sibling.next_sibling.\
                             find_all("td")[-1]
                         snippet = snippet.text.strip()
@@ -111,22 +118,31 @@ class DDG(callbacks.Plugin):
                         linkparse = utils.web.urlparse(link)
                         try:
                             link = parse_qs(linkparse.query)['uddg'][0]
-                        except (IndexError, KeyError):
+                        except KeyError:
+                            # No link was given here, skip.
+                            continue
+                        except IndexError:
                             self.log.exception("DDG: failed to expand redirected result URL %s", origlink)
+                            continue
                         else:
                             self.log.debug("DDG: expanded result URL from %s to %s", origlink, link)
 
-                    s = format("%s - %s %u", ircutils.bold(title), snippet,
-                               link)
-                    replies.append(s)
+                    s = format("%s - %s %u", ircutils.bold(title), snippet, link)
+                    results.append(s)
                 except AttributeError:
                     continue
+        return results
+
+    @wrap(['text'])
+    def search(self, irc, msg, args, text):
+        """<text>
+
+        Searches for <text> on DuckDuckGo's web search."""
+        results = self.search_core(text, msg.args[0])
+        if not results:
+            irc.error("No results found.")
         else:
-            if not replies:
-                irc.error("No results found.")
-            else:
-                irc.reply(', '.join(replies))
-    search = wrap(search, ['text'])
+            irc.reply(', '.join(results))
 
     @wrap(['text'])
     def zeroclick(self, irc, msg, args, text):
