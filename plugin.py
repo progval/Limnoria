@@ -81,6 +81,7 @@ class DDG(callbacks.Plugin):
             # settings given to the function directly.
             show_snippet = self.registryValue("showSnippet", channel_context)
         maxr = max_results or self.registryValue("maxResults", channel_context)
+        self.log.debug('DDG: got %s for max results', maxr)
 
         # In a nutshell, the 'lite' site puts all of its usable content
         # into tables. This means that headings, result snippets and
@@ -88,50 +89,49 @@ class DDG(callbacks.Plugin):
         # parsing somewhat tricky.
         results = []
 
-        for t in self._ddgurl(text):
-            # We run a for loop here to extract meaningful content:
-            for n in range(1, maxr):
-                res = ''
-                # Each valid result has a preceding heading in the format
-                # '<td valign="top">1.&nbsp;</td>', etc.
-                if ("%s." % n) in t.text:
-                    res = t.next_sibling.next_sibling
-                if not res:
-                    continue
-                try:
-                    snippet = ''
-                    # 1) Get a result snippet.
+        raw_results = self._ddgurl(text)
+        for t in raw_results:
+            res = ''
+            # Each valid result has a preceding heading in the format
+            # '<td valign="top">1.&nbsp;</td>', etc.
+            if t.text[0].isdigit():
+                res = t.next_sibling.next_sibling
+            if not res:
+                continue
+            try:
+                snippet = ''
+                # 1) Get a result snippet.
 
-                    if self.registryValue("showsnippet", channel_context):
-                        snippet = res.parent.next_sibling.next_sibling.\
-                            find_all("td")[-1]
-                        snippet = snippet.text.strip()
-                    # 2) Fetch the link title.
-                    title = res.a.text.strip()
-                    # 3) Fetch the result link.
-                    origlink = link = res.a.get('href')
+                if self.registryValue("showsnippet", channel_context):
+                    snippet = res.parent.next_sibling.next_sibling.\
+                        find_all("td")[-1]
+                    snippet = snippet.text.strip()
+                # 2) Fetch the link title.
+                title = res.a.text.strip()
+                # 3) Fetch the result link.
+                origlink = link = res.a.get('href')
 
-                    # As of 2017-01-20, some links on DuckDuckGo's site are shown going through
-                    # a redirect service. The links are in the format "/l/?kh=-1&uddg=https%3A%2F%2Fduckduckgo.com%2F"
-                    # instead of simply being "https://duckduckgo.com". So, we decode these links here.
-                    if link.startswith('/l/'):
-                        linkparse = utils.web.urlparse(link)
-                        try:
-                            link = parse_qs(linkparse.query)['uddg'][0]
-                        except KeyError:
-                            # No link was given here, skip.
-                            continue
-                        except IndexError:
-                            self.log.exception("DDG: failed to expand redirected result URL %s", origlink)
-                            continue
-                        else:
-                            self.log.debug("DDG: expanded result URL from %s to %s", origlink, link)
+                # As of 2017-01-20, some links on DuckDuckGo's site are shown going through
+                # a redirect service. The links are in the format "/l/?kh=-1&uddg=https%3A%2F%2Fduckduckgo.com%2F"
+                # instead of simply being "https://duckduckgo.com". So, we decode these links here.
+                if link.startswith('/l/'):
+                    linkparse = utils.web.urlparse(link)
+                    try:
+                        link = parse_qs(linkparse.query)['uddg'][0]
+                    except KeyError:
+                        # No link was given here, skip.
+                        continue
+                    except IndexError:
+                        self.log.exception("DDG: failed to expand redirected result URL %s", origlink)
+                        continue
+                    else:
+                        self.log.debug("DDG: expanded result URL from %s to %s", origlink, link)
 
-                    s = format("%s - %s %u", ircutils.bold(title), snippet, link)
-                    results.append(s)
-                except AttributeError:
-                    continue
-        return results
+                s = format("%s - %s %u", ircutils.bold(title), snippet, link)
+                results.append(s)
+            except AttributeError:
+                continue
+        return results[:maxr]
 
     @wrap(['text'])
     def search(self, irc, msg, args, text):
