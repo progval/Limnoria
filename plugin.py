@@ -77,7 +77,7 @@ class DDG(callbacks.Plugin):
         irc.getCallback('DDG').search_core(...)
         """
         if show_snippet is None:
-            # Note: don't use ternary there, or the registry value will override any False
+            # Note: don't use ternary here, or the registry value will override any False
             # settings given to the function directly.
             show_snippet = self.registryValue("showSnippet", channel_context)
         maxr = max_results or self.registryValue("maxResults", channel_context)
