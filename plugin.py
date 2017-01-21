@@ -33,6 +33,7 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+import supybot.log as log
 try:
     from supybot.i18n import PluginInternationalization
     _ = PluginInternationalization('DDG')
@@ -59,11 +60,12 @@ class DDG(callbacks.Plugin):
     """Searches for results on DuckDuckGo."""
     threaded = True
 
-    def _ddgurl(self, text):
+    @staticmethod
+    def _ddgurl(text):
         # DuckDuckGo has a 'lite' site free of unparseable JavaScript
         # elements, so we'll use that to our advantage!
         url = "https://duckduckgo.com/lite?" + urlencode({"q": text})
-        self.log.debug("DDG: Using URL %s for search %s", url, text)
+        log.debug("DDG: Using URL %s for search %s", url, text)
         data = utils.web.getUrl(url).decode("utf-8")
         soup = BeautifulSoup(data)
         # Remove "sponsored link" results
