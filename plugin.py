@@ -127,8 +127,9 @@ class DDG(callbacks.Plugin):
                     else:
                         self.log.debug("DDG: expanded result URL from %s to %s", origlink, link)
 
-                s = format("%s - %s %u", ircutils.bold(title), snippet, link)
-                results.append(s)
+                # Return a list of tuples in the form (link title, snippet text, link)
+                results.append((title, snippet, link))
+
             except AttributeError:
                 continue
         return results[:maxr]
@@ -142,7 +143,8 @@ class DDG(callbacks.Plugin):
         if not results:
             irc.error("No results found.")
         else:
-            irc.reply(', '.join(results))
+            strings = [format("%s - %s %u", ircutils.bold(res[0]), res[1], res[2]) for res in results]
+            irc.reply(', '.join(strings))
 
     @wrap(['text'])
     def zeroclick(self, irc, msg, args, text):
