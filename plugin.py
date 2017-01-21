@@ -164,10 +164,10 @@ class DDG(callbacks.Plugin):
                 item = td.text.split("Zero-click info:", 1)[1].strip()
                 td = td.parent.next_sibling.next_sibling.\
                             find("td")
-                # Condense newlines (<br> tags)
+                # Condense newlines (<br> tags). XXX: make these separators configurable.
                 for br in td.find_all('br'):
                     br.replace_with(' - ')
-                res = td.text.strip().split("\n")[0]
+                res = ' | '.join(td.text.strip().split("\n"))
                 try:
                     # Some zero-click results have an attached link to them.
                     link = td.a.get('href')
