@@ -97,6 +97,11 @@ class DDG(callbacks.Plugin):
 
         url, real_url, raw_results = self._ddgurl(text)
 
+        if real_url != url:
+            # We received a redirect, likely from something like a !bang request.
+            # Don't bother parsing the target page, as it probably won't work anyways.
+            return [('', '', real_url)]
+
         for t in raw_results:
             res = ''
             # Each valid result has a preceding heading in the format
@@ -150,7 +155,15 @@ class DDG(callbacks.Plugin):
         if not results:
             irc.error("No results found.")
         else:
-            strings = [format("%s - %s %u", ircutils.bold(res[0]), res[1], res[2]) for res in results]
+            strings = []
+
+            for r in results:
+                if not r[0]:
+                    # This result has no title, so it's likely a redirect from !bang.
+                    strings.append(format("See %u", r[2]))
+                else:
+                    strings.append(format("%s - %s %u", ircutils.bold(r[0]), r[1], r[2]))
+
             irc.reply(', '.join(strings))
 
     @wrap(['text'])
