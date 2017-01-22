@@ -45,6 +45,11 @@ Owner = conf.registerPlugin('Owner', True)
 conf.registerGlobalValue(Owner, 'public',
     registry.Boolean(True, """Determines whether this plugin is publicly
     visible."""))
+conf.registerGlobalValue(Owner, 'announceFormat',
+    registry.String('Announcement from my owner ($owner): $message',
+    """Determines the format of messages sent by the @announce command.
+    $owner may be used for the username of the owner calling this command,
+    and $message for the announcement being made."""))
 conf.registerGlobalValue(Owner, 'quitMsg',
     registry.String('$version', """Determines what quit message will be used by default.
     If the quit command is called without a quit message, this will be used.  If
