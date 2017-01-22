@@ -56,7 +56,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
     if name not in files:
         search = lambda x: re.search(r'(?i)^%s$' % (name,), x)
         matched_names = list(filter(search, files))
-        if len(matched_names) == 1:
+        if len(matched_names) >= 1:
             name = matched_names[0]
         else:
             raise ImportError(name)
