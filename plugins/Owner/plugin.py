@@ -33,6 +33,7 @@ import os
 import sys
 import time
 import socket
+import string
 import linecache
 
 import re
@@ -282,11 +283,17 @@ class Owner(callbacks.Plugin):
         lobotomized in.
         """
         u = ircdb.users.getUser(msg.prefix)
-        text = 'Announcement from my owner (%s): %s' % (u.name, text)
+
+        template = self.registryValue('announceFormat')
+
+        text = ircutils.standardSubstitute(
+            irc, msg, template, env={'owner': u.name, 'message': text})
+
         for channel in irc.state.channels:
             c = ircdb.channels.getChannel(channel)
             if not c.lobotomized:
                 irc.queueMsg(ircmsgs.privmsg(channel, text))
+
         irc.noReply()
     announce = wrap(announce, ['text'])
 
