@@ -287,7 +287,7 @@ class Owner(callbacks.Plugin):
         template = self.registryValue('announceFormat')
 
         text = ircutils.standardSubstitute(
-            irc, msg, template, env={'owner': u.name, 'message': text})
+            irc, msg, template, env={'owner': u.name, 'text': text})
 
         for channel in irc.state.channels:
             c = ircdb.channels.getChannel(channel)
