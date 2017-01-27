@@ -361,7 +361,7 @@ class RSS(callbacks.Plugin):
         new_entries = self.get_new_entries(feed)
 
         order = self.registryValue('sortFeedItems')
-        new_entries = sort_feed_items(new_entries, order)
+        new_entries = sort_feed_items(new_entries, 'newestFirst')
         for irc in world.ircs:
             for channel in irc.state.channels:
                 if feed.name not in self.registryValue('announce', channel):
@@ -369,11 +369,12 @@ class RSS(callbacks.Plugin):
                 if initial:
                     n = self.registryValue('initialAnnounceHeadlines', channel)
                     if n:
-                        announced_entries = new_entries[-n:]
+                        announced_entries = new_entries[0:n]
                     else:
                         announced_entries = []
                 else:
                     announced_entries = new_entries
+                announced_entries = sort_feed_items(announced_entries, order)
                 for entry in announced_entries:
                     self.announce_entry(irc, channel, feed, entry)
 

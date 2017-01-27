@@ -39,7 +39,7 @@ xkcd_old = """<?xml version="1.0" encoding="utf-8"?>
 """
 
 xkcd_new = """<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>xkcd.com</title><link>http://xkcd.com/</link><description>xkcd.com: A webcomic of romance and math humor.</description><language>en</language><item><title>Chaos</title><link>http://xkcd.com/1399/</link><description>&lt;img src="http://imgs.xkcd.com/comics/chaos.png" title="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" alt="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" /&gt;</description><pubDate>Fri, 25 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1399/</guid></item><item><title>Snake Facts</title><link>http://xkcd.com/1398/</link><description>&lt;img src="http://imgs.xkcd.com/comics/snake_facts.png" title="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." alt="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." /&gt;</description><pubDate>Wed, 23 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1398/</guid></item></channel></rss>
+<rss version="2.0"><channel><title>xkcd.com</title><link>http://xkcd.com/</link><description>xkcd.com: A webcomic of romance and math humor.</description><language>en</language><item><title>Telescopes: Refractor vs Reflector</title><link>http://xkcd.com/1791/</link><description>&lt;img src="http://imgs.xkcd.com/comics/telescopes_refractor_vs_reflector.png" title="On the other hand, the refractor's limited light-gathering means it's unable to make out shadow people or the dark god Chernabog." alt="On the other hand, the refractor's limited light-gathering means it's unable to make out shadow people or the dark god Chernabog." /&gt;</description><pubDate>Fri, 27 Jan 2017 05:00:00 -0000</pubDate><guid>http://xkcd.com/1791/</guid></item><item><title>Chaos</title><link>http://xkcd.com/1399/</link><description>&lt;img src="http://imgs.xkcd.com/comics/chaos.png" title="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" alt="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" /&gt;</description><pubDate>Fri, 25 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1399/</guid></item><item><title>Snake Facts</title><link>http://xkcd.com/1398/</link><description>&lt;img src="http://imgs.xkcd.com/comics/snake_facts.png" title="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." alt="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." /&gt;</description><pubDate>Wed, 23 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1398/</guid></item></channel></rss>
 """
 
 
@@ -73,11 +73,11 @@ class RSSTestCase(ChannelPluginTestCase):
         old_open = feedparser._open_resource
         feedparser._open_resource = constant(xkcd_new)
         try:
-            with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(1):
-                with conf.supybot.plugins.RSS.sortFeedItems.context('newestFirst'):
+            with conf.supybot.plugins.RSS.sortFeedItems.context('newestFirst'):
+                with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(1):
                     self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
                     self.assertNotError('rss announce add xkcd')
-                    self.assertRegexp(' ', 'Snake Facts')
+                    self.assertRegexp(' ', 'Telescopes')
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
@@ -91,7 +91,7 @@ class RSSTestCase(ChannelPluginTestCase):
                 with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
                     self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
                     self.assertNotError('rss announce add xkcd')
-                    self.assertRegexp(' ', 'Chaos')
+                    self.assertRegexp(' ', 'Telescopes')
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
@@ -118,14 +118,17 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
             self.assertNotError('rss announce add xkcd')
             self.assertNotError(' ')
-            with conf.supybot.plugins.RSS.waitPeriod.context(1):
-                time.sleep(1.1)
-                self.assertNoResponse(' ')
-                self.assertNoResponse(' ')
-                feedparser._open_resource = constant(xkcd_new)
-                self.assertNoResponse(' ')
-                time.sleep(1.1)
-                self.assertRegexp(' ', 'Chaos')
+            with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
+                with conf.supybot.plugins.RSS.waitPeriod.context(1):
+                    time.sleep(1.1)
+                    self.assertNoResponse(' ')
+                    self.assertNoResponse(' ')
+                    feedparser._open_resource = constant(xkcd_new)
+                    self.assertNoResponse(' ')
+                    time.sleep(1.1)
+                    self.assertRegexp(' ', 'Chaos')
+                    self.assertRegexp(' ', 'Telescopes')
+                    self.assertNoResponse(' ')
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
@@ -144,7 +147,7 @@ class RSSTestCase(ChannelPluginTestCase):
                 feedparser._open_resource = constant(xkcd_new)
                 self.assertNoResponse(' ')
                 time.sleep(1.1)
-                self.assertRegexp(' ', 'Chaos')
+                self.assertRegexp(' ', 'Telescopes')
         finally:
             self._feedMsg('rss announce remove http://xkcd.com/rss.xml')
             self._feedMsg('rss remove http://xkcd.com/rss.xml')
@@ -162,6 +165,35 @@ class RSSTestCase(ChannelPluginTestCase):
                 self.assertNoResponse(' ')
                 time.sleep(1.1)
                 self.assertNoResponse(' ')
+        finally:
+            self._feedMsg('rss announce remove xkcd')
+            self._feedMsg('rss remove xkcd')
+            feedparser._open_resource = old_open
+
+    def tesReannounce(self):
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_old)
+        try:
+            self.assertError('rss announce add xkcd')
+            self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+            self.assertNotError('rss announce add xkcd')
+            self.assertNotError(' ')
+            with conf.supybot.plugins.RSS.waitPeriod.context(1):
+                with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(1):
+                    with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
+                        time.sleep(1.1)
+                        self.assertNoResponse(' ')
+                        self.assertNoResponse(' ')
+                        self._feedMsg('rss announce remove xkcd')
+                        feedparser._open_resource = constant(xkcd_new)
+                        time.sleep(1.1)
+                        self.assertNoResponse(' ')
+                        self.assertNoResponse(' ')
+                        self.assertNotError('rss announce add xkcd')
+                        self.assertNoResponse(' ')
+                        time.sleep(1.1)
+                        self.assertRegexp(' ', 'Telescopes')
+                        self.assertNoResponse(' ')
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
@@ -192,17 +224,19 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss announce add xkcd2')
             self.assertNotError(' ')
             self.assertNotError(' ')
-            with conf.supybot.plugins.RSS.feeds.xkcd1.waitPeriod.context(1):
-                time.sleep(1.1)
-                self.assertNoResponse(' ')
-                self.assertNoResponse(' ')
-                feedparser._open_resource = constant(xkcd_new)
-                self.assertNoResponse(' ')
-                time.sleep(1.1)
-                self.assertRegexp(' ', 'xkcd1.*Chaos')
-                self.assertNoResponse(' ')
-                time.sleep(1.1)
-                self.assertNoResponse(' ')
+            with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
+                with conf.supybot.plugins.RSS.feeds.xkcd1.waitPeriod.context(1):
+                    time.sleep(1.1)
+                    self.assertNoResponse(' ')
+                    self.assertNoResponse(' ')
+                    feedparser._open_resource = constant(xkcd_new)
+                    self.assertNoResponse(' ')
+                    time.sleep(1.1)
+                    self.assertRegexp(' ', 'xkcd1.*Chaos')
+                    self.assertRegexp(' ', 'xkcd1.*Telescopes')
+                    self.assertNoResponse(' ')
+                    time.sleep(1.1)
+                    self.assertNoResponse(' ')
         finally:
             self._feedMsg('rss announce remove xkcd1')
             self._feedMsg('rss remove xkcd1')
@@ -216,7 +250,7 @@ class RSSTestCase(ChannelPluginTestCase):
             feedparser._open_resource = constant(xkcd_new)
             try:
                 self.assertRegexp('rss http://xkcd.com/rss.xml',
-                        'Although the oral exam for the doctorate was')
+                        'On the other hand, the refractor\'s')
             finally:
                 feedparser._open_resource = old_open
 
