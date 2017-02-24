@@ -375,7 +375,7 @@ def stripReverse(s):
 
 def stripUnderline(s):
     """Returns the string s, with underlining removed."""
-    return s.replace('\x1f', '').replace('\x1F', '')
+    return s.replace('\x1f', '')
 
 def stripFormatting(s):
     """Returns the string s, with all formatting removed."""
@@ -385,7 +385,7 @@ def stripFormatting(s):
     s = stripReverse(s)
     s = stripUnderline(s)
     s = stripItalic(s)
-    return s.replace('\x0f', '').replace('\x0F', '')
+    return s.replace('\x0f', '')
 
 _containsFormattingRe = re.compile(r'[\x02\x03\x16\x1f]')
 def formatWhois(irc, replies, caller='', channel='', command='whois'):
