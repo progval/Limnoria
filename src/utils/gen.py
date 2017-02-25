@@ -186,7 +186,10 @@ def safeEval(s, namespace=None):
             return all([checkNode(x) for x in node.values]) and \
                     all([checkNode(x) for x in node.values])
         elif node.__class__ is ast.Name:
-            if node.id in namespace:
+            if namespace is None and node.id in ('True', 'False', 'None'):
+                # For Python < 3.4, which does not have NameConstant.
+                return True
+            elif namespace is not None and node.id in namespace:
                 return True
             else:
                 return False
