@@ -516,15 +516,15 @@ class IrcUserCreator(Creator):
 
     def ignore(self, rest, lineno):
         self._checkId()
-        self.u.ignore = bool(eval(rest))
+        self.u.ignore = bool(utils.gen.safeEval(rest))
 
     def secure(self, rest, lineno):
         self._checkId()
-        self.u.secure = bool(eval(rest))
+        self.u.secure = bool(utils.gen.safeEval(rest))
 
     def hashed(self, rest, lineno):
         self._checkId()
-        self.u.hashed = bool(eval(rest))
+        self.u.hashed = bool(utils.gen.safeEval(rest))
 
     def password(self, rest, lineno):
         self._checkId()
@@ -580,11 +580,11 @@ class IrcChannelCreator(Creator):
 
     def lobotomized(self, rest, lineno):
         self._checkId()
-        self.c.lobotomized = bool(eval(rest))
+        self.c.lobotomized = bool(utils.gen.safeEval(rest))
 
     def defaultallow(self, rest, lineno):
         self._checkId()
-        self.c.defaultAllow = bool(eval(rest))
+        self.c.defaultAllow = bool(utils.gen.safeEval(rest))
 
     def capability(self, rest, lineno):
         self._checkId()

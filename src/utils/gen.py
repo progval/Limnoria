@@ -165,7 +165,7 @@ def saltHash(password, salt=None, hash='sha'):
     return '|'.join([salt, hasher((salt + password).encode('utf8')).hexdigest()])
 
 _astStr2 = ast.Str if minisix.PY2 else ast.Bytes
-def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
+def safeEval(s, namespace=None):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
     without unsafely using eval()."""
     try:
@@ -196,7 +196,12 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
         else:
             return False
     if checkNode(node):
-        return eval(s, namespace, namespace)
+        if namespace is None:
+            return eval(s, namespace, namespace)
+        else:
+            # Probably equivalent to eval() because checkNode(node) is True,
+            # but it's an extra security.
+            return ast.literal_eval(node)
     else:
         raise ValueError(format('Unsafe string: %q', s))
 
