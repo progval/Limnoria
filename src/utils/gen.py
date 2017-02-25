@@ -169,16 +169,9 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
     without unsafely using eval()."""
     try:
-        node = ast.parse(s)
+        node = ast.parse(s, mode='eval').body
     except SyntaxError as e:
         raise ValueError('Invalid string: %s.' % e)
-    nodes = ast.parse(s).body
-    if not nodes:
-        if node.__class__ is ast.Module:
-            return node.doc
-        else:
-            raise ValueError(format('Unsafe string: %q', s))
-    node = nodes[0]
     def checkNode(node):
         if node.__class__ is ast.Expr:
             node = node.value
