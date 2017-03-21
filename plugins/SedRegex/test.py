@@ -130,17 +130,6 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('4 * 2 = 8', str(m))
 
-    def testWhitespaceSeparatorFails(self):
-        self.feedMsg('we are all decelopers on this blessed day')
-        self.feedMsg('s.c.v.')
-        m = self.getMsg(' ')
-        self.assertIn('developers', str(m))
-
-        self.feedMsg('4 / 2 = 8')
-        self.feedMsg('s@/@*@')
-        m = self.getMsg(' ')
-        self.assertIn('4 * 2 = 8', str(m))
-
     def testWeirdSeparatorsFail(self):
         self.feedMsg("can't touch this", frm=self.__class__.other)
         # Only symbols are allowed as separators
