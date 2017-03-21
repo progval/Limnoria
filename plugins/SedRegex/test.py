@@ -70,52 +70,52 @@ class SedRegexTestCase(ChannelPluginTestCase):
 
     def testOnlySelfReplace(self):
         self.feedMsg('evil machines')
-        self.feedMsg('evil tacocats', frm=__class__.other)
+        self.feedMsg('evil tacocats', frm=self.__class__.other)
         self.feedMsg('s/evil/kind/s')
         m = self.getMsg(' ')
         self.assertIn('kind machines', str(m))
 
     def testAllFlagsReplace(self):
         self.feedMsg('Terrible, terrible crimes')
-        self.feedMsg('Terrible, terrible TV shows', frm=__class__.other)
+        self.feedMsg('Terrible, terrible TV shows', frm=self.__class__.other)
         self.feedMsg('s/terr/horr/sgi')
         m = self.getMsg(' ')
         self.assertIn('horrible, horrible crimes', str(m))
 
     def testOtherPersonReplace(self):
-        self.feedMsg('yeah, right', frm=__class__.other)
-        self.feedMsg('s/right/left/', frm=__class__.other2)
+        self.feedMsg('yeah, right', frm=self.__class__.other)
+        self.feedMsg('s/right/left/', frm=self.__class__.other2)
         m = self.getMsg(' ')
         # Note: using the bot prefix for the s/right/left/ part causes the first nick in "X thinks Y"
         # to be empty? It works fine in runtime though...
-        self.assertIn('%s thinks %s meant to say' % (ircutils.nickFromHostmask(__class__.other2),
-                                                     ircutils.nickFromHostmask(__class__.other)), str(m))
+        self.assertIn('%s thinks %s meant to say' % (ircutils.nickFromHostmask(self.__class__.other2),
+                                                     ircutils.nickFromHostmask(self.__class__.other)), str(m))
 
     def testExplicitOtherReplace(self):
-        self.feedMsg('ouch', frm=__class__.other2)
-        self.feedMsg('poof', frm=__class__.other)
+        self.feedMsg('ouch', frm=self.__class__.other2)
+        self.feedMsg('poof', frm=self.__class__.other)
         self.feedMsg('wow!')
-        self.feedMsg('%s: s/^/p/' % ircutils.nickFromHostmask(__class__.other2))
+        self.feedMsg('%s: s/^/p/' % ircutils.nickFromHostmask(self.__class__.other2))
         m = self.getMsg(' ')
         self.assertIn('pouch', str(m))
 
     def testBoldReplacement(self):
         with conf.supybot.plugins.sedregex.boldReplacementText.context(True):
-            self.feedMsg('hahahaha', frm=__class__.other)
+            self.feedMsg('hahahaha', frm=self.__class__.other)
 
             # One replacement
-            self.feedMsg('s/h/H/', frm=__class__.other2)
+            self.feedMsg('s/h/H/', frm=self.__class__.other2)
             m = self.getMsg(' ')
             self.assertIn('\x02H\x02aha', str(m))
 
             # Replace all instances
-            self.feedMsg('s/h/H/g', frm=__class__.other2)
+            self.feedMsg('s/h/H/g', frm=self.__class__.other2)
             m = self.getMsg(' ')
             self.assertIn('\x02H\x02a\x02H\x02a', str(m))
 
             # One whole word
-            self.feedMsg('sweet dreams are made of this', frm=__class__.other)
-            self.feedMsg('s/this/cheese/', frm=__class__.other2)
+            self.feedMsg('sweet dreams are made of this', frm=self.__class__.other)
+            self.feedMsg('s/this/cheese/', frm=self.__class__.other2)
             m = self.getMsg(' ')
             self.assertIn('of \x02cheese\x02', str(m))
 
@@ -142,7 +142,7 @@ class SedRegexTestCase(ChannelPluginTestCase):
         self.assertIn('4 * 2 = 8', str(m))
 
     def testWeirdSeparatorsFail(self):
-        self.feedMsg("can't touch this", frm=__class__.other)
+        self.feedMsg("can't touch this", frm=self.__class__.other)
         # Only symbols are allowed as separators
         self.feedMsg('blah: s a b ')
         self.feedMsg('blah: sdadbd')
@@ -161,10 +161,10 @@ class SedRegexTestCase(ChannelPluginTestCase):
         self.assertIn('meant to say: * %s wakes' % self.nick, str(m))
 
     def testOtherPersonActionReplace(self):
-        self.feedMsg("\x01ACTION sleeps\x01", frm=__class__.other)
+        self.feedMsg("\x01ACTION sleeps\x01", frm=self.__class__.other)
         self.feedMsg('s/sleeps/wakes/')
         m = self.getMsg(' ')
-        n = ircutils.nickFromHostmask(__class__.other)
+        n = ircutils.nickFromHostmask(self.__class__.other)
         self.assertIn('thinks %s meant to say: * %s wakes' % (n, n), str(m))
 
     # TODO: test ignores
