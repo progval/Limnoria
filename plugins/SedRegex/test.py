@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2015, Michael Daniel Telatynski <postmaster@webdevguru.co.uk>
+# Copyright (c) 2017, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,145 @@
 
 ###
 
+from __future__ import print_function
 from supybot.test import *
 
-class SedRegexTestCase(PluginTestCase):
-    plugins = ('SedRegex',)
+class SedRegexTestCase(ChannelPluginTestCase):
+    other = "blah!blah@someone.else"
+    other2 = "ghost!ghost@spooky"
+
+    plugins = ('SedRegex', 'Utilities')
+    config = {'plugins.sedregex.enable': True,
+              'plugins.sedregex.boldReplacementText': False}
+
+    # getMsg() stalls if no message is ever sent (i.e. if the plugin fails to respond to a request)
+    # We should limit the timeout to prevent the tests from taking forever.
+    timeout = 3
+
+    def testSimpleReplace(self):
+        self.feedMsg('Abcd abcdefgh')
+        self.feedMsg('s/abcd/test/')
+        # Run an empty command so that messages from the previous trigger are caught.
+        m = self.getMsg(' ')
+        self.assertIn('Abcd testefgh', str(m))
+
+    def testCaseInsensitiveReplace(self):
+        self.feedMsg('Aliens Are Invading, Help!')
+        self.feedMsg('s/a/e/i')
+        m = self.getMsg(' ')
+        self.assertIn('eliens', str(m))
+
+    def testGlobalReplace(self):
+        self.feedMsg('AAaa aaAa a b')
+        self.feedMsg('s/a/e/g')
+        m = self.getMsg(' ')
+        self.assertIn('AAee eeAe e b', str(m))
+
+    def testGlobalCaseInsensitiveReplace(self):
+        self.feedMsg('Abba')
+        self.feedMsg('s/a/e/gi')
+        m = self.getMsg(' ')
+        self.assertIn('ebbe', str(m))
+
+    def testOnlySelfReplace(self):
+        self.feedMsg('evil machines')
+        self.feedMsg('evil tacocats', frm=__class__.other)
+        self.feedMsg('s/evil/kind/s')
+        m = self.getMsg(' ')
+        self.assertIn('kind machines', str(m))
+
+    def testAllFlagsReplace(self):
+        self.feedMsg('Terrible, terrible crimes')
+        self.feedMsg('Terrible, terrible TV shows', frm=__class__.other)
+        self.feedMsg('s/terr/horr/sgi')
+        m = self.getMsg(' ')
+        self.assertIn('horrible, horrible crimes', str(m))
+
+    def testOtherPersonReplace(self):
+        self.feedMsg('yeah, right', frm=__class__.other)
+        self.feedMsg('s/right/left/', frm=__class__.other2)
+        m = self.getMsg(' ')
+        # Note: using the bot prefix for the s/right/left/ part causes the first nick in "X thinks Y"
+        # to be empty? It works fine in runtime though...
+        self.assertIn('%s thinks %s meant to say' % (ircutils.nickFromHostmask(__class__.other2),
+                                                     ircutils.nickFromHostmask(__class__.other)), str(m))
+
+    def testExplicitOtherReplace(self):
+        self.feedMsg('ouch', frm=__class__.other2)
+        self.feedMsg('poof', frm=__class__.other)
+        self.feedMsg('wow!')
+        self.feedMsg('%s: s/^/p/' % ircutils.nickFromHostmask(__class__.other2))
+        m = self.getMsg(' ')
+        self.assertIn('pouch', str(m))
+
+    def testBoldReplacement(self):
+        with conf.supybot.plugins.sedregex.boldReplacementText.context(True):
+            self.feedMsg('hahahaha', frm=__class__.other)
+
+            # One replacement
+            self.feedMsg('s/h/H/', frm=__class__.other2)
+            m = self.getMsg(' ')
+            self.assertIn('\x02H\x02aha', str(m))
+
+            # Replace all instances
+            self.feedMsg('s/h/H/g', frm=__class__.other2)
+            m = self.getMsg(' ')
+            self.assertIn('\x02H\x02a\x02H\x02a', str(m))
+
+            # One whole word
+            self.feedMsg('sweet dreams are made of this', frm=__class__.other)
+            self.feedMsg('s/this/cheese/', frm=__class__.other2)
+            m = self.getMsg(' ')
+            self.assertIn('of \x02cheese\x02', str(m))
+
+    def testNonSlashSeparator(self):
+        self.feedMsg('we are all decelopers on this blessed day')
+        self.feedMsg('s.c.v.')
+        m = self.getMsg(' ')
+        self.assertIn('developers', str(m))
+
+        self.feedMsg('4 / 2 = 8')
+        self.feedMsg('s@/@*@')
+        m = self.getMsg(' ')
+        self.assertIn('4 * 2 = 8', str(m))
+
+    def testWhitespaceSeparatorFails(self):
+        self.feedMsg('we are all decelopers on this blessed day')
+        self.feedMsg('s.c.v.')
+        m = self.getMsg(' ')
+        self.assertIn('developers', str(m))
+
+        self.feedMsg('4 / 2 = 8')
+        self.feedMsg('s@/@*@')
+        m = self.getMsg(' ')
+        self.assertIn('4 * 2 = 8', str(m))
+
+    def testWeirdSeparatorsFail(self):
+        self.feedMsg("can't touch this", frm=__class__.other)
+        # Only symbols are allowed as separators
+        self.feedMsg('blah: s a b ')
+        self.feedMsg('blah: sdadbd')
+
+        m = self.getMsg('echo dummy message')
+        # XXX: this is a total hack...
+        for msg in self.irc.state.history:
+            print("Message in history: %s" % msg, end='')
+            self.assertNotIn("cbn't", str(msg))
+
+    def testActionReplace(self):
+        self.feedMsg("\x01ACTION sleeps\x01")
+        self.feedMsg('s/sleeps/wakes/')
+
+        m = self.getMsg(' ')
+        self.assertIn('meant to say: * %s wakes' % self.nick, str(m))
+
+    def testOtherPersonActionReplace(self):
+        self.feedMsg("\x01ACTION sleeps\x01", frm=__class__.other)
+        self.feedMsg('s/sleeps/wakes/')
+        m = self.getMsg(' ')
+        n = ircutils.nickFromHostmask(__class__.other)
+        self.assertIn('thinks %s meant to say: * %s wakes' % (n, n), str(m))
+
+    # TODO: test ignores
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
