@@ -395,7 +395,7 @@ def prettyPrint(msg, addRecipients=False, timestampFormat=None, showNick=True):
         s = '*** %s is now known as %s' % (msg.nick, msg.args[0])
     else:
         s = utils.str.format('--- Unknown command %q', ' '.join(msg.args))
-    at = getattr(msg, 'receivedAt', None)
+    at = msg.tagged('receivedAt')
     if timestampFormat and at:
         s = '%s %s' % (time.strftime(timestampFormat, time.localtime(at)), s)
     return s
