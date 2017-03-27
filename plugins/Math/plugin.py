@@ -120,7 +120,7 @@ class Math(callbacks.Plugin):
     _mathEnv['abs'] = abs
     _mathEnv['max'] = max
     _mathEnv['min'] = min
-    _mathEnv['round'] = round
+    _mathEnv['round'] = lambda x, y: round(x, int(y))
     _mathSafeEnv = dict([(x,y) for x,y in _mathEnv.items()])
     _mathSafeEnv['factorial'] = _factorial
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d)])-)?'
