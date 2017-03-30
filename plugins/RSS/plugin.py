@@ -240,7 +240,7 @@ class RSS(callbacks.Plugin):
                 particular feed.""")))
 
     def register_feed(self, name, url, initial,
-            plugin_is_loading, announced=[]):
+            plugin_is_loading, announced=None):
         self.feed_names[name] = url
         self.feeds[url] = Feed(name, url, initial,
                 plugin_is_loading, announced)
