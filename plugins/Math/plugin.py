@@ -195,6 +195,7 @@ class Math(callbacks.Plugin):
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.'))
             return
+        text = text.replace("^", "**")
         text = self._calc_remover(text)
         if 'lambda' in text:
             irc.error(_('You can\'t use lambda in this command.'))
