@@ -468,9 +468,7 @@ class Aka(callbacks.Plugin):
                 assert not biggestAt
                 # Gotta remove the things that have already been subbed in.
                 i = biggestDollar
-                while i:
-                    args.pop(0)
-                    i -= 1
+                args[:] = args[i:]
                 def everythingReplace(tokens):
                     for (i, token) in enumerate(tokens):
                         if isinstance(token, list):
