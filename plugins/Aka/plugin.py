@@ -470,17 +470,19 @@ class Aka(callbacks.Plugin):
                 i = biggestDollar
                 args[:] = args[i:]
                 def everythingReplace(tokens):
+                    skip = 0
                     for (i, token) in enumerate(tokens):
+                        if skip:
+                            skip -= 1
+                            continue
                         if isinstance(token, list):
-                            if everythingReplace(token):
-                                return
+                            everythingReplace(token)
                         if token == '$*':
                             tokens[i:i+1] = args
-                            return True
+                            skip = len(args)-1 # do not make replacements in
+                                               # tokens we just added
                         elif '$*' in token:
                             tokens[i] = token.replace('$*', ' '.join(args))
-                            return True
-                    return False
                 everythingReplace(tokens)
             maxNesting = conf.supybot.commands.nested.maximum()
             if maxNesting and irc.nested+1 > maxNesting:
@@ -518,8 +520,9 @@ class Aka(callbacks.Plugin):
         wildcard = '$*' in alias
         if biggestAt and wildcard:
             raise AkaError(_('Can\'t mix $* and optional args (@1, etc.)'))
-        if alias.count('$*') > 1:
-            raise AkaError(_('There can be only one $* in an alias.'))
+        if alias.count('$*') > 3:
+            # mitigate huge expansions
+            raise AkaError(_('There can be only three $* in an alias.'))
         self._db.add_aka(channel, name, alias)
 
     def _remove_aka(self, channel, name, evenIfLocked=False):

@@ -104,6 +104,10 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertResponse('spam egg', 'egg')
         self.assertResponse('spam egg bacon', 'egg bacon')
 
+        self.assertNotError('aka add doublespam "echo [echo $* $*]"')
+        self.assertResponse('doublespam egg', 'egg egg')
+        self.assertResponse('doublespam egg bacon', 'egg bacon egg bacon')
+
     def testChannel(self):
         self.assertNotError('aka add channel echo $channel')
         self.assertResponse('aka channel', self.channel)
@@ -179,8 +183,10 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertRegexp('fact 50', 'more nesting')
 
     def testDollarStarNesting(self):
-        self.assertNotError('aka add alias aka $*')
-        self.assertNotError('alias add a+ aka add $*')
+        self.assertResponse('aka add alias aka $*', 'The operation succeeded.')
+        self.assertResponse('alias add a+ aka add $*', 'The operation succeeded.')
+        self.assertResponse('a+ spam echo egg', 'The operation succeeded.')
+        self.assertResponse('spam', 'egg')
 
 class AkaTestCase(PluginTestCase):
     plugins = ('Aka', 'Alias', 'User', 'Utilities')
