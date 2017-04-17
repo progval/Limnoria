@@ -108,6 +108,13 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertResponse('doublespam egg', 'egg egg')
         self.assertResponse('doublespam egg bacon', 'egg bacon egg bacon')
 
+    def testExpansionBomb(self):
+        self.assertNotError('aka add bomb "bomb $* $* $* $* $*"')
+        # if the mitigation doesn't work, this test will eat all memory on the
+        # system.
+        self.assertResponse('bomb foo', "Error: You've attempted more nesting "
+                "than is currently allowed on this bot.")
+
     def testChannel(self):
         self.assertNotError('aka add channel echo $channel')
         self.assertResponse('aka channel', self.channel)

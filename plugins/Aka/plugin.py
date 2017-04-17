@@ -448,8 +448,13 @@ class Aka(callbacks.Plugin):
             if biggestDollar or biggestAt:
                 args = getArgs(args, required=biggestDollar, optional=biggestAt,
                                 wildcard=wildcard)
-            max_len = conf.supybot.reply.maximumLength()
-            args = list([x[:max_len] for x in args])
+            remaining_len = conf.supybot.reply.maximumLength()
+            for (i, arg) in enumerate(args):
+                if remaining_len < len(arg):
+                    arg = arg[0:remaining_len]
+                    args[i+1:] = []
+                    break
+                remaining_len -= len(arg)
             def regexpReplace(m):
                 idx = int(m.group(1))
                 return args[idx-1]
@@ -462,7 +467,6 @@ class Aka(callbacks.Plugin):
             replace(tokens, lambda s: dollarRe.sub(regexpReplace, s))
             if biggestAt:
                 assert not wildcard
-                args = args[biggestDollar:]
                 replace(tokens, lambda s: atRe.sub(regexpReplace, s))
             if wildcard:
                 assert not biggestAt
@@ -488,7 +492,7 @@ class Aka(callbacks.Plugin):
             if maxNesting and irc.nested+1 > maxNesting:
                 irc.error(_('You\'ve attempted more nesting than is '
                       'currently allowed on this bot.'), Raise=True)
-            self.Proxy(irc, msg, tokens)
+            self.Proxy(irc, msg, tokens, nested=irc.nested+1)
         if biggestDollar and (wildcard or biggestAt):
             flexargs = _(' at least')
         else:
@@ -520,9 +524,6 @@ class Aka(callbacks.Plugin):
         wildcard = '$*' in alias
         if biggestAt and wildcard:
             raise AkaError(_('Can\'t mix $* and optional args (@1, etc.)'))
-        if alias.count('$*') > 3:
-            # mitigate huge expansions
-            raise AkaError(_('There can be only three $* in an alias.'))
         self._db.add_aka(channel, name, alias)
 
     def _remove_aka(self, channel, name, evenIfLocked=False):
