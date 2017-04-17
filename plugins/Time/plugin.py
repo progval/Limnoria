@@ -30,6 +30,7 @@
 import time
 TIME = time # For later use.
 from datetime import datetime
+from datetime import time as dttime
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -206,6 +207,39 @@ class Time(callbacks.Plugin):
         irc.reply(datetime.now(timezone).strftime(format))
     tztime = wrap(tztime, ['text'])
 
+    @internationalizeDocstring
+    def swatch(self, irc, msg, args, channel, seconds):
+        """[<seconds>]
+
+        Returns the Swatch Internet Time.  If <seconds> is specified, use the
+        given UTC+1 time rather than the current time. For example, "swatch
+        [seconds 17h 30m]" returns the Swatch Internet Time for 17:30 UTC+1.
+        """
+
+        try:
+            import pytz
+        except ImportError:
+            irc.error(_('Python-tz is required by the command, but is not '
+                        'installed on this computer.'))
+            return
+
+        # This is intentionally GMT-1 and it means UTC+1, blame the POSIX
+        # standard.
+        tz = pytz.timezone('Etc/GMT-1')
+
+        now = datetime.now(tz)
+
+        if not seconds:
+            dt = datetime.combine(dt.date(), dttime(0))
+            seconds = (now - dt).seconds
+
+        # Wrap around
+        seconds %= 86400
+
+        irc.reply('%d' % int((seconds + now.second + (now.minute * 60) +
+                             (now.hour * 3600)) / 86.4))
+    swatch = wrap(swatch, [optional('channel'),
+                           optional('float')])
 
 Class = Time
 
