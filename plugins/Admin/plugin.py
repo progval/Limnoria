@@ -169,7 +169,10 @@ class Admin(callbacks.Plugin):
             irc.error(_('I\'m already too close to maximum number of '
                       'channels for this network.'), Raise=True)
         irc.queueMsg(networkGroup.channels.join(channel))
-        irc.noReply()
+        if msg.nick in irc.state.channels[channel].users:
+            irc.noReply()
+        else:
+            irc.replySuccess()
         self.joins[channel] = (irc, msg)
     join = wrap(join, ['validChannel', additional('something')])
 
