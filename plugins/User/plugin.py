@@ -100,9 +100,9 @@ class User(callbacks.Plugin):
 
     @internationalizeDocstring
     def register(self, irc, msg, args, name, password):
-        """<name> <password>
+        """<username> <password>
 
-        Registers <name> with the given password <password> and the current
+        Registers <username> with the given password <password> and the current
         hostmask of the person registering.  You shouldn't register twice; if
         you're not recognized as a user but you've already registered, use the
         hostmask add command to add another hostmask to your already-registered
@@ -432,9 +432,9 @@ class User(callbacks.Plugin):
 
     @internationalizeDocstring
     def identify(self, irc, msg, args, user, password):
-        """<name> <password>
+        """<username> <password>
 
-        Identifies the user as <name>. This command (and all other
+        Identifies the user as <username>. This command (and all other
         commands that include a password) must be sent to the bot privately,
         not in a channel.
         """
