@@ -83,7 +83,7 @@ conf.registerChannelValue(Relay, 'ignores',
     Ignores([], _("""Determines what hostmasks will not be relayed on a
     channel.""")))
 conf.registerChannelValue(Relay, 'noticeNonPrivmsgs',
-    registry.Boolean(False, _("""Determines whether the bot will used NOTICEs
+    registry.Boolean(True, _("""Determines whether the bot will used NOTICEs
     rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts,
     nicks, quits, modes, etc.)""")))
 
