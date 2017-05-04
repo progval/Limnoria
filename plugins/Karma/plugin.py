@@ -338,7 +338,6 @@ class Karma(callbacks.Plugin):
                             'things.'))
         else: # No name was given.  Return the top/bottom N karmas.
             limit = self.registryValue('rankingDisplay', channel)
-            top = self.db.top(channel, limit)
             highest = [format('%q (%s)', s, t)
                        for (s, t) in self.db.top(channel, limit)]
             lowest = [format('%q (%s)', s, t)
