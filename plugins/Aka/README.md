@@ -66,7 +66,7 @@ their most recently played item.
 This `lastfm` aka requires the following plugins to be loaded: `RSS`, 
 `Format` and `Web`.
 
-`RSS` provides `rss`, `Format provides `concat` and `Web` provides 
+`RSS` provides `rss`, `Format` provides `concat` and `Web` provides 
 `urlquote`.
 
 Note that if the nested commands being aliased hadn't been quoted, then
