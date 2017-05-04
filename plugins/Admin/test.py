@@ -106,5 +106,29 @@ class AdminTestCase(PluginTestCase):
     def testAddCapabilityOwner(self):
         self.assertError('admin capability add %s owner' % self.nick)
 
+    def testJoinOnOwnerInvite(self):
+        self.irc.feedMsg(ircmsgs.invite(conf.supybot.nick(), '#foo', prefix=self.prefix))
+        m = self.getMsg(' ')
+        self.assertEqual(m.command, 'JOIN')
+        self.assertEqual(m.args[0], '#foo')
+
+    def testNoJoinOnUnprivilegedInvite(self):
+        try:
+            world.testing = False
+            self.irc.feedMsg(ircmsgs.invite(conf.supybot.nick(), '#foo', prefix='foo!bar@baz'))
+            self.assertResponse('somecommand',
+                'Error: "somecommand" is not a valid command.')
+        finally:
+            world.testing = True
+
+    def testNoJoinOnUnprivilegedInvite(self):
+        try:
+            world.testing = False
+            self.irc.feedMsg(ircmsgs.invite(conf.supybot.nick(), '#foo\u0009', prefix='foo!bar@baz'))
+            self.assertResponse('somecommand',
+                'Error: "somecommand" is not a valid command.')
+        finally:
+            world.testing = True
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
