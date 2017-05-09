@@ -100,6 +100,7 @@ class ChannelLogger(callbacks.Plugin):
             return '%s.log' % channel
 
     def getLogDir(self, irc, channel):
+        channel = self.normalizeChannel(irc, channel)
         logDir = conf.supybot.directories.log.dirize(self.name())
         if self.registryValue('directories'):
             if self.registryValue('directories.network'):
