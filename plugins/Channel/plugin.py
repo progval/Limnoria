@@ -910,6 +910,7 @@ class Channel(callbacks.Plugin):
         # people or channels that shouldn't know
         capability = ircdb.makeChannelCapability(channel, 'op')
         if 's' in irc.state.channels[channel].modes and \
+            not ircdb.checkCapability(msg.nick, 'owner') and \
             msg.args[0] != channel and \
             not ircdb.checkCapability(msg.prefix, capability) and \
             (ircutils.isChannel(msg.args[0]) or \
