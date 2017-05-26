@@ -533,10 +533,8 @@ registerChannelValue(supybot.reply, 'requireChannelCommandsToBeSentInChannel',
     itself.""")))
 
 registerGlobalValue(supybot, 'followIdentificationThroughNickChanges',
-    registry.Boolean(False, _("""Determines whether the bot will unidentify
-    someone when that person changes their nick.  Setting this to True
-    will cause the bot to track such changes.  It defaults to False for a
-    little greater security.""")))
+    registry.Boolean(True, _("""Determines whether the bot will keep users
+    identified after they have changed their nick.""")))
 
 registerChannelValue(supybot, 'alwaysJoinOnInvite',
     registry.Boolean(False, _("""Determines whether the bot will always join a
