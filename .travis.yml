@@ -21,6 +21,7 @@ install:
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
+  - sudo sysctl net.ipv6.bindv6only=1
   - python setup.py install
   - supybot-test test -v --plugins-dir=./plugins/ --no-network --disable-multiprocessing --exclude=./plugins/Scheduler --exclude=./plugins/Filter
   - if [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then python -m irctest irctest.controllers.limnoria; fi
