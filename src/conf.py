@@ -870,6 +870,9 @@ registerGlobalValue(supybot.directories, 'backup',
     Directory('backup', _("""Determines what directory backup data is put
     into. Set it to /dev/null to disable backup (it is a special value,
     so it also works on Windows and systems without /dev/null).""")))
+registerGlobalValue(supybot.directories, 'log',
+    Directory('logs', """Determines what directory the bot will store its
+    logfiles in."""))
 registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', _("""Determines what directory temporary files
     are put into.""")))
@@ -877,8 +880,14 @@ registerGlobalValue(supybot.directories.data, 'web',
     DataFilenameDirectory('web', _("""Determines what directory files of the
     web server (templates, custom images, ...) are put into.""")))
 
-utils.file.AtomicFile.default.tmpDir = supybot.directories.data.tmp
-utils.file.AtomicFile.default.backupDir = supybot.directories.backup
+def _update_tmp():
+    utils.file.AtomicFile.default.tmpDir = supybot.directories.data.tmp
+supybot.directories.data.tmp.addCallback(_update_tmp)
+_update_tmp()
+def _update_backup():
+    utils.file.AtomicFile.default.backupDir = supybot.directories.backup
+supybot.directories.backup.addCallback(_update_backup)
+_update_backup()
 
 registerGlobalValue(supybot.directories, 'plugins',
     registry.CommaSeparatedListOfStrings([], _("""Determines what directories

@@ -178,10 +178,6 @@ class ColorizedFormatter(Formatter):
         else:
             return Formatter.format(self, record, *args, **kwargs)
 
-conf.registerGlobalValue(conf.supybot.directories, 'log',
-    conf.Directory('logs', """Determines what directory the bot will store its
-    logfiles in."""))
-
 _logDir = conf.supybot.directories.log()
 if not os.path.exists(_logDir):
     os.mkdir(_logDir, 0o755)

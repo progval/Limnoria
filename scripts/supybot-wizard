@@ -260,11 +260,8 @@ def main():
     i18n.conf = fakeConf
     i18n.currentLocale = language
     i18n.reloadLocales()
-    import supybot.log as log
-    log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
     import supybot.conf as conf
     i18n.import_conf() # It imports the real conf module
-    import supybot.plugin as plugin
 
     ### Directories.
     # We set these variables in cache because otherwise conf and log will
@@ -284,6 +281,8 @@ def main():
         make a directory named "logs" right here.""")
         (logDir, basedir) = getDirectoryName('logs')
         conf.supybot.directories.log.setValue(logDir)
+        import supybot.log as log
+        log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
 
         # conf.supybot.directories.data
         output("""Your bot will need to put various data somewhere.  Things
@@ -310,6 +309,23 @@ def main():
         (backupDir, basedir) = getDirectoryName('backup', basedir=basedir)
         conf.supybot.directories.backup.setValue(backupDir)
 
+        # conf.supybot.directories.data.tmp
+        output("""Your bot needs a directory to put temporary files (used
+        mainly to atomically update its configuration files).""")
+        (tmpDir, basedir) = getDirectoryName('tmp', basedir=basedir)
+        conf.supybot.directories.data.tmp.setValue(tmpDir)
+
+        # conf.supybot.directories.data.web
+        output("""Your bot needs a directory to put files related to the web
+        server (templates, CSS).""")
+        (webDir, basedir) = getDirectoryName('web', basedir=basedir)
+        conf.supybot.directories.data.web.setValue(webDir)
+
+
+        # imports callbacks, which imports ircdb, which requires
+        # directories.conf
+        import supybot.plugin as plugin
+
         # pluginDirs
         output("""Your bot will also need to know where to find its plugins at.
         Of course, it already knows where the plugins that it came with are,
@@ -330,22 +346,33 @@ def main():
         the various log, config, and data files.""")
         basedir = something("""Where would you like to create these
                             directories?""", default=os.curdir)
+
         # conf.supybot.directories.log
         (logDir, basedir) = getDirectoryName('logs',
                                              basedir=basedir, prompt=False)
         conf.supybot.directories.log.setValue(logDir)
+
         # conf.supybot.directories.data
         (dataDir, basedir) = getDirectoryName('data',
                                               basedir=basedir, prompt=False)
         conf.supybot.directories.data.setValue(dataDir)
+        (tmpDir, basedir) = getDirectoryName('tmp',
+                                             basedir=basedir, prompt=False)
+        conf.supybot.directories.data.tmp.setValue(tmpDir)
+        (webDir, basedir) = getDirectoryName('web',
+                                             basedir=basedir, prompt=False)
+        conf.supybot.directories.data.web.setValue(webDir)
+
         # conf.supybot.directories.conf
         (confDir, basedir) = getDirectoryName('conf',
                                               basedir=basedir, prompt=False)
         conf.supybot.directories.conf.setValue(confDir)
+
         # conf.supybot.directories.backup
         (backupDir, basedir) = getDirectoryName('backup',
                                                 basedir=basedir, prompt=False)
         conf.supybot.directories.backup.setValue(backupDir)
+
         # pluginDirs
         pluginDirs = conf.supybot.directories.plugins()
         (pluginDir, _) = getDirectoryName('plugins',
@@ -353,6 +380,10 @@ def main():
         if pluginDir not in pluginDirs:
             pluginDirs.append(pluginDir)
         conf.supybot.directories.plugins.setValue(pluginDirs)
+
+    import supybot.log as log
+    log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
+    import supybot.plugin as plugin
 
     output("Good!  We're done with the directory stuff.")
 
@@ -719,8 +750,12 @@ def main():
     # We're going to need to do a darcs predist thing here.
     #conf.supybot.debug.generated.setValue('...')
 
+    if advanced:
+        basedir = '.'
+    filename = os.path.join(basedir, '%s.conf')
+
     filename = something("""In which file would you like to save
-                         this config?""", default='%s.conf' % nick)
+                         this config?""", default=filename % nick)
     if not filename.endswith('.conf'):
         filename += '.conf'
     registry.close(conf.supybot, os.path.expanduser(filename))
