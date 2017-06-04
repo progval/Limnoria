@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2014-2015, James Lu
+# Copyright (c) 2014-2017, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,15 +30,11 @@
 
 from supybot.test import *
 
-
 class DDGTestCase(PluginTestCase):
     plugins = ('DDG',)
 
     def testSearch(self):
         self.assertRegexp(
             'ddg search wikipedia', 'Wikipedia.*? - .*?https?\:\/\/')
-    def testZeroclick(self):
-        self.assertRegexp(
-            'zeroclick 2^3', '8')
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

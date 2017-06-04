@@ -166,43 +166,6 @@ class DDG(callbacks.Plugin):
 
             irc.reply(', '.join(strings))
 
-    @wrap(['text'])
-    def zeroclick(self, irc, msg, args, text):
-        """<text>
-
-        Looks up <text> on DuckDuckGo's zero-click engine."""
-        # Zero-click can give multiple replies for things if the
-        # query is ambiguous, sort of like an encyclopedia.
-
-        # For example, looking up "2^3" will give both:
-        # Zero-click info: 8 (number)
-        # Zero-click info: 8
-        replies = {}
-        for td in self._ddgurl(text)[-1]:
-            if td.text.startswith("Zero-click info:"):
-                # Make a dictionary of things
-                item = td.text.split("Zero-click info:", 1)[1].strip()
-                td = td.parent.next_sibling.next_sibling.\
-                            find("td")
-                # Condense newlines (<br> tags). XXX: make these separators configurable.
-                for br in td.find_all('br'):
-                    br.replace_with(' - ')
-                res = ' | '.join(td.text.strip().split("\n"))
-                try:
-                    # Some zero-click results have an attached link to them.
-                    link = td.a.get('href')
-                    # Others have a piece of meaningless JavaScript...
-                    if link != "javascript:;":
-                        res += format(" %u", link)
-                except AttributeError:
-                    pass
-                replies[item] = res
-        else:
-            if not replies:
-                irc.error("No zero-click info could be found for '%s'." %
-                          text, Raise=True)
-            s = ["%s - %s" % (ircutils.bold(k), v) for k, v in replies.items()]
-            irc.reply("; ".join(s))
 Class = DDG
 
 
