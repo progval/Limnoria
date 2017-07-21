@@ -64,6 +64,26 @@ class MessageParserTestCase(ChannelPluginTestCase):
             world.testing = True
             self.prefix = origuser
             conf.supybot.plugins.MessageParser.requireManageCapability.setValue(origconf)
+
+    def testGroups(self):
+        self.assertNotError('messageparser add "this (.+) a(.*)" "echo $1 $2"')
+        self.feedMsg('this is a foo')
+        self.assertResponse(' ', 'is foo')
+        self.feedMsg('this is a')
+        self.assertResponse(' ', 'is')
+        self.assertNotError('messageparser remove "this (.+) a(.*)"')
+        self.assertNotError('messageparser add "this (.+) a(.*)" "echo $1"')
+        self.feedMsg('this is a foo')
+        self.assertResponse(' ', 'is')
+        self.feedMsg('this is a')
+        self.assertResponse(' ', 'is')
+        self.assertNotError('messageparser remove "this (.+) a(.*)"')
+        self.assertNotError('messageparser add "this( .+)? a(.*)" "echo $1 $2"')
+        self.feedMsg('this a foo')
+        self.assertResponse(' ', '$1 foo')
+        self.feedMsg('this a')
+        self.assertResponse(' ', '$1')
+        self.assertNotError('messageparser remove "this( .+)? a(.*)"')
         
     def testShow(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
