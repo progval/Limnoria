@@ -6,9 +6,7 @@ for controlling access to commands, as well as more than 50 builtin plugins
 providing around 400 actual commands.
 
 Limnoria is a project which continues development of Supybot (you can
-call it a fork) by fixing bugs and adding features (see the
-[list of added features](https://github.com/ProgVal/Limnoria/wiki/LGC) for
-more details).
+call it a fork) by fixing bugs and adding features.
 
 # Build status
 
@@ -27,31 +25,17 @@ Python 2.5 and older versions are not supported.
 If this is your first install, there is an [install guide](http://doc.supybot.aperio.fr/en/latest/use/install.html).
 You will probably be pointed to it if you ask on IRC how to install
 Limnoria.
+TL;DR version:
+
+```
+sudo apt-get install python3 python3-pip
+pip3 install --user limnoria
+supybot-wizard
+```
 
 There is extensive documentation at [doc.supybot.aperio.fr] and at
 [Gribble wiki]. We took the time to write it; you should take the time to
 read it.
-
-## Installing from cloned repo
-
-*If you don't need to clone the repo, please see the previous two
-paragraphs for easier installation methods.*
-
-```
-git clone https://github.com/ProgVal/Limnoria.git
-cd Limnoria
-sudo python3 -m pip install -r requirements.txt
-sudo python3 setup.py install
-```
-
-alternatively without root
-
-```
-git clone https://github.com/ProgVal/Limnoria.git
-cd Limnoria
-python3 -m pip install -r requirements.txt --user
-python3 setup.py install --user
-```
 
 [doc.supybot.aperio.fr]:http://doc.supybot.aperio.fr/
 [Gribble wiki]:https://sourceforge.net/p/gribble/wiki/Main_Page/
