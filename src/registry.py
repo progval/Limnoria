@@ -110,7 +110,7 @@ def open_registry(filename, clear=False):
 
 CONF_FILE_HEADER = """
 ######
-# Althrough it is technically possible to do so, we do not recommend that
+# Although it is technically possible to do so, we do not recommend that
 # you edit this file with a text editor.
 # Whenever possible, do it on IRC using the Config plugin, which
 # checks values you set are valid before writing them to the
