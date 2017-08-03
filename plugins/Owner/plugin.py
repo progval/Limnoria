@@ -160,9 +160,6 @@ class Owner(callbacks.Plugin):
                    'No servers are set for the %s network.' % network
         self.log.debug('Creating new Irc for %s.', network)
         newIrc = irclib.Irc(network)
-        for irc in world.ircs:
-            if irc != newIrc:
-                newIrc.state.history = irc.state.history
         driver = drivers.newDriver(newIrc)
         self._loadPlugins(newIrc)
         return newIrc
