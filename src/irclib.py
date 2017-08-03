@@ -147,7 +147,7 @@ class IrcCallback(IrcCommandDispatcher, log.Firewalled):
 # Basic queue for IRC messages.  It doesn't presently (but should at some
 # later point) reorder messages based on priority or penalty calculations.
 ###
-_high = frozenset(['MODE', 'KICK', 'PONG', 'NICK', 'PASS', 'CAPAB'])
+_high = frozenset(['MODE', 'KICK', 'PONG', 'NICK', 'PASS', 'CAPAB', 'REMOVE'])
 _low = frozenset(['PRIVMSG', 'PING', 'WHO', 'NOTICE', 'JOIN'])
 class IrcMsgQueue(object):
     """Class for a queue of IrcMsgs.  Eventually, it should be smart.
