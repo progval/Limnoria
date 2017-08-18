@@ -1,5 +1,5 @@
 language: python
-sudo: false
+sudo: true
 python:
   - "2.6"
   - "2.7"
