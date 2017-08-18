@@ -467,6 +467,7 @@ class Aka(callbacks.Plugin):
             replace(tokens, lambda s: dollarRe.sub(regexpReplace, s))
             if biggestAt:
                 assert not wildcard
+                args = args[biggestDollar:]
                 replace(tokens, lambda s: atRe.sub(regexpReplace, s))
             if wildcard:
                 assert not biggestAt

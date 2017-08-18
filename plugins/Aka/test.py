@@ -135,6 +135,11 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertResponse('myrepr foo', '"foo"')
         self.assertResponse('myrepr ""', '""')
 
+    def testRequiredAndOptional(self):
+        self.assertNotError('aka add reqopt "echo req=$1, opt=@1"')
+        self.assertResponse('reqopt foo bar', 'req=foo, opt=bar')
+        self.assertResponse('reqopt foo', 'req=foo, opt=')
+
     def testNoExtraSpaces(self):
         self.assertNotError('aka add foo "action takes $1\'s money"')
         self.assertResponse('foo bar', '\x01ACTION takes bar\'s money\x01')
