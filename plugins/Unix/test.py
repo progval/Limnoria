@@ -28,11 +28,12 @@
 ###
 
 import os
+import socket
 
 from supybot.test import *
 
 try:
-    from unittest import skipIf
+    from unittest import skip, skipIf
 except ImportError:
     def skipUnlessSpell(f):
         return None
@@ -48,12 +49,23 @@ else:
             'aspell/ispell not available.')
     skipUnlessFortune = skipIf(utils.findBinaryInPath('fortune') is None,
             'fortune not available.')
-    skipUnlessPing = skipIf(
-            utils.findBinaryInPath('ping') is None or not setuid,
-            'ping not available.')
-    skipUnlessPing6 = skipIf(
-            utils.findBinaryInPath('ping6') is None or not setuid,
-            'ping6 not available.')
+
+    if network:
+        skipUnlessPing = skipIf(
+                utils.findBinaryInPath('ping') is None or not setuid,
+                'ping not available.')
+        if socket.has_ipv6:
+            skipUnlessPing6 = skipIf(
+                    utils.findBinaryInPath('ping6') is None or not setuid,
+                    'ping6 not available.')
+        else:
+            skipUnlessPing6 = skip(
+                    'IPv6 not available.')
+    else:
+        skipUnlessPing = skip(
+                'network not available.')
+        skipUnlessPing6 = skip(
+                'network not available.')
 
 class UnixConfigTestCase(ChannelPluginTestCase):
     plugins = ('Unix',)
