@@ -10,7 +10,7 @@ python:
   - "3.6"
   - "nightly"
   - "pypy"
-  - "pypy3.3-5.2-alpha1" # default pypy3 doesn't work, see https://bitbucket.org/pypy/pypy/issues/2129/local-variable-val-referenced-before
+  - "pypy-5.3.1" # default pypy3 doesn't work, see https://bitbucket.org/pypy/pypy/issues/2129/local-variable-val-referenced-before
 env:
   - WITH_OPT_DEPS=true
   - WITH_OPT_DEPS=false
