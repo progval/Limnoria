@@ -507,8 +507,12 @@ class Aka(callbacks.Plugin):
             lock = ' ' + _('Locked by %s at %s') % (locked_by, locked_at)
         else:
             lock = ''
-        doc = format(_('<an alias,%s %n>\n\nAlias for %q.%s'),
-                    flexargs, (biggestDollar, _('argument')), original, lock)
+        if channel == 'global':
+            doc = format(_('<a global alias,%s %n>\n\nAlias for %q.%s'),
+                        flexargs, (biggestDollar, _('argument')), original, lock)
+        else:
+            doc = format(_('<an alias on %s,%s %n>\n\nAlias for %q.%s'),
+                        channel, flexargs, (biggestDollar, _('argument')), original, lock)
         f = utils.python.changeFunctionName(f, name, doc)
         return f
 

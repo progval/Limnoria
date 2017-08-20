@@ -71,6 +71,12 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertNotError('aka add nonascii echo éé')
         self.assertRegexp('help nonascii', "Alias for .*echo éé")
 
+        self.assertNotError('aka remove slashdot')
+        self.assertNotError('aka add --channel %s slashdot foo' % self.channel)
+        self.assertRegexp('help aka slashdot', "an alias on %s.*Alias for .*foo"
+                % self.channel)
+        self.assertNotError('aka remove --channel %s slashdot' % self.channel)
+
     def testShow(self):
         self.assertNotError('aka add foo bar')
         self.assertResponse('show foo', 'bar $*')
@@ -211,7 +217,7 @@ class AkaTestCase(PluginTestCase):
         self.assertNotError('register evil_admin foo')
 
         self.assertNotError('aka add slashdot foo')
-        self.assertRegexp('help aka slashdot', "Alias for .*foo")
+        self.assertRegexp('help aka slashdot', "a global alias.*Alias for .*foo")
         self.assertNotRegexp('help aka slashdot', 'Locked by')
         self.assertNotError('aka lock slashdot')
         self.assertRegexp('help aka slashdot', 'Locked by evil_admin')
