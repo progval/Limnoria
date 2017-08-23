@@ -433,7 +433,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         Supported user and channel modes are cached"""
         # msg.args = [nick, server, ircd-version, umodes, modes,
         #             modes that require arguments? (non-standard)]
-        self.ircd = msg.args[2]
+        self.ircd = msg.args[2] if len(msg.args) >= 3 else msg.args[1]
         self.supported['umodes'] = frozenset(msg.args[3])
         self.supported['chanmodes'] = frozenset(msg.args[4])
 
