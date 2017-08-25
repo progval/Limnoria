@@ -293,6 +293,11 @@ repositories = utils.InsensitivePreservingDict({
                                                    'GLolol',
                                                    'SupyPlugins',
                                                    ),
+               'GLolol-py2legacy': GithubRepository(
+                                                   'GLolol',
+                                                   'SupyPlugins',
+                                                   branch='python2-legacy'
+                                                   ),
                'Iota':             GithubRepository(
                                                    'IotaSpencer',
                                                    'supyplugins',
