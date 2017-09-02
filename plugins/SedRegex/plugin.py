@@ -38,6 +38,7 @@ import supybot.ircdb as ircdb
 import supybot.utils as utils
 
 import re
+import sys
 
 try:
     from supybot.i18n import PluginInternationalization
@@ -45,11 +46,13 @@ try:
 except ImportError:
     _ = lambda x: x
 
-# Note: {0,3} is used for matching the flags instead of "*" to work around a Python bug in versions
-# lower than 2.7.6: see https://stackoverflow.com/questions/3675144/regex-error-nothing-to-repeat
-# and https://bugs.python.org/issue18647
+if sys.version_info[0] < 3:
+    raise ImportError('This plugin requires Python 3. For a legacy version of this plugin that still '
+                      'supports Python 2, consult the python2-legacy branch at '
+                      'https://github.com/GLolol/SupyPlugins/tree/python2-legacy')
+
 SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>.*?)(?P=delim)"
-                       r"(?P<replacement>.*?)(?P=delim)(?P<flags>[a-z]{0,3})$")
+                       r"(?P<replacement>.*?)(?P=delim)(?P<flags>[a-z]*)$")
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
