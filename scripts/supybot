@@ -117,7 +117,14 @@ def main():
                 for irc in world.ircs:
                     quitmsg = conf.supybot.plugins.Owner.quitMsg() or \
                               'Ctrl-C at console.'
-                    quitmsg = ircutils.standardSubstitute(irc, None, quitmsg)
+                    # Because we're quitting from the console, none of the
+                    # standard msg substitutions exist, and these will show as
+                    # raw strings by default. Substitute them here with
+                    # something meaningful instead.
+                    env = dict((key, '<console>')
+                               for key in ('who', 'nick', 'user', 'host'))
+                    quitmsg = ircutils.standardSubstitute(irc, None, quitmsg,
+                                                          env=env)
                     irc.queueMsg(ircmsgs.quit(quitmsg))
                     irc.die()
         except SystemExit as e:
