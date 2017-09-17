@@ -40,6 +40,7 @@ import struct
 import subprocess
 import shlex
 
+import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.utils.minisix as minisix
@@ -49,6 +50,11 @@ import supybot.registry as registry
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Unix')
+
+def checkAllowShell(irc):
+    if not conf.supybot.commands.allowShell():
+        irc.error(_('This command is not available, because '
+            'supybot.commands.allowShell is False.'), Raise=True)
 
 _progstats_endline_remover = utils.str.MultipleRemover('\r\n')
 def progstats():
@@ -401,6 +407,7 @@ class Unix(callbacks.Plugin):
         you don't run anything that will spamify your channel or that
         will bring your machine to its knees.
         """
+        checkAllowShell(irc)
         self.log.info('Unix: running command "%s" for %s/%s', text, msg.nick,
                       irc.network)
         args = shlex.split(text)
@@ -433,6 +440,7 @@ class Unix(callbacks.Plugin):
         you don't run anything that will spamify your channel or that
         will bring your machine to its knees.
         """
+        checkAllowShell(irc)
         self.log.info('Unix: running command "%s" for %s/%s', text, msg.nick,
                       irc.network)
         try:

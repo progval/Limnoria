@@ -172,6 +172,12 @@ if os.name == 'posix':
             self.assertRegexp('unix call /bin/ls /', 'boot, .*dev, ')
             self.assertError('unix call /usr/bin/nosuchcommandaoeuaoeu')
 
+        def testShellForbidden(self):
+            self.assertNotError('unix call /bin/ls /')
+            with conf.supybot.commands.allowShell.context(False):
+                self.assertRegexp('unix call /bin/ls /',
+                        'Error:.*not available.*supybot.commands.allowShell')
+
         def testUptime(self):
             self.assertNotError('unix sysuptime')
 

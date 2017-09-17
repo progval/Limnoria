@@ -66,6 +66,12 @@ def getTracer(fd):
             fd.write('%s: %s\n' % (code.co_filename, code.co_name))
     return tracer
 
+def checkAllowShell(irc):
+    if not conf.supybot.commands.allowShell():
+        irc.error('This command is not available, because '
+            'supybot.commands.allowShell is False.', Raise=True)
+
+
 class Debug(callbacks.Privmsg):
     """This plugin provides debugging abilities for Supybot. It
     should not be loaded with a default installation."""
@@ -94,6 +100,7 @@ class Debug(callbacks.Privmsg):
         returns its value.  If an exception is raised, reports the
         exception (and logs the traceback to the bot's logfile).
         """
+        checkAllowShell(irc)
         try:
             self._evalEnv.update(locals())
             x = eval(s, self._evalEnv, self._evalEnv)
@@ -110,6 +117,7 @@ class Debug(callbacks.Privmsg):
 
         Execs <code>.  Returns success if it didn't raise any exceptions.
         """
+        checkAllowShell(irc)
         exec(s)
         irc.replySuccess()
     _exec = wrap(_exec, ['text'])
@@ -119,6 +127,7 @@ class Debug(callbacks.Privmsg):
 
         Evaluates the given expression.
         """
+        checkAllowShell(irc)
         try:
             irc.reply(repr(eval(text)))
         except Exception as e:
@@ -130,6 +139,7 @@ class Debug(callbacks.Privmsg):
 
         Raises the exception matching <exception name>.
         """
+        checkAllowShell(irc) # Just to be safe, but probably not needed.
         if isinstance(__builtins__, dict):
             exn = __builtins__[name]
         else:
@@ -152,6 +162,7 @@ class Debug(callbacks.Privmsg):
         Starts tracing function calls to <filename>.  If <filename> is not
         given, sys.stdout is used.  This causes much output.
         """
+        checkAllowShell(irc)
         if filename:
             fd = open(filename, 'a')
         else:
@@ -165,6 +176,7 @@ class Debug(callbacks.Privmsg):
 
         Stops tracing function calls on stdout.
         """
+        checkAllowShell(irc)
         sys.settrace(None)
         irc.replySuccess()
     unsettrace = wrap(unsettrace)
@@ -195,6 +207,7 @@ class Debug(callbacks.Privmsg):
 
         Returns the environment of the supybot process.
         """
+        checkAllowShell(irc) # possibly some secret data in the env
         irc.reply(repr(os.environ))
     environ = wrap(environ)
 

@@ -71,6 +71,11 @@ class PluginDownloaderTestCase(PluginTestCase):
         self.assertError('plugindownloader install ProgVal Darcs')
         self._testPluginInstalled('AttackProtector')
 
+    def testShellForbidden(self):
+        with conf.supybot.commands.allowShell.context(False):
+            self.assertRegexp('plugindownloader install ProgVal Darcs',
+                    'Error:.*not available.*supybot.commands.allowShell')
+
     def testInstallQuantumlemur(self):
         self.assertError('plugindownloader install quantumlemur AttackProtector')
         self.assertNotError('plugindownloader install quantumlemur Listener')

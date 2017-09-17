@@ -33,4 +33,21 @@ class DebugTestCase(PluginTestCase):
     plugins = ('Debug',)
 
 
+    def testShellForbidden(self):
+        self.assertResponse('debug eval 1+2', '3')
+        self.assertResponse('debug simpleeval 1+2', '3')
+        self.assertResponse('debug exec irc.reply(1+2)', '3')
+        while self.irc.takeMsg():
+            pass
+        self.assertNotError('debug environ')
+        with conf.supybot.commands.allowShell.context(False):
+            self.assertRegexp('debug eval 1+2',
+                    'Error:.*not available.*supybot.commands.allowShell')
+            self.assertRegexp('debug simpleeval 1+2',
+                    'Error:.*not available.*supybot.commands.allowShell')
+            self.assertRegexp('debug exec irc.reply(1+2)',
+                    'Error:.*not available.*supybot.commands.allowShell')
+            self.assertRegexp('debug environ',
+                    'Error:.*not available.*supybot.commands.allowShell')
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

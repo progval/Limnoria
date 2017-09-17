@@ -80,5 +80,35 @@ class ConfigTestCase(ChannelPluginTestCase):
                           'True or False.*, not \'123\'.')
         self.assertRegexp('config supybot.replies foo', 'settable')
 
+    def testReadOnly(self):
+        old_plugins_dirs = conf.supybot.directories.plugins()
+        try:
+            self.assertResponse('config supybot.commands.allowShell', 'True')
+            self.assertNotError('config supybot.directories.plugins dir1')
+            self.assertNotError('config supybot.commands.allowShell True')
+            self.assertResponse('config supybot.commands.allowShell', 'True')
+            self.assertResponse('config supybot.directories.plugins', 'dir1')
+
+            self.assertNotError('config supybot.commands.allowShell False')
+            self.assertResponse('config supybot.commands.allowShell', 'False')
+
+            self.assertRegexp('config supybot.directories.plugins dir2',
+                    'Error.*not writeable')
+            self.assertResponse('config supybot.directories.plugins', 'dir1')
+            self.assertRegexp('config supybot.commands.allowShell True',
+                    'Error.*not writeable')
+            self.assertResponse('config supybot.commands.allowShell', 'False')
+
+            self.assertRegexp('config commands.allowShell True',
+                    'Error.*not writeable')
+            self.assertResponse('config supybot.commands.allowShell', 'False')
+
+            self.assertRegexp('config COMMANDS.ALLOWSHELL True',
+                    'Error.*not writeable')
+            self.assertResponse('config supybot.commands.allowShell', 'False')
+        finally:
+            conf.supybot.commands.allowShell.setValue(True)
+            conf.supybot.directories.plugins.setValue(old_plugins_dirs)
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

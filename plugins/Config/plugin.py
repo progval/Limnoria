@@ -76,6 +76,29 @@ def getCapability(name):
         ### Do more later, for specific capabilities/sections.
     return capability
 
+def isReadOnly(name):
+    """Prevents changing certain config variables to gain shell access via
+    a vulnerable IRC network."""
+    parts = registry.split(name.lower())
+    if parts[0] != 'supybot':
+        parts.insert(0, 'supybot')
+    if parts == ['supybot', 'commands', 'allowshell'] and \
+            not conf.supybot.commands.allowShell():
+        # allow setting supybot.commands.allowShell from True to False,
+        # but not from False to True.
+        # Otherwise an IRC network could overwrite it.
+        return True
+    elif parts[0:2] == ['supybot', 'directories'] and \
+            not conf.supybot.commands.allowShell():
+        # Setting plugins directory allows for arbitrary code execution if
+        # an attacker can both use the IRC network to MITM and upload files
+        # on the server (eg. with a web CMS).
+        # Setting other directories allows writing data at arbitrary
+        # locations.
+        return True
+    else:
+        return False
+
 def _reload():
     ircdb.users.reload()
     ircdb.ignores.reload()
@@ -189,6 +212,10 @@ class Config(callbacks.Plugin):
                       'available in this group.'))
 
     def _setValue(self, irc, msg, group, value):
+        if isReadOnly(group._name):
+            irc.error(_('This configuration variable is not writeable '
+                'via IRC. To change it you have to: 1) use @flush 2) edit '
+                'the config file 3) use @config reload.'), Raise=True)
         capability = getCapability(group._name)
         if ircdb.checkCapability(msg.prefix, capability):
             # I think callCommand catches exceptions here.  Should it?
@@ -294,6 +321,10 @@ class Config(callbacks.Plugin):
         command will export a "sanitized" configuration file suitable for
         showing publicly.
         """
+        if not conf.supybot.commands.allowShell():
+            # Disallow writing arbitrary files
+            irc.error('This command is not available, because '
+                'supybot.commands.allowShell is False.', Raise=True)
         registry.close(conf.supybot, filename, private=False)
         irc.replySuccess()
     export = wrap(export, [('checkCapability', 'owner'), 'filename'])
