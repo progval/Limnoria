@@ -57,19 +57,21 @@ class GitRepository(VersionnedRepository):
     pass
 
 class GithubRepository(GitRepository):
-    def __init__(self, username, reponame, path='/'):
+    def __init__(self, username, reponame, path='/', branch='master'):
         self._username = username
         self._reponame = reponame
+        self._branch = branch
         if not path.startswith('/'):
             path = '/' + path
         if not path.endswith('/'):
             path += '/'
         self._path = path
 
-        self._downloadUrl = 'https://github.com/%s/%s/tarball/master' % \
+        self._downloadUrl = 'https://github.com/%s/%s/tarball/%s' % \
                             (
                             self._username,
                             self._reponame,
+                            self._branch
                             )
 
 
@@ -81,14 +83,12 @@ class GithubRepository(GitRepository):
         return json.loads(utils.web.getUrl(url).decode('utf8'))
 
     def getPluginList(self):
-        plugins = self._query(
-                                  'repos',
-                                  '%s/%s/contents%s' % (
-                                                          self._username,
-                                                          self._reponame,
-                                                          self._path,
-                                                          )
-                                  )
+        plugins = self._query('repos',
+                              '%s/%s/contents%s' % (self._username,
+                                                    self._reponame,
+                                                    self._path),
+                              args={'ref': self._branch}
+                             )
         if plugins is None:
             log.error((
                       'Cannot get plugins list from repository %s/%s '
@@ -111,6 +111,7 @@ class GithubRepository(GitRepository):
             response.close()
         fileObject.seek(0)
         return tarfile.open(fileobj=fileObject, mode='r:gz')
+
     def install(self, plugin):
         archive = self._download(plugin)
         prefix = archive.getnames()[0]
@@ -292,6 +293,11 @@ repositories = utils.InsensitivePreservingDict({
                                                    'GLolol',
                                                    'SupyPlugins',
                                                    ),
+               'GLolol-py2legacy': GithubRepository(
+                                                   'GLolol',
+                                                   'SupyPlugins',
+                                                   branch='python2-legacy'
+                                                   ),
                'Iota':             GithubRepository(
                                                    'IotaSpencer',
                                                    'supyplugins',
@@ -318,7 +324,7 @@ repositories = utils.InsensitivePreservingDict({
 class PluginDownloader(callbacks.Plugin):
     """This plugin allows you to install unofficial plugins from
     multiple repositories easily. Use the "repolist" command to see list of
-    available repositories and "repolist <repository>" to list plugins, 
+    available repositories and "repolist <repository>" to list plugins,
     which are available in that repository. When you want to install plugin,
     just run command "install <repository> <plugin>"."""
 
