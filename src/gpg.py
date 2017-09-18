@@ -28,6 +28,9 @@
 ###
 
 import os
+import os.path
+import subprocess
+import sys
 
 import supybot.log as log
 import supybot.conf as conf
@@ -58,7 +61,73 @@ except OSError:
               'find the gnupg executable.')
 
 
-available = (gnupg is not None)
+
+# Check for different versions of GPG as the behaviour differs
+# slightly.  Use shutil.which in Python 3.3 and above, otherwise use
+# distutils.spawn.find_executable.  If the binary is installed
+# somewhereweird and not in the $PATH then a bot owner may need to
+# hard-code gpgbin to the full path to their GPG installation.  Tries
+# to use GPG 1.4 primarily, except on Windows because gpg4win is the
+# most popular version and it uses GPG 2.0.
+#
+# An alternative method would utilise os.path.walk to traverse the
+# entire directory structure to look for the GPG binary.  This,
+# however, would result in a significant delay in loading times
+# (depending on the size of the filesystem) and, ideally should be
+# avoided where possible.  It can be added later if there is demand.
+svi = sys.version_info
+
+if float("{0}.{1}".format(svi[0], svi[1])) >= 3.3:
+    import shutil
+    which = shutil.which
+else:
+    import distutils.spawn
+    which = distutils.spawn.find_executable
+
+if sys.platform == "win32":
+    gpg1bin = which("gpg.exe")
+    gpg2bin = which("gpg2.exe")
+else:
+    gpg1bin = which("gpg")
+    gpg2bin = which("gpg2")
+
+if os.path.exists(gpg1bin):
+    gpgbin = gpg1bin
+elif os.path.exists(gpg2bin):
+    gpgbin = gpg2bin
+else:
+    try:
+        if sys.platform == "win32":
+            gpgbin = "gpg2.exe"
+        else:
+            gpgbin = "gpg"
+    except:
+        gpgbin = None
+
+
+# It's not enough to just check for python-gnupg, it needs a backend:
+available = (gnupg is not None and gpgbin is not None)
+
+# Once the GPG binary has been located, check the version and set
+# relevant variables accordingly.
+gpgcheck0 = subprocess.Popen([gpgbin, "--version"],
+                             stdout=subprocess.PIPE).communicate()[0]
+gpgcheck = gpgcheck0.decode("utf-8").split()[2]
+
+if gpgcheck.startswith("1.4"):
+    pubring = "pubring.gpg"
+    secring = "secring.gpg"
+    agent = "False"
+elif gpgcheck.startswith("2.0"):
+    pubring = "pubring.gpg"
+    secring = "secring.gpg"
+    agent = "True"
+elif gpgcheck.startswith("2.1"):
+    pubbox = "pubring.kbx"
+    pubring = []
+    secring = []
+    agent = "True"
+
 
 def fallback(default_return=None):
     """Decorator.
@@ -74,6 +143,7 @@ def fallback(default_return=None):
         return newf
     return decorator
 
+
 @fallback()
 def loadKeyring():
     global keyring
@@ -82,7 +152,8 @@ def loadKeyring():
         log.info('Creating directory %s' % path)
         os.mkdir(path, 0o700)
     assert os.path.isdir(path)
-    keyring = gnupg.GPG(gnupghome=path)
+    keyring = gnupg.GPG(gnupghome=path, use_agent=agent, keyring=pubring,
+                        secret_keyring=secring, gpgbinary=gpgbin)
 loadKeyring()
 
 # Reload the keyring if path changed
