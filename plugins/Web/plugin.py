@@ -279,6 +279,8 @@ class Web(callbacks.PluginRegexp):
         try:
             try:
                 size = fd.headers['Content-Length']
+                if size is None:
+                    raise KeyError('content-length')
                 irc.reply(format(_('%u is %S long.'), url, int(size)))
             except KeyError:
                 size = conf.supybot.protocols.http.peekSize()
