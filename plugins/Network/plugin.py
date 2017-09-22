@@ -165,7 +165,24 @@ class Network(callbacks.Plugin):
         for ircd in ircs:
             self.Proxy(ircd, msg, commandAndArgs)
     cmdall = wrap(cmdall, ['admin', many('something')])
-    
+
+    def asrvchanscmd(self, irc, msg, args, commandAndArgs):
+        """<command> <args>...
+        Perform <command> (with associated <arg>s) on all networks and all channels."""
+        ircs = world.ircs
+        for ircd in ircs:
+            for channel in ircd.state.channels.keys():
+                self.Proxy(ircd, msg, commandAndArgs)
+    asrvchanscmd = wrap(asrvchanscmd, ['admin', many('something')])
+
+    def achanscmd(self, irc, msg, args, commandAndArgs):
+        """<command> <args>...
+        Perform <command> (with associated <arg>s on all channels on current network."""
+        ircd = world.getIrc(irc.network)
+        for channel in irc.state.channels.keys():
+            self.Proxy(ircd, msg, commandAndArgs)
+    achanscmd = wrap(achanscmd, ['admin', many('something')])
+
     ###
     # whois command-related stuff.
     ###
