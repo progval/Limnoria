@@ -301,7 +301,7 @@ class Unix(callbacks.Plugin):
                         args.append(str(val))
                 if '-c' not in args:
                     args.append('-c')
-                    args.append(self.registryValue('ping.defaultCount'))
+                    args.append(str(self.registryValue('ping.defaultCount')))
                 args.append(host)
                 try:
                     with open(os.devnull) as null:
