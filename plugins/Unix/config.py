@@ -108,6 +108,8 @@ conf.registerGroup(Unix, 'ping')
 conf.registerGlobalValue(Unix.ping, 'command', 
     registry.String(utils.findBinaryInPath('ping') or '', """Determines what 
     command will be called for the ping command."""))
+conf.registerGlobalValue(Unix.ping, 'defaultPingCount',
+    registry.Integer(5, """Determines what ping and ping6 counts(-c) will default to."""))
 
 conf.registerGroup(Unix, 'ping6')
 conf.registerGlobalValue(Unix.ping6, 'command', 
