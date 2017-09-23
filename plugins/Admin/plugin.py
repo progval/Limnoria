@@ -350,6 +350,16 @@ class Admin(callbacks.Plugin):
         irc.replySuccess()
     clearq = wrap(clearq)
 
+    def acmd(self, irc, msg, args, commandAndArgs):
+        """<command> [<arg> ...]
+
+        Perform <command> (with associated <arg>s on all channels on current network."""
+        for channel in irc.state.channels:
+            msg.args[0] = channel
+            self.Proxy(irc, msg, commandAndArgs)
+    acmd = wrap(acmd, ['admin', many('something')])
+
+
 
 
 Class = Admin
