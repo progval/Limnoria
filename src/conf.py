@@ -752,8 +752,8 @@ registerGlobalValue(supybot.commands.defaultPlugins, 'importantPlugins',
 # Make sure it is always blacklisted from the Config plugin.
 registerGlobalValue(supybot.commands, 'allowShell',
     registry.Boolean(True, _("""Allows this bot's owner user to use commands
-    that grants them shell access. This commands exists in case you want to
-    prevent MITM from the IRC network itself (vulnerable IRCd or IRCops)
+    that grants them shell access. This config variable exists in case you want
+    to prevent MITM from the IRC network itself (vulnerable IRCd or IRCops)
     from gaining shell access to the bot's server by impersonating the owner.
     Setting this to False also disables plugins and commands that can be
     used to indirectly gain shell access.""")))
