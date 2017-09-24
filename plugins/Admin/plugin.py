@@ -57,7 +57,7 @@ class Admin(callbacks.Plugin):
         """Nick/channel temporarily unavailable."""
         target = msg.args[0]
         t = time.time() + 30
-        if irc.isChannel(target): # We don't care about nicks.
+        if irc.isChannel(target):
             # Let's schedule a rejoin.
             networkGroup = conf.supybot.networks.get(irc.network)
             def rejoin():
