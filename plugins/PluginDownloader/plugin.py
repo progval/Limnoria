@@ -359,6 +359,9 @@ class PluginDownloader(callbacks.Plugin):
         """<repository> <plugin>
 
         Downloads and installs the <plugin> from the <repository>."""
+        if not conf.supybot.commands.allowShell():
+            irc.error(_('This command is not available, because '
+                'supybot.commands.allowShell is False.'), Raise=True)
         global repositories
         if repository not in repositories:
             irc.error(_(
