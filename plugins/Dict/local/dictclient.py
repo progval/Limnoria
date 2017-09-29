@@ -20,15 +20,10 @@ import socket, re
 
 version = '1.0'
 
-def dequote(str):
+def dequote(s):
     """Will remove single or double quotes from the start and end of a string
     and return the result."""
-    quotechars = "'\""
-    while len(str) and str[0] in quotechars:
-        str = str[1:]
-    while len(str) and str[-1] in quotechars:
-        str = str[0:-1]
-    return str
+    return s.strip("'\"")
 
 def enquote(str):
     """This function will put a string in double quotes, properly
