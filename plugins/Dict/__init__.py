@@ -47,11 +47,13 @@ __contributors__ = {}
 from . import config
 from . import plugin
 from imp import reload
+from .local import dictclient
 reload(plugin) # In case we're being reloaded.
+reload(dictclient)
 
 if world.testing:
     from . import test
-    
+
 Class = plugin.Class
 configure = config.configure
 
