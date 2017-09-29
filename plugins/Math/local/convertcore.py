@@ -45,8 +45,8 @@ unitData = \
 # followed by either equations or equivalency lists for the definition.
 # For equations, two are given, separated by a ';'.  Both are functions of
 # "x", the first going from the unit to the equivalent unit and the second
-# one in reverse.  Any valid Python expression returning a float (including 
-# the functions in the math module) should work.  The equivalency list is a 
+# one in reverse.  Any valid Python expression returning a float (including
+# the functions in the math module) should work.  The equivalency list is a
 # python list of tuples giving points for linear interpolation.
 #
 # All units must reduce to primitive units, which are indicated by an '!'
@@ -1059,12 +1059,7 @@ class UnitData(dict):
         "Read all unit data from file"
         types = []
         typeUnits = {}
-        try:
-            f = minisix.io.StringIO(unitData)
-            lines = f.readlines()
-            f.close()
-        except IOError:
-            raise UnitDataError('Can not read "units.dat" file')
+        lines = unitData.splitlines()
         for i in range(len(lines)):     # join continuation lines
             delta = 1
             while lines[i].rstrip().endswith('\\'):
@@ -1229,5 +1224,3 @@ def units(type):
         return '%s units: %s' % (type, ', '.join(unitsByType[type]))
     else:
         return 'valid types: ' + ', '.join(types)
-
-
