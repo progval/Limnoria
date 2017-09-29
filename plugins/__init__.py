@@ -406,6 +406,12 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             if opt == 'by':
                 predicates.append(lambda r, arg=arg: r.by == arg.id)
             elif opt == 'regexp':
+                if not ircdb.checkCapability(msg.prefix, 'trusted'):
+                    # Limited --regexp to trusted users, because specially
+                    # crafted regexps can freeze the bot. See
+                    # https://github.com/ProgVal/Limnoria/issues/855 for details
+                    irc.errorNoCapability('trusted')
+
                 predicates.append(lambda r: regexp_wrapper(r.text, reobj=arg,
                         timeout=0.1, plugin_name=self.name(), fcn_name='search'))
         if glob:
