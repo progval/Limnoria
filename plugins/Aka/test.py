@@ -66,10 +66,10 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertError('aka add unlock "echo foo bar baz"')
 
     def testAkaHelp(self):
-        self.assertNotError('aka add slashdot foo')
-        self.assertRegexp('help slashdot', "Alias for .*foo")
+        self.assertNotError(r'aka add slashdot "foo \"bar\" baz"')
+        self.assertRegexp('help slashdot', r'Alias for "foo \\"bar\\" baz".')
         self.assertNotError('aka add nonascii echo éé')
-        self.assertRegexp('help nonascii', "Alias for .*echo éé")
+        self.assertRegexp('help nonascii', r'Alias for "echo éé".')
 
         self.assertNotError('aka remove slashdot')
         self.assertNotError('aka add --channel %s slashdot foo' % self.channel)

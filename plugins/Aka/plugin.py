@@ -507,12 +507,15 @@ class Aka(callbacks.Plugin):
             lock = ' ' + _('Locked by %s at %s') % (locked_by, locked_at)
         else:
             lock = ''
+        escaped_command = original.replace('\\', '\\\\').replace('"', '\\"')
         if channel == 'global':
             doc = format(_('<a global alias,%s %n>\n\nAlias for %q.%s'),
-                        flexargs, (biggestDollar, _('argument')), original, lock)
+                        flexargs, (biggestDollar, _('argument')),
+                        escaped_command, lock)
         else:
             doc = format(_('<an alias on %s,%s %n>\n\nAlias for %q.%s'),
-                        channel, flexargs, (biggestDollar, _('argument')), original, lock)
+                        channel, flexargs, (biggestDollar, _('argument')),
+                        escaped_command, lock)
         f = utils.python.changeFunctionName(f, name, doc)
         return f
 
