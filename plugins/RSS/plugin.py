@@ -367,13 +367,12 @@ class RSS(callbacks.Plugin):
                 if feed.name not in self.registryValue('announce', channel):
                     continue
                 if initial:
-                    n = self.registryValue('initialAnnounceHeadlines', channel)
-                    if n:
-                        announced_entries = new_entries[0:n]
-                    else:
-                        announced_entries = []
+                    max_entries = \
+                            self.registryValue('initialAnnounceHeadlines', channel)
                 else:
-                    announced_entries = new_entries
+                    max_entries = \
+                            self.registryValue('maximumAnnounceHeadlines', channel)
+                announced_entries = new_entries[0:max_entries]
                 announced_entries = sort_feed_items(announced_entries, order)
                 for entry in announced_entries:
                     self.announce_entry(irc, channel, feed, entry)

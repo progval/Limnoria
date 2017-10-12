@@ -93,6 +93,9 @@ conf.registerGlobalValue(RSS, 'sortFeedItems',
 conf.registerChannelValue(RSS, 'notice',
     registry.Boolean(False, _("""Determines whether announces will be sent
     as notices instead of privmsgs.""")))
+conf.registerChannelValue(RSS, 'maximumAnnounceHeadlines',
+    registry.PositiveInteger(5, _("""Indicates how many new news entries may
+    be sent at the same time. Extra entries will be discarded.""")))
 
 ####################
 # Headlines filtering

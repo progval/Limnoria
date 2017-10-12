@@ -134,6 +134,30 @@ class RSSTestCase(ChannelPluginTestCase):
             self._feedMsg('rss remove xkcd')
             feedparser._open_resource = old_open
 
+    def testMaxAnnounces(self):
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_old)
+        try:
+            self.assertError('rss announce add xkcd')
+            self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+            self.assertNotError('rss announce add xkcd')
+            self.assertNotError(' ')
+            with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
+                with conf.supybot.plugins.RSS.waitPeriod.context(1):
+                    with conf.supybot.plugins.RSS.maximumAnnounceHeadlines.context(1):
+                        time.sleep(1.1)
+                        self.assertNoResponse(' ')
+                        self.assertNoResponse(' ')
+                        feedparser._open_resource = constant(xkcd_new)
+                        self.assertNoResponse(' ')
+                        time.sleep(1.1)
+                        self.assertRegexp(' ', 'Telescopes')
+                        self.assertNoResponse(' ')
+        finally:
+            self._feedMsg('rss announce remove xkcd')
+            self._feedMsg('rss remove xkcd')
+            feedparser._open_resource = old_open
+
     def testAnnounceAnonymous(self):
         old_open = feedparser._open_resource
         feedparser._open_resource = constant(xkcd_old)
