@@ -52,6 +52,11 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('RSS')
 
+if world.testing:
+    INIT_DELAY = 1
+else:
+    INIT_DELAY = 10
+
 if minisix.PY2:
     from urllib2 import ProxyHandler
 else:
@@ -101,7 +106,7 @@ class Feed:
         self.data = None
         # We don't want to fetch feeds right after the plugin is
         # loaded (the bot could be starting, and thus already busy)
-        self.last_update = time.time() if plugin_is_loading else 0
+        self.last_update = 0
         self.entries = []
         self.etag = None
         self.modified = None
@@ -172,6 +177,9 @@ class RSS(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(RSS, self)
         self.__parent.__init__(irc)
+
+        self._init_time = time.time() # To delay loading the feeds
+
         # Scheme: {name: url}
         self.feed_names = callbacks.CanonicalNameDict()
         # Scheme: {url: feed}
@@ -314,16 +322,9 @@ class RSS(callbacks.Plugin):
             (initial, feed.initial) = (feed.initial, False)
         self.announce_feed(feed, initial)
 
-    def update_feed_in_thread(self, feed):
-        feed.last_update = time.time()
-        t = world.SupyThread(target=self.update_feed,
-                             name=format('Fetching feed %u', feed.url),
-                             args=(feed,))
-        t.setDaemon(True)
-        t.start()
-
     def update_feed_if_needed(self, feed):
-        if self.is_expired(feed):
+        if self.is_expired(feed) and \
+                self._init_time + INIT_DELAY < time.time():
             self.update_feed(feed)
 
     @only_one_at_once
