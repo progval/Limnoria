@@ -1014,6 +1014,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
     def noReply(self, msg=None):
         if msg is None:
             msg = self.msg
+        super(NestedCommandsIrcProxy, self).noReply(msg=msg)
         if self.finalEvaled:
             self.irc.noReply(msg=msg)
         else:
