@@ -49,11 +49,8 @@ class Utilities(callbacks.Plugin):
         Does nothing.  Useful sometimes for sequencing commands when you don't
         care about their non-error return values.
         """
-        if irc.nested:
-            msg.tag('ignored')
-            # Need to call NestedCommandsIrcProxy.reply to continue evaluation
-            # of the remaining nested commands.
-            irc.reply('')
+        msg.tag('ignored')
+        irc.noReply()
     # Do be careful not to wrap this unless you do any('something').
 
     @internationalizeDocstring

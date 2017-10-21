@@ -206,6 +206,11 @@ class AkaChannelTestCase(ChannelPluginTestCase):
         self.assertResponse('a+ spam echo egg', 'The operation succeeded.')
         self.assertResponse('spam', 'egg')
 
+    def testIgnore(self):
+        self.assertResponse('aka add test ignore', 'The operation succeeded.')
+        self.assertNoResponse('test')
+
+
 class AkaTestCase(PluginTestCase):
     plugins = ('Aka', 'Alias', 'User', 'Utilities')
 

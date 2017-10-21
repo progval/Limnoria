@@ -498,7 +498,7 @@ class RichReplyMethods(object):
                     msg = self.reply(prefixer(s), **kwargs)
             return msg
 
-    def noReply(self):
+    def noReply(self, msg=None):
         self.repliedTo = True
 
     def _error(self, s, Raise=False, **kwargs):
@@ -1009,6 +1009,16 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 msg.tag('ignored', False)
             else:
                 self.args[self.counter] = s
+            self.evalArgs()
+
+    def noReply(self, msg=None):
+        if msg is None:
+            msg = self.msg
+        if self.finalEvaled:
+            self.irc.noReply(msg=msg)
+        else:
+            self.args.pop(self.counter)
+            msg.tag('ignored', False)
             self.evalArgs()
 
     def replies(self, L, prefixer=None, joiner=None,

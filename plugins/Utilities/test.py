@@ -37,6 +37,7 @@ class UtilitiesTestCase(PluginTestCase):
     def testIgnore(self):
         self.assertNoResponse('utilities ignore foo bar baz', 1)
         self.assertError('utilities ignore [re m/foo bar]')
+        self.assertResponse('echo [utilities ignore foobar] qux', 'qux')
 
     def testSuccess(self):
         self.assertNotError('success 1')
