@@ -241,7 +241,6 @@ class RSSTestCase(ChannelPluginTestCase):
                         self.assertNoResponse(' ')
                         self.assertNoResponse(' ')
                         self.assertNotError('rss announce add xkcd')
-                        self.assertNoResponse(' ')
                         time.sleep(1.1)
                         self.assertRegexp(' ', 'Chaos')
                         self.assertRegexp(' ', 'Telescopes')
