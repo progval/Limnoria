@@ -47,7 +47,7 @@ conf.registerGlobalValue(Owner, 'public',
     visible."""))
 conf.registerGlobalValue(Owner, 'announceFormat',
     registry.String('Announcement from my owner ($owner): $text',
-    """Determines the format of messages sent by the @announce command.
+    """Determines the format of messages sent by the 'announce' command.
     $owner may be used for the username of the owner calling this command,
     and $text for the announcement being made."""))
 conf.registerGlobalValue(Owner, 'quitMsg',

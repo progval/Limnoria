@@ -240,5 +240,5 @@ msgstr ""
 msgid "No quotegrabs matching %s"
 msgstr "Ei %s:ään täsmääviä lainauksia"
 
-#~ msgid "Add the help for \"@help QuoteGrabs\" here."
-#~ msgstr "Lisää ohje \"@help QuoteGrabs\"ille tähän."
+#~ msgid "Add the help for \"help QuoteGrabs\" here."
+#~ msgstr "Lisää ohje \"help QuoteGrabs\"ille tähän."

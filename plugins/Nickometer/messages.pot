@@ -17,7 +17,7 @@ msgstr ""
 
 #: plugin.py:81
 #, docstring
-msgid "Will tell you how lame a nick is by the command `@nickometer [nick]`."
+msgid "Will tell you how lame a nick is by the command `nickometer [nick]`."
 msgstr ""
 
 #: plugin.py:88

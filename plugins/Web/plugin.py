@@ -138,7 +138,7 @@ def catch_web_errors(f):
     return utils.python.changeFunctionName(newf, f.__name__, f.__doc__)
 
 class Web(callbacks.PluginRegexp):
-    """Add the help for "@help Web" here."""
+    """Add the help for 'help Web' here."""
     regexps = ['titleSnarfer']
     threaded = True
 

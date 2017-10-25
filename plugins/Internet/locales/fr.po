@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-SourceCharset: ASCII\n"
 
 #: plugin.py:43
-msgid "Add the help for \"@help Internet\" here."
+msgid "Add the help for \"help Internet\" here."
 msgstr ""
 
 #: plugin.py:47

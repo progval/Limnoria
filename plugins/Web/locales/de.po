@@ -37,8 +37,8 @@ msgid ""
 msgstr "Legt die maximal Anzahl an Bytes fest die der Bot über den 'fetch' Befehl herunterläd."
 
 #: plugin.py:71
-msgid "Add the help for \"@help Web\" here."
-msgstr "Füge die Hilfe für \"@help Web\" hier hinzu."
+msgid "Add the help for \"help Web\" here."
+msgstr "Füge die Hilfe für \"help Web\" hier hinzu."
 
 #: plugin.py:107
 msgid "Title: %s (at %s)"

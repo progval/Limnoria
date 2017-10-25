@@ -36,7 +36,7 @@ msgstr ""
 
 #: plugin.py:71
 #, docstring
-msgid "Add the help for \"@help Web\" here."
+msgid "Add the help for \"help Web\" here."
 msgstr ""
 
 #: plugin.py:107

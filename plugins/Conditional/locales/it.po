@@ -14,7 +14,7 @@ msgstr ""
 #: plugin.py:64
 #, docstring
 msgid ""
-"Add the help for \"@plugin help Conditional\" here\n"
+"Add the help for 'plugin help Conditional' here\n"
 "    This should describe *how* to use this plugin."
 msgstr ""
 

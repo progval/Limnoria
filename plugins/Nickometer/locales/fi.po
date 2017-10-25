@@ -18,10 +18,10 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 
 #: plugin.py:81
-msgid "Will tell you how lame a nick is by the command `@nickometer [nick]`."
+msgid "Will tell you how lame a nick is by the command 'nickometer [nick]'."
 msgstr ""
 "Kertoo kuinka laimea nimimerkki on komennolla\n"
-" `@nickometer [nimimerkki]."
+" 'nickometer [nimimerkki]'"
 
 #: plugin.py:88
 msgid ""

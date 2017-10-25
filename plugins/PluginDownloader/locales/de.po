@@ -13,7 +13,7 @@ msgstr ""
 
 #: plugin.py:219
 msgid ""
-"Add the help for \"@plugin help PluginDownloader\" here\n"
+"Add the help for 'plugin help PluginDownloader' here\n"
 "    This should describe *how* to use this plugin."
 msgstr ""
 

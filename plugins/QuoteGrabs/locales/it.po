@@ -55,7 +55,7 @@ msgstr "%s (Detto da: %s; pescato da %s il %t)"
 
 #: plugin.py:226
 #, docstring
-msgid "Add the help for \"@help QuoteGrabs\" here."
+msgid "Add the help for \"help QuoteGrabs\" here."
 msgstr ""
 
 #: plugin.py:265
