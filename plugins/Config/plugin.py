@@ -214,8 +214,8 @@ class Config(callbacks.Plugin):
     def _setValue(self, irc, msg, group, value):
         if isReadOnly(group._name):
             irc.error(_("This configuration variable is not writeable "
-                "via IRC. To change it you have to: 1) use 'flush' 2) edit "
-                "the config file 3) use 'config reload'."), Raise=True)
+                "via IRC. To change it you have to: 1) use the 'flush' command 2) edit "
+                "the config file 3) use the 'config reload' command."), Raise=True)
         capability = getCapability(group._name)
         if ircdb.checkCapability(msg.prefix, capability):
             # I think callCommand catches exceptions here.  Should it?
