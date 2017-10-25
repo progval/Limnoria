@@ -71,7 +71,7 @@ msgid "Display a nice error instead of \"An error has occurred\"."
 msgstr "."
 
 #: plugin.py:116
-msgid "Add the help for \"@help Web\" here."
+msgid "Add the help for \"help Web\" here."
 msgstr ""
 
 #: plugin.py:162

@@ -47,7 +47,7 @@ msgid "%s (Said by: %s; grabbed by %s at %t)"
 msgstr "%s (Dit par %s ; récupéré par %s à %t)"
 
 #: plugin.py:210
-msgid "Add the help for \"@help QuoteGrabs\" here."
+msgid "Add the help for \"help QuoteGrabs\" here."
 msgstr ""
 
 #: plugin.py:249

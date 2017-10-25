@@ -84,8 +84,8 @@ msgid "Display a nice error instead of \"An error has occurred\"."
 msgstr "Näytä kiva virheilmoitus ilmoitukset \"Virhe on tapahtunut\" sijaan."
 
 #: plugin.py:121
-msgid "Add the help for \"@help Web\" here."
-msgstr "Lisää ohje komennolle \"@help Web\" tähän."
+msgid "Add the help for \"help Web\" here."
+msgstr "Lisää ohje komennolle \"help Web\" tähän."
 
 #: plugin.py:166
 msgid "Title: %s (at %s)"

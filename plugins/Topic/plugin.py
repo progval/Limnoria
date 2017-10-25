@@ -577,7 +577,7 @@ class Topic(callbacks.Plugin):
     def save(self, irc, msg, args, channel):
         """[<channel>]
 
-        Saves the topic in <channel> to be restored with @topic default
+        Saves the topic in <channel> to be restored with 'topic default'
         later. <channel> is only necessary if the message isn't sent in
         the channel itself.
         """

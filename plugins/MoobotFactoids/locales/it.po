@@ -28,7 +28,7 @@ msgstr "Determina quanti elementi mostrare con il comando \"most\"."
 #: plugin.py:289
 #, docstring
 msgid ""
-"Add the help for \"@help MoobotFactoids\" here (assuming you don't implement a MoobotFactoids\n"
+"Add the help for \"help MoobotFactoids\" here (assuming you don't implement a MoobotFactoids\n"
 "    command).  This should describe *how* to use this plugin."
 msgstr ""
 

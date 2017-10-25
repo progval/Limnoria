@@ -99,5 +99,5 @@ msgstr ""
 "        Palauttaa IP:een heksadesimaalisen IP:een IP:lle.\n"
 "        "
 
-#~ msgid "Add the help for \"@help Internet\" here."
-#~ msgstr "Lisää ohje \"@help Internet:ille\" tähän."
+#~ msgid "Add the help for \"help Internet\" here."
+#~ msgstr "Lisää ohje \"help Internet:ille\" tähän."

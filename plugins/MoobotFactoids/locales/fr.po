@@ -31,7 +31,7 @@ msgstr ""
 
 #: plugin.py:288
 msgid ""
-"Add the help for \"@help MoobotFactoids\" here (assuming you don't implement "
+"Add the help for \"help MoobotFactoids\" here (assuming you don't implement "
 "a MoobotFactoids\n"
 "    command).  This should describe *how* to use this plugin."
 msgstr ""

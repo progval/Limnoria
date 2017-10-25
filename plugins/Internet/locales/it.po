@@ -12,7 +12,7 @@ msgstr ""
 
 #: plugin.py:42
 #, docstring
-msgid "Add the help for \"@help Internet\" here."
+msgid "Add the help for \"help Internet\" here."
 msgstr ""
 
 #: plugin.py:46
