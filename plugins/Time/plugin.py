@@ -30,14 +30,20 @@
 import time
 TIME = time # For later use.
 from datetime import datetime
-from .local.ddate import DDate as _ddate
+
 import supybot.conf as conf
+import supybot.log as log
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Time')
 
+try:
+    from ddate.base import DDate as _ddate
+except ImportError:
+    log.info("'ddate' not available, disabling command.")
+    _ddate = None
 
 try:
     from dateutil import parser
@@ -209,13 +215,16 @@ class Time(callbacks.Plugin):
     def ddate(self, irc, msg, args, year=None, month=None, day=None):
         """[<year> <month> <day>]
         Returns a the Discordian date today, or an optional different date."""
-        if year is not None and month is not None and day is not None:
-            try:
-                irc.reply(_ddate(datetime(year=year, month=month, day=day)))
-            except ValueError as e:
-                irc.error("{}".format(e))
+        if _ddate is not None:
+            if year is not None and month is not None and day is not None:
+                try:
+                    irc.reply(_ddate(datetime(year=year, month=month, day=day)))
+                except ValueError as e:
+                    irc.error("%s", e)
+            else:
+                irc.reply(_ddate())
         else:
-            irc.reply(_ddate())
+            irc.error("The 'ddate' module is not installed. Use 'pip install --user ddate' See <https://pypi.python.org/pypi/ddate/> for more information.")
     ddate = wrap(ddate, [optional('positiveint'), optional('positiveint'), optional('positiveint')])
 Class = Time
 
