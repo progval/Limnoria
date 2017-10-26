@@ -55,7 +55,15 @@ class FunctionsTest(SupyTestCase):
 
 class AkaChannelTestCase(ChannelPluginTestCase):
     plugins = ('Aka', 'Conditional', 'Filter', 'Math', 'Utilities',
-            'Format', 'Reply')
+            'Format', 'Reply', 'String')
+
+    def testHistsearch(self):
+        self.assertNotError(
+                r'aka add histsearch "last --from [cif true '
+                r'\"echo test\" \"echo test\"] '
+                r'--regexp [concat \"m/$1/\" [re s/g// \"@2\"]]"')
+        self.assertResponse('echo foo', 'foo')
+        self.assertResponse('histsearch .*', '@echo foo')
 
     def testDoesNotOverwriteCommands(self):
         # We don't have dispatcher commands anymore

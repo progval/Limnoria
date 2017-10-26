@@ -83,7 +83,6 @@ class Conditional(callbacks.Plugin):
             self._runCommandFunction(irc, msg, ifcommand)
         else:
             self._runCommandFunction(irc, msg, elsecommand)
-        irc.noReply()
     cif = wrap(cif, [boolean_or_int, 'something', 'something'])
 
     @internationalizeDocstring
