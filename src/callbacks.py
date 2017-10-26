@@ -1016,7 +1016,10 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             msg = self.msg
         super(NestedCommandsIrcProxy, self).noReply(msg=msg)
         if self.finalEvaled:
-            self.irc.noReply(msg=msg)
+            if isinstance(self.irc, NestedCommandsIrcProxy):
+                self.irc.noReply(msg=msg)
+            else:
+                msg.tag('ignored', True)
         else:
             self.args.pop(self.counter)
             msg.tag('ignored', False)
