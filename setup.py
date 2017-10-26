@@ -152,6 +152,7 @@ packages = ['supybot',
             [
              'supybot.plugins.Dict.local',
              'supybot.plugins.Math.local',
+             'supybot.plugins.Time.local',
             ]
 
 package_dir = {'supybot': 'src',
@@ -161,6 +162,7 @@ package_dir = {'supybot': 'src',
                'supybot.drivers': 'src/drivers',
                'supybot.plugins.Dict.local': 'plugins/Dict/local',
                'supybot.plugins.Math.local': 'plugins/Math/local',
+               'supybot.plugins.Time.local': 'plugins/Time/local',
               }
 
 package_data = {'supybot.locales': [s for s in os.listdir('locales/')]}

@@ -30,7 +30,7 @@
 import time
 TIME = time # For later use.
 from datetime import datetime
-
+from .local.ddate import DDate as _ddate
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
@@ -206,7 +206,17 @@ class Time(callbacks.Plugin):
         irc.reply(datetime.now(timezone).strftime(format))
     tztime = wrap(tztime, ['text'])
 
-
+    def ddate(self, irc, msg, args, year=None, month=None, day=None):
+        """[<year> <month> <day>]
+        Returns a the Discordian date today, or an optional different date."""
+        if year is not None and month is not None and day is not None:
+            try:
+                irc.reply(_ddate(datetime(year=year, month=month, day=day)))
+            except ValueError as e:
+                irc.error("{}".format(e))
+        else:
+            irc.reply(_ddate())
+    ddate = wrap(ddate, [optional('positiveint'), optional('positiveint'), optional('positiveint')])
 Class = Time
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
