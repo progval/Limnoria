@@ -44,6 +44,13 @@ else:
     has_dateutil = True
 
 try:
+    import ddate.base
+except ImportError:
+    has_ddate = False
+else:
+    has_ddate = True
+
+try:
     from unittest import skipIf
 except ImportError: # Python 2.6
     def skipIf(cond, reason):
@@ -92,6 +99,13 @@ class TimeTestCase(PluginTestCase):
     def testNoNestedErrors(self):
         self.assertNotError('echo [seconds 4m]')
 
+    @skipIf(not has_ddate, 'ddate is missing')
+    def testDDate(self):
+        self.assertNotError('ddate')
+        self.assertHelp('ddate 0 0 0') # because nonsense was put in
+        self.assertHelp('ddate -1 1 1') # because nonsense was put in
+        self.assertHelp('ddate -1 -1 -1') # because nonsense was put in
+        # plugin.py:223 would catch these otherwise
+        self.assertResponse('ddate 1 1 1', 'Sweetmorn, the 1st day of Chaos in the YOLD 1167') # make sure the laws of physics and time aren't out of wack
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
-

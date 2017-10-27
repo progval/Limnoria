@@ -27,17 +27,24 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
 import time
 TIME = time # For later use.
 from datetime import datetime
 
 import supybot.conf as conf
+import supybot.log as log
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Time')
 
+try:
+    from ddate.base import DDate as _ddate
+except ImportError:
+    log.info("'ddate' not available, disabling command.")
+    _ddate = None
 
 try:
     from dateutil import parser
@@ -206,7 +213,22 @@ class Time(callbacks.Plugin):
         irc.reply(datetime.now(timezone).strftime(format))
     tztime = wrap(tztime, ['text'])
 
-
+    def ddate(self, irc, msg, args, year=None, month=None, day=None):
+        """[<year> <month> <day>]
+        Returns a the Discordian date today, or an optional different date."""
+        if _ddate is not None:
+            if year is not None and month is not None and day is not None:
+                try:
+                    irc.reply(_ddate(datetime(year=year, month=month, day=day)))
+                except ValueError as e:
+                    irc.error("%s", e)
+            else:
+                irc.reply(_ddate())
+        else:
+            irc.error(_("The 'ddate' module is not installed."
+                        " Use '%s -m pip install --user ddate'"
+                        " See <https://pypi.python.org/pypi/ddate/> for more information.") % sys.executable)
+    ddate = wrap(ddate, [optional('positiveint'), optional('positiveint'), optional('positiveint')])
 Class = Time
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
