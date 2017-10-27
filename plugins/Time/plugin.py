@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
 import time
 TIME = time # For later use.
 from datetime import datetime
@@ -224,7 +225,9 @@ class Time(callbacks.Plugin):
             else:
                 irc.reply(_ddate())
         else:
-            irc.error("The 'ddate' module is not installed. Use 'pip install --user ddate' See <https://pypi.python.org/pypi/ddate/> for more information.")
+            irc.error(_("The 'ddate' module is not installed."
+                        " Use '%s -m pip install --user ddate'"
+                        " See <https://pypi.python.org/pypi/ddate/> for more information.") % sys.executable)
     ddate = wrap(ddate, [optional('positiveint'), optional('positiveint'), optional('positiveint')])
 Class = Time
 
