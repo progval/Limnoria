@@ -256,33 +256,6 @@ class ShrinkUrl(callbacks.PluginRegexp):
             irc.error(str(e))
     x0 = thread(wrap(x0, ['httpUrl']))
 
-    @retry
-    def _getExpandUrl(self, url):
-        url = utils.web.urlquote(url)
-        try:
-            return self.db.get('Expand', url)
-        except KeyError:
-            text = utils.web.getUrl('http://api.longurl.org/v2/expand?url=' + url)
-            text = text.decode()
-            text = text.split('<![CDATA[', 1)[1].split(']]>', 1)[0]
-            self.db.set('Expand', url, text)
-            return text
-
-    @internationalizeDocstring
-    def expand(self, irc, msg, args, url):
-        """<url>
-
-        Returns an expanded version of <url>.
-        """
-        try:
-            expandurl = self._getExpandUrl(url)
-            m = irc.reply(expandurl)
-            if m is not None:
-                m.tag('shrunken')
-        except ShrinkError as e:
-            irc.error(str(e))
-    expand = thread(wrap(expand, ['httpUrl']))
-
 Class = ShrinkUrl
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

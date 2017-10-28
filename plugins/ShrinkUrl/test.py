@@ -113,11 +113,4 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
                 shrink.minimumLength.setValue(origLen)
                 shrink.nonSnarfingRegexp.setValue(origRegexp)
 
-        def testExpand(self):
-            self.assertResponse('expand http://x0.no/0l2k', self.udUrl)
-            self.assertResponse('expand http://x0.no/0l2k', self.udUrl)
-            self.assertResponse('expand http://x0.no/a53s', self.sfUrl)
-            self.assertResponse('expand http://x0.no/a53s', self.sfUrl)
-            self.assertResponse('expand http://x0.no/0l2k', self.udUrl)
-
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
