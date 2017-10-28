@@ -514,12 +514,14 @@ class NetTest(SupyTestCase):
         isIP = utils.net.isIP
         self.failIf(isIP('a.b.c'))
         self.failIf(isIP('256.0.0.0'))
+        self.failIf(isIP('127.0.0.1 127.0.0.1'))
         self.failUnless(isIP('0.0.0.0'))
         self.failUnless(isIP('100.100.100.100'))
         self.failUnless(isIP('255.255.255.255'))
 
     def testIsIPV6(self):
         f = utils.net.isIPV6
+        self.failIf(f('2001:: 2001::'))
         self.failUnless(f('2001::'))
         self.failUnless(f('2001:888:0:1::666'))
 

@@ -434,9 +434,9 @@ def startServer():
     The callback should be an instance of a child of SupyHTTPServerCallback."""
     global http_servers
     addresses4 = [(4, (x, configGroup.port()))
-            for x in configGroup.hosts4().split(' ') if x != '']
+            for x in configGroup.hosts4() if x != '']
     addresses6 = [(6, (x, configGroup.port()))
-            for x in configGroup.hosts6().split(' ') if x != '']
+            for x in configGroup.hosts6() if x != '']
     http_servers = []
     for protocol, address in (addresses4 + addresses6):
         server = SupyHTTPServer(address, protocol, SupyHTTPRequestHandler)

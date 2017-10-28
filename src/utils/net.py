@@ -108,6 +108,9 @@ def isIPV4(s):
     >>> isIPV4('abc.abc.abc.abc')
     0
     """
+    if set(s) - set('0123456789.'):
+        # inet_aton ignores trailing data after the first valid IP address
+        return False
     try:
         return bool(socket.inet_aton(str(s)))
     except socket.error:
