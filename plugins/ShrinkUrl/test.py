@@ -41,8 +41,8 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
                       (udUrl, r'http://tinyurl.com/u479')],
              'ur1': [(sfUrl, r'http://ur1.ca/ceqh8'),
                      (udUrl, r'http://ur1.ca/9xl9k')],
-             'x0': [(sfUrl, r'http://x0.no/a53s'),
-                    (udUrl, r'http://x0.no/0l2k')]
+             'x0': [(sfUrl, r'https://x0.no/a53s'),
+                    (udUrl, r'https://x0.no/0l2k')]
             }
     if network:
         def testShrink(self):
