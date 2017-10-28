@@ -499,16 +499,21 @@ class Owner(callbacks.Plugin):
             return
         # Let's do this so even if the plugin isn't currently loaded, it doesn't
         # stay attempting to load.
-        conf.registerPlugin(name, False)
-        callbacks = irc.removeCallback(name)
-        if callbacks:
-            for callback in callbacks:
-                callback.die()
-                del callback
-            gc.collect()
-            irc.replySuccess()
-        else:
-            irc.error('There was no plugin %s.' % name)
+        old_callback = irc.getCallback(name)
+        if old_callback:
+            # Normalize the plugin case to prevent duplicate registration
+            # entries, https://github.com/ProgVal/Limnoria/issues/1295
+            name = old_callback.name()
+            conf.registerPlugin(name, False)
+            callbacks = irc.removeCallback(name)
+            if callbacks:
+                for callback in callbacks:
+                    callback.die()
+                    del callback
+                gc.collect()
+                irc.replySuccess()
+                return
+        irc.error('There was no plugin %s.' % name)
     unload = wrap(unload, ['something'])
 
     def defaultcapability(self, irc, msg, args, action, capability):
