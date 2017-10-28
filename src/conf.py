@@ -1241,7 +1241,7 @@ registerGroup(supybot.servers, 'http')
 class IP(registry.String):
     """Value must be a valid IP."""
     def setValue(self, v):
-        if v and not all(map(utils.net.isIP, v.split())):
+        if v and not utils.net.isIP(v):
             self.error()
         else:
             registry.String.setValue(self, v)
