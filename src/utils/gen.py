@@ -159,7 +159,7 @@ def saltHash(password, salt=None, hash='sha'):
     if salt is None:
         salt = mktemp()[:8]
     if hash == 'sha':
-        hasher = crypt.sha
+        hasher = crypt.sha1
     elif hash == 'md5':
         hasher = crypt.md5
     return '|'.join([salt, hasher((salt + password).encode('utf8')).hexdigest()])
