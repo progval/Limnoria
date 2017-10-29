@@ -225,9 +225,10 @@ class Time(callbacks.Plugin):
             else:
                 irc.reply(_ddate())
         else:
-            irc.error(_("The 'ddate' module is not installed."
-                        " Use '%s -m pip install --user ddate'"
-                        " See <https://pypi.python.org/pypi/ddate/> for more information.") % sys.executable)
+            irc.error(format(_("The 'ddate' module is not installed. Use "
+                               "'%s -m pip install --user ddate' or see "
+                               "%u for more information."), sys.executable,
+                               "https://pypi.python.org/pypi/ddate/"))
     ddate = wrap(ddate, [optional('positiveint'), optional('positiveint'), optional('positiveint')])
 Class = Time
 
