@@ -145,6 +145,12 @@ class StringTestCase(PluginTestCase):
         for s0, s1, s2, s3, s4, s5, s6, s7, s8, s9 in group(L, 10):
             data = '%s%s%s%s%s%s%s%s%s' % (s0, s1, s2, s3, s4, s5, s6, s7, s8)
             self.assertResponse('xor %s [xor %s %s]' % (s9, s9, data), data)
+    brown_fox_string = 'The quick brown fox jumped over the lazy dog'
+    def testHashes(self):
+        self.assertResponse('sha The quick brown fox jumped over the lazy dog', 'f6513640f3045e9768b239785625caa6a2588842')
+        self.assertResponse('sha256 The quick brown fox jumped over the lazy dog', '7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69')
+        self.assertResponse('sha512 The quick brown fox jumped over the lazy dog', 'db25330cfa5d14eaadf11a6263371cfa0e70fcd7a63a433b91f2300ca25d45b66a7b50d2f6747995c8fa0ff365b28974792e7acd5624e1ddd0d66731f346f0e7')
+        self.assertResponse('ripemd160 The quick brown fox jumped over the lazy dog', 'a2dab7a133ae3edbb34a604d859b7a5fc477f19c')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
