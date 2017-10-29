@@ -35,7 +35,7 @@ import random
 import shutil
 import os.path
 
-from . import crypt
+import hashlib
 
 def contents(filename):
     with open(filename) as fd:
@@ -85,7 +85,7 @@ def touch(filename):
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
     r = random.Random()
-    m = crypt.md5(suffix.encode('utf8'))
+    m = hashlib.md5(suffix.encode('utf8'))
     r.seed(time.time())
     s = str(r.getstate())
     period = random.random()
@@ -97,7 +97,7 @@ def mktemp(suffix=''):
         m.update(s)
         m.update(str(now))
         s = m.hexdigest()
-    return crypt.sha1((s + str(time.time())).encode('utf8')).hexdigest()+suffix
+    return hashlib.sha1((s + str(time.time())).encode('utf8')).hexdigest()+suffix
 
 def nonCommentLines(fd):
     for line in fd:
