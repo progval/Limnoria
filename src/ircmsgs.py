@@ -840,7 +840,7 @@ def mode(channel, args=(), prefix='', msg=None):
     return IrcMsg(prefix=prefix, command='MODE', args=(channel,)+args, msg=msg)
 
 def modes(channel, args=(), prefix='', msg=None):
-    """Returns a MODE message for the channel for all the (mode, targetOrNone) pairs in 'args'."""
+    """Returns a MODE message for the channel for all the (mode, targetOrNone) 2-tuples in 'args'."""
     if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
     modes = args
