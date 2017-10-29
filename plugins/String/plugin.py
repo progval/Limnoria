@@ -257,7 +257,7 @@ class String(callbacks.Plugin):
 
         Returns a SHA256 hash of the given string.
         """
-        irc.reply(utils.crypt.sha_256(text.encode('utf8')).hexdigest())
+        irc.reply(utils.crypt.sha256(text.encode('utf8')).hexdigest())
     sha256 = wrap(sha256, ['text'])
 
     @internationalizeDocstring
@@ -266,17 +266,31 @@ class String(callbacks.Plugin):
 
         Returns a SHA512 hash of the given string.
         """
-        irc.reply(utils.crypt.sha_512(text.encode('utf8')).hexdigest())
+        irc.reply(utils.crypt.sha512(text.encode('utf8')).hexdigest())
     sha512 = wrap(sha512, ['text'])
 
     @internationalizeDocstring
-    def ripemd160(self, irc, msg, args, text):
-        """<text>
+    def algorithms(self, irc, msg, args):
+        """<takes no arguments>
 
-        Returns a RIPEMD160 hash of the given string.
+        Returns the algorithms available on the system.
         """
-        irc.reply(utils.crypt.new('ripemd160', text.encode('utf8')).hexdigest())
-    ripemd160 = wrap(ripemd160, ['text'])
+        algos = list(utils.crypt.algorithms_available)
+        irc.reply("%s" % algos.join(', '))
+    algorithms = wrap(algorithms)
+
+    @internationalizeDocstring
+    def mkhash(self, irc, msg, args, algorithm, text):
+        """<algorithm> <text>
+
+        Returns a hash of TEXT after being run through ALGORITHM.
+        See the command 'algorithms' from this plugin for the algorithms available to your system."""
+        algos = list(utils.crypt.algorithms_available)
+        if algorithm not in algos:
+            irc.error('That algorithm is not available on your system.')
+        else:
+            irc.reply(utils.crypt.new("%s" % algorithm, b"%s" % text.encode('utf8')).hexdigest())
+    mkhash = wrap(mkhash, ['something', 'text'])
 
 Class = String
 
