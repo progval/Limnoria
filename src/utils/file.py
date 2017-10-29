@@ -97,7 +97,7 @@ def mktemp(suffix=''):
         m.update(s)
         m.update(str(now))
         s = m.hexdigest()
-    return crypt.sha((s + str(time.time())).encode('utf8')).hexdigest()+suffix
+    return crypt.sha1((s + str(time.time())).encode('utf8')).hexdigest()+suffix
 
 def nonCommentLines(fd):
     for line in fd:
