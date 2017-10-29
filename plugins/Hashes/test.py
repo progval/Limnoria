@@ -52,7 +52,28 @@ nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'dunker','pilotLight','brainless','LoganH_','jmpnz','steinn',
          'EliasREC','lowks__','OldSmrf','Mad77','snibril','delta','psy',
          'skimpIzu','Kengur','MoonFallen','kotkis','Hyperi']
-         
+
+def group(seq, groupSize, noneFill=True):
+    """Groups a given sequence into sublists of length groupSize."""
+    ret = []
+    L = []
+    i = groupSize
+    for elt in seq:
+        if i > 0:
+            L.append(elt)
+        else:
+            ret.append(L)
+            i = groupSize
+            L = []
+            L.append(elt)
+        i -= 1
+    if L:
+        if noneFill:
+            while len(L) < groupSize:
+                L.append(None)
+        ret.append(L)
+    return ret
+
 class HashesTestCase(PluginTestCase):
     plugins = ('Hashes')
 
