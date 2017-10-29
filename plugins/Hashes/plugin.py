@@ -31,6 +31,7 @@
 import hashlib
 
 import supybot.conf as conf
+import supybot.registry as registry
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
