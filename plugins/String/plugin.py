@@ -250,6 +250,33 @@ class String(callbacks.Plugin):
         irc.reply(utils.crypt.sha(text.encode('utf8')).hexdigest())
     sha = wrap(sha, ['text'])
 
+    @internationalizeDocstring
+    def sha256(self, irc, msg, args, text):
+        """<text>
+
+        Returns a SHA256 hash of the given string.
+        """
+        irc.reply(utils.crypt.sha_256(text.encode('utf8')).hexdigest())
+    sha256 = wrap(sha256, ['text'])
+
+    @internationalizeDocstring
+    def sha512(self, irc, msg, args, text):
+        """<text>
+
+        Returns a SHA512 hash of the given string.
+        """
+        irc.reply(utils.crypt.sha_512(text.encode('utf8')).hexdigest())
+    sha512 = wrap(sha512, ['text'])
+
+    @internationalizeDocstring
+    def ripemd160(self, irc, msg, args, text):
+        """<text>
+
+        Returns a RIPEMD160 hash of the given string.
+        """
+        irc.reply(utils.crypt.ripemd_160(text.encode('utf8')).hexdigest())
+    ripemd160 = wrap(ripemd160, ['text'])
+
 Class = String
 
 

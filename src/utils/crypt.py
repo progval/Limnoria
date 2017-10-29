@@ -29,5 +29,8 @@
 
 from hashlib import md5
 from hashlib import sha1 as sha
+from hashlib import sha256 as sha_256
+from hashlib import sha512 as sha_512
+from hashlib import ripemd160 as ripemd_160
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
