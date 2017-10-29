@@ -43,7 +43,7 @@ _ = PluginInternationalization('Time')
 try:
     from ddate.base import DDate as _ddate
 except ImportError:
-    log.info("'ddate' not available, disabling command.")
+    log.debug("Time: the ddate module is not available; disabling that command.")
     _ddate = None
 
 try:
