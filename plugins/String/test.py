@@ -145,7 +145,6 @@ class StringTestCase(PluginTestCase):
         for s0, s1, s2, s3, s4, s5, s6, s7, s8, s9 in group(L, 10):
             data = '%s%s%s%s%s%s%s%s%s' % (s0, s1, s2, s3, s4, s5, s6, s7, s8)
             self.assertResponse('xor %s [xor %s %s]' % (s9, s9, data), data)
-    brown_fox_string = 'The quick brown fox jumped over the lazy dog'
     def testHashes(self):
         self.assertResponse('sha The quick brown fox jumped over the lazy dog', 'f6513640f3045e9768b239785625caa6a2588842')
         self.assertResponse('sha256 The quick brown fox jumped over the lazy dog', '7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69')
