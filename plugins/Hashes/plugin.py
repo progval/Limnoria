@@ -111,8 +111,7 @@ class Hashes(callbacks.Plugin):
         """<takes no arguments>
 
         Returns the list of available algorithms."""
-        algos = list(hashlib.algorithms_available)
-        irc.reply("%s" % algos.join(', '))
+        irc.reply("%L" % hashlib.algorithms_available)
     algorithms = wrap(algorithms)
 
     @internationalizeDocstring
@@ -120,7 +119,7 @@ class Hashes(callbacks.Plugin):
         """<algorithm> <text>
 
         Returns TEXT after it has been hashed with ALGORITHM. See the 'algorithms' command in this plugin to return the algorithms available on this system."""
-        algos = list(hashlib.algorithms_available)
+        algos = hashlib.algorithms_available
         if algorithm not in algos:
             irc.error("Algorithm not available.")
         else:
