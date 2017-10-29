@@ -47,8 +47,8 @@ def registerDefaultPlugin(command, plugin):
     # This must be set, or the quotes won't be removed.
     conf.supybot.commands.defaultPlugins.get(command).set(plugin)
 
-registerDefaultPlugin('md5', 'String')
-registerDefaultPlugin('sha1', 'String')
+registerDefaultPlugin('md5', 'Hashes')
+registerDefaultPlugin('sha', 'Hashes')
 
 class Hashes(callbacks.Plugin):
     """Provides hash or encryption related commands"""
