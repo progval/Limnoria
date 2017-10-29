@@ -39,8 +39,7 @@ import functools
 import traceback
 import collections
 
-
-from . import crypt
+import hashlib
 from .str import format
 from .file import mktemp
 from . import minisix
@@ -159,9 +158,9 @@ def saltHash(password, salt=None, hash='sha'):
     if salt is None:
         salt = mktemp()[:8]
     if hash == 'sha':
-        hasher = crypt.sha
+        hasher = hashlib.sha1
     elif hash == 'md5':
-        hasher = crypt.md5
+        hasher = hashlib.md5
     return '|'.join([salt, hasher((salt + password).encode('utf8')).hexdigest()])
 
 _astStr2 = ast.Str if minisix.PY2 else ast.Bytes

@@ -42,7 +42,7 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {}
+__contributors__ = {supybot.Author('Ken Spencer', 'kspencer/IotaSpencer', 'ken@electrocode.net'): ['sha256', 'sha512', 'algorithms', 'mkhash']}
 
 from . import config
 from . import plugin

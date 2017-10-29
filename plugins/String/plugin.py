@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2003-2005, Jeremiah Fincher
 # Copyright (c) 2008-2009, James McCoy
+# Copyright (c) 2017, Ken Spencer
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -236,19 +237,60 @@ class String(callbacks.Plugin):
         http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more information
         about md5.
         """
-        irc.reply(utils.crypt.md5(text.encode('utf8')).hexdigest())
+        irc.reply(hashlib.md5(text.encode('utf8')).hexdigest())
     md5 = wrap(md5, ['text'])
 
     @internationalizeDocstring
-    def sha(self, irc, msg, args, text):
+    def sha1(self, irc, msg, args, text):
         """<text>
 
-        Returns the SHA hash of a given string.  Read
+        Returns the SHA1 hash of a given string.  Read
         http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information
         about SHA.
         """
-        irc.reply(utils.crypt.sha(text.encode('utf8')).hexdigest())
-    sha = wrap(sha, ['text'])
+        irc.reply(hashlib.sha1(text.encode('utf8')).hexdigest())
+    sha1 = wrap(sha1, ['text'])
+
+    @internationalizeDocstring
+    def sha256(self, irc, msg, args, text):
+        """<text>
+
+        Returns a SHA256 hash of the given string.
+        """
+        irc.reply(hashlib.sha256(text.encode('utf8')).hexdigest())
+    sha256 = wrap(sha256, ['text'])
+
+    @internationalizeDocstring
+    def sha512(self, irc, msg, args, text):
+        """<text>
+
+        Returns a SHA512 hash of the given string.
+        """
+        irc.reply(hashlib.sha512(text.encode('utf8')).hexdigest())
+    sha512 = wrap(sha512, ['text'])
+
+    @internationalizeDocstring
+    def algorithms(self, irc, msg, args):
+        """<takes no arguments>
+
+        Returns the algorithms available on the system.
+        """
+        algos = list(hashlib.algorithms_available)
+        irc.reply("%s" % algos.join(', '))
+    algorithms = wrap(algorithms)
+
+    @internationalizeDocstring
+    def mkhash(self, irc, msg, args, algorithm, text):
+        """<algorithm> <text>
+
+        Returns a hash of TEXT after being run through ALGORITHM.
+        See the command 'algorithms' from this plugin for the algorithms available to your system."""
+        algos = list(hashlib.algorithms_available)
+        if algorithm not in algos:
+            irc.error('That algorithm is not available on your system.')
+        else:
+            irc.reply(hashlib.new("%s" % algorithm, b"%s" % text.encode('utf8')).hexdigest())
+    mkhash = wrap(mkhash, ['something', 'text'])
 
 Class = String
 
