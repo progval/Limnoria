@@ -62,6 +62,6 @@ internationalization = builtins.get('supybotInternationalization', None)
 # These imports need to happen below the block above, so things get put into
 # __builtins__ appropriately.
 from .gen import *
-from . import crypt, error, file, iter, net, python, seq, str, transaction, web
+from . import error, file, iter, net, python, seq, str, transaction, web
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
