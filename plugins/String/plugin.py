@@ -275,7 +275,7 @@ class String(callbacks.Plugin):
 
         Returns a RIPEMD160 hash of the given string.
         """
-        irc.reply(utils.crypt.ripemd_160(text.encode('utf8')).hexdigest())
+        irc.reply(utils.crypt.new('ripemd160', text.encode('utf8')).hexdigest())
     ripemd160 = wrap(ripemd160, ['text'])
 
 Class = String
