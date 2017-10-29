@@ -1284,7 +1284,11 @@ registerGlobalValue(supybot, 'defaultIgnore',
 registerGlobalValue(supybot, 'externalIP',
    IP('', _("""A string that is the external IP of the bot.  If this is the
    empty string, the bot will attempt to find out its IP dynamically (though
-   sometimes that doesn't work, hence this variable).""")))
+   sometimes that doesn't work, hence this variable). This variable is not used
+   by Limnoria and its built-in plugins: see supybot.protocols.irc.vhost /
+   supybot.protocols.irc.vhost6 to set the IRC bind host, and
+   supybot.servers.http.hosts4 / supybot.servers.http.hosts6 to set the HTTP
+   server bind host.""")))
 
 class SocketTimeout(registry.PositiveInteger):
     """Value must be an integer greater than supybot.drivers.poll and must be
