@@ -241,15 +241,15 @@ class String(callbacks.Plugin):
     md5 = wrap(md5, ['text'])
 
     @internationalizeDocstring
-    def sha(self, irc, msg, args, text):
+    def sha1(self, irc, msg, args, text):
         """<text>
 
-        Returns the SHA hash of a given string.  Read
+        Returns the SHA1 hash of a given string.  Read
         http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information
         about SHA.
         """
-        irc.reply(utils.crypt.sha(text.encode('utf8')).hexdigest())
-    sha = wrap(sha, ['text'])
+        irc.reply(utils.crypt.sha1(text.encode('utf8')).hexdigest())
+    sha1 = wrap(sha1, ['text'])
 
     @internationalizeDocstring
     def sha256(self, irc, msg, args, text):
