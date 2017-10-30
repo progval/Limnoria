@@ -54,17 +54,6 @@ registerDefaultPlugin('sha', 'Hashes')
 
 class Hashes(callbacks.Plugin):
     """Provides hash or encryption related commands"""
-    def xor(self, irc, msg, args, password, text):
-        """<password> <text>
-
-        Returns <text> XOR-encrypted with <password>.  See
-        http://www.yoe.org/developer/xor.html for information about XOR
-        encryption.
-        """
-        chars = utils.iter.cycle(password)
-        ret = [chr(ord(c) ^ ord(next(chars))) for c in text]
-        irc.reply(''.join(ret))
-    xor = wrap(xor, ['something', 'text'])
 
     @internationalizeDocstring
     def md5(self, irc, msg, args, text):

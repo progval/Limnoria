@@ -33,62 +33,12 @@ import re
 from supybot.test import *
 import supybot.utils as utils
 
-nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
-         'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
-         'hellz_hunter','are_j|pub_comp','jason_','dreid','sayke_','winjer',
-         'TenOfTen','GoNoVas','queuetue','the|zzz','Hellfried','Therion',
-         'shro','DaCa','rexec','polin8','r0ky','aaron_','ironfroggy','eugene',
-         'faassen','tirloni','mackstann','Yhg1s','ElBarono','vegai','shang',
-         'typo_','kikoforgetme','asqui','TazyTiggy','fab','nixman','liiwi',
-         'AdamV','paolo','red_one','_AleX_','lament','jamessan','supybot',
-         'macr0_zzz','plaisthos','redghost','disco','mphardy','gt3','mathie',
-         'jonez','r0ky-office','tic','d33p','ES3merge','talin','af','flippo',
-         'sholden','ameoba','shepherg','j2','Acapnotic','dash','merlin262',
-         'Taaus','_moshez','rik','jafo__','blk-majik','JT__','itamar',
-         'kermit-','davidmccabe','glyph','jojo','dave_p','goo','hyjinx',
-         'SamB','exarkun','drewp','Ragica','skylan','redgore','k3','Ra1stlin',
-         'StevenK','carball','h3x','carljm','_jacob','teratorn','frangen',
-         'phed','datazone','Yaggo','acct_','nowhere','pyn','ThomasWaldmann',
-         'dunker','pilotLight','brainless','LoganH_','jmpnz','steinn',
-         'EliasREC','lowks__','OldSmrf','Mad77','snibril','delta','psy',
-         'skimpIzu','Kengur','MoonFallen','kotkis','Hyperi']
-
-def group(seq, groupSize, noneFill=True):
-    """Groups a given sequence into sublists of length groupSize."""
-    ret = []
-    L = []
-    i = groupSize
-    for elt in seq:
-        if i > 0:
-            L.append(elt)
-        else:
-            ret.append(L)
-            i = groupSize
-            L = []
-            L.append(elt)
-        i -= 1
-    if L:
-        if noneFill:
-            while len(L) < groupSize:
-                L.append(None)
-        ret.append(L)
-    return ret
+brown_fox = 'The quick brown fox jumped over the lazy dog'
 
 class HashesTestCase(PluginTestCase):
     plugins = ('Hashes')
 
-    def testXor(self):
-        # This no longer works correctly.  It almost seems like were throwing
-        # in a repr() somewhere.
-        L = [nick for nick in nicks if '|' not in nick and
-                                       '[' not in nick and
-                                       ']' not in nick]
-        for s0, s1, s2, s3, s4, s5, s6, s7, s8, s9 in group(L, 10):
-            data = '%s%s%s%s%s%s%s%s%s' % (s0, s1, s2, s3, s4, s5, s6, s7, s8)
-            self.assertResponse('xor %s [xor %s %s]' % (s9, s9, data), data)
-
     def testHashes(self):
-        brown_fox = 'The quick brown fox jumped over the lazy dog'
         self.assertResponse('md5 %s' % brown_fox, '08a008a01d498c404b0c30852b39d3b8')
         self.assertResponse('sha %s' % brown_fox, 'f6513640f3045e9768b239785625caa6a2588842')
         self.assertResponse('sha256 %s' % brown_fox, '7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69')
