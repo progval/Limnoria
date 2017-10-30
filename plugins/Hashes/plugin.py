@@ -41,17 +41,6 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Hashes')
 
-
-def registerDefaultPlugin(command, plugin):
-    command = callbacks.canonicalName(command)
-    conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                             command, registry.String(plugin, ''))
-    # This must be set, or the quotes won't be removed.
-    conf.supybot.commands.defaultPlugins.get(command).set(plugin)
-
-registerDefaultPlugin('md5', 'Hashes')
-registerDefaultPlugin('sha', 'Hashes')
-
 class Hashes(callbacks.Plugin):
     """Provides hash or encryption related commands"""
 
