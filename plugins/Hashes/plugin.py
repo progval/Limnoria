@@ -100,18 +100,28 @@ class Hashes(callbacks.Plugin):
         """<takes no arguments>
 
         Returns the list of available algorithms."""
-        irc.reply(utils.str.format("%L", hashlib.algorithms_available))
-    algorithms = wrap(algorithms)
+        try:
+            irc.reply(utils.str.format("%L", hashlib.algorithms_available))
+        except AttributeError:
+            pass # allow building but not using, usually python <2.7
+    if hasattr(hashlib, 'algorithms_available'):
+        algorithms = wrap(algorithms)
 
     @internationalizeDocstring
     def mkhash(self, irc, msg, args, algorithm, text):
         """<algorithm> <text>
 
         Returns TEXT after it has been hashed with ALGORITHM. See the 'algorithms' command in this plugin to return the algorithms available on this system."""
-        algos = hashlib.algorithms_available
+        algos = []
+        try:
+            algos = hashlib.algorithms_available
+        except:
+            pass # allow building but not using, usually python <2.7
         if algorithm not in algos:
             irc.error("Algorithm not available.")
         else:
             irc.reply(hashlib.new(algorithm, text.encode('utf8')).hexdigest())
-    mkhash = wrap(mkhash, ['something', 'text'])
+    if hasattr(hashlib, 'algorithms_available'):
+        mkhash = wrap(mkhash, ['something', 'text'])
+
 Class = Hashes
