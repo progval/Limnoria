@@ -112,6 +112,6 @@ class Hashes(callbacks.Plugin):
         if algorithm not in algos:
             irc.error("Algorithm not available.")
         else:
-            irc.reply(hashlib.new(algorithm, b"%s" % text.encode('utf8')).hexdigest())
+            irc.reply(hashlib.new(algorithm, text.encode('utf8')).hexdigest())
     mkhash = wrap(mkhash, ['something', 'text'])
 Class = Hashes
