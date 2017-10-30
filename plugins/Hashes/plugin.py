@@ -92,7 +92,7 @@ class Hashes(callbacks.Plugin):
 
         Returns a SHA512 hash of the given string.
         """
-        irc.reply(hashlib.sha256(text.encode('utf8')).hexdigest())
+        irc.reply(hashlib.sha512(text.encode('utf8')).hexdigest())
     sha512 = wrap(sha512, ['text'])
 
     @internationalizeDocstring
@@ -100,7 +100,7 @@ class Hashes(callbacks.Plugin):
         """<takes no arguments>
 
         Returns the list of available algorithms."""
-        irc.reply("%L" % hashlib.algorithms_available)
+        irc.reply(utils.str.format("%L", hashlib.algorithms_available))
     algorithms = wrap(algorithms)
 
     @internationalizeDocstring
