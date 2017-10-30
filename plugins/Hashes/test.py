@@ -36,7 +36,7 @@ import supybot.utils as utils
 brown_fox = 'The quick brown fox jumped over the lazy dog'
 
 class HashesTestCase(PluginTestCase):
-    plugins = ('Hashes')
+    plugins = ('Hashes',)
 
     def testHashes(self):
         self.assertResponse('md5 %s' % brown_fox, '08a008a01d498c404b0c30852b39d3b8')
