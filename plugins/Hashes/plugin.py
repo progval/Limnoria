@@ -84,10 +84,8 @@ class Hashes(callbacks.Plugin):
         """<takes no arguments>
 
         Returns the list of available algorithms."""
-        try:
-            irc.reply(utils.str.format("%L", hashlib.algorithms_available))
-        except AttributeError:
-            pass # allow building but not using, usually python <2.7
+        irc.reply(utils.str.format("%L", hashlib.algorithms_available))
+
     if hasattr(hashlib, 'algorithms_available'):
         algorithms = wrap(algorithms)
 
@@ -96,12 +94,7 @@ class Hashes(callbacks.Plugin):
         """<algorithm> <text>
 
         Returns TEXT after it has been hashed with ALGORITHM. See the 'algorithms' command in this plugin to return the algorithms available on this system."""
-        algos = []
-        try:
-            algos = hashlib.algorithms_available
-        except:
-            pass # allow building but not using, usually python <2.7
-        if algorithm not in algos:
+        if algorithm not in hashlib.algorithms_available:
             irc.error("Algorithm not available.")
         else:
             irc.reply(hashlib.new(algorithm, text.encode('utf8')).hexdigest())
