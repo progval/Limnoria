@@ -47,9 +47,7 @@ class Hashes(callbacks.Plugin):
     def md5(self, irc, msg, args, text):
         """<text>
 
-        Returns the md5 hash of a given string.  Read
-        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more information
-        about md5.
+        Returns the md5 hash of a given string.
         """
         irc.reply(hashlib.md5(text.encode('utf8')).hexdigest())
     md5 = wrap(md5, ['text'])
@@ -58,9 +56,7 @@ class Hashes(callbacks.Plugin):
     def sha(self, irc, msg, args, text):
         """<text>
 
-        Returns the SHA hash of a given string.  Read
-        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information
-        about SHA.
+        Returns the SHA1 hash of a given string.
         """
         irc.reply(hashlib.sha1(text.encode('utf8')).hexdigest())
     sha = wrap(sha, ['text'])
