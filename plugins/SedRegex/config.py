@@ -56,5 +56,13 @@ conf.registerChannelValue(SedRegex, 'enable',
 conf.registerChannelValue(SedRegex, 'ignoreRegex',
     registry.Boolean(True, _("""Should Perl/sed regex replacing
                      ignore messages which look like valid regex?""")))
+conf.registerGlobalValue(SedRegex, 'processTimeout',
+    registry.PositiveFloat(0.05, _("""Sets the timeout when processing a single
+                                   regexp. The default should be adequate unless
+                                   you have a busy or low-powered system that
+                                   cannot process regexps quickly enough. However,
+                                   you will not want to set this value too high
+                                   as that would make your bot vulnerable to ReDoS
+                                   attacks.""")))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

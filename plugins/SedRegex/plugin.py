@@ -153,7 +153,8 @@ class SedRegex(callbacks.PluginRegexp):
                 else:
                     messageprefix = '%s thinks %s' % (msg.nick, m.nick)
                 try:
-                    if regexp_wrapper(text, pattern, timeout=0.05, plugin_name=self.name(),
+                    regex_timeout = self.registryValue('processTimeout')
+                    if regexp_wrapper(text, pattern, timeout=regex_timeout, plugin_name=self.name(),
                                       fcn_name='replacer'):
                         if self.registryValue('boldReplacementText', msg.args[0]):
                             replacement = ircutils.bold(replacement)
