@@ -212,9 +212,23 @@ class RSSTestCase(ChannelPluginTestCase):
                 self.assertNotError(' ')
                 feedparser._open_resource = constant(xkcd_new)
                 self.assertNotError('reload RSS')
-                self.assertNoResponse(' ')
-                time.sleep(1.1)
                 self.assertRegexp(' ', 'Telescopes')
+        finally:
+            self._feedMsg('rss announce remove xkcd')
+            self._feedMsg('rss remove xkcd')
+            feedparser._open_resource = old_open
+
+    def testReloadNoDelay(self):
+        # https://github.com/ProgVal/Limnoria/issues/922
+        old_open = feedparser._open_resource
+        feedparser._open_resource = constant(xkcd_old)
+        time.sleep(1.1)
+        try:
+            with conf.supybot.plugins.RSS.waitPeriod.context(1):
+                self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+                self.assertRegexp('xkcd', 'Snake Facts')
+                self.assertNotError('reload RSS')
+                self.assertRegexp('xkcd', 'Snake Facts')
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')

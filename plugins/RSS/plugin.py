@@ -178,7 +178,10 @@ class RSS(callbacks.Plugin):
         self.__parent = super(RSS, self)
         self.__parent.__init__(irc)
 
-        self._init_time = time.time() # To delay loading the feeds
+        if world.starting:
+            self._init_time = time.time() # To delay loading the feeds
+        else:
+            self._init_time = 0
 
         # Scheme: {name: url}
         self.feed_names = callbacks.CanonicalNameDict()
