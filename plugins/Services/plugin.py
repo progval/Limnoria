@@ -345,7 +345,7 @@ class Services(callbacks.Plugin):
                              'NickServ %s.  Check email at %s and send the '
                              'auth command to NickServ.', on, email)
         else:
-            self.log.debug('Unexpected notice from NickServ %s: %q.', on, s)
+            self.log.info('Received notice from NickServ %s: %q.', on, s)
 
     def checkPrivileges(self, irc, channel):
         if self.disabled(irc):
