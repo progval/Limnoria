@@ -279,7 +279,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn.connect((address, port))
             if network_config.ssl():
                 self.starttls()
-            elif not network_config.requireStarttls():
+            elif (not network_config.requireStarttls()) and \
+                    'localhost' not in address.lower() and \
+                    not address.startswith('127.') and \
+                    address not in ('0::1', '::1'):
                 drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
                     'man-in-the-middle attacks and passive eavesdropping. '
