@@ -234,7 +234,13 @@ class RSS(callbacks.Plugin):
     def register_feed_config(self, name, url=''):
         self.registryValue('feeds').add(name)
         group = self.registryValue('feeds', value=False)
-        conf.registerGlobalValue(group, name, registry.String(url, ''))
+        conf.registerGlobalValue(group, name,
+                                 registry.String(url, """The URL for the feed
+                                                 %s. Note that because
+                                                 announced lines are cached,
+                                                 you may need to reload this
+                                                 plugin after changing this
+                                                 option.""" % name))
         feed_group = conf.registerGroup(group, name)
         conf.registerChannelValue(feed_group, 'format',
                 registry.String('', _("""Feed-specific format. Defaults to
