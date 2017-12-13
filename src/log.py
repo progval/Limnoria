@@ -194,7 +194,7 @@ except EnvironmentError as e:
     raise SystemExit('Error opening messages logfile (%s).  ' \
           'Generally, this is because you are running Supybot in a directory ' \
           'you don\'t have permissions to add files in, or you\'re running ' \
-          'Supybot as a different user than you normal do.  The original ' \
+          'Supybot as a different user than you normally do.  The original ' \
           'error was: %s' % (messagesLogFilename, utils.gen.exnToString(e)))
 
 # These are public.
