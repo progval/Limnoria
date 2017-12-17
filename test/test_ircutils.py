@@ -266,6 +266,13 @@ class FunctionsTestCase(SupyTestCase):
     def testNickFromHostmask(self):
         self.assertEqual(ircutils.nickFromHostmask('nick!user@host.domain.tld'),
                          'nick')
+        # Hostmasks with user prefixes are sent via userhost-in-names. We need to
+        # properly handle the case where ! is a prefix and not grab '' as the nick
+        # instead.
+        self.assertEqual(ircutils.nickFromHostmask('@nick!user@some.other.host'),
+                         '@nick')
+        self.assertEqual(ircutils.nickFromHostmask('!@nick!user@some.other.host'),
+                         '!@nick')
 
     def testToLower(self):
         self.assertEqual('jemfinch', ircutils.toLower('jemfinch'))

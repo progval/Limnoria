@@ -90,8 +90,8 @@ def splitHostmask(hostmask):
     """hostmask => (nick, user, host)
     Returns the nick, user, host of a user hostmask."""
     assert isUserHostmask(hostmask)
-    nick, rest = hostmask.split('!', 1)
-    user, host = rest.split('@', 1)
+    nick, rest = hostmask.rsplit('!', 1)
+    user, host = rest.rsplit('@', 1)
     return (minisix.intern(nick), minisix.intern(user), minisix.intern(host))
 
 def joinHostmask(nick, ident, host):
