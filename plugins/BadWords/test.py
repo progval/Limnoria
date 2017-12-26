@@ -27,11 +27,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import supybot.conf as conf
 from supybot.test import *
 
 class BadWordsTestCase(PluginTestCase):
-    plugins = ('BadWords', 'Utilities', 'Format')
-    badwords = ('shit', 'ass')
+    plugins = ('BadWords', 'Utilities', 'Format', 'Filter')
+    badwords = ('shit', 'ass', 'fuck')
     def tearDown(self):
         # .default() doesn't seem to be working for BadWords.words
         #default = conf.supybot.plugins.BadWords.words.default()
@@ -43,8 +44,15 @@ class BadWordsTestCase(PluginTestCase):
             self.assertRegexp('echo %s' % word, '(?!%s)' % word)
             self.assertRegexp('echo [colorize %s]' % word, '(?!%s)' % word)
             self.assertRegexp('echo foo%sbar' % word, '(?!%s)' % word)
+            self.assertRegexp('echo foo %s bar' % word, '(?!%s)' % word)
             self.assertRegexp('echo [format join "" %s]' % ' '.join(word),
                               '(?!%s)' % word)
+            with conf.supybot.plugins.BadWords.requireWordBoundaries \
+                    .context(True):
+                self.assertRegexp('echo foo%sbar' % word, word)
+                self.assertRegexp('echo foo %sbar' % word, word)
+                self.assertRegexp('echo foo%s bar' % word, word)
+                self.assertRegexp('echo foo %s bar' % word, '(?!%s)' % word)
 
     def _NegTest(self):
         for word in self.badwords:
