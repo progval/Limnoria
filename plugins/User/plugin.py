@@ -341,12 +341,9 @@ class User(callbacks.Plugin):
                 pass
             if not user.checkPassword(password) and \
                not user.checkHostmask(msg.prefix):
-                try:
+                if ircdb.checkCapability(msg.prefix, 'owner'):
                     u = ircdb.users.getUser(msg.prefix)
-                except KeyError:
-                    irc.error(conf.supybot.replies.incorrectAuthentication(),
-                              Raise=True)
-                if not u._checkCapability('owner'):
+                else:
                     irc.error(conf.supybot.replies.incorrectAuthentication(),
                               Raise=True)
             try:
@@ -382,8 +379,7 @@ class User(callbacks.Plugin):
                 hostmask = msg.prefix
             if not user.checkPassword(password) and \
                not user.checkHostmask(msg.prefix):
-                u = ircdb.users.getUser(msg.prefix)
-                if not u._checkCapability('owner'):
+                if not ircdb.checkCapability(msg.prefix, 'owner'):
                     irc.error(conf.supybot.replies.incorrectAuthentication())
                     return
             try:
