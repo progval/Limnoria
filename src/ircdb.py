@@ -775,7 +775,7 @@ class UsersDictionary(utils.IterableMap):
         self.nextId = max(self.nextId, user.id)
         try:
             if self.getUserId(user.name) != user.id:
-                raise DuplicateHostmask(user.name)
+                raise DuplicateHostmask(user.name, user.name)
         except KeyError:
             pass
         for hostmask in user.hostmasks:
@@ -788,10 +788,10 @@ class UsersDictionary(utils.IterableMap):
                     # raise an exception.  So instead, we'll raise an
                     # exception, but be nice and give the offending hostmask
                     # back at the same time.
-                    raise DuplicateHostmask(hostmask)
+                    raise DuplicateHostmask(u.name, hostmask)
                 for otherHostmask in u.hostmasks:
                     if ircutils.hostmaskPatternEqual(hostmask, otherHostmask):
-                        raise DuplicateHostmask(hostmask)
+                        raise DuplicateHostmask(u.name, hostmask)
         self.invalidateCache(user.id)
         self.users[user.id] = user
         if flush:

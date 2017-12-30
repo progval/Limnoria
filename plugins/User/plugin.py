@@ -321,6 +321,7 @@ class User(callbacks.Plugin):
             must be sent to the bot privately (not on a channel) since it may
             contain a password.
             """
+            caller_is_owner = ircdb.checkCapability(msg.prefix, 'owner')
             if not hostmask:
                 hostmask = msg.prefix
             if not ircutils.isUserHostmask(hostmask):
@@ -335,15 +336,17 @@ class User(callbacks.Plugin):
             try:
                 otherId = ircdb.users.getUserId(hostmask)
                 if otherId != user.id:
-                    irc.error(_('That hostmask is already registered.'),
-                              Raise=True)
+                    if caller_is_owner:
+                        err = _('That hostmask is already registered to %s.')
+                        err %= otherId
+                    else:
+                        err = _('That hostmask is already registered.')
+                    irc.error(err, Raise=True)
             except KeyError:
                 pass
             if not user.checkPassword(password) and \
-               not user.checkHostmask(msg.prefix):
-                if ircdb.checkCapability(msg.prefix, 'owner'):
-                    u = ircdb.users.getUser(msg.prefix)
-                else:
+               not user.checkHostmask(msg.prefix) and \
+               not caller_is_owner:
                     irc.error(conf.supybot.replies.incorrectAuthentication(),
                               Raise=True)
             try:
@@ -352,10 +355,14 @@ class User(callbacks.Plugin):
                 irc.error(str(e), Raise=True)
             try:
                 ircdb.users.setUser(user)
-            except ircdb.DuplicateHostmask:
+            except ircdb.DuplicateHostmask as e:
                 user.removeHostmask(hostmask)
-                irc.error(_('That hostmask is already registered.'),
-                          Raise=True)
+                if caller_is_owner:
+                    err = _('That hostmask is already registered to %s.') \
+                              % e.args[0]
+                else:
+                    err = _('That hostmask is already registered.')
+                irc.error(err, Raise=True)
             except ValueError as e:
                 irc.error(str(e), Raise=True)
             irc.replySuccess()
