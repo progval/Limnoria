@@ -1114,8 +1114,11 @@ def checkCapability(hostmask, capability, users=users, channels=channels,
         else:
             return False
     defaultCapabilities = conf.supybot.capabilities()
+    defaultCapabilitiesRegistered = conf.supybot.capabilities.registeredUsers()
     if capability in defaultCapabilities:
         return defaultCapabilities.check(capability)
+    elif capability in defaultCapabilitiesRegistered:
+        return defaultCapabilitiesRegistered.check(capability)
     elif ignoreDefaultAllow:
         return _x(capability, False)
     else:
@@ -1141,8 +1144,10 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
 # supybot.capabilities
 ###
 
-class DefaultCapabilities(registry.SpaceSeparatedListOfStrings):
+class SpaceSeparatedListOfCapabilities(registry.SpaceSeparatedListOfStrings):
     List = CapabilitySet
+
+class DefaultCapabilities(SpaceSeparatedListOfCapabilities):
     # We use a keyword argument trick here to prevent eval'ing of code that
     # changes allowDefaultOwner from affecting this.  It's not perfect, but
     # it's still an improvement, raising the bar for potential crackers.
@@ -1163,6 +1168,11 @@ conf.registerGlobalValue(conf.supybot, 'capabilities',
     to override these capabilities.  See docs/CAPABILITIES if you don't
     understand why these default to what they do."""))
 
+conf.registerGlobalValue(conf.supybot.capabilities, 'registeredUsers',
+    SpaceSeparatedListOfCapabilities([], """These are the
+    capabilities that are given to every authenticated by default.
+    You probably want to use supybot.capabilities instead, to give these
+    capabilities both to registered and non-registered users."""))
 conf.registerGlobalValue(conf.supybot.capabilities, 'default',
     registry.Boolean(True, """Determines whether the bot by default will allow
     users to have a capability.  If this is disabled, a user must explicitly
