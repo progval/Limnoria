@@ -1170,7 +1170,7 @@ conf.registerGlobalValue(conf.supybot, 'capabilities',
 
 conf.registerGlobalValue(conf.supybot.capabilities, 'registeredUsers',
     SpaceSeparatedListOfCapabilities([], """These are the
-    capabilities that are given to every authenticated by default.
+    capabilities that are given to every authenticated user by default.
     You probably want to use supybot.capabilities instead, to give these
     capabilities both to registered and non-registered users."""))
 conf.registerGlobalValue(conf.supybot.capabilities, 'default',
