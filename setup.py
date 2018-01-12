@@ -61,7 +61,7 @@ try:
         sdate = date.strip()
     idate = int(sdate)
     ldate = []
-    for i in time.strptime(time.asctime(time.gmtime(idate))))[:3]:
+    for i in time.strptime(time.asctime(time.gmtime(idate)))[:3]:
         ldate.append(str(i).zfill(2))
     version = ".".join(ldate)
 except:
