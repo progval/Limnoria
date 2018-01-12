@@ -31,6 +31,8 @@
 import re
 import base64
 import socket
+import os.path
+import sys
 
 sockerrors = (socket.error,)
 try:
@@ -40,6 +42,8 @@ except AttributeError:
 
 from .str import normalizeWhitespace
 from . import minisix
+
+svi = sys.version_info
 
 if minisix.PY2:
     import urllib
@@ -58,13 +62,11 @@ if minisix.PY2:
     from urllib2 import HTTPError, URLError
     from urllib import splithost, splituser
 else:
-    import ssl
     from http.client import InvalidURL
     from urllib.parse import urlsplit, urlunsplit, urlparse
     from html.entities import entitydefs, name2codepoint
     from html.parser import HTMLParser
     import urllib.request, urllib.parse, urllib.error
-    context = ssl._create_unverified_context()
     Request = urllib.request.Request
     urlquote = urllib.parse.quote
     urlquote_plus = urllib.parse.quote_plus
@@ -74,6 +76,18 @@ else:
         return urllib.parse.urlencode(*args, **kwargs)
     from urllib.error import HTTPError, URLError
     from urllib.parse import splithost, splituser
+
+if svi[0] == 2 and svi[1] == 7 and svi[2] >= 9:
+    import ssl
+    context = ssl._create_unverified_context()
+    ca_file = os.path.exists(ssl.get_default_verify_paths().openssl_cafile)
+elif svi[0] >= 3:
+    import ssl
+    context = ssl._create_unverified_context()
+    ca_file = os.path.exists(ssl.get_default_verify_paths().openssl_cafile)
+else:
+    context = None
+    ca_file = False
 
 class Error(Exception):
     pass
@@ -123,8 +137,8 @@ defaultHeaders = {
 # application-specific function.  Feel free to use a callable here.
 proxy = None
 
-def getUrlFd(url, headers=None, data=None, timeout=None):
-    """getUrlFd(url, headers=None, data=None, timeout=None)
+def getUrlFd(url, headers=None, data=None, timeout=None, noverify=None):
+    """getUrlFd(url, headers=None, data=None, timeout=None, noverify=None)
 
     Opens the given url and returns a file object.  Headers and data are
     a dict and string, respectively, as per urllib.request.Request's
@@ -133,6 +147,10 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
         headers = defaultHeaders
     if minisix.PY3 and isinstance(data, str):
         data = data.encode()
+    if noverify is not None:
+        nocert = True
+    else:
+        nocert = False
     try:
         if not isinstance(url, Request):
             (scheme, loc, path, query, frag) = urlsplit(url)
@@ -145,10 +163,19 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
         else:
             request = url
             request.add_data(data)
-        try:
-            fd = urlopen(request, timeout=timeout)
-        except:
+        if context is not None and ca_file is False and nocert is True:
             fd = urlopen(request, timeout=timeout, context=context)
+        elif context is not None and ca_file is False and nocert is False:
+            fd = urlopen(request, timeout=timeout, context=context)
+        elif context is not None and ca_file is True and nocert is True:
+            fd = urlopen(request, timeout=timeout, context=context)
+        elif context is not None and ca_file is True and nocert is False:
+            try:
+                fd = urlopen(request, timeout=timeout)
+            except:
+                fd = urlopen(request, timeout=timeout, context=context)
+        else:
+            fd = urlopen(request, timeout=timeout)
         return fd
     except socket.timeout as e:
         raise Error(TIMED_OUT)
@@ -164,14 +191,14 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
     except ValueError as e:
         raise Error(strError(e))
 
-def getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None):
-    """getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None)
+def getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None, noverify=None):
+    """getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None, noverify=None)
 
     Gets a page.  Returns two strings that are the page gotten and the
     target URL (ie. after redirections).  Size is an integer
     number of bytes to read from the URL.  Headers and data are dicts as per
     urllib.request.Request's arguments."""
-    fd = getUrlFd(url, headers=headers, data=data, timeout=timeout)
+    fd = getUrlFd(url, headers=headers, data=data, timeout=timeout, nocert=nocert)
     try:
         if size is None:
             text = fd.read()
@@ -184,7 +211,7 @@ def getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None
     return (target, text)
 
 def getUrlContent(*args, **kwargs):
-    """getUrlContent(url, size=None, headers=None, data=None, timeout=None)
+    """getUrlContent(url, size=None, headers=None, data=None, timeout=None, noverify=None)
 
     Gets a page.  Returns a string that is the page gotten.  Size is an integer
     number of bytes to read from the URL.  Headers and data are dicts as per
