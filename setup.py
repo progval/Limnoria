@@ -52,22 +52,18 @@ if path:
 VERSION_FILE = os.path.join('src', 'version.py')
 version = None
 try:
-    proc = subprocess.Popen('git show HEAD --format=%ci', shell=True,
+    proc = subprocess.Popen('git show HEAD --format=%ct', shell=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     date = proc.stdout.readline()
     if sys.version_info[0] >= 3:
-        date = date.decode()
-        date = time.strptime(date.strip(), '%Y-%m-%d %H:%M:%S %z')
-        utc_date = time.gmtime(time.mktime(date))
-        version = time.strftime('%Y.%m.%d', utc_date)
+        sdate = date.decode().strip()
     else:
-        (date, timezone) = date.strip().rsplit(' ', 1)
-        date = datetime.datetime.strptime(date.strip(), '%Y-%m-%d %H:%M:%S')
-        offset = time.strptime(timezone[1:], '%H%M')
-        offset = datetime.timedelta(hours=offset.tm_hour,
-                                    minutes=offset.tm_min)
-        utc_date = date - offset
-        version = utc_date.strftime('%Y.%m.%d')
+        sdate = date.strip()
+    idate = int(sdate)
+    ldate = []
+    for i in time.strptime(time.asctime(time.gmtime(idate)))[:3]:
+        ldate.append(str(i).zfill(2))
+    version = ".".join(ldate)
 except:
     if os.path.isfile(VERSION_FILE):
         from src.version import version
