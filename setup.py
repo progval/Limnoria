@@ -56,14 +56,9 @@ try:
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     date = proc.stdout.readline()
     if sys.version_info[0] >= 3:
-        sdate = date.decode().strip()
-    else:
-        sdate = date.strip()
-    idate = int(sdate)
-    ldate = []
-    for i in time.strptime(time.asctime(time.gmtime(idate)))[:3]:
-        ldate.append(str(i).zfill(2))
-    version = ".".join(ldate)
+        date = date.decode()
+    version = ".".join(str(i).zfill(2) for i in
+            time.strptime(time.asctime(time.gmtime(int(date.strip()))))[:3])
 except:
     if os.path.isfile(VERSION_FILE):
         from src.version import version
