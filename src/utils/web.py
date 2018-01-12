@@ -58,11 +58,13 @@ if minisix.PY2:
     from urllib2 import HTTPError, URLError
     from urllib import splithost, splituser
 else:
+    import ssl
     from http.client import InvalidURL
     from urllib.parse import urlsplit, urlunsplit, urlparse
     from html.entities import entitydefs, name2codepoint
     from html.parser import HTMLParser
     import urllib.request, urllib.parse, urllib.error
+    context = ssl._create_unverified_context()
     Request = urllib.request.Request
     urlquote = urllib.parse.quote
     urlquote_plus = urllib.parse.quote_plus
@@ -143,7 +145,10 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
         else:
             request = url
             request.add_data(data)
-        fd = urlopen(request, timeout=timeout)
+        try:
+            fd = urlopen(request, timeout=timeout)
+        except:
+            fd = urlopen(request, timeout=timeout, context=context)
         return fd
     except socket.timeout as e:
         raise Error(TIMED_OUT)
