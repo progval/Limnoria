@@ -149,6 +149,9 @@ def getUrlFd(url, headers=None, data=None, timeout=None, noverify=None):
         data = data.encode()
     if noverify is not None:
         nocert = True
+    # # Ideally we want to include something like this at some point:
+    # elif conf.supybot.protocols.ssl.verifyCertificates() is False:
+    #     nocert = True
     else:
         nocert = False
     try:
@@ -191,14 +194,14 @@ def getUrlFd(url, headers=None, data=None, timeout=None, noverify=None):
     except ValueError as e:
         raise Error(strError(e))
 
-def getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None, noverify=None):
-    """getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None, noverify=None)
+def getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None):
+    """getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None)
 
     Gets a page.  Returns two strings that are the page gotten and the
     target URL (ie. after redirections).  Size is an integer
     number of bytes to read from the URL.  Headers and data are dicts as per
     urllib.request.Request's arguments."""
-    fd = getUrlFd(url, headers=headers, data=data, timeout=timeout, nocert=nocert)
+    fd = getUrlFd(url, headers=headers, data=data, timeout=timeout)
     try:
         if size is None:
             text = fd.read()
