@@ -29,7 +29,7 @@ notifications:
 matrix:
   exclude:
     - python: "2.6"
-      env: WITH_OPT_DEPS=false
+      env: WITH_OPT_DEPS=true
     - python: "3.2"
       env: WITH_OPT_DEPS=false
     - python: "3.3"
