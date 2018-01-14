@@ -1191,6 +1191,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     self.network, e)
             self.tryNextSaslMechanism()
         else:
+            self.sendSaslString(b'')
             self.sasl_scram_state['step'] = 'authenticated'
 
     def do903(self, msg):
