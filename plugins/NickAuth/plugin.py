@@ -199,10 +199,11 @@ class NickAuth(callbacks.Plugin):
             self._auth(irc, msg.prefix, account)
 
     def do354(self, irc, msg):
-        if len(msg.args) != 6 or msg.args[1] != '1':
+        if len(msg.args) != 9 or msg.args[1] != '1':
             return
 
-        (__, ___, ident, host, nick, account) = msg.args
+        # irc.nick 1 user ip host nick status account gecos
+        (n, t, user, ip, host, nick, status, account, gecos) = msg.args
         prefix = '%s!%s@%s' % (nick, ident, host)
         user = ircdb.users.getUserFromNick(irc.network, account)
 
