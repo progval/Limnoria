@@ -346,9 +346,7 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         registry.String('', _("""A certificate that is trusted to verify
         certificates of this network (aka. Certificate Authority).""")))
     registerGlobalValue(network, 'requireStarttls', registry.Boolean(False,
-        _("""Determines whether the bot will connect in plain text to %s
-        but require STARTTLS before authentication. This is ignored if the
-        connection already uses SSL.""") % name))
+        _("""Deprecated config value, keep it to False.""")))
 
     registerGlobalValue(network, 'certfile', registry.String('',
         _("""Determines what certificate file (if any) the bot will use to

@@ -374,7 +374,6 @@ class IrcStateTestCase(SupyTestCase):
         st = irclib.IrcState()
         self.assert_(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
 
-
 class IrcTestCase(SupyTestCase):
     def setUp(self):
         self.irc = irclib.Irc('test')

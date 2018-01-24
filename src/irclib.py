@@ -990,6 +990,14 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.capNegociationEnded = False
         self.requireStarttls = not network_config.ssl() and \
                 network_config.requireStarttls()
+        if self.requireStarttls:
+            log.error(('STARTTLS is no longer supported. Set '
+                'supybot.networks.%s.requireStarttls to False '
+                'to disable it, and use supybot.networks.%s.ssl '
+                'instead.') % (self.network, self.network))
+            self.driver.die()
+            self._reallyDie()
+            return
         self.resetSasl()
 
     def resetSasl(self):
@@ -1036,22 +1044,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
         self.sendMsg(ircmsgs.IrcMsg(command='CAP', args=('LS', '302')))
 
-        if self.requireStarttls:
-            self.sendMsg(ircmsgs.IrcMsg(command='STARTTLS'))
-        else:
-            self.sendAuthenticationMessages()
-
-    def do670(self, irc, msg):
-        """STARTTLS accepted."""
-        log.info('%s: Starting TLS session.', self.network)
-        self.requireStarttls = False
-        self.driver.starttls()
         self.sendAuthenticationMessages()
-    def do691(self, irc, msg):
-        """STARTTLS refused."""
-        log.error('%s: Server refused STARTTLS: %s', self.network, msg.args[0])
-        self.feedMsg(ircmsgs.error('STARTTLS upgrade refused by the server'))
-        self.driver.reconnect()
 
     def sendAuthenticationMessages(self):
         # Notes:
@@ -1282,13 +1275,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 s = self.state.capabilities_ls['sasl']
                 if s is not None:
                     self.filterSaslMechanisms(set(s.split(',')))
-            if 'starttls' not in self.state.capabilities_ls and \
-                    self.requireStarttls:
-                log.error('%s: Server does not support STARTTLS.', self.network)
-                self.feedMsg(ircmsgs.error('STARTTLS upgrade not supported '
-                    'by the server'))
-                self.die()
-                return
             # NOTE: Capabilities are requested in alphabetic order, because
             # sets are unordered, and their "order" is nondeterministic.
             # This is needed for the tests.
