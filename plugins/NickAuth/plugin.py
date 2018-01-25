@@ -203,7 +203,7 @@ class NickAuth(callbacks.Plugin):
             return
 
         # irc.nick 1 user ip host nick status account gecos
-        (n, t, user, ip, host, nick, status, account, gecos) = msg.args
+        (n, t, ident, ip, host, nick, status, account, gecos) = msg.args
         prefix = '%s!%s@%s' % (nick, ident, host)
         user = ircdb.users.getUserFromNick(irc.network, account)
 
