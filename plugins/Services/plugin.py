@@ -405,7 +405,7 @@ class Services(callbacks.Plugin):
         chanserv = self.registryValue('ChanServ')
         if chanserv:
             msg = ircmsgs.privmsg(chanserv,
-                                  ' '.join([command, channel, irc.nick]))
+                                  ' '.join([command, channel]))
             irc.sendMsg(msg)
         else:
             if log:
