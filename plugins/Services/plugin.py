@@ -239,7 +239,7 @@ class Services(callbacks.Plugin):
             elif chanserv and ircutils.strEqual(msg.nick, chanserv):
                 self.doChanservNotice(irc, msg)
 
-    _chanRe = re.compile('\x02(.*?)\x02')
+    _chanRe = re.compile('\x02(#.*?)\x02')
     def doChanservNotice(self, irc, msg):
         if self.disabled(irc):
             return
@@ -250,9 +250,13 @@ class Services(callbacks.Plugin):
         on = 'on %s' % irc.network
         if m is not None:
             channel = m.group(1)
-        if 'all bans' in s or 'unbanned from' in s:
-            # All bans removed (freenode)
-            # You have been unbanned from (oftc)
+        if 'all bans' in s or 'unbanned from' in s or \
+                ('unbanned %s' % irc.nick.lower()) in \
+                ircutils.stripFormatting(s):
+            # All bans removed (old freenode?)
+            # You have been unbanned from (oftc, anope)
+            # "Unbanned \x02someuser\x02 from \x02#channel\x02 (\x02N\x02
+            # ban(s) removed)" (atheme 7.x)
             irc.sendMsg(networkGroup.channels.join(channel))
         elif 'isn\'t registered' in s:
             self.log.warning('Received "%s isn\'t registered" from ChanServ %s',
