@@ -185,11 +185,12 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(''.join(r), s)
 
         if sys.version_info[0] < 3:
-            chr = unichr
+            uchr = unichr
             u = lambda s: s.decode('utf8')
         else:
+            uchr = chr
             u = lambda x: x
-        s = (u('').join([chr(0x1f527), chr(0x1f527), chr(0x1f527), u(' ')]) * 100)\
+        s = (u('').join([uchr(0x1f527), uchr(0x1f527), uchr(0x1f527), u(' ')]) * 100)\
                 [0:-1]
 
         r = ircutils.wrap(s, 20)
