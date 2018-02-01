@@ -184,7 +184,12 @@ class FunctionsTestCase(SupyTestCase):
         self.assertTrue(max(map(pred, r)) <= 100)
         self.assertEqual(''.join(r), s)
 
-        s = (''.join([chr(0x1f527), chr(0x1f527), chr(0x1f527), ' ']) * 100)\
+        if sys.version_info[0] < 3:
+            chr = unichr
+            u = lambda s: s.decode('utf8')
+        else:
+            u = lambda x: x
+        s = (u('').join([chr(0x1f527), chr(0x1f527), chr(0x1f527), u(' ')]) * 100)\
                 [0:-1]
 
         r = ircutils.wrap(s, 20)

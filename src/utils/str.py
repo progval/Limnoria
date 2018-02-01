@@ -309,7 +309,10 @@ def perlVariableSubstitute(vars, text):
 def byteTextWrap(text, size, break_on_hyphens=False, break_long_words=True):
     """Similar to textwrap.wrap(), but considers the size of strings (in bytes)
     instead of their length (in characters)."""
-    words = textwrap.TextWrapper()._split_chunks(text)
+    try:
+        words = textwrap.TextWrapper()._split_chunks(text)
+    except AttributeError: # Python 2
+        words = textwrap.TextWrapper()._split(text)
     words.reverse() # use it as a stack
     if sys.version_info[0] >= 3:
         words = [w.encode() for w in words]
