@@ -598,10 +598,7 @@ class FormatParser(object):
 
 def wrap(s, length, break_on_hyphens = False, break_long_words = False):
     processed = []
-    wrapper = textwrap.TextWrapper(width=length)
-    wrapper.break_long_words = break_long_words
-    wrapper.break_on_hyphens = break_on_hyphens
-    chunks = wrapper.wrap(s)
+    chunks = utils.str.byteTextWrap(s, length)
     context = None
     for chunk in chunks:
         if context is not None:

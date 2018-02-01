@@ -168,6 +168,34 @@ class FunctionsTestCase(SupyTestCase):
         s = ircutils.mircColor('[', 'blue') + ircutils.bold('09:21')
         self.assertEqual(ircutils.stripFormatting(s), '[09:21')
 
+    def testWrap(self):
+        if sys.version_info[0] < 3:
+            pred = len
+        else:
+            pred = lambda s:len(s.encode())
+
+        s = ('foo bar baz qux ' * 100)[0:-1]
+
+        r = ircutils.wrap(s, 10)
+        self.assertTrue(max(map(pred, r)) <= 10)
+        self.assertEqual(''.join(r), s)
+
+        r = ircutils.wrap(s, 100)
+        self.assertTrue(max(map(pred, r)) <= 100)
+        self.assertEqual(''.join(r), s)
+
+        s = (''.join([chr(0x1f527), chr(0x1f527), chr(0x1f527), ' ']) * 100)\
+                [0:-1]
+
+        r = ircutils.wrap(s, 20)
+        self.assertTrue(max(map(pred, r)) <= 20, (max(map(pred, r)), repr(r)))
+        self.assertEqual(''.join(r), s)
+
+        r = ircutils.wrap(s, 100)
+        self.assertTrue(max(map(pred, r)) <= 100)
+        self.assertEqual(''.join(r), s)
+
+
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'
         bolds = ircutils.bold(s)

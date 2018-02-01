@@ -34,6 +34,7 @@ Simple utility functions related to strings.
 """
 
 import re
+import sys
 import time
 import string
 import textwrap
@@ -304,6 +305,25 @@ def perlVariableSubstitute(vars, text):
             else:
                 return '$' + unbraced
     return _perlVarSubstituteRe.sub(replacer, text)
+
+def byteTextWrap(text, size):
+    """Similar to textwrap.wrap(), but considers the size of strings (in bytes)
+    instead of their length (in characters)."""
+    words = textwrap.TextWrapper()._split_chunks(text)
+    words.reverse() # use it as a stack
+    if sys.version_info[0] >= 3:
+        words = [w.encode() for w in words]
+    lines = [b'']
+    while words:
+        word = words.pop(-1)
+        if len(lines[-1]) + len(word) <= size:
+            lines[-1] += word
+        else:
+            lines.append(word)
+    if sys.version_info[0] >= 3:
+        return [l.decode() for l in lines]
+    else:
+        return lines
 
 def commaAndify(seq, comma=',', And=None):
     """Given a a sequence, returns an English clause for that sequence.
