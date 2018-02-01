@@ -36,7 +36,7 @@ class GamesTestCase(ChannelPluginTestCase):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
         sawKick = False
         for i in range(100):
-            m = self.getMsg('roulette', frm='someoneElse')
+            m = self.getMsg('roulette', frm='someoneElse!foo@bar')
             if m.command == 'PRIVMSG':
                 self.failUnless(self._nonKickRe.search(m.args[1]),
                                 'Got a msg without bang|click|spin: %r' % m)

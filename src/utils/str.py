@@ -306,7 +306,7 @@ def perlVariableSubstitute(vars, text):
                 return '$' + unbraced
     return _perlVarSubstituteRe.sub(replacer, text)
 
-def byteTextWrap(text, size):
+def byteTextWrap(text, size, break_on_hyphens=False, break_long_words=True):
     """Similar to textwrap.wrap(), but considers the size of strings (in bytes)
     instead of their length (in characters)."""
     words = textwrap.TextWrapper()._split_chunks(text)
@@ -316,6 +316,9 @@ def byteTextWrap(text, size):
     lines = [b'']
     while words:
         word = words.pop(-1)
+        if len(word) > size:
+            words.append(word[size:])
+            word = word[0:size]
         if len(lines[-1]) + len(word) <= size:
             lines[-1] += word
         else:

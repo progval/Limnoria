@@ -195,6 +195,26 @@ class FunctionsTestCase(SupyTestCase):
         self.assertTrue(max(map(pred, r)) <= 100)
         self.assertEqual(''.join(r), s)
 
+        s = ('foobarbazqux ' * 100)[0:-1]
+
+        r = ircutils.wrap(s, 10)
+        self.assertTrue(max(map(pred, r)) <= 10)
+        self.assertEqual(''.join(r), s)
+
+        r = ircutils.wrap(s, 100)
+        self.assertTrue(max(map(pred, r)) <= 100)
+        self.assertEqual(''.join(r), s)
+
+        s = ('foobarbazqux' * 100)[0:-1]
+
+        r = ircutils.wrap(s, 10)
+        self.assertTrue(max(map(pred, r)) <= 10)
+        self.assertEqual(''.join(r), s)
+
+        r = ircutils.wrap(s, 100)
+        self.assertTrue(max(map(pred, r)) <= 100)
+        self.assertEqual(''.join(r), s)
+
 
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'

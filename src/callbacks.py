@@ -926,7 +926,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                     maximumLength, len(s))
                         s = s[:maximumLength]
                     s_size = len(s.encode()) if minisix.PY3 else len(s)
-                    if s_size > allowedLength or \
+                    if s_size <= allowedLength or \
                        not conf.get(conf.supybot.reply.mores, target):
                         # In case we're truncating, we add 20 to allowedLength,
                         # because our allowedLength is shortened for the
