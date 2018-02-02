@@ -383,36 +383,28 @@ def formatCommand(command):
     return ' '.join(command)
 
 def checkCommandCapability(msg, cb, commandName):
-    if not isinstance(commandName, minisix.string_types):
-        commandName = '.'.join(commandName)
     plugin = cb.name().lower()
-    pluginCommand = '%s.%s' % (plugin, commandName)
+    if not isinstance(commandName, minisix.string_types):
+        assert commandName[0] == plugin, ('checkCommandCapability no longer '
+                'accepts command names that do not start with the callback\'s '
+                'name (%s): %s') % (plugin, commandName)
+        commandName = '.'.join(commandName)
     def checkCapability(capability):
         assert ircdb.isAntiCapability(capability)
         if ircdb.checkCapability(msg.prefix, capability):
             log.info('Preventing %s from calling %s because of %s.',
-                     msg.prefix, pluginCommand, capability)
+                     msg.prefix, commandName, capability)
             raise RuntimeError(capability)
     try:
-        antiPlugin = ircdb.makeAntiCapability(plugin)
         antiCommand = ircdb.makeAntiCapability(commandName)
-        antiPluginCommand = ircdb.makeAntiCapability(pluginCommand)
-        checkCapability(antiPlugin)
         checkCapability(antiCommand)
-        checkCapability(antiPluginCommand)
-        checkAtEnd = [commandName, pluginCommand]
+        checkAtEnd = [commandName]
         default = conf.supybot.capabilities.default()
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
             checkCapability(ircdb.makeChannelCapability(channel, antiCommand))
-            checkCapability(ircdb.makeChannelCapability(channel, antiPlugin))
-            checkCapability(ircdb.makeChannelCapability(channel,
-                                                        antiPluginCommand))
-            chanPlugin = ircdb.makeChannelCapability(channel, plugin)
             chanCommand = ircdb.makeChannelCapability(channel, commandName)
-            chanPluginCommand = ircdb.makeChannelCapability(channel,
-                                                            pluginCommand)
-            checkAtEnd += [chanCommand, chanPlugin, chanPluginCommand]
+            checkAtEnd += [chanCommand]
             default &= ircdb.channels.getChannel(channel).defaultAllow
         return not (default or \
                     any(lambda x: ircdb.checkCapability(msg.prefix, x),
@@ -1301,18 +1293,29 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
         else:
             self.log.info('%s called on %s by %q.', formatCommand(command),
                     msg.args[0], msg.prefix)
-        # XXX I'm being extra-special-careful here, but we need to refactor
-        #     this.
         try:
-            cap = checkCommandCapability(msg, self, command)
+            if len(command) == 1 or command[0] != self.canonicalName():
+                fullCommandName = [self.canonicalName()] + command
+            else:
+                fullCommandName = command
+            # Let "P" be the plugin and "X Y" the command name. The
+            # fullCommandName is "P X Y"
+
+            # check "Y"
+            cap = checkCommandCapability(msg, self, command[-1])
             if cap:
                 irc.errorNoCapability(cap)
                 return
-            for name in command:
-                cap = checkCommandCapability(msg, self, name)
+
+            # check "P", "P.X", and "P.X.Y"
+            prefix = []
+            for name in fullCommandName:
+                prefix.append(name)
+                cap = checkCommandCapability(msg, self, prefix)
                 if cap:
                     irc.errorNoCapability(cap)
                     return
+
             try:
                 self.callingCommand = command
                 self.callCommand(command, irc, msg, *args, **kwargs)
