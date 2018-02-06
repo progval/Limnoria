@@ -86,9 +86,10 @@ def registerGlobalValue(group, name, value):
     value.channelValue = False
     return group.register(name, value)
 
-def registerChannelValue(group, name, value):
+def registerChannelValue(group, name, value, opSettable=True):
     value._supplyDefault = True
     value.channelValue = True
+    value._opSettable = opSettable
     g = group.register(name, value)
     gname = g._name.lower()
     for name in registry._cache.keys():

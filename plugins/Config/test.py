@@ -28,13 +28,23 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from supybot.test import *
+import random
 
+from supybot.test import *
 import supybot.conf as conf
+
+_letters = 'abcdefghijklmnopqrstuvwxyz'
+def random_string():
+    return ''.join(random.choice(_letters) for _ in range(16))
 
 class ConfigTestCase(ChannelPluginTestCase):
     # We add utilities so there's something in supybot.plugins.
-    plugins = ('Config', 'Utilities')
+    plugins = ('Config', 'User', 'Utilities')
+
+    prefix1 = 'somethingElse!user@host1.tld'
+    prefix2 = 'EvensomethingElse!user@host2.tld'
+    prefix3 = 'Completely!Different@host3.tld__no_testcap__'
+
     def testGet(self):
         self.assertNotRegexp('config get supybot.reply', r'registry\.Group')
         self.assertResponse('config supybot.protocols.irc.throttleTime', '0.0')
@@ -109,6 +119,53 @@ class ConfigTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.commands.allowShell.setValue(True)
             conf.supybot.directories.plugins.setValue(old_plugins_dirs)
+
+    def testOpEditable(self):
+        var_name = 'testOpEditable' + random_string()
+        conf.registerChannelValue(conf.supybot.plugins.Config, var_name,
+                registry.Integer(0, 'help'))
+        self.assertNotError('register bar passwd', frm=self.prefix3,
+                private=True)
+        self.assertRegexp('whoami', 'bar', frm=self.prefix3)
+        ircdb.users.getUser('bar').addCapability(self.channel + ',op')
+
+        self.assertRegexp('config plugins.Config.%s 1' % var_name,
+                '^Completely: Error: ',
+                frm=self.prefix3)
+        self.assertResponse('config plugins.Config.%s' % var_name,
+                'Global: 0; #test: 0')
+
+        self.assertNotRegexp('config channel plugins.Config.%s 1' % var_name,
+                '^Completely: Error: ',
+                frm=self.prefix3)
+        self.assertResponse('config plugins.Config.%s' % var_name,
+                'Global: 0; #test: 1')
+
+    def testOpNonEditable(self):
+        var_name = 'testOpNonEditable' + random_string()
+        conf.registerChannelValue(conf.supybot.plugins.Config, var_name,
+                registry.Integer(0, 'help'), opSettable=False)
+        self.assertNotError('register bar passwd', frm=self.prefix3,
+                private=True)
+        self.assertRegexp('whoami', 'bar', frm=self.prefix3)
+        ircdb.users.getUser('bar').addCapability(self.channel + ',op')
+
+        self.assertRegexp('config plugins.Config.%s 1' % var_name,
+                '^Completely: Error: ',
+                frm=self.prefix3)
+        self.assertResponse('config plugins.Config.%s' % var_name,
+                'Global: 0; #test: 0')
+
+        self.assertRegexp('config channel plugins.Config.%s 1' % var_name,
+                '^Completely: Error: ',
+                frm=self.prefix3)
+        self.assertResponse('config plugins.Config.%s' % var_name,
+                'Global: 0; #test: 0')
+
+        self.assertNotRegexp('config channel plugins.Config.%s 1' % var_name,
+                '^Completely: Error: ')
+        self.assertResponse('config plugins.Config.%s' % var_name,
+                'Global: 0; #test: 1')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

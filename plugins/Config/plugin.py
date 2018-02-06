@@ -65,9 +65,15 @@ def getWrapper(name):
 
 def getCapability(name):
     capability = 'owner' # Default to requiring the owner capability.
+    if not name.startswith('supybot') and not name.startswith('users'):
+        name = 'supybot.' + name
     parts = registry.split(name)
+    group = getattr(conf, parts.pop(0))
     while parts:
-        part = parts.pop()
+        part = parts.pop(0)
+        group = group.get(part)
+        if not getattr(group, '_opSettable', True):
+            return 'owner'
         if ircutils.isChannel(part):
             # If a registry value has a channel in it, it requires a
             # 'channel,op' capability, or so we assume.  We'll see if we're
