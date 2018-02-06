@@ -254,9 +254,9 @@ def separateModes(args):
     if not args:
         return []
     modes = args[0]
-    assert modes[0] in '+-', 'Invalid args: %r' % args
     args = list(args[1:])
     ret = []
+    last = '+'
     for c in modes:
         if c in '+-':
             last = c
