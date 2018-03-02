@@ -817,7 +817,7 @@ def standardSubstitute(irc, msg, text, env=None):
         'm': localtime[4], 'min': localtime[4], 'minute': localtime[4],
         's': localtime[5], 'sec': localtime[5], 'second': localtime[5],
         'tz': time.strftime('%Z', localtime),
-        'version': 'Limnoria %s' % version,
+        'version': version,
         })
     if irc:
         vars.update({
