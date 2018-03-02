@@ -30,6 +30,7 @@
 
 import re
 import sys
+import string
 import socket
 
 import supybot.conf as conf
@@ -198,7 +199,8 @@ class Web(callbacks.PluginRegexp):
                 domain = utils.web.getDomain(target
                         if self.registryValue('snarferShowTargetDomain', channel)
                         else url)
-                s = format(_('Title: %s'), title)
+                prefix = self.registryValue('snarferPrefix', channel)
+                s = prefix + title
                 if self.registryValue('snarferShowDomain', channel):
                     s += format(_(' (at %s)'), domain)
                 irc.reply(s, prefixNick=False)
