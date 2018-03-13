@@ -403,12 +403,15 @@ class RSS(callbacks.Plugin):
             all = __builtins__['all']
             any = __builtins__['any']
 
+        title = getattr(entry, 'title', '')
+        description = getattr(entry, 'description', '')
+
         if whitelist:
-            if all(kw not in entry.title and kw not in entry.description
+            if all(kw not in title and kw not in description
                    for kw in whitelist):
                 return False
         if blacklist:
-            if any(kw in entry.title or kw in entry.description
+            if any(kw in title or kw in description
                    for kw in blacklist):
                 return False
         return True
