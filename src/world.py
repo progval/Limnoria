@@ -99,6 +99,7 @@ commandsProcessed = 0
 ircs = [] # A list of all the IRCs.
 
 def getIrc(network):
+    """Returns Irc object of the given network. <network> is string and not case-sensitive."""
     network = network.lower()
     for irc in ircs:
         if irc.network.lower() == network:
