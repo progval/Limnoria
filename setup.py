@@ -37,7 +37,6 @@ import warnings
 import datetime
 import tempfile
 import subprocess
-from math import ceil
 
 warnings.filterwarnings('always', category=DeprecationWarning)
 
