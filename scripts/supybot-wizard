@@ -184,6 +184,14 @@ def main():
                            'run directly in the HOME directory. '
                            'You should not do this unless you want it to '
                            'create multiple files in your HOME directory.')
+    parser.add_option('', '--allow-bin', action='store_true',
+                      dest='allowBin',
+                      help='Determines whether the wizard will be allowed to '
+                           'run directly in a directory for binaries (eg. '
+                           '/usr/bin, /usr/local/bin, or ~/.local/bin). '
+                           'You should not do this unless you want it to '
+                           'create multiple non-binary files in directory '
+                           'that should only contain binaries.')
     parser.add_option('', '--no-network', action='store_false',
                       dest='network',
                       help='Determines whether the wizard will be allowed to '
@@ -195,6 +203,8 @@ def main():
     if os.name == 'posix':
         if (os.getcwd() == os.path.expanduser('~')) and not options.allowHome:
             error('Please, don\'t run this in your HOME directory.')
+        if (os.path.split(os.getcwd())[-1] == 'bin') and not options.allowBin:
+            error('Please, don\'t run this in a "bin" directory.')
     if os.path.isfile(os.path.join('scripts', 'supybot-wizard')) or \
             os.path.isfile(os.path.join('..', 'scripts', 'supybot-wizard')):
         print('')

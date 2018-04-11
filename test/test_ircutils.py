@@ -221,6 +221,11 @@ class FunctionsTestCase(SupyTestCase):
         self.assertTrue(max(map(pred, r)) <= 100)
         self.assertEqual(''.join(r), s)
 
+        s = uchr(233)*500
+        print(repr(ircutils.wrap(s, 500)))
+        import supybot.utils.str
+        print(repr(supybot.utils.str.byteTextWrap(s, 500)))
+
 
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'
