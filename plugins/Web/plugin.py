@@ -204,6 +204,9 @@ class Web(callbacks.PluginRegexp):
                 if self.registryValue('snarferShowDomain', channel):
                     s += format(_(' (at %s)'), domain)
                 irc.reply(s, prefixNick=False)
+        if self.registryValue('snarfMultipleUrls', channel):
+            # FIXME: hack
+            msg.tag('repliedTo', False)
     titleSnarfer = urlSnarfer(titleSnarfer)
     titleSnarfer.__doc__ = utils.web._httpUrlRe
 

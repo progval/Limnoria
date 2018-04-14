@@ -55,6 +55,9 @@ conf.registerChannelValue(Web, 'snarferReportIOExceptions',
 conf.registerChannelValue(Web, 'snarferShowDomain',
     registry.Boolean(True, _("""Determines whether domain names should be
     displayed by the title snarfer.""")))
+conf.registerChannelValue(Web, 'snarfMultipleUrls',
+    registry.Boolean(False, _("""Determines whether the title snarfer will
+    query all URLs in a message, or only the first one.""")))
 conf.registerChannelValue(Web, 'snarferShowTargetDomain',
     registry.Boolean(False, _("""Determines whether the domain name displayed
     by the snarfer will be the original one (posted on IRC) or the target one
