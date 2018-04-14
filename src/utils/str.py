@@ -306,7 +306,21 @@ def perlVariableSubstitute(vars, text):
                 return '$' + unbraced
     return _perlVarSubstituteRe.sub(replacer, text)
 
-def byteTextWrap(text, size, break_on_hyphens=False, break_long_words=True):
+def splitBytes(word, size):
+    # I'm going to hell for this function
+    for i in range(4): # a character takes at most 4 bytes in UTF-8
+        try:
+            if sys.version_info[0] >= 3:
+                word[size-i:].decode()
+            else:
+                word[size-i:].encode('utf8')
+        except UnicodeDecodeError:
+            continue
+        else:
+            return (word[0:size-i], word[size-i:])
+    assert False, (word, size)
+
+def byteTextWrap(text, size, break_on_hyphens=False):
     """Similar to textwrap.wrap(), but considers the size of strings (in bytes)
     instead of their length (in characters)."""
     try:
@@ -320,8 +334,9 @@ def byteTextWrap(text, size, break_on_hyphens=False, break_long_words=True):
     while words:
         word = words.pop(-1)
         if len(word) > size:
-            words.append(word[size:])
-            word = word[0:size]
+            (before, after) = splitBytes(word, size)
+            words.append(after)
+            word = before
         if len(lines[-1]) + len(word) <= size:
             lines[-1] += word
         else:

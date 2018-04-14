@@ -222,9 +222,10 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(''.join(r), s)
 
         s = uchr(233)*500
-        print(repr(ircutils.wrap(s, 500)))
-        import supybot.utils.str
-        print(repr(supybot.utils.str.byteTextWrap(s, 500)))
+        r = ircutils.wrap(s, 500)
+        self.assertTrue(max(map(pred, r)) <= 500)
+        r = ircutils.wrap(s, 139)
+        self.assertTrue(max(map(pred, r)) <= 139)
 
 
     def testSafeArgument(self):

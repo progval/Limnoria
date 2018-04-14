@@ -941,8 +941,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                   stripCtcp=stripCtcp)
                         sendMsg(m)
                         return m
-                    msgs = ircutils.wrap(s, allowedLength,
-                            break_long_words=True)
+                    msgs = ircutils.wrap(s, allowedLength)
                     msgs.reverse()
                     instant = conf.get(conf.supybot.reply.mores.instant,target)
                     while instant > 1 and msgs:
