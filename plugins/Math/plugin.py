@@ -109,7 +109,7 @@ class Math(callbacks.Plugin):
         return math.pow(x, 1.0/3)
     def _factorial(x):
         if x<=10000:
-            return math.factorial(x)
+            return float(math.factorial(x))
         else:
             raise Exception('factorial argument too large')
     _mathEnv['sqrt'] = _sqrt
