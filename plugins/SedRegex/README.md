@@ -22,4 +22,4 @@ The following regex flags (i.e. the `g` in `s/abc/def/g`, etc.) are supported:
 
 - `i`: case insensitive replacement
 - `g`: replace all occurences of the original text
-- `s`: replace only messages from the caller
+- `s`: *(custom flag specific to this plugin)* replace only messages from the caller
