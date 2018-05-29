@@ -252,15 +252,15 @@ class Config(callbacks.Plugin):
             private = None
             for channel in channels:
                 (value, private_value) = self._getValue(irc, msg, group.get(channel))
-                values.append(value)
+                values.append((channel, value))
                 if private_value:
                     private = True
             if len(channels) > 1:
                 irc.reply('; '.join([
                     '%s: %s' % (channel, value)
-                    for value in values]))
+                    for (channel, value) in values]))
             else:
-                irc.reply(values[0])
+                irc.reply(values[0][1])
     channel = wrap(channel, ['channels', 'settableConfigVar',
                              additional('text')])
 
