@@ -205,13 +205,13 @@ class Config(callbacks.Plugin):
             value = _('Global: %s; %s: %s') % (value, msg.args[0], s)
         if hasattr(group, 'value'):
             if not group._private:
-                irc.reply(value)
+                return (value, None)
             else:
                 capability = getCapability(group._name)
                 if ircdb.checkCapability(msg.prefix, capability):
-                    irc.reply(value, private=True)
+                    return (value, True)
                 else:
-                    irc.errorNoCapability(capability)
+                    irc.errorNoCapability(capability, Raise=True)
         else:
             irc.error(_('That registry variable has no value.  Use the list '
                       'command in this plugin to see what variables are '
@@ -226,28 +226,42 @@ class Config(callbacks.Plugin):
         if ircdb.checkCapability(msg.prefix, capability):
             # I think callCommand catches exceptions here.  Should it?
             group.set(value)
-            irc.replySuccess()
         else:
-            irc.errorNoCapability(capability)
+            irc.errorNoCapability(capability, Raise=True)
 
     @internationalizeDocstring
-    def channel(self, irc, msg, args, channel, group, value):
+    def channel(self, irc, msg, args, channels, group, value):
         """[<channel>] <name> [<value>]
 
         If <value> is given, sets the channel configuration variable for <name>
         to <value> for <channel>.  Otherwise, returns the current channel
         configuration value of <name>.  <channel> is only necessary if the
-        message isn't sent in the channel itself."""
+        message isn't sent in the channel itself. More than one channel may
+        be given at once by separating them with commas."""
         if not group.channelValue:
             irc.error(_('That configuration variable is not a channel-specific '
                       'configuration variable.'))
             return
-        group = group.get(channel)
         if value is not None:
-            self._setValue(irc, msg, group, value)
+            for channel in channels:
+                assert irc.isChannel(channel)
+                self._setValue(irc, msg, group.get(channel), value)
+            irc.replySuccess()
         else:
-            self._getValue(irc, msg, group)
-    channel = wrap(channel, ['channel', 'settableConfigVar',
+            values = []
+            private = None
+            for channel in channels:
+                (value, private_value) = self._getValue(irc, msg, group.get(channel))
+                values.append(value)
+                if private_value:
+                    private = True
+            if len(channels) > 1:
+                irc.reply('; '.join([
+                    '%s: %s' % (channel, value)
+                    for value in values]))
+            else:
+                irc.reply(values[0])
+    channel = wrap(channel, ['channels', 'settableConfigVar',
                              additional('text')])
 
     @internationalizeDocstring
@@ -260,8 +274,10 @@ class Config(callbacks.Plugin):
         """
         if value is not None:
             self._setValue(irc, msg, group, value)
+            irc.replySuccess()
         else:
-            self._getValue(irc, msg, group, addChannel=group.channelValue)
+            (value, private) = self._getValue(irc, msg, group, addChannel=group.channelValue)
+            irc.reply(value, private=private)
     config = wrap(config, ['settableConfigVar', additional('text')])
 
     @internationalizeDocstring

@@ -167,5 +167,20 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertResponse('config plugins.Config.%s' % var_name,
                 'Global: 0; #test: 1')
 
+    def testChannel(self):
+        self.assertResponse('config reply.whenAddressedBy.strings ^',
+                'The operation succeeded.')
+        self.assertResponse('config channel reply.whenAddressedBy.strings @',
+                'The operation succeeded.')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '@')
+        self.assertNotError('config channel reply.whenAddressedBy.strings $')
+        self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings', '^')
+        self.assertResponse('config channel #testchan2 reply.whenAddressedBy.strings', '^')
+        self.assertNotError('config channel #testchan1,#testchan2 reply.whenAddressedBy.strings .')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '$')
+        self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings', '.')
+        self.assertResponse('config channel #testchan2 reply.whenAddressedBy.strings', '.')
+
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

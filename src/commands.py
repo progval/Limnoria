@@ -488,6 +488,16 @@ def getChannel(irc, msg, args, state):
     state.channel = channel
     state.args.append(channel)
 
+def getChannels(irc, msg, args, state):
+    if args and all(map(irc.isChannel, args[0].split(','))):
+        channels = args.pop(0).split(',')
+    elif irc.isChannel(msg.args[0]):
+        channels = [msg.args[0]]
+    else:
+        state.log.debug('Raising ArgumentError because there is no channel.')
+        raise callbacks.ArgumentError
+    state.args.append(channels)
+
 def getChannelDb(irc, msg, args, state, **kwargs):
     channelSpecific = conf.supybot.databases.plugins.channelSpecific
     try:
@@ -730,6 +740,7 @@ wrappers = ircutils.IrcDict({
     'isGranted': getHaveHalfopPlus, # Backward compatibility
     'capability': getSomethingNoSpaces,
     'channel': getChannel,
+    'channels': getChannels,
     'channelOrGlobal': getChannelOrGlobal,
     'channelDb': getChannelDb,
     'checkCapability': checkCapability,
