@@ -51,20 +51,22 @@ if path:
 VERSION_FILE = os.path.join('src', 'version.py')
 version = None
 try:
-    proc = subprocess.Popen('git show HEAD --format=%ct', shell=True,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    date = proc.stdout.readline()
-    if sys.version_info[0] >= 3:
-        date = date.decode()
+    if 'SOURCE_DATE_EPOCH' in os.environ:
+        date = int(os.environ['SOURCE_DATE_EPOCH'])
+    else:
+        proc = subprocess.Popen('git show HEAD --format=%ct', shell=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        date = proc.stdout.readline()
+        if sys.version_info[0] >= 3:
+            date = date.decode()
+        date = int(date.strip())
     version = ".".join(str(i).zfill(2) for i in
-            time.strptime(time.asctime(time.gmtime(int(date.strip()))))[:3])
+            time.strptime(time.asctime(time.gmtime(date)))[:3])
 except:
     if os.path.isfile(VERSION_FILE):
         from src.version import version
     else:
-        from time import gmtime, strftime, time
-        t = int(os.environ.get('SOURCE_DATE_EPOCH', time()))
-        version = 'installed on ' + strftime("%Y-%m-%dT%H-%M-%S", gmtime(t))
+        version = 'installed on ' + strftime("%Y-%m-%dT%H-%M-%S", gmtime())
 try:
     os.unlink(VERSION_FILE)
 except OSError: # Does not exist
