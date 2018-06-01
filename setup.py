@@ -62,8 +62,9 @@ except:
     if os.path.isfile(VERSION_FILE):
         from src.version import version
     else:
-        from time import gmtime, strftime
-        version = 'installed on ' + strftime("%Y-%m-%dT%H-%M-%S", gmtime())
+        from time import gmtime, strftime, time
+        t = int(os.environ.get('SOURCE_DATE_EPOCH', time()))
+        version = 'installed on ' + strftime("%Y-%m-%dT%H-%M-%S", gmtime(t))
 try:
     os.unlink(VERSION_FILE)
 except OSError: # Does not exist
