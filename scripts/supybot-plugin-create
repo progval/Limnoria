@@ -92,11 +92,8 @@ license = license.lstrip()
 pluginTemplate = '''
 %s
 
-import supybot.utils as utils
+from supybot import utils, plugins, ircutils, callbacks
 from supybot.commands import *
-import supybot.plugins as plugins
-import supybot.ircutils as ircutils
-import supybot.callbacks as callbacks
 try:
     from supybot.i18n import PluginInternationalization
     _ = PluginInternationalization('%s')
@@ -120,8 +117,7 @@ Class = %s
 configTemplate = '''
 %s
 
-import supybot.conf as conf
-import supybot.registry as registry
+from supybot import conf, registry
 try:
     from supybot.i18n import PluginInternationalization
     _ = PluginInternationalization('%s')
@@ -158,7 +154,7 @@ __init__Template = '''
 """
 
 import supybot
-import supybot.world as world
+from supybot import world
 
 # Use this for the version of this plugin.  You may wish to put a CVS keyword
 # in here if you're keeping the plugin in CVS or some similar system.
