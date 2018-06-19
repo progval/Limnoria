@@ -227,12 +227,7 @@ def main():
     (options, args) = parser.parse_args()
     if options.name:
         name = options.name
-        if options.threaded:
-            threaded = True
-        else:
-            threaded = False
-        if options.realName:
-            realName = options.realName
+        threaded = options.threaded
     else:
         name = something('What should the name of the plugin be?')
         if name.endswith('.py'):
@@ -255,8 +250,11 @@ def main():
         print()
         threaded = yn('Does your plugin need to be threaded?')
 
+    if options.realName:
+        realName = options.realName
+    else:
         realName = something(textwrap.dedent("""
-        What is your real name, so I can fill in the copyright and license  
+        What is your real name, so I can fill in the copyright and license
         appropriately?
         """).strip())
 
