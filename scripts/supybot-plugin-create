@@ -219,8 +219,8 @@ def main():
                       help='sets the name for the plugin.')
     parser.add_option('-t', '--thread', action='store_true', dest='threaded',
                       help='makes the plugin threaded.')
-    parser.add_option('', '--real-name', action='store', dest='realName',
-                      help='Determines what real name the copyright is '
+    parser.add_option('-a', '--author', '--real-name', action='store',
+                      dest='realName', help='Determines who the copyright is '
                       'assigned to.')
     parser.add_option('', '--desc', action='store', dest='desc',
                       help='Short description of plugin.')
@@ -254,7 +254,7 @@ def main():
         realName = options.realName
     else:
         realName = something(textwrap.dedent("""
-        What is your real name, so I can fill in the copyright and license
+        What is your name, so I can fill in the copyright and license
         appropriately?
         """).strip())
 

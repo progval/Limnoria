@@ -86,7 +86,7 @@ class PluginCreateNoninteractiveTestCase(PluginCreateTestCase):
     def _makeplugin(self):
         with open(os.devnull, 'w') as devnull:  # Compat with Python < 3.3
             retcode = subprocess.call(['supybot-plugin-create', '-n', TEST_PLUGIN_NAME,
-                                       '--real-name=skynet', '--desc=Some description'],
+                                       '--author=skynet', '--desc=Some description'],
                                       stdin=devnull)
             self.assertFalse(retcode)  # Check that the return code is 0
 
