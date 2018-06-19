@@ -284,8 +284,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn.connect((address, port))
             if network_config.ssl():
                 self.starttls()
+            # Suppress this warning for loopback IPs.
             elif (not network_config.requireStarttls()) and \
-                    # Suppress this warning for loopback IPs.
                     (ipaddress is None or not ipaddress.ip_address(address).is_loopback):
                 drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
