@@ -222,7 +222,7 @@ def main():
     parser.add_option('-a', '--author', '--real-name', action='store',
                       dest='realName', help='Determines who the copyright is '
                       'assigned to.')
-    parser.add_option('', '--desc', action='store', dest='desc',
+    parser.add_option('-d', '--desc', action='store', dest='desc',
                       help='Short description of plugin.')
     (options, args) = parser.parse_args()
     if options.name:
