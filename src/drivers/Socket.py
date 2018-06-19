@@ -40,6 +40,12 @@ import errno
 import select
 import socket
 
+try:
+    import ipaddress
+except ImportError:
+    # Python < 3.3
+    ipaddress = None
+
 from .. import (conf, drivers, log, utils, world)
 from ..utils import minisix
 from ..utils.str import decode_raw_line
@@ -52,7 +58,6 @@ except:
                       'cannot connect to SSL servers.')
     class SSLError(Exception):
         pass
-
 
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     _instances = []
@@ -279,7 +284,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn.connect((address, port))
             if network_config.ssl():
                 self.starttls()
-            elif not network_config.requireStarttls():
+            elif (not network_config.requireStarttls()) and \
+                    # Suppress this warning for loopback IPs.
+                    (ipaddress is None or not ipaddress.ip_address(address).is_loopback):
                 drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
                     'man-in-the-middle attacks and passive eavesdropping. '
