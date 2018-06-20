@@ -92,11 +92,8 @@ license = license.lstrip()
 pluginTemplate = '''
 %s
 
-import supybot.utils as utils
+from supybot import utils, plugins, ircutils, callbacks
 from supybot.commands import *
-import supybot.plugins as plugins
-import supybot.ircutils as ircutils
-import supybot.callbacks as callbacks
 try:
     from supybot.i18n import PluginInternationalization
     _ = PluginInternationalization('%s')
@@ -120,8 +117,7 @@ Class = %s
 configTemplate = '''
 %s
 
-import supybot.conf as conf
-import supybot.registry as registry
+from supybot import conf, registry
 try:
     from supybot.i18n import PluginInternationalization
     _ = PluginInternationalization('%s')
@@ -157,8 +153,9 @@ __init__Template = '''
 %s: %s
 """
 
+import sys
 import supybot
-import supybot.world as world
+from supybot import world
 
 # Use this for the version of this plugin.  You may wish to put a CVS keyword
 # in here if you're keeping the plugin in CVS or some similar system.
@@ -176,7 +173,10 @@ __url__ = ''
 
 from . import config
 from . import plugin
-from imp import reload
+if sys.version_info >= (3, 4):
+    from importlib import reload
+else:
+    from imp import reload
 # In case we're being reloaded.
 reload(config)
 reload(plugin)
@@ -219,20 +219,15 @@ def main():
                       help='sets the name for the plugin.')
     parser.add_option('-t', '--thread', action='store_true', dest='threaded',
                       help='makes the plugin threaded.')
-    parser.add_option('', '--real-name', action='store', dest='realName',
-                      help='Determines what real name the copyright is '
+    parser.add_option('-a', '--author', '--real-name', action='store',
+                      dest='realName', help='Determines who the copyright is '
                       'assigned to.')
-    parser.add_option('', '--desc', action='store', dest='desc',
+    parser.add_option('-d', '--desc', action='store', dest='desc',
                       help='Short description of plugin.')
     (options, args) = parser.parse_args()
     if options.name:
         name = options.name
-        if options.threaded:
-            threaded = True
-        else:
-            threaded = False
-        if options.realName:
-            realName = options.realName
+        threaded = options.threaded
     else:
         name = something('What should the name of the plugin be?')
         if name.endswith('.py'):
@@ -255,8 +250,11 @@ def main():
         print()
         threaded = yn('Does your plugin need to be threaded?')
 
+    if options.realName:
+        realName = options.realName
+    else:
         realName = something(textwrap.dedent("""
-        What is your real name, so I can fill in the copyright and license  
+        What is your name, so I can fill in the copyright and license
         appropriately?
         """).strip())
 
