@@ -36,6 +36,11 @@ import os
 import shutil
 import compileall
 
+try:
+    from shutil import which
+except ImportError:  # Python < 3.3
+    from distutils.spawn import find_executable as which
+
 TEST_PLUGIN_NAME = "TestPlugin"
 
 class PluginCreateTestCase(SupyTestCase):
@@ -64,6 +69,12 @@ Dummy test plugin
         self._communicate(proc, cmdinput)
 
     def testPluginCreate(self):
+        if not which('supybot-plugin-create'):
+            # When tests are run automatically as part of a build process (e.g. in Debian),
+            # don't assume that the bot is installed yet.
+            print('Skipping supybot-plugin-create test because Limnoria has not been installed yet')
+            return
+
         tmpdir = conf.supybot.directories.data.tmp()
         curdir = os.getcwd()
         try:
