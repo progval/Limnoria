@@ -57,9 +57,36 @@ class LaterTestCase(ChannelPluginTestCase):
         conf.supybot.protocols.irc.strictRfc.setValue('True')
         self.assertError('later tell 1foo bar')
         self.assertError('later tell foo$moo zoob')
-        self.assertNotError('later tell foo: baz')
-        self.assertRegexp('later notes', 'foo\.')
         conf.supybot.protocols.irc.strictRfc.setValue(origconf)
+
+    def testWildcard(self):
+        self.assertNotError('later tell foo* stuff')
+        self.assertNotError('later tell bar,baz more stuff')
+        self.assertRegexp('later notes', 'bar.*foo')
+        testPrefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        m = self.getMsg(' ')
+        self.assertEqual(str(m).strip(),
+                'PRIVMSG #test :foo: Sent just now: <test> stuff')
+
+    def testHostmask(self):
+        self.assertNotError('later tell foo*!*@baz stuff')
+        self.assertNotError('later tell bar,baz more stuff')
+        self.assertRegexp('later notes', 'bar.*foo')
+
+        testPrefix = 'foo!bar@baz2'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        m = self.getMsg(' ')
+        self.assertEqual(m, None)
+
+        testPrefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        m = self.getMsg(' ')
+        self.assertEqual(str(m).strip(),
+                'PRIVMSG #test :foo: Sent just now: <test> stuff')
 
     def testNoteExpiry(self):
         cb = self.irc.getCallback('Later')
