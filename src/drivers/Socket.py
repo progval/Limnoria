@@ -39,9 +39,10 @@ import time
 import errno
 import select
 import socket
+import sys
 
 try:
-    import ipaddress
+    import ipaddress  # Python >= 3.3 or backported ipaddress
 except ImportError:
     # Python < 3.3
     ipaddress = None
@@ -284,9 +285,14 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn.connect((address, port))
             if network_config.ssl():
                 self.starttls()
+
             # Suppress this warning for loopback IPs.
+            targetip = address
+            if sys.version_info[0] < 3:
+                # Backported Python 2 ipaddress demands unicode instead of str
+                targetip = targetip.decode('utf-8')
             elif (not network_config.requireStarttls()) and \
-                    (ipaddress is None or not ipaddress.ip_address(address).is_loopback):
+                    (ipaddress is None or not ipaddress.ip_address(targetip).is_loopback):
                 drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
                     'man-in-the-middle attacks and passive eavesdropping. '
