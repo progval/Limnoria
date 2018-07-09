@@ -5,8 +5,7 @@ existing IRC bots.  It includes a very flexible and powerful ACL system
 for controlling access to commands, as well as more than 50 builtin plugins
 providing around 400 actual commands.
 
-Limnoria is a project which continues development of Supybot (you can
-call it a fork) by fixing bugs and adding features.
+Limnoria is the project which continues development of Supybot since 2010.
 
 # Build status
 
