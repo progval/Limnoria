@@ -200,7 +200,7 @@ class Web(callbacks.PluginRegexp):
                         if self.registryValue('snarferShowTargetDomain', channel)
                         else url)
                 prefix = self.registryValue('snarferPrefix', channel)
-                s = prefix + title
+                s = "%s %s" % (prefix, title)
                 if self.registryValue('snarferShowDomain', channel):
                     s += format(_(' (at %s)'), domain)
                 irc.reply(s, prefixNick=False)

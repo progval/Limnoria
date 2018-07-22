@@ -63,7 +63,7 @@ conf.registerChannelValue(Web, 'snarferShowTargetDomain',
     by the snarfer will be the original one (posted on IRC) or the target one
     (got after following redirects, if any).""")))
 conf.registerChannelValue(Web, 'snarferPrefix',
-    registry.String(_('Title: '), _("""Determines the string used at before
+    registry.String(_('Title:'), _("""Determines the string used at before
     a web page's title.""")))
 conf.registerChannelValue(Web, 'nonSnarfingRegexp',
     registry.Regexp(None, _("""Determines what URLs matching the given regexp
