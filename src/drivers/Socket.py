@@ -286,7 +286,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 self.starttls()
             # Suppress this warning for loopback IPs.
             elif (not network_config.requireStarttls()) and \
-                    (ipaddress is None or not ipaddress.ip_address(address).is_loopback):
+                    (ipaddress is None or not ipaddress.ip_address(unicode(address)).is_loopback):
                 drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
                     'man-in-the-middle attacks and passive eavesdropping. '
