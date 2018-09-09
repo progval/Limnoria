@@ -196,7 +196,6 @@ class ChannelUserDictionary(collections.MutableMapping):
         for channel, ids in self.channels.items():
             for id_, value in ids.items():
                 yield (channel, id_)
-        raise StopIteration()
 
     def __len__(self):
         return sum([len(x) for x in self.channels])
