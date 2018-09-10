@@ -1081,6 +1081,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self.sasl_current_mechanism = self.sasl_next_mechanisms.pop(0)
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
                 args=(self.sasl_current_mechanism.upper(),)))
+        elif conf.supybot.networks.get(self.network).sasl.required():
+            log.error('None of the configured SASL mechanisms succeeded, '
+                    'aborting connection.')
         else:
             self.sasl_current_mechanism = None
             self.endCapabilityNegociation()

@@ -383,6 +383,9 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
     registerGlobalValue(sasl, 'mechanisms', SpaceSeparatedListOfSaslMechanisms(
         ['ecdsa-nist256p-challenge', 'external', 'plain'], _("""Determines
         what SASL mechanisms will be tried and in which order.""")))
+    registerGlobalValue(sasl, 'required', registry.Boolean(False,
+        _("""Determines whether the bot will abort the connection if the
+        none of the enabled SASL mechanism succeeded.""")))
     registerGlobalValue(network, 'socksproxy', registry.String('',
         _("""If not empty, determines the hostname of the socks proxy that
         will be used to connect to this network.""")))
