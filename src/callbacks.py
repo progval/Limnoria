@@ -905,11 +905,15 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     allowedLength = conf.get(conf.supybot.reply.mores.length,
                                              target)
                     if not allowedLength: # 0 indicates this.
-                        allowedLength = 470 - len(self.irc.prefix)
-                        allowedLength -= len(msg.nick)
-                        # The '(XX more messages)' may have not the same
-                        # length in the current locale
-                        allowedLength -= len(_('(XX more messages)'))
+                        allowedLength = (512
+                                - len(':') - len(self.irc.prefix)
+                                - len(' PRIVMSG ')
+                                - len(target)
+                                - len(' :')
+                                - len('\r\n')
+                                )
+                        if self.prefixNick:
+                            allowedLength -= len(msg.nick) + len(': ')
                     maximumMores = conf.get(conf.supybot.reply.mores.maximum,
                                             target)
                     maximumLength = allowedLength * maximumMores
@@ -920,16 +924,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     s_size = len(s.encode()) if minisix.PY3 else len(s)
                     if s_size <= allowedLength or \
                        not conf.get(conf.supybot.reply.mores, target):
-                        # In case we're truncating, we add 20 to allowedLength,
-                        # because our allowedLength is shortened for the
-                        # "(XX more messages)" trailer.
-                        if minisix.PY3:
-                            appended = _('(XX more messages)').encode()
-                            s = s.encode()[:allowedLength-len(appended)]
-                            s = s.decode('utf8', 'ignore')
-                        else:
-                            appended = _('(XX more messages)')
-                            s = s[:allowedLength-len(appended)]
                         # There's no need for action=self.action here because
                         # action implies noLengthCheck, which has already been
                         # handled.  Let's stick an assert in here just in case.
@@ -941,6 +935,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                   stripCtcp=stripCtcp)
                         sendMsg(m)
                         return m
+                    # The '(XX more messages)' may have not the same
+                    # length in the current locale
+                    allowedLength -= len(_('(XX more messages)'))
                     msgs = ircutils.wrap(s, allowedLength)
                     msgs.reverse()
                     instant = conf.get(conf.supybot.reply.mores.instant,target)
