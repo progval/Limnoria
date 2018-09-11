@@ -209,11 +209,11 @@ class MiscTestCase(ChannelPluginTestCase):
             nickConfig.setValue(orig)
 
     def testMore(self):
-        self.assertRegexp('echo %s' % ('abc'*300), 'more')
+        self.assertRegexp('echo %s' % ('abc'*400), 'more')
         self.assertRegexp('more', 'more')
         self.assertNotRegexp('more', 'more')
         with conf.supybot.plugins.Misc.mores.context(2):
-            self.assertRegexp('echo %s' % ('abc'*600), 'more')
+            self.assertRegexp('echo %s' % ('abc'*700), 'more')
 
             self.assertNotRegexp('more', 'more')
             m = self.irc.takeMsg()
