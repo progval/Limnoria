@@ -1220,7 +1220,7 @@ class HttpProxy(registry.String):
         super(HttpProxy, self).setValue(v)
 
 registerGlobalValue(supybot.protocols.http, 'proxy',
-    HttpProxy('', _("""Determines what proxy all HTTP requests should go
+    HttpProxy('', _("""Determines what HTTP proxy all HTTP requests should go
     through.  The value should be of the form 'host:port'.""")))
 utils.web.proxy = supybot.protocols.http.proxy
 
