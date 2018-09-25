@@ -202,16 +202,7 @@ class Group(object):
         self._supplyDefault = supplyDefault
         self._orderAlphabetically = orderAlphabetically
         OriginalClass = self.__class__
-        class X(OriginalClass):
-            """This class exists to differentiate those values that have
-            been changed from their default from those that haven't."""
-            def set(self, *args):
-                self.__class__ = OriginalClass
-                self.set(*args)
-            def setValue(self, *args):
-                self.__class__ = OriginalClass
-                self.setValue(*args)
-        self.X = X
+        self._wasSet = True
 
     def __call__(self):
         raise ValueError('Groups have no value.')
@@ -223,7 +214,7 @@ class Group(object):
     def __makeChild(self, attr, s):
         v = self.__class__(self._default, self._help)
         v.set(s)
-        v.__class__ = self.X
+        self._wasSet = False
         v._supplyDefault = False
         v._help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
@@ -320,7 +311,7 @@ class Group(object):
         for name in self._added:
             node = self._children[name]
             if hasattr(node, 'value') or hasattr(node, 'help'):
-                if node.__class__ is not self.X:
+                if self._wasSet:
                     L.append((node._name, node))
             if getChildren:
                 L.extend(node.getValues(getChildren, fullNames))
@@ -372,6 +363,7 @@ class Value(Group):
         """Override this with a function to convert a string to whatever type
         you want, and call self.setValue to set the value."""
         self.setValue(s)
+        self._wasSet = True
 
     def setValue(self, v):
         """Check conditions on the actual value type here.  I.e., if you're a
@@ -383,11 +375,12 @@ class Value(Group):
         self.value = v
         if self._supplyDefault:
             for (name, v) in list(self._children.items()):
-                if v.__class__ is self.X:
+                if not self._wasSet:
                     self.unregister(name)
         # We call the callback once everything is clean
         for callback, args, kwargs in self._callbacks:
             callback(*args, **kwargs)
+        self._wasSet = True
 
     def context(self, value):
         """Return a context manager object, which sets this variable to a
