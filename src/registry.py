@@ -215,7 +215,7 @@ class Group(object):
     def __makeChild(self, attr, s):
         v = self.__class__(self._default, self._help)
         v.set(s)
-        self._wasSet = False
+        v._wasSet = False
         v._supplyDefault = False
         v._help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
@@ -312,7 +312,7 @@ class Group(object):
         for name in self._added:
             node = self._children[name]
             if hasattr(node, 'value') or hasattr(node, 'help'):
-                if self._wasSet:
+                if node._wasSet:
                     L.append((node._name, node))
             if getChildren:
                 L.extend(node.getValues(getChildren, fullNames))
@@ -378,7 +378,7 @@ class Value(Group):
         self.value = v
         if self._supplyDefault:
             for (name, v) in list(self._children.items()):
-                if not self._wasSet:
+                if not v._wasSet:
                     self.unregister(name)
         # We call the callback once everything is clean
         for callback, args, kwargs in self._callbacks:
