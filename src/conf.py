@@ -134,6 +134,7 @@ def registerUserValue(group, name, value):
 
 class ValidNick(registry.String):
     """Value must be a valid IRC nick."""
+    __slots__ = ()
     def setValue(self, v):
         if not ircutils.isNick(v):
             self.error()
@@ -142,6 +143,7 @@ class ValidNick(registry.String):
 
 class ValidNickOrEmpty(ValidNick):
     """Value must be a valid IRC nick or empty."""
+    __slots__ = ()
     def setValue(self, v):
         if v != '' and not ircutils.isNick(v):
             self.error()
@@ -149,11 +151,13 @@ class ValidNickOrEmpty(ValidNick):
             registry.String.setValue(self, v)
 
 class ValidNicks(registry.SpaceSeparatedListOf):
+    __slots__ = ()
     Value = ValidNick
 
 class ValidNickAllowingPercentS(ValidNick):
     """Value must be a valid IRC nick, with the possible exception of a %s
     in it."""
+    __slots__ = ()
     def setValue(self, v):
         # If this works, it's a valid nick, aside from the %s.
         try:
@@ -164,10 +168,12 @@ class ValidNickAllowingPercentS(ValidNick):
             self.error()
 
 class ValidNicksAllowingPercentS(ValidNicks):
+    __slots__ = ()
     Value = ValidNickAllowingPercentS
 
 class ValidChannel(registry.String):
     """Value must be a valid IRC channel name."""
+    __slots__ = ('channel',)
     def setValue(self, v):
         self.channel = v
         if ',' in v:
@@ -194,6 +200,7 @@ class ValidChannel(registry.String):
 
 class ValidHostmask(registry.String):
     """Value must be a valid user hostmask."""
+    __slots__ = ()
     def setValue(self, v):
         if not ircutils.isUserHostmask(v):
             self.error()
@@ -219,6 +226,7 @@ registerGlobalValue(supybot, 'ident',
 # bots which are migrated from Supybot or an old version of Limnoria
 # (whose default value of supybot.user is the empty string).
 class VersionIfEmpty(registry.String):
+    __slots__ = ()
     def __call__(self):
         ret = registry.String.__call__(self)
         if not ret:
@@ -231,6 +239,7 @@ registerGlobalValue(supybot, 'user',
     will be generated if this is left empty.""")))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
+    __slots__ = ()
     List = ircutils.IrcSet
 
 registerGlobalValue(supybot, 'networks',
@@ -238,6 +247,7 @@ registerGlobalValue(supybot, 'networks',
              orderAlphabetically=True))
 
 class Servers(registry.SpaceSeparatedListOfStrings):
+    __slots__ = ()
     def normalize(self, s):
         if ':' not in s:
             s += ':6667'
@@ -262,6 +272,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
 
 class SocksProxy(registry.String):
     """Value must be a valid hostname:port string."""
+    __slots__ = ()
     def setValue(self, v):
         # TODO: improve checks
         if ':' not in v:
@@ -273,6 +284,7 @@ class SocksProxy(registry.String):
         super(SocksProxy, self).setValue(v)
 
 class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
+    __slots__ = ()
     sorted = True
     List = ircutils.IrcSet
     Value = ValidChannel
@@ -313,10 +325,12 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
             return None
 
 class ValidSaslMechanism(registry.OnlySomeStrings):
+    __slots__ = ()
     validStrings = ('ecdsa-nist256p-challenge', 'external', 'plain',
             'scram-sha-256')
 
 class SpaceSeparatedListOfSaslMechanisms(registry.SpaceSeparatedListOf):
+    __slots__ = ()
     Value = ValidSaslMechanism
 
 def registerNetwork(name, password='', ssl=True, sasl_username='',
@@ -554,6 +568,7 @@ registerChannelValue(supybot.reply, 'showSimpleSyntax',
 
 class ValidPrefixChars(registry.String):
     """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?"""
+    __slots__ = ()
     def setValue(self, v):
         if any([x not in '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?' for x in v]):
             self.error()
@@ -698,6 +713,7 @@ registerGroup(supybot, 'commands')
 
 class ValidQuotes(registry.Value):
     """Value must consist solely of \", ', and ` characters."""
+    __slots__ = ()
     def setValue(self, v):
         if [c for c in v if c not in '"`\'']:
             self.error()
@@ -722,6 +738,7 @@ registerGlobalValue(supybot.commands.nested, 'maximum',
     commands more nested than this.""")))
 
 class ValidBrackets(registry.OnlySomeStrings):
+    __slots__ = ()
     validStrings = ('', '[]', '<>', '{}', '()')
 
 registerChannelValue(supybot.commands.nested, 'brackets',
@@ -816,6 +833,7 @@ registerGlobalValue(supybot.drivers, 'poll',
     driver should block waiting for input.""")))
 
 class ValidDriverModule(registry.OnlySomeStrings):
+    __slots__ = ()
     validStrings = ('default', 'Socket', 'Twisted')
 
 registerGlobalValue(supybot.drivers, 'module',
@@ -836,6 +854,7 @@ registerGlobalValue(supybot.drivers, 'maxReconnectWait',
 # XXX This shouldn't make directories willy-nilly.  As it is now, if it's
 #     configured, it'll still make the default directories, I think.
 class Directory(registry.String):
+    __slots__ = ()
     def __call__(self):
         # ??? Should we perhaps always return an absolute path here?
         v = super(Directory, self).__call__()
@@ -857,6 +876,7 @@ class Directory(registry.String):
         return os.path.join(myself, filename)
 
 class DataFilename(registry.String):
+    __slots__ = ()
     def __call__(self):
         v = super(DataFilename, self).__call__()
         dataDir = supybot.directories.data()
@@ -867,6 +887,7 @@ class DataFilename(registry.String):
         return v
 
 class DataFilenameDirectory(DataFilename, Directory):
+    __slots__ = ()
     def __call__(self):
         v = DataFilename.__call__(self)
         v = Directory.__call__(self)
@@ -924,6 +945,7 @@ registerGlobalValue(supybot.plugins, 'alwaysLoadImportant',
 # supybot.databases.  For stuff relating to Supybot's databases (duh!)
 ###
 class Databases(registry.SpaceSeparatedListOfStrings):
+    __slots__ = ()
     def __call__(self):
         v = super(Databases, self).__call__()
         if not v:
@@ -976,6 +998,7 @@ registerGlobalValue(supybot.databases.channels, 'filename',
 # TODO This will need to do more in the future (such as making sure link.allow
 # will let the link occur), but for now let's just leave it as this.
 class ChannelSpecific(registry.Boolean):
+    __slots__ = ()
     def getChannelLink(self, channel):
         channelSpecific = supybot.databases.plugins.channelSpecific
         channels = [channel]
@@ -1029,6 +1052,7 @@ registerChannelValue(supybot.databases.plugins.channelSpecific.link, 'allow',
 
 
 class CDB(registry.Boolean):
+    __slots__ = ()
     def connect(self, filename):
         from . import cdb
         basename = os.path.basename(filename)
@@ -1069,6 +1093,7 @@ registerGroup(supybot, 'protocols')
 registerGroup(supybot.protocols, 'irc')
 
 class Banmask(registry.SpaceSeparatedSetOfStrings):
+    __slots__ = ('__parent', '__dict__') # __dict__ is needed to set __doc__
     validStrings = ('exact', 'nick', 'user', 'host')
     def __init__(self, *args, **kwargs):
         assert self.validStrings, 'There must be some valid strings.  ' \
@@ -1204,6 +1229,7 @@ registerGlobalValue(supybot.protocols.http, 'peekSize',
 
 class HttpProxy(registry.String):
     """Value must be a valid hostname:port string."""
+    __slots__ = ()
     def setValue(self, v):
         proxies = {}
         if v != "":
@@ -1242,6 +1268,7 @@ registerGroup(supybot.servers, 'http')
 
 class IP(registry.String):
     """Value must be a valid IP."""
+    __slots__ = ()
     def setValue(self, v):
         if v and not utils.net.isIP(v):
             self.error()
@@ -1249,6 +1276,7 @@ class IP(registry.String):
             registry.String.setValue(self, v)
 
 class ListOfIPs(registry.SpaceSeparatedListOfStrings):
+    __slots__ = ()
     Value = IP
 
 registerGlobalValue(supybot.servers.http, 'singleStack',
@@ -1295,6 +1323,7 @@ registerGlobalValue(supybot, 'externalIP',
 class SocketTimeout(registry.PositiveInteger):
     """Value must be an integer greater than supybot.drivers.poll and must be
     greater than or equal to 1."""
+    __slots__ = ()
     def setValue(self, v):
         if v < supybot.drivers.poll() or v < 1:
             self.error()

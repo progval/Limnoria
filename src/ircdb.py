@@ -108,6 +108,7 @@ def unWildcardHostmask(hostmask):
 _invert = invertCapability
 class CapabilitySet(set):
     """A subclass of set handling basic capability stuff."""
+    __slots__ = ('__parent',)
     def __init__(self, capabilities=()):
         self.__parent = super(CapabilitySet, self)
         self.__parent.__init__()
@@ -155,6 +156,7 @@ class CapabilitySet(set):
 antiOwner = makeAntiCapability('owner')
 class UserCapabilitySet(CapabilitySet):
     """A subclass of CapabilitySet to handle the owner capability correctly."""
+    __slots__ = ('__parent',)
     def __init__(self, *args, **kwargs):
         self.__parent = super(UserCapabilitySet, self)
         self.__parent.__init__(*args, **kwargs)
@@ -196,6 +198,8 @@ class UserCapabilitySet(CapabilitySet):
 
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user."""
+    __slots__ = ('id', 'auth', 'name', 'ignore', 'secure', 'hashed',
+            'password', 'capabilities', 'hostmasks', 'nicks', 'gpgkeys')
     def __init__(self, ignore=False, password='', name='',
                  capabilities=(), hostmasks=None, nicks=None,
                  secure=False, hashed=False):
@@ -368,6 +372,8 @@ class IrcUser(object):
 
 class IrcChannel(object):
     """This class holds the capabilities, bans, and ignores of a channel."""
+    __slots__ = ('defaultAllow', 'expiredBans', 'bans', 'ignores', 'silences',
+            'exceptions', 'capabilities', 'lobotomized')
     defaultOff = ('op', 'halfop', 'voice', 'protected')
     def __init__(self, bans=None, silences=None, exceptions=None, ignores=None,
                  capabilities=None, lobotomized=False, defaultAllow=True):
@@ -491,10 +497,12 @@ class IrcChannel(object):
 
 
 class Creator(object):
+    __slots__ = ()
     def badCommand(self, command, rest, lineno):
         raise ValueError('Invalid command on line %s: %s' % (lineno, command))
 
 class IrcUserCreator(Creator):
+    __slots__ = ('users')
     u = None
     def __init__(self, users):
         if self.u is None:
@@ -563,6 +571,7 @@ class IrcUserCreator(Creator):
             IrcUserCreator.u = None
 
 class IrcChannelCreator(Creator):
+    __slots__ = ('c', 'channels', 'hadChannel')
     name = None
     def __init__(self, channels):
         self.c = IrcChannel()
@@ -611,6 +620,8 @@ class DuplicateHostmask(ValueError):
 
 class UsersDictionary(utils.IterableMap):
     """A simple serialized-to-file User Database."""
+    __slots__ = ('noFlush', 'filename', 'users', '_nameCache',
+            '_hostmaskCache')
     def __init__(self):
         self.noFlush = False
         self.filename = None
@@ -821,6 +832,7 @@ class UsersDictionary(utils.IterableMap):
 
 
 class ChannelsDictionary(utils.IterableMap):
+    __slots__ = ('noFlush', 'filename', 'channels')
     def __init__(self):
         self.noFlush = False
         self.filename = None
@@ -897,6 +909,7 @@ class ChannelsDictionary(utils.IterableMap):
 
 
 class IgnoresDB(object):
+    __slots__ = ('filename', 'hostmasks')
     def __init__(self):
         self.filename = None
         self.hostmasks = {}
@@ -1145,9 +1158,11 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
 ###
 
 class SpaceSeparatedListOfCapabilities(registry.SpaceSeparatedListOfStrings):
+    __slots__ = ()
     List = CapabilitySet
 
 class DefaultCapabilities(SpaceSeparatedListOfCapabilities):
+    __slots__ = ()
     # We use a keyword argument trick here to prevent eval'ing of code that
     # changes allowDefaultOwner from affecting this.  It's not perfect, but
     # it's still an improvement, raising the bar for potential crackers.
