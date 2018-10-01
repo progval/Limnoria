@@ -343,7 +343,7 @@ class Unix(callbacks.Plugin):
     def sysuptime(self, irc, msg, args):
         """takes no arguments
 
-        Returns the uptime from the system the bot is runnning on.
+        Returns the uptime from the system the bot is running on.
         """
         uptimeCmd = self.registryValue('sysuptime.command')
         if uptimeCmd:
@@ -372,7 +372,7 @@ class Unix(callbacks.Plugin):
     def sysuname(self, irc, msg, args):
         """takes no arguments
 
-        Returns the uname -a from the system the bot is runnning on.
+        Returns the uname -a from the system the bot is running on.
         """
         unameCmd = self.registryValue('sysuname.command')
         if unameCmd:
