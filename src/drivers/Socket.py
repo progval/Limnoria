@@ -292,6 +292,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 # Backported Python 2 ipaddress demands unicode instead of str
                 targetip = targetip.decode('utf-8')
             elif (not network_config.requireStarttls()) and \
+                    (not network_config.ssl()) and \
                     (ipaddress is None or not ipaddress.ip_address(targetip).is_loopback):
                 drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
