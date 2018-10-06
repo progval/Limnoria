@@ -519,6 +519,8 @@ class RichReplyMethods(object):
         s = self.__makeReply(v, s)
         if s:
             return self._error(s, **kwargs)
+        elif kwargs['Raise']:
+            raise Error()
 
     def errorPossibleBug(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.possibleBug)
