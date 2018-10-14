@@ -92,7 +92,7 @@ class InvalidFeedUrl(ValueError):
 class Feed:
     __slots__ = ('url', 'name', 'data', 'last_update', 'entries',
             'etag', 'modified', 'initial',
-            'lock', 'announced_entries')
+            'lock', 'announced_entries', 'last_exception')
     def __init__(self, name, url, initial,
             plugin_is_loading=False, announced=None):
         assert name, name
@@ -113,6 +113,7 @@ class Feed:
         self.lock = threading.Lock()
         self.announced_entries = announced or \
                 utils.structures.TruncatableSet()
+        self.last_exception = None
 
     def __repr__(self):
         return 'Feed(%r, %r, %b, <bool>, %r)' % \
@@ -328,6 +329,16 @@ class RSS(callbacks.Plugin):
                 feed.data = d.feed
                 feed.entries = d.entries
                 feed.last_update = time.time()
+                # feedparser will store soft errors in bozo_exception and set
+                # the "bozo" bit to 1 on supported platforms:
+                # https://pythonhosted.org/feedparser/bozo.html
+                # If this error caused us to e.g. not get any entries at all,
+                # it may be helpful to show it as well.
+                if getattr(d, 'bozo', 0) and hasattr(d, 'bozo_exception'):
+                    feed.last_exception = d.bozo_exception
+                else:
+                    feed.last_exception = None
+
             (initial, feed.initial) = (feed.initial, False)
         self.announce_feed(feed, initial)
 
@@ -555,7 +566,12 @@ class RSS(callbacks.Plugin):
         self.update_feed_if_needed(feed)
         entries = feed.entries
         if not entries:
-            irc.error(_('Couldn\'t get RSS feed.'))
+            s = _('Couldn\'t get RSS feed.')
+            # If we got a soft parsing exception on our last run, show the error.
+            if feed.last_exception is not None:
+                s += _(' Parser error: ')
+                s += str(feed.last_exception)
+            irc.error(s)
             return
         n = n or self.registryValue('defaultNumberOfHeadlines', channel)
         entries = list(filter(lambda e:self.should_send_entry(channel, e),
