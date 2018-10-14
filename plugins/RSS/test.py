@@ -42,6 +42,16 @@ xkcd_new = """<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0"><channel><title>xkcd.com</title><link>http://xkcd.com/</link><description>xkcd.com: A webcomic of romance and math humor.</description><language>en</language><item><title>Telescopes: Refractor vs Reflector</title><link>http://xkcd.com/1791/</link><description>&lt;img src="http://imgs.xkcd.com/comics/telescopes_refractor_vs_reflector.png" title="On the other hand, the refractor's limited light-gathering means it's unable to make out shadow people or the dark god Chernabog." alt="On the other hand, the refractor's limited light-gathering means it's unable to make out shadow people or the dark god Chernabog." /&gt;</description><pubDate>Fri, 27 Jan 2017 05:00:00 -0000</pubDate><guid>http://xkcd.com/1791/</guid></item><item><title>Chaos</title><link>http://xkcd.com/1399/</link><description>&lt;img src="http://imgs.xkcd.com/comics/chaos.png" title="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" alt="Although the oral exam for the doctorate was just 'can you do that weird laugh?'" /&gt;</description><pubDate>Fri, 25 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1399/</guid></item><item><title>Snake Facts</title><link>http://xkcd.com/1398/</link><description>&lt;img src="http://imgs.xkcd.com/comics/snake_facts.png" title="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." alt="Biologically speaking, what we call a 'snake' is actually a human digestive tract which has escaped from its host." /&gt;</description><pubDate>Wed, 23 Jul 2014 04:00:00 -0000</pubDate><guid>http://xkcd.com/1398/</guid></item></channel></rss>
 """
 
+not_well_formed = """<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+<channel>
+	<title>this is missing a close tag
+	<link>http://example.com/</link>
+	<description>this dummy feed has no elements</description>
+	<language>en</language>
+</channel>
+</rss>
+"""
 
 def constant(content):
     if minisix.PY3:
@@ -321,6 +331,18 @@ class RSSTestCase(ChannelPluginTestCase):
                         'On the other hand, the refractor\'s')
             finally:
                 feedparser._open_resource = old_open
+
+    def testBadlyFormedFeedWithNoItems(self):
+        # This combination will cause the RSS command to show the last parser
+        # error.
+        old_open = feedparser._open_resource
+        time.sleep(1.1)
+        feedparser._open_resource = constant(not_well_formed)
+        try:
+            self.assertRegexp('rss http://example.com/',
+                              'Parser error')
+        finally:
+            feedparser._open_resource = old_open
 
     if network:
         def testRssinfo(self):
