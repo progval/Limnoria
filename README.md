@@ -1,4 +1,4 @@
-Provides an interface to DuckDuckGo's web search.
+Provides an interface to DuckDuckGo's web search. This plugin requires the [Beautiful Soup 4](http://www.crummy.com/software/BeautifulSoup/bs4/doc/) Python module.
 
 #### Example
 
