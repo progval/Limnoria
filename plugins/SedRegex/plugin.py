@@ -159,7 +159,7 @@ class SedRegex(callbacks.PluginRegexp):
                         if self.registryValue('boldReplacementText', msg.args[0]):
                             replacement = ircutils.bold(replacement)
                         subst = process(pattern.sub, replacement,
-                                        text, count, timeout=0.05)
+                                        text, count, timeout=regex_timeout)
                         if action:  # If the message was an ACTION, prepend the nick back.
                             subst = '* %s %s' % (m.nick, subst)
 
