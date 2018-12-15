@@ -72,6 +72,14 @@ class ProcessTimeoutError(Exception):
     """Gets raised when a process is killed due to timeout."""
     pass
 
+def _rlimit_min(a, b):
+    if a == resource.RLIM_INFINITY:
+        return b
+    elif b == resource.RLIM_INFINITY:
+        return a
+    else:
+        return min(soft, heap_size)
+
 def process(f, *args, **kwargs):
     """Runs a function <f> in a subprocess.
     
@@ -109,7 +117,10 @@ def process(f, *args, **kwargs):
     def newf(f, q, *args, **kwargs):
         if resource:
             rsrc = resource.RLIMIT_DATA
-            resource.setrlimit(rsrc, (heap_size, heap_size))
+            (soft, hard) = resource.getrlimit(rsrc)
+            soft = _rlimit_min(soft, heap_size)
+            hard = _rlimit_min(hard, heap_size)
+            resource.setrlimit(rsrc, (soft, hard))
         try:
             r = f(*args, **kwargs)
             q.put(r)
