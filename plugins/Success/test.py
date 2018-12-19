@@ -27,10 +27,22 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import supybot.conf as conf
 from supybot.test import *
 
-class SuccessTestCase(PluginTestCase):
-    plugins = ('Success',)
+class SuccessTestCase(ChannelPluginTestCase):
+    plugins = ('Success', 'User')
+
+    def setUp(self):
+        ChannelPluginTestCase.setUp(self)
+        self.prefix = 'mf2!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.nick, 'register tester moo',
+                                         prefix=self.prefix))
+
+    def testSuccess(self):
+        self.assertResponse('success add success1:', 'The operation succeeded.')
+        self.assertResponse('success add success2:',
+                'success1:  Success #1 added.')
 
 
 # vim:set shiftwidth=4 softtabstop=8 expandtab textwidth=78:

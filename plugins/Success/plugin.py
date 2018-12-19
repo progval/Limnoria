@@ -48,6 +48,7 @@ class Success(plugins.ChannelIdDatabasePlugin):
         pluginSelf = self
         self.originalClass = conf.supybot.replies.success.__class__
         class MySuccessClass(self.originalClass):
+            __slots__ = ()
             def __call__(self):
                 ret = pluginSelf.db.random(dynamic.msg.args[0])
                 if ret is None:
