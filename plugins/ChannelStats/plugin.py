@@ -292,7 +292,7 @@ class ChannelStats(callbacks.Plugin):
                              name, channel))
     stats = wrap(stats, ['channeldb', additional('something')])
 
-    _calc_match_forbidden_chars = re.compile('[_[\]]')
+    _calc_match_forbidden_chars = re.compile('[_\[\]]')
     _env = {'__builtins__': types.ModuleType('__builtins__')}
     _env.update(math.__dict__)
     def _factorial(x):

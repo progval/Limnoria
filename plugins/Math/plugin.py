@@ -157,7 +157,7 @@ class Math(callbacks.Plugin):
         else:
             return '%s%s' % (realS, imagS)
 
-    _calc_match_forbidden_chars = re.compile('[_[\]]')
+    _calc_match_forbidden_chars = re.compile('[_\[\]]')
     _calc_remover = utils.str.MultipleRemover('_[] \t')
     ###
     # So this is how the 'calc' command works:

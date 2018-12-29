@@ -181,7 +181,7 @@ def _hostmaskPatternEqual(pattern, hostmask):
             elif c == '?':
                 fd.write('.')
             elif c in '[{':
-                fd.write('[[{]')
+                fd.write(r'[\[{]')
             elif c in '}]':
                 fd.write(r'[}\]]')
             elif c in '|\\':
