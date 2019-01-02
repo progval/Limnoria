@@ -1,2 +1,4 @@
 include LICENSE.md
 include Makefile
+include .travis.yml
+include requirements.txt
