@@ -147,19 +147,9 @@ packages = ['supybot',
              'supybot.plugins.Math.local',
             ]
 
-package_dir = {'supybot': 'src',
-               'supybot.utils': 'src/utils',
-               'supybot.locales': 'locales',
-               'supybot.plugins': 'plugins',
-               'supybot.drivers': 'src/drivers',
-               'supybot.plugins.Dict.local': 'plugins/Dict/local',
-               'supybot.plugins.Math.local': 'plugins/Math/local',
-              }
-
-package_data = {'supybot.locales': [s for s in os.listdir('locales/')]}
+package_data = {'supybot.locales': [s for s in os.listdir('supybot/locales/')]}
 
 for plugin in plugins:
-    package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
     locales_path = 'plugins/' + plugin + '/locales/'
     locales_name = 'supybot.plugins.'+plugin
     if os.path.exists(locales_path):
@@ -209,8 +199,6 @@ setup(
 
     # Installation data
     packages=packages,
-
-    package_dir=package_dir,
 
     package_data=package_data,
 

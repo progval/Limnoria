@@ -1,4 +1,4 @@
-PYTHON=`which python`
+PYTHON=`which python3`
 DESTDIR=/
 PROJECT=limnoria
 
@@ -9,6 +9,9 @@ all:
 	@echo "make builddeb_py2 - Generate a deb package for Python 2"
 	@echo "make builddeb_py3 - Generate a deb package for Python 3"
 	@echo "make clean - Get rid of scratch and byte files"
+
+test:
+	PATH=./scripts/:${PATH} PYTHONPATH=. $(PYTHON) ./scripts/supybot-test test --plugins-dir=plugins/
 
 source:
 	$(PYTHON) setup.py sdist $(COMPILE)
@@ -35,4 +38,5 @@ clean:
 	rm -rf build/ MANIFEST
 	find . -name '*.pyc' -delete
 	rm debian/control
-	
+
+.PHONY: test
