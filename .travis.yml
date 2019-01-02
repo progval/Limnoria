@@ -8,7 +8,9 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7-dev"
+  - "3.7"
+  - "3.8-dev"
+  - "nightly"
   - "pypy"
   - "pypy-5.3.1" # default pypy3 doesn't work, see https://bitbucket.org/pypy/pypy/issues/2129/local-variable-val-referenced-before
 env:
@@ -37,6 +39,8 @@ matrix:
     - python: "3.4"
       env: WITH_OPT_DEPS=false
     - python: "3.5"
+      env: WITH_OPT_DEPS=false
+    - python: "3.6"
       env: WITH_OPT_DEPS=false
     - python: "nightly"
       env: WITH_OPT_DEPS=false
