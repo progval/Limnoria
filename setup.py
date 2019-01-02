@@ -252,7 +252,7 @@ if sys.version_info < (3, 0):
     warnings.warn('You are installing Limnoria for Python 2. While Python 2 '
             'is currently supported by Limnoria, this may change in the near '
             'future. If there is anything preventing you frorm upgrading to '
-            'Python 3 (incompatible plugin, dependency, ...), please open a '
+            'Python 3 (incompatible third-party plugin, ...), please open a '
             'bug at <https://github.com/ProgVal/Limnoria/issues> and we\'ll '
             'see together what we can do about it.',
             DeprecationWarning)
