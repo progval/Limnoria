@@ -15,7 +15,7 @@ Last rule: you shouldn't add a mandatory dependency. Limnoria does not
 come with any (besides Python), so please try to keep all dependencies
 optional.
 
-[Style Guidelines]:http://supybot.aperio.fr/doc/develop/style.html
+[Style Guidelines]:https://limnoria.readthedocs.io/en/latest/develop/style.html
 
 ## Sending patches
 
@@ -32,6 +32,6 @@ is very appreciated.
 
 See also [Contributing to Limnoria] at [Limnoria documentation].
 
-[Contributing to Limnoria]:http://supybot.aperio.fr/doc/contribute/index.html#contributing-to-limnoria
+[Contributing to Limnoria]:https://limnoria.readthedocs.io/en/latest/contribute/index.html
 
-[Limnoria documentation]:http://supybot.aperio.fr/doc/index.html
+[Limnoria documentation]:https://limnoria.readthedocs.io/
