@@ -535,10 +535,21 @@ class FormatContext(object):
             s += '\x0f'
         return s
 
+    def size(self):
+        """Returns the number of bytes needed to reproduce this context in an
+        IRC string."""
+        prefix_size = self.bold + self.reverse + self.underline + \
+                bool(self.fg) + bool(self.bg)
+        if prefix_size:
+            return prefix_size + 1 # '\x0f'
+        else:
+            return 0
+
 class FormatParser(object):
     def __init__(self, s):
         self.fd = minisix.io.StringIO(s)
         self.last = None
+        self.max_context_size = 0
 
     def getChar(self):
         if self.last is not None:
@@ -557,14 +568,22 @@ class FormatParser(object):
         while c:
             if c == '\x02':
                 context.bold = not context.bold
+                self.max_context_size = max(
+                        self.max_context_size, context.size())
             elif c == '\x16':
                 context.reverse = not context.reverse
+                self.max_context_size = max(
+                        self.max_context_size, context.size())
             elif c == '\x1f':
                 context.underline = not context.underline
+                self.max_context_size = max(
+                        self.max_context_size, context.size())
             elif c == '\x0f':
                 context.reset()
             elif c == '\x03':
                 self.getColor(context)
+                self.max_context_size = max(
+                        self.max_context_size, context.size())
             c = self.getChar()
         return context
 
@@ -597,8 +616,17 @@ class FormatParser(object):
             self.ungetChar(c)
 
 def wrap(s, length, break_on_hyphens = False):
+    # Get the maximum number of bytes needed to format a chunk of the string
+    # at any point.
+    # This is an overapproximation of what each chunk will need, but it's
+    # either that or make the code of byteTextWrap aware of contexts, and its
+    # code is complicated enough as it is already.
+    parser = FormatParser(s)
+    parser.parse()
+    format_overhead = parser.max_context_size
+
     processed = []
-    chunks = utils.str.byteTextWrap(s, length)
+    chunks = utils.str.byteTextWrap(s, length - format_overhead)
     context = None
     for chunk in chunks:
         if context is not None:
