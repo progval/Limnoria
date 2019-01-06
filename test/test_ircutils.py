@@ -229,9 +229,7 @@ class FunctionsTestCase(SupyTestCase):
 
         s = '\x02\x16 barbazqux' + ('foobarbazqux ' * 20)[0:-1]
         r = ircutils.wrap(s, 91)
-        print(list(map(pred, r)))
         self.assertTrue(max(map(pred, r)) <= 91)
-
 
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'

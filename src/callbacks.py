@@ -939,7 +939,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         return m
                     # The '(XX more messages)' may have not the same
                     # length in the current locale
-                    allowedLength -= len(_('(XX more messages)'))
+                    allowedLength -= len(_('(XX more messages)')) + 1 # bold
                     msgs = ircutils.wrap(s, allowedLength)
                     msgs.reverse()
                     instant = conf.get(conf.supybot.reply.mores.instant,target)

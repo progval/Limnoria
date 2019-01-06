@@ -540,6 +540,10 @@ class FormatContext(object):
         IRC string."""
         prefix_size = self.bold + self.reverse + self.underline + \
                 bool(self.fg) + bool(self.bg)
+        if self.fg and self.bg:
+            prefix_size += 6 # '\x03xx,yy%s'
+        elif self.fg or self.bg:
+            prefix_size += 3 # '\x03xx%s'
         if prefix_size:
             return prefix_size + 1 # '\x0f'
         else:
