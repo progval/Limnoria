@@ -1,20 +1,5 @@
 language: python
 sudo: true
-python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-  - "3.7-dev"
-  - "nightly"
-  - "pypy"
-  - "pypy-5.3.1" # default pypy3 doesn't work, see https://bitbucket.org/pypy/pypy/issues/2129/local-variable-val-referenced-before
-env:
-  - WITH_OPT_DEPS=true
-  - WITH_OPT_DEPS=false
 install:
   - if [ "$WITH_OPT_DEPS" = "true" ] ; then pip install -vr requirements.txt; fi
   - if [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then pip install -v git+https://github.com/ProgVal/irctest.git; fi
@@ -28,22 +13,51 @@ script:
 notifications:
     email: false
 matrix:
-  exclude:
+  include:
     - python: "2.6"
+      env: WITH_OPT_DEPS=false
+      dist: trusty
+    - python: "2.7"
+      env: WITH_OPT_DEPS=false
+      dist: trusty
+    - python: "2.7"
       env: WITH_OPT_DEPS=true
+      dist: trusty
     - python: "3.2"
       env: WITH_OPT_DEPS=false
+      dist: trusty
+    - python: "3.2"
+      env: WITH_OPT_DEPS=true
+      dist: trusty
     - python: "3.3"
-      env: WITH_OPT_DEPS=false
+      env: WITH_OPT_DEPS=true
+      dist: trusty
     - python: "3.4"
-      env: WITH_OPT_DEPS=false
+      env: WITH_OPT_DEPS=true
+      dist: trusty
     - python: "3.5"
-      env: WITH_OPT_DEPS=false
+      env: WITH_OPT_DEPS=true
+      dist: trusty
     - python: "3.6"
+      env: WITH_OPT_DEPS=true
+      dist: trusty
+
+    - python: "3.7"
       env: WITH_OPT_DEPS=false
+      dist: xenial
+    - python: "3.7"
+      env: WITH_OPT_DEPS=true
+      dist: xenial
+    - python: "3.8-dev"
+      env: WITH_OPT_DEPS=true
+      dist: xenial
     - python: "nightly"
-      env: WITH_OPT_DEPS=false
+      env: WITH_OPT_DEPS=true
+      dist: xenial
+
     - python: "pypy"
-      env: WITH_OPT_DEPS=false
+      env: WITH_OPT_DEPS=true
+      dist: trusty
     - python: "pypy3.3-5.2-alpha1"
-      env: WITH_OPT_DEPS=false
+      env: WITH_OPT_DEPS=true
+      dist: trusty
