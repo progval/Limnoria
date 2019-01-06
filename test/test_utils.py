@@ -308,7 +308,7 @@ class StrTest(SupyTestCase):
         self.assertEqual(f('fooba\\rba\\z'), 'foorz')
         f = PRTR('s/cat/dog/i')
         self.assertEqual(f('CATFISH'), 'dogFISH')
-        f = PRTR('s/foo/foo\/bar/')
+        f = PRTR(r's/foo/foo\/bar/')
         self.assertEqual(f('foo'), 'foo/bar')
         f = PRTR('s/^/foo/')
         self.assertEqual(f('bar'), 'foobar')
@@ -326,7 +326,7 @@ class StrTest(SupyTestCase):
         self.assertEqual(f('foobarbaz'), 'barbarbaz')
 
     def testPerlReToReplacerBug850931(self):
-        f = utils.str.perlReToReplacer('s/\b(\w+)\b/\1./g')
+        f = utils.str.perlReToReplacer(r's/\b(\w+)\b/\1./g')
         self.assertEqual(f('foo bar baz'), 'foo. bar. baz.')
 
     def testCommaAndify(self):

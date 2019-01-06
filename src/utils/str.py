@@ -89,7 +89,7 @@ def rsplit(s, sep=None, maxsplit=-1):
     return s.rsplit(sep, maxsplit)
 
 def normalizeWhitespace(s, removeNewline=True):
-    """Normalizes the whitespace in a string; \s+ becomes one space."""
+    r"""Normalizes the whitespace in a string; \s+ becomes one space."""
     if not s:
         return str(s) # not the same reference
     starts_with_space = (s[0] in ' \n\t\r')
@@ -525,7 +525,7 @@ def timestamp(t):
 def url(url):
     return url
 
-_formatRe = re.compile('%((?:\d+)?\.\d+f|[bfhiLnpqrsStTuv%])')
+_formatRe = re.compile(r'%((?:\d+)?\.\d+f|[bfhiLnpqrsStTuv%])')
 def format(s, *args, **kwargs):
     """w00t.
 
