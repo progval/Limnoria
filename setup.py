@@ -207,6 +207,7 @@ setup(
              'scripts/supybot-botchk',
              'scripts/supybot-wizard',
              'scripts/supybot-adduser',
+             'scripts/supybot-reset-password',
              'scripts/supybot-plugin-doc',
              'scripts/supybot-plugin-create',
              ],
