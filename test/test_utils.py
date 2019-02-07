@@ -1175,6 +1175,45 @@ class TestTruncatableSet(SupyTestCase):
         s.truncate(3)
         self.assertEqual(s, set(['foo', 'baz', 'qux']))
 
+class UtilsPythonTest(SupyTestCase):
+    def test_dict(self):
+        class Foo:
+            def __hasattr__(self, n):
+                raise Exception()
+            def __getattr__(self, n):
+                raise Exception()
+
+        def f():
+            self = Foo()
+            self.bar = 'baz'
+            raise Exception('f')
+
+        try:
+            f()
+        except:
+            res = utils.python.collect_extra_debug_data()
+
+        self.assertTrue(re.search('self.bar.*=.*baz', res), res)
+
+    def test_slots(self):
+        class Foo:
+            __slots__ = ('bar',)
+            def __hasattr__(self, n):
+                raise Exception()
+            def __getattr__(self, n):
+                raise Exception(n)
+
+        def f():
+            self = Foo()
+            self.bar = 'baz'
+            raise Exception('f')
+
+        try:
+            f()
+        except:
+            res = utils.python.collect_extra_debug_data()
+
+        self.assertTrue(re.search('self.bar.*=.*baz', res), res)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

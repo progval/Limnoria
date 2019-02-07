@@ -159,10 +159,12 @@ def collect_extra_debug_data():
         frame_locals = frame.f_locals
         for inspected in ('self', 'cls'):
             if inspected in frame_locals:
-                if hasattr(frame_locals[inspected], '__dict__') and \
-                        frame_locals[inspected].__dict__:
-                    for (key, value) in frame_locals[inspected].__dict__.items():
-                        frame_locals['%s.%s' % (inspected, key)] = value
+                for attr_name in dir(frame_locals[inspected]):
+                    try:
+                        v = getattr(frame_locals[inspected], attr_name)
+                    except Exception:
+                        v = '<ERROR WHILE GETTING VALUE>'
+                    frame_locals['%s.%s' % (inspected, attr_name)] = v
         for key, value in frame_locals.items():
             if key == '__builtins__':
                 # This is flooding
@@ -173,7 +175,7 @@ def collect_extra_debug_data():
             #error we don't want.
             try:
                 data += repr(value) + '\n'
-            except:
+            except Exception:
                 data += '<ERROR WHILE PRINTING VALUE>\n'
     data += '\n'
     data += '+-----------------------+\n'
