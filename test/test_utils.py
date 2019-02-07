@@ -1179,9 +1179,9 @@ class UtilsPythonTest(SupyTestCase):
     def test_dict(self):
         class Foo:
             def __hasattr__(self, n):
-                raise Exception()
+                raise Exception(n)
             def __getattr__(self, n):
-                raise Exception()
+                raise Exception(n)
 
         def f():
             self = Foo()
@@ -1199,7 +1199,7 @@ class UtilsPythonTest(SupyTestCase):
         class Foo:
             __slots__ = ('bar',)
             def __hasattr__(self, n):
-                raise Exception()
+                raise Exception(n)
             def __getattr__(self, n):
                 raise Exception(n)
 

@@ -159,7 +159,15 @@ def collect_extra_debug_data():
         frame_locals = frame.f_locals
         for inspected in ('self', 'cls'):
             if inspected in frame_locals:
-                for attr_name in dir(frame_locals[inspected]):
+                try:
+                    attribute_names = dir(frame_locals[inspected])
+                except Exception: # For Python 2 and Pypy
+                    try:
+                        attribute_names = list(
+                            frame_locals[inspected].__dict__)
+                    except Exception:
+                        attribute_names = []
+                for attr_name in attribute_names:
                     try:
                         v = getattr(frame_locals[inspected], attr_name)
                     except Exception:
