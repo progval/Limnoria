@@ -1213,7 +1213,5 @@ class UtilsPythonTest(SupyTestCase):
         except:
             res = utils.python.collect_extra_debug_data()
 
-        self.assertTrue(re.search('self.bar.*=.*baz', res), res)
-
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
