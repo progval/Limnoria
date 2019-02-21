@@ -102,7 +102,7 @@ import shutil
 import os
 
 
-plugins = [s for s in os.listdir('plugins') if
+plugins = [s for s in os.listdir(os.path.join('supybot', 'plugins')) if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
 def normalizeWhitespace(s):
