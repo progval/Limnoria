@@ -48,7 +48,10 @@ if debug:
 if path:
     os.chdir(path)
 
-VERSION_FILE = os.path.join('src', 'version.py')
+if os.path.isdir('src'):
+    VERSION_FILE = os.path.join('src', 'version.py')
+else:
+    VERSION_FILE = os.path.join('supybot', 'version.py')
 version = None
 try:
     if 'SOURCE_DATE_EPOCH' in os.environ:
@@ -64,7 +67,7 @@ try:
             time.strptime(time.asctime(time.gmtime(date)))[:3])
 except:
     if os.path.isfile(VERSION_FILE):
-        from src.version import version
+        from supybot.version import version
     else:
         version = 'installed on ' + time.strftime("%Y-%m-%dT%H-%M-%S", time.gmtime())
 try:
@@ -72,7 +75,7 @@ try:
 except OSError: # Does not exist
     pass
 if version:
-    fd = open(os.path.join('src', 'version.py'), 'a')
+    fd = open(VERSION_FILE, 'a')
     fd.write("version = '%s'\n" % version)
     fd.write('try: # For import from setup.py\n')
     fd.write('    import supybot.utils.python\n')
