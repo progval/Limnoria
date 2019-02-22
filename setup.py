@@ -48,10 +48,7 @@ if debug:
 if path:
     os.chdir(path)
 
-if os.path.isdir('src'):
-    VERSION_FILE = os.path.join('src', 'version.py')
-else:
-    VERSION_FILE = os.path.join('supybot', 'version.py')
+VERSION_FILE = os.path.join('src', 'version.py')
 version = None
 try:
     if 'SOURCE_DATE_EPOCH' in os.environ:
@@ -67,7 +64,7 @@ try:
             time.strptime(time.asctime(time.gmtime(date)))[:3])
 except:
     if os.path.isfile(VERSION_FILE):
-        from supybot.version import version
+        from src.version import version
     else:
         version = 'installed on ' + time.strftime("%Y-%m-%dT%H-%M-%S", time.gmtime())
 try:
@@ -75,7 +72,7 @@ try:
 except OSError: # Does not exist
     pass
 if version:
-    fd = open(VERSION_FILE, 'a')
+    fd = open(os.path.join('src', 'version.py'), 'a')
     fd.write("version = '%s'\n" % version)
     fd.write('try: # For import from setup.py\n')
     fd.write('    import supybot.utils.python\n')
@@ -102,7 +99,7 @@ import shutil
 import os
 
 
-plugins = [s for s in os.listdir(os.path.join('supybot', 'plugins')) if
+plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
 def normalizeWhitespace(s):
@@ -150,9 +147,19 @@ packages = ['supybot',
              'supybot.plugins.Math.local',
             ]
 
-package_data = {'supybot.locales': [s for s in os.listdir('supybot/locales/')]}
+package_dir = {'supybot': 'src',
+               'supybot.utils': 'src/utils',
+               'supybot.locales': 'locales',
+               'supybot.plugins': 'plugins',
+               'supybot.drivers': 'src/drivers',
+               'supybot.plugins.Dict.local': 'plugins/Dict/local',
+               'supybot.plugins.Math.local': 'plugins/Math/local',
+              }
+
+package_data = {'supybot.locales': [s for s in os.listdir('locales/')]}
 
 for plugin in plugins:
+    package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
     locales_path = 'plugins/' + plugin + '/locales/'
     locales_name = 'supybot.plugins.'+plugin
     if os.path.exists(locales_path):
@@ -202,6 +209,8 @@ setup(
 
     # Installation data
     packages=packages,
+
+    package_dir=package_dir,
 
     package_data=package_data,
 
