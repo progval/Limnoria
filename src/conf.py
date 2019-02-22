@@ -256,6 +256,11 @@ class Servers(registry.SpaceSeparatedListOfStrings):
     def convert(self, s):
         s = self.normalize(s)
         (server, port) = s.rsplit(':', 1)
+
+        # support for `[ipv6]:port` format
+        if server.startwith("[") and server.endswith("]"):
+            server = server[1:-1]
+
         port = int(port)
         return (server, port)
 
