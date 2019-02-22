@@ -258,7 +258,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
         (server, port) = s.rsplit(':', 1)
 
         # support for `[ipv6]:port` format
-        if server.startwith("[") and server.endswith("]"):
+        if server.startswith("[") and server.endswith("]"):
             server = server[1:-1]
 
         port = int(port)
