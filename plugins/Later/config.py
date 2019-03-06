@@ -56,4 +56,9 @@ conf.registerGlobalValue(Later, 'messageExpiry',
     days that a message will remain queued for a user. After this time elapses,
     the message will be deleted. If this value is 0, there is no maximum.""")))
 
+conf.registerGroup(Later, 'format')
+conf.registerGlobalValue(Later.format, 'senderHostname',
+    registry.Boolean(False, _("""Determines whether senders' hostname will be
+    shown in messages (instead of just the nick).""")))
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

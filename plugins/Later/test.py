@@ -28,6 +28,7 @@
 ###
 
 from supybot.test import *
+import supybot.conf as conf
 import time
 
 class LaterTestCase(ChannelPluginTestCase):
@@ -126,6 +127,16 @@ class LaterTestCase(ChannelPluginTestCase):
         self.assertEqual(str(m).strip(),
                 'PRIVMSG #test :bar: Sent 1 minute ago: <test> more stuff')
         time.time = real_time
-        
+
+    def testSenderHostname(self):
+        self.assertNotError('later tell foo stuff')
+        testPrefix = 'foo!bar@baz'
+        with conf.supybot.plugins.Later.format.senderHostname.context(True):
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                             prefix=testPrefix))
+            m = self.getMsg(' ')
+        self.assertEqual(str(m).strip(),
+                'PRIVMSG #test :foo: Sent just now: <%s> stuff' % self.prefix)
+ 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

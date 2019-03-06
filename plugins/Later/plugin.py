@@ -150,7 +150,7 @@ class Later(callbacks.Plugin):
         full_queues = []
         for validnick in validnicks:
             try:
-                self._addNote(validnick, msg.nick, text)
+                self._addNote(validnick, msg.prefix, text)
             except QueueIsFull:
                 full_queues.append(validnick)
         if full_queues:
@@ -210,7 +210,7 @@ class Later(callbacks.Plugin):
             return
         self._notes[nick].reverse()
         for note in self._notes[nick]:
-            if note[1] == msg.nick:
+            if ircutils.nickFromHostmask(note[1]) == msg.nick:
                 self._notes[nick].remove(note)
                 if len(self._notes[nick]) == 0:
                     del self._notes[nick]
@@ -243,6 +243,8 @@ class Later(callbacks.Plugin):
             msg.tag('repliedTo', old_repliedto)
 
     def _formatNote(self, when, whence, note):
+        if not self.registryValue('format.senderHostname'):
+            whence = ircutils.nickFromHostmask(whence)
         return _('Sent %s: <%s> %s') % (self._timestamp(when), whence, note)
 
     def doJoin(self, irc, msg):
