@@ -289,12 +289,21 @@ repositories = utils.InsensitivePreservingDict({
                                                    'skgsergio',
                                                    'Limnoria-plugins',
                                                    ),
+               'jlu5':             GithubRepository(
+                                                   'jlu5',
+                                                   'SupyPlugins',
+                                                   ),
+               'jlu5-py2legacy':   GithubRepository(
+                                                   'jlu5',
+                                                   'SupyPlugins',
+                                                   branch='python2-legacy'
+                                                   ),
                'GLolol':           GithubRepository(
-                                                   'GLolol',
+                                                   'jlu5',
                                                    'SupyPlugins',
                                                    ),
                'GLolol-py2legacy': GithubRepository(
-                                                   'GLolol',
+                                                   'jlu5',
                                                    'SupyPlugins',
                                                    branch='python2-legacy'
                                                    ),
