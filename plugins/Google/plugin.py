@@ -75,13 +75,13 @@ class Google(callbacks.PluginRegexp):
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
 
-    _decode_re = re.compile(r'<h3 class="r"><a href="/url\?q=(?P<url>[^"]+)&[^"]+">(?P<title>.*?)</a></h3>.*?<a class="[^"]+" href="/url\?q=(?P<cacheUrl>http://webcache[^"]+)">.*?<span class="st">(?P<content>.*?)</span>', re.DOTALL | re.MULTILINE)
+    _decode_re = re.compile(r'<div><div class="\w+"><a href="/url\?q=(?P<url>[^"]+)&[^"]+"><div class="(\w| )+">(?P<title>.*?)</div><div class="(\w| )+">(?P<breadcrumbs>.*?)</div></a></div>(?P<content><div class="(\w| )+">.*?</div></div>)', re.DOTALL | re.MULTILINE)
     @classmethod
     def decode(cls, text):
-        matches = cls._decode_re.findall(text)
+        matches = cls._decode_re.finditer(text)
         results = []
         for match in matches:
-            r = dict(zip(('url', 'title', 'cacheUrl', 'content'), match))
+            r = match.groupdict()
             r['url'] = utils.web.urlunquote(utils.web.htmlToText(r['url'].split('&amp;')[0]))
             results.append(r)
         return results
