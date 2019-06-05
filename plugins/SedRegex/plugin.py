@@ -130,7 +130,7 @@ class SedRegex(callbacks.PluginRegexp):
 
         for m in iterable:
             if m.command in ('PRIVMSG', 'NOTICE') and \
-                    m.args[0] == msg.args[0] and m.tagged('receivedBy') == irc:
+                    ircutils.strEqual(m.args[0], msg.args[0]) and m.tagged('receivedBy') == irc:
                 if target and m.nick != target:
                     continue
                 # Don't snarf ignored users' messages unless specifically
