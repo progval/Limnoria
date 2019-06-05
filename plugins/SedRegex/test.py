@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2017, James Lu <james@overdrivenetworks.com>
+# Copyright (c) 2017-2019, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -156,6 +156,22 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         n = ircutils.nickFromHostmask(self.__class__.other)
         self.assertIn('thinks %s meant to say: * %s wakes' % (n, n), str(m))
+
+    # https://github.com/jlu5/SupyPlugins/commit/e19abe049888667c3d0a4eb4a2c3ae88b8bea511
+    # We want to make sure the bot treats channel names case-insensitively, if some client
+    # writes to it using a differente case.
+    def testCaseNormalizationInRead(self):
+        assert self.channel != self.channel.title()  # In case Limnoria's defaults change
+        self.feedMsg("what a strange bug", to=self.channel.title())
+        self.feedMsg('s/strange/hilarious/', to=self.channel)
+        m = self.getMsg(' ')
+        self.assertIn('what a hilarious bug', str(m))
+    def testCaseNormalizationInReplace(self):
+        assert self.channel != self.channel.title()  # In case Limnoria's defaults change
+        self.feedMsg("Segmentation fault", to=self.channel)
+        self.feedMsg('s/$/ (core dumped)/', to=self.channel.title())
+        m = self.getMsg(' ')
+        self.assertIn('Segmentation fault (core dumped)', str(m))
 
     # TODO: test ignores
 
