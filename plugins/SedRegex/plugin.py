@@ -114,8 +114,8 @@ class SedRegex(callbacks.PluginRegexp):
 
         try:
             (pattern, replacement, count, flags) = self._unpack_sed(msg.args[1])
-        except (ValueError, re.error) as e:
-            self.log.warning(_("SedRegex error: %s"), e)
+        except Exception as e:
+            self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
             if self.registryValue('displayErrors', msg.args[0]):
                 irc.error('%s.%s: %s' % (e.__class__.__module__, e.__class__.__name__, e))
             return
@@ -168,16 +168,16 @@ class SedRegex(callbacks.PluginRegexp):
                         irc.reply(_("%s meant to say: %s") %
                                     (messageprefix, subst), prefixNick=False)
                         return
-                except (ValueError, re.error) as e:
+                except Exception as e:
+                    self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
                     if self.registryValue('displayErrors', msg.args[0]):
                         irc.error('%s.%s: %s' % (e.__class__.__module__, e.__class__.__name__, e))
                     return
 
         self.log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
                          msg.args[1], len(irc.state.history), msg.args[0])
-        if self.registryValue("displayErrors", msg.args[0]):
-            irc.error(_("Search not found in the last %i messages.") %
-                      len(irc.state.history), Raise=True)
+        irc.error(_("Search not found in the last %i messages.") %
+                    len(irc.state.history), Raise=True)
     replacer.__doc__ = SED_REGEX.pattern
 
 Class = SedRegex
