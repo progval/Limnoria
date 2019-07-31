@@ -1175,7 +1175,13 @@ class DefaultCapabilities(SpaceSeparatedListOfCapabilities):
             self.value.add('-owner')
 
 conf.registerGlobalValue(conf.supybot, 'capabilities',
-    DefaultCapabilities(['-owner', '-admin', '-trusted'], """These are the
+    DefaultCapabilities([
+        '-owner', '-admin', '-trusted',
+        '-aka.add', '-aka.set', '-aka.remove',
+        '-alias.add', '-alias.remove',
+        '-scheduler.add', '-scheduler.remove',
+    ],
+    """These are the
     capabilities that are given to everyone by default.  If they are normal
     capabilities, then the user will have to have the appropriate
     anti-capability if you want to override these capabilities; if they are
