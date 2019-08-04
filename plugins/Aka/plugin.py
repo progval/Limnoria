@@ -555,7 +555,7 @@ class Aka(callbacks.Plugin):
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
-                if not ircutils.isChannel(arg):
+                if not irc.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
@@ -587,7 +587,7 @@ class Aka(callbacks.Plugin):
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
-                if not ircutils.isChannel(arg):
+                if not irc.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
@@ -618,7 +618,7 @@ class Aka(callbacks.Plugin):
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
-                if not ircutils.isChannel(arg):
+                if not irc.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
@@ -650,7 +650,7 @@ class Aka(callbacks.Plugin):
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
-                if not ircutils.isChannel(arg):
+                if not irc.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
@@ -673,7 +673,7 @@ class Aka(callbacks.Plugin):
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
-                if not ircutils.isChannel(arg):
+                if not irc.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
@@ -696,7 +696,7 @@ class Aka(callbacks.Plugin):
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
-                if not ircutils.isChannel(arg):
+                if not irc.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
@@ -742,7 +742,7 @@ class Aka(callbacks.Plugin):
         filterlocked = filterunlocked = False
         for (option, arg) in optlist:
             if option == 'channel':
-                if not ircutils.isChannel(arg):
+                if not irc.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg
@@ -785,7 +785,7 @@ class Aka(callbacks.Plugin):
         channel = 'global'
         for (option, arg) in optlist:
             if option == 'channel':
-                if not ircutils.isChannel(arg):
+                if not irc.isChannel(arg):
                     irc.error(_('%r is not a valid channel.') % arg,
                             Raise=True)
                 channel = arg

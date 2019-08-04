@@ -63,7 +63,7 @@ def getWrapper(name):
             raise registry.InvalidRegistryName(name)
     return group
 
-def getCapability(name):
+def getCapability(irc, name):
     capability = 'owner' # Default to requiring the owner capability.
     if not name.startswith('supybot') and not name.startswith('users'):
         name = 'supybot.' + name
@@ -74,7 +74,7 @@ def getCapability(name):
         group = group.get(part)
         if not getattr(group, '_opSettable', True):
             return 'owner'
-        if ircutils.isChannel(part):
+        if irc.isChannel(part):
             # If a registry value has a channel in it, it requires a
             # 'channel,op' capability, or so we assume.  We'll see if we're
             # proven wrong.
@@ -148,15 +148,15 @@ class Config(callbacks.Plugin):
         except registry.InvalidRegistryValue as e:
             irc.error(str(e))
 
-    def _list(self, group):
+    def _list(self, irc, group):
         L = []
         for (vname, v) in group._children.items():
             if hasattr(group, 'channelValue') and group.channelValue and \
-               ircutils.isChannel(vname) and not v._children:
+               irc.isChannel(vname) and not v._children:
                 continue
             if hasattr(v, 'channelValue') and v.channelValue:
                 vname = '#' + vname
-            if v._added and not all(ircutils.isChannel, v._added):
+            if v._added and not all(irc.isChannel, v._added):
                 vname = '@' + vname
             L.append(vname)
         utils.sortBy(str.lower, L)
@@ -172,7 +172,7 @@ class Config(callbacks.Plugin):
         it can be separately configured for each channel using the 'channel'
         command in this plugin, it is preceded by an '#' sign.
         """
-        L = self._list(group)
+        L = self._list(irc, group)
         if L:
             irc.reply(format('%L', L))
         else:
@@ -190,7 +190,7 @@ class Config(callbacks.Plugin):
         for (name, x) in conf.supybot.getValues(getChildren=True):
             if word in name.lower():
                 possibleChannel = registry.split(name)[-1]
-                if not ircutils.isChannel(possibleChannel):
+                if not irc.isChannel(possibleChannel):
                     L.append(name)
         if L:
             irc.reply(format('%L', L))
@@ -207,7 +207,7 @@ class Config(callbacks.Plugin):
             if not group._private:
                 return (value, None)
             else:
-                capability = getCapability(group._name)
+                capability = getCapability(irc, group._name)
                 if ircdb.checkCapability(msg.prefix, capability):
                     return (value, True)
                 else:
@@ -222,7 +222,7 @@ class Config(callbacks.Plugin):
             irc.error(_("This configuration variable is not writeable "
                 "via IRC. To change it you have to: 1) use the 'flush' command 2) edit "
                 "the config file 3) use the 'config reload' command."), Raise=True)
-        capability = getCapability(group._name)
+        capability = getCapability(irc, group._name)
         if ircdb.checkCapability(msg.prefix, capability):
             # I think callCommand catches exceptions here.  Should it?
             group.set(value)

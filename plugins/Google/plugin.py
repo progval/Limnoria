@@ -326,7 +326,7 @@ class Google(callbacks.PluginRegexp):
         Uses Google's calculator to calculate the value of <expression>.
         """
         channel = msg.args[0]
-        if not ircutils.isChannel(channel):
+        if not irc.isChannel(channel):
             channel = None
         url = self._googleUrl(expr, channel)
         h = {"User-Agent":"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36"}
@@ -360,7 +360,7 @@ class Google(callbacks.PluginRegexp):
         Looks <phone number> up on Google.
         """
         channel = msg.args[0]
-        if not ircutils.isChannel(channel):
+        if not irc.isChannel(channel):
             channel = None
         url = self._googleUrl(phonenumber, channel)
         html = utils.web.getUrl(url).decode('utf8')

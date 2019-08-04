@@ -35,6 +35,7 @@ import pickle
 import supybot.conf as conf
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 
 # The test framework used to provide these, but not it doesn't.  We'll add
 # messages to as we find bugs (if indeed we find bugs).
@@ -229,6 +230,10 @@ class IrcStateTestCase(SupyTestCase):
     class FakeIrc:
         nick = 'nick'
         prefix = 'nick!user@host'
+
+        def isChannel(self, s):
+            return ircutils.isChannel(s)
+
     irc = FakeIrc()
     def testKickRemovesChannel(self):
         st = irclib.IrcState()

@@ -34,7 +34,7 @@ class ReplyTestCase(ChannelPluginTestCase):
     plugins = ('Reply',)
     def testPrivate(self):
         m = self.getMsg('private [list]')
-        self.failIf(ircutils.isChannel(m.args[0]))
+        self.failIf(self.irc.isChannel(m.args[0]))
 
     def testNotice(self):
         m = self.getMsg('notice [list]')

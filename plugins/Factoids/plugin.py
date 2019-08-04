@@ -128,7 +128,7 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
             self.write(httpserver.get_template('factoids/index.html'))
         elif len(parts) == 2:
             channel = utils.web.urlunquote(parts[0])
-            if not ircutils.isChannel(channel):
+            if not irc.isChannel(channel):
                 self.send_response(404)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
                 self.end_headers()

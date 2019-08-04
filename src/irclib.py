@@ -569,7 +569,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
-        if ircutils.isChannel(channel): # There can be user modes, as well.
+        if irc.isChannel(channel): # There can be user modes, as well.
             try:
                 chan = self.channels[channel]
             except KeyError:

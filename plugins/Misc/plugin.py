@@ -34,6 +34,7 @@ import imp
 import sys
 import json
 import time
+import functools
 
 
 import supybot
@@ -402,10 +403,10 @@ class Misc(callbacks.Plugin):
             irc.error(_('That\'s all, there is no more.'))
     more = wrap(more, [additional('seenNick')])
 
-    def _validLastMsg(self, msg):
+    def _validLastMsg(self, irc, msg):
         return msg.prefix and \
                msg.command == 'PRIVMSG' and \
-               ircutils.isChannel(msg.args[0])
+               irc.isChannel(msg.args[0])
 
     @internationalizeDocstring
     def last(self, irc, msg, args, optlist):
@@ -422,7 +423,7 @@ class Misc(callbacks.Plugin):
         predicates = {}
         nolimit = False
         skipfirst = True
-        if ircutils.isChannel(msg.args[0]):
+        if irc.isChannel(msg.args[0]):
             predicates['in'] = lambda m: ircutils.strEqual(m.args[0],
                                                            msg.args[0])
         else:
@@ -469,7 +470,8 @@ class Misc(callbacks.Plugin):
                 predicates.setdefault('regexp', []).append(f)
             elif option == 'nolimit':
                 nolimit = True
-        iterable = filter(self._validLastMsg, reversed(irc.state.history))
+        iterable = filter(functools.partial(self._validLastMsg, irc),
+                          reversed(irc.state.history))
         if skipfirst:
             # Drop the first message only if our current channel is the same as
             # the channel we've been instructed to look at.
@@ -535,7 +537,7 @@ class Misc(callbacks.Plugin):
             irc.error('This command cannot be nested.', Raise=True)
         if target.lower() == 'me':
             target = msg.nick
-        if ircutils.isChannel(target):
+        if irc.isChannel(target):
             irc.error(_('Hey, just give the command.  No need for the tell.'))
             return
         if not ircutils.isNick(target):

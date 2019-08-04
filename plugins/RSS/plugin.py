@@ -63,7 +63,7 @@ else:
     from urllib.request import ProxyHandler
 
 def get_feedName(irc, msg, args, state):
-    if ircutils.isChannel(args[0]):
+    if irc.isChannel(args[0]):
         state.errorInvalid('feed name', args[0], 'must not be channel names.')
     if not registry.isValidRegistryName(args[0]):
         state.errorInvalid('feed name', args[0],

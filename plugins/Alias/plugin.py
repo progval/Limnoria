@@ -43,13 +43,13 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Alias')
 
 # Copied from the old privmsgs.py.
-def getChannel(msg, args=()):
+def getChannel(irc, msg, args):
     """Returns the channel the msg came over or the channel given in args.
 
     If the channel was given in args, args is modified (the channel is
     removed).
     """
-    if args and ircutils.isChannel(args[0]):
+    if args and irc.isChannel(msg.args[0]):
         if conf.supybot.reply.requireChannelCommandsToBeSentInChannel():
             if args[0] != msg.args[0]:
                 s = 'Channel commands must be sent in the channel to which ' \
@@ -60,7 +60,7 @@ def getChannel(msg, args=()):
                     'to False.'
                 raise callbacks.Error(s)
         return args.pop(0)
-    elif ircutils.isChannel(msg.args[0]):
+    elif irc.isChannel(msg.args[0]):
         return msg.args[0]
     else:
         raise callbacks.Error('Command must be sent in a channel or ' \
@@ -173,7 +173,7 @@ def makeNewAlias(name, alias):
     def f(self, irc, msg, args):
         alias = original.replace('$nick', msg.nick)
         if '$channel' in original:
-            channel = getChannel(msg, args)
+            channel = getChannel(irc, msg, args)
             alias = alias.replace('$channel', channel)
         tokens = callbacks.tokenize(alias)
         if biggestDollar or biggestAt:

@@ -120,7 +120,7 @@ class NickCapture(callbacks.Plugin):
 
     def do437(self, irc, msg):
         """Nick/channel is temporarily unavailable"""
-        if ircutils.isChannel(msg.args[1]):
+        if irc.isChannel(msg.args[1]):
             return
         self.log.info('Nick %s is unavailable; attempting NickServ release '
                       'on %s.' % (msg.args[1], irc.network))

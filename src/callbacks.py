@@ -470,7 +470,7 @@ class RichReplyMethods(object):
             joiner = joiner.join
         to = self._getTarget(kwargs.get('to'))
         if oneToOne is None: # Can be True, False, or None
-            if ircutils.isChannel(to):
+            if self.irc.isChannel(to):
                 oneToOne = conf.get(conf.supybot.reply.oneToOne, to)
             else:
                 oneToOne = conf.supybot.reply.oneToOne()
@@ -665,7 +665,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         self.notice = None
         self.private = None
         self.noLengthCheck = None
-        if ircutils.isChannel(self.msg.args[0]):
+        if self.irc.isChannel(self.msg.args[0]):
             self.prefixNick = conf.get(conf.supybot.reply.withNickPrefix,
                                        self.msg.args[0])
         else:
@@ -976,7 +976,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                             pass # We'll leave it as it is.
                     mask = prefix.split('!', 1)[1]
                     self._mores[mask] = msgs
-                    public = ircutils.isChannel(msg.args[0])
+                    public = self.irc.isChannel(msg.args[0])
                     private = self.private or not public
                     self._mores[msg.nick] = (private, msgs)
                     m = reply(msg, response, to=self.to,

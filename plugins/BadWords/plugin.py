@@ -75,7 +75,7 @@ class BadWords(callbacks.Privmsg):
             channel = msg.args[0]
             self.updateRegexp(channel)
             s = ircutils.stripFormatting(msg.args[1])
-            if ircutils.isChannel(channel) and self.registryValue('kick', channel):
+            if irc.isChannel(channel) and self.registryValue('kick', channel):
                 if self.regexp.search(s):
                     c = irc.state.channels[channel]
                     cap = ircdb.makeChannelCapability(channel, 'op')

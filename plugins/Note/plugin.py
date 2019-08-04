@@ -270,8 +270,8 @@ class Note(callbacks.Plugin):
         self.db.setRead(id)
     note = wrap(note, ['user', ('id', 'note')])
 
-    def _formatNoteId(self, msg, note, sent=False):
-        if note.public or not ircutils.isChannel(msg.args[0]):
+    def _formatNoteId(self, irc, msg, note, sent=False):
+        if note.public or not irc.isChannel(msg.args[0]):
             if sent:
                 sender = plugins.getUserName(note.to)
                 return format('#%i to %s', note.id, sender)
@@ -315,7 +315,7 @@ class Note(callbacks.Plugin):
             irc.reply('No matching notes were found.')
         else:
             utils.sortBy(operator.attrgetter('id'), notes)
-            ids = [self._formatNoteId(msg, note) for note in notes]
+            ids = [self._formatNoteId(irc, msg, note) for note in notes]
             ids = self._condense(ids)
             irc.reply(format('%L', ids))
     search = wrap(search,
@@ -357,7 +357,7 @@ class Note(callbacks.Plugin):
             irc.reply('You have no unread notes.')
         else:
             utils.sortBy(operator.attrgetter('id'), notes)
-            ids = [self._formatNoteId(msg, note) for note in notes]
+            ids = [self._formatNoteId(irc, msg, note) for note in notes]
             ids = self._condense(ids)
             irc.reply(format('%L.', ids))
     list = wrap(list, ['user', getopts({'old': '', 'sent': '',
@@ -421,7 +421,7 @@ class Note(callbacks.Plugin):
         else:
             utils.sortBy(operator.attrgetter('id'), notes)
             notes.reverse() # Most recently sent first.
-            ids = [self._formatNoteId(msg, note, sent=True) for note in notes]
+            ids = [self._formatNoteId(irc, msg, note, sent=True) for note in notes]
             ids = self._condense(ids)
             irc.reply(format('%L.', ids))
 
@@ -444,7 +444,7 @@ class Note(callbacks.Plugin):
         else:
             utils.sortBy(operator.attrgetter('id'), notes)
             notes.reverse()
-            ids = [self._formatNoteId(msg, note) for note in notes]
+            ids = [self._formatNoteId(irc, msg, note) for note in notes]
             ids = self._condense(ids)
             irc.reply(format('%L.', ids))
 

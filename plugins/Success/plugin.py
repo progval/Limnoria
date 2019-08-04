@@ -62,7 +62,7 @@ class Success(plugins.ChannelIdDatabasePlugin):
                 return ret
 
             def get(self, attr):
-                if ircutils.isChannel(attr):
+                if irc.isChannel(attr):
                     pluginSelf.target = attr
                 return self
         conf.supybot.replies.success.__class__ = MySuccessClass
