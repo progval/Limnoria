@@ -143,7 +143,7 @@ def areNicks(s, strictRfc=True, nicklen=None):
     nick = functools.partial(isNick, strictRfc=strictRfc, nicklen=nicklen)
     return all(map(nick, s.split(',')))
 
-def isChannel(s, chantypes='#&+!', channellen=50):
+def isChannel(s, chantypes='#&!', channellen=50):
     """s => bool
     Returns True if s is a valid IRC channel name."""
     return s and \
@@ -153,13 +153,13 @@ def isChannel(s, chantypes='#&+!', channellen=50):
            len(s) <= channellen and \
            len(s.split(None, 1)) == 1
 
-def areChannels(s, chantypes='#&+!',channellen=50):
+def areChannels(s, chantypes='#&!', channellen=50):
     """Like 'isChannel(x)' but for comma-separated list."""
     chan = functools.partial(isChannel, chantypes=chantypes,
             channellen=channellen)
     return all(map(chan, s.split(',')))
 
-def areReceivers(s, strictRfc=True, nicklen=None, chantypes='#&+!',
+def areReceivers(s, strictRfc=True, nicklen=None, chantypes='#&!',
         channellen=50):
     """Like 'isNick(x) or isChannel(x)' but for comma-separated list."""
     nick = functools.partial(isNick, strictRfc=strictRfc, nicklen=nicklen)
