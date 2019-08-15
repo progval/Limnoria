@@ -133,13 +133,13 @@ class ConfigTestCase(ChannelPluginTestCase):
                 '^Completely: Error: ',
                 frm=self.prefix3)
         self.assertResponse('config plugins.Config.%s' % var_name,
-                'Global: 0; #test: 0')
+                'Global: 0; #test @ test: 0')
 
         self.assertNotRegexp('config channel plugins.Config.%s 1' % var_name,
                 '^Completely: Error: ',
                 frm=self.prefix3)
         self.assertResponse('config plugins.Config.%s' % var_name,
-                'Global: 0; #test: 1')
+                'Global: 0; #test @ test: 1')
 
     def testOpNonEditable(self):
         var_name = 'testOpNonEditable' + random_string()
@@ -154,18 +154,18 @@ class ConfigTestCase(ChannelPluginTestCase):
                 '^Completely: Error: ',
                 frm=self.prefix3)
         self.assertResponse('config plugins.Config.%s' % var_name,
-                'Global: 0; #test: 0')
+                'Global: 0; #test @ test: 0')
 
         self.assertRegexp('config channel plugins.Config.%s 1' % var_name,
                 '^Completely: Error: ',
                 frm=self.prefix3)
         self.assertResponse('config plugins.Config.%s' % var_name,
-                'Global: 0; #test: 0')
+                'Global: 0; #test @ test: 0')
 
         self.assertNotRegexp('config channel plugins.Config.%s 1' % var_name,
                 '^Completely: Error: ')
         self.assertResponse('config plugins.Config.%s' % var_name,
-                'Global: 0; #test: 1')
+                'Global: 0; #test @ test: 1')
 
     def testChannel(self):
         self.assertResponse('config reply.whenAddressedBy.strings ^',
@@ -180,6 +180,54 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertResponse('config channel reply.whenAddressedBy.strings', '$')
         self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings', '.')
         self.assertResponse('config channel #testchan2 reply.whenAddressedBy.strings', '.')
+
+    def testChannelNetwork(self):
+        irc = self.irc
+        irc1 = getTestIrc('testnet1')
+        irc2 = getTestIrc('testnet2')
+        irc3 = getTestIrc('testnet3')
+        conf.supybot.reply.whenAddressedBy.strings.get('#test')._wasSet = False
+        # 1. Set global
+        self.assertResponse('config reply.whenAddressedBy.strings ^',
+                'The operation succeeded.')
+
+        # 2. Set for current net + #testchan1
+        self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings @',
+                'The operation succeeded.')
+
+        # Exact match for #2:
+        self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings', '@')
+
+        # 3: Set for #testchan1 for all nets:
+        self.assertNotError('config channel * #testchan1 reply.whenAddressedBy.strings $')
+
+        # Still exact match for #2:
+        self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings', '@')
+
+        # Inherit from *:
+        self.assertResponse('config channel testnet1 #testchan1 reply.whenAddressedBy.strings', '$')
+        self.assertResponse('config channel testnet2 #testchan1 reply.whenAddressedBy.strings', '$')
+
+        # 4: Set for testnet1 for #testchan1 and #testchan2:
+        self.assertNotError('config channel testnet1 #testchan1,#testchan2 reply.whenAddressedBy.strings .')
+
+        # 5: Set for testnet2 for #testchan1:
+        self.assertNotError('config channel testnet2 #testchan1 reply.whenAddressedBy.strings :')
+
+        # Inherit from global value (nothing was set of current net or current
+        # chan):
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '^')
+
+        # Still exact match for #2:
+        self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings', '@')
+        self.assertResponse('config channel %s #testchan1 reply.whenAddressedBy.strings' % irc.network, '@')
+
+        # Exact match for #4:
+        self.assertResponse('config channel testnet1 #testchan1 reply.whenAddressedBy.strings', '.')
+        self.assertResponse('config channel testnet1 #testchan2 reply.whenAddressedBy.strings', '.')
+
+        # Inherit from #5, which set for #testchan1 on all nets
+        self.assertResponse('config channel testnet3 #testchan1 reply.whenAddressedBy.strings', ':')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

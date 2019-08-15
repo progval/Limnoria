@@ -151,10 +151,10 @@ class Config(callbacks.Plugin):
     def _list(self, irc, group):
         L = []
         for (vname, v) in group._children.items():
-            if hasattr(group, 'channelValue') and group.channelValue and \
+            if hasattr(group, '_channelValue') and group._channelValue and \
                irc.isChannel(vname) and not v._children:
                 continue
-            if hasattr(v, 'channelValue') and v.channelValue:
+            if hasattr(v, '_channelValue') and v._channelValue:
                 vname = '#' + vname
             if v._added and not all(irc.isChannel, v._added):
                 vname = '@' + vname
@@ -198,11 +198,20 @@ class Config(callbacks.Plugin):
             irc.reply(_('There were no matching configuration variables.'))
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?
 
-    def _getValue(self, irc, msg, group, addChannel=False):
+    def _getValue(self, irc, msg, group, network=None, channel=None, addGlobal=False):
+        global_value = str(group) or ' '
+        group = group.getSpecific(
+            network=network.network, channel=channel, check=None)
         value = str(group) or ' '
-        if addChannel and irc.isChannel(msg.args[0]) and not irc.nested:
-            s = str(group.get(msg.args[0]))
-            value = _('Global: %s; %s: %s') % (value, msg.args[0], s)
+        if addGlobal and not irc.nested:
+            value = _(
+                'Global: %(global_value)s; '
+                '%(channel_name)s @ %(network_name)s: %(channel_value)s') % {
+                'global_value': global_value,
+                'channel_name': msg.args[0],
+                'network_name': irc.network,
+                'channel_value': value,
+            }
         if hasattr(group, 'value'):
             if not group._private:
                 return (value, None)
@@ -230,28 +239,44 @@ class Config(callbacks.Plugin):
             irc.errorNoCapability(capability, Raise=True)
 
     @internationalizeDocstring
-    def channel(self, irc, msg, args, channels, group, value):
-        """[<channel>] <name> [<value>]
+    def channel(self, irc, msg, args, network, channels, group, value):
+        """[<network>] [<channel>] <name> [<value>]
 
         If <value> is given, sets the channel configuration variable for <name>
-        to <value> for <channel>.  Otherwise, returns the current channel
+        to <value> for <channel> on the <network>.
+        Otherwise, returns the current channel
         configuration value of <name>.  <channel> is only necessary if the
         message isn't sent in the channel itself. More than one channel may
-        be given at once by separating them with commas."""
-        if not group.channelValue:
+        be given at once by separating them with commas.
+        <network> defaults to the current network."""
+        if not group._channelValue:
             irc.error(_('That configuration variable is not a channel-specific '
                       'configuration variable.'))
             return
         if value is not None:
             for channel in channels:
                 assert irc.isChannel(channel)
+
+                # Sets the non-network-specific value, for forward
+                # compatibility, ie. this will work even if the owner rolls
+                # back Limnoria to an older version.
+                # It's also an easy way to support plugins which are not
+                # network-aware.
                 self._setValue(irc, msg, group.get(channel), value)
+
+                if network != '*':
+                    # Set the network-specific value
+                    self._setValue(irc, msg, group.get(':' + network.network).get(channel), value)
+
             irc.replySuccess()
         else:
+            if network == '*':
+                network = None
             values = []
             private = None
             for channel in channels:
-                (value, private_value) = self._getValue(irc, msg, group.get(channel))
+                (value, private_value) = \
+                    self._getValue(irc, msg, group, network, channel)
                 values.append((channel, value))
                 if private_value:
                     private = True
@@ -261,7 +286,8 @@ class Config(callbacks.Plugin):
                     for (channel, value) in values]))
             else:
                 irc.reply(values[0][1])
-    channel = wrap(channel, ['channels', 'settableConfigVar',
+    channel = wrap(channel, [optional(first(('literal', '*'), 'networkIrc')),
+                             'channels', 'settableConfigVar',
                              additional('text')])
 
     @internationalizeDocstring
@@ -276,7 +302,10 @@ class Config(callbacks.Plugin):
             self._setValue(irc, msg, group, value)
             irc.replySuccess()
         else:
-            (value, private) = self._getValue(irc, msg, group, addChannel=group.channelValue)
+            (value, private) = self._getValue(
+                irc, msg, group, network=irc,
+                channel=msg.args[0] if irc.isChannel(msg.args[0]) else None,
+                addGlobal=group._channelValue)
             irc.reply(value, private=private)
     config = wrap(config, ['settableConfigVar', additional('text')])
 

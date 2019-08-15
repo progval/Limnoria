@@ -59,6 +59,9 @@ supybot.log.plugins.individualLogfiles: False
 supybot.protocols.irc.throttleTime: 0
 supybot.reply.whenAddressedBy.chars: @
 supybot.networks.test.server: should.not.need.this
+supybot.networks.testnet1.server: should.not.need.this
+supybot.networks.testnet2.server: should.not.need.this
+supybot.networks.testnet3.server: should.not.need.this
 supybot.nick: test
 supybot.databases.users.allowUnregistration: True
 """ % {'base_dir': os.getcwd()})
