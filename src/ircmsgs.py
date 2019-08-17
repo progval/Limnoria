@@ -116,7 +116,7 @@ class IrcMsg(object):
     # On second thought, let's use methods for tagging.
     __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
                  '_hash', '_str', '_repr', '_len', 'tags', 'reply_env',
-                 'server_tags', 'time')
+                 'server_tags', 'time', 'channel')
     def __init__(self, s='', command='', args=(), prefix='', msg=None,
             reply_env=None):
         assert not (msg and s), 'IrcMsg.__init__ cannot accept both s and msg'

@@ -470,6 +470,33 @@ class IrcTestCase(SupyTestCase):
         self.irc.feedMsg(msg2)
         self.assertEqual(list(self.irc.state.history), [msg1, msg2])
 
+    def testMsgChannel(self):
+        self.irc.reset()
+
+        self.irc.state.supported['statusmsg'] = '@'
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG #linux :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, '#linux')
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG @#linux2 :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, '#linux2')
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG +#linux3 :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, None)
+
+        self.irc.state.supported['statusmsg'] = '+@'
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG #linux :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, '#linux')
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG @#linux2 :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, '#linux2')
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG +#linux3 :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, '#linux3')
+
+        del self.irc.state.supported['statusmsg']
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG #linux :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, '#linux')
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG @#linux2 :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, None)
+        self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG +#linux3 :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, None)
+
     def testQuit(self):
         self.irc.reset()
         self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #foo'))
