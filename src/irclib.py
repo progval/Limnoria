@@ -882,10 +882,11 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         msg.tag('receivedOn', self.network)
         msg.tag('receivedAt', time.time())
 
-        # Check if the message is addressed to a channel
+        # Check if the message is sent to a channel
         if msg.args:
             channel = msg.args[0]
-            if not conf.supybot.protocols.irc.strictRfc():
+            if msg.command in ('NOTICE', 'PRIVMSG') and \
+                    not conf.supybot.protocols.irc.strictRfc():
                 statusmsg_chars = self.state.supported.get('statusmsg', '')
                 channel = channel.lstrip(statusmsg_chars)
             if not self.isChannel(channel):

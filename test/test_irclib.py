@@ -497,6 +497,15 @@ class IrcTestCase(SupyTestCase):
         self.irc.feedMsg(ircmsgs.IrcMsg('PRIVMSG +#linux3 :foo bar baz!'))
         self.assertEqual(self.irc.state.history[-1].channel, None)
 
+        # Test msg.channel is set only for PRIVMSG and NOTICE
+        self.irc.state.supported['statusmsg'] = '+@'
+        self.irc.feedMsg(ircmsgs.IrcMsg('NOTICE @#linux :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, '#linux')
+        self.irc.feedMsg(ircmsgs.IrcMsg('NOTICE @#linux2 :foo bar baz!'))
+        self.assertEqual(self.irc.state.history[-1].channel, '#linux2')
+        self.irc.feedMsg(ircmsgs.IrcMsg('MODE @#linux3 +v foo'))
+        self.assertEqual(self.irc.state.history[-1].channel, None)
+
     def testQuit(self):
         self.irc.reset()
         self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #foo'))
