@@ -1391,33 +1391,33 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
         else:
             self.__parent.__call__(irc, msg)
 
-    def registryValue(self, name, channel=None, value=True):
+    def registryValue(self, name, channel=None, network=None, value=True):
+        if isinstance(network, bool):
+            # Network-unaware plugin that uses 'value' as a positional
+            # argument.
+            (network, value) = (value, network)
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
         names = registry.split(name)
         for name in names:
             group = group.get(name)
-        if channel is not None:
-            if ircutils.isChannel(channel):
-                group = group.get(channel)
-            else:
-                self.log.debug('%s: registryValue got channel=%r', plugin,
-                               channel)
         if value:
+            group = group.getSpecific(network=network, channel=channel)
             return group()
         else:
             return group
 
-    def setRegistryValue(self, name, value, channel=None):
+    def setRegistryValue(self, name, value, channel=None, network=None):
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
         names = registry.split(name)
         for name in names:
             group = group.get(name)
-        if channel is None:
-            group.setValue(value)
-        else:
-            group.get(channel).setValue(value)
+        if network:
+            group = group.get(':' + network)
+        if channel:
+            group = group.get(channel)
+        group.setValue(value)
 
     def userValue(self, name, prefixOrName, default=None):
         try:

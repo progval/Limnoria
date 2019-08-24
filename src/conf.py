@@ -83,12 +83,14 @@ def registerGroup(Group, name, group=None, **kwargs):
     return Group.register(name, group)
 
 def registerGlobalValue(group, name, value):
-    value.channelValue = False
+    value._networkValue = False
+    value._channelValue = False
     return group.register(name, value)
 
 def registerChannelValue(group, name, value, opSettable=True):
     value._supplyDefault = True
-    value.channelValue = True
+    value._networkValue = True
+    value._channelValue = True
     value._opSettable = opSettable
     g = group.register(name, value)
     gname = g._name.lower()
@@ -96,8 +98,13 @@ def registerChannelValue(group, name, value, opSettable=True):
         if name.lower().startswith(gname) and len(gname) < len(name):
             name = name[len(gname)+1:] # +1 for .
             parts = registry.split(name)
-            if len(parts) == 1 and parts[0] and ircutils.isChannel(parts[0]):
-                # This gets the channel values so they always persist.
+            if len(parts) == 2 and parts[0] and parts[0].startswith(':') \
+                    and parts[1] and ircutils.isChannel(parts[1]):
+                # This gets the network+channel values so they always persist.
+                g.get(parts[0])()
+                g.get(parts[0]).get(parts[1])()
+            elif len(parts) == 1 and parts[0] and ircutils.isChannel(parts[0]):
+                # Old-style variant of the above, without a network
                 g.get(parts[0])()
 
 def registerPlugin(name, currentValue=None, public=True):
