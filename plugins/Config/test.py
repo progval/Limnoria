@@ -216,7 +216,11 @@ class ConfigTestCase(ChannelPluginTestCase):
 
         # Inherit from global value (nothing was set of current net or current
         # chan):
-        self.assertResponse('config channel reply.whenAddressedBy.strings', '^')
+        (old_channel, self.channel) = (self.channel, '#iejofjfozifk')
+        try:
+            self.assertResponse('config channel reply.whenAddressedBy.strings', '^')
+        finally:
+            self.channel = old_channel
 
         # Still exact match for #2:
         self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings', '@')
