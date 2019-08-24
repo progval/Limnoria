@@ -185,9 +185,17 @@ class ValuesTestCase(SupyTestCase):
         self.assertRaises(registry.InvalidRegistryValue,
                           v.setValue, re.compile(r'foo'))
 
-    def testBackslashes(self):
+    def testBackslashesKeys(self):
+        conf.supybot.reply.whenAddressedBy.strings.get(':foo').set('=/*')
+        filename = conf.supybot.directories.conf.dirize('backslashes1.conf')
+        registry.close(conf.supybot, filename)
+        registry.open_registry(filename)
+        value = conf.supybot.reply.whenAddressedBy.strings.get(':foo')()
+        self.assertEqual(value, {'=/*'})
+
+    def testBackslashesValues(self):
         conf.supybot.reply.whenAddressedBy.chars.set('\\')
-        filename = conf.supybot.directories.conf.dirize('backslashes.conf')
+        filename = conf.supybot.directories.conf.dirize('backslashes2.conf')
         registry.close(conf.supybot, filename)
         registry.open_registry(filename)
         self.assertEqual(conf.supybot.reply.whenAddressedBy.chars(), '\\')
