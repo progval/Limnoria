@@ -226,7 +226,8 @@ class Group(object):
 
     def __getattr__(self, attr):
         if attr.startswith('_'):
-            object.__getattr__(self, attr)
+            raise AttributeError('%s has no attribute %s' %
+                (self.__class__.__name__, attr))
         elif attr in self._children:
             return self._children[attr]
         elif self._supplyDefault:
