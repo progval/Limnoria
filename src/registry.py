@@ -340,6 +340,8 @@ class Value(Group):
         self._showDefault = showDefault
         self._help = utils.str.normalizeWhitespace(help.strip())
         self._callbacks = []
+        self._networkValue = False
+        self._channelValue = False
         if setDefault:
             self.setValue(default)
 

@@ -232,4 +232,34 @@ class SecurityTestCase(SupyTestCase):
         self.assertFalse(g._private)
         self.assertTrue(g.val._private)
 
+
+class InheritanceTestCase(SupyTestCase):
+    def testChild(self):
+        parent = registry.String('foo', 'help')
+        parent._supplyDefault = True
+        self.assertTrue(parent._wasSet)
+        self.assertEqual(parent(), 'foo')
+
+        child = parent.get('child')
+        self.assertFalse(child._wasSet)
+        self.assertEqual(child(), 'foo')
+
+        parent.setValue('bar')
+        self.assertTrue(parent._wasSet)
+        self.assertEqual(parent(), 'bar')
+        self.assertFalse(child._wasSet)
+        self.assertEqual(child(), 'bar') # Takes the new parent value
+
+        child.setValue('baz')
+        self.assertTrue(parent._wasSet)
+        self.assertEqual(parent(), 'bar')
+        self.assertTrue(child._wasSet)
+        self.assertEqual(child(), 'baz')
+
+        parent.setValue('qux')
+        self.assertTrue(parent._wasSet)
+        self.assertEqual(parent(), 'qux')
+        self.assertTrue(child._wasSet)
+        self.assertEqual(child(), 'baz') # Keeps its own value
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
