@@ -261,7 +261,7 @@ class Owner(callbacks.Plugin):
                 tokens = callbacks.tokenize(s, channel=msg.args[0])
                 self.Proxy(irc, msg, tokens)
             except SyntaxError as e:
-                irc.queueMsg(callbacks.error(msg, str(e)))
+                irc.error(str(e))
 
     def logmark(self, irc, msg, args, text):
         """<text>

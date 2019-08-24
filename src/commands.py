@@ -205,9 +205,12 @@ def urlSnarfer(f):
     """Protects the snarfer from loops (with other bots) and whatnot."""
     def newf(self, irc, msg, match, *L, **kwargs):
         url = match.group(0)
-        channel = msg.args[0]
-        if not irc.isChannel(channel) or (ircmsgs.isCtcp(msg) and not
-                                          ircmsgs.isAction(msg)):
+        channel = msg.channel
+        if not channel:
+            # Don't snarf in private
+            return
+        if not (ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg)):
+            # Don't snarf CTCPs unless they are a /me
             return
         if ircdb.channels.getChannel(channel).lobotomized:
             self.log.debug('Not snarfing in %s: lobotomized.', channel)
@@ -491,10 +494,11 @@ def getChannel(irc, msg, args, state):
         return
     if args and irc.isChannel(args[0]):
         channel = args.pop(0)
-    elif irc.isChannel(msg.args[0]):
-        channel = msg.args[0]
+    elif msg.channel:
+        channel = msg.channel
     else:
         state.log.debug('Raising ArgumentError because there is no channel.')
+        print(msg.channel, msg)
         raise callbacks.ArgumentError
     state.channel = channel
     state.args.append(channel)
@@ -502,8 +506,8 @@ def getChannel(irc, msg, args, state):
 def getChannels(irc, msg, args, state):
     if args and all(map(irc.isChannel, args[0].split(','))):
         channels = args.pop(0).split(',')
-    elif irc.isChannel(msg.args[0]):
-        channels = [msg.args[0]]
+    elif msg.channel:
+        channels = [msg.channel]
     else:
         state.log.debug('Raising ArgumentError because there is no channel.')
         raise callbacks.ArgumentError
@@ -535,11 +539,11 @@ def inChannel(irc, msg, args, state):
         state.error(_('I\'m not in %s.') % state.channel, Raise=True)
 
 def onlyInChannel(irc, msg, args, state):
-    if not (irc.isChannel(msg.args[0]) and msg.args[0] in irc.state.channels):
+    if not (msg.channel and msg.channel in irc.state.channels):
         state.error(_('This command may only be given in a channel that I am '
                     'in.'), Raise=True)
     else:
-        state.channel = msg.args[0]
+        state.channel = msg.channel
         state.args.append(state.channel)
 
 def callerInGivenChannel(irc, msg, args, state):
@@ -576,8 +580,8 @@ def getChannelOrGlobal(irc, msg, args, state):
     elif args and irc.isChannel(args[0]):
         channel = args.pop(0)
         state.channel = channel
-    elif irc.isChannel(msg.args[0]):
-        channel = msg.args[0]
+    elif msg.channel:
+        channel = msg.channel
         state.channel = channel
     else:
         state.log.debug('Raising ArgumentError because there is no channel.')
@@ -620,11 +624,11 @@ def getSomethingNoSpaces(irc, msg, args, state, *L):
     getSomething(irc, msg, args, state, p=p, *L)
 
 def private(irc, msg, args, state):
-    if irc.isChannel(msg.args[0]):
+    if msg.channel:
         state.errorRequiresPrivacy(Raise=True)
 
 def public(irc, msg, args, state, errmsg=None):
-    if not irc.isChannel(msg.args[0]):
+    if not msg.channel:
         if errmsg is None:
             errmsg = _('This message must be sent in a channel.')
         state.error(errmsg, Raise=True)

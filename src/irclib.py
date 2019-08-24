@@ -875,25 +875,33 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         else:
             return None
 
-    _numericErrorCommandRe = re.compile(r'^[45][0-9][0-9]$')
-    def feedMsg(self, msg):
-        """Called by the IrcDriver; feeds a message received."""
+    def _tagMsg(self, msg):
+        """Sets attribute on an incoming IRC message. Will usually only be
+        called by feedMsg, but may be useful in tests as well."""
         msg.tag('receivedBy', self)
         msg.tag('receivedOn', self.network)
         msg.tag('receivedAt', time.time())
 
         # Check if the message is sent to a channel
         if msg.args:
-            channel = msg.args[0]
+            msg.channel = msg.args[0]
             if msg.command in ('NOTICE', 'PRIVMSG') and \
                     not conf.supybot.protocols.irc.strictRfc():
-                statusmsg_chars = self.state.supported.get('statusmsg', '')
-                channel = channel.lstrip(statusmsg_chars)
-            if not self.isChannel(channel):
-                channel = None
+                msg.channel = self._stripChannelPrefix(msg.channel)
+            if not self.isChannel(msg.channel):
+                msg.channel = None
         else:
-            channel = None
-        msg.channel = channel
+            msg.channel = None
+
+    def _stripChannelPrefix(self, channel):
+        statusmsg_chars = self.state.supported.get('statusmsg', '')
+        return channel.lstrip(statusmsg_chars)
+
+    _numericErrorCommandRe = re.compile(r'^[45][0-9][0-9]$')
+    def feedMsg(self, msg):
+        """Called by the IrcDriver; feeds a message received."""
+        self._tagMsg(msg)
+        channel = msg.channel
 
         preInFilter = str(msg).rstrip('\r\n')
         log.debug('Incoming message (%s): %s', self.network, preInFilter)

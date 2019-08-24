@@ -47,6 +47,7 @@ class CommandsTestCase(SupyTestCase):
         realIrc = getTestIrc()
         realIrc.nick = 'test'
         realIrc.state.supported['chantypes'] = '#'
+        realIrc._tagMsg(msg)
         irc = callbacks.SimpleProxy(realIrc, msg)
         myspec = Spec(spec, **kwargs)
         state = myspec(irc, msg, given)
