@@ -446,16 +446,23 @@ class Value(Group):
         100) convert to an integer in set() and check that the integer is less
         than 100 in this method.  You *must* call this parent method in your
         own setValue."""
+        self._setValue(v, inherited=False)
+
+    def _setValue(self, v, inherited):
+        """Like setValue, but accepted an extra 'inherited' argument.
+        inherited=True means the value is inherited from the parent, so if
+        the parent gets a new value, this group will get the new value as
+        well."""
         self._lastModified = time.time()
         self.value = v
         if self._supplyDefault:
-            for (name, v) in list(self._children.items()):
-                if not v._wasSet:
-                    self.unregister(name)
+            for (name, child) in list(self._children.items()):
+                if not child._wasSet:
+                    child._setValue(v, inherited=True)
         # We call the callback once everything is clean
         for callback, args, kwargs in self._callbacks:
             callback(*args, **kwargs)
-        self._wasSet = True
+        self._wasSet = not inherited
 
     def context(self, value):
         """Return a context manager object, which sets this variable to a
