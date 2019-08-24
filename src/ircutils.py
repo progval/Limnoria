@@ -659,7 +659,10 @@ def safeArgument(s):
 
 def replyTo(msg):
     """Returns the appropriate target to send responses to msg."""
-    if isChannel(msg.args[0]):
+    if msg.channel:
+        # if message was sent to +#channel, we want to reply to +#channel;
+        # or unvoiced channel users will see the bot reply without the
+        # origin query
         return msg.args[0]
     else:
         return msg.nick
@@ -867,10 +870,7 @@ def standardSubstitute(irc, msg, text, env=None):
             vars.update(msg.reply_env)
 
     if irc and msg:
-        if isChannel(msg.args[0]):
-            channel = msg.args[0]
-        else:
-            channel = 'somewhere'
+        channel = msg.channel or 'somewhere'
         def randNick():
             if channel != 'somewhere':
                 L = list(irc.state.channels[channel].users)

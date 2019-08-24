@@ -281,12 +281,10 @@ class FunctionsTestCase(SupyTestCase):
     def testStandardSubstitute(self):
         # Stub out random msg and irc objects that provide what
         # standardSubstitute wants
-        msg = ircmsgs.IrcMsg(':%s PRIVMSG #channel :stuff' % self.hostmask)
-        class Irc(object):
-            nick = 'bob'
-            network = 'testnet'
+        irc = getTestIrc()
 
-        irc = Irc()
+        msg = ircmsgs.IrcMsg(':%s PRIVMSG #channel :stuff' % self.hostmask)
+        irc._tagMsg(msg)
 
         f = ircutils.standardSubstitute
         vars = {'foo': 'bar', 'b': 'c', 'i': 100,
@@ -344,9 +342,12 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual('{}|^', ircutils.toLower('[]\\~'))
 
     def testReplyTo(self):
+        irc = getTestIrc()
         prefix = 'foo!bar@baz'
         channel = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
         private = ircmsgs.privmsg('jemfinch', 'bar baz', prefix=prefix)
+        irc._tagMsg(channel)
+        irc._tagMsg(private)
         self.assertEqual(ircutils.replyTo(channel), channel.args[0])
         self.assertEqual(ircutils.replyTo(private), private.nick)
 
