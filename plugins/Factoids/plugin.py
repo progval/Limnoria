@@ -53,7 +53,8 @@ from supybot.utils.seq import dameraulevenshtein
 def getFactoid(irc, msg, args, state):
     assert not state.channel
     callConverter('channel', irc, msg, args, state)
-    separator = state.cb.registryValue('learnSeparator', state.channel)
+    separator = state.cb.registryValue('learnSeparator',
+                                       state.channel, irc.network)
     try:
         i = args.index(separator)
     except ValueError:
@@ -137,7 +138,8 @@ class FactoidsCallback(httpserver.SupyHTTPServerCallback):
                         {'title': 'Factoids - not a channel',
                          'error': 'This is not a channel'})
                 return
-            if not self._plugin.registryValue('web.channel', channel):
+            if not self._plugin.registryValue('web.channel',
+                                              channel, irc.network):
                 self.send_response(403)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
                 self.end_headers()
@@ -252,13 +254,16 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         method = self.getCommandMethod(command)
         if method.__func__.__name__ == 'learn':
             chan = None
+            network = None
             if dynamic.msg is not None:
-                chan = dynamic.msg.args[0]
-            s = self.registryValue('learnSeparator', chan)
+                chan = dynamic.msg.channel
+            if dynamic.irc is not None:
+                network = dynamic.irc.network
+            s = self.registryValue('learnSeparator', chan, network)
             help = callbacks.getHelp
             if simpleSyntax is None:
-                simpleSyntax = conf.get(conf.supybot.reply.showSimpleSyntax,
-                                        chan)
+                simpleSyntax = conf.supybot.reply.showSimpleSyntax.getSpecific(
+                    dynamic.irc.network, chan)()
             if simpleSyntax:
                 help = callbacks.getSyntax
             return help(method,
@@ -276,7 +281,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         return (keyresults, factresults,)
     
     def learn(self, irc, msg, args, channel, key, factoid):
-        if self.registryValue('requireVoice', channel) and \
+        if self.registryValue('requireVoice', channel, irc.network) and \
                 not irc.state.channels[channel].isVoicePlus(msg.nick):
             irc.error(_('You have to be at least voiced to teach factoids.'), Raise=True)
         
@@ -366,8 +371,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         
         return []
                 
-    def _updateRank(self, channel, factoids):
-        if self.registryValue('keepRankInfo', channel):
+    def _updateRank(self, network, channel, factoids):
+        if self.registryValue('keepRankInfo', channel, network):
             db = self.getDb(channel)
             cursor = db.cursor()
             for (fact,factid,relationid) in factoids:
@@ -391,7 +396,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             if number:
                 try:
                     irc.reply(format_fact(factoids[number-1][0]))
-                    self._updateRank(channel, [factoids[number-1]])
+                    self._updateRank(irc.network, channel, [factoids[number-1]])
                 except IndexError:
                     irc.error(_('That\'s not a valid number for that key.'))
                     return
@@ -399,7 +404,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 env = {'key': key}
                 def prefixer(v):
                     env['value'] = v
-                    formatter = self.registryValue('format', msg.args[0])
+                    formatter = self.registryValue('format',
+                                                   msg.channel, irc.network)
                     return ircutils.standardSubstitute(irc, msg,
                                                        formatter, env)
                 if len(factoids) == 1:
@@ -413,7 +419,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                         counter += 1
                     irc.replies(factoidsS, prefixer=prefixer,
                                 joiner=', or ', onlyPrefixFirst=True)
-                self._updateRank(channel, factoids)
+                self._updateRank(irc.network, channel, factoids)
         elif error:
             irc.error(_('No factoid matches that key.'))
 
@@ -429,9 +435,9 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
                 irc.error('No factoid matches that key.')
 
     def invalidCommand(self, irc, msg, tokens):
-        if irc.isChannel(msg.args[0]):
-            channel = msg.args[0]
-            if self.registryValue('replyWhenInvalidCommand', channel):
+        channel = msg.channel
+        if channel:
+            if self.registryValue('replyWhenInvalidCommand', channel, irc.network):
                 key = ' '.join(tokens)
                 factoids = self._lookupFactoid(channel, key)
                 if factoids:
@@ -556,7 +562,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         itself.
         """
         if not number:
-            number = self.registryValue('rankListLength', channel)
+            number = self.registryValue('rankListLength', channel, irc.network)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT keys.key, relations.usage_count
@@ -655,7 +661,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
-        if self.registryValue('requireVoice', channel) and \
+        if self.registryValue('requireVoice', channel, irc.network) and \
                 not irc.state.channels[channel].isVoicePlus(msg.nick):
             irc.error(_('You have to be at least voiced to remove factoids.'), Raise=True)
         number = None
@@ -834,7 +840,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         if cursor.rowcount == 0:
             irc.reply(_('No keys matched that query.'))
         elif cursor.rowcount == 1 and \
-             self.registryValue('showFactoidIfOnlyOneMatch', channel):
+             self.registryValue('showFactoidIfOnlyOneMatch',
+                                channel, irc.network):
             self.whatis(irc, msg, [channel, cursor.fetchone()[0]])
         elif cursor.rowcount > 100:
             irc.reply(_('More than 100 keys matched that query; '
@@ -843,7 +850,8 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         if len(results) == 0:
             irc.reply(_('No keys matched that query.'))
         elif len(results) == 1 and \
-             self.registryValue('showFactoidIfOnlyOneMatch', channel):
+             self.registryValue('showFactoidIfOnlyOneMatch',
+                                channel, irc.network):
             self.whatis(irc, msg, [channel, results[0][0]])
         elif len(results) > 100:
             irc.reply(_('More than 100 keys matched that query; '

@@ -50,17 +50,20 @@ class Anonymous(callbacks.Plugin):
     supybot.plugins.Anonymous.requireRegistration.
     """
     def _preCheck(self, irc, msg, target, action):
-        if self.registryValue('requireRegistration', target):
+        if self.registryValue('requireRegistration', target, irc.network):
             try:
                 foo = ircdb.users.getUser(msg.prefix)
             except KeyError:
                 irc.errorNotRegistered(Raise=True)
-        capability = self.registryValue('requireCapability', target)
+        capability = self.registryValue('requireCapability',
+                                        target, irc.network)
         if capability:
             if not ircdb.checkCapability(msg.prefix, capability):
                 irc.errorNoCapability(capability, Raise=True)
         if action != 'tell':
-            if self.registryValue('requirePresenceInChannel', target) and \
+            require_presence = self.registryValue('requirePresenceInChannel',
+                                                  target, irc.network)
+            if require_presence and \
                msg.nick not in irc.state.channels[target].users:
                 irc.error(format(_('You must be in %s to %q in there.'),
                                  target, action), Raise=True)

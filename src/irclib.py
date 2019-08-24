@@ -843,6 +843,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
             for callback in reversed(self.callbacks):
+                self._setMsgChannel(msg)
                 msg = callback.outFilter(self, msg)
                 if msg is None:
                     log.debug('%s.outFilter returned None.', callback.name())
@@ -882,18 +883,20 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         msg.tag('receivedOn', self.network)
         msg.tag('receivedAt', time.time())
 
-        # Check if the message is sent to a channel
+        self._setMsgChannel(msg)
+
+    def _setMsgChannel(self, msg):
         if msg.args:
             msg.channel = msg.args[0]
             if msg.command in ('NOTICE', 'PRIVMSG') and \
                     not conf.supybot.protocols.irc.strictRfc():
-                msg.channel = self._stripChannelPrefix(msg.channel)
+                msg.channel = self.stripChannelPrefix(msg.channel)
             if not self.isChannel(msg.channel):
                 msg.channel = None
         else:
             msg.channel = None
 
-    def _stripChannelPrefix(self, channel):
+    def stripChannelPrefix(self, channel):
         statusmsg_chars = self.state.supported.get('statusmsg', '')
         return channel.lstrip(statusmsg_chars)
 

@@ -92,7 +92,7 @@ class Herald(callbacks.Plugin):
             return # Recently split.
         channel = msg.args[0]
         irc = callbacks.SimpleProxy(irc, msg)
-        if self.registryValue('heralding', channel):
+        if self.registryValue('heralding', channel, irc.network):
             try:
                 id = ircdb.users.getUserId(msg.prefix)
                 if id in self.splitters:
@@ -100,22 +100,26 @@ class Herald(callbacks.Plugin):
                     return
                 herald = self.db[channel, id]
             except KeyError:
-                default = self.registryValue('default', channel)
+                default = self.registryValue('default', channel, irc.network)
                 if default:
                     default = ircutils.standardSubstitute(irc, msg, default)
                     msgmaker = ircmsgs.privmsg
-                    if self.registryValue('default.notice', channel):
+                    if self.registryValue('default.notice',
+                                          channel, irc.network):
                         msgmaker = ircmsgs.notice
                     target = msg.nick
-                    if self.registryValue('default.public', channel):
+                    if self.registryValue('default.public',
+                                          channel, irc.network):
                         target = channel
                     irc.queueMsg(msgmaker(target, default))
                 return
             now = time.time()
-            throttle = self.registryValue('throttle', channel)
+            throttle = self.registryValue('throttle',
+                                          channel, irc.network)
             if now - self.lastHerald.get((channel, id), 0) > throttle:
                 if (channel, id) in self.lastParts:
-                   i = self.registryValue('throttle.afterPart', channel)
+                   i = self.registryValue('throttle.afterPart',
+                                          channel, irc.network)
                    if now - self.lastParts[channel, id] < i:
                        return
                 self.lastHerald[channel, id] = now
@@ -160,7 +164,7 @@ class Herald(callbacks.Plugin):
             self.setRegistryValue('default', text, channel)
             irc.replySuccess()
         else:
-            resp = self.registryValue('default', channel) or \
+            resp = self.registryValue('default', channel, irc.network) or \
                    _('I do not have a default herald set for %s.') % channel
             irc.reply(resp)
     default = wrap(default, ['channel',

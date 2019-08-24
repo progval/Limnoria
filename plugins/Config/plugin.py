@@ -199,21 +199,22 @@ class Config(callbacks.Plugin):
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?
 
     def _getValue(self, irc, msg, group, network=None, channel=None, addGlobal=False):
+        global_group = group
         global_value = str(group) or ' '
         group = group.getSpecific(
-            network=network.network, channel=channel, check=None)
+            network=network.network, channel=channel, check=False)
         value = str(group) or ' '
         if addGlobal and not irc.nested:
             value = _(
                 'Global: %(global_value)s; '
                 '%(channel_name)s @ %(network_name)s: %(channel_value)s') % {
                 'global_value': global_value,
-                'channel_name': msg.args[0],
+                'channel_name': msg.channel,
                 'network_name': irc.network,
                 'channel_value': value,
             }
-        if hasattr(group, 'value'):
-            if not group._private:
+        if hasattr(global_group, 'value'):
+            if not global_group._private:
                 return (value, None)
             else:
                 capability = getCapability(irc, group._name)
@@ -224,7 +225,7 @@ class Config(callbacks.Plugin):
         else:
             irc.error(_('That registry variable has no value.  Use the list '
                       'command in this plugin to see what variables are '
-                      'available in this group.'))
+                      'available in this group.'), Raise=True)
 
     def _setValue(self, irc, msg, group, value):
         if isReadOnly(group._name):
@@ -304,7 +305,7 @@ class Config(callbacks.Plugin):
         else:
             (value, private) = self._getValue(
                 irc, msg, group, network=irc,
-                channel=msg.args[0] if irc.isChannel(msg.args[0]) else None,
+                channel=msg.channel,
                 addGlobal=group._channelValue)
             irc.reply(value, private=private)
     config = wrap(config, ['settableConfigVar', additional('text')])
@@ -319,11 +320,10 @@ class Config(callbacks.Plugin):
             s = group.help()
             if s:
                 if hasattr(group, 'value') and not group._private:
-                    channel = msg.args[0]
-                    if irc.isChannel(channel) and \
-                            channel in group._children:
+                    if msg.channel and \
+                            msg.channel in group._children:
                         globvalue = str(group)
-                        chanvalue = str(group.get(channel))
+                        chanvalue = str(group.get(msg.channel))
                         if chanvalue != globvalue:
                             s += _('  (Current global value: %s;  '
                                     'current channel value: %s)') % \

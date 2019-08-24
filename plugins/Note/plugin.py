@@ -186,7 +186,7 @@ class Note(callbacks.Plugin):
         specified by separating their names by commas.
         """
         # Let's get the from user.
-        public = irc.isChannel(msg.args[0])
+        public = bool(msg.channel)
         sent = []
         for target in targets:
             id = self.db.send(user.id, target.id, public, text)
@@ -209,7 +209,7 @@ class Note(callbacks.Plugin):
                       'that have been sent to you.', Raise=True)
         self.db.setRead(id)
         text += ' (in reply to #%s)' % id
-        public = irc.isChannel(msg.args[0])
+        public = bool(msg.channel)
         try:
             target = ircdb.users.getUser(note.frm)
         except KeyError:
@@ -271,7 +271,7 @@ class Note(callbacks.Plugin):
     note = wrap(note, ['user', ('id', 'note')])
 
     def _formatNoteId(self, irc, msg, note, sent=False):
-        if note.public or not irc.isChannel(msg.args[0]):
+        if note.public or not msg.channel:
             if sent:
                 sender = plugins.getUserName(note.to)
                 return format('#%i to %s', note.id, sender)

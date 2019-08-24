@@ -76,8 +76,8 @@ class Services(callbacks.Plugin):
         if msg.command == 'JOIN' and not self.disabled(irc):
             if not self.identified:
                 if self.registryValue('noJoinsUntilIdentified'):
-                    self.log.info('Holding JOIN to %s until identified.',
-                                  msg.args[0])
+                    self.log.info('Holding JOIN to %s @ %s until identified.',
+                                  msg.channel, irc.network)
                     self.waitingJoins.setdefault(irc.network, [])
                     self.waitingJoins[irc.network].append(msg)
                     return None
@@ -357,17 +357,17 @@ class Services(callbacks.Plugin):
             return
         chanserv = self.registryValue('ChanServ')
         on = 'on %s' % irc.network
-        if chanserv and self.registryValue('ChanServ.op', channel):
+        if chanserv and self.registryValue('ChanServ.op', channel, irc.network):
             if irc.nick not in irc.state.channels[channel].ops:
                 self.log.info('Requesting op from %s in %s %s.',
                               chanserv, channel, on)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'op %s' % channel))
-        if chanserv and self.registryValue('ChanServ.halfop', channel):
+        if chanserv and self.registryValue('ChanServ.halfop', channel, irc.network):
             if irc.nick not in irc.state.channels[channel].halfops:
                 self.log.info('Requesting halfop from %s in %s %s.',
                               chanserv, channel, on)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'halfop %s' % channel))
-        if chanserv and self.registryValue('ChanServ.voice', channel):
+        if chanserv and self.registryValue('ChanServ.voice', channel, irc.network):
             if irc.nick not in irc.state.channels[channel].voices:
                 self.log.info('Requesting voice from %s in %s %s.',
                               chanserv, channel, on)

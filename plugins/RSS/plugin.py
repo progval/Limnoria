@@ -352,7 +352,7 @@ class RSS(callbacks.Plugin):
         announced_feeds = set()
         for irc in world.ircs:
             for channel in irc.state.channels:
-                announced_feeds |= self.registryValue('announce', channel)
+                announced_feeds |= self.registryValue('announce', channel, irc.network)
         for name in announced_feeds:
             feed = self.get_feed(name)
             if not feed:
@@ -385,14 +385,15 @@ class RSS(callbacks.Plugin):
         new_entries = sort_feed_items(new_entries, 'newestFirst')
         for irc in world.ircs:
             for channel in irc.state.channels:
-                if feed.name not in self.registryValue('announce', channel):
+                if feed.name not in self.registryValue('announce',
+                                                       channel, irc.network):
                     continue
                 if initial:
-                    max_entries = \
-                            self.registryValue('initialAnnounceHeadlines', channel)
+                    max_entries = self.registryValue(
+                        'initialAnnounceHeadlines', channel, irc.network)
                 else:
-                    max_entries = \
-                            self.registryValue('maximumAnnounceHeadlines', channel)
+                    max_entries = self.registryValue(
+                        'maximumAnnounceHeadlines', channel, irc.network)
                 announced_entries = new_entries[0:max_entries]
                 announced_entries = sort_feed_items(announced_entries, order)
                 for entry in announced_entries:
@@ -402,9 +403,9 @@ class RSS(callbacks.Plugin):
     #################
     # Entry rendering
 
-    def should_send_entry(self, channel, entry):
-        whitelist = self.registryValue('keywordWhitelist', channel)
-        blacklist = self.registryValue('keywordBlacklist', channel)
+    def should_send_entry(self, network, channel, entry):
+        whitelist = self.registryValue('keywordWhitelist', channel, network)
+        blacklist = self.registryValue('keywordBlacklist', channel, network)
 
         # fix shadowing by "from supybot.commands import *"
         try:
@@ -429,14 +430,15 @@ class RSS(callbacks.Plugin):
 
     _normalize_entry = utils.str.multipleReplacer(
             {'\r': ' ', '\n': ' ', '\x00': ''})
-    def format_entry(self, channel, feed, entry, is_announce):
+    def format_entry(self, network, channel, feed, entry, is_announce):
         key_name = 'announceFormat' if is_announce else 'format'
         if feed.name in self.registryValue('feeds'):
             specific_key_name = registry.join(['feeds', feed.name, key_name])
-            template = self.registryValue(specific_key_name, channel) or \
-                    self.registryValue(key_name, channel)
+            template = self.registryValue(specific_key_name,
+                                          channel, network) or \
+                    self.registryValue(key_name, channel, network)
         else:
-            template = self.registryValue(key_name, channel)
+            template = self.registryValue(key_name, channel, network)
         date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
         s = string.Template(template).substitute(
@@ -446,9 +448,9 @@ class RSS(callbacks.Plugin):
         return self._normalize_entry(s)
 
     def announce_entry(self, irc, channel, feed, entry):
-        if self.should_send_entry(channel, entry):
-            s = self.format_entry(channel, feed, entry, True)
-            if self.registryValue('notice', channel):
+        if self.should_send_entry(irc.network, channel, entry):
+            s = self.format_entry(irc.network, channel, feed, entry, True)
+            if self.registryValue('notice', channel, irc.network):
                 m = ircmsgs.notice(channel, s)
             else:
                 m = ircmsgs.privmsg(channel, s)
@@ -559,10 +561,7 @@ class RSS(callbacks.Plugin):
         feed = self.get_feed(url)
         if not feed:
             feed = Feed(url, url, True)
-        if irc.isChannel(msg.args[0]):
-            channel = msg.args[0]
-        else:
-            channel = None
+        channel = msg.channel
         self.update_feed_if_needed(feed)
         entries = feed.entries
         if not entries:
@@ -573,13 +572,13 @@ class RSS(callbacks.Plugin):
                 s += str(feed.last_exception)
             irc.error(s)
             return
-        n = n or self.registryValue('defaultNumberOfHeadlines', channel)
-        entries = list(filter(lambda e:self.should_send_entry(channel, e),
+        n = n or self.registryValue('defaultNumberOfHeadlines', channel, irc.network)
+        entries = list(filter(lambda e:self.should_send_entry(irc.network, channel, e),
                               feed.entries))
         entries = entries[:n]
-        headlines = map(lambda e:self.format_entry(channel, feed, e, False),
+        headlines = map(lambda e:self.format_entry(irc.network, channel, feed, e, False),
                         entries)
-        sep = self.registryValue('headlineSeparator', channel)
+        sep = self.registryValue('headlineSeparator', channel, irc.network)
         irc.replies(headlines, joiner=sep)
     rss = wrap(rss, [first('url', 'feedName'), additional('int')])
 

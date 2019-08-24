@@ -46,7 +46,7 @@ class User(callbacks.Plugin):
     authentication to the bot. This is a core Supybot plugin that should
     not be removed!"""
     def _checkNotChannel(self, irc, msg, password=' '):
-        if password and irc.isChannel(msg.args[0]):
+        if password and msg.channel:
             raise callbacks.Error(conf.supybot.replies.requiresPrivacy())
 
     @internationalizeDocstring
@@ -88,7 +88,8 @@ class User(callbacks.Plugin):
                 users.append(u.name)
         if users:
             utils.sortBy(str.lower, users)
-            private = self.registryValue("listInPrivate", msg.args[0])
+            private = self.registryValue("listInPrivate",
+                                         msg.channel, irc.network)
             irc.reply(format('%L', users), private=private)
         else:
             if predicates:

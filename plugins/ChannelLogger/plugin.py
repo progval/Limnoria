@@ -90,11 +90,11 @@ class ChannelLogger(callbacks.Plugin):
                     self.log.exception('Odd exception:')
 
     def logNameTimestamp(self, channel):
-        format = self.registryValue('filenameTimestamp', channel)
+        format = self.registryValue('filenameTimestamp', channel, irc.network)
         return time.strftime(format)
 
     def getLogName(self, channel):
-        if self.registryValue('rotateLogs', channel):
+        if self.registryValue('rotateLogs', channel, irc.network):
             return '%s.%s.log' % (channel, self.logNameTimestamp(channel))
         else:
             return '%s.log' % channel
@@ -118,7 +118,7 @@ class ChannelLogger(callbacks.Plugin):
     def checkLogNames(self):
         for (irc, logs) in self.logs.items():
             for (channel, log) in list(logs.items()):
-                if self.registryValue('rotateLogs', channel):
+                if self.registryValue('rotateLogs', channel, irc.network):
                     name = self.getLogName(channel)
                     if name != os.path.basename(log.name):
                         log.close()
@@ -156,26 +156,27 @@ class ChannelLogger(callbacks.Plugin):
         return ircutils.toLower(channel)
 
     def doLog(self, irc, channel, s, *args):
-        if not self.registryValue('enable', channel):
+        if not self.registryValue('enable', channel, irc.network):
             return
         s = format(s, *args)
         channel = self.normalizeChannel(irc, channel)
         log = self.getLog(irc, channel)
-        if self.registryValue('timestamp', channel):
+        if self.registryValue('timestamp', channel, irc.network):
             self.timestamp(log)
-        if self.registryValue('stripFormatting', channel):
+        if self.registryValue('stripFormatting', channel, irc.network):
             s = ircutils.stripFormatting(s)
         if minisix.PY2:
             s = s.decode('utf8', 'ignore')
         log.write(s)
-        if self.registryValue('flushImmediately'):
+        if self.registryValue('flushImmediately', irc.network):
             log.flush()
 
     def doPrivmsg(self, irc, msg):
         (recipients, text) = msg.args
         for channel in recipients.split(','):
             if irc.isChannel(channel):
-                noLogPrefix = self.registryValue('noLogPrefix', channel)
+                noLogPrefix = self.registryValue('noLogPrefix',
+                                                 channel, irc.network)
                 cap = ircdb.makeChannelCapability(channel, 'logChannelMessages')
                 try:
                     logChannelMessages = ircdb.checkCapability(msg.prefix, cap,
@@ -217,7 +218,7 @@ class ChannelLogger(callbacks.Plugin):
 
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
-            if(self.registryValue('showJoinParts', channel)):
+            if(self.registryValue('showJoinParts', channel, irc.network)):
                 self.doLog(irc, channel,
                            '*** %s <%s> has joined %s\n',
                            msg.nick, msg.prefix, channel)
@@ -242,7 +243,7 @@ class ChannelLogger(callbacks.Plugin):
         else:
             reason = ""
         for channel in msg.args[0].split(','):
-            if(self.registryValue('showJoinParts', channel)):
+            if(self.registryValue('showJoinParts', channel, irc.network)):
                 self.doLog(irc, channel,
                            '*** %s <%s> has left %s%s\n',
                            msg.nick, msg.prefix, channel, reason)
@@ -268,7 +269,7 @@ class ChannelLogger(callbacks.Plugin):
         else:
             reason = ""
         for channel in msg.tagged('channels'):
-            if(self.registryValue('showJoinParts', channel)):
+            if(self.registryValue('showJoinParts', channel, irc.network)):
                 self.doLog(irc, channel,
                            '*** %s <%s> has quit IRC%s\n',
                            msg.nick, msg.prefix, reason)

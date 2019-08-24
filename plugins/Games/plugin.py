@@ -130,7 +130,7 @@ class Games(callbacks.Plugin):
             self._rouletteBullet = random.randrange(0, 6)
             irc.reply(_('*SPIN* Are you feeling lucky?'), prefixNick=False)
             return
-        channel = msg.args[0]
+        channel = msg.channel
         if self._rouletteChamber == self._rouletteBullet:
             self._rouletteBullet = random.randrange(0, 6)
             self._rouletteChamber = random.randrange(0, 6)

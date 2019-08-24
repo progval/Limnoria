@@ -105,15 +105,17 @@ class ShrinkUrl(callbacks.PluginRegexp):
 
     def _outFilterThread(self, irc, msg):
         (channel, text) = msg.args
+        network = irc.network
         for m in utils.web.httpUrlRe.finditer(text):
             url = m.group(1)
-            if len(url) > self.registryValue('minimumLength', channel):
+            if len(url) > self.registryValue('minimumLength', channel, network):
                 try:
                     cmd = self.registryValue('serviceRotation',
-                                             channel, value=False)
+                                             channel, network, value=False)
                     cmd = cmd.getService().capitalize()
                 except ValueError:
-                    cmd = self.registryValue('default', channel).capitalize()
+                    cmd = self.registryValue('default', channel, network) \
+                        .capitalize()
                 try:
                     shortUrl = getattr(self, '_get%sUrl' % cmd)(url)
                     text = text.replace(url, shortUrl)
@@ -126,39 +128,41 @@ class ShrinkUrl(callbacks.PluginRegexp):
     def outFilter(self, irc, msg):
         if msg.command != 'PRIVMSG':
             return msg
-        channel = msg.args[0]
-        if irc.isChannel(channel):
+        if msg.channel:
             if not msg.shrunken:
-                if self.registryValue('outFilter', channel):
+                if self.registryValue('outFilter', msg.channel, irc.network):
                     if utils.web.httpUrlRe.search(msg.args[1]):
                         self._outFilterThread(irc, msg)
                         return None
         return msg
 
     def shrinkSnarfer(self, irc, msg, match):
-        channel = msg.args[0]
-        if not irc.isChannel(channel):
+        channel = msg.channel
+        network = irc.network
+        if not channel:
             return
-        if self.registryValue('shrinkSnarfer', channel):
+        if self.registryValue('shrinkSnarfer', channel, network):
             url = match.group(0)
-            r = self.registryValue('nonSnarfingRegexp', channel)
+            r = self.registryValue('nonSnarfingRegexp', channel, network)
             if r and r.search(url) is not None:
                 self.log.debug('Matched nonSnarfingRegexp: %u', url)
                 return
-            minlen = self.registryValue('minimumLength', channel)
+            minlen = self.registryValue('minimumLength', channel, network)
             try:
                 cmd = self.registryValue('serviceRotation',
-                                         channel, value=False)
+                                         channel, network, value=False)
                 cmd = cmd.getService().capitalize()
             except ValueError:
-                cmd = self.registryValue('default', channel).capitalize()
+                cmd = self.registryValue('default', channel, network) \
+                    .capitalize()
             if len(url) >= minlen:
                 try:
                     shorturl = getattr(self, '_get%sUrl' % cmd)(url)
                 except (utils.web.Error, AttributeError, ShrinkError):
                     self.log.info('Couldn\'t get shorturl for %u', url)
                     return
-                if self.registryValue('shrinkSnarfer.showDomain', channel):
+                if self.registryValue('shrinkSnarfer.showDomain',
+                                      channel, network):
                     domain = ' (at %s)' % utils.web.getDomain(url)
                 else:
                     domain = ''

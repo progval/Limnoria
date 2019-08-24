@@ -170,11 +170,11 @@ def _makeReply(irc, msg, s,
     # XXX This isn't entirely right.  Consider to=#foo, private=True.
     target = ircutils.replyTo(msg)
     def isPublic(s):
-        return irc.isChannel(irc._stripChannelPrefix(s))
+        return irc.isChannel(irc.stripChannelPrefix(s))
     if to is not None and isPublic(to):
         target = to
     if isPublic(target):
-        channel = irc._stripChannelPrefix(target)
+        channel = irc.stripChannelPrefix(target)
     else:
         channel = None
     if notice is None:
@@ -376,16 +376,16 @@ class Tokenizer(object):
                 args[-1].append(ends.pop())
         return args
 
-def tokenize(s, channel=None):
+def tokenize(s, channel=None, network=None):
     """A utility function to create a Tokenizer and tokenize a string."""
     pipe = False
     brackets = ''
     nested = conf.supybot.commands.nested
     if nested():
-        brackets = conf.get(nested.brackets, channel)
+        brackets = nested.brackets.getSpecific(network, channel)()
         if conf.get(nested.pipeSyntax, channel): # No nesting, no pipe.
             pipe = True
-    quotes = conf.get(conf.supybot.commands.quotes, channel)
+    quotes = conf.supybot.commands.quotes.getSpecific(network, channel)()
     try:
         ret = Tokenizer(brackets=brackets,pipe=pipe,quotes=quotes).tokenize(s)
         return ret
@@ -1414,8 +1414,9 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
         names = registry.split(name)
         for name in names:
             group = group.get(name)
-        if value:
+        if channel or network:
             group = group.getSpecific(network=network, channel=channel)
+        if value:
             return group()
         else:
             return group

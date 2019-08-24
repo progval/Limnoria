@@ -258,7 +258,8 @@ class Owner(callbacks.Plugin):
                                utils.timeElapsed(punishment, seconds=False)))
                 return
             try:
-                tokens = callbacks.tokenize(s, channel=msg.args[0])
+                tokens = callbacks.tokenize(s, channel=msg.channel,
+                                            network=irc.network)
                 self.Proxy(irc, msg, tokens)
             except SyntaxError as e:
                 irc.error(str(e))

@@ -207,17 +207,18 @@ class Unix(callbacks.Plugin):
 
         Returns a fortune from the *nix fortune program.
         """
-        channel = msg.args[0]
+        channel = msg.channel
+        network = irc.network
         fortuneCmd = self.registryValue('fortune.command')
         if fortuneCmd:
             args = [fortuneCmd]
-            if self.registryValue('fortune.short', channel):
+            if self.registryValue('fortune.short', channel, network):
                 args.append('-s')
-            if self.registryValue('fortune.equal', channel):
+            if self.registryValue('fortune.equal', channel, network):
                 args.append('-e')
-            if self.registryValue('fortune.offensive', channel):
+            if self.registryValue('fortune.offensive', channel, network):
                 args.append('-a')
-            args.extend(self.registryValue('fortune.files', channel))
+            args.extend(self.registryValue('fortune.files', channel, network))
             try:
                 with open(os.devnull) as null:
                     inst = subprocess.Popen(args,

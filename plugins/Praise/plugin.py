@@ -84,7 +84,7 @@ class Praise(plugins.ChannelIdDatabasePlugin):
         text = text.replace('$who', target)
         if reason:
             text += _(' for ') + reason
-        if self.registryValue('showIds', channel):
+        if self.registryValue('showIds', channel, irc.network):
             text += format(' (#%i)', praise.id)
         irc.reply(text, action=True)
     praise = wrap(praise, ['channeldb', optional('id'), 'text'])

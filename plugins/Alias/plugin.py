@@ -49,9 +49,9 @@ def getChannel(irc, msg, args):
     If the channel was given in args, args is modified (the channel is
     removed).
     """
-    if args and irc.isChannel(msg.args[0]):
+    if args and msg.channel:
         if conf.supybot.reply.requireChannelCommandsToBeSentInChannel():
-            if args[0] != msg.args[0]:
+            if args[0] != msg.channel:
                 s = 'Channel commands must be sent in the channel to which ' \
                     'they apply; if this is not the behavior you desire, ' \
                     'ask the bot\'s administrator to change the registry ' \
@@ -60,8 +60,8 @@ def getChannel(irc, msg, args):
                     'to False.'
                 raise callbacks.Error(s)
         return args.pop(0)
-    elif irc.isChannel(msg.args[0]):
-        return msg.args[0]
+    elif msg.channel:
+        return msg.channel
     else:
         raise callbacks.Error('Command must be sent in a channel or ' \
                                'include a channel in its arguments.')

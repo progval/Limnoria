@@ -124,7 +124,7 @@ class Misc(callbacks.Plugin):
                            utils.timeElapsed(punishment, seconds=False)))
             return
         # Now, for normal handling.
-        channel = msg.args[0]
+        channel = msg.channel
         # Only bother with the invaildCommand flood handling if it's actually
         # enabled
         if conf.supybot.abuse.flood.command.invalid():
@@ -138,7 +138,8 @@ class Misc(callbacks.Plugin):
                msg.prefix != irc.prefix and \
                ircutils.isUserHostmask(msg.prefix):
                 penalty = conf.supybot.abuse.flood.command.invalid.punishment()
-                banmask = banmasker(msg.prefix, channel=None)
+                banmask = banmasker(msg.prefix, channel=channel,
+                                    network=irc.network)
                 self.log.info('Ignoring %s for %s seconds due to an apparent '
                               'invalid command flood.', banmask, penalty)
                 if tokens and tokens[0] == 'Error:':
@@ -153,7 +154,8 @@ class Misc(callbacks.Plugin):
                                utils.timeElapsed(penalty, seconds=False)))
                 return
         # Now, for normal handling.
-        if conf.get(conf.supybot.reply.whenNotCommand, channel):
+        if conf.supybot.reply.whenNotCommand.getSpecific(
+                channel, irc.network)():
             if len(tokens) >= 2:
                 cb = irc.getCallback(tokens[0])
                 if cb:
@@ -177,7 +179,7 @@ class Misc(callbacks.Plugin):
                     if channel != irc.nick else _('private'))
             if irc.nested:
                 bracketConfig = conf.supybot.commands.nested.brackets
-                brackets = conf.get(bracketConfig, channel)
+                brackets = bracketConfig.getSpecific(channel, irc.network)()
                 if brackets:
                     (left, right) = brackets
                     irc.reply(left + ' '.join(tokens) + right)
@@ -386,7 +388,7 @@ class Misc(callbacks.Plugin):
                 return
         try:
             L = irc._mores[userHostmask]
-            number = self.registryValue('mores', msg.args[0])
+            number = self.registryValue('mores', msg.channel, irc.network)
             chunks = [L.pop() for x in range(0, number)]
             if L:
                 if len(L) < 2:
@@ -406,7 +408,7 @@ class Misc(callbacks.Plugin):
     def _validLastMsg(self, irc, msg):
         return msg.prefix and \
                msg.command == 'PRIVMSG' and \
-               irc.isChannel(msg.args[0])
+               msg.channel
 
     @internationalizeDocstring
     def last(self, irc, msg, args, optlist):
@@ -423,9 +425,9 @@ class Misc(callbacks.Plugin):
         predicates = {}
         nolimit = False
         skipfirst = True
-        if irc.isChannel(msg.args[0]):
+        if msg.channel:
             predicates['in'] = lambda m: ircutils.strEqual(m.args[0],
-                                                           msg.args[0])
+                                                           msg.channel)
         else:
             skipfirst = False
         for (option, arg) in optlist:
@@ -437,7 +439,7 @@ class Misc(callbacks.Plugin):
                 def f(m, arg=arg):
                     return ircutils.strEqual(m.args[0], arg)
                 predicates['in'] = f
-                if arg != msg.args[0]:
+                if arg != msg.channel:
                     skipfirst = False
             elif option == 'on':
                 def f(m, arg=arg):
@@ -484,6 +486,7 @@ class Misc(callbacks.Plugin):
         predicates.append(userInChannel)
         # Make sure the user can't get messages from a +s channel unless
         # they're calling the command from that channel or from a query
+        # TODO: support statusmsg, but be careful about leaking scopes.
         def notSecretMsg(m):
             return not irc.isChannel(msg.args[0]) \
                     or msg.args[0] == m.args[0] \
