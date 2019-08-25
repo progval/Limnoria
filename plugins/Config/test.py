@@ -181,6 +181,25 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertResponse('config channel #testchan1 reply.whenAddressedBy.strings', '.')
         self.assertResponse('config channel #testchan2 reply.whenAddressedBy.strings', '.')
 
+    def testNetwork(self):
+        getTestIrc('testnet1')
+        getTestIrc('testnet2')
+        self.assertResponse('config reply.whenAddressedBy.strings ^',
+                'The operation succeeded.')
+        self.assertResponse('config network reply.whenAddressedBy.strings @',
+                'The operation succeeded.')
+        self.assertResponse('config network reply.whenAddressedBy.strings', '@')
+        self.assertNotError('config network reply.whenAddressedBy.strings $')
+        self.assertResponse('config network testnet1 reply.whenAddressedBy.strings', '^')
+        self.assertResponse('config network testnet2 reply.whenAddressedBy.strings', '^')
+        self.assertResponse('config network reply.whenAddressedBy.strings', '$')
+        self.assertResponse('config network testnet1 reply.whenAddressedBy.strings', '^')
+        self.assertResponse('config network testnet2 reply.whenAddressedBy.strings', '^')
+
+        self.assertNotError('config network testnet1 reply.whenAddressedBy.strings =')
+        self.assertResponse('config network testnet1 reply.whenAddressedBy.strings', '=')
+        self.assertResponse('config network testnet2 reply.whenAddressedBy.strings', '^')
+
     def testChannelNetwork(self):
         irc = self.irc
         irc1 = getTestIrc('testnet1')

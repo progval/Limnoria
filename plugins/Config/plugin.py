@@ -291,6 +291,30 @@ class Config(callbacks.Plugin):
                              'channels', 'settableConfigVar',
                              additional('text')])
 
+    def network(self, irc, msg, args, network, group, value):
+        """[<network>] <name> [<value>]
+
+        If <value> is given, sets the network configuration variable for <name>
+        to <value> for <network>.
+        Otherwise, returns the current network configuration value of <name>.
+        <network> defaults to the current network."""
+        if not group._networkValue:
+            irc.error(_('That configuration variable is not a network-specific '
+                      'configuration variable.'))
+            return
+        if value is not None:
+            self._setValue(irc, msg, group.get(':' + network.network), value)
+
+            irc.replySuccess()
+        else:
+            values = []
+            private = None
+            (value, private) = \
+                self._getValue(irc, msg, group, network)
+            irc.reply(value, private=private)
+    network = wrap(network, ['networkIrc', 'settableConfigVar',
+                             additional('text')])
+
     @internationalizeDocstring
     def config(self, irc, msg, args, group, value):
         """<name> [<value>]
