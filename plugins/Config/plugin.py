@@ -256,11 +256,11 @@ class Config(callbacks.Plugin):
                 if private_value:
                     private = True
             if len(channels) > 1:
-                irc.reply('; '.join([
-                    '%s: %s' % (channel, value)
-                    for (channel, value) in values]))
+                irc.reply('; '.join(['%s: %s' % (channel, value)
+                                     for (channel, value) in values]),
+                          private=private)
             else:
-                irc.reply(values[0][1])
+                irc.reply(values[0][1], private=private)
     channel = wrap(channel, ['channels', 'settableConfigVar',
                              additional('text')])
 
