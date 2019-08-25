@@ -30,7 +30,7 @@
 from supybot.test import *
 
 class ServicesTestCase(PluginTestCase):
-    plugins = ('Services',)
+    plugins = ('Services', 'Config')
     config = {
         'plugins.Services.NickServ': 'NickServ',
         'plugins.Services.ChanServ': 'ChanServ',
@@ -47,6 +47,33 @@ class ServicesTestCase(PluginTestCase):
         m = self.assertNotError('services identify')
         self.failUnless(m.args[0] == 'NickServ')
         self.failUnless(m.args[1].lower() == 'identify biff')
+
+    def testPasswordConfg(self):
+        self.assertNotError('config plugins.Services.nicks ""')
+        self.assertNotError('config network plugins.Services.nicks ""')
+
+        self.assertNotError('services password %s bar' % self.nick)
+
+        self.assertResponse(
+            'config plugins.Services.nicks',
+            'Global:  ; test: %s' % self.nick)
+        self.assertResponse(
+            'config plugins.Services.nickserv.password.%s' % self.nick,
+            'Global: bar; test: bar')
+
+        self.assertNotError(
+            'config network plugins.Services.nickserv.password.%s bar2'
+            % self.nick)
+        self.assertResponse(
+            'config plugins.Services.nickserv.password.%s' % self.nick,
+            'Global: bar; test: bar2')
+        self.assertResponse(
+            'config plugins.Services.nickserv.password.%s' % self.nick,
+            'Global: bar; test: bar2')
+
+        m = self.assertNotError('services identify')
+        self.failUnless(m.args[0] == 'NickServ')
+        self.failUnless(m.args[1].lower() == 'identify bar2')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

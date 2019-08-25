@@ -205,14 +205,24 @@ class Config(callbacks.Plugin):
             network=network.network, channel=channel, check=False)
         value = str(group) or ' '
         if addGlobal and not irc.nested:
-            value = _(
-                'Global: %(global_value)s; '
-                '%(channel_name)s @ %(network_name)s: %(channel_value)s') % {
-                'global_value': global_value,
-                'channel_name': msg.channel,
-                'network_name': irc.network,
-                'channel_value': value,
-            }
+            if global_group._channelValue and channel:
+                # TODO: also show the network value when relevant
+                value = _(
+                    'Global: %(global_value)s; '
+                    '%(channel_name)s @ %(network_name)s: %(channel_value)s') % {
+                    'global_value': global_value,
+                    'channel_name': msg.channel,
+                    'network_name': irc.network,
+                    'channel_value': value,
+                }
+            elif global_group._networkValue and network:
+                value = _(
+                    'Global: %(global_value)s; '
+                    '%(network_name)s: %(network_value)s') % {
+                    'global_value': global_value,
+                    'network_name': irc.network,
+                    'network_value': value,
+                }
         if hasattr(global_group, 'value'):
             if not global_group._private:
                 return (value, None)
@@ -330,7 +340,7 @@ class Config(callbacks.Plugin):
             (value, private) = self._getValue(
                 irc, msg, group, network=irc,
                 channel=msg.channel,
-                addGlobal=group._channelValue)
+                addGlobal=group._channelValue or group._networkValue)
             irc.reply(value, private=private)
     config = wrap(config, ['settableConfigVar', additional('text')])
 

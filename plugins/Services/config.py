@@ -38,8 +38,8 @@ def registerNick(nick, password=''):
     p = conf.supybot.plugins.Services.Nickserv.get('password')
     h = _('Determines what password the bot will use with NickServ when ' \
         'identifying as %s.') % nick
-    v = conf.registerGlobalValue(p, nick,
-                                 registry.String(password, h, private=True))
+    v = conf.registerNetworkValue(p, nick,
+                                  registry.String(password, h, private=True))
     if password:
         v.setValue(password)
 
@@ -65,7 +65,7 @@ class ValidNickSet(conf.ValidNicks):
     List = ircutils.IrcSet
 
 Services = conf.registerPlugin('Services')
-conf.registerGlobalValue(Services, 'nicks',
+conf.registerNetworkValue(Services, 'nicks',
     ValidNickSet([], _("""Determines what nicks the bot will use with
     services.""")))
 
@@ -76,19 +76,19 @@ conf.registerGlobalValue(Services, 'disabledNetworks',
     Networks(_('QuakeNet').split(), _("""Determines what networks this plugin
     will be disabled on.""")))
 
-conf.registerGlobalValue(Services, 'noJoinsUntilIdentified',
+conf.registerNetworkValue(Services, 'noJoinsUntilIdentified',
     registry.Boolean(False, _("""Determines whether the bot will not join any
     channels until it is identified.  This may be useful, for instances, if
     you have a vhost that isn't set until you're identified, or if you're
     joining +r channels that won't allow you to join unless you identify.""")))
-conf.registerGlobalValue(Services, 'ghostDelay',
+conf.registerNetworkValue(Services, 'ghostDelay',
     registry.NonNegativeInteger(60, _("""Determines how many seconds the bot will
     wait between successive GHOST attempts. Set this to 0 to disable GHOST.""")))
-conf.registerGlobalValue(Services, 'NickServ',
+conf.registerNetworkValue(Services, 'NickServ',
     ValidNickOrEmptyString('NickServ', _("""Determines what nick the 'NickServ' service
     has.""")))
 conf.registerGroup(Services.NickServ, 'password')
-conf.registerGlobalValue(Services, 'ChanServ',
+conf.registerNetworkValue(Services, 'ChanServ',
     ValidNickOrEmptyString('ChanServ', _("""Determines what nick the 'ChanServ' service
     has.""")))
 conf.registerChannelValue(Services.ChanServ, 'password',
