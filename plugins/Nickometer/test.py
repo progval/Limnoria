@@ -33,6 +33,12 @@ class NickometerTestCase(PluginTestCase):
     plugins = ('Nickometer',)
     def testNickometer(self):
         self.assertNotError('nickometer')
-        self.assertNotError('nickometer jemfinch')
+        self.assertResponse(
+            'nickometer jemfinch',
+            'The "lame nick-o-meter" reading for "jemfinch" is 0.0%.')
+        nick = 'xXReallyObnoxious1337NickXx'
+        self.assertResponse(
+            'nickometer %s' % nick,
+            'The "lame nick-o-meter" reading for "%s" is 99.96%%.' % nick)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
