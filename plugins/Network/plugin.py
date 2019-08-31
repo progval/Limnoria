@@ -108,12 +108,11 @@ class Network(callbacks.Plugin):
 
     @internationalizeDocstring
     def disconnect(self, irc, msg, args, otherIrc, quitMsg):
-        """[<network>] [<quit message>]
+        """<network> [<quit message>]
 
         Disconnects from the network represented by the network <network>.
         If <quit message> is given, quits the network with the given quit
-        message.  <network> is only necessary if the network is different
-        from the network the command is sent on.
+        message.
         """
         standard_msg = conf.supybot.plugins.Owner.quitMsg()
         if standard_msg:
@@ -125,7 +124,7 @@ class Network(callbacks.Plugin):
         if otherIrc != irc:
             irc.replySuccess(_('Disconnection to %s initiated.') %
                              otherIrc.network)
-    disconnect = wrap(disconnect, ['owner', 'networkIrc', additional('text')])
+    disconnect = wrap(disconnect, ['owner', ('networkIrc', True), additional('text')])
 
     @internationalizeDocstring
     def reconnect(self, irc, msg, args, otherIrc, quitMsg):
