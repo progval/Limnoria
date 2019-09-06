@@ -60,14 +60,15 @@ def DB(filename, types):
         def junk(*args, **kwargs):
             pass
         return junk
-    filename = conf.supybot.directories.data.dirize(filename)
     def MakeDB(*args, **kwargs):
         for type in conf.supybot.databases():
             # Can't do this because Python sucks.  Go ahead, try it!
             # filename = '.'.join([filename, type, 'db'])
             fn = '.'.join([filename, type, 'db'])
+            fn = utils.file.sanitizeName(fn)
+            path = conf.supybot.directories.data.dirize(fn)
             try:
-                return types[type](fn, *args, **kwargs)
+                return types[type](path, *args, **kwargs)
             except KeyError:
                 continue
         raise NoSuitableDatabase(types.keys())
@@ -78,11 +79,11 @@ def makeChannelFilename(filename, channel=None, dirname=None):
     filename = os.path.basename(filename)
     channelSpecific = conf.supybot.databases.plugins.channelSpecific
     channel = channelSpecific.getChannelLink(channel)
-    channel = ircutils.toLower(channel)
+    channel = utils.file.sanitizeName(ircutils.toLower(channel))
     if dirname is None:
         dirname = conf.supybot.directories.data.dirize(channel)
     if not os.path.exists(dirname):
-            os.makedirs(dirname)
+        os.makedirs(dirname)
     return os.path.join(dirname, filename)
 
 def getChannel(channel):

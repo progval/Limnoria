@@ -29,6 +29,22 @@
 ###
 
 from supybot.test import *
+import supybot.conf as conf
 
 import supybot.irclib as irclib
 import supybot.plugins as plugins
+
+class PluginsTestCase(SupyTestCase):
+    def testMakeChannelFilename(self):
+        self.assertEqual(
+            plugins.makeChannelFilename('dir', '#foo'),
+            conf.supybot.directories.data() + '/#foo/dir')
+        self.assertEqual(
+            plugins.makeChannelFilename('dir', '#f/../oo'),
+            conf.supybot.directories.data() + '/#f..oo/dir')
+        self.assertEqual(
+            plugins.makeChannelFilename('dir', '/./'),
+            conf.supybot.directories.data() + '/_/dir')
+        self.assertEqual(
+            plugins.makeChannelFilename('dir', '/../'),
+            conf.supybot.directories.data() + '/__/dir')

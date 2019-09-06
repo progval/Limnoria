@@ -504,6 +504,10 @@ class FileTest(SupyTestCase):
         self.failUnless(utils.file.mktemp())
         self.failUnless(utils.file.mktemp())
 
+    def testSanitizeName(self):
+        self.assertEqual(utils.file.sanitizeName('#foo'), '#foo')
+        self.assertEqual(utils.file.sanitizeName('#f/../oo'), '#f..oo')
+
 
 class NetTest(SupyTestCase):
     def testEmailRe(self):

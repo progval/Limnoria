@@ -35,6 +35,7 @@ import time
 import supybot.conf as conf
 import supybot.world as world
 import supybot.ircdb as ircdb
+import supybot.utils as utils
 import supybot.irclib as irclib
 import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
@@ -95,9 +96,10 @@ class ChannelLogger(callbacks.Plugin):
 
     def getLogName(self, channel):
         if self.registryValue('rotateLogs', channel):
-            return '%s.%s.log' % (channel, self.logNameTimestamp(channel))
+            name = '%s.%s.log' % (channel, self.logNameTimestamp(channel))
         else:
-            return '%s.log' % channel
+            name = '%s.log' % channel
+        return utils.file.sanitizeName(name)
 
     def getLogDir(self, irc, channel):
         channel = self.normalizeChannel(irc, channel)

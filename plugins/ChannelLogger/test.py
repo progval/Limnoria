@@ -32,5 +32,13 @@ from supybot.test import *
 class ChannelLoggerTestCase(PluginTestCase):
     plugins = ('ChannelLogger',)
 
+    def testLogDir(self):
+        self.assertEqual(
+            self.irc.getCallback('ChannelLogger').getLogName('#foo'),
+            '#foo.log')
+        self.assertEqual(
+            self.irc.getCallback('ChannelLogger').getLogName('#f/../oo'),
+            '#f..oo.log')
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
