@@ -585,6 +585,7 @@ class ReplyIrcProxy(RichReplyMethods):
     def __init__(self, irc, msg):
         self.irc = irc
         self.msg = msg
+        self.getRealIrc()._setMsgChannel(self.msg)
 
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
@@ -636,8 +637,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
     _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, args, nested=0):
         assert isinstance(args, list), 'Args should be a list, not a string.'
-        self.irc = irc
-        self.msg = msg
+        super(NestedCommandsIrcProxy, self).__init__(irc, msg)
         self.nested = nested
         self.repliedTo = False
         if not self.nested and isinstance(irc, self.__class__):
