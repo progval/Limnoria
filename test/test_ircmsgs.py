@@ -147,6 +147,14 @@ class IrcMsgTestCase(SupyTestCase):
         self.assertEqual(m.args, ('me', 'Hello'))
         self.assertEqual(str(m), s + '\n')
 
+        s = '@foo=;bar=baz;qux= ' \
+            ':nick!ident@host.com PRIVMSG me :Hello'
+        m = ircmsgs.IrcMsg(s)
+        self.assertEqual(m.server_tags, {
+            'foo': None,
+            'bar': 'baz',
+            'qux': None})
+
     def testTime(self):
         before = time.time()
         msg = ircmsgs.IrcMsg('PRIVMSG #foo :foo')

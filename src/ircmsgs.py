@@ -73,7 +73,12 @@ def parse_server_tags(s):
             server_tags[tag] = None
         else:
             (key, value) = tag.split('=', 1)
-            server_tags[key] = unescape_server_tag_value(value)
+            value = unescape_server_tag_value(value)
+            if value == '':
+                # "Implementations MUST interpret empty tag values (e.g. foo=)
+                # as equivalent to missing tag values (e.g. foo)."
+                value = None
+            server_tags[key] = value
     return server_tags
 def format_server_tags(server_tags):
     parts = []
