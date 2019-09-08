@@ -89,13 +89,13 @@ class ChannelLogger(callbacks.Plugin):
                 if e.args[0] != 'I/O operation on a closed file':
                     self.log.exception('Odd exception:')
 
-    def logNameTimestamp(self, channel):
-        format = self.registryValue('filenameTimestamp', channel, irc.network)
+    def logNameTimestamp(self, network, channel):
+        format = self.registryValue('filenameTimestamp', channel, network)
         return time.strftime(format)
 
-    def getLogName(self, channel):
-        if self.registryValue('rotateLogs', channel, irc.network):
-            return '%s.%s.log' % (channel, self.logNameTimestamp(channel))
+    def getLogName(self, network, channel):
+        if self.registryValue('rotateLogs', channel, network):
+            return '%s.%s.log' % (channel, self.logNameTimestamp(network, channel))
         else:
             return '%s.log' % channel
 
@@ -119,7 +119,7 @@ class ChannelLogger(callbacks.Plugin):
         for (irc, logs) in self.logs.items():
             for (channel, log) in list(logs.items()):
                 if self.registryValue('rotateLogs', channel, irc.network):
-                    name = self.getLogName(channel)
+                    name = self.getLogName(irc.network, channel)
                     if name != os.path.basename(log.name):
                         log.close()
                         del logs[channel]
@@ -135,7 +135,7 @@ class ChannelLogger(callbacks.Plugin):
             return logs[channel]
         else:
             try:
-                name = self.getLogName(channel)
+                name = self.getLogName(irc.network, channel)
                 logDir = self.getLogDir(irc, channel)
                 log = open(os.path.join(logDir, name), encoding='utf-8', mode='a')
                 logs[channel] = log
@@ -168,7 +168,7 @@ class ChannelLogger(callbacks.Plugin):
         if minisix.PY2:
             s = s.decode('utf8', 'ignore')
         log.write(s)
-        if self.registryValue('flushImmediately', irc.network):
+        if self.registryValue('flushImmediately'):
             log.flush()
 
     def doPrivmsg(self, irc, msg):
