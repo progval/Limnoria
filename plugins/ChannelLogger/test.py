@@ -34,10 +34,10 @@ class ChannelLoggerTestCase(PluginTestCase):
 
     def testLogDir(self):
         self.assertEqual(
-            self.irc.getCallback('ChannelLogger').getLogName('#foo'),
+            self.irc.getCallback('ChannelLogger').getLogName('test', '#foo'),
             '#foo.log')
         self.assertEqual(
-            self.irc.getCallback('ChannelLogger').getLogName('#f/../oo'),
+            self.irc.getCallback('ChannelLogger').getLogName('test', '#f/../oo'),
             '#f..oo.log')
 
 
