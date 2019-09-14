@@ -73,19 +73,19 @@ class URL(callbacks.Plugin):
     def doPrivmsg(self, irc, msg):
         if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
             return
-        channel = msg.args[0]
-        if irc.isChannel(channel):
+        if msg.channel:
             if ircmsgs.isAction(msg):
                 text = ircmsgs.unAction(msg)
             else:
                 text = msg.args[1]
             for url in utils.web.urlRe.findall(text):
-                r = self.registryValue('nonSnarfingRegexp', channel)
+                r = self.registryValue('nonSnarfingRegexp',
+                                       msg.channel, irc.network)
                 if r and r.search(url):
                     self.log.debug('Skipping adding %u to db.', url)
                     continue
                 self.log.debug('Adding %u to db.', url)
-                self.db.add(channel, url, msg)
+                self.db.add(msg.channel, url, msg)
 
     @internationalizeDocstring
     def stats(self, irc, msg, args, channel):

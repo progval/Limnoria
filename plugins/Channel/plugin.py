@@ -54,24 +54,26 @@ class Channel(callbacks.Plugin):
         self.invites = {}
 
     def doKick(self, irc, msg):
-        channel = msg.args[0]
+        channel = msg.channel
+        network = irc.network
         if msg.args[1] == irc.nick:
-            if self.registryValue('alwaysRejoin', channel):
-                delay = self.registryValue('rejoinDelay', channel)
+            if self.registryValue('alwaysRejoin', channel, network):
+                delay = self.registryValue('rejoinDelay', channel, network)
                 networkGroup = conf.supybot.networks.get(irc.network)
                 if delay:
                     def f():
                         irc.sendMsg(networkGroup.channels.join(channel))
                     schedule.addEvent(f, time.time() + delay)
-                    self.log.info('Kicked from %s by %s. Rejoining after %s '
-                                  'seconds.', channel, msg.prefix, delay)
+                    self.log.info('Kicked from %s @ %s by %s. '
+                                  'Rejoining after %s seconds.',
+                                  channel, network, msg.prefix, delay)
                 else:
-                    self.log.info('Kicked from %s by %s. Rejoining.',
-                                  channel, msg.prefix)
+                    self.log.info('Kicked from %s @ %s by %s. Rejoining.',
+                                  channel, network, msg.prefix)
                     irc.sendMsg(networkGroup.channels.join(channel))
             else:
-                self.log.info('Kicked from %s by %s. Not auto-rejoining.',
-                        channel, msg.prefix)
+                self.log.info('Kicked from %s @ %s by %s. Not auto-rejoining.',
+                        channel, network, msg.prefix)
 
     def _sendMsg(self, irc, msg):
         irc.queueMsg(msg)
@@ -274,7 +276,7 @@ class Channel(callbacks.Plugin):
         supybot.plugins.Channel.partMsg will be used. No part message will be
         used if neither a cycle reason nor a default part message is given.
         """
-        reason = (reason or self.registryValue("partMsg", channel))
+        reason = (reason or self.registryValue("partMsg", channel, irc.network))
         reason = ircutils.standardSubstitute(irc, msg, reason)
         self._sendMsg(irc, ircmsgs.part(channel, reason))
         networkGroup = conf.supybot.networks.get(irc.network)
@@ -907,12 +909,20 @@ class Channel(callbacks.Plugin):
         nicks if --count option is provided.
         """
         # Make sure we don't elicit information about private channels to
-        # people or channels that shouldn't know
+        # people or channels that shouldn't know. Someone is allowed if
+        # any of these are true:
+        # * the channel is not secret (mode +s),
+        # * the request is sent to the channel itself (FIXME: what about
+        #   channels without +n?),
+        # * the requester is op,
+        # * the request is not sent to a channel (or else everyone in the
+        #   channel would see the response) and the requester is in the
+        #   channel themselves
         capability = ircdb.makeChannelCapability(channel, 'op')
         if 's' in irc.state.channels[channel].modes and \
-            msg.args[0] != channel and \
+            msg.channel != channel and \
             not ircdb.checkCapability(msg.prefix, capability) and \
-            (irc.isChannel(msg.args[0]) or \
+            (msg.channel or \
              msg.nick not in irc.state.channels[channel].users):
             irc.error(_('You don\'t have access to that information.'),
                     Raise=True)
@@ -920,7 +930,7 @@ class Channel(callbacks.Plugin):
         keys = [option for (option, arg) in optlist]
         if 'count' not in keys:
             utils.sortBy(str.lower, L)
-            private = self.registryValue("nicksInPrivate", channel)
+            private = self.registryValue("nicksInPrivate", channel, irc.network)
             irc.reply(utils.str.commaAndify(L), private=private)
         else:
             irc.reply(str(len(L)))
@@ -961,11 +971,9 @@ class Channel(callbacks.Plugin):
         supybot.plugins.Channel.partMsg will be used. No part message will be
         used if no default is configured.
         """
-        if channel is None:
-            if irc.isChannel(msg.args[0]):
-                channel = msg.args[0]
-            else:
-                irc.error(Raise=True)
+        channel = channel or msg.channel
+        if not channel:
+            irc.error(Raise=True)
         capability = ircdb.makeChannelCapability(channel, 'op')
         if not ircdb.checkCapabilities(msg.prefix, [capability, 'admin']):
             irc.errorNoCapability(capability, Raise=True)
@@ -976,7 +984,7 @@ class Channel(callbacks.Plugin):
             pass
         if channel not in irc.state.channels:
             irc.error(_('I\'m not in %s.') % channel, Raise=True)
-        reason = (reason or self.registryValue("partMsg", channel))
+        reason = (reason or self.registryValue("partMsg", channel, irc.network))
         reason = ircutils.standardSubstitute(irc, msg, reason)
         irc.queueMsg(ircmsgs.part(channel, reason))
         if msg.nick in irc.state.channels[channel].users:

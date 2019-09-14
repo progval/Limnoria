@@ -125,8 +125,8 @@ class Seen(callbacks.Plugin):
     def doPrivmsg(self, irc, msg):
         if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
             return
-        if irc.isChannel(msg.args[0]):
-            channel = msg.args[0]
+        if msg.channel:
+            channel = msg.channel
             said = ircmsgs.prettyPrint(msg)
             self.db.update(channel, msg.nick, said)
             self.anydb.update(channel, msg.nick, said)
@@ -184,7 +184,8 @@ class Seen(callbacks.Plugin):
             results = []
             if '*' in name:
                 if (len(name.replace('*', '')) <
-                        self.registryValue('minimumNonWildcard', channel)):
+                        self.registryValue('minimumNonWildcard',
+                                           channel, irc.network)):
                     irc.error(_('Not enough non-wildcard characters.'),
                             Raise=True)
                 results = db.seenWildcard(channel, name)
@@ -196,7 +197,7 @@ class Seen(callbacks.Plugin):
                 reply = format(_('%s was last seen in %s %s ago'),
                                  nick, channel,
                                  utils.timeElapsed(time.time()-when))
-                if self.registryValue('showLastMessage', channel):
+                if self.registryValue('showLastMessage', channel, irc.network):
                     if minisix.PY2:
                         said = said.decode('utf8')
                     reply = _('%s: %s') % (reply, said)
@@ -277,7 +278,7 @@ class Seen(callbacks.Plugin):
             (when, said) = db.seen(channel, '<last>')
             reply = format(_('Someone was last seen in %s %s ago'),
                              channel, utils.timeElapsed(time.time()-when))
-            if self.registryValue('showLastMessage', channel):
+            if self.registryValue('showLastMessage', channel, irc.network):
                 reply = _('%s: %s') % (reply, said)
             irc.reply(reply)
         except KeyError:
@@ -304,7 +305,7 @@ class Seen(callbacks.Plugin):
             reply = format(_('%s was last seen in %s %s ago'),
                              user.name, channel,
                              utils.timeElapsed(time.time()-when))
-            if self.registryValue('showLastMessage', channel):
+            if self.registryValue('showLastMessage', channel, irc.network):
                 reply = _('%s: %s') % (reply, said)
             irc.reply(reply)
         except KeyError:

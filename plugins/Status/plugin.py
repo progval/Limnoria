@@ -140,9 +140,9 @@ class Status(callbacks.Plugin):
         """
         (user, system, childUser, childSystem, elapsed) = os.times()
         now = time.time()
-        target = msg.args[0]
+        target = (msg.channel, irc.network)
         timeRunning = now - world.startedAt
-        if self.registryValue('cpu.children', target) and \
+        if self.registryValue('cpu.children', *target) and \
            user+system < timeRunning+1: # Fudge for FPU inaccuracies.
             children = _('My children have taken %.2f seconds of user time '
                        'and %.2f seconds of system time '
@@ -154,11 +154,11 @@ class Status(callbacks.Plugin):
         response = _('I have taken %.2f seconds of user time and %.2f seconds '
                    'of system time, for a total of %.2f seconds of CPU '
                    'time.  %s') % (user, system, user + system, children)
-        if self.registryValue('cpu.threads', target):
+        if self.registryValue('cpu.threads', *target):
             response += format('I have spawned %n; I currently have %i still '
                                'running.',
                                (world.threadsSpawned, 'thread'), activeThreads)
-        if self.registryValue('cpu.memory', target):
+        if self.registryValue('cpu.memory', *target):
             mem = None
             pid = os.getpid()
             plat = sys.platform

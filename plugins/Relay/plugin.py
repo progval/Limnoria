@@ -197,7 +197,7 @@ class Relay(callbacks.Plugin):
     do401 = do402
 
     def _formatPrivmsg(self, nick, network, msg):
-        channel = msg.args[0]
+        channel = msg.channel
         if self.registryValue('includeNetwork', channel):
             network = '@' + network
         else:
@@ -229,12 +229,12 @@ class Relay(callbacks.Plugin):
         assert msg.command in ('PRIVMSG', 'NOTICE', 'TOPIC')
         for otherIrc in world.ircs:
             if otherIrc != irc and not otherIrc.zombie:
-                if msg.args[0] in otherIrc.state.channels:
+                if msg.channel in otherIrc.state.channels:
                     msg.tag('relayedMsg')
                     otherIrc.queueMsg(msg)
 
     def _checkRelayMsg(self, msg):
-        channel = msg.args[0]
+        channel = msg.channel
         if channel in self.lastRelayMsgs:
             q = self.lastRelayMsgs[channel]
             unformatted = ircutils.stripFormatting(msg.args[1])
@@ -247,7 +247,7 @@ class Relay(callbacks.Plugin):
     def _punishRelayers(self, msg):
         assert self._checkRelayMsg(msg), 'Punishing without checking.'
         who = msg.prefix
-        channel = msg.args[0]
+        channel = msg.channel
         def notPunishing(irc, s, *args):
             self.log.info('Not punishing %s in %s on %s: %s.',
                           msg.prefix, channel, irc.network, s, *args)
@@ -268,12 +268,12 @@ class Relay(callbacks.Plugin):
     def doPrivmsg(self, irc, msg):
         if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
             return
-        (channel, text) = msg.args
-        if irc.isChannel(channel):
+        text = msg.args[1]
+        if msg.channel:
             irc = self._getRealIrc(irc)
-            if channel not in self.registryValue('channels'):
+            if msg.channel not in self.registryValue('channels'):
                 return
-            ignores = self.registryValue('ignores', channel)
+            ignores = self.registryValue('ignores', msg.channel, irc.network)
             for ignore in ignores:
                 if ircutils.hostmaskPatternEqual(ignore, msg.prefix):
                     self.log.debug('Refusing to relay %s, ignored by %s.',
@@ -281,7 +281,8 @@ class Relay(callbacks.Plugin):
                     return
             # Let's try to detect other relay bots.
             if self._checkRelayMsg(msg):
-                if self.registryValue('punishOtherRelayBots', channel):
+                if self.registryValue('punishOtherRelayBots',
+                                      msg.channel, irc.network):
                     self._punishRelayers(msg)
                 # Either way, we don't relay the message.
                 else:
@@ -291,13 +292,12 @@ class Relay(callbacks.Plugin):
             else:
                 network = self._getIrcName(irc)
                 s = self._formatPrivmsg(msg.nick, network, msg)
-                m = self._msgmaker(channel, s)
+                m = self._msgmaker(msg.channel, network, s)
                 self._sendToOthers(irc, m)
 
-    def _msgmaker(self, target, s):
+    def _msgmaker(self, target, network, s):
         msg = dynamic.msg
-        channel = dynamic.channel
-        if self.registryValue('noticeNonPrivmsgs', dynamic.channel) and \
+        if self.registryValue('noticeNonPrivmsgs', target) and \
            msg.command != 'PRIVMSG':
             return ircmsgs.notice(target, s)
         else:
@@ -423,16 +423,15 @@ class Relay(callbacks.Plugin):
             if msg.relayedMsg:
                 self._addRelayMsg(msg)
             else:
-                channel = msg.args[0]
-                if channel in self.registryValue('channels'):
+                if msg.channel in self.registryValue('channels'):
                     network = self._getIrcName(irc)
                     s = self._formatPrivmsg(irc.nick, network, msg)
-                    relayMsg = self._msgmaker(channel, s)
+                    relayMsg = self._msgmaker(msg.args[0], s)
                     self._sendToOthers(irc, relayMsg)
         return msg
 
     def _addRelayMsg(self, msg):
-        channel = msg.args[0]
+        channel = msg.channel
         if channel in self.lastRelayMsgs:
             q = self.lastRelayMsgs[channel]
         else:

@@ -96,8 +96,8 @@ def retry(tries=3):
         return newf
     return decorator
 
-def getTestIrc():
-    irc = irclib.Irc('test')
+def getTestIrc(name='test'):
+    irc = irclib.Irc(name)
     # Gotta clear the connect messages (USER, NICK, etc.)
     while irc.takeMsg():
         pass

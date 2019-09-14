@@ -185,9 +185,17 @@ class ValuesTestCase(SupyTestCase):
         self.assertRaises(registry.InvalidRegistryValue,
                           v.setValue, re.compile(r'foo'))
 
-    def testBackslashes(self):
+    def testBackslashesKeys(self):
+        conf.supybot.reply.whenAddressedBy.strings.get(':foo').set('=/*')
+        filename = conf.supybot.directories.conf.dirize('backslashes1.conf')
+        registry.close(conf.supybot, filename)
+        registry.open_registry(filename)
+        value = conf.supybot.reply.whenAddressedBy.strings.get(':foo')()
+        self.assertEqual(value, set(['=/*']))
+
+    def testBackslashesValues(self):
         conf.supybot.reply.whenAddressedBy.chars.set('\\')
-        filename = conf.supybot.directories.conf.dirize('backslashes.conf')
+        filename = conf.supybot.directories.conf.dirize('backslashes2.conf')
         registry.close(conf.supybot, filename)
         registry.open_registry(filename)
         self.assertEqual(conf.supybot.reply.whenAddressedBy.chars(), '\\')
@@ -223,5 +231,35 @@ class SecurityTestCase(SupyTestCase):
         g.register('val', v)
         self.assertFalse(g._private)
         self.assertTrue(g.val._private)
+
+
+class InheritanceTestCase(SupyTestCase):
+    def testChild(self):
+        parent = registry.String('foo', 'help')
+        parent._supplyDefault = True
+        self.assertTrue(parent._wasSet)
+        self.assertEqual(parent(), 'foo')
+
+        child = parent.get('child')
+        self.assertFalse(child._wasSet)
+        self.assertEqual(child(), 'foo')
+
+        parent.setValue('bar')
+        self.assertTrue(parent._wasSet)
+        self.assertEqual(parent(), 'bar')
+        self.assertFalse(child._wasSet)
+        self.assertEqual(child(), 'bar') # Takes the new parent value
+
+        child.setValue('baz')
+        self.assertTrue(parent._wasSet)
+        self.assertEqual(parent(), 'bar')
+        self.assertTrue(child._wasSet)
+        self.assertEqual(child(), 'baz')
+
+        parent.setValue('qux')
+        self.assertTrue(parent._wasSet)
+        self.assertEqual(parent(), 'qux')
+        self.assertTrue(child._wasSet)
+        self.assertEqual(child(), 'baz') # Keeps its own value
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

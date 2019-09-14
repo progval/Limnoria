@@ -115,9 +115,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         db.isolation_level = None
         return db
 
-    def _updateRank(self, channel, regexp):
+    def _updateRank(self, network, channel, regexp):
         subfolder = None if channel == 'global' else channel
-        if self.registryValue('keepRankInfo', subfolder):
+        if self.registryValue('keepRankInfo', subfolder, network):
             db = self.getDb(channel)
             cursor = db.cursor()
             cursor.execute("""SELECT usage_count
@@ -153,10 +153,10 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             return True
 
     def do_privmsg_notice(self, irc, msg):
-        channel = msg.args[0]
-        if not irc.isChannel(channel):
+        channel = msg.channel
+        if not channel:
             return
-        if self.registryValue('enable', channel):
+        if self.registryValue('enable', channel, irc.network):
             actions = []
             results = []
             for channel in set(map(plugins.getChannel, (channel, 'global'))):
@@ -168,12 +168,12 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                 results.extend([(channel,)+x for x in cursor.fetchall()])
             if len(results) == 0:
                 return
-            max_triggers = self.registryValue('maxTriggers', channel)
+            max_triggers = self.registryValue('maxTriggers', channel, irc.network)
             for (channel, regexp, action) in results:
                 for match in re.finditer(regexp, msg.args[1]):
                     if match is not None:
                         thisaction = action
-                        self._updateRank(channel, regexp)
+                        self._updateRank(irc.network, channel, regexp)
                         for (i, j) in enumerate(match.groups()):
                             if match.group(i+1) is not None:
                                 thisaction = re.sub(r'\$' + str(i+1), match.group(i+1), thisaction)
@@ -192,7 +192,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             self.do_privmsg_notice(irc, msg)
 
     def doNotice(self, irc, msg):
-        if self.registryValue('enableForNotices', msg.args[0]):
+        if self.registryValue('enableForNotices', msg.channel, irc.network):
             self.do_privmsg_notice(irc, msg)
 
     @internationalizeDocstring
@@ -406,7 +406,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             return
 
         s = [ "%s: %s" % (ircutils.bold('#'+str(regexp[1])), regexp[0]) for regexp in regexps ]
-        separator = self.registryValue('listSeparator', channel)
+        separator = self.registryValue('listSeparator', channel, irc.network)
         irc.reply(separator.join(s))
     list = wrap(list, ['channelOrGlobal'])
 
@@ -419,7 +419,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         rankListLength registry value. <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        numregexps = self.registryValue('rankListLength', channel)
+        numregexps = self.registryValue('rankListLength', channel, irc.network)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT regexp, usage_count

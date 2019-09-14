@@ -85,7 +85,7 @@ class Lart(plugins.ChannelIdDatabasePlugin):
         text = text.replace('$who', target)
         if reason:
             text += _(' for ') + reason
-        if self.registryValue('showIds', channel):
+        if self.registryValue('showIds', channel, irc.network):
             text += format(' (#%i)', lart.id)
         irc.reply(text, action=True)
     lart = wrap(lart, ['channeldb', optional('id'), 'text'])

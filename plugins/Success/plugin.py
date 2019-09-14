@@ -50,7 +50,8 @@ class Success(plugins.ChannelIdDatabasePlugin):
         class MySuccessClass(self.originalClass):
             __slots__ = ()
             def __call__(self):
-                ret = pluginSelf.db.random(dynamic.msg.args[0])
+                msg = dynamic.msg
+                ret = pluginSelf.db.random(msg.channel or msg.args[0])
                 if ret is None:
                     try:
                         self.__class__ = pluginSelf.originalClass

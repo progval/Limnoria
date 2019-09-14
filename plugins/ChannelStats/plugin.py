@@ -142,8 +142,8 @@ class StatsDB(plugins.ChannelUserDB):
             return UserStat(*L)
 
     def addMsg(self, irc, msg, id=None):
-        if msg.args and irc.isChannel(msg.args[0]):
-            channel = plugins.getChannel(msg.args[0])
+        if msg.channel:
+            channel = plugins.getChannel(msg.channel)
             if (channel, 'channelStats') not in self:
                 self[channel, 'channelStats'] = ChannelStat()
             self[channel, 'channelStats'].addMsg(msg)
@@ -186,8 +186,8 @@ class ChannelStats(callbacks.Plugin):
 
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
-            if irc.isChannel(msg.args[0]):
-                if self.registryValue('selfStats', msg.args[0]):
+            if msg.channel:
+                if self.registryValue('selfStats', msg.channel, irc.network):
                     try:
                         self.outFiltering = True
                         self.db.addMsg(irc, msg, 0)

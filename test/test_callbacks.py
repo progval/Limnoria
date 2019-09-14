@@ -175,6 +175,7 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual('foobar--', callbacks.canonicalName('foobar--'))
 
     def testAddressed(self):
+        irc = getTestIrc()
         oldprefixchars = str(conf.supybot.reply.whenAddressedBy.chars)
         nick = 'supybot'
         conf.supybot.reply.whenAddressedBy.chars.set('~!@')
@@ -189,6 +190,7 @@ class FunctionsTestCase(SupyTestCase):
         for msg in inChannel:
             self.assertEqual('foo', callbacks.addressed(nick, msg), msg)
         msg = ircmsgs.privmsg(nick, 'foo')
+        irc._tagMsg(msg)
         self.assertEqual('foo', callbacks.addressed(nick, msg))
         conf.supybot.reply.whenAddressedBy.chars.set(oldprefixchars)
         msg = ircmsgs.privmsg('#foo', '%s::::: bar' % nick)
@@ -216,52 +218,84 @@ class FunctionsTestCase(SupyTestCase):
             conf.supybot.reply.whenNotAddressed.setValue(original)
 
     def testAddressedWithMultipleNicks(self):
+        irc = getTestIrc()
         msg = ircmsgs.privmsg('#foo', 'bar: baz')
+        irc._tagMsg(msg)
         self.assertEqual(callbacks.addressed('bar', msg), 'baz')
         # need to recreate the msg objects since the old ones have already
         # been tagged
         msg = ircmsgs.privmsg('#foo', 'bar: baz')
+        irc._tagMsg(msg)
         self.assertEqual(callbacks.addressed('biff', msg, nicks=['bar']),
                          'baz')
 
     def testAddressedWithNickAtEnd(self):
+        irc = getTestIrc()
         msg = ircmsgs.privmsg('#foo', 'baz, bar')
+        irc._tagMsg(msg)
         self.assertEqual(callbacks.addressed('bar', msg,
                                              whenAddressedByNickAtEnd=True),
                          'baz')
 
     def testAddressedPrefixCharsTakePrecedenceOverNickAtEnd(self):
+        irc = getTestIrc()
         msg = ircmsgs.privmsg('#foo', '@echo foo')
+        irc._tagMsg(msg)
         self.assertEqual(callbacks.addressed('foo', msg,
                                              whenAddressedByNickAtEnd=True,
                                              prefixChars='@'),
                          'echo foo')
 
-
     def testReply(self):
+        irc = getTestIrc()
         prefix = 'foo!bar@baz'
         channelMsg = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
         nonChannelMsg = ircmsgs.privmsg('supybot', 'bar baz', prefix=prefix)
+        irc._tagMsg(channelMsg)
+        irc._tagMsg(nonChannelMsg)
         self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
-                         callbacks.reply(channelMsg, 'foo', private=True))
+                         callbacks._makeReply(irc, channelMsg, 'foo',
+                                              private=True))
         self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
-                         callbacks.reply(nonChannelMsg, 'foo'))
+                         callbacks._makeReply(irc, nonChannelMsg, 'foo'))
         self.assertEqual(ircmsgs.privmsg(channelMsg.args[0],
                                          '%s: foo' % channelMsg.nick),
-                         callbacks.reply(channelMsg, 'foo'))
+                         callbacks._makeReply(irc, channelMsg, 'foo'))
         self.assertEqual(ircmsgs.privmsg(channelMsg.args[0],
                                          'foo'),
-                         callbacks.reply(channelMsg, 'foo', prefixNick=False))
+                         callbacks._makeReply(irc, channelMsg, 'foo',
+                                              prefixNick=False))
         self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
-                         callbacks.reply(channelMsg, 'foo',
-                                         notice=True, private=True))
+                         callbacks._makeReply(irc, channelMsg, 'foo',
+                                              notice=True, private=True))
+
+    def testReplyStatusmsg(self):
+        irc = getTestIrc()
+        prefix = 'foo!bar@baz'
+        msg = ircmsgs.privmsg('+#foo', 'bar baz', prefix=prefix)
+        irc._tagMsg(msg)
+
+        # No statusmsg set, so understood as being a private message, so
+        # private reply
+        self.assertEqual(ircmsgs.notice(msg.nick, 'foo'),
+                         callbacks._makeReply(irc, msg, 'foo'))
+
+        irc.state.supported['statusmsg'] = '+'
+        msg = ircmsgs.privmsg('+#foo', 'bar baz', prefix=prefix)
+        irc._tagMsg(msg)
+        print(msg.channel)
+        self.assertEqual(ircmsgs.privmsg('+#foo', '%s: foo' % msg.nick),
+                         callbacks._makeReply(irc, msg, 'foo'))
 
     def testReplyTo(self):
+        irc = getTestIrc()
         prefix = 'foo!bar@baz'
         msg = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
-        self.assertEqual(callbacks.reply(msg, 'blah', to='blah'),
+        irc._tagMsg(msg)
+        self.assertEqual(callbacks._makeReply(irc, msg, 'blah', to='blah'),
                          ircmsgs.privmsg('#foo', 'blah: blah'))
-        self.assertEqual(callbacks.reply(msg, 'blah', to='blah', private=True),
+        self.assertEqual(callbacks._makeReply(irc, msg, 'blah', to='blah',
+                                              private=True),
                          ircmsgs.notice('blah', 'blah'))
 
     def testTokenize(self):
@@ -682,7 +716,9 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
 
 class ProxyTestCase(SupyTestCase):
     def testHashing(self):
+        irc = getTestIrc()
         msg = ircmsgs.ping('0')
+        irc._tagMsg(msg)
         irc = irclib.Irc('test')
         proxy = callbacks.SimpleProxy(irc, msg)
         # First one way...

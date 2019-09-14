@@ -72,10 +72,11 @@ class BadWords(callbacks.Privmsg):
         # We need to check for bad words here rather than in doPrivmsg because
         # messages don't get to doPrivmsg if the user is ignored.
         if msg.command == 'PRIVMSG' and self.words():
-            channel = msg.args[0]
-            self.updateRegexp(channel)
+            channel = msg.channel
+            self.updateRegexp(channel, irc.network)
             s = ircutils.stripFormatting(msg.args[1])
-            if irc.isChannel(channel) and self.registryValue('kick', channel):
+            if irc.isChannel(channel) \
+                    and self.registryValue('kick', channel, irc.network):
                 if self.regexp.search(s):
                     c = irc.state.channels[channel]
                     cap = ircdb.makeChannelCapability(channel, 'op')
@@ -86,22 +87,23 @@ class BadWords(callbacks.Privmsg):
                                            "they are halfop+ or can't be "
                                            "kicked.", msg.nick, channel)
                         else:
-                            message = self.registryValue('kick.message', channel)
+                            message = self.registryValue('kick.message',
+                                                         channel, irc.network)
                             irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
                     else:
                         self.log.warning('Should kick %s from %s, but not opped.',
                                          msg.nick, channel)
         return msg
 
-    def updateRegexp(self, channel):
+    def updateRegexp(self, channel, network):
         if self.lastModified < self.words.lastModified:
-            self.makeRegexp(self.words(), channel)
+            self.makeRegexp(self.words(), channel, network)
             self.lastModified = time.time()
 
     def outFilter(self, irc, msg):
         if self.filtering and msg.command == 'PRIVMSG' and self.words():
-            channel = msg.args[0]
-            self.updateRegexp(channel)
+            channel = msg.channel
+            self.updateRegexp(channel, irc.network)
             s = msg.args[1]
             if self.registryValue('stripFormatting'):
                 s = ircutils.stripFormatting(s)
@@ -110,9 +112,9 @@ class BadWords(callbacks.Privmsg):
                 msg = ircmsgs.privmsg(msg.args[0], t, msg=msg)
         return msg
 
-    def makeRegexp(self, iterable, channel):
+    def makeRegexp(self, iterable, channel, network):
         s = '(%s)' % '|'.join(map(re.escape, iterable))
-        if self.registryValue('requireWordBoundaries', channel):
+        if self.registryValue('requireWordBoundaries', channel, network):
             s = r'\b%s\b' % s
         self.regexp = re.compile(s, re.I)
 

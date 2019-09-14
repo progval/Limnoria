@@ -212,7 +212,7 @@ class Group(object):
         s = '%r is not a valid entry in %r' % (attr, self._name)
         raise NonExistentRegistryEntry(s)
 
-    def __makeChild(self, attr, s):
+    def _makeChild(self, attr, s):
         v = self.__class__(self._default, self._help)
         v.set(s)
         v._wasSet = False
@@ -225,10 +225,13 @@ class Group(object):
         return attr in self._children
 
     def __getattr__(self, attr):
-        if attr in self._children:
+        if attr.startswith('_'):
+            raise AttributeError('%s has no attribute %s' %
+                (self.__class__.__name__, attr))
+        elif attr in self._children:
             return self._children[attr]
         elif self._supplyDefault:
-            return self.__makeChild(attr, str(self))
+            return self._makeChild(attr, str(self))
         else:
             self.__nonExistentEntry(attr)
 
@@ -253,7 +256,7 @@ class Group(object):
                     parts = split(rest)
                     if len(parts) == 1 and parts[0] == name:
                         try:
-                            self.__makeChild(name, v)
+                            self._makeChild(name, v)
                         except InvalidRegistryValue:
                             # It's probably supposed to be registered later.
                             pass
@@ -328,7 +331,7 @@ class Value(Group):
     """Invalid registry value.  If you're getting this message, report it,
     because we forgot to put a proper help string here."""
     __slots__ = ('__parent', '_default', '_showDefault', '_help', '_callbacks',
-            'value', 'channelValue', '_opSettable')
+            'value', '_networkValue', '_channelValue', '_opSettable')
     def __init__(self, default, help, setDefault=True,
                  showDefault=True, **kwargs):
         self.__parent = super(Value, self)
@@ -337,8 +340,28 @@ class Value(Group):
         self._showDefault = showDefault
         self._help = utils.str.normalizeWhitespace(help.strip())
         self._callbacks = []
+        self._networkValue = False
+        self._channelValue = False
         if setDefault:
             self.setValue(default)
+
+    def _makeChild(self, attr, s):
+        v = self.__class__(self._default, self._help)
+        v.set(s)
+        v._wasSet = False
+        if self._networkValue and self._channelValue:
+            # If this is both a network-specific and channel-specific value,
+            # then the child is (only) channel-specific.
+            v._networkValue = False
+            v._channelValue = True
+            v._supplyDefault = True
+        else:
+            # Otherwise, the child is neither network-specific or
+            # channel-specific.
+            v._supplyDefault = False
+        v._help = '' # Clear this so it doesn't print a bazillion times.
+        self.register(attr, v)
+        return v
 
     def error(self, value=_NoValueGiven):
         if hasattr(self, 'errormsg') and value is not _NoValueGiven:
@@ -355,6 +378,58 @@ class Value(Group):
         e = InvalidRegistryValue(utils.str.normalizeWhitespace(s))
         e.value = self
         raise e
+
+    def getSpecific(self, network=None, channel=None, check=True):
+        """Gets the network-specific and/or channel-specific value of this
+        Value.
+        If `check=True` (the default), this will raise an error if `network`
+        (resp. `channel`) is provided but this Value is not network-specific
+        (resp. channel-specific). If `check=False`, then `network` and/or
+        `channel` may be silently ignored.
+        """
+        if network and not self._networkValue:
+            if check:
+                raise NonExistentRegistryEntry('%s is not network-specific' %
+                    self._name)
+            else:
+                network = None
+        if channel and not self._channelValue:
+            if check:
+                raise NonExistentRegistryEntry('%s is not channel-specific' %
+                    self._name)
+            else:
+                channel = None
+        if network and channel:
+            # The complicated case. We want a net+chan specific value,
+            # which may come in three different ways:
+            #
+            # 1. it was set explicitely net+chan
+            # 2. it's inherited from a net specific value (which may itself be
+            #    inherited from the base value)
+            # 3. it's inherited from the chan specific value (which is not a
+            #    actually a parent in the registry tree, but we need this to
+            #    load configuration from old bots).
+            #
+            # The choice between 2 and 3 is done by checking which of the
+            # net-specific and chan-specific values was set explicitely by
+            # a user/admin. In case both were, the net-specific value is used
+            # (there is no particular reason for this, I just think it makes
+            # more sense).
+            network_value = self.get(':' + network)
+            network_channel_value = network_value.get(channel)
+            channel_value = self.get(channel)
+            if network_value._wasSet or network_channel_value._wasSet:
+                # cases 1 and 2
+                return network_channel_value
+            else:
+                # case 3
+                return channel_value
+        elif network:
+            return self.get(':' + network)
+        elif channel:
+            return self.get(channel)
+        else:
+            return self
 
     def setName(self, *args):
         if self._name == 'unset':
@@ -374,16 +449,23 @@ class Value(Group):
         100) convert to an integer in set() and check that the integer is less
         than 100 in this method.  You *must* call this parent method in your
         own setValue."""
+        self._setValue(v, inherited=False)
+
+    def _setValue(self, v, inherited):
+        """Like setValue, but accepted an extra 'inherited' argument.
+        inherited=True means the value is inherited from the parent, so if
+        the parent gets a new value, this group will get the new value as
+        well."""
         self._lastModified = time.time()
         self.value = v
         if self._supplyDefault:
-            for (name, v) in list(self._children.items()):
-                if not v._wasSet:
-                    self.unregister(name)
+            for (name, child) in list(self._children.items()):
+                if not child._wasSet:
+                    child._setValue(v, inherited=True)
         # We call the callback once everything is clean
         for callback, args, kwargs in self._callbacks:
             callback(*args, **kwargs)
-        self._wasSet = True
+        self._wasSet = not inherited
 
     def context(self, value):
         """Return a context manager object, which sets this variable to a

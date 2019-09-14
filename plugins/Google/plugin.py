@@ -69,7 +69,7 @@ class Google(callbacks.PluginRegexp):
     _googleRe = re.compile(r'\b(google)\b', re.I)
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and \
-           self.registryValue('colorfulFilter', msg.args[0]):
+           self.registryValue('colorfulFilter', msg.channel, irc.network):
             s = msg.args[1]
             s = re.sub(self._googleRe, self._getColorGoogle, s)
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
@@ -88,7 +88,7 @@ class Google(callbacks.PluginRegexp):
 
 
     _gsearchUrl = 'https://www.google.com/search'
-    def search(self, query, channel, options={}):
+    def search(self, query, channel, network, options={}):
         """search("search phrase", options={})
 
         Valid options are:
@@ -121,11 +121,11 @@ class Google(callbacks.PluginRegexp):
                 opts['safe'] = v
             elif k == 'language':
                 opts['hl'] = v
-        defLang = self.registryValue('defaultLanguage', channel)
+        defLang = self.registryValue('defaultLanguage', channel, network)
         if 'hl' not in opts and defLang:
             opts['hl'] = defLang.strip('lang_')
         if 'safe' not in opts:
-            opts['safe'] = self.registryValue('searchFilter', dynamic.channel)
+            opts['safe'] = self.registryValue('searchFilter', channel, network)
         if 'rsz' not in opts:
             opts['rsz'] = 'large'
 
@@ -169,7 +169,8 @@ class Google(callbacks.PluginRegexp):
         If option --snippet is given, returns also the page text snippet.
         """
         opts = dict(opts)
-        data = self.search(text, msg.args[0], {'smallsearch': True})
+        data = self.search(text, msg.channel, irc.network,
+                           {'smallsearch': True})
         data = self.decode(data)
         if data:
             url = data[0]['url']
@@ -195,13 +196,13 @@ class Google(callbacks.PluginRegexp):
         if 'language' in optlist and optlist['language'].lower() not in \
            conf.supybot.plugins.Google.safesearch.validStrings:
             irc.errorInvalid('language')
-        data = self.search(text, msg.args[0], dict(optlist))
-        bold = self.registryValue('bold', msg.args[0])
-        max = self.registryValue('maximumResults', msg.args[0])
+        data = self.search(text, msg.channel, irc.network, dict(optlist))
+        bold = self.registryValue('bold', msg.channel, irc.network)
+        max = self.registryValue('maximumResults', msg.channel, irc.network)
         # We don't use supybot.reply.oneToOne here, because you generally
         # do not want @google to echo ~20 lines of results, even if you
         # have reply.oneToOne enabled.
-        onetoone = self.registryValue('oneToOne', msg.args[0])
+        onetoone = self.registryValue('oneToOne', msg.channel, irc.network)
         for result in self.formatData(data,
                                   bold=bold, max=max, onetoone=onetoone):
             irc.reply(result)
@@ -215,7 +216,7 @@ class Google(callbacks.PluginRegexp):
 
         Returns a link to the cached version of <url> if it is available.
         """
-        data = self.search(url, msg.args[0], {'smallsearch': True})
+        data = self.search(url, msg.channel, irc.network, {'smallsearch': True})
         if data:
             m = data[0]
             if m['cacheUrl']:
@@ -233,10 +234,11 @@ class Google(callbacks.PluginRegexp):
         Returns the results of each search, in order, from greatest number
         of results to least.
         """
-        channel = msg.args[0]
+        channel = msg.channel
+        network = irc.network
         results = []
         for arg in args:
-            text = self.search(arg, channel, {'smallsearch': True})
+            text = self.search(arg, channel, network, {'smallsearch': True})
             i = text.find('id="resultStats"')
             stats = utils.web.htmlToText(self._fight_re.search(text).group('stats'))
             if stats == '':
@@ -246,7 +248,7 @@ class Google(callbacks.PluginRegexp):
             results.append((int(count), arg))
         results.sort()
         results.reverse()
-        if self.registryValue('bold', msg.args[0]):
+        if self.registryValue('bold', channel, network):
             bold = ircutils.bold
         else:
             bold = repr
@@ -294,26 +296,26 @@ class Google(callbacks.PluginRegexp):
         codes (not language names), which are listed here:
         https://cloud.google.com/translate/docs/languages
         """
-        channel = msg.args[0]
         (text, language) = self._translate(sourceLang, targetLang, text)
         irc.reply(text, language)
     translate = wrap(translate, ['something', 'to', 'something', 'text'])
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
-        if not self.registryValue('searchSnarfer', msg.args[0]):
+        if not self.registryValue('searchSnarfer', msg.channel, irc.network):
             return
         searchString = match.group(1)
-        data = self.search(searchString, msg.args[0], {'smallsearch': True})
+        data = self.search(searchString, msg.channel, irc.network,
+                           {'smallsearch': True})
         if data['responseData']['results']:
             url = data['responseData']['results'][0]['unescapedUrl']
             irc.reply(url, prefixNick=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
 
-    def _googleUrl(self, s, channel):
+    def _googleUrl(self, s, channel, network):
         s = utils.web.urlquote_plus(s)
         url = r'http://%s/search?q=%s' % \
-                (self.registryValue('baseUrl', channel), s)
+                (self.registryValue('baseUrl', channel, network), s)
         return url
 
     _calcRe1 = re.compile(r'<span class="cwcot".*?>(.*?)</span>', re.I)
@@ -325,10 +327,7 @@ class Google(callbacks.PluginRegexp):
 
         Uses Google's calculator to calculate the value of <expression>.
         """
-        channel = msg.args[0]
-        if not irc.isChannel(channel):
-            channel = None
-        url = self._googleUrl(expr, channel)
+        url = self._googleUrl(expr, msg.channel, irc.network)
         h = {"User-Agent":"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36"}
         html = utils.web.getUrl(url, headers=h).decode('utf8')
         match = self._calcRe1.search(html)
@@ -359,10 +358,7 @@ class Google(callbacks.PluginRegexp):
 
         Looks <phone number> up on Google.
         """
-        channel = msg.args[0]
-        if not irc.isChannel(channel):
-            channel = None
-        url = self._googleUrl(phonenumber, channel)
+        url = self._googleUrl(phonenumber, msg.channel, irc.network)
         html = utils.web.getUrl(url).decode('utf8')
         m = self._phoneRe.search(html)
         if m is not None:

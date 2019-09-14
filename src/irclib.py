@@ -843,6 +843,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
             for callback in reversed(self.callbacks):
+                self._setMsgChannel(msg)
                 msg = callback.outFilter(self, msg)
                 if msg is None:
                     log.debug('%s.outFilter returned None.', callback.name())
@@ -875,16 +876,36 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         else:
             return None
 
-    _numericErrorCommandRe = re.compile(r'^[45][0-9][0-9]$')
-    def feedMsg(self, msg):
-        """Called by the IrcDriver; feeds a message received."""
+    def _tagMsg(self, msg):
+        """Sets attribute on an incoming IRC message. Will usually only be
+        called by feedMsg, but may be useful in tests as well."""
         msg.tag('receivedBy', self)
         msg.tag('receivedOn', self.network)
         msg.tag('receivedAt', time.time())
-        if msg.args and self.isChannel(msg.args[0]):
-            channel = msg.args[0]
+
+        self._setMsgChannel(msg)
+
+    def _setMsgChannel(self, msg):
+        if msg.args:
+            msg.channel = msg.args[0]
+            if msg.command in ('NOTICE', 'PRIVMSG') and \
+                    not conf.supybot.protocols.irc.strictRfc():
+                msg.channel = self.stripChannelPrefix(msg.channel)
+            if not self.isChannel(msg.channel):
+                msg.channel = None
         else:
-            channel = None
+            msg.channel = None
+
+    def stripChannelPrefix(self, channel):
+        statusmsg_chars = self.state.supported.get('statusmsg', '')
+        return channel.lstrip(statusmsg_chars)
+
+    _numericErrorCommandRe = re.compile(r'^[45][0-9][0-9]$')
+    def feedMsg(self, msg):
+        """Called by the IrcDriver; feeds a message received."""
+        self._tagMsg(msg)
+        channel = msg.channel
+
         preInFilter = str(msg).rstrip('\r\n')
         log.debug('Incoming message (%s): %s', self.network, preInFilter)
 

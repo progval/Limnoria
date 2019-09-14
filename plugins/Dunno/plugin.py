@@ -42,12 +42,12 @@ class Dunno(plugins.ChannelIdDatabasePlugin):
 
     callAfter = ['MoobotFactoids', 'Factoids', 'Infobot']
     def invalidCommand(self, irc, msg, tokens):
-        channel = msg.args[0]
-        if irc.isChannel(channel):
-            dunno = self.db.random(channel)
+        if msg.channel:
+            dunno = self.db.random(msg.channel)
             if dunno is not None:
                 dunno = dunno.text
-                prefixNick = self.registryValue('prefixNick', channel)
+                prefixNick = self.registryValue('prefixNick',
+                                                msg.channel, irc.network)
                 env = {'command': tokens[0]}
                 self.log.info('Issuing "dunno" answer, %s is not a command.',
                         tokens[0])

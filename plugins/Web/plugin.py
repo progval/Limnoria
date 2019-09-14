@@ -144,7 +144,7 @@ class Web(callbacks.PluginRegexp):
     threaded = True
 
     def noIgnore(self, irc, msg):
-        return not self.registryValue('checkIgnored', msg.args[0])
+        return not self.registryValue('checkIgnored', msg.channel, irc.network)
 
     def getTitle(self, irc, url, raiseErrors):
         size = conf.supybot.protocols.http.peekSize()
@@ -184,16 +184,17 @@ class Web(callbacks.PluginRegexp):
 
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
-        channel = msg.args[0]
-        if not irc.isChannel(channel):
+        channel = msg.channel
+        network = irc.network
+        if not channel:
             return
         if callbacks.addressed(irc.nick, msg):
             return
-        if self.registryValue('titleSnarfer', channel):
+        if self.registryValue('titleSnarfer', channel, network):
             url = match.group(0)
             if not self._checkURLWhitelist(url):
                 return
-            r = self.registryValue('nonSnarfingRegexp', channel)
+            r = self.registryValue('nonSnarfingRegexp', channel, network)
             if r and r.search(url):
                 self.log.debug('Not titleSnarfing %q.', url)
                 return
@@ -203,14 +204,15 @@ class Web(callbacks.PluginRegexp):
             (target, title) = r
             if title:
                 domain = utils.web.getDomain(target
-                        if self.registryValue('snarferShowTargetDomain', channel)
+                        if self.registryValue('snarferShowTargetDomain',
+                                              channel, network)
                         else url)
-                prefix = self.registryValue('snarferPrefix', channel)
+                prefix = self.registryValue('snarferPrefix', channel, network)
                 s = "%s %s" % (prefix, title)
-                if self.registryValue('snarferShowDomain', channel):
+                if self.registryValue('snarferShowDomain', channel, network):
                     s += format(_(' (at %s)'), domain)
                 irc.reply(s, prefixNick=False)
-        if self.registryValue('snarfMultipleUrls', channel):
+        if self.registryValue('snarfMultipleUrls', channel, network):
             # FIXME: hack
             msg.tag('repliedTo', False)
     titleSnarfer = urlSnarfer(titleSnarfer)

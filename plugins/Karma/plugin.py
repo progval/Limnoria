@@ -243,16 +243,16 @@ class Karma(callbacks.Plugin):
         return thing
 
     def _respond(self, irc, channel, thing, karma):
-        if self.registryValue('response', channel):
+        if self.registryValue('response', channel, irc.network):
             irc.reply(_('%(thing)s\'s karma is now %(karma)i') %
                     {'thing': thing, 'karma': karma})
         else:
             irc.noReply()
 
     def _doKarma(self, irc, msg, channel, thing):
-        inc = self.registryValue('incrementChars', channel)
-        dec = self.registryValue('decrementChars', channel)
-        onlynicks = self.registryValue('onlyNicks', channel)
+        inc = self.registryValue('incrementChars', channel, irc.network)
+        dec = self.registryValue('decrementChars', channel, irc.network)
+        onlynicks = self.registryValue('onlyNicks', channel, irc.network)
         karma = ''
         for s in inc:
             if thing.endswith(s):
@@ -262,7 +262,8 @@ class Karma(callbacks.Plugin):
                         irc.state.channels[channel].users):
                     return
                 if ircutils.strEqual(thing, msg.nick) and \
-                    not self.registryValue('allowSelfRating', channel):
+                    not self.registryValue('allowSelfRating',
+                                           channel, irc.network):
                         irc.error(_('You\'re not allowed to adjust your own karma.'))
                         return
                 self.db.increment(channel, self._normalizeThing(thing))
@@ -274,7 +275,8 @@ class Karma(callbacks.Plugin):
                         irc.state.channels[channel].users):
                     return
                 if ircutils.strEqual(thing, msg.nick) and \
-                    not self.registryValue('allowSelfRating', channel):
+                    not self.registryValue('allowSelfRating',
+                                           channel, irc.network):
                     irc.error(_('You\'re not allowed to adjust your own karma.'))
                     return
                 self.db.decrement(channel, self._normalizeThing(thing))
@@ -283,23 +285,22 @@ class Karma(callbacks.Plugin):
             self._respond(irc, channel, thing, karma[0]-karma[1])
 
     def invalidCommand(self, irc, msg, tokens):
-        channel = msg.args[0]
-        if irc.isChannel(channel) and tokens:
+        if msg.channel and tokens:
             thing = ' '.join(tokens)
-            self._doKarma(irc, msg, channel, thing)
+            self._doKarma(irc, msg, msg.channel, thing)
 
     def doPrivmsg(self, irc, msg):
         # We don't handle this if we've been addressed because invalidCommand
         # will handle it for us.  This prevents us from accessing the db twice
         # and therefore crashing.
         if not (msg.addressed or msg.repliedTo):
-            channel = msg.args[0]
-            if irc.isChannel(channel) and \
+            if msg.channel and \
                not ircmsgs.isCtcp(msg) and \
-               self.registryValue('allowUnaddressedKarma', channel):
+               self.registryValue('allowUnaddressedKarma',
+                                  msg.channel, irc.network):
                 irc = callbacks.SimpleProxy(irc, msg)
                 thing = msg.args[1].rstrip()
-                self._doKarma(irc, msg, channel, thing)
+                self._doKarma(irc, msg, msg.channel, thing)
 
     @internationalizeDocstring
     def karma(self, irc, msg, args, channel, things):
@@ -320,7 +321,7 @@ class Karma(callbacks.Plugin):
             else:
                 (added, subtracted) = t
                 total = added - subtracted
-                if self.registryValue('simpleOutput', channel):
+                if self.registryValue('simpleOutput', channel, irc.network):
                     s = format('%s: %i', name, total)
                 else:
                     s = format(_('Karma for %q has been increased %n and '
@@ -342,7 +343,7 @@ class Karma(callbacks.Plugin):
                 irc.reply(_('I didn\'t know the karma for any of those '
                             'things.'))
         else: # No name was given.  Return the top/bottom N karmas.
-            limit = self.registryValue('rankingDisplay', channel)
+            limit = self.registryValue('rankingDisplay', channel, irc.network)
             highest = [format('%q (%s)', s, t)
                        for (s, t) in self.db.top(channel, limit)]
             lowest = [format('%q (%s)', s, t)
@@ -372,7 +373,8 @@ class Karma(callbacks.Plugin):
         necessary if the message isn't sent in the channel itself.
         """
         L = self.db.most(channel, kind,
-                         self.registryValue('mostDisplay', channel))
+                         self.registryValue('mostDisplay',
+                                            channel, irc.network))
         if L:
             L = [format('%q: %i', name, i) for (name, i) in L]
             irc.reply(format('%L', L))

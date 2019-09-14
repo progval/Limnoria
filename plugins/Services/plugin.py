@@ -55,7 +55,7 @@ class Services(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Services, self)
         self.__parent.__init__(irc)
-        for nick in self.registryValue('nicks'):
+        for nick in self.registryValue('nicks', network=irc.network):
             config.registerNick(nick)
         self.reset()
 
@@ -75,9 +75,9 @@ class Services(callbacks.Plugin):
     def outFilter(self, irc, msg):
         if msg.command == 'JOIN' and not self.disabled(irc):
             if not self.identified:
-                if self.registryValue('noJoinsUntilIdentified'):
-                    self.log.info('Holding JOIN to %s until identified.',
-                                  msg.args[0])
+                if self.registryValue('noJoinsUntilIdentified', network=irc.network):
+                    self.log.info('Holding JOIN to %s @ %s until identified.',
+                                  msg.channel, irc.network)
                     self.waitingJoins.setdefault(irc.network, [])
                     self.waitingJoins[irc.network].append(msg)
                     return None
@@ -90,25 +90,25 @@ class Services(callbacks.Plugin):
         else:
             return network_nick
 
-    def _getNickServPassword(self, nick):
+    def _getNickServPassword(self, nick, network):
         # This should later be nick-specific.
-        assert nick in self.registryValue('nicks')
-        return self.registryValue('NickServ.password.%s' % nick)
+        assert nick in self.registryValue('nicks', network=network)
+        return self.registryValue('NickServ.password.%s' % nick, network=network)
 
-    def _setNickServPassword(self, nick, password):
+    def _setNickServPassword(self, nick, password, network):
         # This also should be nick-specific.
-        assert nick in self.registryValue('nicks')
-        self.setRegistryValue('NickServ.password.%s' % nick, password)
+        assert nick in self.registryValue('nicks', network=network)
+        self.setRegistryValue('NickServ.password.%s' % nick, password, network=network)
 
     def _doIdentify(self, irc, nick=None):
         if self.disabled(irc):
             return
         if nick is None:
             nick = self._getNick(irc.network)
-        if nick not in self.registryValue('nicks'):
+        if nick not in self.registryValue('nicks', network=irc.network):
             return
-        nickserv = self.registryValue('NickServ')
-        password = self._getNickServPassword(nick)
+        nickserv = self.registryValue('NickServ', network=irc.network)
+        password = self._getNickServPassword(nick, irc.network)
         if not nickserv or not password:
             s = 'Tried to identify without a NickServ or password set.'
             self.log.warning(s)
@@ -127,11 +127,11 @@ class Services(callbacks.Plugin):
             return
         if nick is None:
             nick = self._getNick(irc.network)
-        if nick not in self.registryValue('nicks'):
+        if nick not in self.registryValue('nicks', network=irc.network):
             return
-        nickserv = self.registryValue('NickServ')
-        password = self._getNickServPassword(nick)
-        ghostDelay = self.registryValue('ghostDelay')
+        nickserv = self.registryValue('NickServ', network=irc.network)
+        password = self._getNickServPassword(nick, irc.network)
+        ghostDelay = self.registryValue('ghostDelay', network=irc.network)
         if not ghostDelay:
             return
         if not nickserv or not password:
@@ -157,11 +157,11 @@ class Services(callbacks.Plugin):
         if self.disabled(irc):
             return
         nick = self._getNick(irc.network)
-        if nick not in self.registryValue('nicks'):
+        if nick not in self.registryValue('nicks', network=irc.network):
             return
-        nickserv = self.registryValue('NickServ')
-        password = self._getNickServPassword(nick)
-        ghostDelay = self.registryValue('ghostDelay')
+        nickserv = self.registryValue('NickServ', network=irc.network)
+        password = self._getNickServPassword(nick, irc.network)
+        ghostDelay = self.registryValue('ghostDelay', network=irc.network)
         if not ghostDelay:
             return
         if nick and nickserv and password and \
@@ -181,13 +181,13 @@ class Services(callbacks.Plugin):
         if self.disabled(irc):
             return
         nick = self._getNick(irc.network)
-        if nick not in self.registryValue('nicks'):
+        if nick not in self.registryValue('nicks', network=irc.network):
             return
-        nickserv = self.registryValue('NickServ')
+        nickserv = self.registryValue('NickServ', network=irc.network)
         if not nickserv:
             self.log.warning('NickServ is unset, cannot identify.')
             return
-        password = self._getNickServPassword(nick)
+        password = self._getNickServPassword(nick, irc.network)
         if not password:
             self.log.warning('Password for %s is unset, cannot identify.',nick)
             return
@@ -205,10 +205,10 @@ class Services(callbacks.Plugin):
         if self.disabled(irc):
             return
         nick = self._getNick(irc.network)
-        if nick not in self.registryValue('nicks'):
+        if nick not in self.registryValue('nicks', network=irc.network):
             return
         if nick and irc.afterConnect:
-            password = self._getNickServPassword(nick)
+            password = self._getNickServPassword(nick, irc.network)
             if not password:
                 return
             self._doGhost(irc)
@@ -232,8 +232,8 @@ class Services(callbacks.Plugin):
 
     def doNotice(self, irc, msg):
         if irc.afterConnect:
-            nickserv = self.registryValue('NickServ')
-            chanserv = self.registryValue('ChanServ')
+            nickserv = self.registryValue('NickServ', network=irc.network)
+            chanserv = self.registryValue('ChanServ', network=irc.network)
             if nickserv and ircutils.strEqual(msg.nick, nickserv):
                 self.doNickservNotice(irc, msg)
             elif chanserv and ircutils.strEqual(msg.nick, chanserv):
@@ -298,7 +298,7 @@ class Services(callbacks.Plugin):
                   'Resetting password to empty.' % on
             self.log.warning(log)
             self.sentGhost = time.time()
-            self._setNickServPassword(nick, '')
+            self._setNickServPassword(nick, '', irc.network)
         elif self._ghosted(irc, s):
             self.log.info('Received "GHOST succeeded" from NickServ %s.', on)
             self.sentGhost = None
@@ -355,19 +355,19 @@ class Services(callbacks.Plugin):
     def checkPrivileges(self, irc, channel):
         if self.disabled(irc):
             return
-        chanserv = self.registryValue('ChanServ')
+        chanserv = self.registryValue('ChanServ', network=irc.network)
         on = 'on %s' % irc.network
-        if chanserv and self.registryValue('ChanServ.op', channel):
+        if chanserv and self.registryValue('ChanServ.op', channel, irc.network):
             if irc.nick not in irc.state.channels[channel].ops:
                 self.log.info('Requesting op from %s in %s %s.',
                               chanserv, channel, on)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'op %s' % channel))
-        if chanserv and self.registryValue('ChanServ.halfop', channel):
+        if chanserv and self.registryValue('ChanServ.halfop', channel, irc.network):
             if irc.nick not in irc.state.channels[channel].halfops:
                 self.log.info('Requesting halfop from %s in %s %s.',
                               chanserv, channel, on)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'halfop %s' % channel))
-        if chanserv and self.registryValue('ChanServ.voice', channel):
+        if chanserv and self.registryValue('ChanServ.voice', channel, irc.network):
             if irc.nick not in irc.state.channels[channel].voices:
                 self.log.info('Requesting voice from %s in %s %s.',
                               chanserv, channel, on)
@@ -376,7 +376,7 @@ class Services(callbacks.Plugin):
     def doMode(self, irc, msg):
         if self.disabled(irc):
             return
-        chanserv = self.registryValue('ChanServ')
+        chanserv = self.registryValue('ChanServ', network=irc.network)
         on = 'on %s' % irc.network
         if ircutils.strEqual(msg.nick, chanserv):
             channel = msg.args[0]
@@ -406,7 +406,7 @@ class Services(callbacks.Plugin):
         self.__parent.callCommand(command, irc, msg, *args, **kwargs)
 
     def _chanservCommand(self, irc, channel, command, log=False):
-        chanserv = self.registryValue('ChanServ')
+        chanserv = self.registryValue('ChanServ', network=irc.network)
         if chanserv:
             msg = ircmsgs.privmsg(chanserv,
                                   ' '.join([command, channel]))
@@ -493,7 +493,8 @@ class Services(callbacks.Plugin):
     invite = wrap(invite, [('checkChannelCapability', 'op'), 'inChannel'])
 
     def doInvite(self, irc, msg):
-        if ircutils.strEqual(msg.nick, self.registryValue('ChanServ')):
+        if ircutils.strEqual(
+                msg.nick, self.registryValue('ChanServ', etwork=irc.network)):
             channel = msg.args[1]
             on = 'on %s' % irc.network
             networkGroup = conf.supybot.networks.get(irc.network)
@@ -506,8 +507,8 @@ class Services(callbacks.Plugin):
 
         Identifies with NickServ using the current nick.
         """
-        if self.registryValue('NickServ'):
-            if irc.nick in self.registryValue('nicks'):
+        if self.registryValue('NickServ', network=irc.network):
+            if irc.nick in self.registryValue('nicks', network=irc.network):
                 self._doIdentify(irc, irc.nick)
                 irc.replySuccess()
             else:
@@ -525,7 +526,7 @@ class Services(callbacks.Plugin):
         Ghosts the bot's given nick and takes it.  If no nick is given,
         ghosts the bot's configured nick and takes it.
         """
-        if self.registryValue('NickServ'):
+        if self.registryValue('NickServ', network=irc.network):
             if not nick:
                 nick = self._getNick(irc.network)
             if ircutils.strEqual(nick, irc.nick):
@@ -547,13 +548,17 @@ class Services(callbacks.Plugin):
         """
         if not password:
             try:
-                self.registryValue('nicks').remove(nick)
+                v = self.registryValue('nicks', network=irc.network).copy()
+                v.remove(nick)
+                self.setRegistryValue('nicks', value=v, network=irc.network)
                 irc.replySuccess()
             except KeyError:
                 irc.error(_('That nick was not configured with a password.'))
                 return
         else:
-            self.registryValue('nicks').add(nick)
+            v = self.registryValue('nicks', network=irc.network).copy()
+            v.add(nick)
+            self.setRegistryValue('nicks', value=v, network=irc.network)
             config.registerNick(nick, password)
             irc.replySuccess()
     password = wrap(password, [('checkCapability', 'admin'),
@@ -566,7 +571,7 @@ class Services(callbacks.Plugin):
         Returns the nicks that this plugin is configured to identify and ghost
         with.
         """
-        L = list(self.registryValue('nicks'))
+        L = list(self.registryValue('nicks', network=irc.network))
         if L:
             utils.sortBy(ircutils.toLower, L)
             irc.reply(format('%L', L))

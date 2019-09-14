@@ -64,16 +64,17 @@ def canChangeTopic(irc, msg, args, state):
 
 
 def getTopic(irc, msg, args, state, format=True):
-    separator = state.cb.registryValue('separator', state.channel)
+    separator = state.cb.registryValue('separator', state.channel, irc.network)
     if separator in args[0] and not \
-            state.cb.registryValue('allowSeparatorinTopics', state.channel):
+            state.cb.registryValue('allowSeparatorinTopics',
+                                   state.channel, irc.network):
         state.errorInvalid('topic', args[0],
                            format(_('The topic must not include %q.'),
                                   separator))
     topic = args.pop(0)
     if format:
         env = {'topic': topic}
-        formatter = state.cb.registryValue('format', state.channel)
+        formatter = state.cb.registryValue('format', state.channel, irc.network)
         topic = ircutils.standardSubstitute(irc, msg, formatter, env)
     state.args.append(topic)
 
@@ -90,7 +91,7 @@ def getTopicNumber(irc, msg, args, state):
     if n > 0:
         n -= 1
     topic = irc.state.getTopic(state.channel)
-    separator = state.cb.registryValue('separator', state.channel)
+    separator = state.cb.registryValue('separator', state.channel, irc.network)
     topics = splitTopic(topic, separator)
     if not topics:
         state.error(format(_('There are no topics in %s.'), state.channel),
@@ -162,24 +163,25 @@ class Topic(callbacks.Plugin):
         except (IOError, shutil.Error) as e:
             self.log.warning('File error: %s', e)
 
-    def _splitTopic(self, topic, channel):
-        separator = self.registryValue('separator', channel)
+    def _splitTopic(self, irc, channel):
+        topic = irc.state.getTopic(channel)
+        separator = self.registryValue('separator', channel, irc.network)
         return splitTopic(topic, separator)
 
-    def _joinTopic(self, channel, topics):
-        separator = self.registryValue('separator', channel)
+    def _joinTopic(self, irc, channel, topics):
+        separator = self.registryValue('separator', channel, irc.network)
         return separator.join(topics)
 
-    def _addUndo(self, channel, topics):
+    def _addUndo(self, irc, channel, topics):
         stack = self.undos.setdefault(channel, [])
         stack.append(topics)
-        maxLen = self.registryValue('undo.max', channel)
+        maxLen = self.registryValue('undo.max', channel, irc.network)
         del stack[:len(stack) - maxLen]
 
-    def _addRedo(self, channel, topics):
+    def _addRedo(self, irc, channel, topics):
         stack = self.redos.setdefault(channel, [])
         stack.append(topics)
-        maxLen = self.registryValue('undo.max', channel)
+        maxLen = self.registryValue('undo.max', channel, irc.network)
         del stack[:len(stack) - maxLen]
 
     def _getUndo(self, channel):
@@ -197,16 +199,16 @@ class Topic(callbacks.Plugin):
     def _formatTopics(self, irc, channel, topics, fit=False):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics
-        newTopic = self._joinTopic(channel, topics)
+        newTopic = self._joinTopic(irc, channel, topics)
         try:
             maxLen = irc.state.supported['topiclen']
             if fit:
                 while len(newTopic) > maxLen:
                     topics.pop(0)
                     self.lastTopics[channel] = topics
-                    newTopic = self._joinTopic(channel, topics)
+                    newTopic = self._joinTopic(irc, channel, topics)
             elif len(newTopic) > maxLen:
-                if self.registryValue('recognizeTopiclen', channel):
+                if self.registryValue('recognizeTopiclen', channel, irc.network):
                     irc.error(format(_('That topic is too long for this '
                                        'server (maximum length: %i; this topic: '
                                        '%i).'), maxLen, len(newTopic)),
@@ -219,7 +221,7 @@ class Topic(callbacks.Plugin):
         if isinstance(topics, list) or isinstance(topics, tuple):
             assert topics is not None
             topics = self._formatTopics(irc, channel, topics, fit)
-        self._addUndo(channel, topics)
+        self._addUndo(irc, channel, topics)
         if not isDo and channel in self.redos:
             del self.redos[channel]
         irc.queueMsg(ircmsgs.topic(channel, topics))
@@ -238,7 +240,8 @@ class Topic(callbacks.Plugin):
         c = irc.state.channels[channel]
         if msg.nick in c.ops or msg.nick in c.halfops or 't' not in c.modes:
             return True
-        capabilities = self.registryValue('requireManageCapability', channel)
+        capabilities = self.registryValue('requireManageCapability',
+                                          channel, irc.network)
         if capabilities:
             for capability in re.split(r'\s*;\s*', capabilities):
                 if capability.startswith('channel,'):
@@ -247,7 +250,7 @@ class Topic(callbacks.Plugin):
                 if capability and ircdb.checkCapability(msg.prefix, capability):
                     return
             capabilities = self.registryValue('requireManageCapability',
-                    channel)
+                                              channel, irc.network)
             irc.errorNoCapability(capabilities, Raise=True)
         else:
             return
@@ -261,7 +264,7 @@ class Topic(callbacks.Plugin):
         # Try to restore the topic when not set yet.
         channel = msg.args[1]
         c = irc.state.channels.get(channel)
-        if c is None or not self.registryValue('setOnJoin', channel):
+        if c is None or not self.registryValue('setOnJoin', channel, irc.network):
             return
         if irc.nick not in c.ops and 't' in c.modes:
             self.log.debug('Not trying to restore topic in %s. I\'m not opped '
@@ -274,7 +277,8 @@ class Topic(callbacks.Plugin):
         else:
             newTopic = self._formatTopics(irc, channel, topics)
             if c.topic == '' or (c.topic != newTopic and
-                                 self.registryValue('alwaysSetOnJoin', channel)):
+                                 self.registryValue('alwaysSetOnJoin',
+                                                    channel, irc.network)):
                 self._sendTopics(irc, channel, newTopic)
 
     def do332(self, irc, msg):
@@ -282,7 +286,7 @@ class Topic(callbacks.Plugin):
             self.watchingFor332.remove(msg.args[1])
             # Store an undo for the topic when we join a channel.  This allows
             # us to undo the first topic change that takes place in a channel.
-            self._addUndo(msg.args[1], [msg.args[2]])
+            self._addUndo(irc, msg.args[1], [msg.args[2]])
 
     def topic(self, irc, msg, args, channel):
         """[<channel>]
@@ -301,7 +305,7 @@ class Topic(callbacks.Plugin):
         if the message isn't sent in the channel itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         topics.append(topic)
         self._sendTopics(irc, channel, topics)
     add = wrap(add, ['canChangeTopic', rest('topic')])
@@ -315,7 +319,7 @@ class Topic(callbacks.Plugin):
         itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         topics.append(topic)
         self._sendTopics(irc, channel, topics, fit=True)
     fit = wrap(fit, ['canChangeTopic', rest('topic')])
@@ -326,7 +330,7 @@ class Topic(callbacks.Plugin):
         Replaces topic <number> with <topic>.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         topics[i] = topic
         self._sendTopics(irc, channel, topics)
     replace = wrap(replace, ['canChangeTopic', 'topicNumber', rest('topic')])
@@ -339,7 +343,7 @@ class Topic(callbacks.Plugin):
         isn't sent in the channel itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         topics.insert(0, topic)
         self._sendTopics(irc, channel, topics)
     insert = wrap(insert, ['canChangeTopic', rest('topic')])
@@ -351,7 +355,7 @@ class Topic(callbacks.Plugin):
         message isn't sent in the channel itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         if len(topics) == 0 or len(topics) == 1:
             irc.error(_('I can\'t shuffle 1 or fewer topics.'), Raise=True)
         elif len(topics) == 2:
@@ -372,7 +376,7 @@ class Topic(callbacks.Plugin):
         itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         num = len(topics)
         if num == 0 or num == 1:
             irc.error(_('I cannot reorder 1 or fewer topics.'), Raise=True)
@@ -392,7 +396,7 @@ class Topic(callbacks.Plugin):
         Mostly useful for topic reordering.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         L = []
         for (i, t) in enumerate(topics):
             L.append(format(_('%i: %s'), i + 1, utils.str.ellipsisify(t, 30)))
@@ -407,7 +411,7 @@ class Topic(callbacks.Plugin):
         index into the topics.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         irc.reply(topics[number])
     get = wrap(get, ['inChannel', 'topicNumber'])
 
@@ -421,7 +425,7 @@ class Topic(callbacks.Plugin):
         isn't sent in the channel itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         topics[number] = replacer(topics[number])
         self._sendTopics(irc, channel, topics)
     change = wrap(change, ['canChangeTopic', 'topicNumber', 'regexpReplacer'])
@@ -435,7 +439,7 @@ class Topic(callbacks.Plugin):
         """
         self._checkManageCapabilities(irc, msg, channel)
         if number is not None:
-            topics = self._splitTopic(irc.state.getTopic(channel), channel)
+            topics = self._splitTopic(irc, channel)
             topics[number] = topic
         else:
             topics = [topic]
@@ -453,7 +457,7 @@ class Topic(callbacks.Plugin):
         necessary if the message isn't sent in the channel itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         numbers = set(numbers)
         for n in numbers:
             # Equivalent of marking the topic for deletion; there's no
@@ -534,7 +538,7 @@ class Topic(callbacks.Plugin):
         channel itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        self._addRedo(channel, self._getUndo(channel))  # current topic.
+        self._addRedo(irc, channel, self._getUndo(channel))  # current topic.
         topics = self._getUndo(channel)  # This is the topic list we want.
         if topics is not None:
             self._sendTopics(irc, channel, topics, isDo=True)
@@ -564,7 +568,7 @@ class Topic(callbacks.Plugin):
         itself.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         if first == second:
             irc.error(_('I refuse to swap the same topic with itself.'))
             return
@@ -598,7 +602,7 @@ class Topic(callbacks.Plugin):
         variable supybot.plugins.Topic.default.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topic = self.registryValue('default', channel)
+        topic = self.registryValue('default', channel, irc.network)
         if topic:
             self._sendTopics(irc, channel, [topic])
         else:
@@ -613,7 +617,7 @@ class Topic(callbacks.Plugin):
         current topic appropriately.
         """
         self._checkManageCapabilities(irc, msg, channel)
-        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics = self._splitTopic(irc, channel)
         self.setRegistryValue('separator', separator, channel)
         self._sendTopics(irc, channel, topics)
     separator = wrap(separator, ['canChangeTopic', 'something'])

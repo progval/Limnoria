@@ -175,7 +175,8 @@ class Time(callbacks.Plugin):
         <channel> is given without <format>, uses the format for <channel>.
         """
         if not format:
-            format = self.registryValue('format', channel or msg.args[0])
+            format = self.registryValue('format', channel or msg.channel,
+                                        irc.network)
         if tzlocal:
             irc.reply(datetime.fromtimestamp(seconds, tzlocal()).strftime(format))
         else:
@@ -209,7 +210,7 @@ class Time(callbacks.Plugin):
             timezone = pytz.timezone(timezone)
         except pytz.UnknownTimeZoneError:
             irc.error(_('Unknown timezone'), Raise=True)
-        format = self.registryValue("format", msg.args[0])
+        format = self.registryValue("format", msg.channel, irc.network)
         irc.reply(datetime.now(timezone).strftime(format))
     tztime = wrap(tztime, ['text'])
 

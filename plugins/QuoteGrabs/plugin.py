@@ -241,14 +241,17 @@ class QuoteGrabs(callbacks.Plugin):
         if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
             return
         irc = callbacks.SimpleProxy(irc, msg)
-        if irc.isChannel(msg.args[0]):
-            (chan, payload) = msg.args
-            words = self.registryValue('randomGrabber.minimumWords', chan)
-            length = self.registryValue('randomGrabber.minimumCharacters',chan)
+        if msg.channel:
+            payload = msg.args[1]
+            words = self.registryValue('randomGrabber.minimumWords',
+                                       msg.channel, irc.network)
+            length = self.registryValue('randomGrabber.minimumCharacters',
+                                        msg.channel, irc.network)
             grabTime = \
-            self.registryValue('randomGrabber.averageTimeBetweenGrabs', chan)
-            channel = plugins.getChannel(chan)
-            if self.registryValue('randomGrabber', chan):
+            self.registryValue('randomGrabber.averageTimeBetweenGrabs',
+                               msg.channel, irc.network)
+            channel = plugins.getChannel(msg.channel)
+            if self.registryValue('randomGrabber', msg.channel, irc.network):
                 if len(payload) > length and len(payload.split()) > words:
                     try:
                         last = int(self.db.select(channel, msg.nick))
@@ -287,6 +290,8 @@ class QuoteGrabs(callbacks.Plugin):
         for m in reversed(irc.state.history):
             if m.command == 'PRIVMSG' and ircutils.nickEqual(m.nick, nick) \
                     and ircutils.strEqual(m.args[0], chan):
+                # TODO: strip statusmsg prefix for comparison? Must be careful
+                # abouk leaks, though.
                 self._grab(channel, irc, m, msg.prefix)
                 irc.replySuccess()
                 return

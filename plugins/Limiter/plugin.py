@@ -48,9 +48,9 @@ class Limiter(callbacks.Plugin):
         irc.noReply()
 
     def _enforceLimit(self, irc, channel):
-        if self.registryValue('enable', channel):
-            maximum = self.registryValue('maximumExcess', channel)
-            minimum = self.registryValue('minimumExcess', channel)
+        if self.registryValue('enable', channel, irc.network):
+            maximum = self.registryValue('maximumExcess', channel, irc.network)
+            minimum = self.registryValue('minimumExcess', channel, irc.network)
             assert maximum > minimum
             currentUsers = len(irc.state.channels[channel].users)
             currentLimit = irc.state.channels[channel].modes.get('l', 0)
@@ -62,7 +62,7 @@ class Limiter(callbacks.Plugin):
     def doJoin(self, irc, msg):
         if not ircutils.strEqual(msg.nick, irc.nick):
             irc = callbacks.SimpleProxy(irc, msg)
-            self._enforceLimit(irc, msg.args[0])
+            self._enforceLimit(irc, msg.channel)
     doPart = doJoin
     doKick = doJoin
 

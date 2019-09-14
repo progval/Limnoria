@@ -93,13 +93,13 @@ class Dict(callbacks.Plugin):
         if words[0] in dbs:
             dictionary = words.pop(0)
         else:
-            default = self.registryValue('default', msg.args[0])
+            default = self.registryValue('default', msg.channel, irc.network)
             if default in dbs:
                 dictionary = default
             else:
                 if default:
-                    self.log.info('Default dict for %s is not a supported '
-                                  'dictionary: %s.', msg.args[0], default)
+                    self.log.info('Default dict for %s @ %s is not a supported '
+                                  'dictionary: %s.', msg.channel, irc.network, default)
                 dictionary = '*'
         if not words:
             irc.error(_('You must give a word to define.'), Raise=True)
@@ -123,7 +123,7 @@ class Dict(callbacks.Plugin):
             L.append('%s: %s' % (db, s))
         utils.sortBy(len, L)
         if dictionary == '*' and len(dbs) > 1 and \
-                self.registryValue("showDictName", msg.args[0]):
+                self.registryValue("showDictName", msg.channel, irc.network):
             s = format(_('%L responded: %s'), list(dbs), '; '.join(L))
         else:
             s = '; '.join(L)

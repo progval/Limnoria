@@ -63,12 +63,12 @@ class Filter(callbacks.Plugin):
 
     def outFilter(self, irc, msg):
         if msg.command in ('PRIVMSG', 'NOTICE'):
-            if msg.args[0] in self.outFilters:
+            if msg.channel in self.outFilters:
                 if ircmsgs.isAction(msg):
                     s = ircmsgs.unAction(msg)
                 else:
                     s = msg.args[1]
-                methods = self.outFilters[msg.args[0]]
+                methods = self.outFilters[msg.channel]
                 for filtercommand in methods:
                     myIrc = MyFilterProxy()
                     filtercommand(myIrc, msg, [s])
@@ -651,7 +651,8 @@ class Filter(callbacks.Plugin):
         "internationalization" becomes "i18n").
         """
         L = []
-        minimum = self.registryValue('shrink.minimum', msg.args[0])
+        minimum = self.registryValue('shrink.minimum',
+                                     msg.channel, irc.network)
         r = re.compile(r'[A-Za-z]{%s,}' % minimum)
         def shrink(m):
             s = m.group(0)

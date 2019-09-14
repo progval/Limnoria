@@ -45,7 +45,7 @@ class Protector(callbacks.Plugin):
         if ircutils.strEqual(msg.nick, irc.nick):
             self.log.debug('%q is immune, it\'s me.', msg)
             return True # It's the bot itself.
-        if msg.nick in self.registryValue('immune', msg.args[0]):
+        if msg.nick in self.registryValue('immune', msg.channel, irc.network):
             self.log.debug('%q is immune, it\'s configured to be immune.', msg)
             return True
         return False
@@ -78,18 +78,18 @@ class Protector(callbacks.Plugin):
             self.log.debug('Ignoring %q, %s.', msg, reason)
         if not msg.args:
             ignore('no msg.args')
-        elif not irc.isChannel(msg.args[0]):
+        elif not msg.channel:
             ignore('not on a channel')
-        elif not self.registryValue('enable', msg.args[0]):
+        elif not self.registryValue('enable', msg.channel, irc.network):
             ignore('supybot.plugins.Protector.enable is False.')
-        elif msg.args[0] not in irc.state.channels:
+        elif msg.channel not in irc.state.channels:
             # One has to wonder how this would happen, but just in case...
             ignore('bot isn\'t in channel')
-        elif irc.nick not in irc.state.channels[msg.args[0]].ops:
+        elif irc.nick not in irc.state.channels[msg.channel].ops:
             ignore('bot is not opped')
-        elif msg.nick not in irc.state.channels[msg.args[0]].users:
+        elif msg.nick not in irc.state.channels[msg.channel].users:
             ignore('sender is not in channel (ChanServ, maybe?)')
-        elif msg.nick not in irc.state.channels[msg.args[0]].ops:
+        elif msg.nick not in irc.state.channels[msg.channel].ops:
             ignore('sender is not an op in channel (IRCOP, maybe?)')
         elif self.isImmune(irc, msg):
             ignore('sender is immune')
@@ -97,7 +97,7 @@ class Protector(callbacks.Plugin):
             super(Protector, self).__call__(irc, msg)
 
     def doMode(self, irc, msg):
-        channel = msg.args[0]
+        channel = msg.channel
         chanOp = ircdb.makeChannelCapability(channel, 'op')
         chanVoice = ircdb.makeChannelCapability(channel, 'voice')
         chanHalfOp = ircdb.makeChannelCapability(channel, 'halfop')
@@ -134,7 +134,7 @@ class Protector(callbacks.Plugin):
                 # Handle bans.
 
     def doKick(self, irc, msg):
-        channel = msg.args[0]
+        channel = msg.channel
         kicked = msg.args[1].split(',')
         protected = []
         for nick in kicked:

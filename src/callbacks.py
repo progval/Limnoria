@@ -156,17 +156,25 @@ def canonicalName(command, preserve_spaces=False):
         command = command[:-1]
     return ''.join([x for x in command if x not in special]).lower() + reAppend
 
-def reply(msg, s, prefixNick=None, private=None,
-          notice=None, to=None, action=None, error=False,
-          stripCtcp=True):
+def reply(*args, **kwargs):
+    warnings.warn('callbacks.reply is deprecated. Use irc.reply instead.',
+                  DeprecationWarning)
+    return _makeReply(dynamic.irc, *args, **kwargs)
+
+def _makeReply(irc, msg, s,
+              prefixNick=None, private=None,
+              notice=None, to=None, action=None, error=False,
+              stripCtcp=True):
     msg.tag('repliedTo')
     # Ok, let's make the target:
     # XXX This isn't entirely right.  Consider to=#foo, private=True.
     target = ircutils.replyTo(msg)
-    if ircutils.isChannel(to):
+    def isPublic(s):
+        return irc.isChannel(irc.stripChannelPrefix(s))
+    if to is not None and isPublic(to):
         target = to
-    if ircutils.isChannel(target):
-        channel = target
+    if isPublic(target):
+        channel = irc.stripChannelPrefix(target)
     else:
         channel = None
     if notice is None:
@@ -195,11 +203,11 @@ def reply(msg, s, prefixNick=None, private=None,
     s = ircutils.safeArgument(s)
     if not s and not action:
         s = _('Error: I tried to send you an empty message.')
-    if prefixNick and ircutils.isChannel(target):
+    if prefixNick and isPublic(target):
         # Let's may sure we don't do, "#channel: foo.".
-        if not ircutils.isChannel(to):
+        if not isPublic(to):
             s = '%s: %s' % (to, s)
-    if not ircutils.isChannel(target):
+    if not isPublic(target):
         if conf.supybot.reply.withNoticeWhenPrivate():
             notice = True
     # And now, let's decide whether it's a PRIVMSG or a NOTICE.
@@ -214,11 +222,16 @@ def reply(msg, s, prefixNick=None, private=None,
     ret.tag('inReplyTo', msg)
     return ret
 
-def error(msg, s, **kwargs):
+def error(*args, **kwargs):
+    warnings.warn('callbacks.error is deprecated. Use irc.error instead.',
+                  DeprecationWarning)
+    return _makeErrorReply(dynamic.irc, *args, **kwargs)
+
+def _makeErrorReply(irc, msg, s, **kwargs):
     """Makes an error reply to msg with the appropriate error payload."""
     kwargs['error'] = True
     msg.tag('isError')
-    return reply(msg, s, **kwargs)
+    return _makeReply(irc, msg, s, **kwargs)
 
 def getHelp(method, name=None, doc=None):
     if name is None:
@@ -363,16 +376,16 @@ class Tokenizer(object):
                 args[-1].append(ends.pop())
         return args
 
-def tokenize(s, channel=None):
+def tokenize(s, channel=None, network=None):
     """A utility function to create a Tokenizer and tokenize a string."""
     pipe = False
     brackets = ''
     nested = conf.supybot.commands.nested
     if nested():
-        brackets = conf.get(nested.brackets, channel)
+        brackets = nested.brackets.getSpecific(network, channel)()
         if conf.get(nested.pipeSyntax, channel): # No nesting, no pipe.
             pipe = True
-    quotes = conf.get(conf.supybot.commands.quotes, channel)
+    quotes = conf.supybot.commands.quotes.getSpecific(network, channel)()
     try:
         ret = Tokenizer(brackets=brackets,pipe=pipe,quotes=quotes).tokenize(s)
         return ret
@@ -400,8 +413,8 @@ def checkCommandCapability(msg, cb, commandName):
         checkCapability(antiCommand)
         checkAtEnd = [commandName]
         default = conf.supybot.capabilities.default()
-        if ircutils.isChannel(msg.args[0]):
-            channel = msg.args[0]
+        if msg.channel:
+            channel = msg.channel
             checkCapability(ircdb.makeChannelCapability(channel, antiCommand))
             chanCommand = ircdb.makeChannelCapability(channel, commandName)
             checkAtEnd += [chanCommand]
@@ -426,7 +439,7 @@ class RichReplyMethods(object):
         return ircutils.standardSubstitute(self, self.msg, s)
 
     def _getConfig(self, wrapper):
-        return conf.get(wrapper, self.msg.args[0])
+        return conf.get(wrapper, self.msg.channel)
 
     def replySuccess(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.success)
@@ -572,6 +585,7 @@ class ReplyIrcProxy(RichReplyMethods):
     def __init__(self, irc, msg):
         self.irc = irc
         self.msg = msg
+        self.getRealIrc()._setMsgChannel(self.msg)
 
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
@@ -599,7 +613,7 @@ class ReplyIrcProxy(RichReplyMethods):
                 raise ArgumentError
         if msg is None:
             msg = self.msg
-        m = error(msg, s, **kwargs)
+        m = _makeErrorReply(self, msg, s, **kwargs)
         self.irc.queueMsg(m)
         return m
 
@@ -609,7 +623,7 @@ class ReplyIrcProxy(RichReplyMethods):
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         kwargs.pop('noLengthCheck', None)
-        m = reply(msg, s, **kwargs)
+        m = _makeReply(self, msg, s, **kwargs)
         self.irc.queueMsg(m)
         return m
 
@@ -623,8 +637,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
     _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, args, nested=0):
         assert isinstance(args, list), 'Args should be a list, not a string.'
-        self.irc = irc
-        self.msg = msg
+        super(NestedCommandsIrcProxy, self).__init__(irc, msg)
         self.nested = nested
         self.repliedTo = False
         if not self.nested and isinstance(irc, self.__class__):
@@ -665,9 +678,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         self.notice = None
         self.private = None
         self.noLengthCheck = None
-        if self.irc.isChannel(self.msg.args[0]):
+        if self.msg.channel:
             self.prefixNick = conf.get(conf.supybot.reply.withNickPrefix,
-                                       self.msg.args[0])
+                                       self.msg.channel)
         else:
             self.prefixNick = conf.supybot.reply.withNickPrefix()
 
@@ -894,12 +907,12 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 elif self.noLengthCheck:
                     # noLengthCheck only matters to NestedCommandsIrcProxy, so
                     # it's not used here.  Just in case you were wondering.
-                    m = reply(msg, s, to=self.to,
-                              notice=self.notice,
-                              action=self.action,
-                              private=self.private,
-                              prefixNick=self.prefixNick,
-                              stripCtcp=stripCtcp)
+                    m = _makeReply(self, msg, s, to=self.to,
+                                  notice=self.notice,
+                                  action=self.action,
+                                  private=self.private,
+                                  prefixNick=self.prefixNick,
+                                  stripCtcp=stripCtcp)
                     sendMsg(m)
                     return m
                 else:
@@ -930,11 +943,11 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         # action implies noLengthCheck, which has already been
                         # handled.  Let's stick an assert in here just in case.
                         assert not self.action
-                        m = reply(msg, s, to=self.to,
-                                  notice=self.notice,
-                                  private=self.private,
-                                  prefixNick=self.prefixNick,
-                                  stripCtcp=stripCtcp)
+                        m = _makeReply(self, msg, s, to=self.to,
+                                      notice=self.notice,
+                                      private=self.private,
+                                      prefixNick=self.prefixNick,
+                                      stripCtcp=stripCtcp)
                         sendMsg(m)
                         return m
                     # The '(XX more messages)' may have not the same
@@ -946,11 +959,11 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     while instant > 1 and msgs:
                         instant -= 1
                         response = msgs.pop()
-                        m = reply(msg, response, to=self.to,
-                                  notice=self.notice,
-                                  private=self.private,
-                                  prefixNick=self.prefixNick,
-                                  stripCtcp=stripCtcp)
+                        m = _makeReply(self, msg, response, to=self.to,
+                                      notice=self.notice,
+                                      private=self.private,
+                                      prefixNick=self.prefixNick,
+                                      stripCtcp=stripCtcp)
                         sendMsg(m)
                         # XXX We should somehow allow these to be returned, but
                         #     until someone complains, we'll be fine :)  We
@@ -976,15 +989,15 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                             pass # We'll leave it as it is.
                     mask = prefix.split('!', 1)[1]
                     self._mores[mask] = msgs
-                    public = self.irc.isChannel(msg.args[0])
+                    public = bool(self.msg.channel)
                     private = self.private or not public
                     self._mores[msg.nick] = (private, msgs)
-                    m = reply(msg, response, to=self.to,
-                                            action=self.action,
-                                            notice=self.notice,
-                                            private=self.private,
-                                            prefixNick=self.prefixNick,
-                                            stripCtcp=stripCtcp)
+                    m = _makeReply(self, msg, response, to=self.to,
+                                  action=self.action,
+                                  notice=self.notice,
+                                  private=self.private,
+                                  prefixNick=self.prefixNick,
+                                  stripCtcp=stripCtcp)
                     sendMsg(m)
                     return m
             finally:
@@ -1035,7 +1048,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             if not isinstance(self.irc, irclib.Irc):
                 return self.irc.error(s, **kwargs)
             else:
-                m = error(self.msg, s, **kwargs)
+                m = _makeErrorReply(self, self.msg, s, **kwargs)
                 self.irc.queueMsg(m)
                 return m
         else:
@@ -1346,7 +1359,7 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
         help = getHelp
         chan = None
         if dynamic.msg is not None:
-            chan = dynamic.msg.args[0]
+            chan = dynamic.msg.channel
         if simpleSyntax is None:
             simpleSyntax = conf.get(conf.supybot.reply.showSimpleSyntax, chan)
         if simpleSyntax:
@@ -1385,39 +1398,40 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
             else:
                 noIgnore = self.noIgnore
             if noIgnore or \
-               not ircdb.checkIgnored(msg.prefix, msg.args[0]) or \
+               not ircdb.checkIgnored(msg.prefix, msg.channel) or \
                not ircutils.isUserHostmask(msg.prefix):  # Some services impl.
                 self.__parent.__call__(irc, msg)
         else:
             self.__parent.__call__(irc, msg)
 
-    def registryValue(self, name, channel=None, value=True):
+    def registryValue(self, name, channel=None, network=None, value=True):
+        if isinstance(network, bool):
+            # Network-unaware plugin that uses 'value' as a positional
+            # argument.
+            (network, value) = (value, network)
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
         names = registry.split(name)
         for name in names:
             group = group.get(name)
-        if channel is not None:
-            if ircutils.isChannel(channel):
-                group = group.get(channel)
-            else:
-                self.log.debug('%s: registryValue got channel=%r', plugin,
-                               channel)
+        if channel or network:
+            group = group.getSpecific(network=network, channel=channel)
         if value:
             return group()
         else:
             return group
 
-    def setRegistryValue(self, name, value, channel=None):
+    def setRegistryValue(self, name, value, channel=None, network=None):
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
         names = registry.split(name)
         for name in names:
             group = group.get(name)
-        if channel is None:
-            group.setValue(value)
-        else:
-            group.get(channel).setValue(value)
+        if network:
+            group = group.get(':' + network)
+        if channel:
+            group = group.get(channel)
+        group.setValue(value)
 
     def userValue(self, name, prefixOrName, default=None):
         try:
