@@ -468,7 +468,7 @@ def unhook(subdir):
     """Unsets the callback assigned to the given subdir, and return it."""
     global http_servers
     assert isinstance(http_servers, list)
-    for server in http_servers:
+    for server in list(http_servers):
         server.unhook(subdir)
         if len(server.callbacks) <= 0 and not configGroup.keepAlive():
             server.shutdown()
