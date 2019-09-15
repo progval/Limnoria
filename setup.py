@@ -159,11 +159,21 @@ package_dir = {'supybot': 'src',
 package_data = {'supybot.locales': [s for s in os.listdir('locales/')]}
 
 for plugin in plugins:
-    package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
+    plugin_name = 'supybot.plugins.' + plugin
+    package_dir[plugin_name] = 'plugins/' + plugin
+    pot_path = 'plugins/' + plugin + 'messages.pot'
     locales_path = 'plugins/' + plugin + '/locales/'
-    locales_name = 'supybot.plugins.'+plugin
+
+    files = []
+
+    if os.path.exists(pot_path):
+        files.append('messages.pot')
+
     if os.path.exists(locales_path):
-        package_data.update({locales_name: ['locales/'+s for s in os.listdir(locales_path)]})
+        files.extend(['locales/'+s for s in os.listdir(locales_path)])
+
+    if files:
+        package_data.update({plugin_name: files})
 
 setup(
     # Metadata
