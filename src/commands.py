@@ -123,9 +123,9 @@ def process(f, *args, **kwargs):
             resource.setrlimit(rsrc, (soft, hard))
         try:
             r = f(*args, **kwargs)
-            q.put(r)
+            q.put([True, r])
         except Exception as e:
-            q.put(e)
+            q.put([False, e])
     targetArgs = (f, q,) + args
     p = callbacks.CommandProcess(target=newf,
                                 args=targetArgs, kwargs=kwargs)
@@ -136,15 +136,15 @@ def process(f, *args, **kwargs):
         q.close()
         raise ProcessTimeoutError("%s aborted due to timeout." % (p.name,))
     try:
-        v = q.get(block=False)
+        success, v = q.get(block=False)
     except minisix.queue.Empty:
         return None
     finally:
         q.close()
-    if isinstance(v, Exception):
-        raise v
-    else:
+    if success:
         return v
+    else:
+        raise v
 
 def regexp_wrapper(s, reobj, timeout, plugin_name, fcn_name):
     '''A convenient wrapper to stuff regexp search queries through a subprocess.
