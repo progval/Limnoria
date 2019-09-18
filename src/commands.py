@@ -123,9 +123,9 @@ def process(f, *args, **kwargs):
             resource.setrlimit(rsrc, (soft, hard))
         try:
             r = f(*args, **kwargs)
-            q.put(r)
+            q.put([False, r])
         except Exception as e:
-            q.put(e)
+            q.put([True, e])
     targetArgs = (f, q,) + args
     p = callbacks.CommandProcess(target=newf,
                                 args=targetArgs, kwargs=kwargs)
@@ -136,12 +136,13 @@ def process(f, *args, **kwargs):
         q.close()
         raise ProcessTimeoutError("%s aborted due to timeout." % (p.name,))
     try:
-        v = q.get(block=False)
+        raised, v = q.get(block=False)
     except minisix.queue.Empty:
         return None
     finally:
         q.close()
-    if isinstance(v, Exception):
+
+    if raised:
         raise v
     else:
         return v
