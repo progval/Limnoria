@@ -886,15 +886,15 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self._setMsgChannel(msg)
 
     def _setMsgChannel(self, msg):
+        channel = None
         if msg.args:
-            msg.channel = msg.args[0]
+            channel = msg.args[0]
             if msg.command in ('NOTICE', 'PRIVMSG') and \
                     not conf.supybot.protocols.irc.strictRfc():
-                msg.channel = self.stripChannelPrefix(msg.channel)
-            if not self.isChannel(msg.channel):
-                msg.channel = None
-        else:
-            msg.channel = None
+                channel = self.stripChannelPrefix(channel)
+        if not self.isChannel(channel):
+            channel = None
+        msg.channel = channel
 
     def stripChannelPrefix(self, channel):
         statusmsg_chars = self.state.supported.get('statusmsg', '')
