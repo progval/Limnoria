@@ -28,6 +28,35 @@
 ###
 
 class Reader(object):
+    """Opens a file and reads it in blocks, using the `Creator` class to
+    instantiate an object for each of the blocks.
+
+    The format is of the form:
+
+    ```
+    entry_type entry_id1:
+      command1 arg1 arg1b
+      command2 arg2
+
+    entry_type entry_id2:
+      command3 arg3 arg13
+    ```
+
+    When reading this file, the `Creator` will be instantiated with the
+    provided args and kwargs to a `creator` object, whose methods will then
+    be called in this pattern:
+
+    ```
+    creator.entry_type("entry_id1", 1)
+    creator.command1("arg1 arg1b", 2)
+    creator.command2("arg2", 3)
+    creator.finish()
+
+    creator.entry_type'entry_id2", 5)
+    creator.command3("arg3 arg3b", 6)
+    creator.finish()
+    ```
+    """
     def __init__(self, Creator, *args, **kwargs):
         self.Creator = Creator
         self.args = args
