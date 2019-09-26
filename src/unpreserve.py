@@ -38,11 +38,11 @@ class Reader(object):
     The format is of the form:
 
     ```
-    entry_type entry_id1:
+    entry_type entry_id1
       command1 arg1 arg1b
       command2 arg2
 
-    entry_type entry_id2:
+    entry_type entry_id2
       command3 arg3 arg13
     ```
 
