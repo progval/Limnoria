@@ -27,6 +27,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import os
+
+from . import log, utils
+
 class Reader(object):
     """Opens a file and reads it in blocks, using the `Creator` class to
     instantiate an object for each of the blocks.
@@ -98,6 +102,41 @@ class Reader(object):
                 self.creator.badCommand(command, rest, lineno)
         if self.modifiedCreator:
             self.creator.finish()
+
+
+class Preserver(object):
+    __slots__ = ('_class_name','noFlush')
+
+    def __init__(self, class_name):
+        self._class_name = class_name
+        self.noFlush = False
+
+    def open(self, filename, Creator, *args, **kwargs):
+        """Opens the `filename` and instantiates objects using the provided
+        `Creator` and args (see the `Reader` class)."""
+        try:
+            reader = Reader(Creator, *args, **kwargs)
+            try:
+                self.noFlush = True
+                reader.readFile(filename)
+            finally:
+                self.noFlush = False
+            self.flush()
+        except (EnvironmentError, Exception) as e:
+            log.exception('Invalid %s file, resetting to empty.',
+                    self._class_name)
+
+    def flush(self, filename, blocks):
+        if not self.noFlush:
+            fd = utils.file.AtomicFile(filename)
+            for (first_line, object_) in blocks:
+                fd.write(first_line)
+                fd.write(os.linesep)
+                object_.preserve(fd, indent='  ')
+            fd.close()
+        else:
+            log.debug('Not flushing %s because of noFlush.',
+                    self._class_name)
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
