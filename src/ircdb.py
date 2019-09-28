@@ -620,44 +620,70 @@ class DuplicateHostmask(ValueError):
 
 class UsersDictionary(utils.IterableMap):
     """A simple serialized-to-file User Database."""
-    __slots__ = ('filename', 'users', '_nameCache', '_hostmaskCache')
+    __slots__ = ('noFlush', 'filename', 'users', '_nameCache',
+            '_hostmaskCache')
     def __init__(self):
+        self.noFlush = False
         self.filename = None
-        self._preserver = unpreserve.Preserver(self.__class__.__name__)
         self.users = {}
         self.nextId = 0
         self._nameCache = utils.structures.CacheDict(1000)
         self._hostmaskCache = utils.structures.CacheDict(1000)
 
+    # This is separate because the Creator has to access our instance.
     def open(self, filename):
         self.filename = filename
-        self._preserver.open(filename, IrcUserCreator, self)
+        reader = unpreserve.Reader(IrcUserCreator, self)
+        try:
+            self.noFlush = True
+            try:
+                reader.readFile(filename)
+                self.noFlush = False
+                self.flush()
+            except EnvironmentError as e:
+                log.error('Invalid user dictionary file, resetting to empty.')
+                log.error('Exact error: %s', utils.exnToString(e))
+            except Exception as e:
+                log.exception('Exact error:')
+        finally:
+            self.noFlush = False
+
+    def reload(self):
+        """Reloads the database from its file."""
+        self.nextId = 0
+        self.users.clear()
+        self._nameCache.clear()
+        self._hostmaskCache.clear()
+        if self.filename is not None:
+            try:
+                self.open(self.filename)
+            except EnvironmentError as e:
+                log.warning('UsersDictionary.reload failed: %s', e)
+        else:
+            log.error('UsersDictionary.reload called with no filename.')
 
     def flush(self):
         """Flushes the database to its file."""
-        if self.filename is not None:
-            L = sorted(self.users.items())
-            blocks = [('user %s' % id, user) for (id, user) in L]
-            self._preserver.flush(self.filename, blocks)
+        if not self.noFlush:
+            if self.filename is not None:
+                L = list(self.users.items())
+                L.sort()
+                fd = utils.file.AtomicFile(self.filename)
+                for (id, u) in L:
+                    fd.write('user %s' % id)
+                    fd.write(os.linesep)
+                    u.preserve(fd, indent='  ')
+                fd.close()
+            else:
+                log.error('UsersDictionary.flush called with no filename.')
         else:
-            log.error('UsersDictionary.flush called with no filename.')
+            log.debug('Not flushing UsersDictionary because of noFlush.')
 
     def close(self):
         self.flush()
         if self.flush in world.flushers:
             world.flushers.remove(self.flush)
         self.users.clear()
-
-    def reload(self):
-        """Reloads the database from its file."""
-        if self.filename is not None:
-            self.nextId = 0
-            self.users.clear()
-            self._nameCache.clear()
-            self._hostmaskCache.clear()
-            self.open(self.filename)
-        else:
-            log.error('UsersDictionary.reload called with no filename.')
 
     def items(self):
         return self.users.items()
@@ -806,24 +832,44 @@ class UsersDictionary(utils.IterableMap):
 
 
 class ChannelsDictionary(utils.IterableMap):
-    __slots__ = ('channels', 'filename')
+    __slots__ = ('noFlush', 'filename', 'channels')
     def __init__(self):
+        self.noFlush = False
         self.filename = None
-        self._preserver = unpreserve.Preserver(self.__class__.__name__)
         self.channels = ircutils.IrcDict()
 
     def open(self, filename):
-        self.filename = filename
-        self._preserver.open(filename, IrcChannelCreator, self)
+        self.noFlush = True
+        try:
+            self.filename = filename
+            reader = unpreserve.Reader(IrcChannelCreator, self)
+            try:
+                reader.readFile(filename)
+                self.noFlush = False
+                self.flush()
+            except EnvironmentError as e:
+                log.error('Invalid channel database, resetting to empty.')
+                log.error('Exact error: %s', utils.exnToString(e))
+            except Exception as e:
+                log.error('Invalid channel database, resetting to empty.')
+                log.exception('Exact error:')
+        finally:
+            self.noFlush = False
 
     def flush(self):
         """Flushes the channel database to its file."""
-        if self.filename is not None:
-            L = sorted(self.channels.items())
-            blocks = [('channel %s' % name, channel) for (name, channel) in L]
-            self._preserver.flush(self.filename, blocks)
+        if not self.noFlush:
+            if self.filename is not None:
+                fd = utils.file.AtomicFile(self.filename)
+                for (channel, c) in self.channels.items():
+                    fd.write('channel %s' % channel)
+                    fd.write(os.linesep)
+                    c.preserve(fd, indent='  ')
+                fd.close()
+            else:
+                log.warning('ChannelsDictionary.flush without self.filename.')
         else:
-            log.error('UsersDictionary.flush called with no filename.')
+            log.debug('Not flushing ChannelsDictionary because of noFlush.')
 
     def close(self):
         self.flush()
@@ -835,7 +881,10 @@ class ChannelsDictionary(utils.IterableMap):
         """Reloads the channel database from its file."""
         if self.filename is not None:
             self.channels.clear()
-            self.open(self.filename)
+            try:
+                self.open(self.filename)
+            except EnvironmentError as e:
+                log.warning('ChannelsDictionary.reload failed: %s', e)
         else:
             log.warning('ChannelsDictionary.reload without self.filename.')
 
