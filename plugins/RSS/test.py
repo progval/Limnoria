@@ -117,7 +117,7 @@ class RSSTestCase(ChannelPluginTestCase):
             with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(0):
                 self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
                 self.assertNotError('rss announce add xkcd')
-                self.assertNoResponse(' ')
+                self.assertNoResponse(' ', timeout=0.1)
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
@@ -135,10 +135,9 @@ class RSSTestCase(ChannelPluginTestCase):
             with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
                 with conf.supybot.plugins.RSS.waitPeriod.context(1):
                     timeFastForward(1.1)
-                    self.assertNoResponse(' ')
-                    self.assertNoResponse(' ')
+                    self.assertNoResponse(' ', timeout=0.1)
                     feedparser._open_resource = constant(xkcd_new)
-                    self.assertNoResponse(' ')
+                    self.assertNoResponse(' ', timeout=0.1)
                     timeFastForward(1.1)
                     self.assertRegexp(' ', 'Chaos')
                     self.assertRegexp(' ', 'Telescopes')
@@ -161,10 +160,10 @@ class RSSTestCase(ChannelPluginTestCase):
                 with conf.supybot.plugins.RSS.waitPeriod.context(1):
                     with conf.supybot.plugins.RSS.maximumAnnounceHeadlines.context(1):
                         timeFastForward(1.1)
-                        self.assertNoResponse(' ')
-                        self.assertNoResponse(' ')
+                        self.assertNoResponse(' ', timeout=0.1)
                         feedparser._open_resource = constant(xkcd_new)
-                        self.assertNoResponse(' ')
+                        log.debug('set return value to: %r', xkcd_new)
+                        self.assertNoResponse(' ', timeout=0.1)
                         timeFastForward(1.1)
                         self.assertRegexp(' ', 'Telescopes')
                         self.assertNoResponse(' ')
@@ -182,10 +181,9 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError(' ')
             with conf.supybot.plugins.RSS.waitPeriod.context(1):
                 timeFastForward(1.1)
-                self.assertNoResponse(' ')
-                self.assertNoResponse(' ')
+                self.assertNoResponse(' ', timeout=0.1)
                 feedparser._open_resource = constant(xkcd_new)
-                self.assertNoResponse(' ')
+                self.assertNoResponse(' ', timeout=0.1)
                 timeFastForward(1.1)
                 self.assertRegexp(' ', 'Telescopes')
         finally:
@@ -201,11 +199,11 @@ class RSSTestCase(ChannelPluginTestCase):
             with conf.supybot.plugins.RSS.waitPeriod.context(1):
                 self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
                 self.assertNotError('rss announce add xkcd')
-                self.assertNotError(' ')
+                self.assertNotError(' ', timeout=0.1)
                 self.assertNotError('reload RSS')
-                self.assertNoResponse(' ')
+                self.assertNoResponse(' ', timeout=0.1)
                 timeFastForward(1.1)
-                self.assertNoResponse(' ')
+                self.assertNoResponse(' ', timeout=0.1)
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
@@ -219,7 +217,7 @@ class RSSTestCase(ChannelPluginTestCase):
             with conf.supybot.plugins.RSS.waitPeriod.context(1):
                 self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
                 self.assertNotError('rss announce add xkcd')
-                self.assertNotError(' ')
+                self.assertRegexp(' ', 'Snake Facts')
                 feedparser._open_resource = constant(xkcd_new)
                 self.assertNotError('reload RSS')
                 self.assertRegexp(' ', 'Telescopes')
@@ -257,13 +255,11 @@ class RSSTestCase(ChannelPluginTestCase):
                 with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(1):
                     with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
                         timeFastForward(1.1)
-                        self.assertNoResponse(' ')
-                        self.assertNoResponse(' ')
+                        self.assertNoResponse(' ', timeout=0.1)
                         self._feedMsg('rss announce remove xkcd')
                         feedparser._open_resource = constant(xkcd_new)
                         timeFastForward(1.1)
-                        self.assertNoResponse(' ')
-                        self.assertNoResponse(' ')
+                        self.assertNoResponse(' ', timeout=0.1)
                         self.assertNotError('rss announce add xkcd')
                         timeFastForward(1.1)
                         self.assertRegexp(' ', 'Chaos')
@@ -304,16 +300,15 @@ class RSSTestCase(ChannelPluginTestCase):
             with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
                 with conf.supybot.plugins.RSS.feeds.xkcd1.waitPeriod.context(1):
                     timeFastForward(1.1)
-                    self.assertNoResponse(' ')
-                    self.assertNoResponse(' ')
+                    self.assertNoResponse(' ', timeout=0.1)
                     feedparser._open_resource = constant(xkcd_new)
-                    self.assertNoResponse(' ')
+                    self.assertNoResponse(' ', timeout=0.1)
                     timeFastForward(1.1)
                     self.assertRegexp(' ', 'xkcd1.*Chaos')
                     self.assertRegexp(' ', 'xkcd1.*Telescopes')
                     self.assertNoResponse(' ')
                     timeFastForward(1.1)
-                    self.assertNoResponse(' ')
+                    self.assertNoResponse(' ', timeout=0.1)
         finally:
             self._feedMsg('rss announce remove xkcd1')
             self._feedMsg('rss remove xkcd1')
