@@ -154,10 +154,10 @@ class Network(callbacks.Plugin):
         """
         self.Proxy(otherIrc, msg, commandAndArgs)
     command = wrap(command, ['admin', ('networkIrc', True), many('something')])
-    
+
     def cmdall(self, irc, msg, args, commandAndArgs):
         """<command> [<arg> ...]
-        
+
         Perform <command> (with its associated <arg>s) on all networks.
         """
         ircs = world.ircs
@@ -225,11 +225,9 @@ class Network(callbacks.Plugin):
         only necessary if the network is different than the network the command
         is sent on.
         """
-        # The double nick here is necessary because single-nick WHOIS only works
-        # if the nick is on the same server (*not* the same network) as the user
-        # giving the command.  Yeah, it made me say wtf too.
-        nick = ircutils.toLower(nick)
+        # Here we use a remote server whois (double nick) to get idle/signon time.
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
+        nick = ircutils.toLower(nick)
         self._whois[(otherIrc, nick)] = (irc, msg, {}, 'whois')
     whois = wrap(whois, ['networkIrc', 'nick'])
 
@@ -241,11 +239,9 @@ class Network(callbacks.Plugin):
         only necessary if the network is different than the network the command
         is sent on.
         """
-        # The double nick here is necessary because single-nick WHOIS only works
-        # if the nick is on the same server (*not* the same network) as the user
-        # giving the command.  Yeah, it made me say wtf too.
-        nick = ircutils.toLower(nick)
+        # Here we use a remote server whois (double nick) to get idle/signon time.
         otherIrc.queueMsg(ircmsgs.whowas(nick, nick))
+        nick = ircutils.toLower(nick)
         self._whois[(otherIrc, nick)] = (irc, msg, {}, 'whowas')
     whowas = wrap(whowas, ['networkIrc', 'nick'])
 
@@ -301,7 +297,7 @@ class Network(callbacks.Plugin):
     @internationalizeDocstring
     def uptime(self, irc, msg, args, otherIrc):
         """[<network>]
-        
+
         Returns the time duration since the connection was established.
         """
         network = otherIrc.network
