@@ -50,10 +50,7 @@ class NewsTestCase(ChannelPluginTestCase):
         self.assertRegexp('news', 'subject.*subject2')
         self.assertNotError('add 5 subject3: foo3')
         self.assertRegexp('news', 'subject3')
-        print()
-        print('Sleeping to expire the news item (testAddnews)')
-        time.sleep(6)
-        print('Done sleeping.')
+        timeFastForward(6)
         self.assertNotRegexp('news', 'subject3')
 
     def testNews(self):
@@ -79,10 +76,7 @@ class NewsTestCase(ChannelPluginTestCase):
         self.assertRegexp('old', 'No old news')
         self.assertNotError('add 5 foo: bar')
         self.assertRegexp('old', 'No old news')
-        print()
-        print('Sleeping to expire the news item (testOldnews)')
-        time.sleep(6)
-        print('Done sleeping.')
+        timeFastForward(6)
         self.assertNotError('old')
 
 

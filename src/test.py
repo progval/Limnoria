@@ -74,6 +74,25 @@ def cachingGetHelp(method, name=None, doc=None):
     return lastGetHelp
 callbacks.getHelp = cachingGetHelp
 
+real_time = time.time
+mock_time_offset = 0
+
+def mockTime():
+    """Wrapper for time.time() that adds an offset, eg. for skipping after a
+    timeout expired."""
+    return real_time() + mock_time_offset
+
+def timeFastForward(extra_offset):
+    global mock_time_offset
+    mock_time_offset += extra_offset
+
+def setupMockTime():
+    mock_time_offset = 0
+    time.time = mockTime
+
+def teardownMockTime():
+    time.time = real_time
+
 def retry(tries=3):
     assert tries > 0
     def decorator(f):
@@ -133,11 +152,13 @@ class SupyTestCase(unittest.TestCase):
         log.critical('Beginning test case %s', self.id())
         threads = [t.getName() for t in threading.enumerate()]
         log.critical('Threads: %L', threads)
+        setupMockTime()
         unittest.TestCase.setUp(self)
 
     def tearDown(self):
         for irc in world.ircs[:]:
             irc._reallyDie()
+        teardownMockTime()
 
     if sys.version_info < (2, 7, 0):
         def assertIn(self, member, container, msg=None):
@@ -288,9 +309,9 @@ class PluginTestCase(SupyTestCase):
         if not expectException and self.myVerbose >= verbosity.EXCEPTIONS:
             conf.supybot.log.stdout.setValue(True)
         self.irc.feedMsg(msg)
-        fed = time.time()
+        fed = real_time()
         response = self.irc.takeMsg()
-        while response is None and time.time() - fed < timeout:
+        while response is None and real_time() - fed < timeout:
             time.sleep(0.01) # So it doesn't suck up 100% cpu.
             drivers.run()
             response = self.irc.takeMsg()
@@ -487,9 +508,9 @@ class ChannelPluginTestCase(PluginTestCase):
         if self.myVerbose >= verbosity.MESSAGES:
             print('Feeding: %r' % msg)
         self.irc.feedMsg(msg)
-        fed = time.time()
+        fed = real_time()
         response = self.irc.takeMsg()
-        while response is None and time.time() - fed < timeout:
+        while response is None and real_time() - fed < timeout:
             time.sleep(0.1)
             drivers.run()
             response = self.irc.takeMsg()
