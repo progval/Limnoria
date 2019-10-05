@@ -116,7 +116,7 @@ class Feed:
         self.last_exception = None
 
     def __repr__(self):
-        return 'Feed(%r, %r, %b, <bool>, %r)' % \
+        return 'Feed(%r, %r, %r, <bool>, %r)' % \
                 (self.name, self.url, self.initial, self.announced_entries)
 
     def get_command(self, plugin):
