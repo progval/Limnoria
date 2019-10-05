@@ -87,7 +87,6 @@ def timeFastForward(extra_offset):
     mock_time_offset += extra_offset
 
 def setupMockTime():
-    mock_time_offset = 0
     time.time = mockTime
 
 def teardownMockTime():

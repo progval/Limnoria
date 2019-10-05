@@ -267,5 +267,10 @@ if sys.version_info < (3, 0):
             'bug at <https://github.com/ProgVal/Limnoria/issues> and we\'ll '
             'see together what we can do about it.',
             DeprecationWarning)
+if sys.version_info < (3, 3):
+    warnings.warn('You are installing Limnoria for Python < 3.3, which is '
+            'only partially support. Limnoria requires Python 3.4 or later '
+            'to be fully stable.',
+            DeprecationWarning)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

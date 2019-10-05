@@ -70,6 +70,12 @@ ENCODING = 'string_escape' if minisix.PY2 else 'unicode_escape'
 decoder = codecs.getdecoder(ENCODING)
 encoder = codecs.getencoder(ENCODING)
 
+if hasattr(time, 'monotonic'):
+    monotonic_time = time.monotonic
+else:
+    # fallback for python < 3.3
+    monotonic_time = time.time
+
 _cache = utils.InsensitivePreservingDict()
 _lastModified = 0
 def open_registry(filename, clear=False):
@@ -105,7 +111,7 @@ def open_registry(filename, clear=False):
         except ValueError:
             raise InvalidRegistryFile('Error unpacking line %r' % acc)
         _cache[key] = value
-    _lastModified = time.time()
+    _lastModified = monotonic_time()
     _fd.close()
 
 CONF_FILE_HEADER = """
@@ -435,7 +441,7 @@ class Value(Group):
         if self._name == 'unset':
             self._lastModified = 0
         self.__parent.setName(*args)
-        self._lastModified = time.time()
+        self._lastModified = monotonic_time()
 
     def set(self, s):
         """Override this with a function to convert a string to whatever type
@@ -456,7 +462,7 @@ class Value(Group):
         inherited=True means the value is inherited from the parent, so if
         the parent gets a new value, this group will get the new value as
         well."""
-        self._lastModified = time.time()
+        self._lastModified = monotonic_time()
         self.value = v
         if self._supplyDefault:
             for (name, child) in list(self._children.items()):
