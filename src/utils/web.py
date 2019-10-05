@@ -48,6 +48,7 @@ if minisix.PY2:
     from urlparse import urlsplit, urlunsplit, urlparse
     from htmlentitydefs import entitydefs, name2codepoint
     from HTMLParser import HTMLParser
+    from cgi import escape as html_escape
     Request = urllib2.Request
     urlquote = urllib.quote
     urlquote_plus = urllib.quote_plus
@@ -62,6 +63,7 @@ else:
     from urllib.parse import urlsplit, urlunsplit, urlparse
     from html.entities import entitydefs, name2codepoint
     from html.parser import HTMLParser
+    from html import escape as html_escape
     import urllib.request, urllib.parse, urllib.error
     Request = urllib.request.Request
     urlquote = urllib.parse.quote
