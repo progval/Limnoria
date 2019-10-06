@@ -195,8 +195,9 @@ class RealSupyHTTPServer(HTTPServer):
         self.callbacks[subdir] = callback
         callback.doHook(self, subdir)
     def unhook(self, subdir):
-        callback = self.callbacks.pop(subdir) # May raise a KeyError. We don't care.
-        callback.doUnhook(self)
+        callback = self.callbacks.pop(subdir, None)
+        if callback:
+            callback.doUnhook(self)
         return callback
 
     def __str__(self):
