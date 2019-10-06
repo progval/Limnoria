@@ -568,9 +568,9 @@ class RSS(callbacks.Plugin):
                         channels.append(ircnet.network + channel)
 
             if channels:
-                irc.reply(format("%s announces to %L.", feed, channels))
+                irc.reply(format("%s is announced to %L.", feed, channels))
             else:
-                irc.reply("%s does not announce to any channels." % feed)
+                irc.reply("%s is not announced to any channels." % feed)
 
         chans = wrap(chans, ['feedName'])
 
