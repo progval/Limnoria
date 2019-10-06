@@ -651,8 +651,8 @@ class HTTPPluginTestCase(PluginTestCase):
 
     def request(self, url, method='GET', read=True, data={}):
         assert url.startswith('/')
-        wfile = minisix.io.StringIO()
-        rfile = minisix.io.StringIO()
+        wfile = minisix.io.BytesIO()
+        rfile = minisix.io.BytesIO()
         connection = FakeHTTPConnection(wfile, rfile)
         connection.putrequest(method, url)
         connection.endheaders()
