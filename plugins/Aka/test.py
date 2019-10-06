@@ -31,6 +31,7 @@
 from supybot.test import *
 
 import supybot.conf as conf
+import supybot.httpserver as httpserver
 import supybot.plugin as plugin
 import supybot.registry as registry
 from supybot.utils.minisix import u
@@ -291,5 +292,53 @@ class AkaTestCase(PluginTestCase):
         self.assertRegexp('aka search many', 'many words')
         # This should be case insensitive too.
         self.assertRegexp('aka search MaNY', 'many words')
+
+class AkaWebUITestCase(ChannelHTTPPluginTestCase):
+    plugins = ('Aka',)
+    config = {
+        'servers.http.keepAlive': True,
+        'plugins.Aka.web.enable': False,
+    }
+
+    def setUp(self):
+        super(ChannelHTTPPluginTestCase, self).setUp()
+        httpserver.startServer()
+
+    def tearDown(self):
+        httpserver.stopServer()
+        super(ChannelHTTPPluginTestCase, self).tearDown()
+
+    def testToggleWebEnable(self):
+        self.assertHTTPResponse('/aka/', 404)
+        self.assertNotError('config plugins.Aka.web.enable True')
+        self.assertHTTPResponse('/aka/', 200)
+        self.assertNotError('config plugins.Aka.web.enable False')
+        self.assertHTTPResponse('/aka/', 404)
+
+    def testGlobalPage(self):
+        self.assertNotError('config plugins.Aka.web.enable True')
+
+        self.assertNotError('aka add foo1 echo 1')
+        self.assertNotError('aka add --channel #foo foo2 echo 2')
+        self.assertNotError('aka add --channel #bar foo3 echo 3')
+
+        (respCode, body) = self.request('/aka/list/global')
+        self.assertEqual(respCode, 200)
+        self.assertIn(b'foo1', body)
+        self.assertNotIn(b'foo2', body)
+        self.assertNotIn(b'foo3', body)
+
+    def testChannelPage(self):
+        self.assertNotError('config plugins.Aka.web.enable True')
+
+        self.assertNotError('aka add foo1 echo 1')
+        self.assertNotError('aka add --channel #foo foo2 echo 2')
+        self.assertNotError('aka add --channel #bar foo3 echo 3')
+
+        (respCode, body) = self.request('/aka/list/%23foo')
+        self.assertEqual(respCode, 200)
+        self.assertIn(b'foo1', body)
+        self.assertIn(b'foo2', body)
+        self.assertNotIn(b'foo3', body)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
