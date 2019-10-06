@@ -422,6 +422,7 @@ class Config(callbacks.Plugin):
         """
         v = str(group.__class__(group._default, ''))
         self._setValue(irc, msg, group, v)
+        irc.replySuccess()
     setdefault = wrap(setdefault, ['settableConfigVar'])
 
 Class = Config
