@@ -637,8 +637,6 @@ class FakeHTTPConnection(HTTPConnection):
         self.rfile = rfile
         self.wfile = wfile
     def send(self, data):
-        if minisix.PY3 and isinstance(data, bytes):
-            data = data.decode()
         self.wfile.write(data)
     #def putheader(self, name, value):
     #    self._headers[name] = value
