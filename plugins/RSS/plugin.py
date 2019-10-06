@@ -550,6 +550,30 @@ class RSS(callbacks.Plugin):
         remove = wrap(remove, [('checkChannelCapability', 'op'),
                                many(first('url', 'feedName'))])
 
+        @internationalizeDocstring
+        def chans(self, irc, msg, args, feed):
+            """<name|url>
+
+            Returns a list of channels that the given feed name or URL is being
+            announced to.
+            """
+            plugin = irc.getCallback('RSS')
+            if not plugin.get_feed(feed):
+                irc.error(_("Unknown feed %s" % feed), Raise=True)
+
+            channels = []
+            for ircnet in world.ircs:
+                for channel in ircnet.state.channels:
+                    if feed in plugin.registryValue('announce', channel, ircnet.network):
+                        channels.append(ircnet.network + channel)
+
+            if channels:
+                irc.reply(format("%s announces to %L.", feed, channels))
+            else:
+                irc.reply("%s does not announce to any channels." % feed)
+
+        chans = wrap(chans, ['feedName'])
+
     @internationalizeDocstring
     def rss(self, irc, msg, args, url, n):
         """<name|url> [<number of headlines>]
