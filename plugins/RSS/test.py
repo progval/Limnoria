@@ -357,9 +357,15 @@ class RSSTestCase(ChannelPluginTestCase):
             timeFastForward(1.1)
             self.assertNotError('rss add advogato %s' % url)
             self.assertNotError('rss announce add advogato')
+            self.assertRegexp('rss announce channels advogato', 'advogato is announced to.*%s%s' % (self.irc.network, self.channel))
+
             self.assertNotRegexp('rss announce', r'ValueError')
+
             self.assertNotError('rss announce remove advogato')
+            self.assertRegexp('rss announce channels advogato', 'advogato is not announced to any channels')
+
             self.assertNotError('rss remove advogato')
+            self.assertRegexp('rss announce channels advogato', 'Unknown feed')
 
         def testRss(self):
             timeFastForward(1.1)
