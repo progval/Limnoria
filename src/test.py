@@ -657,8 +657,8 @@ class HTTPPluginTestCase(PluginTestCase):
         connection.putrequest(method, url)
         connection.endheaders()
         rfile.seek(0)
-        wfile.seek(0)
         handler = TestRequestHandler(rfile, wfile)
+        wfile.seek(0)
         if read:
             return (handler._response, wfile.read())
         else:
