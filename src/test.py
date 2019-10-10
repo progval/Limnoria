@@ -637,8 +637,6 @@ class FakeHTTPConnection(HTTPConnection):
         self.rfile = rfile
         self.wfile = wfile
     def send(self, data):
-        if minisix.PY3 and isinstance(data, bytes):
-            data = data.decode()
         self.wfile.write(data)
     #def putheader(self, name, value):
     #    self._headers[name] = value
@@ -653,14 +651,14 @@ class HTTPPluginTestCase(PluginTestCase):
 
     def request(self, url, method='GET', read=True, data={}):
         assert url.startswith('/')
-        wfile = minisix.io.StringIO()
-        rfile = minisix.io.StringIO()
+        wfile = minisix.io.BytesIO()
+        rfile = minisix.io.BytesIO()
         connection = FakeHTTPConnection(wfile, rfile)
         connection.putrequest(method, url)
         connection.endheaders()
         rfile.seek(0)
-        wfile.seek(0)
         handler = TestRequestHandler(rfile, wfile)
+        wfile.seek(0)
         if read:
             return (handler._response, wfile.read())
         else:

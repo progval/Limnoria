@@ -56,5 +56,9 @@ conf.registerGlobalValue(Aka, 'maximumWordsInName',
     command name. Setting this to an high value may slow down your bot
     on long commands.""")))
 
+conf.registerGroup(Aka, 'web')
+conf.registerGlobalValue(Aka.web, 'enable',
+    registry.Boolean(False, _("""Determines whether the Akas will be
+    browsable through the HTTP server.""")))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

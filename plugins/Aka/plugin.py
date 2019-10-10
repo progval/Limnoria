@@ -41,6 +41,7 @@ import supybot.plugins as plugins
 import supybot.utils.minisix as minisix
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+import supybot.httpserver as httpserver
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization('Aka')
 
@@ -193,6 +194,15 @@ if sqlite3:
                 return (bool(r[0]), r[1], r[2])
             else:
                 raise AkaError(_('This Aka does not exist.'))
+
+        def get_all(self, channel):
+            cursor = self.get_db(channel).cursor()
+            cursor.execute("""
+                SELECT id, name, alias, locked, locked_by, locked_at
+                FROM aliases;
+            """)
+            return cursor.fetchall()
+
     available_db.update({'sqlite3': SQLiteAkaDB})
 elif sqlalchemy:
     Base = sqlalchemy.ext.declarative.declarative_base()
@@ -324,6 +334,16 @@ elif sqlalchemy:
             except sqlalchemy.orm.exc.NoResultFound:
                 raise AkaError(_('This Aka does not exist.'))
 
+        def get_all(self, channel):
+            akas = self.get_db(channel).query(
+                SQLAlchemyAlias.id, SQLAlchemyAlias.name, SQLAlchemyAlias.alias,
+                SQLAlchemyAlias.locked, SQLAlchemyAlias.locked_by, SQLAlchemyAlias.locked_at
+            ).all()
+            return map(
+                lambda aka: (aka.name, aka.alias, aka.locked, aka.locked_by, aka.locked_at),
+                akas
+            )
+
     available_db.update({'sqlalchemy': SqlAlchemyAkaDB})
 
 
@@ -376,6 +396,107 @@ elif 'sqlalchemy' in conf.supybot.databases() and 'sqlalchemy' in available_db:
 else:
     raise plugins.NoSuitableDatabase(['sqlite3', 'sqlalchemy'])
 
+
+class AkaHTTPCallback(httpserver.SupyHTTPServerCallback):
+    name = 'Aka web interface'
+    base_template = '''\
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Aka</title>
+    <link rel="stylesheet" href="/default.css">
+  </head>
+
+  <body>
+    <h1>Aka</h1>
+
+    %s
+  </body>
+</html>'''
+    index_template = base_template % '''\
+    <p>To view the global Akas either click <a href="list/global">here</a> or
+    enter 'global' in the form below.</p>
+
+    <form action="" method="post">
+        <label for="channel">Channel name:</label>
+        <input type="text" placeholder="#channel" name="channel" id="channel">
+        <input type="submit" name="submit" value="view">
+    </form>'''
+    list_template = base_template % '''\
+    <table>
+      <thead>
+        <th>Name</th>
+        <th>Alias</th>
+        <th>Locked</th>
+      </thead>
+      %s
+    </table>'''
+
+    def doGet(self, handler, path, *args, **kwargs):
+        if path == '/':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html; charset=utf-8')
+            self.end_headers()
+            self.write(self.index_template)
+
+        elif path.startswith('/list/'):
+            parts = path.split('/')
+            channel = parts[2] if len(parts) == 3 else 'global'
+            channel = utils.web.urlunquote(channel)
+
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html; charset=utf-8')
+            self.end_headers()
+
+            akas = {}
+            for aka in self._plugin._db.get_all('global'):
+                akas[aka[1]] = aka
+
+            if channel != 'global':
+                for aka in self._plugin._db.get_all(channel):
+                    akas[aka[1]] = aka
+
+            aka_rows = []
+            for (name, aka) in sorted(akas.items()):
+                (id, name, alias, locked, locked_by, locked_at) = aka
+                locked_column = 'False'
+                if locked:
+                    locked_column = format(
+                        _('By %s at %s'),
+                        locked_by,
+                        locked_at.split('.')[0],
+                    )
+                aka_rows.append(
+                    format(
+                        """
+                            <tr>
+                                <td style="white-space: nowrap;"><code>%s</code></td>
+                                <td><code>%s<code></td>
+                                <td style="white-space: nowrap;">%s</td>
+                            </tr>
+                        """,
+                        utils.web.html_escape(name),
+                        utils.web.html_escape(alias),
+                        utils.web.html_escape(locked_column),
+                    )
+                )
+            self.write(format(self.list_template, ''.join(aka_rows)))
+
+    def doPost(self, handler, path, form, *args, **kwargs):
+        if path == '/' and 'channel' in form:
+            self.send_response(303)
+            self.send_header(
+                'Location',
+                format('list/%s', utils.web.urlquote(form['channel'].value))
+            )
+            self.end_headers()
+        else:
+            self.send_response(400)
+            self.send_header('Content-type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.write('Missing field \'channel\'.')
+
+
 class Aka(callbacks.Plugin):
     """Aka is the improved version of the Alias plugin. It stores akas outside
     of the bot.conf, which doesn't have risk of corrupting the bot.conf file
@@ -388,6 +509,32 @@ class Aka(callbacks.Plugin):
         # "sqlalchemy" is only for backward compatibility
         filename = conf.supybot.directories.data.dirize('Aka.sqlalchemy.db')
         self._db = AkaDB(filename)
+        self._http_running = False
+        conf.supybot.plugins.Aka.web.enable.addCallback(self._httpConfCallback)
+        if self.registryValue('web.enable'):
+            self._startHttp()
+
+    def die(self):
+        if self._http_running:
+            self._stopHttp()
+
+    def _httpConfCallback(self):
+        if self.registryValue('web.enable'):
+            if not self._http_running:
+                self._startHttp()
+        else:
+            if self._http_running:
+                self._stopHttp()
+
+    def _startHttp(self):
+        callback = AkaHTTPCallback()
+        callback._plugin = self
+        httpserver.hook('aka', callback)
+        self._http_running = True
+
+    def _stopHttp(self):
+        httpserver.unhook('aka')
+        self._http_running = False
 
     def isCommandMethod(self, name):
         args = name.split(' ')
