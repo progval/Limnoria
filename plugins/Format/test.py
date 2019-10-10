@@ -74,6 +74,7 @@ class FormatTestCase(PluginTestCase):
     def testTitle(self):
         self.assertResponse('title foo', 'Foo')
         self.assertResponse('title foo bar', 'Foo Bar')
+        self.assertResponse('foo\'s bar', 'Foo\'s Bar')
 
     def testRepr(self):
         self.assertResponse('repr foo bar baz', '"foo bar baz"')
