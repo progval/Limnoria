@@ -149,7 +149,7 @@ class Format(callbacks.Plugin):
 
         Returns <text> titlecased.
         """
-        irc.reply(text.title())
+        irc.reply(string.capwords(text, " "))
     title = wrap(title, ['text'])
 
     @internationalizeDocstring
