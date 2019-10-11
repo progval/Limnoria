@@ -49,7 +49,7 @@ except ImportError:
 if sys.version_info[0] < 3:
     raise ImportError('This plugin requires Python 3. For a legacy version of this plugin that still '
                       'supports Python 2, consult the python2-legacy branch at '
-                      'https://github.com/GLolol/SupyPlugins/tree/python2-legacy')
+                      'https://github.com/jlu5/SupyPlugins/tree/python2-legacy')
 
 SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>.*?)(?P=delim)"
                        r"(?P<replacement>.*?)(?P=delim)(?P<flags>[a-z]*)$")
