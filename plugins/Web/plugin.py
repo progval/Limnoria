@@ -157,7 +157,7 @@ class Web(callbacks.PluginRegexp):
                 irc.error(_('That URL raised <' + str(e)) + '>',
                           Raise=True)
                 return None
-            elif not raiseErrors:
+            else:
                 self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>', url, str(e))
                 return None
         try:
@@ -169,7 +169,7 @@ class Web(callbacks.PluginRegexp):
                     irc.error(_('Could not guess the page\'s encoding. (Try '
                                 'installing python-charade.)'), Raise=True)
                     return None
-                elif not raiseErrors:
+                else:
                     self.log.info('Web plugin TitleSnarfer: URL <%s> Could '
                                   'not guess the page\'s encoding. (Try '
                                   'installing python-charade.)', url)
@@ -193,7 +193,7 @@ class Web(callbacks.PluginRegexp):
             else:
                 irc.error(format(_('That URL appears to have no HTML title '
                                  'within the first %S.'), size), Raise=True)
-        elif not raiseErrors:
+        else:
             if len(text) < size:
                 self.log.info('Web plugin TitleSnarfer: URL <%s> appears'
                               ' to have no HTML title. ', url)
