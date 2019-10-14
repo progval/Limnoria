@@ -153,19 +153,27 @@ class Web(callbacks.PluginRegexp):
             (target, text) = utils.web.getUrlTargetAndContent(url, size=size,
                 timeout=timeout)
         except Exception as e:
-            self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>', url, str(e))
-            return None
+            if raiseErrors:
+                irc.error(_('That URL raised <' + str(e)) + '>',
+                          Raise=True)
+                return None
+            elif not raiseErrors:
+                self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>', url, str(e))
+                return None
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')
         except UnicodeDecodeError:
-            pass
-        if minisix.PY3 and isinstance(text, bytes):
-            if raiseErrors:
-                irc.error(_('Could not guess the page\'s encoding. (Try '
-                        'installing python-charade.)'), Raise=True)
-            else:
-                return None
+            if minisix.PY3:
+                if raiseErrors:
+                    irc.error(_('Could not guess the page\'s encoding. (Try '
+                                'installing python-charade.)'), Raise=True)
+                    return None
+                elif not raiseErrors:
+                    self.log.info('Web plugin TitleSnarfer: URL <%s> Could '
+                                  'not guess the page\'s encoding. (Try '
+                                  'installing python-charade.)', url)
+                    return None
         try:
             parser = Title()
             parser.feed(text)
@@ -173,7 +181,7 @@ class Web(callbacks.PluginRegexp):
             # Workaround for Python 2
             # https://github.com/ProgVal/Limnoria/issues/1359
             parser = Title()
-            parser.feed(bytes(text)) # bytes() = str() in py2
+            parser.feed(text.encode('utf8'))
         parser.close()
         title = utils.str.normalizeWhitespace(''.join(parser.data).strip())
         if title:
