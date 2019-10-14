@@ -154,45 +154,44 @@ class Web(callbacks.PluginRegexp):
                 timeout=timeout)
         except Exception as e:
             self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>', url, str(e))
-            text = None
-        if text:
-            try:
-                text = text.decode(utils.web.getEncoding(text) or 'utf8',
-                        'replace')
-            except UnicodeDecodeError:
-                pass
-            if minisix.PY3 and isinstance(text, bytes):
-                if raiseErrors:
-                    irc.error(_('Could not guess the page\'s encoding. (Try '
-                            'installing python-charade.)'), Raise=True)
-                else:
-                    return None
-            try:
-                parser = Title()
-                parser.feed(text)
-            except UnicodeDecodeError:
-                # Workaround for Python 2
-                # https://github.com/ProgVal/Limnoria/issues/1359
-                parser = Title()
-                parser.feed(bytes(text)) # bytes() = str() in py2
-            parser.close()
-            title = utils.str.normalizeWhitespace(''.join(parser.data).strip())
-            if title:
-                return (target, title)
-            elif raiseErrors:
-                if len(text) < size:
-                    irc.error(_('That URL appears to have no HTML title.'),
-                            Raise=True)
-                else:
-                    irc.error(format(_('That URL appears to have no HTML title '
-                                     'within the first %S.'), size), Raise=True)
-            elif not raiseErrors:
-                if len(text) < size:
-                    self.log.info('Web plugin TitleSnarfer: URL <%s> appears'
-                                  ' to have no HTML title. ', url)
-                else:
-                    self.log.info('Web plugin TitleSnarfer: URL <%s> appears to have no HTML title'
-                                  ' within the first %S.', url, size)
+            return None
+        try:
+            text = text.decode(utils.web.getEncoding(text) or 'utf8',
+                    'replace')
+        except UnicodeDecodeError:
+            pass
+        if minisix.PY3 and isinstance(text, bytes):
+            if raiseErrors:
+                irc.error(_('Could not guess the page\'s encoding. (Try '
+                        'installing python-charade.)'), Raise=True)
+            else:
+                return None
+        try:
+            parser = Title()
+            parser.feed(text)
+        except UnicodeDecodeError:
+            # Workaround for Python 2
+            # https://github.com/ProgVal/Limnoria/issues/1359
+            parser = Title()
+            parser.feed(bytes(text)) # bytes() = str() in py2
+        parser.close()
+        title = utils.str.normalizeWhitespace(''.join(parser.data).strip())
+        if title:
+            return (target, title)
+        elif raiseErrors:
+            if len(text) < size:
+                irc.error(_('That URL appears to have no HTML title.'),
+                        Raise=True)
+            else:
+                irc.error(format(_('That URL appears to have no HTML title '
+                                 'within the first %S.'), size), Raise=True)
+        elif not raiseErrors:
+            if len(text) < size:
+                self.log.info('Web plugin TitleSnarfer: URL <%s> appears'
+                              ' to have no HTML title. ', url)
+            else:
+                self.log.info('Web plugin TitleSnarfer: URL <%s> appears to have no HTML title'
+                              ' within the first %S.', url, size)
 
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
