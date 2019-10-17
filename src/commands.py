@@ -149,7 +149,7 @@ def process(f, *args, **kwargs):
 
 def regexp_wrapper(s, reobj, timeout, plugin_name, fcn_name):
     '''A convenient wrapper to stuff regexp search queries through a subprocess.
-    
+
     This is used because specially-crafted regexps can use exponential time
     and hang the bot.'''
     def re_bool(s, reobj):
@@ -163,7 +163,7 @@ def regexp_wrapper(s, reobj, timeout, plugin_name, fcn_name):
         v = process(re_bool, s, reobj, timeout=timeout, pn=plugin_name, cn=fcn_name)
         return v
     except ProcessTimeoutError:
-        return False
+        return None
 
 class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):
