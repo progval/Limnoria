@@ -173,6 +173,14 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('Segmentation fault (core dumped)', str(m))
 
+    def testReDoSTimeout(self):
+        # From https://snyk.io/blog/redos-and-catastrophic-backtracking/
+        for idx in range(500):
+            self.feedMsg("ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX")
+        self.feedMsg(r"s/A(B|C+)+D/this should abort/")
+        m = self.getMsg(' ', timeout=1)
+        self.assertIn('timed out', str(m))
+
     # TODO: test ignores
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
