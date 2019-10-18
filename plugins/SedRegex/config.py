@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2015, Michael Daniel Telatynski <postmaster@webdevguru.co.uk>
-# Copyright (c) 2015, James Lu <glolol@overdrivenetworks.com>
+# Copyright (c) 2015-2019, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ conf.registerChannelValue(SedRegex, 'ignoreRegex',
     registry.Boolean(True, _("""Should Perl/sed regex replacing
                      ignore messages which look like valid regex?""")))
 conf.registerGlobalValue(SedRegex, 'processTimeout',
-    registry.PositiveFloat(0.05, _("""Sets the timeout when processing a single
+    registry.PositiveFloat(0.5,  _("""Sets the timeout when processing a single
                                    regexp. The default should be adequate unless
                                    you have a busy or low-powered system that
                                    cannot process regexps quickly enough. However,

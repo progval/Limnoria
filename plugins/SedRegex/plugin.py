@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2015, Michael Daniel Telatynski <postmaster@webdevguru.co.uk>
-# Copyright (c) 2015-2017, James Lu <james@overdrivenetworks.com>
+# Copyright (c) 2015-2019, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -154,8 +154,9 @@ class SedRegex(callbacks.PluginRegexp):
                     messageprefix = '%s thinks %s' % (msg.nick, m.nick)
                 try:
                     regex_timeout = self.registryValue('processTimeout')
-                    if regexp_wrapper(text, pattern, timeout=regex_timeout, plugin_name=self.name(),
-                                      fcn_name='replacer'):
+                    replace_result = regexp_wrapper(text, pattern, timeout=regex_timeout, plugin_name=self.name(),
+                                                    fcn_name='replacer')
+                    if replace_result is True:
                         if self.registryValue('boldReplacementText', msg.args[0]):
                             replacement = ircutils.bold(replacement)
                         subst = process(pattern.sub, replacement,
@@ -168,6 +169,12 @@ class SedRegex(callbacks.PluginRegexp):
                         irc.reply(_("%s meant to say: %s") %
                                     (messageprefix, subst), prefixNick=False)
                         return
+                    elif replace_result is None:
+                        # Abort on timeout instead of looking against older messages - this prevents
+                        # replacing the wrong message when we get a one off timeout, which usually leads
+                        # to very confusing results.
+                        # This requires commit https://github.com/ProgVal/Limnoria/commit/b54d8f8073b4fca1787012b211337dc707cfea45
+                        irc.error(_("Search timed out."), Raise=True)
                 except Exception as e:
                     self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
                     if self.registryValue('displayErrors', msg.args[0]):
