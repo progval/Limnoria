@@ -63,7 +63,7 @@ class Plugin(callbacks.Plugin):
         """<command>
 
         Returns the name of the plugin that would be used to call <command>.
-        
+
         If it is not uniquely determined, returns list of all plugins that
         contain <command>.
         """
@@ -170,7 +170,7 @@ class Plugin(callbacks.Plugin):
             if author != supybot.authors.unknown:
                 s = _('The %s plugin was written by %s. ' % (cb.name(), author))
             else:
-                s = _('The %s plugin has not been claimed by an author. ')
+                s = _('The %s plugin has not been claimed by an author. ') % cb.name()
 
             contribs = getattr(module, '__contributors__', {})
             if contribs:
@@ -191,8 +191,8 @@ class Plugin(callbacks.Plugin):
             contributorNicks = dict((author.nick.lower(), author) for author in contributors.keys())
             lnick = nick.lower()
 
-            author = getattr(module, '__author__', None)
-            if author and lnick == author.nick.lower():
+            author = getattr(module, '__author__', supybot.authors.unknown)
+            if author != supybot.authors.unknown and lnick == author.nick.lower():
                 # Special case for the plugin author. We remove legacy handling of the case where
                 # someone is listed both as author and contributor, which should never really happen?
                 return _('%s wrote the %s plugin.') % (author, cb.name())
