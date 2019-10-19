@@ -64,7 +64,7 @@ class authors(object): # This is basically a bag.
     grantbow = Author('Grant Bowman', 'Grantbow', 'grantbow@grantbow.com')
     stepnem = Author('Štěpán Němec', 'stepnem', 'stepnem@gmail.com')
     progval = Author('Valentin Lorentz', 'ProgVal', 'progval@gmail.com')
-    unknown = Author('Unknown author', 'unknown', 'unknown@supybot.org')
+    unknown = Author('Unknown author', 'unknown', 'unknown@email.invalid')
 
     # Let's be somewhat safe about this.
     def __getattr__(self, attr):
