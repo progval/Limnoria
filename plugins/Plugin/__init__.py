@@ -29,20 +29,14 @@
 
 """
 This plugin handles various plugin-related things, such as getting help for
-a plugin, getting a list of the loaded plugins, and searching and downloading
-plugins from supybot.com.
+a plugin or retrieving author info.
 """
 
 import supybot
 import supybot.world as world
 
-# Use this for the version of this plugin.  You may wish to put a CVS keyword
-# in here if you're keeping the plugin in CVS or some similar system.
 __version__ = "%%VERSION%%"
-
-# XXX Replace this with an appropriate author or supybot.Author instance.
 __author__ = supybot.authors.jemfinch
-
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
 __contributors__ = {
@@ -50,7 +44,6 @@ __contributors__ = {
     }
 
 from . import config
-# This had to be renamed because of stupid case-insensitivity issues.
 from . import plugin
 from imp import reload
 reload(plugin) # In case we're being reloaded.
