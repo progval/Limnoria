@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2019, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -183,28 +184,24 @@ class Plugin(callbacks.Plugin):
         def buildPersonString(module):
             """
             Build the list of contributions (if any) for the requested person
-            for the requested plugin
+            for the requested plugin.
             """
-            isAuthor = False
-            authorInfo = None
-            moduleContribs = module.__contributors__.keys()
+            contributors = getattr(module, '__contributors__', {})
+            # Make a mapping of nicks to author instances
+            contributorNicks = dict((author.nick.lower(), author) for author in contributors.keys())
             lnick = nick.lower()
-            for contrib in moduleContribs:
-                if contrib.nick.lower() == lnick:
-                    authorInfo = contrib
-                    break
-            authorInfo = authorInfo or getattr(supybot.authors, nick, None)
-            if not authorInfo:
-                return _('The nick specified (%s) is not a registered '
-                       'contributor.') % nick
-            fullName = str(authorInfo)
-            contributions = []
-            if hasattr(module, '__contributors__'):
-                if authorInfo not in module.__contributors__:
-                    return _('The %s plugin does not have \'%s\' listed as a '
-                           'contributor.') % (cb.name(), nick)
-                contributions = module.__contributors__[authorInfo]
-            isAuthor = getattr(module, '__author__', False) == authorInfo
+
+            author = getattr(module, '__author__', None)
+            if author and lnick == author.nick.lower():
+                # Special case for the plugin author. We remove legacy handling of the case where
+                # someone is listed both as author and contributor, which should never really happen?
+                return _('%s wrote the %s plugin.') % (author, cb.name())
+            elif lnick not in contributorNicks:
+                return _('%s is not listed as a contributor to %s.') % (nick, cb.name())
+
+            authorInfo = contributorNicks[lnick]
+            contributions = contributors[authorInfo]
+
             (nonCommands, commands) = utils.iter.partition(lambda s: ' ' in s,
                                                            contributions)
             results = []
@@ -215,19 +212,15 @@ class Plugin(callbacks.Plugin):
                 results.append(format(_('the %L %s'), commands, s))
             if nonCommands:
                 results.append(format(_('the %L'), nonCommands))
-            if results and isAuthor:
-                return format(
-                        _('%s wrote the %s plugin and also contributed %L.'),
-                        (fullName, cb.name(), results))
-            elif results and not isAuthor:
+
+            fullName = getShortName(authorInfo)
+            if results:
                 return format(_('%s contributed %L to the %s plugin.'),
                               fullName, results, cb.name())
-            elif isAuthor and not results:
-                return _('%s wrote the %s plugin') % (fullName, cb.name())
-            # XXX Does this ever actually get reached?
             else:
-                return _('%s has no listed contributions for the %s '
+                return _('%s has no specific listed contributions to the %s '
                          'plugin.') % (fullName, cb.name())
+
         # First we need to check and see if the requested plugin is loaded
         module = cb.classModule
         if not nick:
