@@ -39,9 +39,12 @@ __version__ = "%%VERSION%%"
 __author__ = supybot.authors.jemfinch
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
+# Note: the tests for this plugin look at some of this data - update that too
+# as necessary
 __contributors__ = {
-    supybot.authors.skorobeus: ['contributors'],
-    }
+    supybot.authors.skorobeus: ['original contributors command'],
+    supybot.authors.jlu: ['refactored contributors command'],
+}
 
 from . import config
 from . import plugin

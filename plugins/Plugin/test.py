@@ -34,7 +34,7 @@ class PluginTestCase(PluginTestCase):
     def testPlugin(self):
         self.assertRegexp('plugin ignore', 'available.*Utilities plugin')
         self.assertResponse('echo [plugin ignore]', 'Utilities')
-    
+
     def testPlugins(self):
         self.assertRegexp('plugins join', '(Format.*Admin|Admin.*Format)')
         self.assertRegexp('plugins plugin', 'Plugin')
@@ -50,25 +50,22 @@ class PluginTestCase(PluginTestCase):
     def testContributors(self):
         # Test ability to list contributors
         self.assertNotError('contributors Plugin')
+
         # Test ability to list contributions
-        # Verify that when a single command contribution has been made,
-        # the word "command" is properly not pluralized.
-        # Note: This will break if the listed person ever makes more than
-        # one contribution to the Plugin plugin
-        self.assertRegexp('contributors Plugin skorobeus', 'command')
-        # Test handling of pluralization of "command" when person has
-        # contributed more than one command to the plugin.
-        # -- Need to create this case, check it with the regexp 'commands'
+        # As of 2019-10-19 there is no more distinction between commands and non-commands
+        self.assertRegexp('contributors Plugin skorobeus', 'original contributors command')
+
+        # TODO: test handling of a person with multiple contributions to a command
+
         # Test handling of invalid plugin
         self.assertRegexp('contributors InvalidPlugin', 'not a valid plugin')
-        # Test handling of invalid person
+
+        # Test handling of unknown person. As of 2019-10-19 it doesn't matter whether
+        # they're listed in supybot.authors or not.
         self.assertRegexp('contributors Plugin noname',
-                          'not a registered contributor')
-        # Test handling of valid person with no contributions
-        # Note: This will break if the listed person ever makes a contribution
-        # to the Plugin plugin
+                          'not listed as a contributor')
         self.assertRegexp('contributors Plugin bwp',
-                          'listed as a contributor')
+                          'not listed as a contributor')
 
     def testContributorsIsCaseInsensitive(self):
         self.assertNotError('contributors Plugin Skorobeus')
