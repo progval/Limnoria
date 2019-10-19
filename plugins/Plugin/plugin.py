@@ -151,6 +151,7 @@ class Plugin(callbacks.Plugin):
             in the format 'First Last (nick)'.
             """
             return '%(name)s (%(nick)s)' % authorInfo.__dict__
+
         def buildContributorsString(longList):
             """
             Take a list of long names and turn it into :
@@ -158,48 +159,27 @@ class Plugin(callbacks.Plugin):
             """
             L = [getShortName(n) for n in longList]
             return format('%L', L)
-        def sortAuthors():
-            """
-            Sort the list of 'long names' based on the number of contributions
-            associated with each.
-            """
-            L = list(module.__contributors__.items())
-            def negativeSecondElement(x):
-                return -len(x[1])
-            utils.sortBy(negativeSecondElement, L)
-            return [t[0] for t in L]
+
         def buildPeopleString(module):
             """
             Build the list of author + contributors (if any) for the requested
             plugin.
             """
-            head = _('The %s plugin') % cb.name()
-            author = _('has not been claimed by an author')
-            conjunction = _('and')
-            contrib = _('has no contributors listed.')
-            hasAuthor = False
-            hasContribs = False
-            if hasattr(module, '__author__'):
-                if module.__author__ != supybot.authors.unknown:
-                    author = _('was written by %s') % str(module.__author__)
-                    hasAuthor = True
-            if hasattr(module, '__contributors__'):
-                contribs = sortAuthors()
-                if hasAuthor:
-                    try:
-                        contribs.remove(module.__author__)
-                    except ValueError:
-                        pass
-                if contribs:
-                    contrib = format(_('%s %h contributed to it.'),
-                                     buildContributorsString(contribs),
-                                     len(contribs))
-                    hasContribs = True
-                elif hasAuthor:
-                    contrib = _('has no additional contributors listed.')
-            if hasContribs and not hasAuthor:
-                conjunction = _('but')
-            return ' '.join([head, author, conjunction, contrib])
+            author = getattr(module, '__author__', supybot.authors.unknown)
+            if author != supybot.authors.unknown:
+                s = _('The %s plugin was written by %s. ' % (cb.name(), author))
+            else:
+                s = _('The %s plugin has not been claimed by an author. ')
+
+            contribs = getattr(module, '__contributors__', {})
+            if contribs:
+                s += format(_('%s %h contributed to it.'),
+                              buildContributorsString(contribs.keys()),
+                              len(contribs))
+            else:
+                s += _('No additional contributors are listed.')
+            return s
+
         def buildPersonString(module):
             """
             Build the list of contributions (if any) for the requested person
