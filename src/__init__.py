@@ -47,8 +47,7 @@ class Author(object):
         self.email = email
 
     def __str__(self):
-        return '%s (%s) <%s>' % (self.name, self.nick,
-                                 utils.web.mungeEmail(self.email))
+        return '%s (%s) <%s>' % (self.name, self.nick, self.email)
 
 class authors(object): # This is basically a bag.
     jemfinch = Author('Jeremy Fincher', 'jemfinch', 'jemfinch@users.sf.net')

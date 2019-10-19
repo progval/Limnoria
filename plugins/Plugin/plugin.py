@@ -181,8 +181,7 @@ class Plugin(callbacks.Plugin):
             hasContribs = False
             if hasattr(module, '__author__'):
                 if module.__author__ != supybot.authors.unknown:
-                    author = _('was written by %s') % \
-                        utils.web.mungeEmail(str(module.__author__))
+                    author = _('was written by %s') % str(module.__author__)
                     hasAuthor = True
             if hasattr(module, '__contributors__'):
                 contribs = sortAuthors()
@@ -218,7 +217,7 @@ class Plugin(callbacks.Plugin):
             if not authorInfo:
                 return _('The nick specified (%s) is not a registered '
                        'contributor.') % nick
-            fullName = utils.web.mungeEmail(str(authorInfo))
+            fullName = str(authorInfo)
             contributions = []
             if hasattr(module, '__contributors__'):
                 if authorInfo not in module.__contributors__:
