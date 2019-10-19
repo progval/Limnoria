@@ -47,7 +47,10 @@ class Author(object):
         self.email = email
 
     def __str__(self):
-        return '%s (%s) <%s>' % (self.name, self.nick, self.email)
+        if self.name != self.nick:
+            return '%s (%s) <%s>' % (self.name, self.nick, self.email)
+        else:
+            return '%s <%s>' % (self.name, self.email)
 
 class authors(object): # This is basically a bag.
     jemfinch = Author('Jeremy Fincher', 'jemfinch', 'jemfinch@users.sf.net')
