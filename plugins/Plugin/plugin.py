@@ -201,24 +201,13 @@ class Plugin(callbacks.Plugin):
 
             authorInfo = contributorNicks[lnick]
             contributions = contributors[authorInfo]
-
-            (nonCommands, commands) = utils.iter.partition(lambda s: ' ' in s,
-                                                           contributions)
-            results = []
-            if commands:
-                s = _('command')
-                if len(commands) > 1:
-                    s = utils.str.pluralize(s)
-                results.append(format(_('the %L %s'), commands, s))
-            if nonCommands:
-                results.append(format(_('the %L'), nonCommands))
-
             fullName = getShortName(authorInfo)
-            if results:
-                return format(_('%s contributed %L to the %s plugin.'),
-                              fullName, results, cb.name())
+
+            if contributions:
+                return format(_('%s contributed the following to %s: %s'),
+                              fullName, cb.name(), ', '.join(contributions))
             else:
-                return _('%s has no specific listed contributions to the %s '
+                return _('%s did not list any specific contributions to the %s '
                          'plugin.') % (fullName, cb.name())
 
         # First we need to check and see if the requested plugin is loaded
