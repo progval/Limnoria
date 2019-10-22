@@ -210,7 +210,7 @@ def urlSnarfer(f):
         if not channel:
             # Don't snarf in private
             return
-        if not (ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg)):
+        if ircmsgs.isCtcp(msg) and not ircmsgs.isAction(msg):
             # Don't snarf CTCPs unless they are a /me
             return
         if ircdb.channels.getChannel(channel).lobotomized:
