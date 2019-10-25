@@ -379,6 +379,37 @@ class IrcStateTestCase(SupyTestCase):
         st = irclib.IrcState()
         self.assert_(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
 
+class IrcCapsTestCase(SupyTestCase):
+    def testReqLineLength(self):
+        self.irc = irclib.Irc('test')
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+
+        self.irc.REQUEST_CAPABILITIES = set(['a'*400, 'b'*400])
+        caps = ' '.join(self.irc.REQUEST_CAPABILITIES)
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', '*', 'a'*400)))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'b'*400)))
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        self.assertEqual(m.args[1], 'a'*400)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        self.assertEqual(m.args[1], 'b'*400)
+
 class IrcTestCase(SupyTestCase):
     def setUp(self):
         self.irc = irclib.Irc('test')

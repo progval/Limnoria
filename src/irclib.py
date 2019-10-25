@@ -32,6 +32,7 @@ import copy
 import time
 import random
 import base64
+import textwrap
 import collections
 
 try:
@@ -1300,19 +1301,24 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self._addCapabilities(msg.args[3])
         elif len(msg.args) == 3: # End of LS
             self._addCapabilities(msg.args[2])
-            common_supported_capabilities = set(self.state.capabilities_ls) & \
-                    self.REQUEST_CAPABILITIES
+
             if 'sasl' in self.state.capabilities_ls:
                 s = self.state.capabilities_ls['sasl']
                 if s is not None:
                     self.filterSaslMechanisms(set(s.split(',')))
+
+            # Normally at this point, self.state.capabilities_ack should be
+            # empty; but let's just make sure we're not requesting the same
+            # caps twice for no reason.
+            new_caps = (
+                set(self.state.capabilities_ls) &
+                self.REQUEST_CAPABILITIES -
+                self.state.capabilities_ack)
             # NOTE: Capabilities are requested in alphabetic order, because
             # sets are unordered, and their "order" is nondeterministic.
             # This is needed for the tests.
-            if common_supported_capabilities:
-                caps = ' '.join(sorted(common_supported_capabilities))
-                self.sendMsg(ircmsgs.IrcMsg(command='CAP',
-                    args=('REQ', caps)))
+            if new_caps:
+                self._requestCaps(new_caps)
             else:
                 self.endCapabilityNegociation()
         else:
@@ -1353,9 +1359,15 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.REQUEST_CAPABILITIES -
                 self.state.capabilities_ack)
         if common_supported_unrequested_capabilities:
-            caps = ' '.join(sorted(common_supported_unrequested_capabilities))
+            self._requestCaps(common_supported_unrequested_capabilities)
+
+    def _requestCaps(self, caps):
+        caps = ' '.join(sorted(caps))
+        # textwrap works here because in ASCII, all chars are 1 bytes:
+        cap_lines = textwrap.wrap(caps, MAX_LINE_SIZE-len('CAP REQ :'))
+        for cap_line in cap_lines:
             self.sendMsg(ircmsgs.IrcMsg(command='CAP',
-                args=('REQ', caps)))
+                args=('REQ', cap_line)))
 
     def monitor(self, targets):
         """Increment a counter of how many callbacks monitor each target;
