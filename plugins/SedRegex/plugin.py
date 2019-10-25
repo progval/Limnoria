@@ -30,6 +30,7 @@
 ###
 
 from supybot.commands import *
+from supybot.commands import ProcessTimeoutError
 import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
 import supybot.callbacks as callbacks
@@ -56,6 +57,9 @@ SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
+
+class SearchNotFound(Exception):
+    pass
 
 class SedRegex(callbacks.PluginRegexp):
     """History replacer using sed-style regex syntax."""
@@ -128,7 +132,25 @@ class SedRegex(callbacks.PluginRegexp):
         if not ircutils.isNick(str(target), strictRfc=True):
             return
 
-        for m in iterable:
+        regex_timeout = self.registryValue('processTimeout')
+        try:
+            message = process(self._replacer_process, irc, msg,
+                    target, pattern, replacement, count, iterable,
+                    timeout=regex_timeout, pn=self.name(), cn='replacer')
+        except ProcessTimeoutError:
+            irc.error(_("Search timed out."))
+        except SearchNotFound:
+            irc.error(_("Search not found in the last %i messages.") %
+                len(irc.state.history))
+        except Exception as e:
+            if self.registryValue('displayErrors', msg.args[0]):
+                irc.error('%s.%s: %s' % (e.__class__.__module__,
+                    e.__class__.__name__, e))
+        else:
+            irc.reply(message, prefixNick=False)
+
+    def _replacer_process(self, irc, msg, target, pattern, replacement, count, messages):
+        for m in messages:
             if m.command in ('PRIVMSG', 'NOTICE') and \
                     ircutils.strEqual(m.args[0], msg.args[0]) and m.tagged('receivedBy') == irc:
                 if target and m.nick != target:
@@ -152,39 +174,27 @@ class SedRegex(callbacks.PluginRegexp):
                     messageprefix = msg.nick
                 else:
                     messageprefix = '%s thinks %s' % (msg.nick, m.nick)
+
                 try:
-                    regex_timeout = self.registryValue('processTimeout')
-                    replace_result = regexp_wrapper(text, pattern, timeout=regex_timeout, plugin_name=self.name(),
-                                                    fcn_name='replacer')
-                    if replace_result is True:
+                    replace_result = pattern.search(text)
+                    if replace_result:
                         if self.registryValue('boldReplacementText', msg.args[0]):
                             replacement = ircutils.bold(replacement)
-                        subst = process(pattern.sub, replacement,
-                                        text, count, timeout=regex_timeout)
+                        subst = pattern.sub(replacement, text, count)
                         if action:  # If the message was an ACTION, prepend the nick back.
                             subst = '* %s %s' % (m.nick, subst)
 
                         subst = axe_spaces(subst)
 
-                        irc.reply(_("%s meant to say: %s") %
-                                    (messageprefix, subst), prefixNick=False)
-                        return
-                    elif replace_result is None:
-                        # Abort on timeout instead of looking against older messages - this prevents
-                        # replacing the wrong message when we get a one off timeout, which usually leads
-                        # to very confusing results.
-                        # This requires commit https://github.com/ProgVal/Limnoria/commit/b54d8f8073b4fca1787012b211337dc707cfea45
-                        irc.error(_("Search timed out."), Raise=True)
+                        return _("%s meant to say: %s") % \
+                            (messageprefix, subst)
                 except Exception as e:
                     self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
-                    if self.registryValue('displayErrors', msg.args[0]):
-                        irc.error('%s.%s: %s' % (e.__class__.__module__, e.__class__.__name__, e))
-                    return
+                    raise
 
         self.log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
                          msg.args[1], len(irc.state.history), msg.args[0])
-        irc.error(_("Search not found in the last %i messages.") %
-                    len(irc.state.history), Raise=True)
+        raise SearchNotFound()
     replacer.__doc__ = SED_REGEX.pattern
 
 Class = SedRegex
