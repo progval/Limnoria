@@ -379,11 +379,15 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
     def reset(self):
         """Resets the state to normal, unconnected state."""
         self.history.reset()
+        self.history.resize(conf.supybot.protocols.irc.maxHistoryLength())
+        self.ircd = None
         self.channels.clear()
         self.supported.clear()
         self.nicksToHostmasks.clear()
-        self.history.resize(conf.supybot.protocols.irc.maxHistoryLength())
         self.batches = {}
+        self.capabilities_ack = set()
+        self.capabilities_nak = set()
+        self.capabilities_ls = set()
 
     def __reduce__(self):
         return (self.__class__, (self.history, self.supported,
