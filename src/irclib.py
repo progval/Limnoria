@@ -49,6 +49,8 @@ from .utils.str import rsplit
 from .utils.iter import chain
 from .utils.structures import smallqueue, RingBuffer
 
+MAX_LINE_SIZE = 512 # Including \r\n
+
 ###
 # The base class for a callback to be registered with an Irc object.  Shows
 # the required interface for callbacks -- name(),
@@ -849,7 +851,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     log.debug('%s.outFilter returned None.', callback.name())
                     return self.takeMsg()
                 world.debugFlush()
-            if len(str(msg)) > 512:
+            if len(str(msg)) > MAX_LINE_SIZE:
                 # Yes, this violates the contract, but at this point it doesn't
                 # matter.  That's why we gotta go munging in private attributes
                 #
@@ -858,7 +860,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 # this issue, there's no fundamental reason to make it a
                 # warning.
                 log.debug('Truncating %r, message is too long.', msg)
-                msg._str = msg._str[:500] + '\r\n'
+                msg._str = msg._str[:MAX_LINE_SIZE-2] + '\r\n'
                 msg._len = len(str(msg))
             # I don't think we should do this.  Why should it matter?  If it's
             # something important, then the server will send it back to us,
