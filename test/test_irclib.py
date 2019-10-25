@@ -832,6 +832,8 @@ class SaslTestCase(SupyTestCase):
         while self.irc.takeMsg():
             pass
 
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='422')) # ERR_NOMOTD
+
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
                 args=('*', 'NEW', 'sasl=EXTERNAL')))
 
