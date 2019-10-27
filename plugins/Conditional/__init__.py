@@ -41,8 +41,7 @@ import supybot.world as world
 # in here if you're keeping the plugin in CVS or some similar system.
 __version__ = "0.1"
 
-# XXX Replace this with an appropriate author or supybot.Author instance.
-__author__ = supybot.authors.unknown
+__author__ = supybot.Author('Daniel Folkinshteyn', 'nanotube', 'nanotube@users.sourceforge.net')
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.

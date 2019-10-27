@@ -39,8 +39,7 @@ import supybot.world as world
 # in here if you're keeping the plugin in CVS or some similar system.
 __version__ = ""
 
-# XXX Replace this with an appropriate author or supybot.Author instance.
-__author__ = supybot.authors.unknown
+__author__ = supybot.authors.progval
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.

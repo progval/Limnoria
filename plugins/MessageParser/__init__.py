@@ -40,16 +40,14 @@ import supybot.world as world
 # in here if you're keeping the plugin in CVS or some similar system.
 __version__ = "0.1"
 
-# XXX Replace this with an appropriate author or supybot.Author instance.
-__author__ = supybot.authors.unknown
-
+__author__ = supybot.Author('Daniel Folkinshteyn', 'nanotube', 'nanotube@users.sourceforge.net')
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
 __contributors__ = {}
 
 # This is a url where the most recent plugin package can be downloaded.
-__url__ = '' # 'http://supybot.com/Members/yourname/MessageParser/download'
+__url__ = ''
 
 from . import config
 from . import plugin
