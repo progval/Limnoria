@@ -35,10 +35,12 @@ from supybot.test import *
 import supybot.ircutils as ircutils
 from supybot.utils.minisix import u
 
+# import sqlite3, so it's in sys.modules and conf.supybot.databases includes
+# sqlite3.
 try:
-    import sqlite
+    import sqlite3
 except ImportError:
-    sqlite = None
+    sqlite3 = None
 
 from . import plugin
 MFconf = conf.supybot.plugins.MoobotFactoids
