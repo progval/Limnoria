@@ -3,3 +3,4 @@ include README.md
 include Makefile
 include .travis.yml
 include requirements.txt
+include test/*.py
