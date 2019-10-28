@@ -227,7 +227,9 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.prefix = userPrefix2
         self.assertNotError('mogle is <reply>mo')
         self.assertRegexp('most authored',
-                            'Most prolific authors:.*moo.*(1).*boo.*(1)')
+                          (r'Most prolific authors: .*'
+                           r'(moo.*\(1\).*boo.*\(1\)'
+                           r'|boo.*\(1\).*moo.*\(1\))'))
         self.assertRegexp('most recent',
                             "2 latest factoids:.*mogle.*moogle.*")
         self.assertResponse('moogle', 'moo')
