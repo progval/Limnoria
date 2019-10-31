@@ -168,12 +168,10 @@ class Web(callbacks.PluginRegexp):
                 if raiseErrors:
                     irc.error(_('Could not guess the page\'s encoding. (Try '
                                 'installing python-charade.)'), Raise=True)
-                    return None
                 else:
                     self.log.info('Web plugin TitleSnarfer: URL <%s> Could '
                                   'not guess the page\'s encoding. (Try '
                                   'installing python-charade.)', url)
-                    return None
         try:
             parser = Title()
             parser.feed(text)
