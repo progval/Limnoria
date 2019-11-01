@@ -411,8 +411,14 @@ class Owner(callbacks.Plugin):
         collected = world.upkeep()
         if gc.garbage:
             L.append('Garbage!  %r.' % gc.garbage)
-        L.append(format('%n collected.', (collected, 'object')))
-        irc.reply('  '.join(L))
+        if collected is not None:
+            # Some time between 5.2 and 7.1, Pypy (3?) started returning None
+            # when gc.collect() is called.
+            L.append(format('%n collected.', (collected, 'object')))
+        if L:
+            irc.reply('  '.join(L))
+        else:
+            irc.replySuccess()
     upkeep = wrap(upkeep, [additional(('literal', ['high']))])
 
     def load(self, irc, msg, args, optlist, name):
