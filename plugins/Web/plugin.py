@@ -156,10 +156,8 @@ class Web(callbacks.PluginRegexp):
             if raiseErrors:
                 irc.error(_('That URL raised <' + str(e)) + '>',
                           Raise=True)
-                return None
             else:
                 self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>', url, str(e))
-                return None
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')
