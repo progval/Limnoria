@@ -154,19 +154,19 @@ def upkeep():
         if not hasattr(sys.stdout, 'getvalue'):
             # Stupid twisted sometimes replaces our stdout with theirs, because
             # "The Twisted Way Is The Right Way" (ha!).  So we're stuck simply
-            # returning.
+            # skipping the checks
             log.warning('Expected cStringIO as stdout, got %r.', sys.stdout)
-            return
-        s = sys.stdout.getvalue()
-        if s:
-            log.warning('Printed to stdout after daemonization: %s', s)
-            sys.stdout.seek(0)
-            sys.stdout.truncate() # Truncates to current offset.
-        s = sys.stderr.getvalue()
-        if s:
-            log.error('Printed to stderr after daemonization: %s', s)
-            sys.stderr.seek(0)
-            sys.stderr.truncate() # Truncates to current offset.
+        else:
+            s = sys.stdout.getvalue()
+            if s:
+                log.warning('Printed to stdout after daemonization: %s', s)
+                sys.stdout.seek(0)
+                sys.stdout.truncate() # Truncates to current offset.
+            s = sys.stderr.getvalue()
+            if s:
+                log.error('Printed to stderr after daemonization: %s', s)
+                sys.stderr.seek(0)
+                sys.stderr.truncate() # Truncates to current offset.
     doFlush = conf.supybot.flush() and not starting
     if doFlush:
         flush()
