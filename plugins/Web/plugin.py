@@ -149,19 +149,27 @@ class Web(callbacks.PluginRegexp):
     def getTitle(self, irc, url, raiseErrors):
         size = conf.supybot.protocols.http.peekSize()
         timeout = self.registryValue('timeout')
-        (target, text) = utils.web.getUrlTargetAndContent(url, size=size,
+        try:
+            (target, text) = utils.web.getUrlTargetAndContent(url, size=size,
                 timeout=timeout)
+        except Exception as e:
+            if raiseErrors:
+                irc.error(_('That URL raised <' + str(e)) + '>',
+                          Raise=True)
+            else:
+                self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>', url, str(e))
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')
         except UnicodeDecodeError:
-            pass
-        if minisix.PY3 and isinstance(text, bytes):
-            if raiseErrors:
-                irc.error(_('Could not guess the page\'s encoding. (Try '
-                        'installing python-charade.)'), Raise=True)
-            else:
-                return None
+            if minisix.PY3:
+                if raiseErrors:
+                    irc.error(_('Could not guess the page\'s encoding. (Try '
+                                'installing python-charade.)'), Raise=True)
+                else:
+                    self.log.info('Web plugin TitleSnarfer: URL <%s> Could '
+                                  'not guess the page\'s encoding. (Try '
+                                  'installing python-charade.)', url)
         try:
             parser = Title()
             parser.feed(text)
@@ -181,6 +189,13 @@ class Web(callbacks.PluginRegexp):
             else:
                 irc.error(format(_('That URL appears to have no HTML title '
                                  'within the first %S.'), size), Raise=True)
+        else:
+            if len(text) < size:
+                self.log.info('Web plugin TitleSnarfer: URL <%s> appears'
+                              ' to have no HTML title. ', url)
+            else:
+                self.log.info('Web plugin TitleSnarfer: URL <%s> appears to have no HTML title'
+                              ' within the first %S.', url, size)
 
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
