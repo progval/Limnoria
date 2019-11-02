@@ -151,8 +151,13 @@ class Config(callbacks.Plugin):
     def _list(self, irc, group):
         L = []
         for (vname, v) in group._children.items():
-            if hasattr(group, '_channelValue') and group._channelValue and \
-               irc.isChannel(vname) and not v._children:
+            if getattr(group, '_networkValue', False) and \
+                    vname.startswith(':'):
+                # Skip pseudo-children that are network names
+                continue
+            if getattr(group, '_channelValue', False) and \
+                    irc.isChannel(vname):
+                # Skip pseudo-children that are channel names
                 continue
             if hasattr(v, '_channelValue') and v._channelValue:
                 vname = '#' + vname

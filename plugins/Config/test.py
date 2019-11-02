@@ -56,6 +56,14 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertNotError('config list supybot.replies')
         self.assertRegexp('config list supybot', r'@plugins.*@replies.*@reply')
 
+    def testListExcludes(self):
+        """Checks that 'config list' excludes pseudo-children of
+        network-specific and channel-specific variables."""
+        self.assertNotError(
+            'config channel #zpojfejf supybot.replies.error foo')
+        self.assertRegexp('config list supybot.replies.error',
+                          "There don't seem to be any values")
+
     def testHelp(self):
         self.assertError('config help alsdkfj')
         self.assertError('config help supybot.alsdkfj')
