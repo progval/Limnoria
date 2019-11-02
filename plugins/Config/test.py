@@ -53,7 +53,7 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertError('config list asldfkj')
         self.assertError('config list supybot.asdfkjsldf')
         self.assertNotError('config list supybot')
-        self.assertNotError('config list supybot.replies')
+        self.assertRegexp('config list supybot.replies', ', #:errorOwner, ')
         self.assertRegexp('config list supybot', r'@plugins.*@replies.*@reply')
 
     def testListExcludes(self):

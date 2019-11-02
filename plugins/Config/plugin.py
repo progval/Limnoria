@@ -159,7 +159,9 @@ class Config(callbacks.Plugin):
                     irc.isChannel(vname):
                 # Skip pseudo-children that are channel names
                 continue
-            if hasattr(v, '_channelValue') and v._channelValue:
+            if getattr(v, '_networkValue', False):
+                vname = ':' + vname
+            if getattr(v, '_channelValue', False):
                 vname = '#' + vname
             if v._added and not all(irc.isChannel, v._added):
                 vname = '@' + vname
