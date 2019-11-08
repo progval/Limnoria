@@ -1197,7 +1197,9 @@ conf.registerGlobalValue(conf.supybot.capabilities, 'registeredUsers',
 conf.registerGlobalValue(conf.supybot.capabilities, 'default',
     registry.Boolean(True, """Determines whether the bot by default will allow
     users to have a capability.  If this is disabled, a user must explicitly
-    have the capability for whatever command they wish to run."""))
+    have the capability for whatever command they wish to run.
+    To set this in a channel-specific way, use the 'channel capability
+    setdefault' command."""))
 conf.registerGlobalValue(conf.supybot.capabilities, 'private',
     registry.SpaceSeparatedListOfStrings([], """Determines what capabilities
     the bot will never tell to a non-admin whether or not a user has them."""))
