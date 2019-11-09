@@ -1226,7 +1226,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
     def do904(self, msg):
         log.warning('%s: SASL authentication failed (mechanism: %s)',
-                self.network, self.sasl_next_mechanisms[0])
+                self.network, self.sasl_current_mechanism)
         self.tryNextSaslMechanism()
 
     def do905(self, msg):
