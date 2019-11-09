@@ -91,9 +91,6 @@ class MathTestCase(PluginTestCase):
         self.assertError('base 4 4')
         self.assertError('base 10 12 A')
 
-        print()
-        print("If we have not fixed a bug with Math.base, the following ")
-        print("tests will hang the test-suite.")
         self.assertRegexp('base 2 10 [base 10 2 -12]', '-12')
         self.assertRegexp('base 16 2 [base 2 16 -110101]', '-110101')
 
@@ -117,7 +114,10 @@ class MathTestCase(PluginTestCase):
         self.assertError('calc factorial(20000)')
 
     def testCalcNoNameError(self):
-        self.assertNotRegexp('calc foobar(x)', 'NameError')
+        self.assertRegexp('calc foobar(x)', 'foobar is not a defined function')
+
+    def testCalcInvalidNode(self):
+        self.assertRegexp('calc {"foo": "bar"}', 'Illegal construct Dict')
 
     def testCalcImaginary(self):
         self.assertResponse('calc 3 + sqrt(-1)', '3+i')
