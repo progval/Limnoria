@@ -388,7 +388,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.batches = {}
         self.capabilities_ack = set()
         self.capabilities_nak = set()
-        self.capabilities_ls = set()
+        self.capabilities_ls = {}
 
     def __reduce__(self):
         return (self.__class__, (self.history, self.supported,
