@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import supybot
 from supybot.test import *
 
 class PluginTestCase(PluginTestCase):
@@ -46,6 +47,8 @@ class PluginTestCase(PluginTestCase):
 
     def testAuthor(self):
         self.assertRegexp('plugin author plugin', 'jemfinch')
+        self.assertRegexp('plugin author plugin', 'maintained by %s' %
+                          supybot.authors.limnoria_core.name)
 
     def testContributors(self):
         # Test ability to list contributors
@@ -53,13 +56,18 @@ class PluginTestCase(PluginTestCase):
 
         # Test ability to list contributions
         # As of 2019-10-19 there is no more distinction between commands and non-commands
-        self.assertRegexp('contributors Plugin skorobeus', 'original contributors command')
-        self.assertRegexp('contributors Plugin Kevin Murphy', 'original contributors command')
-        self.assertRegexp('contributors Plugin James Lu', 'refactored contributors command')
+        self.assertRegexp('contributors Plugin skorobeus',
+                          'original contributors command')
+        self.assertRegexp('contributors Plugin Kevin Murphy',
+                          'original contributors command')
+        self.assertRegexp('contributors Plugin James Lu',
+                          'refactored contributors command')
 
         # Test handling of the plugin author, who is usually not listed in __contributors__
-        self.assertRegexp('contributors Plugin jemfinch', 'wrote the Plugin plugin')
-        self.assertRegexp('contributors Plugin Jeremy Fincher', 'wrote the Plugin plugin')
+        self.assertRegexp('contributors Plugin jemfinch',
+                          'wrote the Plugin plugin')
+        self.assertRegexp('contributors Plugin Jeremy Fincher',
+                          'wrote the Plugin plugin')
 
         # TODO: test handling of a person with multiple contributions to a command
 

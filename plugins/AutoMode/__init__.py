@@ -41,6 +41,7 @@ import supybot.world as world
 __version__ = "%%VERSION%%"
 
 __author__ = supybot.authors.jemfinch
+__maintainer__ = supybot.authors.limnoria_core
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.

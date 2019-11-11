@@ -41,6 +41,7 @@ import supybot.world as world
 __version__ = "0.1"
 
 __author__ = supybot.authors.strike
+__maintainer__ = supybot.authors.limnoria_core
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.

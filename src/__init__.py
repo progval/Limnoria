@@ -81,6 +81,9 @@ class authors(object): # This is basically a bag.
     jlu = Author('James Lu', email='james@overdrivenetworks.com')
     unknown = Author('Unknown author', email='unknown@email.invalid')
 
+    # Set as __maintainer__ field for all built-in plugins
+    limnoria_core = Author('Limnoria contributors')
+
     # Let's be somewhat safe about this.
     def __getattr__(self, attr):
         try:

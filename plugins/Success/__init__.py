@@ -39,8 +39,8 @@ import supybot.world as world
 # in here if you're keeping the plugin in CVS or some similar system.
 __version__ = ""
 
-# XXX Replace this with an appropriate author or supybot.Author instance.
 __author__ = supybot.authors.strike
+__maintainer__ = supybot.authors.limnoria_core
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.

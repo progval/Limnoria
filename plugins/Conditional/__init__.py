@@ -42,6 +42,7 @@ import supybot.world as world
 __version__ = "0.1"
 
 __author__ = supybot.Author('Daniel Folkinshteyn', 'nanotube', 'nanotube@users.sourceforge.net')
+__maintainer__ = supybot.authors.limnoria_core
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
