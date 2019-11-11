@@ -45,7 +45,7 @@ class SchedulerTestCase(ChannelPluginTestCase):
         timeFastForward(2)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(2)
-        self.assertResponse(' ', 'testAddRemove', timeout=1)
+        self.assertResponse(' ', 'testAddRemove')
         m = self.assertNotError('scheduler add 5 echo testAddRemove2')
         # Get id.
         id = None
@@ -75,12 +75,12 @@ class SchedulerTestCase(ChannelPluginTestCase):
     def testRepeat(self):
         self.assertNotError('scheduler repeat repeater 5 echo testRepeat')
         timeFastForward(5)
-        self.assertResponse(' ', 'testRepeat', timeout=1)
+        self.assertResponse(' ', 'testRepeat')
         self.assertResponse('scheduler list', 'repeater: "echo testRepeat"')
         timeFastForward(3)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(2)
-        self.assertResponse(' ', 'testRepeat', timeout=1)
+        self.assertResponse(' ', 'testRepeat')
         self.assertNotError('scheduler remove repeater')
         self.assertNotRegexp('scheduler list', 'repeater')
         timeFastForward(5)
@@ -89,11 +89,11 @@ class SchedulerTestCase(ChannelPluginTestCase):
     def testRepeatWorksWithNestedCommands(self):
         self.assertNotError('scheduler repeat foo 5 "echo foo [echo nested]"')
         timeFastForward(5)
-        self.assertResponse(' ', 'foo nested', timeout=1)
+        self.assertResponse(' ', 'foo nested')
         timeFastForward(3)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(2)
-        self.assertResponse(' ', 'foo nested', timeout=1)
+        self.assertResponse(' ', 'foo nested')
         self.assertNotError('scheduler remove foo')
         timeFastForward(5)
         self.assertNoResponse(' ', timeout=1)
