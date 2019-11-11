@@ -42,8 +42,10 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertRegexp('scheduler list', 'no.*commands')
         m = self.assertNotError('scheduler add 5 echo testAddRemove')
         self.assertNotRegexp('scheduler list', 'no.*commands')
-        self.assertNoResponse(' ', 3)
-        self.assertResponse(' ', 'testAddRemove')
+        timeFastForward(2)
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(2)
+        self.assertResponse(' ', 'testAddRemove', timeout=1)
         m = self.assertNotError('scheduler add 5 echo testAddRemove2')
         # Get id.
         id = None
@@ -54,7 +56,8 @@ class SchedulerTestCase(ChannelPluginTestCase):
                 break
         self.failUnless(id, 'Couldn\'t find id in reply.')
         self.assertNotError('scheduler remove %s' % id)
-        self.assertNoResponse(' ', 5)
+        timeFastForward(5)
+        self.assertNoResponse(' ', timeout=1)
 
     # Need this test to run first so it has id 0 for its event
     def test00RemoveZero(self):
@@ -66,25 +69,34 @@ class SchedulerTestCase(ChannelPluginTestCase):
                 id = s
                 break
         self.assertNotError('scheduler remove %s' % id)
-        self.assertNoResponse(' ', 5)
+        timeFastForward(5)
+        self.assertNoResponse(' ', timeout=1)
 
     def testRepeat(self):
         self.assertNotError('scheduler repeat repeater 5 echo testRepeat')
-        self.assertResponse(' ', 'testRepeat')
+        timeFastForward(5)
+        self.assertResponse(' ', 'testRepeat', timeout=1)
         self.assertResponse('scheduler list', 'repeater: "echo testRepeat"')
-        self.assertNoResponse(' ', 3)
-        self.assertResponse(' ', 'testRepeat')
+        timeFastForward(3)
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(2)
+        self.assertResponse(' ', 'testRepeat', timeout=1)
         self.assertNotError('scheduler remove repeater')
         self.assertNotRegexp('scheduler list', 'repeater')
-        self.assertNoResponse(' ', 5)
+        timeFastForward(5)
+        self.assertNoResponse(' ', timeout=1)
 
     def testRepeatWorksWithNestedCommands(self):
         self.assertNotError('scheduler repeat foo 5 "echo foo [echo nested]"')
-        self.assertResponse(' ', 'foo nested')
-        self.assertNoResponse(' ', 3)
-        self.assertResponse(' ', 'foo nested')
+        timeFastForward(5)
+        self.assertResponse(' ', 'foo nested', timeout=1)
+        timeFastForward(3)
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(2)
+        self.assertResponse(' ', 'foo nested', timeout=1)
         self.assertNotError('scheduler remove foo')
-        self.assertNoResponse(' ', 5)
+        timeFastForward(5)
+        self.assertNoResponse(' ', timeout=1)
 
     def testRepeatDisallowsIntegerNames(self):
         self.assertError('scheduler repeat 1234 1234 "echo NoIntegerNames"')
