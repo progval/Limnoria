@@ -131,10 +131,20 @@ class Plugin(callbacks.Plugin):
             irc.error(_('That plugin does not seem to be loaded.'))
             return
         module = cb.classModule
-        if hasattr(module, '__author__') and module.__author__:
-            irc.reply(str(module.__author__))
+
+        author = getattr(module, '__author__', None)
+        # Allow for a maintainer field, which better represents plugins that have changed hands
+        # over time. Of course, assume that the author is the maintainer if no other info is given.
+        maintainer = getattr(module, '__maintainer__', None) or author
+
+        if author:
+            if maintainer == author:
+                irc.reply(_("%s was written by %s") % (cb.name(), author))
+            else:
+                irc.reply(_("%s was written by %s and is maintained by %s.") % \
+                            (cb.name(), author, maintainer))
         else:
-            irc.reply(_('That plugin doesn\'t have an author that claims it.'))
+            irc.reply(_('%s does not have any author listed.') % cb.name())
     author = wrap(author, [('plugin')])
 
     @internationalizeDocstring
