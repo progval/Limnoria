@@ -136,7 +136,10 @@ class MathTestCase(PluginTestCase):
         self.assertResponse('calc 3+33333333333333', '33333333333336')
 
     def testCalcMemoryError(self):
-        self.assertRegexp('calc ' + '('*500, 'too much recursion')
+        self.assertRegexp('calc ' + '('*10000,
+            '(too much recursion'  # cpython
+            '|parenthesis is never closed)'  # pypy
+        )
 
     def testICalc(self):
         self.assertResponse('icalc 1^1', '0')
