@@ -135,6 +135,9 @@ class MathTestCase(PluginTestCase):
     def testCalcStrFloat(self):
         self.assertResponse('calc 3+33333333333333', '33333333333336')
 
+    def testCalcMemoryError(self):
+        self.assertRegexp('calc ' + '('*500, 'too much recursion')
+
     def testICalc(self):
         self.assertResponse('icalc 1^1', '0')
         self.assertResponse('icalc 10**24', '1' + '0'*24)

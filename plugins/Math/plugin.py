@@ -149,6 +149,8 @@ class Math(callbacks.Plugin):
             irc.error(_('Invalid syntax: %s') % e.args[0])
         except NameError as e:
             irc.error(_('%s is not a defined function.') % e.args[0])
+        except MemoryError:
+            irc.error(_('Memory error (too much recursion?)'))
         except Exception as e:
             irc.error(str(e))
     calc = wrap(calc, ['text'])
