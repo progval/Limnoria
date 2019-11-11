@@ -139,26 +139,19 @@ class Plugin(callbacks.Plugin):
 
     @internationalizeDocstring
     def contributors(self, irc, msg, args, cb, nick):
-        """<plugin> [<nick>]
+        """<plugin> [<name>]
 
         Replies with a list of people who made contributions to a given plugin.
-        If <nick> is specified, that person's specific contributions will
-        be listed.  Note: The <nick> is the part inside of the parentheses
-        in the people listing.
+        If <name> is specified, that person's specific contributions will
+        be listed. You can specify a person's name by their full name or their nick,
+        which is shown inside brackets if available.
         """
-        def getShortName(authorInfo):
-            """
-            Take an Authors object, and return only the name and nick values
-            in the format 'First Last (nick)'.
-            """
-            return '%(name)s (%(nick)s)' % authorInfo.__dict__
-
         def buildContributorsString(longList):
             """
             Take a list of long names and turn it into :
             shortname[, shortname and shortname].
             """
-            L = [getShortName(n) for n in longList]
+            L = [authorInfo.format(short=True) for authorInfo in longList]
             return format('%L', L)
 
         def buildPeopleString(module):
@@ -187,12 +180,18 @@ class Plugin(callbacks.Plugin):
             for the requested plugin.
             """
             contributors = getattr(module, '__contributors__', {})
-            # Make a mapping of nicks to author instances
-            contributorNicks = dict((author.nick.lower(), author) for author in contributors.keys())
+            # Make a mapping of nicks and names to author instances
+            contributorNicks = {}
+            for contributor in contributors.keys():
+                if contributor.nick:
+                    contributorNicks[contributor.nick.lower()] = contributor
+                if contributor.name:
+                    contributorNicks[contributor.name.lower()] = contributor
             lnick = nick.lower()
 
             author = getattr(module, '__author__', supybot.authors.unknown)
-            if author != supybot.authors.unknown and lnick == author.nick.lower():
+            if author != supybot.authors.unknown and \
+                    (lnick == (author.name or '').lower() or lnick == (author.nick or '').lower()):
                 # Special case for the plugin author. We remove legacy handling of the case where
                 # someone is listed both as author and contributor, which should never really happen?
                 return _('%s wrote the %s plugin.') % (author, cb.name())
@@ -201,7 +200,7 @@ class Plugin(callbacks.Plugin):
 
             authorInfo = contributorNicks[lnick]
             contributions = contributors[authorInfo]
-            fullName = getShortName(authorInfo)
+            fullName = authorInfo.format(short=True)
 
             if contributions:
                 return format(_('%s contributed the following to %s: %s'),
@@ -217,7 +216,7 @@ class Plugin(callbacks.Plugin):
         else:
             nick = ircutils.toLower(nick)
             irc.reply(buildPersonString(module))
-    contributors = wrap(contributors, ['plugin', additional('nick')])
+    contributors = wrap(contributors, ['plugin', additional('text')])
 Plugin = internationalizeDocstring(Plugin)
 
 Class = Plugin

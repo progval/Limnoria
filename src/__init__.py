@@ -50,7 +50,7 @@ class Author(object):
         self.nick = nick
         self.email = email
 
-    def __str__(self):
+    def format(self, short=False):
         # If only one of these are defined, take the nick as the name
         name = self.name or self.nick or 'Unknown author'
 
@@ -58,10 +58,13 @@ class Author(object):
         if self.nick and name != self.nick:
             # Format as "Name (nick)" if both are given and different
             s += ' (%s)' % self.nick
-        if self.email:
+        if self.email and not short:
             # Add "Name (nick) <email>" or "Name <email>" if provided
             s += ' <%s>' % self.email
         return s
+
+    def __str__(self):
+        return self.format()
 
 class authors(object): # This is basically a bag.
     jemfinch = Author('Jeremy Fincher', 'jemfinch', 'jemfinch@users.sf.net')

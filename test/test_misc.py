@@ -54,4 +54,10 @@ class MiscTestCase(SupyTestCase):
         # Only email?
         self.assertEqual(str(supybot.Author(email='xyzzy@localhost.localdomain')), 'Unknown author <xyzzy@localhost.localdomain>')
 
+    def testAuthorExpandShort(self):
+        self.assertEqual(supybot.authors.progval.format(short=True),
+                         'Valentin Lorentz (ProgVal)')
+        self.assertEqual(supybot.authors.jlu.format(short=True),
+                         'James Lu')
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
