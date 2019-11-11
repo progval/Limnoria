@@ -33,9 +33,18 @@ import time
 
 import supybot.schedule as schedule
 
+# Use a different driver name than the main Schedule, because Schedule
+# is a driver so it self-registers in the dict of drivers with its name.
+# So by keeping the name we overwrite the main Schedule in the dict of
+# drivers (which is supposed to be in sync with the one accessible
+# as supybot.schedule.schedule).
+class FakeSchedule(schedule.Schedule):
+    def name(self):
+        return 'FakeSchedule'
+
 class TestSchedule(SupyTestCase):
     def testSchedule(self):
-        sched = schedule.Schedule()
+        sched = FakeSchedule()
         i = [0]
         def add10():
             i[0] = i[0] + 10
@@ -60,7 +69,7 @@ class TestSchedule(SupyTestCase):
         self.assertEqual(i[0], 11)
 
     def testReschedule(self):
-        sched = schedule.Schedule()
+        sched = FakeSchedule()
         i = [0]
         def inc():
             i[0] += 1
@@ -74,7 +83,7 @@ class TestSchedule(SupyTestCase):
         self.assertEqual(i[0], 1)
 
     def testPeriodic(self):
-        sched = schedule.Schedule()
+        sched = FakeSchedule()
         i = [0]
         def inc():
             i[0] += 1
@@ -97,7 +106,7 @@ class TestSchedule(SupyTestCase):
         self.assertEqual(i[0], 3)
 
     def testCountedPeriodic(self):
-        sched = schedule.Schedule()
+        sched = FakeSchedule()
         i = [0]
         def inc():
             i[0] += 1
