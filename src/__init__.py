@@ -40,6 +40,10 @@ del builtins['supybotInternationalization']
 (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['format'] = utils.str.format
 
 class Author(object):
+    """
+    Describes a plugin author. All fields are optional, but the standard practice
+    is to include an email and at least one of 'name' and 'nick'.
+    """
     def __init__(self, name=None, nick=None, email=None, **kwargs):
         self.__dict__.update(kwargs)
         self.name = name
@@ -47,10 +51,17 @@ class Author(object):
         self.email = email
 
     def __str__(self):
-        if self.name != self.nick:
-            return '%s (%s) <%s>' % (self.name, self.nick, self.email)
-        else:
-            return '%s <%s>' % (self.name, self.email)
+        # If only one of these are defined, take the nick as the name
+        name = self.name or self.nick or 'Unknown author'
+
+        s = name
+        if self.nick and name != self.nick:
+            # Format as "Name (nick)" if both are given and different
+            s += ' (%s)' % self.nick
+        if self.email:
+            # Add "Name (nick) <email>" or "Name <email>" if provided
+            s += ' <%s>' % self.email
+        return s
 
 class authors(object): # This is basically a bag.
     jemfinch = Author('Jeremy Fincher', 'jemfinch', 'jemfinch@users.sf.net')
@@ -64,8 +75,8 @@ class authors(object): # This is basically a bag.
     grantbow = Author('Grant Bowman', 'Grantbow', 'grantbow@grantbow.com')
     stepnem = Author('Štěpán Němec', 'stepnem', 'stepnem@gmail.com')
     progval = Author('Valentin Lorentz', 'ProgVal', 'progval@gmail.com')
-    jlu = Author('James Lu', 'GLolol', 'james@overdrivenetworks.com')
-    unknown = Author('Unknown author', 'unknown', 'unknown@email.invalid')
+    jlu = Author('James Lu', email='james@overdrivenetworks.com')
+    unknown = Author('Unknown author', email='unknown@email.invalid')
 
     # Let's be somewhat safe about this.
     def __getattr__(self, attr):
