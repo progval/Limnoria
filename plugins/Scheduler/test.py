@@ -41,7 +41,7 @@ class SchedulerTestCase(ChannelPluginTestCase):
     def testAddRemove(self):
         self.assertRegexp('scheduler list', 'no.*commands')
         m = self.assertNotError('scheduler add 5 echo testAddRemove')
-        self.assertNotRegexp('scheduler list', 'no.*commands')
+        self.assertRegexp('scheduler list', 'echo testAddRemove')
         timeFastForward(2)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(2)
@@ -73,7 +73,8 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertNoResponse(' ', timeout=1)
 
     def testRepeat(self):
-        self.assertNotError('scheduler repeat repeater 5 echo testRepeat')
+        self.assertRegexp('scheduler repeat repeater 5 echo testRepeat',
+            'testRepeat')
         timeFastForward(5)
         self.assertResponse(' ', 'testRepeat')
         self.assertResponse('scheduler list', 'repeater: "echo testRepeat"')
@@ -82,12 +83,13 @@ class SchedulerTestCase(ChannelPluginTestCase):
         timeFastForward(2)
         self.assertResponse(' ', 'testRepeat')
         self.assertNotError('scheduler remove repeater')
-        self.assertNotRegexp('scheduler list', 'repeater')
+        self.assertRegexp('scheduler list', 'no.*commands')
         timeFastForward(5)
         self.assertNoResponse(' ', timeout=1)
 
     def testRepeatWorksWithNestedCommands(self):
-        self.assertNotError('scheduler repeat foo 5 "echo foo [echo nested]"')
+        self.assertRegexp('scheduler repeat foo 5 "echo foo [echo nested]"',
+            'foo nested')
         timeFastForward(5)
         self.assertResponse(' ', 'foo nested')
         timeFastForward(3)
