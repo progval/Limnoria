@@ -62,6 +62,8 @@ if minisix.PY2:
 else:
     from urllib.request import ProxyHandler
 
+from .config import register_feed_config
+
 def get_feedName(irc, msg, args, state):
     if irc.isChannel(args[0]):
         state.errorInvalid('feed name', args[0], 'must not be channel names.')
@@ -194,8 +196,6 @@ class RSS(callbacks.Plugin):
         else:
             announced = {}
         for name in self.registryValue('feeds'):
-            self.assert_feed_does_not_exist(name)
-            self.register_feed_config(name)
             try:
                 url = self.registryValue(registry.join(['feeds', name]))
             except registry.NonExistentRegistryEntry:
@@ -234,28 +234,6 @@ class RSS(callbacks.Plugin):
                 s = format(_('I already have a feed with that URL named %s.'),
                         feed.name)
                 raise callbacks.Error(s)
-
-    def register_feed_config(self, name, url=''):
-        self.registryValue('feeds').add(name)
-        group = self.registryValue('feeds', value=False)
-        conf.registerGlobalValue(group, name,
-                                 registry.String(url, """The URL for the feed
-                                                 %s. Note that because
-                                                 announced lines are cached,
-                                                 you may need to reload this
-                                                 plugin after changing this
-                                                 option.""" % name))
-        feed_group = conf.registerGroup(group, name)
-        conf.registerChannelValue(feed_group, 'format',
-                registry.String('', _("""Feed-specific format. Defaults to
-                supybot.plugins.RSS.format if empty.""")))
-        conf.registerChannelValue(feed_group, 'announceFormat',
-                registry.String('', _("""Feed-specific announce format.
-                Defaults to supybot.plugins.RSS.announceFormat if empty.""")))
-        conf.registerGlobalValue(feed_group, 'waitPeriod',
-                registry.NonNegativeInteger(0, _("""If set to a non-zero
-                value, overrides supybot.plugins.RSS.waitPeriod for this
-                particular feed.""")))
 
     def register_feed(self, name, url, initial,
             plugin_is_loading, announced=None):
@@ -468,7 +446,7 @@ class RSS(callbacks.Plugin):
         given URL.
         """
         self.assert_feed_does_not_exist(name, url)
-        self.register_feed_config(name, url)
+        register_feed_config(name, url)
         self.register_feed(name, url, True, False)
         irc.replySuccess()
     add = wrap(add, ['feedName', 'url'])
@@ -525,7 +503,7 @@ class RSS(callbacks.Plugin):
             for name in feeds:
                 feed = plugin.get_feed(name)
                 if not feed:
-                    plugin.register_feed_config(name, name)
+                    register_feed_config(name, name)
                     plugin.register_feed(name, name, True, False)
                     feed = plugin.get_feed(name)
                 plugin.announce_feed(feed, True)

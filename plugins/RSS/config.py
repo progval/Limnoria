@@ -115,4 +115,27 @@ conf.registerChannelValue(RSS, 'keywordBlacklist',
     in this blacklist.""")))
 
 
+def register_feed_config(name, url=''):
+    RSS.feeds().add(name)
+    conf.registerGlobalValue(RSS.feeds, name,
+        registry.String(url, _("""The URL for the feed %s. Note that because
+        announced lines are cached, you may need to reload this plugin after
+        changing this option.""" % name)))
+    feed_group = conf.registerGroup(RSS.feeds, name)
+    conf.registerChannelValue(feed_group, 'format',
+            registry.String('', _("""Feed-specific format. Defaults to
+            supybot.plugins.RSS.format if empty.""")))
+    conf.registerChannelValue(feed_group, 'announceFormat',
+            registry.String('', _("""Feed-specific announce format.
+            Defaults to supybot.plugins.RSS.announceFormat if empty.""")))
+    conf.registerGlobalValue(feed_group, 'waitPeriod',
+            registry.NonNegativeInteger(0, _("""If set to a non-zero
+            value, overrides supybot.plugins.RSS.waitPeriod for this
+            particular feed.""")))
+
+for name in RSS.feeds():
+    register_feed_config(name)
+
+
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
