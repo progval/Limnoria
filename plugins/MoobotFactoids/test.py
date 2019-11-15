@@ -71,6 +71,34 @@ class OptionListTestCase(SupyTestCase):
         self._testOptions('^\\%(\\%(foo\\)\\@<!.\\)*$',
                           ['^\\%(\\%(foo\\)\\@<!.\\)*$'])
 
+
+class NonChannelFactoidsTestCase(ChannelPluginTestCase):
+    plugins = ('MoobotFactoids', 'User')
+    config = {'reply.whenNotCommand': False}
+
+    def setUp(self):
+        ChannelPluginTestCase.setUp(self)
+        # Create a valid user to use
+        self.prefix = 'mf!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.nick, 'register tester moo',
+                                         prefix=self.prefix))
+        m = self.irc.takeMsg() # Response to register.
+    def testAddFactoid(self):
+        self.assertNotError('moo is foo')
+        # Check stripping punctuation
+        self.assertError('moo!?    is foo') # 'moo' already exists
+        self.assertNotError('foo!?    is foo')
+        self.assertResponse('foo', 'foo is foo')
+        self.assertNotError('bar is <reply>moo is moo')
+        self.assertResponse('bar', 'moo is moo')
+        # Check substitution
+        self.assertNotError('who is <reply>$who')
+        self.assertResponse('who', ircutils.nickFromHostmask(self.prefix))
+        # Check that actions ("\x01ACTION...") don't match
+        m = ircmsgs.action(self.channel, 'is doing something')
+        self.irc.feedMsg(m)
+        self.assertNoResponse(' ', 1)
+
 class FactoidsTestCase(ChannelPluginTestCase):
     plugins = ('MoobotFactoids', 'User', 'String', 'Utilities', 'Web')
     config = {'reply.whenNotCommand': False}

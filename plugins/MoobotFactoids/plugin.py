@@ -325,7 +325,7 @@ class MoobotFactoids(callbacks.Plugin):
         else:
             key = ' '.join(tokens)
             key = self._sanitizeKey(key)
-            channel = plugins.getChannel(msg.channel)
+            channel = plugins.getChannel(msg.channel or msg.args[0])
             fact = self.db.getFactoid(channel, key)
             if fact:
                 self.db.updateRequest(channel, key, msg.prefix)
@@ -385,7 +385,7 @@ class MoobotFactoids(callbacks.Plugin):
 
     def addFactoid(self, irc, msg, tokens):
         # First, check and see if the entire message matches a factoid key
-        channel = plugins.getChannel(msg.channel)
+        channel = plugins.getChannel(msg.channel or msg.args[0])
         id = self._getUserId(irc, msg.prefix)
         try:
             (key, fact) = self._getKeyAndFactoid(tokens)
@@ -401,7 +401,7 @@ class MoobotFactoids(callbacks.Plugin):
         id = self._getUserId(irc, msg.prefix)
         (key, regexp) = list(map(' '.join,
                             utils.iter.split('=~'.__eq__, tokens, maxsplit=1)))
-        channel = plugins.getChannel(msg.channel)
+        channel = plugins.getChannel(msg.channel or msg.args[0])
         # Check and make sure it's in the DB
         fact = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
@@ -422,7 +422,7 @@ class MoobotFactoids(callbacks.Plugin):
         isAlso = pairs.index(['is', 'also'])
         key = ' '.join(tokens[:isAlso])
         new_text = ' '.join(tokens[isAlso+2:])
-        channel = plugins.getChannel(msg.channel)
+        channel = plugins.getChannel(msg.channel or msg.args[0])
         fact = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         # It's fair game if we get to here
@@ -433,7 +433,7 @@ class MoobotFactoids(callbacks.Plugin):
 
     def replaceFactoid(self, irc, msg, tokens):
         # Must be registered!
-        channel = plugins.getChannel(msg.channel)
+        channel = plugins.getChannel(msg.channel or msg.args[0])
         id = self._getUserId(irc, msg.prefix)
         del tokens[0] # remove the "no,"
         try:
