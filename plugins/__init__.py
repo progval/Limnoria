@@ -75,7 +75,7 @@ def DB(filename, types):
     return MakeDB
 
 def makeChannelFilename(filename, channel=None, dirname=None):
-    assert channel is not None, 'Death to those who use None for their channel'
+    assert channel is not None, 'Channel should not be None'
     filename = os.path.basename(filename)
     channelSpecific = conf.supybot.databases.plugins.channelSpecific
     channel = channelSpecific.getChannelLink(channel)
@@ -87,7 +87,7 @@ def makeChannelFilename(filename, channel=None, dirname=None):
     return os.path.join(dirname, filename)
 
 def getChannel(channel):
-    assert channel is not None, 'Death to those who use None for their channel'
+    assert channel is not None, 'Channel should not be None'
     channelSpecific = conf.supybot.databases.plugins.channelSpecific
     return channelSpecific.getChannelLink(channel)
 
