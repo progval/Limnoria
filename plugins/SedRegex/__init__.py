@@ -43,6 +43,9 @@ __contributors__ = {supybot.Author("James Lu", "GLolol", "glolol@overdrivenetwor
                     supybot.Author('nyuszika7h', 'nyuszika7h', 'nyuszika7h@openmailbox.org'):
                     	["_unpack_sed method within plugin.py"]
                    }
+__maintainer__ = getattr(supybot.authors, 'jlu',
+                         supybot.Author('James Lu', 'GLolol', 'james@overdrivenetworks.com'))
+
 __url__ = 'https://github.com/jlu5/SupyPlugins'
 
 from . import config
