@@ -158,6 +158,7 @@ class Web(callbacks.PluginRegexp):
                           Raise=True)
             else:
                 self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>', url, str(e))
+                return
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
                     'replace')
@@ -170,6 +171,7 @@ class Web(callbacks.PluginRegexp):
                     self.log.info('Web plugin TitleSnarfer: URL <%s> Could '
                                   'not guess the page\'s encoding. (Try '
                                   'installing python-charade.)', url)
+                    return
         try:
             parser = Title()
             parser.feed(text)
