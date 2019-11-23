@@ -33,6 +33,7 @@ from supybot.test import *
 import sys
 import time
 import pickle
+import supybot.conf as conf
 import supybot.utils as utils
 from supybot.utils.structures import *
 import supybot.utils.minisix as minisix
@@ -356,6 +357,18 @@ class StrTest(SupyTestCase):
         self.assertRaises(TypeError, utils.str.commaAndify, L)
         L.append((3,))
         self.assertRaises(TypeError, utils.str.commaAndify, L)
+
+    def testCommaAndifyConfig(self):
+        f = utils.str.commaAndify
+        L = ['foo', 'bar']
+        with conf.supybot.reply.format.list.maximumItems.context(3):
+            self.assertEqual(f(L), 'foo and bar')
+            L.append('baz')
+            self.assertEqual(f(L), 'foo, bar, and baz')
+            L.append('qux')
+            self.assertEqual(f(L), 'foo, bar, and 2 others')
+            L.append('quux')
+            self.assertEqual(f(L), 'foo, bar, and 3 others')
 
     def testUnCommaThe(self):
         f = utils.str.unCommaThe

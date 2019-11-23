@@ -481,6 +481,29 @@ def timeElapsed(*args, **kwargs):
     return originalTimeElapsed(*args, **kwargs)
 utils.timeElapsed = timeElapsed
 
+registerGroup(supybot.reply.format, 'list')
+registerChannelValue(supybot.reply.format.list, 'maximumItems',
+    registry.NonNegativeInteger(0, _("""Maximum number of items in a list
+    before the end is replaced with 'and others'. Set to 0 to always
+    show the entire list.""")))
+
+originalCommaAndify = utils.str.commaAndify
+def commaAndify(seq, *args, **kwargs):
+    maximum_items = supybot.reply.format.list.maximumItems.getSpecific(
+        channel=dynamic.channel,
+        network=getattr(dynamic.irc, 'network', None))()
+    if maximum_items:
+        seq = list(seq)
+        initial_length = len(seq)
+        if len(seq) > maximum_items:
+            seq = seq[:maximum_items]
+            nb_skipped = initial_length - maximum_items + 1
+            # Even though nb_skipped is always >= 2, some languages require
+            # nItems for proper pluralization.
+            seq[-1] = utils.str.nItems(nb_skipped, _('other'))
+    return originalCommaAndify(seq, *args, **kwargs)
+utils.str.commaAndify = commaAndify
+
 registerGlobalValue(supybot.reply, 'maximumLength',
     registry.Integer(512*256, _("""Determines the absolute maximum length of
     the bot's reply -- no reply will be passed through the bot with a length
