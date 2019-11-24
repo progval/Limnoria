@@ -213,7 +213,6 @@ if __name__ == '__main__':
         registryFilename = args.pop()
         try:
             # The registry *MUST* be opened before importing log or conf.
-            i18n.getLocaleFromRegistryFilename(registryFilename)
             registry.open_registry(registryFilename)
             shutil.copyfile(registryFilename, registryFilename + '.bak')
         except registry.InvalidRegistryFile as e:
@@ -228,6 +227,8 @@ if __name__ == '__main__':
             sys.stderr.write(str(e))
             sys.stderr.write(os.linesep)
             sys.exit(-1)
+
+    i18n.getLocaleFromRegistryCache()
 
     try:
         import supybot.log as log

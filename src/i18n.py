@@ -52,14 +52,12 @@ currentLocale = 'en'
 class PluginNotFound(Exception):
     pass
 
-def getLocaleFromRegistryFilename(filename):
+def getLocaleFromRegistryCache():
     """Called by the 'supybot' script. Gets the locale name before conf is
     loaded."""
     global currentLocale
-    with open(filename, 'r') as fd:
-        for line in fd:
-            if line.startswith('supybot.language: '):
-                currentLocale = line[len('supybot.language: '):]
+    import supybot.registry as registry
+    currentLocale = registry._cache['supybot.language']
 
 def import_conf():
     """Imports the conf into this module"""
