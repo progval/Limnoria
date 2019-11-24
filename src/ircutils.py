@@ -476,21 +476,21 @@ def formatWhois(irc, replies, caller='', channel='', command='whois'):
         idle = utils.timeElapsed(replies['317'].args[2])
         signon = utils.str.timestamp(float(replies['317'].args[3]))
     else:
-        idle = '<unknown>'
-        signon = '<unknown>'
+        idle = _('<unknown>')
+        signon = _('<unknown>')
     if '312' in replies:
         server = replies['312'].args[2]
         if len(replies['312']) > 3:
             signoff = replies['312'].args[3]
     else:
-        server = '<unknown>'
+        server = _('<unknown>')
     if '301' in replies:
-        away = ' %s is away: %s.' % (nick, replies['301'].args[2])
+        away = _(' %s is away: %s.') % (nick, replies['301'].args[2])
     else:
         away = ''
     if '320' in replies:
         if replies['320'].args[2]:
-            identify = ' identified'
+            identify = _(' identified')
         else:
             identify = ''
     else:
