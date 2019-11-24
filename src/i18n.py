@@ -61,6 +61,8 @@ def getLocaleFromRegistryCache():
         currentLocale = registry._cache['supybot.language']
     except KeyError:
         pass
+    else:
+        reloadLocales()
 
 def import_conf():
     """Imports the conf into this module"""
