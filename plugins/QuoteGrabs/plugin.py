@@ -118,7 +118,7 @@ class SqliteQuoteGrabsDB(object):
         if len(results) == 0:
             raise dbi.NoRecordError
         (id, by, quote, hostmask, at, grabber) = results[0]
-        if quoteonly is 0:
+        if quoteonly == 0:
             return QuoteGrabsRecord(id, by=by, text=quote, hostmask=hostmask,
                                     at=int(at), grabber=grabber)
         else:
