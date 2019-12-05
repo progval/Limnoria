@@ -146,7 +146,8 @@ class Utilities(callbacks.Plugin):
         text = ' '.join(args)
         commands = command.split()
         commands = list(map(callbacks.canonicalName, commands))
-        tokens = callbacks.tokenize(text)
+        tokens = callbacks.tokenize(text,
+            channel=msg.channel, network=irc.network)
         allTokens = commands + tokens
         self.Proxy(irc, msg, allTokens)
     apply = wrap(apply, ['something', many('something')])
@@ -167,7 +168,8 @@ class Utilities(callbacks.Plugin):
         if fake_msg.reply_env is None:
             fake_msg.reply_env = {}
         fake_msg.reply_env[var_name] = value
-        tokens = callbacks.tokenize(command)
+        tokens = callbacks.tokenize(command,
+            channel=msg.channel, network=irc.network)
         self.Proxy(irc, fake_msg, tokens)
 
     let = wrap(let, [

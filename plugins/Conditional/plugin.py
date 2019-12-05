@@ -63,7 +63,8 @@ class Conditional(callbacks.Plugin):
 
     def _runCommandFunction(self, irc, msg, command):
         """Run a command from message, as if command was sent over IRC."""
-        tokens = callbacks.tokenize(command)
+        tokens = callbacks.tokenize(command,
+            channel=msg.channel, network=irc.network)
         try:
             self.Proxy(irc.irc, msg, tokens)
         except Exception as e:
@@ -303,7 +304,8 @@ class Conditional(callbacks.Plugin):
         Runs <testcommand> and returns true if it raises an error;
         false otherwise.
         """
-        tokens = callbacks.tokenize(testcommand)
+        tokens = callbacks.tokenize(testcommand,
+            channel=msg.channel, network=irc.network)
         InvalidCommand = collections.namedtuple('InvalidCommand',
                 'command')
         replies = []

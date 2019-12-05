@@ -350,7 +350,8 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             user = ircdb.users.getUser(prefix)
             return user.id
         except KeyError:
-            if conf.get(conf.supybot.databases.plugins.requireRegistration, channel):
+            if conf.get(conf.supybot.databases.plugins.requireRegistration,
+                    channel=channel, network=irc.network):
                 irc.errorNotRegistered(Raise=True)
             return
 

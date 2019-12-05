@@ -129,7 +129,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
 
     def _runCommandFunction(self, irc, msg, command):
         """Run a command from message, as if command was sent over IRC."""
-        tokens = callbacks.tokenize(command)
+        tokens = callbacks.tokenize(command,
+            channel=msg.channel, network=irc.network)
         try:
             self.Proxy(irc.irc, msg, tokens)
         except Exception as e:

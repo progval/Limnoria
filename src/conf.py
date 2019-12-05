@@ -136,12 +136,8 @@ def registerPlugin(name, currentValue=None, public=True):
     registerGroup(users.plugins, name)
     return group
 
-def get(group, channel=None):
-    if group.channelValue and \
-       channel is not None and ircutils.isChannel(channel):
-        return group.get(channel)()
-    else:
-        return group()
+def get(group, channel=None, network=None):
+    return group.getSpecific(channel=channel, network=network)()
 
 ###
 # The user info registry.

@@ -178,14 +178,19 @@ def _makeReply(irc, msg, s,
     else:
         channel = None
     if notice is None:
-        notice = conf.get(conf.supybot.reply.withNotice, channel)
+        notice = conf.get(conf.supybot.reply.withNotice,
+            channel=channel, network=irc.network)
     if private is None:
-        private = conf.get(conf.supybot.reply.inPrivate, channel)
+        private = conf.get(conf.supybot.reply.inPrivate,
+            channel=channel, network=irc.network)
     if prefixNick is None:
-        prefixNick = conf.get(conf.supybot.reply.withNickPrefix, channel)
+        prefixNick = conf.get(conf.supybot.reply.withNickPrefix,
+            channel=channel, network=irc.network)
     if error:
-        notice =conf.get(conf.supybot.reply.error.withNotice, channel) or notice
-        private=conf.get(conf.supybot.reply.error.inPrivate, channel) or private
+        notice =conf.get(conf.supybot.reply.error.withNotice,
+            channel=channel, network=irc.network) or notice
+        private=conf.get(conf.supybot.reply.error.inPrivate,
+            channel=channel, network=irc.network) or private
         s = _('Error: ') + s
     if private:
         prefixNick = False
@@ -383,7 +388,8 @@ def tokenize(s, channel=None, network=None):
     nested = conf.supybot.commands.nested
     if nested():
         brackets = nested.brackets.getSpecific(network, channel)()
-        if conf.get(nested.pipeSyntax, channel): # No nesting, no pipe.
+        if conf.get(nested.pipeSyntax,
+                channel=channel, network=network): # No nesting, no pipe.
             pipe = True
     quotes = conf.supybot.commands.quotes.getSpecific(network, channel)()
     try:
@@ -439,7 +445,8 @@ class RichReplyMethods(object):
         return ircutils.standardSubstitute(self, self.msg, s)
 
     def _getConfig(self, wrapper):
-        return conf.get(wrapper, self.msg.channel)
+        return conf.get(wrapper,
+            channel=self.msg.channel, network=self.irc.network)
 
     def replySuccess(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.success)
@@ -484,7 +491,8 @@ class RichReplyMethods(object):
         to = self._getTarget(kwargs.get('to'))
         if oneToOne is None: # Can be True, False, or None
             if self.irc.isChannel(to):
-                oneToOne = conf.get(conf.supybot.reply.oneToOne, to)
+                oneToOne = conf.get(conf.supybot.reply.oneToOne,
+                    channel=to, network=self.irc.network)
             else:
                 oneToOne = conf.supybot.reply.oneToOne()
         if oneToOne:
@@ -680,7 +688,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         self.noLengthCheck = None
         if self.msg.channel:
             self.prefixNick = conf.get(conf.supybot.reply.withNickPrefix,
-                                       self.msg.channel)
+                channel=self.msg.channel, network=self.irc.network)
         else:
             self.prefixNick = conf.supybot.reply.withNickPrefix()
 
@@ -918,7 +926,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 else:
                     s = ircutils.safeArgument(s)
                     allowedLength = conf.get(conf.supybot.reply.mores.length,
-                                             target)
+                        channel=target, network=self.irc.network)
                     if not allowedLength: # 0 indicates this.
                         allowedLength = (512
                                 - len(':') - len(self.irc.prefix)
@@ -930,7 +938,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         if self.prefixNick:
                             allowedLength -= len(msg.nick) + len(': ')
                     maximumMores = conf.get(conf.supybot.reply.mores.maximum,
-                                            target)
+                        channel=target, network=self.irc.network)
                     maximumLength = allowedLength * maximumMores
                     if len(s) > maximumLength:
                         log.warning('Truncating to %s bytes from %s bytes.',
@@ -938,7 +946,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         s = s[:maximumLength]
                     s_size = len(s.encode()) if minisix.PY3 else len(s)
                     if s_size <= allowedLength or \
-                       not conf.get(conf.supybot.reply.mores, target):
+                       not conf.get(conf.supybot.reply.mores,
+                            channel=target, network=self.irc.network):
                         # There's no need for action=self.action here because
                         # action implies noLengthCheck, which has already been
                         # handled.  Let's stick an assert in here just in case.
@@ -955,7 +964,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     allowedLength -= len(_('(XX more messages)')) + 1 # bold
                     msgs = ircutils.wrap(s, allowedLength)
                     msgs.reverse()
-                    instant = conf.get(conf.supybot.reply.mores.instant,target)
+                    instant = conf.get(conf.supybot.reply.mores.instant,
+                        channel=target, network=self.irc.network)
                     while instant > 1 and msgs:
                         instant -= 1
                         response = msgs.pop()
@@ -1358,10 +1368,14 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
         method = self.getCommandMethod(command)
         help = getHelp
         chan = None
+        net = None
         if dynamic.msg is not None:
             chan = dynamic.msg.channel
+        if dynamic.irc is not None:
+            net = dynamic.irc.network
         if simpleSyntax is None:
-            simpleSyntax = conf.get(conf.supybot.reply.showSimpleSyntax, chan)
+            simpleSyntax = conf.get(conf.supybot.reply.showSimpleSyntax,
+                channel=chan, network=net)
         if simpleSyntax:
             help = getSyntax
         if hasattr(method, '__doc__'):

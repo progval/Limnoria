@@ -112,7 +112,8 @@ class Scheduler(callbacks.Plugin):
 
     def _makeCommandFunction(self, irc, msg, command, remove=True):
         """Makes a function suitable for scheduling from command."""
-        tokens = callbacks.tokenize(command)
+        tokens = callbacks.tokenize(command,
+            channel=msg.channel, network=irc.network)
         def f():
             if remove:
                 del self.events[str(f.eventId)]
