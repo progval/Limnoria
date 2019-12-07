@@ -35,12 +35,12 @@ Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 from __future__ import division
 
 import os
+import sys
 import time
 import errno
 import threading
 import select
 import socket
-import sys
 
 try:
     import ipaddress  # Python >= 3.3 or backported ipaddress
@@ -221,7 +221,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def connect(self, **kwargs):
         self.reconnect(reset=False, **kwargs)
 
-    def reconnect(self, wait=False, reset=True):
+    def reconnect(self, wait=False, reset=True, server=None):
         self._attempt += 1
         self.nextReconnectTime = None
         if self.connected:
@@ -242,7 +242,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         if wait:
             self.scheduleReconnect()
             return
-        self.server = self._getNextServer()
+        self.server = server or self._getNextServer()
         network_config = getattr(conf.supybot.networks, self.irc.network)
         socks_proxy = network_config.socksproxy()
         try:
@@ -252,20 +252,20 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             log.error('Cannot use socks proxy (SocksiPy not installed), '
                     'using direct connection instead.')
             socks_proxy = ''
-        if socks_proxy:
-            address = self.server[0]
         else:
             try:
-                address = utils.net.getAddressFromHostname(self.server[0],
-                        attempt=self._attempt)
+                hostname = utils.net.getAddressFromHostname(
+                    self.server.hostname,
+                    attempt=self._attempt)
             except (socket.gaierror, socket.error) as e:
                 drivers.log.connectError(self.currentServer, e)
                 self.scheduleReconnect()
                 return
-        port = self.server[1]
         drivers.log.connect(self.currentServer)
         try:
-            self.conn = utils.net.getSocket(address, port=port,
+            self.conn = utils.net.getSocket(
+                    self.server.hostname,
+                    port=self.server.port,
                     socks_proxy=socks_proxy,
                     vhost=conf.supybot.protocols.irc.vhost(),
                     vhostv6=conf.supybot.protocols.irc.vhostv6(),
@@ -280,12 +280,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         try:
             # Connect before SSL, otherwise SSL is disabled if we use SOCKS.
             # See http://stackoverflow.com/q/16136916/539465
-            self.conn.connect((address, port))
-            if network_config.ssl():
+            self.conn.connect((self.server.hostname, self.server.port))
+            if network_config.ssl() or self.server.force_tls_verification:
                 self.starttls()
 
             # Suppress this warning for loopback IPs.
-            targetip = address
+            targetip = hostname
             if sys.version_info[0] < 3:
                 # Backported Python 2 ipaddress demands unicode instead of str
                 targetip = targetip.decode('utf-8')
@@ -361,6 +361,15 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def name(self):
         return '%s(%s)' % (self.__class__.__name__, self.irc)
 
+    def anyCertValidationEnabled(self):
+        """Returns whether any kind of certificate validation is enabled, other
+        than Server.force_tls_verification."""
+        return any([
+            conf.supybot.protocols.ssl.verifyCertificates(),
+            network_config.ssl.serverFingerprints(),
+            network_config.ssl.authorityCertificate(),
+        ])
+
     def starttls(self):
         assert 'ssl' in globals()
         network_config = getattr(conf.supybot.networks, self.irc.network)
@@ -373,15 +382,20 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             drivers.log.warning('Could not find cert file %s.' %
                     certfile)
             certfile = None
-        verifyCertificates = conf.supybot.protocols.ssl.verifyCertificates()
-        if not verifyCertificates:
-            drivers.log.warning('Not checking SSL certificates, connections '
-                    'are vulnerable to man-in-the-middle attacks. Set '
-                    'supybot.protocols.ssl.verifyCertificates to "true" '
-                    'to enable validity checks.')
+        if self.server.force_tls_verification \
+                and not self.anyCertValidationEnabled():
+            verifyCertificates = True
+        else:
+            verifyCertificates = conf.supybot.protocols.ssl.verifyCertificates()
+            if not verifyCertificates:
+                drivers.log.warning('Not checking SSL certificates, connections '
+                        'are vulnerable to man-in-the-middle attacks. Set '
+                        'supybot.protocols.ssl.verifyCertificates to "true" '
+                        'to enable validity checks.')
         try:
             self.conn = utils.net.ssl_wrap_socket(self.conn,
-                    logger=drivers.log, hostname=self.server[0],
+                    logger=drivers.log,
+                    hostname=self.server.hostname,
                     certfile=certfile,
                     verify=verifyCertificates,
                     trusted_fingerprints=network_config.ssl.serverFingerprints(),

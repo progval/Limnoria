@@ -27,14 +27,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from supybot.test import *
-
 import copy
 import pickle
-import warnings
+import unittest.mock
+
+from supybot.test import *
 
 import supybot.conf as conf
 import supybot.irclib as irclib
+import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 
@@ -496,6 +497,58 @@ class IrcCapsTestCase(SupyTestCase):
         self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args[0], 'REQ', m)
         self.assertEqual(m.args[1], 'b'*400)
+
+class StsTestCase(SupyTestCase):
+    def setUp(self):
+        self.irc = irclib.Irc('test')
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+
+        self.irc.driver = unittest.mock.Mock()
+
+    def tearDown(self):
+        ircdb.networks.networks = {}
+
+    def testStsInSecureConnection(self):
+        self.irc.driver.anyCertValidationEnabled.return_value = True
+        self.irc.driver.ssl = True
+        self.irc.driver.server = drivers.Server('irc.test', 6697, False)
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'sts=duration=42,port=6697')))
+
+        self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {
+            'irc.test': 'duration=42,port=6697'})
+        self.irc.driver.reconnect.assert_not_called()
+
+    def testStsInInsecureTlsConnection(self):
+        self.irc.driver.anyCertValidationEnabled.return_value = False
+        self.irc.driver.ssl = True
+        self.irc.driver.server = drivers.Server('irc.test', 6697, False)
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'sts=duration=42,port=6697')))
+
+        self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
+        self.irc.driver.reconnect.assert_called_once_with(
+            server=drivers.Server('irc.test', 6697, True))
+
+    def testStsInCleartextConnection(self):
+        self.irc.driver.anyCertValidationEnabled.return_value = False
+        self.irc.driver.ssl = True
+        self.irc.driver.server = drivers.Server('irc.test', 6667, False)
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'sts=duration=42,port=6697')))
+
+        self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
+        self.irc.driver.reconnect.assert_called_once_with(
+            server=drivers.Server('irc.test', 6697, True))
 
 class IrcTestCase(SupyTestCase):
     def setUp(self):

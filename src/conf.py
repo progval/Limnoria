@@ -273,15 +273,17 @@ class Servers(registry.SpaceSeparatedListOfStrings):
         return s
 
     def convert(self, s):
+        from .drivers import Server
+
         s = self.normalize(s)
-        (server, port) = s.rsplit(':', 1)
+        (hostname, port) = s.rsplit(':', 1)
 
         # support for `[ipv6]:port` format
-        if server.startswith("[") and server.endswith("]"):
-            server = server[1:-1]
+        if hostname.startswith("[") and hostname.endswith("]"):
+            hostname = hostname[1:-1]
 
         port = int(port)
-        return (server, port)
+        return Server(hostname, port, force_tls_verification=False)
 
     def __call__(self):
         L = registry.SpaceSeparatedListOfStrings.__call__(self)
@@ -1037,6 +1039,12 @@ registerGroup(supybot.databases, 'channels')
 registerGlobalValue(supybot.databases.channels, 'filename',
     registry.String('channels.conf', _("""Determines what filename will be used
     for the channels database.  This file will go into the directory specified
+    by the supybot.directories.conf variable.""")))
+
+registerGroup(supybot.databases, 'networks')
+registerGlobalValue(supybot.databases.networks, 'filename',
+    registry.String('networks.conf', _("""Determines what filename will be used
+    for the networks database.  This file will go into the directory specified
     by the supybot.directories.conf variable.""")))
 
 # TODO This will need to do more in the future (such as making sure link.allow

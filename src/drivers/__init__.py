@@ -33,9 +33,18 @@ Contains various drivers (network, file, and otherwise) for using IRC objects.
 """
 
 import socket
+from collections import namedtuple
 
 from .. import conf, ircmsgs, log as supylog, utils
 from ..utils import minisix
+
+
+Server = namedtuple('Server', 'hostname port force_tls_verification')
+# force_tls_verification=True implies two things:
+# 1. force TLS to be enabled for this server
+# 2. ensure there is some kind of verification. If the user did not enable
+#    any, use standard PKI validation.
+
 
 _drivers = {}
 _deadDrivers = set()
@@ -80,7 +89,7 @@ class ServersMixin(object):
         assert self.servers, 'Servers value for %s is empty.' % \
                              self.networkGroup._name
         server = self.servers.pop(0)
-        self.currentServer = '%s:%s' % server
+        self.currentServer = '%s:%s' % (server.hostname, server.port)
         return server
 
 

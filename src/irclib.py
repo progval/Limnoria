@@ -55,6 +55,7 @@ except ImportError:
     scram = None
 
 from . import conf, ircdb, ircmsgs, ircutils, log, utils, world
+from .drivers import Server
 from .utils.str import rsplit
 from .utils.iter import chain
 from .utils.structures import smallqueue, RingBuffer
@@ -1468,14 +1469,42 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     self.network, caps)
         self.capUpkeep()
 
+    def _onCapSts(self, policy):
+        parsed_policy = ircutils._parseStsPolicy(log, policy)
+        if parsed_policy is None:
+            # There was an error (and it was logged). Abort the connection.
+            self.driver.reconnect()
+            return
+
+        if not self.driver.ssl or not self.driver.anyCertValidationEnabled():
+            hostname = self.driver.server.hostname
+            # Reconnect to the server, but with TLS *and* certificate
+            # validation this time.
+            self.driver.reconnect(
+                server=Server(hostname, parsed_policy['port'], True))
+        else:
+            # TLS is enabled and certificate is verified; write the STS policy
+            # in stone.
+            # For future-proofing (because we don't want to write an invalid
+            # value), we write the raw policy received from the server instead
+            # of the parsed one.
+            ircdb.networks.getNetwork(self.network).addStsPolicy(
+                self.driver.server.hostname, policy)
+
     def _addCapabilities(self, capstring):
         for item in capstring.split():
             while item.startswith(('=', '~')):
                 item = item[1:]
             if '=' in item:
                 (cap, value) = item.split('=', 1)
+                if cap == 'sts':
+                    self._onCapSts(value)
                 self.state.capabilities_ls[cap] = value
             else:
+                if item == 'sts':
+                    log.error('Got "sts" capability without value. Aborting '
+                              'connection.')
+                    self.driver.reconnect()
                 self.state.capabilities_ls[item] = None
 
     def doCapLs(self, msg):
