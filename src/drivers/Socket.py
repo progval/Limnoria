@@ -82,9 +82,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.resetDelay()
         if self.networkGroup.get('ssl').value and 'ssl' not in globals():
             drivers.log.error('The Socket driver can not connect to SSL '
-                              'servers for your Python version.  Try the '
-                              'Twisted driver instead, or install a Python'
-                              'version that supports SSL (2.6 and greater).')
+                              'servers for your Python version.')
             self.ssl = False
         else:
             self.ssl = self.networkGroup.get('ssl').value
