@@ -352,7 +352,6 @@ class IrcChannelTestCase(IrcdbTestCase):
 class IrcNetworkTestCase(IrcdbTestCase):
     def testDefaults(self):
         n = ircdb.IrcNetwork()
-        self.assertIsNone(n.name)
         self.assertEqual(n.stsPolicies, {})
         self.assertEqual(n.lastDisconnectTimes, {})
 
@@ -373,7 +372,7 @@ class IrcNetworkTestCase(IrcdbTestCase):
         self.assertTrue(min_ <= n.lastDisconnectTimes['foo'] <= max_)
 
     def testPreserve(self):
-        n = ircdb.IrcNetwork('foonet')
+        n = ircdb.IrcNetwork()
         n.addStsPolicy('foo', 'sts1')
         n.addStsPolicy('bar', 'sts2')
         n.addDisconnection('foo')
@@ -459,15 +458,14 @@ class NetworksDictionaryTestCase(IrcdbTestCase):
         IrcdbTestCase.setUp(self)
 
     def testGetSetNetwork(self):
-        self.assertEqual(self.networks.getNetwork('foo').name, None)
+        self.assertEqual(self.networks.getNetwork('foo').stsPolicies, {})
 
         n = ircdb.IrcNetwork()
-        n.name = 'foo'
         self.networks.setNetwork('foo', n)
-        self.assertEqual(self.networks.getNetwork('foo').name, 'foo')
+        self.assertEqual(self.networks.getNetwork('foo').stsPolicies, {})
 
     def testPreserveOne(self):
-        n = ircdb.IrcNetwork('foonet')
+        n = ircdb.IrcNetwork()
         n.addStsPolicy('foo', 'sts1')
         n.addStsPolicy('bar', 'sts2')
         n.addDisconnection('foo')
@@ -496,15 +494,15 @@ class NetworksDictionaryTestCase(IrcdbTestCase):
         ])
 
     def testPreserveThree(self):
-        n = ircdb.IrcNetwork('foonet')
+        n = ircdb.IrcNetwork()
         n.addStsPolicy('foo', 'sts1')
         self.networks.setNetwork('foonet', n)
 
-        n = ircdb.IrcNetwork('barnet')
+        n = ircdb.IrcNetwork()
         n.addStsPolicy('bar', 'sts2')
         self.networks.setNetwork('barnet', n)
 
-        n = ircdb.IrcNetwork('baznet')
+        n = ircdb.IrcNetwork()
         n.addStsPolicy('baz', 'sts3')
         self.networks.setNetwork('baznet', n)
 

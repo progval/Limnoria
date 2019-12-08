@@ -241,6 +241,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         else:
             drivers.log.debug('Not resetting %s.', self.irc)
         if wait:
+            if server is not None:
+                # Make this server be the next one to be used.
+                self.servers.insert(0, server)
             self.scheduleReconnect()
             return
         self.currentServer = server or self._getNextServer()
@@ -283,8 +286,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             # See http://stackoverflow.com/q/16136916/539465
             self.conn.connect(
                 (self.currentServer.hostname, self.currentServer.port))
-            if network_config.ssl() \
-                    or self.currentServer.force_tls_verification:
+            if network_config.ssl() or \
+                    self.currentServer.force_tls_verification:
                 self.starttls()
 
             # Suppress this warning for loopback IPs.
@@ -294,6 +297,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 targetip = targetip.decode('utf-8')
             elif (not network_config.requireStarttls()) and \
                     (not network_config.ssl()) and \
+                    (not self.currentServer.force_tls_verification) and \
                     (ipaddress is None or not ipaddress.ip_address(targetip).is_loopback):
                 drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
@@ -369,6 +373,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def anyCertValidationEnabled(self):
         """Returns whether any kind of certificate validation is enabled, other
         than Server.force_tls_verification."""
+        network_config = getattr(conf.supybot.networks, self.irc.network)
         return any([
             conf.supybot.protocols.ssl.verifyCertificates(),
             network_config.ssl.serverFingerprints(),
@@ -392,7 +397,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             verifyCertificates = True
         else:
             verifyCertificates = conf.supybot.protocols.ssl.verifyCertificates()
-            if not verifyCertificates:
+            if not self.currentServer.force_tls_verification \
+                    and not self.anyCertValidationEnabled():
                 drivers.log.warning('Not checking SSL certificates, connections '
                         'are vulnerable to man-in-the-middle attacks. Set '
                         'supybot.protocols.ssl.verifyCertificates to "true" '

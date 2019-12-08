@@ -100,6 +100,8 @@ class ServersMixin(object):
         lastDisconnect = network.lastDisconnectTimes.get(server.hostname)
 
         if policy is None or lastDisconnect is None:
+            log.debug('No STS policy, or never disconnected from this server. %r %r',
+                policy, lastDisconnect)
             return server
 
         # The policy was stored, which means it was received on a secure
@@ -107,8 +109,12 @@ class ServersMixin(object):
         policy = ircutils.parseStsPolicy(log, policy, parseDuration=True)
 
         if lastDisconnect + policy['duration'] < time.time():
+            log.info('STS policy expired, removing.')
             network.expireStsPolicy(server.hostname)
             return server
+
+        log.info('Using STS policy: changing port from %s to %s.',
+            server.port, policy['port'])
 
         # Change the port, and force TLS verification, as required by the STS
         # specification.

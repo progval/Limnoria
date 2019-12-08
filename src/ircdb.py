@@ -499,16 +499,15 @@ class IrcChannel(object):
 class IrcNetwork(object):
     """This class holds dynamic information about a network that should be
     preserved across restarts."""
-    __slots__ = ('name', 'stsPolicies', 'lastDisconnectTimes')
+    __slots__ = ('stsPolicies', 'lastDisconnectTimes')
 
-    def __init__(self, name=None, stsPolicies=None, lastDisconnectTimes=None):
-        self.name = name
+    def __init__(self, stsPolicies=None, lastDisconnectTimes=None):
         self.stsPolicies = stsPolicies or {}
         self.lastDisconnectTimes = lastDisconnectTimes or {}
 
     def __repr__(self):
-        return '%s(name=%r, stsPolicy=%r, lastDisconnectTimes=%s)' % \
-            (self.__class__.__name, self.name, self.stsPolicy,
+        return '%s(stsPolicies=%r, lastDisconnectTimes=%s)' % \
+            (self.__class__.__name__, self.stsPolicies,
              self.lastDisconnectTimes)
 
     def addStsPolicy(self, server, stsPolicy):
@@ -659,13 +658,14 @@ class IrcChannelCreator(Creator):
 
 class IrcNetworkCreator(Creator):
     __slots__ = ('net', 'networks')
+    name = None
 
     def __init__(self, networks):
         self.net = IrcNetwork()
         self.networks = networks
 
     def network(self, rest, lineno):
-        self.net.name = rest
+        IrcNetworkCreator.name = rest
 
     def stspolicy(self, rest, lineno):
         (server, stsPolicy) = rest.split()
@@ -677,8 +677,8 @@ class IrcNetworkCreator(Creator):
         self.net.lastDisconnectTimes[server] = when
 
     def finish(self):
-        if self.net.name:
-            self.networks.setNetwork(self.net.name, self.net)
+        if self.name:
+            self.networks.setNetwork(self.name, self.net)
             self.net = IrcNetwork()
 
 

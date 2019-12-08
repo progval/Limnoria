@@ -419,10 +419,15 @@ class IrcStateFsm(object):
         CONNECTED_SASL = 80
         '''Doing SASL authentication in the middle of a connection.'''
 
+        SHUTTING_DOWN = 100
+
     def __init__(self):
         self.reset()
 
     def reset(self):
+        if getattr(self, 'state', None) is not None:
+            log.debug('resetting from %s to %s',
+                self.state, self.States.UNINITIALIZED)
         self.state = self.States.UNINITIALIZED
 
     def _transition(self, to_state, expected_from=None):
@@ -482,6 +487,9 @@ class IrcStateFsm(object):
             self.States.INIT_WAITING_MOTD,
             self.States.INIT_MOTD
         ])
+
+    def on_shutdown(self):
+        self._transition(self.States.SHUTTING_DOWN)
 
 class IrcState(IrcCommandDispatcher, log.Firewalled):
     """Maintains state of the Irc connection.  Should also become smarter.
@@ -1252,7 +1260,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                       self.state.capabilities_req,
                       self.state.capabilities_ack,
                       self.state.capabilities_nak)
-            self.driver.reconnect()
+            self.driver.reconnect(wait=True)
         elif capabilities_responded == self.state.capabilities_req:
             log.debug('Got all capabilities ACKed/NAKed')
             # We got all the capabilities we asked for
@@ -1470,13 +1478,14 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.capUpkeep()
 
     def _onCapSts(self, policy):
-        secure_connection = self.driver.ssl and self.driver.anyCertValidationEnabled()
+        secure_connection = self.driver.currentServer.force_tls_verification \
+            or (self.driver.ssl and self.driver.anyCertValidationEnabled())
 
         parsed_policy = ircutils.parseStsPolicy(
             log, policy, parseDuration=secure_connection)
         if parsed_policy is None:
             # There was an error (and it was logged). Abort the connection.
-            self.driver.reconnect()
+            self.driver.reconnect(wait=True)
             return
 
         if secure_connection:
@@ -1485,14 +1494,20 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             # For future-proofing (because we don't want to write an invalid
             # value), we write the raw policy received from the server instead
             # of the parsed one.
+            log.debug('Storing STS policy: %s', policy)
             ircdb.networks.getNetwork(self.network).addStsPolicy(
-                self.driver.server.hostname, policy)
+                self.driver.currentServer.hostname, policy)
         else:
-            hostname = self.driver.server.hostname
+            hostname = self.driver.currentServer.hostname
+            log.info('Got STS policy over insecure connection; '
+                     'reconnecting to secure port. %r',
+                     self.driver.currentServer)
             # Reconnect to the server, but with TLS *and* certificate
             # validation this time.
+            self.state.fsm.on_shutdown()
             self.driver.reconnect(
-                server=Server(hostname, parsed_policy['port'], True))
+                server=Server(hostname, parsed_policy['port'], True),
+                wait=True)
 
     def _addCapabilities(self, capstring):
         for item in capstring.split():
@@ -1507,8 +1522,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 if item == 'sts':
                     log.error('Got "sts" capability without value. Aborting '
                               'connection.')
-                    self.driver.reconnect()
+                    self.driver.reconnect(wait=True)
                 self.state.capabilities_ls[item] = None
+
 
     def doCapLs(self, msg):
         if len(msg.args) == 4:
@@ -1519,6 +1535,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self._addCapabilities(msg.args[3])
         elif len(msg.args) == 3: # End of LS
             self._addCapabilities(msg.args[2])
+            if self.state.fsm.state == IrcStateFsm.States.SHUTTING_DOWN:
+                return
             self.state.fsm.expect_state([
                 # Normal case:
                 IrcStateFsm.States.INIT_CAP_NEGOTIATION,
@@ -1573,6 +1591,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         caps = msg.args[2].split()
         assert caps, 'Empty list of capabilities'
         self._addCapabilities(msg.args[2])
+        if self.state.fsm.state == IrcStateFsm.States.SHUTTING_DOWN:
+            return
         common_supported_unrequested_capabilities = (
                 set(self.state.capabilities_ls) &
                 self.REQUEST_CAPABILITIES -
