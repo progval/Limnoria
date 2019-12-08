@@ -225,6 +225,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self._attempt += 1
         self.nextReconnectTime = None
         if self.connected:
+            self.onDisconnect()
             drivers.log.reconnect(self.irc.network)
             if self in self._instances:
                 self._instances.remove(self)
@@ -242,7 +243,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         if wait:
             self.scheduleReconnect()
             return
-        self.server = server or self._getNextServer()
+        self.currentServer = server or self._getNextServer()
         network_config = getattr(conf.supybot.networks, self.irc.network)
         socks_proxy = network_config.socksproxy()
         try:
@@ -255,7 +256,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         else:
             try:
                 hostname = utils.net.getAddressFromHostname(
-                    self.server.hostname,
+                    self.currentServer.hostname,
                     attempt=self._attempt)
             except (socket.gaierror, socket.error) as e:
                 drivers.log.connectError(self.currentServer, e)
@@ -264,8 +265,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         drivers.log.connect(self.currentServer)
         try:
             self.conn = utils.net.getSocket(
-                    self.server.hostname,
-                    port=self.server.port,
+                    self.currentServer.hostname,
+                    port=self.currentServer.port,
                     socks_proxy=socks_proxy,
                     vhost=conf.supybot.protocols.irc.vhost(),
                     vhostv6=conf.supybot.protocols.irc.vhostv6(),
@@ -280,8 +281,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         try:
             # Connect before SSL, otherwise SSL is disabled if we use SOCKS.
             # See http://stackoverflow.com/q/16136916/539465
-            self.conn.connect((self.server.hostname, self.server.port))
-            if network_config.ssl() or self.server.force_tls_verification:
+            self.conn.connect(
+                (self.currentServer.hostname, self.currentServer.port))
+            if network_config.ssl() \
+                    or self.currentServer.force_tls_verification:
                 self.starttls()
 
             # Suppress this warning for loopback IPs.
@@ -351,6 +354,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         if self.writeCheckTime is not None:
             self.writeCheckTime = None
         drivers.log.die(self.irc)
+        drivers.IrcDriver.die(self)
+        drivers.ServersMixin.die(self)
 
     def _reallyDie(self):
         if self.conn is not None:
@@ -382,7 +387,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             drivers.log.warning('Could not find cert file %s.' %
                     certfile)
             certfile = None
-        if self.server.force_tls_verification \
+        if self.currentServer.force_tls_verification \
                 and not self.anyCertValidationEnabled():
             verifyCertificates = True
         else:
@@ -395,7 +400,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         try:
             self.conn = utils.net.ssl_wrap_socket(self.conn,
                     logger=drivers.log,
-                    hostname=self.server.hostname,
+                    hostname=self.currentServer.hostname,
                     certfile=certfile,
                     verify=verifyCertificates,
                     trusted_fingerprints=network_config.ssl.serverFingerprints(),

@@ -550,6 +550,32 @@ class StsTestCase(SupyTestCase):
         self.irc.driver.reconnect.assert_called_once_with(
             server=drivers.Server('irc.test', 6697, True))
 
+    def testStsInCleartextConnectionInvalidDuration(self):
+        # "Servers MAY send this key to all clients, but insecurely
+        # connected clients MUST ignore it."
+        self.irc.driver.anyCertValidationEnabled.return_value = False
+        self.irc.driver.ssl = True
+        self.irc.driver.server = drivers.Server('irc.test', 6667, False)
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'sts=duration=foo,port=6697')))
+
+        self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
+        self.irc.driver.reconnect.assert_called_once_with(
+            server=drivers.Server('irc.test', 6697, True))
+
+    def testStsInCleartextConnectionNoDuration(self):
+        # "Servers MAY send this key to all clients, but insecurely
+        # connected clients MUST ignore it."
+        self.irc.driver.anyCertValidationEnabled.return_value = False
+        self.irc.driver.ssl = True
+        self.irc.driver.server = drivers.Server('irc.test', 6667, False)
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'sts=port=6697')))
+
+        self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
+        self.irc.driver.reconnect.assert_called_once_with(
+            server=drivers.Server('irc.test', 6697, True))
+
 class IrcTestCase(SupyTestCase):
     def setUp(self):
         self.irc = irclib.Irc('test')

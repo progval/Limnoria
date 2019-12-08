@@ -32,10 +32,11 @@
 Contains various drivers (network, file, and otherwise) for using IRC objects.
 """
 
+import time
 import socket
 from collections import namedtuple
 
-from .. import conf, ircmsgs, log as supylog, utils
+from .. import conf, ircdb, ircmsgs, ircutils, log as supylog, utils
 from ..utils import minisix
 
 
@@ -73,6 +74,7 @@ class IrcDriver(object):
 
 class ServersMixin(object):
     def __init__(self, irc, servers=()):
+        self.networkName = irc.network
         self.networkGroup = conf.supybot.networks.get(irc.network)
         self.servers = servers
         super(ServersMixin, self).__init__()
@@ -89,8 +91,36 @@ class ServersMixin(object):
         assert self.servers, 'Servers value for %s is empty.' % \
                              self.networkGroup._name
         server = self.servers.pop(0)
-        self.currentServer = '%s:%s' % (server.hostname, server.port)
-        return server
+        self.currentServer = self._applyStsPolicy(server)
+        return self.currentServer
+
+    def _applyStsPolicy(self, server):
+        network = ircdb.networks.getNetwork(self.networkName)
+        policy = network.stsPolicies.get(server.hostname)
+        lastDisconnect = network.lastDisconnectTimes.get(server.hostname)
+
+        if policy is None or lastDisconnect is None:
+            return server
+
+        # The policy was stored, which means it was received on a secure
+        # connection.
+        policy = ircutils.parseStsPolicy(log, policy, parseDuration=True)
+
+        if lastDisconnect + policy['duration'] < time.time():
+            network.expireStsPolicy(server.hostname)
+            return server
+
+        # Change the port, and force TLS verification, as required by the STS
+        # specification.
+        return Server(server.hostname, policy['port'],
+                      force_tls_verification=True)
+
+    def die(self):
+        self.onDisconnect()
+
+    def onDisconnect(self):
+        network = ircdb.networks.getNetwork(self.networkName)
+        network.addDisconnection(self.currentServer.hostname)
 
 
 def empty():
@@ -138,7 +168,8 @@ def run():
 class Log(object):
     """This is used to have a nice, consistent interface for drivers to use."""
     def connect(self, server):
-        self.info('Connecting to %s.', server)
+        self.info('Connecting to %s:%s.',
+                  server.hostname, server.port)
 
     def connectError(self, server, e):
         if isinstance(e, Exception):
@@ -146,7 +177,8 @@ class Log(object):
                 e = e.args[1]
             else:
                 e = utils.exnToString(e)
-        self.warning('Error connecting to %s: %s', server, e)
+        self.warning('Error connecting to %s:%s: %s',
+                     server.hostname, server.port, e)
 
     def disconnect(self, server, e=None):
         if e:
@@ -156,7 +188,8 @@ class Log(object):
                 e = str(e)
             if not e.endswith('.'):
                 e += '.'
-            self.warning('Disconnect from %s: %s', server, e)
+            self.warning('Disconnect from %s:%s: %s',
+                         server.hostname, server.port, e)
         else:
             self.info('Disconnect from %s.', server)
 

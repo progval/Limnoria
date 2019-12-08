@@ -42,7 +42,7 @@ import multiprocessing
 
 import re
 
-from . import conf, drivers, ircutils, log, registry
+from . import conf, ircutils, log, registry
 from .utils import minisix
 
 startedAt = time.time() # Just in case it doesn't get set later.
@@ -193,6 +193,7 @@ def upkeep():
 
 def makeDriversDie():
     """Kills drivers."""
+    from . import drivers
     log.info('Killing Driver objects.')
     for driver in drivers._drivers.values():
         driver.die()

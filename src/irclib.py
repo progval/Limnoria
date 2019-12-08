@@ -1470,19 +1470,16 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.capUpkeep()
 
     def _onCapSts(self, policy):
-        parsed_policy = ircutils._parseStsPolicy(log, policy)
+        secure_connection = self.driver.ssl and self.driver.anyCertValidationEnabled()
+
+        parsed_policy = ircutils.parseStsPolicy(
+            log, policy, parseDuration=secure_connection)
         if parsed_policy is None:
             # There was an error (and it was logged). Abort the connection.
             self.driver.reconnect()
             return
 
-        if not self.driver.ssl or not self.driver.anyCertValidationEnabled():
-            hostname = self.driver.server.hostname
-            # Reconnect to the server, but with TLS *and* certificate
-            # validation this time.
-            self.driver.reconnect(
-                server=Server(hostname, parsed_policy['port'], True))
-        else:
+        if secure_connection:
             # TLS is enabled and certificate is verified; write the STS policy
             # in stone.
             # For future-proofing (because we don't want to write an invalid
@@ -1490,6 +1487,12 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             # of the parsed one.
             ircdb.networks.getNetwork(self.network).addStsPolicy(
                 self.driver.server.hostname, policy)
+        else:
+            hostname = self.driver.server.hostname
+            # Reconnect to the server, but with TLS *and* certificate
+            # validation this time.
+            self.driver.reconnect(
+                server=Server(hostname, parsed_policy['port'], True))
 
     def _addCapabilities(self, capstring):
         for item in capstring.split():

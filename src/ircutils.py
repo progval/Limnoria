@@ -931,7 +931,7 @@ class AuthenticateDecoder(object):
         return base64.b64decode(b''.join(self.chunks))
 
 
-def _parseStsPolicy(logger, policy):
+def parseStsPolicy(logger, policy, parseDuration):
     parsed_policy = {}
     for kv in policy.split(','):
         if '=' in kv:
@@ -941,6 +941,10 @@ def _parseStsPolicy(logger, policy):
             parsed_policy[kv] = None
 
     for key in ('port', 'duration'):
+        if key == 'duration' and not parseDuration:
+            if key in parsed_policy:
+                del parsed_policy[key]
+            continue
         if parsed_policy.get(key) is None:
             logger.error('Missing or empty "%s" key in STS policy.'
                          'Aborting connection.', key)

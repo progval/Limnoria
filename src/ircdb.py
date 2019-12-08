@@ -515,6 +515,10 @@ class IrcNetwork(object):
         assert isinstance(stsPolicy, str)
         self.stsPolicies[server] = stsPolicy
 
+    def expireStsPolicy(self, server):
+        if server in self.stsPolicies:
+            del self.stsPolicies[server]
+
     def addDisconnection(self, server):
         self.lastDisconnectTimes[server] = int(time.time())
 
@@ -674,8 +678,8 @@ class IrcNetworkCreator(Creator):
 
     def finish(self):
         if self.net.name:
-            self.networks.setNetwork(self.net)
-            self.name = None
+            self.networks.setNetwork(self.net.name, self.net)
+            self.net = IrcNetwork()
 
 
 class DuplicateHostmask(ValueError):
