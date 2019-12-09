@@ -199,7 +199,7 @@ class Group(object):
     """A group; it doesn't hold a value unless handled by a subclass."""
     __slots__ = ('_help', '_name', '_added', '_children', '_lastModified',
             '_private', '_supplyDefault', '_orderAlphabetically', '_wasSet')
-    def __init__(self, help='', supplyDefault=False,
+    def __init__(self, help='',
                  orderAlphabetically=True, private=False):
         self._help = utils.str.normalizeWhitespace(help)
         self._name = 'unset'
@@ -207,7 +207,7 @@ class Group(object):
         self._children = utils.InsensitivePreservingDict()
         self._lastModified = 0
         self._private = private
-        self._supplyDefault = supplyDefault
+        self._supplyDefault = False  # It should only be true for Value
         self._orderAlphabetically = orderAlphabetically
         self._wasSet = True
 
@@ -219,13 +219,8 @@ class Group(object):
         raise NonExistentRegistryEntry(s)
 
     def _makeChild(self, attr, s):
-        v = self.__class__(self._default, self._help)
-        v.set(s)
-        v._wasSet = False
-        v._supplyDefault = False
-        v._help = '' # Clear this so it doesn't print a bazillion times.
-        self.register(attr, v)
-        return v
+        raise NotImplementedError(
+            'Group does not implement _makeChild; only Value does.')
 
     def __hasattr__(self, attr):
         return attr in self._children
