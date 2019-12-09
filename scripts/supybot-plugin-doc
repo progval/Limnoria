@@ -146,10 +146,12 @@ class PluginDoc(object):
             self.appendLine('No configuration for this plugin')
         else:
             for confValues in self.genConfig(confs, 0):
-                (name, isChan, help, default, indent) = confValues
+                (name, isChan, isNet, help, default, indent) = confValues
                 self.appendLine('%s' % name, indent - 1)
-                self.appendLine('This config variable defaults to %s and %s '
-                                'channel specific.' % (default,isChan), indent)
+                self.appendLine(
+                    ('This config variable defaults to %s, '
+                     'is%s network-specific, and is %s channel-specific.')
+                    % (default, isNet, isChan), indent)
                 self.lines.append('')
                 self.appendLine(help, indent)
                 self.lines.append('')
@@ -194,10 +196,12 @@ class PluginDoc(object):
             self.appendLine('No configuration for this plugin', 2)
         else:
             for confValues in self.genConfig(confs, 2):
-                (name, isChan, help, default, indent) = confValues
+                (name, isChan, isNet, help, default, indent) = confValues
                 self.appendLine('* %s' % name, indent - 1)
-                self.appendLine('This config variable defaults to %s and %s '
-                                'channel specific.' % (default,isChan), indent)
+                self.appendLine(
+                    ('This config variable defaults to %s, '
+                     'is%s network-specific, and is %s channel-specific.')
+                    % (default, isNet, isChan), indent)
                 self.appendLine(help, indent)
         return '\n'.join(self.lines) + '\n'
 
@@ -206,22 +210,22 @@ class PluginDoc(object):
         if not confVars:
             return
         for (c, v) in confVars:
+            if not isinstance(v, registry.Value):
+                # Don't log groups
+                continue
             name = v._name
             indent = origindent + 1
             try:
                 default = str(v)
-                if isinstance(v._default, basestring) or v._default is None:
+                if not isinstance(v._default, basestring):
                     default = utils.str.dqrepr(default)
                 help = v.help()
-                channelValue = v.channelValue
             except registry.NonExistentRegistryEntry:
                 pass
             else:
-                if channelValue:
-                    cv = 'is'
-                else:
-                    cv = 'is not'
-                yield (name, cv, help, default, indent)
+                cv = '' if v._channelValue else ' not'
+                nv = '' if v._networkValue else ' not'
+                yield (name, cv, nv, help, default, indent)
             for confValues in self.genConfig(v, indent):
                 yield confValues
 
