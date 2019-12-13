@@ -494,7 +494,7 @@ class Services(callbacks.Plugin):
 
     def doInvite(self, irc, msg):
         if ircutils.strEqual(
-                msg.nick, self.registryValue('ChanServ', etwork=irc.network)):
+                msg.nick, self.registryValue('ChanServ', network=irc.network)):
             channel = msg.args[1]
             on = 'on %s' % irc.network
             networkGroup = conf.supybot.networks.get(irc.network)
