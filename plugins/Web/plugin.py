@@ -157,7 +157,8 @@ class Web(callbacks.PluginRegexp):
                 irc.error(_('That URL raised <' + str(e)) + '>',
                           Raise=True)
             else:
-                self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>', url, str(e))
+                self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>',
+                              url, str(e))
                 return
         try:
             text = text.decode(utils.web.getEncoding(text) or 'utf8',
@@ -193,11 +194,12 @@ class Web(callbacks.PluginRegexp):
                                  'within the first %S.'), size), Raise=True)
         else:
             if len(text) < size:
-                self.log.info('Web plugin TitleSnarfer: URL <%s> appears'
-                              ' to have no HTML title. ', url)
+                self.log.debug('Web plugin TitleSnarfer: URL <%s> appears '
+                               'to have no HTML title. ', url)
             else:
-                self.log.info('Web plugin TitleSnarfer: URL <%s> appears to have no HTML title'
-                              ' within the first %S.', url, size)
+                self.log.debug('Web plugin TitleSnarfer: URL <%s> appears '
+                               'to have no HTML title within the first %S.',
+                               url, size)
 
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
