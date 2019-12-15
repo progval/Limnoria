@@ -229,6 +229,8 @@ class PluginTestCase(SupyTestCase):
         conf.supybot.reply.whenAddressedBy.chars.setValue('@')
         conf.supybot.reply.error.detailed.setValue(True)
         conf.supybot.reply.whenNotCommand.setValue(True)
+        # Choose a random port for tests using the HTTP server
+        conf.supybot.servers.http.port.setValue(0)
         self.myVerbose = world.myVerbose
         def rmFiles(dir):
             for filename in os.listdir(dir):
