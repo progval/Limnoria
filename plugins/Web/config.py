@@ -72,6 +72,10 @@ conf.registerChannelValue(Web, 'nonSnarfingRegexp',
 conf.registerChannelValue(Web, 'checkIgnored',
     registry.Boolean(True, _("""Determines whether the title snarfer checks
     if the author of a message is ignored.""")))
+conf.registerChannelValue(Web, 'requestLanguage',
+    registry.String('', _("""If set, the Accept-Language HTTP header will be set to this
+    value for title requests. Useful for overriding the auto-detected language based on
+    the server's location.""")))
 
 conf.registerGlobalValue(Web, 'urlWhitelist',
     registry.SpaceSeparatedListOfStrings([], """If set, bot will only fetch data

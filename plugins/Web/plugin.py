@@ -146,12 +146,16 @@ class Web(callbacks.PluginRegexp):
     def noIgnore(self, irc, msg):
         return not self.registryValue('checkIgnored', msg.channel, irc.network)
 
-    def getTitle(self, irc, url, raiseErrors):
+    def getTitle(self, irc, url, raiseErrors, msg):
         size = conf.supybot.protocols.http.peekSize()
         timeout = self.registryValue('timeout')
+        headers = dict(utils.web.defaultHeaders)
+        language = self.registryValue('requestLanguage', msg.channel, msg.network)
+        if language:
+            headers['Accept-Language'] = language
         try:
             (target, text) = utils.web.getUrlTargetAndContent(url, size=size,
-                timeout=timeout)
+                timeout=timeout, headers=headers)
         except Exception as e:
             if raiseErrors:
                 irc.error(_('That URL raised <' + str(e)) + '>',
@@ -215,7 +219,7 @@ class Web(callbacks.PluginRegexp):
             if r and r.search(url):
                 self.log.debug('Not titleSnarfing %q.', url)
                 return
-            r = self.getTitle(irc, url, False)
+            r = self.getTitle(irc, url, False, msg)
             if not r:
                 return
             (target, title) = r
@@ -340,7 +344,7 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(url):
             irc.error("This url is not on the whitelist.")
             return
-        r = self.getTitle(irc, url, True)
+        r = self.getTitle(irc, url, True, msg)
         if not r:
             return
         (target, title) = r
