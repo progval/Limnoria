@@ -1123,7 +1123,7 @@ class TestTimeoutQueue(SupyTestCase):
         q.enqueue(3)
         self.assertEqual(len(q), 3)
         self.assertEqual(sum(q), 6)
-        time.sleep(1.1)
+        timeFastForward(1.1)
         self.assertEqual(len(q), 0)
         self.assertEqual(sum(q), 0)
 
@@ -1136,7 +1136,7 @@ class TestTimeoutQueue(SupyTestCase):
         q.enqueue(3)
         self.assertEqual(len(q), 3)
         self.assertEqual(sum(q), 6)
-        time.sleep(1.1)
+        timeFastForward(1.1)
         self.assertEqual(len(q), 0)
         self.assertEqual(sum(q), 0)
 
@@ -1146,7 +1146,7 @@ class TestTimeoutQueue(SupyTestCase):
         self.failUnless(1 in q)
         self.failUnless(1 in q) # For some reason, the second one might fail.
         self.failIf(2 in q)
-        time.sleep(1.1)
+        timeFastForward(1.1)
         self.failIf(1 in q)
 
     def testReset(self):

@@ -53,10 +53,10 @@ class TestSchedule(SupyTestCase):
 
         sched.addEvent(add10, time.time() + 3)
         sched.addEvent(add1, time.time() + 1)
-        time.sleep(1.2)
+        timeFastForward(1.2)
         sched.run()
         self.assertEqual(i[0], 1)
-        time.sleep(1.9)
+        timeFastForward(1.9)
         sched.run()
         self.assertEqual(i[0], 11)
 
@@ -65,7 +65,7 @@ class TestSchedule(SupyTestCase):
         self.assertEqual(i[0], 11)
         sched.removeEvent('test')
         self.assertEqual(i[0], 11)
-        time.sleep(3)
+        timeFastForward(3)
         self.assertEqual(i[0], 11)
 
     def testReschedule(self):
@@ -75,10 +75,10 @@ class TestSchedule(SupyTestCase):
             i[0] += 1
         n = sched.addEvent(inc, time.time() + 1)
         sched.rescheduleEvent(n, time.time() + 3)
-        time.sleep(1.2)
+        timeFastForward(1.2)
         sched.run()
         self.assertEqual(i[0], 0)
-        time.sleep(2)
+        timeFastForward(2)
         sched.run()
         self.assertEqual(i[0], 1)
 
@@ -88,20 +88,20 @@ class TestSchedule(SupyTestCase):
         def inc():
             i[0] += 1
         n = sched.addPeriodicEvent(inc, 1, name='test_periodic')
-        time.sleep(0.6)
+        timeFastForward(0.6)
         sched.run() # 0.6
         self.assertEqual(i[0], 1)
-        time.sleep(0.6)
+        timeFastForward(0.6)
         sched.run() # 1.2
         self.assertEqual(i[0], 2)
-        time.sleep(0.6)
+        timeFastForward(0.6)
         sched.run() # 1.8
         self.assertEqual(i[0], 2)
-        time.sleep(0.6)
+        timeFastForward(0.6)
         sched.run() # 2.4
         self.assertEqual(i[0], 3)
         sched.removePeriodicEvent(n)
-        time.sleep(1)
+        timeFastForward(1)
         sched.run() # 3.4
         self.assertEqual(i[0], 3)
 
@@ -111,19 +111,19 @@ class TestSchedule(SupyTestCase):
         def inc():
             i[0] += 1
         n = sched.addPeriodicEvent(inc, 1, name='test_periodic', count=3)
-        time.sleep(0.6)
+        timeFastForward(0.6)
         sched.run() # 0.6
         self.assertEqual(i[0], 1)
-        time.sleep(0.6)
+        timeFastForward(0.6)
         sched.run() # 1.2
         self.assertEqual(i[0], 2)
-        time.sleep(0.6)
+        timeFastForward(0.6)
         sched.run() # 1.8
         self.assertEqual(i[0], 2)
-        time.sleep(0.6)
+        timeFastForward(0.6)
         sched.run() # 2.4
         self.assertEqual(i[0], 3)
-        time.sleep(1)
+        timeFastForward(1)
         sched.run() # 3.4
         self.assertEqual(i[0], 3)
 

@@ -248,7 +248,7 @@ class IrcUserTestCase(IrcdbTestCase):
             u = ircdb.IrcUser()
             u.addAuth('foo!bar@baz')
             self.failUnless(u.checkHostmask('foo!bar@baz'))
-            time.sleep(2.1)
+            timeFastForward(2.1)
             self.failIf(u.checkHostmask('foo!bar@baz'))
         finally:
             conf.supybot.databases.users.timeoutIdentification.setValue(orig)
@@ -265,7 +265,7 @@ class IrcUserTestCase(IrcdbTestCase):
             self.failUnless(len(u.auth) == 1)
             u.addAuth('boo!far@fizz')
             self.failUnless(u.checkHostmask('boo!far@fizz'))
-            time.sleep(2.1)
+            timeFastForward(2.1)
             self.failIf(u.checkHostmask('foo!bar@baz'))
             self.failIf(u.checkHostmask('boo!far@fizz'))
         finally:
