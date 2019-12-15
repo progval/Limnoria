@@ -225,7 +225,10 @@ class Web(callbacks.PluginRegexp):
                                               channel, network)
                         else url)
                 prefix = self.registryValue('snarferPrefix', channel, network)
-                s = "%s %s" % (prefix, title)
+                if prefix:
+                    s = "%s %s" % (prefix, title)
+                else:
+                    s = title
                 if self.registryValue('snarferShowDomain', channel, network):
                     s += format(_(' (at %s)'), domain)
                 irc.reply(s, prefixNick=False)
