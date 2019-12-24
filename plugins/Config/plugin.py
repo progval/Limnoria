@@ -181,7 +181,7 @@ class Config(callbacks.Plugin):
         """
         L = self._list(irc, group)
         if L:
-            irc.reply(format('%L', L))
+            irc.reply(format('%L', sorted(L)))
         else:
             irc.error(_('There don\'t seem to be any values in %s.') % 
                       group._name)
