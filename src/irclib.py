@@ -36,9 +36,16 @@ import textwrap
 import collections
 
 try:
-    import ecdsa
+    class crypto:
+        import cryptography
+        from cryptography.hazmat.primitives.serialization \
+            import load_pem_private_key
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives.asymmetric.ec import ECDSA
+        from cryptography.hazmat.primitives.asymmetric.utils import Prehashed
+        from cryptography.hazmat.primitives.hashes import SHA256
 except ImportError:
-    ecdsa = None
+    crypto = None
 
 try:
     import pyxmpp2_scram as scram
@@ -1042,7 +1049,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
         for mechanism in network_config.sasl.mechanisms():
             if mechanism == 'ecdsa-nist256p-challenge' and \
-                    ecdsa and self.sasl_username and self.sasl_ecdsa_key:
+                    crypto and self.sasl_username and \
+                    self.sasl_ecdsa_key:
                 self.sasl_next_mechanisms.append(mechanism)
             elif mechanism == 'external' and (
                     network_config.certfile() or
@@ -1171,12 +1179,15 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         if string == b'':
             self.sendSaslString(self.sasl_username.encode('utf-8'))
             return
+
         try:
-            with open(self.sasl_ecdsa_key) as fd:
-                private_key = ecdsa.SigningKey.from_pem(fd.read())
-            authstring = private_key.sign(string)
+            with open(self.sasl_ecdsa_key, 'rb') as fd:
+                private_key = crypto.load_pem_private_key(
+                    fd.read(),password=None, backend=crypto.default_backend())
+            authstring = private_key.sign(
+                string, crypto.ECDSA(crypto.Prehashed(crypto.SHA256())))
             self.sendSaslString(authstring)
-        except (ecdsa.BadDigestError, OSError, ValueError):
+        except (OSError, ValueError):
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
                 args=('*',)))
             self.tryNextSaslMechanism()

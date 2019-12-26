@@ -6,4 +6,4 @@ feedparser
 sqlalchemy
 PySocks
 mock
-ecdsa
+cryptography
