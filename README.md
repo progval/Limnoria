@@ -27,8 +27,9 @@ Limnoria.
 TL;DR version:
 
 ```
-sudo apt-get install python3 python3-pip
+sudo apt-get install python3 python3-pip python3-wheel
 pip3 install --user limnoria
+# You might need to add $HOME/.local/bin to your PATH
 supybot-wizard
 ```
 
