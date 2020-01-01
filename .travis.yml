@@ -2,7 +2,7 @@ language: python
 sudo: true
 install:
   - if [ "$WITH_OPT_DEPS" = "true" ] ; then pip install -vr requirements.txt; fi
-  - if [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then pip install -v git+https://github.com/ProgVal/irctest.git; fi
+  - pip install -v git+https://github.com/ProgVal/irctest.git
   - echo "y" | pip uninstall limnoria || true
 # command to run tests, e.g. python setup.py test
 script:
@@ -14,24 +14,6 @@ notifications:
     email: false
 matrix:
   include:
-    - python: "2.6"
-      env: WITH_OPT_DEPS=false
-      dist: trusty
-    - python: "2.7"
-      env: WITH_OPT_DEPS=false
-      dist: trusty
-    - python: "2.7"
-      env: WITH_OPT_DEPS=true
-      dist: trusty
-    - python: "3.2"
-      env: WITH_OPT_DEPS=false
-      dist: trusty
-    - python: "3.2"
-      env: WITH_OPT_DEPS=true
-      dist: trusty
-    - python: "3.3"
-      env: WITH_OPT_DEPS=true
-      dist: trusty
     - python: "3.4"
       env: WITH_OPT_DEPS=true
       dist: trusty
@@ -55,10 +37,7 @@ matrix:
       env: WITH_OPT_DEPS=true
       dist: xenial
 
-    - python: "pypy"
-      env: WITH_OPT_DEPS=true
-      dist: trusty
-    - python: "pypy3.3-5.2-alpha1"
+    - python: "pypy3"
       env: WITH_OPT_DEPS=true
       dist: trusty
     - python: "pypy3"

@@ -81,8 +81,8 @@ if version:
     fd.write('    pass\n')
     fd.close()
 
-if sys.version_info < (2, 6, 0):
-    sys.stderr.write("Supybot requires Python 2.6 or newer.")
+if sys.version_info < (3, 4, 0):
+    sys.stderr.write("Limnoria requires Python 3.4 or newer.")
     sys.stderr.write(os.linesep)
     sys.exit(-1)
 
@@ -206,13 +206,10 @@ setup(
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
         'Operating System :: Microsoft :: Windows',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Communications :: Chat :: Internet Relay Chat',
         'Topic :: Software Development :: Libraries :: Python Modules',
         ],
