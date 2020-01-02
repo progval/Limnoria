@@ -8,7 +8,7 @@ install:
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - python setup.py install
-  - supybot-test test -v --plugins-dir=./plugins/ --no-network --disable-multiprocessing
+  - supybot-test test -v --plugins-dir=./plugins/ --no-network
   - if [ "$WITH_OPT_DEPS" = "true" ] -a [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then python -m irctest irctest.controllers.limnoria; fi
 notifications:
     email: false
