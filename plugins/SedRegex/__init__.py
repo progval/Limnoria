@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2015, Michael Daniel Telatynski <postmaster@webdevguru.co.uk>
-# Copyright (c) 2015-2016, James Lu <glolol@overdrivenetworks.com>
+# Copyright (c) 2015-2020, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,21 +36,20 @@ History replacer using sed-style expressions.
 import supybot
 import supybot.world as world
 
-__version__ = "2016.02.28.1+git"
+__version__ = supybot.version.version
 __author__ = supybot.Author("Michael Daniel Telatynski", "t3chguy", "postmaster@webdevguru.co.uk")
-__contributors__ = {supybot.Author("James Lu", "GLolol", "glolol@overdrivenetworks.com"):
+__contributors__ = {supybot.authors.jlu:
                     	["options bolding the replacement text", "misc. bug fixes and enhancements"],
                     supybot.Author('nyuszika7h', 'nyuszika7h', 'nyuszika7h@openmailbox.org'):
                     	["_unpack_sed method within plugin.py"]
                    }
-__maintainer__ = getattr(supybot.authors, 'jlu',
-                         supybot.Author('James Lu', 'GLolol', 'james@overdrivenetworks.com'))
+__maintainer__ = supybot.authors.limnoria_core
 
-__url__ = 'https://github.com/jlu5/SupyPlugins'
+__url__ = 'https://github.com/ProgVal/Limnoria/tree/master/plugins/SedRegex'
 
 from . import config
 from . import plugin
-from imp import reload
+from importlib import reload
 
 reload(config)
 reload(plugin)
