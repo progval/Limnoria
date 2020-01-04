@@ -51,7 +51,7 @@ conf.registerGlobalValue(Owner, 'announceFormat',
     $owner may be used for the username of the owner calling this command,
     and $text for the announcement being made."""))
 conf.registerGlobalValue(Owner, 'quitMsg',
-    registry.String('$version', """Determines what quit message will be used by default.
+    registry.String('Limnoria $version', """Determines what quit message will be used by default.
     If the quit command is called without a quit message, this will be used.  If
     this value is empty, the nick of the person giving the quit command will be
     used.  The standard substitutions ($version, $nick, etc.) are all handled
