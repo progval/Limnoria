@@ -42,16 +42,13 @@ import sys
 import atexit
 import shutil
 import signal
-if sys.version_info[0] < 3:
-    import cStringIO as StringIO
-    StringIO = StringIO.StringIO
-else:
-    from io import StringIO
 
 if sys.version_info < (3, 4, 0):
     sys.stderr.write('This program requires Python 3.4 or later.')
     sys.stderr.write(os.linesep)
     sys.exit(-1)
+
+from io import StringIO  # Import this after version check since this will fail on Python 2
 
 def _termHandler(signalNumber, stackFrame):
     raise SystemExit('Signal #%s.' % signalNumber)

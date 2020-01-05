@@ -36,9 +36,6 @@ import shutil
 
 import supybot
 
-if sys.version_info[0] >= 3:
-    basestring = str
-
 def error(s):
     sys.stderr.write('%s\n' % s)
     sys.exit(-1)
@@ -217,7 +214,7 @@ class PluginDoc(object):
             indent = origindent + 1
             try:
                 default = str(v)
-                if not isinstance(v._default, basestring):
+                if not isinstance(v._default, str):
                     default = utils.str.dqrepr(default)
                 help = v.help()
             except registry.NonExistentRegistryEntry:
