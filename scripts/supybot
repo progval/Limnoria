@@ -178,14 +178,14 @@ if __name__ == '__main__':
                       help='Determines whether the bot will allow its '
                            'defaultCapabilities not to include "-owner", thus '
                            'giving all users the owner capability by default. '
-                           ' This is dumb, hence we require a command-line '
-                           'option.  Don\'t do this.')
+                           'This is a security risk since it allows anyone to run '
+                           'any command on your bot, so we advise not to use this.')
     parser.add_option('', '--allow-root', action='store_true',
                       dest='allowRoot',
                       help='Determines whether the bot will be allowed to run '
-                           'as root.  You don\'t want this.  Don\'t do it.  '
-                           'Even if you think you want it, you don\'t.  '
-                           'You\'re probably dumb if you do this.')
+                           'as root. This should not be used except in special '
+                           'circumstances, such as running inside a containerized '
+                           'environment.')
     parser.add_option('', '--debug', action='store_true', dest='debug',
                       help='Determines whether some extra debugging stuff '
                       'will be logged in this script.')
@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
-            sys.stderr.write('Don\'t even try to run this as root.')
+            sys.stderr.write('Running as root is not supported by default (see --allow-root).')
             sys.stderr.write(os.linesep)
             sys.exit(-1)
 

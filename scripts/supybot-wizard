@@ -175,9 +175,9 @@ def main():
     parser.add_option('', '--allow-root', action='store_true',
                       dest='allowRoot',
                       help='Determines whether the wizard will be allowed to '
-                           'run as root.  You don\'t want this.  Don\'t do it.'
-                           '  Even if you think you want it, you don\'t.  '
-                           'You\'re probably dumb if you do this.')
+                           'as root. This should not be used except in special '
+                           'circumstances, such as running inside a containerized '
+                           'environment.')
     parser.add_option('', '--allow-home', action='store_true',
                       dest='allowHome',
                       help='Determines whether the wizard will be allowed to '
@@ -199,7 +199,7 @@ def main():
     (options, args) = parser.parse_args()
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
-            error('Please, don\'t run this as root.')
+            error('Running as root is not supported by default (see --allow-root).')
     if os.name == 'posix':
         if (os.getcwd() == os.path.expanduser('~')) and not options.allowHome:
             error('Please, don\'t run this in your HOME directory.')
