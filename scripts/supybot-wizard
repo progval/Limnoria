@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ###
 # Copyright (c) 2003-2004, Jeremiah Fincher
@@ -41,8 +41,8 @@ def error(s):
         sys.stderr.write(os.linesep)
     sys.exit(-1)
 
-if sys.version_info < (2, 6, 0):
-    error('This program requires Python >= 2.6.0')
+if sys.version_info < (3, 4, 0):
+    error('This program requires Python 3.4 or later.')
 
 import supybot
 

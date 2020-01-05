@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ###
 # Copyright (c) 2003-2004, Jeremiah Fincher
@@ -48,8 +48,8 @@ if sys.version_info[0] < 3:
 else:
     from io import StringIO
 
-if sys.version_info < (2, 6, 0):
-    sys.stderr.write('This program requires Python >= 2.6.0')
+if sys.version_info < (3, 4, 0):
+    sys.stderr.write('This program requires Python 3.4 or later.')
     sys.stderr.write(os.linesep)
     sys.exit(-1)
 
