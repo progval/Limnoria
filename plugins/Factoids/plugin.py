@@ -565,7 +565,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             number = self.registryValue('rankListLength', channel, irc.network)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT keys.key, relations.usage_count
+        cursor.execute("""SELECT DISTINCT keys.key, relations.usage_count
                           FROM keys, relations
                           WHERE relations.key_id=keys.id
                           ORDER BY relations.usage_count DESC
