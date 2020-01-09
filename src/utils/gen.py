@@ -37,7 +37,7 @@ import textwrap
 import warnings
 import functools
 import traceback
-import collections
+import collections.abc
 
 
 from . import crypt
@@ -254,7 +254,7 @@ class IterableMap(object):
     __nonzero__ = __bool__
 
 
-class InsensitivePreservingDict(collections.MutableMapping):
+class InsensitivePreservingDict(collections.abc.MutableMapping):
     def key(self, s):
         """Override this if you wish."""
         if s is not None:

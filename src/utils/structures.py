@@ -32,7 +32,7 @@ Data structures for Python.
 """
 
 import time
-import collections
+import collections.abc
 
 
 class RingBuffer(object):
@@ -427,7 +427,7 @@ class MultiSet(object):
         return elt in self.d
 
 
-class CacheDict(collections.MutableMapping):
+class CacheDict(collections.abc.MutableMapping):
     __slots__ = ('d', 'max')
     def __init__(self, max, **kwargs):
         self.d = dict(**kwargs)
@@ -456,7 +456,7 @@ class CacheDict(collections.MutableMapping):
     def __len__(self):
         return len(self.d)
 
-class TruncatableSet(collections.MutableSet):
+class TruncatableSet(collections.abc.MutableSet):
     """A set that keeps track of the order of inserted elements so
     the oldest can be removed."""
     __slots__ = ('_ordered_items', '_items')

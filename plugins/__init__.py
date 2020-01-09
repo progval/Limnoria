@@ -36,7 +36,7 @@ import codecs
 import fnmatch
 import os.path
 import threading
-import collections
+import collections.abc
 
 from .. import callbacks, conf, dbi, ircdb, ircutils, log, utils, world
 from ..commands import *
@@ -174,7 +174,7 @@ class DbiChannelDB(object):
         return _getDbAndDispatcher
 
 
-class ChannelUserDictionary(collections.MutableMapping):
+class ChannelUserDictionary(collections.abc.MutableMapping):
     IdDict = dict
     def __init__(self):
         self.channels = ircutils.IrcDict()
