@@ -1188,7 +1188,7 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         bhost = '*'
         if not options:
             options = supybot.protocols.irc.banmask.getSpecific(
-                channel, network)()
+                network, channel)()
         for option in options:
             if option == 'nick':
                 bnick = nick

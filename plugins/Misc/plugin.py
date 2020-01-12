@@ -155,7 +155,7 @@ class Misc(callbacks.Plugin):
                 return
         # Now, for normal handling.
         if conf.supybot.reply.whenNotCommand.getSpecific(
-                channel, irc.network)():
+                irc.network, channel)():
             if len(tokens) >= 2:
                 cb = irc.getCallback(tokens[0])
                 if cb:
@@ -179,7 +179,7 @@ class Misc(callbacks.Plugin):
                     if channel != irc.nick else _('private'))
             if irc.nested:
                 bracketConfig = conf.supybot.commands.nested.brackets
-                brackets = bracketConfig.getSpecific(channel, irc.network)()
+                brackets = bracketConfig.getSpecific(irc.network, channel)()
                 if brackets:
                     (left, right) = brackets
                     irc.reply(left + ' '.join(tokens) + right)
