@@ -1299,6 +1299,23 @@ registerGlobalValue(supybot.protocols.http, 'proxy',
     through.  The value should be of the form 'host:port'.""")))
 utils.web.proxy = supybot.protocols.http.proxy
 
+class HttpRequestLanguage(registry.String):
+    """Must be a valid HTTP Accept-Language value."""
+    __slots__ = ()
+    def setValue(self, v):
+        headers = utils.web.defaultHeaders
+        lkey = 'Accept-Language'
+        if v:
+            headers[lkey] = v
+        elif lkey in headers:
+            del headers[lkey]
+        super(HttpRequestLanguage, self).setValue(v)
+
+registerChannelValue(supybot.protocols.http, 'requestLanguage',
+    HttpRequestLanguage('', _("""If set, the Accept-Language HTTP header will be set to this
+    value for requests. Useful for overriding the auto-detected language based on
+    the server's location.""")))
+
 ###
 # supybot.protocols.ssl
 ###
