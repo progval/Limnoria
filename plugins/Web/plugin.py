@@ -149,14 +149,7 @@ class Web(callbacks.PluginRegexp):
     def getTitle(self, irc, url, raiseErrors, msg):
         size = conf.supybot.protocols.http.peekSize()
         timeout = self.registryValue('timeout')
-        headers = dict(utils.web.defaultHeaders)
-        language = conf.supybot.protocols.http.requestLanguage.getSpecific(
-                irc.network, msg.channel)()
-        lkey = 'Accept-Language'
-        if language:
-            headers[lkey] = language
-        elif lkey in headers:
-            del headers[lkey]
+        headers = conf.defaultHttpHeaders(irc.network, msg.channel)
         try:
             (target, text) = utils.web.getUrlTargetAndContent(url, size=size,
                 timeout=timeout, headers=headers)

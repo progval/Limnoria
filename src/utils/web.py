@@ -115,9 +115,13 @@ def strError(e):
     else:
         return str(e)
 
-defaultHeaders = {
+# Used to build defaultHeaders
+baseDefaultHeaders = {
     'User-agent': 'Mozilla/5.0 (compatible; utils.web python module)'
     }
+
+# overridable by other modules/plugins.
+defaultHeaders = baseDefaultHeaders.copy()
 
 # Other modules should feel free to replace this with an appropriate
 # application-specific function.  Feel free to use a callable here.
