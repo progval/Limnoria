@@ -1318,13 +1318,14 @@ class HttpRequestLanguage(registry.String):
     """Must be a valid HTTP Accept-Language value."""
     __slots__ = ()
     def setValue(self, v):
-        utils.web.defaultHeaders = defaultHttpHeaders(None, None)
         super(HttpRequestLanguage, self).setValue(v)
+        utils.web.defaultHeaders = defaultHttpHeaders(None, None)
 
 registerChannelValue(supybot.protocols.http, 'requestLanguage',
     HttpRequestLanguage('', _("""If set, the Accept-Language HTTP header will be set to this
     value for requests. Useful for overriding the auto-detected language based on
     the server's location.""")))
+
 
 ###
 # supybot.protocols.ssl
