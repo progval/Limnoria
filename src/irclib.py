@@ -1143,7 +1143,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
         mechanism = self.sasl_current_mechanism
         if mechanism == 'ecdsa-nist256p-challenge':
-            self.doAuthenticateEcdsa(string)
+            self._doAuthenticateEcdsa(string)
         elif mechanism == 'external':
             self.sendSaslString(b'')
         elif mechanism.startswith('scram-'):
@@ -1152,15 +1152,15 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 if step == 'uninitialized':
                     log.debug('%s: starting SCRAM.',
                             self.network)
-                    self.doAuthenticateScramFirst(mechanism)
+                    self._doAuthenticateScramFirst(mechanism)
                 elif step == 'first-sent':
                     log.debug('%s: received SCRAM challenge.',
                             self.network)
-                    self.doAuthenticateScramChallenge(string)
+                    self._doAuthenticateScramChallenge(string)
                 elif step == 'final-sent':
                     log.debug('%s: finishing SCRAM.',
                             self.network)
-                    self.doAuthenticateScramFinish(string)
+                    self._doAuthenticateScramFinish(string)
                 else:
                     assert False
             except scram.ScramException:
@@ -1175,7 +1175,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             ])
             self.sendSaslString(authstring)
 
-    def doAuthenticateEcdsa(self, string):
+    def _doAuthenticateEcdsa(self, string):
         if string == b'':
             self.sendSaslString(self.sasl_username.encode('utf-8'))
             return
@@ -1192,7 +1192,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 args=('*',)))
             self.tryNextSaslMechanism()
 
-    def doAuthenticateScramFirst(self, mechanism):
+    def _doAuthenticateScramFirst(self, mechanism):
         """Handle sending the client-first message of SCRAM auth."""
         hash_name = mechanism[len('scram-'):]
         if hash_name.endswith('-plus'):
@@ -1213,13 +1213,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.sendSaslString(client_first)
         self.sasl_scram_state['step'] = 'first-sent'
 
-    def doAuthenticateScramChallenge(self, challenge):
+    def _doAuthenticateScramChallenge(self, challenge):
         client_final = self.sasl_scram_state['authenticator'] \
                 .challenge(challenge)
         self.sendSaslString(client_final)
         self.sasl_scram_state['step'] = 'final-sent'
 
-    def doAuthenticateScramFinish(self, data):
+    def _doAuthenticateScramFinish(self, data):
         try:
             res = self.sasl_scram_state['authenticator'] \
                     .finish(data)
