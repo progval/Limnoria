@@ -37,6 +37,7 @@ from __future__ import division
 import os
 import time
 import errno
+import threading
 import select
 import socket
 import sys
@@ -62,7 +63,7 @@ except:
 
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     _instances = []
-    _selecting = [False] # We want it to be mutable.
+    _selecting = threading.Lock()
     def __init__(self, irc):
         self._instances.append(self)
         assert irc is not None
@@ -147,10 +148,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     @classmethod
     def _select(cls):
-        if cls._selecting[0]:
-            return
         try:
-            cls._selecting[0] = True
+            if not cls._selecting.acquire(blocking=False):
+                # there's already a thread running this code, abort.
+                return
             for inst in cls._instances:
                 # Do not use a list comprehension here, we have to edit the list
                 # and not to reassign it.
@@ -173,7 +174,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 # 'Interrupted system call'
                 raise
         finally:
-            cls._selecting[0] = False
+            cls._selecting.release()
         for instance in cls._instances:
             if instance.irc and not instance.irc.zombie:
                 instance._sendIfMsgs()
