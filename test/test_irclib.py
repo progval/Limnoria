@@ -31,6 +31,7 @@ from supybot.test import *
 
 import copy
 import pickle
+import warnings
 
 import supybot.conf as conf
 import supybot.irclib as irclib
@@ -41,6 +42,92 @@ import supybot.ircutils as ircutils
 # messages to as we find bugs (if indeed we find bugs).
 msgs = []
 rawmsgs = []
+
+
+class IrcCommandDispatcherTestCase(SupyTestCase):
+    class DispatchedClass(irclib.IrcCommandDispatcher):
+        def doPrivmsg():
+            pass
+        def doCap():
+            pass
+        def doFail():
+            pass
+
+    class DispatchedClassSub(irclib.IrcCommandDispatcher):
+        def doPrivmsg():
+            pass
+        def doPrivmsgFoo():
+            pass
+        def doCapLs():
+            pass
+        def doFailFoo():
+            pass
+
+    def testCommandDispatch(self):
+        dispatcher = self.DispatchedClass()
+        self.assertEqual(
+            dispatcher.dispatchCommand('privmsg', ['foo']),
+            dispatcher.doPrivmsg)
+        self.assertEqual(
+            dispatcher.dispatchCommand('cap', ['*', 'ls']),
+            dispatcher.doCap)
+        self.assertEqual(
+            dispatcher.dispatchCommand('fail', ['foo', 'bar']),
+            dispatcher.doFail)
+        self.assertEqual(
+            dispatcher.dispatchCommand('foobar', ['*', 'ls']),
+            None)
+
+    def testSubCommandDispatch(self):
+        dispatcher = self.DispatchedClassSub()
+        self.assertEqual(
+            dispatcher.dispatchCommand('privmsg', ['foo']),
+            dispatcher.doPrivmsg)
+        self.assertEqual(
+            dispatcher.dispatchCommand('cap', ['*', 'ls']),
+            dispatcher.doCapLs)
+        self.assertEqual(
+            dispatcher.dispatchCommand('fail', ['foo', 'bar']),
+            dispatcher.doFailFoo)
+        self.assertEqual(
+            dispatcher.dispatchCommand('foobar', ['*', 'ls']),
+            None)
+
+    def testCommandDispatchMissingArgs(self):
+        dispatcher = self.DispatchedClass()
+        self.assertEqual(
+            dispatcher.dispatchCommand('privmsg', ['foo']),
+            dispatcher.doPrivmsg)
+        self.assertEqual(
+            dispatcher.dispatchCommand('cap', ['*']),
+            dispatcher.doCap)
+        self.assertEqual(
+            dispatcher.dispatchCommand('fail', []),
+            dispatcher.doFail)
+        self.assertEqual(
+            dispatcher.dispatchCommand('foobar', ['*']),
+            None)
+
+    def testCommandDispatchLegacy(self):
+        """Tests the legacy parameters of dispatchCommand, without the "args"
+        argument."""
+        dispatcher = self.DispatchedClass()
+        with self.assertWarnsRegex(DeprecationWarning, "'args'"):
+            self.assertEqual(
+                dispatcher.dispatchCommand('privmsg'),
+                dispatcher.doPrivmsg)
+        with self.assertWarnsRegex(DeprecationWarning, "'args'"):
+            self.assertEqual(
+                dispatcher.dispatchCommand('cap'),
+                dispatcher.doCap)
+        with self.assertWarnsRegex(DeprecationWarning, "'args'"):
+            self.assertEqual(
+                dispatcher.dispatchCommand('fail'),
+                dispatcher.doFail)
+        with self.assertWarnsRegex(DeprecationWarning, "'args'"):
+            self.assertEqual(
+                dispatcher.dispatchCommand('foobar'),
+                None)
 
 class IrcMsgQueueTestCase(SupyTestCase):
     mode = ircmsgs.op('#foo', 'jemfinch')

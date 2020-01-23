@@ -72,7 +72,7 @@ class ChannelStat(irclib.IrcCommandDispatcher):
 
     def addMsg(self, msg):
         self.msgs += 1
-        method = self.dispatchCommand(msg.command)
+        method = self.dispatchCommand(msg.command, msg.args)
         if method is not None:
             method(msg)
 

@@ -33,6 +33,7 @@ import time
 import random
 import base64
 import textwrap
+import warnings
 import collections
 
 try:
@@ -70,9 +71,39 @@ MAX_LINE_SIZE = 512 # Including \r\n
 
 class IrcCommandDispatcher(object):
     """Base class for classes that must dispatch on a command."""
-    def dispatchCommand(self, command):
+
+    def dispatchCommand(self, command, args=None):
         """Given a string 'command', dispatches to doCommand."""
-        return getattr(self, 'do' + command.capitalize(), None)
+        if args is None:
+            warnings.warn(
+                "dispatchCommand now takes an 'args' attribute, which is "
+                "a list of the command's arguments (ie. IrcMsg.args).",
+                DeprecationWarning)
+            args = []
+
+        command = command.upper()
+        subcommand = None
+        method = None
+
+        # Dispatch on command + subcommand, if there is a subcommand, and
+        # a method with the matching name exists
+        if command in ('FAIL', 'WARN', 'NOTE') and len(args) >= 1:
+            subcommand = args[0]
+        elif command in ('CAP',) and len(args) >= 2:
+            # Note: this only covers the server-to-client format
+            subcommand = args[1]
+
+        command = command.capitalize()
+
+        if subcommand is not None:
+            subcommand = subcommand.capitalize()
+            method = getattr(self, 'do' + command + subcommand, None)
+
+        # If not dispatched on command + subcommand, then dispatch on command
+        if method is None:
+            method = getattr(self, 'do' + command, None)
+
+        return method
 
 
 class IrcCallback(IrcCommandDispatcher, log.Firewalled):
@@ -141,7 +172,7 @@ class IrcCallback(IrcCommandDispatcher, log.Firewalled):
 
     def __call__(self, irc, msg):
         """Used for handling each message."""
-        method = self.dispatchCommand(msg.command)
+        method = self.dispatchCommand(msg.command, msg.args)
         if method is not None:
             method(irc, msg)
 
@@ -429,7 +460,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             assert batch in self.batches, \
                     'Server references undeclared batch %s' % batch
             self.batches[batch].messages.append(msg)
-        method = self.dispatchCommand(msg.command)
+        method = self.dispatchCommand(msg.command, msg.args)
         if method is not None:
             method(irc, msg)
 
@@ -944,7 +975,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 log.debug('Updating server attribute to %s.', self.server)
 
         # Dispatch to specific handlers for commands.
-        method = self.dispatchCommand(msg.command)
+        method = self.dispatchCommand(msg.command, msg.args)
         if method is not None:
             method(msg)
         elif self._numericErrorCommandRe.search(msg.command):
@@ -1260,18 +1291,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                  self.network, msg.args[1])
         self.filterSaslMechanisms(set(msg.args[1].split(',')))
 
-    def doCap(self, msg):
-        subcommand = msg.args[1]
-        if subcommand == 'ACK':
-            self.doCapAck(msg)
-        elif subcommand == 'NAK':
-            self.doCapNak(msg)
-        elif subcommand == 'LS':
-            self.doCapLs(msg)
-        elif subcommand == 'DEL':
-            self.doCapDel(msg)
-        elif subcommand == 'NEW':
-            self.doCapNew(msg)
     def doCapAck(self, msg):
         if len(msg.args) != 3:
             log.warning('Bad CAP ACK from server: %r', msg)
