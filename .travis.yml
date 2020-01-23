@@ -43,3 +43,8 @@ matrix:
     - python: "pypy3"
       env: WITH_OPT_DEPS=true
       dist: xenial
+
+    allow_failures:
+    - python: "nightly"
+      env: WITH_OPT_DEPS=true
+      dist: xenial
