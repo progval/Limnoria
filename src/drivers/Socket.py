@@ -65,7 +65,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     _instances = []
     _selecting = threading.Lock()
     def __init__(self, irc):
-        self._instances.append(self)
         assert irc is not None
         self.irc = irc
         drivers.IrcDriver.__init__(self, irc)
