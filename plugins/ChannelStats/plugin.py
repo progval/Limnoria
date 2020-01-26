@@ -44,6 +44,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+from supybot.utils.math_evaluator import safe_eval, InvalidNode
 
 _ = PluginInternationalization('ChannelStats')
 
@@ -292,15 +293,6 @@ class ChannelStats(callbacks.Plugin):
                              name, channel))
     stats = wrap(stats, ['channeldb', additional('something')])
 
-    _calc_match_forbidden_chars = re.compile('[_\[\]]')
-    _env = {'__builtins__': types.ModuleType('__builtins__')}
-    _env.update(math.__dict__)
-    def _factorial(x):
-        if x<=10000:
-            return math.factorial(x)
-        else:
-            raise Exception('factorial argument too large')
-    _env['factorial'] = _factorial
     @internationalizeDocstring
     def rank(self, irc, msg, args, channel, expr):
         """[<channel>] <stat expression>
@@ -314,30 +306,26 @@ class ChannelStats(callbacks.Plugin):
         if msg.nick not in irc.state.channels[channel].users:
             irc.error(format('You must be in %s to use this command.', channel))
             return
-        # XXX I could do this the right way, and abstract out a safe eval,
-        #     or I could just copy/paste from the Math plugin.
-        if self._calc_match_forbidden_chars.match(expr):
-            irc.error(_('There\'s really no reason why you should have '
-                      'underscores or brackets in your mathematical '
-                      'expression.  Please remove them.'), Raise=True)
-        if 'lambda' in expr:
-            irc.error(_('You can\'t use lambda in this command.'), Raise=True)
         expr = expr.lower()
         users = []
         for ((c, id), stats) in self.db.items():
             if ircutils.strEqual(c, channel) and \
                (id == 0 or ircdb.users.hasUser(id)):
-                e = self._env.copy()
+                e = {}
                 for attr in stats._values:
                     e[attr] = float(getattr(stats, attr))
                 try:
-                    v = eval(expr, e, e)
+                    v = safe_eval(expr, allow_ints=True, variables=e)
                 except ZeroDivisionError:
                     v = float('inf')
                 except NameError as e:
-                    irc.errorInvalid(_('stat variable'), str(e).split()[1])
+                    irc.errorInvalid(_('stat variable'), str(e))
+                except InvalidNode as e:
+                    irc.error(_('Invalid syntax: %s') % e.args[0], Raise=True)
                 except Exception as e:
                     irc.error(utils.exnToString(e), Raise=True)
+                else:
+                    v = float(v)
                 if id == 0:
                     users.append((v, irc.nick))
                 else:

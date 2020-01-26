@@ -27,6 +27,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""A safe evaluator for math expressions using Python syntax.
+Unlike eval(), it can be run on untrusted input.
+"""
+
 import ast
 import math
 import cmath
@@ -122,9 +126,12 @@ UNSAFE_ENV.update(filter_module(math, 'ceil floor factorial gcd'.split()))
 # It would be nice if ast.literal_eval used a visitor so we could subclass
 # to extend it, but it doesn't, so let's reimplement it entirely.
 class SafeEvalVisitor(ast.NodeVisitor):
-    def __init__(self, allow_ints):
+    def __init__(self, allow_ints, variables=None):
         self._allow_ints = allow_ints
         self._env = UNSAFE_ENV if allow_ints else SAFE_ENV
+        if variables:
+            self._env = self._env.copy()
+            self._env.update(variables)
 
     def _convert_num(self, x):
         """Converts numbers to complex if ints are not allowed."""
@@ -178,6 +185,6 @@ class SafeEvalVisitor(ast.NodeVisitor):
     def generic_visit(self, node):
         raise InvalidNode('illegal construct %s' % node.__class__.__name__)
 
-def safe_eval(text, allow_ints):
+def safe_eval(text, allow_ints, variables=None):
     node = ast.parse(text, mode='eval')
-    return SafeEvalVisitor(allow_ints).visit(node)
+    return SafeEvalVisitor(allow_ints, variables=variables).visit(node)
