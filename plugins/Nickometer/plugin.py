@@ -139,7 +139,7 @@ class Nickometer(callbacks.Plugin):
         nick=re.sub('^C--$', 'C', nick);
 
         # Punish consecutive non-alphas
-        matches=re.findall('[^\w\d]{2,}',nick)
+        matches=re.findall(r'[^\w\d]{2,}',nick)
         for match in matches:
             score += self.punish(slowPow(10, len(match)),
                                     '%s consecutive non-alphas ' % len(match))
@@ -147,9 +147,9 @@ class Nickometer(callbacks.Plugin):
         # Remove balanced brackets ...
         while True:
             nickInitial = nick
-            nick=re.sub('^([^()]*)(\()(.*)(\))([^()]*)$', '\1\3\5', nick, 1)
-            nick=re.sub('^([^{}]*)(\{)(.*)(\})([^{}]*)$', '\1\3\5', nick, 1)
-            nick=re.sub('^([^\[\]]*)(\[)(.*)(\])([^\[\]]*)$', '\1\3\5', nick, 1)
+            nick = re.sub(r'^([^()]*)(\()(.*)(\))([^()]*)$', r'\1\3\5', nick, 1)
+            nick = re.sub(r'^([^{}]*)(\{)(.*)(\})([^{}]*)$', r'\1\3\5', nick, 1)
+            nick = re.sub(r'^([^\[\]]*)(\[)(.*)(\])([^\[\]]*)$', r'\1\3\5', nick, 1)
             if nick == nickInitial:
                 break
             self.log.debug('Removed some matching brackets %r => %r',

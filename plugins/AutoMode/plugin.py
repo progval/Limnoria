@@ -108,7 +108,7 @@ class AutoMode(callbacks.Plugin):
                 user = ircdb.users.getUser(ircdb.users.getUserId(msg.prefix))
             except KeyError:
                 return
-            pattern = re.compile('-|\+')
+            pattern = re.compile(r'-|\+')
             for item in self.registryValue('extra', channel, network):
                 try:
                     username, modes = pattern.split(item, maxsplit=1)
