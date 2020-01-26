@@ -48,13 +48,11 @@ __contributors__ = {}
 from . import config
 from . import plugin
 from importlib import reload
-if version_info[0] >= 3:
-    from importlib import reload
 reload(plugin) # In case we're being reloaded.
 
 if world.testing:
     from . import test
-    
+
 Class = plugin.Class
 configure = config.configure
 
