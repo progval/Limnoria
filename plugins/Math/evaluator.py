@@ -61,11 +61,11 @@ BIN_OPS = {
 MATH_CONSTANTS = 'e inf nan pi tau'.split()
 SAFE_MATH_FUNCTIONS = (
     'acos acosh asin asinh atan atan2 atanh copysign cos cosh degrees erf '
-    'erfc exp expm1 fabs fmod frexp fsum gamma hypot ldexp lgamma log log10 '
+    'erfc exp expm1 fabs fmod frexp fsum gamma hypot ldexp lgamma '
     'log1p log2 modf pow radians remainder sin sinh tan tanh'
 ).split()
 SAFE_CMATH_FUNCTIONS = (
-    'acos acosh asin asinh atan atanh cos cosh exp inf infj log log10 '
+    'acos acosh asin asinh atan atanh cos cosh exp inf infj '
     'nanj phase polar rect sin sinh tan tanh tau'
 ).split()
 
@@ -77,6 +77,18 @@ def _sqrt(x):
         return cmath.sqrt(x)
     else:
         return math.sqrt(x)
+
+def _log(x):
+    if isinstance(x, complex) or x < 0:
+        return cmath.log(x)
+    else:
+        return math.log(x)
+
+def _log10(x):
+    if isinstance(x, complex) or x < 0:
+        return cmath.log10(x)
+    else:
+        return math.log10(x)
 
 def _cbrt(x):
     return math.pow(x, 1.0/3)
@@ -96,6 +108,8 @@ SAFE_ENV.update({
     'factorial': _factorial,
     'sqrt': _sqrt,
     'cbrt': _cbrt,
+    'log': _log,
+    'log10': _log10,
     'ceil': lambda x: float(math.ceil(x)),
     'floor': lambda x: float(math.floor(x)),
 })
