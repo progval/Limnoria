@@ -30,7 +30,6 @@
 
 import re
 import os
-import imp
 import sys
 import json
 import time
@@ -57,12 +56,6 @@ _ = PluginInternationalization('Misc')
 
 if minisix.PY2:
     from itertools import ifilter as filter
-
-def get_suffix(file):
-    for suffix in imp.get_suffixes():
-        if file[-len(suffix[0]):] == suffix[0]:
-            return suffix
-    return None
 
 def getPluginsInDirectory(directory):
     # get modules in a given directory

@@ -28,11 +28,15 @@
 ###
 
 import os
+import re
 import sys
-import imp
 import os.path
 import linecache
-import re
+import importlib.util
+
+if not hasattr(importlib.util, 'module_from_spec'):
+    # Python < 3.5
+    import imp
 
 from . import callbacks, conf, log, registry
 
@@ -60,9 +64,20 @@ def loadPluginModule(name, ignoreDeprecation=False):
             name = matched_names[0]
         else:
             raise ImportError(name)
-    moduleInfo = imp.find_module(name, pluginDirs)
+
     try:
-        module = imp.load_module(name, *moduleInfo)
+        if hasattr(importlib.util, 'module_from_spec'):
+            # Python >= 3.5
+            spec = importlib.machinery.PathFinder.find_spec(name, pluginDirs)
+            if spec is None:
+                assert ImportError(name)
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[module.__name__] = module
+            spec.loader.exec_module(module)
+        else:
+            # Python < 3.5
+            moduleInfo = imp.find_module(name, pluginDirs)
+            module = imp.load_module(name, *moduleInfo)
     except:
         sys.modules.pop(name, None)
         keys = list(sys.modules.keys())

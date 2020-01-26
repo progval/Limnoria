@@ -147,7 +147,7 @@ class GithubRepository(GitRepository):
                                         reload_imported = True
                                     elif not reload_imported and \
                                             b'reload(' in line:
-                                        fd.write(b'from imp import reload\n')
+                                        fd.write(b'from importlib import reload\n')
                                         reload_imported = True
                                 fd.write(line)
                     if newFileName.endswith('__init__.py'):

@@ -478,7 +478,7 @@ class Owner(callbacks.Plugin):
                 if hasattr(module, 'reload') and 'x' in locals():
                     module.reload(x)
                 if hasattr(module, 'config'):
-                    from imp import reload
+                    from importlib import reload
                     reload(module.config)
                 for callback in callbacks:
                     callback.die()

@@ -47,7 +47,7 @@ __contributors__ = {supybot.Author('Keith Jones', 'kmj', ''): ['convert']}
 
 from . import config
 from . import plugin
-from imp import reload
+from importlib import reload
 from .local import convertcore
 reload(plugin) # In case we're being reloaded.
 reload(convertcore)
