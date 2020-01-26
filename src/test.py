@@ -342,7 +342,7 @@ class PluginTestCase(SupyTestCase):
         if m is None:
             raise TimeoutError(query)
         if lastGetHelp not in m.args[1]:
-            self.failUnless(m.args[1].startswith('Error:'),
+            self.assertTrue(m.args[1].startswith('Error:'),
                             '%r did not error: %s' % (query, m.args[1]))
         return m
 
@@ -353,10 +353,10 @@ class PluginTestCase(SupyTestCase):
         m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError(query)
-        self.failIf(m.args[1].startswith('Error:'),
-                    '%r errored: %s' % (query, m.args[1]))
-        self.failIf(lastGetHelp in m.args[1],
-                    '%r returned the help string.' % query)
+        self.assertFalse(m.args[1].startswith('Error:'),
+                         '%r errored: %s' % (query, m.args[1]))
+        self.assertFalse(lastGetHelp in m.args[1],
+                         '%r returned the help string.' % query)
         return m
 
     def assertSnarfNotError(self, query, **kwargs):
@@ -369,13 +369,13 @@ class PluginTestCase(SupyTestCase):
         msg = m.args[1]
         if 'more message' in msg:
             msg = msg[0:-27] # Strip (XXX more messages)
-        self.failUnless(msg in lastGetHelp,
+        self.assertTrue(msg in lastGetHelp,
                         '%s is not the help (%s)' % (m.args[1], lastGetHelp))
         return m
 
     def assertNoResponse(self, query, timeout=0, **kwargs):
         m = self._feedMsg(query, timeout=timeout, **kwargs)
-        self.failIf(m, 'Unexpected response: %r' % m)
+        self.assertFalse(m, 'Unexpected response: %r' % m)
         return m
 
     def assertSnarfNoResponse(self, query, timeout=0, **kwargs):
@@ -398,7 +398,7 @@ class PluginTestCase(SupyTestCase):
         m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError(query)
-        self.failUnless(re.search(regexp, m.args[1], flags),
+        self.assertTrue(re.search(regexp, m.args[1], flags),
                         '%r does not match %r' % (m.args[1], regexp))
         return m
 
@@ -410,7 +410,7 @@ class PluginTestCase(SupyTestCase):
         m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError(query)
-        self.failUnless(re.search(regexp, m.args[1], flags) is None,
+        self.assertTrue(re.search(regexp, m.args[1], flags) is None,
                         '%r matched %r' % (m.args[1], regexp))
         return m
 
@@ -422,7 +422,7 @@ class PluginTestCase(SupyTestCase):
         m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError(query)
-        self.failUnless(ircmsgs.isAction(m), '%r is not an action.' % m)
+        self.assertTrue(ircmsgs.isAction(m), '%r is not an action.' % m)
         if expectedResponse is not None:
             s = ircmsgs.unAction(m)
             self.assertEqual(s, expectedResponse,
@@ -437,9 +437,9 @@ class PluginTestCase(SupyTestCase):
         m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError(query)
-        self.failUnless(ircmsgs.isAction(m))
+        self.assertTrue(ircmsgs.isAction(m))
         s = ircmsgs.unAction(m)
-        self.failUnless(re.search(regexp, s, flags),
+        self.assertTrue(re.search(regexp, s, flags),
                         '%r does not match %r' % (s, regexp))
 
     def assertSnarfActionRegexp(self, query, regexp, flags=re.I, **kwargs):
@@ -456,13 +456,13 @@ class PluginTestCase(SupyTestCase):
             if ((name in self._noTestDoc) and \
                not name.lower() in self.__class__.__name__.lower()):
                 continue
-            self.failUnless(sys.modules[cb.__class__.__name__].__doc__,
+            self.assertTrue(sys.modules[cb.__class__.__name__].__doc__,
                             '%s has no module documentation.' % name)
             if hasattr(cb, 'isCommandMethod'):
                 for attr in dir(cb):
                     if cb.isCommandMethod(attr) and \
                        attr == callbacks.canonicalName(attr):
-                        self.failUnless(getattr(cb, attr, None).__doc__,
+                        self.assertTrue(getattr(cb, attr, None).__doc__,
                                         '%s.%s has no help.' % (name, attr))
 
 
@@ -476,13 +476,13 @@ class ChannelPluginTestCase(PluginTestCase):
         PluginTestCase.setUp(self)
         self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         m = self.irc.takeMsg()
-        self.failIf(m is None, 'No message back from joining channel.')
+        self.assertFalse(m is None, 'No message back from joining channel.')
         self.assertEqual(m.command, 'MODE')
         m = self.irc.takeMsg()
-        self.failIf(m is None, 'No message back from joining channel.')
+        self.assertFalse(m is None, 'No message back from joining channel.')
         self.assertEqual(m.command, 'MODE')
         m = self.irc.takeMsg()
-        self.failIf(m is None, 'No message back from joining channel.')
+        self.assertFalse(m is None, 'No message back from joining channel.')
         self.assertEqual(m.command, 'WHO')
 
     def _feedMsg(self, query, timeout=None, to=None, frm=None, private=False,

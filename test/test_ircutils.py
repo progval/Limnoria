@@ -47,47 +47,47 @@ class FunctionsTestCase(SupyTestCase):
         for msg in msgs:
             if msg.prefix and ircutils.isUserHostmask(msg.prefix):
                 s = msg.prefix
-                self.failUnless(ircutils.hostmaskPatternEqual(s, s),
+                self.assertTrue(ircutils.hostmaskPatternEqual(s, s),
                                 '%r did not match itself.' % s)
                 banmask = ircutils.banmask(s)
-                self.failUnless(ircutils.hostmaskPatternEqual(banmask, s),
+                self.assertTrue(ircutils.hostmaskPatternEqual(banmask, s),
                                 '%r did not match %r' % (s, banmask))
         s = 'supybot!~supybot@dhcp065-024-075-056.columbus.rr.com'
-        self.failUnless(ircutils.hostmaskPatternEqual(s, s))
+        self.assertTrue(ircutils.hostmaskPatternEqual(s, s))
         s = 'jamessan|work!~jamessan@209-6-166-196.c3-0.' \
             'abr-ubr1.sbo-abr.ma.cable.rcn.com'
-        self.failUnless(ircutils.hostmaskPatternEqual(s, s))
+        self.assertTrue(ircutils.hostmaskPatternEqual(s, s))
 
     def testIsUserHostmask(self):
-        self.failUnless(ircutils.isUserHostmask(self.hostmask))
-        self.failUnless(ircutils.isUserHostmask('a!b@c'))
-        self.failIf(ircutils.isUserHostmask('!bar@baz'))
-        self.failIf(ircutils.isUserHostmask('!@baz'))
-        self.failIf(ircutils.isUserHostmask('!bar@'))
-        self.failIf(ircutils.isUserHostmask('!@'))
-        self.failIf(ircutils.isUserHostmask('foo!@baz'))
-        self.failIf(ircutils.isUserHostmask('foo!bar@'))
-        self.failIf(ircutils.isUserHostmask(''))
-        self.failIf(ircutils.isUserHostmask('!'))
-        self.failIf(ircutils.isUserHostmask('@'))
-        self.failIf(ircutils.isUserHostmask('!bar@baz'))
+        self.assertTrue(ircutils.isUserHostmask(self.hostmask))
+        self.assertTrue(ircutils.isUserHostmask('a!b@c'))
+        self.assertFalse(ircutils.isUserHostmask('!bar@baz'))
+        self.assertFalse(ircutils.isUserHostmask('!@baz'))
+        self.assertFalse(ircutils.isUserHostmask('!bar@'))
+        self.assertFalse(ircutils.isUserHostmask('!@'))
+        self.assertFalse(ircutils.isUserHostmask('foo!@baz'))
+        self.assertFalse(ircutils.isUserHostmask('foo!bar@'))
+        self.assertFalse(ircutils.isUserHostmask(''))
+        self.assertFalse(ircutils.isUserHostmask('!'))
+        self.assertFalse(ircutils.isUserHostmask('@'))
+        self.assertFalse(ircutils.isUserHostmask('!bar@baz'))
 
     def testIsChannel(self):
-        self.failUnless(ircutils.isChannel('#'))
-        self.failUnless(ircutils.isChannel('&'))
-        self.failIf(ircutils.isChannel('+'))
-        self.failUnless(ircutils.isChannel('+', chantypes='#&+!'))
-        self.failUnless(ircutils.isChannel('!'))
-        self.failUnless(ircutils.isChannel('#foo'))
-        self.failUnless(ircutils.isChannel('&foo'))
-        self.failIf(ircutils.isChannel('+foo'))
-        self.failUnless(ircutils.isChannel('+foo', chantypes='#&+!'))
-        self.failUnless(ircutils.isChannel('!foo'))
-        self.failIf(ircutils.isChannel('#foo bar'))
-        self.failIf(ircutils.isChannel('#foo,bar'))
-        self.failIf(ircutils.isChannel('#foobar\x07'))
-        self.failIf(ircutils.isChannel('foo'))
-        self.failIf(ircutils.isChannel(''))
+        self.assertTrue(ircutils.isChannel('#'))
+        self.assertTrue(ircutils.isChannel('&'))
+        self.assertFalse(ircutils.isChannel('+'))
+        self.assertTrue(ircutils.isChannel('+', chantypes='#&+!'))
+        self.assertTrue(ircutils.isChannel('!'))
+        self.assertTrue(ircutils.isChannel('#foo'))
+        self.assertTrue(ircutils.isChannel('&foo'))
+        self.assertFalse(ircutils.isChannel('+foo'))
+        self.assertTrue(ircutils.isChannel('+foo', chantypes='#&+!'))
+        self.assertTrue(ircutils.isChannel('!foo'))
+        self.assertFalse(ircutils.isChannel('#foo bar'))
+        self.assertFalse(ircutils.isChannel('#foo,bar'))
+        self.assertFalse(ircutils.isChannel('#foobar\x07'))
+        self.assertFalse(ircutils.isChannel('foo'))
+        self.assertFalse(ircutils.isChannel(''))
 
     def testBold(self):
         s = ircutils.bold('foo')
@@ -249,22 +249,22 @@ class FunctionsTestCase(SupyTestCase):
         try:
             original = conf.supybot.protocols.irc.strictRfc()
             conf.supybot.protocols.irc.strictRfc.setValue(True)
-            self.failUnless(ircutils.isNick('jemfinch'))
-            self.failUnless(ircutils.isNick('jemfinch0'))
-            self.failUnless(ircutils.isNick('[0]'))
-            self.failUnless(ircutils.isNick('{jemfinch}'))
-            self.failUnless(ircutils.isNick('[jemfinch]'))
-            self.failUnless(ircutils.isNick('jem|finch'))
-            self.failUnless(ircutils.isNick('\\```'))
-            self.failUnless(ircutils.isNick('`'))
-            self.failUnless(ircutils.isNick('A'))
-            self.failIf(ircutils.isNick(''))
-            self.failIf(ircutils.isNick('8foo'))
-            self.failIf(ircutils.isNick('10'))
-            self.failIf(ircutils.isNick('-'))
-            self.failIf(ircutils.isNick('-foo'))
+            self.assertTrue(ircutils.isNick('jemfinch'))
+            self.assertTrue(ircutils.isNick('jemfinch0'))
+            self.assertTrue(ircutils.isNick('[0]'))
+            self.assertTrue(ircutils.isNick('{jemfinch}'))
+            self.assertTrue(ircutils.isNick('[jemfinch]'))
+            self.assertTrue(ircutils.isNick('jem|finch'))
+            self.assertTrue(ircutils.isNick('\\```'))
+            self.assertTrue(ircutils.isNick('`'))
+            self.assertTrue(ircutils.isNick('A'))
+            self.assertFalse(ircutils.isNick(''))
+            self.assertFalse(ircutils.isNick('8foo'))
+            self.assertFalse(ircutils.isNick('10'))
+            self.assertFalse(ircutils.isNick('-'))
+            self.assertFalse(ircutils.isNick('-foo'))
             conf.supybot.protocols.irc.strictRfc.setValue(False)
-            self.failUnless(ircutils.isNick('services@something.undernet.net'))
+            self.assertTrue(ircutils.isNick('services@something.undernet.net'))
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(original)
 
@@ -272,9 +272,9 @@ class FunctionsTestCase(SupyTestCase):
         try:
             original = conf.supybot.protocols.irc.strictRfc()
             conf.supybot.protocols.irc.strictRfc.setValue(True)
-            self.failIf(ircutils.isNick('foo bar'))
+            self.assertFalse(ircutils.isNick('foo bar'))
             conf.supybot.protocols.irc.strictRfc.setValue(False)
-            self.failIf(ircutils.isNick('foo bar'))
+            self.assertFalse(ircutils.isNick('foo bar'))
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(original)
 
@@ -306,7 +306,7 @@ class FunctionsTestCase(SupyTestCase):
         for msg in msgs:
             if ircutils.isUserHostmask(msg.prefix):
                 banmask = ircutils.banmask(msg.prefix)
-                self.failUnless(ircutils.hostmaskPatternEqual(banmask,
+                self.assertTrue(ircutils.hostmaskPatternEqual(banmask,
                                                               msg.prefix),
                                 '%r didn\'t match %r' % (msg.prefix, banmask))
         self.assertEqual(ircutils.banmask('foobar!user@host'), '*!*@host')
@@ -402,9 +402,9 @@ class IrcDictTestCase(SupyTestCase):
     def testContains(self):
         d = ircutils.IrcDict()
         d['#FOO'] = None
-        self.failUnless('#foo' in d)
+        self.assertTrue('#foo' in d)
         d['#fOOBAR[]'] = None
-        self.failUnless('#foobar{}' in d)
+        self.assertTrue('#foobar{}' in d)
 
     def testGetSetItem(self):
         d = ircutils.IrcDict()
@@ -416,8 +416,8 @@ class IrcDictTestCase(SupyTestCase):
     def testCopyable(self):
         d = ircutils.IrcDict()
         d['foo'] = 'bar'
-        self.failUnless(d == copy.copy(d))
-        self.failUnless(d == copy.deepcopy(d))
+        self.assertTrue(d == copy.copy(d))
+        self.assertTrue(d == copy.deepcopy(d))
 
 
 class IrcSetTestCase(SupyTestCase):
@@ -425,30 +425,30 @@ class IrcSetTestCase(SupyTestCase):
         s = ircutils.IrcSet()
         s.add('foo')
         s.add('bar')
-        self.failUnless('foo' in s)
-        self.failUnless('FOO' in s)
+        self.assertTrue('foo' in s)
+        self.assertTrue('FOO' in s)
         s.discard('alfkj')
         s.remove('FOo')
-        self.failIf('foo' in s)
-        self.failIf('FOo' in s)
+        self.assertFalse('foo' in s)
+        self.assertFalse('FOo' in s)
 
     def testCopy(self):
         s = ircutils.IrcSet()
         s.add('foo')
         s.add('bar')
         s1 = copy.deepcopy(s)
-        self.failUnless('foo' in s)
-        self.failUnless('FOO' in s)
+        self.assertTrue('foo' in s)
+        self.assertTrue('FOO' in s)
         s.discard('alfkj')
         s.remove('FOo')
-        self.failIf('foo' in s)
-        self.failIf('FOo' in s)
-        self.failUnless('foo' in s1)
-        self.failUnless('FOO' in s1)
+        self.assertFalse('foo' in s)
+        self.assertFalse('FOo' in s)
+        self.assertTrue('foo' in s1)
+        self.assertTrue('FOO' in s1)
         s1.discard('alfkj')
         s1.remove('FOo')
-        self.failIf('foo' in s1)
-        self.failIf('FOo' in s1)
+        self.assertFalse('foo' in s1)
+        self.assertFalse('FOo' in s1)
 
 
 class IrcStringTestCase(SupyTestCase):
@@ -463,8 +463,8 @@ class IrcStringTestCase(SupyTestCase):
     def testInequality(self):
         s1 = 'supybot'
         s2 = ircutils.IrcString('Supybot')
-        self.failUnless(s1 == s2)
-        self.failIf(s1 != s2)
+        self.assertTrue(s1 == s2)
+        self.assertFalse(s1 != s2)
 
 class AuthenticateTestCase(SupyTestCase):
     PAIRS = [

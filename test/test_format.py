@@ -31,7 +31,7 @@ from supybot.test import *
 
 class FormatTestCase(SupyTestCase):
     def test_t_acceptsNone(self):
-        self.failUnless(format('%t', None))
+        self.assertTrue(format('%t', None))
 
     def testFloatingPoint(self):
         self.assertEqual(format('%.2f', 0.12345), '0.12')

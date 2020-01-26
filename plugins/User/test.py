@@ -103,13 +103,13 @@ class UserTestCase(PluginTestCase):
         self.assertResponse('hostmask', self.prefix)
         self.assertError('@hostmask asdf')
         m = self.irc.takeMsg()
-        self.failIf(m is not None, m)
+        self.assertFalse(m is not None, m)
 
     def testRegisterUnregister(self):
         self.prefix = self.prefix1
         self.assertNotError('register foo bar')
         self.assertError('register foo baz')
-        self.failUnless(ircdb.users.getUserId('foo'))
+        self.assertTrue(ircdb.users.getUserId('foo'))
         self.assertError('unregister foo')
         self.assertNotError('unregister foo bar')
         self.assertRaises(KeyError, ircdb.users.getUserId, 'foo')
@@ -122,8 +122,8 @@ class UserTestCase(PluginTestCase):
         try:
             self.assertError('unregister foo')
             m = self.irc.takeMsg()
-            self.failIf(m is not None, m)
-            self.failUnless(ircdb.users.getUserId('foo'))
+            self.assertFalse(m is not None, m)
+            self.assertTrue(ircdb.users.getUserId('foo'))
         finally:
             conf.supybot.databases.users.allowUnregistration.setValue(orig)
 

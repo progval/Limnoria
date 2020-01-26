@@ -47,7 +47,7 @@ class IrcMsgTestCase(SupyTestCase):
         for msg in msgs:
             if msg.prefix:
                 strmsg = str(msg)
-                self.failIf(len(msg) != len(strmsg) and \
+                self.assertFalse(len(msg) != len(strmsg) and \
                             strmsg.replace(':', '') == strmsg)
 
     def testRepr(self):
@@ -58,17 +58,17 @@ class IrcMsgTestCase(SupyTestCase):
     def testStr(self):
         for (rawmsg, msg) in zip(rawmsgs, msgs):
             strmsg = str(msg).strip()
-            self.failIf(rawmsg != strmsg and \
+            self.assertFalse(rawmsg != strmsg and \
                         strmsg.replace(':', '') == strmsg)
 
     def testEq(self):
         for msg in msgs:
             self.assertEqual(msg, msg)
-        self.failIf(msgs and msgs[0] == []) # Comparison to unhashable type.
+        self.assertFalse(msgs and msgs[0] == []) # Comparison to unhashable type.
 
     def testNe(self):
         for msg in msgs:
-            self.failIf(msg != msg)
+            self.assertFalse(msg != msg)
 
 ##     def testImmutability(self):
 ##         s = 'something else'
@@ -111,7 +111,7 @@ class IrcMsgTestCase(SupyTestCase):
         for msg in msgs:
             if hash(msg) == 0:
                 zeroes += 1
-        self.failIf(zeroes > (len(msgs)/10), 'Too many zero hashes.')
+        self.assertFalse(zeroes > (len(msgs)/10), 'Too many zero hashes.')
 
     def testMsgKeywordHandledProperly(self):
         msg = ircmsgs.notice('foo', 'bar')
@@ -126,11 +126,11 @@ class IrcMsgTestCase(SupyTestCase):
 
     def testTags(self):
         m = ircmsgs.privmsg('foo', 'bar')
-        self.failIf(m.repliedTo)
+        self.assertFalse(m.repliedTo)
         m.tag('repliedTo')
-        self.failUnless(m.repliedTo)
+        self.assertTrue(m.repliedTo)
         m.tag('repliedTo')
-        self.failUnless(m.repliedTo)
+        self.assertTrue(m.repliedTo)
         m.tag('repliedTo', 12)
         self.assertEqual(m.repliedTo, 12)
 
@@ -177,22 +177,22 @@ class FunctionsTestCase(SupyTestCase):
              ':ACTION resizes angryman\'s terminal to 40x24 (#16)']
         msgs = list(map(ircmsgs.IrcMsg, L))
         for msg in msgs:
-            self.failUnless(ircmsgs.isAction(msg))
+            self.assertTrue(ircmsgs.isAction(msg))
 
     def testIsActionIsntStupid(self):
         m = ircmsgs.privmsg('#x', '\x01NOTANACTION foo\x01')
-        self.failIf(ircmsgs.isAction(m))
+        self.assertFalse(ircmsgs.isAction(m))
         m = ircmsgs.privmsg('#x', '\x01ACTION foo bar\x01')
-        self.failUnless(ircmsgs.isAction(m))
+        self.assertTrue(ircmsgs.isAction(m))
 
     def testIsCtcp(self):
-        self.failUnless(ircmsgs.isCtcp(ircmsgs.privmsg('foo',
+        self.assertTrue(ircmsgs.isCtcp(ircmsgs.privmsg('foo',
                                                        '\x01VERSION\x01')))
-        self.failIf(ircmsgs.isCtcp(ircmsgs.privmsg('foo', '\x01')))
+        self.assertFalse(ircmsgs.isCtcp(ircmsgs.privmsg('foo', '\x01')))
 
     def testIsActionFalseWhenNoSpaces(self):
         msg = ircmsgs.IrcMsg('PRIVMSG #foo :\x01ACTIONfoobar\x01')
-        self.failIf(ircmsgs.isAction(msg))
+        self.assertFalse(ircmsgs.isAction(msg))
 
     def testUnAction(self):
         s = 'foo bar baz'
@@ -259,7 +259,7 @@ class FunctionsTestCase(SupyTestCase):
                          ('#osu,#umich', 'michiganSucks'))
 
     def testQuit(self):
-        self.failUnless(ircmsgs.quit(prefix='foo!bar@baz'))
+        self.assertTrue(ircmsgs.quit(prefix='foo!bar@baz'))
 
     def testOps(self):
         m = ircmsgs.ops('#foo', ['foo', 'bar', 'baz'])
@@ -294,15 +294,15 @@ class FunctionsTestCase(SupyTestCase):
         m = ircmsgs.IrcMsg(prefix="caker!~caker@ns.theshore.net",
                            command="QUIT",
                            args=('jupiter.oftc.net quasar.oftc.net',))
-        self.failUnless(ircmsgs.isSplit(m))
+        self.assertTrue(ircmsgs.isSplit(m))
         m = ircmsgs.IrcMsg(prefix="bzbot!Brad2901@ACC87473.ipt.aol.com",
                            command="QUIT",
                            args=('Read error: 110 (Connection timed out)',))
-        self.failIf(ircmsgs.isSplit(m))
+        self.assertFalse(ircmsgs.isSplit(m))
         m = ircmsgs.IrcMsg(prefix="JibberJim!~none@8212cl.b0nwbeoe.co.uk",
                            command="QUIT",
                            args=('"Bye!"',))
-        self.failIf(ircmsgs.isSplit(m))
+        self.assertFalse(ircmsgs.isSplit(m))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

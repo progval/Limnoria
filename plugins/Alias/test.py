@@ -110,7 +110,7 @@ class AliasTestCase(ChannelPluginTestCase):
         self.assertResponse('foobar', 'sbbone')
         self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
         cb.removeAlias('foobar', evenIfLocked=True)
-        self.failIf('foobar' in cb.aliases)
+        self.assertFalse('foobar' in cb.aliases)
         self.assertError('foobar')
 
         self.assertRegexp('alias add abc\x07 ignore', 'Error.*Invalid')
@@ -167,14 +167,14 @@ class EscapedAliasTestCase(ChannelPluginTestCase):
     def testWriteDatabase(self):
         self.assertNotError('alias add fooo.spam echo egg')
         self.assertResponse('fooo.spam', 'egg')
-        self.failUnless(hasattr(conf.supybot.plugins.Alias.escapedaliases,
+        self.assertTrue(hasattr(conf.supybot.plugins.Alias.escapedaliases,
             'a1a4dfooospam'))
         self.assertEqual(conf.supybot.plugins.Alias.escapedaliases.a1a4dfooospam(),
                 'echo egg')
 
         self.assertNotError('alias add foo.spam.egg echo supybot')
         self.assertResponse('foo.spam.egg', 'supybot')
-        self.failUnless(hasattr(conf.supybot.plugins.Alias.escapedaliases,
+        self.assertTrue(hasattr(conf.supybot.plugins.Alias.escapedaliases,
             'a2a3d8dfoospamegg'))
         self.assertEqual(conf.supybot.plugins.Alias.escapedaliases.a2a3d8dfoospamegg(),
                 'echo supybot')

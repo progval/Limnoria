@@ -43,7 +43,7 @@ class LimiterTestCase(ChannelPluginTestCase):
             self.assertEqual(m, ircmsgs.limit('#foo', 1+10))
             self.irc.feedMsg(ircmsgs.join('#foo', prefix='bar!root@host'))
             m = self.irc.takeMsg()
-            self.failIf(m is not None)
+            self.assertFalse(m is not None)
             conf.supybot.plugins.Limiter.maximumExcess.setValue(7)
             self.irc.feedMsg(ircmsgs.part('#foo', prefix='bar!root@host'))
             m = self.irc.takeMsg()

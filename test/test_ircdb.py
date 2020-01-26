@@ -48,17 +48,17 @@ class IrcdbTestCase(SupyTestCase):
 
 class FunctionsTestCase(IrcdbTestCase):
     def testIsAntiCapability(self):
-        self.failIf(ircdb.isAntiCapability('foo'))
-        self.failIf(ircdb.isAntiCapability('#foo,bar'))
-        self.failUnless(ircdb.isAntiCapability('-foo'))
-        self.failUnless(ircdb.isAntiCapability('#foo,-bar'))
-        self.failUnless(ircdb.isAntiCapability('#foo.bar,-baz'))
+        self.assertFalse(ircdb.isAntiCapability('foo'))
+        self.assertFalse(ircdb.isAntiCapability('#foo,bar'))
+        self.assertTrue(ircdb.isAntiCapability('-foo'))
+        self.assertTrue(ircdb.isAntiCapability('#foo,-bar'))
+        self.assertTrue(ircdb.isAntiCapability('#foo.bar,-baz'))
 
     def testIsChannelCapability(self):
-        self.failIf(ircdb.isChannelCapability('foo'))
-        self.failUnless(ircdb.isChannelCapability('#foo,bar'))
-        self.failUnless(ircdb.isChannelCapability('#foo.bar,baz'))
-        self.failUnless(ircdb.isChannelCapability('#foo,bar.baz'))
+        self.assertFalse(ircdb.isChannelCapability('foo'))
+        self.assertTrue(ircdb.isChannelCapability('#foo,bar'))
+        self.assertTrue(ircdb.isChannelCapability('#foo.bar,baz'))
+        self.assertTrue(ircdb.isChannelCapability('#foo,bar.baz'))
 
     def testMakeAntiCapability(self):
         self.assertEqual(ircdb.makeAntiCapability('foo'), '-foo')
@@ -94,17 +94,17 @@ class CapabilitySetTestCase(SupyTestCase):
         d = ircdb.CapabilitySet()
         self.assertRaises(KeyError, d.check, 'foo')
         d = ircdb.CapabilitySet(('foo',))
-        self.failUnless(d.check('foo'))
-        self.failIf(d.check('-foo'))
+        self.assertTrue(d.check('foo'))
+        self.assertFalse(d.check('-foo'))
         d.add('bar')
-        self.failUnless(d.check('bar'))
-        self.failIf(d.check('-bar'))
+        self.assertTrue(d.check('bar'))
+        self.assertFalse(d.check('-bar'))
         d.add('-baz')
-        self.failIf(d.check('baz'))
-        self.failUnless(d.check('-baz'))
+        self.assertFalse(d.check('baz'))
+        self.assertTrue(d.check('-baz'))
         d.add('-bar')
-        self.failIf(d.check('bar'))
-        self.failUnless(d.check('-bar'))
+        self.assertFalse(d.check('bar'))
+        self.assertTrue(d.check('-bar'))
         d.remove('-bar')
         self.assertRaises(KeyError, d.check, '-bar')
         self.assertRaises(KeyError, d.check, 'bar')
@@ -119,31 +119,31 @@ class CapabilitySetTestCase(SupyTestCase):
 
     def testContains(self):
         s = ircdb.CapabilitySet()
-        self.failIf('foo' in s)
-        self.failIf('-foo' in s)
+        self.assertFalse('foo' in s)
+        self.assertFalse('-foo' in s)
         s.add('foo')
-        self.failUnless('foo' in s)
-        self.failUnless('-foo' in s)
+        self.assertTrue('foo' in s)
+        self.assertTrue('-foo' in s)
         s.remove('foo')
-        self.failIf('foo' in s)
-        self.failIf('-foo' in s)
+        self.assertFalse('foo' in s)
+        self.assertFalse('-foo' in s)
         s.add('-foo')
-        self.failUnless('foo' in s)
-        self.failUnless('-foo' in s)
+        self.assertTrue('foo' in s)
+        self.assertTrue('-foo' in s)
 
     def testCheck(self):
         s = ircdb.CapabilitySet()
         self.assertRaises(KeyError, s.check, 'foo')
         self.assertRaises(KeyError, s.check, '-foo')
         s.add('foo')
-        self.failUnless(s.check('foo'))
-        self.failIf(s.check('-foo'))
+        self.assertTrue(s.check('foo'))
+        self.assertFalse(s.check('-foo'))
         s.remove('foo')
         self.assertRaises(KeyError, s.check, 'foo')
         self.assertRaises(KeyError, s.check, '-foo')
         s.add('-foo')
-        self.failIf(s.check('foo'))
-        self.failUnless(s.check('-foo'))
+        self.assertFalse(s.check('foo'))
+        self.assertTrue(s.check('-foo'))
         s.remove('-foo')
         self.assertRaises(KeyError, s.check, 'foo')
         self.assertRaises(KeyError, s.check, '-foo')
@@ -152,26 +152,26 @@ class CapabilitySetTestCase(SupyTestCase):
         s = ircdb.CapabilitySet()
         s.add('foo')
         s.add('-foo')
-        self.failIf(s.check('foo'))
-        self.failUnless(s.check('-foo'))
+        self.assertFalse(s.check('foo'))
+        self.assertTrue(s.check('-foo'))
         s.add('foo')
-        self.failUnless(s.check('foo'))
-        self.failIf(s.check('-foo'))
+        self.assertTrue(s.check('foo'))
+        self.assertFalse(s.check('-foo'))
 
 
 class UserCapabilitySetTestCase(SupyTestCase):
     def testOwnerHasAll(self):
         d = ircdb.UserCapabilitySet(('owner',))
-        self.failIf(d.check('-foo'))
-        self.failUnless(d.check('foo'))
+        self.assertFalse(d.check('-foo'))
+        self.assertTrue(d.check('foo'))
 
     def testOwnerIsAlwaysPresent(self):
         d = ircdb.UserCapabilitySet()
-        self.failUnless('owner' in d)
-        self.failUnless('-owner' in d)
-        self.failIf(d.check('owner'))
+        self.assertTrue('owner' in d)
+        self.assertTrue('-owner' in d)
+        self.assertFalse(d.check('owner'))
         d.add('owner')
-        self.failUnless(d.check('owner'))
+        self.assertTrue(d.check('owner'))
 
     def testReprEval(self):
         s = ircdb.UserCapabilitySet()
@@ -184,30 +184,30 @@ class UserCapabilitySetTestCase(SupyTestCase):
     def testOwner(self):
         s = ircdb.UserCapabilitySet()
         s.add('owner')
-        self.failUnless('foo' in s)
-        self.failUnless('-foo' in s)
-        self.failUnless(s.check('owner'))
-        self.failIf(s.check('-owner'))
-        self.failIf(s.check('-foo'))
-        self.failUnless(s.check('foo'))
+        self.assertTrue('foo' in s)
+        self.assertTrue('-foo' in s)
+        self.assertTrue(s.check('owner'))
+        self.assertFalse(s.check('-owner'))
+        self.assertFalse(s.check('-foo'))
+        self.assertTrue(s.check('foo'))
 
 ##     def testWorksAfterReload(self):
 ##         s = ircdb.UserCapabilitySet(['owner'])
-##         self.failUnless(s.check('owner'))
+##         self.assertTrue(s.check('owner'))
 ##         import sets
 ##         reload(sets)
-##         self.failUnless(s.check('owner'))
+##         self.assertTrue(s.check('owner'))
 
 
 class IrcUserTestCase(IrcdbTestCase):
     def testCapabilities(self):
         u = ircdb.IrcUser()
         u.addCapability('foo')
-        self.failUnless(u._checkCapability('foo'))
-        self.failIf(u._checkCapability('-foo'))
+        self.assertTrue(u._checkCapability('foo'))
+        self.assertFalse(u._checkCapability('-foo'))
         u.addCapability('-bar')
-        self.failUnless(u._checkCapability('-bar'))
-        self.failIf(u._checkCapability('bar'))
+        self.assertTrue(u._checkCapability('-bar'))
+        self.assertFalse(u._checkCapability('bar'))
         u.removeCapability('foo')
         u.removeCapability('-bar')
         self.assertRaises(KeyError, u._checkCapability, 'foo')
@@ -220,26 +220,26 @@ class IrcUserTestCase(IrcdbTestCase):
     def testRemoveHostmask(self):
         u = ircdb.IrcUser()
         u.addHostmask('foo!bar@baz')
-        self.failUnless(u.checkHostmask('foo!bar@baz'))
+        self.assertTrue(u.checkHostmask('foo!bar@baz'))
         u.addHostmask('foo!bar@baz')
         u.removeHostmask('foo!bar@baz')
-        self.failIf(u.checkHostmask('foo!bar@baz'))
+        self.assertFalse(u.checkHostmask('foo!bar@baz'))
 
     def testOwner(self):
         u = ircdb.IrcUser()
         u.addCapability('owner')
-        self.failUnless(u._checkCapability('foo'))
-        self.failIf(u._checkCapability('-foo'))
+        self.assertTrue(u._checkCapability('foo'))
+        self.assertFalse(u._checkCapability('-foo'))
 
     def testInitCapabilities(self):
         u = ircdb.IrcUser(capabilities=['foo'])
-        self.failUnless(u._checkCapability('foo'))
+        self.assertTrue(u._checkCapability('foo'))
 
     def testPassword(self):
         u = ircdb.IrcUser()
         u.setPassword('foobar')
-        self.failUnless(u.checkPassword('foobar'))
-        self.failIf(u.checkPassword('somethingelse'))
+        self.assertTrue(u.checkPassword('foobar'))
+        self.assertFalse(u.checkPassword('somethingelse'))
 
     def testTimeoutAuth(self):
         orig = conf.supybot.databases.users.timeoutIdentification()
@@ -247,9 +247,9 @@ class IrcUserTestCase(IrcdbTestCase):
             conf.supybot.databases.users.timeoutIdentification.setValue(2)
             u = ircdb.IrcUser()
             u.addAuth('foo!bar@baz')
-            self.failUnless(u.checkHostmask('foo!bar@baz'))
+            self.assertTrue(u.checkHostmask('foo!bar@baz'))
             timeFastForward(2.1)
-            self.failIf(u.checkHostmask('foo!bar@baz'))
+            self.assertFalse(u.checkHostmask('foo!bar@baz'))
         finally:
             conf.supybot.databases.users.timeoutIdentification.setValue(orig)
 
@@ -259,46 +259,46 @@ class IrcUserTestCase(IrcdbTestCase):
             conf.supybot.databases.users.timeoutIdentification.setValue(2)
             u = ircdb.IrcUser()
             u.addAuth('foo!bar@baz')
-            self.failUnless(u.checkHostmask('foo!bar@baz'))
+            self.assertTrue(u.checkHostmask('foo!bar@baz'))
             u.addAuth('foo!bar@baz')
-            self.failUnless(u.checkHostmask('foo!bar@baz'))
-            self.failUnless(len(u.auth) == 1)
+            self.assertTrue(u.checkHostmask('foo!bar@baz'))
+            self.assertTrue(len(u.auth) == 1)
             u.addAuth('boo!far@fizz')
-            self.failUnless(u.checkHostmask('boo!far@fizz'))
+            self.assertTrue(u.checkHostmask('boo!far@fizz'))
             timeFastForward(2.1)
-            self.failIf(u.checkHostmask('foo!bar@baz'))
-            self.failIf(u.checkHostmask('boo!far@fizz'))
+            self.assertFalse(u.checkHostmask('foo!bar@baz'))
+            self.assertFalse(u.checkHostmask('boo!far@fizz'))
         finally:
             conf.supybot.databases.users.timeoutIdentification.setValue(orig)
 
     def testHashedPassword(self):
         u = ircdb.IrcUser()
         u.setPassword('foobar', hashed=True)
-        self.failUnless(u.checkPassword('foobar'))
-        self.failIf(u.checkPassword('somethingelse'))
+        self.assertTrue(u.checkPassword('foobar'))
+        self.assertFalse(u.checkPassword('somethingelse'))
         self.assertNotEqual(u.password, 'foobar')
 
     def testHostmasks(self):
         prefix = 'foo12341234!bar@baz.domain.tld'
         hostmasks = ['*!bar@baz.domain.tld', 'foo12341234!*@*']
         u = ircdb.IrcUser()
-        self.failIf(u.checkHostmask(prefix))
+        self.assertFalse(u.checkHostmask(prefix))
         for hostmask in hostmasks:
             u.addHostmask(hostmask)
-        self.failUnless(u.checkHostmask(prefix))
+        self.assertTrue(u.checkHostmask(prefix))
 
     def testAuth(self):
         prefix = 'foo!bar@baz'
         u = ircdb.IrcUser()
         u.addAuth(prefix)
-        self.failUnless(u.auth)
+        self.assertTrue(u.auth)
         u.clearAuth()
-        self.failIf(u.auth)
+        self.assertFalse(u.auth)
 
     def testIgnore(self):
         u = ircdb.IrcUser(ignore=True)
-        self.failIf(u._checkCapability('foo'))
-        self.failUnless(u._checkCapability('-foo'))
+        self.assertFalse(u._checkCapability('foo'))
+        self.assertTrue(u._checkCapability('-foo'))
 
     def testRemoveCapability(self):
         u = ircdb.IrcUser(capabilities=('foo',))
@@ -307,45 +307,45 @@ class IrcUserTestCase(IrcdbTestCase):
 class IrcChannelTestCase(IrcdbTestCase):
     def testInit(self):
         c = ircdb.IrcChannel()
-        self.failIf(c._checkCapability('op'))
-        self.failIf(c._checkCapability('voice'))
-        self.failIf(c._checkCapability('halfop'))
-        self.failIf(c._checkCapability('protected'))
+        self.assertFalse(c._checkCapability('op'))
+        self.assertFalse(c._checkCapability('voice'))
+        self.assertFalse(c._checkCapability('halfop'))
+        self.assertFalse(c._checkCapability('protected'))
 
     def testCapabilities(self):
         c = ircdb.IrcChannel(defaultAllow=False)
-        self.failIf(c._checkCapability('foo'))
+        self.assertFalse(c._checkCapability('foo'))
         c.addCapability('foo')
-        self.failUnless(c._checkCapability('foo'))
+        self.assertTrue(c._checkCapability('foo'))
         c.removeCapability('foo')
-        self.failIf(c._checkCapability('foo'))
+        self.assertFalse(c._checkCapability('foo'))
 
     def testDefaultCapability(self):
         c = ircdb.IrcChannel()
         c.setDefaultCapability(False)
-        self.failIf(c._checkCapability('foo'))
-        self.failUnless(c._checkCapability('-foo'))
+        self.assertFalse(c._checkCapability('foo'))
+        self.assertTrue(c._checkCapability('-foo'))
         c.setDefaultCapability(True)
-        self.failUnless(c._checkCapability('foo'))
-        self.failIf(c._checkCapability('-foo'))
+        self.assertTrue(c._checkCapability('foo'))
+        self.assertFalse(c._checkCapability('-foo'))
 
     def testLobotomized(self):
         c = ircdb.IrcChannel(lobotomized=True)
-        self.failUnless(c.checkIgnored('foo!bar@baz'))
+        self.assertTrue(c.checkIgnored('foo!bar@baz'))
 
     def testIgnored(self):
         prefix = 'foo!bar@baz'
         banmask = ircutils.banmask(prefix)
         c = ircdb.IrcChannel()
-        self.failIf(c.checkIgnored(prefix))
+        self.assertFalse(c.checkIgnored(prefix))
         c.addIgnore(banmask)
-        self.failUnless(c.checkIgnored(prefix))
+        self.assertTrue(c.checkIgnored(prefix))
         c.removeIgnore(banmask)
-        self.failIf(c.checkIgnored(prefix))
+        self.assertFalse(c.checkIgnored(prefix))
         c.addBan(banmask)
-        self.failUnless(c.checkIgnored(prefix))
+        self.assertTrue(c.checkIgnored(prefix))
         c.removeBan(banmask)
-        self.failIf(c.checkIgnored(prefix))
+        self.assertFalse(c.checkIgnored(prefix))
 
 class UsersDictionaryTestCase(IrcdbTestCase):
     filename = os.path.join(conf.supybot.directories.conf(),
@@ -483,13 +483,13 @@ class CheckCapabilityTestCase(IrcdbTestCase):
                                      self.users, self.channels)
 
     def testOwner(self):
-        self.failUnless(self.checkCapability(self.owner, self.cap))
-        self.failIf(self.checkCapability(self.owner, self.anticap))
-        self.failUnless(self.checkCapability(self.owner, self.chancap))
-        self.failIf(self.checkCapability(self.owner, self.antichancap))
+        self.assertTrue(self.checkCapability(self.owner, self.cap))
+        self.assertFalse(self.checkCapability(self.owner, self.anticap))
+        self.assertTrue(self.checkCapability(self.owner, self.chancap))
+        self.assertFalse(self.checkCapability(self.owner, self.antichancap))
         self.channels.setChannel(self.channel, self.channelanticap)
-        self.failUnless(self.checkCapability(self.owner, self.cap))
-        self.failIf(self.checkCapability(self.owner, self.anticap))
+        self.assertTrue(self.checkCapability(self.owner, self.cap))
+        self.assertFalse(self.checkCapability(self.owner, self.anticap))
 
     def testNothingAgainstChannel(self):
         self.channels.setChannel(self.channel, self.channelnothing)
@@ -500,11 +500,11 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         self.assertEqual(self.checkCapability(self.nothing, self.chancap),
                          self.channelnothing.defaultAllow)
         self.channels.setChannel(self.channel, self.channelcap)
-        self.failUnless(self.checkCapability(self.nothing, self.chancap))
-        self.failIf(self.checkCapability(self.nothing, self.antichancap))
+        self.assertTrue(self.checkCapability(self.nothing, self.chancap))
+        self.assertFalse(self.checkCapability(self.nothing, self.antichancap))
         self.channels.setChannel(self.channel, self.channelanticap)
-        self.failIf(self.checkCapability(self.nothing, self.chancap))
-        self.failUnless(self.checkCapability(self.nothing, self.antichancap))
+        self.assertFalse(self.checkCapability(self.nothing, self.chancap))
+        self.assertTrue(self.checkCapability(self.nothing, self.antichancap))
 
     def testNothing(self):
         self.assertEqual(self.checkCapability(self.nothing, self.cap),
@@ -513,23 +513,23 @@ class CheckCapabilityTestCase(IrcdbTestCase):
                          not conf.supybot.capabilities.default())
 
     def testJustFoo(self):
-        self.failUnless(self.checkCapability(self.justfoo, self.cap))
-        self.failIf(self.checkCapability(self.justfoo, self.anticap))
+        self.assertTrue(self.checkCapability(self.justfoo, self.cap))
+        self.assertFalse(self.checkCapability(self.justfoo, self.anticap))
 
     def testAntiFoo(self):
-        self.failUnless(self.checkCapability(self.antifoo, self.anticap))
-        self.failIf(self.checkCapability(self.antifoo, self.cap))
+        self.assertTrue(self.checkCapability(self.antifoo, self.anticap))
+        self.assertFalse(self.checkCapability(self.antifoo, self.cap))
 
     def testJustChanFoo(self):
         self.channels.setChannel(self.channel, self.channelnothing)
-        self.failUnless(self.checkCapability(self.justchanfoo, self.chancap))
-        self.failIf(self.checkCapability(self.justchanfoo, self.antichancap))
+        self.assertTrue(self.checkCapability(self.justchanfoo, self.chancap))
+        self.assertFalse(self.checkCapability(self.justchanfoo, self.antichancap))
         self.channelnothing.defaultAllow = not self.channelnothing.defaultAllow
-        self.failUnless(self.checkCapability(self.justchanfoo, self.chancap))
-        self.failIf(self.checkCapability(self.justchanfoo, self.antichancap))
+        self.assertTrue(self.checkCapability(self.justchanfoo, self.chancap))
+        self.assertFalse(self.checkCapability(self.justchanfoo, self.antichancap))
         self.channels.setChannel(self.channel, self.channelanticap)
-        self.failUnless(self.checkCapability(self.justchanfoo, self.chancap))
-        self.failIf(self.checkCapability(self.justchanfoo, self.antichancap))
+        self.assertTrue(self.checkCapability(self.justchanfoo, self.chancap))
+        self.assertFalse(self.checkCapability(self.justchanfoo, self.antichancap))
 
     def testChanOpCountsAsEverything(self):
         self.channels.setChannel(self.channel, self.channelanticap)
@@ -537,20 +537,20 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         u = self.users.getUser(id)
         u.addCapability(self.chanop)
         self.users.setUser(u)
-        self.failUnless(self.checkCapability(self.nothing, self.chancap))
+        self.assertTrue(self.checkCapability(self.nothing, self.chancap))
         self.channels.setChannel(self.channel, self.channelnothing)
-        self.failUnless(self.checkCapability(self.nothing, self.chancap))
+        self.assertTrue(self.checkCapability(self.nothing, self.chancap))
         self.channelnothing.defaultAllow = not self.channelnothing.defaultAllow
-        self.failUnless(self.checkCapability(self.nothing, self.chancap))
+        self.assertTrue(self.checkCapability(self.nothing, self.chancap))
 
     def testAntiChanFoo(self):
         self.channels.setChannel(self.channel, self.channelnothing)
-        self.failIf(self.checkCapability(self.antichanfoo, self.chancap))
-        self.failUnless(self.checkCapability(self.antichanfoo,
+        self.assertFalse(self.checkCapability(self.antichanfoo, self.chancap))
+        self.assertTrue(self.checkCapability(self.antichanfoo,
                                              self.antichancap))
 
     def testSecurefoo(self):
-        self.failUnless(self.checkCapability(self.securefoo, self.cap))
+        self.assertTrue(self.checkCapability(self.securefoo, self.cap))
         id = self.users.getUserId(self.securefoo)
         u = self.users.getUser(id)
         u.addAuth(self.securefoo)
@@ -558,7 +558,7 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         try:
             originalConfDefaultAllow = conf.supybot.capabilities.default()
             conf.supybot.capabilities.default.set('False')
-            self.failIf(self.checkCapability('a' + self.securefoo, self.cap))
+            self.assertFalse(self.checkCapability('a' + self.securefoo, self.cap))
         finally:
             conf.supybot.capabilities.default.set(str(originalConfDefaultAllow))
 

@@ -156,7 +156,7 @@ class FilterTest(ChannelPluginTestCase):
         self.assertNotError('outfilter rot13')
         self.assertResponse('rot13 foobar', '%s: foobar' % s)
         m = self.getMsg('action foobar')
-        self.failUnless(ircmsgs.isAction(m))
+        self.assertTrue(ircmsgs.isAction(m))
         s = ircmsgs.unAction(m)
         self.assertEqual(s, 'sbbone')
 

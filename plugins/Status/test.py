@@ -40,11 +40,11 @@ class StatusTestCase(PluginTestCase):
 
     def testCpu(self):
         m = self.assertNotError('status cpu')
-        self.failIf('kB kB' in m.args[1])
-        self.failIf('None' in m.args[1], 'None in cpu output: %r.' % m)
+        self.assertFalse('kB kB' in m.args[1])
+        self.assertFalse('None' in m.args[1], 'None in cpu output: %r.' % m)
         for s in ['linux', 'freebsd', 'openbsd', 'netbsd', 'darwin']:
             if sys.platform.startswith(s):
-                self.failUnless('B' in m.args[1] or 'KB' in m.args[1] or
+                self.assertTrue('B' in m.args[1] or 'KB' in m.args[1] or
                                 'MB' in m.args[1],
                                 'No memory string on supported platform.')
         try:

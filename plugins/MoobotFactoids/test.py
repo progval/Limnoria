@@ -53,11 +53,11 @@ class OptionListTestCase(SupyTestCase):
         while max and L:
             max -= 1
             option = plugin.pickOptions(s)
-            self.failUnless(option in original,
+            self.assertTrue(option in original,
                             'Option %s not in %s' % (option, original))
             if option in L:
                 L.remove(option)
-        self.failIf(L, 'Some options never seen: %s' % L)
+        self.assertFalse(L, 'Some options never seen: %s' % L)
 
     def testPickOptions(self):
         self._testOptions('(a|b)', ['a', 'b'])
@@ -356,7 +356,7 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertResponse('foo', 'foo is bar')
         self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, '\x01VERSION\x01'))
         m = self.irc.takeMsg()
-        self.failIf(m)
+        self.assertFalse(m)
 
     def testAddFactoidNotCalledWithBadNestingSyntax(self):
         self.assertError('re s/Error:.*/foo/ ]')

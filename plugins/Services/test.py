@@ -41,12 +41,12 @@ class ServicesTestCase(PluginTestCase):
         self.assertError('services identify') # Don't have a password.
         self.assertNotError('services password %s baz' % self.nick)
         m = self.assertNotError('services identify')
-        self.failUnless(m.args[0] == 'NickServ')
-        self.failUnless(m.args[1].lower() == 'identify baz')
+        self.assertTrue(m.args[0] == 'NickServ')
+        self.assertTrue(m.args[1].lower() == 'identify baz')
         self.assertNotError('services password %s biff' % self.nick)
         m = self.assertNotError('services identify')
-        self.failUnless(m.args[0] == 'NickServ')
-        self.failUnless(m.args[1].lower() == 'identify biff')
+        self.assertTrue(m.args[0] == 'NickServ')
+        self.assertTrue(m.args[1].lower() == 'identify biff')
 
     def testPasswordConfg(self):
         self.assertNotError('config plugins.Services.nicks ""')
@@ -72,8 +72,8 @@ class ServicesTestCase(PluginTestCase):
             'Global: bar; test: bar2')
 
         m = self.assertNotError('services identify')
-        self.failUnless(m.args[0] == 'NickServ')
-        self.failUnless(m.args[1].lower() == 'identify bar2')
+        self.assertTrue(m.args[0] == 'NickServ')
+        self.assertTrue(m.args[1].lower() == 'identify bar2')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

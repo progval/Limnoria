@@ -86,11 +86,11 @@ class MiscTestCase(ChannelPluginTestCase):
     def testHelpIncludeFullCommandName(self):
         self.assertHelp('help channel capability add')
         m = self.getMsg('help channel capability add')
-        self.failUnless('channel capability add' in m.args[1])
+        self.assertTrue('channel capability add' in m.args[1])
 
     def testHelpDoesAmbiguityWithDefaultPlugins(self):
         m = self.getMsg('help list') # Misc.list and User.list.
-        self.failIf(m.args[1].startswith('Error'))
+        self.assertFalse(m.args[1].startswith('Error'))
 
     def testHelpIsCaseInsensitive(self):
         self.assertHelp('help LIST')
@@ -145,19 +145,19 @@ class MiscTestCase(ChannelPluginTestCase):
         oldprefix, self.prefix = self.prefix, 'tester!foo@bar__no_testcap__baz'
         self.nick = 'tester'
         m = self.getMsg('tell aljsdkfh [plugin tell]')
-        self.failUnless('let you do' in m.args[1])
+        self.assertTrue('let you do' in m.args[1])
         m = self.getMsg('tell #foo [plugin tell]')
-        self.failUnless('No need for' in m.args[1])
+        self.assertTrue('No need for' in m.args[1])
         m = self.getMsg('tell me you love me')
         m = self.irc.takeMsg()
-        self.failUnless(m.args[0] == self.nick)
+        self.assertTrue(m.args[0] == self.nick)
 
     def testNoNestedTell(self):
         self.assertRegexp('echo [tell %s foo]' % self.nick, 'nested')
 
     def testTellDoesNotPropogateAction(self):
         m = self.getMsg('tell foo [action bar]')
-        self.failIf(ircmsgs.isAction(m))
+        self.assertFalse(ircmsgs.isAction(m))
 
     def testLast(self):
         orig = conf.supybot.plugins.Misc.timestampFormat()

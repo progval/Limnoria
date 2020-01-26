@@ -169,13 +169,13 @@ class IrcMsgQueueTestCase(SupyTestCase):
         q.enqueue(self.msg)
         q.enqueue(self.msg)
         q.enqueue(self.msg)
-        self.failUnless(self.msg in q)
+        self.assertTrue(self.msg in q)
         q.dequeue()
-        self.failUnless(self.msg in q)
+        self.assertTrue(self.msg in q)
         q.dequeue()
-        self.failUnless(self.msg in q)
+        self.assertTrue(self.msg in q)
         q.dequeue()
-        self.failIf(self.msg in q)
+        self.assertFalse(self.msg in q)
 
     def testRepr(self):
         q = irclib.IrcMsgQueue()
@@ -189,14 +189,14 @@ class IrcMsgQueueTestCase(SupyTestCase):
 
     def testEmpty(self):
         q = irclib.IrcMsgQueue()
-        self.failIf(q)
+        self.assertFalse(q)
 
     def testEnqueueDequeue(self):
         q = irclib.IrcMsgQueue()
         q.enqueue(self.msg)
-        self.failUnless(q)
+        self.assertTrue(q)
         self.assertEqual(self.msg, q.dequeue())
-        self.failIf(q)
+        self.assertFalse(q)
         q.enqueue(self.msg)
         q.enqueue(self.notice)
         self.assertEqual(self.msg, q.dequeue())
@@ -236,7 +236,7 @@ class IrcMsgQueueTestCase(SupyTestCase):
             q.enqueue(self.msg)
             q.enqueue(self.msg)
             self.assertEqual(self.msg, q.dequeue())
-            self.failIf(q)
+            self.assertFalse(q)
         finally:
             configVar.setValue(original)
 
@@ -278,39 +278,39 @@ class ChannelStateTestCase(SupyTestCase):
         c1 = pickle.loads(pickle.dumps(c))
         self.assertEqual(c, c1)
         c.removeUser('jemfinch')
-        self.failIf('jemfinch' in c.users)
-        self.failUnless('jemfinch' in c1.users)
+        self.assertFalse('jemfinch' in c.users)
+        self.assertTrue('jemfinch' in c1.users)
 
     def testCopy(self):
         c = irclib.ChannelState()
         c.addUser('jemfinch')
         c1 = copy.deepcopy(c)
         c.removeUser('jemfinch')
-        self.failIf('jemfinch' in c.users)
-        self.failUnless('jemfinch' in c1.users)
+        self.assertFalse('jemfinch' in c.users)
+        self.assertTrue('jemfinch' in c1.users)
 
     def testAddUser(self):
         c = irclib.ChannelState()
         c.addUser('foo')
-        self.failUnless('foo' in c.users)
-        self.failIf('foo' in c.ops)
-        self.failIf('foo' in c.voices)
-        self.failIf('foo' in c.halfops)
+        self.assertTrue('foo' in c.users)
+        self.assertFalse('foo' in c.ops)
+        self.assertFalse('foo' in c.voices)
+        self.assertFalse('foo' in c.halfops)
         c.addUser('+bar')
-        self.failUnless('bar' in c.users)
-        self.failUnless('bar' in c.voices)
-        self.failIf('bar' in c.ops)
-        self.failIf('bar' in c.halfops)
+        self.assertTrue('bar' in c.users)
+        self.assertTrue('bar' in c.voices)
+        self.assertFalse('bar' in c.ops)
+        self.assertFalse('bar' in c.halfops)
         c.addUser('%baz')
-        self.failUnless('baz' in c.users)
-        self.failUnless('baz' in c.halfops)
-        self.failIf('baz' in c.voices)
-        self.failIf('baz' in c.ops)
+        self.assertTrue('baz' in c.users)
+        self.assertTrue('baz' in c.halfops)
+        self.assertFalse('baz' in c.voices)
+        self.assertFalse('baz' in c.ops)
         c.addUser('@quuz')
-        self.failUnless('quuz' in c.users)
-        self.failUnless('quuz' in c.ops)
-        self.failIf('quuz' in c.halfops)
-        self.failIf('quuz' in c.voices)
+        self.assertTrue('quuz' in c.users)
+        self.assertTrue('quuz' in c.ops)
+        self.assertFalse('quuz' in c.halfops)
+        self.assertFalse('quuz' in c.voices)
 
 
 class IrcStateTestCase(SupyTestCase):
@@ -327,7 +327,7 @@ class IrcStateTestCase(SupyTestCase):
         st.channels['#foo'] = irclib.ChannelState()
         m = ircmsgs.kick('#foo', self.irc.nick, prefix=self.irc.prefix)
         st.addMsg(self.irc, m)
-        self.failIf('#foo' in st.channels)
+        self.assertFalse('#foo' in st.channels)
 
     def testAddMsgRemovesOpsProperly(self):
         st = irclib.IrcState()
@@ -335,19 +335,19 @@ class IrcStateTestCase(SupyTestCase):
         st.channels['#foo'].ops.add('bar')
         m = ircmsgs.mode('#foo', ('-o', 'bar'))
         st.addMsg(self.irc, m)
-        self.failIf('bar' in st.channels['#foo'].ops)
+        self.assertFalse('bar' in st.channels['#foo'].ops)
 
     def testNickChangesChangeChannelUsers(self):
         st = irclib.IrcState()
         st.channels['#foo'] = irclib.ChannelState()
         st.channels['#foo'].addUser('@bar')
-        self.failUnless('bar' in st.channels['#foo'].users)
-        self.failUnless(st.channels['#foo'].isOp('bar'))
+        self.assertTrue('bar' in st.channels['#foo'].users)
+        self.assertTrue(st.channels['#foo'].isOp('bar'))
         st.addMsg(self.irc, ircmsgs.IrcMsg(':bar!asfd@asdf.com NICK baz'))
-        self.failIf('bar' in st.channels['#foo'].users)
-        self.failIf(st.channels['#foo'].isOp('bar'))
-        self.failUnless('baz' in st.channels['#foo'].users)
-        self.failUnless(st.channels['#foo'].isOp('baz'))
+        self.assertFalse('bar' in st.channels['#foo'].users)
+        self.assertFalse(st.channels['#foo'].isOp('bar'))
+        self.assertTrue('baz' in st.channels['#foo'].users)
+        self.assertTrue(st.channels['#foo'].isOp('baz'))
 
     def testHistory(self):
         if len(msgs) < 10:
@@ -360,7 +360,7 @@ class IrcStateTestCase(SupyTestCase):
                     state.addMsg(self.irc, msg)
                 except Exception:
                     pass
-                self.failIf(len(state.history) > maxHistoryLength())
+                self.assertFalse(len(state.history) > maxHistoryLength())
             self.assertEqual(len(state.history), maxHistoryLength())
             self.assertEqual(list(state.history),
                              msgs[len(msgs) - maxHistoryLength():])
@@ -414,19 +414,19 @@ class IrcStateTestCase(SupyTestCase):
         state = irclib.IrcState()
         stateCopy = state.copy()
         state.channels['#foo'] = None
-        self.failIf('#foo' in stateCopy.channels)
+        self.assertFalse('#foo' in stateCopy.channels)
 
     def testJoin(self):
         st = irclib.IrcState()
         st.addMsg(self.irc, ircmsgs.join('#foo', prefix=self.irc.prefix))
-        self.failUnless('#foo' in st.channels)
-        self.failUnless(self.irc.nick in st.channels['#foo'].users)
+        self.assertTrue('#foo' in st.channels)
+        self.assertTrue(self.irc.nick in st.channels['#foo'].users)
         st.addMsg(self.irc, ircmsgs.join('#foo', prefix='foo!bar@baz'))
-        self.failUnless('foo' in st.channels['#foo'].users)
+        self.assertTrue('foo' in st.channels['#foo'].users)
         st2 = st.copy()
         st.addMsg(self.irc, ircmsgs.quit(prefix='foo!bar@baz'))
-        self.failIf('foo' in st.channels['#foo'].users)
-        self.failUnless('foo' in st2.channels['#foo'].users)
+        self.assertFalse('foo' in st.channels['#foo'].users)
+        self.assertTrue('foo' in st2.channels['#foo'].users)
 
 
     def testEq(self):
@@ -444,23 +444,23 @@ class IrcStateTestCase(SupyTestCase):
     def testHandlesModes(self):
         st = irclib.IrcState()
         st.addMsg(self.irc, ircmsgs.join('#foo', prefix=self.irc.prefix))
-        self.failIf('bar' in st.channels['#foo'].ops)
+        self.assertFalse('bar' in st.channels['#foo'].ops)
         st.addMsg(self.irc, ircmsgs.op('#foo', 'bar'))
-        self.failUnless('bar' in st.channels['#foo'].ops)
+        self.assertTrue('bar' in st.channels['#foo'].ops)
         st.addMsg(self.irc, ircmsgs.deop('#foo', 'bar'))
-        self.failIf('bar' in st.channels['#foo'].ops)
+        self.assertFalse('bar' in st.channels['#foo'].ops)
 
-        self.failIf('bar' in st.channels['#foo'].voices)
+        self.assertFalse('bar' in st.channels['#foo'].voices)
         st.addMsg(self.irc, ircmsgs.voice('#foo', 'bar'))
-        self.failUnless('bar' in st.channels['#foo'].voices)
+        self.assertTrue('bar' in st.channels['#foo'].voices)
         st.addMsg(self.irc, ircmsgs.devoice('#foo', 'bar'))
-        self.failIf('bar' in st.channels['#foo'].voices)
+        self.assertFalse('bar' in st.channels['#foo'].voices)
 
-        self.failIf('bar' in st.channels['#foo'].halfops)
+        self.assertFalse('bar' in st.channels['#foo'].halfops)
         st.addMsg(self.irc, ircmsgs.halfop('#foo', 'bar'))
-        self.failUnless('bar' in st.channels['#foo'].halfops)
+        self.assertTrue('bar' in st.channels['#foo'].halfops)
         st.addMsg(self.irc, ircmsgs.dehalfop('#foo', 'bar'))
-        self.failIf('bar' in st.channels['#foo'].halfops)
+        self.assertFalse('bar' in st.channels['#foo'].halfops)
 
     def testDoModeOnlyChannels(self):
         st = irclib.IrcState()
@@ -471,14 +471,14 @@ class IrcCapsTestCase(SupyTestCase):
         self.irc = irclib.Irc('test')
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+        self.assertTrue(m.command == 'NICK', 'Expected NICK, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+        self.assertTrue(m.command == 'USER', 'Expected USER, got %r.' % m)
 
         self.irc.REQUEST_CAPABILITIES = set(['a'*400, 'b'*400])
         caps = ' '.join(self.irc.REQUEST_CAPABILITIES)
@@ -488,12 +488,12 @@ class IrcCapsTestCase(SupyTestCase):
             args=('*', 'LS', 'b'*400)))
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args[0], 'REQ', m)
         self.assertEqual(m.args[1], 'a'*400)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args[0], 'REQ', m)
         self.assertEqual(m.args[1], 'b'*400)
 
@@ -502,17 +502,17 @@ class IrcTestCase(SupyTestCase):
         self.irc = irclib.Irc('test')
 
         #m = self.irc.takeMsg()
-        #self.failUnless(m.command == 'PASS', 'Expected PASS, got %r.' % m)
+        #self.assertTrue(m.command == 'PASS', 'Expected PASS, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+        self.assertTrue(m.command == 'NICK', 'Expected NICK, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+        self.assertTrue(m.command == 'USER', 'Expected USER, got %r.' % m)
 
         # TODO
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
@@ -521,7 +521,7 @@ class IrcTestCase(SupyTestCase):
             args=('*', 'LS', 'extended-join')))
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args[0], 'REQ', m)
         # NOTE: Capabilities are requested in alphabetic order, because
         # sets are unordered, and their "order" is nondeterministic.
@@ -531,11 +531,11 @@ class IrcTestCase(SupyTestCase):
             args=('*', 'ACK', 'account-tag multi-prefix extended-join')))
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args, ('END',), m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m is None, m)
+        self.assertTrue(m is None, m)
 
     def testPingResponse(self):
         self.irc.feedMsg(ircmsgs.ping('123'))
@@ -547,11 +547,11 @@ class IrcTestCase(SupyTestCase):
         self.irc.feedMsg(ircmsgs.IrcMsg('433 * %s :Nickname already in use.' %\
                                         self.irc.nick))
         msg = self.irc.takeMsg()
-        self.failUnless(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
+        self.assertTrue(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
         self.irc.feedMsg(ircmsgs.IrcMsg('433 * %s :Nickname already in use.' %\
                                         self.irc.nick))
         msg = self.irc.takeMsg()
-        self.failUnless(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
+        self.assertTrue(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
 
     def testSendBeforeQueue(self):
         while self.irc.takeMsg() is not None:
@@ -559,14 +559,14 @@ class IrcTestCase(SupyTestCase):
         self.irc.queueMsg(ircmsgs.IrcMsg('NOTICE #foo bar'))
         self.irc.sendMsg(ircmsgs.IrcMsg('PRIVMSG #foo yeah!'))
         msg = self.irc.takeMsg()
-        self.failUnless(msg.command == 'PRIVMSG')
+        self.assertTrue(msg.command == 'PRIVMSG')
         msg = self.irc.takeMsg()
-        self.failUnless(msg.command == 'NOTICE')
+        self.assertTrue(msg.command == 'NOTICE')
 
     def testNoMsgLongerThan512(self):
         self.irc.queueMsg(ircmsgs.privmsg('whocares', 'x'*1000))
         msg = self.irc.takeMsg()
-        self.failUnless(len(msg) <= 512, 'len(msg) was %s' % len(msg))
+        self.assertTrue(len(msg) <= 512, 'len(msg) was %s' % len(msg))
 
     def testReset(self):
         for msg in msgs:
@@ -575,9 +575,9 @@ class IrcTestCase(SupyTestCase):
             except:
                 pass
         self.irc.reset()
-        self.failIf(self.irc.state.history)
-        self.failIf(self.irc.state.channels)
-        self.failIf(self.irc.outstandingPing)
+        self.assertFalse(self.irc.state.history)
+        self.assertFalse(self.irc.state.channels)
+        self.assertFalse(self.irc.outstandingPing)
 
     def testHistory(self):
         self.irc.reset()
@@ -691,21 +691,21 @@ class SaslTestCase(SupyTestCase):
 
     def startCapNegociation(self, caps='sasl'):
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+        self.assertTrue(m.command == 'NICK', 'Expected NICK, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+        self.assertTrue(m.command == 'USER', 'Expected USER, got %r.' % m)
 
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
             args=('*', 'LS', caps)))
 
         if caps:
             m = self.irc.takeMsg()
-            self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+            self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
             self.assertEqual(m.args[0], 'REQ', m)
             self.assertEqual(m.args[1], 'sasl')
 
@@ -714,7 +714,7 @@ class SaslTestCase(SupyTestCase):
 
     def endCapNegociation(self):
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args, ('END',), m)
 
     def testPlain(self):
@@ -850,7 +850,7 @@ class SaslTestCase(SupyTestCase):
             conf.supybot.networks.test.sasl.password.setValue('')
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
         self.assertEqual(m.args[0], 'REQ', m)
         self.assertEqual(m.args[1], 'sasl')
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',

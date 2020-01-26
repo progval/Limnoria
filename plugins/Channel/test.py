@@ -116,18 +116,18 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         self.assertNotError('op')
         m = self.getMsg('op foo')
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+o', 'foo'))
         m = self.getMsg('op foo bar')
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+o', 'foo'))
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+o', 'bar'))
         self.irc.state.supported['MODES'] = 2
         m = self.getMsg('op foo bar')
         try:
-            self.failUnless(m.command == 'MODE' and
+            self.assertTrue(m.command == 'MODE' and
                             m.args == (self.channel, '+oo', 'foo', 'bar'))
         finally:
             self.irc.state.supported['MODES'] = 1
@@ -137,13 +137,13 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         self.assertNotError('halfop')
         m = self.getMsg('halfop foo')
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+h', 'foo'))
         m = self.getMsg('halfop foo bar')
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+h', 'foo'))
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+h', 'bar'))
 
     def testVoice(self):
@@ -151,13 +151,13 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         self.assertNotError('voice')
         m = self.getMsg('voice foo')
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+v', 'foo'))
         m = self.getMsg('voice foo bar')
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+v', 'foo'))
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'MODE' and
+        self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+v', 'bar'))
 
     def assertKban(self, query, hostmask, **kwargs):

@@ -193,7 +193,7 @@ class ConverterTestCase(CommandsTestCase):
 
 class FirstTestCase(CommandsTestCase):
     def testRepr(self):
-        self.failUnless(repr(first('int')))
+        self.assertTrue(repr(first('int')))
 
     def testFirstConverterFailsAndNotErroredState(self):
         self.assertStateErrored([first('int', 'something')], ['words'],

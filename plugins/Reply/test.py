@@ -34,7 +34,7 @@ class ReplyTestCase(ChannelPluginTestCase):
     plugins = ('Reply',)
     def testPrivate(self):
         m = self.getMsg('private [list]')
-        self.failIf(self.irc.isChannel(m.args[0]))
+        self.assertFalse(self.irc.isChannel(m.args[0]))
 
     def testNotice(self):
         m = self.getMsg('notice [list]')
@@ -62,6 +62,6 @@ class ReplyNonChannelTestCase(PluginTestCase):
         self.prefix = 'something!else@somewhere.else'
         self.nick = 'something'
         m = self.assertAction('action foo', 'foo')
-        self.failIf(m.args[0] == self.irc.nick)
+        self.assertFalse(m.args[0] == self.irc.nick)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

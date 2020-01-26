@@ -105,23 +105,23 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.feedMsg('this message has some stuff in it')
         m = self.getMsg(' ')
-        self.failUnless(str(m).startswith('PRIVMSG #test :i saw some stuff'))
+        self.assertTrue(str(m).startswith('PRIVMSG #test :i saw some stuff'))
     
     def testMaxTriggers(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertNotError('messageparser add "sbd" "echo i saw somebody"')
         self.feedMsg('this message issued by sbd has some stuff in it')
         m = self.getMsg(' ')
-        self.failUnless(str(m).startswith('PRIVMSG #test :i saw some'))
+        self.assertTrue(str(m).startswith('PRIVMSG #test :i saw some'))
         m = self.getMsg(' ')
-        self.failUnless(str(m).startswith('PRIVMSG #test :i saw some'))
+        self.assertTrue(str(m).startswith('PRIVMSG #test :i saw some'))
 
         with conf.supybot.plugins.messageparser.maxtriggers.context(1):
             self.feedMsg('this message issued by sbd has some stuff in it')
             m = self.getMsg(' ')
-            self.failUnless(str(m).startswith('PRIVMSG #test :i saw some'))
+            self.assertTrue(str(m).startswith('PRIVMSG #test :i saw some'))
             m = self.getMsg(' ')
-            self.failIf(m)
+            self.assertFalse(m)
 
     def testLock(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
