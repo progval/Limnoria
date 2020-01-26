@@ -44,7 +44,7 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Math')
 
 from .local import convertcore
-from .evaluator import safe_eval, InvalidNode, SAFE_ENV
+from supybot.utils.math_evaluator import safe_eval, InvalidNode, SAFE_ENV
 
 baseArg = ('int', 'base', lambda i: i <= 36)
 
