@@ -267,9 +267,9 @@ class AkaTestCase(PluginTestCase):
 
     def testList(self):
         self.assertNotError('aka add foo bar')
-        self.assertRegexp('aka list', 'foo.*?bar \$\*')
+        self.assertRegexp('aka list', r'foo.*?bar \$\*')
         self.assertNotError('aka add "foo bar" baz')
-        self.assertRegexp('aka list', 'foo.*?bar \$\*.*?foo bar.*?baz \$\*')
+        self.assertRegexp('aka list', r'foo.*?bar \$\*.*?foo bar.*?baz \$\*')
 
     def testListLockedUnlocked(self):
         self.assertNotError('register tacocat hunter2')

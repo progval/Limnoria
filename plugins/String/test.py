@@ -130,7 +130,7 @@ class StringTestCase(PluginTestCase):
         self.assertNotRegexp('re foo bar baz', 'unpack list of wrong size')
 
     def testReBug850931(self):
-        self.assertResponse('re s/\b(\w+)\b/\1./g foo bar baz',
+        self.assertResponse(r're s/\b(\w+)\b/\1./g foo bar baz',
                             'foo. bar. baz.')
 
     def testNotOverlongRe(self):
