@@ -116,9 +116,9 @@ class StringTestCase(PluginTestCase):
         self.assertResponse('re s/user/luser/g user user', 'luser luser')
         self.assertResponse('re s/user/luser/ user user', 'luser user')
         self.assertNotRegexp('re m/foo/ bar', 'has no attribute')
-        self.assertResponse('re m/a\S+y/ "the bot angryman is hairy"','angry')
-        self.assertResponse('re m/a\S+y/g "the bot angryman is hairy"',
-                'angry and airy')
+        self.assertResponse('re m/a\\S+y/ "the bot angryman is hairy"', 'angry')
+        self.assertResponse('re m/a\\S+y/g "the bot angryman is hairy"',
+                            'angry and airy')
 
     def testReNotEmptyString(self):
         self.assertError('re s//foo/g blah')

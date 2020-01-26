@@ -34,28 +34,28 @@ import sqlite3
 
 
 class MessageParserTestCase(ChannelPluginTestCase):
-    plugins = ('MessageParser','Utilities','User') 
+    plugins = ('MessageParser','Utilities','User')
     #utilities for the 'echo'
     #user for register for testVacuum
-    
+
     def testAdd(self):
         self.assertError('messageparser add') #no args
         self.assertError('messageparser add "stuff"') #no action arg
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertRegexp('messageparser show "stuff"', '.*i saw some stuff.*')
-        
+
         self.assertError('messageparser add "[a" "echo stuff"') #invalid regexp
         self.assertError('messageparser add "(a" "echo stuff"') #invalid regexp
         self.assertNotError('messageparser add "stuff" "echo i saw no stuff"') #overwrite existing regexp
         self.assertRegexp('messageparser show "stuff"', '.*i saw no stuff.*')
-        
-        
+
+
         try:
             world.testing = False
             origuser = self.prefix
             self.prefix = 'stuff!stuff@stuff'
             self.assertNotError('register nottester stuff', private=True)
-            
+
             self.assertError('messageparser add "aoeu" "echo vowels are nice"')
             origconf = conf.supybot.plugins.MessageParser.requireManageCapability()
             conf.supybot.plugins.MessageParser.requireManageCapability.setValue('')
@@ -84,13 +84,13 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.feedMsg('this a')
         self.assertResponse(' ', '$1')
         self.assertNotError('messageparser remove "this( .+)? a(.*)"')
-        
+
     def testShow(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertRegexp('messageparser show "nostuff"', 'there is no such regexp trigger')
         self.assertRegexp('messageparser show "stuff"', '.*i saw some stuff.*')
         self.assertRegexp('messageparser show --id 1', '.*i saw some stuff.*')
-    
+
     def testInfo(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertRegexp('messageparser info "nostuff"', 'there is no such regexp trigger')
@@ -100,13 +100,13 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.feedMsg('this message has some stuff in it')
         self.getMsg(' ')
         self.assertRegexp('messageparser info "stuff"', 'has been triggered 1 times')
-    
+
     def testTrigger(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.feedMsg('this message has some stuff in it')
         m = self.getMsg(' ')
         self.assertTrue(str(m).startswith('PRIVMSG #test :i saw some stuff'))
-    
+
     def testMaxTriggers(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertNotError('messageparser add "sbd" "echo i saw somebody"')
@@ -129,7 +129,7 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.assertError('messageparser add "stuff" "echo some other stuff"')
         self.assertError('messageparser remove "stuff"')
         self.assertRegexp('messageparser info "stuff"', 'is locked')
-    
+
     def testUnlock(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertNotError('messageparser lock "stuff"')
@@ -137,26 +137,26 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.assertNotError('messageparser unlock "stuff"')
         self.assertRegexp('messageparser info "stuff"', 'is not locked')
         self.assertNotError('messageparser remove "stuff"')
-        
+
     def testRank(self):
-        self.assertRegexp('messageparser rank', 
-                'There are no regexp triggers in the database\.')
+        self.assertRegexp('messageparser rank',
+                          r'There are no regexp triggers in the database\.')
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
-        self.assertRegexp('messageparser rank', '#1 "stuff" \(0\)')
+        self.assertRegexp('messageparser rank', r'#1 "stuff" \(0\)')
         self.assertNotError('messageparser add "aoeu" "echo vowels are nice!"')
-        self.assertRegexp('messageparser rank', '#1 "stuff" \(0\), #2 "aoeu" \(0\)')
+        self.assertRegexp('messageparser rank', r'#1 "stuff" \(0\), #2 "aoeu" \(0\)')
         self.feedMsg('instead of asdf, dvorak has aoeu')
         self.getMsg(' ')
-        self.assertRegexp('messageparser rank', '#1 "aoeu" \(1\), #2 "stuff" \(0\)')
-        
+        self.assertRegexp('messageparser rank', r'#1 "aoeu" \(1\), #2 "stuff" \(0\)')
+
     def testList(self):
-        self.assertRegexp('messageparser list', 
-                'There are no regexp triggers in the database\.')
+        self.assertRegexp('messageparser list',
+                          r'There are no regexp triggers in the database\.')
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertRegexp('messageparser list', '\x02#1\x02: stuff')
         self.assertNotError('messageparser add "aoeu" "echo vowels are nice!"')
         self.assertRegexp('messageparser list', '\x02#1\x02: stuff, \x02#2\x02: aoeu')
-        
+
     def testRemove(self):
         self.assertError('messageparser remove "stuff"')
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
@@ -166,7 +166,7 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.assertNotError('messageparser remove "stuff"')
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertNotError('messageparser remove --id 1')
-        
+
     def testVacuum(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertNotError('messageparser remove "stuff"')
@@ -179,7 +179,7 @@ class MessageParserTestCase(ChannelPluginTestCase):
             self.prefix = 'stuff!stuff@stuff'
             self.assertNotError('register nottester stuff', private=True)
             self.assertError('messageparser vacuum')
-            
+
             orig = conf.supybot.plugins.MessageParser.requireVacuumCapability()
             conf.supybot.plugins.MessageParser.requireVacuumCapability.setValue('')
             self.assertNotError('messageparser vacuum')
@@ -187,10 +187,10 @@ class MessageParserTestCase(ChannelPluginTestCase):
             world.testing = True
             self.prefix = original
             conf.supybot.plugins.MessageParser.requireVacuumCapability.setValue(orig)
-    
+
     def testKeepRankInfo(self):
         orig = conf.supybot.plugins.MessageParser.keepRankInfo()
-        
+
         try:
             conf.supybot.plugins.MessageParser.keepRankInfo.setValue(False)
             self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
@@ -199,9 +199,9 @@ class MessageParserTestCase(ChannelPluginTestCase):
             self.assertRegexp('messageparser info "stuff"', 'has been triggered 0 times')
         finally:
             conf.supybot.plugins.MessageParser.keepRankInfo.setValue(orig)
-        
+
         self.feedMsg('this message has some stuff in it')
         self.getMsg(' ')
         self.assertRegexp('messageparser info "stuff"', 'has been triggered 1 times')
-        
+
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -170,23 +170,23 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertNotError('learn moped is pretty fast')
         self.assertRegexp('moe', 'mooz.*moped')
         self.assertError('nosuchthing')
-    
+
     def testWhatis(self):
         self.assertNotError('learn foo is bar')
         self.assertRegexp('whatis foo', 'bar')
         self.assertRegexp('whatis foob', 'foo')
         self.assertNotError('learn foob is barb')
         self.assertRegexp('whatis foom', 'foo.*foob')
-    
+
     def testStandardSubstitute(self):
         self.assertNotError('learn foo is this is $channel, and hour is $hour')
-        self.assertRegexp('whatis foo', 'this is #test, and hour is \d{1,2}')
-        self.assertRegexp('whatis --raw foo', 'this is \$channel, and hour is \$hour')
+        self.assertRegexp('whatis foo', r'this is #test, and hour is \d{1,2}')
+        self.assertRegexp('whatis --raw foo', r'this is \$channel, and hour is \$hour')
         self.assertNotError('learn bar is this is $$channel escaped')
-        self.assertRegexp('whatis bar', 'this is \$channel')
+        self.assertRegexp('whatis bar', r'this is \$channel')
         self.assertNotError('learn bar is this is $minute')
-        self.assertRegexp('whatis bar', '\$channel.*\d{1,2}')
-        
+        self.assertRegexp('whatis bar', r'\$channel.*\d{1,2}')
+
     def testAlias(self):
         self.assertNotError('learn foo is bar')
         self.assertNotError('alias foo zoog')
@@ -195,19 +195,19 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertError('alias foo gnoop')
         self.assertNotError('alias foo gnoop 2')
         self.assertRegexp('whatis gnoop', 'snorp')
-    
+
     def testRank(self):
         self.assertNotError('learn foo is bar')
         self.assertNotError('learn moo is cow')
-        self.assertRegexp('factoids rank', '#1 foo \(0\), #2 moo \(0\)')
-        self.assertRegexp('whatis moo', '.*cow.*')
-        self.assertRegexp('factoids rank', '#1 moo \(1\), #2 foo \(0\)')
-        self.assertRegexp('factoids rank 1', '#1 moo \(1\)')
+        self.assertRegexp('factoids rank', r'#1 foo \(0\), #2 moo \(0\)')
+        self.assertRegexp('whatis moo', r'.*cow.*')
+        self.assertRegexp('factoids rank', r'#1 moo \(1\), #2 foo \(0\)')
+        self.assertRegexp('factoids rank 1', r'#1 moo \(1\)')
         self.assertNotRegexp('factoids rank 1', 'foo')
         self.assertRegexp('factoids rank --plain', 'moo, foo')
         self.assertRegexp('factoids rank --plain --alpha', 'foo, moo')
         self.assertResponse('factoids rank --plain 1', 'moo')
-    
+
     def testQuoteHandling(self):
         self.assertNotError('learn foo is "\\"bar\\""')
         self.assertRegexp('whatis foo', r'"bar"')

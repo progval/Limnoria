@@ -144,7 +144,7 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertAction('moo3', 'foo')
         # Test and make sure it's parsing
         self.assertNotError('moo4 is <reply>(1|2|3)')
-        self.assertRegexp('moo4', '^(1|2|3)$')
+        self.assertRegexp('moo4', r'^(1|2|3)$')
         # Check case-insensitivity
         self.assertResponse('MOO', 'foo')
         self.assertResponse('mOo', 'foo')
@@ -158,30 +158,30 @@ class FactoidsTestCase(ChannelPluginTestCase):
 
     def testFactinfo(self):
         self.assertNotError('moo is <reply>foo')
-        self.assertRegexp('factinfo moo', '^moo: Created by tester on.*$')
+        self.assertRegexp('factinfo moo', r'^moo: Created by tester on.*$')
         self.assertNotError('moo')
-        self.assertRegexp('factinfo moo', self.prefix + '.*1 time')
+        self.assertRegexp('factinfo moo', self.prefix + r'.*1 time')
         self.assertNotError('moo')
-        self.assertRegexp('factinfo moo', self.prefix + '.*2 times')
+        self.assertRegexp('factinfo moo', self.prefix + r'.*2 times')
         self.assertNotError('moo =~ s/foo/bar/')
         self.assertRegexp('factinfo moo',
-                          '^moo: Created by tester on'
-                          '.*?\. Last modified by tester on .*?\. '
-                          'Last requested by %s on .*?, '
-                          'requested 2 times.$' % self.prefix)
+                          r'^moo: Created by tester on'
+                          r'.*?\. Last modified by tester on .*?\. '
+                          r'Last requested by %s on .*?, '
+                          r'requested 2 times.$' % self.prefix)
         self.assertNotError('lock moo')
         self.assertRegexp('factinfo moo',
-                          '^moo: Created by tester on'
-                          '.*?\. Last modified by tester on .*?\. '
-                          'Last requested by %s on .*?, '
-                          'requested 2 times. '
-                          'Locked by tester on .*\.$' % self.prefix)
+                          r'^moo: Created by tester on'
+                          r'.*?\. Last modified by tester on .*?\. '
+                          r'Last requested by %s on .*?, '
+                          r'requested 2 times. '
+                          r'Locked by tester on .*\.$' % self.prefix)
         self.assertNotError('unlock moo')
         self.assertRegexp('factinfo moo',
-                          '^moo: Created by tester on'
-                          '.*?\. Last modified by tester on .*?\. '
-                          'Last requested by %s on .*?, '
-                          'requested 2 times.$' % self.prefix)
+                          r'^moo: Created by tester on'
+                          r'.*?\. Last modified by tester on .*?\. '
+                          r'Last requested by %s on .*?, '
+                          r'requested 2 times.$' % self.prefix)
         # Make sure I solved this bug
         # Check and make sure all the other stuff is reset
         self.assertNotError('foo is bar')
@@ -189,8 +189,8 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertNotError('foo')
         self.assertNotError('no foo is baz')
         self.assertRegexp('factinfo foo',
-                          '^foo: Created by tester on'
-                          '(?!(request|modif)).*?\.$')
+                          r'^foo: Created by tester on'
+                          r'(?!(request|modif)).*?\.$')
 
     def testLockUnlock(self):
         # disable world.testing since we want new users to not
@@ -200,22 +200,22 @@ class FactoidsTestCase(ChannelPluginTestCase):
             self.assertNotError('moo is <reply>moo')
             self.assertNotError('lock moo')
             self.assertRegexp('factinfo moo',
-                              '^moo: Created by tester on'
-                              '.*?\. Locked by tester on .*?\.')
+                              r'^moo: Created by tester on'
+                              r'.*?\. Locked by tester on .*?\.')
             # switch user
             original = self.prefix
             self.prefix = 'moo!moo@moo'
             self.assertNotError('register nottester moo', private=True)
             self.assertError('unlock moo')
             self.assertRegexp('factinfo moo',
-                              '^moo: Created by tester on'
-                              '.*?\. Locked by tester on .*?\.')
+                              r'^moo: Created by tester on'
+                              r'.*?\. Locked by tester on .*?\.')
             # switch back
             self.prefix = original
             self.assertNotError('identify tester moo', private=True)
             self.assertNotError('unlock moo')
             self.assertRegexp('factinfo moo',
-                              '^moo: Created by tester on.*?\.')
+                              r'^moo: Created by tester on.*?\.')
         finally:
             world.testing = True
 
@@ -246,10 +246,10 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertError('most popular')
         self.assertResponse('most authored',
                             'Most prolific author: moo (1)')
-        self.assertRegexp('most recent', "1 latest factoid:.*moogle")
+        self.assertRegexp('most recent', r"1 latest factoid:.*moogle")
         self.assertResponse('moogle', 'moo')
         self.assertRegexp('most popular',
-                            "Top 1 requested factoid:.*moogle.*(1)")
+                          r"Top 1 requested factoid:.*moogle.*(1)")
         # Check plural response
         time.sleep(1)
         self.prefix = userPrefix2
@@ -259,18 +259,18 @@ class FactoidsTestCase(ChannelPluginTestCase):
                            r'(moo.*\(1\).*boo.*\(1\)'
                            r'|boo.*\(1\).*moo.*\(1\))'))
         self.assertRegexp('most recent',
-                            "2 latest factoids:.*mogle.*moogle.*")
+                          r"2 latest factoids:.*mogle.*moogle.*")
         self.assertResponse('moogle', 'moo')
         self.assertRegexp('most popular',
-                            "Top 1 requested factoid:.*moogle.*(2)")
+                          r"Top 1 requested factoid:.*moogle.*(2)")
         self.assertResponse('mogle', 'mo')
         self.assertRegexp('most popular',
-                            "Top 2 requested factoids:.*"
-                            "moogle.*(2).*mogle.*(1)")
+                          r"Top 2 requested factoids:.*"
+                          r"moogle.*(2).*mogle.*(1)")
         # Check most author ordering
         self.assertNotError('moo is <reply>oom')
         self.assertRegexp('most authored',
-                            'Most prolific authors:.*boo.*(2).*moo.*(1)')
+                          r'Most prolific authors:.*boo.*(2).*moo.*(1)')
 
     def testListkeys(self):
         self.assertResponse('listkeys %', 'No keys matching "%" found.')
@@ -287,13 +287,13 @@ class FactoidsTestCase(ChannelPluginTestCase):
             for i in range(10):
                 self.assertNotError('moo%s is <reply>moo' % i)
             self.assertRegexp('listkeys moo',
-                              '^Key search for "moo" '
-                              '\(11 found\): ("moo\d*", )+and "moo9"$')
+                              r'^Key search for "moo" '
+                              r'\(11 found\): ("moo\d*", )+and "moo9"$')
             self.assertNotError('foo is bar')
             self.assertRegexp('listkeys %',
-                              '^Key search for "\%" '
-                              '\(12 found\): "foo", ("moo\d*", )+and '
-                              '"moo9"$')
+                              r'^Key search for "\%" '
+                              r'\(12 found\): "foo", ("moo\d*", )+and '
+                              r'"moo9"$')
             # Check quoting
             self.assertNotError('foo\' is bar')
             self.assertResponse('listkeys foo',
@@ -317,7 +317,7 @@ class FactoidsTestCase(ChannelPluginTestCase):
 
     def testListauth(self):
         self.assertNotError('moo is <reply>moo')
-        self.assertRegexp('listauth tester', 'tester.*\(1 found\):.*moo')
+        self.assertRegexp('listauth tester', r'tester.*\(1 found\):.*moo')
         self.assertError('listauth moo')
 
     def testRemove(self):

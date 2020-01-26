@@ -72,7 +72,7 @@ class UserTestCase(PluginTestCase):
         self.assertResponse('hostmask add bar *!*@foobar/*',
                 'Error: That hostmask is already registered to foo.',
                 frm=self.prefix2)
-        self.assertRegexp('hostmask list foo', '\*!\*@foobar/b',
+        self.assertRegexp('hostmask list foo', r'\*!\*@foobar/b',
                 frm=self.prefix1)
         self.assertNotRegexp('hostmask list bar', 'foobar',
                 frm=self.prefix2)

@@ -50,7 +50,7 @@ class TodoTestCase(PluginTestCase):
         self.assertRegexp('todo', '#1: wash my car')
         # Check that task
         self.assertRegexp('todo 1',
-                          'Todo for tester: wash my car \(Added .*?\)')
+                          r'Todo for tester: wash my car \(Added .*?\)')
         # Check that it lists all my tasks when given my name
         self.assertResponse('todo tester',
                             'Todo for tester: #1: wash my car')
@@ -61,7 +61,7 @@ class TodoTestCase(PluginTestCase):
         # Check error
         self.assertError('todo asfas')
         self.assertRegexp('todo asfas',
-                            'Error: \'asfas\' is not a valid task')
+                          'Error: \'asfas\' is not a valid task')
         # Check priority sorting
         self.assertNotError('todo setpriority 1 100')
         self.assertNotError('todo setpriority 2 10')
@@ -117,19 +117,19 @@ class TodoTestCase(PluginTestCase):
     def testSetPriority(self):
         self.assertNotError('todo add --priority=1 moo')
         self.assertRegexp('todo 1',
-                          'moo, priority: 1 \(Added at .*?\)')
+                          r'moo, priority: 1 \(Added at .*?\)')
         self.assertNotError('setpriority 1 50')
         self.assertRegexp('todo 1',
-                          'moo, priority: 50 \(Added at .*?\)')
+                          r'moo, priority: 50 \(Added at .*?\)')
         self.assertNotError('setpriority 1 0')
-        self.assertRegexp('todo 1', 'moo \(Added at .*?\)')
+        self.assertRegexp('todo 1', r'moo \(Added at .*?\)')
 
     def testChangeTodo(self):
         self.assertNotError('todo add moo')
         self.assertError('todo change 1 asdfas')
         self.assertError('todo change 1 m/asdfaf//')
         self.assertNotError('todo change 1 s/moo/foo/')
-        self.assertRegexp('todo 1', 'Todo for tester: foo \(Added .*?\)')
+        self.assertRegexp('todo 1', r'Todo for tester: foo \(Added .*?\)')
 
     def testActiveInactiveTodo(self):
         self.assertNotError('todo add foo')
