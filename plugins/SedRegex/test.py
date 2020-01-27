@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2017-2019, James Lu <james@overdrivenetworks.com>
+# Copyright (c) 2017-2020, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
 ###
 
 from __future__ import print_function
+import unittest
 from supybot.test import *
 
 class SedRegexTestCase(ChannelPluginTestCase):
@@ -173,6 +174,7 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('Segmentation fault (core dumped)', str(m))
 
+    @unittest.skipIf(world.disableMultiprocessing, "Test requires multiprocessing to be enabled")
     def testReDoSTimeout(self):
         # From https://snyk.io/blog/redos-and-catastrophic-backtracking/
         for idx in range(500):
