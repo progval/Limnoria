@@ -99,9 +99,9 @@ class Feed:
             plugin_is_loading=False, announced=None):
         assert name, name
         if not url:
-            if not utils.web.httpUrlRe.match(name):
-                raise InvalidFeedUrl(name)
             url = name
+        if not utils.web.httpUrlRe.match(url):
+            raise InvalidFeedUrl(url)
         self.name = name
         self.url = url
         self.initial = initial
@@ -560,9 +560,12 @@ class RSS(callbacks.Plugin):
         If <number of headlines> is given, return only that many headlines.
         """
         self.log.debug('Fetching %u', url)
-        feed = self.get_feed(url)
-        if not feed:
-            feed = Feed(url, url, True)
+        try:
+            feed = self.get_feed(url)
+            if not feed:
+                feed = Feed(url, url, True)
+        except InvalidFeedUrl:
+            irc.error('%s is not a valid feed URL or name.' % url, Raise=True)
         channel = msg.channel
         self.update_feed_if_needed(feed)
         entries = feed.entries
