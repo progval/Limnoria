@@ -27,15 +27,15 @@ msgstr "Fehlend \"%s\". Vielleicht solltest du deine Argumente in doppelte Anfü
 
 #: ../src/callbacks.py:318
 msgid "\"|\" with nothing preceding.  I obviously can't do a pipe with nothing before the |."
-msgstr ""
+msgstr "\"|\" mit nichts vorhergehendem.  Eine pipe ohne Eingangsmaterial vor dem | funktioniert nicht."
 
 #: ../src/callbacks.py:326
 msgid "Spurious \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
-msgstr ""
+msgstr "Falsche \"%s\".  Du solltest Zitate in doppelte Anführungszeichen packen um zu verhindern, dass zusätzliche Anführungszeichen als verschachtelte Befehle ausgewertet werden."
 
 #: ../src/callbacks.py:335
 msgid "\"|\" with nothing following.  I obviously can't do a pipe with nothing after the |."
-msgstr ""
+msgstr "\"|\" mit nichts nachfolgendem.  Eine pipe ohne Ziel nach dem | funktioniert nicht."
 
 #: ../src/callbacks.py:519
 msgid "%s is not a valid %s."
@@ -47,7 +47,7 @@ msgstr "%s nicht zulässig"
 
 #: ../src/callbacks.py:599
 msgid "You've attempted more nesting than is currently allowed on this bot."
-msgstr "Du hast versucht mehr zu Verschachteln wie momentan bei diesem Bot erlaubt ist."
+msgstr "Du hast versucht mehr zu Verschachteln als bei diesem Bot momentan erlaubt ist."
 
 #: ../src/callbacks.py:778
 msgid "The command %q is available in the %L plugins.  Please specify the plugin whose command you wish to call by using its name as a command before %q."
@@ -283,7 +283,7 @@ msgid ""
 "    printed for human reading should be formatted. Refer to the Python\n"
 "    documentation for the time module to see valid formatting characters for\n"
 "    time formats."
-msgstr ""
+msgstr "Legt fest wie Zeitstempel für das menschliche Lesen formattiert werden sollen. Schlag in der Python Dokumentation das time Modul nach um gültige Zeichen zu erfahren."
 
 #: ../src/conf.py:312
 msgid ""
@@ -296,14 +296,14 @@ msgid ""
 "Determines the absolute maximum length of\n"
 "    the bot's reply -- no reply will be passed through the bot with a length\n"
 "    greater than this."
-msgstr ""
+msgstr "Legt die absolut maximale Länge für Bot-Antworten fest. Keine Antwort länger als dieser Wert wird vom Bot zugelassen."
 
 #: ../src/conf.py:327
 msgid ""
 "Determines whether the bot will break up long\n"
 "    messages into chunks and allow users to use  the 'more' command to get the\n"
 "    remaining chunks."
-msgstr ""
+msgstr "Legt fest ob der Bot lange Nachrichten in mehrere Stücke unterteilt und der Nutzer mit dem more-Befehl die restlichen Stücke erhalten kann."
 
 #: ../src/conf.py:332
 msgid ""
@@ -316,7 +316,7 @@ msgid ""
 "Determines how long individual chunks\n"
 "    will be.  If set to 0, uses our super-tweaked,\n"
 "    get-the-most-out-of-an-individual-message default."
-msgstr ""
+msgstr "Legt fest wie lang einzelne Stücke sein werden. Beim Wert 0 wird unser super-getunter Nutze-alles-was-aus-einzelnen-Nachrichten-machbar-ist-Standard verwendet."
 
 #: ../src/conf.py:341
 msgid ""
