@@ -88,6 +88,17 @@ def only_one_at_once(f):
             lock[0] = False
     return newf
 
+def get_entry_id(entry):
+    # in order, try elements to use as unique identifier.
+    # http://validator.w3.org/feed/docs/rss2.html#hrelementsOfLtitemgt
+    id_elements = ('id', 'link', 'title', 'description')
+    for id_element in id_elements:
+        try:
+            return getattr(entry, id_element)
+        except AttributeError:
+            pass
+    raise ValueError('Feed entry is missing both title and description')
+
 class InvalidFeedUrl(ValueError):
     pass
 
@@ -340,17 +351,13 @@ class RSS(callbacks.Plugin):
             self.update_feed_if_needed(feed)
 
     def get_new_entries(self, feed):
-        # http://validator.w3.org/feed/docs/rss2.html#hrelementsOfLtitemgt
-        get_id = lambda entry: entry.id if hasattr(entry, 'id') else (
-                entry.title if hasattr(entry, 'title') else entry.description)
-
         with feed.lock:
             entries = feed.entries
             new_entries = [entry for entry in entries
-                    if get_id(entry) not in feed.announced_entries]
+                    if get_entry_id(entry) not in feed.announced_entries]
             if not new_entries:
                 return []
-            feed.announced_entries |= set(get_id(entry) for entry in new_entries)
+            feed.announced_entries |= set(get_entry_id(entry) for entry in new_entries)
             # We keep a little more because we don't want to re-announce
             # oldest entries if one of the newest gets removed.
             feed.announced_entries.truncate(10*len(entries))
