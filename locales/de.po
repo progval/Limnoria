@@ -567,7 +567,7 @@ msgid ""
 "Determines what error message the bot\n"
 "    replies with when someone tries to do something that requires them to be\n"
 "    registered but they're not currently recognized."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot antortet wenn jemand etwas versucht, das es erforderlich macht registriert zu sein, es aber nicht ist."
 
 #: ../src/conf.py:515
 msgid ""
@@ -582,7 +582,7 @@ msgid ""
 "Determines what error message is given when the bot\n"
 "    is telling someone they aren't cool enough to use the command they tried to\n"
 "    use."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot einer Person ausgibt, die nicht cool genug ist den Befehl auszuführen."
 
 #: ../src/conf.py:523
 msgid ""
@@ -594,7 +594,7 @@ msgid ""
 "    supybot.capabilities.default is set to False, meaning that no commands are\n"
 "    allowed unless explicitly in your capabilities.  Either way, you can't do\n"
 "    what you want to do."
-msgstr ""
+msgstr "Dir fehlen ein paar Fähigkeiten. Es könnte sein, dass du die Anti-Fähigkeit für diese Fähigkeit besitzt oder der Channel diese Anti-Fähigkeit als Standard bereitstellt oder die globalen Anti-Fähigkeiten diese als Standard bereitstellen. Es könnte auch sein, dass der Kanal oder supybot.capabilities.default auf False eingestellt sind, bedeutet es sind keinerlei Befehle erlaubt ausgenommen der explizit zugestandenen mittels Fähigkeiten. Wie dem auch sei, das was du versuchst funktioniert gerade nicht."
 
 #: ../src/conf.py:531
 msgid ""
@@ -602,7 +602,7 @@ msgid ""
 "    someone that they aren't cool enough to use the command they tried to use,\n"
 "    and the author of the code calling errorNoCapability didn't provide an\n"
 "    explicit capability for whatever reason."
-msgstr ""
+msgstr "Bestimt welche generische Fehlernachricht der Bot einer Person ausgibt, die nicht cool genug ist den Befehl auszuführen den sie versucht hat und der Autor des Codes hat keine bestimmte Fähigkeit dafür bereitgestellt."
 
 #: ../src/conf.py:537
 #, fuzzy
