@@ -27,15 +27,15 @@ msgstr "Fehlend \"%s\". Vielleicht solltest du deine Argumente in doppelte Anfü
 
 #: ../src/callbacks.py:318
 msgid "\"|\" with nothing preceding.  I obviously can't do a pipe with nothing before the |."
-msgstr ""
+msgstr "\"|\" mit nichts vorhergehendem.  Eine pipe ohne Eingangsmaterial vor dem | funktioniert nicht."
 
 #: ../src/callbacks.py:326
 msgid "Spurious \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
-msgstr ""
+msgstr "Falsche \"%s\".  Du solltest Zitate in doppelte Anführungszeichen packen um zu verhindern, dass zusätzliche Anführungszeichen als verschachtelte Befehle ausgewertet werden."
 
 #: ../src/callbacks.py:335
 msgid "\"|\" with nothing following.  I obviously can't do a pipe with nothing after the |."
-msgstr ""
+msgstr "\"|\" mit nichts nachfolgendem.  Eine pipe ohne Ziel nach dem | funktioniert nicht."
 
 #: ../src/callbacks.py:519
 msgid "%s is not a valid %s."
@@ -47,7 +47,7 @@ msgstr "%s nicht zulässig"
 
 #: ../src/callbacks.py:599
 msgid "You've attempted more nesting than is currently allowed on this bot."
-msgstr "Du hast versucht mehr zu Verschachteln wie momentan bei diesem Bot erlaubt ist."
+msgstr "Du hast versucht mehr zu Verschachteln als bei diesem Bot momentan erlaubt ist."
 
 #: ../src/callbacks.py:778
 msgid "The command %q is available in the %L plugins.  Please specify the plugin whose command you wish to call by using its name as a command before %q."
@@ -283,7 +283,7 @@ msgid ""
 "    printed for human reading should be formatted. Refer to the Python\n"
 "    documentation for the time module to see valid formatting characters for\n"
 "    time formats."
-msgstr ""
+msgstr "Legt fest wie Zeitstempel für das menschliche Lesen formattiert werden sollen. Schlag in der Python Dokumentation das time Modul nach um gültige Zeichen zu erfahren."
 
 #: ../src/conf.py:312
 msgid ""
@@ -296,14 +296,14 @@ msgid ""
 "Determines the absolute maximum length of\n"
 "    the bot's reply -- no reply will be passed through the bot with a length\n"
 "    greater than this."
-msgstr ""
+msgstr "Legt die absolut maximale Länge für Bot-Antworten fest. Keine Antwort länger als dieser Wert wird vom Bot zugelassen."
 
 #: ../src/conf.py:327
 msgid ""
 "Determines whether the bot will break up long\n"
 "    messages into chunks and allow users to use  the 'more' command to get the\n"
 "    remaining chunks."
-msgstr ""
+msgstr "Legt fest ob der Bot lange Nachrichten in mehrere Stücke unterteilt und der Nutzer mit dem more-Befehl die restlichen Stücke erhalten kann."
 
 #: ../src/conf.py:332
 msgid ""
@@ -316,7 +316,7 @@ msgid ""
 "Determines how long individual chunks\n"
 "    will be.  If set to 0, uses our super-tweaked,\n"
 "    get-the-most-out-of-an-individual-message default."
-msgstr ""
+msgstr "Legt fest wie lang einzelne Stücke sein werden. Beim Wert 0 wird unser super-getunter Nutze-alles-was-aus-einzelnen-Nachrichten-machbar-ist-Standard verwendet."
 
 #: ../src/conf.py:341
 msgid ""
@@ -510,7 +510,7 @@ msgid ""
 "\n"
 "    Determines what error message the bot gives when it wants to be\n"
 "    ambiguous."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot ausgibt, wenn er zweideutig sein möchte."
 
 #: ../src/conf.py:488
 msgid ""
@@ -524,7 +524,7 @@ msgstr ""
 msgid ""
 "Determines what error\n"
 "    message the bot gives to the owner when it wants to be ambiguous."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot an den Besitzer ausgibt, wenn er zweideutig sein möchte."
 
 #: ../src/conf.py:493
 msgid ""
@@ -537,9 +537,9 @@ msgstr ""
 #: ../src/conf.py:494
 msgid ""
 "Determines what message the bot replies with when\n"
-"     someonetries to use a command that requires being identified or having a\n"
+"     someone tries to use a command that requires being identified or having a\n"
 "    password and neither credential is correct."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot ausgibt, wenn jemand einen Befehl versucht der es erforderlich macht sich identifiziert zu haben oder korrekte Anmeldedaten zu haben."
 
 #: ../src/conf.py:500
 msgid ""
@@ -552,7 +552,7 @@ msgstr "Ich konnte %s nicht in meiner Benutzerdatenbank finden. Falls du keinen 
 msgid ""
 "Determines what error message the bot replies with when someone tries\n"
 "    to accessing some information on a user the bot doesn't know about."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot ausgibt, wenn jemand versucht auf Informationen zuzugreifen über die der Bot nichts weiß."
 
 #: ../src/conf.py:507
 msgid ""
@@ -567,7 +567,7 @@ msgid ""
 "Determines what error message the bot\n"
 "    replies with when someone tries to do something that requires them to be\n"
 "    registered but they're not currently recognized."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot antortet wenn jemand etwas versucht, das es erforderlich macht registriert zu sein, es aber nicht ist."
 
 #: ../src/conf.py:515
 msgid ""
@@ -582,7 +582,7 @@ msgid ""
 "Determines what error message is given when the bot\n"
 "    is telling someone they aren't cool enough to use the command they tried to\n"
 "    use."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot einer Person ausgibt, die nicht cool genug ist den Befehl auszuführen."
 
 #: ../src/conf.py:523
 msgid ""
@@ -594,7 +594,7 @@ msgid ""
 "    supybot.capabilities.default is set to False, meaning that no commands are\n"
 "    allowed unless explicitly in your capabilities.  Either way, you can't do\n"
 "    what you want to do."
-msgstr ""
+msgstr "Dir fehlen ein paar Fähigkeiten. Es könnte sein, dass du die Anti-Fähigkeit für diese Fähigkeit besitzt oder der Channel diese Anti-Fähigkeit als Standard bereitstellt oder die globalen Anti-Fähigkeiten diese als Standard bereitstellen. Es könnte auch sein, dass der Kanal oder supybot.capabilities.default auf False eingestellt sind, bedeutet es sind keinerlei Befehle erlaubt ausgenommen der explizit zugestandenen mittels Fähigkeiten. Wie dem auch sei, das was du versuchst funktioniert gerade nicht."
 
 #: ../src/conf.py:531
 msgid ""
@@ -602,7 +602,7 @@ msgid ""
 "    someone that they aren't cool enough to use the command they tried to use,\n"
 "    and the author of the code calling errorNoCapability didn't provide an\n"
 "    explicit capability for whatever reason."
-msgstr ""
+msgstr "Bestimt welche generische Fehlernachricht der Bot einer Person ausgibt, die nicht cool genug ist den Befehl auszuführen den sie versucht hat und der Autor des Codes hat keine bestimmte Fähigkeit dafür bereitgestellt."
 
 #: ../src/conf.py:537
 #, fuzzy
@@ -616,7 +616,7 @@ msgid ""
 "Determines what error messages the bot sends to people\n"
 "    who try to do things in a channel that really should be done in\n"
 "    private."
-msgstr ""
+msgstr "Bestimmt welche Fehlermeldung der Bot an Leute schickt, die Dinge im Kanal versuchen, welche jedoch besser per privater Nachricht getan werden sollten."
 
 #: ../src/conf.py:543
 msgid ""
@@ -629,14 +629,14 @@ msgstr "Das könnte ein Programmierfehler sein. Falls du das denkst, melden dies
 msgid ""
 "Determines what message the bot sends when it thinks you've\n"
 "    encountered a bug that the developers don't know about."
-msgstr ""
+msgstr "Bestimmt welche Meldung der Bot schickt, wenn er glaubt, dass du einen Programmierfehler gefunden hast von dem die Entwickler nichts wissen."
 
 #: ../src/conf.py:553
 msgid ""
 "A floating point number of seconds to throttle\n"
 "    snarfed URLs, in order to prevent loops between two bots snarfing the same\n"
 "    URLs and having the snarfed URL in the output of the snarf message."
-msgstr ""
+msgstr "Eine Fließkommazahl in Sekunden um das Erschnüffeln von URLs zu bremsen. Notwendig um zu verhindern, dass zum einen zwei Bots die gleichen URLs erschnüffeln und zum anderen die erschnüffelte URL in der Ausgabe der erschnüffelten Nachricht zu haben."
 
 #: ../src/conf.py:558
 msgid ""
@@ -644,7 +644,7 @@ msgid ""
 "    between running the upkeep function that flushes (commits) open databases,\n"
 "    collects garbage, and records some useful statistics at the debugging\n"
 "     level."
-msgstr ""
+msgstr "Bestimmt die Anzahl der Sekunden zwischen einem Durchlauf der upkeep-Funktion, die offene in die Datenbank schreibt, Müll sammelt und ein paar nützliche Statistiken zum Zwecke der Fehlersuche sammelt."
 
 #: ../src/conf.py:564
 msgid ""
@@ -655,14 +655,14 @@ msgid ""
 "    version over your modifications.  Do note that if you change this to False\n"
 "    inside the bot, your changes won't be flushed.  To make this change\n"
 "    permanent, you must edit the registry yourself."
-msgstr ""
+msgstr "Bestimmt ob der Bot perodisch alle Daten auf die Festplatte schreibt. Generell sollte das nur auf False stehen wenn du die Konfigurationsdateien von Hand ändern und verhindern willst, dass der Bot deine Änderungen überschreibt. Wenn du diesen Wert auf False änderst bedenke, dass deine Änderungen innerhalb des Bots nicht gespeichert werden. Um diese Änderungen permanent zu machen musst du die Registrierung händisch anpassen."
 
 #: ../src/conf.py:589
 msgid ""
 "Determines what characters are valid for quoting\n"
 "    arguments to commands in order to prevent them from being tokenized.\n"
 "    "
-msgstr ""
+msgstr "Bestimmt welche Zeichen für das Zitieren von Argumenten an Befehle gültig sind um zu verhindern, dass diese in Tokens übersetzt werden."
 
 #: ../src/conf.py:596
 msgid ""
