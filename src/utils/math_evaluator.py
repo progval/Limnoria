@@ -56,6 +56,7 @@ BIN_OPS = {
     ast.Sub: operator.sub,
     ast.Mult: operator.mul,
     ast.Div: operator.truediv,
+    ast.Mod: operator.mod,
     ast.Pow: operator.pow,
     ast.BitXor: operator.xor,
     ast.BitOr: operator.or_,
