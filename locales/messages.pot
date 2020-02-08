@@ -356,8 +356,7 @@ msgstr ""
 #: src/conf.py:415
 msgid ""
 "Determines what SASL username will be used on %s. This should\n"
-"        be the bot's account name. Due to the way SASL works, you can't use\n"
-"        any grouped nick."
+"        be the bot's account name."
 msgstr ""
 
 #: src/conf.py:419

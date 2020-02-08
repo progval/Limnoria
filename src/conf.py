@@ -409,8 +409,7 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
     sasl = registerGroup(network, 'sasl')
     registerGlobalValue(sasl, 'username', registry.String(sasl_username,
         _("""Determines what SASL username will be used on %s. This should
-        be the bot's account name. Due to the way SASL works, you can't use
-        any grouped nick.""") % name, private=False))
+        be the bot's account name.""") % name, private=False))
     registerGlobalValue(sasl, 'password', registry.String(sasl_password,
         _("""Determines what SASL password will be used on %s.""") \
         % name, private=True))
