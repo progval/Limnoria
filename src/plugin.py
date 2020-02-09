@@ -69,7 +69,10 @@ def loadPluginModule(name, ignoreDeprecation=False):
         if hasattr(importlib.util, 'module_from_spec'):
             # Python >= 3.5
             spec = importlib.machinery.PathFinder.find_spec(name, pluginDirs)
-            if spec is None:
+            if spec is None or spec.loader is None:
+                # spec is None if 'name' can't be found; and
+                # spec.loader might be None in some rare occasions as well
+                # (eg. for namespace packages)
                 assert ImportError(name)
             module = importlib.util.module_from_spec(spec)
             sys.modules[module.__name__] = module
