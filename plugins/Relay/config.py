@@ -86,6 +86,9 @@ conf.registerChannelValue(Relay, 'noticeNonPrivmsgs',
     registry.Boolean(False, _("""Determines whether the bot will used NOTICEs
     rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts,
     nicks, quits, modes, etc.)""")))
+conf.registerChannelValue(Relay, 'nonPrivmsgs',
+    registry.Boolean(True, _("""Determines whether the bot will relay
+    non-PRIVMSG messages (i.e., joins, parts, nicks, quits, modes, etc.)""")))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

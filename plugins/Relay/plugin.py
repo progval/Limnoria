@@ -308,6 +308,8 @@ class Relay(callbacks.Plugin):
         channel = msg.args[0]
         if channel not in self.registryValue('channels'):
             return
+        if not self.registryValue('nonPrivmsgs', channel):
+            return
         network = self._getIrcName(irc)
         if self.registryValue('hostmasks', channel):
             hostmask = format(' (%s)', msg.prefix.split('!')[1])
@@ -321,6 +323,8 @@ class Relay(callbacks.Plugin):
         irc = self._getRealIrc(irc)
         channel = msg.args[0]
         if channel not in self.registryValue('channels'):
+            return
+        if not self.registryValue('nonPrivmsgs', channel):
             return
         network = self._getIrcName(irc)
         if self.registryValue('hostmasks', channel):
@@ -340,6 +344,8 @@ class Relay(callbacks.Plugin):
         channel = msg.args[0]
         if channel not in self.registryValue('channels'):
             return
+        if not self.registryValue('nonPrivmsgs', channel):
+            return
         network = self._getIrcName(irc)
         s = format(_('mode change by %s on %s: %s'),
                    msg.nick, network, ' '.join(msg.args[1:]))
@@ -350,6 +356,8 @@ class Relay(callbacks.Plugin):
         irc = self._getRealIrc(irc)
         channel = msg.args[0]
         if channel not in self.registryValue('channels'):
+            return
+        if not self.registryValue('nonPrivmsgs', channel):
             return
         network = self._getIrcName(irc)
         if len(msg.args) == 3:
@@ -367,6 +375,8 @@ class Relay(callbacks.Plugin):
         network = self._getIrcName(irc)
         s = format(_('nick change by %s to %s on %s'), msg.nick,newNick,network)
         for channel in self.registryValue('channels'):
+            if not self.registryValue('nonPrivmsgs', channel):
+                return
             m = self._msgmaker(channel, s)
             self._sendToOthers(irc, m)
 
@@ -374,6 +384,8 @@ class Relay(callbacks.Plugin):
         irc = self._getRealIrc(irc)
         (channel, newTopic) = msg.args
         if channel not in self.registryValue('channels'):
+            return
+        if not self.registryValue('nonPrivmsgs', channel):
             return
         network = self._getIrcName(irc)
         if self.registryValue('topicSync', channel):
@@ -406,6 +418,8 @@ class Relay(callbacks.Plugin):
         else:
             s = format(_('%s has quit %s.'), msg.nick, network)
         for channel in self.registryValue('channels'):
+            if not self.registryValue('nonPrivmsgs', channel):
+                return
             m = self._msgmaker(channel, s)
             self._sendToOthers(irc, m)
 
@@ -414,6 +428,8 @@ class Relay(callbacks.Plugin):
         network = self._getIrcName(irc)
         s = format(_('disconnected from %s: %s'), network, msg.args[0])
         for channel in self.registryValue('channels'):
+            if not self.registryValue('nonPrivmsgs', channel):
+                return
             m = self._msgmaker(channel, s)
             self._sendToOthers(irc, m)
 
