@@ -198,6 +198,6 @@ else:
             logger.critical('This Python version does not support SSL/TLS '
                     'certification authority verification, which makes your '
                     'connection vulnerable to man-in-the-middle attacks. See: '
-                    '<http://doc.supybot.aperio.fr/en/latest/use/security.html#ssl-python-versions>')
+                    '<http://docs.limnoria.net/en/latest/use/security.html#ssl-python-versions>')
         return conn
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

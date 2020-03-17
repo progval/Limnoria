@@ -298,7 +298,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     'does not use SSL/TLS, which makes it vulnerable to '
                     'man-in-the-middle attacks and passive eavesdropping. '
                     'You should consider upgrading your connection to SSL/TLS '
-                    '<http://doc.supybot.aperio.fr/en/latest/use/faq.html#how-to-make-a-connection-secure>')
+                    '<http://docs.limnoria.net/en/latest/use/faq.html#how-to-make-a-connection-secure>')
                     % self.irc.network)
 
             def setTimeout():
