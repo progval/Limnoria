@@ -73,7 +73,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
                 # spec is None if 'name' can't be found; and
                 # spec.loader might be None in some rare occasions as well
                 # (eg. for namespace packages)
-                assert ImportError(name)
+                raise ImportError(name)
             module = importlib.util.module_from_spec(spec)
             sys.modules[module.__name__] = module
             spec.loader.exec_module(module)
