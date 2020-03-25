@@ -297,7 +297,7 @@ class Relay(callbacks.Plugin):
 
     def _msgmaker(self, target, network, s):
         msg = dynamic.msg
-        if self.registryValue('noticeNonPrivmsgs', target) and \
+        if self.registryValue('noticeNonPrivmsgs', target, network) and \
            msg.command != 'PRIVMSG':
             return ircmsgs.notice(target, s)
         else:
@@ -314,7 +314,7 @@ class Relay(callbacks.Plugin):
         else:
             hostmask = ''
         s = format(_('%s%s has joined on %s'), msg.nick, hostmask, network)
-        m = self._msgmaker(channel, s)
+        m = self._msgmaker(channel, network, s)
         self._sendToOthers(irc, m)
 
     def doPart(self, irc, msg):
@@ -332,7 +332,7 @@ class Relay(callbacks.Plugin):
                        msg.nick, hostmask, network, msg.args[1])
         else:
             s = format(_('%s%s has left on %s'), msg.nick, hostmask, network)
-        m = self._msgmaker(channel, s)
+        m = self._msgmaker(channel, network, s)
         self._sendToOthers(irc, m)
 
     def doMode(self, irc, msg):
@@ -343,7 +343,7 @@ class Relay(callbacks.Plugin):
         network = self._getIrcName(irc)
         s = format(_('mode change by %s on %s: %s'),
                    msg.nick, network, ' '.join(msg.args[1:]))
-        m = self._msgmaker(channel, s)
+        m = self._msgmaker(channel, network, s)
         self._sendToOthers(irc, m)
 
     def doKick(self, irc, msg):
@@ -358,7 +358,7 @@ class Relay(callbacks.Plugin):
         else:
             s = format(_('%s was kicked by %s on %s'),
                        msg.args[1], msg.nick, network)
-        m = self._msgmaker(channel, s)
+        m = self._msgmaker(channel, network, s)
         self._sendToOthers(irc, m)
 
     def doNick(self, irc, msg):
@@ -367,7 +367,7 @@ class Relay(callbacks.Plugin):
         network = self._getIrcName(irc)
         s = format(_('nick change by %s to %s on %s'), msg.nick,newNick,network)
         for channel in self.registryValue('channels'):
-            m = self._msgmaker(channel, s)
+            m = self._msgmaker(channel, network, s)
             self._sendToOthers(irc, m)
 
     def doTopic(self, irc, msg):
@@ -395,7 +395,7 @@ class Relay(callbacks.Plugin):
         else:
             s = format(_('topic change by %s on %s: %s'),
                        msg.nick, network, newTopic)
-            m = self._msgmaker(channel, s)
+            m = self._msgmaker(channel, network, s)
             self._sendToOthers(irc, m)
 
     def doQuit(self, irc, msg):
@@ -406,7 +406,7 @@ class Relay(callbacks.Plugin):
         else:
             s = format(_('%s has quit %s.'), msg.nick, network)
         for channel in self.registryValue('channels'):
-            m = self._msgmaker(channel, s)
+            m = self._msgmaker(channel, network, s)
             self._sendToOthers(irc, m)
 
     def doError(self, irc, msg):
@@ -414,7 +414,7 @@ class Relay(callbacks.Plugin):
         network = self._getIrcName(irc)
         s = format(_('disconnected from %s: %s'), network, msg.args[0])
         for channel in self.registryValue('channels'):
-            m = self._msgmaker(channel, s)
+            m = self._msgmaker(channel, network, s)
             self._sendToOthers(irc, m)
 
     def outFilter(self, irc, msg):
@@ -426,7 +426,7 @@ class Relay(callbacks.Plugin):
                 if msg.channel in self.registryValue('channels'):
                     network = self._getIrcName(irc)
                     s = self._formatPrivmsg(irc.nick, network, msg)
-                    relayMsg = self._msgmaker(msg.args[0], s)
+                    relayMsg = self._msgmaker(msg.args[0], network, s)
                     self._sendToOthers(irc, relayMsg)
         return msg
 
