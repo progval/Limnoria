@@ -696,7 +696,7 @@ def main():
             output("""Some terminals may not be able to display the pretty
             colors logged to stderr.  By default, though, we turn the colors
             off for Windows machines and leave it on for *nix machines.""")
-            if os.name is not 'nt':
+            if os.name != 'nt':
                 conf.supybot.log.stdout.colorized.setValue(
                     not yn('Would you like to turn this colorization off?',
                     default=False))
