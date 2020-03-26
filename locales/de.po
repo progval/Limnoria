@@ -510,7 +510,9 @@ msgid ""
 "\n"
 "    Determines what error message the bot gives when it wants to be\n"
 "    ambiguous."
-msgstr "Bestimmt welche Fehlermeldung der Bot ausgibt, wenn er zweideutig sein möchte."
+msgstr ""
+"\n"
+"Bestimmt welche Fehlermeldung der Bot ausgibt, wenn er zweideutig sein möchte."
 
 #: ../src/conf.py:488
 msgid ""

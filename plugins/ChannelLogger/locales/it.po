@@ -46,7 +46,7 @@ msgid ""
 "    prefix, just set it to the empty string."
 msgstr ""
 "Determina con quale stringa debba essere prefissato un messaggio per non\n"
-"    essere registrato. Se non si vuole alcun prefisso, impostare una stringa vuota.\n"
+"    essere registrato. Se non si vuole alcun prefisso, impostare una stringa vuota."
 
 #: config.py:62
 msgid ""
@@ -78,21 +78,21 @@ msgid ""
 "Determines whether the bot will partition its\n"
 "    channel logs into separate directories based on different criteria."
 msgstr ""
-"Determina se il bot suddividerà i log del canale in directory separate in base a criteri differenti.\n"
+"Determina se il bot suddividerà i log del canale in directory separate in base a criteri differenti."
 
 #: config.py:78
 msgid ""
 "Determines whether the bot will use a network\n"
 "    directory if using directories."
 msgstr ""
-"Determina se, in caso si utilizzino directory, il bot userà una directory per network.\n"
+"Determina se, in caso si utilizzino directory, il bot userà una directory per network."
 
 #: config.py:81
 msgid ""
 "Determines whether the bot will use a channel\n"
 "    directory if using directories."
 msgstr ""
-"Determina se, in caso si utilizzino directory, il bot userà una directory per canale.\n"
+"Determina se, in caso si utilizzino directory, il bot userà una directory per canale."
 
 #: config.py:84
 msgid ""
@@ -101,7 +101,7 @@ msgid ""
 "    if using directories."
 msgstr ""
 "Determina se, in caso si utilizzino directory, il bot userà un timestamp\n"
-"    (definito da supybot.plugins.ChannelLogger.directories.timestamp.format).\n"
+"    (definito da supybot.plugins.ChannelLogger.directories.timestamp.format)."
 
 #: config.py:88
 msgid ""

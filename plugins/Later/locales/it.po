@@ -43,7 +43,7 @@ msgid ""
 "    the message will be deleted. If this value is 0, there is no maximum."
 msgstr ""
 "Determina il numero massimo di giorni che un messaggio rimarrà in coda per un utente. Allo scadere\n"
-"    di questo tempo il messaggio verrà cancellato. Se questo valore è uguale a 0, non c'è un limite massimo.\n"
+"    di questo tempo il messaggio verrà cancellato. Se questo valore è uguale a 0, non c'è un limite massimo."
 
 #: plugin.py:46
 #, docstring

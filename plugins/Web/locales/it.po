@@ -25,7 +25,7 @@ msgid ""
 "    like to exclude from being snarfed."
 msgstr ""
 "Determina quali URL corrispondenti alla regexp fornita non verranno intercettati.\n"
-"    Se non si vuole escludere alcun URL, fornire una stringa vuota.\n"
+"    Se non si vuole escludere alcun URL, fornire una stringa vuota."
 
 #: config.py:60
 msgid ""

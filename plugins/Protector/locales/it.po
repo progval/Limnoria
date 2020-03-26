@@ -26,5 +26,5 @@ msgid ""
 msgstr ""
 "Determina quali nick il bot considererà immuni, le azioni di questi nick non\n"
 "    verranno monitorate dal plugin. In linea di massima sarà presente nella lista\n"
-"    solo il ChanServ della rete.\n"
+"    solo il ChanServ della rete."
 

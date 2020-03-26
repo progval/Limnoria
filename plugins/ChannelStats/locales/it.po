@@ -18,7 +18,7 @@ msgid ""
 "    cases where the bot is relaying between channels on a network)."
 msgstr ""
 "Determina se il bot terrà statistiche del canale, probabilmente alterandole\n"
-"    (in particolare in caso faccia l'inoltro dei messaggi attraverso i canali).\n"
+"    (in particolare in caso faccia l'inoltro dei messaggi attraverso i canali)."
 
 #: config.py:64
 msgid ""

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Determina quali URL non vanno intercettati e memorizzati nel database del canale;\n"
 "    quelli che corrispondono alla regexp fornita non verranno coinvolti.\n"
-"    Se non vuoi escludere alcun URL, aggiungi una stringa vuota.\n"
+"    Se non vuoi escludere alcun URL, aggiungi una stringa vuota."
 
 #: plugin.py:89
 #, docstring

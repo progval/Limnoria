@@ -32,7 +32,7 @@ msgid ""
 "Determines how many highest/lowest karma things\n"
 "    are shown when karma is called with no arguments."
 msgstr ""
-"Determina quanti karma più/meno vengono mostrati quando richiamato senza argomenti.\n"
+"Determina quanti karma più/meno vengono mostrati quando richiamato senza argomenti."
 
 #: config.py:55
 msgid ""

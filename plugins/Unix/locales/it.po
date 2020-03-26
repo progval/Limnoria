@@ -67,7 +67,7 @@ msgid ""
 msgstr ""
 "Determina quale file specifico (eventuale) verrà usato con il comando fortune,\n"
 "    se non è specificato utilizzerà il predefinito a livello di sistema. Nota che\n"
-"    questo file va collocato insieme agli altri file di fortune presenti nel sistema.\n"
+"    questo file va collocato insieme agli altri file di fortune presenti nel sistema."
 
 #: config.py:82
 msgid ""

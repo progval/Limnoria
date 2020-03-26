@@ -40,7 +40,7 @@ msgid ""
 "Convert a number from any base, 2 through 36, to any other\n"
 "        base, 2 through 36. Returns a string."
 msgstr ""
-"Converte un numero da qualsiasi base tra 2 e 36 ad un'altra tra 2 e 36, restituisce una stringa.\n"
+"Converte un numero da qualsiasi base tra 2 e 36 ad un'altra tra 2 e 36, restituisce una stringa."
 
 #: plugin.py:157
 #, docstring

@@ -227,10 +227,6 @@ msgstr ""
 "\n"
 " Tämä komento näyttää Akan sisällön."
 
-#: plugin.py:689
-msgid "This Aka does not exist."
-msgstr "Tätä Akaa ei ole olemassakaan."
-
 #: plugin.py:694
 msgid ""
 "takes no arguments\n"

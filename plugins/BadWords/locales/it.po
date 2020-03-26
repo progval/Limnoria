@@ -24,7 +24,7 @@ msgid ""
 "Determines what words are\n"
 "    considered to be 'bad' so the bot won't say them."
 msgstr ""
-"Determina quali parole sono considerate \"volgari\" per cui il bot non le pronuncerà.\n"
+"Determina quali parole sono considerate \"volgari\" per cui il bot non le pronuncerà."
 
 #: config.py:56
 msgid ""

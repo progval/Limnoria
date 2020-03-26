@@ -23,7 +23,7 @@ msgid ""
 "Determines how often (in seconds) the bot\n"
 "    will check whether its nick ISON."
 msgstr ""
-"Determina quanto spesso (in secondi) il bot controllerà il suo nick con ISON.\n"
+"Determina quanto spesso (in secondi) il bot controllerà il suo nick con ISON."
 
 #: plugin.py:40
 #, docstring

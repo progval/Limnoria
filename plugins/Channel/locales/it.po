@@ -797,7 +797,7 @@ msgid ""
 "Internal message for notifying all the #channel,ops in a channel of\n"
 "        a given situation."
 msgstr ""
-"Messaggio interno per notificare una data situazione a tutti gli operatori (#canale,op) in un canale.\n"
+"Messaggio interno per notificare una data situazione a tutti gli operatori (#canale,op) in un canale."
 
 #: plugin.py:846
 msgid "Alert to all %s ops: %s"

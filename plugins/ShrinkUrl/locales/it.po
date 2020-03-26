@@ -17,7 +17,7 @@ msgid ""
 "             like this snarfer to be enabled?"
 msgstr ""
 "Questo plugin offre un cattura URL che riporterà una versione accorciata\n"
-"             di quelli lunghi inviati al canale. Lo si vuole abilitare?\n"
+"             di quelli lunghi inviati al canale. Lo si vuole abilitare?"
 
 #: config.py:45 config.py:49
 #, fuzzy
