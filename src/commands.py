@@ -499,7 +499,6 @@ def getChannel(irc, msg, args, state):
         channel = msg.channel
     else:
         state.log.debug('Raising ArgumentError because there is no channel.')
-        print(msg.channel, msg)
         raise callbacks.ArgumentError
     state.channel = channel
     state.args.append(channel)
