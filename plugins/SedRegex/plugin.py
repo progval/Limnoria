@@ -66,6 +66,7 @@ class SedRegex(callbacks.PluginRegexp):
     threaded = True
     public = True
     unaddressedRegexps = ['replacer']
+    flags = 0  # Make callback matching case sensitive
 
     @staticmethod
     def _unpack_sed(expr):

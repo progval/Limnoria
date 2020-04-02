@@ -57,6 +57,10 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('eliens', str(m))
 
+    def testIgnoreRegexpWithBadCase(self):
+        self.feedMsg('aliens are invading, help!')
+        self.assertNoResponse('S/aliens/monsters/')
+
     def testGlobalReplace(self):
         self.feedMsg('AAaa aaAa a b')
         self.feedMsg('s/a/e/g')
