@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2015, Michael Daniel Telatynski <postmaster@webdevguru.co.uk>
-# Copyright (c) 2015-2019, James Lu <james@overdrivenetworks.com>
+# Copyright (c) 2015-2020, James Lu <james@overdrivenetworks.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -52,8 +52,7 @@ if sys.version_info[0] < 3:
                       'supports Python 2, consult the python2-legacy branch at '
                       'https://github.com/jlu5/SupyPlugins/tree/python2-legacy')
 
-SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>.*?)(?P=delim)"
-                       r"(?P<replacement>.*?)(?P=delim)(?P<flags>[a-z]*)$")
+from .constants import *
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})

@@ -49,10 +49,12 @@ __url__ = 'https://github.com/ProgVal/Limnoria/tree/master/plugins/SedRegex'
 
 from . import config
 from . import plugin
+from . import constants
 from importlib import reload
 
 reload(config)
 reload(plugin)
+reload(constants)
 
 if world.testing:
     from . import test

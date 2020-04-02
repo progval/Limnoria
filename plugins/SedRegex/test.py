@@ -187,6 +187,36 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ', timeout=1)
         self.assertIn('timed out', str(m))
 
+    def testMissingTrailingSeparator(self):
+        # Allow the plugin to work if you miss the trailing /
+        self.feedMsg('hello world')
+        self.feedMsg('s/world/everyone')
+        m = self.getMsg(' ')
+        self.assertIn('hello everyone', str(m))
+
+        # Make sure it works if there's a space in the replacement
+        self.feedMsg('hello world')
+        self.feedMsg('s@world@how are you')
+        m = self.getMsg(' ')
+        self.assertIn('hello how are you', str(m))
+
+        # Ditto with a space in the original text
+        self.feedMsg("foo bar @ baz")
+        self.feedMsg('s/bar @/and')
+        m = self.getMsg(' ')
+        self.assertIn('foo and baz', str(m))
+
+    def testIgnoreTextAfterTrailingSeparator(self):
+        # https://github.com/jlu5/SupyPlugins/issues/59
+        self.feedMsg('see you ltaer')
+        self.feedMsg('s/ltaer/later/ this text will be ignored')
+        m = self.getMsg(' ')
+        self.assertIn('see you later', str(m))
+
+        self.feedMsg('s/LTAER/later, bye/i <extra text>')
+        m = self.getMsg(' ')
+        self.assertIn('see you later, bye', str(m))
+
     # TODO: test ignores
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
