@@ -53,7 +53,8 @@ if sys.version_info[0] < 3:
                       'https://github.com/jlu5/SupyPlugins/tree/python2-legacy')
 
 SED_REGEX = re.compile(r"^(?:(?P<nick>.+?)[:,] )?s(?P<delim>[^\w\s])(?P<pattern>.*?)(?P=delim)"
-                       r"(?P<replacement>.*?)(?P=delim)(?P<flags>[a-z]*)$")
+                       r"(?P<replacement>.*?)(?P=delim)(?P<flags>[a-z]*)$",
+                       re.I)
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
@@ -85,15 +86,12 @@ class SedRegex(callbacks.PluginRegexp):
 
         match = SED_REGEX.search(escaped_expr)
 
-        if not match:
-            return
-
         groups = match.groupdict()
         pattern = groups['pattern'].replace('\0', delim)
         replacement = groups['replacement'].replace('\0', delim)
 
         if groups['flags']:
-            raw_flags = set(groups['flags'])
+            raw_flags = set(groups['flags'].lower())
         else:
             raw_flags = set()
 

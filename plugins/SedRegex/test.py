@@ -51,6 +51,12 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('Abcd testefgh', str(m))
 
+    def testCaseInsensitiveRegexp(self):
+        self.feedMsg('aliens are invading, help!')
+        self.feedMsg('S/a/e/i')
+        m = self.getMsg(' ')
+        self.assertIn('eliens', str(m))
+
     def testCaseInsensitiveReplace(self):
         self.feedMsg('Aliens Are Invading, Help!')
         self.feedMsg('s/a/e/i')
