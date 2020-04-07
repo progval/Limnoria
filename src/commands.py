@@ -518,7 +518,6 @@ def getChannelDb(irc, msg, args, state, **kwargs):
     try:
         getChannel(irc, msg, args, state, **kwargs)
         channel = channelSpecific.getChannelLink(state.channel)
-        state.channel = channel
         state.args[-1] = channel
     except (callbacks.ArgumentError, IndexError):
         if channelSpecific():
@@ -530,7 +529,6 @@ def getChannelDb(irc, msg, args, state, **kwargs):
             raise
         else:
             channel = channelSpecific.getChannelLink(channel)
-            state.channel = channel
             state.args.append(channel)
 
 def inChannel(irc, msg, args, state):
