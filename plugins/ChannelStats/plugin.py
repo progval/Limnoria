@@ -242,9 +242,11 @@ class ChannelStats(callbacks.Plugin):
         necessary if the message isn't sent on the channel itself.  If <name>
         isn't given, it defaults to the user sending the command.
         """
-        if msg.nick not in irc.state.channels[channel].users:
-            irc.error(format('You must be in %s to use this command.', channel))
-            return
+        if channel != '#':
+            # Skip this check if databases.plugins.channelspecific is False.
+            if msg.nick not in irc.state.channels[channel].users:
+                irc.error(format('You must be in %s to use this command.', channel))
+                return
         if name and ircutils.strEqual(name, irc.nick):
             id = 0
         elif not name:
@@ -303,9 +305,11 @@ class ChannelStats(callbacks.Plugin):
         'kicks', 'kicked', 'topics', and 'modes'.  Any simple mathematical
         expression involving those variables is permitted.
         """
-        if msg.nick not in irc.state.channels[channel].users:
-            irc.error(format('You must be in %s to use this command.', channel))
-            return
+        if channel != '#':
+            # Skip this check if databases.plugins.channelspecific is False.
+            if msg.nick not in irc.state.channels[channel].users:
+                irc.error(format('You must be in %s to use this command.', channel))
+                return
         expr = expr.lower()
         users = []
         for ((c, id), stats) in self.db.items():
