@@ -63,6 +63,9 @@ def constant(content):
 url = 'http://www.advogato.org/rss/articles.xml'
 class RSSTestCase(ChannelPluginTestCase):
     plugins = ('RSS','Plugin')
+
+    timeout = 1
+
     def testRssAddBadName(self):
         self.assertError('rss add "foo bar" %s' % url)
 
@@ -340,6 +343,8 @@ class RSSTestCase(ChannelPluginTestCase):
             feedparser._open_resource = old_open
 
     if network:
+        timeout = 5  # Note this applies also to the above tests
+
         def testRssinfo(self):
             timeFastForward(1.1)
             self.assertNotError('rss info %s' % url)

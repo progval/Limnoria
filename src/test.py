@@ -196,8 +196,10 @@ class PluginTestCase(SupyTestCase):
     cleanConfDir = True
     cleanDataDir = True
     config = {}
+    timeout = None
     def __init__(self, methodName='runTest'):
-        self.timeout = timeout
+        if self.timeout is None:
+            self.timeout = timeout
         originalRunTest = getattr(self, methodName)
         def runTest(self):
             run = True
@@ -373,12 +375,23 @@ class PluginTestCase(SupyTestCase):
                         '%s is not the help (%s)' % (m.args[1], lastGetHelp))
         return m
 
-    def assertNoResponse(self, query, timeout=0, **kwargs):
+    def assertNoResponse(self, query, timeout=None, **kwargs):
+        if timeout is None:
+            timeout = 0
+            # timeout=0 does not wait at all for an answer after the command
+            # function finished running. This is fine for non-threaded
+            # plugins because they usually won't answer anything after that;
+            # but not for threaded plugins.
+            # TODO: also detect threaded commands
+            for cb in self.irc.callbacks:
+                if cb.threaded:
+                    timeout = self.timeout
+                    break
         m = self._feedMsg(query, timeout=timeout, **kwargs)
         self.assertFalse(m, 'Unexpected response: %r' % m)
         return m
 
-    def assertSnarfNoResponse(self, query, timeout=0, **kwargs):
+    def assertSnarfNoResponse(self, query, timeout=None, **kwargs):
         return self.assertNoResponse(query, timeout=timeout,
                                      usePrefixChar=False, **kwargs)
 

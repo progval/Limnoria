@@ -42,7 +42,7 @@ class SedRegexTestCase(ChannelPluginTestCase):
 
     # getMsg() stalls if no message is ever sent (i.e. if the plugin fails to respond to a request)
     # We should limit the timeout to prevent the tests from taking forever.
-    timeout = 3
+    timeout = 1
 
     def testSimpleReplace(self):
         self.feedMsg('Abcd abcdefgh')
