@@ -59,7 +59,7 @@ class SedRegexTestCase(ChannelPluginTestCase):
 
     def testIgnoreRegexpWithBadCase(self):
         self.feedMsg('aliens are invading, help!')
-        self.assertNoResponse('S/aliens/monsters/')
+        self.assertSnarfNoResponse('S/aliens/monsters/')
 
     def testGlobalReplace(self):
         self.feedMsg('AAaa aaAa a b')
@@ -145,7 +145,6 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg('echo dummy message')
         # XXX: this is a total hack...
         for msg in self.irc.state.history:
-            print("Message in history: %s" % msg, end='')
             self.assertNotIn("cbn't", str(msg))
 
     def testActionReplace(self):
