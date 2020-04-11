@@ -968,15 +968,31 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     # The '(XX more messages)' may have not the same
                     # length in the current locale
                     allowedLength -= len(_('(XX more messages)')) + 1 # bold
-                    msgs = ircutils.wrap(s, allowedLength)
-                    msgs.reverse()
+                    chunks = ircutils.wrap(s, allowedLength)
+
+                    # Last messages to display at the beginning of the list
+                    # (which is used like a stack)
+                    chunks.reverse()
+
+                    msgs = []
+                    for (i, chunk) in enumerate(chunks):
+                        if i == 0:
+                            pass # last message, no suffix to add
+                        else:
+                            if i == 1:
+                                more = _('more message')
+                            else:
+                                more = _('more messages')
+                            n = ircutils.bold('(%i %s)' % (len(msgs), more))
+                            chunk = '%s %s' % (chunk, n)
+                        msgs.append(_makeReply(self, msg, chunk, **replyArgs))
+
                     instant = conf.get(conf.supybot.reply.mores.instant,
                         channel=target, network=self.irc.network)
                     while instant > 1 and msgs:
                         instant -= 1
                         response = msgs.pop()
-                        m = _makeReply(self, msg, response, **replyArgs)
-                        sendMsg(m)
+                        sendMsg(response)
                         # XXX We should somehow allow these to be returned, but
                         #     until someone complains, we'll be fine :)  We
                         #     can't return from here, though, for obvious
@@ -985,13 +1001,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     if not msgs:
                         return
                     response = msgs.pop()
-                    if msgs:
-                        if len(msgs) == 1:
-                            more = _('more message')
-                        else:
-                            more = _('more messages')
-                        n = ircutils.bold('(%i %s)' % (len(msgs), more))
-                        response = '%s %s' % (response, n)
                     prefix = msg.prefix
                     if self.to and ircutils.isNick(self.to):
                         try:
@@ -1004,9 +1013,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     public = bool(self.msg.channel)
                     private = self.private or not public
                     self._mores[msg.nick] = (private, msgs)
-                    m = _makeReply(self, msg, response, **replyArgs)
-                    sendMsg(m)
-                    return m
+                    sendMsg(response)
+                    return response
             finally:
                 self._resetReplyAttributes()
         else:

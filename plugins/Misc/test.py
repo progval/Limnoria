@@ -212,9 +212,9 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertResponse('echo %s' % ('abc '*400),
                             'abc '*112 + ' \x02(3 more messages)\x02')
         self.assertResponse('more',
-                            'abc '*112 + ' \x02(2 more messages)\x0f')
+                            'abc '*112 + ' \x02(2 more messages)\x02')
         self.assertResponse('more',
-                            'abc '*112 + ' \x02(1 more message)\x0f')
+                            'abc '*112 + ' \x02(1 more message)\x02')
         self.assertResponse('more',
                             ' '.join(['abc']*(400-112*3)))
         self.assertResponse('more',
@@ -225,12 +225,12 @@ class MiscTestCase(ChannelPluginTestCase):
             self.assertResponse('echo %s' % ('abc '*400),
                                 'abc '*112 + ' \x02(3 more messages)\x02')
             self.assertResponse('more',
-                                'abc '*112)
+                                'abc '*112 + ' \x02(2 more messages)\x02')
             m = self.irc.takeMsg()
             self.assertIsNot(m, None)
             self.assertEqual(
                 m.args[1],
-                self.nick + ': ' + 'abc '*112 + ' \x02(1 more message)\x0f')
+                'abc '*112 + ' \x02(1 more message)\x02')
             self.assertResponse('more',
                                 ' '.join(['abc']*(400-112*3)))
             self.assertResponse('more',

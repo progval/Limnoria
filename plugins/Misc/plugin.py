@@ -386,17 +386,12 @@ class Misc(callbacks.Plugin):
                       'to see someone else\'s more.  To do so, call this '
                       'command with that person\'s nick.'), Raise=True)
         number = self.registryValue('mores', msg.channel, irc.network)
-        chunks = L[-number:]
-        chunks.reverse()
+        msgs = L[-number:]
+        msgs.reverse()
         L[-number:] = []
-        if chunks:
-            if L:
-                if len(L) < 2:
-                    more = _('1 more message')
-                else:
-                    more = _('%i more messages') % len(L)
-                chunks[-1] += format(' \x02(%s)\x0F', more)
-            irc.replies(chunks, noLengthCheck=True, oneToOne=False)
+        if msgs:
+            for msg in msgs:
+                irc.queueMsg(msg)
         else:
             irc.error(_('That\'s all, there is no more.'))
     more = wrap(more, [additional('seenNick')])
