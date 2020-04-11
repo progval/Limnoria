@@ -208,7 +208,7 @@ class Web(callbacks.PluginRegexp):
         network = irc.network
         if not channel:
             return
-        if callbacks.addressed(irc.nick, msg):
+        if callbacks.addressed(irc, msg):
             return
         if self.registryValue('titleSnarfer', channel, network):
             url = match.group(0)

@@ -177,6 +177,34 @@ class FunctionsTestCase(SupyTestCase):
     def testAddressed(self):
         irc = getTestIrc()
         oldprefixchars = str(conf.supybot.reply.whenAddressedBy.chars)
+        nick = irc.nick
+        conf.supybot.reply.whenAddressedBy.chars.set('~!@')
+        inChannel = ['~foo', '@foo', '!foo',
+                     '%s: foo' % nick, '%s foo' % nick,
+                     '%s: foo' % nick.capitalize(), '%s: foo' % nick.upper()]
+        inChannel = [ircmsgs.privmsg('#foo', s) for s in inChannel]
+        badmsg = ircmsgs.privmsg('#foo', '%s:foo' % nick)
+        self.assertFalse(callbacks.addressed(irc, badmsg))
+        badmsg = ircmsgs.privmsg('#foo', '%s^: foo' % nick)
+        self.assertFalse(callbacks.addressed(irc, badmsg))
+        for msg in inChannel:
+            self.assertEqual('foo', callbacks.addressed(irc, msg), msg)
+        msg = ircmsgs.privmsg(nick, 'foo')
+        irc._tagMsg(msg)
+        self.assertEqual('foo', callbacks.addressed(irc, msg))
+        conf.supybot.reply.whenAddressedBy.chars.set(oldprefixchars)
+        msg = ircmsgs.privmsg('#foo', '%s::::: bar' % nick)
+        self.assertEqual('bar', callbacks.addressed(irc, msg))
+        msg = ircmsgs.privmsg('#foo', '%s: foo' % nick.upper())
+        self.assertEqual('foo', callbacks.addressed(irc, msg))
+        badmsg = ircmsgs.privmsg('#foo', '%s`: foo' % nick)
+        self.assertFalse(callbacks.addressed(irc, badmsg))
+
+    def testAddressedLegacy(self):
+        """Checks callbacks.addressed still accepts the 'nick' argument
+        instead of 'irc'."""
+        irc = getTestIrc()
+        oldprefixchars = str(conf.supybot.reply.whenAddressedBy.chars)
         nick = 'supybot'
         conf.supybot.reply.whenAddressedBy.chars.set('~!@')
         inChannel = ['~foo', '@foo', '!foo',
@@ -184,21 +212,28 @@ class FunctionsTestCase(SupyTestCase):
                      '%s: foo' % nick.capitalize(), '%s: foo' % nick.upper()]
         inChannel = [ircmsgs.privmsg('#foo', s) for s in inChannel]
         badmsg = ircmsgs.privmsg('#foo', '%s:foo' % nick)
-        self.assertFalse(callbacks.addressed(nick, badmsg))
+        with self.assertWarnsRegex(DeprecationWarning, 'Irc object instead'):
+            self.assertFalse(callbacks.addressed(nick, badmsg))
         badmsg = ircmsgs.privmsg('#foo', '%s^: foo' % nick)
-        self.assertFalse(callbacks.addressed(nick, badmsg))
+        with self.assertWarnsRegex(DeprecationWarning, 'Irc object instead'):
+            self.assertFalse(callbacks.addressed(nick, badmsg))
         for msg in inChannel:
-            self.assertEqual('foo', callbacks.addressed(nick, msg), msg)
+            with self.assertWarns(DeprecationWarning):
+                self.assertEqual('foo', callbacks.addressed(nick, msg), msg)
         msg = ircmsgs.privmsg(nick, 'foo')
         irc._tagMsg(msg)
-        self.assertEqual('foo', callbacks.addressed(nick, msg))
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual('foo', callbacks.addressed(nick, msg))
         conf.supybot.reply.whenAddressedBy.chars.set(oldprefixchars)
         msg = ircmsgs.privmsg('#foo', '%s::::: bar' % nick)
-        self.assertEqual('bar', callbacks.addressed(nick, msg))
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual('bar', callbacks.addressed(nick, msg))
         msg = ircmsgs.privmsg('#foo', '%s: foo' % nick.upper())
-        self.assertEqual('foo', callbacks.addressed(nick, msg))
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual('foo', callbacks.addressed(nick, msg))
         badmsg = ircmsgs.privmsg('#foo', '%s`: foo' % nick)
-        self.assertFalse(callbacks.addressed(nick, badmsg))
+        with self.assertWarns(DeprecationWarning):
+            self.assertFalse(callbacks.addressed(nick, badmsg))
 
     def testAddressedReplyWhenNotAddressed(self):
         msg1 = ircmsgs.privmsg('#foo', '@bar')

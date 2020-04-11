@@ -40,6 +40,7 @@ from . import shlex
 import codecs
 import getopt
 import inspect
+import warnings
 
 from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry,
         utils, world)
@@ -48,13 +49,22 @@ from .utils.iter import any, all
 from .i18n import PluginInternationalization
 _ = PluginInternationalization()
 
-def _addressed(nick, msg, prefixChars=None, nicks=None,
+def _addressed(irc, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
               whenAddressedByNickAtEnd=None):
+    if isinstance(irc, str):
+        warnings.warn(
+            "callbacks.addressed's first argument should now be be the Irc "
+            "object instead of the bot's nick.",
+            DeprecationWarning)
+        network = None
+        nick = irc
+    else:
+        network = irc.network
+        nick = irc.nick
     def get(group):
-        if ircutils.isChannel(target):
-            group = group.get(target)
-        return group()
+        v = group.getSpecific(network=network, channel=msg.channel)
+        return v()
     def stripPrefixStrings(payload):
         for prefixString in prefixStrings:
             if payload.startswith(prefixString):
@@ -62,7 +72,8 @@ def _addressed(nick, msg, prefixChars=None, nicks=None,
         return payload
 
     assert msg.command == 'PRIVMSG'
-    (target, payload) = msg.args
+    target = msg.channel or msg.args[0]
+    payload = msg.args[1]
     if not payload:
         return ''
     if prefixChars is None:
@@ -125,7 +136,7 @@ def _addressed(nick, msg, prefixChars=None, nicks=None,
     else:
         return ''
 
-def addressed(nick, msg, **kwargs):
+def addressed(irc, msg, **kwargs):
     """If msg is addressed to 'name', returns the portion after the address.
     Otherwise returns the empty string.
     """
@@ -133,7 +144,7 @@ def addressed(nick, msg, **kwargs):
     if payload is not None:
         return payload
     else:
-        payload = _addressed(nick, msg, **kwargs)
+        payload = _addressed(irc, msg, **kwargs)
         msg.tag('addressed', payload)
         return payload
 

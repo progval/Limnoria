@@ -233,7 +233,7 @@ class Owner(callbacks.Plugin):
                'Owner isn\'t first callback: %r' % irc.callbacks
         if ircmsgs.isCtcp(msg):
             return
-        s = callbacks.addressed(irc.nick, msg)
+        s = callbacks.addressed(irc, msg)
         if s:
             ignored = ircdb.checkIgnored(msg.prefix)
             if ignored:

@@ -189,7 +189,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                 self._runCommandFunction(irc, msg, action)
 
     def doPrivmsg(self, irc, msg):
-        if not callbacks.addressed(irc.nick, msg): #message is not direct command
+        if not callbacks.addressed(irc, msg): #message is not direct command
             self.do_privmsg_notice(irc, msg)
 
     def doNotice(self, irc, msg):
