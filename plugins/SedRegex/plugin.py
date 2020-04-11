@@ -111,7 +111,7 @@ class SedRegex(callbacks.PluginRegexp):
         return (pattern, replacement, count, raw_flags)
 
     def replacer(self, irc, msg, regex):
-        if not self.registryValue('enable', msg.args[0]):
+        if not self.registryValue('enable', msg.channel, irc.network):
             return
         iterable = reversed(irc.state.history)
         msg.tag('Replacer')
@@ -120,7 +120,7 @@ class SedRegex(callbacks.PluginRegexp):
             (pattern, replacement, count, flags) = self._unpack_sed(msg.args[1])
         except Exception as e:
             self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
-            if self.registryValue('displayErrors', msg.args[0]):
+            if self.registryValue('displayErrors', msg.channel, irc.network):
                 irc.error('%s.%s: %s' % (e.__class__.__module__, e.__class__.__name__, e))
             return
 
@@ -143,7 +143,7 @@ class SedRegex(callbacks.PluginRegexp):
             irc.error(_("Search not found in the last %i messages.") %
                 len(irc.state.history))
         except Exception as e:
-            if self.registryValue('displayErrors', msg.args[0]):
+            if self.registryValue('displayErrors', msg.channel, irc.network):
                 irc.error('%s.%s: %s' % (e.__class__.__module__,
                     e.__class__.__name__, e))
         else:
@@ -167,7 +167,7 @@ class SedRegex(callbacks.PluginRegexp):
                 else:
                     text = m.args[1]
 
-                if self.registryValue('ignoreRegex', msg.args[0]) and \
+                if self.registryValue('ignoreRegex', msg.channel, irc.network) and \
                         m.tagged('Replacer'):
                     continue
                 if m.nick == msg.nick:
@@ -178,7 +178,8 @@ class SedRegex(callbacks.PluginRegexp):
                 try:
                     replace_result = pattern.search(text)
                     if replace_result:
-                        if self.registryValue('boldReplacementText', msg.args[0]):
+                        if self.registryValue('boldReplacementText',
+                                              msg.channel, irc.network):
                             replacement = ircutils.bold(replacement)
                         subst = pattern.sub(replacement, text, count)
                         if action:  # If the message was an ACTION, prepend the nick back.
