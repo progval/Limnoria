@@ -381,8 +381,15 @@ class Misc(callbacks.Plugin):
                 return
         try:
             L = irc._mores[userHostmask]
-            number = self.registryValue('mores', msg.channel, irc.network)
-            chunks = [L.pop() for x in range(0, number)]
+        except KeyError:
+            irc.error(_('You haven\'t asked me a command; perhaps you want '
+                      'to see someone else\'s more.  To do so, call this '
+                      'command with that person\'s nick.'), Raise=True)
+        number = self.registryValue('mores', msg.channel, irc.network)
+        chunks = L[-number:]
+        chunks.reverse()
+        L[-number:] = []
+        if chunks:
             if L:
                 if len(L) < 2:
                     more = _('1 more message')
@@ -390,11 +397,7 @@ class Misc(callbacks.Plugin):
                     more = _('%i more messages') % len(L)
                 chunks[-1] += format(' \x02(%s)\x0F', more)
             irc.replies(chunks, noLengthCheck=True, oneToOne=False)
-        except KeyError:
-            irc.error(_('You haven\'t asked me a command; perhaps you want '
-                      'to see someone else\'s more.  To do so, call this '
-                      'command with that person\'s nick.'))
-        except IndexError:
+        else:
             irc.error(_('That\'s all, there is no more.'))
     more = wrap(more, [additional('seenNick')])
 

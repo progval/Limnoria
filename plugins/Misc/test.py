@@ -232,6 +232,8 @@ class MiscTestCase(ChannelPluginTestCase):
                 m.args[1],
                 self.nick + ': ' + 'abc '*112 + ' \x02(1 more message)\x0f')
             self.assertResponse('more',
+                                ' '.join(['abc']*(400-112*3)))
+            self.assertResponse('more',
                                 "Error: That's all, there is no more.")
 
     def testClearMores(self):
