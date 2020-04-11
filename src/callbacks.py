@@ -910,26 +910,27 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         if not isinstance(s, minisix.string_types): # avoid trying to str() unicode
             s = str(s) # Allow non-string esses.
+
+        replyArgs = dict(
+            to=self.to,
+            notice=self.notice,
+            action=self.action,
+            private=self.private,
+            prefixNick=self.prefixNick,
+            stripCtcp=stripCtcp
+        )
+
         if self.finalEvaled:
             try:
                 if isinstance(self.irc, self.__class__):
                     s = s[:conf.supybot.reply.maximumLength()]
-                    return self.irc.reply(s, to=self.to,
-                                          notice=self.notice,
-                                          action=self.action,
-                                          private=self.private,
-                                          prefixNick=self.prefixNick,
+                    return self.irc.reply(s,
                                           noLengthCheck=self.noLengthCheck,
-                                          stripCtcp=stripCtcp)
+                                          **replyArgs)
                 elif self.noLengthCheck:
                     # noLengthCheck only matters to NestedCommandsIrcProxy, so
                     # it's not used here.  Just in case you were wondering.
-                    m = _makeReply(self, msg, s, to=self.to,
-                                  notice=self.notice,
-                                  action=self.action,
-                                  private=self.private,
-                                  prefixNick=self.prefixNick,
-                                  stripCtcp=stripCtcp)
+                    m = _makeReply(self, msg, s, **replyArgs)
                     sendMsg(m)
                     return m
                 else:
@@ -961,11 +962,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         # action implies noLengthCheck, which has already been
                         # handled.  Let's stick an assert in here just in case.
                         assert not self.action
-                        m = _makeReply(self, msg, s, to=self.to,
-                                      notice=self.notice,
-                                      private=self.private,
-                                      prefixNick=self.prefixNick,
-                                      stripCtcp=stripCtcp)
+                        m = _makeReply(self, msg, s, **replyArgs)
                         sendMsg(m)
                         return m
                     # The '(XX more messages)' may have not the same
@@ -978,11 +975,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     while instant > 1 and msgs:
                         instant -= 1
                         response = msgs.pop()
-                        m = _makeReply(self, msg, response, to=self.to,
-                                      notice=self.notice,
-                                      private=self.private,
-                                      prefixNick=self.prefixNick,
-                                      stripCtcp=stripCtcp)
+                        m = _makeReply(self, msg, response, **replyArgs)
                         sendMsg(m)
                         # XXX We should somehow allow these to be returned, but
                         #     until someone complains, we'll be fine :)  We
@@ -1011,12 +1004,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     public = bool(self.msg.channel)
                     private = self.private or not public
                     self._mores[msg.nick] = (private, msgs)
-                    m = _makeReply(self, msg, response, to=self.to,
-                                  action=self.action,
-                                  notice=self.notice,
-                                  private=self.private,
-                                  prefixNick=self.prefixNick,
-                                  stripCtcp=stripCtcp)
+                    m = _makeReply(self, msg, response, **replyArgs)
                     sendMsg(m)
                     return m
             finally:
