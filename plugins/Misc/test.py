@@ -209,21 +209,30 @@ class MiscTestCase(ChannelPluginTestCase):
             nickConfig.setValue(orig)
 
     def testMore(self):
-        self.assertRegexp('echo %s' % ('abc'*400), 'more')
-        self.assertRegexp('more', 'more')
-        self.assertNotRegexp('more', 'more')
+        self.assertResponse('echo %s' % ('abc '*400),
+                            'abc '*112 + ' \x02(3 more messages)\x02')
+        self.assertResponse('more',
+                            'abc '*112 + ' \x02(2 more messages)\x0f')
+        self.assertResponse('more',
+                            'abc '*112 + ' \x02(1 more message)\x0f')
+        self.assertResponse('more',
+                            ' '.join(['abc']*(400-112*3)))
+        self.assertResponse('more',
+                            "Error: That's all, there is no more.")
+
+    def testMoreMores(self):
         with conf.supybot.plugins.Misc.mores.context(2):
-            self.assertRegexp('echo %s' % ('abc'*700), 'more')
-
-            self.assertNotRegexp('more', 'more')
+            self.assertResponse('echo %s' % ('abc '*400),
+                                'abc '*112 + ' \x02(3 more messages)\x02')
+            self.assertResponse('more',
+                                'abc '*112)
             m = self.irc.takeMsg()
             self.assertIsNot(m, None)
-            self.assertIn('more', m.args[1])
-
-            self.assertNotRegexp('more', 'more')
-            m = self.irc.takeMsg()
-            self.assertIsNot(m, None)
-            self.assertNotIn('more', m.args[1])
+            self.assertEqual(
+                m.args[1],
+                self.nick + ': ' + 'abc '*112 + ' \x02(1 more message)\x0f')
+            self.assertResponse('more',
+                                "Error: That's all, there is no more.")
 
     def testClearMores(self):
         self.assertRegexp('echo %s' % ('abc'*700), 'more')
