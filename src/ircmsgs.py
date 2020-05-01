@@ -63,8 +63,19 @@ SERVER_TAG_ESCAPE = [
     ]
 escape_server_tag_value = utils.str.MultipleReplacer(
         dict(SERVER_TAG_ESCAPE))
-unescape_server_tag_value = utils.str.MultipleReplacer(
-        dict(map(lambda x:(x[1],x[0]), SERVER_TAG_ESCAPE)))
+
+_server_tag_unescape = {k: v for (v, k) in SERVER_TAG_ESCAPE}
+_escape_sequence_pattern = re.compile(r'\\.?')
+def _unescape_replacer(m):
+    escape_sequence = m.group(0)
+    unescaped = _server_tag_unescape.get(escape_sequence)
+    if unescaped is None:
+        # Matches both a lone \ at the end and a \ followed by an "invalid"
+        # character. In both cases, the \ must be dropped.
+        return escape_sequence[1:]
+    return unescaped
+def unescape_server_tag_value(s):
+    return _escape_sequence_pattern.sub(_unescape_replacer, s)
 
 def parse_server_tags(s):
     server_tags = {}

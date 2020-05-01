@@ -163,6 +163,24 @@ class IrcMsgTestCase(SupyTestCase):
         m._str = None  # Clear the cache (set before parsing)
         self.assertEqual(str(m), s + '\r\n')
 
+        # bar\1 is equivalent to baz1
+        s = r'@foo=;bar=baz\1;qux= ' \
+            r':nick!ident@host.com PRIVMSG me :Hello'
+        m = ircmsgs.IrcMsg(s)
+        self.assertEqual(m.server_tags, {
+            'foo': None,
+            'bar': 'baz1',
+            'qux': None})
+
+        # bar\ is equivalent to baz
+        s = r'@foo=;bar=baz\;qux= ' \
+            r':nick!ident@host.com PRIVMSG me :Hello'
+        m = ircmsgs.IrcMsg(s)
+        self.assertEqual(m.server_tags, {
+            'foo': None,
+            'bar': 'baz',
+            'qux': None})
+
         s = r'@foo=;bar=baz;qux= ' \
             r':nick!ident@host.com PRIVMSG me :Hello'
         m = ircmsgs.IrcMsg(s)
