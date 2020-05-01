@@ -1682,6 +1682,10 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         """Handles PONG messages."""
         self.outstandingPing = False
 
+    def do375(self, msg):
+        self.state.fsm.on_start_motd(self, msg)
+        log.info('Got start of MOTD from %s', self.server)
+
     def do376(self, msg):
         self.state.fsm.on_end_motd()
         log.info('Got end of MOTD from %s', self.server)
