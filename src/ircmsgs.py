@@ -89,6 +89,10 @@ def format_server_tags(server_tags):
             parts.append('%s=%s' % (key, escape_server_tag_value(value)))
     return '@' + ';'.join(parts)
 
+def split_args(s, maxsplit=-1):
+    """Splits on spaces, treating consecutive spaces as one."""
+    return list(filter(bool, s.split(' ', maxsplit=maxsplit)))
+
 class IrcMsg(object):
     """Class to represent an IRC message.
 
@@ -144,16 +148,16 @@ class IrcMsg(object):
                     self.server_tags = parse_server_tags(server_tags[1:])
                 else:
                     self.server_tags = {}
-                if s[0] == ':':
-                    self.prefix, s = s[1:].split(None, 1)
-                else:
-                    self.prefix = ''
                 if ' :' in s: # Note the space: IPV6 addresses are bad w/o it.
                     s, last = s.split(' :', 1)
-                    self.args = s.split()
+                    self.args = split_args(s)
                     self.args.append(last.rstrip('\r\n'))
                 else:
-                    self.args = s.split()
+                    self.args = split_args(s.rstrip('\r\n'))
+                if self.args[0][0] == ':':
+                    self.prefix = self.args.pop(0)[1:]
+                else:
+                    self.prefix = ''
                 self.command = self.args.pop(0)
                 if 'time' in self.server_tags:
                     s = self.server_tags['time']

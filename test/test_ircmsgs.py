@@ -119,6 +119,20 @@ class IrcMsgTestCase(SupyTestCase):
         self.assertEqual(msg2.command, 'PRIVMSG')
         self.assertEqual(msg2.args, msg.args)
 
+    def testSplit(self):
+        msg = ircmsgs.IrcMsg(s=':foo    bar      baz   :qux')
+        self.assertEqual(msg.prefix, 'foo')
+        self.assertEqual(msg.command, 'bar')
+        self.assertEqual(msg.args, ('baz', 'qux'))
+
+        msg = ircmsgs.IrcMsg(s=':foo\tbar baz')
+        self.assertEqual(msg.prefix, 'foo\tbar')
+        self.assertEqual(msg.command, 'baz')
+
+        msg = ircmsgs.IrcMsg(s=':foo bar\tbaz')
+        self.assertEqual(msg.prefix, 'foo')
+        self.assertEqual(msg.command, 'bar\tbaz')
+
     def testMalformedIrcMsgRaised(self):
         self.assertRaises(ircmsgs.MalformedIrcMsg, ircmsgs.IrcMsg, ':foo')
         self.assertRaises(ircmsgs.MalformedIrcMsg, ircmsgs.IrcMsg,
