@@ -122,7 +122,7 @@ class IrcMsg(object):
     __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
                  '_hash', '_str', '_repr', '_len', 'tags', 'reply_env',
                  'server_tags', 'time', 'channel')
-    def __init__(self, s='', command='', args=(), prefix='', msg=None,
+    def __init__(self, s='', command='', args=(), prefix='', server_tags=None, msg=None,
             reply_env=None):
         assert not (msg and s), 'IrcMsg.__init__ cannot accept both s and msg'
         if not s and not command and not msg:
@@ -193,7 +193,10 @@ class IrcMsg(object):
                 assert all(ircutils.isValidArgument, args), args
                 self.args = args
                 self.time = None
-                self.server_tags = {}
+                if server_tags is None:
+                    self.server_tags = {}
+                else:
+                    self.server_tags = server_tags
         self.args = tuple(self.args)
         if isUserHostmask(self.prefix):
             (self.nick,self.user,self.host)=ircutils.splitHostmask(self.prefix)
@@ -205,25 +208,31 @@ class IrcMsg(object):
             return self._str
         if self.prefix:
             if len(self.args) > 1:
-                self._str = ':%s %s %s :%s\r\n' % \
-                            (self.prefix, self.command,
-                             ' '.join(self.args[:-1]), self.args[-1])
+                s = ':%s %s %s :%s\r\n' % (
+                    self.prefix, self.command,
+                    ' '.join(self.args[:-1]), self.args[-1])
             else:
                 if self.args:
-                    self._str = ':%s %s :%s\r\n' % \
-                                (self.prefix, self.command, self.args[0])
+                    s = ':%s %s :%s\r\n' % (
+                        self.prefix, self.command, self.args[0])
                 else:
-                    self._str = ':%s %s\r\n' % (self.prefix, self.command)
+                    s = ':%s %s\r\n' % (self.prefix, self.command)
         else:
             if len(self.args) > 1:
-                self._str = '%s %s :%s\r\n' % \
-                            (self.command,
-                             ' '.join(self.args[:-1]), self.args[-1])
+                s = '%s %s :%s\r\n' % (
+                    self.command,
+                    ' '.join(self.args[:-1]), self.args[-1])
             else:
                 if self.args:
-                    self._str = '%s :%s\r\n' % (self.command, self.args[0])
+                    s = '%s :%s\r\n' % (self.command, self.args[0])
                 else:
-                    self._str = '%s\r\n' % self.command
+                    s = '%s\r\n' % self.command
+
+        if self.server_tags:
+            s = format_server_tags(self.server_tags) + ' ' + s
+
+        self._str = s
+
         return self._str
 
     def __len__(self):
@@ -252,8 +261,9 @@ class IrcMsg(object):
     def __repr__(self):
         if self._repr is not None:
             return self._repr
-        self._repr = format('IrcMsg(prefix=%q, command=%q, args=%r)',
-                            self.prefix, self.command, self.args)
+        self._repr = format(
+            'IrcMsg(server_tags=%r, prefix=%q, command=%q, args=%r)',
+            self.server_tags, self.prefix, self.command, self.args)
         return self._repr
 
     def __reduce__(self):

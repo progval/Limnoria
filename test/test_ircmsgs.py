@@ -146,6 +146,8 @@ class IrcMsgTestCase(SupyTestCase):
         self.assertEqual(m.command, 'PRIVMSG')
         self.assertEqual(m.args, ('me', 'Hello'))
         self.assertEqual(str(m), s + '\n')
+        m._str = None  # Clear the cache (set before parsing)
+        self.assertEqual(str(m), s + '\r\n')
 
         s = '@foo=;bar=baz;qux= ' \
             ':nick!ident@host.com PRIVMSG me :Hello'
