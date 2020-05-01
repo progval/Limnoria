@@ -34,6 +34,7 @@ import os
 import sys
 import time
 import shutil
+import fnmatch
 started = time.time()
 
 import supybot
@@ -164,12 +165,16 @@ if __name__ == '__main__':
     world.disableMultiprocessing = options.disableMultiprocessing
 
     # This must go before checking for args, of course.
+    if options.excludePlugins:
+        exclusionPattern = re.compile('|'.join(
+            fnmatch.translate(pat) for pat in options.excludePlugins
+        ))
+    else:
+        exclusionPattern = None
     for pluginDir in options.pluginsDirs:
         for name in glob.glob(os.path.join(pluginDir, '*')):
-            #print '***', name
-            if not any(map(lambda x:name in x,
-                           map(glob.glob, options.excludePlugins))) and \
-                    os.path.isdir(name):
+            if (exclusionPattern is None or not exclusionPattern.match(name)) \
+                    and os.path.isdir(name):
                 args.append(name)
 
     if not args:
