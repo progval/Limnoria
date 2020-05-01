@@ -135,8 +135,8 @@ class IrcMsgTestCase(SupyTestCase):
         self.assertEqual(m.repliedTo, 12)
 
     def testServerTags(self):
-        s = '@aaa=b\\:bb;ccc;example.com/ddd=ee\\\\se ' \
-            ':nick!ident@host.com PRIVMSG me :Hello'
+        s = r'@aaa=b\:bb;ccc;example.com/ddd=ee\\se ' \
+            r':nick!ident@host.com PRIVMSG me :Hello'
         m = ircmsgs.IrcMsg(s)
         self.assertEqual(m.server_tags, {
             'aaa': 'b;bb',
@@ -149,8 +149,8 @@ class IrcMsgTestCase(SupyTestCase):
         m._str = None  # Clear the cache (set before parsing)
         self.assertEqual(str(m), s + '\r\n')
 
-        s = '@foo=;bar=baz;qux= ' \
-            ':nick!ident@host.com PRIVMSG me :Hello'
+        s = r'@foo=;bar=baz;qux= ' \
+            r':nick!ident@host.com PRIVMSG me :Hello'
         m = ircmsgs.IrcMsg(s)
         self.assertEqual(m.server_tags, {
             'foo': None,
