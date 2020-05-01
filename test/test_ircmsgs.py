@@ -32,6 +32,7 @@ from supybot.test import *
 import time
 import copy
 import pickle
+import itertools
 
 import supybot.conf as conf
 import supybot.ircmsgs as ircmsgs
@@ -161,7 +162,13 @@ class IrcMsgTestCase(SupyTestCase):
         self.assertEqual(m.args, ('me', 'Hello'))
         self.assertEqual(str(m), s + '\n')
         m._str = None  # Clear the cache (set before parsing)
-        self.assertEqual(str(m), s + '\r\n')
+
+        tag_set = [r'aaa=b\:bb', r'ccc', r'example.com/ddd=ee\\se']
+        expected = [
+            '@' + ';'.join(tags)
+            + ' :nick!ident@host.com PRIVMSG me :Hello\r\n'
+            for tags in itertools.permutations(tag_set)]
+        self.assertIn(str(m), expected)
 
         # bar\1 is equivalent to baz1
         s = r'@foo=;bar=baz\1;qux= ' \
