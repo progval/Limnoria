@@ -107,6 +107,43 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertNotError('scheduler repeat foo 5 "echo foo"')
         self.assertError('scheduler repeat foo 5 "echo another foo fails"')
 
+    def testSinglePersistence(self):
+        self.assertRegexp(
+            'scheduler add 10 echo testSingle',
+            '^The operation succeeded')
+
+        self.assertNotError('unload Scheduler')
+        schedule.schedule.reset()
+        timeFastForward(20)
+        self.assertNoResponse(' ', timeout=1)
+
+        self.assertNotError('load Scheduler')
+        self.assertResponse(' ', 'testSingle')
+
+    def testRepeatPersistence(self):
+        self.assertRegexp(
+            'scheduler repeat repeater 5 echo testRepeat',
+            'testRepeat')
+
+        self.assertNotError('unload Scheduler')
+        schedule.schedule.reset()
+        timeFastForward(20)
+        self.assertNoResponse(' ', timeout=1)
+
+        self.assertNotError('load Scheduler')
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(2)
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(2)
+        self.assertResponse(' ', 'testRepeat')
+
+        timeFastForward(3)
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(2)
+        self.assertResponse(' ', 'testRepeat')
+
+
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
