@@ -108,19 +108,27 @@ class Schedule(drivers.IrcDriver):
         f = self.removeEvent(name)
         self.addEvent(f, t, name=name)
 
-    def addPeriodicEvent(self, f, t, name=None, now=True, args=[], kwargs={},
-            count=None):
-        """Adds a periodic event that is called every t seconds."""
-        def wrapper(count):
+    def makePeriodicWrapper(
+            self, f, t, name=None, args=[], kwargs={}, count=None):
+        """Returns a function that will run and re-schedule itself every t
+        seconds."""
+        def wrapper():
+            nonlocal count
             try:
                 f(*args, **kwargs)
             finally:
                 # Even if it raises an exception, let's schedule it.
-                if count[0] is not None:
-                    count[0] -= 1
-                if count[0] is None or count[0] > 0:
+                if count is not None:
+                    count -= 1
+                if count is None or count > 0:
                     return self.addEvent(wrapper, time.time() + t, name)
-        wrapper = functools.partial(wrapper, [count])
+        return wrapper
+
+    def addPeriodicEvent(
+            self, f, t, name=None, now=True, args=[], kwargs={}, count=None):
+        """Adds a periodic event that is called every t seconds."""
+        wrapper = self.makePeriodicWrapper(
+            f, t, name, args, kwargs, count)
         if now:
             return wrapper()
         else:

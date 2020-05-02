@@ -29,6 +29,7 @@
 
 import time
 import os
+import math
 import shutil
 import tempfile
 
@@ -56,6 +57,14 @@ class Scheduler(callbacks.Plugin):
         self._restoreEvents(irc)
         world.flushers.append(self._flush)
 
+    def _getNextRunIn(self, first_run, now, period):
+        next_run_in = period - ((now - first_run) % period)
+        if next_run_in < 5:
+            # don't run immediatly, it might overwhelm the bot on
+            # startup.
+            next_run_in += period
+        return next_run_in
+
     def _restoreEvents(self, irc):
         try:
             pkl = open(filename, 'rb')
@@ -82,8 +91,21 @@ class Scheduler(callbacks.Plugin):
                     self._add(ircobj, event['msg'],
                               event['time'], event['command'], n)
                 elif event['type'] == 'repeat': # repeating event
+                    now = time.time()
+                    first_run = event.get('first_run')
+                    if first_run is None:
+                        # old DBs don't have a "first_run"; let's take "now" as
+                        # first_run.
+                        first_run = now
+
+                    # Preserve the offset over restarts; eg. if event['time']
+                    # is 24hours, we want to keep running the command at the
+                    # same time of day.
+                    next_run_in = self._getNextRunIn(
+                        first_run, now, event['time'])
+
                     self._repeat(ircobj, event['msg'], name,
-                                 event['time'], event['command'], False)
+                                 event['time'], event['command'], first_run, next_run_in)
             except AssertionError as e:
                 if str(e) == 'An event with the same name has already been scheduled.':
                     # we must be reloading the plugin, event is still scheduled
@@ -166,14 +188,24 @@ class Scheduler(callbacks.Plugin):
             irc.error(_('Invalid event id.'))
     remove = wrap(remove, ['lowered'])
 
-    def _repeat(self, irc, msg, name, seconds, command, now=True):
+    def _repeat(self, irc, msg, name, seconds, command, first_run=None, next_run_in=None):
         f = self._makeCommandFunction(irc, msg, command, remove=False)
-        id = schedule.addPeriodicEvent(f, seconds, name, now)
+        f_wrapper = schedule.schedule.makePeriodicWrapper(f, seconds, name)
+        if next_run_in is None:
+            assert first_run is None
+            # run immediately
+            id = f_wrapper()
+            first_run = time.time()
+        else:
+            assert first_run is not None
+            id = schedule.addEvent(f_wrapper, time.time() + next_run_in, name)
         assert id == name
         self.events[name] = {'command':command,
                              'msg':msg,
                              'time':seconds,
-                             'type':'repeat'}
+                             'type':'repeat',
+                             'first_run': first_run,
+                             }
 
     @internationalizeDocstring
     def repeat(self, irc, msg, args, name, seconds, command):

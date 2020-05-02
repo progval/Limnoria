@@ -122,8 +122,25 @@ class SchedulerTestCase(ChannelPluginTestCase):
 
     def testRepeatPersistence(self):
         self.assertRegexp(
-            'scheduler repeat repeater 5 echo testRepeat',
+            'scheduler repeat repeater 20 echo testRepeat',
             'testRepeat')
+
+        self.assertNotError('unload Scheduler')
+        schedule.schedule.reset()
+        timeFastForward(30)
+        self.assertNoResponse(' ', timeout=1)
+
+        self.assertNotError('load Scheduler')
+        self.assertNoResponse(' ', timeout=1) # T+30 to T+31
+        timeFastForward(5)
+        self.assertNoResponse(' ', timeout=1) # T+36 to T+37
+        timeFastForward(5)
+        self.assertResponse(' ', 'testRepeat', timeout=1) # T+42
+
+        timeFastForward(15)
+        self.assertNoResponse(' ', timeout=1) # T+57 to T+58
+        timeFastForward(5)
+        self.assertResponse(' ', 'testRepeat', timeout=1) # T+64
 
         self.assertNotError('unload Scheduler')
         schedule.schedule.reset()
@@ -131,16 +148,11 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertNoResponse(' ', timeout=1)
 
         self.assertNotError('load Scheduler')
-        self.assertNoResponse(' ', timeout=1)
-        timeFastForward(2)
-        self.assertNoResponse(' ', timeout=1)
-        timeFastForward(2)
-        self.assertResponse(' ', 'testRepeat')
-
-        timeFastForward(3)
-        self.assertNoResponse(' ', timeout=1)
-        timeFastForward(2)
-        self.assertResponse(' ', 'testRepeat')
+        self.assertNoResponse(' ', timeout=1) # T+85 to T+86
+        timeFastForward(10)
+        self.assertNoResponse(' ', timeout=1) # T+95 to T+96
+        timeFastForward(10)
+        self.assertResponse(' ', 'testRepeat', timeout=1) # T+106
 
 
 
