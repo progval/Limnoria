@@ -496,6 +496,47 @@ class IrcChannel(object):
         fd.write(os.linesep)
 
 
+class IrcNetwork(object):
+    """This class holds dynamic information about a network that should be
+    preserved across restarts."""
+    __slots__ = ('stsPolicies', 'lastDisconnectTimes')
+
+    def __init__(self, stsPolicies=None, lastDisconnectTimes=None):
+        self.stsPolicies = stsPolicies or {}
+        self.lastDisconnectTimes = lastDisconnectTimes or {}
+
+    def __repr__(self):
+        return '%s(stsPolicies=%r, lastDisconnectTimes=%s)' % \
+            (self.__class__.__name__, self.stsPolicies,
+             self.lastDisconnectTimes)
+
+    def addStsPolicy(self, server, stsPolicy):
+        assert isinstance(stsPolicy, str)
+        self.stsPolicies[server] = stsPolicy
+
+    def expireStsPolicy(self, server):
+        if server in self.stsPolicies:
+            del self.stsPolicies[server]
+
+    def addDisconnection(self, server):
+        self.lastDisconnectTimes[server] = int(time.time())
+
+    def preserve(self, fd, indent=''):
+        def write(s):
+            fd.write(indent)
+            fd.write(s)
+            fd.write(os.linesep)
+
+        for (server, stsPolicy) in sorted(self.stsPolicies.items()):
+            write('stsPolicy %s %s' % (server, stsPolicy))
+
+        for (server, disconnectTime) in \
+                sorted(self.lastDisconnectTimes.items()):
+            write('lastDisconnectTime %s %s' % (server, disconnectTime))
+
+        fd.write(os.linesep)
+
+
 class Creator(object):
     __slots__ = ()
     def badCommand(self, command, rest, lineno):
@@ -615,6 +656,32 @@ class IrcChannelCreator(Creator):
             IrcChannelCreator.name = None
 
 
+class IrcNetworkCreator(Creator):
+    __slots__ = ('net', 'networks')
+    name = None
+
+    def __init__(self, networks):
+        self.net = IrcNetwork()
+        self.networks = networks
+
+    def network(self, rest, lineno):
+        IrcNetworkCreator.name = rest
+
+    def stspolicy(self, rest, lineno):
+        (server, stsPolicy) = rest.split()
+        self.net.addStsPolicy(server, stsPolicy)
+
+    def lastdisconnecttime(self, rest, lineno):
+        (server, when) = rest.split()
+        when = int(when)
+        self.net.lastDisconnectTimes[server] = when
+
+    def finish(self):
+        if self.name:
+            self.networks.setNetwork(self.name, self.net)
+            self.net = IrcNetwork()
+
+
 class DuplicateHostmask(ValueError):
     pass
 
@@ -666,10 +733,8 @@ class UsersDictionary(utils.IterableMap):
         """Flushes the database to its file."""
         if not self.noFlush:
             if self.filename is not None:
-                L = list(self.users.items())
-                L.sort()
                 fd = utils.file.AtomicFile(self.filename)
-                for (id, u) in L:
+                for (id, u) in sorted(self.users.items()):
                     fd.write('user %s' % id)
                     fd.write(os.linesep)
                     u.preserve(fd, indent='  ')
@@ -861,7 +926,7 @@ class ChannelsDictionary(utils.IterableMap):
         if not self.noFlush:
             if self.filename is not None:
                 fd = utils.file.AtomicFile(self.filename)
-                for (channel, c) in self.channels.items():
+                for (channel, c) in sorted(self.channels.items()):
                     fd.write('channel %s' % channel)
                     fd.write(os.linesep)
                     c.preserve(fd, indent='  ')
@@ -906,6 +971,83 @@ class ChannelsDictionary(utils.IterableMap):
 
     def items(self):
         return self.channels.items()
+
+class NetworksDictionary(utils.IterableMap):
+    __slots__ = ('noFlush', 'filename', 'networks')
+
+    def __init__(self):
+        self.noFlush = False
+        self.filename = None
+        self.networks = ircutils.IrcDict()
+
+    def open(self, filename):
+        self.noFlush = True
+        try:
+            self.filename = filename
+            reader = unpreserve.Reader(IrcNetworkCreator, self)
+            try:
+                reader.readFile(filename)
+                self.noFlush = False
+                self.flush()
+            except EnvironmentError as e:
+                log.error('Invalid network database, resetting to empty.')
+                log.error('Exact error: %s', utils.exnToString(e))
+            except Exception as e:
+                log.error('Invalid network database, resetting to empty.')
+                log.exception('Exact error:')
+        finally:
+            self.noFlush = False
+
+    def flush(self):
+        """Flushes the network database to its file."""
+        if not self.noFlush:
+            if self.filename is not None:
+                fd = utils.file.AtomicFile(self.filename)
+                for (network, net) in sorted(self.networks.items()):
+                    fd.write('network %s' % network)
+                    fd.write(os.linesep)
+                    net.preserve(fd, indent='  ')
+                fd.close()
+            else:
+                log.warning('NetworksDictionary.flush without self.filename.')
+        else:
+            log.debug('Not flushing NetworksDictionary because of noFlush.')
+
+    def close(self):
+        self.flush()
+        if self.flush in world.flushers:
+            world.flushers.remove(self.flush)
+        self.networks.clear()
+
+    def reload(self):
+        """Reloads the network database from its file."""
+        if self.filename is not None:
+            self.networks.clear()
+            try:
+                self.open(self.filename)
+            except EnvironmentError as e:
+                log.warning('NetworksDictionary.reload failed: %s', e)
+        else:
+            log.warning('NetworksDictionary.reload without self.filename.')
+
+    def getNetwork(self, network):
+        """Returns an IrcNetwork object for the given network."""
+        network = network.lower()
+        if network in self.networks:
+            return self.networks[network]
+        else:
+            c = IrcNetwork()
+            self.networks[network] = c
+            return c
+
+    def setNetwork(self, network, ircNetwork):
+        """Sets a given network to the IrcNetwork object given."""
+        network = network.lower()
+        self.networks[network] = ircNetwork
+        self.flush()
+
+    def items(self):
+        return self.networks.items()
 
 
 class IgnoresDB(object):
@@ -997,6 +1139,14 @@ except EnvironmentError as e:
     log.warning('Couldn\'t open channel database: %s', e)
 
 try:
+    networkFile = os.path.join(confDir,
+                               conf.supybot.databases.networks.filename())
+    networks = NetworksDictionary()
+    networks.open(networkFile)
+except EnvironmentError as e:
+    log.warning('Couldn\'t open network database: %s', e)
+
+try:
     ignoreFile = os.path.join(confDir,
                               conf.supybot.databases.ignores.filename())
     ignores = IgnoresDB()
@@ -1006,8 +1156,9 @@ except EnvironmentError as e:
 
 
 world.flushers.append(users.flush)
-world.flushers.append(ignores.flush)
 world.flushers.append(channels.flush)
+world.flushers.append(networks.flush)
+world.flushers.append(ignores.flush)
 
 
 ###

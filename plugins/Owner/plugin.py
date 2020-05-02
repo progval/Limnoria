@@ -148,14 +148,14 @@ class Owner(callbacks.Plugin):
     def _connect(self, network, serverPort=None, password='', ssl=False):
         try:
             group = conf.supybot.networks.get(network)
-            (server, port) = group.servers()[0]
+            group.servers()[0]
         except (registry.NonExistentRegistryEntry, IndexError):
             if serverPort is None:
                 raise ValueError('connect requires a (server, port) ' \
                                   'if the network is not registered.')
             conf.registerNetwork(network, password, ssl)
-            serverS = '%s:%s' % serverPort
-            conf.supybot.networks.get(network).servers.append(serverS)
+            server = '%s:%s' % serverPort
+            conf.supybot.networks.get(network).servers.append(server)
             assert conf.supybot.networks.get(network).servers(), \
                    'No servers are set for the %s network.' % network
         self.log.debug('Creating new Irc for %s.', network)

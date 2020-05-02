@@ -31,11 +31,13 @@ from supybot.test import *
 
 import os
 import unittest
+import unittest.mock
 
 import supybot.conf as conf
 import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.ircutils as ircutils
+from supybot.utils.minisix import io
 
 class IrcdbTestCase(SupyTestCase):
     def setUp(self):
@@ -347,6 +349,49 @@ class IrcChannelTestCase(IrcdbTestCase):
         c.removeBan(banmask)
         self.assertFalse(c.checkIgnored(prefix))
 
+class IrcNetworkTestCase(IrcdbTestCase):
+    def testDefaults(self):
+        n = ircdb.IrcNetwork()
+        self.assertEqual(n.stsPolicies, {})
+        self.assertEqual(n.lastDisconnectTimes, {})
+
+    def testStsPolicy(self):
+        n = ircdb.IrcNetwork()
+        n.addStsPolicy('foo', 'bar')
+        n.addStsPolicy('baz', 'qux')
+        self.assertEqual(n.stsPolicies, {
+            'foo': 'bar',
+            'baz': 'qux',
+        })
+
+    def testAddDisconnection(self):
+        n = ircdb.IrcNetwork()
+        min_ = int(time.time())
+        n.addDisconnection('foo')
+        max_ = int(time.time())
+        self.assertTrue(min_ <= n.lastDisconnectTimes['foo'] <= max_)
+
+    def testPreserve(self):
+        n = ircdb.IrcNetwork()
+        n.addStsPolicy('foo', 'sts1')
+        n.addStsPolicy('bar', 'sts2')
+        n.addDisconnection('foo')
+        n.addDisconnection('baz')
+        disconnect_time_foo = n.lastDisconnectTimes['foo']
+        disconnect_time_baz = n.lastDisconnectTimes['baz']
+        fd = io.StringIO()
+        n.preserve(fd, indent='    ')
+        fd.seek(0)
+        self.assertCountEqual(fd.read().split('\n'), [
+            '    stsPolicy foo sts1',
+            '    stsPolicy bar sts2',
+            '    lastDisconnectTime foo %d' % disconnect_time_foo,
+            '    lastDisconnectTime baz %d' % disconnect_time_baz,
+            '',
+            '',
+        ])
+
+
 class UsersDictionaryTestCase(IrcdbTestCase):
     filename = os.path.join(conf.supybot.directories.conf(),
                             'UsersDictionaryTestCase.conf')
@@ -399,6 +444,88 @@ class UsersDictionaryTestCase(IrcdbTestCase):
         u2 = self.users.newUser()
         u2.addHostmask('*!xyzzy@baz.domain.c?m')
         self.assertRaises(ValueError, self.users.setUser, u2)
+
+
+class NetworksDictionaryTestCase(IrcdbTestCase):
+    filename = os.path.join(conf.supybot.directories.conf(),
+                            'NetworksDictionaryTestCase.conf')
+    def setUp(self):
+        try:
+            os.remove(self.filename)
+        except:
+            pass
+        self.networks = ircdb.NetworksDictionary()
+        IrcdbTestCase.setUp(self)
+
+    def testGetSetNetwork(self):
+        self.assertEqual(self.networks.getNetwork('foo').stsPolicies, {})
+
+        n = ircdb.IrcNetwork()
+        self.networks.setNetwork('foo', n)
+        self.assertEqual(self.networks.getNetwork('foo').stsPolicies, {})
+
+    def testPreserveOne(self):
+        n = ircdb.IrcNetwork()
+        n.addStsPolicy('foo', 'sts1')
+        n.addStsPolicy('bar', 'sts2')
+        n.addDisconnection('foo')
+        n.addDisconnection('baz')
+        disconnect_time_foo = n.lastDisconnectTimes['foo']
+        disconnect_time_baz = n.lastDisconnectTimes['baz']
+        self.networks.setNetwork('foonet', n)
+
+        fd = io.StringIO()
+        fd.close = lambda: None
+        self.networks.filename = 'blah'
+        original_Atomicfile = utils.file.AtomicFile
+        with unittest.mock.patch(
+                'supybot.utils.file.AtomicFile', return_value=fd):
+            self.networks.flush()
+
+        lines = fd.getvalue().split('\n')
+        self.assertEqual(lines.pop(0), 'network foonet')
+        self.assertCountEqual(lines, [
+            '  stsPolicy foo sts1',
+            '  stsPolicy bar sts2',
+            '  lastDisconnectTime foo %d' % disconnect_time_foo,
+            '  lastDisconnectTime baz %d' % disconnect_time_baz,
+            '',
+            '',
+        ])
+
+    def testPreserveThree(self):
+        n = ircdb.IrcNetwork()
+        n.addStsPolicy('foo', 'sts1')
+        self.networks.setNetwork('foonet', n)
+
+        n = ircdb.IrcNetwork()
+        n.addStsPolicy('bar', 'sts2')
+        self.networks.setNetwork('barnet', n)
+
+        n = ircdb.IrcNetwork()
+        n.addStsPolicy('baz', 'sts3')
+        self.networks.setNetwork('baznet', n)
+
+        fd = io.StringIO()
+        fd.close = lambda: None
+        self.networks.filename = 'blah'
+        original_Atomicfile = utils.file.AtomicFile
+        with unittest.mock.patch(
+                'supybot.utils.file.AtomicFile', return_value=fd):
+            self.networks.flush()
+
+        fd.seek(0)
+        self.assertEqual(fd.getvalue(),
+            'network barnet\n'
+            '  stsPolicy bar sts2\n'
+            '\n'
+            'network baznet\n'
+            '  stsPolicy baz sts3\n'
+            '\n'
+            'network foonet\n'
+            '  stsPolicy foo sts1\n'
+            '\n'
+        )
 
 
 class CheckCapabilityTestCase(IrcdbTestCase):
