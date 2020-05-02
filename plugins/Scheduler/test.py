@@ -87,6 +87,17 @@ class SchedulerTestCase(ChannelPluginTestCase):
         timeFastForward(5)
         self.assertNoResponse(' ', timeout=1)
 
+    def testRepeatDelay(self):
+        self.assertNoResponse(
+            'scheduler repeat --delay 5 repeater 20 echo testRepeat',
+            timeout=1)
+        timeFastForward(5)
+        self.assertResponse(' ', 'testRepeat', timeout=1)
+        timeFastForward(17)
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(5)
+        self.assertResponse(' ', 'testRepeat', timeout=1)
+
     def testRepeatWorksWithNestedCommands(self):
         self.assertRegexp('scheduler repeat foo 5 "echo foo [echo nested]"',
             'foo nested')

@@ -188,17 +188,11 @@ class Scheduler(callbacks.Plugin):
             irc.error(_('Invalid event id.'))
     remove = wrap(remove, ['lowered'])
 
-    def _repeat(self, irc, msg, name, seconds, command, first_run=None, next_run_in=None):
+    def _repeat(self, irc, msg, name, seconds, command, first_run, next_run_in):
         f = self._makeCommandFunction(irc, msg, command, remove=False)
         f_wrapper = schedule.schedule.makePeriodicWrapper(f, seconds, name)
-        if next_run_in is None:
-            assert first_run is None
-            # run immediately
-            id = f_wrapper()
-            first_run = time.time()
-        else:
-            assert first_run is not None
-            id = schedule.addEvent(f_wrapper, time.time() + next_run_in, name)
+        assert first_run is not None
+        id = schedule.addEvent(f_wrapper, time.time() + next_run_in, name)
         assert id == name
         self.events[name] = {'command':command,
                              'msg':msg,
@@ -208,23 +202,29 @@ class Scheduler(callbacks.Plugin):
                              }
 
     @internationalizeDocstring
-    def repeat(self, irc, msg, args, name, seconds, command):
-        """<name> <seconds> <command>
+    def repeat(self, irc, msg, args, optlist, name, seconds, command):
+        """[--delay <delay>] <name> <seconds> <command>
 
         Schedules the command <command> to run every <seconds> seconds,
         starting now (i.e., the command runs now, and every <seconds> seconds
         thereafter).  <name> is a name by which the command can be
         unscheduled.
+        If --delay is given, starts in <delay> seconds instead of now.
         """
+        opts = dict(optlist)
         name = name.lower()
         if name in self.events:
             irc.error(_('There is already an event with that name, please '
                       'choose another name.'), Raise=True)
-        self._repeat(irc, msg, name, seconds, command)
+        next_run_in = opts.get('delay', 0)
+        first_run = time.time() + next_run_in
+        self._repeat(irc, msg, name, seconds, command, first_run, next_run_in)
         # We don't reply because the command runs immediately.
         # But should we?  What if the command doesn't have visible output?
         # irc.replySuccess()
-    repeat = wrap(repeat, ['nonInt', 'positiveInt', 'text'])
+    repeat = wrap(repeat, [
+        getopts({'delay': 'positiveInt'}),
+        'nonInt', 'positiveInt', 'text'])
 
     @internationalizeDocstring
     def list(self, irc, msg, args):
