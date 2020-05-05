@@ -1230,7 +1230,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         'multi-prefix', 'metadata-notify', 'account-tag',
         'userhost-in-names', 'invite-notify', 'server-time',
         'chghost', 'batch', 'away-notify', 'message-tags',
-        'msgid'])
+        'msgid', 'setname'])
 
     def _queueConnectMessages(self):
         if self.zombie:
