@@ -41,7 +41,9 @@ class SchedulerTestCase(ChannelPluginTestCase):
     def testAddRemove(self):
         self.assertRegexp('scheduler list', 'no.*commands')
         m = self.assertNotError('scheduler add 5 echo testAddRemove')
-        self.assertRegexp('scheduler list', 'echo testAddRemove')
+        self.assertResponse(
+            'scheduler list',
+            '1 (in 4 seconds): "echo testAddRemove"')
         timeFastForward(2)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(2)
@@ -77,7 +79,10 @@ class SchedulerTestCase(ChannelPluginTestCase):
             'testRepeat')
         timeFastForward(5)
         self.assertResponse(' ', 'testRepeat')
-        self.assertResponse('scheduler list', 'repeater: "echo testRepeat"')
+        self.assertResponse(
+            'scheduler list',
+            'repeater (every 5 seconds, next run in 4 seconds): '
+            '"echo testRepeat"')
         timeFastForward(3)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(2)

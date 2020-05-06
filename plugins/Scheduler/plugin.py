@@ -57,9 +57,9 @@ class Scheduler(callbacks.Plugin):
         self._restoreEvents(irc)
         world.flushers.append(self._flush)
 
-    def _getNextRunIn(self, first_run, now, period):
+    def _getNextRunIn(self, first_run, now, period, not_right_now=False):
         next_run_in = period - ((now - first_run) % period)
-        if next_run_in < 5:
+        if not_right_now and next_run_in < 5:
             # don't run immediatly, it might overwhelm the bot on
             # startup.
             next_run_in += period
@@ -102,7 +102,7 @@ class Scheduler(callbacks.Plugin):
                     # is 24hours, we want to keep running the command at the
                     # same time of day.
                     next_run_in = self._getNextRunIn(
-                        first_run, now, event['time'])
+                        first_run, now, event['time'], not_right_now=True)
 
                     self._repeat(ircobj, event['msg'], name,
                                  event['time'], event['command'], first_run, next_run_in)
@@ -235,9 +235,18 @@ class Scheduler(callbacks.Plugin):
         L = list(self.events.items())
         if L:
             L.sort()
-            for (i, (name, command)) in enumerate(L):
-                L[i] = format('%s: %q', name, command['command'])
-            irc.reply(format('%L', L))
+            replies = []
+            now = time.time()
+            for (i, (name, event)) in enumerate(L):
+                if event['type'] == 'single':
+                    replies.append(format('%s (in %T): %q', name,
+                        event['time'] - now, event['command']))
+                else:
+                    next_run_in = self._getNextRunIn(
+                        event['first_run'], now, event['time'])
+                    replies.append(format('%s (every %T, next run in %T): %q',
+                        name, event['time'], next_run_in, event['command']))
+            irc.reply(format('%L', replies))
         else:
             irc.reply(_('There are currently no scheduled commands.'))
     list = wrap(list)
