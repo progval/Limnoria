@@ -1166,6 +1166,47 @@ class TestCacheDict(SupyTestCase):
             self.assertTrue(i in d)
             self.assertTrue(d[i] == i)
 
+class TestTimeoutDict(SupyTestCase):
+    def testInit(self):
+        d = TimeoutDict(10)
+        self.assertEqual(dict(d), {})
+        d['foo'] = 'bar'
+        d['baz'] = 'qux'
+        self.assertEqual(dict(d), {'foo': 'bar', 'baz': 'qux'})
+
+    def testExpire(self):
+        d = TimeoutDict(10)
+        self.assertEqual(dict(d), {})
+        d['foo'] = 'bar'
+        timeFastForward(11)
+        d['baz'] = 'qux'  # Moves 'foo' to the old gen
+        self.assertEqual(dict(d), {'foo': 'bar', 'baz': 'qux'})
+
+        timeFastForward(11)
+        self.assertEqual(dict(d), {'foo': 'bar', 'baz': 'qux'})
+
+        d['quux'] = 42  # removes the old gen and moves 'baz' to the old gen
+        self.assertEqual(dict(d), {'baz': 'qux', 'quux': 42})
+
+    def testEquality(self):
+        d1 = TimeoutDict(10)
+        d2 = TimeoutDict(10)
+        self.assertEqual(d1, d2)
+
+        d1['foo'] = 'bar'
+        self.assertNotEqual(d1, d2)
+
+        timeFastForward(5)  # check they are equal despite the time difference
+
+        d2['foo'] = 'bar'
+        self.assertEqual(d1, d2)
+
+        timeFastForward(7)
+
+        d1['baz'] = 'qux'  # moves 'foo' to the old gen (12 seconds old)
+        d2['baz'] = 'qux'  # does not move it (7 seconds old)
+        self.assertEqual(d1, d2)
+
 class TestTruncatableSet(SupyTestCase):
     def testBasics(self):
         s = TruncatableSet(['foo', 'bar', 'baz', 'qux'])

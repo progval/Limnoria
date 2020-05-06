@@ -58,7 +58,7 @@ from . import conf, ircdb, ircmsgs, ircutils, log, utils, world
 from .drivers import Server
 from .utils.str import rsplit
 from .utils.iter import chain
-from .utils.structures import smallqueue, RingBuffer
+from .utils.structures import smallqueue, RingBuffer, TimeoutDict
 
 MAX_LINE_SIZE = 512 # Including \r\n
 
@@ -539,7 +539,10 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.history = history
         self.channels = channels
         self.nicksToHostmasks = nicksToHostmasks
-        self.batches = {}
+
+        # Batches should always finish and be way shorter than 3600s, but
+        # let's just make sure to avoid leaking memory.
+        self.batches = TimeoutDict(timeout=3600)
 
     def reset(self):
         """Resets the state to normal, unconnected state."""
@@ -550,7 +553,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.channels.clear()
         self.supported.clear()
         self.nicksToHostmasks.clear()
-        self.batches = {}
+        self.batches.clear()
         self.capabilities_req = set()
         self.capabilities_ack = set()
         self.capabilities_nak = set()
