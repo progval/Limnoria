@@ -845,9 +845,10 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             batch_type = msg.args[1]
             batch_arguments = tuple(msg.args[2:])
             self.batches[batch_name] = Batch(type=batch_type,
-                    arguments=batch_arguments, messages=[])
+                    arguments=batch_arguments, messages=[msg])
         elif msg.args[0].startswith('-'):
             batch = self.batches.pop(batch_name)
+            batch.messages.append(msg)
             msg.tag('batch', batch)
         else:
             assert False, msg.args[0]
