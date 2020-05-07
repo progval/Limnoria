@@ -60,7 +60,7 @@ from .utils.str import rsplit
 from .utils.iter import chain
 from .utils.structures import smallqueue, RingBuffer, TimeoutDict
 
-MAX_LINE_SIZE = 512 # Including \r\n
+MAX_LINE_SIZE = 512 # Including \r\n, but excluding server_tags
 
 ###
 # The base class for a callback to be registered with an Irc object.  Shows
@@ -990,6 +990,27 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         else:
             log.warning('Refusing to send %r; %s is a zombie.', msg, self)
 
+    def _truncateMsg(self, msg):
+        msg_str = str(msg)
+        if msg_str[0] == '@':
+            (msg_tags_str, msg_rest_str) = msg_str.split(' ', 1)
+            msg_tags_str += ' '
+        else:
+            msg_tags_str = ''
+            msg_rest_str = msg_str
+        if len(msg_rest_str) > MAX_LINE_SIZE:
+            # Yes, this violates the contract, but at this point it doesn't
+            # matter.  That's why we gotta go munging in private attributes
+            #
+            # I'm changing this to a log.debug to fix a possible loop in
+            # the LogToIrc plugin.  Since users can't do anything about
+            # this issue, there's no fundamental reason to make it a
+            # warning.
+            log.debug('Truncating %r, message is too long.', msg)
+            msg._str = msg_tags_str + msg_rest_str[:MAX_LINE_SIZE-2] + '\r\n'
+            msg._len = len(str(msg))
+        # TODO: truncate tags
+
     def takeMsg(self):
         """Called by the IrcDriver; takes a message to be sent."""
         if not self.callbacks:
@@ -1026,17 +1047,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     log.debug('%s.outFilter returned None.', callback.name())
                     return self.takeMsg()
                 world.debugFlush()
-            if len(str(msg)) > MAX_LINE_SIZE:
-                # Yes, this violates the contract, but at this point it doesn't
-                # matter.  That's why we gotta go munging in private attributes
-                #
-                # I'm changing this to a log.debug to fix a possible loop in
-                # the LogToIrc plugin.  Since users can't do anything about
-                # this issue, there's no fundamental reason to make it a
-                # warning.
-                log.debug('Truncating %r, message is too long.', msg)
-                msg._str = msg._str[:MAX_LINE_SIZE-2] + '\r\n'
-                msg._len = len(str(msg))
+
+            self._truncateMsg(msg)
+
             # I don't think we should do this.  Why should it matter?  If it's
             # something important, then the server will send it back to us,
             # and if it's just a privmsg/notice/etc., we don't care.

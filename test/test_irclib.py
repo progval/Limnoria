@@ -649,7 +649,18 @@ class IrcTestCase(SupyTestCase):
     def testNoMsgLongerThan512(self):
         self.irc.queueMsg(ircmsgs.privmsg('whocares', 'x'*1000))
         msg = self.irc.takeMsg()
-        self.assertTrue(len(msg) <= 512, 'len(msg) was %s' % len(msg))
+        self.assertEqual(
+            len(msg), 512, 'len(msg) was %s (msg=%r)' % (len(msg), msg))
+
+        # Server tags don't influence the size limit of the rest of the
+        # message.
+        self.irc.queueMsg(ircmsgs.IrcMsg(
+            command='PRIVMSG', args=['whocares', 'x'*1000],
+            server_tags={'y': 'z'*500}))
+        msg2 = self.irc.takeMsg()
+        self.assertEqual(
+            len(msg2), 512+504, 'len(msg2) was %s (msg2=%r)' % (len(msg2), msg2))
+        self.assertEqual(msg.args, msg2.args)
 
     def testReset(self):
         for msg in msgs:
