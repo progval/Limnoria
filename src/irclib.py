@@ -1649,7 +1649,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
         caps = ' '.join(sorted(caps))
         # textwrap works here because in ASCII, all chars are 1 bytes:
-        cap_lines = textwrap.wrap(caps, MAX_LINE_SIZE-len('CAP REQ :'))
+        cap_lines = textwrap.wrap(
+            caps, MAX_LINE_SIZE-len('CAP REQ :'),
+            break_long_words=False, break_on_hyphens=False)
         for cap_line in cap_lines:
             self.sendMsg(ircmsgs.IrcMsg(command='CAP',
                 args=('REQ', cap_line)))
