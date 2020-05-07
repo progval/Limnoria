@@ -614,7 +614,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.supported['chanmodes'] = frozenset(msg.args[4])
 
     _005converters = utils.InsensitivePreservingDict({
-        'modes': int,
+        'modes': lambda s: int(s) if s else None,  # it's optional
         'keylen': int,
         'nicklen': int,
         'userlen': int,
