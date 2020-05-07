@@ -258,7 +258,8 @@ class IrcMsg(object):
                hash(self) == hash(other) and \
                self.command == other.command and \
                self.prefix == other.prefix and \
-               self.args == other.args
+               self.args == other.args and \
+               self.server_tags == other.server_tags
     __req__ = __eq__ # I don't know exactly what this does, but it can't hurt.
 
     def __ne__(self, other):
