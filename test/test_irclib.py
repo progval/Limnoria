@@ -498,6 +498,68 @@ class IrcCapsTestCase(SupyTestCase):
         self.assertEqual(m.args[0], 'REQ', m)
         self.assertEqual(m.args[1], 'b'*400)
 
+    def testNoEchomessageWithoutLabeledresponse(self):
+        self.irc = irclib.Irc('test')
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'USER', 'Expected USER, got %r.' % m)
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'LS', 'account-notify echo-message')))
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        self.assertEqual(m.args[1], 'account-notify')
+
+        m = self.irc.takeMsg()
+        self.assertIsNone(m)
+
+    def testEchomessageLabeledresponseGrouped(self):
+        self.irc = irclib.Irc('test')
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertTrue(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'USER', 'Expected USER, got %r.' % m)
+
+        self.irc.REQUEST_CAPABILITIES = set([
+            'account-notify', 'a'*490, 'echo-message', 'labeled-response'])
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP', args=(
+            '*', 'LS',
+            'account-notify ' + 'a'*490 + ' echo-message labeled-response')))
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        self.assertEqual(m.args[1], 'echo-message labeled-response')
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        self.assertEqual(m.args[1], 'a'*490)
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args[0], 'REQ', m)
+        self.assertEqual(m.args[1], 'account-notify')
+
+        m = self.irc.takeMsg()
+        self.assertIsNone(m)
+
+
 class StsTestCase(SupyTestCase):
     def setUp(self):
         self.irc = irclib.Irc('test')

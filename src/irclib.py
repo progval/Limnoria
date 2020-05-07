@@ -117,6 +117,7 @@ class IrcCallback(IrcCommandDispatcher, log.Firewalled):
     """
     callAfter = ()
     callBefore = ()
+    echo_message = False
     __firewalled__ = {'die': None,
                       'reset': None,
                       '__call__': None,
@@ -181,6 +182,20 @@ class IrcCallback(IrcCommandDispatcher, log.Firewalled):
 
     def __call__(self, irc, msg):
         """Used for handling each message."""
+        if not self.echo_message \
+                and msg.command in ('PRIVMSG', 'NOTICE', 'TAGMSG') \
+                and ('label' in msg.server_tags
+                     or not msg.tagged('receivedAt')):
+            # This is an echo of a message we sent; and the plugin didn't
+            # opt-in to receiving echos; ignoring it.
+            # `'label' in msg.server_tags` detects echos when labeled-response
+            # is enabled; and `not msg.tag('receivedAt')` detects simulated
+            # echos. As we don't enable real echo-message unless
+            # labeled-response is enabled; this is an exhaustive check of echos
+            # in all cases.
+            # See "When a client sends a private message to its own nick" at
+            # <https://ircv3.net/specs/extensions/labeled-response>
+            return
         method = self.dispatchCommand(msg.command, msg.args)
         if method is not None:
             method(irc, msg)
@@ -1057,12 +1072,19 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
             self._truncateMsg(msg)
 
-            # I don't think we should do this.  Why should it matter?  If it's
-            # something important, then the server will send it back to us,
-            # and if it's just a privmsg/notice/etc., we don't care.
-            # On second thought, we need this for testing.
-            if world.testing:
-                self.state.addMsg(self, msg)
+            if msg.command.upper() in ('PRIVMSG', 'NOTICE', 'TAGMSG') \
+                    and 'echo-message' not in self.state.capabilities_ack:
+                # echo-message is not implemented by server; let's emulate it
+                # here, just before sending it to the driver.
+                assert not msg.tagged('receivedAt')
+                self.feedMsg(msg, tag=False)
+            else:
+                # I don't think we should do this.  Why should it matter?  If it's
+                # something important, then the server will send it back to us,
+                # and if it's just a privmsg/notice/etc., we don't care.
+                # On second thought, we need this for testing.
+                if world.testing:
+                    self.state.addMsg(self, msg)
             log.debug('Outgoing message (%s): %s', self.network, str(msg).rstrip('\r\n'))
             return msg
         elif self.zombie:
@@ -1098,9 +1120,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         return channel.lstrip(statusmsg_chars)
 
     _numericErrorCommandRe = re.compile(r'^[45][0-9][0-9]$')
-    def feedMsg(self, msg):
-        """Called by the IrcDriver; feeds a message received."""
-        self._tagMsg(msg)
+    def feedMsg(self, msg, tag=True):
+        """Called by the IrcDriver; feeds a message received.
+
+        `tag=False` is used when simulating echo messages, to skip adding
+        received* tags."""
+        if tag:
+            self._tagMsg(msg)
         channel = msg.channel
 
         preInFilter = str(msg).rstrip('\r\n')
@@ -1250,11 +1276,12 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self.REQUEST_CAPABILITIES.add('sasl')
 
 
+    # Note: echo-message is only requested if labeled-response is available.
     REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
         'multi-prefix', 'metadata-notify', 'account-tag',
         'userhost-in-names', 'invite-notify', 'server-time',
         'chghost', 'batch', 'away-notify', 'message-tags',
-        'msgid', 'setname', 'labeled-response'])
+        'msgid', 'setname', 'labeled-response', 'echo-message'])
 
     def _queueConnectMessages(self):
         if self.zombie:
@@ -1654,7 +1681,24 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     def _requestCaps(self, caps):
         self.state.capabilities_req |= caps
 
-        caps = ' '.join(sorted(caps))
+        caps = list(sorted(caps))
+        cap_lines = []
+        if 'echo-message' in caps \
+                and 'labeled-response' not in self.state.capabilities_ack:
+            # Make sure echo-message is never requested unless we either have
+            # labeled-response already, or we request it *on the same line*
+            # so they are both accepted or both rejected). The reason for this
+            # is that this is required to properly deal with PRIVMSGs sent to
+            # oneself.
+            # See "When a client sends a private message to its own nick" at
+            # <https://ircv3.net/specs/extensions/labeled-response>
+            caps.remove('echo-message')
+            if 'labeled-response' in caps:
+                caps.remove('labeled-response')
+                # This makes sure they are always on the same line (which
+                # happens to be the first):
+                caps = ['echo-message', 'labeled-response'] + caps
+        caps = ' '.join(caps)
         # textwrap works here because in ASCII, all chars are 1 bytes:
         cap_lines = textwrap.wrap(
             caps, MAX_LINE_SIZE-len('CAP REQ :'),
