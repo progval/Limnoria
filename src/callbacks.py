@@ -1418,9 +1418,10 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
                 noIgnore = self.noIgnore(irc, msg)
             else:
                 noIgnore = self.noIgnore
-            if noIgnore or \
-               not ircdb.checkIgnored(msg.prefix, msg.channel) or \
-               not ircutils.isUserHostmask(msg.prefix):  # Some services impl.
+            if (noIgnore or
+               not msg.prefix or  # simulated echo message
+               not ircdb.checkIgnored(msg.prefix, msg.channel) or
+               not ircutils.isUserHostmask(msg.prefix)):  # Some services impl.
                 self.__parent.__call__(irc, msg)
         else:
             self.__parent.__call__(irc, msg)
