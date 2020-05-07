@@ -1040,6 +1040,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.outstandingPing = True
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
+            if not world.testing and 'label' not in msg.server_tags \
+                    and 'labeled-response' in self.state.capabilities_ack:
+                # Not adding labels while testing, because it would break
+                # all plugin tests using IrcMsg equality (unless they
+                # explicitly add the label, but it becomes a burden).
+                msg.server_tags['label'] = ircutils.makeLabel()
+                msg._len = msg._str = None
             for callback in reversed(self.callbacks):
                 self._setMsgChannel(msg)
                 msg = callback.outFilter(self, msg)
@@ -1247,7 +1254,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         'multi-prefix', 'metadata-notify', 'account-tag',
         'userhost-in-names', 'invite-notify', 'server-time',
         'chghost', 'batch', 'away-notify', 'message-tags',
-        'msgid', 'setname'])
+        'msgid', 'setname', 'labeled-response'])
 
     def _queueConnectMessages(self):
         if self.zombie:

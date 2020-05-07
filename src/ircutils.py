@@ -41,6 +41,7 @@ from __future__ import print_function
 import re
 import sys
 import time
+import uuid
 import base64
 import random
 import string
@@ -958,6 +959,17 @@ def parseStsPolicy(logger, policy, parseDuration):
             return None
 
     return parsed_policy
+
+
+def makeLabel():
+    """Returns a unique label for outgoing message tags.
+
+    Unicity is not guaranteed across restarts.
+    Returns should be handled as opaque strings, using only equality.
+
+    This is used for <https://ircv3.net/specs/extensions/labeled-response>
+    """
+    return str(uuid.uuid4())
 
 
 numerics = {
