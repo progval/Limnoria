@@ -1219,6 +1219,13 @@ registerGlobalValue(supybot.protocols.irc, 'strictRfc',
     requires you to message a nick such as services@this.network.server
     then you you should set this to False.""")))
 
+registerGlobalValue(supybot.protocols.irc, 'experimentalExtensions',
+    registry.Boolean(False, _("""Determines whether the bot will enable
+    draft/experimental extensions of the IRC protocol. Setting this to True
+    may break your bot at any time without warning and/or break your
+    configuration irreversibly. So keep it False unless you know what you are
+    doing.""")))
+
 registerGlobalValue(supybot.protocols.irc, 'certfile',
     registry.String('', _("""Determines what certificate file (if any) the bot
     will use connect with SSL sockets by default.""")))

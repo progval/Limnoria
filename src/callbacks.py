@@ -236,6 +236,14 @@ def _makeReply(irc, msg, s,
     # Finally, we'll return the actual message.
     ret = msgmaker(target, s)
     ret.tag('inReplyTo', msg)
+    if 'msgid' in msg.server_tags \
+            and conf.supybot.protocols.irc.experimentalExtensions() \
+            and 'message-tags' in irc.state.capabilities_ack:
+        # In theory, msgid being in server_tags implies message-tags was
+        # negotiated, but the +reply spec requires it explicitly. Plus, there's
+        # no harm in doing this extra check, in case a plugin is replying
+        # across network (as it may happen with '@network command').
+        ret.server_tags['+draft/reply'] = msg.server_tags['msgid']
     return ret
 
 def error(*args, **kwargs):
