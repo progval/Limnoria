@@ -35,9 +35,7 @@ class FunctionsTestCase(SupyTestCase):
     def testLoadPluginModule(self):
         self.assertRaises(ImportError, plugin.loadPluginModule, 'asldj')
         self.assertTrue(plugin.loadPluginModule('Owner'))
-        # I haven't yet figured out a way to get case-insensitivity back for
-        # "directoried" plugins.
-        #self.assertTrue(plugin.loadPluginModule('owner'))
+        self.assertTrue(plugin.loadPluginModule('owner'))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
