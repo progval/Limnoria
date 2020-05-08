@@ -196,8 +196,9 @@ class Config(callbacks.Plugin):
         L = []
         for (name, x) in conf.supybot.getValues(getChildren=True):
             if word in name.lower():
-                possibleChannel = registry.split(name)[-1]
-                if not irc.isChannel(possibleChannel):
+                last_name_part = registry.split(name)[-1]
+                if not irc.isChannel(last_name_part) \
+                        and not last_name_part.startswith(':'): # network
                     L.append(name)
         if L:
             irc.reply(format('%L', L))
