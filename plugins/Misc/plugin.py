@@ -292,7 +292,11 @@ class Misc(callbacks.Plugin):
             if cHelp:
                 irc.reply(cHelp)
             else:
-                irc.error()
+                irc.reply(_(
+                    "Use the 'list' command to list all plugins, and "
+                    "'list <plugin>' to list all commands in a plugin. "
+                    "To show the help of a command, use 'help <command>'. "
+                ))
             return
         command = list(map(callbacks.canonicalName, command))
         (maxL, cbs) = irc.findCallbacksForArgs(command)
