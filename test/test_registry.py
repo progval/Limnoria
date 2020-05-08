@@ -200,6 +200,14 @@ class ValuesTestCase(SupyTestCase):
         registry.open_registry(filename)
         self.assertEqual(conf.supybot.reply.whenAddressedBy.chars(), '\\')
 
+    def testSpacesValues(self):
+        with conf.supybot.networks.test.password.context(' foo '):
+            self.assertEqual(conf.supybot.networks.test.password(), ' foo ')
+            filename = conf.supybot.directories.conf.dirize('spaces.conf')
+            registry.close(conf.supybot, filename)
+            registry.open_registry(filename)
+            self.assertEqual(conf.supybot.networks.test.password(), ' foo ')
+
     def testWith(self):
         v = registry.String('foo', 'help')
         self.assertEqual(v(), 'foo')

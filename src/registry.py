@@ -103,9 +103,9 @@ def open_registry(filename, clear=False):
         else:
             acc += line
         try:
-            (key, value) = re.split(r'(?<!\\):', acc, 1)
+            (key, value) = re.split(r'(?<!\\): ', acc, 1)
             key = key.strip()
-            value = value.strip()
+            value = value.strip('\r\n')
             value = decoder(value)[0]
             acc = ''
         except ValueError:
