@@ -64,6 +64,13 @@ if setuptools:
         if url:
             kwargs.setdefault('url', url)
 
+        if 'long_description' not in kwargs:
+            readme_path = os.path.join(
+                os.path.dirname(plugin.__file__), 'README.md')
+            if os.path.isfile(readme_path):
+                with open(readme_path, 'r') as fd:
+                    kwargs['long_description'] = fd.read()
+
         module_name = kwargs['name'].replace('-', '_')
         kwargs.setdefault('packages', [module_name])
         kwargs.setdefault('package_dir', {module_name: '.'})
