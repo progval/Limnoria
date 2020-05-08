@@ -206,6 +206,24 @@ class Config(callbacks.Plugin):
             irc.reply(_('There were no matching configuration variables.'))
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?
 
+    @internationalizeDocstring
+    def searchvalues(self, irc, msg, args, word):
+        """<word>
+
+        Searches for <word> in the values of current configuration variables.
+        """
+        L = []
+        for (name, x) in conf.supybot.getValues(getChildren=True):
+            if (hasattr(x, 'value') # not a group
+                    and word in str(x()).lower()):
+                last_name_part = registry.split(name)[-1]
+                L.append(name)
+        if L:
+            irc.reply(format('%L', L))
+        else:
+            irc.reply(_('There were no matching configuration variables.'))
+    searchvalues = wrap(searchvalues, ['lowered'])
+
     def _getValue(self, irc, msg, group, network=None, channel=None, addGlobal=False):
         global_group = group
         global_value = str(group) or ' '

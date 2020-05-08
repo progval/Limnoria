@@ -83,9 +83,20 @@ class ConfigTestCase(ChannelPluginTestCase):
             self.assertNotError('config help %s' % name)
 
     def testSearch(self):
-        self.assertNotError('config search chars')
+        self.assertRegexp(
+            'config search chars', 'supybot.reply.whenAddressedBy.chars')
         self.assertNotError('config channel reply.whenAddressedBy.chars @')
         self.assertNotRegexp('config search chars', self.channel)
+
+    def testSearchValues(self):
+        self.assertResponse(
+            'config searchvalues @@@',
+            'There were no matching configuration variables.')
+        self.assertNotError('config channel reply.whenAddressedBy.strings @@@')
+        self.assertResponse(
+            'config searchvalues @@@',
+            r'supybot.reply.whenAddressedBy.strings.#test and '
+            r'supybot.reply.whenAddressedBy.strings.\:test.#test')
 
     def testDefault(self):
         self.assertNotError('config default '
