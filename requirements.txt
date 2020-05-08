@@ -1,3 +1,4 @@
+setuptools
 chardet
 pytz
 python-dateutil

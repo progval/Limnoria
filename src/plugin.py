@@ -34,11 +34,20 @@ import os.path
 import linecache
 import importlib.util
 
+try:
+    import pkg_resources
+except ImportError:
+    pkg_resources = None
+
 if not hasattr(importlib.util, 'module_from_spec'):
     # Python < 3.5
     import imp
 
 from . import callbacks, conf, log, registry
+
+ENTRYPOINT_GROUPS = [
+    'limnoria.plugins',
+]
 
 installDir = os.path.dirname(sys.modules[__name__].__file__)
 _pluginsDir = os.path.join(installDir, 'plugins')
@@ -46,11 +55,21 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 class Deprecated(ImportError):
     pass
 
+def loadPluginFromEntrypoint(name):
+    if pkg_resources:
+        for entrypoint_group in ENTRYPOINT_GROUPS:
+            for entrypoint in pkg_resources.iter_entry_points(entrypoint_group):
+                if entrypoint.name.lower() == name.lower():
+                    return entrypoint.load()
+
+    return None
+
 def loadPluginModule(name, ignoreDeprecation=False):
     """Loads (and returns) the module for the plugin with the given name."""
     files = []
     pluginDirs = conf.supybot.directories.plugins()[:]
     pluginDirs.append(_pluginsDir)
+    module = None
     for dir in pluginDirs:
         try:
             files.extend(os.listdir(dir))
@@ -63,31 +82,36 @@ def loadPluginModule(name, ignoreDeprecation=False):
         if len(matched_names) >= 1:
             name = matched_names[0]
         else:
-            raise ImportError(name)
-
-    try:
-        if hasattr(importlib.util, 'module_from_spec'):
-            # Python >= 3.5
-            spec = importlib.machinery.PathFinder.find_spec(name, pluginDirs)
-            if spec is None or spec.loader is None:
-                # spec is None if 'name' can't be found; and
-                # spec.loader might be None in some rare occasions as well
-                # (eg. for namespace packages)
+            module = loadPluginFromEntrypoint(name)
+            if module is None:
                 raise ImportError(name)
-            module = importlib.util.module_from_spec(spec)
-            sys.modules[module.__name__] = module
-            spec.loader.exec_module(module)
-        else:
-            # Python < 3.5
-            moduleInfo = imp.find_module(name, pluginDirs)
-            module = imp.load_module(name, *moduleInfo)
-    except:
-        sys.modules.pop(name, None)
-        keys = list(sys.modules.keys())
-        for key in keys:
-            if key.startswith(name + '.'):
-                sys.modules.pop(key)
-        raise
+
+    if module is None:
+        # Found by listing files; must now import it
+        try:
+            if hasattr(importlib.util, 'module_from_spec'):
+                # Python >= 3.5
+                spec = importlib.machinery.PathFinder.find_spec(name, pluginDirs)
+                if spec is None or spec.loader is None:
+                    # spec is None if 'name' can't be found; and
+                    # spec.loader might be None in some rare occasions as well
+                    # (eg. for namespace packages)
+                    raise ImportError(name)
+                module = importlib.util.module_from_spec(spec)
+                sys.modules[module.__name__] = module
+                spec.loader.exec_module(module)
+            else:
+                # Python < 3.5
+                moduleInfo = imp.find_module(name, pluginDirs)
+                module = imp.load_module(name, *moduleInfo)
+        except:
+            sys.modules.pop(name, None)
+            keys = list(sys.modules.keys())
+            for key in keys:
+                if key.startswith(name + '.'):
+                    sys.modules.pop(key)
+            raise
+
     if 'deprecated' in module.__dict__ and module.deprecated:
         if ignoreDeprecation:
             log.warning('Deprecated plugin loaded: %s', name)
