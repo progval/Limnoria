@@ -33,15 +33,17 @@ import json
 import importlib
 import urllib.parse
 
-from supybot import conf, utils, plugins, ircutils, callbacks, httpserver
-from supybot.commands import *
+from supybot import utils, callbacks, httpserver
+from supybot.commands import wrap
 from supybot.i18n import PluginInternationalization
-
-_ = PluginInternationalization("Fediverse")
 
 from . import activitypub as ap
 
+
 importlib.reload(ap)
+
+
+_ = PluginInternationalization("Fediverse")
 
 
 _username_re = re.compile("@(?P<localuser>[^@]+)@(?P<hostname>[^@]+)")
@@ -92,7 +94,7 @@ class FediverseHttp(httpserver.SupyHTTPServerCallback):
             return
         pem = ap.get_public_key_pem()
         actor_url = ap.get_instance_actor_url()
-        hostname = urllib.parse.urlparse(hostname).hostname
+        hostname = urllib.parse.urlparse(actor_url).hostname
         actor = {
             "@context": [
                 "https://www.w3.org/ns/activitystreams",
@@ -119,6 +121,7 @@ class Fediverse(callbacks.Plugin):
     def __init__(self, irc):
         super().__init__(irc)
         self._startHttp()
+        self._actor_cache = utils.structures.TimeoutDict(timeout=600)
 
     def _startHttp(self):
         callback = FediverseHttp()
@@ -132,11 +135,9 @@ class Fediverse(callbacks.Plugin):
     def _stopHttp(self):
         httpserver.unhook("fediverse")
 
-    @wrap(["somethingWithoutSpaces"])
-    def profile(self, irc, msg, args, username):
-        """<@user@instance>
-
-        Returns generic information on the account @user@instance."""
+    def _get_actor(self, irc, username):
+        if username in self._actor_cache:
+            return self._actor_cache[username]
         match = _username_re.match(username)
         if not match:
             irc.errorInvalid("fediverse username", username)
@@ -145,19 +146,58 @@ class Fediverse(callbacks.Plugin):
 
         try:
             actor = ap.get_actor(localuser, hostname)
-        except ap.ActorNotFound as e:
+        except ap.ActorNotFound:
             # Usually a 404
             irc.error("Unknown user %s." % username, Raise=True)
 
+        self._actor_cache[username] = actor
+        self._actor_cache[actor["id"]] = actor
+
+        return actor
+
+    def _format_actor_username(self, actor):
+        hostname = urllib.parse.urlparse(actor["id"]).hostname
+        return "@%s@%s" % (actor["preferredUsername"], hostname)
+
+    def _format_status(self, irc, status):
+        assert status["type"] == "Note", status
+        author_url = status["attributedTo"]
+        author = self._get_actor(irc, author_url)
+        return _("%s (%s): %s") % (
+            author["name"],
+            self._format_actor_username(author),
+            utils.web.htmlToText(status["content"]),
+        )
+
+    @wrap(["somethingWithoutSpaces"])
+    def profile(self, irc, msg, args, username):
+        """<@user@instance>
+
+        Returns generic information on the account @user@instance."""
+        actor = self._get_actor(irc, username)
+
         irc.reply(
-            _("\x02%s\x02 (@%s@%s): %s")
+            _("\x02%s\x02 (%s): %s")
             % (
                 actor["name"],
-                actor["preferredUsername"],
-                hostname,
-                utils.web.htmlToText(actor["summary"], tagReplace=""),
+                self._format_actor_username(actor),
+                utils.web.htmlToText(actor["summary"]),
             )
         )
+
+    @wrap(["somethingWithoutSpaces"])
+    def featured(self, irc, msg, args, username):
+        """<@user@instance>
+
+        Returned the featured statuses of @user@instance (aka. pinned toots).
+        """
+        actor = self._get_actor(irc, username)
+        if "featured" not in actor:
+            irc.error(_("No featured statuses."), Raise=True)
+        statuses = json.loads(ap.signed_request(actor["featured"])).get(
+            "orderedItems", []
+        )
+        irc.replies([self._format_status(irc, status) for status in statuses])
 
 
 Class = Fediverse

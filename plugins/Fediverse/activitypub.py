@@ -167,9 +167,10 @@ def get_public_key_pem():
     )
 
 
-def _signed_request(url, headers, data=None):
+def signed_request(url, headers=None, data=None):
     method = "get" if data is None else "post"
     instance_actor_url = get_instance_actor_url()
+    headers = headers or {}
 
     if instance_actor_url:
         signed_headers = [
@@ -209,7 +210,7 @@ def actor_url(localuser, hostname):
 def get_actor(localuser, hostname):
     url = actor_url(localuser, hostname)
 
-    content = _signed_request(url, headers={"Accept": ACTIVITY_MIMETYPE})
+    content = signed_request(url, headers={"Accept": ACTIVITY_MIMETYPE})
 
     assert content is not None
 
