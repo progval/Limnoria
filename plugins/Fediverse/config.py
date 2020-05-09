@@ -51,9 +51,9 @@ def configure(advanced):
 
 
 Fediverse = conf.registerPlugin("Fediverse")
-# This is where your configuration variables (if any) should go.  For example:
-# conf.registerGlobalValue(Fediverse, 'someConfigVariableName',
-#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
+conf.registerChannelValue(Fediverse, 'usernameSnarfer',
+    registry.Boolean(False, _("""Determines whether the bot will output the
+    profile of @username@hostname accounts it sees in channel messages.""")))
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

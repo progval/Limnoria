@@ -46,7 +46,7 @@ importlib.reload(ap)
 _ = PluginInternationalization("Fediverse")
 
 
-_username_re = re.compile("@(?P<localuser>[^@]+)@(?P<hostname>[^@]+)")
+_username_regexp = re.compile("@(?P<localuser>[^@ ]+)@(?P<hostname>[^@ ]+)")
 
 
 class FediverseHttp(httpserver.SupyHTTPServerCallback):
@@ -113,10 +113,11 @@ class FediverseHttp(httpserver.SupyHTTPServerCallback):
         self.wfile.write(json.dumps(actor).encode())
 
 
-class Fediverse(callbacks.Plugin):
+class Fediverse(callbacks.PluginRegexp):
     """Fetches information from ActivityPub servers."""
 
     threaded = True
+    regexps = ['usernameSnarfer']
 
     def __init__(self, irc):
         super().__init__(irc)
@@ -138,7 +139,7 @@ class Fediverse(callbacks.Plugin):
     def _get_actor(self, irc, username):
         if username in self._actor_cache:
             return self._actor_cache[username]
-        match = _username_re.match(username)
+        match = _username_regexp.match(username)
         if not match:
             irc.errorInvalid("fediverse username", username)
         localuser = match.group("localuser")
@@ -184,6 +185,23 @@ class Fediverse(callbacks.Plugin):
                 utils.web.htmlToText(actor["summary"]),
             )
         )
+
+    def usernameSnarfer(self, irc, msg, match):
+        try:
+            actor = self._get_actor(irc, match.group(0))
+        except ap.ActivityPubError:
+            # Be silent on errors
+            return
+
+        irc.reply(
+            _("\x02%s\x02 (%s): %s")
+            % (
+                actor["name"],
+                self._format_actor_username(actor),
+                utils.web.htmlToText(actor["summary"]),
+            )
+        )
+    usernameSnarfer.__doc__ = _username_regexp.pattern
 
     @wrap(["somethingWithoutSpaces"])
     def featured(self, irc, msg, args, username):
